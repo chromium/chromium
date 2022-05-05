@@ -4501,7 +4501,7 @@ hooks = [
     'action': [
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
-      '--fallback-versions=10',
+      '--fallback-versions=20',
       '--nogoma',
       '--nogn-gen',
       '--no-shell',
@@ -4519,7 +4519,7 @@ hooks = [
     'action': [
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
-      '--fallback-versions=10',
+      '--fallback-versions=20',
       '--nogoma',
       '--nogn-gen',
       '--no-shell',
@@ -4536,7 +4536,7 @@ hooks = [
     'action': [
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
-      '--fallback-versions=10',
+      '--fallback-versions=20',
       '--nogoma',
       '--nogn-gen',
       '--no-shell',
@@ -4552,7 +4552,7 @@ hooks = [
     'action': [
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
-      '--fallback-versions=10',
+      '--fallback-versions=20',
       '--nogoma',
       '--nogn-gen',
       '--no-shell',
@@ -4571,7 +4571,7 @@ hooks = [
     'action': [
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
-      '--fallback-versions=10',
+      '--fallback-versions=20',
       '--nogoma',
       '--nogn-gen',
       '--no-shell',
@@ -4590,7 +4590,7 @@ hooks = [
     'action': [
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
-      '--fallback-versions=10',
+      '--fallback-versions=20',
       '--nogoma',
       '--nogn-gen',
       '--no-shell',
@@ -4609,7 +4609,7 @@ hooks = [
     'action': [
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
-      '--fallback-versions=10',
+      '--fallback-versions=20',
       '--nogoma',
       '--nogn-gen',
       '--no-shell',
@@ -4627,7 +4627,7 @@ hooks = [
     'action': [
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
-      '--fallback-versions=10',
+      '--fallback-versions=20',
       '--nogoma',
       '--nogn-gen',
       '--no-shell',
