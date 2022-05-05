@@ -17,6 +17,7 @@
 #include "ui/android/window_android.h"
 #include "url/android/gurl_android.h"
 
+using password_manager::CreateDialogTraits;
 using password_manager::PasswordChangeSuccessTracker;
 using password_manager::metrics_util::LeakDialogDismissalReason;
 using password_manager::metrics_util::LeakDialogType;
@@ -32,7 +33,8 @@ CredentialLeakControllerAndroid::CredentialLeakControllerAndroid(
       origin_(origin),
       username_(username),
       password_change_success_tracker_(password_change_success_tracker),
-      window_android_(window_android) {}
+      window_android_(window_android),
+      leak_dialog_traits_(CreateDialogTraits(leak_type)) {}
 
 CredentialLeakControllerAndroid::~CredentialLeakControllerAndroid() = default;
 
@@ -113,23 +115,23 @@ void CredentialLeakControllerAndroid::OnCloseDialog() {
 }
 
 std::u16string CredentialLeakControllerAndroid::GetAcceptButtonLabel() const {
-  return password_manager::GetAcceptButtonLabel(leak_type_);
+  return leak_dialog_traits_->GetAcceptButtonLabel();
 }
 
 std::u16string CredentialLeakControllerAndroid::GetCancelButtonLabel() const {
-  return password_manager::GetCancelButtonLabel(leak_type_);
+  return leak_dialog_traits_->GetCancelButtonLabel();
 }
 
 std::u16string CredentialLeakControllerAndroid::GetDescription() const {
-  return password_manager::GetDescription(leak_type_);
+  return leak_dialog_traits_->GetDescription();
 }
 
 std::u16string CredentialLeakControllerAndroid::GetTitle() const {
-  return password_manager::GetTitle(leak_type_);
+  return leak_dialog_traits_->GetTitle();
 }
 
 bool CredentialLeakControllerAndroid::ShouldShowCancelButton() const {
-  return password_manager::ShouldShowCancelButton(leak_type_);
+  return leak_dialog_traits_->ShouldShowCancelButton();
 }
 
 bool CredentialLeakControllerAndroid::ShouldShowAutomaticChangePasswordButton()

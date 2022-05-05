@@ -87,6 +87,8 @@ class CredentialLeakControllerAndroid {
   const raw_ptr<ui::WindowAndroid> window_android_;
 
   std::unique_ptr<CredentialLeakDialogViewAndroid> dialog_view_;
+
+  std::unique_ptr<password_manager::LeakDialogTraits> leak_dialog_traits_;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_CREDENTIAL_LEAK_CONTROLLER_ANDROID_H_
