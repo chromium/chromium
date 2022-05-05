@@ -13,9 +13,9 @@
 <link rel="import" href="./common_styles/common_styles.html">
 
 <!--
-  A simple notification card with a button, link (optional) and icon (optional).
+  A simple warning notification card with a button, link (optional) and icon.
   Example:
-    <notification-card button-label="OK" link-label="What?" type="success">
+    <notification-card button-label="OK" link-label="What?">
       Great success!
     </notification-card>
 
@@ -23,8 +23,6 @@
    'button-label' - label displayed on the button. If empty or not set, the
                    button is hidden.
    'link-label' - text of the link. If empty or not set, the link is hidden.
-   'type' - icon type. Can be either 'success' or 'fail'. If not set, no icon
-            is displayed.
 
   Events:
     'buttonclick' - fired on button click.
@@ -43,44 +41,40 @@
       }
 
       :host iron-icon {
+        color: var(--cros-icon-color-warning);
         height: 28px;
         width: 28px;
       }
 
-      iron-icon[icon='cr:warning'] {
-        color: var(--google-yellow-500);
-      }
-
-      iron-icon[icon='notification-card:done'] {
-        color: var(--google-green-500);
-      }
-
       #text-container {
-        color: grey;
+        /* TODO(https://crbug.com/1320715) Revise the color */
+        color: var(--cros-text-color-primary);
         line-height: 130%;
         max-width: 240px;
         text-align: center;
       }
 
       a {
-        color: rgb(17, 85, 204); /* #1155CC */
+        /* TODO(https://crbug.com/1320715) Revise the color
+        color: rgb(17, 85, 204);  #1155CC
+        */
         cursor: pointer;
         text-decoration: none;
       }
 
       a:focus {
-        outline-color: rgb(77, 144, 254); /* #4D90FE */
+        /* TODO(https://crbug.com/1320715) Revise the color
+        outline-color: rgb(77, 144, 254);  #4D90FE
+        */
         transition: outline-color 200ms;
       }
     </style>
     <div id="container" class="vertical layout center fit">
       <div class="flex vertical layout center center-justified">
-        <template is="dom-if" if="[[type]]">
-          <div id="icon-container" class="vertical layout center">
-            <iron-icon icon$="[[iconNameByType_(type)]]">
-            </iron-icon>
-          </div>
-        </template>
+        <div id="icon-container" class="vertical layout center">
+          <iron-icon icon="cr:warning">
+          </iron-icon>
+        </div>
         <div id="text-container">
           <slot></slot>
         </div>

@@ -4,12 +4,6 @@
 
 /* #js_imports_placeholder */
 
-/** @enum {string} */
-const NotificationCardType = {
-  FAIL: 'fail',
-  SUCCESS: 'success',
-};
-
 class NotificationCard extends Polymer.Element {
 
   static get is() {
@@ -23,24 +17,7 @@ class NotificationCard extends Polymer.Element {
       buttonLabel: {type: String, value: ''},
 
       linkLabel: {type: String, value: ''},
-
-      type: {type: String, value: ''}
     };
-  }
-
-  /**
-   * @param {NotificationCardType} type
-   * @private
-   */
-  iconNameByType_(type) {
-    if (type == NotificationCardType.FAIL) {
-      return 'cr:warning';
-    }
-    if (type == NotificationCardType.SUCCESS) {
-      return 'oobe-24:done';
-    }
-    console.error('Unknown type "' + type + '".');
-    return '';
   }
 
   /** @private */

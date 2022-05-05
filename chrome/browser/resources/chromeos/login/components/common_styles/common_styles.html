@@ -66,18 +66,18 @@
       /* Links styles used within OOBE */
 
       .oobe-local-link {
-        color: rgb(17, 85, 204); /* #1155CC */
+        color: var(--cros-link-color);
         cursor: pointer;
         text-decoration: none;
       }
 
       .oobe-local-link:focus {
-        outline-color: rgb(77, 144, 254); /* #4D90FE */
+        outline-color: var(--cros-button-active-shadow-color-ambient-primary);
         transition: outline-color 200ms;
       }
 
       .oobe-optin-row {
-        border-top: 1px solid var(--google-grey-200);
+        border-top: 1px solid var(--cros-color-primary-inverted);
         font-size: 13px;
         margin-top: 12px;
         padding-top: 12px;

@@ -30,14 +30,14 @@
         border: none;
         border-radius: 0;
         box-shadow: none;
-        color: var(--google-blue-600);
+        color: var(--cros-link-color);
         font-weight: 400;
         margin: 0 -0.57em;
         min-width: 0;
       }
 
       :host([link]) cr-button:focus {
-        background-color: rgba(66, 133, 244, 0.12);
+        background-color: var(--cros-button-active-shadow-color-ambient-primary);
       }
 
       :host-context(.focus-outline-visible):host([link]) cr-button:focus {
@@ -45,7 +45,7 @@
       }
 
       :host([link]) cr-button[disabled] {
-        color: rgb(168, 168, 168);
+        color: var(--cros-color-disabled);
       }
     </style>
     <cr-button id="button" disabled="[[disabled]]" on-click="onClick_"
