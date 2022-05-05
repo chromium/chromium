@@ -152,7 +152,7 @@ ProcessedLocalAudioSource::ProcessedLocalAudioSource(
     bool disable_local_echo,
     const blink::AudioProcessingProperties& audio_processing_properties,
     int num_requested_channels,
-    ConstraintsOnceCallback started_callback,
+    ConstraintsRepeatingCallback started_callback,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : blink::MediaStreamAudioSource(std::move(task_runner),
                                     true /* is_local_source */,
@@ -486,8 +486,7 @@ void ProcessedLocalAudioSource::SetVolume(double volume) {
 
 void ProcessedLocalAudioSource::OnCaptureStarted() {
   SendLogMessageWithSessionId(base::StringPrintf("OnCaptureStarted()"));
-  std::move(started_callback_)
-      .Run(this, blink::mojom::MediaStreamRequestResult::OK, "");
+  started_callback_.Run(this, mojom::blink::MediaStreamRequestResult::OK, "");
 }
 
 void ProcessedLocalAudioSource::Capture(const media::AudioBus* audio_bus,
@@ -546,6 +545,16 @@ void ProcessedLocalAudioSource::OnCaptureProcessorCreated(
   DCHECK_NE(!!media_stream_audio_processor_, !!audio_processor_proxy_);
   if (audio_processor_proxy_)
     audio_processor_proxy_->SetControls(controls);
+}
+
+void ProcessedLocalAudioSource::ChangeSourceImpl(
+    const MediaStreamDevice& new_device) {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  WebRtcLogMessage("ProcessedLocalAudioSource::ChangeSourceImpl(new_device = " +
+                   new_device.id + ")");
+  EnsureSourceIsStopped();
+  SetDevice(new_device);
+  EnsureSourceIsStarted();
 }
 
 void ProcessedLocalAudioSource::SetOutputDeviceForAec(
