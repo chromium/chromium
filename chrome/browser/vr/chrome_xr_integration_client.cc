@@ -22,6 +22,7 @@
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/vr/ui_host/vr_ui_host_impl.h"
@@ -63,13 +64,14 @@ class CameraIndicationObserver : public content::BrowserXRRuntime::Observer {
     if (num_runtimes_with_camera_in_use_ && !ui_) {
       DCHECK(web_contents);
 
-      blink::MediaStreamDevice device(
+      blink::mojom::StreamDevices devices;
+      devices.video_device = blink::MediaStreamDevice(
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
           kWebXrVideoCaptureDeviceId, kWebXrVideoCaptureDeviceName);
 
       ui_ = MediaCaptureDevicesDispatcher::GetInstance()
                 ->GetMediaStreamCaptureIndicator()
-                ->RegisterMediaStream(web_contents, {std::move(device)});
+                ->RegisterMediaStream(web_contents, devices);
       DCHECK(ui_);
     }
 

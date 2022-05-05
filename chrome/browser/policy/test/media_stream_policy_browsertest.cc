@@ -20,6 +20,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 using testing::_;
 
@@ -106,16 +107,22 @@ class MediaStreamDevicesControllerBrowserTest
     }
   }
 
-  void Accept(const blink::MediaStreamDevices& devices,
+  void Accept(const blink::mojom::StreamDevices& devices,
               blink::mojom::MediaStreamRequestResult result,
               bool blocked_by_permissions_policy,
               ContentSetting audio_setting,
               ContentSetting video_setting) {
     if (policy_value_ || request_url_allowed_via_allowlist_) {
-      ASSERT_EQ(1U, devices.size());
-      ASSERT_EQ("fake_dev", devices[0].id);
+      ASSERT_EQ(1, devices.audio_device.has_value() +
+                       devices.video_device.has_value());
+      if (devices.audio_device.has_value()) {
+        ASSERT_EQ("fake_dev", devices.audio_device.value().id);
+      } else if (devices.video_device.has_value()) {
+        ASSERT_EQ("fake_dev", devices.video_device.value().id);
+      }
     } else {
-      ASSERT_EQ(0U, devices.size());
+      ASSERT_FALSE(devices.audio_device.has_value());
+      ASSERT_FALSE(devices.video_device.has_value());
     }
   }
 

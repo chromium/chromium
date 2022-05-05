@@ -26,6 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -91,25 +92,25 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
   content::MediaResponseCallback MakeCallback(
       base::RunLoop* wait_loop,
       blink::mojom::MediaStreamRequestResult* request_result,
-      blink::MediaStreamDevices* devices_result) {
+      blink::mojom::StreamDevices& devices_result) {
     return base::BindOnce(
         [](base::RunLoop* wait_loop,
            blink::mojom::MediaStreamRequestResult* request_result,
-           blink::MediaStreamDevices* devices_result,
-           const blink::MediaStreamDevices& devices,
+           blink::mojom::StreamDevices* devices_result,
+           const blink::mojom::StreamDevices& devices,
            blink::mojom::MediaStreamRequestResult result,
            std::unique_ptr<content::MediaStreamUI> ui) {
           *request_result = result;
           *devices_result = devices;
           wait_loop->Quit();
         },
-        wait_loop, request_result, devices_result);
+        wait_loop, request_result, &devices_result);
   }
 
   void HandleRequest(const content::MediaStreamRequest& request,
                      base::RunLoop* wait_loop,
                      blink::mojom::MediaStreamRequestResult* request_result,
-                     blink::MediaStreamDevices* devices_result) {
+                     blink::mojom::StreamDevices& devices_result) {
     access_handler_->HandleRequest(
         web_contents(), request,
         MakeCallback(wait_loop, request_result, devices_result),
@@ -125,7 +126,7 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
   void ProcessRequest(
       const content::DesktopMediaID& fake_desktop_media_id_response,
       blink::mojom::MediaStreamRequestResult* request_result,
-      blink::MediaStreamDevices* devices_result,
+      blink::mojom::StreamDevices& devices_result,
       bool request_audio,
       bool expect_result = true) {
     SetTestFlags({{true /* expect_screens */, true /* expect_windows*/,
@@ -177,25 +178,25 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
       blink::mojom::MediaStreamRequestResult expected_result,
       size_t expected_number_of_devices) {
     blink::mojom::MediaStreamRequestResult result;
-    blink::MediaStreamDevices devices;
+    blink::mojom::StreamDevices devices;
     SetTestFlags({MakePickerTestFlags(with_audio /*request_audio*/)});
 
     base::RunLoop wait_loop;
     HandleRequest(MakeMediaDeviceUpdateRequest(with_audio /* request_audio */),
-                  &wait_loop, &result, &devices);
+                  &wait_loop, &result, devices);
     wait_loop.Run();
     EXPECT_FALSE(test_flags_[0].picker_created);
     access_handler_.reset();
     EXPECT_EQ(expected_result, result);
 
-    ASSERT_EQ(expected_number_of_devices, devices.size());
+    ASSERT_EQ(expected_number_of_devices, blink::CountDevices(devices));
     if (expected_number_of_devices >= 1) {
       EXPECT_EQ(blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
-                devices[0].type);
+                devices.video_device.value().type);
     }
     if (expected_number_of_devices >= 2) {
       EXPECT_EQ(blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
-                devices[1].type);
+                devices.audio_device.value().type);
     }
   }
 
@@ -208,10 +209,10 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(DisplayMediaAccessHandlerTest, PermissionGiven) {
   blink::mojom::MediaStreamRequestResult result;
-  blink::MediaStreamDevices devices;
+  blink::mojom::StreamDevices devices;
   ProcessRequest(content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
                                          content::DesktopMediaID::kFakeId),
-                 &result, &devices, false /* request_audio */);
+                 &result, devices, false /* request_audio */);
 // TODO(https://crbug.com/1266425): Fix screen-capture tests on MacOS
 #if BUILDFLAG(IS_MAC)
   // Starting from macOS 10.15, screen capture requires system permissions
@@ -224,19 +225,19 @@ TEST_F(DisplayMediaAccessHandlerTest, PermissionGiven) {
 #endif
 
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, result);
-  EXPECT_EQ(1u, devices.size());
+  EXPECT_EQ(1u, blink::CountDevices(devices));
   EXPECT_EQ(blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
-            devices[0].type);
-  EXPECT_TRUE(devices[0].display_media_info);
+            devices.video_device.value().type);
+  EXPECT_TRUE(devices.video_device.value().display_media_info);
 }
 
 TEST_F(DisplayMediaAccessHandlerTest, PermissionGivenToRequestWithAudio) {
   blink::mojom::MediaStreamRequestResult result;
-  blink::MediaStreamDevices devices;
+  blink::mojom::StreamDevices devices;
   content::DesktopMediaID fake_media_id(content::DesktopMediaID::TYPE_SCREEN,
                                         content::DesktopMediaID::kFakeId,
                                         true /* audio_share */);
-  ProcessRequest(fake_media_id, &result, &devices, true /* request_audio */);
+  ProcessRequest(fake_media_id, &result, devices, true /* request_audio */);
 // TODO(https://crbug.com/1266425): Fix screen-capture tests on MacOS
 #if BUILDFLAG(IS_MAC)
   // Starting from macOS 10.15, screen capture requires system permissions
@@ -248,22 +249,22 @@ TEST_F(DisplayMediaAccessHandlerTest, PermissionGivenToRequestWithAudio) {
   }
 #endif
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, result);
-  EXPECT_EQ(2u, devices.size());
+  EXPECT_EQ(2u, blink::CountDevices(devices));
   EXPECT_EQ(blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
-            devices[0].type);
-  EXPECT_TRUE(devices[0].display_media_info);
+            devices.video_device.value().type);
+  EXPECT_TRUE(devices.video_device.value().display_media_info);
   EXPECT_EQ(blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
-            devices[1].type);
-  EXPECT_TRUE(devices[1].input.IsValid());
+            devices.audio_device.value().type);
+  EXPECT_TRUE(devices.audio_device.value().input.IsValid());
 }
 
 TEST_F(DisplayMediaAccessHandlerTest, PermissionDenied) {
   blink::mojom::MediaStreamRequestResult result;
-  blink::MediaStreamDevices devices;
-  ProcessRequest(content::DesktopMediaID(), &result, &devices,
+  blink::mojom::StreamDevices devices;
+  ProcessRequest(content::DesktopMediaID(), &result, devices,
                  true /* request_audio */);
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, result);
-  EXPECT_EQ(0u, devices.size());
+  EXPECT_EQ(0u, blink::CountDevices(devices));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -284,11 +285,11 @@ TEST_F(DisplayMediaAccessHandlerTest, DlpRestricted) {
 
   blink::mojom::MediaStreamRequestResult result =
       blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED;
-  blink::MediaStreamDevices devices;
-  ProcessRequest(media_id, &result, &devices, /*request_audio=*/false);
+  blink::mojom::StreamDevices devices;
+  ProcessRequest(media_id, &result, devices, /*request_audio=*/false);
 
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, result);
-  EXPECT_EQ(0u, devices.size());
+  EXPECT_EQ(0u, blink::CountDevices(devices));
 }
 
 TEST_F(DisplayMediaAccessHandlerTest, DlpNotRestricted) {
@@ -308,11 +309,11 @@ TEST_F(DisplayMediaAccessHandlerTest, DlpNotRestricted) {
 
   blink::mojom::MediaStreamRequestResult result =
       blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED;
-  blink::MediaStreamDevices devices;
-  ProcessRequest(media_id, &result, &devices, /*request_audio=*/false);
+  blink::mojom::StreamDevices devices;
+  ProcessRequest(media_id, &result, devices, /*request_audio=*/false);
 
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, result);
-  EXPECT_EQ(1u, devices.size());
+  EXPECT_EQ(1u, blink::CountDevices(devices));
 }
 
 TEST_F(DisplayMediaAccessHandlerTest, DlpWebContentsDestroyed) {
@@ -333,12 +334,12 @@ TEST_F(DisplayMediaAccessHandlerTest, DlpWebContentsDestroyed) {
 
   blink::mojom::MediaStreamRequestResult result =
       blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED;
-  blink::MediaStreamDevices devices;
-  ProcessRequest(media_id, &result, &devices, /*request_audio=*/false,
+  blink::mojom::StreamDevices devices;
+  ProcessRequest(media_id, &result, devices, /*request_audio=*/false,
                  /*expect_result=*/false);
 
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED, result);
-  EXPECT_EQ(0u, devices.size());
+  EXPECT_EQ(0u, blink::CountDevices(devices));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -504,11 +505,12 @@ TEST_F(DisplayMediaAccessHandlerTest, MultipleRequests) {
         [](base::RunLoop* wait_loop,
            blink::mojom::MediaStreamRequestResult* request_result,
            blink::MediaStreamDevices* devices_result,
-           const blink::MediaStreamDevices& devices,
+           const blink::mojom::StreamDevices& devices,
            blink::mojom::MediaStreamRequestResult result,
            std::unique_ptr<content::MediaStreamUI> ui) {
           *request_result = result;
-          *devices_result = devices;
+          *devices_result =
+              blink::StreamDevicesToMediaStreamDevicesList(devices);
           wait_loop->Quit();
         },
         &wait_loop[i], &result, &devices);
@@ -618,13 +620,13 @@ TEST_F(DisplayMediaAccessHandlerTest, ChangeSourceWithPendingPickerRequest) {
                 MakePickerTestFlags(false /*request_audio*/)});
 
   blink::mojom::MediaStreamRequestResult results[2];
-  blink::MediaStreamDevices devices[2];
+  blink::mojom::StreamDevices devices[2];
   base::RunLoop wait_loop[2];
 
   HandleRequest(MakeRequest(false /* request_audio */), &wait_loop[0],
-                &results[0], &devices[0]);
+                &results[0], devices[0]);
   HandleRequest(MakeMediaDeviceUpdateRequest(false /* request_audio */),
-                &wait_loop[1], &results[1], &devices[1]);
+                &wait_loop[1], &results[1], devices[1]);
 
   wait_loop[0].Run();
   EXPECT_TRUE(test_flags_[0].picker_created);
@@ -653,13 +655,13 @@ TEST_F(DisplayMediaAccessHandlerTest,
                 MakePickerTestFlags(false /*request_audio*/)});
 
   blink::mojom::MediaStreamRequestResult results[2];
-  blink::MediaStreamDevices devices[2];
+  blink::mojom::StreamDevices devices[2];
   base::RunLoop wait_loop[2];
 
   HandleRequest(MakeRequest(false /* request_audio */), &wait_loop[0],
-                &results[0], &devices[0]);
+                &results[0], devices[0]);
   HandleRequest(MakeMediaDeviceUpdateRequest(false /* request_audio */),
-                &wait_loop[1], &results[1], &devices[1]);
+                &wait_loop[1], &results[1], devices[1]);
 
   // Policy is changed after the requests are received, but before they are
   // processed in the call to wait_loop.Run() below.
@@ -691,19 +693,19 @@ TEST_F(DisplayMediaAccessHandlerTest,
   SetTestFlags({{MakePickerTestFlags(false /*request_audio*/)}});
 
   blink::mojom::MediaStreamRequestResult results[3];
-  blink::MediaStreamDevices devices[3];
+  blink::mojom::StreamDevices devices[3];
   base::RunLoop wait_loop[3];
 
   HandleRequest(MakeRequest(false /* request_audio */), &wait_loop[0],
-                &results[0], &devices[0]);
+                &results[0], devices[0]);
   {
     content::MediaStreamRequest request =
         MakeMediaDeviceUpdateRequest(false /* request_audio */);
     request.requested_video_device_id = "MALFORMED";
-    HandleRequest(request, &wait_loop[1], &results[1], &devices[1]);
+    HandleRequest(request, &wait_loop[1], &results[1], devices[1]);
   }
   HandleRequest(MakeMediaDeviceUpdateRequest(false /* request_audio */),
-                &wait_loop[2], &results[2], &devices[2]);
+                &wait_loop[2], &results[2], devices[2]);
 
   wait_loop[0].Run();
   EXPECT_TRUE(test_flags_[0].picker_created);

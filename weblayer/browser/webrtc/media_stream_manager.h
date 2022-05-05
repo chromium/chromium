@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace content {
 class WebContents;
@@ -56,7 +57,7 @@ class MediaStreamManager {
 
   void OnMediaAccessPermissionResult(
       content::MediaResponseCallback callback,
-      const blink::MediaStreamDevices& devices,
+      const blink::mojom::StreamDevices& devices,
       blink::mojom::MediaStreamRequestResult result,
       bool blocked_by_permissions_policy,
       ContentSetting audio_setting,
@@ -73,7 +74,7 @@ class MediaStreamManager {
   struct RequestPendingClientApproval {
     RequestPendingClientApproval();
     RequestPendingClientApproval(content::MediaResponseCallback callback,
-                                 const blink::MediaStreamDevices& devices,
+                                 const blink::mojom::StreamDevices& devices,
                                  blink::mojom::MediaStreamRequestResult result);
     ~RequestPendingClientApproval();
 
@@ -81,7 +82,7 @@ class MediaStreamManager {
         RequestPendingClientApproval&& other);
 
     content::MediaResponseCallback callback;
-    blink::MediaStreamDevices devices;
+    blink::mojom::StreamDevices devices;
     blink::mojom::MediaStreamRequestResult result;
   };
   std::map<int, RequestPendingClientApproval> requests_pending_client_approval_;

@@ -62,6 +62,7 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 #include "ui/accessibility/platform/fuchsia/semantic_provider_impl.h"
 #include "ui/aura/window.h"
@@ -205,16 +206,16 @@ void HandleMediaPermissionsRequestResult(
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback,
     const std::vector<blink::mojom::PermissionStatus>& result) {
-  blink::MediaStreamDevices devices;
+  blink::mojom::StreamDevices devices;
 
   int result_pos = 0;
 
   if (request.audio_type ==
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
     if (result[result_pos] == blink::mojom::PermissionStatus::GRANTED) {
-      devices.push_back(blink::MediaStreamDevice(
+      devices.audio_device = blink::MediaStreamDevice(
           request.audio_type, request.requested_audio_device_id,
-          /*name=*/""));
+          /*name=*/"");
     }
     result_pos++;
   }
@@ -222,16 +223,17 @@ void HandleMediaPermissionsRequestResult(
   if (request.video_type ==
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
     if (result[result_pos] == blink::mojom::PermissionStatus::GRANTED) {
-      devices.push_back(blink::MediaStreamDevice(
+      devices.video_device = blink::MediaStreamDevice(
           request.video_type, request.requested_video_device_id,
-          /*name=*/""));
+          /*name=*/"");
     }
   }
 
   std::move(callback).Run(
       devices,
-      devices.empty() ? blink::mojom::MediaStreamRequestResult::NO_HARDWARE
-                      : blink::mojom::MediaStreamRequestResult::OK,
+      (!devices.audio_device.has_value() && !devices.video_device.has_value())
+          ? blink::mojom::MediaStreamRequestResult::NO_HARDWARE
+          : blink::mojom::MediaStreamRequestResult::OK,
       nullptr);
 }
 
@@ -1240,7 +1242,7 @@ void FrameImpl::RequestMediaAccessPermission(
     permissions.push_back(blink::PermissionType::AUDIO_CAPTURE);
   } else if (request.audio_type != blink::mojom::MediaStreamType::NO_SERVICE) {
     std::move(callback).Run(
-        blink::MediaStreamDevices(),
+        blink::mojom::StreamDevices(),
         blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED, nullptr);
     return;
   }
@@ -1250,7 +1252,7 @@ void FrameImpl::RequestMediaAccessPermission(
     permissions.push_back(blink::PermissionType::VIDEO_CAPTURE);
   } else if (request.video_type != blink::mojom::MediaStreamType::NO_SERVICE) {
     std::move(callback).Run(
-        blink::MediaStreamDevices(),
+        blink::mojom::StreamDevices(),
         blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED, nullptr);
     return;
   }
@@ -1259,7 +1261,7 @@ void FrameImpl::RequestMediaAccessPermission(
       request.render_process_id, request.render_frame_id);
   if (!render_frame_host) {
     std::move(callback).Run(
-        blink::MediaStreamDevices(),
+        blink::mojom::StreamDevices(),
         blink::mojom::MediaStreamRequestResult::INVALID_STATE, nullptr);
     return;
   }
@@ -1267,7 +1269,7 @@ void FrameImpl::RequestMediaAccessPermission(
   if (url::Origin::Create(request.security_origin) !=
       render_frame_host->GetLastCommittedOrigin()) {
     std::move(callback).Run(
-        blink::MediaStreamDevices(),
+        blink::mojom::StreamDevices(),
         blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
         nullptr);
     return;

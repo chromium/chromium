@@ -79,6 +79,7 @@ include_rules = [
   "+third_party/blink/public/mojom/autoplay",
   "+third_party/blink/public/mojom/loader/resource_load_info.mojom.h",
   "+third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h",
+  "+third_party/blink/public/mojom/mediastream/media_stream.mojom.h",
   "+third_party/blink/public/mojom/messaging",
   "+third_party/blink/public/mojom/speech/speech_synthesis.mojom.h",
   "+third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h",

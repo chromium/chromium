@@ -91,14 +91,13 @@ class CONTENT_EXPORT MediaStreamManager
  public:
   // Callback to deliver the result of a media access request.
   using MediaAccessRequestCallback =
-      base::OnceCallback<void(const blink::MediaStreamDevices& devices,
+      base::OnceCallback<void(const blink::mojom::StreamDevices& devices,
                               std::unique_ptr<MediaStreamUIProxy> ui)>;
 
   using GenerateStreamCallback =
       base::OnceCallback<void(blink::mojom::MediaStreamRequestResult result,
                               const std::string& label,
-                              const blink::MediaStreamDevices& audio_devices,
-                              const blink::MediaStreamDevices& video_devices,
+                              blink::mojom::StreamDevicesPtr stream_devices,
                               bool pan_tilt_zoom_allowed)>;
 
   using OpenDeviceCallback =
@@ -450,6 +449,9 @@ class CONTENT_EXPORT MediaStreamManager
       std::pair<std::string, std::unique_ptr<DeviceRequest>>;
   using DeviceRequests = std::list<LabeledDeviceRequest>;
 
+  static void SetRequestDevice(DeviceRequest& request,
+                               const blink::MediaStreamDevice& device);
+
   void InitializeMaybeAsync(
       std::unique_ptr<VideoCaptureProvider> video_capture_provider);
 
@@ -457,12 +459,12 @@ class CONTENT_EXPORT MediaStreamManager
   void HandleAccessRequestResponse(
       const std::string& label,
       const media::AudioParameters& output_parameters,
-      const blink::MediaStreamDevices& devices,
+      const blink::mojom::StreamDevices& devices,
       blink::mojom::MediaStreamRequestResult result);
   void HandleChangeSourceRequestResponse(
       const std::string& label,
       DeviceRequest* request,
-      const blink::MediaStreamDevices& devices);
+      const blink::mojom::StreamDevices& devices);
   void StopMediaStreamFromBrowser(const std::string& label);
   void ChangeMediaStreamSourceFromBrowser(const std::string& label,
                                           const DesktopMediaID& media_id);
@@ -576,7 +578,7 @@ class CONTENT_EXPORT MediaStreamManager
   void FinalizeGetOpenDevice(const std::string& label, DeviceRequest* request);
   void PanTiltZoomPermissionChecked(
       const std::string& label,
-      const blink::MediaStreamDevices& video_devices,
+      const absl::optional<blink::MediaStreamDevice>& video_device,
       base::OnceCallback<void(bool)> callback,
       bool pan_tilt_zoom_allowed);
   void FinalizeRequestFailed(const std::string& label,
@@ -586,7 +588,7 @@ class CONTENT_EXPORT MediaStreamManager
   void FinalizeChangeDevice(const std::string& label, DeviceRequest* request);
   void FinalizeMediaAccessRequest(const std::string& label,
                                   DeviceRequest* request,
-                                  const blink::MediaStreamDevices& devices);
+                                  const blink::mojom::StreamDevices& devices);
   void HandleCheckMediaAccessResponse(const std::string& label,
                                       bool have_access);
 
@@ -609,13 +611,13 @@ class CONTENT_EXPORT MediaStreamManager
       const blink::WebMediaDeviceInfoArray& devices,
       std::string* device_id) const;
 
-  void TranslateDeviceIdToSourceId(DeviceRequest* request,
+  void TranslateDeviceIdToSourceId(const DeviceRequest* request,
                                    blink::MediaStreamDevice* device) const;
 
   // Handles the callback from MediaStreamUIProxy to receive the UI window id,
   // used for excluding the notification window in desktop capturing.
   void OnMediaStreamUIWindowId(blink::mojom::MediaStreamType video_type,
-                               const blink::MediaStreamDevices& devices,
+                               const blink::mojom::StreamDevices& devices,
                                gfx::NativeViewId window_id);
 
   // Runs on the IO thread and does the actual [un]registration of callbacks.
@@ -699,7 +701,7 @@ class CONTENT_EXPORT MediaStreamManager
   // When device changes, update which tabs' capture-handles are tracked.
   void MaybeUpdateTrackedCaptureHandleConfigs(
       const std::string& label,
-      const blink::MediaStreamDevices& new_devices,
+      const blink::mojom::StreamDevices& new_devices,
       GlobalRenderFrameHostId capturer);
 
   // Receive a new capture-handle from the CaptureHandleManager.

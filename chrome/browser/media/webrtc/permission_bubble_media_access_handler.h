@@ -14,6 +14,7 @@
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -59,14 +60,14 @@ class PermissionBubbleMediaAccessHandler
       content::WebContents* web_contents,
       int64_t request_id,
       content::MediaStreamRequest request,
-      const blink::MediaStreamDevices& devices,
+      const blink::mojom::StreamDevices& devices,
       blink::mojom::MediaStreamRequestResult result,
       bool blocked_by_permissions_policy,
       ContentSetting audio_setting,
       ContentSetting video_setting);
   void OnAccessRequestResponse(content::WebContents* web_contents,
                                int64_t request_id,
-                               const blink::MediaStreamDevices& devices,
+                               const blink::mojom::StreamDevices& devices,
                                blink::mojom::MediaStreamRequestResult result,
                                std::unique_ptr<content::MediaStreamUI> ui);
 

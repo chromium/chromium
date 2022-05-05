@@ -10,8 +10,6 @@
 
 namespace blink {
 
-MockMojoMediaStreamDispatcherHost::MockMojoMediaStreamDispatcherHost() {}
-
 MockMojoMediaStreamDispatcherHost::~MockMojoMediaStreamDispatcherHost() {}
 
 mojo::PendingRemote<mojom::blink::MediaStreamDispatcherHost>
@@ -26,33 +24,29 @@ void MockMojoMediaStreamDispatcherHost::GenerateStream(
     mojom::blink::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
     GenerateStreamCallback callback) {
   request_id_ = request_id;
-  audio_devices_.clear();
-  video_devices_.clear();
   ++request_stream_counter_;
+  stream_devices_ = blink::mojom::blink::StreamDevices();
 
   blink::mojom::StreamSelectionStrategy strategy =
       audio_stream_selection_info_ptr->strategy;
   if (controls.audio.requested &&
       (strategy == blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID ||
        strategy == blink::mojom::StreamSelectionStrategy::FORCE_NEW_STREAM)) {
-    MediaStreamDevice audio_device;
-    audio_device.id = controls.audio.device_id + session_id_.ToString();
-    audio_device.name = "microphone";
-    audio_device.type = controls.audio.stream_type;
-    audio_device.set_session_id(session_id_);
-    audio_device.matched_output_device_id =
+    stream_devices_.audio_device = MediaStreamDevice(
+        controls.audio.stream_type,
+        controls.audio.device_id + session_id_.ToString(), "microphone");
+    stream_devices_.audio_device.value().set_session_id(session_id_);
+    stream_devices_.audio_device.value().matched_output_device_id =
         "associated_output_device_id" + session_id_.ToString();
-    audio_devices_.push_back(std::move(audio_device));
   }
 
   if (controls.video.requested) {
-    MediaStreamDevice video_device;
-    video_device.id = controls.video.device_id + session_id_.ToString();
-    video_device.name = "usb video camera";
-    video_device.type = controls.video.stream_type;
-    video_device.video_facing = media::MEDIA_VIDEO_FACING_USER;
-    video_device.set_session_id(session_id_);
-    video_devices_.push_back(video_device);
+    stream_devices_.video_device = MediaStreamDevice(
+        controls.video.stream_type,
+        controls.video.device_id + session_id_.ToString(), "usb video camera");
+    stream_devices_.video_device.value().video_facing =
+        media::MEDIA_VIDEO_FACING_USER;
+    stream_devices_.video_device.value().set_session_id(session_id_);
   }
 
   if (do_not_run_cb_) {
@@ -60,7 +54,7 @@ void MockMojoMediaStreamDispatcherHost::GenerateStream(
   } else {
     std::move(callback).Run(mojom::blink::MediaStreamRequestResult::OK,
                             String("dummy") + String::Number(request_id_),
-                            audio_devices_, video_devices_,
+                            stream_devices_.Clone(),
                             /*pan_tilt_zoom_allowed=*/false);
   }
 }
@@ -72,13 +66,16 @@ void MockMojoMediaStreamDispatcherHost::CancelRequest(int32_t request_id) {
 void MockMojoMediaStreamDispatcherHost::StopStreamDevice(
     const String& device_id,
     const absl::optional<base::UnguessableToken>& session_id) {
-  for (const MediaStreamDevice& device : audio_devices_) {
+  if (stream_devices_.audio_device.has_value()) {
+    const MediaStreamDevice& device = stream_devices_.audio_device.value();
     if (device.id == device_id.Utf8() && device.session_id() == session_id) {
       ++stop_audio_device_counter_;
       return;
     }
   }
-  for (const MediaStreamDevice& device : video_devices_) {
+
+  if (stream_devices_.video_device.has_value()) {
+    const MediaStreamDevice& device = stream_devices_.video_device.value();
     if (device.id == device_id.Utf8() && device.session_id() == session_id) {
       ++stop_video_device_counter_;
       return;

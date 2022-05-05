@@ -33,6 +33,7 @@
 #include "extensions/common/constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/views/border.h"
 
@@ -464,9 +465,11 @@ void TabSharingUIViews::CreateTabCaptureIndicator() {
   if (!shared_tab_)
     return;
 
+  blink::mojom::StreamDevices devices;
+  devices.video_device = device;
   tab_capture_indicator_ui_ = MediaCaptureDevicesDispatcher::GetInstance()
                                   ->GetMediaStreamCaptureIndicator()
-                                  ->RegisterMediaStream(shared_tab_, {device});
+                                  ->RegisterMediaStream(shared_tab_, devices);
   tab_capture_indicator_ui_->OnStarted(
       base::RepeatingClosure(), content::MediaStreamUI::SourceCallback(),
       /*label=*/std::string(), /*screen_capture_ids=*/{},

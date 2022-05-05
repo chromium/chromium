@@ -18,6 +18,7 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 class MediaAccessHandler;
 class MediaStreamCaptureIndicator;
@@ -121,7 +122,7 @@ class MediaCaptureDevicesDispatcher
       content::BrowserContext* context,
       bool audio,
       bool video,
-      blink::MediaStreamDevices* devices) override;
+      blink::mojom::StreamDevices& devices) override;
 
   // content::MediaObserver:
   void OnAudioCaptureDevicesChanged() override;

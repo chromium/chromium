@@ -295,7 +295,7 @@ void SpeechRecognitionManagerImpl::RecognitionAllowedCallback(int session_id,
 
 void SpeechRecognitionManagerImpl::MediaRequestPermissionCallback(
     int session_id,
-    const blink::MediaStreamDevices& devices,
+    const blink::mojom::StreamDevices& devices,
     std::unique_ptr<MediaStreamUIProxy> stream_ui) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -303,10 +303,12 @@ void SpeechRecognitionManagerImpl::MediaRequestPermissionCallback(
   if (iter == sessions_.end())
     return;
 
-  bool is_allowed = !devices.empty();
+  blink::MediaStreamDevices devices_list =
+      blink::StreamDevicesToMediaStreamDevicesList(devices);
+  const bool is_allowed = !devices_list.empty();
   if (is_allowed) {
     // Copy the approved devices array to the context for UI indication.
-    iter->second->context.devices = devices;
+    iter->second->context.devices = devices_list;
 
     // Save the UI object.
     iter->second->ui = std::move(stream_ui);

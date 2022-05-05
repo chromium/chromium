@@ -16,6 +16,7 @@
 #include "components/performance_manager/test_support/test_harness_helper.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace performance_manager {
 
@@ -79,8 +80,16 @@ void PageLiveStateDecoratorHelperTest::EndToEndStreamPropertyTest(
   blink::MediaStreamDevice device(stream_type, "fake_device", "fake_device");
   device.display_media_info = std::move(display_media_info);
 
+  blink::mojom::StreamDevices devices;
+  if (blink::IsAudioInputMediaType(device.type))
+    devices.audio_device = device;
+  else if (blink::IsVideoInputMediaType(device.type))
+    devices.video_device = device;
+  else
+    NOTREACHED();
+
   std::unique_ptr<content::MediaStreamUI> ui =
-      indicator()->RegisterMediaStream(web_contents(), {device});
+      indicator()->RegisterMediaStream(web_contents(), devices);
   ui->OnStarted(base::RepeatingClosure(),
                 content::MediaStreamUI::SourceCallback(),
                 /*label=*/std::string(), /*screen_capture_ids=*/{},

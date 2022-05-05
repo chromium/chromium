@@ -33,7 +33,7 @@ class MediaStreamDeviceEnumerator;
 // renderer.
 class MediaStreamDevicesController {
  public:
-  typedef base::OnceCallback<void(const blink::MediaStreamDevices& devices,
+  typedef base::OnceCallback<void(const blink::mojom::StreamDevices& devices,
                                   blink::mojom::MediaStreamRequestResult result,
                                   bool blocked_by_permissions_policy,
                                   ContentSetting audio_setting,
@@ -81,8 +81,8 @@ class MediaStreamDevicesController {
 
   // Returns a list of devices available for the request for the given
   // audio/video permission settings.
-  blink::MediaStreamDevices GetDevices(ContentSetting audio_setting,
-                                       ContentSetting video_setting);
+  blink::mojom::StreamDevices GetDevices(ContentSetting audio_setting,
+                                         ContentSetting video_setting);
 
   // Runs |callback_| with the current audio/video permission settings.
   void RunCallback(bool blocked_by_permissions_policy);

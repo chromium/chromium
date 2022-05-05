@@ -31,7 +31,9 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include <vector>
@@ -52,7 +54,7 @@
 using content::BrowserThread;
 
 using MediaResponseCallback =
-    base::OnceCallback<void(const blink::MediaStreamDevices& devices,
+    base::OnceCallback<void(const blink::mojom::StreamDevices& devices,
                             blink::mojom::MediaStreamRequestResult result,
                             std::unique_ptr<content::MediaStreamUI> ui)>;
 
@@ -211,7 +213,7 @@ void PermissionBubbleMediaAccessHandler::HandleRequest(
     // If screen capturing isn't enabled on Android, we'll use "invalid state"
     // as result, same as on desktop.
     std::move(callback).Run(
-        blink::MediaStreamDevices(),
+        blink::mojom::StreamDevices(),
         blink::mojom::MediaStreamRequestResult::INVALID_STATE, nullptr);
     return;
   }
@@ -307,7 +309,7 @@ void PermissionBubbleMediaAccessHandler::OnMediaStreamRequestResponse(
     content::WebContents* web_contents,
     int64_t request_id,
     content::MediaStreamRequest request,
-    const blink::MediaStreamDevices& devices,
+    const blink::mojom::StreamDevices& devices,
     blink::mojom::MediaStreamRequestResult result,
     bool blocked_by_permissions_policy,
     ContentSetting audio_setting,
@@ -326,7 +328,7 @@ void PermissionBubbleMediaAccessHandler::OnMediaStreamRequestResponse(
   }
 
   std::unique_ptr<content::MediaStreamUI> ui;
-  if (!devices.empty()) {
+  if (devices.audio_device.has_value() || devices.video_device.has_value()) {
     ui = MediaCaptureDevicesDispatcher::GetInstance()
              ->GetMediaStreamCaptureIndicator()
              ->RegisterMediaStream(web_contents, devices);
@@ -338,7 +340,7 @@ void PermissionBubbleMediaAccessHandler::OnMediaStreamRequestResponse(
 void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
     content::WebContents* web_contents,
     int64_t request_id,
-    const blink::MediaStreamDevices& devices,
+    const blink::mojom::StreamDevices& devices,
     blink::mojom::MediaStreamRequestResult result,
     std::unique_ptr<content::MediaStreamUI> ui) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

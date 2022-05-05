@@ -18,10 +18,10 @@
 #include "media/mojo/mojom/display_media_information.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-forward.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
 namespace blink {
-
 
 // Types of media stream requests that can be made to the media controller.
 enum MediaStreamRequestType {
@@ -124,6 +124,11 @@ struct BLINK_COMMON_EXPORT MediaStreamDevice {
 };
 
 using MediaStreamDevices = std::vector<MediaStreamDevice>;
+
+BLINK_COMMON_EXPORT MediaStreamDevices
+StreamDevicesToMediaStreamDevicesList(const mojom::StreamDevices& devices);
+
+BLINK_COMMON_EXPORT size_t CountDevices(const mojom::StreamDevices& devices);
 
 }  // namespace blink
 

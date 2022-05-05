@@ -30,7 +30,7 @@ class RenderFrameHostDelegate;
 class CONTENT_EXPORT MediaStreamUIProxy {
  public:
   using ResponseCallback =
-      base::OnceCallback<void(const blink::MediaStreamDevices& devices,
+      base::OnceCallback<void(const blink::mojom::StreamDevices& devices,
                               blink::mojom::MediaStreamRequestResult result)>;
 
   using WindowIdCallback =
@@ -117,7 +117,7 @@ class CONTENT_EXPORT MediaStreamUIProxy {
   friend class FakeMediaStreamUIProxy;
 
   void ProcessAccessRequestResponse(
-      const blink::MediaStreamDevices& devices,
+      const blink::mojom::StreamDevices& devices,
       blink::mojom::MediaStreamRequestResult result);
   void ProcessStopRequestFromUI();
   void ProcessChangeSourceRequestFromUI(const DesktopMediaID& media_id);
@@ -170,6 +170,8 @@ class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
 
  private:
   // This is used for RequestAccess().
+  // TODO(crbug/1313021): Use blink::mojom::StreamDevices instead of
+  // blink::MediaStreamDevices.
   blink::MediaStreamDevices devices_;
 
   // These are used for CheckAccess().

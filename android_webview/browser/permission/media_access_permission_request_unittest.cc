@@ -8,7 +8,9 @@
 
 #include "base/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace android_webview {
 
@@ -78,10 +80,10 @@ class MediaAccessPermissionRequestTest : public testing::Test {
   blink::mojom::MediaStreamRequestResult result_;
 
  private:
-  void Callback(const blink::MediaStreamDevices& devices,
+  void Callback(const blink::mojom::StreamDevices& devices,
                 blink::mojom::MediaStreamRequestResult result,
                 std::unique_ptr<content::MediaStreamUI> ui) {
-    devices_ = devices;
+    devices_ = blink::StreamDevicesToMediaStreamDevicesList(devices);
     result_ = result;
   }
 };

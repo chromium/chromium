@@ -9,6 +9,7 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace screen_capture {
@@ -30,7 +31,7 @@ void GetScreenCapturePermissionAndroid(
           ? blink::mojom::MediaStreamRequestResult::OK
           : blink::mojom::MediaStreamRequestResult::INVALID_STATE;
 
-  blink::MediaStreamDevices devices;
+  blink::mojom::StreamDevices devices;
   std::unique_ptr<content::MediaStreamUI> ui;
   if (result == blink::mojom::MediaStreamRequestResult::OK) {
     if (request.video_type ==
@@ -39,13 +40,13 @@ void GetScreenCapturePermissionAndroid(
       screen_id.type = content::DesktopMediaID::TYPE_WEB_CONTENTS;
       screen_id.web_contents_id = content::WebContentsMediaCaptureId(
           request.render_process_id, request.render_frame_id);
-      devices.push_back(blink::MediaStreamDevice(
-          request.video_type, screen_id.ToString(), "Current Tab"));
+      devices.video_device = blink::MediaStreamDevice(
+          request.video_type, screen_id.ToString(), "Current Tab");
     } else {
       content::DesktopMediaID screen_id = content::DesktopMediaID(
           content::DesktopMediaID::TYPE_SCREEN, webrtc::kFullDesktopScreenId);
-      devices.push_back(blink::MediaStreamDevice(
-          request.video_type, screen_id.ToString(), "Screen"));
+      devices.video_device = blink::MediaStreamDevice(
+          request.video_type, screen_id.ToString(), "Screen");
     }
 
     ui = MediaCaptureDevicesDispatcher::GetInstance()

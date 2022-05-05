@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace {
 
@@ -172,14 +173,22 @@ class MediaStreamCaptureIndicatorObserverMethodTest
       public testing::WithParamInterface<
           std::tuple<ObserverMethodTestParam, bool>> {};
 
-blink::MediaStreamDevice CreateFakeDevice(
+blink::mojom::StreamDevices CreateFakeDevice(
     const ObserverMethodTestParam& param) {
+  blink::mojom::StreamDevices fake_devices;
   blink::MediaStreamDevice device(param.stream_type, "fake_device",
                                   "fake_device");
   if (param.display_media_info)
     device.display_media_info = param.display_media_info->Clone();
 
-  return device;
+  if (blink::IsAudioInputMediaType(param.stream_type))
+    fake_devices.audio_device = device;
+  else if (blink::IsVideoInputMediaType(param.stream_type))
+    fake_devices.video_device = device;
+  else
+    NOTREACHED();
+
+  return fake_devices;
 }
 
 }  // namespace
@@ -192,7 +201,7 @@ TEST_P(MediaStreamCaptureIndicatorObserverMethodTest, AddAndRemoveDevice) {
   // By default all accessors should return false as there's no stream device.
   EXPECT_FALSE((indicator()->*(param.accessor_method))(web_contents()));
   std::unique_ptr<content::MediaStreamUI> ui =
-      indicator()->RegisterMediaStream(source, {CreateFakeDevice(param)});
+      indicator()->RegisterMediaStream(source, CreateFakeDevice(param));
 
   // Make sure that the observer gets called and that the corresponding accessor
   // gets called when |OnStarted| is called.
@@ -219,7 +228,7 @@ TEST_P(MediaStreamCaptureIndicatorObserverMethodTest, CloseActiveWebContents) {
 
   // Create and start the fake stream device.
   std::unique_ptr<content::MediaStreamUI> ui =
-      indicator()->RegisterMediaStream(source, {CreateFakeDevice(param)});
+      indicator()->RegisterMediaStream(source, CreateFakeDevice(param));
   (observer()->*(param.observer_method))(source, true);
   ui->OnStarted(base::RepeatingClosure(),
                 content::MediaStreamUI::SourceCallback(),

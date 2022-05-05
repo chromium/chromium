@@ -46,6 +46,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "url/origin.h"
@@ -453,12 +454,20 @@ void CastMirroringServiceHost::ShowCaptureIndicator() {
       !web_contents()) {
     return;
   }
-  const blink::MediaStreamDevice device(
-      ConvertVideoStreamType(source_media_id_.type),
-      source_media_id_.ToString(), /* name */ std::string());
+
+  blink::mojom::StreamDevices devices;
+  const blink::mojom::MediaStreamType stream_type =
+      ConvertVideoStreamType(source_media_id_.type);
+  blink::MediaStreamDevice device = blink::MediaStreamDevice(
+      stream_type, source_media_id_.ToString(), /* name */ std::string());
+  if (blink::IsAudioInputMediaType(stream_type))
+    devices.audio_device = device;
+  else if (blink::IsVideoInputMediaType(stream_type))
+    devices.video_device = device;
+  DCHECK(devices.audio_device.has_value() || devices.video_device.has_value());
   media_stream_ui_ = MediaCaptureDevicesDispatcher::GetInstance()
                          ->GetMediaStreamCaptureIndicator()
-                         ->RegisterMediaStream(web_contents(), {device});
+                         ->RegisterMediaStream(web_contents(), devices);
   media_stream_ui_->OnStarted(
       base::RepeatingClosure(), content::MediaStreamUI::SourceCallback(),
       /*label=*/std::string(), /*screen_capture_ids=*/{},

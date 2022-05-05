@@ -12,6 +12,7 @@
 #include "content/public/common/window_container_type.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "url/gurl.h"
 
 namespace background_loader {
@@ -36,10 +37,10 @@ class BackgroundLoaderContentsTest : public testing::Test,
   bool download() { return download_; }
   bool can_download_delegate_called() { return delegate_called_; }
 
-  void MediaAccessCallback(const blink::MediaStreamDevices& devices,
+  void MediaAccessCallback(const blink::mojom::StreamDevices& devices,
                            blink::mojom::MediaStreamRequestResult result,
                            std::unique_ptr<content::MediaStreamUI> ui);
-  blink::MediaStreamDevices devices() { return devices_; }
+  blink::mojom::StreamDevices& devices() { return devices_; }
   blink::mojom::MediaStreamRequestResult request_result() {
     return request_result_;
   }
@@ -50,8 +51,8 @@ class BackgroundLoaderContentsTest : public testing::Test,
  private:
   std::unique_ptr<BackgroundLoaderContents> contents_;
   bool download_;
-  bool delegate_called_;
-  blink::MediaStreamDevices devices_;
+  bool delegate_called_ = false;
+  blink::mojom::StreamDevices devices_;
   blink::mojom::MediaStreamRequestResult request_result_;
   std::unique_ptr<content::MediaStreamUI> media_stream_ui_;
   base::WaitableEvent waiter_;
@@ -59,7 +60,6 @@ class BackgroundLoaderContentsTest : public testing::Test,
 
 BackgroundLoaderContentsTest::BackgroundLoaderContentsTest()
     : download_(false),
-      delegate_called_(false),
       waiter_(base::WaitableEvent::ResetPolicy::MANUAL,
               base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
@@ -91,7 +91,7 @@ void BackgroundLoaderContentsTest::SetDelegate() {
 }
 
 void BackgroundLoaderContentsTest::MediaAccessCallback(
-    const blink::MediaStreamDevices& devices,
+    const blink::mojom::StreamDevices& devices,
     blink::mojom::MediaStreamRequestResult result,
     std::unique_ptr<content::MediaStreamUI> ui) {
   devices_ = devices;
@@ -171,7 +171,8 @@ TEST_F(BackgroundLoaderContentsTest, DoesNotGiveMediaAccessPermission) {
                           base::Unretained(this)));
   WaitForSignal();
   // No devices allowed.
-  ASSERT_TRUE(devices().empty());
+  ASSERT_TRUE(!devices().audio_device.has_value() &&
+              !devices().video_device.has_value());
   // Permission has been dismissed rather than denied.
   ASSERT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DISMISSED,
             request_result());

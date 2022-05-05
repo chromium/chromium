@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace blink {
 
@@ -141,6 +142,23 @@ bool MediaStreamDevice::IsSameDevice(
          input.sample_rate() == other_device.input.sample_rate() &&
          input.channel_layout() == other_device.input.channel_layout() &&
          session_id_ == other_device.session_id_;
+}
+
+// TODO(crbug/1313021): Remove this function and use blink::mojom::StreaDevices
+// directly everywhere.
+blink::MediaStreamDevices StreamDevicesToMediaStreamDevicesList(
+    const blink::mojom::StreamDevices& devices) {
+  blink::MediaStreamDevices all_devices;
+  if (devices.audio_device.has_value())
+    all_devices.push_back(devices.audio_device.value());
+  if (devices.video_device.has_value())
+    all_devices.push_back(devices.video_device.value());
+  return all_devices;
+}
+
+size_t CountDevices(const blink::mojom::StreamDevices& devices) {
+  return (devices.audio_device.has_value() ? 1u : 0u) +
+         (devices.video_device.has_value() ? 1u : 0u);
 }
 
 }  // namespace blink

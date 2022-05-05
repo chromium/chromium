@@ -1332,14 +1332,13 @@ class DlpContentManagerAshScreenShareBrowserTest
                         int state_change_times) {
     // First check for the permission to start screen sharing.
     // It should call DlpContentManager::CheckScreenShareRestriction().
-    base::test::TestFuture<
-        std::reference_wrapper<const blink::MediaStreamDevices>,
-        blink::mojom::MediaStreamRequestResult,
-        std::unique_ptr<content::MediaStreamUI>>
+    base::test::TestFuture<const blink::mojom::StreamDevices&,
+                           blink::mojom::MediaStreamRequestResult,
+                           std::unique_ptr<content::MediaStreamUI>>
         test_future;
     handler->HandleRequest(
         web_contents, request,
-        test_future.GetCallback<const blink::MediaStreamDevices&,
+        test_future.GetCallback<const blink::mojom::StreamDevices&,
                                 blink::mojom::MediaStreamRequestResult,
                                 std::unique_ptr<content::MediaStreamUI>>(),
         /*extension=*/nullptr);

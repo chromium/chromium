@@ -10,6 +10,7 @@
 #include "components/webrtc/media_stream_devices_controller.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "weblayer/browser/java/jni/MediaStreamManager_jni.h"
 
 using base::android::AttachCurrentThread;
@@ -26,17 +27,6 @@ struct UserData : public base::SupportsUserData::Data {
   MediaStreamManager* manager = nullptr;
 };
 
-void FindStreamTypes(const blink::MediaStreamDevices& devices,
-                     bool* audio,
-                     bool* video) {
-  for (const auto& device : devices) {
-    if (device.type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE)
-      *audio = true;
-    if (device.type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE)
-      *video = true;
-  }
-}
-
 }  // namespace
 
 // A class that tracks the lifecycle of a single active media stream. Ownership
@@ -44,10 +34,11 @@ void FindStreamTypes(const blink::MediaStreamDevices& devices,
 class MediaStreamManager::StreamUi : public content::MediaStreamUI {
  public:
   StreamUi(base::WeakPtr<MediaStreamManager> manager,
-           const blink::MediaStreamDevices& devices)
+           const blink::mojom::StreamDevices& devices)
       : manager_(manager) {
     DCHECK(manager_);
-    FindStreamTypes(devices, &streaming_audio_, &streaming_video_);
+    streaming_audio_ = devices.audio_device.has_value();
+    streaming_video_ = devices.video_device.has_value();
   }
   StreamUi(const StreamUi&) = delete;
   StreamUi& operator=(const StreamUi&) = delete;
@@ -136,7 +127,8 @@ void MediaStreamManager::OnClientReadyToStream(JNIEnv* env,
                                         request->second.devices));
   } else {
     std::move(request->second.callback)
-        .Run({}, blink::mojom::MediaStreamRequestResult::NO_HARDWARE, {});
+        .Run(blink::mojom::StreamDevices(),
+             blink::mojom::MediaStreamRequestResult::NO_HARDWARE, {});
   }
   requests_pending_client_approval_.erase(request);
 }
@@ -149,7 +141,7 @@ void MediaStreamManager::StopStreaming(JNIEnv* env) {
 
 void MediaStreamManager::OnMediaAccessPermissionResult(
     content::MediaResponseCallback callback,
-    const blink::MediaStreamDevices& devices,
+    const blink::mojom::StreamDevices& devices,
     blink::mojom::MediaStreamRequestResult result,
     bool blocked_by_permissions_policy,
     ContentSetting audio_setting,
@@ -160,13 +152,12 @@ void MediaStreamManager::OnMediaAccessPermissionResult(
   }
 
   int request_id = next_request_id_++;
-  bool audio = false;
-  bool video = false;
-  FindStreamTypes(devices, &audio, &video);
   requests_pending_client_approval_[request_id] =
       RequestPendingClientApproval(std::move(callback), devices, result);
-  Java_MediaStreamManager_prepareToStream(base::android::AttachCurrentThread(),
-                                          j_object_, audio, video, request_id);
+  Java_MediaStreamManager_prepareToStream(
+      base::android::AttachCurrentThread(), j_object_,
+      devices.audio_device.has_value(), devices.video_device.has_value(),
+      request_id);
 }
 
 void MediaStreamManager::RegisterStream(StreamUi* stream) {
@@ -208,7 +199,7 @@ MediaStreamManager::RequestPendingClientApproval::
 
 MediaStreamManager::RequestPendingClientApproval::RequestPendingClientApproval(
     content::MediaResponseCallback callback,
-    const blink::MediaStreamDevices& devices,
+    const blink::mojom::StreamDevices& devices,
     blink::mojom::MediaStreamRequestResult result)
     : callback(std::move(callback)), devices(devices), result(result) {}
 

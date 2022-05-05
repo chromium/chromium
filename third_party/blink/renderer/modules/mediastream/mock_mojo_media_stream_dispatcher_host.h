@@ -18,7 +18,7 @@ namespace blink {
 class MockMojoMediaStreamDispatcherHost
     : public mojom::blink::MediaStreamDispatcherHost {
  public:
-  MockMojoMediaStreamDispatcherHost();
+  MockMojoMediaStreamDispatcherHost() = default;
 
   MockMojoMediaStreamDispatcherHost(const MockMojoMediaStreamDispatcherHost&) =
       delete;
@@ -72,11 +72,8 @@ class MockMojoMediaStreamDispatcherHost
   int stop_audio_device_counter() const { return stop_audio_device_counter_; }
   int stop_video_device_counter() const { return stop_video_device_counter_; }
 
-  const WTF::Vector<MediaStreamDevice>& audio_devices() const {
-    return audio_devices_;
-  }
-  const WTF::Vector<MediaStreamDevice>& video_devices() const {
-    return video_devices_;
+  const blink::mojom::blink::StreamDevices& devices() const {
+    return stream_devices_;
   }
 
  private:
@@ -86,8 +83,7 @@ class MockMojoMediaStreamDispatcherHost
   int stop_video_device_counter_ = 0;
   base::UnguessableToken session_id_ = base::UnguessableToken::Create();
   bool do_not_run_cb_ = false;
-  WTF::Vector<MediaStreamDevice> audio_devices_;
-  WTF::Vector<MediaStreamDevice> video_devices_;
+  blink::mojom::blink::StreamDevices stream_devices_;
   GenerateStreamCallback generate_stream_cb_;
   mojo::Receiver<mojom::blink::MediaStreamDispatcherHost> receiver_{this};
 };

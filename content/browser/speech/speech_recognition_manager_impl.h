@@ -16,6 +16,7 @@
 #include "content/public/browser/speech_recognition_manager.h"
 #include "content/public/browser/speech_recognition_session_config.h"
 #include "content/public/browser/speech_recognition_session_context.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-forward.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
 
 namespace media {
@@ -144,7 +145,7 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   // users deny the request.
   void MediaRequestPermissionCallback(
       int session_id,
-      const blink::MediaStreamDevices& devices,
+      const blink::mojom::StreamDevices& devices,
       std::unique_ptr<MediaStreamUIProxy> stream_ui);
 
   // Entry point for pushing any external event into the session handling FSM.

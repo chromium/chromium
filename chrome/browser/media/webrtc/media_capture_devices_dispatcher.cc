@@ -37,6 +37,7 @@
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/common/content_features.h"
@@ -149,7 +150,7 @@ void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE &&
       !base::FeatureList::IsEnabled(features::kUserMediaScreenCapturing)) {
     std::move(callback).Run(
-        blink::MediaStreamDevices(),
+        blink::mojom::StreamDevices(),
         blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED, nullptr);
     return;
   }
@@ -165,7 +166,7 @@ void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
       return;
     }
   }
-  std::move(callback).Run(blink::MediaStreamDevices(),
+  std::move(callback).Run(blink::mojom::StreamDevices(),
                           blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
                           nullptr);
 }
@@ -235,7 +236,7 @@ void MediaCaptureDevicesDispatcher::GetDefaultDevicesForBrowserContext(
     content::BrowserContext* context,
     bool audio,
     bool video,
-    blink::MediaStreamDevices* devices) {
+    blink::mojom::StreamDevices& devices) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(audio || video);
 
@@ -246,11 +247,10 @@ void MediaCaptureDevicesDispatcher::GetDefaultDevicesForBrowserContext(
     const blink::MediaStreamDevice* device =
         GetRequestedAudioDevice(default_device);
     if (device) {
-      devices->push_back(*device);
+      devices.audio_device = *device;
     } else {
       const blink::MediaStreamDevices& audio_devices = GetAudioCaptureDevices();
-      if (!audio_devices.empty())
-        devices->push_back(audio_devices.front());
+      devices.audio_device = audio_devices.front();
     }
   }
 
@@ -259,11 +259,11 @@ void MediaCaptureDevicesDispatcher::GetDefaultDevicesForBrowserContext(
     const blink::MediaStreamDevice* device =
         GetRequestedVideoDevice(default_device);
     if (device) {
-      devices->push_back(*device);
+      devices.video_device = *device;
     } else {
       const blink::MediaStreamDevices& video_devices = GetVideoCaptureDevices();
       if (!video_devices.empty())
-        devices->push_back(video_devices.front());
+        devices.video_device = video_devices.front();
     }
   }
 }

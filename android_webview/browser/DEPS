@@ -124,6 +124,7 @@ include_rules = [
   # QuotaStatusCode required by AwQuotaManagerBridge.
   "+third_party/blink/public/mojom/quota",
   "+third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h",
+  "+third_party/blink/public/mojom/mediastream/media_stream.mojom.h",
   # For favicon url
   "+third_party/blink/public/mojom/favicon",
   # For find-in-page

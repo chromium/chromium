@@ -332,8 +332,7 @@ void MediaStreamDispatcherHost::CancelAllRequests() {
   for (auto& pending_request : pending_requests_) {
     std::move(pending_request->callback)
         .Run(blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
-             std::string(), blink::MediaStreamDevices(),
-             blink::MediaStreamDevices(),
+             /*label=*/std::string(), /*stream_devices=*/nullptr,
              /*pan_tilt_zoom_allowed=*/false);
   }
   pending_requests_.clear();
@@ -388,7 +387,7 @@ void MediaStreamDispatcherHost::DoGenerateStream(
                                            salt_and_origin.origin)) {
     std::move(callback).Run(
         blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
-        std::string(), blink::MediaStreamDevices(), blink::MediaStreamDevices(),
+        /*label=*/std::string(), /*stream_devices=*/nullptr,
         /*pan_tilt_zoom_allowed=*/false);
     return;
   }

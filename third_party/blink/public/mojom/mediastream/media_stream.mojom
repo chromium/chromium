@@ -142,6 +142,12 @@ interface MediaStreamDeviceObserver {
                               MediaStreamDevice device);
 };
 
+// Contains devices that are assigned to a specific stream.
+struct StreamDevices {
+  MediaStreamDevice? audio_device;
+  MediaStreamDevice? video_device;
+};
+
 // Per-frame browser-side interface that is used by the renderer process to
 // make media stream requests.
 interface MediaStreamDispatcherHost {
@@ -162,8 +168,7 @@ interface MediaStreamDispatcherHost {
   GenerateStream(int32 request_id, StreamControls controls, bool user_gesture,
                  StreamSelectionInfo audio_stream_selection_info)
       => (MediaStreamRequestResult result, string label,
-         array<MediaStreamDevice> audio_devices,
-         array<MediaStreamDevice> video_devices,
+         StreamDevices? stream_devices,
          bool pan_tilt_zoom_allowed);
 
   // The |focus| bit is |true| if focus should be switched to

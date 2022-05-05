@@ -153,7 +153,7 @@ class MediaStreamUI {
 
 // Callback used return results of media access requests.
 using MediaResponseCallback =
-    base::OnceCallback<void(const blink::MediaStreamDevices& devices,
+    base::OnceCallback<void(const blink::mojom::StreamDevices& stream_devices,
                             blink::mojom::MediaStreamRequestResult result,
                             std::unique_ptr<MediaStreamUI> ui)>;
 }  // namespace content

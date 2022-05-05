@@ -20,6 +20,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -60,7 +61,7 @@ void MediaStreamDevicesController::RequestPermissions(
   // The RFH may have been destroyed by the time the request is processed.
   if (!rfh) {
     std::move(callback).Run(
-        MediaStreamDevices(),
+        blink::mojom::StreamDevices(),
         blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN, false,
         {}, {});
     return;
@@ -68,7 +69,7 @@ void MediaStreamDevicesController::RequestPermissions(
 
   if (rfh->GetLastCommittedOrigin().GetURL().is_empty()) {
     std::move(callback).Run(
-        MediaStreamDevices(),
+        blink::mojom::StreamDevices(),
         blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, false, {},
         {});
     return;
@@ -76,7 +77,7 @@ void MediaStreamDevicesController::RequestPermissions(
 
   if (rfh->GetLastCommittedOrigin().GetURL() != request.security_origin) {
     std::move(callback).Run(
-        MediaStreamDevices(),
+        blink::mojom::StreamDevices(),
         blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN, false,
         {}, {});
     return;
@@ -169,7 +170,7 @@ void MediaStreamDevicesController::RequestPermissions(
 MediaStreamDevicesController::~MediaStreamDevicesController() {
   if (!callback_.is_null()) {
     std::move(callback_).Run(
-        MediaStreamDevices(),
+        blink::mojom::StreamDevices(),
         blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN, false,
         {}, {});
   }
@@ -292,19 +293,18 @@ bool MediaStreamDevicesController::ShouldRequestVideo() const {
   return video_setting_ == CONTENT_SETTING_ASK;
 }
 
-MediaStreamDevices MediaStreamDevicesController::GetDevices(
+blink::mojom::StreamDevices MediaStreamDevicesController::GetDevices(
     ContentSetting audio_setting,
     ContentSetting video_setting) {
   bool audio_allowed = audio_setting == CONTENT_SETTING_ALLOW;
   bool video_allowed = video_setting == CONTENT_SETTING_ALLOW;
 
   if (!audio_allowed && !video_allowed)
-    return MediaStreamDevices();
+    return blink::mojom::StreamDevices();
 
-  MediaStreamDevices devices;
+  blink::mojom::StreamDevices devices;
   switch (request_.request_type) {
     case blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY: {
-      const blink::MediaStreamDevice* device = nullptr;
       // For open device request, when requested device_id is empty, pick
       // the first available of the given type. If requested device_id is
       // not empty, return the desired device if it's available. Otherwise,
@@ -315,13 +315,13 @@ MediaStreamDevices MediaStreamDevicesController::GetDevices(
         DCHECK_EQ(blink::mojom::MediaStreamType::NO_SERVICE,
                   request_.video_type);
         if (!request_.requested_audio_device_id.empty()) {
-          device = enumerator_->GetRequestedAudioDevice(
+          devices.audio_device = *enumerator_->GetRequestedAudioDevice(
               request_.requested_audio_device_id);
         } else {
           const blink::MediaStreamDevices& audio_devices =
               enumerator_->GetAudioCaptureDevices();
           if (!audio_devices.empty())
-            device = &audio_devices.front();
+            devices.audio_device = audio_devices.front();
         }
       } else if (video_allowed &&
                  request_.video_type ==
@@ -330,17 +330,15 @@ MediaStreamDevices MediaStreamDevicesController::GetDevices(
                   request_.audio_type);
         // Pepper API opens only one device at a time.
         if (!request_.requested_video_device_id.empty()) {
-          device = enumerator_->GetRequestedVideoDevice(
+          devices.video_device = *enumerator_->GetRequestedVideoDevice(
               request_.requested_video_device_id);
         } else {
           const blink::MediaStreamDevices& video_devices =
               enumerator_->GetVideoCaptureDevices();
           if (!video_devices.empty())
-            device = &video_devices.front();
+            devices.video_device = video_devices.front();
         }
       }
-      if (device)
-        devices.push_back(*device);
       break;
     }
     case blink::MEDIA_GENERATE_STREAM: {
@@ -353,7 +351,7 @@ MediaStreamDevices MediaStreamDevicesController::GetDevices(
             enumerator_->GetRequestedAudioDevice(
                 request_.requested_audio_device_id);
         if (audio_device) {
-          devices.push_back(*audio_device);
+          devices.audio_device = *audio_device;
           get_default_audio_device = false;
         }
       }
@@ -362,7 +360,7 @@ MediaStreamDevices MediaStreamDevicesController::GetDevices(
             enumerator_->GetRequestedVideoDevice(
                 request_.requested_video_device_id);
         if (video_device) {
-          devices.push_back(*video_device);
+          devices.video_device = *video_device;
           get_default_video_device = false;
         }
       }
@@ -372,7 +370,7 @@ MediaStreamDevices MediaStreamDevicesController::GetDevices(
       if (get_default_audio_device || get_default_video_device) {
         enumerator_->GetDefaultDevicesForBrowserContext(
             web_contents_->GetBrowserContext(), get_default_audio_device,
-            get_default_video_device, &devices);
+            get_default_video_device, devices);
       }
       break;
     }
@@ -387,7 +385,7 @@ MediaStreamDevices MediaStreamDevicesController::GetDevices(
       // Get the default devices for the request.
       enumerator_->GetDefaultDevicesForBrowserContext(
           web_contents_->GetBrowserContext(), audio_allowed, video_allowed,
-          &devices);
+          devices);
       break;
     }
     case blink::MEDIA_DEVICE_UPDATE: {
@@ -403,7 +401,7 @@ void MediaStreamDevicesController::RunCallback(
     bool blocked_by_permissions_policy) {
   CHECK(callback_);
 
-  MediaStreamDevices devices;
+  blink::mojom::StreamDevices devices;
   // If all requested permissions are allowed then the callback should report
   // success, otherwise we report |denial_reason_|.
   blink::mojom::MediaStreamRequestResult request_result =
@@ -413,7 +411,8 @@ void MediaStreamDevicesController::RunCallback(
       (video_setting_ == CONTENT_SETTING_ALLOW ||
        video_setting_ == CONTENT_SETTING_DEFAULT)) {
     devices = GetDevices(audio_setting_, video_setting_);
-    if (devices.empty()) {
+    if (!devices.audio_device.has_value() &&
+        !devices.video_device.has_value()) {
       // Even if all requested permissions are allowed, if there are no devices
       // at this point we still report a failure.
       request_result = blink::mojom::MediaStreamRequestResult::NO_HARDWARE;

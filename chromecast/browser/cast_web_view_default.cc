@@ -31,6 +31,7 @@
 #include "ipc/ipc_message.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
@@ -244,7 +245,7 @@ void CastWebViewDefault::RequestMediaAccessPermission(
       !params_->allow_media_access) {
     LOG(WARNING) << __func__ << ": media access is disabled.";
     std::move(callback).Run(
-        blink::MediaStreamDevices(),
+        blink::mojom::StreamDevices(),
         blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
         std::unique_ptr<content::MediaStreamUI>());
     return;
@@ -257,7 +258,7 @@ void CastWebViewDefault::RequestMediaAccessPermission(
   DVLOG(2) << __func__ << " audio_devices=" << audio_devices.size()
            << " video_devices=" << video_devices.size();
 
-  blink::MediaStreamDevices devices;
+  blink::mojom::StreamDevices devices;
   if (request.audio_type ==
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
     const blink::MediaStreamDevice* device = GetRequestedDeviceOrDefault(
@@ -265,7 +266,7 @@ void CastWebViewDefault::RequestMediaAccessPermission(
     if (device) {
       DVLOG(1) << __func__ << "Using audio device: id=" << device->id
                << " name=" << device->name;
-      devices.push_back(*device);
+      devices.audio_device = *device;
     }
   }
 
@@ -276,7 +277,7 @@ void CastWebViewDefault::RequestMediaAccessPermission(
     if (device) {
       DVLOG(1) << __func__ << "Using video device: id=" << device->id
                << " name=" << device->name;
-      devices.push_back(*device);
+      devices.video_device = *device;
     }
   }
 

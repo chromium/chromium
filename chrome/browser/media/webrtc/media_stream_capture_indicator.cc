@@ -30,6 +30,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -156,22 +157,26 @@ class MediaStreamCaptureIndicator::WebContentsDeviceUsage
   bool IsCapturingDisplay() const { return display_stream_count_ > 0; }
 
   std::unique_ptr<content::MediaStreamUI> RegisterMediaStream(
-      const blink::MediaStreamDevices& devices,
+      const blink::mojom::StreamDevices& devices,
       std::unique_ptr<MediaStreamUI> ui,
       const std::u16string application_title);
 
   // Increment ref-counts up based on the type of each device provided.
-  void AddDevices(const blink::MediaStreamDevices& devices,
+  void AddDevices(const blink::mojom::StreamDevices& devices,
                   base::OnceClosure stop_callback);
 
   // Decrement ref-counts up based on the type of each device provided.
-  void RemoveDevices(const blink::MediaStreamDevices& devices);
+  void RemoveDevices(const blink::mojom::StreamDevices& devices);
 
   // Helper to call |stop_callback_|.
   void NotifyStopped();
 
  private:
   int& GetStreamCount(const blink::MediaStreamDevice& device);
+
+  void AddDevice(const blink::MediaStreamDevice& device);
+
+  void RemoveDevice(const blink::MediaStreamDevice& device);
 
   // content::WebContentsObserver overrides.
   void WebContentsDestroyed() override {
@@ -198,7 +203,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
  public:
   UIDelegate(WebContents* web_contents,
              base::WeakPtr<WebContentsDeviceUsage> device_usage,
-             const blink::MediaStreamDevices& devices,
+             const blink::mojom::StreamDevices& devices,
              std::unique_ptr<::MediaStreamUI> ui,
              const std::u16string application_title)
       : device_usage_(device_usage),
@@ -209,7 +214,8 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 #endif
         application_title_(std::move(application_title)) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(!devices_.empty());
+    DCHECK(devices_.audio_device.has_value() ||
+           devices_.video_device.has_value());
   }
 
   UIDelegate(const UIDelegate&) = delete;
@@ -292,7 +298,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 #endif
 
   base::WeakPtr<WebContentsDeviceUsage> device_usage_;
-  const blink::MediaStreamDevices devices_;
+  const blink::mojom::StreamDevices devices_;
   const std::unique_ptr<::MediaStreamUI> ui_;
 #if !BUILDFLAG(IS_ANDROID)
   MediaStreamFocusDelegate focus_delegate_;
@@ -303,7 +309,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 
 std::unique_ptr<content::MediaStreamUI>
 MediaStreamCaptureIndicator::WebContentsDeviceUsage::RegisterMediaStream(
-    const blink::MediaStreamDevices& devices,
+    const blink::mojom::StreamDevices& devices,
     std::unique_ptr<MediaStreamUI> ui,
     const std::u16string application_title) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -314,19 +320,12 @@ MediaStreamCaptureIndicator::WebContentsDeviceUsage::RegisterMediaStream(
 }
 
 void MediaStreamCaptureIndicator::WebContentsDeviceUsage::AddDevices(
-    const blink::MediaStreamDevices& devices,
+    const blink::mojom::StreamDevices& devices,
     base::OnceClosure stop_callback) {
-  for (const auto& device : devices) {
-    int& stream_count = GetStreamCount(device);
-    ++stream_count;
-
-    if (web_contents() && stream_count == 1) {
-      ObserverMethod obs_func = GetObserverMethodToCall(device);
-      DCHECK(obs_func);
-      for (Observer& obs : indicator_->observers_)
-        (obs.*obs_func)(web_contents(), true);
-    }
-  }
+  if (devices.audio_device.has_value())
+    AddDevice(devices.audio_device.value());
+  if (devices.video_device.has_value())
+    AddDevice(devices.video_device.value());
 
   if (web_contents()) {
     stop_callback_ = std::move(stop_callback);
@@ -337,19 +336,11 @@ void MediaStreamCaptureIndicator::WebContentsDeviceUsage::AddDevices(
 }
 
 void MediaStreamCaptureIndicator::WebContentsDeviceUsage::RemoveDevices(
-    const blink::MediaStreamDevices& devices) {
-  for (const auto& device : devices) {
-    int& stream_count = GetStreamCount(device);
-    --stream_count;
-    DCHECK_GE(stream_count, 0);
-
-    if (web_contents() && stream_count == 0) {
-      ObserverMethod obs_func = GetObserverMethodToCall(device);
-      DCHECK(obs_func);
-      for (Observer& obs : indicator_->observers_)
-        (obs.*obs_func)(web_contents(), false);
-    }
-  }
+    const blink::mojom::StreamDevices& devices) {
+  if (devices.audio_device.has_value())
+    RemoveDevice(devices.audio_device.value());
+  if (devices.video_device.has_value())
+    RemoveDevice(devices.video_device.value());
 
   if (web_contents() && !web_contents()->IsBeingDestroyed()) {
     web_contents()->NotifyNavigationStateChanged(content::INVALIDATE_TYPE_TAB);
@@ -392,6 +383,33 @@ int& MediaStreamCaptureIndicator::WebContentsDeviceUsage::GetStreamCount(
   }
 }
 
+void MediaStreamCaptureIndicator::WebContentsDeviceUsage::AddDevice(
+    const blink::MediaStreamDevice& device) {
+  int& stream_count = GetStreamCount(device);
+  ++stream_count;
+
+  if (web_contents() && stream_count == 1) {
+    ObserverMethod obs_func = GetObserverMethodToCall(device);
+    DCHECK(obs_func);
+    for (Observer& obs : indicator_->observers_)
+      (obs.*obs_func)(web_contents(), true);
+  }
+}
+
+void MediaStreamCaptureIndicator::WebContentsDeviceUsage::RemoveDevice(
+    const blink::MediaStreamDevice& device) {
+  int& stream_count = GetStreamCount(device);
+  --stream_count;
+  DCHECK_GE(stream_count, 0);
+
+  if (web_contents() && stream_count == 0) {
+    ObserverMethod obs_func = GetObserverMethodToCall(device);
+    DCHECK(obs_func);
+    for (Observer& obs : indicator_->observers_)
+      (obs.*obs_func)(web_contents(), false);
+  }
+}
+
 MediaStreamCaptureIndicator::Observer::~Observer() {
   DCHECK(!IsInObserverList());
 }
@@ -411,7 +429,7 @@ MediaStreamCaptureIndicator::~MediaStreamCaptureIndicator() {
 std::unique_ptr<content::MediaStreamUI>
 MediaStreamCaptureIndicator::RegisterMediaStream(
     content::WebContents* web_contents,
-    const blink::MediaStreamDevices& devices,
+    const blink::mojom::StreamDevices& devices,
     std::unique_ptr<MediaStreamUI> ui,
     const std::u16string application_title) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

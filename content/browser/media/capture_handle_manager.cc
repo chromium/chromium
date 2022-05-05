@@ -253,7 +253,7 @@ void CaptureHandleManager::OnTabCaptureStopped(
 
 void CaptureHandleManager::OnTabCaptureDevicesUpdated(
     const std::string& label,
-    const std::vector<blink::MediaStreamDevice>& new_devices,
+    const blink::mojom::StreamDevices& new_devices,
     GlobalRenderFrameHostId capturer,
     DeviceCaptureHandleChangeCallback handle_change_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -266,8 +266,13 @@ void CaptureHandleManager::OnTabCaptureDevicesUpdated(
   }
 
   // Start tracking any new devices; resume tracking of changed devices.
-  for (const auto& device : new_devices) {
-    OnTabCaptureStarted(label, device, capturer, handle_change_callback);
+  if (new_devices.audio_device.has_value()) {
+    OnTabCaptureStarted(label, new_devices.audio_device.value(), capturer,
+                        handle_change_callback);
+  }
+  if (new_devices.video_device.has_value()) {
+    OnTabCaptureStarted(label, new_devices.video_device.value(), capturer,
+                        handle_change_callback);
   }
 
   // Forget any old device which was not in |new_devices|.

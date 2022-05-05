@@ -629,16 +629,16 @@ class UserMediaClientTest : public ::testing::Test {
     StartMockedVideoSource();
 
     EXPECT_EQ(kRequestSucceeded, request_state());
-    EXPECT_EQ(1U, mock_dispatcher_host_.audio_devices().size());
-    EXPECT_EQ(1U, mock_dispatcher_host_.video_devices().size());
+    EXPECT_NE(absl::nullopt, mock_dispatcher_host_.devices().audio_device);
+    EXPECT_NE(absl::nullopt, mock_dispatcher_host_.devices().video_device);
     // MockMojoMediaStreamDispatcherHost appends its internal session ID to its
     // internal device IDs.
     EXPECT_EQ(std::string(expected_audio_device_id) +
                   mock_dispatcher_host_.session_id().ToString(),
-              mock_dispatcher_host_.audio_devices()[0].id);
+              mock_dispatcher_host_.devices().audio_device.value().id);
     EXPECT_EQ(std::string(expected_video_device_id) +
                   mock_dispatcher_host_.session_id().ToString(),
-              mock_dispatcher_host_.video_devices()[0].id);
+              mock_dispatcher_host_.devices().video_device.value().id);
   }
 
   void ApplyConstraintsVideoMode(
@@ -1439,8 +1439,8 @@ TEST_F(UserMediaClientTest, DesktopCaptureChangeSourceWithoutAudio) {
   UserMediaRequest* request =
       UserMediaRequest::CreateForTesting(audio_constraints, video_constraints);
   user_media_client_impl_->RequestUserMediaForTest(request);
-  EXPECT_EQ(1U, mock_dispatcher_host_.audio_devices().size());
-  EXPECT_EQ(1U, mock_dispatcher_host_.video_devices().size());
+  EXPECT_NE(absl::nullopt, mock_dispatcher_host_.devices().audio_device);
+  EXPECT_NE(absl::nullopt, mock_dispatcher_host_.devices().video_device);
 
   // If the new desktop capture source doesn't have audio, the previous audio
   // device should be stopped. Here |EnsureSourceIsStopped()| should be called

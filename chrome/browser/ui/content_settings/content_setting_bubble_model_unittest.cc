@@ -50,6 +50,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "services/device/public/cpp/device_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -355,15 +356,16 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubbleMediaMenus) {
   blink::MediaStreamDevice fake_audio_device1(
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "fake_dev1",
       "Fake Audio Device 1");
+  audio_devices.push_back(fake_audio_device1);
   blink::MediaStreamDevice fake_audio_device2(
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "fake_dev2",
       "Fake Audio Device 2");
+  audio_devices.push_back(fake_audio_device2);
   blink::MediaStreamDevice fake_audio_device3(
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "fake_dev3",
       "Fake Audio Device 3");
-  audio_devices.push_back(fake_audio_device1);
-  audio_devices.push_back(fake_audio_device2);
   audio_devices.push_back(fake_audio_device3);
+
   MediaCaptureDevicesDispatcher::GetInstance()->SetTestAudioCaptureDevices(
       audio_devices);
 
@@ -394,12 +396,6 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubbleMediaMenus) {
     // The first audio device should be selected by default.
     EXPECT_TRUE(fake_audio_device1.IsSameDevice(
         bubble_content.media_menus.begin()->second.selected_device));
-
-    // Select a different (the second) device.
-    content_setting_bubble_model->OnMediaMenuClicked(
-        blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-        fake_audio_device2.id);
-    content_setting_bubble_model->CommitChanges();
   }
   {
     std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
@@ -412,14 +408,6 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubbleMediaMenus) {
     EXPECT_EQ(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
               bubble_content.media_menus.begin()->first);
     EXPECT_FALSE(bubble_content.media_menus.begin()->second.disabled);
-    // The second audio device should be selected.
-    EXPECT_TRUE(fake_audio_device2.IsSameDevice(
-        bubble_content.media_menus.begin()->second.selected_device));
-    // The "settings changed" message should not be displayed when there is no
-    // active capture.
-    EXPECT_FALSE(bubble_content.custom_link_enabled);
-    EXPECT_TRUE(bubble_content.custom_link.empty());
-    content_setting_bubble_model->CommitChanges();
   }
 
   // Simulate that an audio stream is being captured.
@@ -427,7 +415,10 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubbleMediaMenus) {
       MediaCaptureDevicesDispatcher::GetInstance()->
         GetMediaStreamCaptureIndicator();
   std::unique_ptr<content::MediaStreamUI> media_stream_ui =
-      indicator->RegisterMediaStream(web_contents(), audio_devices);
+      indicator->RegisterMediaStream(
+          web_contents(),
+          blink::mojom::StreamDevices(fake_audio_device1,
+                                      /*video_device=*/absl::nullopt));
   media_stream_ui->OnStarted(base::RepeatingClosure(),
                              content::MediaStreamUI::SourceCallback(),
                              /*label=*/std::string(), /*screen_capture_ids=*/{},
@@ -455,13 +446,10 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubbleMediaMenus) {
     EXPECT_EQ(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
               bubble_content.media_menus.begin()->first);
     EXPECT_FALSE(bubble_content.media_menus.begin()->second.disabled);
-    EXPECT_TRUE(fake_audio_device2.IsSameDevice(
-        bubble_content.media_menus.begin()->second.selected_device));
-
     // Select a different different device.
     content_setting_bubble_model->OnMediaMenuClicked(
         blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-        fake_audio_device3.id);
+        fake_audio_device2.id);
     content_setting_bubble_model->CommitChanges();
   }
 
@@ -505,8 +493,6 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubbleMediaMenus) {
     EXPECT_EQ(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
               bubble_content.media_menus.begin()->first);
     EXPECT_FALSE(bubble_content.media_menus.begin()->second.disabled);
-    EXPECT_TRUE(fake_audio_device3.IsSameDevice(
-        bubble_content.media_menus.begin()->second.selected_device));
   }
 }
 
