@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/metrics/perf/profile_provider_chromeos.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_provider.h"
 
@@ -20,7 +21,7 @@ struct ArcFeatures;
 namespace metrics {
 class CachedMetricsProfile;
 class ChromeUserMetricsExtension;
-}
+}  // namespace metrics
 
 enum class EnrollmentStatus;
 class PrefRegistrySimple;
@@ -51,6 +52,10 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   // Retrieves ARC features using ArcFeaturesParser. When this task is complete,
   // |callback| is run.
   void InitTaskGetArcFeatures(base::OnceClosure callback);
+
+  // Retrieves TPM type using TpmManagerClient. When this task is complete,
+  // |callback| is run.
+  void InitTaskGetTpmType(base::OnceClosure callback);
 
   // metrics::MetricsProvider:
   void Init() override;
@@ -83,6 +88,20 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   void OnArcFeaturesParsed(base::OnceClosure callback,
                            absl::optional<arc::ArcFeatures> features);
 
+  // Sets the TPM version info (tpm family and GSC version), then calls the
+  // callback.
+  void OnTpmManagerGetVersionInfo(
+      base::OnceClosure callback,
+      const tpm_manager::GetVersionInfoReply& reply);
+
+  // Sets the TPM supported features (runtime selection), then calls the
+  // callback.
+  void OnTpmManagerGetSupportedFeatures(
+      base::OnceClosure callback,
+      const tpm_manager::GetSupportedFeaturesReply& reply);
+
+  void SetTpmType(metrics::SystemProfileProto* system_profile_proto);
+
   // Called from the ProvideCurrentSessionData(...) to record UserType.
   void UpdateUserTypeUMA();
 
@@ -110,6 +129,12 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
 
   // ARC release version obtained from build properties.
   absl::optional<std::string> arc_release_ = absl::nullopt;
+
+  // The following three fields together determine the TPM
+  // (go/trusted-platform-module) type.
+  absl::optional<uint32_t> tpm_family_ = absl::nullopt;
+  absl::optional<tpm_manager::GscVersion> gsc_version_ = absl::nullopt;
+  absl::optional<bool> tpm_support_runtime_selection_ = absl::nullopt;
 
   base::WeakPtrFactory<ChromeOSMetricsProvider> weak_ptr_factory_{this};
 };

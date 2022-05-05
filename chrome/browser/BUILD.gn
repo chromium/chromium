@@ -5051,6 +5051,8 @@ static_library("browser") {
       "//chromeos/dbus",
       "//chromeos/dbus/image_loader",
       "//chromeos/dbus/session_manager",
+      "//chromeos/dbus/tpm_manager",
+      "//chromeos/dbus/tpm_manager:tpm_manager_proto",
       "//chromeos/dbus/update_engine",
       "//chromeos/login/login_state",
       "//chromeos/memory",

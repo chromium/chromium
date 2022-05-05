@@ -38,6 +38,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/structured/recorder.h"
@@ -56,6 +57,12 @@ using metrics::SampledProfile;
 using metrics::SystemProfileProto;
 
 namespace {
+
+// TPM family. We use the TPM 2.0 style encoding, e.g.:
+// * TPM 1.2: "1.2" -> 0x312e3200
+// * TPM 2.0: "2.0" -> 0x322e3000
+constexpr int kTpmV1Family = 0x312e3200;
+constexpr int kTpmV2Family = 0x322e3000;
 
 void IncrementPrefValue(const char* path) {
   PrefService* pref = g_browser_process->local_state();
@@ -91,8 +98,7 @@ ChromeOSMetricsProvider::ChromeOSMetricsProvider(
     profile_provider_ = std::make_unique<metrics::ProfileProvider>();
 }
 
-ChromeOSMetricsProvider::~ChromeOSMetricsProvider() {
-}
+ChromeOSMetricsProvider::~ChromeOSMetricsProvider() {}
 
 // static
 void ChromeOSMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -134,9 +140,10 @@ void ChromeOSMetricsProvider::Init() {
 
 void ChromeOSMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
   base::RepeatingClosure barrier =
-      base::BarrierClosure(2, std::move(done_callback));
+      base::BarrierClosure(3, std::move(done_callback));
   InitTaskGetFullHardwareClass(barrier);
   InitTaskGetArcFeatures(barrier);
+  InitTaskGetTpmType(barrier);
 }
 
 void ChromeOSMetricsProvider::OnDidCreateMetricsLog() {
@@ -179,6 +186,18 @@ void ChromeOSMetricsProvider::InitTaskGetArcFeatures(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void ChromeOSMetricsProvider::InitTaskGetTpmType(base::OnceClosure callback) {
+  base::RepeatingClosure barrier = base::BarrierClosure(2, std::move(callback));
+  chromeos::TpmManagerClient::Get()->GetVersionInfo(
+      tpm_manager::GetVersionInfoRequest(),
+      base::BindOnce(&ChromeOSMetricsProvider::OnTpmManagerGetVersionInfo,
+                     weak_ptr_factory_.GetWeakPtr(), barrier));
+  chromeos::TpmManagerClient::Get()->GetSupportedFeatures(
+      tpm_manager::GetSupportedFeaturesRequest(),
+      base::BindOnce(&ChromeOSMetricsProvider::OnTpmManagerGetSupportedFeatures,
+                     weak_ptr_factory_.GetWeakPtr(), barrier));
+}
+
 void ChromeOSMetricsProvider::ProvideSystemProfileMetrics(
     metrics::SystemProfileProto* system_profile_proto) {
   WriteLinkedAndroidPhoneProto(system_profile_proto);
@@ -193,6 +212,8 @@ void ChromeOSMetricsProvider::ProvideSystemProfileMetrics(
     hardware->set_internal_display_supports_touch(true);
   else if (has_touch == display::Display::TouchSupport::UNAVAILABLE)
     hardware->set_internal_display_supports_touch(false);
+
+  SetTpmType(system_profile_proto);
 
   if (arc_release_) {
     metrics::SystemProfileProto::OS::Arc* arc =
@@ -335,6 +356,73 @@ void ChromeOSMetricsProvider::OnArcFeaturesParsed(
     return;
   }
   arc_release_ = features->build_props.at("ro.build.version.release");
+}
+
+void ChromeOSMetricsProvider::OnTpmManagerGetVersionInfo(
+    base::OnceClosure callback,
+    const tpm_manager::GetVersionInfoReply& reply) {
+  if (reply.status() == tpm_manager::STATUS_SUCCESS) {
+    tpm_family_ = reply.family();
+    gsc_version_ = reply.gsc_version();
+  } else {
+    LOG(ERROR) << "Failed to get TPM version info.";
+  }
+  std::move(callback).Run();
+}
+
+void ChromeOSMetricsProvider::OnTpmManagerGetSupportedFeatures(
+    base::OnceClosure callback,
+    const tpm_manager::GetSupportedFeaturesReply& reply) {
+  if (reply.status() == tpm_manager::STATUS_SUCCESS) {
+    tpm_support_runtime_selection_ = reply.support_runtime_selection();
+  } else {
+    LOG(ERROR) << "Failed to get TPM supported features.";
+  }
+  std::move(callback).Run();
+}
+
+void ChromeOSMetricsProvider::SetTpmType(
+    metrics::SystemProfileProto* system_profile_proto) {
+  metrics::SystemProfileProto::Hardware* hardware =
+      system_profile_proto->mutable_hardware();
+  if (!tpm_family_.has_value() || !gsc_version_.has_value() ||
+      !tpm_support_runtime_selection_.has_value()) {
+    hardware->set_tpm_type(
+        metrics::SystemProfileProto::Hardware::TPM_TYPE_UNKNOWN);
+    return;
+  }
+  if (tpm_support_runtime_selection_.value()) {
+    // Runtime selection TPM type.
+    hardware->set_tpm_type(
+        metrics::SystemProfileProto::Hardware::TPM_TYPE_RUNTIME_SELECTION);
+  } else if (tpm_family_.value() == kTpmV1Family &&
+             gsc_version_.value() == tpm_manager::GSC_VERSION_NOT_GSC) {
+    // Non-GSC TPM1.2 devices.
+    hardware->set_tpm_type(metrics::SystemProfileProto::Hardware::TPM_TYPE_1);
+  } else if (tpm_family_.value() == kTpmV2Family) {
+    // GSC devices should all be TPM2.0 family.
+    if (gsc_version_.value() == tpm_manager::GSC_VERSION_CR50) {
+      // CR50 devices.
+      hardware->set_tpm_type(
+          metrics::SystemProfileProto::Hardware::TPM_TYPE_CR50);
+    } else if (gsc_version_.value() == tpm_manager::GSC_VERSION_TI50) {
+      // TI50 devices.
+      hardware->set_tpm_type(
+          metrics::SystemProfileProto::Hardware::TPM_TYPE_TI50);
+    } else {
+      // Generic TPM2.0 devices are not reported yet.
+      LOG(WARNING) << "Unknown TPM type: generic TPM 2.0.";
+      hardware->set_tpm_type(
+          metrics::SystemProfileProto::Hardware::TPM_TYPE_UNKNOWN);
+    }
+  } else {
+    // Other combinations shouldn't appear.
+    LOG(WARNING) << "Unknown TPM type: TPM family = "
+                 << static_cast<int>(tpm_family_.value()) << ", GSC version = "
+                 << static_cast<int>(gsc_version_.value());
+    hardware->set_tpm_type(
+        metrics::SystemProfileProto::Hardware::TPM_TYPE_UNKNOWN);
+  }
 }
 
 void ChromeOSMetricsProvider::UpdateUserTypeUMA() {

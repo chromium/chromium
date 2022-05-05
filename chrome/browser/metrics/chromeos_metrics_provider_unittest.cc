@@ -20,6 +20,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
@@ -30,7 +31,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
+using Hardware = metrics::SystemProfileProto::Hardware;
+
 namespace {
+
+constexpr int kTpmV1Family = 0x312e3200;
+constexpr int kTpmV2Family = 0x322e3000;
 
 class FakeMultiDeviceSetupClientImplFactory
     : public ash::multidevice_setup::MultiDeviceSetupClientImpl::Factory {
@@ -93,6 +99,7 @@ class ChromeOSMetricsProviderTest : public testing::Test {
   void SetUp() override {
     // Set up a PowerManagerClient instance for PerfProvider.
     chromeos::PowerManagerClient::InitializeFake();
+    chromeos::TpmManagerClient::InitializeFake();
 
     ash::multidevice_setup::MultiDeviceSetupClientFactory::GetInstance()
         ->SetServiceIsNULLWhileTestingForTesting(false);
@@ -119,9 +126,23 @@ class ChromeOSMetricsProviderTest : public testing::Test {
       chromeos::LoginState::Initialize();
   }
 
+  void CheckTpmType(const Hardware::TpmType& expected_tpm_type) {
+    TestChromeOSMetricsProvider provider;
+    provider.OnDidCreateMetricsLog();
+    metrics::SystemProfileProto system_profile;
+    provider.ProvideSystemProfileMetrics(&system_profile);
+
+    ASSERT_TRUE(system_profile.has_hardware());
+    const Hardware::TpmType proto_tpm_type =
+        system_profile.hardware().tpm_type();
+
+    EXPECT_EQ(expected_tpm_type, proto_tpm_type);
+  }
+
   void TearDown() override {
     // Destroy the login state tracker if it was initialized.
     chromeos::LoginState::Shutdown();
+    chromeos::TpmManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     ash::multidevice_setup::MultiDeviceSetupClientImpl::Factory::
         SetFactoryForTesting(nullptr);
@@ -241,4 +262,70 @@ TEST_F(ChromeOSMetricsProviderTest, FullHardwareClass) {
       system_profile.hardware().full_hardware_class();
 
   EXPECT_EQ(expected_full_hw_class, proto_full_hw_class);
+}
+
+TEST_F(ChromeOSMetricsProviderTest, TpmTypeRuntimeSelection) {
+  chromeos::TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->mutable_supported_features_reply()
+      ->set_support_runtime_selection(true);
+
+  CheckTpmType(Hardware::TPM_TYPE_RUNTIME_SELECTION);
+}
+
+TEST_F(ChromeOSMetricsProviderTest, TpmTypeV1) {
+  chromeos::TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->mutable_version_info_reply()
+      ->set_family(kTpmV1Family);
+
+  CheckTpmType(Hardware::TPM_TYPE_1);
+}
+
+TEST_F(ChromeOSMetricsProviderTest, TpmTypeCr50) {
+  tpm_manager::GetVersionInfoReply* reply = chromeos::TpmManagerClient::Get()
+                                                ->GetTestInterface()
+                                                ->mutable_version_info_reply();
+  reply->set_gsc_version(tpm_manager::GSC_VERSION_CR50);
+  reply->set_family(kTpmV2Family);
+
+  CheckTpmType(Hardware::TPM_TYPE_CR50);
+}
+
+TEST_F(ChromeOSMetricsProviderTest, TpmTypeTi50) {
+  tpm_manager::GetVersionInfoReply* reply = chromeos::TpmManagerClient::Get()
+                                                ->GetTestInterface()
+                                                ->mutable_version_info_reply();
+  reply->set_gsc_version(tpm_manager::GSC_VERSION_TI50);
+  reply->set_family(kTpmV2Family);
+
+  CheckTpmType(Hardware::TPM_TYPE_TI50);
+}
+
+TEST_F(ChromeOSMetricsProviderTest, TpmTypeInvalidFamily) {
+  chromeos::TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->mutable_version_info_reply()
+      ->set_family(100);
+
+  CheckTpmType(Hardware::TPM_TYPE_UNKNOWN);
+}
+
+TEST_F(ChromeOSMetricsProviderTest, TpmTypeGenericTpm2) {
+  tpm_manager::GetVersionInfoReply* reply = chromeos::TpmManagerClient::Get()
+                                                ->GetTestInterface()
+                                                ->mutable_version_info_reply();
+  reply->set_family(kTpmV2Family);
+
+  CheckTpmType(Hardware::TPM_TYPE_UNKNOWN);
+}
+
+TEST_F(ChromeOSMetricsProviderTest, TpmTypeInvalidGscWithFamilyV1) {
+  tpm_manager::GetVersionInfoReply* reply = chromeos::TpmManagerClient::Get()
+                                                ->GetTestInterface()
+                                                ->mutable_version_info_reply();
+  reply->set_family(kTpmV1Family);
+  reply->set_gsc_version(tpm_manager::GSC_VERSION_CR50);
+
+  CheckTpmType(Hardware::TPM_TYPE_UNKNOWN);
 }
