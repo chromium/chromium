@@ -51,6 +51,10 @@
 #include "ui/events/event_sink.h"
 #include "ui/gfx/geometry/size.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace chromeos {
 
 // Note that show_oobe_ui_ defaults to false because WizardController assumes

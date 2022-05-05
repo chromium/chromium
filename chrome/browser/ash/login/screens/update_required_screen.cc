@@ -29,6 +29,10 @@
 #include "components/user_manager/user_manager.h"
 #include "ui/chromeos/devicetype_utils.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace ash {
 namespace {
 

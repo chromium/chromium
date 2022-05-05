@@ -22,6 +22,10 @@
 #include "ui/display/display_switches.h"
 #include "ui/snapshot/snapshot.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace chromeos {
 
 namespace {

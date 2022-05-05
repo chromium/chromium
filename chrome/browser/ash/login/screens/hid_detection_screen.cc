@@ -27,6 +27,10 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace ash {
 namespace {
 

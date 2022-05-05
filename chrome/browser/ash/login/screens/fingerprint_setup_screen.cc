@@ -17,6 +17,10 @@
 #include "content/public/browser/device_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace ash {
 namespace {
 

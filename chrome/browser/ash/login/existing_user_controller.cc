@@ -136,6 +136,10 @@
 #include "chromeos/ash/components/dbus/hiberman/hiberman_client.h"  // nogncheck
 #endif
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace ash {
 namespace {
 

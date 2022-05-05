@@ -95,6 +95,10 @@
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace {
 
 // Timeout to delay first notification about offline state for a

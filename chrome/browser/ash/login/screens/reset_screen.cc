@@ -35,6 +35,10 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace ash {
 namespace {
 
