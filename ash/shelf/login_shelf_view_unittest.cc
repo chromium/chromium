@@ -211,6 +211,13 @@ TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterSessionStateChange) {
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
 }
 
+// Checks that the login shelf is not displayed in Shimless RMA.
+TEST_P(LoginShelfViewTest, ShouldHideUiInShimlessRma) {
+  EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
+  NotifySessionStateChanged(SessionState::RMA);
+  EXPECT_TRUE(ShowsShelfButtons({}));
+}
+
 // Checks the login shelf updates UI after shutdown policy change when the
 // screen is locked.
 TEST_P(LoginShelfViewTest,

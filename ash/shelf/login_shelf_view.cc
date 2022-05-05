@@ -919,7 +919,8 @@ void LoginShelfView::UpdateUi() {
 
   SessionState session_state =
       Shell::Get()->session_controller()->GetSessionState();
-  if (session_state == SessionState::ACTIVE) {
+  if (session_state == SessionState::ACTIVE ||
+      session_state == SessionState::RMA) {
     // The entire view was set invisible. The buttons are also set invisible
     // to avoid affecting calculation of the shelf size.
     for (auto* child : children())
