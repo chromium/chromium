@@ -177,6 +177,10 @@ try_.builder(
 
 try_.builder(
     name = "linux-lacros-dbg",
+    # TODO(crbug.com/1233247) Adds the CI tester when it's available.
+    mirrors = [
+        "ci/linux-lacros-dbg",
+    ],
 )
 
 try_.builder(
