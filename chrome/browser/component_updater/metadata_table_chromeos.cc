@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/cryptohome/system_salt_getter.h"
 #include "base/hash/sha1.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -56,18 +55,11 @@ const user_manager::User* GetActiveUser() {
 
 // Converts username to a hashed string.
 std::string HashUsername(const std::string& username) {
-  chromeos::SystemSaltGetter* salt_getter = chromeos::SystemSaltGetter::Get();
-  DCHECK(salt_getter);
-
-  // System salt must be defined at this point.
-  const chromeos::SystemSaltGetter::RawSalt* salt = salt_getter->GetRawSalt();
-  DCHECK(salt);
-
   unsigned char binmd[base::kSHA1Length];
   std::string lowercase(username);
   std::transform(lowercase.begin(), lowercase.end(), lowercase.begin(),
                  ::tolower);
-  std::vector<uint8_t> data = *salt;
+  std::vector<uint8_t> data;
   std::copy(lowercase.begin(), lowercase.end(), std::back_inserter(data));
   base::SHA1HashBytes(data.data(), data.size(), binmd);
   std::string result = base::HexEncode(binmd, sizeof(binmd));
