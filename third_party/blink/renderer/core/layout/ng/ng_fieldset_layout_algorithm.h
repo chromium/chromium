@@ -66,9 +66,6 @@ class CORE_EXPORT NGFieldsetLayoutAlgorithm
 
   const WritingDirectionMode writing_direction_;
 
-  NGBoxStrut borders_;
-  NGBoxStrut padding_;
-
   LayoutUnit intrinsic_block_size_;
   const LayoutUnit consumed_block_size_;
   LogicalSize border_box_size_;

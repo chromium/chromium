@@ -126,6 +126,8 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
 
   const NGBreakTokenType* BreakToken() const { return break_token_; }
 
+  const NGBoxStrut& Borders() const { return container_builder_.Borders(); }
+  const NGBoxStrut& Padding() const { return container_builder_.Padding(); }
   const NGBoxStrut& BorderPadding() const {
     return container_builder_.BorderPadding();
   }
