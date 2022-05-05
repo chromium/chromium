@@ -2978,52 +2978,6 @@ error::Error GLES2DecoderPassthroughImpl::HandleSetActiveURLCHROMIUM(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::BindTexImage2DCHROMIUMImpl(
-    GLenum target,
-    GLenum internalformat,
-    GLint imageId) {
-  TextureTarget target_enum = GLenumToTextureTarget(target);
-  if (target_enum == TextureTarget::kCubeMap ||
-      target_enum == TextureTarget::kUnkown) {
-    InsertError(GL_INVALID_ENUM, "Invalid target");
-    return error::kNoError;
-  }
-
-  gl::GLImage* image = group_->image_manager()->LookupImage(imageId);
-  if (image == nullptr) {
-    InsertError(GL_INVALID_OPERATION, "No image found with the given ID");
-    return error::kNoError;
-  }
-
-  const BoundTexture& bound_texture =
-      bound_textures_[static_cast<size_t>(target_enum)][active_texture_unit_];
-  if (bound_texture.texture == nullptr) {
-    InsertError(GL_INVALID_OPERATION, "No texture bound");
-    return error::kNoError;
-  }
-
-  if (image->ShouldBindOrCopy() == gl::GLImage::BIND) {
-    if (internalformat)
-      image->BindTexImageWithInternalformat(target, internalformat);
-    else
-      image->BindTexImage(target);
-  } else {
-    image->CopyTexImage(target);
-  }
-
-  // Target is already validated
-  UpdateTextureSizeFromTarget(target);
-
-  DCHECK(bound_texture.texture != nullptr);
-  bound_texture.texture->SetLevelImage(target, 0, image);
-
-  // If there was any GLImage bound to |target| on this texture unit, then
-  // forget it.
-  RemovePendingBindingTexture(target, active_texture_unit_);
-
-  return error::kNoError;
-}
-
 void GLES2DecoderPassthroughImpl::VerifyServiceTextureObjectsExist() {
   resources_->texture_object_map.ForEach(
       [this](GLuint client_id, scoped_refptr<TexturePassthrough> texture) {

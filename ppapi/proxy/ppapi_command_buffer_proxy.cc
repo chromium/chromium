@@ -257,17 +257,6 @@ const gpu::Capabilities& PpapiCommandBufferProxy::GetCapabilities() const {
   return capabilities_;
 }
 
-int32_t PpapiCommandBufferProxy::CreateImage(ClientBuffer buffer,
-                                             size_t width,
-                                             size_t height) {
-  NOTREACHED();
-  return -1;
-}
-
-void PpapiCommandBufferProxy::DestroyImage(int32_t id) {
-  NOTREACHED();
-}
-
 bool PpapiCommandBufferProxy::Send(IPC::Message* msg) {
   DCHECK(last_state_.error == gpu::error::kNoError);
 

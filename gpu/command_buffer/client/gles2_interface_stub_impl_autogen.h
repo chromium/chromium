@@ -991,13 +991,6 @@ void GLES2InterfaceStub::GetUniformsES3CHROMIUM(GLuint /* program */,
                                                 GLsizei /* bufsize */,
                                                 GLsizei* /* size */,
                                                 void* /* info */) {}
-GLuint GLES2InterfaceStub::CreateImageCHROMIUM(ClientBuffer /* buffer */,
-                                               GLsizei /* width */,
-                                               GLsizei /* height */,
-                                               GLenum /* internalformat */) {
-  return 0;
-}
-void GLES2InterfaceStub::DestroyImageCHROMIUM(GLuint /* image_id */) {}
 void GLES2InterfaceStub::DescheduleUntilFinishedCHROMIUM() {}
 void GLES2InterfaceStub::GetTranslatedShaderSourceANGLE(GLuint /* shader */,
                                                         GLsizei /* bufsize */,
@@ -1069,14 +1062,6 @@ GLuint GLES2InterfaceStub::CreateAndConsumeTextureCHROMIUM(
 void GLES2InterfaceStub::BindUniformLocationCHROMIUM(GLuint /* program */,
                                                      GLint /* location */,
                                                      const char* /* name */) {}
-void GLES2InterfaceStub::BindTexImage2DCHROMIUM(GLenum /* target */,
-                                                GLint /* imageId */) {}
-void GLES2InterfaceStub::BindTexImage2DWithInternalformatCHROMIUM(
-    GLenum /* target */,
-    GLenum /* internalformat */,
-    GLint /* imageId */) {}
-void GLES2InterfaceStub::ReleaseTexImage2DCHROMIUM(GLenum /* target */,
-                                                   GLint /* imageId */) {}
 void GLES2InterfaceStub::TraceBeginCHROMIUM(const char* /* category_name */,
                                             const char* /* trace_name */) {}
 void GLES2InterfaceStub::TraceEndCHROMIUM() {}

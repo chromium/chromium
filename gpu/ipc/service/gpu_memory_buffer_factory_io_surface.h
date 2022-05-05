@@ -77,8 +77,7 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryIOSurface
   typedef std::unordered_map<IOSurfaceMapKey,
                              base::ScopedCFTypeRef<IOSurfaceRef>>
       IOSurfaceMap;
-  // TODO(reveman): Remove |io_surfaces_| and allow IOSurface backed GMBs to be
-  // used with any GPU process by passing a mach_port to CreateImageCHROMIUM.
+
   IOSurfaceMap io_surfaces_;
   base::Lock io_surfaces_lock_;
 };

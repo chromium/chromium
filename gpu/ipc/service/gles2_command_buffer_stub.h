@@ -68,8 +68,6 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
                                 gfx::GpuFenceHandle handle) override;
   void GetGpuFenceHandle(uint32_t gpu_fence_id,
                          GetGpuFenceHandleCallback callback) override;
-  void CreateImage(mojom::CreateImageParamsPtr params) override;
-  void DestroyImage(int32_t id) override;
 
   void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
 

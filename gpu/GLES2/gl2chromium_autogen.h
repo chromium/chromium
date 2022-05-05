@@ -312,8 +312,6 @@
 #define glGetTransformFeedbackVaryingsCHROMIUM \
   GLES2_GET_FUN(GetTransformFeedbackVaryingsCHROMIUM)
 #define glGetUniformsES3CHROMIUM GLES2_GET_FUN(GetUniformsES3CHROMIUM)
-#define glCreateImageCHROMIUM GLES2_GET_FUN(CreateImageCHROMIUM)
-#define glDestroyImageCHROMIUM GLES2_GET_FUN(DestroyImageCHROMIUM)
 #define glDescheduleUntilFinishedCHROMIUM \
   GLES2_GET_FUN(DescheduleUntilFinishedCHROMIUM)
 #define glGetTranslatedShaderSourceANGLE \
@@ -333,10 +331,6 @@
 #define glCreateAndConsumeTextureCHROMIUM \
   GLES2_GET_FUN(CreateAndConsumeTextureCHROMIUM)
 #define glBindUniformLocationCHROMIUM GLES2_GET_FUN(BindUniformLocationCHROMIUM)
-#define glBindTexImage2DCHROMIUM GLES2_GET_FUN(BindTexImage2DCHROMIUM)
-#define glBindTexImage2DWithInternalformatCHROMIUM \
-  GLES2_GET_FUN(BindTexImage2DWithInternalformatCHROMIUM)
-#define glReleaseTexImage2DCHROMIUM GLES2_GET_FUN(ReleaseTexImage2DCHROMIUM)
 #define glTraceBeginCHROMIUM GLES2_GET_FUN(TraceBeginCHROMIUM)
 #define glTraceEndCHROMIUM GLES2_GET_FUN(TraceEndCHROMIUM)
 #define glDiscardFramebufferEXT GLES2_GET_FUN(DiscardFramebufferEXT)

@@ -1402,19 +1402,6 @@ void GLES2DecoderTestBase::DoDeleteTexture(
   }
 }
 
-void GLES2DecoderTestBase::DoBindTexImage2DCHROMIUM(GLenum target,
-                                                    GLint image_id) {
-  cmds::BindTexImage2DCHROMIUM bind_tex_image_2d_cmd;
-  bind_tex_image_2d_cmd.Init(target, image_id);
-  EXPECT_CALL(*gl_, GetError())
-      .Times(AtMost(2))
-      .WillOnce(Return(GL_NO_ERROR))
-      .WillOnce(Return(GL_NO_ERROR))
-      .RetiresOnSaturation();
-  EXPECT_EQ(error::kNoError, ExecuteCmd(bind_tex_image_2d_cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-}
-
 void GLES2DecoderTestBase::DoTexImage2D(GLenum target,
                                         GLint level,
                                         GLenum internal_format,

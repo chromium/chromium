@@ -2936,32 +2936,6 @@ void BindUniformLocationCHROMIUMBucket(GLuint program,
   }
 }
 
-void BindTexImage2DCHROMIUM(GLenum target, GLint imageId) {
-  gles2::cmds::BindTexImage2DCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::BindTexImage2DCHROMIUM>();
-  if (c) {
-    c->Init(target, imageId);
-  }
-}
-
-void BindTexImage2DWithInternalformatCHROMIUM(GLenum target,
-                                              GLenum internalformat,
-                                              GLint imageId) {
-  gles2::cmds::BindTexImage2DWithInternalformatCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::BindTexImage2DWithInternalformatCHROMIUM>();
-  if (c) {
-    c->Init(target, internalformat, imageId);
-  }
-}
-
-void ReleaseTexImage2DCHROMIUM(GLenum target, GLint imageId) {
-  gles2::cmds::ReleaseTexImage2DCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::ReleaseTexImage2DCHROMIUM>();
-  if (c) {
-    c->Init(target, imageId);
-  }
-}
-
 void TraceBeginCHROMIUM(GLuint category_bucket_id, GLuint name_bucket_id) {
   gles2::cmds::TraceBeginCHROMIUM* c =
       GetCmdSpace<gles2::cmds::TraceBeginCHROMIUM>();

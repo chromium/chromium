@@ -469,10 +469,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // up-to-date.
   void LazilyUpdateCurrentlyBoundElementArrayBuffer();
 
-  error::Error BindTexImage2DCHROMIUMImpl(GLenum target,
-                                          GLenum internalformat,
-                                          GLint image_id);
-
   void VerifyServiceTextureObjectsExist();
 
   bool IsEmulatedFramebufferBound(GLenum target) const;

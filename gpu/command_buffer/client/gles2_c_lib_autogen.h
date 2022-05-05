@@ -1451,16 +1451,6 @@ void GL_APIENTRY GLES2GetUniformsES3CHROMIUM(GLuint program,
                                              void* info) {
   gles2::GetGLContext()->GetUniformsES3CHROMIUM(program, bufsize, size, info);
 }
-GLuint GL_APIENTRY GLES2CreateImageCHROMIUM(ClientBuffer buffer,
-                                            GLsizei width,
-                                            GLsizei height,
-                                            GLenum internalformat) {
-  return gles2::GetGLContext()->CreateImageCHROMIUM(buffer, width, height,
-                                                    internalformat);
-}
-void GL_APIENTRY GLES2DestroyImageCHROMIUM(GLuint image_id) {
-  gles2::GetGLContext()->DestroyImageCHROMIUM(image_id);
-}
 void GL_APIENTRY GLES2DescheduleUntilFinishedCHROMIUM() {
   gles2::GetGLContext()->DescheduleUntilFinishedCHROMIUM();
 }
@@ -1564,19 +1554,6 @@ void GL_APIENTRY GLES2BindUniformLocationCHROMIUM(GLuint program,
                                                   GLint location,
                                                   const char* name) {
   gles2::GetGLContext()->BindUniformLocationCHROMIUM(program, location, name);
-}
-void GL_APIENTRY GLES2BindTexImage2DCHROMIUM(GLenum target, GLint imageId) {
-  gles2::GetGLContext()->BindTexImage2DCHROMIUM(target, imageId);
-}
-void GL_APIENTRY
-GLES2BindTexImage2DWithInternalformatCHROMIUM(GLenum target,
-                                              GLenum internalformat,
-                                              GLint imageId) {
-  gles2::GetGLContext()->BindTexImage2DWithInternalformatCHROMIUM(
-      target, internalformat, imageId);
-}
-void GL_APIENTRY GLES2ReleaseTexImage2DCHROMIUM(GLenum target, GLint imageId) {
-  gles2::GetGLContext()->ReleaseTexImage2DCHROMIUM(target, imageId);
 }
 void GL_APIENTRY GLES2TraceBeginCHROMIUM(const char* category_name,
                                          const char* trace_name) {
@@ -3006,14 +2983,6 @@ extern const NameToFunc g_gles2_function_table[] = {
         reinterpret_cast<GLES2FunctionPointer>(glGetUniformsES3CHROMIUM),
     },
     {
-        "glCreateImageCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(glCreateImageCHROMIUM),
-    },
-    {
-        "glDestroyImageCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(glDestroyImageCHROMIUM),
-    },
-    {
         "glDescheduleUntilFinishedCHROMIUM",
         reinterpret_cast<GLES2FunctionPointer>(
             glDescheduleUntilFinishedCHROMIUM),
@@ -3069,19 +3038,6 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glBindUniformLocationCHROMIUM",
         reinterpret_cast<GLES2FunctionPointer>(glBindUniformLocationCHROMIUM),
-    },
-    {
-        "glBindTexImage2DCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(glBindTexImage2DCHROMIUM),
-    },
-    {
-        "glBindTexImage2DWithInternalformatCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(
-            glBindTexImage2DWithInternalformatCHROMIUM),
-    },
-    {
-        "glReleaseTexImage2DCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(glReleaseTexImage2DCHROMIUM),
     },
     {
         "glTraceBeginCHROMIUM",

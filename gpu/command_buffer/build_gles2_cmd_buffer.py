@@ -1952,20 +1952,6 @@ _FUNCTION_INFO = {
     'es3': True,
     'trace_level': 1,
   },
-  'CreateImageCHROMIUM': {
-    'type': 'NoCommand',
-    'cmd_args':
-        'ClientBuffer buffer, GLsizei width, GLsizei height, '
-        'GLenum internalformat',
-    'result': ['GLuint'],
-    'extension': "CHROMIUM_image",
-    'trace_level': 1,
-  },
-  'DestroyImageCHROMIUM': {
-    'type': 'NoCommand',
-    'extension': "CHROMIUM_image",
-    'trace_level': 1,
-  },
   'DescheduleUntilFinishedCHROMIUM': {
     'type': 'Custom',
     'decoder_func': 'DoDescheduleUntilFinishedCHROMIUM',
@@ -3903,21 +3889,6 @@ _FUNCTION_INFO = {
     'decoder_func': 'DoIsVertexArrayOES',
     'unit_test': False,
     'pepper_interface': 'VertexArrayObject',
-  },
-  'BindTexImage2DCHROMIUM': {
-    'decoder_func': 'DoBindTexImage2DCHROMIUM',
-    'unit_test': False,
-    'extension': "CHROMIUM_image",
-  },
-  'BindTexImage2DWithInternalformatCHROMIUM': {
-    'decoder_func': 'DoBindTexImage2DWithInternalformatCHROMIUM',
-    'unit_test': False,
-    'extension': "CHROMIUM_image",
-  },
-  'ReleaseTexImage2DCHROMIUM': {
-    'decoder_func': 'DoReleaseTexImage2DCHROMIUM',
-    'unit_test': False,
-    'extension': "CHROMIUM_image",
   },
   'ShallowFinishCHROMIUM': {
     'type': 'NoCommand',

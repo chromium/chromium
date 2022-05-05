@@ -343,7 +343,6 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
                               GLint border,
                               GLsizei size,
                               uint32_t bucket_id);
-  void DoBindTexImage2DCHROMIUM(GLenum target, GLint image_id);
   void DoTexImage2D(GLenum target,
                     GLint level,
                     GLenum internal_format,

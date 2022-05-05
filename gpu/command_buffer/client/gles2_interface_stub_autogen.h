@@ -733,11 +733,6 @@ void GetUniformsES3CHROMIUM(GLuint program,
                             GLsizei bufsize,
                             GLsizei* size,
                             void* info) override;
-GLuint CreateImageCHROMIUM(ClientBuffer buffer,
-                           GLsizei width,
-                           GLsizei height,
-                           GLenum internalformat) override;
-void DestroyImageCHROMIUM(GLuint image_id) override;
 void DescheduleUntilFinishedCHROMIUM() override;
 void GetTranslatedShaderSourceANGLE(GLuint shader,
                                     GLsizei bufsize,
@@ -801,11 +796,6 @@ GLuint CreateAndConsumeTextureCHROMIUM(const GLbyte* mailbox) override;
 void BindUniformLocationCHROMIUM(GLuint program,
                                  GLint location,
                                  const char* name) override;
-void BindTexImage2DCHROMIUM(GLenum target, GLint imageId) override;
-void BindTexImage2DWithInternalformatCHROMIUM(GLenum target,
-                                              GLenum internalformat,
-                                              GLint imageId) override;
-void ReleaseTexImage2DCHROMIUM(GLenum target, GLint imageId) override;
 void TraceBeginCHROMIUM(const char* category_name,
                         const char* trace_name) override;
 void TraceEndCHROMIUM() override;

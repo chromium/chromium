@@ -173,15 +173,6 @@ const gpu::Capabilities& Context::GetCapabilities() const {
   return capabilities_;
 }
 
-int32_t Context::CreateImage(ClientBuffer buffer, size_t width, size_t height) {
-  NOTREACHED();
-  return -1;
-}
-
-void Context::DestroyImage(int32_t id) {
-  NOTREACHED();
-}
-
 void Context::SignalQuery(uint32_t query, base::OnceClosure callback) {
   NOTREACHED();
 }

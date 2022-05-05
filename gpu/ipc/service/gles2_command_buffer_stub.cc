@@ -503,68 +503,6 @@ void GLES2CommandBufferStub::GetGpuFenceHandle(
   std::move(callback).Run(std::move(handle));
 }
 
-void GLES2CommandBufferStub::CreateImage(mojom::CreateImageParamsPtr params) {
-  TRACE_EVENT0("gpu", "GLES2CommandBufferStub::OnCreateImage");
-  const int32_t id = params->id;
-  const gfx::Size& size = params->size;
-  const gfx::BufferFormat& format = params->format;
-  const gfx::BufferPlane& plane = params->plane;
-  const uint64_t image_release_count = params->image_release_count;
-  ScopedContextOperation operation(*this);
-  if (!operation.is_context_current())
-    return;
-
-  gles2::ImageManager* image_manager = channel_->image_manager();
-  DCHECK(image_manager);
-  if (image_manager->LookupImage(id)) {
-    LOG(ERROR) << "Image already exists with same ID.";
-    return;
-  }
-
-  if (!gpu::IsImageFromGpuMemoryBufferFormatSupported(
-          format, gles2_decoder_->GetCapabilities())) {
-    LOG(ERROR) << "Format is not supported.";
-    return;
-  }
-
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, format)) {
-    LOG(ERROR) << "Invalid image size for format.";
-    return;
-  }
-
-  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, format)) {
-    LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane) << " for "
-               << gfx::BufferFormatToString(format);
-    return;
-  }
-
-  scoped_refptr<gl::GLImage> image = channel()->CreateImageForGpuMemoryBuffer(
-      std::move(params->gpu_memory_buffer), size, format, plane,
-      surface_handle_);
-  if (!image.get())
-    return;
-
-  image_manager->AddImage(image.get(), id);
-  if (image_release_count)
-    sync_point_client_state_->ReleaseFenceSync(image_release_count);
-}
-
-void GLES2CommandBufferStub::DestroyImage(int32_t id) {
-  TRACE_EVENT0("gpu", "GLES2CommandBufferStub::OnDestroyImage");
-  ScopedContextOperation operation(*this);
-  if (!operation.is_context_current())
-    return;
-
-  gles2::ImageManager* image_manager = channel_->image_manager();
-  DCHECK(image_manager);
-  if (!image_manager->LookupImage(id)) {
-    LOG(ERROR) << "Image with ID doesn't exist.";
-    return;
-  }
-
-  image_manager->RemoveImage(id);
-}
-
 void GLES2CommandBufferStub::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {
   pending_swap_completed_params_.push_back({swap_id, flags});
   pending_presented_params_.push_back({swap_id, flags});

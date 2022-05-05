@@ -237,15 +237,6 @@ interface GpuChannel {
   ReleaseSysmemBufferCollection(mojo_base.mojom.UnguessableToken id);
 };
 
-struct CreateImageParams {
-  int32 id;
-  gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer;
-  gfx.mojom.Size size;
-  gfx.mojom.BufferFormat format;
-  gfx.mojom.BufferPlane plane;
-  uint64 image_release_count;
-};
-
 // Interface used to issue commands to a specific CommandBuffer instance in the
 // GPU process.
 interface CommandBuffer {
@@ -265,17 +256,6 @@ interface CommandBuffer {
 
   // Requests retrieval of a GpuFenceHandle by ID.
   GetGpuFenceHandle(uint32 id) => (gfx.mojom.GpuFenceHandle? fence_handle);
-
-  // Creates an image from an existing gpu memory buffer. The id that can be
-  // used to identify the image from a command buffer.
-  //
-  // TODO(crbug.com/1216120): Remove this once CreateImageCHROMIUM is gone.
-  CreateImage(CreateImageParams params);
-
-  // Destroys a previously created image identified by `id`.
-  //
-  // TODO(crbug.com/1216120): Remove this once CreateImageCHROMIUM is gone.
-  DestroyImage(int32 id);
 
   // Asynchronously waits until the SyncToken is signaled, then sends a
   // corresponding SignalAck on the CommandBufferClient interface, using

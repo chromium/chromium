@@ -545,14 +545,6 @@ void CommandBufferStub::GetGpuFenceHandle(uint32_t id,
   std::move(callback).Run(gfx::GpuFenceHandle());
 }
 
-void CommandBufferStub::CreateImage(mojom::CreateImageParamsPtr params) {
-  DLOG(ERROR) << "CreateImage unsupported.";
-}
-
-void CommandBufferStub::DestroyImage(int32_t id) {
-  DLOG(ERROR) << "DestroyImage unsupported.";
-}
-
 void CommandBufferStub::OnDestroyTransferBuffer(int32_t id) {
   TRACE_EVENT0("gpu", "CommandBufferStub::OnDestroyTransferBuffer");
 

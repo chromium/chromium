@@ -2091,19 +2091,6 @@ void GLES2TraceImplementation::GetUniformsES3CHROMIUM(GLuint program,
   gl_->GetUniformsES3CHROMIUM(program, bufsize, size, info);
 }
 
-GLuint GLES2TraceImplementation::CreateImageCHROMIUM(ClientBuffer buffer,
-                                                     GLsizei width,
-                                                     GLsizei height,
-                                                     GLenum internalformat) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CreateImageCHROMIUM");
-  return gl_->CreateImageCHROMIUM(buffer, width, height, internalformat);
-}
-
-void GLES2TraceImplementation::DestroyImageCHROMIUM(GLuint image_id) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::DestroyImageCHROMIUM");
-  gl_->DestroyImageCHROMIUM(image_id);
-}
-
 void GLES2TraceImplementation::DescheduleUntilFinishedCHROMIUM() {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
                                 "GLES2Trace::DescheduleUntilFinishedCHROMIUM");
@@ -2238,28 +2225,6 @@ void GLES2TraceImplementation::BindUniformLocationCHROMIUM(GLuint program,
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
                                 "GLES2Trace::BindUniformLocationCHROMIUM");
   gl_->BindUniformLocationCHROMIUM(program, location, name);
-}
-
-void GLES2TraceImplementation::BindTexImage2DCHROMIUM(GLenum target,
-                                                      GLint imageId) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::BindTexImage2DCHROMIUM");
-  gl_->BindTexImage2DCHROMIUM(target, imageId);
-}
-
-void GLES2TraceImplementation::BindTexImage2DWithInternalformatCHROMIUM(
-    GLenum target,
-    GLenum internalformat,
-    GLint imageId) {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu", "GLES2Trace::BindTexImage2DWithInternalformatCHROMIUM");
-  gl_->BindTexImage2DWithInternalformatCHROMIUM(target, internalformat,
-                                                imageId);
-}
-
-void GLES2TraceImplementation::ReleaseTexImage2DCHROMIUM(GLenum target,
-                                                         GLint imageId) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::ReleaseTexImage2DCHROMIUM");
-  gl_->ReleaseTexImage2DCHROMIUM(target, imageId);
 }
 
 void GLES2TraceImplementation::TraceBeginCHROMIUM(const char* category_name,

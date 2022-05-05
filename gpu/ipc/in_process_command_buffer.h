@@ -61,7 +61,6 @@ class GLShareGroup;
 
 namespace gfx {
 struct GpuFenceHandle;
-class Size;
 }
 
 namespace ui {
@@ -153,10 +152,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   void SetGpuControlClient(GpuControlClient*) override;
   // GetCapabilities() can be called on any thread.
   const Capabilities& GetCapabilities() const override;
-  int32_t CreateImage(ClientBuffer buffer,
-                      size_t width,
-                      size_t height) override;
-  void DestroyImage(int32_t id) override;
   void SignalQuery(uint32_t query_id, base::OnceClosure callback) override;
   void CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) override;
   void GetGpuFence(uint32_t gpu_fence_id,
@@ -326,13 +321,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   void RegisterTransferBufferOnGpuThread(int32_t id,
                                          scoped_refptr<Buffer> buffer);
   void DestroyTransferBufferOnGpuThread(int32_t id);
-
-  void CreateImageOnGpuThread(int32_t id,
-                              gfx::GpuMemoryBufferHandle handle,
-                              const gfx::Size& size,
-                              gfx::BufferFormat format,
-                              uint64_t fence_sync);
-  void DestroyImageOnGpuThread(int32_t id);
 
   void SetGetBufferOnGpuThread(int32_t shm_id, base::WaitableEvent* completion);
 

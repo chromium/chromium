@@ -2874,39 +2874,6 @@ TEST_F(GLES2ImplementationTest, VertexAttribDivisorANGLE) {
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
-TEST_F(GLES2ImplementationTest, BindTexImage2DCHROMIUM) {
-  struct Cmds {
-    cmds::BindTexImage2DCHROMIUM cmd;
-  };
-  Cmds expected;
-  expected.cmd.Init(GL_TEXTURE_2D, 2);
-
-  gl_->BindTexImage2DCHROMIUM(GL_TEXTURE_2D, 2);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
-TEST_F(GLES2ImplementationTest, BindTexImage2DWithInternalformatCHROMIUM) {
-  struct Cmds {
-    cmds::BindTexImage2DWithInternalformatCHROMIUM cmd;
-  };
-  Cmds expected;
-  expected.cmd.Init(GL_TEXTURE_2D, GL_ALPHA, 3);
-
-  gl_->BindTexImage2DWithInternalformatCHROMIUM(GL_TEXTURE_2D, GL_ALPHA, 3);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
-TEST_F(GLES2ImplementationTest, ReleaseTexImage2DCHROMIUM) {
-  struct Cmds {
-    cmds::ReleaseTexImage2DCHROMIUM cmd;
-  };
-  Cmds expected;
-  expected.cmd.Init(GL_TEXTURE_2D, 2);
-
-  gl_->ReleaseTexImage2DCHROMIUM(GL_TEXTURE_2D, 2);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
 TEST_F(GLES2ImplementationTest, DiscardFramebufferEXT) {
   GLenum data[2][1] = {{0}};
   struct Cmds {

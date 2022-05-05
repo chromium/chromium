@@ -549,12 +549,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
       const GLuint* baseInstances,
       GLsizei drawcount);
 
-  GLuint CreateImageCHROMIUMHelper(ClientBuffer buffer,
-                                   GLsizei width,
-                                   GLsizei height,
-                                   GLenum internalformat);
-  void DestroyImageCHROMIUMHelper(GLuint image_id);
-
   // Helper for GetVertexAttrib
   bool GetVertexAttribHelper(GLuint index, GLenum pname, uint32_t* param);
 

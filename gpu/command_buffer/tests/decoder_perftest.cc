@@ -265,15 +265,6 @@ class RecordReplayContext : public GpuControl {
 
   const Capabilities& GetCapabilities() const override { return capabilities_; }
 
-  int32_t CreateImage(ClientBuffer buffer,
-                      size_t width,
-                      size_t height) override {
-    NOTIMPLEMENTED();
-    return -1;
-  }
-
-  void DestroyImage(int32_t id) override { NOTREACHED(); }
-
   void SignalQuery(uint32_t query, base::OnceClosure callback) override {
     NOTREACHED();
   }

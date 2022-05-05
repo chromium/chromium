@@ -217,8 +217,6 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
                                 gfx::GpuFenceHandle handle) override;
   void GetGpuFenceHandle(uint32_t id,
                          GetGpuFenceHandleCallback callback) override;
-  void CreateImage(mojom::CreateImageParamsPtr params) override;
-  void DestroyImage(int32_t id) override;
   void SignalSyncToken(const SyncToken& sync_token, uint32_t id) override;
   void SignalQuery(uint32_t query, uint32_t id) override;
   void BindMediaReceiver(mojo::GenericPendingAssociatedReceiver receiver,

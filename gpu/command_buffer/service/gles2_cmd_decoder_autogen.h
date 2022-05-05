@@ -5026,64 +5026,6 @@ error::Error GLES2DecoderImpl::HandleCreateAndConsumeTextureINTERNALImmediate(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderImpl::HandleBindTexImage2DCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::BindTexImage2DCHROMIUM& c =
-      *static_cast<const volatile gles2::cmds::BindTexImage2DCHROMIUM*>(
-          cmd_data);
-  GLenum target = static_cast<GLenum>(c.target);
-  GLint imageId = static_cast<GLint>(c.imageId);
-  if (!validators_->texture_bind_target.IsValid(target)) {
-    LOCAL_SET_GL_ERROR_INVALID_ENUM("glBindTexImage2DCHROMIUM", target,
-                                    "target");
-    return error::kNoError;
-  }
-  DoBindTexImage2DCHROMIUM(target, imageId);
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderImpl::HandleBindTexImage2DWithInternalformatCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::BindTexImage2DWithInternalformatCHROMIUM& c =
-      *static_cast<const volatile gles2::cmds::
-                       BindTexImage2DWithInternalformatCHROMIUM*>(cmd_data);
-  GLenum target = static_cast<GLenum>(c.target);
-  GLenum internalformat = static_cast<GLenum>(c.internalformat);
-  GLint imageId = static_cast<GLint>(c.imageId);
-  if (!validators_->texture_bind_target.IsValid(target)) {
-    LOCAL_SET_GL_ERROR_INVALID_ENUM(
-        "glBindTexImage2DWithInternalformatCHROMIUM", target, "target");
-    return error::kNoError;
-  }
-  if (!validators_->texture_internal_format.IsValid(internalformat)) {
-    LOCAL_SET_GL_ERROR_INVALID_ENUM(
-        "glBindTexImage2DWithInternalformatCHROMIUM", internalformat,
-        "internalformat");
-    return error::kNoError;
-  }
-  DoBindTexImage2DWithInternalformatCHROMIUM(target, internalformat, imageId);
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderImpl::HandleReleaseTexImage2DCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::ReleaseTexImage2DCHROMIUM& c =
-      *static_cast<const volatile gles2::cmds::ReleaseTexImage2DCHROMIUM*>(
-          cmd_data);
-  GLenum target = static_cast<GLenum>(c.target);
-  GLint imageId = static_cast<GLint>(c.imageId);
-  if (!validators_->texture_bind_target.IsValid(target)) {
-    LOCAL_SET_GL_ERROR_INVALID_ENUM("glReleaseTexImage2DCHROMIUM", target,
-                                    "target");
-    return error::kNoError;
-  }
-  DoReleaseTexImage2DCHROMIUM(target, imageId);
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderImpl::HandleTraceEndCHROMIUM(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

@@ -96,8 +96,6 @@ namespace gpu {
 
 namespace {
 
-base::AtomicSequenceNumber g_next_image_id;
-
 template <typename T>
 base::OnceClosure WrapTaskWithResult(base::OnceCallback<T(void)> task,
                                      T* result,
@@ -1062,118 +1060,6 @@ const Capabilities& InProcessCommandBuffer::GetCapabilities() const {
 
 const GpuFeatureInfo& InProcessCommandBuffer::GetGpuFeatureInfo() const {
   return task_executor_->gpu_feature_info();
-}
-
-int32_t InProcessCommandBuffer::CreateImage(ClientBuffer buffer,
-                                            size_t width,
-                                            size_t height) {
-  DCHECK(gpu_memory_buffer_manager_);
-  gfx::GpuMemoryBuffer* gpu_memory_buffer =
-      reinterpret_cast<gfx::GpuMemoryBuffer*>(buffer);
-  DCHECK(gpu_memory_buffer);
-
-  int32_t new_id = g_next_image_id.GetNext() + 1;
-
-  DCHECK(IsImageFromGpuMemoryBufferFormatSupported(
-      gpu_memory_buffer->GetFormat(), capabilities_));
-
-  // This handle is owned by the GPU thread and must be passed to it or it
-  // will leak. In otherwords, do not early out on error between here and the
-  // queuing of the CreateImage task below.
-  gfx::GpuMemoryBufferHandle handle = gpu_memory_buffer->CloneHandle();
-  bool requires_sync_point = handle.type == gfx::IO_SURFACE_BUFFER;
-
-  uint64_t fence_sync = 0;
-  if (requires_sync_point)
-    fence_sync = GenerateFenceSyncRelease();
-
-  ScheduleGpuTask(base::BindOnce(
-      &InProcessCommandBuffer::CreateImageOnGpuThread,
-      gpu_thread_weak_ptr_factory_.GetWeakPtr(), new_id, std::move(handle),
-      gfx::Size(base::checked_cast<int>(width),
-                base::checked_cast<int>(height)),
-      gpu_memory_buffer->GetFormat(), fence_sync));
-
-  if (fence_sync) {
-    SyncToken sync_token(GetNamespaceID(), GetCommandBufferID(), fence_sync);
-    sync_token.SetVerifyFlush();
-    gpu_memory_buffer_manager_->SetDestructionSyncToken(gpu_memory_buffer,
-                                                        sync_token);
-  }
-
-  return new_id;
-}
-
-void InProcessCommandBuffer::CreateImageOnGpuThread(
-    int32_t id,
-    gfx::GpuMemoryBufferHandle handle,
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    uint64_t fence_sync) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-  gles2::ImageManager* image_manager = task_executor_->image_manager();
-  DCHECK(image_manager);
-  if (image_manager->LookupImage(id)) {
-    LOG(ERROR) << "Image already exists with same ID.";
-    return;
-  }
-
-  switch (handle.type) {
-    case gfx::SHARED_MEMORY_BUFFER: {
-      if (!base::IsValueInRangeForNumericType<size_t>(handle.stride)) {
-        LOG(ERROR) << "Invalid stride for image.";
-        return;
-      }
-      auto image = base::MakeRefCounted<gl::GLImageSharedMemory>(size);
-      if (!image->Initialize(handle.region, handle.id, format, handle.offset,
-                             handle.stride)) {
-        LOG(ERROR) << "Failed to initialize image.";
-        return;
-      }
-
-      image_manager->AddImage(image.get(), id);
-      break;
-    }
-    default: {
-      if (!image_factory_) {
-        LOG(ERROR) << "Image factory missing but required by buffer type.";
-        return;
-      }
-
-      scoped_refptr<gl::GLImage> image =
-          image_factory_->CreateImageForGpuMemoryBuffer(
-              std::move(handle), size, format, gfx::BufferPlane::DEFAULT,
-              kDisplayCompositorClientId, kNullSurfaceHandle);
-      if (!image.get()) {
-        LOG(ERROR) << "Failed to create image for buffer.";
-        return;
-      }
-
-      image_manager->AddImage(image.get(), id);
-      break;
-    }
-  }
-
-  if (fence_sync)
-    sync_point_client_state_->ReleaseFenceSync(fence_sync);
-}
-
-void InProcessCommandBuffer::DestroyImage(int32_t id) {
-  ScheduleGpuTask(
-      base::BindOnce(&InProcessCommandBuffer::DestroyImageOnGpuThread,
-                     gpu_thread_weak_ptr_factory_.GetWeakPtr(), id));
-}
-
-void InProcessCommandBuffer::DestroyImageOnGpuThread(int32_t id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-  gles2::ImageManager* image_manager = task_executor_->image_manager();
-  DCHECK(image_manager);
-  if (!image_manager->LookupImage(id)) {
-    LOG(ERROR) << "Image with ID doesn't exist.";
-    return;
-  }
-
-  image_manager->RemoveImage(id);
 }
 
 void InProcessCommandBuffer::OnConsoleMessage(int32_t id,

@@ -3326,40 +3326,6 @@ void GLES2Implementation::CopySubTextureCHROMIUM(
   CheckGLError();
 }
 
-void GLES2Implementation::BindTexImage2DCHROMIUM(GLenum target, GLint imageId) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glBindTexImage2DCHROMIUM("
-                     << GLES2Util::GetStringTextureBindTarget(target) << ", "
-                     << imageId << ")");
-  helper_->BindTexImage2DCHROMIUM(target, imageId);
-  CheckGLError();
-}
-
-void GLES2Implementation::BindTexImage2DWithInternalformatCHROMIUM(
-    GLenum target,
-    GLenum internalformat,
-    GLint imageId) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG(
-      "[" << GetLogPrefix() << "] glBindTexImage2DWithInternalformatCHROMIUM("
-          << GLES2Util::GetStringTextureBindTarget(target) << ", "
-          << GLES2Util::GetStringTextureInternalFormat(internalformat) << ", "
-          << imageId << ")");
-  helper_->BindTexImage2DWithInternalformatCHROMIUM(target, internalformat,
-                                                    imageId);
-  CheckGLError();
-}
-
-void GLES2Implementation::ReleaseTexImage2DCHROMIUM(GLenum target,
-                                                    GLint imageId) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glReleaseTexImage2DCHROMIUM("
-                     << GLES2Util::GetStringTextureBindTarget(target) << ", "
-                     << imageId << ")");
-  helper_->ReleaseTexImage2DCHROMIUM(target, imageId);
-  CheckGLError();
-}
-
 void GLES2Implementation::DiscardFramebufferEXT(GLenum target,
                                                 GLsizei count,
                                                 const GLenum* attachments) {

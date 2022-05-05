@@ -310,8 +310,6 @@ GL_APICALL void         GL_APIENTRY glGetProgramInfoCHROMIUM (GLidProgram progra
 GL_APICALL void         GL_APIENTRY glGetUniformBlocksCHROMIUM (GLidProgram program, GLsizeiNotNegative bufsize, GLsizei* size, void* info);
 GL_APICALL void         GL_APIENTRY glGetTransformFeedbackVaryingsCHROMIUM (GLidProgram program, GLsizeiNotNegative bufsize, GLsizei* size, void* info);
 GL_APICALL void         GL_APIENTRY glGetUniformsES3CHROMIUM (GLidProgram program, GLsizeiNotNegative bufsize, GLsizei* size, void* info);
-GL_APICALL GLuint       GL_APIENTRY glCreateImageCHROMIUM (ClientBuffer buffer, GLsizei width, GLsizei height, GLenum internalformat);
-GL_APICALL void         GL_APIENTRY glDestroyImageCHROMIUM (GLuint image_id);
 GL_APICALL void         GL_APIENTRY glDescheduleUntilFinishedCHROMIUM (void);
 GL_APICALL void         GL_APIENTRY glGetTranslatedShaderSourceANGLE (GLidShader shader, GLsizeiNotNegative bufsize, GLsizeiOptional* length, char* source);
 GL_APICALL void         GL_APIENTRY glPostSubBufferCHROMIUM (GLuint64 swap_id, GLint x, GLint y, GLint width, GLint height, GLbitfieldSwapBuffersFlags flags = 0);
@@ -326,9 +324,6 @@ GL_APICALL void         GL_APIENTRY glProduceTextureDirectCHROMIUM (GLidBindText
 GL_APICALL GLuint       GL_APIENTRY glCreateAndConsumeTextureCHROMIUM (const GLbyte* mailbox);
 GL_APICALL void         GL_APIENTRY glCreateAndConsumeTextureINTERNAL (GLuint texture, const GLbyte* mailbox);
 GL_APICALL void         GL_APIENTRY glBindUniformLocationCHROMIUM (GLidProgram program, GLint location, const char* name);
-GL_APICALL void         GL_APIENTRY glBindTexImage2DCHROMIUM (GLenumTextureBindTarget target, GLint imageId);
-GL_APICALL void         GL_APIENTRY glBindTexImage2DWithInternalformatCHROMIUM (GLenumTextureBindTarget target, GLenumTextureInternalFormat internalformat, GLint imageId);
-GL_APICALL void         GL_APIENTRY glReleaseTexImage2DCHROMIUM (GLenumTextureBindTarget target, GLint imageId);
 GL_APICALL void         GL_APIENTRY glTraceBeginCHROMIUM (const char* category_name, const char* trace_name);
 GL_APICALL void         GL_APIENTRY glTraceEndCHROMIUM (void);
 GL_APICALL void         GL_APIENTRY glDiscardFramebufferEXT (GLenumFramebufferTarget target, GLsizei count, const GLenum* attachments);

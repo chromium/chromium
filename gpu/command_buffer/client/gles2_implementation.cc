@@ -4476,7 +4476,6 @@ const GLubyte* GLES2Implementation::GetStringHelper(GLenum name) {
     // Adds extensions implemented on client side only.
     if (name == GL_EXTENSIONS) {
       str += std::string(str.empty() ? "" : " ") +
-             "GL_CHROMIUM_image "
              "GL_CHROMIUM_map_sub "
              "GL_CHROMIUM_ordering_barrier "
              "GL_CHROMIUM_sync_point "
@@ -7188,94 +7187,6 @@ bool GLES2Implementation::CanDecodeWithHardwareAcceleration(
     const cc::ImageHeaderMetadata* image_metadata) const {
   NOTREACHED();
   return false;
-}
-
-namespace {
-
-bool CreateImageValidInternalFormat(GLenum internalformat,
-                                    const Capabilities& capabilities) {
-  switch (internalformat) {
-    case GL_R16_EXT:
-      return capabilities.texture_norm16;
-    case GL_RGB10_A2_EXT:
-      return capabilities.image_ar30 || capabilities.image_ab30;
-    case GL_RGB_YCBCR_P010_CHROMIUM:
-      return capabilities.image_ycbcr_p010;
-    case GL_RED:
-    case GL_RG_EXT:
-    case GL_RGB:
-    case GL_RGBA:
-    case GL_RGB_YCBCR_422_CHROMIUM:
-    case GL_RGB_YCBCR_420V_CHROMIUM:
-    case GL_RGB_YCRCB_420_CHROMIUM:
-    case GL_BGRA_EXT:
-      return true;
-    default:
-      return false;
-  }
-}
-
-}  // namespace
-
-GLuint GLES2Implementation::CreateImageCHROMIUMHelper(ClientBuffer buffer,
-                                                      GLsizei width,
-                                                      GLsizei height,
-                                                      GLenum internalformat) {
-  if (width <= 0) {
-    SetGLError(GL_INVALID_VALUE, "glCreateImageCHROMIUM", "width <= 0");
-    return 0;
-  }
-
-  if (height <= 0) {
-    SetGLError(GL_INVALID_VALUE, "glCreateImageCHROMIUM", "height <= 0");
-    return 0;
-  }
-
-  if (!CreateImageValidInternalFormat(internalformat, capabilities_)) {
-    SetGLError(GL_INVALID_VALUE, "glCreateImageCHROMIUM", "invalid format");
-    return 0;
-  }
-
-  // CreateImage creates a fence sync so we must flush first to ensure all
-  // previously created fence syncs are flushed first.
-  FlushHelper();
-
-  int32_t image_id = gpu_control_->CreateImage(buffer, width, height);
-  if (image_id < 0) {
-    SetGLError(GL_OUT_OF_MEMORY, "glCreateImageCHROMIUM", "image_id < 0");
-    return 0;
-  }
-  return image_id;
-}
-
-GLuint GLES2Implementation::CreateImageCHROMIUM(ClientBuffer buffer,
-                                                GLsizei width,
-                                                GLsizei height,
-                                                GLenum internalformat) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCreateImageCHROMIUM(" << width
-                     << ", " << height << ", "
-                     << GLES2Util::GetStringImageInternalFormat(internalformat)
-                     << ")");
-  GLuint image_id =
-      CreateImageCHROMIUMHelper(buffer, width, height, internalformat);
-  CheckGLError();
-  return image_id;
-}
-
-void GLES2Implementation::DestroyImageCHROMIUMHelper(GLuint image_id) {
-  // Flush the command stream to make sure all pending commands
-  // that may refer to the image_id are executed on the service side.
-  helper_->CommandBufferHelper::Flush();
-  gpu_control_->DestroyImage(image_id);
-}
-
-void GLES2Implementation::DestroyImageCHROMIUM(GLuint image_id) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glDestroyImageCHROMIUM("
-                     << image_id << ")");
-  DestroyImageCHROMIUMHelper(image_id);
-  CheckGLError();
 }
 
 bool GLES2Implementation::ValidateSize(const char* func, GLsizeiptr size) {

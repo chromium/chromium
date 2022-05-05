@@ -275,27 +275,6 @@ void TestGLES2Interface::PixelStorei(GLenum pname, GLint param) {
   }
 }
 
-GLuint TestGLES2Interface::CreateImageCHROMIUM(ClientBuffer buffer,
-                                               GLsizei width,
-                                               GLsizei height,
-                                               GLenum internalformat) {
-  DCHECK(internalformat == GL_RGB || internalformat == GL_RGBA ||
-         (test_capabilities_.texture_format_bgra8888 &&
-          internalformat == GL_BGRA_EXT));
-  GLuint image_id = NextImageId();
-  images_.insert(image_id);
-  return image_id;
-}
-
-void TestGLES2Interface::DestroyImageCHROMIUM(GLuint image_id) {
-  RetireImageId(image_id);
-  if (!images_.count(image_id)) {
-    ADD_FAILURE() << "destroyImageCHROMIUM called on unknown image "
-                  << image_id;
-  }
-  images_.erase(image_id);
-}
-
 void* TestGLES2Interface::MapBufferCHROMIUM(GLuint target, GLenum access) {
   DCHECK_GT(bound_buffer_.count(target), 0u);
   DCHECK_GT(buffers_.count(bound_buffer_[target]), 0u);

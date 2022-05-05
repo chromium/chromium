@@ -497,69 +497,6 @@ const Capabilities& GLManager::GetCapabilities() const {
   return capabilities_;
 }
 
-int32_t GLManager::CreateImage(ClientBuffer buffer,
-                               size_t width,
-                               size_t height) {
-  gfx::Size size(width, height);
-  scoped_refptr<gl::GLImage> gl_image;
-
-#if BUILDFLAG(IS_MAC)
-  if (use_iosurface_memory_buffers_) {
-    IOSurfaceGpuMemoryBuffer* gpu_memory_buffer =
-        IOSurfaceGpuMemoryBuffer::FromClientBuffer(buffer);
-    unsigned internalformat =
-        gl::BufferFormatToGLInternalFormat(gpu_memory_buffer->GetFormat());
-    const uint32_t io_surface_plane = 0;
-    scoped_refptr<gl::GLImageIOSurface> image(
-        gl::GLImageIOSurface::Create(size, internalformat));
-    if (!image->Initialize(gpu_memory_buffer->iosurface(), io_surface_plane,
-                           gfx::GenericSharedMemoryId(1),
-                           gfx::BufferFormat::BGRA_8888)) {
-      return -1;
-    }
-    gl_image = image;
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
-  if (use_native_pixmap_memory_buffers_) {
-    gfx::GpuMemoryBuffer* gpu_memory_buffer =
-        reinterpret_cast<gfx::GpuMemoryBuffer*>(buffer);
-    DCHECK(gpu_memory_buffer);
-    if (gpu_memory_buffer->GetType() == gfx::NATIVE_PIXMAP) {
-      gfx::GpuMemoryBufferHandle handle = gpu_memory_buffer->CloneHandle();
-      gfx::BufferFormat format = gpu_memory_buffer->GetFormat();
-      gl_image =
-          gpu_memory_buffer_factory_->AsImageFactory()
-              ->CreateImageForGpuMemoryBuffer(
-                  std::move(handle), size, format, gfx::BufferPlane::DEFAULT,
-                  gpu::kDisplayCompositorClientId, gpu::kNullSurfaceHandle);
-      if (!gl_image)
-        return -1;
-    }
-  }
-
-  if (!gl_image) {
-    GpuMemoryBufferImpl* gpu_memory_buffer =
-        GpuMemoryBufferImpl::FromClientBuffer(buffer);
-
-    gfx::BufferFormat format = gpu_memory_buffer->GetFormat();
-    auto image = base::MakeRefCounted<gl::GLImageRefCountedMemory>(size);
-    if (!image->Initialize(gpu_memory_buffer->bytes(), format)) {
-      return -1;
-    }
-    gl_image = image;
-  }
-
-  static int32_t next_id = 1;
-  int32_t new_id = next_id++;
-  image_manager_.AddImage(gl_image.get(), new_id);
-  return new_id;
-}
-
-void GLManager::DestroyImage(int32_t id) {
-  image_manager_.RemoveImage(id);
-}
-
 void GLManager::SignalQuery(uint32_t query, base::OnceClosure callback) {
   NOTREACHED();
 }

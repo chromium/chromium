@@ -92,16 +92,6 @@ class RasterMockGLES2Interface : public gles2::GLES2InterfaceStub {
                void(GLuint texture, GLenum mode));
   MOCK_METHOD1(EndSharedImageAccessDirectCHROMIUM, void(GLuint texture));
 
-  // Image objects.
-  MOCK_METHOD4(CreateImageCHROMIUM,
-               GLuint(ClientBuffer buffer,
-                      GLsizei width,
-                      GLsizei height,
-                      GLenum internalformat));
-  MOCK_METHOD2(BindTexImage2DCHROMIUM, void(GLenum target, GLint imageId));
-  MOCK_METHOD2(ReleaseTexImage2DCHROMIUM, void(GLenum target, GLint imageId));
-  MOCK_METHOD1(DestroyImageCHROMIUM, void(GLuint image_id));
-
   // Texture allocation and copying.
   MOCK_METHOD9(TexImage2D,
                void(GLenum target,

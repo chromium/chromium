@@ -4814,47 +4814,6 @@ TEST_F(GLES2FormatTest, BindUniformLocationCHROMIUMBucket) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
-TEST_F(GLES2FormatTest, BindTexImage2DCHROMIUM) {
-  cmds::BindTexImage2DCHROMIUM& cmd =
-      *GetBufferAs<cmds::BindTexImage2DCHROMIUM>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLenum>(11), static_cast<GLint>(12));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::BindTexImage2DCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLenum>(11), cmd.target);
-  EXPECT_EQ(static_cast<GLint>(12), cmd.imageId);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, BindTexImage2DWithInternalformatCHROMIUM) {
-  cmds::BindTexImage2DWithInternalformatCHROMIUM& cmd =
-      *GetBufferAs<cmds::BindTexImage2DWithInternalformatCHROMIUM>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLenum>(11),
-                           static_cast<GLenum>(12), static_cast<GLint>(13));
-  EXPECT_EQ(static_cast<uint32_t>(
-                cmds::BindTexImage2DWithInternalformatCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLenum>(11), cmd.target);
-  EXPECT_EQ(static_cast<GLenum>(12), cmd.internalformat);
-  EXPECT_EQ(static_cast<GLint>(13), cmd.imageId);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, ReleaseTexImage2DCHROMIUM) {
-  cmds::ReleaseTexImage2DCHROMIUM& cmd =
-      *GetBufferAs<cmds::ReleaseTexImage2DCHROMIUM>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLenum>(11), static_cast<GLint>(12));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::ReleaseTexImage2DCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLenum>(11), cmd.target);
-  EXPECT_EQ(static_cast<GLint>(12), cmd.imageId);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
 TEST_F(GLES2FormatTest, TraceBeginCHROMIUM) {
   cmds::TraceBeginCHROMIUM& cmd = *GetBufferAs<cmds::TraceBeginCHROMIUM>();
   void* next_cmd =

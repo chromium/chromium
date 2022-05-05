@@ -73,12 +73,6 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
 
   void PixelStorei(GLenum pname, GLint param) override;
 
-  GLuint CreateImageCHROMIUM(ClientBuffer buffer,
-                             GLsizei width,
-                             GLsizei height,
-                             GLenum internalformat) override;
-  void DestroyImageCHROMIUM(GLuint image_id) override;
-
   void* MapBufferCHROMIUM(GLuint target, GLenum access) override;
   GLboolean UnmapBufferCHROMIUM(GLuint target) override;
   void BufferData(GLenum target,
@@ -242,7 +236,6 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   unsigned next_texture_id_ = 1;
   unsigned next_renderbuffer_id_ = 1;
   std::unordered_map<unsigned, std::unique_ptr<Buffer>> buffers_;
-  std::unordered_set<unsigned> images_;
   std::unordered_set<unsigned> textures_;
   std::unordered_set<unsigned> renderbuffer_set_;
 
