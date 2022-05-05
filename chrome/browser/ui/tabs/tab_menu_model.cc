@@ -125,7 +125,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                           IDS_TAB_CXMENU_UNFOLLOW_SITE);
     }
   }
-  if (send_tab_to_self::ShouldOfferFeature(
+  if (send_tab_to_self::ShouldDisplayEntryPoint(
           tab_strip->GetWebContentsAt(index))) {
     AddSeparator(ui::NORMAL_SEPARATOR);
 #if BUILDFLAG(IS_MAC)

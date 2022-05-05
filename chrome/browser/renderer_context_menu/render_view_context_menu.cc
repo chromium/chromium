@@ -1710,7 +1710,7 @@ void RenderViewContextMenu::AppendPageItems() {
 
   // Send-Tab-To-Self (user's other devices), page level.
   if (GetBrowser() &&
-      send_tab_to_self::ShouldOfferFeature(embedder_web_contents_)) {
+      send_tab_to_self::ShouldDisplayEntryPoint(embedder_web_contents_)) {
     AppendSendTabToSelfItem(/*add_separator=*/!has_sharing_menu_items);
     has_sharing_menu_items = true;
   }

@@ -267,7 +267,7 @@ void SharingHubModel::PopulateThirdPartyActions() {
 
 bool SharingHubModel::DoShowSendTabToSelfForWebContents(
     content::WebContents* web_contents) {
-  return send_tab_to_self::ShouldOfferFeature(web_contents);
+  return send_tab_to_self::ShouldDisplayEntryPoint(web_contents);
 }
 
 void SharingHubModel::OnShareTargetsUpdated(

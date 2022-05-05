@@ -518,7 +518,7 @@ CommandSource::CommandResults TabCommandSource::GetCommands(
     results.push_back(std::move(item));
   }
 
-  if (send_tab_to_self::ShouldOfferFeature(
+  if (send_tab_to_self::ShouldDisplayEntryPoint(
           tab_strip_model->GetActiveWebContents())) {
     if (auto item = ItemForTitle(u"Send tab to self...", finder, &ranges)) {
       item->command = base::BindOnce(&chrome::SendTabToSelfFromPageAction,

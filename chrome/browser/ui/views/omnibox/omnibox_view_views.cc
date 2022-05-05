@@ -1904,7 +1904,7 @@ void OmniboxViewViews::PerformDrop(const ui::DropTargetEvent& event,
 void OmniboxViewViews::MaybeAddSendTabToSelfItem(
     ui::SimpleMenuModel* menu_contents) {
   // Only add this menu entry if SendTabToSelf feature is enabled.
-  if (!send_tab_to_self::ShouldOfferFeature(
+  if (!send_tab_to_self::ShouldDisplayEntryPoint(
           location_bar_view_->GetWebContents())) {
     return;
   }

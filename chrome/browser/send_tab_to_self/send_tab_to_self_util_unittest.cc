@@ -8,12 +8,16 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/test_send_tab_to_self_model.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -33,6 +37,9 @@ class FakeSendTabToSelfModel : public TestSendTabToSelfModel {
 
   void SetIsReady(bool is_ready) { is_ready_ = is_ready; }
   void SetHasValidTargetDevice(bool has_valid_target_device) {
+    if (has_valid_target_device) {
+      DCHECK(is_ready_) << "Target devices are only known if the model's ready";
+    }
     has_valid_target_device_ = has_valid_target_device;
   }
 
@@ -57,10 +64,11 @@ class FakeSendTabToSelfSyncService : public SendTabToSelfSyncService {
 
 std::unique_ptr<KeyedService> BuildFakeSendTabToSelfSyncService(
     content::BrowserContext*) {
-  auto service = std::make_unique<FakeSendTabToSelfSyncService>();
-  service->GetSendTabToSelfModel()->SetIsReady(true);
-  service->GetSendTabToSelfModel()->SetHasValidTargetDevice(true);
-  return service;
+  return std::make_unique<FakeSendTabToSelfSyncService>();
+}
+
+std::unique_ptr<KeyedService> BuildTestSyncService(content::BrowserContext*) {
+  return std::make_unique<syncer::TestSyncService>();
 }
 
 class SendTabToSelfUtilTest : public BrowserWithTestWindowTest {
@@ -73,7 +81,9 @@ class SendTabToSelfUtilTest : public BrowserWithTestWindowTest {
 
   TestingProfile::TestingFactories GetTestingFactories() override {
     return {{SendTabToSelfSyncServiceFactory::GetInstance(),
-             base::BindRepeating(&BuildFakeSendTabToSelfSyncService)}};
+             base::BindRepeating(&BuildFakeSendTabToSelfSyncService)},
+            {SyncServiceFactory::GetInstance(),
+             base::BindRepeating(&BuildTestSyncService)}};
   }
 
   content::WebContents* web_contents() {
@@ -84,48 +94,100 @@ class SendTabToSelfUtilTest : public BrowserWithTestWindowTest {
     return static_cast<FakeSendTabToSelfSyncService*>(
         SendTabToSelfSyncServiceFactory::GetForProfile(profile()));
   }
+
+  void SignIn() {
+    CoreAccountInfo account;
+    account.gaia = "gaia_id";
+    account.email = "email@test.com";
+    account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+    static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(profile()))
+        ->SetAccountInfo(account);
+  }
 };
 
-TEST_F(SendTabToSelfUtilTest, ShouldNotOfferFeatureIfModelNotReady) {
-  service()->GetSendTabToSelfModel()->SetIsReady(false);
-  service()->GetSendTabToSelfModel()->SetHasValidTargetDevice(true);
+TEST_F(SendTabToSelfUtilTest,
+       ShouldHideEntryPointIfSignedOutAndPromoFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kSendTabToSelfSigninPromo);
 
   NavigateAndCommitActiveTab(GURL(kHttpsUrl));
-  EXPECT_FALSE(ShouldOfferFeature(web_contents()));
+  EXPECT_FALSE(GetEntryPointDisplayReason(web_contents()));
 }
 
-TEST_F(SendTabToSelfUtilTest, ShouldNotOfferFeatureIfHasNoValidTargetDevice) {
+TEST_F(SendTabToSelfUtilTest,
+       ShouldShowPromoIfSignedOutAndPromoFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSendTabToSelfSigninPromo);
+
+  NavigateAndCommitActiveTab(GURL(kHttpsUrl));
+  EXPECT_EQ(EntryPointDisplayReason::kOfferSignIn,
+            GetEntryPointDisplayReason(web_contents()));
+}
+
+TEST_F(SendTabToSelfUtilTest, ShouldHideEntryPointIfModelNotReady) {
+  SignIn();
+  service()->GetSendTabToSelfModel()->SetIsReady(false);
+  service()->GetSendTabToSelfModel()->SetHasValidTargetDevice(false);
+
+  NavigateAndCommitActiveTab(GURL(kHttpsUrl));
+  EXPECT_FALSE(GetEntryPointDisplayReason(web_contents()));
+}
+
+TEST_F(SendTabToSelfUtilTest,
+       ShouldHideEntryPointIfHasNoValidTargetDeviceAndPromoFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kSendTabToSelfSigninPromo);
+
+  SignIn();
   service()->GetSendTabToSelfModel()->SetIsReady(true);
   service()->GetSendTabToSelfModel()->SetHasValidTargetDevice(false);
 
   NavigateAndCommitActiveTab(GURL(kHttpsUrl));
-  EXPECT_FALSE(ShouldOfferFeature(web_contents()));
+  EXPECT_FALSE(GetEntryPointDisplayReason(web_contents()));
+}
+
+TEST_F(SendTabToSelfUtilTest,
+       ShouldShowPromoIfHasNoValidTargetDeviceAndPromoFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSendTabToSelfSigninPromo);
+
+  SignIn();
+  service()->GetSendTabToSelfModel()->SetIsReady(true);
+  service()->GetSendTabToSelfModel()->SetHasValidTargetDevice(false);
+
+  NavigateAndCommitActiveTab(GURL(kHttpsUrl));
+  EXPECT_EQ(EntryPointDisplayReason::kInformNoTargetDevice,
+            GetEntryPointDisplayReason(web_contents()));
 }
 
 TEST_F(SendTabToSelfUtilTest, ShouldOnlyOfferFeatureIfHttpOrHttps) {
+  SignIn();
   service()->GetSendTabToSelfModel()->SetIsReady(true);
   service()->GetSendTabToSelfModel()->SetHasValidTargetDevice(true);
 
   NavigateAndCommitActiveTab(GURL(kHttpsUrl));
-  EXPECT_TRUE(ShouldOfferFeature(web_contents()));
+  EXPECT_EQ(EntryPointDisplayReason::kOfferFeature,
+            GetEntryPointDisplayReason(web_contents()));
 
   NavigateAndCommitActiveTab(GURL(kHttpUrl));
-  EXPECT_TRUE(ShouldOfferFeature(web_contents()));
+  EXPECT_EQ(EntryPointDisplayReason::kOfferFeature,
+            GetEntryPointDisplayReason(web_contents()));
 
   NavigateAndCommitActiveTab(GURL("192.168.0.0"));
-  EXPECT_FALSE(ShouldOfferFeature(web_contents()));
+  EXPECT_FALSE(GetEntryPointDisplayReason(web_contents()));
 
   NavigateAndCommitActiveTab(GURL("chrome-untrusted://url"));
-  EXPECT_FALSE(ShouldOfferFeature(web_contents()));
+  EXPECT_FALSE(GetEntryPointDisplayReason(web_contents()));
 
   NavigateAndCommitActiveTab(GURL("chrome://flags"));
-  EXPECT_FALSE(ShouldOfferFeature(web_contents()));
+  EXPECT_FALSE(GetEntryPointDisplayReason(web_contents()));
 
   NavigateAndCommitActiveTab(GURL("tel:07399999999"));
-  EXPECT_FALSE(ShouldOfferFeature(web_contents()));
+  EXPECT_FALSE(GetEntryPointDisplayReason(web_contents()));
 }
 
-TEST_F(SendTabToSelfUtilTest, ShouldNotOfferFeatureInIncognitoMode) {
+TEST_F(SendTabToSelfUtilTest, ShouldHideEntryPointInIncognitoMode) {
   // TODO(crbug.com/1313539): This isn't a great way to fake an off-the-record
   // profile, but BrowserWithTestWindowTest lacks support. More concretely, this
   // harness relies on TestingProfileManager, and the only fitting method there
@@ -140,10 +202,13 @@ TEST_F(SendTabToSelfUtilTest, ShouldNotOfferFeatureInIncognitoMode) {
   // Note: if changing this, audit profile-finding logic in the feature.
   // For example, NotificationManager.java in the Android code assumes
   // incognito is not supported.
-  EXPECT_FALSE(ShouldOfferFeature(web_contents()));
+  EXPECT_FALSE(GetEntryPointDisplayReason(web_contents()));
 }
 
-TEST_F(SendTabToSelfUtilTest, ShouldNotOfferFeatureInOmniboxWhileNavigating) {
+TEST_F(SendTabToSelfUtilTest, ShouldHideEntryPointInOmniboxWhileNavigating) {
+  SignIn();
+  service()->GetSendTabToSelfModel()->SetIsReady(true);
+  service()->GetSendTabToSelfModel()->SetHasValidTargetDevice(true);
   NavigateAndCommitActiveTab(GURL(kHttpsUrl));
 
   ASSERT_FALSE(web_contents()->IsWaitingForResponse());
