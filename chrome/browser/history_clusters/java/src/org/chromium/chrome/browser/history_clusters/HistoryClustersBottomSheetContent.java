@@ -28,7 +28,7 @@ public class HistoryClustersBottomSheetContent implements BottomSheetContent {
     @Nullable
     @Override
     public View getToolbarView() {
-        return mToolbarView;
+        return null;
     }
 
     @Override
@@ -85,9 +85,5 @@ public class HistoryClustersBottomSheetContent implements BottomSheetContent {
 
     void setContentView(View contentView) {
         mContentView = contentView;
-    }
-
-    void setToolbarView(View toolbarView) {
-        mToolbarView = toolbarView;
     }
 }

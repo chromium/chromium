@@ -149,15 +149,15 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
                 recyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setItemAnimator(null);
         recyclerView.setAdapter(mAdapter);
+        contentView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        View bottomSheetToolbar =
-                layoutInflater.inflate(R.layout.history_clusters_bottom_sheet_toolbar, null);
+        View bottomSheetToolbar = contentView.findViewById(R.id.bottom_sheet_toolbar);
 
         PropertyModelChangeProcessor.create(mBottomSheetToolbarModel, bottomSheetToolbar,
                 HistoryClustersViewBinder::bindBottomSheetToolbar);
 
         mBottomSheetContent.setContentView(contentView);
-        mBottomSheetContent.setToolbarView(bottomSheetToolbar);
         mBottomSheetInflated = true;
     }
 
