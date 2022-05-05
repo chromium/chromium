@@ -9,12 +9,15 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/path_service.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/encryption_scheme.h"
@@ -22,6 +25,7 @@
 #include "media/base/video_codecs.h"
 #include "media/cdm/cdm_capability.h"
 #include "media/cdm/win/media_foundation_cdm_module.h"
+#include "media/cdm/win/media_foundation_cdm_util.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/mojom/key_system_support.mojom.h"
@@ -226,11 +230,59 @@ base::flat_set<EncryptionScheme> GetSupportedEncryptionSchemes(
   return supported_schemes;
 }
 
+HRESULT CreateDummyMediaFoundationCdm(
+    ComPtr<IMFContentDecryptionModuleFactory> cdm_factory,
+    const std::string& key_system) {
+  // Set `use_hw_secure_codecs` to indicate this for hardware secure mode,
+  // which typically requires identifier and persistent storage.
+  CdmConfig cdm_config = {key_system, /*allow_distinctive_identifier=*/true,
+                          /*allow_persistent_state=*/true,
+                          /*use_hw_secure_codecs=*/true};
+
+  // Use a random CDM origin.
+  auto cdm_origin_id = base::UnguessableToken::Create();
+
+  // Use a dummy CDM store path root under the temp dir here. Since this code
+  // runs in the LPAC process, the temp dir will be something like:
+  //   C:\Users\<user>\AppData\Local\Packages\cr.sb.cdm<...>\AC\Temp
+  // This folder is specifically for the CDM app container, so there's no need
+  // to set ACL explicitly.
+  base::FilePath temp_dir;
+  base::PathService::Get(base::DIR_TEMP, &temp_dir);
+  const char kDummyCdmStore[] = "DummyMediaFoundationCdmStore";
+  auto dummy_cdm_store_path_root = temp_dir.AppendASCII(kDummyCdmStore);
+
+  // Create the dummy CDM.
+  Microsoft::WRL::ComPtr<IMFContentDecryptionModule> mf_cdm;
+  auto hr = CreateMediaFoundationCdm(cdm_factory, cdm_config, cdm_origin_id,
+                                     /*cdm_client_token=*/absl::nullopt,
+                                     dummy_cdm_store_path_root, mf_cdm);
+  DLOG_IF(ERROR, FAILED(hr)) << __func__ << ": Failed for " << key_system;
+  mf_cdm.Reset();
+
+  // Delete the dummy CDM store folder so we don't leave files behind.
+  // This may fail since the CDM and related objects may still have the file
+  // open. But it will be cleaned next time so files will not accumulate.
+  // TODO(crbug.com/1309741): Consider update GetDeletePathRecursivelyCallback()
+  // to support retry and use it here.
+  std::ignore = base::DeletePathRecursively(dummy_cdm_store_path_root);
+
+  return hr;
+}
+
 absl::optional<CdmCapability> GetCdmCapability(
     ComPtr<IMFContentDecryptionModuleFactory> cdm_factory,
     const std::string& key_system,
     bool is_hw_secure) {
   DVLOG(2) << __func__ << ", is_hw_secure=" << is_hw_secure;
+
+  // For hardware secure decryption, even when IsTypeSupportedInternal() says
+  // it's supported, CDM creation could fail immediately. Therefore, create a
+  // dummy CDM instance to detect this case.
+  if (is_hw_secure &&
+      FAILED(CreateDummyMediaFoundationCdm(cdm_factory, key_system))) {
+    return absl::nullopt;
+  }
 
   // TODO(hmchen): make this generic for more key systems.
   const std::string robustness =
