@@ -41,6 +41,20 @@
       "use_remoteexec": true
     }
   },
+  "Android arm64 Builder All Targets (dbg)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.webview",
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
   "Android x64 Builder (dbg)": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",

@@ -600,7 +600,8 @@
           'junit_tests': 'chromium_junit_tests',
         },
       },
-      'Android arm64 Builder (dbg)': {
+      'Android arm64 Builder (dbg)': {},
+      'Android arm64 Builder All Targets (dbg)': {
         'additional_compile_targets': [
           'all',
         ],

@@ -457,6 +457,14 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-arm64-all-targets-dbg",
+    goma_jobs = goma.jobs.J300,
+    mirrors = [
+        "ci/Android arm64 Builder All Targets (dbg)",
+    ],
+)
+
+try_.builder(
     name = "android_blink_rel",
 )
 

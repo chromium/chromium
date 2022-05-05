@@ -262,6 +262,50 @@ ci.builder(
     tree_closing = True,
 )
 
+# We want to confirm that we can compile everything.
+# Android however has some non standard buildchains
+# which cause gn analyze to not filter out our compile targets
+# when running a try bot.
+# This means that our trybots would result in compile times of
+# 5+ hours. So instead we have this bot which will compile all on CI.
+# It should match "Android arm64 Builder (dbg)"
+# History: crbug.com/1246468
+ci.builder(
+    name = "Android arm64 Builder All Targets (dbg)",
+    branch_selector = branches.STANDARD_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "download_vr_test_apks",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_mb",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "builder|arm",
+        short_name = "64",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    execution_timeout = 7 * time.hour,
+    # We will make this tree closing once we have confirmed that this builder works correctly
+    # crbug.com/1246468
+    tree_closing = False,
+)
+
 ci.builder(
     name = "Android x64 Builder (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,

@@ -118,6 +118,20 @@
       "use_goma": true
     }
   },
+  "android-arm64-all-targets-dbg": {
+    "gn_args": {
+      "disable_android_lint": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": true,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_errorprone_java_compiler": false,
+      "use_goma": true
+    }
+  },
   "android-asan": {
     "gn_args": {
       "dcheck_always_on": true,

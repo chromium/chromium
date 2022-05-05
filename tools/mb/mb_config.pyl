@@ -81,6 +81,7 @@
       'Android ASAN (dbg)': 'android_clang_asan_debug_bot_reclient',
       'Android arm Builder (dbg)': 'android_webview_google_debug_static_bot_reclient',
       'Android arm64 Builder (dbg)': 'android_webview_google_debug_static_bot_arm64_reclient',
+      'Android arm64 Builder All Targets (dbg)': 'android_webview_google_debug_static_bot_arm64_reclient',
       # Trigger testers on Android Q+
       'Android x64 Builder (dbg)': 'android_debug_static_bot_x64_reclient_webview_trichrome_webview_shell',
       'Android x86 Builder (dbg)': 'android_debug_static_bot_x86_reclient',
@@ -889,6 +890,7 @@
       'android-12-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell',
       'android-12-x64-fyi-rel': 'android_release_bot_minimal_symbols_x64_fastbuild_webview_trichrome_reclient',
       'android-12-x64-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome',
+      'android-arm64-all-targets-dbg': 'android_debug_trybot_compile_only_arm64_fastbuild',
       'android-asan': 'android_clang_asan_release_trybot',
       'android-bfcache-rel': 'android_release_trybot',
       'android-binary-size': 'android_binary_size',
