@@ -118,8 +118,7 @@ bool IsColorSpaceSupportedByPCVR(const avifImage* image) {
           ((image->depth == 8 || image->depth == 10) &&
            (image->yuvFormat == AVIF_PIXEL_FORMAT_YUV420 ||
             image->yuvFormat == AVIF_PIXEL_FORMAT_YUV422 ||
-            image->yuvFormat == AVIF_PIXEL_FORMAT_YUV444) &&
-           image->alphaRange == AVIF_RANGE_FULL));
+            image->yuvFormat == AVIF_PIXEL_FORMAT_YUV444)));
 }
 
 media::VideoPixelFormat AvifToVideoPixelFormat(avifPixelFormat fmt,
@@ -246,15 +245,9 @@ void YUVAToRGBA(const avifImage* image,
 
       transform->Transform(&pixel, 1);
 
-      int alpha = max_channel_i;
       // TODO(wtc): Use templates or other ways to avoid checking whether the
-      // image supports alpha and whether alpha is limited range in the inner
-      // loop.
-      if (a_ptr) {
-        alpha = a_ptr[i];
-        if (image->alphaRange == AVIF_RANGE_LIMITED)
-          alpha = avifLimitedToFullY(image->depth, alpha);
-      }
+      // image supports alpha in the inner loop.
+      const int alpha = a_ptr ? a_ptr[i] : max_channel_i;
 
       WritePixel(max_channel, pixel, alpha / max_channel, premultiply_alpha,
                  rgba_dest);
