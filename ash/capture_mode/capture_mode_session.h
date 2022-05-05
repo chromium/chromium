@@ -104,6 +104,15 @@ class ASH_EXPORT CaptureModeSession
   // nullptr if no window is available for selection.
   aura::Window* GetSelectedWindow() const;
 
+  // Called when a user toggles the capture source or capture type to announce
+  // an accessibility alert. If `trigger_now` is true, it will announce
+  // immediately; otherwise, it will trigger another alert asynchronously with
+  // the alert.
+  void A11yAlertCaptureSource(bool trigger_now);
+
+  // Called when switching a capture type from another capture type.
+  void A11yAlertCaptureType();
+
   // Called when either the capture source or type changes.
   void OnCaptureSourceChanged(CaptureModeSource new_source);
   void OnCaptureTypeChanged(CaptureModeType new_type);

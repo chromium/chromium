@@ -58,8 +58,10 @@ void CaptureWindowObserver::SetSelectedWindow(aura::Window* window) {
 
   // Stop observing the current selected window if there is one.
   StopObserving();
-  if (window)
+  if (window) {
     StartObserving(window);
+    capture_mode_session_->A11yAlertCaptureSource(/*trigger_now=*/true);
+  }
   RepaintCaptureRegion();
 
   auto* controller = CaptureModeController::Get();

@@ -153,13 +153,16 @@ void TriggerAccessibilityAlert(int message_id) {
   TriggerAccessibilityAlert(l10n_util::GetStringUTF8(message_id));
 }
 
-void TriggerAccessibilityAlertSoon(int message_id) {
+void TriggerAccessibilityAlertSoon(const std::string& message) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &AccessibilityControllerImpl::TriggerAccessibilityAlertWithMessage,
-          Shell::Get()->accessibility_controller()->GetWeakPtr(),
-          l10n_util::GetStringUTF8(message_id)));
+          Shell::Get()->accessibility_controller()->GetWeakPtr(), message));
+}
+
+void TriggerAccessibilityAlertSoon(int message_id) {
+  TriggerAccessibilityAlertSoon(l10n_util::GetStringUTF8(message_id));
 }
 
 CameraPreviewSnapPosition GetCameraNextHorizontalSnapPosition(

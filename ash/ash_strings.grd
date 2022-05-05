@@ -4094,20 +4094,29 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_CLOSE" desc="Alert spoken by screen readers when exiting capture mode.">
         Exit capture mode
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_FULLSCREEN_SCREENSHOT" desc="Alert spoken by screen readers on capturing full screen screenshot.">
+        Press enter to capture full screen screenshot
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_FULLSCREEN_RECORD" desc="Alert spoken by screen readers on recording full screen.">
+        Press enter to record full screen
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_REGION_SCREENSHOT" desc="Alert spoken by screen readers on capturing partial screenshot.">
+        Press enter to capture partial screenshot
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_REGION_RECORD" desc="Alert spoken by screen readers on recording partial screen.">
+        Press enter to record partial screen
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_WINDOW_SCREENSHOT" desc="Alert spoken by screen readers on capturing window screenshot.">
+        Press enter to capture window screenshot
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_WINDOW_RECORD" desc="Alert spoken by screen readers on recording window screen.">
+        Press enter to record window
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_TYPE_IMAGE" desc="Alert spoken by screen readers on selecting screenshot mode.">
         Screenshot mode selected
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_TYPE_VIDEO" desc="Alert spoken by screen readers on selecting screen recording mode.">
         Screen recording mode selected
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_SOURCE_FULLSCREEN" desc="Alert spoken by screen readers on selecting full screen as source.">
-        Selection area set to full screen
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_SOURCE_REGION" desc="Alert spoken by screen readers on selecting partial screen as source.">
-        Partial screenshot selected
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_SOURCE_WINDOW" desc="Alert spoken by screen readers on selecting window as source.">
-        Selection area set to window
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_SCREENSHOT_CAPTURED" desc="Alert spoken by screen readers when screenshot captured.">
         Screenshot captured

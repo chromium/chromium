@@ -63,6 +63,7 @@ void TriggerAccessibilityAlert(int message_id);
 // asynchronously as soon as possible. This is used to make sure consecutive
 // alerts do not override one another, so all of them can be announced by
 // ChromeVox.
+void TriggerAccessibilityAlertSoon(const std::string& message);
 void TriggerAccessibilityAlertSoon(int message_id);
 
 // Returns the next horizontal or vertical snap position based on the current

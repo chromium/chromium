@@ -327,24 +327,15 @@ void ClipRectToFit(gfx::Rect* out_bounds, const gfx::Rect& rect) {
                           std::min(rect.bottom(), out_bounds->bottom()));
 }
 
-// Returns the appropriate |message_id| for a chromevox alert.
-// |for_toggle_alert| helps differentiate between the session start and when a
-// user toggles the source.
-int GetMessageIdForCaptureSource(CaptureModeSource source,
-                                 bool for_toggle_alert) {
+// Returns the `message_id` for the chromevox alert when capture session starts.
+int GetMessageIdForInitialCaptureSource(CaptureModeSource source) {
   switch (source) {
     case CaptureModeSource::kFullscreen:
-      return for_toggle_alert
-                 ? IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_SOURCE_FULLSCREEN
-                 : IDS_ASH_SCREEN_CAPTURE_SOURCE_FULLSCREEN;
+      return IDS_ASH_SCREEN_CAPTURE_SOURCE_FULLSCREEN;
     case CaptureModeSource::kRegion:
-      return for_toggle_alert
-                 ? IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_SOURCE_REGION
-                 : IDS_ASH_SCREEN_CAPTURE_SOURCE_PARTIAL;
+      return IDS_ASH_SCREEN_CAPTURE_SOURCE_PARTIAL;
     default:
-      return for_toggle_alert
-                 ? IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_SOURCE_WINDOW
-                 : IDS_ASH_SCREEN_CAPTURE_SOURCE_WINDOW;
+      return IDS_ASH_SCREEN_CAPTURE_SOURCE_WINDOW;
   }
 }
 
@@ -622,8 +613,8 @@ void CaptureModeSession::Initialize() {
   // `capture_mode_bar_widget_`.
   capture_mode_util::TriggerAccessibilityAlert(l10n_util::GetStringFUTF8(
       IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN,
-      l10n_util::GetStringUTF16(GetMessageIdForCaptureSource(
-          controller_->source(), /*for_toggle_alert=*/false)),
+      l10n_util::GetStringUTF16(
+          GetMessageIdForInitialCaptureSource(controller_->source())),
       l10n_util::GetStringUTF16(
           controller_->type() == CaptureModeType::kImage
               ? IDS_ASH_SCREEN_CAPTURE_TYPE_SCREENSHOT
@@ -749,6 +740,51 @@ aura::Window* CaptureModeSession::GetSelectedWindow() const {
                                   : nullptr;
 }
 
+void CaptureModeSession::A11yAlertCaptureSource(bool trigger_now) {
+  auto* controller = CaptureModeController::Get();
+  const bool is_capturing_image = controller->type() == CaptureModeType::kImage;
+  std::string message;
+
+  switch (controller->source()) {
+    case CaptureModeSource::kFullscreen:
+      message = l10n_util::GetStringUTF8(
+          is_capturing_image
+              ? IDS_ASH_SCREEN_CAPTURE_ALERT_FULLSCREEN_SCREENSHOT
+              : IDS_ASH_SCREEN_CAPTURE_ALERT_FULLSCREEN_RECORD);
+      break;
+    case CaptureModeSource::kRegion:
+      if (!controller->user_capture_region().IsEmpty()) {
+        message = l10n_util::GetStringUTF8(
+            is_capturing_image ? IDS_ASH_SCREEN_CAPTURE_ALERT_REGION_SCREENSHOT
+                               : IDS_ASH_SCREEN_CAPTURE_ALERT_REGION_RECORD);
+      }
+      break;
+    case CaptureModeSource::kWindow:
+      // Selected window could be non-empty when switching to capture type.
+      if (GetSelectedWindow()) {
+        message = l10n_util::GetStringUTF8(
+            is_capturing_image ? IDS_ASH_SCREEN_CAPTURE_ALERT_WINDOW_SCREENSHOT
+                               : IDS_ASH_SCREEN_CAPTURE_ALERT_WINDOW_RECORD);
+      }
+      break;
+  }
+
+  if (!message.empty()) {
+    if (trigger_now)
+      capture_mode_util::TriggerAccessibilityAlert(message);
+    else
+      capture_mode_util::TriggerAccessibilityAlertSoon(message);
+  }
+}
+
+void CaptureModeSession::A11yAlertCaptureType() {
+  capture_mode_util::TriggerAccessibilityAlert(
+      CaptureModeController::Get()->type() == CaptureModeType::kImage
+          ? IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_TYPE_IMAGE
+          : IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_TYPE_VIDEO);
+  A11yAlertCaptureSource(/*trigger_now=*/false);
+}
+
 void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
   capture_source_changed_ = true;
 
@@ -770,8 +806,7 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
   if (focus_cycler_->RegionGroupFocused())
     focus_cycler_->ClearFocus();
 
-  capture_mode_util::TriggerAccessibilityAlert(
-      GetMessageIdForCaptureSource(new_source, /*for_toggle_alert=*/true));
+  A11yAlertCaptureSource(/*trigger_now=*/true);
 
   MaybeReparentCameraPreviewWidget();
 }
@@ -782,10 +817,7 @@ void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
-  capture_mode_util::TriggerAccessibilityAlert(
-      new_type == CaptureModeType::kImage
-          ? IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_TYPE_IMAGE
-          : IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_TYPE_VIDEO);
+  A11yAlertCaptureType();
 }
 
 void CaptureModeSession::OnWaitingForDlpConfirmationStarted() {
@@ -2119,6 +2151,8 @@ void CaptureModeSession::OnLocatedEventReleased(
   // After first release event, we advance to the next phase.
   is_selecting_region_ = false;
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kRegionPhaseChange);
+
+  A11yAlertCaptureSource(/*trigger_now=*/true);
 }
 
 void CaptureModeSession::UpdateCaptureRegion(
