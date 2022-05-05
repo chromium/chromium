@@ -2946,10 +2946,10 @@ Try tapping the mic to ask me anything.
         Shut down
       </message>
       <!-- Run calibration page -->
-      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_PAGE_TITLE" translateable="false" desc="Title for the page shown when running component calibration steps.">
-        Calibrating device components
+      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_PAGE_TITLE" desc="Title for the page shown when running component calibration steps.">
+        Calibrating components...
       </message>
-      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPLETE_TITLE" translateable="false" desc="Title for the page shown when component calibration steps are complete.">
+      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPLETE_TITLE" desc="Title for the page shown when component calibration steps are complete.">
         Calibration complete
       </message>
       <!-- OS update page -->
