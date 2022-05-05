@@ -12,7 +12,7 @@
 // #import {OobeTypes} from './components/oobe_types.m.js';
 
 
-// #import {RESET_AVAILABLE_SCREEN_GROUP, SCREEN_APP_LAUNCH_SPLASH, SCREEN_GAIA_SIGNIN, DISPLAY_TYPE, ACCELERATOR_CANCEL, ACCELERATOR_VERSION, ACCELERATOR_RESET, SCREEN_OOBE_RESET, SCREEN_DEVICE_DISABLED, USER_ACTION_ROLLBACK_TOGGLED, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.m.js';
+// #import {RESET_AVAILABLE_SCREEN_GROUP, DISPLAY_TYPE, ACCELERATOR_CANCEL, ACCELERATOR_VERSION, ACCELERATOR_RESET, SCREEN_OOBE_RESET, SCREEN_DEVICE_DISABLED, USER_ACTION_ROLLBACK_TOGGLED, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.m.js';
 // #import {MultiTapDetector} from './multi_tap_detector.m.js';
 // #import {keyboard} from './keyboard_utils.m.js'
 // #import {DisplayManagerScreenAttributes} from './components/display_manager_types.m.js'
@@ -384,18 +384,6 @@ cr.define('cr.ui.login', function() {
     showScreen(screen) {
       // Do not allow any other screen to clobber the device disabled screen.
       if (this.currentScreen.id == SCREEN_DEVICE_DISABLED) {
-        return;
-      }
-
-      // Prevent initial GAIA signin load from interrupting the kiosk splash
-      // screen.
-      // TODO: remove this special case when a better fix is found for the race
-      // condition. This if statement was introduced to fix http://b/113786350.
-      if (this.currentScreen.id == SCREEN_APP_LAUNCH_SPLASH &&
-          screen.id == SCREEN_GAIA_SIGNIN) {
-        console.info(
-            this.currentScreen.id +
-            ' screen showing. Ignoring switch to Gaia screen.');
         return;
       }
 

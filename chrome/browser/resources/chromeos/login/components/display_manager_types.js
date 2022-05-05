@@ -74,7 +74,6 @@ DisplayManagerScreenAttributes.resetAllowed;
 /* #export */ const SCREEN_GAIA_SIGNIN = 'gaia-signin';
 /* #export */ const SCREEN_ERROR_MESSAGE = 'error-message';
 /* #export */ const SCREEN_PASSWORD_CHANGED = 'gaia-password-changed';
-/* #export */ const SCREEN_APP_LAUNCH_SPLASH = 'app-launch-splash';
 /* #export */ const SCREEN_CONFIRM_PASSWORD = 'saml-confirm-password';
 /* #export */ const SCREEN_FATAL_ERROR = 'fatal-error';
 /* #export */ const SCREEN_KIOSK_ENABLE = 'kiosk-enable';
