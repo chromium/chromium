@@ -1,0 +1,27 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/cargo_crate.gni")
+
+# TODO(crbug/1297719): work out why this isn't automatically populated by
+# crates.py
+
+cargo_crate("autocxx_gen") {
+  crate_type = "bin"
+  crate_root = "crate/src/main.rs"
+  sources = [ "crate/src/main.rs" ]
+  edition = "2018"
+  cargo_pkg_version = "0.22.0"
+  cargo_pkg_authors = "Adrian Taylor <adetaylor@chromium.org>"
+  deps = [
+    "//third_party/rust/autocxx_engine/v0_22:lib",
+    "//third_party/rust/clap/v3:lib",
+    "//third_party/rust/env_logger/v0_9:lib",
+    "//third_party/rust/indexmap/v1:lib",
+    "//third_party/rust/miette/v4:lib",
+    "//third_party/rust/pathdiff/v0_2:lib",
+    "//third_party/rust/proc_macro2/v1:lib",
+    "//third_party/rust/quote/v1:lib",
+  ]
+}

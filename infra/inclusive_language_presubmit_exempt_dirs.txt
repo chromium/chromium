@@ -604,6 +604,7 @@ third_party/rust/aho_corasick/v0_7/crate/src 1 1
 third_party/rust/ansi_term/v0_11/crate 1 1
 third_party/rust/aquamarine/v0_1/crate/doc/js 1 1
 third_party/rust/atty/v0_2/crate 3 2
+third_party/rust/autocfg/v1/crate 1 1
 third_party/rust/autocxx_bindgen/v0_59/crate/src 10 2
 third_party/rust/backtrace/v0_3/crate/.github/workflows 2 1
 third_party/rust/bindgen/v0_59/crate/src 10 2
@@ -611,6 +612,7 @@ third_party/rust/cexpr/v0_6/crate/.github/workflows 2 1
 third_party/rust/cfg_if/v1/crate/.github/workflows 4 1
 third_party/rust/clang_sys/v1/crate 1 1
 third_party/rust/clang_sys/v1/crate/.github/workflows 2 1
+third_party/rust/clap_lex/v0_1/crate 2 2
 third_party/rust/clap/v2/crate 10 5
 third_party/rust/clap/v2/crate/.github 1 1
 third_party/rust/clap/v2/crate/src 1 1
@@ -618,6 +620,10 @@ third_party/rust/clap/v2/crate/src/app 8 3
 third_party/rust/clap/v2/crate/src/args 7 2
 third_party/rust/clap/v2/crate/src/args/arg_builder 7 4
 third_party/rust/clap/v2/crate/src/completions 1 1
+third_party/rust/clap/v3/crate 2 1
+third_party/rust/clap/v3/crate/src 1 1
+third_party/rust/clap/v3/crate/src/build 9 3
+third_party/rust/clap/v3/crate/src/parse 1 1
 third_party/rust/codespan_reporting/v0_11/crate 2 1
 third_party/rust/codespan_reporting/v0_11/crate/examples 1 1
 third_party/rust/cxx/v1/crate 1 1
@@ -632,6 +638,10 @@ third_party/rust/gimli/v0_26/crate 3 3
 third_party/rust/gimli/v0_26/crate/fixtures/self 23 2
 third_party/rust/gimli/v0_26/crate/src/read 3 1
 third_party/rust/glob/v0_3/crate 1 1
+third_party/rust/hashbrown/v0_11/crate 2 1
+third_party/rust/hashbrown/v0_11/crate/src 1 1
+third_party/rust/indexmap/v1/crate 1 1
+third_party/rust/indexmap/v1/crate/.github/workflows 2 1
 third_party/rust/indoc/v1/crate 1 1
 third_party/rust/indoc/v1/crate/.github/workflows 1 1
 third_party/rust/itertools/v0_9/crate 2 2
@@ -669,8 +679,8 @@ third_party/rust/moveit/v0_5/crate/.github/workflows 2 1
 third_party/rust/nom/v7/crate 16 4
 third_party/rust/nom/v7/crate/doc 2 1
 third_party/rust/nom/v7/crate/src 8 1
-third_party/rust/once_cell/v1/crate 1 1
 third_party/rust/once_cell/v1/crate/.github/workflows 1 1
+third_party/rust/os_str_bytes/v6/crate 3 1
 third_party/rust/owo_colors/v3/crate/.github/workflows 2 1
 third_party/rust/pathdiff/v0_2/crate/.github/workflows 2 1
 third_party/rust/peeking_take_while/v0_1/crate 1 1
@@ -700,6 +710,7 @@ third_party/rust/serde/v1/crate 1 1
 third_party/rust/serde/v1/crate/src 1 1
 third_party/rust/smawk/v0_3/crate 1 1
 third_party/rust/smawk/v0_3/crate/src 2 1
+third_party/rust/strsim/v0_10/crate 2 1
 third_party/rust/strsim/v0_8/crate 3 1
 third_party/rust/supports_unicode/v1/crate/src 1 1
 third_party/rust/syn/v1/crate 1 1

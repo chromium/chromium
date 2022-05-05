@@ -77,7 +77,13 @@ def main():
   if args.output_prefix:
     copy_to_prefixed_filename(args.outdir, "gen0.cc", args.output_prefix)
     copy_to_prefixed_filename(args.outdir, "gen1.cc", args.output_prefix)
-  atomic_copy(os.path.join(args.outdir, "cxxgen.h"), args.header)
+  atomic_copy(os.path.join(args.outdir, "gen0.h"), args.header)
+  # TODO(https://github.com/google/autocxx/issues/1092)
+  rs_include_path = os.path.join(args.outdir, "gen0.include.rs")
+  if not os.path.exists(rs_include_path):
+    # Make a blank file
+    with build_utils.AtomicOutput(rs_include_path, only_if_changed=True) as output:
+      pass
 
 
 if __name__ == '__main__':
