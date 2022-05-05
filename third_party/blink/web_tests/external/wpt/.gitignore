@@ -2,14 +2,13 @@
 *.py[co]
 *.sw[po]
 *~
-MANIFEST.json
+/MANIFEST.json
 \#*
 _certs
 .virtualenv
 config.json
 node_modules
 scratch
-/testharness_runner.html
 webdriver/.idea
 .vscode/
 .DS_Store

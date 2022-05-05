@@ -352,6 +352,13 @@ SET TIMEOUT: acid/acid3/test.html
 *: tools/*
 *: */third_party/*
 
+# .gitignore files in child directories
+*: cors/resources/.gitignore
+*: css/.gitignore
+*: css/css-writing-modes/tools/generators/.gitignore
+*: resources/.gitignore
+*: webaudio/.gitignore
+
 # Build system virtualenv
 *: css/tools/_virtualenv/*
 
