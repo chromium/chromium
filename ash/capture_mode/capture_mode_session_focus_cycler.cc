@@ -383,7 +383,15 @@ void CaptureModeSessionFocusCycler::OnWidgetClosing(views::Widget* widget) {
   // focused.
   if (current_focus_group_ == FocusGroup::kPendingSettings ||
       current_focus_group_ == FocusGroup::kSettingsMenu) {
-    ClearFocus();
+    // When the settings menu is closed while focus is in or about to be in it,
+    // we manually put the focus back on the settings button.
+    current_focus_group_ = FocusGroup::kSettingsClose;
+    focus_index_ = 0u;
+    const auto highlightable_views = GetGroupItems(current_focus_group_);
+    DCHECK_EQ(highlightable_views.size(), 2u);
+    scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+        GetA11yOverrideWindow());
+    highlightable_views[focus_index_]->PseudoFocus();
   }
   UpdateA11yAnnotation();
 }

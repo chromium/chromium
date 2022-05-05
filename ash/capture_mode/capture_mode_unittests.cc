@@ -2271,6 +2271,50 @@ TEST_F(CaptureModeTest, IgnoreUnselectableWindowsWhileTabbingInKWindow) {
   EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
 }
 
+// Tests that the focus should be on the `Settings` button after closing the
+// settings menu.
+TEST_F(CaptureModeTest, ReturnFocusToSettingsButtonAfterSettingsMenuIsClosed) {
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kImage);
+  CaptureModeSession* capture_mode_session = controller->capture_mode_session();
+  CaptureModeSessionTestApi test_api(capture_mode_session);
+
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  auto* event_generator = GetEventGenerator();
+
+  // Check the initial focus of the focus ring.
+  EXPECT_EQ(FocusGroup::kNone, test_api.GetCurrentFocusGroup());
+
+  // Tab six times, `Settings` button should be focused.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/6);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_TRUE(test_api.GetCaptureModeBarView()->settings_button()->has_focus());
+
+  // Tab the space key and the settings menu will be opened.
+  SendKey(ui::VKEY_SPACE, event_generator, ui::EF_NONE);
+  EXPECT_TRUE(test_api.GetCaptureModeSettingsView());
+  EXPECT_EQ(FocusGroup::kPendingSettings, test_api.GetCurrentFocusGroup());
+
+  // Close the settings menu, the focus ring should be on the `Settings` button.
+  SendKey(ui::VKEY_ESCAPE, event_generator, ui::EF_NONE);
+  EXPECT_FALSE(test_api.GetCaptureModeSettingsView());
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_TRUE(test_api.GetCaptureModeBarView()->settings_button()->has_focus());
+
+  // Tab the space key to open the settings menu again and tab to focus on the
+  // settings menu item.
+  SendKey(ui::VKEY_SPACE, event_generator, ui::EF_NONE);
+  EXPECT_TRUE(test_api.GetCaptureModeSettingsView());
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/3);
+  EXPECT_EQ(FocusGroup::kSettingsMenu, test_api.GetCurrentFocusGroup());
+
+  // Close the settings menu, the focus ring should be on the `Settings` button.
+  SendKey(ui::VKEY_ESCAPE, event_generator, ui::EF_NONE);
+  EXPECT_FALSE(test_api.GetCaptureModeSettingsView());
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_TRUE(test_api.GetCaptureModeBarView()->settings_button()->has_focus());
+}
+
 class CaptureModeSaveFileTest
     : public CaptureModeTest,
       public testing::WithParamInterface<CaptureModeType> {
