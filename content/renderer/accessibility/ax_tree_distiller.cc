@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <queue>
+#include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -116,15 +117,10 @@ AXTreeDistiller::AXTreeDistiller(RenderFrameImpl* render_frame)
 
 AXTreeDistiller::~AXTreeDistiller() = default;
 
-void AXTreeDistiller::Distill() {
+void AXTreeDistiller::Distill(SnapshotAndDistillAXTreeCallback callback) {
+  callback_ = std::move(callback);
   SnapshotAXTree();
   DistillAXTree();
-
-  // TODO(https://crbug.com/1278249): Move the call to a proper place.
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (features::IsReadAnythingWithScreen2xEnabled())
-    ScheduleScreen2xRun();
-#endif
 }
 
 void AXTreeDistiller::SnapshotAXTree() {
@@ -145,10 +141,21 @@ void AXTreeDistiller::SnapshotAXTree() {
 void AXTreeDistiller::DistillAXTree() {
   // If content_node_ids_ is already cached, do nothing.
   if (content_node_ids_)
-    return;
+    OnAXTreeDistilled();
   content_node_ids_ = std::make_unique<std::vector<ui::AXNodeID>>();
 
   DCHECK(snapshot_);
+
+  // If Read Anything with Screen 2x is enabled, kick off Screen 2x run, which
+  // distills the AXTree in the utility process using ML.
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (features::IsReadAnythingWithScreen2xEnabled()) {
+    ScheduleScreen2xRun();
+    return;
+  }
+#endif
+
+  // Otherwise, distill the AXTree in process using the rules-based algorithm.
   ui::AXTree tree;
   bool success = tree.Unserialize(*snapshot_);
   if (!success)
@@ -163,6 +170,11 @@ void AXTreeDistiller::DistillAXTree() {
   }
 
   AddContentNodesToVector(article_node, content_node_ids_.get());
+  OnAXTreeDistilled();
+}
+
+void AXTreeDistiller::OnAXTreeDistilled() {
+  std::move(callback_).Run(*snapshot_.get(), *content_node_ids_.get());
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -175,9 +187,10 @@ void AXTreeDistiller::ScheduleScreen2xRun() {
 
 void AXTreeDistiller::ProcessScreen2xResult(
     const std::vector<ui::AXNodeID>& content_node_ids) {
-  // TODO(https://crbug.com/1278249): Use |content_node_ids|.
+  *content_node_ids_ = content_node_ids;
+  // TODO: Set |is_distillable_|.
+  OnAXTreeDistilled();
 }
-
 #endif
 
 }  // namespace content
