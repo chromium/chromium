@@ -1534,6 +1534,15 @@ config("default_warnings") {
         cflags += [ "-Wno-unqualified-std-cast-call" ]
       }
 
+      if (!is_nacl && !(is_chromeos ||
+                        default_toolchain == "//build/toolchain/cros:target")) {
+        # TODO(https://crbug.com/1316298): Re-enable once test failure is figured out
+        cflags += [
+          "-Xclang",
+          "-no-opaque-pointers",
+        ]
+      }
+
       if (is_fuchsia) {
         # TODO(https://bugs.chromium.org/p/fuchsia/issues/detail?id=77383)
         cflags += [ "-Wno-deprecated-copy" ]
