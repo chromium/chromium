@@ -227,7 +227,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "info_collection GTX 1660",
+        "name": "info_collection_tests GTX 1660",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -266,7 +266,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "info_collection HD 630",
+        "name": "info_collection_tests HD 630",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -441,7 +441,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webcodecs GTX 1660",
+        "name": "webcodecs_tests GTX 1660",
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -472,7 +472,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webcodecs HD 630",
+        "name": "webcodecs_tests HD 630",
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -580,7 +580,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgl_conformance_gl_passthrough GTX 1660",
+        "name": "webgl_conformance_gl_passthrough_tests GTX 1660",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -617,7 +617,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgl_conformance_gl_passthrough HD 630",
+        "name": "webgl_conformance_gl_passthrough_tests HD 630",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true

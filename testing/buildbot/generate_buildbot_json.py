@@ -957,6 +957,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       step_name = '%s_tests' % step_name
     if variant_id:
       step_name = self.add_variant_to_test_name(step_name, variant_id)
+      if 'name' in test_config:
+        test_config['name'] = step_name
     result = self.generate_isolated_script_test(
       waterfall, tester_name, tester_config, step_name, test_config)
     if not result:
