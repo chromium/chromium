@@ -713,7 +713,6 @@ void NativeWidgetAura::Restore() {
 }
 
 void NativeWidgetAura::SetFullscreen(bool fullscreen,
-                                     const base::TimeDelta& delay,
                                      int64_t target_display_id) {
   // The `target_display_id` argument is unsupported in Aura.
   DCHECK_EQ(target_display_id, display::kInvalidDisplayId);

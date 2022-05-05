@@ -16,10 +16,6 @@ namespace features {
 VIEWS_EXPORT extern const base::Feature kEnablePlatformHighContrastInkDrop;
 VIEWS_EXPORT extern const base::Feature kEnableViewPaintOptimization;
 
-#if BUILDFLAG(IS_MAC)
-VIEWS_EXPORT extern const base::Feature kFullscreenControllerMac;
-#endif
-
 }  // namespace features
 }  // namespace views
 

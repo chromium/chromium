@@ -217,10 +217,6 @@ void NativeWidgetMac::InitNativeWidget(Widget::InitParams params) {
         [CreateNSWindow(create_window_params.get()) retain]);
     ns_window_host_->CreateInProcessNSWindowBridge(std::move(window));
   }
-  // TODO(https://crbug.com/1302857): Remove this once FullscreenControllerMac
-  // is on by default.
-  if (base::FeatureList::IsEnabled(features::kFullscreenControllerMac))
-    GetNSWindowMojo()->CreateFullscreenController();
   ns_window_host_->SetParent(parent_host);
   ns_window_host_->InitWindow(params,
                               ConvertBoundsToScreenIfNeeded(params.bounds));
@@ -646,20 +642,15 @@ bool NativeWidgetMac::IsMinimized() const {
 void NativeWidgetMac::Restore() {
   if (!GetNSWindowMojo())
     return;
-  if (base::FeatureList::IsEnabled(features::kFullscreenControllerMac)) {
-    GetNSWindowMojo()->ExitFullscreen();
-  } else {
-    GetNSWindowMojo()->SetFullscreen(false);
-  }
+  GetNSWindowMojo()->ExitFullscreen();
   GetNSWindowMojo()->SetMiniaturized(false);
 }
 
 void NativeWidgetMac::SetFullscreen(bool fullscreen,
-                                    const base::TimeDelta& delay,
                                     int64_t target_display_id) {
   if (!ns_window_host_)
     return;
-  ns_window_host_->SetFullscreen(fullscreen, delay, target_display_id);
+  ns_window_host_->SetFullscreen(fullscreen, target_display_id);
 }
 
 bool NativeWidgetMac::IsFullscreen() const {

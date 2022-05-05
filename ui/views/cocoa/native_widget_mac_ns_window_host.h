@@ -154,11 +154,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   // Tell the window to transition to being fullscreen or not-fullscreen.
   // If `fullscreen` is true, then `target_display_id` specifies the display to
-  // which window should move (or an invalid display, to use the default). If
-  // `delay` is given, this sets the target fullscreen state and then posts a
-  // delayed task to request the window transition. See crbug.com/1210548.
+  // which window should move (or an invalid display, to use the default).
   void SetFullscreen(bool fullscreen,
-                     base::TimeDelta delay = {},
                      int64_t target_display_id = display::kInvalidDisplayId);
 
   // The ultimate fullscreen state that is being targeted (irrespective of any
@@ -254,10 +251,6 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   void UpdateCompositorProperties();
   void DestroyCompositor();
-
-  // This is used to request a delayed fullscreen window transition after some
-  // other window placement occurs; see SetFullscreen() and crbug.com/1210548.
-  static void SetFullscreenAfterDelay(uint64_t bridged_native_widget_id);
 
   // Sort |attached_native_view_host_views_| by the order in which their
   // NSViews should appear as subviews. This does a recursive pre-order

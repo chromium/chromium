@@ -805,9 +805,7 @@ bool Widget::IsMinimized() const {
   return native_widget_->IsMinimized();
 }
 
-void Widget::SetFullscreen(bool fullscreen,
-                           base::TimeDelta delay,
-                           int64_t target_display_id) {
+void Widget::SetFullscreen(bool fullscreen, int64_t target_display_id) {
   // It isn't valid to specify `target_display_id` when exiting fullscreen.
   if (!fullscreen)
     DCHECK(target_display_id == display::kInvalidDisplayId);
@@ -817,7 +815,7 @@ void Widget::SetFullscreen(bool fullscreen,
   }
 
   auto weak_ptr = GetWeakPtr();
-  native_widget_->SetFullscreen(fullscreen, delay, target_display_id);
+  native_widget_->SetFullscreen(fullscreen, target_display_id);
   if (!weak_ptr)
     return;
 

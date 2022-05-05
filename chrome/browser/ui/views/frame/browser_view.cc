@@ -3976,28 +3976,17 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
     }
   }
 
-  // Toggle fullscreen mode; move the window between displays as needed.
-  // TODO(crbug.com/1034783): Implement at lower layers to avoid transitions.
-#if BUILDFLAG(IS_MAC)
-  bool entering_cross_screen_fullscreen = false;
-  const bool fullscreen_controller_mac_enabled =
-      base::FeatureList::IsEnabled(views::features::kFullscreenControllerMac);
-#else   // BUILDFLAG(IS_MAC)
-  const bool fullscreen_controller_mac_enabled = false;
-#endif  // BUILDFLAG(IS_MAC)
   bool swapping_screens_during_fullscreen = false;
-  if (fullscreen && display_id != display::kInvalidDisplayId &&
-      !fullscreen_controller_mac_enabled) {
+#if BUILDFLAG(IS_MAC)
+  frame_->SetFullscreen(fullscreen, display_id);
+#else   // BUILDFLAG(IS_MAC)
+  if (fullscreen && display_id != display::kInvalidDisplayId) {
     display::Screen* screen = display::Screen::GetScreen();
     display::Display display;
     display::Display current_display =
         screen->GetDisplayNearestWindow(GetNativeWindow());
     if (screen && screen->GetDisplayWithDisplayId(display_id, &display) &&
         current_display.id() != display_id) {
-#if BUILDFLAG(IS_MAC)
-      entering_cross_screen_fullscreen = true;
-#endif  // BUILDFLAG(IS_MAC)
-
       // Fullscreen windows must exit fullscreen to move to another display.
       if (IsFullscreen()) {
         swapping_screens_during_fullscreen = true;
@@ -4042,23 +4031,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
                          frame_->GetWindowBoundsInScreen().size()});
     }
   }
-
-#if BUILDFLAG(IS_MAC)
-  // On Mac, the fullscreen state change must be requested with a delay after
-  // moving the window to the target display; see http://crbug.com/1210548
-  base::TimeDelta delay;
-  if (swapping_screens_during_fullscreen)
-    delay = base::Milliseconds(1000);
-  else if (entering_cross_screen_fullscreen)
-    delay = base::Milliseconds(1);
-  frame_->SetFullscreen(fullscreen, delay,
-                        fullscreen_controller_mac_enabled
-                            ? display_id
-                            : display::kInvalidDisplayId);
-#else   // BUILDFLAG(IS_MAC)
   frame_->SetFullscreen(fullscreen);
-  // On Mac, the pre-fullscreen bounds must be restored after an asynchronous
-  // transition out of the fullscreen workspace; see http://crbug.com/1039874
   if (!fullscreen && restore_pre_fullscreen_bounds_callback_)
     std::move(restore_pre_fullscreen_bounds_callback_).Run();
 #endif  // BUILDFLAG(IS_MAC)

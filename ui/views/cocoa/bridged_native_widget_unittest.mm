@@ -250,45 +250,6 @@ NSTextInputContext* g_fake_current_input_context = nullptr;
 
 @end
 
-// Class to override -[NSWindow toggleFullScreen:] to a no-op. This simulates
-// NSWindow's behavior when attempting to toggle fullscreen state again, when
-// the last attempt failed but Cocoa has not yet sent
-// windowDidFailToEnterFullScreen:.
-@interface BridgedNativeWidgetTestWindow : NativeWidgetMacNSWindow {
- @private
-  BOOL _ignoreToggleFullScreen;
-  int _ignoredToggleFullScreenCount;
-}
-@property(assign, nonatomic) BOOL ignoreToggleFullScreen;
-@property(readonly, nonatomic) int ignoredToggleFullScreenCount;
-@end
-
-@implementation BridgedNativeWidgetTestWindow
-
-@synthesize ignoreToggleFullScreen = _ignoreToggleFullScreen;
-@synthesize ignoredToggleFullScreenCount = _ignoredToggleFullScreenCount;
-
-- (void)performSelector:(SEL)aSelector
-             withObject:(id)anArgument
-             afterDelay:(NSTimeInterval)delay {
-  // This is used in simulations without a message loop. Don't start a message
-  // loop since that would expose the tests to system notifications and
-  // potential flakes. Instead, just pretend the message loop is flushed here.
-  if (_ignoreToggleFullScreen && aSelector == @selector(toggleFullScreen:))
-    [self toggleFullScreen:anArgument];
-  else
-    [super performSelector:aSelector withObject:anArgument afterDelay:delay];
-}
-
-- (void)toggleFullScreen:(id)sender {
-  if (_ignoreToggleFullScreen)
-    ++_ignoredToggleFullScreenCount;
-  else
-    [super toggleFullScreen:sender];
-}
-
-@end
-
 namespace views {
 namespace test {
 
@@ -309,7 +270,7 @@ class MockNativeWidgetMac : public NativeWidgetMac {
     ownership_ = params.ownership;
 
     base::scoped_nsobject<NativeWidgetMacNSWindow> window(
-        [[BridgedNativeWidgetTestWindow alloc]
+        [[NativeWidgetMacNSWindow alloc]
             initWithContentRect:ui::kWindowSizeDeterminedLater
                       styleMask:NSBorderlessWindowMask
                         backing:NSBackingStoreBuffered
@@ -1958,70 +1919,6 @@ TEST_F(BridgedNativeWidgetTest, TextInput_WriteToPasteboard) {
     EXPECT_EQ(1u, [objects count]);
     EXPECT_NSEQ(@"bar baz", [objects lastObject]);
   }
-}
-
-typedef BridgedNativeWidgetTestBase BridgedNativeWidgetSimulateFullscreenTest;
-
-// Simulate the notifications that AppKit would send out if a fullscreen
-// operation begins, and then fails and must abort. This notification sequence
-// was determined by posting delayed tasks to toggle fullscreen state and then
-// mashing Ctrl+Left/Right to keep OSX in a transition between Spaces to cause
-// the fullscreen transition to fail.
-TEST_F(BridgedNativeWidgetSimulateFullscreenTest, FailToEnterAndExit) {
-  BridgedNativeWidgetTestWindow* window =
-      base::mac::ObjCCastStrict<BridgedNativeWidgetTestWindow>(
-          widget_->GetNativeWindow().GetNativeNSWindow());
-  [window setIgnoreToggleFullScreen:YES];
-  widget_->Show();
-
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-
-  EXPECT_FALSE(bridge()->target_fullscreen_state());
-
-  // Simulate an initial toggleFullScreen: (user- or Widget-initiated).
-  [center postNotificationName:NSWindowWillEnterFullScreenNotification
-                        object:window];
-
-  // On a failure, Cocoa starts by sending an unexpected *exit* fullscreen, and
-  // NativeWidgetNSWindowBridge will think it's just a delayed transition and
-  // try to go back into fullscreen but get ignored by Cocoa.
-  EXPECT_EQ(0, [window ignoredToggleFullScreenCount]);
-  EXPECT_TRUE(bridge()->target_fullscreen_state());
-  [center postNotificationName:NSWindowDidExitFullScreenNotification
-                        object:window];
-  EXPECT_EQ(1, [window ignoredToggleFullScreenCount]);
-  EXPECT_FALSE(bridge()->target_fullscreen_state());
-
-  // Cocoa follows up with a failure message sent to the NSWindowDelegate (there
-  // is no equivalent notification for failure).
-  ViewsNSWindowDelegate* window_delegate =
-      base::mac::ObjCCast<ViewsNSWindowDelegate>([window delegate]);
-  [window_delegate windowDidFailToEnterFullScreen:window];
-  EXPECT_FALSE(bridge()->target_fullscreen_state());
-
-  // Now perform a successful fullscreen operation.
-  [center postNotificationName:NSWindowWillEnterFullScreenNotification
-                        object:window];
-  EXPECT_TRUE(bridge()->target_fullscreen_state());
-  [center postNotificationName:NSWindowDidEnterFullScreenNotification
-                        object:window];
-  EXPECT_TRUE(bridge()->target_fullscreen_state());
-
-  // And try to get out.
-  [center postNotificationName:NSWindowWillExitFullScreenNotification
-                        object:window];
-  EXPECT_FALSE(bridge()->target_fullscreen_state());
-
-  // On a failure, Cocoa sends a failure message, but then just dumps the window
-  // out of fullscreen anyway (in that order).
-  [window_delegate windowDidFailToExitFullScreen:window];
-  EXPECT_FALSE(bridge()->target_fullscreen_state());
-  [center postNotificationName:NSWindowDidExitFullScreenNotification
-                        object:window];
-  EXPECT_EQ(1, [window ignoredToggleFullScreenCount]);  // No change.
-  EXPECT_FALSE(bridge()->target_fullscreen_state());
-
-  widget_->CloseNow();
 }
 
 }  // namespace test
