@@ -160,7 +160,7 @@ absl::optional<syncer::ModelError> SendTabToSelfBridge::ApplySyncChanges(
 
       std::unique_ptr<SendTabToSelfEntry> remote_entry =
           SendTabToSelfEntry::FromProto(specifics, clock_->Now());
-      if (!remote_entry) {
+      if (!remote_entry || remote_entry->GetGUID().empty()) {
         continue;  // Skip invalid entries.
       }
       if (remote_entry->IsExpired(clock_->Now())) {
@@ -330,6 +330,12 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
   auto entry = std::make_unique<SendTabToSelfEntry>(
       guid, url, trimmed_title, shared_time, local_device_name_,
       target_device_cache_guid);
+
+  // In the case where the entry was not created properly do not commit it to
+  // the batch data.
+  if (entry->GetGUID().empty()) {
+    return nullptr;
+  }
 
   std::unique_ptr<ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
@@ -617,7 +623,7 @@ void SendTabToSelfBridge::DoGarbageCollection() {
   auto entry = entries_.begin();
   while (entry != entries_.end()) {
     DCHECK_EQ(entry->first, entry->second->GetGUID());
-    std::string guid = entry->first;
+    std::string guid = entry->second->GetGUID();
     // In the case of an invalid entry remove it here.
     if (guid.empty()) {
       entry++;

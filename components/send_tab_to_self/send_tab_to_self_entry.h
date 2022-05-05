@@ -83,6 +83,8 @@ class SendTabToSelfEntry {
   bool IsExpired(base::Time current_time) const;
 
   // Creates a SendTabToSelfEntry consisting of only the required fields.
+  // This entry will have an expired SharedTime and therefor this function
+  // should only be used for testing.
   static std::unique_ptr<SendTabToSelfEntry> FromRequiredFields(
       const std::string& guid,
       const GURL& url,
