@@ -1830,9 +1830,21 @@ void StoragePartitionImpl::OnAuthRequired(
     // OnAuthCredentials() with a nullopt that triggers CancelAuth().
     process_id = network::mojom::kInvalidProcessId;
 
-    auto* render_frame_host = context.navigation_or_document()->GetDocument();
-    if (render_frame_host)
-      process_id = render_frame_host->GetGlobalId().child_id;
+    // `navigation_or_document_` can be null when `context` is created with
+    // an invalid render frame host after a page is destroyed.
+    // It is currently possible for the ServiceWorker case above to use
+    // kRenderFrameHostContext for the auth request, after the RenderFrameHost
+    // has been deleted. Treating this as an invalid process ID will cancel the
+    // auth, which is the same outcome as if the ServiceWorker's process were
+    // used.
+    // TODO(https://crbug.com/1322751): Update the ServiceWorker code to
+    // recognize when the RenderFrameHost goes away and not use
+    // CreateForRenderFrameHost above.
+    if (context.navigation_or_document()) {
+      auto* render_frame_host = context.navigation_or_document()->GetDocument();
+      if (render_frame_host)
+        process_id = render_frame_host->GetGlobalId().child_id;
+    }
   }
   OnAuthRequiredContinuation(
       process_id, request_id, url, *is_primary_main_frame, first_auth_attempt,
