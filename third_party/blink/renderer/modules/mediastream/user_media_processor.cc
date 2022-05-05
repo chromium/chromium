@@ -1004,7 +1004,7 @@ void UserMediaProcessor::GotOpenDevice(
   if (IsAudioInputMediaType(response->device.type)) {
     devices->audio_device = response->device;
   } else if (IsVideoInputMediaType(response->device.type)) {
-    devices->audio_device = response->device;
+    devices->video_device = response->device;
   } else {
     NOTREACHED();
   }
