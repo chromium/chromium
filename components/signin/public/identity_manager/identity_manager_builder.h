@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -41,7 +40,7 @@ namespace network {
 class NetworkConnectionTracker;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace account_manager {
 class AccountManagerFacade;
 }
@@ -68,7 +67,7 @@ struct IdentityManagerBuildParams {
   scoped_refptr<TokenWebData> token_web_data;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   account_manager::AccountManagerFacade* account_manager_facade = nullptr;
   bool is_regular_profile = false;
 #endif

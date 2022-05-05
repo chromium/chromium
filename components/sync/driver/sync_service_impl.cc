@@ -20,7 +20,6 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -828,7 +827,7 @@ void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
       // Sync-the-feature remains off.
       StopAndClear();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS)
       // TODO(https://crbug.com/1233933): Update this when Lacros profiles
       //     support signed-in-but-not-consented-to-sync state.
 

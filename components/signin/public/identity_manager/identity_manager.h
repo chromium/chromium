@@ -33,7 +33,7 @@
 #include "base/time/time.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace account_manager {
 class AccountManagerFacade;
 }
@@ -371,7 +371,7 @@ class IdentityManager : public KeyedService,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     SigninClient* signin_client = nullptr;
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     account_manager::AccountManagerFacade* account_manager_facade = nullptr;
 #endif
 
@@ -550,7 +550,7 @@ class IdentityManager : public KeyedService,
       const std::string& locale,
       const std::string& picture_url);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   friend account_manager::AccountManagerFacade* GetAccountManagerFacade(
       IdentityManager* identity_manager);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -626,7 +626,7 @@ class IdentityManager : public KeyedService,
   AccountTrackerService* GetAccountTrackerService() const;
   AccountFetcherService* GetAccountFetcherService() const;
   GaiaCookieManagerService* GetGaiaCookieManagerService() const;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   account_manager::AccountManagerFacade* GetAccountManagerFacade() const;
 #endif
 
@@ -686,7 +686,7 @@ class IdentityManager : public KeyedService,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   SigninClient* const signin_client_;
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   account_manager::AccountManagerFacade* const account_manager_facade_;
 #endif
 

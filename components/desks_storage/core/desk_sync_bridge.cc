@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"

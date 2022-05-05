@@ -117,7 +117,7 @@ bool PlatformCrashpadInitialization(
     // to ChromeOS's /sbin/crash_reporter which in turn passes the dump to
     // crash_sender which handles the upload.
     std::string url;
-#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_CHROMEOS)
     url = crash_reporter_client->GetUploadUrl();
 #else
     url = std::string();
@@ -156,7 +156,7 @@ bool PlatformCrashpadInitialization(
     annotations["build_time_millis"] = base::NumberToString(build_time);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     // Chromium OS: save board and builder path for 'tast symbolize'.
     annotations["chromeos-board"] = base::SysInfo::GetLsbReleaseBoard();
     std::string builder_path;
@@ -181,7 +181,7 @@ bool PlatformCrashpadInitialization(
     // contain these annotations.
     arguments.push_back("--monitor-self-annotation=ptype=crashpad-handler");
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     arguments.push_back("--use-cros-crash-reporter");
 
     if (crash_reporter_client->IsRunningUnattended()) {

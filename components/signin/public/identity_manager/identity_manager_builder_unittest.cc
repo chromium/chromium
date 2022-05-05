@@ -9,7 +9,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/public/base/test_signin_client.h"
@@ -23,7 +22,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/account_manager_core/mock_account_manager_facade.h"
 #endif
 
@@ -86,7 +85,7 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
       std::make_unique<FakeDeviceAccountsProvider>();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   auto account_manager_facade =
       std::make_unique<account_manager::MockAccountManagerFacade>();
   params.account_manager_facade = account_manager_facade.get();

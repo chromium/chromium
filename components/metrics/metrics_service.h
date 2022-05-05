@@ -232,14 +232,14 @@ class MetricsService : public base::HistogramFlattener {
   void UpdateCurrentUserMetricsConsent(bool user_metrics_consent);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Forces the client ID to be reset and generates a new client ID. This will
   // be called when a user re-consents to metrics collection and the user had
   // consented in the past.
   //
   // This is to preserve the pseudo-anonymous identifier <client_id, user_id>.
   void ResetClientId();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry();
 

@@ -23,20 +23,20 @@
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/reporting/storage/missive_storage_module.h"
 #include "components/reporting/storage/missive_storage_module_delegate_impl.h"
 
 using ::chromeos::MissiveClient;
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace reporting {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Features settings for storage and uploader.
 // Use `missived` by all browsers.
 const base::Feature kUseMissiveDaemonFeature{StorageSelector::kUseMissiveDaemon,
@@ -51,36 +51,36 @@ const base::Feature kProvideUploaderFeature {
       base::FEATURE_DISABLED_BY_DEFAULT
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 const char StorageSelector::kUseMissiveDaemon[] = "ConnectMissiveDaemon";
 // static
 const char StorageSelector::kProvideUploader[] = "ProvideUploader";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // static
 bool StorageSelector::is_uploader_required() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(kProvideUploaderFeature);
 #else   // Not ChromeOS
   return true;   // Local storage must have an uploader.
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // static
 bool StorageSelector::is_use_missive() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(kUseMissiveDaemonFeature);
 #else   // Not ChromeOS
   return false;  // Use Local storage.
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 void StorageSelector::CreateMissiveStorageModule(
     base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
@@ -113,5 +113,5 @@ void StorageSelector::CreateMissiveStorageModule(
   std::move(cb).Run(missive_storage_module);
   return;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace reporting

@@ -32,7 +32,7 @@ const char kOs[] =
     "win";
 #elif BUILDFLAG(IS_ANDROID)
     "android";
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_CHROMEOS)
     "cros";
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     "linux";

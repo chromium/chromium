@@ -25,7 +25,7 @@
 #include "components/signin/public/webdata/token_web_data.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_chromeos.h"
 #endif
 
@@ -53,7 +53,7 @@ std::unique_ptr<ProfileOAuth2TokenServiceIOSDelegate> CreateIOSOAuthDelegate(
       signin_client, std::move(device_accounts_provider),
       account_tracker_service);
 }
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<ProfileOAuth2TokenServiceDelegate> CreateCrOsOAuthDelegate(
     SigninClient* signin_client,
     AccountTrackerService* account_tracker_service,
@@ -101,10 +101,10 @@ CreateOAuth2TokenServiceDelegate(
     AccountTrackerService* account_tracker_service,
     signin::AccountConsistencyMethod account_consistency,
     SigninClient* signin_client,
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     bool delete_signin_cookies_on_exit,
     scoped_refptr<TokenWebData> token_web_data,
@@ -123,7 +123,7 @@ CreateOAuth2TokenServiceDelegate(
   return CreateIOSOAuthDelegate(signin_client,
                                 std::move(device_accounts_provider),
                                 account_tracker_service);
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_CHROMEOS)
   return CreateCrOsOAuthDelegate(signin_client, account_tracker_service,
                                  network_connection_tracker,
                                  account_manager_facade, is_regular_profile);
@@ -150,10 +150,10 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
     AccountTrackerService* account_tracker_service,
     network::NetworkConnectionTracker* network_connection_tracker,
     signin::AccountConsistencyMethod account_consistency,
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     bool delete_signin_cookies_on_exit,
     scoped_refptr<TokenWebData> token_web_data,
@@ -179,9 +179,9 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
       pref_service,
       CreateOAuth2TokenServiceDelegate(
           account_tracker_service, account_consistency, signin_client,
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
           account_manager_facade, is_regular_profile,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
           delete_signin_cookies_on_exit, token_web_data,
 #endif
