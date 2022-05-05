@@ -220,12 +220,6 @@ Polymer({
       type: Boolean,
       value: false,
     },
-
-    /** @private */
-    metricsConsentDesc_: {
-      type: String,
-      value: '',
-    },
     // </if>
   },
 
@@ -258,11 +252,6 @@ Polymer({
       if (pref) {
         this.metricsConsentPref_ = pref;
         this.isMetricsConsentConfigurable_ = state.isConfigurable;
-        // TODO(crbug/1295789): Revert descriptions back to a single description
-        // once per-user crash is ready.
-        this.metricsConsentDesc_ = state.prefName === 'metrics.user_consent' ?
-            this.i18n('enableLoggingUserDesc') :
-            this.i18n('enableLoggingOwnerDesc');
       }
     });
     // </if>

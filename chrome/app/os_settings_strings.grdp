@@ -4151,11 +4151,8 @@ Press an assigned switch or key to remove assignment.
       Help improve ChromeOS features and performance
     </message>
   </if>
-  <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_OWNER_DESC" desc="The description of the checkbox to enable/disable crash and user metrics logging in ChromeOS for the owner of the device.">
+  <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_DESC" desc="The description of the checkbox to enable/disable crash and user metrics logging in ChromeOS for user of the device.">
     Automatically sends crash reports as well as diagnostic and usage data to Google
-  </message>
-  <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_USER_DESC" desc="The description of the checkbox to enable/disable user metrics logging in ChromeOS for non-owners of the device.">
-    Automatically sends diagnostic and usage data to Google
   </message>
   <message name="IDS_SETTINGS_ENABLE_SUGGESTED_CONTENT_TITLE" desc="The label of the checkbox to enable/disable Suggested Content in ChromeOS settings. Suggested Content includes app search recommendations and website recommendations which can show up in places such as the launcher search and suggestion chips.">
     Suggest new content to explore
