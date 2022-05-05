@@ -26,6 +26,7 @@
   }
 
   #messageContainer .text {
+    color: var(--cros-text-color-secondary);
     font: var(--cros-body-1-font);
     height: 40px;
     line-height: 1.5;
@@ -36,6 +37,10 @@
 
   #messageContainer cr-button {
     margin-top: 20px;
+  }
+
+  #messageContainer cr-button:hover {
+    color: var(--cros-text-color-primary);
   }
 
   :host(:not([main-page])) #container {
