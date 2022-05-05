@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <array>
 #include <iterator>
 #include <limits>
