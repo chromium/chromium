@@ -248,7 +248,7 @@ TEST_F(PagedAppsGridViewTest, GridDimensionsChangesWithDisplaySize) {
   // more rows.
   UpdateDisplay("700x1400");
   EXPECT_EQ(5, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
-  EXPECT_EQ(7, GetPagedAppsGridView()->GetRowsForTesting());
+  EXPECT_EQ(6, GetPagedAppsGridView()->GetRowsForTesting());
   EXPECT_EQ(5, GetPagedAppsGridView()->cols());
 }
 
@@ -478,7 +478,7 @@ TEST_F(PagedAppsGridViewWithNudgeTest, GridDimensionsChangesWithDisplaySize) {
   // more rows.
   UpdateDisplay("700x1400");
   EXPECT_EQ(5, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
-  EXPECT_EQ(7, GetPagedAppsGridView()->GetRowsForTesting());
+  EXPECT_EQ(6, GetPagedAppsGridView()->GetRowsForTesting());
   EXPECT_EQ(5, GetPagedAppsGridView()->cols());
 }
 

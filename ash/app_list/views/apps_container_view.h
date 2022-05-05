@@ -83,9 +83,9 @@ class ASH_EXPORT AppsContainerView
   // is enough space to fit page switcher next to the apps grid.
   int GetMinHorizontalMarginForAppsGrid() const;
 
-  // The minimal top margin for the apps grids (measured from the top of the
-  // apps container). Set to accommodate min apps container margins, search box
-  // and suggestion chips.
+  // The minimal top margin for the apps grid (measured from the top of the
+  // search box to the top of the apps grid). This margin includes space for
+  // search box and suggestion chips.
   // For productivity launcher UI, this will not include space for continue
   // section and recent apps.
   int GetMinTopMarginForAppsGrid(const gfx::Size& search_box_size) const;
@@ -97,15 +97,12 @@ class ASH_EXPORT AppsContainerView
   int GetIdealHorizontalMargin() const;
   int GetIdealVerticalMargin() const;
 
-  // Calculates the apps container or apps grid margin depending on the
-  // available content bounds, and search box size.
-  // |available_bounds| - The bounds available to lay out either full apps
-  //      container or apps grid (depending on |for_full_contaier_bounds|).
+  // Calculates the apps container margins depending on the available content
+  // bounds, and search box size.
+  // |available_bounds| - The bounds available to lay out the full apps
+  //      container.
   // |search_box_size| - The expected search box size. Used to determine the
   //      the amount of space in apps container available to the apps grid
-  //      (if calaulating margins for apps grid, |available_bounds| should
-  //      not contain the search box, so this value will not be used in that
-  //      case).
   //
   // NOTE: This should not call into ContentsView::GetSearchBoxBounds*()
   // methods, as CalculateMarginsForAvailableBounds is used to calculate the

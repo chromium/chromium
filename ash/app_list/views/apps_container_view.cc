@@ -109,6 +109,7 @@ constexpr float kNonAppsStateOpacity = 0.1;
 // The ratio of allowed bounds for apps grid view to its maximum margin.
 constexpr int kAppsGridMarginRatio = 16;
 constexpr int kAppsGridMarginRatioForSmallWidth = 12;
+constexpr int kAppsGridMarginRatioForSmallHeight = 24;
 
 // The margins within the apps container for app list folder view.
 constexpr int kFolderMargin = 16;
@@ -125,8 +126,14 @@ constexpr int kGridToPageSwitcherMargin = 8;
 // Minimal horizontal distance from the page switcher to apps container bounds.
 constexpr int kPageSwitcherEndMargin = 16;
 
-// The vertical margin for the `AppsGridView` contents.
-constexpr int kGridVerticalMargin = 24;
+// The minimum amount of vertical margin between the apps container edges and
+// the its contents.
+constexpr int kMinimumVerticalContainerMargin = 24;
+
+// The vertical margin above the `AppsGridView`. The space between suggestion
+// chips and the app grid. With Productivity launcher, the space between the
+// search box and the app grid.
+constexpr int kAppGridTopMargin = 24;
 
 // The number of columns available for the ContinueSectionView.
 constexpr int kContinueColumnCount = 4;
@@ -405,8 +412,13 @@ gfx::Rect AppsContainerView::CalculateAvailableBoundsForAppsGrid(
   // Reserve vertical space for search box and suggestion chips.
   available_bounds.Inset(gfx::Insets().set_top(GetMinTopMarginForAppsGrid(
       contents_view_->GetSearchBoxSize(AppListState::kStateApps))));
-  // Subtracts apps grid view insets from space available for apps grid.
-  available_bounds.Inset(gfx::Insets::VH(kGridVerticalMargin, 0));
+  // Remove space for vertical margins at the top and bottom of the apps
+  // container.
+  if (features::IsProductivityLauncherEnabled()) {
+    available_bounds.Inset(gfx::Insets::VH(GetIdealVerticalMargin(), 0));
+  } else {
+    available_bounds.Inset(gfx::Insets::VH(kMinimumVerticalContainerMargin, 0));
+  }
 
   return available_bounds;
 }
@@ -999,7 +1011,7 @@ void AppsContainerView::Layout() {
       GetContentsBounds(),
       contents_view_->GetSearchBoxSize(AppListState::kStateApps));
   gfx::Rect grid_rect = rect;
-  grid_rect.Inset(gfx::Insets::TLBR(kGridVerticalMargin, margins.left(),
+  grid_rect.Inset(gfx::Insets::TLBR(kAppGridTopMargin, margins.left(),
                                     margins.bottom(), margins.right()));
   // The grid rect insets are added to calculated margins. Given that the
   // grid bounds rect should include insets, they have to be removed from
@@ -1313,7 +1325,7 @@ int AppsContainerView::GetMinTopMarginForAppsGrid(
           ? 0
           : kSuggestionChipContainerHeight + kSuggestionChipContainerTopMargin;
 
-  return search_box_size.height() + kGridVerticalMargin +
+  return search_box_size.height() + kAppGridTopMargin +
          suggestion_chip_container_size;
 }
 
@@ -1329,7 +1341,20 @@ int AppsContainerView::GetIdealHorizontalMargin() const {
 }
 
 int AppsContainerView::GetIdealVerticalMargin() const {
-  return GetContentsBounds().height() / kAppsGridMarginRatio;
+  if (!features::IsProductivityLauncherEnabled())
+    return GetContentsBounds().height() / kAppsGridMarginRatio;
+
+  const int screen_height =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestView(GetWidget()->GetNativeView())
+          .bounds()
+          .height();
+  const float margin_ratio = (screen_height <= 800)
+                                 ? kAppsGridMarginRatioForSmallHeight
+                                 : kAppsGridMarginRatio;
+
+  return std::max(kMinimumVerticalContainerMargin,
+                  static_cast<int>(screen_height / margin_ratio));
 }
 
 const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
@@ -1380,7 +1405,7 @@ const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
     // Productivity launcher does not have a preset number of rows per page.
     // Instead of adjusting the margins to fit a set number of rows, the grid
     // will change the number of rows to fit within the provided space.
-    vertical_margin = kGridVerticalMargin;
+    vertical_margin = GetIdealVerticalMargin();
   } else {
     vertical_margin =
         calculate_margin(GetIdealVerticalMargin(), available_height,
@@ -1393,11 +1418,11 @@ const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
 
   const int min_horizontal_margin = GetMinHorizontalMarginForAppsGrid();
 
-  cached_container_margins_.margins =
-      gfx::Insets::TLBR(std::max(vertical_margin, kGridVerticalMargin),
-                        std::max(horizontal_margin, min_horizontal_margin),
-                        std::max(vertical_margin, kGridVerticalMargin),
-                        std::max(horizontal_margin, min_horizontal_margin));
+  cached_container_margins_.margins = gfx::Insets::TLBR(
+      std::max(vertical_margin, kMinimumVerticalContainerMargin),
+      std::max(horizontal_margin, min_horizontal_margin),
+      std::max(vertical_margin, kMinimumVerticalContainerMargin),
+      std::max(horizontal_margin, min_horizontal_margin));
   cached_container_margins_.bounds_size = available_bounds.size();
   cached_container_margins_.search_box_size = search_box_size;
 
