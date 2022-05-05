@@ -108,6 +108,7 @@ struct PopupMatchRowView: View {
                 image: image, highlightColor: highlightColor
               )
               .accessibilityHidden(true)
+              .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
             }
           Spacer()
         }.frame(width: Dimensions.leadingSpacing)
