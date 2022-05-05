@@ -232,7 +232,7 @@ tests! {
                              TriggerCondition::SignalsUnsatisfied,
                              2));
 
-        let mut blocking_events_buf = [Default::default(); 16];
+        let mut blocking_events_buf = [std::mem::MaybeUninit::uninit(); 16];
         // The trap should arm with no blocking events since nothing should be
         // triggered yet.
         match trap.arm(Some(&mut blocking_events_buf)) {

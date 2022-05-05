@@ -54,24 +54,6 @@ impl UnsafeTrapEvent {
     }
 }
 
-impl Default for UnsafeTrapEvent {
-    fn default() -> Self {
-        // `UnsafeTrapEvent` wraps a C FFI struct that is POD and valid when
-        // zero-initialized.
-        //
-        // We do it this way since the struct members vary based on pointer
-        // size: the C struct has a bitfield to ensure `trigger_context` is
-        // always 8 bytes regardless of platform pointer size, and bindgen gives
-        // significantly different struct bindings in the 32- and 64-bit case.
-        // Zero-initializing it is simpler than using cfg conditionals.
-        let raw_event: raw_ffi::MojoTrapEvent = unsafe { mem::zeroed() };
-        UnsafeTrapEvent(raw_ffi::MojoTrapEvent {
-            struct_size: mem::size_of::<raw_ffi::MojoTrapEvent>() as u32,
-            ..raw_event
-        })
-    }
-}
-
 pub type EventHandler = extern "C" fn(&UnsafeTrapEvent);
 
 /// The result of arming an `UnsafeTrap`.
@@ -79,7 +61,8 @@ pub enum ArmResult<'a> {
     /// The trap was successfully armed with no blocking events.
     Armed,
     /// An event would have triggered immediately, blocking the arm. Contains
-    /// the event(s).
+    /// the event(s). The returned slice is a reborrow of the buffer passed to
+    /// `UnsafeTrap::arm`.
     Blocked(&'a [UnsafeTrapEvent]),
     /// Arming failed due to a different Mojo error. If no buffer was passed in
     /// to `arm` but there were blocking events Failed(FailedPrecondition) will
@@ -193,20 +176,31 @@ impl UnsafeTrap {
     ///
     /// If arming was successful, the trap remains armed until an event is
     /// received. At this point it is immediately disarmed.
-    pub fn arm<'a>(&self, blocking_events: Option<&'a mut [UnsafeTrapEvent]>) -> ArmResult<'a> {
+    pub fn arm<'a>(
+        &self,
+        blocking_events: Option<&'a mut [mem::MaybeUninit<UnsafeTrapEvent>]>,
+    ) -> ArmResult<'a> {
         // Initialized to the available space in `blocking_events` (or 0), then
         // updated in-place by the Mojo FFI call.
         let mut num_events = blocking_events
             .as_ref()
             .map_or(0, |b| u32::try_from(b.len()).expect("`blocking_events` too large"));
 
-        // Ensure `struct_size` fields are set correctly for versioning.
+        // Initialize `blocking_events` and set `struct_size` fields which are
+        // used by Mojo for struct versioning.
         let mut blocking_events: Option<&'a mut [UnsafeTrapEvent]> =
-            blocking_events.map(|events| {
-                assert!(events.len() > 0);
-                // The `Default` impl sets `struct_size`.
-                events.fill(Default::default());
-                events
+            blocking_events.map(|blocking_events| {
+                for uninit_event in blocking_events.iter_mut() {
+                    // `UnsafeTrapEvent` wraps a C FFI struct that is POD and
+                    // valid when zero-initialized.
+                    let mut event: UnsafeTrapEvent = unsafe { mem::zeroed() };
+                    event.0.struct_size = mem::size_of::<UnsafeTrapEvent>() as u32;
+                    uninit_event.write(event);
+                }
+
+                // Now that all elements are initialized it is sound to
+                // assume_init.
+                unsafe { mem::MaybeUninit::slice_assume_init_mut(blocking_events) }
             });
 
         let (blocking_events_ptr, num_events_ptr) = match blocking_events.as_mut() {
@@ -468,7 +462,7 @@ where
     ///   * Failed for some other reason. Returns the error.
     pub fn arm(&self) -> MojoResult {
         const MAX_BLOCKING_EVENTS: usize = 16;
-        let mut buf = [Default::default(); MAX_BLOCKING_EVENTS];
+        let mut buf = [mem::MaybeUninit::uninit(); MAX_BLOCKING_EVENTS];
 
         // Try to arm the trap. If blocking events were returned handle them.
         let blocking_events: &[UnsafeTrapEvent] = match self.trap.arm(Some(&mut buf)) {
