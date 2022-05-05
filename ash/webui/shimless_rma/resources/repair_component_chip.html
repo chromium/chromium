@@ -37,6 +37,11 @@
     position: absolute;
   }
 
+  :host([checked]) #componentName,
+  :host([checked]) #componentIdentifier {
+    color: var(--google-blue-700);
+  }
+
   #componentName {
     color: var(--shimless-component-text-color);
     font-family: var(--shimless-component-font-family);
@@ -51,10 +56,6 @@
     font-size: var(--shimless-component-description-font-size);
     font-weight: var(--shimless-regular-font-weight);
     line-height: var(--shimless-component-description-line-height);
-  }
-
-  :host([checked]) #labelDiv {
-    color: var(--google-blue-700);
   }
 
   iron-icon {
