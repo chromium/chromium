@@ -50,8 +50,7 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
 #pragma mark - AutocompleteResultConsumer
 
 - (void)updateMatches:(NSArray<id<AutocompleteSuggestionGroup>>*)result
-    preselectedMatchGroupIndex:(NSInteger)groupIndex
-                 withAnimation:(BOOL)animation {
+    preselectedMatchGroupIndex:(NSInteger)groupIndex {
   NSMutableArray* extractedPedals = [[NSMutableArray alloc] init];
   self.highlightedPedalIndex = NSNotFound;
   self.originalResult = result;
@@ -70,9 +69,7 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
     // If no pedals, display old pedal for a duration of `kPedalDebouceTimer`
     // with new suggestion. This avoids pedal flickering because the pedal
     // results are async. (cf. crbug.com/1316404).
-    [self updateMatchesWithPedals:self.extractedPedals
-                  suggestionGroup:result
-                        animation:animation];
+    [self updateMatchesWithPedals:self.extractedPedals suggestionGroup:result];
     if (!self.removePedalsTimer) {
       self.removePedalsTimer =
           [NSTimer scheduledTimerWithTimeInterval:kPedalDebouceTimer
@@ -89,9 +86,7 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
 
   self.extractedPedals = extractedPedals;
 
-  [self updateMatchesWithPedals:extractedPedals
-                suggestionGroup:result
-                      animation:animation];
+  [self updateMatchesWithPedals:extractedPedals suggestionGroup:result];
 }
 
 - (void)setTextAlignment:(NSTextAlignment)alignment {
@@ -220,8 +215,7 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
 // to avoid pedal flickering.
 - (void)removePedals:(NSTimer*)timer {
   [self.dataSink updateMatches:self.originalResult
-      preselectedMatchGroupIndex:0
-                   withAnimation:NO];
+      preselectedMatchGroupIndex:0];
 
   self.extractedPedals = nil;
   self.removePedalsTimer = nil;
@@ -232,12 +226,9 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
 - (void)updateMatchesWithPedals:
             (NSArray<id<OmniboxPedal, OmniboxIcon>>*)extractedPedals
                 suggestionGroup:
-                    (NSArray<id<AutocompleteSuggestionGroup>>*)result
-                      animation:(BOOL)animation {
+                    (NSArray<id<AutocompleteSuggestionGroup>>*)result {
   if (extractedPedals.count == 0) {
-    [self.dataSink updateMatches:result
-        preselectedMatchGroupIndex:0
-                     withAnimation:animation];
+    [self.dataSink updateMatches:result preselectedMatchGroupIndex:0];
     return;
   }
 
@@ -255,8 +246,7 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
   const NSInteger suggestionGroupIndexInCombinedGroups = 1;
 
   [self.dataSink updateMatches:combinedGroups
-      preselectedMatchGroupIndex:suggestionGroupIndexInCombinedGroups
-                   withAnimation:animation];
+      preselectedMatchGroupIndex:suggestionGroupIndexInCombinedGroups];
 }
 
 @end

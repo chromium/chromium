@@ -51,18 +51,9 @@ class OmniboxPopupMediatorDelegate {
 // Whether the mediator has results to show.
 @property(nonatomic, assign) BOOL hasResults;
 
-- (void)updateMatches:(const AutocompleteResult&)result
-        withAnimation:(BOOL)animated;
-
-// Sets the text alignment of the popup content.
-- (void)setTextAlignment:(NSTextAlignment)alignment;
-
 // Sets the semantic content attribute of the popup content.
 - (void)setSemanticContentAttribute:
     (UISemanticContentAttribute)semanticContentAttribute;
-
-// Updates the popup with the |results|.
-- (void)updateWithResults:(const AutocompleteResult&)results;
 
 @property(nonatomic, weak) id<BrowserCommands> dispatcher;
 @property(nonatomic, weak) id<AutocompleteResultConsumer> consumer;
@@ -91,8 +82,7 @@ class OmniboxPopupMediatorDelegate {
                   faviconLoader:(FaviconLoader*)faviconLoader
                        delegate:(OmniboxPopupMediatorDelegate*)delegate;
 
-- (void)updateMatches:(const AutocompleteResult&)result
-        withAnimation:(BOOL)animated;
+- (void)updateMatches:(const AutocompleteResult&)result;
 
 // Sets the text alignment of the popup content.
 - (void)setTextAlignment:(NSTextAlignment)alignment;

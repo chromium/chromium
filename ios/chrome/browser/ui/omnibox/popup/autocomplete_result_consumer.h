@@ -50,8 +50,7 @@
 // `preselectedMatchGroupIndex` is the section selected by default when no row
 // is highlighted.
 - (void)updateMatches:(NSArray<id<AutocompleteSuggestionGroup>>*)result
-    preselectedMatchGroupIndex:(NSInteger)groupIndex
-                 withAnimation:(BOOL)animation;
+    preselectedMatchGroupIndex:(NSInteger)groupIndex;
 
 // Sets the text alignment of the popup content.
 - (void)setTextAlignment:(NSTextAlignment)alignment;

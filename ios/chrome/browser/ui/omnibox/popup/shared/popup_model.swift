@@ -40,8 +40,7 @@ import UIKit
   // MARK: AutocompleteResultConsumer
 
   public func updateMatches(
-    _ matchGroups: [AutocompleteSuggestionGroup], preselectedMatchGroupIndex: NSInteger,
-    withAnimation: Bool
+    _ matchGroups: [AutocompleteSuggestionGroup], preselectedMatchGroupIndex: NSInteger
   ) {
     // Reset highlight state.
     self.highlightedMatchIndexPath = nil
