@@ -796,7 +796,7 @@ See your search engine’s instructions for deleting your search history, if app
         Options for Discover
       </message>
       <message name="IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_MESSAGE" desc="Warning message displayed inside an alert before downloading a calendar file.[iOS only]">
-          This website is trying to download a calendar file.
+          This website wants to download a file and add it to your calendar.
       </message>
       <message name="IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_TITLE" desc="Title of the alert displaying a warning message before downloading a calendar file.[iOS only]">
           Calendar File Available
