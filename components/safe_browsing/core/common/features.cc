@@ -108,9 +108,6 @@ const base::Feature kOmitNonUserGesturesFromReferrerChain{
 const base::Feature kSafeBrowsingCsbrrWithToken{
     "SafeBrowsingCsbrrWithToken", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kSafeBrowsingCTDownloadWarning{
-    "SafeBrowsingCTDownloadWarning", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kSafeBrowsingEnterpriseCsd{
     "SafeBrowsingEnterpriseCsd", base::FEATURE_ENABLED_BY_DEFAULT};
 

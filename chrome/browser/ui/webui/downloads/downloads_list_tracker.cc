@@ -56,6 +56,7 @@ const char* GetDangerTypeString(download::DownloadDangerType danger_type) {
       return "DANGEROUS_FILE";
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
       return "DANGEROUS_URL";
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
       return "DANGEROUS_CONTENT";
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
@@ -80,11 +81,6 @@ const char* GetDangerTypeString(download::DownloadDangerType danger_type) {
       return "DEEP_SCANNED_OPENED_DANGEROUS";
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
       return "BLOCKED_UNSUPPORTED_FILE_TYPE";
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
-      return base::FeatureList::IsEnabled(
-                 safe_browsing::kSafeBrowsingCTDownloadWarning)
-                 ? "DANGEROUS_ACCOUNT_COMPROMISE"
-                 : "DANGEROUS_CONTENT";
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:

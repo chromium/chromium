@@ -1893,10 +1893,6 @@ are declared in tools/grit/grit_rule.gni.
           Extensions, apps, and themes can harm your computer. Are you sure you want to continue?
         </message>
       </if>
-      <message name="IDS_PROMPT_DANGEROUS_DOWNLOAD_ACCOUNT_COMPROMISE"
-        desc="Message shown to the user to validate the download when the download content is deteremined to be associated with account compromise by safebrowsing.">
-        <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> could let attackers steal your personal information.
-      </message>
       <message name="IDS_PROMPT_UNCOMMON_DOWNLOAD_CONTENT"
          desc="Message shown to the user to validate the download when the download content is classified as uncommon by safebrowsing.">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> is not commonly downloaded and may be dangerous.
@@ -2046,10 +2042,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_KEEP_UNCOMMON_DOWNLOAD_TITLE"
                desc="Title for the confirmation dialog asking whether the user really meant to keep an uncommon download">
         Keep file?
-      </message>
-      <message name="IDS_CONFIRM_DANGEROUS_DOWNLOAD_ACCOUNT_COMPROMISE_TITLE"
-        desc="Title for the confirmation dialog asking whether the user really meant to keep an uncommon download">
-        This file is dangerous
       </message>
       <message name="IDS_PROMPT_CONFIRM_KEEP_DANGEROUS_DOWNLOAD"
                desc="Prompt text for the confirmation dialog asking whether the user really meant to keep a dangerous download">
@@ -2672,10 +2664,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_WARNING_SUBPAGE_SUMMARY_INSECURE"
                desc="Subpage summary text for a download item when the download is insecure.">
         This file may have been read or edited because this site isn't using a secure connection
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_WARNING_SUBPAGE_ACCOUNT_COMPROMISE"
-               desc="Subpage summary text for a download item when the download might cause compromise.">
-        This file may let attackers steal your personal information
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DANGEROUS"
                desc="Dangerous warning for the user.">
