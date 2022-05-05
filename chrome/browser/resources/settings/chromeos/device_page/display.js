@@ -6,6 +6,7 @@
  * @fileoverview
  * 'settings-display' is the settings subpage for display settings.
  */
+
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
@@ -22,19 +23,19 @@ import '../../settings_vars_css.js';
 import '../../controls/settings_dropdown_menu.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, Router} from '../../router.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
+import {Route} from '../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior} from '../prefs_behavior.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, getDisplayApi, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, StorageSpaceState} from './device_page_browser_proxy.js';
+import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, getDisplayApi} from './device_page_browser_proxy.js';
 
 /**
  * @typedef {{
@@ -61,298 +62,319 @@ const NightLightScheduleType = {
   CUSTOM: 2,
 };
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-display',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const SettingsDisplayElementBase = mixinBehaviors(
+    [DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior],
+    PolymerElement);
 
-  behaviors: [
-    DeepLinkingBehavior,
-    I18nBehavior,
-    PrefsBehavior,
-    RouteObserverBehavior,
-  ],
+/** @polymer */
+class SettingsDisplayElement extends SettingsDisplayElementBase {
+  static get is() {
+    return 'settings-display';
+  }
 
-  properties: {
-    /**
-     * @type {!chrome.settingsPrivate.PrefObject}
-     * @private
-     */
-    selectedModePref_: {
-      type: Object,
-      value() {
-        return {
-          key: 'fakeDisplaySliderPref',
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: 0,
-        };
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * @type {!chrome.settingsPrivate.PrefObject}
+       * @private
+       */
+      selectedModePref_: {
+        type: Object,
+        value() {
+          return {
+            key: 'fakeDisplaySliderPref',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: 0,
+          };
+        },
       },
-    },
 
-    /**
-     * @type {!chrome.settingsPrivate.PrefObject}
-     * @private
-     */
-    selectedZoomPref_: {
-      type: Object,
-      value() {
-        return {
-          key: 'fakeDisplaySliderZoomPref',
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: 0,
-        };
+      /**
+       * @type {!chrome.settingsPrivate.PrefObject}
+       * @private
+       */
+      selectedZoomPref_: {
+        type: Object,
+        value() {
+          return {
+            key: 'fakeDisplaySliderZoomPref',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: 0,
+          };
+        },
       },
-    },
 
-    /**
-     * Array of displays.
-     * @type {!Array<!chrome.system.display.DisplayUnitInfo>}
-     */
-    displays: Array,
+      /**
+       * Array of displays.
+       * @type {!Array<!chrome.system.display.DisplayUnitInfo>}
+       */
+      displays: Array,
 
-    /**
-     * Array of display layouts.
-     * @type {!Array<!chrome.system.display.DisplayLayout>}
-     */
-    layouts: Array,
+      /**
+       * Array of display layouts.
+       * @type {!Array<!chrome.system.display.DisplayLayout>}
+       */
+      layouts: Array,
 
-    /**
-     * String listing the ids in displays. Used to observe changes to the
-     * display configuration (i.e. when a display is added or removed).
-     */
-    displayIds: {type: String, observer: 'onDisplayIdsChanged_'},
+      /**
+       * String listing the ids in displays. Used to observe changes to the
+       * display configuration (i.e. when a display is added or removed).
+       */
+      displayIds: {type: String, observer: 'onDisplayIdsChanged_'},
 
-    /** Primary display id */
-    primaryDisplayId: String,
+      /** Primary display id */
+      primaryDisplayId: String,
 
-    /** @type {!chrome.system.display.DisplayUnitInfo|undefined} */
-    selectedDisplay: Object,
+      /** @type {!chrome.system.display.DisplayUnitInfo|undefined} */
+      selectedDisplay: Object,
 
-    /** Id passed to the overscan dialog. */
-    overscanDisplayId: {
-      type: String,
-      notify: true,
-    },
-
-    /** Ids for mirroring destination displays. */
-    mirroringDestinationIds: Array,
-
-    /** @private {!Array<number>} Mode index values for slider. */
-    modeValues_: Array,
-
-    /**
-     * @private {!Array<SliderTick>} Display zoom slider tick
-     *     values.
-     */
-    zoomValues_: Array,
-
-    /** @private {!DropdownMenuOptionList} */
-    displayModeList_: {
-      type: Array,
-      value: [],
-    },
-
-    /** @private {!DropdownMenuOptionList} */
-    refreshRateList_: {
-      type: Array,
-      value: [],
-    },
-
-    /** @private */
-    unifiedDesktopAvailable_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('unifiedDesktopAvailable');
-      }
-    },
-
-    /** @private */
-    ambientColorAvailable_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('deviceSupportsAmbientColor');
-      }
-    },
-
-    /** @private */
-    listAllDisplayModes_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('listAllDisplayModes');
-      }
-    },
-
-    /** @private */
-    unifiedDesktopMode_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * @type {!chrome.settingsPrivate.PrefObject}
-     * @private
-     */
-    selectedParentModePref_: {
-      type: Object,
-      value: function() {
-        return {
-          key: 'fakeDisplayParentModePref',
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: 0,
-        };
+      /** Id passed to the overscan dialog. */
+      overscanDisplayId: {
+        type: String,
+        notify: true,
       },
-    },
 
-    /** @private */
-    scheduleTypesList_: {
-      type: Array,
-      value() {
-        return [
-          {
-            name: loadTimeData.getString('displayNightLightScheduleNever'),
-            value: NightLightScheduleType.NEVER
-          },
-          {
-            name: loadTimeData.getString(
-                'displayNightLightScheduleSunsetToSunRise'),
-            value: NightLightScheduleType.SUNSET_TO_SUNRISE
-          },
-          {
-            name: loadTimeData.getString('displayNightLightScheduleCustom'),
-            value: NightLightScheduleType.CUSTOM
-          }
-        ];
+      /** Ids for mirroring destination displays. */
+      mirroringDestinationIds: Array,
+
+      /** @private {!Array<number>} Mode index values for slider. */
+      modeValues_: Array,
+
+      /**
+       * @private {!Array<SliderTick>} Display zoom slider tick
+       *     values.
+       */
+      zoomValues_: Array,
+
+      /** @private {!DropdownMenuOptionList} */
+      displayModeList_: {
+        type: Array,
+        value: [],
       },
-    },
 
-    /** @private */
-    shouldOpenCustomScheduleCollapse_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {!DropdownMenuOptionList} */
+      refreshRateList_: {
+        type: Array,
+        value: [],
+      },
 
-    /** @private */
-    nightLightScheduleSubLabel_: String,
+      /** @private */
+      unifiedDesktopAvailable_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('unifiedDesktopAvailable');
+        }
+      },
 
-    /** @private */
-    logicalResolutionText_: String,
+      /** @private */
+      ambientColorAvailable_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('deviceSupportsAmbientColor');
+        }
+      },
 
-    /** @private {!Array<string>} */
-    displayTabNames_: Array,
+      /** @private */
+      listAllDisplayModes_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('listAllDisplayModes');
+        }
+      },
 
-    /** @private */
-    selectedTab_: Number,
+      /** @private */
+      unifiedDesktopMode_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Contains the settingId of any deep link that wasn't able to be shown,
-     * null otherwise.
-     * @private {?chromeos.settings.mojom.Setting}
-     */
-    pendingSettingId_: {
-      type: Number,
-      value: null,
-    },
+      /**
+       * @type {!chrome.settingsPrivate.PrefObject}
+       * @private
+       */
+      selectedParentModePref_: {
+        type: Object,
+        value: function() {
+          return {
+            key: 'fakeDisplayParentModePref',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: 0,
+          };
+        },
+      },
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kDisplaySize,
-        chromeos.settings.mojom.Setting.kNightLight,
-        chromeos.settings.mojom.Setting.kDisplayOrientation,
-        chromeos.settings.mojom.Setting.kDisplayArrangement,
-        chromeos.settings.mojom.Setting.kDisplayResolution,
-        chromeos.settings.mojom.Setting.kDisplayRefreshRate,
-        chromeos.settings.mojom.Setting.kDisplayMirroring,
-        chromeos.settings.mojom.Setting.kAllowWindowsToSpanDisplays,
-        chromeos.settings.mojom.Setting.kAmbientColors,
-        chromeos.settings.mojom.Setting.kTouchscreenCalibration,
-        chromeos.settings.mojom.Setting.kNightLightColorTemperature,
-        chromeos.settings.mojom.Setting.kDisplayOverscan,
-      ]),
-    },
-  },
+      /** @private */
+      scheduleTypesList_: {
+        type: Array,
+        value() {
+          return [
+            {
+              name: loadTimeData.getString('displayNightLightScheduleNever'),
+              value: NightLightScheduleType.NEVER
+            },
+            {
+              name: loadTimeData.getString(
+                  'displayNightLightScheduleSunsetToSunRise'),
+              value: NightLightScheduleType.SUNSET_TO_SUNRISE
+            },
+            {
+              name: loadTimeData.getString('displayNightLightScheduleCustom'),
+              value: NightLightScheduleType.CUSTOM
+            }
+          ];
+        },
+      },
 
-  observers: [
-    'updateNightLightScheduleSettings_(prefs.ash.night_light.schedule_type.*,' +
-        ' prefs.ash.night_light.enabled.*)',
-    'onSelectedModeChange_(selectedModePref_.value)',
-    'onSelectedParentModeChange_(selectedParentModePref_.value)',
-    'onSelectedZoomChange_(selectedZoomPref_.value)',
-    'onDisplaysChanged_(displays.*)',
-  ],
+      /** @private */
+      shouldOpenCustomScheduleCollapse_: {
+        type: Boolean,
+        value: false,
+      },
 
-  /**
-   * This represents the index of the mode with the highest refresh rate at
-   * the current resolution.
-   * @private {number}
-   */
-  currentSelectedParentModeIndex_: -1,
+      /** @private */
+      nightLightScheduleSubLabel_: String,
 
-  /**
-   * This is the index of the currently selected mode.
-   * @private {number} Selected mode index received from chrome.
-   */
-  currentSelectedModeIndex_: -1,
+      /** @private */
+      logicalResolutionText_: String,
 
-  /**
-   * Listener for chrome.system.display.onDisplayChanged events.
-   * @type {function(void)|undefined}
-   * @private
-   */
-  displayChangedListener_: undefined,
+      /** @private {!Array<string>} */
+      displayTabNames_: Array,
 
-  /** @private {?DevicePageBrowserProxy} */
-  browserProxy_: null,
+      /** @private */
+      selectedTab_: Number,
 
-  /** @private {string} */
-  invalidDisplayId_: loadTimeData.getString('invalidDisplayId'),
+      /**
+       * Contains the settingId of any deep link that wasn't able to be shown,
+       * null otherwise.
+       * @private {?chromeos.settings.mojom.Setting}
+       */
+      pendingSettingId_: {
+        type: Number,
+        value: null,
+      },
 
-  /** @private {!Route|undefined} */
-  currentRoute_: undefined,
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kDisplaySize,
+          chromeos.settings.mojom.Setting.kNightLight,
+          chromeos.settings.mojom.Setting.kDisplayOrientation,
+          chromeos.settings.mojom.Setting.kDisplayArrangement,
+          chromeos.settings.mojom.Setting.kDisplayResolution,
+          chromeos.settings.mojom.Setting.kDisplayRefreshRate,
+          chromeos.settings.mojom.Setting.kDisplayMirroring,
+          chromeos.settings.mojom.Setting.kAllowWindowsToSpanDisplays,
+          chromeos.settings.mojom.Setting.kAmbientColors,
+          chromeos.settings.mojom.Setting.kTouchscreenCalibration,
+          chromeos.settings.mojom.Setting.kNightLightColorTemperature,
+          chromeos.settings.mojom.Setting.kDisplayOverscan,
+        ]),
+      },
 
-  /**
-   * Maps a parentModeIndex to the list of possible refresh rates.
-   * All modes have a modeIndex corresponding to the index in the selected
-   * display's mode list. Parent mode indexes represent the mode with the
-   * highest refresh rate at a given resolution. There is 1 and only 1
-   * parentModeIndex for each possible resolution .
-   * @private {!Map<number, DropdownMenuOptionList>}
-   */
-  parentModeToRefreshRateMap_: new Map(),
+    };
+  }
 
-  /**
-   * Map containing an entry for each display mode mapping its modeIndex to
-   * the corresponding parentModeIndex value.
-   * @private {!Map<number, number>} Mode index values for slider.
-   */
-  modeToParentModeMap_: new Map(),
+  static get observers() {
+    return [
+      'updateNightLightScheduleSettings_(prefs.ash.night_light.schedule_type.*,' +
+          ' prefs.ash.night_light.enabled.*)',
+      'onSelectedModeChange_(selectedModePref_.value)',
+      'onSelectedParentModeChange_(selectedParentModePref_.value)',
+      'onSelectedZoomChange_(selectedZoomPref_.value)',
+      'onDisplaysChanged_(displays.*)',
+
+    ];
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /**
+     * This represents the index of the mode with the highest refresh rate at
+     * the current resolution.
+     * @private {number}
+     */
+    this.currentSelectedParentModeIndex_ = -1;
+
+    /**
+     * This is the index of the currently selected mode.
+     * @private {number} Selected mode index received from chrome.
+     */
+    this.currentSelectedModeIndex_ = -1;
+
+    /**
+     * Listener for chrome.system.display.onDisplayChanged events.
+     * @type {function(void)|undefined}
+     * @private
+     */
+    this.displayChangedListener_ = undefined;
+
+    /** @private {string} */
+    this.invalidDisplayId_ = loadTimeData.getString('invalidDisplayId');
+
+    /** @private {!Route|undefined} */
+    this.currentRoute_ = undefined;
+
+    /** @private {!DevicePageBrowserProxy} */
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
-  },
+
+    /**
+     * Maps a parentModeIndex to the list of possible refresh rates.
+     * All modes have a modeIndex corresponding to the index in the selected
+     * display's mode list. Parent mode indexes represent the mode with the
+     * highest refresh rate at a given resolution. There is 1 and only 1
+     * parentModeIndex for each possible resolution .
+     * @private {!Map<number, DropdownMenuOptionList>}
+     */
+    this.parentModeToRefreshRateMap_ = new Map();
+
+    /**
+     * Map containing an entry for each display mode mapping its modeIndex to
+     * the corresponding parentModeIndex value.
+     * @private {!Map<number, number>} Mode index values for slider.
+     */
+    this.modeToParentModeMap_ = new Map();
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.displayChangedListener_ =
         this.displayChangedListener_ || (() => this.getDisplayInfo_());
     getDisplayApi().onDisplayChanged.addListener(this.displayChangedListener_);
 
     this.getDisplayInfo_();
     this.$.displaySizeSlider.updateValueInstantly = false;
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     getDisplayApi().onDisplayChanged.removeListener(
         assert(this.displayChangedListener_));
 
     this.currentSelectedModeIndex_ = -1;
     this.currentSelectedParentModeIndex_ = -1;
-  },
+  }
 
   /**
    * Overridden from DeepLinkingBehavior.
@@ -369,23 +391,23 @@ Polymer({
 
     // Continue with deep link attempt.
     return true;
-  },
+  }
 
   /**
-   * @param {!Route|undefined} opt_newRoute
-   * @param {!Route|undefined} opt_oldRoute
+   * @param {!Route} newRoute
+   * @param {!Route=} opt_oldRoute
    */
-  currentRouteChanged(opt_newRoute, opt_oldRoute) {
-    this.currentRoute_ = opt_newRoute;
+  currentRouteChanged(newRoute, opt_oldRoute) {
+    this.currentRoute_ = newRoute;
 
     // When navigating away from the page, deselect any selected display.
-    if (opt_newRoute !== routes.DISPLAY && opt_oldRoute === routes.DISPLAY) {
+    if (newRoute !== routes.DISPLAY && opt_oldRoute === routes.DISPLAY) {
       this.browserProxy_.highlightDisplay(this.invalidDisplayId_);
       return;
     }
 
     // Does not apply to this page.
-    if (opt_newRoute !== routes.DISPLAY) {
+    if (newRoute !== routes.DISPLAY) {
       this.pendingSettingId_ = null;
       return;
     }
@@ -397,7 +419,7 @@ Polymer({
         this.pendingSettingId_ = result.pendingSettingId;
       }
     });
-  },
+  }
 
   /**
    * Shows or hides the overscan dialog.
@@ -411,14 +433,14 @@ Polymer({
     } else {
       this.$.displayOverscan.close();
     }
-  },
+  }
 
   /** @private */
   onDisplayIdsChanged_() {
     // Close any overscan dialog (which will cancel any overscan operation)
     // if displayIds changes.
     this.showOverscanDialog_(false);
-  },
+  }
 
   /** @private */
   getDisplayInfo_() {
@@ -427,7 +449,7 @@ Polymer({
     };
     getDisplayApi().getInfo(
         flags, displays => this.displayInfoFetched_(displays));
-  },
+  }
 
   /**
    * @param {!Array<!chrome.system.display.DisplayUnitInfo>} displays
@@ -444,7 +466,7 @@ Polymer({
     } else {
       this.mirroringDestinationIds = [];
     }
-  },
+  }
 
   /**
    * @param {!Array<!chrome.system.display.DisplayUnitInfo>} displays
@@ -456,7 +478,7 @@ Polymer({
     this.displays = displays;
     this.displayTabNames_ = displays.map(({name}) => name);
     this.updateDisplayInfo_();
-  },
+  }
 
   /**
    * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
@@ -471,7 +493,7 @@ Polymer({
       }
     }
     return 0;
-  },
+  }
 
   /**
    * Checks if the given device policy is enabled.
@@ -481,7 +503,7 @@ Polymer({
    */
   isDevicePolicyEnabled_(policyPref) {
     return policyPref !== undefined && policyPref.value !== null;
-  },
+  }
 
   /**
    * Checks if display resolution is managed by device policy.
@@ -494,7 +516,7 @@ Polymer({
         (resolutionPref.value.external_use_native !== undefined ||
          (resolutionPref.value.external_width !== undefined &&
           resolutionPref.value.external_height !== undefined));
-  },
+  }
 
   /**
    * Checks if display resolution is managed by policy and the policy
@@ -506,7 +528,7 @@ Polymer({
   isDisplayResolutionMandatory_(resolutionPref) {
     return this.isDisplayResolutionManagedByPolicy_(resolutionPref) &&
         !resolutionPref.value.recommended;
-  },
+  }
 
   /**
    * Checks if display scale factor is managed by device policy.
@@ -523,7 +545,7 @@ Polymer({
       return resolutionPref.value.internal_scale_percentage !== undefined;
     }
     return resolutionPref.value.external_scale_percentage !== undefined;
-  },
+  }
 
   /**
    * Checks if display scale factor is managed by policy and the policy
@@ -536,7 +558,7 @@ Polymer({
     return this.isDisplayScaleManagedByPolicy_(
                selectedDisplay, resolutionPref) &&
         !resolutionPref.value.recommended;
-  },
+  }
 
 
   /**
@@ -565,7 +587,7 @@ Polymer({
       });
     }
     this.displayModeList_ = optionList;
-  },
+  }
 
   /**
    * Uses the modes of |selectedDisplay| to build a nested map of width =>
@@ -600,7 +622,7 @@ Polymer({
       modes.get(mode.width).get(mode.height).set(mode.refreshRate, i);
     }
     return modes;
-  },
+  }
 
   /**
    * Parses the display modes for |selectedDisplay|. |displayModeList_| will
@@ -665,7 +687,7 @@ Polymer({
 
     // Use the new sort order.
     this.sortResolutionList_();
-  },
+  }
 
   /**
    * Picks the appropriate parent mode from a refresh rate -> mode index map.
@@ -677,7 +699,7 @@ Polymer({
   getParentModeIndex_(refreshRates) {
     const maxRefreshRate = Math.max(...refreshRates.keys());
     return refreshRates.get(maxRefreshRate);
-  },
+  }
 
   /**
    * Adds a an entry in |displayModeList_| for the resolution represented by
@@ -704,7 +726,7 @@ Polymer({
       name: resolutionOption,
       value: parentModeIndex,
     });
-  },
+  }
 
   /**
    * Adds a an entry in |parentModeToRefreshRateMap_| for the refresh rate
@@ -734,7 +756,7 @@ Polymer({
       name: refreshRateOption,
       value: modeIndex,
     });
-  },
+  }
 
   /**
    * Sorts |displayModeList_| in descending order. First order sort is width,
@@ -753,7 +775,7 @@ Polymer({
                   getWidthFromResolutionString(second.name);
             })
             .reverse();
-  },
+  }
 
   /**
    * Parses display modes for |selectedDisplay|. A 'mode' is a resolution +
@@ -769,7 +791,7 @@ Polymer({
     } else {
       this.parseCompoundDisplayModes_(selectedDisplay);
     }
-  },
+  }
 
   /**
    * Returns a value from |zoomValues_| that is closest to the display zoom
@@ -792,7 +814,7 @@ Polymer({
     }
 
     return /** @type {number} */ (closestMatch);
-  },
+  }
 
   /**
    * Given the display with the current display mode, this function lists all
@@ -809,7 +831,7 @@ Polymer({
         label: this.i18n('displayZoomValue', ariaValue.toString())
       };
     });
-  },
+  }
 
   /**
    * We need to call this explicitly rather than relying on change events
@@ -866,7 +888,7 @@ Polymer({
 
     this.updateLogicalResolutionText_(
         /** @type {number} */ (this.selectedZoomPref_.value));
-  },
+  }
 
   /**
    * Returns true if the resolution setting needs to be displayed.
@@ -876,7 +898,7 @@ Polymer({
    */
   showDropDownResolutionSetting_(display) {
     return !display.isInternal;
-  },
+  }
 
   /**
    * Returns true if the refresh rate setting needs to be displayed.
@@ -887,7 +909,7 @@ Polymer({
   showRefreshRateSetting_(display) {
     return this.listAllDisplayModes_ &&
         this.showDropDownResolutionSetting_(display);
-  },
+  }
 
   /**
    * Returns true if external touch devices are connected and the current
@@ -901,7 +923,7 @@ Polymer({
   showTouchCalibrationSetting_(display) {
     return !display.isInternal &&
         loadTimeData.getBoolean('enableTouchCalibrationSetting');
-  },
+  }
 
   /**
    * Returns true if the overscan setting should be shown for |display|.
@@ -911,7 +933,7 @@ Polymer({
    */
   showOverscanSetting_(display) {
     return !display.isInternal;
-  },
+  }
 
   /**
    * Returns true if the ambient color setting should be shown for |display|.
@@ -922,7 +944,7 @@ Polymer({
    */
   showAmbientColorSetting_(ambientColorAvailable, display) {
     return ambientColorAvailable && display && display.isInternal;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -930,7 +952,7 @@ Polymer({
    */
   hasMultipleDisplays_() {
     return this.displays.length > 1;
-  },
+  }
 
   /**
    * Returns false if the display select menu has to be hidden.
@@ -945,7 +967,7 @@ Polymer({
     }
 
     return false;
-  },
+  }
 
   /**
    * Returns the select menu index indicating whether the display currently is
@@ -960,7 +982,7 @@ Polymer({
       return 0;
     }
     return 1;
-  },
+  }
 
   /**
    * Returns the i18n string for the text to be used for mirroring settings.
@@ -970,7 +992,7 @@ Polymer({
    */
   getDisplayMirrorText_(displays) {
     return this.i18n('displayMirror', displays[0].name);
-  },
+  }
 
   /**
    * @param {boolean} unifiedDesktopAvailable
@@ -987,7 +1009,7 @@ Polymer({
     return unifiedDesktopMode ||
         (unifiedDesktopAvailable && displays.length > 1 &&
          !this.isMirrored_(displays));
-  },
+  }
 
   /**
    * @param {boolean} unifiedDesktopMode
@@ -998,7 +1020,7 @@ Polymer({
     return this.i18n(
         unifiedDesktopMode ? 'displayUnifiedDesktopOn' :
                              'displayUnifiedDesktopOff');
-  },
+  }
 
   /**
    * @param {boolean} unifiedDesktopMode
@@ -1013,7 +1035,7 @@ Polymer({
 
     return this.isMirrored_(displays) ||
         (!unifiedDesktopMode && displays.length > 1);
-  },
+  }
 
   /**
    * @param {!Array<!chrome.system.display.DisplayUnitInfo>} displays
@@ -1023,7 +1045,7 @@ Polymer({
   isMirrored_(displays) {
     return displays !== undefined && displays.length > 0 &&
         !!displays[0].mirroringSourceId;
-  },
+  }
 
   /**
    * @param {!chrome.system.display.DisplayUnitInfo} display
@@ -1033,7 +1055,7 @@ Polymer({
    */
   isSelected_(display, selectedDisplay) {
     return display.id === selectedDisplay.id;
-  },
+  }
 
   /**
    * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
@@ -1042,7 +1064,7 @@ Polymer({
    */
   enableSetResolution_(selectedDisplay) {
     return selectedDisplay.modes.length > 1;
-  },
+  }
 
   /**
    * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
@@ -1051,7 +1073,7 @@ Polymer({
    */
   enableDisplayZoomSlider_(selectedDisplay) {
     return selectedDisplay.availableDisplayZoomFactors.length > 1;
-  },
+  }
 
   /**
    * Returns true if the given mode is the best mode for the
@@ -1074,7 +1096,7 @@ Polymer({
     }
 
     return mode.uiScale === 1.0;
-  },
+  }
 
   /**
    * @return {string}
@@ -1100,7 +1122,7 @@ Polymer({
       return this.i18n('displayResolutionTextNative', widthStr, heightStr);
     }
     return this.i18n('displayResolutionText', widthStr, heightStr);
-  },
+  }
 
   /**
    * Updates the logical resolution text to be used for the display size
@@ -1136,7 +1158,7 @@ Polymer({
     }
     this.logicalResolutionText_ =
         this.i18n(logicalResolutionStrId, widthStr, heightStr);
-  },
+  }
 
   /**
    * Determines whether width and height should be swapped in the
@@ -1151,7 +1173,7 @@ Polymer({
 
     return bounds.width > bounds.height !==
         mode.widthInNativePixels > mode.heightInNativePixels;
-  },
+  }
 
 
   /**
@@ -1169,7 +1191,7 @@ Polymer({
     const zoomFactor = this.$.displaySizeSlider.ticks[sliderValue].value;
     this.updateLogicalResolutionText_(
         /** @type {number} */ (zoomFactor));
-  },
+  }
 
   /**
    * @param {!CustomEvent<string>} e |e.detail| is the id of the selected
@@ -1187,15 +1209,15 @@ Polymer({
         return;
       }
     }
-  },
+  }
 
   /** @private */
   onSelectDisplayTab_() {
-    const {selected} = this.$$('cr-tabs');
+    const {selected} = this.shadowRoot.querySelector('cr-tabs');
     if (this.selectedTab_ !== selected) {
       this.setSelectedDisplay_(this.displays[selected]);
     }
-  },
+  }
 
   /**
    * Handles event when a touch calibration option is selected.
@@ -1204,7 +1226,7 @@ Polymer({
    */
   onTouchCalibrationTap_(e) {
     getDisplayApi().showNativeTouchCalibration(this.selectedDisplay.id);
-  },
+  }
 
   /**
    * Handles the event when an option from display select menu is selected.
@@ -1229,7 +1251,7 @@ Polymer({
     getDisplayApi().setDisplayProperties(
         this.selectedDisplay.id, properties,
         () => this.setPropertiesCallback_());
-  },
+  }
 
   /**
    * Handles a change in the |selectedParentModePref| value triggered via the
@@ -1250,7 +1272,7 @@ Polymer({
 
     // Reset |selectedModePref| to the parentMode.
     this.set('selectedModePref_.value', this.selectedParentModePref_.value);
-  },
+  }
 
   /**
    * Returns True if a new parentMode has been set and we have received an
@@ -1265,7 +1287,7 @@ Polymer({
 
     return this.currentSelectedParentModeIndex_ !==
         this.selectedParentModePref_.value;
-  },
+  }
 
   /**
    * Returns True if a new mode has been set and we have received an update
@@ -1284,7 +1306,7 @@ Polymer({
     }
 
     return this.currentSelectedModeIndex_ !== this.selectedModePref_.value;
-  },
+  }
 
   /**
    * Handles a change in |selectedModePref| triggered via the observer.
@@ -1313,7 +1335,7 @@ Polymer({
     getDisplayApi().setDisplayProperties(
         this.selectedDisplay.id, properties,
         () => this.setPropertiesCallback_());
-  },
+  }
 
   /**
    * Triggerend when the display size slider changes its value. This only
@@ -1334,7 +1356,7 @@ Polymer({
     getDisplayApi().setDisplayProperties(
         this.selectedDisplay.id, properties,
         () => this.setPropertiesCallback_());
-  },
+  }
 
   /**
    * Returns whether the option "Auto-rotate" is one of the shown options in
@@ -1345,7 +1367,7 @@ Polymer({
    */
   showAutoRotateOption_(selectedDisplay) {
     return selectedDisplay.isAutoRotationAllowed;
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -1363,7 +1385,7 @@ Polymer({
     getDisplayApi().setDisplayProperties(
         this.selectedDisplay.id, properties,
         () => this.setPropertiesCallback_());
-  },
+  }
 
   /** @private */
   onMirroredTap_(event) {
@@ -1383,7 +1405,7 @@ Polymer({
         console.error('setMirrorMode Error: ' + error.message);
       }
     });
-  },
+  }
 
   /** @private */
   onUnifiedDesktopTap_() {
@@ -1392,7 +1414,7 @@ Polymer({
     };
     getDisplayApi().setDisplayProperties(
         this.primaryDisplayId, properties, () => this.setPropertiesCallback_());
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -1402,12 +1424,12 @@ Polymer({
     e.preventDefault();
     this.overscanDisplayId = this.selectedDisplay.id;
     this.showOverscanDialog_(true);
-  },
+  }
 
   /** @private */
   onCloseOverscanDialog_() {
-    focusWithoutInk(assert(this.$$('#overscan')));
-  },
+    focusWithoutInk(assert(this.shadowRoot.querySelector('#overscan')));
+  }
 
   /** @private */
   updateDisplayInfo_() {
@@ -1445,7 +1467,7 @@ Polymer({
         this.pendingSettingId_ = null;
       }
     });
-  },
+  }
 
   /** @private */
   setPropertiesCallback_() {
@@ -1453,7 +1475,7 @@ Polymer({
       console.error(
           'setDisplayProperties Error: ' + chrome.runtime.lastError.message);
     }
-  },
+  }
 
   /**
    * Invoked when the status of Night Light or its schedule type are changed,
@@ -1474,7 +1496,7 @@ Polymer({
     } else {
       this.nightLightScheduleSubLabel_ = '';
     }
-  },
+  }
 
   /**
    * @return {boolean}
@@ -1485,15 +1507,17 @@ Polymer({
       return false;
     }
     return this.hasMultipleDisplays_() || this.isMirrored_(this.displays);
-  },
+  }
 
   /** @private */
   onDisplaysChanged_() {
     flush();
-    const displayLayout = this.$$('#displayLayout');
+    const displayLayout = this.shadowRoot.querySelector('#displayLayout');
     if (displayLayout) {
       displayLayout.updateDisplays(
           this.displays, this.layouts, this.mirroringDestinationIds);
     }
-  },
-});
+  }
+}
+
+customElements.define(SettingsDisplayElement.is, SettingsDisplayElement);

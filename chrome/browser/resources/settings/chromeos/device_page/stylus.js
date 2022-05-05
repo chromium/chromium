@@ -7,116 +7,147 @@
  * 'settings-stylus' is the settings subpage with stylus-specific settings.
  */
 
-const FIND_MORE_APPS_URL = 'https://play.google.com/store/apps/' +
-    'collection/promotion_30023cb_stylus_apps';
-
-import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import '//resources/js/action_link.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, getDisplayApi, StorageSpaceState} from './device_page_browser_proxy.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared_css.js';
-import {Router, Route} from '../../router.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
-import {routes} from '../os_route.js';
+
+import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
+import {assert} from '//resources/js/assert.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route} from '../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
+import {routes} from '../os_route.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-stylus',
+import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, NoteAppInfo, NoteAppLockScreenSupport} from './device_page_browser_proxy.js';
 
-  behaviors: [
-    DeepLinkingBehavior,
-    RouteObserverBehavior,
-  ],
+const FIND_MORE_APPS_URL = 'https://play.google.com/store/apps/' +
+    'collection/promotion_30023cb_stylus_apps';
 
-  properties: {
-    /** Preferences state. */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const SettingsStylusElementBase = mixinBehaviors(
+    [DeepLinkingBehavior, RouteObserverBehavior], PolymerElement);
 
-    /**
-     * Policy indicator type for user policy - used for policy indicator UI
-     * shown when an app that is not allowed to run on lock screen by policy is
-     * selected.
-     * @type {CrPolicyIndicatorType}
-     * @private
-     */
-    userPolicyIndicator_: {
-      type: String,
-      value: CrPolicyIndicatorType.USER_POLICY,
-    },
+/** @polymer */
+class SettingsStylusElement extends SettingsStylusElementBase {
+  static get is() {
+    return 'settings-stylus';
+  }
 
-    /**
-     * Note taking apps the user can pick between.
-     * @private {Array<!NoteAppInfo>}
-     */
-    appChoices_: {
-      type: Array,
-      value() {
-        return [];
-      }
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * True if the device has an internal stylus.
-     * @private
-     */
-    hasInternalStylus_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('hasInternalStylus');
+  static get properties() {
+    return {
+      /** Preferences state. */
+      prefs: {
+        type: Object,
+        notify: true,
       },
-      readOnly: true,
-    },
 
-    /**
-     * Currently selected note taking app.
-     * @private {?NoteAppInfo}
-     */
-    selectedApp_: {
-      type: Object,
-      value: null,
-    },
+      /**
+       * Policy indicator type for user policy - used for policy indicator UI
+       * shown when an app that is not allowed to run on lock screen by policy
+       * is selected.
+       * @type {CrPolicyIndicatorType}
+       * @private
+       */
+      userPolicyIndicator_: {
+        type: String,
+        value: CrPolicyIndicatorType.USER_POLICY,
+      },
 
-    /**
-     * True if the ARC container has not finished starting yet.
-     * @private
-     */
-    waitingForAndroid_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Note taking apps the user can pick between.
+       * @private {Array<!NoteAppInfo>}
+       */
+      appChoices_: {
+        type: Array,
+        value() {
+          return [];
+        }
+      },
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kStylusToolsInShelf,
-        chromeos.settings.mojom.Setting.kStylusNoteTakingApp,
-        chromeos.settings.mojom.Setting.kStylusNoteTakingFromLockScreen,
-        chromeos.settings.mojom.Setting.kStylusLatestNoteOnLockScreen,
-      ]),
-    },
-  },
+      /**
+       * True if the device has an internal stylus.
+       * @private
+       */
+      hasInternalStylus_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('hasInternalStylus');
+        },
+        readOnly: true,
+      },
+
+      /**
+       * Currently selected note taking app.
+       * @private {?NoteAppInfo}
+       */
+      selectedApp_: {
+        type: Object,
+        value: null,
+      },
+
+      /**
+       * True if the ARC container has not finished starting yet.
+       * @private
+       */
+      waitingForAndroid_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kStylusToolsInShelf,
+          chromeos.settings.mojom.Setting.kStylusNoteTakingApp,
+          chromeos.settings.mojom.Setting.kStylusNoteTakingFromLockScreen,
+          chromeos.settings.mojom.Setting.kStylusLatestNoteOnLockScreen,
+        ]),
+      },
+
+    };
+  }
+
+  /** @override */
+  constructor() {
+    super();
+
+    /** @private {!DevicePageBrowserProxy} */
+    this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+
+    this.browserProxy_.setNoteTakingAppsUpdatedCallback(
+        this.onNoteAppsUpdated_.bind(this));
+    this.browserProxy_.requestNoteTakingApps();
+  }
 
   /**
    * @param {!Route} route
-   * @param {Route} oldRoute
+   * @param {!Route=} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
@@ -125,7 +156,7 @@ Polymer({
     }
 
     this.attemptDeepLink();
-  },
+  }
 
   /**
    * @return {boolean} Whether note taking from the lock screen is supported
@@ -136,7 +167,7 @@ Polymer({
     return !!this.selectedApp_ &&
         this.selectedApp_.lockScreenSupport !==
         NoteAppLockScreenSupport.NOT_SUPPORTED;
-  },
+  }
 
   /**
    * @return {boolean} Whether the selected app is disallowed to handle note
@@ -147,7 +178,7 @@ Polymer({
     return !!this.selectedApp_ &&
         this.selectedApp_.lockScreenSupport ===
         NoteAppLockScreenSupport.NOT_ALLOWED_BY_POLICY;
-  },
+  }
 
   /**
    * @return {boolean} Whether the selected app is enabled as a note action
@@ -158,22 +189,7 @@ Polymer({
     return !!this.selectedApp_ &&
         this.selectedApp_.lockScreenSupport ===
         NoteAppLockScreenSupport.ENABLED;
-  },
-
-  /** @private {?DevicePageBrowserProxy} */
-  browserProxy_: null,
-
-  /** @override */
-  created() {
-    this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
-  },
-
-  /** @override */
-  ready() {
-    this.browserProxy_.setNoteTakingAppsUpdatedCallback(
-        this.onNoteAppsUpdated_.bind(this));
-    this.browserProxy_.requestNoteTakingApps();
-  },
+  }
 
   /**
    * Finds note app info with the provided app id.
@@ -186,7 +202,7 @@ Polymer({
       return app.value === id;
     }) ||
         null;
-  },
+  }
 
   /**
    * Toggles whether the selected app is enabled as a note action handler on
@@ -206,7 +222,7 @@ Polymer({
         this.selectedApp_.lockScreenSupport ===
         NoteAppLockScreenSupport.SUPPORTED);
     recordSettingChange();
-  },
+  }
 
   /** @private */
   onSelectedAppChanged_() {
@@ -217,7 +233,7 @@ Polymer({
       this.browserProxy_.setPreferredNoteTakingApp(app.value);
       recordSettingChange();
     }
-  },
+  }
 
   /**
    * @param {Array<!NoteAppInfo>} apps
@@ -229,8 +245,8 @@ Polymer({
     this.appChoices_ = apps;
 
     // Wait until app selection UI is updated before setting the selected app.
-    this.async(this.onSelectedAppChanged_.bind(this));
-  },
+    microTask.run(this.onSelectedAppChanged_.bind(this));
+  }
 
   /**
    * @param {Array<!NoteAppInfo>} apps
@@ -239,7 +255,7 @@ Polymer({
    */
   showNoApps_(apps, waitingForAndroid) {
     return apps.length === 0 && !waitingForAndroid;
-  },
+  }
 
   /**
    * @param {Array<!NoteAppInfo>} apps
@@ -248,10 +264,12 @@ Polymer({
    */
   showApps_(apps, waitingForAndroid) {
     return apps.length > 0 && !waitingForAndroid;
-  },
+  }
 
   /** @private */
   onFindAppsTap_() {
     this.browserProxy_.showPlayStore(FIND_MORE_APPS_URL);
-  },
-});
+  }
+}
+
+customElements.define(SettingsStylusElement.is, SettingsStylusElement);

@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import { addSingletonGetter, addWebUIListener,WebUIListener} from 'chrome://resources/js/cr.m.js';
-// clang-format on
+import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 
-  /**
-   * Enumeration for device state about remaining space.
-   * These values must be kept in sync with
-   * StorageManagerHandler::StorageSpaceState in C++ code.
-   * @enum {number}
-   */
+/**
+ * Enumeration for device state about remaining space.
+ * These values must be kept in sync with
+ * StorageManagerHandler::StorageSpaceState in C++ code.
+ * @enum {number}
+ */
 export const StorageSpaceState = {
   NORMAL: 0,
   LOW: 1,
@@ -31,13 +29,13 @@ export function getDisplayApi() {
   return systemDisplayApi;
 }
 
-  /**
-   * @typedef {{
-   *   id: string,
-   *   is_dedicated_charger: boolean,
-   *   description: string
-   * }}
-   */
+/**
+ * @typedef {{
+ *   id: string,
+ *   is_dedicated_charger: boolean,
+ *   description: string
+ * }}
+ */
 export let PowerSource;
 
 /**
@@ -356,6 +354,17 @@ export class DevicePageBrowserProxyImpl {
   openMyFiles() {
     chrome.send('openMyFiles');
   }
+
+  /** @return {!DevicePageBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new DevicePageBrowserProxyImpl());
+  }
+
+  /** @param {!DevicePageBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(DevicePageBrowserProxyImpl);
+/** @type {?DevicePageBrowserProxy} */
+let instance = null;
