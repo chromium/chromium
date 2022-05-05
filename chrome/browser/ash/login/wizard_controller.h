@@ -191,9 +191,6 @@ class WizardController : public OobeUI::Observer {
   // screen.
   BaseScreen* current_screen() const { return current_screen_; }
 
-  // Returns true if the current wizard instance has reached the login screen.
-  bool login_screen_started() const { return login_screen_started_; }
-
   // Returns true if a given screen exists.
   bool HasScreen(OobeScreenId screen_id);
 
@@ -496,8 +493,6 @@ class WizardController : public OobeUI::Observer {
 
   // Whether OOBE has yet been marked as completed.
   bool oobe_marked_completed_ = false;
-
-  bool login_screen_started_ = false;
 
   // Non-owning pointer to local state used for testing.
   static PrefService* local_state_for_testing_;

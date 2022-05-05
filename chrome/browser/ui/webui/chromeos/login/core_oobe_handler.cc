@@ -302,10 +302,9 @@ void CoreOobeHandler::HandleStartDemoModeSetupForTesting(
   }
 
   WizardController* wizard_controller = WizardController::default_controller();
-  if (wizard_controller && !wizard_controller->login_screen_started()) {
-    wizard_controller->SimulateDemoModeSetupForTesting(config);
-    wizard_controller->AdvanceToScreen(DemoSetupScreenView::kScreenId);
-  }
+  DCHECK(wizard_controller);
+  wizard_controller->SimulateDemoModeSetupForTesting(config);  // IN-TEST
+  wizard_controller->AdvanceToScreen(DemoSetupScreenView::kScreenId);
 }
 
 void CoreOobeHandler::HandleUpdateOobeUIState(int state) {

@@ -827,10 +827,6 @@ void WizardController::OnSignInFatalErrorScreenExit() {
 }
 
 void WizardController::ShowLoginScreen() {
-  // This may be triggered by multiply asynchronous events from the JS side.
-  if (login_screen_started_)
-    return;
-
   if (!time_eula_accepted_.is_null()) {
     base::TimeDelta delta = base::TimeTicks::Now() - time_eula_accepted_;
     base::UmaHistogramMediumTimes("OOBE.EULAToSignInTime", delta);
@@ -838,7 +834,6 @@ void WizardController::ShowLoginScreen() {
   VLOG(1) << "Showing login screen.";
   UpdateStatusAreaVisibilityForScreen(GaiaView::kScreenId);
   GetLoginDisplayHost()->StartSignInScreen();
-  login_screen_started_ = true;
 }
 
 void WizardController::ShowGaiaPasswordChangedScreen(
@@ -1278,7 +1273,6 @@ void WizardController::SkipToLoginForTesting() {
   if (current_screen_ && current_screen_->screen_id() == GaiaView::kScreenId)
     return;
   wizard_context_->skip_to_login_for_tests = true;
-  login_screen_started_ = false;
 
   if (!chromeos::features::IsOobeConsolidatedConsentEnabled())
     StartupUtils::MarkEulaAccepted();
@@ -2113,7 +2107,6 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
                  << current_screen_->screen_id();
     return;
   }
-  login_screen_started_ = false;
 
   if (screen_id == WelcomeView::kScreenId) {
     ShowWelcomeScreen();
