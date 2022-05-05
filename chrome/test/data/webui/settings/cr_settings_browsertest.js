@@ -310,7 +310,7 @@ var CrSettingsPasswordEditDialogTest = class extends CrSettingsBrowserTest {
   }
 };
 
-TEST_F('CrSettingsPasswordEditDialogTest', 'DISABLED_All', function() {
+TEST_F('CrSettingsPasswordEditDialogTest', 'All', function() {
   mocha.run();
 });
 
