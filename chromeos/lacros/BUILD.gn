@@ -110,4 +110,8 @@ if (is_chromeos_device) {
       "lacros.ShelfLaunch.unstable",
     ]
   }
+
+  lacros_tast_tests("lacros_variations_tast_tests") {
+    tast_tests = [ "lacros.VariationSmoke" ]
+  }
 }

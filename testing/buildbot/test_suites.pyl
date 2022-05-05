@@ -4074,6 +4074,18 @@
       },
     },
 
+    'lacros_variations_tast_tests': {
+      'lacros_variations_tast_tests': {
+        'swarming': {
+          'idempotent': False,  # https://crbug.com/923426#c27
+        },
+        'resultdb': {
+          'enable': True,
+        },
+        'experiment_percentage': 100,
+      },
+    },
+
     'layout_ng_gtests': {
       'webkit_unit_tests_ng': {
         'args': [
@@ -7442,19 +7454,24 @@
       },
     },
 
-    'lacros_all_tast_tests_eve': {
-      'lacros_all_tast_tests': {
-        'variants': [
-          'LACROS_EVE',
-        ]
-      },
-    },
-
     'lacros_amd64_generic_rel_skylab_fyi': {
       'lacros_skylab_poc': {
         'variants': [
           'CROS_OCTOPUS_FULL',
           'CROS_EVE_FULL',
+        ]
+      },
+    },
+
+    'lacros_device_or_vm_tast_tests': {
+      'lacros_all_tast_tests': {
+        'variants': [
+          'LACROS_EVE',
+        ]
+      },
+      'lacros_variations_tast_tests': {
+        'variants': [
+          'LACROS_AMD64_GENERIC',
         ]
       },
     },

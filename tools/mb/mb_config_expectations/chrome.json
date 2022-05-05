@@ -152,7 +152,7 @@
       "is_chromeos_device": true,
       "is_official_build": true,
       "ozone_platform_headless": true,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "target_os": "chromeos",
       "use_goma": true,
       "use_thin_lto": true

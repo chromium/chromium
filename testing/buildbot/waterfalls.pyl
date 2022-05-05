@@ -214,7 +214,7 @@
           'has_native_resultdb_integration',
         ],
         'test_suites': {
-          'gtest_tests': 'lacros_all_tast_tests_eve',
+          'gtest_tests': 'lacros_device_or_vm_tast_tests',
           'isolated_scripts': 'chrome_sizes',
         },
         'os_type': 'chromeos',

@@ -1163,6 +1163,13 @@
     "label": "//build/lacros:lacros_version_metadata",
     "type": "additional_compile_target",
   },
+  "lacros_variations_tast_tests" : {
+    "label": "//chromeos/lacros:lacros_variations_tast_tests",
+    "type": "generated_script",
+    "args": [
+      "--logs-dir=${ISOLATED_OUTDIR}",
+    ],
+  },
   "latency_unittests": {
     "label": "//ui/latency:latency_unittests",
     "type": "console_test_launcher",
