@@ -312,6 +312,7 @@ class FakeImageDecoder : public image_fetcher::ImageDecoder {
  public:
   void DecodeImage(const std::string& image_data,
                    const gfx::Size& desired_image_frame_size,
+                   data_decoder::DataDecoder* data_decoder,
                    image_fetcher::ImageDecodedCallback callback) override {
     gfx::Image image = gfx::Image::CreateFrom1xPNGBytes(
         reinterpret_cast<const uint8_t*>(image_data.data()), image_data.size());

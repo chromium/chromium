@@ -17,6 +17,10 @@
 #include "components/ntp_tiles/icon_cacher.h"
 #include "components/ntp_tiles/popular_sites.h"
 
+namespace data_decoder {
+class DataDecoder;
+}  // namespace data_decoder
+
 namespace favicon {
 class FaviconService;
 class LargeIconService;
@@ -45,7 +49,8 @@ class IconCacherImpl : public IconCacher {
   // crbug.com/696563
   IconCacherImpl(favicon::FaviconService* favicon_service,
                  favicon::LargeIconService* large_icon_service,
-                 std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher);
+                 std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher,
+                 std::unique_ptr<data_decoder::DataDecoder> data_decoder);
 
   IconCacherImpl(const IconCacherImpl&) = delete;
   IconCacherImpl& operator=(const IconCacherImpl&) = delete;
@@ -102,6 +107,7 @@ class IconCacherImpl : public IconCacher {
   const raw_ptr<favicon::LargeIconService> large_icon_service_;
   std::unique_ptr<image_fetcher::ImageFetcher> const image_fetcher_;
   std::map<GURL, std::vector<base::OnceClosure>> in_flight_requests_;
+  std::unique_ptr<data_decoder::DataDecoder> data_decoder_;
 
   base::WeakPtrFactory<IconCacherImpl> weak_ptr_factory_{this};
 };

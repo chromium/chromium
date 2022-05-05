@@ -402,6 +402,7 @@ void LogoServiceImpl::OnCachedLogoRead(
         cached_logo->encoded_image;
     image_decoder_->DecodeImage(
         encoded_image->data(), gfx::Size(),  // No particular size desired.
+        /*data_decoder=*/nullptr,
         ImageDecodedHandlerWithTimeout::Wrap(base::BindOnce(
             &LogoServiceImpl::OnLightCachedImageDecoded,
             weak_ptr_factory_.GetWeakPtr(), std::move(cached_logo))));
@@ -441,6 +442,7 @@ void LogoServiceImpl::OnLightCachedImageDecoded(
 
   image_decoder_->DecodeImage(
       dark_encoded_image->data(), gfx::Size(),  // No particular size desired.
+      /*data_decoder=*/nullptr,
       ImageDecodedHandlerWithTimeout::Wrap(base::BindOnce(
           &LogoServiceImpl::OnCachedLogoAvailable,
           weak_ptr_factory_.GetWeakPtr(), std::move(cached_logo), image)));
@@ -535,6 +537,7 @@ void LogoServiceImpl::OnFreshLogoParsed(bool* parsing_failed,
 
     image_decoder_->DecodeImage(
         encoded_image->data(), gfx::Size(),  // No particular size desired.
+        /*data_decoder=*/nullptr,
         ImageDecodedHandlerWithTimeout::Wrap(base::BindOnce(
             &LogoServiceImpl::OnLightFreshImageDecoded,
             weak_ptr_factory_.GetWeakPtr(), std::move(logo),
@@ -562,6 +565,7 @@ void LogoServiceImpl::OnLightFreshImageDecoded(
 
   image_decoder_->DecodeImage(
       dark_encoded_image->data(), gfx::Size(),  // No particular size desired.
+      /*data_decoder=*/nullptr,
       ImageDecodedHandlerWithTimeout::Wrap(base::BindOnce(
           &LogoServiceImpl::OnFreshLogoAvailable,
           weak_ptr_factory_.GetWeakPtr(), std::move(logo), download_failed,

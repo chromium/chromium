@@ -150,8 +150,9 @@ void CachedImageFetcher::OnImageFetchedFromCache(
     if (!image_callback.is_null() ||
         (cache_result_needs_transcoding &&
          !request.params.allow_needs_transcoding_file())) {
+      auto* data_decoder = request.params.data_decoder();
       GetImageDecoder()->DecodeImage(
-          image_data, gfx::Size(),
+          image_data, gfx::Size(), data_decoder,
           base::BindOnce(&CachedImageFetcher::OnImageDecodedFromCache,
                          weak_ptr_factory_.GetWeakPtr(), std::move(request),
                          ImageDataFetcherCallback(), std::move(image_callback),

@@ -20,6 +20,7 @@
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/ntp_tiles/features.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
@@ -69,10 +70,12 @@ int GetMinimumFetchingSizeForChromeSuggestionsFaviconsFromServer() {
 IconCacherImpl::IconCacherImpl(
     favicon::FaviconService* favicon_service,
     favicon::LargeIconService* large_icon_service,
-    std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher)
+    std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher,
+    std::unique_ptr<data_decoder::DataDecoder> data_decoder)
     : favicon_service_(favicon_service),
       large_icon_service_(large_icon_service),
-      image_fetcher_(std::move(image_fetcher)) {}
+      image_fetcher_(std::move(image_fetcher)),
+      data_decoder_(std::move(data_decoder)) {}
 
 IconCacherImpl::~IconCacherImpl() = default;
 
@@ -129,6 +132,8 @@ void IconCacherImpl::OnGetFaviconImageForPageURLFinished(
                                            kImageFetcherUmaClient);
   // For images with multiple frames, prefer one of size 128x128px.
   params.set_frame_size(gfx::Size(kDesiredFrameSize, kDesiredFrameSize));
+  if (data_decoder_)
+    params.set_data_decoder(data_decoder_.get());
   image_fetcher_->FetchImage(
       IconURL(site),
       base::BindOnce(&IconCacherImpl::OnPopularSitesFaviconDownloaded,
@@ -192,7 +197,7 @@ IconCacherImpl::MaybeProvideDefaultIcon(
   image_fetcher_->GetImageDecoder()->DecodeImage(
       std::string(ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
           site.default_icon_resource)),
-      gfx::Size(kDesiredFrameSize, kDesiredFrameSize),
+      gfx::Size(kDesiredFrameSize, kDesiredFrameSize), data_decoder_.get(),
       preliminary_callback->callback());
   return preliminary_callback;
 }

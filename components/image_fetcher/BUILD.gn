@@ -45,6 +45,7 @@ source_set("android") {
     "//components/embedder_support/android:simple_factory_key",
     "//components/image_fetcher/core",
     "//components/image_fetcher/core:metrics",
+    "//services/data_decoder/public/cpp",
     "//ui/gfx",
   ]
 }

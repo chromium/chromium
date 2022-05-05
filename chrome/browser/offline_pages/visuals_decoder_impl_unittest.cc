@@ -38,8 +38,8 @@ TEST_F(VisualsDecoderImplTest, Success) {
   const int kImageHeight = 2;
   const gfx::Image kDecodedImage =
       gfx::test::CreateImage(kImageWidth, kImageHeight);
-  EXPECT_CALL(*image_decoder, DecodeImage(kImageData, _, _))
-      .WillOnce(testing::WithArg<2>(
+  EXPECT_CALL(*image_decoder, DecodeImage(kImageData, _, _, _))
+      .WillOnce(testing::WithArg<3>(
           Invoke([&](image_fetcher::ImageDecodedCallback callback) {
             std::move(callback).Run(kDecodedImage);
           })));
@@ -54,8 +54,8 @@ TEST_F(VisualsDecoderImplTest, Success) {
 
 TEST_F(VisualsDecoderImplTest, DecodeFail) {
   const gfx::Image kDecodedImage = gfx::Image();
-  EXPECT_CALL(*image_decoder, DecodeImage(kImageData, _, _))
-      .WillOnce(testing::WithArg<2>(
+  EXPECT_CALL(*image_decoder, DecodeImage(kImageData, _, _, _))
+      .WillOnce(testing::WithArg<3>(
           Invoke([&](image_fetcher::ImageDecodedCallback callback) {
             std::move(callback).Run(kDecodedImage);
           })));

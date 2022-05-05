@@ -26,6 +26,7 @@ source_set("ntp_tiles") {
     "//ios/chrome/browser/json_parser",
     "//ios/chrome/browser/search_engines",
     "//ios/web",
+    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
   ]
 }

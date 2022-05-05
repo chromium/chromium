@@ -236,6 +236,7 @@ void SanitizedImageSource::OnImageLoaded(
   // Send image body to image decoder in isolated process.
   image_decoder_->DecodeImage(
       *body, gfx::Size() /* No particular size desired. */,
+      /*data_decoder=*/nullptr,
       base::BindOnce(&SanitizedImageSource::OnImageDecoded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

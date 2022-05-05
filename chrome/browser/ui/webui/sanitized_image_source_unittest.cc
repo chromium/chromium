@@ -40,9 +40,10 @@ MATCHER_P(MemoryEq, other, "Eq matcher for base::RefCountedMemory contents") {
 
 class MockImageDecoder : public image_fetcher::ImageDecoder {
  public:
-  MOCK_METHOD3(DecodeImage,
+  MOCK_METHOD4(DecodeImage,
                void(const std::string&,
                     const gfx::Size&,
+                    data_decoder::DataDecoder*,
                     image_fetcher::ImageDecodedCallback));
 };
 
@@ -88,9 +89,10 @@ TEST_F(SanitizedImageSourceTest, MultiRequest) {
     std::string body;
     std::tie(color, url, body) = datum;
     EXPECT_CALL(*mock_image_decoder_,
-                DecodeImage(body, gfx::Size(), testing::_))
+                DecodeImage(body, gfx::Size(), nullptr, testing::_))
         .Times(1)
         .WillOnce([color](const std::string&, const gfx::Size&,
+                          data_decoder::DataDecoder*,
                           image_fetcher::ImageDecodedCallback callback) {
           std::move(callback).Run(MakeImage(color));
         });
@@ -132,7 +134,7 @@ TEST_F(SanitizedImageSourceTest, FailedLoad) {
   // Set up expectations and mock data.
   test_url_loader_factory_.AddResponse(kImageUrl, "", net::HTTP_NOT_FOUND);
   EXPECT_CALL(*mock_image_decoder_,
-              DecodeImage(testing::_, testing::_, testing::_))
+              DecodeImage(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
   EXPECT_CALL(callback,
@@ -150,7 +152,7 @@ TEST_F(SanitizedImageSourceTest, FailedLoad) {
 TEST_F(SanitizedImageSourceTest, WrongUrl) {
   // Set up expectations and mock data.
   EXPECT_CALL(*mock_image_decoder_,
-              DecodeImage(testing::_, testing::_, testing::_))
+              DecodeImage(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
   EXPECT_CALL(callback,

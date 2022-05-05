@@ -76,7 +76,7 @@ TEST_F(IOSImageDecoderImplTest, JPGImage) {
   std::string image_data =
       std::string(reinterpret_cast<char*>(kJPGImage), sizeof(kJPGImage));
   ios_image_decoder_impl_->DecodeImage(
-      image_data, gfx::Size(),
+      image_data, gfx::Size(), /*data_decoder=*/nullptr,
       base::BindOnce(&IOSImageDecoderImplTest::OnImageDecoded,
                      base::Unretained(this)));
 
@@ -91,7 +91,7 @@ TEST_F(IOSImageDecoderImplTest, WebpImage) {
   std::string image_data =
       std::string(reinterpret_cast<char*>(kWEBPImage), sizeof(kWEBPImage));
   ios_image_decoder_impl_->DecodeImage(
-      image_data, gfx::Size(),
+      image_data, gfx::Size(), /*data_decoder=*/nullptr,
       base::BindOnce(&IOSImageDecoderImplTest::OnImageDecoded,
                      base::Unretained(this)));
 

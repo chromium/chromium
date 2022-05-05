@@ -25,6 +25,7 @@ FakeImageDecoder::~FakeImageDecoder() = default;
 void FakeImageDecoder::DecodeImage(
     const std::string& image_data,
     const gfx::Size& desired_image_frame_size,
+    data_decoder::DataDecoder* data_decoder,
     image_fetcher::ImageDecodedCallback callback) {
   ASSERT_TRUE(enabled_);
   gfx::Image image;

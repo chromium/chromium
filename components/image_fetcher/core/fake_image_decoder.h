@@ -26,6 +26,7 @@ class FakeImageDecoder : public image_fetcher::ImageDecoder {
 
   void DecodeImage(const std::string& image_data,
                    const gfx::Size& desired_image_frame_size,
+                   data_decoder::DataDecoder* data_decoder,
                    image_fetcher::ImageDecodedCallback callback) override;
   void SetEnabled(bool enabled);
   void SetBeforeImageDecoded(const base::RepeatingClosure& callback);

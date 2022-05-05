@@ -32,6 +32,7 @@
 #include "components/image_fetcher/core/mock_image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/mock_resource_bundle_delegate.h"
@@ -197,7 +198,8 @@ TEST_F(IconCacherTestPopularSites, LargeCached) {
 
   PreloadIcon(site_.url, site_.large_icon_url,
               favicon_base::IconType::kTouchIcon, 128, 128);
-  IconCacherImpl cacher(&favicon_service_, nullptr, std::move(image_fetcher_));
+  IconCacherImpl cacher(&favicon_service_, nullptr, std::move(image_fetcher_),
+                        nullptr);
   cacher.StartFetchPopularSites(site_, done.Get(), done.Get());
   WaitForMainThreadTasksToFinish();
   EXPECT_FALSE(IconIsCachedFor(site_.url, favicon_base::IconType::kFavicon));
@@ -216,7 +218,8 @@ TEST_F(IconCacherTestPopularSites, LargeNotCachedAndFetchSucceeded) {
     EXPECT_CALL(done, Run()).WillOnce(Quit(&loop));
   }
 
-  IconCacherImpl cacher(&favicon_service_, nullptr, std::move(image_fetcher_));
+  IconCacherImpl cacher(&favicon_service_, nullptr, std::move(image_fetcher_),
+                        nullptr);
   cacher.StartFetchPopularSites(site_, done.Get(), done.Get());
   loop.Run();
   EXPECT_FALSE(IconIsCachedFor(site_.url, favicon_base::IconType::kFavicon));
@@ -235,7 +238,8 @@ TEST_F(IconCacherTestPopularSites, SmallNotCachedAndFetchSucceeded) {
     EXPECT_CALL(done, Run()).WillOnce(Quit(&loop));
   }
 
-  IconCacherImpl cacher(&favicon_service_, nullptr, std::move(image_fetcher_));
+  IconCacherImpl cacher(&favicon_service_, nullptr, std::move(image_fetcher_),
+                        nullptr);
   cacher.StartFetchPopularSites(site_, done.Get(), done.Get());
   loop.Run();
   EXPECT_TRUE(IconIsCachedFor(site_.url, favicon_base::IconType::kFavicon));
@@ -253,7 +257,8 @@ TEST_F(IconCacherTestPopularSites, LargeNotCachedAndFetchFailed) {
         .WillOnce(FailFetch());
   }
 
-  IconCacherImpl cacher(&favicon_service_, nullptr, std::move(image_fetcher_));
+  IconCacherImpl cacher(&favicon_service_, nullptr, std::move(image_fetcher_),
+                        nullptr);
   cacher.StartFetchPopularSites(site_, done.Get(), done.Get());
   WaitForMainThreadTasksToFinish();
   EXPECT_FALSE(IconIsCachedFor(site_.url, favicon_base::IconType::kFavicon));
@@ -264,7 +269,8 @@ TEST_F(IconCacherTestPopularSites, HandlesEmptyCallbacksNicely) {
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*image_fetcher_, FetchImageAndData_(_, _, _, _))
       .WillOnce(PassFetch(128, 128));
-  IconCacherImpl cacher(&favicon_service_, nullptr, std::move(image_fetcher_));
+  IconCacherImpl cacher(&favicon_service_, nullptr, std::move(image_fetcher_),
+                        nullptr);
   cacher.StartFetchPopularSites(site_, base::NullCallback(),
                                 base::NullCallback());
   WaitForHistoryThreadTasksToFinish();  // Writing the icon into the DB.
@@ -302,7 +308,8 @@ TEST_F(IconCacherTestPopularSites, ProvidesDefaultIconAndSucceedsWithFetching) {
     EXPECT_CALL(icon_available, Run()).WillOnce(Quit(&fetch_loop));
   }
 
-  IconCacherImpl cacher(&favicon_service_, nullptr, std::move(image_fetcher_));
+  IconCacherImpl cacher(&favicon_service_, nullptr, std::move(image_fetcher_),
+                        nullptr);
   site_.default_icon_resource = 12345;
   cacher.StartFetchPopularSites(site_, icon_available.Get(),
                                 preliminary_icon_available.Get());
@@ -331,7 +338,8 @@ TEST_F(IconCacherTestPopularSites, LargeNotCachedAndFetchPerformedOnlyOnce) {
     EXPECT_CALL(done, Run()).WillOnce(Return()).WillOnce(Quit(&loop));
   }
 
-  IconCacherImpl cacher(&favicon_service_, nullptr, std::move(image_fetcher_));
+  IconCacherImpl cacher(&favicon_service_, nullptr, std::move(image_fetcher_),
+                        nullptr);
   cacher.StartFetchPopularSites(site_, done.Get(), done.Get());
   cacher.StartFetchPopularSites(site_, done.Get(), done.Get());
   loop.Run();
@@ -363,7 +371,7 @@ TEST_F(IconCacherTestMostLikely, Cached) {
       kTestDipForServerRequests, kTestIconTypeForServerRequests,
       kTestGoogleServerClientParam);
   IconCacherImpl cacher(&favicon_service_, &large_icon_service,
-                        std::move(fetcher_for_icon_cacher_));
+                        std::move(fetcher_for_icon_cacher_), nullptr);
 
   base::MockOnceClosure done;
   EXPECT_CALL(done, Run()).Times(0);
@@ -394,7 +402,7 @@ TEST_F(IconCacherTestMostLikely, NotCachedAndFetchSucceeded) {
       kTestDipForServerRequests, kTestIconTypeForServerRequests,
       kTestGoogleServerClientParam);
   IconCacherImpl cacher(&favicon_service_, &large_icon_service,
-                        std::move(fetcher_for_icon_cacher_));
+                        std::move(fetcher_for_icon_cacher_), nullptr);
 
   cacher.StartFetchMostLikely(page_url, done.Get());
   // Both these task runners need to be flushed in order to get |done| called by
@@ -426,7 +434,7 @@ TEST_F(IconCacherTestMostLikely, NotCachedAndFetchFailed) {
       kTestDipForServerRequests, kTestIconTypeForServerRequests,
       kTestGoogleServerClientParam);
   IconCacherImpl cacher(&favicon_service_, &large_icon_service,
-                        std::move(fetcher_for_icon_cacher_));
+                        std::move(fetcher_for_icon_cacher_), nullptr);
 
   cacher.StartFetchMostLikely(page_url, done.Get());
   // Both these task runners need to be flushed before flushing the main thread
@@ -449,7 +457,7 @@ TEST_F(IconCacherTestMostLikely, HandlesEmptyCallbacksNicely) {
       kTestDipForServerRequests, kTestIconTypeForServerRequests,
       kTestGoogleServerClientParam);
   IconCacherImpl cacher(&favicon_service_, &large_icon_service,
-                        std::move(fetcher_for_icon_cacher_));
+                        std::move(fetcher_for_icon_cacher_), nullptr);
 
   cacher.StartFetchMostLikely(page_url, base::NullCallback());
 
@@ -489,7 +497,7 @@ TEST_F(IconCacherTestMostLikely, NotCachedAndFetchPerformedOnlyOnce) {
       kTestDipForServerRequests, kTestIconTypeForServerRequests,
       kTestGoogleServerClientParam);
   IconCacherImpl cacher(&favicon_service_, &large_icon_service,
-                        std::move(fetcher_for_icon_cacher_));
+                        std::move(fetcher_for_icon_cacher_), nullptr);
 
   cacher.StartFetchMostLikely(page_url, done.Get());
   cacher.StartFetchMostLikely(page_url, done.Get());

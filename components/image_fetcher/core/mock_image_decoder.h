@@ -15,9 +15,10 @@ class MockImageDecoder : public image_fetcher::ImageDecoder {
  public:
   MockImageDecoder();
   ~MockImageDecoder() override;
-  MOCK_METHOD3(DecodeImage,
+  MOCK_METHOD4(DecodeImage,
                void(const std::string& image_data,
                     const gfx::Size& desired_image_frame_size,
+                    data_decoder::DataDecoder* data_decoder,
                     image_fetcher::ImageDecodedCallback callback));
 };
 

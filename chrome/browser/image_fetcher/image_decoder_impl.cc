@@ -16,8 +16,11 @@ class ImageDecoderImpl::DecodeImageRequest
     : public ::ImageDecoder::ImageRequest {
  public:
   DecodeImageRequest(ImageDecoderImpl* decoder,
+                     data_decoder::DataDecoder* data_decoder,
                      image_fetcher::ImageDecodedCallback callback)
-      : decoder_(decoder), callback_(std::move(callback)) {}
+      : ImageRequest(data_decoder),
+        decoder_(decoder),
+        callback_(std::move(callback)) {}
 
   DecodeImageRequest(const DecodeImageRequest&) = delete;
   DecodeImageRequest& operator=(const DecodeImageRequest&) = delete;
@@ -68,9 +71,10 @@ ImageDecoderImpl::~ImageDecoderImpl() {}
 void ImageDecoderImpl::DecodeImage(
     const std::string& image_data,
     const gfx::Size& desired_image_frame_size,
+    data_decoder::DataDecoder* data_decoder,
     image_fetcher::ImageDecodedCallback callback) {
   std::unique_ptr<DecodeImageRequest> decode_image_request(
-      new DecodeImageRequest(this, std::move(callback)));
+      new DecodeImageRequest(this, data_decoder, std::move(callback)));
 
   ::ImageDecoder::StartWithOptions(
       decode_image_request.get(), image_data, ::ImageDecoder::DEFAULT_CODEC,
