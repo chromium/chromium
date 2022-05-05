@@ -44,7 +44,7 @@ class PageSwitcher : public views::View,
 
  private:
   // Button pressed callback.
-  void OnButtonPressed(views::Button* sender, const ui::Event& event);
+  void HandlePageSwitch(const ui::Event& event);
 
   // Overridden from PaginationModelObserver:
   void TotalPagesChanged(int previous_page_count, int new_page_count) override;
@@ -61,8 +61,6 @@ class PageSwitcher : public views::View,
 
   // Whether tablet mode is enabled.
   bool is_tablet_mode_;
-
-  const SkColor background_color_;
 };
 
 }  // namespace ash

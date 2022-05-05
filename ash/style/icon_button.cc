@@ -108,12 +108,25 @@ IconButton::IconButton(PressedCallback callback,
 IconButton::IconButton(PressedCallback callback,
                        IconButton::Type type,
                        const gfx::VectorIcon* icon,
-                       int accessible_name_id,
+                       const std::u16string& accessible_name,
                        bool is_togglable,
                        bool has_border)
     : IconButton(std::move(callback), type, icon, is_togglable, has_border) {
-  SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
+  SetTooltipText(accessible_name);
 }
+
+IconButton::IconButton(PressedCallback callback,
+                       IconButton::Type type,
+                       const gfx::VectorIcon* icon,
+                       int accessible_name_id,
+                       bool is_togglable,
+                       bool has_border)
+    : IconButton(std::move(callback),
+                 type,
+                 icon,
+                 l10n_util::GetStringUTF16(accessible_name_id),
+                 is_togglable,
+                 has_border) {}
 
 IconButton::~IconButton() = default;
 

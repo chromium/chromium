@@ -59,6 +59,12 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   IconButton(PressedCallback callback,
              Type type,
              const gfx::VectorIcon* icon,
+             const std::u16string& accessible_name,
+             bool is_togglable,
+             bool has_border);
+  IconButton(PressedCallback callback,
+             Type type,
+             const gfx::VectorIcon* icon,
              int accessible_name_id,
              bool is_togglable,
              bool has_border);
