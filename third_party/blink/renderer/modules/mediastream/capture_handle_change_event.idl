@@ -7,5 +7,5 @@
     Exposed = Window, RuntimeEnabled = CaptureHandle
 ] interface CaptureHandleChangeEvent : Event {
   constructor(DOMString type, CaptureHandleChangeEventInit eventInitDict);
-  [SameObject] CaptureHandle captureHandle();
+  [SameObject] CaptureHandle? captureHandle();
 };

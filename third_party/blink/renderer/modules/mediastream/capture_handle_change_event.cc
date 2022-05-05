@@ -12,9 +12,7 @@ CaptureHandleChangeEvent::CaptureHandleChangeEvent(
     const AtomicString& type,
     CaptureHandle* capture_handle)
     : Event(type, Bubbles::kNo, Cancelable::kNo),
-      capture_handle_(capture_handle) {
-  DCHECK(capture_handle_);
-}
+      capture_handle_(capture_handle) {}
 
 CaptureHandleChangeEvent* CaptureHandleChangeEvent::Create(
     const AtomicString& type,
@@ -25,14 +23,15 @@ CaptureHandleChangeEvent* CaptureHandleChangeEvent::Create(
 CaptureHandleChangeEvent::CaptureHandleChangeEvent(
     const AtomicString& type,
     const CaptureHandleChangeEventInit* initializer)
-    : Event(type, initializer), capture_handle_(initializer->captureHandle()) {
-  DCHECK(capture_handle_);
-}
+    : Event(type, initializer),
+      capture_handle_(initializer->hasCaptureHandle()
+                          ? initializer->captureHandle()
+                          : nullptr) {}
 
 CaptureHandleChangeEvent::~CaptureHandleChangeEvent() = default;
 
 CaptureHandle* CaptureHandleChangeEvent::captureHandle() const {
-  return capture_handle_.Get();
+  return capture_handle_ ? capture_handle_.Get() : nullptr;
 }
 
 const AtomicString& CaptureHandleChangeEvent::InterfaceName() const {
