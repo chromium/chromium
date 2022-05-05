@@ -96085,7 +96085,7 @@
        ]
       ],
       "pseudo-elements-002.html": [
-       "9c4a6d27b50cd6401c568f39cfc037f88e0e228a",
+       "96e7db40cef534a532a06f8be78575e3d65e4753",
        [
         null,
         [
@@ -314290,6 +314290,10 @@
      "bb1525cc225db8a52ed894b8f9bfb2958a8f2341",
      []
     ],
+    "FedCM.idl": [
+     "af48621038c02cb1e4875d5722c8c4aa5c4bb7b9",
+     []
+    ],
     "FileAPI.idl": [
      "aee0e65dcae267201bbe6ae8b8c90231795facf1",
      []
@@ -314866,6 +314870,10 @@
      "5b2c8fa67a6b130d1fe99f962ff85c5cf7a7bc3d",
      []
     ],
+    "mediacapture-viewport.idl": [
+     "187bdf28df22ec11e0679325e6b8b1dc958dc1aa",
+     []
+    ],
     "mediasession.idl": [
      "4cec354c9d1ec80d20b1f506baa94447330c8bbc",
      []
@@ -314900,10 +314908,6 @@
     ],
     "orientation-sensor.idl": [
      "5172c87cd4e2c2ef2678bff956c3356c3d162e43",
-     []
-    ],
-    "origin-policy.idl": [
-     "0820e2ee567e8bfe93206f985900afa832bf9b67",
      []
     ],
     "page-lifecycle.idl": [
@@ -315203,7 +315207,7 @@
      []
     ],
     "webaudio.idl": [
-     "c8ad2a851fc03f90aff3b0c8a2289fadffdb85be",
+     "24cd721ee811538a6365227d4a8f1008dbd1fe33",
      []
     ],
     "webauthn.idl": [
@@ -315231,7 +315235,7 @@
      []
     ],
     "webgpu.idl": [
-     "07d3ac0662b60cfae3c0b4e66947d97ee86b1758",
+     "6cbab9821d3fb167135d743debcd6695717bd201",
      []
     ],
     "webhid.idl": [
@@ -315247,7 +315251,7 @@
      []
     ],
     "webnn.idl": [
-     "59fd6ec34cc634ddb3d9fa54fdee0cdca2a7457f",
+     "13959b38ffc3d6659c40cba086c9d23e1b55aea9",
      []
     ],
     "webrtc-encoded-transform.idl": [
@@ -315267,7 +315271,7 @@
      []
     ],
     "webrtc-stats.idl": [
-     "657cbe93e94d396c6e21978dc9c46fd04cd21993",
+     "61a2f93a52f9f55bf2cee92b1337ad3eaadbfe88",
      []
     ],
     "webrtc-svc.idl": [
@@ -315283,7 +315287,7 @@
      []
     ],
     "webtransport.idl": [
-     "cb02cdd05d49f260b77a761d2e0d9b35743b9c02",
+     "78f362a4370b8c7299898d87f1e5a4908a08648f",
      []
     ],
     "webusb.idl": [
@@ -368997,7 +369001,7 @@
        ]
       ],
       "container-for-shadow-dom.html": [
-       "7d8437d95a3d99d91b72ffa23d9359d54fd89ef2",
+       "d69ec9e4aeff5ea4c24c5c9d21f48c5e21e189df",
        [
         null,
         {}
@@ -369312,7 +369316,14 @@
        ]
       ],
       "pseudo-elements-003.html": [
-       "67a74fb3ba923b0da07f1d00790281c98eec6ee9",
+       "fe68898b38ef140211d04e2f7d6f3381eff62a9a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "pseudo-elements-004.html": [
+       "db199f220505dc4e55c5a3bbcce1903e4d22ece9",
        [
         null,
         {}

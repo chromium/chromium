@@ -4,7 +4,7 @@
 // Source: WebGPU (https://gpuweb.github.io/gpuweb/)
 
 interface mixin GPUObjectBase {
-    attribute (USVString or undefined) label;
+    attribute USVString label;
 };
 
 dictionary GPUObjectDescriptorBase {

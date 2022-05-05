@@ -31,8 +31,8 @@ interface WebTransport {
   /* a ReadableStream of WebTransportBidirectionalStream objects */
   readonly attribute ReadableStream incomingBidirectionalStreams;
 
-  Promise<WritableStream> createUnidirectionalStream();
-  /* a ReadableStream of ReceiveStreams */
+  Promise<WebTransportSendStream> createUnidirectionalStream();
+  /* a ReadableStream of WebTransportReceiveStream objects */
   readonly attribute ReadableStream incomingUnidirectionalStreams;
 };
 
@@ -78,6 +78,29 @@ dictionary WebTransportDatagramStats {
   unsigned long long expiredOutgoing;
   unsigned long long droppedIncoming;
   unsigned long long lostOutgoing;
+};
+
+[Exposed=(Window,Worker), SecureContext]
+interface WebTransportSendStream : WritableStream {
+  Promise<WebTransportSendStreamStats> getStats();
+};
+
+dictionary WebTransportSendStreamStats {
+  DOMHighResTimeStamp timestamp;
+  unsigned long long bytesWritten;
+  unsigned long long bytesSent;
+  unsigned long long bytesAcknowledged;
+};
+
+[Exposed=(Window,Worker), SecureContext]
+interface WebTransportReceiveStream : ReadableStream {
+  Promise<WebTransportReceiveStreamStats> getStats();
+};
+
+dictionary WebTransportReceiveStreamStats {
+  DOMHighResTimeStamp timestamp;
+  unsigned long long bytesReceived;
+  unsigned long long bytesRead;
 };
 
 [Exposed=(Window,Worker), SecureContext]
