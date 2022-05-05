@@ -5860,6 +5860,12 @@
     "expiry_milestone": -1
   },
   {
+    "name": "upgrade-center-refactor",
+    "owners": [ "pakzhygitov", "bling-flags@google.com" ],
+    // This is a temp flag and should be removed within this milestone.
+    "expiry_milestone": 104
+  },
+  {
     "name": "usb-notification-controller",
     "owners": [ "jthies", "bleung" ],
     "expiry_milestone": 105

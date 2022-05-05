@@ -592,6 +592,12 @@ const char kUpdateHistoryEntryPointsInIncognitoDescription[] =
     "When enabled, the entry points to history UI from Incognito mode will be "
     "removed.";
 
+const char kUpgradeCenterRefactorName[] =
+    "Enable Upgrade Center refactored code";
+const char kUpgradeCenterRefactorDescription[] =
+    "When enabled, upgrade сenter logic is provided by a Browser Agent "
+    "not BVC.";
+
 const char kUseLensToSearchForImageName[] =
     "Use Google Lens to Search for images";
 const char kUseLensToSearchForImageDescription[] =

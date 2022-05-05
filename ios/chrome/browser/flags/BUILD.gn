@@ -73,6 +73,7 @@ source_set("flags") {
     "//ios/chrome/browser/ui/sync/utils:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
     "//ios/chrome/browser/ui/toolbar_container:feature_flags",
+    "//ios/chrome/browser/ui/upgrade/utils:features",
     "//ios/chrome/browser/ui/util:features",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/components/security_interstitials/https_only_mode:feature",

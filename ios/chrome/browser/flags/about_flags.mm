@@ -84,6 +84,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/upgrade/utils/features.h"
 #include "ios/chrome/browser/ui/util/features.h"
 #include "ios/chrome/browser/web/features.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -878,6 +879,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSmartSortingNewOverflowMenuName,
      flag_descriptions::kSmartSortingNewOverflowMenuDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kSmartSortingNewOverflowMenu)},
+    {"upgrade-center-refactor", flag_descriptions::kUpgradeCenterRefactorName,
+     flag_descriptions::kUpgradeCenterRefactorDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kUpgradeCenterRefactor)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
