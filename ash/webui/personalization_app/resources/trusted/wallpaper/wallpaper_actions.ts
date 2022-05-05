@@ -6,8 +6,8 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Action} from 'chrome://resources/js/cr/ui/store.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
+import {DisplayableImage} from '../../common/constants.js';
 import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
-import {DisplayableImage} from '../personalization_reducers.js';
 
 /**
  * @fileoverview Defines the actions to change wallpaper state.
@@ -22,6 +22,7 @@ export enum WallpaperActionName {
   BEGIN_LOAD_GOOGLE_PHOTOS_ENABLED = 'begin_load_google_photos_enabled',
   BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS = 'begin_load_google_photos_photos',
   BEGIN_LOAD_IMAGES_FOR_COLLECTIONS = 'begin_load_images_for_collections',
+  BEGIN_LOAD_DEFAULT_IMAGE_THUMBNAIL = 'begin_load_default_image',
   BEGIN_LOAD_LOCAL_IMAGES = 'begin_load_local_images',
   BEGIN_LOAD_LOCAL_IMAGE_DATA = 'begin_load_local_image_data',
   BEGIN_LOAD_SELECTED_IMAGE = 'begin_load_selected_image',
@@ -35,6 +36,7 @@ export enum WallpaperActionName {
       'set_google_photos_daily_refresh_album_id',
   SET_GOOGLE_PHOTOS_ENABLED = 'set_google_photos_enabled',
   SET_IMAGES_FOR_COLLECTION = 'set_images_for_collection',
+  SET_DEFAULT_IMAGE_THUMBNAIL = 'set_default_image',
   SET_LOCAL_IMAGES = 'set_local_images',
   SET_LOCAL_IMAGE_DATA = 'set_local_image_data',
   SET_SELECTED_IMAGE = 'set_selected_image',
@@ -42,8 +44,9 @@ export enum WallpaperActionName {
   SET_FULLSCREEN_ENABLED = 'set_fullscreen_enabled',
 }
 
-export type WallpaperActions = AppendGooglePhotosAlbumAction|
-    AppendGooglePhotosAlbumsAction|AppendGooglePhotosPhotosAction|
+export type WallpaperActions =
+    AppendGooglePhotosAlbumAction|AppendGooglePhotosAlbumsAction|
+    AppendGooglePhotosPhotosAction|BeginLoadDefaultImageThumbnailAction|
     BeginLoadGooglePhotosAlbumAction|BeginLoadGooglePhotosAlbumsAction|
     BeginLoadGooglePhotosEnabledAction|BeginLoadGooglePhotosPhotosAction|
     BeginLoadImagesForCollectionsAction|BeginLoadLocalImagesAction|
@@ -51,7 +54,8 @@ export type WallpaperActions = AppendGooglePhotosAlbumAction|
     BeginLoadSelectedImageAction|BeginSelectImageAction|ClearDailyRefreshAction|
     EndSelectImageAction|SetCollectionsAction|SetDailyRefreshCollectionIdAction|
     SetGooglePhotosDailyRefreshAlbumIdAction|SetGooglePhotosEnabledAction|
-    SetImagesForCollectionAction|SetLocalImageDataAction|SetLocalImagesAction|
+    SetImagesForCollectionAction|SetDefaultImageThumbnailAction|
+    SetLocalImageDataAction|SetLocalImagesAction|
     SetUpdatedDailyRefreshImageAction|SetSelectedImageAction|
     SetFullscreenEnabledAction;
 
@@ -182,6 +186,15 @@ export function beginLoadImagesForCollectionsAction(
     collections,
     name: WallpaperActionName.BEGIN_LOAD_IMAGES_FOR_COLLECTIONS,
   };
+}
+
+export type BeginLoadDefaultImageThumbnailAction = Action&{
+  name: WallpaperActionName.BEGIN_LOAD_DEFAULT_IMAGE_THUMBNAIL,
+};
+
+export function beginLoadDefaultImageThubmnailAction():
+    BeginLoadDefaultImageThumbnailAction {
+  return {name: WallpaperActionName.BEGIN_LOAD_DEFAULT_IMAGE_THUMBNAIL};
 }
 
 export type BeginLoadLocalImagesAction = Action&{
@@ -353,6 +366,19 @@ export function setImagesForCollectionAction(
     collectionId,
     images,
     name: WallpaperActionName.SET_IMAGES_FOR_COLLECTION,
+  };
+}
+
+export type SetDefaultImageThumbnailAction = Action&{
+  name: WallpaperActionName.SET_DEFAULT_IMAGE_THUMBNAIL,
+  thumbnail: string,
+};
+
+export function setDefaultImageThumbnailAction(thumbnail: string):
+    SetDefaultImageThumbnailAction {
+  return {
+    thumbnail,
+    name: WallpaperActionName.SET_DEFAULT_IMAGE_THUMBNAIL,
   };
 }
 

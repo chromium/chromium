@@ -91,6 +91,11 @@ void FakePersonalizationAppWallpaperProvider::FetchGooglePhotosPhotos(
       ash::personalization_app::mojom::FetchGooglePhotosPhotosResponse::New());
 }
 
+void FakePersonalizationAppWallpaperProvider::GetDefaultImageThumbnail(
+    GetDefaultImageThumbnailCallback callback) {
+  std::move(callback).Run(std::string());
+}
+
 void FakePersonalizationAppWallpaperProvider::GetLocalImages(
     GetLocalImagesCallback callback) {
   std::move(callback).Run({});
@@ -110,6 +115,11 @@ void FakePersonalizationAppWallpaperProvider::SelectWallpaper(
     uint64_t image_asset_id,
     bool preview_mode,
     SelectWallpaperCallback callback) {
+  std::move(callback).Run(/*success=*/true);
+}
+
+void FakePersonalizationAppWallpaperProvider::SelectDefaultImage(
+    SelectDefaultImageCallback callback) {
   std::move(callback).Run(/*success=*/true);
 }
 

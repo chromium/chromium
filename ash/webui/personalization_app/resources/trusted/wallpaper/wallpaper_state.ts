@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
+import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from '../../common/constants.js';
 import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
 
 /**
@@ -59,7 +60,10 @@ export interface GooglePhotosState {
 export interface LoadingState {
   collections: boolean;
   images: Record<WallpaperCollection['id'], boolean>;
-  local: {images: boolean, data: Record<FilePath['path'], boolean>};
+  local: {
+    images: boolean,
+    data: Record<FilePath['path']|DefaultImageSymbol, boolean>,
+  };
   refreshWallpaper: boolean;
   selected: boolean;
   setImage: number;
@@ -72,12 +76,14 @@ export interface LoadingState {
 }
 
 /**
- * |images| stores the list of images on local disk.
- * |data| stores a mapping of image.path to a thumbnail data url.
+ * |images| stores the list of images on local disk. The image in index 0 may be
+ * a special case for default image thumbnail.
+ * |data| stores a mapping of image.path to a thumbnail data url. There is also
+ * a special key to represent the default image thumbnail.
  */
 export interface LocalState {
-  images: Array<FilePath>|null;
-  data: Record<FilePath['path'], string>;
+  images: Array<FilePath|DefaultImageSymbol>|null;
+  data: Record<FilePath['path']|DefaultImageSymbol, string>;
 }
 
 export enum DailyRefreshType {
@@ -99,7 +105,7 @@ export interface WallpaperState {
   loading: LoadingState;
   local: LocalState;
   currentSelected: CurrentWallpaper|null;
-  pendingSelected: WallpaperImage|FilePath|GooglePhotosPhoto|null;
+  pendingSelected: DisplayableImage|null;
   dailyRefresh: DailyRefreshState|null;
   fullscreen: boolean;
   googlePhotos: GooglePhotosState;
@@ -111,7 +117,7 @@ export function emptyState(): WallpaperState {
     loading: {
       collections: true,
       images: {},
-      local: {images: false, data: {}},
+      local: {images: false, data: {[kDefaultImageSymbol]: false}},
       refreshWallpaper: false,
       selected: false,
       setImage: 0,
@@ -122,7 +128,7 @@ export function emptyState(): WallpaperState {
         photosByAlbumId: {},
       },
     },
-    local: {images: null, data: {}},
+    local: {images: null, data: {[kDefaultImageSymbol]: ''}},
     currentSelected: null,
     pendingSelected: null,
     dailyRefresh: null,

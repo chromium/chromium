@@ -5,6 +5,7 @@
 import * as constants from '../common/constants.js';
 import {isNullOrArray} from '../common/utils.js';
 import {GooglePhotosEnablementState} from '../trusted/personalization_app.mojom-webui.js';
+import {isDefaultImage, isFilePath} from '../trusted/utils.js';
 import {onMessageReceived} from '../trusted/wallpaper/untrusted_message_handler.js';
 
 /**
@@ -75,7 +76,9 @@ export function validateReceivedData(event: constants.Events): boolean {
     }
     case constants.EventType.SEND_LOCAL_IMAGES:
       // Images array may be empty.
-      return Array.isArray(event.images);
+      return Array.isArray(event.images) &&
+          event.images.every(
+              image => isDefaultImage(image) || isFilePath(image));
     case constants.EventType.SEND_IMAGE_TILES: {
       // Images array may be empty.
       return Array.isArray(event.tiles);

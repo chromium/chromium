@@ -5,10 +5,13 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
+import {DefaultImageSymbol, kDefaultImageSymbol} from '../../common/constants.js';
+import {isNonEmptyArray} from '../../common/utils.js';
 import {Actions} from '../personalization_actions.js';
 import {WallpaperCollection} from '../personalization_app.mojom-webui.js';
 import {ReducerFunction} from '../personalization_reducers.js';
 import {PersonalizationState} from '../personalization_state.js';
+import {isDefaultImage, isFilePath} from '../utils.js';
 
 import {WallpaperActionName} from './wallpaper_actions.js';
 import {DailyRefreshType, WallpaperState} from './wallpaper_state.js';
@@ -75,6 +78,17 @@ function loadingReducer(
         ...state,
         images: {...state.images, [action.collectionId]: false},
       };
+    case WallpaperActionName.BEGIN_LOAD_DEFAULT_IMAGE_THUMBNAIL:
+      return {
+        ...state,
+        local: {
+          ...state.local,
+          data: {
+            ...state.local.data,
+            [kDefaultImageSymbol]: true,
+          },
+        },
+      };
     case WallpaperActionName.BEGIN_LOAD_LOCAL_IMAGES:
       return {
         ...state,
@@ -83,20 +97,34 @@ function loadingReducer(
           images: true,
         },
       };
-    case WallpaperActionName.SET_LOCAL_IMAGES:
+    case WallpaperActionName.SET_DEFAULT_IMAGE_THUMBNAIL:
       return {
         ...state,
         local: {
-          // Only keep loading state for most recent local images.
-          data: (action.images || [])
-                    .reduce(
-                        (result, {path}) => {
-                          if (state.local.data.hasOwnProperty(path)) {
-                            result[path] = state.local.data[path];
-                          }
-                          return result;
-                        },
-                        {} as Record<FilePath['path'], boolean>),
+          ...state.local,
+          data: {
+            ...state.local.data,
+            [kDefaultImageSymbol]: false,
+          },
+        },
+      };
+    case WallpaperActionName.SET_LOCAL_IMAGES:
+      // Only keep loading state for most recent local images and the default
+      // image.
+      const imagesToKeep: Array<DefaultImageSymbol|FilePath> =
+          [kDefaultImageSymbol, ...(action.images || [])];
+      return {
+        ...state,
+        local: {
+          data: imagesToKeep.reduce(
+              (result, next) => {
+                const path = isFilePath(next) ? next.path : next;
+                if (state.local.data.hasOwnProperty(path)) {
+                  result[path] = state.local.data[path];
+                }
+                return result;
+              },
+              {} as Record<FilePath['path']|DefaultImageSymbol, boolean>),
           // Image list is done loading.
           images: false,
         },
@@ -208,21 +236,57 @@ function localReducer(
     state: WallpaperState['local'], action: Actions,
     _: PersonalizationState): WallpaperState['local'] {
   switch (action.name) {
-    case WallpaperActionName.SET_LOCAL_IMAGES:
+    case WallpaperActionName.SET_DEFAULT_IMAGE_THUMBNAIL:
+      if (action.thumbnail) {
+        return {
+          images: [
+            kDefaultImageSymbol,
+            ...(state.images || []).filter(img => isFilePath(img))
+          ],
+          data: {
+            ...state.data,
+            [kDefaultImageSymbol]: action.thumbnail,
+          },
+        };
+      }
       return {
-        ...state,
-        images: action.images,
-        // Only keep image thumbnails if the image is still in |images|.
-        data: (action.images || [])
-                  .reduce(
-                      (result, {path}) => {
-                        if (state.data.hasOwnProperty(path)) {
-                          result[path] = state.data[path];
-                        }
-                        return result;
-                      },
-                      {} as Record<FilePath['path'], string>),
+        images: Array.isArray(state.images) ?
+            state.images.filter(img => isFilePath(img)) :
+            null,
+        data: {...state.data, [kDefaultImageSymbol]: ''},
       };
+
+    case WallpaperActionName.SET_LOCAL_IMAGES: {
+      const hasDefaultImageWithData = isNonEmptyArray(state.images) &&
+          isDefaultImage(state.images[0]) && !!state.data[kDefaultImageSymbol];
+
+      if (!Array.isArray(action.images)) {
+        return {
+          // Keep the default image in image list if it is present.
+          images: hasDefaultImageWithData ? [kDefaultImageSymbol] : null,
+          data: {[kDefaultImageSymbol]: state.data[kDefaultImageSymbol]},
+        };
+      }
+      // If the first image from prior state is the device default image, keep
+      // it.
+      const newImages: Array<DefaultImageSymbol|FilePath> =
+          hasDefaultImageWithData ? [kDefaultImageSymbol, ...action.images] :
+                                    action.images;
+      return {
+        images: newImages,
+        // Only keep image thumbnails if the image is still in |images|.
+        data: newImages.reduce(
+            (result, next) => {
+              const key = isFilePath(next) ? next.path : next;
+              if (state.data.hasOwnProperty(key)) {
+                result[key] = state.data[key];
+              }
+              return result;
+            },
+            // Set the default value for |kDefaultImageSymbol| here.
+            {[kDefaultImageSymbol]: ''} as typeof state.data),
+      };
+    }
     case WallpaperActionName.SET_LOCAL_IMAGE_DATA:
       return {
         ...state,

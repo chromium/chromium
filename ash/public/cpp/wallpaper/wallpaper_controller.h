@@ -139,6 +139,11 @@ class ASH_PUBLIC_EXPORT WallpaperController {
                                    bool show_wallpaper,
                                    SetWallpaperCallback callback) = 0;
 
+  // Get the path to the default wallpaper file for this account. Will be empty
+  // if this user/device has no recommended default wallpaper.
+  virtual base::FilePath GetDefaultWallpaperPath(
+      const AccountId& account_id) = 0;
+
   // Sets the paths of the customized default wallpaper to be used wherever a
   // default wallpaper is needed. If a default wallpaper is being shown, updates
   // the screen to replace the old default wallpaper. Note: it doesn't change

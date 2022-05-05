@@ -11,12 +11,13 @@ import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {Events, EventType, kMaximumLocalImagePreviews} from '../common/constants.js';
+import {DefaultImageSymbol, Events, EventType, kMaximumLocalImagePreviews} from '../common/constants.js';
 import {getCountText, getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, isNonEmptyArray, isSelectionEvent} from '../common/utils.js';
 import {GooglePhotosEnablementState, WallpaperCollection} from '../trusted/personalization_app.mojom-webui.js';
-import {selectCollection, selectGooglePhotosCollection, selectLocalCollection, validateReceivedData} from '../untrusted/iframe_api.js';
+import {getPathOrSymbol} from '../trusted/utils.js';
 
 import {getTemplate} from './collections_grid.html.js';
+import {selectCollection, selectGooglePhotosCollection, selectLocalCollection, validateReceivedData} from './iframe_api.js';
 
 /**
  * @fileoverview Responds to |SendCollectionsEvent| from trusted. Handles user
@@ -57,8 +58,7 @@ type ImageTile = {
   type: TileType.IMAGE_GOOGLE_PHOTOS|TileType.IMAGE_LOCAL|TileType.IMAGE_ONLINE,
   id: string,
   name: string,
-  count?: string,
-  preview: Url[],
+  count?: string, preview: Url[],
 };
 
 type Tile = LoadingTile|FailureTile|ImageTile;
@@ -80,13 +80,15 @@ function getGooglePhotosTile(): ImageTile {
 }
 
 function getImages(
-    localImages: FilePath[], localImageData: Record<string, string>): Url[] {
+    localImages: Array<FilePath|DefaultImageSymbol>,
+    localImageData: Record<string|DefaultImageSymbol, string>): Url[] {
   if (!localImageData || !Array.isArray(localImages)) {
     return [];
   }
   const result = [];
-  for (const {path} of localImages) {
-    const data = {url: localImageData[path]};
+  for (const image of localImages) {
+    const key = getPathOrSymbol(image);
+    const data = {url: localImageData[key]};
     if (!!data.url && data.url.length > 0) {
       result.push(data);
     }
@@ -103,10 +105,11 @@ function getImages(
  * Get the first displayable image with data from the list of possible images.
  */
 function getLocalTile(
-    localImages: FilePath[],
-    localImageData: {[key: string]: string}): ImageTile|LoadingTile {
-  const isMoreToLoad =
-      localImages.some(({path}) => !localImageData.hasOwnProperty(path));
+    localImages: Array<FilePath|DefaultImageSymbol>,
+    localImageData: Record<FilePath['path']|DefaultImageSymbol, string>):
+    ImageTile|LoadingTile {
+  const isMoreToLoad = localImages.some(
+      image => !localImageData.hasOwnProperty(getPathOrSymbol(image)));
 
   const imagesToDisplay = getImages(localImages, localImageData);
 
@@ -183,7 +186,7 @@ export class CollectionsGrid extends PolymerElement {
   private collections_: WallpaperCollection[];
   private googlePhotosEnabled_: GooglePhotosEnablementState|undefined;
   private imageCounts_: {[key: string]: number|null};
-  private localImages_: FilePath[];
+  private localImages_: Array<FilePath|DefaultImageSymbol>;
   private localImageData_: {[key: string]: string};
   private tiles_: Tile[];
 
@@ -275,8 +278,8 @@ export class CollectionsGrid extends PolymerElement {
    * either of those properties changes.
    */
   private onLocalImagesLoaded_(
-      localImages: FilePath[]|undefined,
-      localImageData: {[key: string]: string}) {
+      localImages: Array<FilePath|DefaultImageSymbol>|undefined,
+      localImageData: Record<FilePath['path']|DefaultImageSymbol, string>) {
     if (!Array.isArray(localImages) || !localImageData) {
       return;
     }

@@ -27,7 +27,7 @@
         </template>
         <template is="dom-if" if="[[isImageReady_(item, imageData_, imageDataLoading_)]]">
           <div class="photo-inner-container" role="option"
-              tabindex$="[[tabIndex]]" data-id$="[[getImageKey_(item)]]"
+              tabindex$="[[tabIndex]]" data-id$="[[getImageDataId_(item)]]"
               on-click="onImageSelected_" on-keypress="onImageSelected_"
               aria-posinset$="[[getAriaIndex_(index)]]"
               aria-selected$="[[getAriaSelected_(item, currentSelected_, pendingSelected_)]]"

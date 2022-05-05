@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
@@ -310,6 +311,22 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosPhotos(
       item_id, album_id, resume_token, std::move(callback));
 }
 
+void PersonalizationAppWallpaperProviderImpl::GetDefaultImageThumbnail(
+    GetDefaultImageThumbnailCallback callback) {
+  auto* wallpaper_controller = WallpaperController::Get();
+  base::FilePath default_wallpaper_path =
+      wallpaper_controller->GetDefaultWallpaperPath(GetAccountId(profile_));
+  if (default_wallpaper_path.empty()) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+  image_util::DecodeImageFile(
+      base::BindOnce(
+          &PersonalizationAppWallpaperProviderImpl::OnGetDefaultImage,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      default_wallpaper_path);
+}
+
 void PersonalizationAppWallpaperProviderImpl::GetLocalImages(
     GetLocalImagesCallback callback) {
   // TODO(b/190062481) also load images from android files.
@@ -482,6 +499,15 @@ void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(
       base::BindOnce(
           &PersonalizationAppWallpaperProviderImpl::OnOnlineWallpaperSelected,
           backend_weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PersonalizationAppWallpaperProviderImpl::SelectDefaultImage(
+    SelectDefaultImageCallback callback) {
+  WallpaperControllerClientImpl* client = WallpaperControllerClientImpl::Get();
+  DCHECK(client);
+  client->RecordWallpaperSourceUMA(ash::WallpaperType::kDefault);
+  client->SetDefaultWallpaper(GetAccountId(profile_), /*show_wallpaper=*/true,
+                              std::move(callback));
 }
 
 void PersonalizationAppWallpaperProviderImpl::SelectLocalImage(
@@ -707,6 +733,19 @@ void PersonalizationAppWallpaperProviderImpl::OnFetchGooglePhotosEnabled(
       state ==
       ash::personalization_app::mojom::GooglePhotosEnablementState::kEnabled;
   std::move(callback).Run(state);
+}
+
+void PersonalizationAppWallpaperProviderImpl::OnGetDefaultImage(
+    GetDefaultImageThumbnailCallback callback,
+    const gfx::ImageSkia& image) {
+  if (image.isNull()) {
+    // Do not call |mojom::ReportBadMessage| here. The message is valid, but the
+    // file may be corrupt or unreadable.
+    std::move(callback).Run(std::string());
+    return;
+  }
+  std::move(callback).Run(
+      webui::GetBitmapDataUrl(*GetResizedImage(image).bitmap()));
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnGetLocalImages(

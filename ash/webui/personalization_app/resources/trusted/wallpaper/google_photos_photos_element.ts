@@ -12,14 +12,14 @@ import './styles.js';
 import '../../common/styles.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DisplayableImage} from '../../common/constants.js';
 import {getLoadingPlaceholders, getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent, normalizeKeyForRTL} from '../../common/utils.js';
 import {dismissErrorAction, setErrorAction} from '../personalization_actions.js';
-import {CurrentWallpaper, GooglePhotosPhoto, WallpaperImage, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
+import {CurrentWallpaper, GooglePhotosPhoto, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isGooglePhotosPhoto} from '../utils.js';
 
@@ -133,7 +133,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   private focusedColIndex_: number;
 
   /** The pending selected wallpaper. */
-  private pendingSelected_: FilePath|GooglePhotosPhoto|WallpaperImage|null;
+  private pendingSelected_: DisplayableImage|null;
 
   /** The list of photos. */
   private photos_: GooglePhotosPhoto[]|null|undefined;

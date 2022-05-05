@@ -21,6 +21,7 @@ export class TestWallpaperProvider extends
       'fetchGooglePhotosCount',
       'fetchGooglePhotosEnabled',
       'fetchGooglePhotosPhotos',
+      'getDefaultImageThumbnail',
       'getLocalImages',
       'getLocalImageThumbnail',
       'setWallpaperObserver',
@@ -28,6 +29,7 @@ export class TestWallpaperProvider extends
       'selectGooglePhotosAlbum',
       'getGooglePhotosDailyRefreshAlbumId',
       'selectWallpaper',
+      'selectDefaultImage',
       'selectLocalImage',
       'setCurrentWallpaperLayout',
       'setDailyRefreshCollectionId',
@@ -119,9 +121,11 @@ export class TestWallpaperProvider extends
       Record<string, string|undefined> = {};
   localImages: FilePath[]|null;
   localImageData: Record<string, string>;
+  defaultImageThumbnail: string = 'data://default_image_thumbnail';
   currentWallpaper: CurrentWallpaper;
   selectWallpaperResponse = true;
   selectGooglePhotosPhotoResponse = true;
+  selectDefaultImageResponse = true;
   selectLocalImageResponse = true;
   updateDailyRefreshWallpaperResponse = true;
   isInTabletModeResponse = true;
@@ -198,6 +202,11 @@ export class TestWallpaperProvider extends
     return Promise.resolve({response});
   }
 
+  getDefaultImageThumbnail(): Promise<{data: string}> {
+    this.methodCalled('getDefaultImageThumbnail');
+    return Promise.resolve({data: this.defaultImageThumbnail});
+  }
+
   getLocalImages() {
     this.methodCalled('getLocalImages');
     return Promise.resolve({images: this.localImages});
@@ -219,6 +228,11 @@ export class TestWallpaperProvider extends
   selectWallpaper(assetId: bigint, previewMode: boolean) {
     this.methodCalled('selectWallpaper', assetId, previewMode);
     return Promise.resolve({success: this.selectWallpaperResponse});
+  }
+
+  selectDefaultImage() {
+    this.methodCalled('selectDefaultImage');
+    return Promise.resolve({success: this.selectDefaultImageResponse});
   }
 
   selectGooglePhotosPhoto(id: string) {

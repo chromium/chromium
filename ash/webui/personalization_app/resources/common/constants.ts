@@ -5,7 +5,19 @@
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {GooglePhotosEnablementState, WallpaperCollection} from '../trusted/personalization_app.mojom-webui.js';
+import {GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../trusted/personalization_app.mojom-webui.js';
+
+// A special unique symbol that represents the device default image, normally
+// not accessible by the user.
+// Warning: symbols as object keys are not iterated by normal methods, but can
+// be iterated by |getOwnPropertySymbols|.
+export const kDefaultImageSymbol: unique symbol =
+    Symbol.for('chromeos_default_wallpaper');
+
+export type DefaultImageSymbol = typeof kDefaultImageSymbol;
+
+export type DisplayableImage =
+    FilePath|GooglePhotosPhoto|WallpaperImage|DefaultImageSymbol;
 
 export const trustedOrigin = 'chrome://personalization';
 
@@ -73,7 +85,7 @@ export type SendImageTilesEvent = {
 
 export type SendLocalImagesEvent = {
   type: EventType.SEND_LOCAL_IMAGES,
-  images: FilePath[],
+  images: Array<FilePath|DefaultImageSymbol>,
 };
 
 /**
@@ -81,7 +93,7 @@ export type SendLocalImagesEvent = {
  */
 export type SendLocalImageDataEvent = {
   type: EventType.SEND_LOCAL_IMAGE_DATA,
-  data: {[key: string]: string},
+  data: Record<string|DefaultImageSymbol, string>,
 };
 
 export type SendCurrentWallpaperAssetIdEvent = {

@@ -6,6 +6,9 @@
  * @fileoverview Helper functions for communicating between trusted and
  * untrusted. All trusted -> untrusted communication must happen through the
  * functions in this file.
+ * @deprecated chrome-untrusted://personalization has been removed, but these
+ * functions still exist to keep the API temporarily the same. This file should
+ * be removed when possible.
  */
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
@@ -21,10 +24,11 @@ import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage} from '
 /**
  * TODO(b:197023872) this class is deprecated and should be removed by more
  * post-iframe cleanup.
+ * @deprecated
  */
 export class IFrameApi {
   /**
-   * Send an array of wallpaper collections to untrusted.
+   * Send an array of wallpaper collections collections grid..
    */
   sendCollections(
       target: CollectionsGrid, collections: Array<WallpaperCollection>) {
@@ -36,7 +40,8 @@ export class IFrameApi {
   }
 
   /**
-   * Sends whether the user is allowed to access Google Photos to untrusted.
+   * Sends whether the user is allowed to access Google Photos to collections
+   * grid.
    */
   sendGooglePhotosEnabled(
       target: CollectionsGrid, enabled: GooglePhotosEnablementState) {
@@ -75,7 +80,7 @@ export class IFrameApi {
   }
 
   /**
-   * Send an array of wallpaper images to chrome-untrusted://.
+   * Send an array of wallpaper images to collections grid.
    * Will clear the page if images is empty array.
    */
   sendImageTiles(target: ImagesGrid, tiles: constants.ImageTile[]) {
@@ -87,9 +92,11 @@ export class IFrameApi {
   }
 
   /**
-   * Send an array of local images to chrome-untrusted://.
+   * Send an array of local images to collections grid.
    */
-  sendLocalImages(target: CollectionsGrid, images: FilePath[]) {
+  sendLocalImages(
+      target: CollectionsGrid,
+      images: Array<FilePath|constants.DefaultImageSymbol>) {
     const event: constants.SendLocalImagesEvent = {
       type: constants.EventType.SEND_LOCAL_IMAGES,
       images
@@ -98,9 +105,11 @@ export class IFrameApi {
   }
 
   /**
-   * Sends image data keyed by stringified image id.
+   * Sends image data keyed by stringified image id (or default image symbol).
    */
-  sendLocalImageData(target: CollectionsGrid, data: Record<string, string>) {
+  sendLocalImageData(
+      target: CollectionsGrid,
+      data: Record<string|constants.DefaultImageSymbol, string>) {
     const event: constants.SendLocalImageDataEvent = {
       type: constants.EventType.SEND_LOCAL_IMAGE_DATA,
       data

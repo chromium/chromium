@@ -14,12 +14,11 @@ import './styles.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {ImageTile} from '../../common/constants.js';
+import {DisplayableImage, ImageTile} from '../../common/constants.js';
 import {isNonEmptyArray} from '../../common/utils.js';
 import {ImagesGrid} from '../../untrusted/images_grid.js';
 import {IFrameApi} from '../iframe_api.js';
 import {CurrentWallpaper, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperType} from '../personalization_app.mojom-webui.js';
-import {DisplayableImage} from '../personalization_reducers.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isWallpaperImage} from '../utils.js';

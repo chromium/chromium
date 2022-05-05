@@ -112,6 +112,9 @@ class PersonalizationAppWallpaperProviderImpl
       const absl::optional<std::string>& resume_token,
       FetchGooglePhotosPhotosCallback callback) override;
 
+  void GetDefaultImageThumbnail(
+      GetDefaultImageThumbnailCallback callback) override;
+
   void GetLocalImages(GetLocalImagesCallback callback) override;
 
   void GetLocalImageThumbnail(const base::FilePath& file_path,
@@ -131,6 +134,8 @@ class PersonalizationAppWallpaperProviderImpl
   void SelectWallpaper(uint64_t image_asset_id,
                        bool preview_mode,
                        SelectWallpaperCallback callback) override;
+
+  void SelectDefaultImage(SelectDefaultImageCallback callback) override;
 
   void SelectLocalImage(const base::FilePath& path,
                         ash::WallpaperLayout layout,
@@ -198,6 +203,9 @@ class PersonalizationAppWallpaperProviderImpl
   void OnFetchGooglePhotosEnabled(
       FetchGooglePhotosEnabledCallback callback,
       ash::personalization_app::mojom::GooglePhotosEnablementState state);
+
+  void OnGetDefaultImage(GetDefaultImageThumbnailCallback callback,
+                         const gfx::ImageSkia& image);
 
   void OnGetLocalImages(GetLocalImagesCallback callback,
                         const std::vector<base::FilePath>& images);

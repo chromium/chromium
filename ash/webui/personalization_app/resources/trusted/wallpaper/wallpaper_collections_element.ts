@@ -12,12 +12,13 @@ import './styles.js';
 
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {kMaximumLocalImagePreviews} from '../../common/constants.js';
+import {DefaultImageSymbol, kDefaultImageSymbol, kMaximumLocalImagePreviews} from '../../common/constants.js';
 import {isNonEmptyArray} from '../../common/utils.js';
 import {CollectionsGrid} from '../../untrusted/collections_grid.js';
 import {IFrameApi} from '../iframe_api.js';
 import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+import {getPathOrSymbol} from '../utils.js';
 
 import {getTemplate} from './wallpaper_collections_element.html.js';
 import {initializeBackdropData} from './wallpaper_controller.js';
@@ -100,10 +101,11 @@ export class WallpaperCollections extends WithPersonalizationStore {
   private googlePhotosEnabled_: GooglePhotosEnablementState;
   private images_: Record<string, WallpaperImage[]>;
   private imagesLoading_: Record<string, boolean>;
-  private localImages_: FilePath[];
+  private localImages_: Array<FilePath|DefaultImageSymbol>|null;
   private localImagesLoading_: boolean;
-  private localImageData_: Record<string, string>;
-  private localImageDataLoading_: Record<string, boolean>;
+  private localImageData_: Record<FilePath['path']|DefaultImageSymbol, string>;
+  private localImageDataLoading_:
+      Record<FilePath['path']|DefaultImageSymbol, boolean>;
   private hasError_: boolean;
 
   private wallpaperProvider_: WallpaperProviderInterface;
@@ -136,7 +138,9 @@ export class WallpaperCollections extends WithPersonalizationStore {
     this.watch('imagesLoading_', state => state.wallpaper.loading.images);
     this.watch('localImages_', state => state.wallpaper.local.images);
     this.watch(
-        'localImagesLoading_', state => state.wallpaper.loading.local.images);
+        'localImagesLoading_',
+        state => state.wallpaper.loading.local.images ||
+            state.wallpaper.loading.local.data[kDefaultImageSymbol]);
     this.watch('localImageData_', state => state.wallpaper.local.data);
     this.watch(
         'localImageDataLoading_', state => state.wallpaper.loading.local.data);
@@ -230,7 +234,8 @@ export class WallpaperCollections extends WithPersonalizationStore {
    * Send updated local images list.
    */
   private onLocalImagesChanged_(
-      localImages: FilePath[]|null, localImagesLoading: boolean) {
+      localImages: Array<FilePath|DefaultImageSymbol>|null,
+      localImagesLoading: boolean) {
     this.didSendLocalImageData_ = false;
     if (!localImagesLoading && Array.isArray(localImages)) {
       IFrameApi.getInstance().sendLocalImages(
@@ -242,15 +247,16 @@ export class WallpaperCollections extends WithPersonalizationStore {
    * Send up to |maximumImageThumbnailsCount| image thumbnails.
    */
   private onLocalImageDataChanged_(
-      images: FilePath[]|null, imageData: Record<string, string>,
-      imageDataLoading: Record<string, boolean>) {
+      images: Array<FilePath|DefaultImageSymbol>|null,
+      imageData: Record<string|DefaultImageSymbol, string>,
+      imageDataLoading: Record<string|DefaultImageSymbol, boolean>) {
     if (!Array.isArray(images) || !imageData || !imageDataLoading ||
         this.didSendLocalImageData_) {
       return;
     }
 
-    const successfullyLoaded: string[] =
-        images.map(image => image.path).filter(key => {
+    const successfullyLoaded: Array<string|DefaultImageSymbol> =
+        images.map(image => getPathOrSymbol(image)).filter(key => {
           const doneLoading = imageDataLoading[key] === false;
           const success = !!imageData[key];
           return success && doneLoading;
@@ -267,7 +273,8 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
       return didLoadMaximum ||
           // No more images to load so send now even if some failed.
-          images.every(image => imageDataLoading[image.path] === false);
+          images.every(
+              image => imageDataLoading[getPathOrSymbol(image)] === false);
     }
 
 
@@ -275,19 +282,19 @@ export class WallpaperCollections extends WithPersonalizationStore {
       // Also send information about which images failed to load. This is
       // necessary to decide whether to show loading animation or failure svg
       // while updating local images.
-      const failures = images.map(image => image.path)
-                           .filter(key => {
-                             const doneLoading =
-                                 imageDataLoading[key] === false;
-                             const failure = imageData[key] === '';
-                             return failure && doneLoading;
-                           })
-                           .reduce((result, key) => {
-                             // Empty string means that this image failed to
-                             // load.
-                             result[key] = '';
-                             return result;
-                           }, {} as Record<string, string>);
+      const failures =
+          images.map(image => getPathOrSymbol(image))
+              .filter((key: string|DefaultImageSymbol) => {
+                const doneLoading = imageDataLoading[key] === false;
+                const failure = imageData[key] === '';
+                return failure && doneLoading;
+              })
+              .reduce((result, key) => {
+                // Empty string means that this image failed to
+                // load.
+                result[key] = '';
+                return result;
+              }, {} as Record<FilePath['path']|DefaultImageSymbol, string>);
 
       const data =
           successfullyLoaded.filter((_, i) => i < kMaximumLocalImagePreviews)

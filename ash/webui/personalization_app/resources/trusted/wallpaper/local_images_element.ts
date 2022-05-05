@@ -15,19 +15,20 @@ import './styles.js';
 import '../../common/icons.js';
 import '../../common/styles.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getLoadingPlaceholderAnimationDelay} from '../../common/utils.js';
-import {isSelectionEvent} from '../../common/utils.js';
-import {CurrentWallpaper, GooglePhotosPhoto, WallpaperImage, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
+import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from '../../common/constants.js';
+import {getLoadingPlaceholderAnimationDelay, isSelectionEvent} from '../../common/utils.js';
+import {CurrentWallpaper, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {isFilePath} from '../utils.js';
+import {getPathOrSymbol, isDefaultImage, isFilePath} from '../utils.js';
 
 import {getTemplate} from './local_images_element.html.js';
-import {fetchLocalData, selectWallpaper} from './wallpaper_controller.js';
+import {fetchLocalData, getDefaultImageThumbnail, selectWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
+
 
 export class LocalImages extends WithPersonalizationStore {
   static get is() {
@@ -77,12 +78,13 @@ export class LocalImages extends WithPersonalizationStore {
   override hidden: boolean;
 
   private wallpaperProvider_: WallpaperProviderInterface;
-  private images_: FilePath[]|null;
-  private imageData_: Record<FilePath['path'], string>;
-  private imageDataLoading_: Record<FilePath['path'], boolean>;
+  private images_: Array<FilePath|DefaultImageSymbol>|null;
+  private imageData_: Record<FilePath['path']|DefaultImageSymbol, string>;
+  private imageDataLoading_:
+      Record<FilePath['path']|DefaultImageSymbol, boolean>;
   private currentSelected_: CurrentWallpaper|null;
-  private pendingSelected_: FilePath|GooglePhotosPhoto|WallpaperImage|null;
-  private imagesToDisplay_: FilePath[];
+  private pendingSelected_: DisplayableImage|null;
+  private imagesToDisplay_: Array<FilePath|DefaultImageSymbol>;
 
   constructor() {
     super();
@@ -102,6 +104,7 @@ export class LocalImages extends WithPersonalizationStore {
     this.watch<LocalImages['pendingSelected_']>(
         'pendingSelected_', state => state.wallpaper.pendingSelected);
     this.updateFromStore();
+    getDefaultImageThumbnail(this.wallpaperProvider_, this.getStore());
     fetchLocalData(this.wallpaperProvider_, this.getStore());
     window.addEventListener('focus', () => {
       fetchLocalData(this.wallpaperProvider_, this.getStore());
@@ -126,7 +129,7 @@ export class LocalImages extends WithPersonalizationStore {
   /** Sets |imagesToDisplay| when a new set of local images loads. */
   private onImagesChanged_(images: LocalImages['images_']) {
     this.imagesToDisplay_ = (images || []).filter(image => {
-      const key = image.path;
+      const key = getPathOrSymbol(image);
       if (this.imageDataLoading_[key] === false) {
         return !!this.imageData_[key];
       }
@@ -148,7 +151,7 @@ export class LocalImages extends WithPersonalizationStore {
     // |imagesToDisplay| while iterating.
     for (let i = this.imagesToDisplay_.length - 1; i >= 0; i--) {
       const image = this.imagesToDisplay_[i];
-      const key = image.path;
+      const key = getPathOrSymbol(image);
       const failed = imageDataLoading[key] === false && !imageData[key];
       if (failed) {
         this.splice('imagesToDisplay_', i, 1);
@@ -157,10 +160,18 @@ export class LocalImages extends WithPersonalizationStore {
   }
 
   private getAriaSelected_(
-      image: FilePath|null, currentSelected: LocalImages['currentSelected_'],
+      image: FilePath|DefaultImageSymbol|null,
+      currentSelected: LocalImages['currentSelected_'],
       pendingSelected: LocalImages['pendingSelected_']): 'true'|'false' {
     if (!image || (!currentSelected && !pendingSelected)) {
       return 'false';
+    }
+    if (isDefaultImage(image)) {
+      return ((isDefaultImage(pendingSelected)) ||
+              (!pendingSelected && !!currentSelected &&
+               currentSelected.type === WallpaperType.kDefault))
+                 .toString() as 'true' |
+          'false';
     }
     return (isFilePath(pendingSelected) &&
                 image.path === pendingSelected.path ||
@@ -170,7 +181,10 @@ export class LocalImages extends WithPersonalizationStore {
         'false';
   }
 
-  private getAriaLabel_(image: FilePath|null): string {
+  private getAriaLabel_(image: FilePath|DefaultImageSymbol|null): string {
+    if (isDefaultImage(image)) {
+      return this.i18n('defaultWallpaper');
+    }
     if (!isFilePath(image)) {
       return '';
     }
@@ -179,12 +193,12 @@ export class LocalImages extends WithPersonalizationStore {
   }
 
   private isImageLoading_(
-      image: FilePath|null,
+      image: FilePath|DefaultImageSymbol|null,
       imageDataLoading: LocalImages['imageDataLoading_']): boolean {
-    if (!isFilePath(image) || !imageDataLoading) {
+    if (!image || !imageDataLoading) {
       return true;
     }
-    const key = image.path;
+    const key = getPathOrSymbol(image);
     // If key is not present, then loading has not yet started. Still show a
     // loading tile in this case.
     return !imageDataLoading.hasOwnProperty(key) ||
@@ -196,30 +210,42 @@ export class LocalImages extends WithPersonalizationStore {
   }
 
   private isImageReady_(
-      image: FilePath|null, imageData: LocalImages['imageData_'],
+      image: FilePath|DefaultImageSymbol|null,
+      imageData: LocalImages['imageData_'],
       imageDataLoading: LocalImages['imageDataLoading_']): boolean {
-    if (!isFilePath(image) || !imageData || !imageDataLoading) {
+    if (!image || !imageData || !imageDataLoading) {
       return false;
     }
-    const key = image.path;
+    const key = getPathOrSymbol(image);
     return !!imageData[key] && imageDataLoading[key] === false;
   }
 
-  private getImageData_(image: FilePath, imageData: LocalImages['imageData_']):
-      string {
-    return imageData[image.path];
+  private getImageData_(
+      image: FilePath|DefaultImageSymbol,
+      imageData: LocalImages['imageData_']): string {
+    return imageData[getPathOrSymbol(image)];
   }
 
-  private getImageKey_(image: FilePath): FilePath['path'] {
-    return image.path;
+  private getImageDataId_(image: FilePath|DefaultImageSymbol): string {
+    return isFilePath(image) ? image.path : image.toString();
   }
 
   private onImageSelected_(event: Event) {
     if (!isSelectionEvent(event)) {
       return;
     }
-    const path = (event.currentTarget as HTMLElement).dataset['id'];
-    const image = this.images_!.find(image => path === image.path);
+    const dataId = (event.currentTarget as HTMLElement).dataset['id'];
+    assert(
+        typeof dataId === 'string' && dataId.length > 0,
+        'image data id is required');
+    const image = this.images_!.find(image => {
+      if (isFilePath(image)) {
+        return dataId === image.path;
+      }
+      assert(
+          image === kDefaultImageSymbol, 'only one symbol should be present');
+      return dataId === image.toString();
+    });
     if (!image) {
       assertNotReached('Image with that path not found');
       return;

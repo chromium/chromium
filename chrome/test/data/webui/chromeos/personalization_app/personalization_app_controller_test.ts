@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {cancelPreviewWallpaper, fetchCollections, fetchGooglePhotosAlbum, fetchLocalData, getImageKey, getLocalImages, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, selectWallpaper, WallpaperImage} from 'chrome://personalization/trusted/personalization_app.js';
+import {cancelPreviewWallpaper, DefaultImageSymbol, fetchCollections, fetchGooglePhotosAlbum, fetchLocalData, getDefaultImageThumbnail, getImageKey, getLocalImages, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, isFilePath, kDefaultImageSymbol, selectWallpaper, WallpaperImage} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -562,18 +562,28 @@ suite('Personalization app controller', () => {
   });
 
   test('clears local images when fetching new image list fails', async () => {
+    // No default image on this device.
+    wallpaperProvider.defaultImageThumbnail = '';
+    await getDefaultImageThumbnail(wallpaperProvider, personalizationStore);
     await fetchLocalData(wallpaperProvider, personalizationStore);
-    // Reset the history of actions and prior states, but keep the current
-    // state.
-    personalizationStore.reset(personalizationStore.data);
 
     wallpaperProvider.localImages = null;
     await fetchLocalData(wallpaperProvider, personalizationStore);
 
-    assertEquals(null, personalizationStore.data.wallpaper.local.images);
+    assertEquals(
+        null, personalizationStore.data.wallpaper.local.images,
+        'local images set to null');
     assertDeepEquals({}, personalizationStore.data.wallpaper.local.data);
+    assertEquals(
+        '', personalizationStore.data.wallpaper.local.data[kDefaultImageSymbol],
+        'default image still present but set to empty string');
     assertDeepEquals(
-        {}, personalizationStore.data.wallpaper.loading.local.data);
+        {}, personalizationStore.data.wallpaper.loading.local.data,
+        'local images not loading');
+    assertFalse(
+        personalizationStore.data.wallpaper.loading.local
+            .data[kDefaultImageSymbol],
+        'default image is not loading');
   });
 });
 
@@ -938,5 +948,93 @@ suite('does not respond to re-selecting the current wallpaper', () => {
     personalizationStore.reset(personalizationStore.data);
 
     await testReselectWallpaper(image);
+  });
+});
+
+suite('updates default image', () => {
+  let wallpaperProvider: TestWallpaperProvider;
+  let personalizationStore: TestPersonalizationStore;
+
+  setup(() => {
+    wallpaperProvider = new TestWallpaperProvider();
+    personalizationStore = new TestPersonalizationStore({});
+    personalizationStore.setReducersEnabled(true);
+    wallpaperProvider.isInTabletModeResponse = false;
+  });
+
+  test('get default image thumbnail', async () => {
+    // Initialize some local image data.
+    await fetchLocalData(wallpaperProvider, personalizationStore);
+    // Reset the history of actions and prior states, but keep the current
+    // state.
+    personalizationStore.reset(personalizationStore.data);
+
+    assertTrue(
+        personalizationStore.data.wallpaper.local.images.every(
+            (image: FilePath|DefaultImageSymbol) => isFilePath(image) &&
+                !!personalizationStore.data.wallpaper.local.data[image.path]),
+        'every image is file path with data');
+
+    await getDefaultImageThumbnail(wallpaperProvider, personalizationStore);
+
+    assertDeepEquals(
+        [
+          {name: 'begin_load_default_image'},
+          {
+            thumbnail: 'data://default_image_thumbnail',
+            name: 'set_default_image',
+          },
+        ],
+        personalizationStore.actions,
+        'load default image thumbnail actions',
+    );
+
+
+    assertDeepEquals(
+        [true, false],
+        personalizationStore.states.map(
+            state => state.wallpaper.loading.local.data[kDefaultImageSymbol]),
+        'expected loading state while fetching default thumbnail',
+    );
+    assertEquals(
+        wallpaperProvider.defaultImageThumbnail,
+        personalizationStore.data.wallpaper.local.data[kDefaultImageSymbol],
+        'default image thumbnail is set');
+  });
+
+  test('refresh local image list keeps default thumbnail', async () => {
+    // Initialize some local image data.
+    await fetchLocalData(wallpaperProvider, personalizationStore);
+    await getDefaultImageThumbnail(wallpaperProvider, personalizationStore);
+    // Reset the history of actions and prior states, but keep the current
+    // state.
+    personalizationStore.reset(personalizationStore.data);
+
+    assertEquals(
+        wallpaperProvider.defaultImageThumbnail,
+        personalizationStore.data.wallpaper.local.data[kDefaultImageSymbol],
+        'default image thumbnail is set');
+
+    assertDeepEquals(
+        [kDefaultImageSymbol, ...wallpaperProvider.localImages!],
+        personalizationStore.data.wallpaper.local.images,
+        'local images include default thumbnail',
+    );
+
+    // Simulate user deleting a local image from Downloads directory. Keep the
+    // first image only.
+    wallpaperProvider.localImages = wallpaperProvider.localImages!.slice(0, 1);
+    await fetchLocalData(wallpaperProvider, personalizationStore);
+
+    // Default image symbol does not show up in Object.keys.
+    assertDeepEquals(
+        [wallpaperProvider.localImages[0]!.path],
+        Object.keys(personalizationStore.data.wallpaper.local.data),
+        'local image data deleted for missing image');
+
+    assertEquals(
+        wallpaperProvider.defaultImageThumbnail,
+        personalizationStore.data.wallpaper.local.data[kDefaultImageSymbol],
+        'default image thumbnail is still set');
   });
 });

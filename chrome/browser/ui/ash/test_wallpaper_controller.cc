@@ -113,6 +113,11 @@ void TestWallpaperController::SetDefaultWallpaper(
   std::move(callback).Run(/*success=*/true);
 }
 
+base::FilePath TestWallpaperController::GetDefaultWallpaperPath(
+    const AccountId& account_id) {
+  return base::FilePath();
+}
+
 void TestWallpaperController::SetCustomizedDefaultWallpaperPaths(
     const base::FilePath& customized_default_small_path,
     const base::FilePath& customized_default_large_path) {

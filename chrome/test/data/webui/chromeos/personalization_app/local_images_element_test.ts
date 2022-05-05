@@ -5,8 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {LocalImages} from 'chrome://personalization/trusted/personalization_app.js';
-
+import {kDefaultImageSymbol, LocalImages} from 'chrome://personalization/trusted/personalization_app.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -34,6 +33,11 @@ suite('LocalImagesTest', function() {
     ];
     return Array.from(
         localImagesElement.shadowRoot!.querySelectorAll(selectors.join(' ')));
+  }
+
+  function getDefaultImageHtmlElement(): HTMLElement|null {
+    return localImagesElement!.shadowRoot!.querySelector(
+        `.photo-inner-container[data-id="${kDefaultImageSymbol.toString()}"]`);
   }
 
   setup(() => {
@@ -208,5 +212,48 @@ suite('LocalImagesTest', function() {
     assertEquals(
         images[1]!.getAttribute('aria-label'),
         wallpaperProvider.localImages![1]!.path);
+  });
+
+  test('click default image thumbnail resets wallpaper', async () => {
+    personalizationStore.data.wallpaper.local = {
+      images: [kDefaultImageSymbol, ...wallpaperProvider.localImages!],
+      data: {
+        [kDefaultImageSymbol]: wallpaperProvider.defaultImageThumbnail,
+        ...wallpaperProvider.localImageData
+      },
+    };
+
+    localImagesElement = initElement(LocalImages, {hidden: false});
+    await waitAfterNextRender(localImagesElement);
+
+    const container = getDefaultImageHtmlElement();
+    container!.click();
+
+    await wallpaperProvider.whenCalled('selectDefaultImage');
+  });
+
+  test('default image thumbnail hidden when fails to load', async () => {
+    personalizationStore.data.wallpaper.local = {
+      images: [kDefaultImageSymbol],
+      data: {[kDefaultImageSymbol]: ''},
+    };
+
+    localImagesElement = initElement(LocalImages, {hidden: false});
+
+    await waitAfterNextRender(localImagesElement);
+
+    assertEquals(
+        null, getDefaultImageHtmlElement(),
+        'default image container does not exist');
+
+    personalizationStore.data.wallpaper.local = {
+      images: [kDefaultImageSymbol],
+      data: {[kDefaultImageSymbol]: wallpaperProvider.defaultImageThumbnail},
+    };
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(localImagesElement);
+
+    assertTrue(
+        !!getDefaultImageHtmlElement(), 'default image container does exist');
   });
 });
