@@ -2683,8 +2683,9 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   auto* evaluator = cq_data->GetContainerQueryEvaluator();
   DCHECK(evaluator);
 
-  switch (evaluator->ContainerChanged(GetDocument(), style, physical_size,
-                                      physical_axes)) {
+  ContainerQueryEvaluator::Change query_change = evaluator->ContainerChanged(
+      GetDocument(), style, physical_size, physical_axes);
+  switch (query_change) {
     case ContainerQueryEvaluator::Change::kNone:
       if (!cq_data->SkippedStyleRecalc())
         return;
@@ -2696,6 +2697,9 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
       change = change.ForceRecalcDescendantContainers();
       break;
   }
+
+  if (query_change != ContainerQueryEvaluator::Change::kNone)
+    style.ClearCachedPseudoElementStyles();
 
   NthIndexCache nth_index_cache(GetDocument());
 
