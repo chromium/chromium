@@ -19,6 +19,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/overlay_prioritizer.h"
@@ -153,6 +154,13 @@ void WaylandSurface::SetAcquireFence(gfx::GpuFenceHandle acquire_fence) {
   // must disallow clients to use explicit synchronization.
   DCHECK(!apply_state_immediately_);
   DCHECK(connection_->linux_explicit_synchronization_v1());
+  if (!acquire_fence.is_null()) {
+    base::TimeTicks ticks;
+    auto status = gfx::GpuFence::GetStatusChangeTime(
+        acquire_fence.owned_fd.get(), &ticks);
+    if (status == gfx::GpuFence::kSignaled)
+      return;
+  }
   pending_state_.acquire_fence = std::move(acquire_fence);
   return;
 }

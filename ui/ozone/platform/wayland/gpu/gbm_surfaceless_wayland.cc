@@ -424,6 +424,15 @@ void GbmSurfacelessWayland::OnSubmission(uint32_t frame_id,
   submitted_frame->planes.clear();
   submitted_frame->overlays.clear();
 
+  // Check if the fence has retired.
+  if (!release_fence.is_null()) {
+    base::TimeTicks ticks;
+    auto status = gfx::GpuFence::GetStatusChangeTime(
+        release_fence.owned_fd.get(), &ticks);
+    if (status == gfx::GpuFence::kSignaled)
+      release_fence = {};
+  }
+
   std::move(submitted_frame->completion_callback)
       .Run(gfx::SwapCompletionResult(swap_result, std::move(release_fence)));
 
