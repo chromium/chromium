@@ -2426,6 +2426,7 @@ static_library("browser") {
     "//ui/base/ime",
     "//ui/color",
     "//ui/compositor",
+    "//ui/display/util:util",
     "//ui/events:events_base",
     "//ui/events/devices",
     "//ui/gfx",
@@ -5671,6 +5672,7 @@ static_library("browser") {
       "//ui/base:fullscreen_win",
       "//ui/color:accent_color_observer",
       "//ui/color:color_switches",
+      "//ui/display/util:util",
     ]
     allow_circular_includes_from +=
         [ "//chrome/browser/safe_browsing/chrome_cleaner" ]

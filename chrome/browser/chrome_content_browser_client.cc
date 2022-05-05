@@ -411,7 +411,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #include "ui/base/ui_base_paths.h"
-#include "ui/display/display.h"
+#include "ui/display/util/display_util.h"
 #if BUILDFLAG(DFMIFY_DEV_UI)
 #include "chrome/browser/dev_ui/android/dev_ui_loader_throttle.h"
 #endif  // BUILDFLAG(DFMIFY_DEV_UI)
@@ -5944,8 +5944,8 @@ ChromeContentBrowserClient::GetWideColorGamutHeuristic() {
     return WideColorGamutHeuristic::kUseDisplay;
   }
 
-  if (display::Display::HasForceDisplayColorProfile() &&
-      display::Display::GetForcedDisplayColorProfile() ==
+  if (display::HasForceDisplayColorProfile() &&
+      display::GetForcedDisplayColorProfile() ==
           gfx::ColorSpace::CreateDisplayP3D65()) {
     return WideColorGamutHeuristic::kUseDisplay;
   }

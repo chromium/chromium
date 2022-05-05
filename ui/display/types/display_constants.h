@@ -37,6 +37,14 @@ constexpr int32_t kInvalidYearOfManufacture = -1;
 // capable displays.
 constexpr float kMinHDRCapableMaxLuminanceRelative = 1.0625;
 
+// Set SDR content to 75% of display brightness so SDR colors look good
+// and there is no perceived brightness change during SDR-HDR.
+constexpr float kSDRJoint = 0.75;
+
+// Set the HDR level multiplier to 4x so that the bright areas of the videos
+// are not overexposed, and maintain local contrast.
+constexpr float kHDRLevel = 4.0;
+
 // Used to describe the state of a multi-display configuration.
 enum MultipleDisplayState {
   MULTIPLE_DISPLAY_STATE_INVALID,

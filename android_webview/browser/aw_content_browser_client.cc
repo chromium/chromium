@@ -107,7 +107,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_bundle_android.h"
-#include "ui/display/display.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/resources/grit/ui_resources.h"
 
@@ -1021,8 +1021,8 @@ AwContentBrowserClient::GetWideColorGamutHeuristic() {
   if (base::FeatureList::IsEnabled(features::kWebViewWideColorGamutSupport))
     return WideColorGamutHeuristic::kUseWindow;
 
-  if (display::Display::HasForceDisplayColorProfile() &&
-      display::Display::GetForcedDisplayColorProfile() ==
+  if (display::HasForceDisplayColorProfile() &&
+      display::GetForcedDisplayColorProfile() ==
           gfx::ColorSpace::CreateDisplayP3D65()) {
     return WideColorGamutHeuristic::kUseWindow;
   }

@@ -57,34 +57,6 @@ float GetForcedDeviceScaleFactorImpl() {
   return static_cast<float>(scale_in_double);
 }
 
-gfx::ColorSpace ForcedColorProfileStringToColorSpace(const std::string& value) {
-  if (value == "srgb")
-    return gfx::ColorSpace::CreateSRGB();
-  if (value == "display-p3-d65")
-    return gfx::ColorSpace::CreateDisplayP3D65();
-  if (value == "scrgb-linear")
-    return gfx::ColorSpace::CreateSCRGBLinear();
-  if (value == "hdr10")
-    return gfx::ColorSpace::CreateHDR10();
-  if (value == "extended-srgb")
-    return gfx::ColorSpace::CreateExtendedSRGB();
-  if (value == "generic-rgb") {
-    return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::APPLE_GENERIC_RGB,
-                           gfx::ColorSpace::TransferID::GAMMA18);
-  }
-  if (value == "color-spin-gamma24") {
-    // Run this color profile through an ICC profile. The resulting color space
-    // is slightly different from the input color space, and removing the ICC
-    // profile would require rebaselineing many layout tests.
-    gfx::ColorSpace color_space(
-        gfx::ColorSpace::PrimaryID::WIDE_GAMUT_COLOR_SPIN,
-        gfx::ColorSpace::TransferID::GAMMA24);
-    return gfx::ICCProfile::FromColorSpace(color_space).GetColorSpace();
-  }
-  LOG(ERROR) << "Invalid forced color profile: \"" << value << "\"";
-  return gfx::ColorSpace::CreateSRGB();
-}
-
 const char* ToRotationString(display::Display::Rotation rotation) {
   switch (rotation) {
     case display::Display::ROTATE_0:
@@ -130,21 +102,6 @@ void Display::SetForceDeviceScaleFactor(double dsf) {
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kForceDeviceScaleFactor, base::StringPrintf("%.2f", dsf));
-}
-
-// static
-gfx::ColorSpace Display::GetForcedDisplayColorProfile() {
-  DCHECK(HasForceDisplayColorProfile());
-  std::string value =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kForceDisplayColorProfile);
-  return ForcedColorProfileStringToColorSpace(value);
-}
-
-// static
-bool Display::HasForceDisplayColorProfile() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kForceDisplayColorProfile);
 }
 
 // static

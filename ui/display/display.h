@@ -87,14 +87,6 @@ class DISPLAY_EXPORT Display final {
   // command line via "--force-device-scale-factor".
   static bool HasForceDeviceScaleFactor();
 
-  // Returns the forced display color profile, which is given by
-  // "--force-color-profile".
-  static gfx::ColorSpace GetForcedDisplayColorProfile();
-
-  // Indicates if a display color profile is being explicitly enforced from the
-  // command line via "--force-color-profile".
-  static bool HasForceDisplayColorProfile();
-
   // Returns the forced raster color profile, which is given by
   // "--force-raster-color-profile".
   static gfx::ColorSpace GetForcedRasterColorProfile();

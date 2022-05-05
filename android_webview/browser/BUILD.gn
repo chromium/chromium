@@ -284,6 +284,7 @@ source_set("browser") {
     "//third_party/blink/public/mojom:mojom_platform",
     "//third_party/crashpad/crashpad/client",
     "//ui/android",
+    "//ui/display/util:util",
     "//ui/gl",
     "//ui/resources",
     "//ui/touch_selection",

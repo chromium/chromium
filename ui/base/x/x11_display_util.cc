@@ -294,7 +294,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     if (monitor_iter != output_to_monitor.end() && monitor_iter->second == 0)
       monitor_order_primary_display_index = displays.size();
 
-    if (!display::Display::HasForceDisplayColorProfile()) {
+    if (!display::HasForceDisplayColorProfile()) {
       gfx::ICCProfile icc_profile = ui::GetICCProfileForMonitor(
           monitor_iter == output_to_monitor.end() ? 0 : monitor_iter->second);
       gfx::ColorSpace color_space = icc_profile.GetPrimariesOnlyColorSpace();

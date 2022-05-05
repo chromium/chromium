@@ -261,9 +261,8 @@ gfx::DisplayColorSpaces GetDisplayColorSpacesForHdr(
 gfx::DisplayColorSpaces GetForcedDisplayColorSpaces() {
   // Adjust white level to a default value irrespective of whether the color
   // space is scRGB linear (defaults to 80 nits) or PQ (defaults to 100 nits).
-  const auto& color_space =
-      Display::GetForcedDisplayColorProfile().GetWithSDRWhiteLevel(
-          gfx::ColorSpace::kDefaultScrgbLinearSdrWhiteLevel);
+  const auto& color_space = GetForcedDisplayColorProfile().GetWithSDRWhiteLevel(
+      gfx::ColorSpace::kDefaultScrgbLinearSdrWhiteLevel);
   auto display_color_spaces = CreateDisplayColorSpaces(color_space);
   // Use the forced color profile's buffer format for all content usages.
   if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::PQ) {
@@ -295,7 +294,7 @@ Display CreateDisplayFromDisplayInfo(
   // from the ICC profile provided by |color_profile_reader| for SDR content,
   // and HDR10 or scRGB linear for HDR and WCG content if HDR is enabled.
   gfx::DisplayColorSpaces color_spaces;
-  if (Display::HasForceDisplayColorProfile()) {
+  if (HasForceDisplayColorProfile()) {
     color_spaces = GetForcedDisplayColorSpaces();
   } else if (hdr_enabled_on_any_display) {
     const float sdr_white_level = display_info.sdr_white_level();

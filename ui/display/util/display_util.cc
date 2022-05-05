@@ -6,12 +6,15 @@
 
 #include <stddef.h>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "ui/display/types/display_snapshot.h"
 #include "ui/display/util/edid_parser.h"
+#include "ui/gfx/icc_profile.h"
 
 namespace display {
 
@@ -208,5 +211,111 @@ bool HasInternalDisplay() {
 void SetInternalDisplayIds(base::flat_set<int64_t> display_ids) {
   *internal_display_ids() = std::move(display_ids);
 }
+
+gfx::ColorSpace ForcedColorProfileStringToColorSpace(const std::string& value) {
+  if (value == "srgb")
+    return gfx::ColorSpace::CreateSRGB();
+  if (value == "display-p3-d65")
+    return gfx::ColorSpace::CreateDisplayP3D65();
+  if (value == "scrgb-linear")
+    return gfx::ColorSpace::CreateSCRGBLinear();
+  if (value == "hdr10")
+    return gfx::ColorSpace::CreateHDR10();
+  if (value == "extended-srgb")
+    return gfx::ColorSpace::CreateExtendedSRGB();
+  if (value == "generic-rgb") {
+    return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::APPLE_GENERIC_RGB,
+                           gfx::ColorSpace::TransferID::GAMMA18);
+  }
+  if (value == "color-spin-gamma24") {
+    // Run this color profile through an ICC profile. The resulting color space
+    // is slightly different from the input color space, and removing the ICC
+    // profile would require rebaselineing many layout tests.
+    gfx::ColorSpace color_space(
+        gfx::ColorSpace::PrimaryID::WIDE_GAMUT_COLOR_SPIN,
+        gfx::ColorSpace::TransferID::GAMMA24);
+    return gfx::ICCProfile::FromColorSpace(color_space).GetColorSpace();
+  }
+  LOG(ERROR) << "Invalid forced color profile: \"" << value << "\"";
+  return gfx::ColorSpace::CreateSRGB();
+}
+
+gfx::ColorSpace GetForcedDisplayColorProfile() {
+  DCHECK(HasForceDisplayColorProfile());
+  std::string value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          /*switches::kForceDisplayColorProfile=*/"force-color-profile");
+  return ForcedColorProfileStringToColorSpace(value);
+}
+
+bool HasForceDisplayColorProfile() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      /*switches::kForceDisplayColorProfile=*/"force-color-profile");
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Constructs the raster DisplayColorSpaces out of |snapshot_color_space|,
+// including the HDR ones if present and |allow_high_bit_depth| is set.
+gfx::DisplayColorSpaces CreateDisplayColorSpaces(
+    const gfx::ColorSpace& snapshot_color_space,
+    bool allow_high_bit_depth,
+    const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata) {
+  if (HasForceDisplayColorProfile()) {
+    return gfx::DisplayColorSpaces(GetForcedDisplayColorProfile(),
+                                   DisplaySnapshot::PrimaryFormat());
+  }
+
+  // ChromeOS VMs (e.g. amd64-generic or betty) have INVALID Primaries; just
+  // pass the color space along.
+  if (!snapshot_color_space.IsValid()) {
+    return gfx::DisplayColorSpaces(snapshot_color_space,
+                                   DisplaySnapshot::PrimaryFormat());
+  }
+
+  const auto primary_id = snapshot_color_space.GetPrimaryID();
+
+  skcms_Matrix3x3 primary_matrix{};
+  if (primary_id == gfx::ColorSpace::PrimaryID::CUSTOM)
+    snapshot_color_space.GetPrimaryMatrix(&primary_matrix);
+
+  // Reconstruct the native colorspace with an IEC61966 2.1 transfer function
+  // for SDR content (matching that of sRGB).
+  gfx::ColorSpace sdr_color_space;
+  if (primary_id == gfx::ColorSpace::PrimaryID::CUSTOM) {
+    sdr_color_space = gfx::ColorSpace::CreateCustom(
+        primary_matrix, gfx::ColorSpace::TransferID::SRGB);
+  } else {
+    sdr_color_space =
+        gfx::ColorSpace(primary_id, gfx::ColorSpace::TransferID::SRGB);
+  }
+  gfx::DisplayColorSpaces display_color_spaces = gfx::DisplayColorSpaces(
+      sdr_color_space, DisplaySnapshot::PrimaryFormat());
+
+  if (allow_high_bit_depth && snapshot_color_space.IsHDR()) {
+    gfx::ColorSpace hdr_color_space;
+    if (primary_id == gfx::ColorSpace::PrimaryID::CUSTOM) {
+      hdr_color_space = gfx::ColorSpace::CreatePiecewiseHDR(
+          primary_id, kSDRJoint, kHDRLevel, &primary_matrix);
+    } else {
+      hdr_color_space =
+          gfx::ColorSpace::CreatePiecewiseHDR(primary_id, kSDRJoint, kHDRLevel);
+    }
+
+    display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+        gfx::ContentColorUsage::kHDR, false /* needs_alpha */, hdr_color_space,
+        gfx::BufferFormat::RGBA_1010102);
+    display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+        gfx::ContentColorUsage::kHDR, true /* needs_alpha */, hdr_color_space,
+        gfx::BufferFormat::RGBA_1010102);
+
+    // TODO(https://crbug.com/1286074): Populate maximum luminance based on
+    // `hdr_static_metadata`. For now, assume that the HDR maximum luminance
+    // is 1,000% of the SDR maximum luminance.
+    constexpr float kHDRMaxLuminanceRelative = 10.f;
+    display_color_spaces.SetHDRMaxLuminanceRelative(kHDRMaxLuminanceRelative);
+  }
+  return display_color_spaces;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace display
