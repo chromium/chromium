@@ -4924,6 +4924,37 @@
             ]
         }
     ],
+    "NtpRealboxDesignUpdates": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "RealboxMatchSearchboxThemeParam": "0"
+                    },
+                    "enable_features": [
+                        "NtpRealboxMatchSearchboxTheme"
+                    ]
+                },
+                {
+                    "name": "Enabled_Rounded_Corners",
+                    "params": {
+                        "RealboxMatchSearchboxThemeParam": "1"
+                    },
+                    "enable_features": [
+                        "NtpRealboxMatchSearchboxTheme"
+                    ]
+                }
+            ]
+        }
+    ],
     "NtpRealboxPedals": [
         {
             "platforms": [
