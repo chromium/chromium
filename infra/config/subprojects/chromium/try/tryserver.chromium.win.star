@@ -108,6 +108,9 @@ try_.builder(
 
 try_.builder(
     name = "win_x64_archive",
+    mirrors = [
+        "ci/win-archive-rel",
+    ],
 )
 
 try_.builder(
