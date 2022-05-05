@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/strcat.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_command_line.h"
 #include "components/policy/core/common/policy_test_utils.h"
@@ -33,7 +34,6 @@ namespace {
 const char kPageLoadedString[] = "Page loaded!";
 const char kPageURL[] = "/test-page.html";
 const char kPageTitle[] = "Page title!";
-const char kInvalidNTPLocation[] = "invalid_url";
 
 // Provides responses for redirect and changed window location URLs.
 std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
@@ -264,10 +264,10 @@ BOOL WaitForHistoryToDisappear() {
 }
 
 // Tests that the new tab doesn't open the policy's New Tab Page Location when
-// the URL is invalid.
-- (void)testInvalidNTPLocation {
+// the URL is empty.
+- (void)testEmptyNTPLocation {
   // Set the policy's NTP Location value at runtime.
-  [self setNTPPolicyValue:kInvalidNTPLocation];
+  [self setNTPPolicyValue:""];
 
   // Open a new tab page.
   [ChromeEarlGrey openNewTab];

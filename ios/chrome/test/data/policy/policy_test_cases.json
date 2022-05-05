@@ -378,11 +378,21 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {
-            "NewTabPageLocation": "not_a_url"
+            "NewTabPageLocation": ""
         },
         "prefs": {
           "ios.ntp.location_override": {
               "default_value": ""
+          }
+        }
+      },
+      {
+        "policies": {
+            "NewTabPageLocation": "m.youtube.com"
+        },
+        "prefs": {
+          "ios.ntp.location_override": {
+              "value": "https://m.youtube.com"
           }
         }
       },

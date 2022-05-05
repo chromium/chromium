@@ -24,6 +24,14 @@ class NewTabPageLocationPolicyHandler : public TypeCheckingPolicyHandler {
                            policy::PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
+
+ private:
+  // Format the New Tab Page Location URL string to be the correct format of a
+  // URL.
+  std::string FormatNewTabPageLocationURL(const std::string ntp_location);
+
+  // Verifies that the value is a valid URL.
+  bool ValidateNewTabPageLocationURL(const base::Value* value);
 };
 
 }  // namespace policy
