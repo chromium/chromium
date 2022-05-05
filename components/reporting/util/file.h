@@ -10,6 +10,9 @@
 #include "base/callback.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/strings/strcat.h"
+#include "components/reporting/util/status.h"
+#include "components/reporting/util/statusor.h"
 
 namespace reporting {
 
@@ -29,6 +32,23 @@ bool DeleteFilesWarnIfFailed(
     base::RepeatingCallback<bool(const base::FilePath&)> pred =
         base::BindRepeating([](const base::FilePath&) { return true; }));
 
+// Attempt to read entire file given from |file_path| starting from offset.
+// Returns a string of the data read, or an error if one was encountered.
+StatusOr<std::string> MaybeReadFile(const base::FilePath& file_path,
+                                    int64_t offset);
+
+// Appends |data| with a new line to |file_path|.
+Status AppendLine(const base::FilePath& file_path,
+                  const base::StringPiece& data);
+
+// Overwrites or creates a new file at |file_path| with the contents |data|.
+Status MaybeWriteFile(const base::FilePath& file_path,
+                      const base::StringPiece& data);
+
+// Removes the first |pos| bytes from a file at |file_path| and also removes
+// the rest of the line which the byte at position |pos| was on.
+StatusOr<uint32_t> RemoveAndTruncateLine(const base::FilePath& file_path,
+                                         uint32_t pos);
 }  // namespace reporting
 
 #endif  // COMPONENTS_REPORTING_UTIL_FILE_H_

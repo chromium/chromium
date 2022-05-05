@@ -20,7 +20,10 @@ static_library("file") {
     "file.cc",
     "file.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    ":status",
+    "//base",
+  ]
 }
 
 source_set("shared_vector") {
