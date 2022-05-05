@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import abc
 
 from ..node import NodeVisitor

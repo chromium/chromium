@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import logging
 from threading import Thread
 

@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 class NoSSLEnvironment:
     ssl_enabled = False
 

@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 from .base import WebDriverBrowser, require_arg
 from .base import get_timeout_multiplier   # noqa: F401
 from ..executors import executor_kwargs as base_executor_kwargs

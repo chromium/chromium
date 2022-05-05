@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import os
 from collections import deque
 from urllib.parse import urljoin

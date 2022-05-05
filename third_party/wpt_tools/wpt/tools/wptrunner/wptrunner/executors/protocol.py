@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import traceback
 from http.client import HTTPConnection
 

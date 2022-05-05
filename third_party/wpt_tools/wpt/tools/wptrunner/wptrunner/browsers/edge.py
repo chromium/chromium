@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import time
 import subprocess
 from .base import require_arg

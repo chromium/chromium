@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import threading
 import traceback
 from queue import Empty

@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 class ClickAction:
     name = "click"
 

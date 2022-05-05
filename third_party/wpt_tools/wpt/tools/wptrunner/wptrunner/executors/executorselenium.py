@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import json
 import os
 import socket

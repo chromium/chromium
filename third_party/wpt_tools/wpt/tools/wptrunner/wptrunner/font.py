@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import ctypes
 import os
 import platform

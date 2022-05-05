@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import fnmatch
 import os
 import re

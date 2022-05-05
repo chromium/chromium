@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# mypy: allow-untyped-defs
+
 import argparse
 import os
 

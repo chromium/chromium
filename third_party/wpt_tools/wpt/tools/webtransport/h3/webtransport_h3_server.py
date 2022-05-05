@@ -1,3 +1,5 @@
+# mypy: allow-subclassing-any, no-warn-return-any
+
 import asyncio
 import logging
 import os

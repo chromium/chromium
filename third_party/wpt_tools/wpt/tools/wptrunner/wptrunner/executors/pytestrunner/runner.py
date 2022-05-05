@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 """
 Provides interface to deal with pytest.
 

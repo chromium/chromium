@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import errno
 import http.server
 import os

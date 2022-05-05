@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 #default_value:foo
 #include: other.manifest
 #

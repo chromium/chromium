@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 from .base import require_arg
 from .base import get_timeout_multiplier   # noqa: F401
 from .chrome import ChromeBrowser

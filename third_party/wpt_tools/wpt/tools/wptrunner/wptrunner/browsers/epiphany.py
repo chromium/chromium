@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 from .base import (NullBrowser,  # noqa: F401
                    certificate_domain_list,
                    get_timeout_multiplier,  # noqa: F401

@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import copy
 import os
 from collections import defaultdict

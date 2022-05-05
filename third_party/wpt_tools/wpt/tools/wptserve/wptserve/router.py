@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import itertools
 import re
 import sys

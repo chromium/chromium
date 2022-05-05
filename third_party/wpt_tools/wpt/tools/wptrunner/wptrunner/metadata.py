@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import array
 import os
 from collections import defaultdict, namedtuple

@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 class NodeVisitor:
     def visit(self, node):
         # This is ugly as hell, but we don't have multimethods and

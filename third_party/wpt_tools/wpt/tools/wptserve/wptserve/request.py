@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import base64
 import cgi
 import tempfile

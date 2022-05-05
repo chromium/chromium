@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 from math import log
 from collections import defaultdict
 

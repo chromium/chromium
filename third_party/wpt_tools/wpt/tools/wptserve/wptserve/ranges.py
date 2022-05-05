@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 from .utils import HTTPException
 
 

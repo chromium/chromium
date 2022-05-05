@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 from . import chrome_spki_certs
 from .base import WebDriverBrowser, require_arg
 from .base import NullBrowser  # noqa: F401

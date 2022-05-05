@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import os
 
 from .. import metadata, products

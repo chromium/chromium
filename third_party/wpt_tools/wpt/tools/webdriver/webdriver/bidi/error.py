@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import collections
 
 from typing import ClassVar, DefaultDict, Optional, Type

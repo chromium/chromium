@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import enum
 import errno
 import os

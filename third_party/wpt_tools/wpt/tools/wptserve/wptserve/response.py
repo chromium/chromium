@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from io import BytesIO

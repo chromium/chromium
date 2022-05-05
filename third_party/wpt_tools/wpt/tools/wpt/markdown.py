@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 from functools import reduce
 
 def format_comment_title(product):

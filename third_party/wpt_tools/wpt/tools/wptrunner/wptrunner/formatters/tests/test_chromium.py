@@ -1,3 +1,5 @@
+# mypy: ignore-errors
+
 import json
 import sys
 from os.path import dirname, join
