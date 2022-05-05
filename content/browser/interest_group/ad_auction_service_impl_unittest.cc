@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -242,6 +243,13 @@ class NetworkResponder {
     return report_count_;
   }
 
+  // Returns true if the network request for path received a response.
+  bool ReportSent(const std::string& path) const {
+    base::AutoLock auto_lock(lock_);
+    return std::find(sent_reports_.begin(), sent_reports_.end(), path) !=
+           sent_reports_.end();
+  }
+
   // Indicates whether `stored_url_loader_client_` is connected to a receiver.
   bool RemoteIsConnected() {
     base::AutoLock auto_lock(lock_);
@@ -283,6 +291,7 @@ class NetworkResponder {
       report_count_++;
       URLLoaderInterceptor::WriteResponse(
           kFledgeReportHeaders, report_it->second, params->client.get());
+      sent_reports_.push_back(params->url_request.url.path());
       return true;
     }
 
@@ -349,7 +358,11 @@ class NetworkResponder {
   // the Javascript MIME type.
   base::flat_map<std::string, std::string> script_map_ GUARDED_BY(lock_);
 
+  // Like `json_update_map_`, but for reporting requests.
   base::flat_map<std::string, std::string> report_map_ GUARDED_BY(lock_);
+
+  // Only saves reporting requests that auctually received responses.
+  std::vector<std::string> sent_reports_ GUARDED_BY(lock_);
 
   // Stores the set of URL paths that will receive deferred updates.
   //
@@ -4000,7 +4013,11 @@ function scoreAd(
             "https://example.com/new_render");
 }
 
-TEST_F(AdAuctionServiceImplTest, FetchReport) {
+// When sending reports, the next report request is feteched after the previous
+// report request completed (either succeeded or failed). Reporting should
+// continue even after the page navigated away. Timeout works for report
+// requests.
+TEST_F(AdAuctionServiceImplTest, SendReports) {
   const std::string kBiddingScript = base::StringPrintf(R"(
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
@@ -4031,9 +4048,10 @@ function reportResult(auctionConfig, browserSignals) {
 )",
                          kOriginStringA, kOriginStringA);
 
+  manager_->set_reporting_interval_for_testing(base::Seconds(5));
   network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
   network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
-  network_responder_->RegisterReportResponse("/report_bidder", "");
+  network_responder_->RegisterReportResponse("/report_bidder", /*response=*/"");
   network_responder_->RegisterStoreUrlLoaderClient("/report_seller");
 
   blink::InterestGroup interest_group = CreateInterestGroup();
@@ -4058,14 +4076,196 @@ function reportResult(auctionConfig, browserSignals) {
   EXPECT_NE(auction_result, absl::nullopt);
 
   task_environment()->FastForwardBy(base::Seconds(30) - base::Seconds(1));
-  // There should be two reports, one for winning bidder and one for seller.
-  EXPECT_EQ(network_responder_->ReportCount(), 2u);
-  // The request to seller report url should hang before 30s.
+  // There should only be the seller report, and the bidder report request is
+  // not fetched because the seller report request hangs and didn't finish yet.
+  EXPECT_EQ(network_responder_->ReportCount(), 1u);
+  // The request to seller's report url should hang before 30s.
   EXPECT_TRUE(network_responder_->RemoteIsConnected());
   task_environment()->FastForwardBy(base::Seconds(2));
   // The request to seller report url should be disconnected after 30s due to
   // timeout.
   EXPECT_FALSE(network_responder_->RemoteIsConnected());
+  // Reporting should continue even after the page navigated away.
+  NavigateAndCommit(kUrlB);
+  task_environment()->FastForwardBy(base::Seconds(1));
+  // The next request will not be sent when it's less than 5 seconds after the
+  // previous request completed.
+  EXPECT_EQ(network_responder_->ReportCount(), 1u);
+  task_environment()->FastForwardBy(base::Seconds(4));
+  // There should be two reports in total now, since the seller's report request
+  // completed (timed out) and then the bidder's report request was also fetched
+  // after 5 seconds since then.
+  EXPECT_EQ(network_responder_->ReportCount(), 2u);
+}
+
+// Similar to SendReports() above, but with one report request failed instead of
+// timed out. Following report requests should still be send after previous ones
+// failed.
+TEST_F(AdAuctionServiceImplTest, SendReportsOneReportFailed) {
+  const std::string kBiddingScript = base::StringPrintf(R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+function reportWin(
+    auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+  sendReportTo('%s/report_bidder');
+}
+  )",
+                                                        kOriginStringA);
+
+  const std::string kDecisionScript =
+      base::StringPrintf(R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+function reportResult(auctionConfig, browserSignals) {
+  sendReportTo('%s/report_seller');
+  return {
+    'success': true,
+    'signalsForWinner': {'signalForWinner': 1},
+    'reportUrl': '%s/report_seller',
+  };
+}
+)",
+                         kOriginStringA, kOriginStringA);
+
+  manager_->set_reporting_interval_for_testing(base::Seconds(5));
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+  network_responder_->RegisterReportResponse("/report_bidder", /*response=*/"");
+  network_responder_->FailRequestWithError("/report_seller",
+                                           net::ERR_CONNECTION_FAILED);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  auto auction_config = blink::mojom::AuctionAdConfig::New();
+  auction_config->seller = kOriginA;
+  auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config->auction_ad_config_non_shared_params =
+      blink::mojom::AuctionAdConfigNonSharedParams::New();
+  auction_config->auction_ad_config_non_shared_params->interest_group_buyers = {
+      kOriginA};
+  absl::optional<GURL> auction_result =
+      RunAdAuctionAndFlush(std::move(auction_config));
+  EXPECT_NE(auction_result, absl::nullopt);
+
+  // There should be no report since the seller report failed, and the bidder
+  // report request is not fetched yet.
+  EXPECT_EQ(network_responder_->ReportCount(), 0u);
+
+  task_environment()->FastForwardBy(base::Seconds(2));
+  // The next request will not be sent when it's less than 5 seconds after the
+  // previous request completed.
+  EXPECT_EQ(network_responder_->ReportCount(), 0u);
+  task_environment()->FastForwardBy(base::Seconds(4));
+  // The bidder's report request was fetched after 5 seconds since the previous
+  // request completed.
+  EXPECT_EQ(network_responder_->ReportCount(), 1u);
+}
+
+// Checks that all reporting in the pending queue gets canceled if the reporting
+// queue max length is exceeded at the time of enqueuing a new set of reports.
+TEST_F(AdAuctionServiceImplTest, ReportQueueMaxLength) {
+  // Use interest group name as bid value.
+  const std::string kBiddingScript = base::StringPrintf(R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {
+    'ad': 'example',
+    'bid': parseInt(interestGroup.name),
+    'render': 'https://example.com/render'
+  };
+}
+function reportWin(
+    auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+  sendReportTo('%s/report_bidder_' + browserSignals.bid);
+}
+  )",
+                                                        kOriginStringA);
+
+  const std::string kDecisionScript =
+      base::StringPrintf(R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+function reportResult(auctionConfig, browserSignals) {
+  sendReportTo('%s/report_seller_' + browserSignals.bid);
+  return {
+    'success': true,
+    'signalsForWinner': {'signalForWinner': 1},
+    'reportUrl': '%s/report_seller_' + browserSignals.bid,
+  };
+}
+)",
+                         kOriginStringA, kOriginStringA);
+
+  manager_->set_max_report_queue_length_for_testing(1);
+  manager_->set_reporting_interval_for_testing(base::Seconds(5));
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  // Run three auctions, each time with a new interest group which bids i wins
+  // the auction.
+  for (int i = 1; i < 4; i++) {
+    const std::string name = base::NumberToString(i);
+    network_responder_->RegisterReportResponse(
+        base::StringPrintf("/report_bidder_%s", name.c_str()), "");
+    network_responder_->RegisterReportResponse(
+        base::StringPrintf("/report_seller_%s", name.c_str()), "");
+    blink::InterestGroup interest_group = CreateInterestGroup();
+    interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+    interest_group.name = name;
+    interest_group.ads.emplace();
+    blink::InterestGroup::Ad ad(
+        /*render_url=*/GURL("https://example.com/render"),
+        /*metadata=*/absl::nullopt);
+    interest_group.ads->emplace_back(std::move(ad));
+    JoinInterestGroupAndFlush(interest_group);
+    EXPECT_EQ(1, GetJoinCount(kOriginA, name));
+
+    auto auction_config = blink::mojom::AuctionAdConfig::New();
+    auction_config->seller = kOriginA;
+
+    auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+    auction_config->auction_ad_config_non_shared_params =
+        blink::mojom::AuctionAdConfigNonSharedParams::New();
+    auction_config->auction_ad_config_non_shared_params
+        ->interest_group_buyers = {kOriginA};
+    absl::optional<GURL> auction_result =
+        RunAdAuctionAndFlush(std::move(auction_config));
+    EXPECT_NE(auction_result, absl::nullopt);
+  }
+
+  // There should be one report sent already, since there's no delay for the
+  // first report.
+  EXPECT_EQ(network_responder_->ReportCount(), 1u);
+  EXPECT_TRUE(network_responder_->ReportSent("/report_seller_1"));
+  // Fastforward enough time for all expected reports to be sent.
+  task_environment()->FastForwardBy(base::Seconds(60));
+  // Two more reports were sent.
+  EXPECT_EQ(network_responder_->ReportCount(), 3u);
+
+  // The last (third) auction's reports should be sent successfully.
+  EXPECT_TRUE(network_responder_->ReportSent("/report_bidder_3"));
+  EXPECT_TRUE(network_responder_->ReportSent("/report_seller_3"));
+  // The first auction's second report and the second auction's reports should
+  // be dropped and not be sent.
+  EXPECT_FALSE(network_responder_->ReportSent("/report_bidder_1"));
+  EXPECT_FALSE(network_responder_->ReportSent("/report_bidder_2"));
+  EXPECT_FALSE(network_responder_->ReportSent("/report_seller_2"));
 }
 
 // Run several auctions, some of which have a winner, and some of which do

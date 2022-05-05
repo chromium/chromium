@@ -23,7 +23,9 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -157,6 +159,15 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Get the last maintenance time from the underlying InterestGroupStorage.
   void GetLastMaintenanceTimeForTesting(
       base::RepeatingCallback<void(base::Time)> callback) const;
+  // Enqueues report requests. Using `client_security_state` when fetching
+  // report URLs from the network.
+  void EnqueueReports(
+      const std::vector<GURL>& report_urls,
+      const std::vector<GURL>& debug_win_report_urls,
+      const std::vector<GURL>& debug_loss_report_urls,
+      const url::Origin& frame_origin,
+      network::mojom::ClientSecurityStatePtr client_security_state,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   AuctionProcessManager& auction_process_manager() {
     return *auction_process_manager_;
@@ -178,10 +189,31 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     auction_process_manager_ = std::move(auction_process_manager);
   }
 
+  // For testing *only*; changes the maximum number of report URLs that can be
+  // stored in `report_requests_` queue.
+  void set_max_report_queue_length_for_testing(int max_queue_length);
+
+  // For testing *only*; changes the time interval to wait before sending the
+  // next report after sending one.
+  void set_reporting_interval_for_testing(base::TimeDelta interval);
+
  private:
   // InterestGroupUpdateManager calls private members to write updates to the
   // database.
   friend class InterestGroupUpdateManager;
+
+  struct ReportRequest {
+    ReportRequest();
+    ~ReportRequest();
+
+    // Used to fetch the report URL.
+    std::unique_ptr<network::SimpleURLLoader> simple_url_loader;
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
+
+    // Used for Uma histograms.
+    std::string name;
+    int request_url_size_bytes;
+  };
 
   // Callbacks for CheckPermissionsAndJoinInterestGroup() and
   // CheckPermissionsAndLeaveInterestGroup(), respectively. Call
@@ -233,6 +265,21 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const std::string& owner_origin,
       const std::string& name);
 
+  // Enqueues each of `report_urls` to the `report_requests_` queue.
+  void HandleReports(
+      const std::vector<GURL>& report_urls,
+      const url::Origin& frame_origin,
+      network::mojom::ClientSecurityStatePtr client_security_state,
+      const std::string& name,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  // Dequeues and sends the first report request in `report_requests_` queue,
+  // if the queue is not empty.
+  void SendReports();
+  // Invoked when a report request completed.
+  void OnOneReportSent(
+      std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
+      scoped_refptr<net::HttpResponseHeaders> response_headers);
+
   // Owns and manages access to the InterestGroupStorage living on a different
   // thread.
   base::SequenceBound<InterestGroupStorage> impl_;
@@ -255,6 +302,28 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Checks if a frame can join or leave an interest group. Global so that
   // pending operations can continue after a page has been navigate away from.
   InterestGroupPermissionsChecker permissions_checker_;
+
+  // The queue of report requests. Empty the queue if it's size is larger than
+  // `max_report_queue_length` at the time of adding new entries.
+  base::circular_deque<std::unique_ptr<ReportRequest>> report_requests_;
+
+  // Whether a task of SendReports() is being executed. Used to avoid invoking
+  // multiple SendReports() simultaneously.
+  bool send_reports_in_progress_ = false;
+
+  // The maximum number of report requests that can be stored in queue
+  // `report_requests_`.
+  //
+  // Should *only* be changed by tests.
+  int max_report_queue_length_;
+
+  // The time interval to wait before sending the next report request after
+  // sending one.
+  //
+  // Should *only* be changed by tests.
+  base::TimeDelta reporting_interval_;
+
+  base::WeakPtrFactory<InterestGroupManagerImpl> weak_factory_{this};
 };
 
 }  // namespace content

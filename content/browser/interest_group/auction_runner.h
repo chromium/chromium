@@ -807,9 +807,10 @@ class CONTENT_EXPORT AuctionRunner {
     std::unique_ptr<AuctionWorkletManager::WorkletHandle>
         seller_worklet_handle_;
 
-    // Report URLs from reportResult() and reportWin() methods. Returned to
-    // caller for it to deal with, so the Auction itself can be deleted at the
-    // end of the auction.
+    // Report URLs from reportResult() and reportWin() methods. An auction's
+    // report URL from reportResult() comes before the URL from its reportWin()
+    // method if there is one. Returned to `callback_` to deal with, so the
+    // auction itself can be deleted at the end of the auction.
     std::vector<GURL> report_urls_;
 
     // All errors reported by worklets thus far.
@@ -817,7 +818,7 @@ class CONTENT_EXPORT AuctionRunner {
 
     // Ad Beacon URL mapping generated from reportResult() or reportWin() from
     // this auction and its components. Destination is relative to this auction.
-    // Returned to the caller for it to deal with, so the Auction itself can be
+    // Returned to `callback_` to deal with, so the Auction itself can be
     // deleted at the end of the auction.
     ReportingMetadata ad_beacon_map_;
 

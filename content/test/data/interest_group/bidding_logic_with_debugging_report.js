@@ -20,5 +20,7 @@ function generateBid(
 
 function reportWin(
     auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
-  sendReportTo(browserSignals.interestGroupOwner + '/echo?report_bidder');
+  sendReportTo(
+      browserSignals.interestGroupOwner + '/echoall?report_bidder/' +
+      browserSignals.interestGroupName);
 }

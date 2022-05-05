@@ -4,7 +4,6 @@
 
 function scoreAd(
     adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
-  // const adMetadataJSON = JSON.stringify(adMetadata);
   forDebuggingOnly.reportAdAuctionLoss(
       auctionConfig.seller + '/echo?seller_debug_report_loss/' + adMetadata);
   forDebuggingOnly.reportAdAuctionWin(
@@ -13,5 +12,5 @@ function scoreAd(
 }
 
 function reportResult(auctionConfig, browserSignals) {
-  sendReportTo(auctionConfig.seller + '/echo?report_seller');
+  sendReportTo(auctionConfig.seller + '/echoall?report_seller');
 }

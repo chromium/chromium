@@ -17,6 +17,7 @@
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
@@ -61,6 +62,9 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                   blink::mojom::AuctionAdConfigPtr config,
                   FinalizeAdCallback callback) override;
 
+  scoped_refptr<network::WrapperSharedURLLoaderFactory>
+  GetRefCountedTrustedURLLoaderFactory();
+
   // AuctionRunner::Delegate implementation:
   network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory() override;
   network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() override;
@@ -92,12 +96,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                                      interest_group_api_operation,
                                  const url::Origin& origin) const;
 
-  // Handles passed in report URLs. For each url of `report_urls`, call
-  // FetchReport() to send a request to the url, and add UMA histgrams.
-  void HandleReports(network::mojom::URLLoaderFactory* factory,
-                     const std::vector<GURL>& report_urls,
-                     const std::string& name);
-
   // Deletes `auction`.
   void OnAuctionComplete(
       RunAdAuctionCallback callback,
@@ -123,6 +121,12 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
   mojo::Remote<network::mojom::URLLoaderFactory> frame_url_loader_factory_;
   mojo::Remote<network::mojom::URLLoaderFactory> trusted_url_loader_factory_;
+
+  // Ref counted wrapper of `trusted_url_loader_factory_`. This will be used for
+  // reporting requests, which might happen after the frame is destroyed, when
+  // `trusted_url_loader_factory_` no longer being available.
+  scoped_refptr<network::WrapperSharedURLLoaderFactory>
+      ref_counted_trusted_url_loader_factory_;
 
   // This must be before `auctions_`, since auctions may own references to
   // worklets it manages.
