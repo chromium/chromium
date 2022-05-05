@@ -119,7 +119,7 @@ class ThreadLocalStoragePerfTest : public testing::Test {
                   base::BindLambdaForTesting([&]() {
                     volatile intptr_t total = 0;
                     for (size_t i = 0; i < num_operation; ++i)
-                      total += read();
+                      total = total + read();
                   }),
                   num_operation, num_threads);
 

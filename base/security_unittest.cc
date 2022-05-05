@@ -36,10 +36,10 @@ namespace {
 // We also use it so that the compiler doesn't discard certain return values
 // as something we don't need (see the comment with calloc below).
 template <typename Type>
-NOINLINE Type HideValueFromCompiler(volatile Type value) {
+NOINLINE Type HideValueFromCompiler(Type value) {
 #if defined(__GNUC__)
   // In a GCC compatible compiler (GCC or Clang), make this compiler barrier
-  // more robust than merely using "volatile".
+  // more robust.
   __asm__ volatile ("" : "+r" (value));
 #endif  // __GNUC__
   return value;

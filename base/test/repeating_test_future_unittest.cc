@@ -18,6 +18,7 @@ namespace {
 struct MoveOnlyValue {
  public:
   MoveOnlyValue() = default;
+  MoveOnlyValue(std::string data) : data(std::move(data)) {}
   MoveOnlyValue(const MoveOnlyValue&) = delete;
   auto& operator=(const MoveOnlyValue&) = delete;
   MoveOnlyValue(MoveOnlyValue&&) = default;
@@ -153,7 +154,7 @@ TEST_F(RepeatingTestFutureTest, TakeShouldWorkWithMoveOnlyValue) {
   RepeatingTestFuture<MoveOnlyValue> future;
 
   RunLater(BindLambdaForTesting(
-      [&future]() { future.AddValue({.data = "move only value"}); }));
+      [&future]() { future.AddValue(MoveOnlyValue("move only value")); }));
 
   MoveOnlyValue result = future.Take();
 

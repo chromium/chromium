@@ -37,7 +37,9 @@ class ObserverInterface {
   ObserverInterface(const ObserverInterface&) = delete;
   ObserverInterface& operator=(const ObserverInterface&) = delete;
   virtual ~ObserverInterface() = default;
-  virtual void Observe() const { ++g_observer_list_perf_test_counter; }
+  virtual void Observe() const {
+    g_observer_list_perf_test_counter = g_observer_list_perf_test_counter + 1;
+  }
 };
 
 class UnsafeObserver : public ObserverInterface {};

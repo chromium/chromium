@@ -30,6 +30,7 @@ constexpr int kOtherValue = 10;
 struct MoveOnlyValue {
  public:
   MoveOnlyValue() = default;
+  MoveOnlyValue(int data) : data(data) {}
   MoveOnlyValue(const MoveOnlyValue&) = delete;
   auto& operator=(const MoveOnlyValue&) = delete;
   MoveOnlyValue(MoveOnlyValue&&) = default;
@@ -129,7 +130,7 @@ TEST_F(TestFutureTest, TakeShouldWorkWithMoveOnlyValue) {
   const int expected_data = 99;
   TestFuture<MoveOnlyValue> future;
 
-  RunLater(base::BindOnce(future.GetCallback(), MoveOnlyValue{expected_data}));
+  RunLater(base::BindOnce(future.GetCallback(), MoveOnlyValue(expected_data)));
 
   MoveOnlyValue actual_value = future.Take();
 

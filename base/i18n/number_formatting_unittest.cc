@@ -107,11 +107,11 @@ TEST(NumberFormattingTest, FormatPercent) {
     const char* expected_arabic;
     const char* expected_arabic_egypt;
   } cases[] = {
-      {0, "0%", u8"0\u00a0%", u8"\u06f0\u066a", u8"0\u200e%\u200e",
-       u8"\u0660\u066a\u061c"},
-      {42, "42%", "42\u00a0%", u8"\u06f4\u06f2\u066a", u8"42\u200e%\u200e",
+      {0, "0%", "0\u00a0%", "\u06f0\u066a", "0\u200e%\u200e",
+       "\u0660\u066a\u061c"},
+      {42, "42%", "42\u00a0%", "\u06f4\u06f2\u066a", "42\u200e%\u200e",
        "\u0664\u0662\u066a\u061c"},
-      {1024, "1,024%", "1.024\u00a0%", u8"\u06f1\u066c\u06f0\u06f2\u06f4\u066a",
+      {1024, "1,024%", "1.024\u00a0%", "\u06f1\u066c\u06f0\u06f2\u06f4\u066a",
        "1,024\u200e%\u200e", "\u0661\u066c\u0660\u0662\u0664\u066a\u061c"},
   };
 

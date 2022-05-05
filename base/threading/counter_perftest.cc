@@ -38,7 +38,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
 class Uint64_NoLock {
  public:
   Uint64_NoLock() = default;
-  void Increment() { ++counter_; }
+  void Increment() { counter_ = counter_ + 1; }
   uint64_t value() const { return counter_; }
 
  private:

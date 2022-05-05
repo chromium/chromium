@@ -243,9 +243,6 @@ class small_map {
       return !(*this == other);
     }
 
-    bool operator==(const const_iterator& other) const;
-    bool operator!=(const const_iterator& other) const;
-
    private:
     friend class small_map;
     friend class const_iterator;
@@ -602,24 +599,6 @@ class small_map {
     }
   }
 };
-
-template <typename NormalMap,
-          size_t kArraySize,
-          typename EqualKey,
-          typename Functor>
-inline bool small_map<NormalMap, kArraySize, EqualKey, Functor>::iterator::
-operator==(const const_iterator& other) const {
-  return other == *this;
-}
-
-template <typename NormalMap,
-          size_t kArraySize,
-          typename EqualKey,
-          typename Functor>
-inline bool small_map<NormalMap, kArraySize, EqualKey, Functor>::iterator::
-operator!=(const const_iterator& other) const {
-  return other != *this;
-}
 
 }  // namespace base
 

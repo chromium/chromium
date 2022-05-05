@@ -40,10 +40,6 @@ TEST(ContiguousIteratorTest, ForwardIterator) {
   static_assert(!IsContiguousIterator<const ForwardIterator&>::value,
                 "Error: const ForwardIterator& should not be considered a "
                 "contiguous iterator.");
-  static_assert(
-      !IsContiguousIterator<std::reverse_iterator<ForwardIterator>>::value,
-      "Error: A reverse ForwardIterator should not be considered a "
-      "contiguous iterator.");
 }
 
 TEST(ContiguousIteratorTest, BidirectionalIterator) {
