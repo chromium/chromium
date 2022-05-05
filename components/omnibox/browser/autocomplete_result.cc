@@ -144,7 +144,7 @@ AutocompleteResult::AutocompleteResult() {
   matches_.reserve(std::max(GetMaxMatches(), GetMaxMatches(true)));
 }
 
-AutocompleteResult::~AutocompleteResult() {}
+AutocompleteResult::~AutocompleteResult() = default;
 
 void AutocompleteResult::TransferOldMatches(
     const AutocompleteInput& input,
@@ -236,8 +236,8 @@ void AutocompleteResult::SortAndCull(
     const AutocompleteInput& input,
     TemplateURLService* template_url_service,
     const AutocompleteMatch* preserve_default_match) {
-  for (auto i(matches_.begin()); i != matches_.end(); ++i)
-    i->ComputeStrippedDestinationURL(input, template_url_service);
+  for (auto& match : matches_)
+    match.ComputeStrippedDestinationURL(input, template_url_service);
 
   DemoteOnDeviceSearchSuggestions();
 
@@ -246,7 +246,7 @@ void AutocompleteResult::SortAndCull(
 
 #if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
   // Because tail suggestions are a "last resort", we cull the tail suggestions
-  // if there any non-default non-tail suggestions.
+  // if there are any non-default, non-tail suggestions.
   MaybeCullTailSuggestions(&matches_, comparing_object);
 #endif
 
@@ -361,11 +361,11 @@ void AutocompleteResult::SortAndCull(
 }
 
 void AutocompleteResult::GroupAndDemoteMatchesWithHeaders() {
-  constexpr int kNoHeaderSuggesetionGroupId = -1;
+  constexpr int kNoHeaderSuggestionGroupId = -1;
 
   // Create a map from suggestion group ID to the index it first appears.
   // Reserve the first spot for matches without headers.
-  std::map<int, int> group_id_index_map = {{kNoHeaderSuggesetionGroupId, 0}};
+  std::map<int, int> group_id_index_map = {{kNoHeaderSuggestionGroupId, 0}};
   for (auto it = matches_.begin(); it != matches_.end(); ++it) {
     if (it->suggestion_group_id.has_value()) {
       // Record group IDs and header strings, if available, into the
@@ -384,8 +384,7 @@ void AutocompleteResult::GroupAndDemoteMatchesWithHeaders() {
       }
     }
 
-    int group_id =
-        it->suggestion_group_id.value_or(kNoHeaderSuggesetionGroupId);
+    int group_id = it->suggestion_group_id.value_or(kNoHeaderSuggestionGroupId);
     // Use the 1-based index of the match to record the first appearance of its
     // group ID since 0 is reserved for matches without headers. We are
     // interested in the relative values of these indices only and their
@@ -403,12 +402,12 @@ void AutocompleteResult::GroupAndDemoteMatchesWithHeaders() {
   // while preserving the existing order of matches with the same group ID.
   std::stable_sort(
       matches_.begin(), matches_.end(),
-      [&group_id_index_map, kNoHeaderSuggesetionGroupId](const auto& a,
-                                                         const auto& b) {
+      [&group_id_index_map, kNoHeaderSuggestionGroupId](const auto& a,
+                                                        const auto& b) {
         const int a_group_id =
-            a.suggestion_group_id.value_or(kNoHeaderSuggesetionGroupId);
+            a.suggestion_group_id.value_or(kNoHeaderSuggestionGroupId);
         const int b_group_id =
-            b.suggestion_group_id.value_or(kNoHeaderSuggesetionGroupId);
+            b.suggestion_group_id.value_or(kNoHeaderSuggestionGroupId);
         return group_id_index_map[a_group_id] < group_id_index_map[b_group_id];
       });
 }
@@ -560,8 +559,8 @@ void AutocompleteResult::ConvertOpenTabMatches(
 }
 
 bool AutocompleteResult::HasCopiedMatches() const {
-  for (auto i(begin()); i != end(); ++i) {
-    if (i->from_previous)
+  for (const auto& i : *this) {
+    if (i.from_previous)
       return true;
   }
   return false;
@@ -762,8 +761,8 @@ void AutocompleteResult::CopyFrom(const AutocompleteResult& other) {
 
 #if DCHECK_IS_ON()
 void AutocompleteResult::Validate() const {
-  for (auto i(begin()); i != end(); ++i)
-    i->Validate();
+  for (const auto& i : *this)
+    i.Validate();
 }
 #endif  // DCHECK_IS_ON()
 
@@ -974,8 +973,8 @@ void AutocompleteResult::LogUpdateMetrics(
 // static
 bool AutocompleteResult::HasMatchByDestination(const AutocompleteMatch& match,
                                                const ACMatches& matches) {
-  for (auto i(matches.begin()); i != matches.end(); ++i) {
-    if (i->destination_url == match.destination_url)
+  for (const auto& m : matches) {
+    if (m.destination_url == match.destination_url)
       return true;
   }
   return false;

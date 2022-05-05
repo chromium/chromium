@@ -308,7 +308,7 @@ AutocompleteController::AutocompleteController(
   }
   // It's important that the HistoryURLProvider gets added after SearchProvider:
   // AutocompleteController::Start() calls each providers' Start() function
-  // synchronously in the order they're in in providers_.
+  // synchronously in the order they're in providers_.
   // - SearchProvider::Start() synchronously queries the history database's
   //   keyword_search_terms and url table.
   // - HistoryUrlProvider::Start schedules a background task that also accesses
@@ -420,8 +420,8 @@ void AutocompleteController::AddObserver(Observer* observer) {
 }
 
 void AutocompleteController::Start(const AutocompleteInput& input) {
-  TRACE_EVENT1("omnibox", "AutocompleteController::Start",
-               "text", base::UTF16ToUTF8(input.text()));
+  TRACE_EVENT1("omnibox", "AutocompleteController::Start", "text",
+               base::UTF16ToUTF8(input.text()));
 
   // When input.want_asynchronous_matches() is false, the AutocompleteController
   // is being used for text classification, which should not notify observers.
@@ -457,13 +457,14 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   // Start the new query.
   in_start_ = true;
   base::TimeTicks start_time = base::TimeTicks::Now();
-  for (auto i(providers_.begin()); i != providers_.end(); ++i) {
+  for (const auto& provider : providers_) {
     base::TimeTicks provider_start_time = base::TimeTicks::Now();
-    (*i)->Start(input_, minimal_changes);
+    provider->Start(input_, minimal_changes);
     if (!input.want_asynchronous_matches())
-      DCHECK((*i)->done());
+      DCHECK(provider->done());
     base::TimeTicks provider_end_time = base::TimeTicks::Now();
-    std::string name = std::string("Omnibox.ProviderTime2.") + (*i)->GetName();
+    std::string name =
+        std::string("Omnibox.ProviderTime2.") + provider->GetName();
     base::HistogramBase* counter = base::Histogram::FactoryGet(
         name, 1, 5000, 20, base::Histogram::kUmaTargetedHistogramFlag);
     counter->Add(static_cast<int>(
@@ -480,8 +481,8 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   base::UmaHistogramBoolean("Omnibox.Start.WantAsyncMatches",
                             input.want_asynchronous_matches());
 
-  // This will usually set |done_| to false, unless all of the providers are
-  // are finished after the synchronous pass we just completed.
+  // This will usually set |done_| to false, unless all providers are finished
+  // after the synchronous pass we just completed.
   CheckIfDone();
 
   // The second true forces saying the default match has changed.
@@ -547,10 +548,9 @@ void AutocompleteController::DeleteMatch(const AutocompleteMatch& match) {
   DCHECK(match.SupportsDeletion());
 
   // Delete duplicate matches attached to the main match first.
-  for (auto it(match.duplicate_matches.begin());
-       it != match.duplicate_matches.end(); ++it) {
-    if (it->deletable)
-      it->provider->DeleteMatch(*it);
+  for (const auto& duplicate_match : match.duplicate_matches) {
+    if (duplicate_match.deletable)
+      duplicate_match.provider->DeleteMatch(duplicate_match);
   }
 
   if (match.deletable) {
@@ -720,8 +720,8 @@ void AutocompleteController::
 
 void AutocompleteController::SetMatchDestinationURL(
     AutocompleteMatch* match) const {
-  const TemplateURL* template_url = match->GetTemplateURL(
-      template_url_service_, false);
+  const TemplateURL* template_url =
+      match->GetTemplateURL(template_url_service_, false);
   if (!template_url)
     return;
 
@@ -763,9 +763,8 @@ void AutocompleteController::UpdateResult(
   AutocompleteResult old_matches_to_reuse;
   old_matches_to_reuse.Swap(&result_);
 
-  for (Providers::const_iterator i(providers_.begin());
-       i != providers_.end(); ++i)
-    result_.AppendMatches(input_, (*i)->matches());
+  for (const auto& provider : providers_)
+    result_.AppendMatches(input_, provider->matches());
 
   bool perform_tab_match = true;
 #if BUILDFLAG(IS_ANDROID)
@@ -826,8 +825,7 @@ void AutocompleteController::UpdateResult(
 
   const bool default_is_valid = result_.default_match();
   std::u16string default_associated_keyword;
-  if (default_is_valid &&
-      result_.default_match()->associated_keyword) {
+  if (default_is_valid && result_.default_match()->associated_keyword) {
     default_associated_keyword =
         result_.default_match()->associated_keyword->keyword;
   }
@@ -868,9 +866,9 @@ void AutocompleteController::UpdateAssociatedKeywords(
       keyword_provider_->GetKeywordForText(input_.text());
 
   std::set<std::u16string> keywords;
-  for (auto match(result->begin()); match != result->end(); ++match) {
+  for (auto& match : *result) {
     std::u16string keyword(
-        match->GetSubstitutingExplicitlyInvokedKeyword(template_url_service_));
+        match.GetSubstitutingExplicitlyInvokedKeyword(template_url_service_));
     if (!keyword.empty()) {
       keywords.insert(keyword);
       continue;
@@ -887,29 +885,29 @@ void AutocompleteController::UpdateAssociatedKeywords(
       // If the match has an answer, it will look strange to try to display
       // it along with a keyword hint. Prefer the keyword hint, and revert
       // to a typical search.
-      match->answer.reset();
-      match->associated_keyword = std::make_unique<AutocompleteMatch>(
+      match.answer.reset();
+      match.associated_keyword = std::make_unique<AutocompleteMatch>(
           keyword_provider_->CreateVerbatimMatch(exact_keyword, exact_keyword,
                                                  input_));
 #if BUILDFLAG(IS_ANDROID)
-      match->UpdateJavaAnswer();
+      match.UpdateJavaAnswer();
 #endif
       continue;
     }
 
     // Otherwise, set a match's associated keyword based on the match's
     // fill_into_edit, which should take inline autocompletions into account.
-    keyword = keyword_provider_->GetKeywordForText(match->fill_into_edit);
+    keyword = keyword_provider_->GetKeywordForText(match.fill_into_edit);
 
     // Only add the keyword if the match does not have a duplicate keyword with
     // a more relevant match.
     if (!keyword.empty() && !keywords.count(keyword)) {
       keywords.insert(keyword);
-      match->associated_keyword = std::make_unique<AutocompleteMatch>(
-          keyword_provider_->CreateVerbatimMatch(match->fill_into_edit, keyword,
+      match.associated_keyword = std::make_unique<AutocompleteMatch>(
+          keyword_provider_->CreateVerbatimMatch(match.fill_into_edit, keyword,
                                                  input_));
     } else {
-      match->associated_keyword.reset();
+      match.associated_keyword.reset();
     }
   }
 }
@@ -1052,10 +1050,8 @@ void AutocompleteController::UpdateAssistedQueryStats(
 
       selected_index = base::StringPrintf("%" PRIuS, index);
     }
-    match->search_terms_args->assisted_query_stats =
-        base::StringPrintf("chrome.%s.%s",
-                           selected_index.c_str(),
-                           autocompletions.c_str());
+    match->search_terms_args->assisted_query_stats = base::StringPrintf(
+        "chrome.%s.%s", selected_index.c_str(), autocompletions.c_str());
   }
 }
 
@@ -1065,9 +1061,8 @@ void AutocompleteController::NotifyChanged(bool notify_default_match) {
 }
 
 void AutocompleteController::CheckIfDone() {
-  for (Providers::const_iterator i(providers_.begin()); i != providers_.end();
-       ++i) {
-    if (!(*i)->done()) {
+  for (const auto& provider : providers_) {
+    if (!provider->done()) {
       done_ = false;
       return;
     }
@@ -1095,10 +1090,8 @@ void AutocompleteController::StartStopTimer() {
 
 void AutocompleteController::StopHelper(bool clear_result,
                                         bool due_to_user_inactivity) {
-  for (Providers::const_iterator i(providers_.begin()); i != providers_.end();
-       ++i) {
-    (*i)->Stop(clear_result, due_to_user_inactivity);
-  }
+  for (const auto& provider : providers_)
+    provider->Stop(clear_result, due_to_user_inactivity);
 
   expire_timer_.Stop();
   stop_timer_.Stop();
