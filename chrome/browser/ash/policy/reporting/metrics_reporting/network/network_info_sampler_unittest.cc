@@ -20,6 +20,7 @@
 #include "chromeos/network/network_state_handler.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace reporting {
@@ -49,6 +50,7 @@ class NetworkInfoSamplerTest : public ::testing::Test {
   void SetUp() override {
     device_client_ = network_handler_test_helper_.device_test();
     device_client_->ClearDevices();
+    base::RunLoop().RunUntilIdle();
   }
 
   ::ash::ShillDeviceClient::TestInterface* device_client_;
@@ -95,8 +97,11 @@ TEST_F(NetworkInfoSamplerTest, AllTypes) {
 
   MetricData result;
   NetworkInfoSampler sampler;
-  sampler.Collect(base::BindLambdaForTesting(
-      [&](MetricData metric_data) { result = std::move(metric_data); }));
+  sampler.MaybeCollect(
+      base::BindLambdaForTesting([&](absl::optional<MetricData> metric_data) {
+        ASSERT_TRUE(metric_data.has_value());
+        result = std::move(metric_data.value());
+      }));
 
   ASSERT_TRUE(result.has_info_data());
   ASSERT_TRUE(result.info_data().has_networks_info());
@@ -180,8 +185,11 @@ TEST_F(NetworkInfoSamplerTest, Cellular_ESimPolicyDisabled) {
 
   MetricData result;
   NetworkInfoSampler sampler;
-  sampler.Collect(base::BindLambdaForTesting(
-      [&](MetricData metric_data) { result = std::move(metric_data); }));
+  sampler.MaybeCollect(
+      base::BindLambdaForTesting([&](absl::optional<MetricData> metric_data) {
+        ASSERT_TRUE(metric_data.has_value());
+        result = std::move(metric_data.value());
+      }));
 
   ASSERT_TRUE(result.has_info_data());
   ASSERT_TRUE(result.info_data().has_networks_info());
@@ -206,6 +214,18 @@ TEST_F(NetworkInfoSamplerTest, Cellular_ESimPolicyDisabled) {
   // No eid reported, feature is disabled.
   EXPECT_TRUE(
       result.info_data().networks_info().network_interfaces(0).eids().empty());
+}
+
+TEST_F(NetworkInfoSamplerTest, NoDevices) {
+  bool callback_called = false;
+  NetworkInfoSampler sampler;
+  sampler.MaybeCollect(
+      base::BindLambdaForTesting([&](absl::optional<MetricData> metric_data) {
+        ASSERT_FALSE(metric_data.has_value());
+        callback_called = true;
+      }));
+
+  ASSERT_TRUE(callback_called);
 }
 
 }  // namespace

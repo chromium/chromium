@@ -19,7 +19,7 @@ class NetworkInfoSampler : public Sampler {
 
   ~NetworkInfoSampler() override = default;
 
-  void Collect(MetricCallback callback) override;
+  void MaybeCollect(OptionalMetricCallback callback) override;
 };
 
 }  // namespace reporting

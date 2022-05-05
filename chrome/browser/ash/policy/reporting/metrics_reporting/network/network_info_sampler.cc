@@ -34,7 +34,7 @@ absl::optional<NetworkDeviceType> GetNetworkDeviceType(
 
 }  // namespace
 
-void NetworkInfoSampler::Collect(MetricCallback callback) {
+void NetworkInfoSampler::MaybeCollect(OptionalMetricCallback callback) {
   ::ash::NetworkStateHandler::DeviceStateList device_list;
   ::ash::NetworkStateHandler* network_state_handler =
       ::ash::NetworkHandler::Get()->network_state_handler();
@@ -85,7 +85,10 @@ void NetworkInfoSampler::Collect(MetricCallback callback) {
 
   if (!networks_info->network_interfaces().empty()) {
     std::move(callback).Run(std::move(metric_data));
+    return;
   }
+
+  std::move(callback).Run(absl::nullopt);
 }
 
 }  // namespace reporting
