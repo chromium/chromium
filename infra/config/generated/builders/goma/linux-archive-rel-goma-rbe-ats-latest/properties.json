@@ -1,4 +1,47 @@
 {
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "goma",
+              "builder": "linux-archive-rel-goma-rbe-ats-latest",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-fyi-archive",
+              "builder_group": "chromium.goma.fyi",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "clobber",
+                  "mb",
+                  "goma_latest_client"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "enable_reclient"
+                ],
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "goma",
+          "builder": "linux-archive-rel-goma-rbe-ats-latest",
+          "project": "chromium"
+        }
+      ]
+    }
+  },
   "$build/goma": {
     "enable_ats": true,
     "rpc_extra_params": "?prod",

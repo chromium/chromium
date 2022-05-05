@@ -7,6 +7,57 @@
       "linux-archive-rel.json"
     ]
   },
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "linux-archive-rel",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "clobber",
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "enable_reclient"
+                ],
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "linux-archive-rel",
+          "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "linux_chromium_archive_rel_ng",
+          "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux_chromium_clobber_rel_ng",
+          "group": "tryserver.chromium.linux"
+        }
+      ]
+    }
+  },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
     "jobs": 250,

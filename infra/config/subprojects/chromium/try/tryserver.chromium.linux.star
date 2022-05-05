@@ -420,6 +420,9 @@ try_.builder(
 
 try_.builder(
     name = "linux_chromium_archive_rel_ng",
+    mirrors = [
+        "ci/linux-archive-rel",
+    ],
 )
 
 try_.orchestrator_builder(
@@ -474,6 +477,13 @@ try_.builder(
 
 try_.builder(
     name = "linux_chromium_clobber_rel_ng",
+    mirrors = [
+        "ci/linux-archive-rel",
+    ],
+    try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
 )
 
 try_.builder(
