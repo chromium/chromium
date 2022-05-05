@@ -28,6 +28,7 @@
   #leftPane {
     box-sizing: border-box;
     margin-inline-end: 80px;
+    margin-top: 112px;
     width: 40%;
   }
 
@@ -35,16 +36,9 @@
     box-sizing: border-box;
     width: 60%;
   }
-
-  #optionalIcon {
-    height: 112px;
-  }
 </style>
 <div id="pageWrapper">
   <div id="leftPane">
-    <div id="optionalIcon">
-      <slot name="optional-icon"></slot>
-    </div>
     <slot name="left-pane"></slot>
   </div>
   <div id="rightPane">
