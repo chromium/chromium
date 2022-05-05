@@ -2936,16 +2936,6 @@
         },
         'use_swarming': False,
       },
-      'Win ASan Release (reclient shadow)': {
-        'additional_compile_targets': [
-          'chromium_builder_asan',
-        ],
-      },
-      'Win ASan Release Media (reclient shadow)': {
-        'additional_compile_targets': [
-          'chromium_builder_asan',
-        ],
-      },
       'Win x64 Builder (reclient compare)': {
         # Copied from
         # https://source.chromium.org/chromium/chromium/src/+/7b147a6777cb32d6a12e1716c61a0ed50dc1229a:testing/buildbot/waterfalls.pyl;l=6023-6030

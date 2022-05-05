@@ -8940,16 +8940,6 @@
       }
     ]
   },
-  "Win ASan Release (reclient shadow)": {
-    "additional_compile_targets": [
-      "chromium_builder_asan"
-    ]
-  },
-  "Win ASan Release Media (reclient shadow)": {
-    "additional_compile_targets": [
-      "chromium_builder_asan"
-    ]
-  },
   "Win x64 Builder (reclient compare)": {
     "additional_compile_targets": [
       "pdf_fuzzers"
