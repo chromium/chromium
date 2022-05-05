@@ -557,11 +557,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(const AtomicString& name,
       !RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
     return CSSSelector::kPseudoUnknown;
 
-  if (match->type == CSSSelector::kPseudoTargetText &&
-      !RuntimeEnabledFeatures::CSSTargetTextPseudoElementEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
   if (match->type == CSSSelector::kPseudoHighlight &&
       !RuntimeEnabledFeatures::HighlightAPIEnabled()) {
     return CSSSelector::kPseudoUnknown;

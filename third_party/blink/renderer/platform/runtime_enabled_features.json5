@@ -776,12 +776,6 @@
       name: "CSSSystemColorComputeToSelf",
       status: "experimental",
     },
-    {
-      // Support for ::target-text pseudo element as specified in
-      // https://drafts.csswg.org/css-pseudo/#selectordef-target-text
-      name: "CSSTargetTextPseudoElement",
-      status: "stable",
-    },
     // Support for CSS Toggles, https://tabatkins.github.io/css-toggle/
     {
       name: "CSSToggles",
@@ -1145,7 +1139,6 @@
       name: "FontSynthesis",
       status: "stable",
     },
-    // For simulating Android's overlay fullscreen video in web tests on Linux.
     {
       name: "ForcedColors",
       status: "stable",
@@ -1160,6 +1153,8 @@
       name:"ForceEagerMeasureMemory",
     },
     {
+      // For simulating Android's overlay fullscreen video in web tests on
+      // Linux.
       name: "ForceOverlayFullscreenVideo",
     },
     {

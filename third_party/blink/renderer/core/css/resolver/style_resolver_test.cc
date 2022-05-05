@@ -545,8 +545,6 @@ TEST_F(StyleResolverTest, NoFetchForAtPage) {
 }
 
 TEST_F(StyleResolverTest, NoFetchForHighlightPseudoElements) {
-  ScopedCSSTargetTextPseudoElementForTest scoped_feature(true);
-
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       body::target-text, body::selection {
