@@ -19207,6 +19207,37 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="1" label="Sync credentials were removed"/>
 </enum>
 
+<enum name="CredentialManagerAPIError">
+  <summary>
+    Numeric values correspond to CredentialManagerStatusCodes class.
+  </summary>
+  <int value="4" label="SIGN_IN_REQUIRED"/>
+  <int value="5" label="INVALID_ACCOUNT"/>
+  <int value="6" label="RESOLUTION_REQUIRED"/>
+  <int value="7" label="NETWORK_ERROR"/>
+  <int value="8" label="INTERNAL_ERROR"/>
+  <int value="10" label="DEVELOPER_ERROR"/>
+  <int value="13" label="UNEXPECTED_ERROR"/>
+  <int value="14" label="INTERRUPTED"/>
+  <int value="15" label="TIMEOUT"/>
+  <int value="16" label="CANCELLED"/>
+  <int value="17" label="API_NOT_CONNECTED"/>
+  <int value="18" label="DEAD_CLIENT"/>
+  <int value="19" label="REMOTE_EXCEPTION"/>
+  <int value="20" label="CONNECTION_SUSPENDED_DURING_CALL"/>
+  <int value="21" label="CONNECTION_TIMED_OUT_DURING_UPDATE"/>
+  <int value="22" label="RECONNECTION_TIMED_OUT"/>
+  <int value="43500" label="ACTIVITY_NOT_FOUND"/>
+  <int value="43501" label="SETTING_DESERIALIZATION_FAILED"/>
+  <int value="43502" label="CHROME_SYNC_API_CALL_ERROR"/>
+  <int value="43504" label="ERROR_WHILE_DOING_LEAK_CHECK_SERVICE_GRPC"/>
+  <int value="43505" label="ERROR_WHILE_CREATING_DATA_HOLDER"/>
+  <int value="43506" label="ERROR_WHILE_SERIALIZING_CHECKUP_RESULT_SUMMARY"/>
+  <int value="43507" label="REQUIRED_SYNCED_ACCOUNT_MISSING"/>
+  <int value="43508" label="LEAK_CHECK_SERVICE_AUTH_ERROR"/>
+  <int value="43509" label="LEAK_CHECK_SERVICE_RESOURCE_EXHAUSTED"/>
+</enum>
+
 <enum name="CredentialManagerError">
   <int value="0" label="No context"/>
   <int value="1" label="Provided account is empty"/>

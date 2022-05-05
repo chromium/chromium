@@ -2669,6 +2669,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PasswordManager.SyncControllerDelegateNotifiesCredentialManager.APIErrorCode"
+    enum="CredentialManagerAPIError" expires_after="2022-08-10">
+  <owner>kazinova@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    The error codes returned by the GMS Core ChromeSync 1P CredentialManager API
+    for setting the current autofill account. Recorded when the asynchronous job
+    has returned. This is currently only recorded on Android.
+  </summary>
+</histogram>
+
+<histogram
     name="PasswordManager.SyncControllerDelegateNotifiesCredentialManager.ErrorCode"
     enum="PasswordStoreAndroidBackendError" expires_after="2022-08-10">
   <owner>kazinova@google.com</owner>

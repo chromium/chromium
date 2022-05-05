@@ -160,8 +160,11 @@ void PasswordSyncControllerDelegateAndroid::OnCredentialManagerError(
       BuildCredentialManagerNotificationMetricName("Success"), 0);
   base::UmaHistogramEnumeration(
       BuildCredentialManagerNotificationMetricName("ErrorCode"), error.type);
-  // TODO(crbug/1297615): Record API errors when the API is actually
-  // implemented.
+  if (error.type == AndroidBackendErrorType::kExternalError) {
+    base::UmaHistogramSparse(
+        BuildCredentialManagerNotificationMetricName("APIErrorCode"),
+        api_error_code);
+  }
 }
 
 void PasswordSyncControllerDelegateAndroid::UpdateSyncStatusOnStartUp() {

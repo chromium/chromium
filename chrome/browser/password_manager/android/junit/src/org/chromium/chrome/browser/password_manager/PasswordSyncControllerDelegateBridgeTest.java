@@ -10,6 +10,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.common.api.Status;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,6 +50,9 @@ public class PasswordSyncControllerDelegateBridgeTest {
 
     private static final String TEST_EMAIL_ADDRESS = "test@email.com";
     private static final Exception EXPECTED_EXCEPTION = new Exception("Sample failure");
+    private static final int EXPECTED_API_ERROR_CODE = CommonStatusCodes.INTERNAL_ERROR;
+    private static final Exception EXPECTED_API_EXCEPTION =
+            new ApiException(new Status(EXPECTED_API_ERROR_CODE, ""));
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -102,6 +109,25 @@ public class PasswordSyncControllerDelegateBridgeTest {
         verify(mBridgeJniMock)
                 .onCredentialManagerError(
                         sDummyNativePointer, AndroidBackendErrorType.UNCATEGORIZED, 0);
+    }
+
+    @Test
+    public void testNotifyCredentialManagerWhenSyncingCallsBridgeOnAPIError() {
+        when(mSyncServiceMock.getAccountInfo())
+                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
+
+        mDelegateBridge.notifyCredentialManagerWhenSyncing();
+        ArgumentCaptor<Callback<Exception>> failureCallback =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mDelegateMock)
+                .notifyCredentialManagerWhenSyncing(
+                        eq(TEST_EMAIL_ADDRESS), any(), failureCallback.capture());
+
+        assertNotNull(failureCallback.getValue());
+        failureCallback.getValue().onResult(EXPECTED_API_EXCEPTION);
+        verify(mBridgeJniMock)
+                .onCredentialManagerError(sDummyNativePointer,
+                        AndroidBackendErrorType.EXTERNAL_ERROR, EXPECTED_API_ERROR_CODE);
     }
 
     @Test

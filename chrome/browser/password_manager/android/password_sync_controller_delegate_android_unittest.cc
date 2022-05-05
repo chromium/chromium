@@ -21,6 +21,8 @@ namespace password_manager {
 
 namespace {
 
+using base::Bucket;
+using ::testing::ElementsAre;
 using ::testing::Return;
 using ::testing::StrictMock;
 
@@ -166,12 +168,11 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
 
   // Imitate credential manager notification success and check recorded metrics.
   consumer().OnCredentialManagerNotified();
-  histogram_tester.ExpectBucketCount(
-      "PasswordManager.SyncControllerDelegateNotifiesCredentialManager.Success",
-      true, 1);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.SyncControllerDelegateNotifiesCredentialManager.Success",
-      1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "PasswordManager.SyncControllerDelegateNotifiesCredentialManager."
+          "Success"),
+      ElementsAre(Bucket(true, 1)));
 }
 
 TEST_F(PasswordSyncControllerDelegateAndroidTest,
@@ -182,20 +183,46 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
   AndroidBackendError expected_error(AndroidBackendErrorType::kUncategorized);
   consumer().OnCredentialManagerError(expected_error, 0);
 
-  histogram_tester.ExpectBucketCount(
-      "PasswordManager.SyncControllerDelegateNotifiesCredentialManager.Success",
-      false, 1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "PasswordManager.SyncControllerDelegateNotifiesCredentialManager."
+          "Success"),
+      ElementsAre(Bucket(false, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "PasswordManager.SyncControllerDelegateNotifiesCredentialManager."
+          "ErrorCode"),
+      ElementsAre(Bucket(expected_error.type, 1)));
   histogram_tester.ExpectTotalCount(
-      "PasswordManager.SyncControllerDelegateNotifiesCredentialManager.Success",
-      1);
-  histogram_tester.ExpectBucketCount(
       "PasswordManager.SyncControllerDelegateNotifiesCredentialManager."
-      "ErrorCode",
-      expected_error.type, 1);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.SyncControllerDelegateNotifiesCredentialManager."
-      "ErrorCode",
-      1);
+      "APIErrorCode",
+      0);
+}
+
+TEST_F(PasswordSyncControllerDelegateAndroidTest,
+       MetrcisWhenCredentialManagerNotificationFailsAPIError) {
+  base::HistogramTester histogram_tester;
+
+  // Imitate failure and check recorded metrics.
+  AndroidBackendError expected_error(AndroidBackendErrorType::kExternalError);
+  constexpr int expected_api_error_code = 43507;
+  consumer().OnCredentialManagerError(expected_error, expected_api_error_code);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "PasswordManager.SyncControllerDelegateNotifiesCredentialManager."
+          "Success"),
+      ElementsAre(Bucket(false, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "PasswordManager.SyncControllerDelegateNotifiesCredentialManager."
+          "ErrorCode"),
+      ElementsAre(Bucket(expected_error.type, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "PasswordManager.SyncControllerDelegateNotifiesCredentialManager."
+          "APIErrorCode"),
+      ElementsAre(Bucket(expected_api_error_code, 1)));
 }
 
 }  // namespace password_manager
