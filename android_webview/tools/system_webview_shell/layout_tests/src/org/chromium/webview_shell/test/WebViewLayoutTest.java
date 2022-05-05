@@ -62,7 +62,8 @@ public class WebViewLayoutTest {
     // to how blink performs baseline optimizations. For more details see
     // third_party/blink/tools/blinkpy/common/checkout/baseline_optimizer.py.
     private static final List<String> BLINK_STABLE_FALLBACKS = Arrays.asList(
-            EXTERNAL_PREFIX + BASE_BLINK_TEST_PATH + "virtual/stable/" + GLOBAL_LISTING_FILE,
+            EXTERNAL_PREFIX + BASE_BLINK_TEST_PATH + "platform/generic/virtual/stable/"
+                    + GLOBAL_LISTING_FILE,
             EXTERNAL_PREFIX + BASE_BLINK_TEST_PATH + "platform/linux/virtual/stable/"
                     + GLOBAL_LISTING_FILE,
             EXTERNAL_PREFIX + BASE_BLINK_TEST_PATH + "platform/win/virtual/stable/"
@@ -152,9 +153,10 @@ public class WebViewLayoutTest {
         ensureJsTestCopied();
         loadUrlWebViewAsync("file://" + PATH_BLINK_PREFIX
                 + "webexposed/global-interface-listing.html", mTestActivity);
-        String blinkExpected = readFile(PATH_BLINK_PREFIX
+        String blinkExpected = readFile(PATH_BLINK_PREFIX + "platform/generic/"
                 + "webexposed/global-interface-listing-expected.txt");
         String blinkPlatformSpecificExpected = readFile(PATH_BLINK_PREFIX
+                + "platform/generic/"
                 + "webexposed/global-interface-listing-platform-specific-expected.txt");
         String webviewExcluded = readFile(PATH_WEBVIEW_PREFIX
                 + "webexposed/not-webview-exposed.txt");

@@ -154,14 +154,15 @@ instrumentation_test_apk("system_webview_shell_layout_test_apk") {
   ]
   data = [
     "test/data/",
+    "//third_party/blink/web_tests/platform/generic/virtual/stable/webexposed/",
     "//third_party/blink/web_tests/platform/linux/virtual/stable/webexposed/",
     "//third_party/blink/web_tests/platform/mac/virtual/stable/webexposed/",
     "//third_party/blink/web_tests/platform/win/virtual/stable/webexposed/",
     "//third_party/blink/web_tests/resources/global-interface-listing.js",
     "//third_party/blink/web_tests/virtual/stable/webexposed/",
     "//third_party/blink/web_tests/webexposed/global-interface-listing.html",
-    "//third_party/blink/web_tests/webexposed/global-interface-listing-expected.txt",
-    "//third_party/blink/web_tests/webexposed/global-interface-listing-platform-specific-expected.txt",
+    "//third_party/blink/web_tests/platform/generic/webexposed/global-interface-listing-expected.txt",
+    "//third_party/blink/web_tests/platform/generic/webexposed/global-interface-listing-platform-specific-expected.txt",
   ]
 
   # Tell GN to ignore 'incremental_install' even if the user has it in their GN
