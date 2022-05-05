@@ -199,6 +199,57 @@ class MouseHandlingView : public View {
   void OnMouseEvent(ui::MouseEvent* event) override { event->SetHandled(); }
 };
 
+TEST_F(RootViewTest, EventHandlersResetWhenDeleted) {
+  // Set up a widget + rootview
+  Widget widget;
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  init_params.bounds = gfx::Rect(100, 100);
+  widget.Init(std::move(init_params));
+  widget.Show();
+  internal::RootView* root_view =
+      static_cast<internal::RootView*>(widget.GetRootView());
+  View* contents_view = widget.SetContentsView(std::make_unique<View>());
+
+  // Set up a child view to handle events
+  View* event_handler =
+      contents_view->AddChildView(std::make_unique<views::View>());
+  root_view->SetMouseAndGestureHandler(event_handler);
+  ASSERT_EQ(event_handler, root_view->gesture_handler_for_testing());
+
+  // Delete the child and expect that there is no longer a mouse handler
+  contents_view->RemoveChildViewT(event_handler);
+  EXPECT_EQ(nullptr, root_view->gesture_handler_for_testing());
+}
+
+TEST_F(RootViewTest, EventHandlersNotResetWhenReparented) {
+  // Set up a widget + rootview
+  Widget widget;
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  init_params.bounds = gfx::Rect(100, 100);
+  widget.Init(std::move(init_params));
+  widget.Show();
+  internal::RootView* root_view =
+      static_cast<internal::RootView*>(widget.GetRootView());
+  View* contents_view = widget.SetContentsView(std::make_unique<View>());
+
+  // Set up a child view to handle events
+  View* event_handler =
+      contents_view->AddChildView(std::make_unique<views::View>());
+  root_view->SetMouseAndGestureHandler(event_handler);
+  ASSERT_EQ(event_handler, root_view->gesture_handler_for_testing());
+
+  // Reparent the child within the hierarchyand expect that it's still the mouse
+  // handler
+  View* other_parent =
+      contents_view->AddChildView(std::make_unique<views::View>());
+  other_parent->AddChildView(event_handler);
+  EXPECT_EQ(event_handler, root_view->gesture_handler_for_testing());
+}
+
 // Verifies that the gesture handler stored in the root view is reset after
 // mouse is released. Note that during mouse event handling,
 // `RootView::SetMouseAndGestureHandler()` may be called to set the gesture
