@@ -2834,14 +2834,14 @@ Try tapping the mic to ask me anything.
         Skip calibration
       </message>
       <!-- Setup calibration page -->
-      <message name="IDS_SHIMLESS_RMA_SETUP_CALIBRATION_PAGE_TITLE" translateable="false" desc="Title for the page that displays specific instructions required for some calibration steps.">
-        Prepare to calibrate device components
+      <message name="IDS_SHIMLESS_RMA_SETUP_CALIBRATION_PAGE_TITLE" desc="Title for the page that displays specific instructions required for some calibration steps.">
+        Calibrate components
       </message>
-      <message name="IDS_SHIMLESS_RMA_BASE_CALIBRATION_INSTRUCTIONS" translateable="false" desc="Instructions for calibrating gyroscope and accelerometer located in the base of the device.">
-        Please place the device on a flat surface before proceeding.
+      <message name="IDS_SHIMLESS_RMA_BASE_CALIBRATION_INSTRUCTIONS" desc="Instructions for calibrating gyroscope and accelerometer located in the base of the device.">
+        Before proceeding, place your laptop on a flat surface
       </message>
-      <message name="IDS_SHIMLESS_RMA_LID_CALIBRATION_INSTRUCTIONS" translateable="false" desc="Instructions for calibrating gyroscope and accelerometer located in the lid of the device.">
-        Please place the lid of the device on a flat surface before proceeding.
+      <message name="IDS_SHIMLESS_RMA_LID_CALIBRATION_INSTRUCTIONS" desc="Instructions for calibrating gyroscope and accelerometer located in the lid of the device.">
+        Before proceeding, place your whole device (base and lid) on a flat surface.
       </message>
       <!-- Finalize device page -->
       <message name="IDS_SHIMLESS_RMA_FINALIZE_PAGE_TITLE" translateable="false" desc="Title for the page shown when finalizing the device. Finalizing is the process of confirming the device is ready to return to the owner.">
