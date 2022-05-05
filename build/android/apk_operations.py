@@ -1647,16 +1647,52 @@ class _PrintCertsCommand(_Command):
           full_output = subprocess.check_output(
               cmd + ['-rfc'], stderr=subprocess.STDOUT)
     else:
-      cmd = [
-          build_tools.GetPath('apksigner'), 'verify', '--print-certs',
-          '--verbose', self.apk_helper.path
+
+      def run_apksigner(min_sdk_version):
+        cmd = [
+            build_tools.GetPath('apksigner'), 'verify', '--min-sdk-version',
+            str(min_sdk_version), '--print-certs', '--verbose',
+            self.apk_helper.path
+        ]
+        logging.warning('Running: %s', ' '.join(cmd))
+        env = os.environ.copy()
+        env['PATH'] = os.path.pathsep.join(
+            [os.path.join(_JAVA_HOME, 'bin'),
+             env.get('PATH')])
+        # Redirect stderr to hide verification failures (see explanation below).
+        return subprocess.check_output(cmd,
+                                       env=env,
+                                       universal_newlines=True,
+                                       stderr=subprocess.STDOUT)
+
+      # apksigner's default behavior is nonintuitive: it will print "Verified
+      # using <scheme number>...: false" for any scheme which is obsolete for
+      # the APK's minSdkVersion even if it actually was signed with that scheme
+      # (ex. it prints "Verified using v1 scheme: false" for Monochrome because
+      # v1 was obsolete by N). To workaround this, we force apksigner to use the
+      # lowest possible minSdkVersion. We need to fallback to higher
+      # minSdkVersions in case the APK fails to verify for that minSdkVersion
+      # (which means the APK is genuinely not signed with that scheme). These
+      # SDK values are the highest SDK version before the next scheme is
+      # available:
+      versions = [
+          version_codes.MARSHMALLOW,  # before v2 launched in N
+          version_codes.OREO_MR1,  # before v3 launched in P
+          version_codes.Q,  # before v4 launched in R
+          version_codes.R,
       ]
-      logging.warning('Running: %s', ' '.join(cmd))
-      env = os.environ.copy()
-      env['PATH'] = os.path.pathsep.join(
-          [os.path.join(_JAVA_HOME, 'bin'),
-           env.get('PATH')])
-      stdout = subprocess.check_output(cmd, env=env, universal_newlines=True)
+      stdout = None
+      for min_sdk_version in versions:
+        try:
+          stdout = run_apksigner(min_sdk_version)
+          break
+        except subprocess.CalledProcessError:
+          # Doesn't verify with this min-sdk-version, so try again with a higher
+          # one
+          continue
+      if not stdout:
+        raise RuntimeError('apksigner was not able to verify APK')
+
       print(stdout)
       if self.args.full_cert:
         if 'v1 scheme (JAR signing): true' not in stdout:
