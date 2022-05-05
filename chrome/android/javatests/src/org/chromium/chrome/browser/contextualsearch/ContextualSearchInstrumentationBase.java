@@ -304,7 +304,7 @@ public class ContextualSearchInstrumentationBase {
     protected static final String RELATED_SEARCHES_NODE = "intelligence";
 
     private static final String TAG = "CSIBase";
-    private static final int TEST_TIMEOUT = 15000;
+    private static final int TEST_TIMEOUT = 1500;
     private static final int TEST_EXPECTED_FAILURE_TIMEOUT = 1000;
 
     private static final int PANEL_INTERACTION_MAX_RETRIES = 3;
@@ -622,6 +622,8 @@ public class ContextualSearchInstrumentationBase {
                 success = true;
             } catch (AssertionError | TimeoutException e) {
                 if (tries > PANEL_INTERACTION_MAX_RETRIES) {
+                    Log.e(TAG, "ctxs Failed interactions and giving up.", e);
+                    Thread.dumpStack();
                     throw e;
                 } else {
                     Log.e(TAG, "Failed to peek panel bar, trying again.", e);
