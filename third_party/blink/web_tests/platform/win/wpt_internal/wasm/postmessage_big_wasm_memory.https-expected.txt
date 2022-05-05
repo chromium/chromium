@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test that WebAssembly memories greater than 2GB can be postmessaged. WebAssembly.Memory(): could not allocate memory
+Harness: the test ran to completion.
+

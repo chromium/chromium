@@ -624,6 +624,13 @@
       ]
      ],
      "grid": {
+      "grid-item-oof-crash.html": [
+       "fae587dc8e622ed6300aec593619f71100ce7ce8",
+       [
+        null,
+        {}
+       ]
+      ],
       "grid-nested-columns-crash.html": [
        "8b636ae7fa4b4b40ffc137cfc3796c4a1784be13",
        [
@@ -1138,6 +1145,13 @@
       ],
       "slot-content-visibility-21-crash.html": [
        "196f0b4a90aafaad985342bbb773a39f9f31a7e1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "slot-content-visibility-22-crash.html": [
+       "c8b4935ef6b390a0971309343e740d3776ba0150",
        [
         null,
         {}
@@ -11505,70 +11519,70 @@
    },
    "file-system-access": {
     "local_FileSystemBaseHandle-IndexedDB-manual.https.html": [
-     "211b190aad36db7cf98acf6a5bb25856f67c9d5e",
+     "6f2e0d7ef1092abd79eb2e7c512f0398139ab5a5",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemBaseHandle-isSameEntry-manual.https.html": [
-     "d2ddc2dbdccca95dcb0f1cf2820714c14961f4c3",
+     "6587bdf506eb7e8bfafe308efee26061f5b1e009",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemBaseHandle-postMessage-BroadcastChannel-manual.https.html": [
-     "f395b0b4c17e18ac36e835c0c39576f3fe30525c",
+     "3981372df03673d591ca57dfc0c259fcc1be0dee",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemBaseHandle-postMessage-Error-manual.https.html": [
-     "67206e350966c9b75432bb095bf091b8d260bfbd",
+     "b872839f2a8ecb3a3875d9f07c0223a0e6fddb8a",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemBaseHandle-postMessage-MessagePort-frames-manual.https.html": [
-     "35f23d8387d8b771e7e1e93729b59107e773f2f0",
+     "3ec98c86c0cf9859d1a11cf4230fdccf7af78ebf",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemBaseHandle-postMessage-MessagePort-windows-manual.https.html": [
-     "922cbf556a13465898589fddfab05bda345d1dd0",
+     "359f11cd171550b476f1140dc8e6d92d46998fcc",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemBaseHandle-postMessage-MessagePort-workers-manual.https.html": [
-     "22ef3ba37d36a435f2aae874054e156e8bb67520",
+     "af0d6169095c7cdea0b1ccdb572321a180a1c22a",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemBaseHandle-postMessage-frames-manual.https.html": [
-     "8eb9082708242947e29404df422da2a2b6753c98",
+     "1581a645a5be154bb44f27b6b4f590670f8c9f97",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemBaseHandle-postMessage-windows-manual.https.html": [
-     "2137ea368c94411278c78d6d993f0e305e3b6131",
+     "21fd7cb274620503cf1f798d03bb0d817e76abcc",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemBaseHandle-postMessage-workers-manual.https.html": [
-     "619a37cc972166cc691feccb24109073fa979f1c",
+     "f30ecddd9afa66e0b37da4aa3a4747b741adac7c",
      [
       null,
       {}
@@ -11582,21 +11596,21 @@
      ]
     ],
     "local_FileSystemDirectoryHandle-getDirectoryHandle-manual.https.html": [
-     "63a88538e8b915e80d334949ca2b2b619d3e9654",
+     "e403d225ea96ab622adc0f3856b5cd451249a0e8",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemDirectoryHandle-getFileHandle-manual.https.html": [
-     "d16771bf450df6237bbd55b440b4789da2acf6e7",
+     "1fa4e116991186871e5c81aaa5c36b73fa92bdec",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemDirectoryHandle-iteration-manual.https.html": [
-     "495ea5e0a095a4e3dab424e250d45797c6b5e955",
+     "8537ca02ba501ac022fc5dbf756be9233b07ed74",
      [
       null,
       {}
@@ -11610,63 +11624,56 @@
      ]
     ],
     "local_FileSystemDirectoryHandle-removeEntry-manual.https.html": [
-     "765492e1e861779567df9f255628eb0f5ffb83df",
-     [
-      null,
-      {}
-     ]
-    ],
-    "local_FileSystemDirectoryHandle-rename-manual.https.html": [
-     "a4a7fb9b5985e08e7f03701033dfe35c17ebfb0b",
+     "cf97b9d1bb153d82f3346f221a044b709398420c",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemDirectoryHandle-resolve-manual.https.html": [
-     "0d539abb54e08f8bfbb06bcc5010cda3a53b83da",
+     "25be22afafcd4ab483c8c1e196c50ca698e94f25",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemFileHandle-create-sync-access-handle-manual.https.tentative.html": [
-     "2f2fc00e5ebdf9090b5c9e32683721ec999f05f7",
+     "4641b13a45bd42d64e96a27e92cc7bdc57325965",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemFileHandle-getFile-manual.https.html": [
-     "9d8dede88949053c43bc3b15f28b335d9bb93198",
+     "9583032b595a8fe8448d95e78ebe4067ea20c6fd",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemFileHandle-move-manual.https.html": [
-     "3d056a507966902fc59e3e327cc53c09f0eabc14",
+     "360b09c3b7aad39bb37037383163def662517d31",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemWritableFileStream-manual.https.html": [
-     "2db242c708d029893cea4294af15f5b751716fe1",
+     "b9f28c5b08ca10e1e5a7e10b088a6951073aa00c",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemWritableFileStream-piped-manual.https.html": [
-     "296f75412e1c8e631e49e3b7a8320c60c718bc05",
+     "645eddbb501c87eae4dcee3cb374589a5ee1662b",
      [
       null,
       {}
      ]
     ],
     "local_FileSystemWritableFileStream-write-manual.https.html": [
-     "eb9708740b584b83065f07b5a68b6c676915bd1d",
+     "f1c4960ad371e402c07bc71efd7190fdc1521ade",
      [
       null,
       {}
@@ -223852,6 +223859,19 @@
        {}
       ]
      ],
+     "mq-invalid-media-type-layer-001.html": [
+      "ef3fc48ca888810101ad196917022f6c378b52a9",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "mq-negative-range-001.html": [
       "f311463877a3d3a76905461fe0fddf647e487047",
       [
@@ -297528,7 +297548,7 @@
       ]
      },
      "local-fs-test-helpers.js": [
-      "1f944b0ad6a856c2d0881df5a322f5ab7ee4e387",
+      "143c8231ab62fc048b81b81f9d1fc9a924a87b0e",
       []
      ],
      "message-target-dedicated-worker.js": [
@@ -297564,15 +297584,7 @@
       []
      ],
      "opaque-origin-sandbox.html": [
-      "63ada267d8cee589989bc7758b0b5378e6af91b9",
-      []
-     ],
-     "sandboxed-fs-test-helpers.js": [
-      "f6cfd4b0aab82d20d4ee422107837240f2e3ae3d",
-      []
-     ],
-     "sync-access-handle-test.js": [
-      "ec13ff9a06bc67e9a770489fddc3e84678281027",
+      "f489f889b3cfbe7887c6c6dad04de79cd52cc76e",
       []
      ],
      "test-helpers.js": [
@@ -297581,100 +297593,12 @@
      ]
     },
     "script-tests": {
-     "FileSystemBaseHandle-IndexedDB.js": [
-      "855e52f04ddf2f4f8641524010216c6e8c7cdda7",
-      []
-     ],
-     "FileSystemBaseHandle-isSameEntry.js": [
-      "8c0b3521c3faed445e95f4fded160d5ac497e578",
-      []
-     ],
-     "FileSystemBaseHandle-postMessage-BroadcastChannel.js": [
-      "6c3ae7d49bc7c9a2cb49c6b214b3ec022a8790d4",
-      []
-     ],
-     "FileSystemBaseHandle-postMessage-Error.js": [
-      "0b9dc6b033f379b227aac84d8e9ed63520d50514",
-      []
-     ],
-     "FileSystemBaseHandle-postMessage-MessagePort-frames.js": [
-      "89343f3948de3bdfa52ecd9463489dffc6cada32",
-      []
-     ],
-     "FileSystemBaseHandle-postMessage-MessagePort-windows.js": [
-      "78b3176bf813d037ed71fad75281ca8cf3e3e191",
-      []
-     ],
-     "FileSystemBaseHandle-postMessage-MessagePort-workers.js": [
-      "8e46edc88a9e030b1e963598659eb3148a552b18",
-      []
-     ],
-     "FileSystemBaseHandle-postMessage-frames.js": [
-      "009a030a4f01fc4d1c2ba3d9b616cc32c0d27398",
-      []
-     ],
-     "FileSystemBaseHandle-postMessage-windows.js": [
-      "83bf8c64297c2962e4cf2f597d16bb26f31f167f",
-      []
-     ],
-     "FileSystemBaseHandle-postMessage-workers.js": [
-      "f7abf65554b783e6a1ab6ee0d3f3b2142d22c991",
-      []
-     ],
      "FileSystemBaseHandle-remove.js": [
       "2306bde7cdb87b6e893a92389200ce4fa7fe36ec",
       []
      ],
-     "FileSystemDirectoryHandle-getDirectoryHandle.js": [
-      "48a4ce4ce69e8f6823db6fdd0c83a2a0c3378f32",
-      []
-     ],
-     "FileSystemDirectoryHandle-getFileHandle.js": [
-      "dddd67a705808c65f759741956c3b2e16114f43d",
-      []
-     ],
-     "FileSystemDirectoryHandle-iteration.js": [
-      "3e721a0f017f0b393dba05a4f3b8dc098f6c0698",
-      []
-     ],
      "FileSystemDirectoryHandle-move.js": [
       "856c1f3293208e301d7095593f2e9f0297752659",
-      []
-     ],
-     "FileSystemDirectoryHandle-removeEntry.js": [
-      "01e2ebe10889b0de539b54d983124865ab9276bc",
-      []
-     ],
-     "FileSystemDirectoryHandle-resolve.js": [
-      "a8900f97e54523f29bdc9afcd021d32c9dbb0e08",
-      []
-     ],
-     "FileSystemFileHandle-create-sync-access-handle.js": [
-      "8efe685596b749ba67aaea939d7a5f82417a5199",
-      []
-     ],
-     "FileSystemFileHandle-getFile.js": [
-      "80593418bb1622b76e440a1c55cd745c59b8a582",
-      []
-     ],
-     "FileSystemFileHandle-move.js": [
-      "a3be9f49afd85ddd47578ba8138c9c4f1bc5b09a",
-      []
-     ],
-     "FileSystemSyncAccessHandle-flush.js": [
-      "74517f6cf3861caf1b480bd38025c9930555d84b",
-      []
-     ],
-     "FileSystemWritableFileStream-piped.js": [
-      "64637c9febf4027d3368d0f589b542c321ed424b",
-      []
-     ],
-     "FileSystemWritableFileStream-write.js": [
-      "ea4915a14105497c06b3d6fea4197a60469b6d62",
-      []
-     ],
-     "FileSystemWritableFileStream.js": [
-      "1cebb993556f0da7785e9f9df8b3d47f4d4229cd",
       []
      ]
     }
@@ -298880,10 +298804,162 @@
     }
    },
    "fs": {
-    "META.yml": [
-     "05e66225cf220ab8d443e06e412b568c7642c7ce",
+    "DIR_METADATA": [
+     "12cf0e36d35303a5936a5a1f0fba87083b219262",
      []
-    ]
+    ],
+    "META.yml": [
+     "23d7765cdfa39689ef72ae6a0beb15b8b4292ecd",
+     []
+    ],
+    "OWNERS": [
+     "c037205a31c45750dabcd5c7bc088b4fe9382c8c",
+     []
+    ],
+    "README.md": [
+     "8b99a0140dbfcc1293c19105437d37577fd373db",
+     []
+    ],
+    "resources": {
+     "message-target-dedicated-worker.js": [
+      "26ff23ef8ac65009c3c5efd4bdeda3970ae93910",
+      []
+     ],
+     "message-target-service-worker.js": [
+      "4a6174ae3b5539300954f6f36782a96a066b4889",
+      []
+     ],
+     "message-target-shared-worker.js": [
+      "6829c61d4cf9f32f4834ae09ffba1d614b0430a0",
+      []
+     ],
+     "message-target.html": [
+      "32c7f0c56c61d4d2f6e432dd3c38f8afe91f9762",
+      []
+     ],
+     "message-target.js": [
+      "5cba9498c12d01d50118198068081b4ac1cb4d84",
+      []
+     ],
+     "messaging-blob-helpers.js": [
+      "852f2e2d3213075ce738fbc2bb5ac4a1f4008ad6",
+      []
+     ],
+     "messaging-helpers.js": [
+      "776c0c50d56b730826192d914da7ee0653dc0f03",
+      []
+     ],
+     "messaging-serialize-helpers.js": [
+      "063fe4173d9808b22a62d7081be7d7fe7a534b57",
+      []
+     ],
+     "opaque-origin-sandbox.html": [
+      "b2582ca4c2904b67d95e4fd9e63a4259e1766316",
+      []
+     ],
+     "sandboxed-fs-test-helpers.js": [
+      "9c93212f49cb3ab21ebc23585b1c22f804e876bf",
+      []
+     ],
+     "sync-access-handle-test.js": [
+      "ec13ff9a06bc67e9a770489fddc3e84678281027",
+      []
+     ],
+     "test-helpers.js": [
+      "27469349cdeaa8eb02fd3b8e19ed9a4cff2a6081",
+      []
+     ]
+    },
+    "script-tests": {
+     "FileSystemBaseHandle-IndexedDB.js": [
+      "855e52f04ddf2f4f8641524010216c6e8c7cdda7",
+      []
+     ],
+     "FileSystemBaseHandle-isSameEntry.js": [
+      "8c0b3521c3faed445e95f4fded160d5ac497e578",
+      []
+     ],
+     "FileSystemBaseHandle-postMessage-BroadcastChannel.js": [
+      "681037db2fb129319935313f399cbafc08149d85",
+      []
+     ],
+     "FileSystemBaseHandle-postMessage-Error.js": [
+      "7c97a7da484e3fca54d458d6b1fde4bf7c216406",
+      []
+     ],
+     "FileSystemBaseHandle-postMessage-MessagePort-frames.js": [
+      "b70b2992c62ff461c212edc71c87380d7c44f35d",
+      []
+     ],
+     "FileSystemBaseHandle-postMessage-MessagePort-windows.js": [
+      "dceb250ebbf9e8760cddd5f8c870418e88d79444",
+      []
+     ],
+     "FileSystemBaseHandle-postMessage-MessagePort-workers.js": [
+      "b386527dbd017deb5421de9356f6ec3df97b3f3a",
+      []
+     ],
+     "FileSystemBaseHandle-postMessage-frames.js": [
+      "1e77b89d770032fc5321bdaf3193a6365a2f3065",
+      []
+     ],
+     "FileSystemBaseHandle-postMessage-windows.js": [
+      "798d458534ef5413c9d3d8e57583bb40fc5b91e5",
+      []
+     ],
+     "FileSystemBaseHandle-postMessage-workers.js": [
+      "dbd8e5754d21d6c48dd20efbe881df495a8fcc81",
+      []
+     ],
+     "FileSystemDirectoryHandle-getDirectoryHandle.js": [
+      "48a4ce4ce69e8f6823db6fdd0c83a2a0c3378f32",
+      []
+     ],
+     "FileSystemDirectoryHandle-getFileHandle.js": [
+      "dddd67a705808c65f759741956c3b2e16114f43d",
+      []
+     ],
+     "FileSystemDirectoryHandle-iteration.js": [
+      "3e721a0f017f0b393dba05a4f3b8dc098f6c0698",
+      []
+     ],
+     "FileSystemDirectoryHandle-removeEntry.js": [
+      "01e2ebe10889b0de539b54d983124865ab9276bc",
+      []
+     ],
+     "FileSystemDirectoryHandle-resolve.js": [
+      "a8900f97e54523f29bdc9afcd021d32c9dbb0e08",
+      []
+     ],
+     "FileSystemFileHandle-create-sync-access-handle.js": [
+      "302d4a5a7afafcd71e1deeea4f973cb663f1e436",
+      []
+     ],
+     "FileSystemFileHandle-getFile.js": [
+      "80593418bb1622b76e440a1c55cd745c59b8a582",
+      []
+     ],
+     "FileSystemFileHandle-move.js": [
+      "a3be9f49afd85ddd47578ba8138c9c4f1bc5b09a",
+      []
+     ],
+     "FileSystemSyncAccessHandle-flush.js": [
+      "580da69cc95a0e1c4173c69b9503e2a4adca9add",
+      []
+     ],
+     "FileSystemWritableFileStream-piped.js": [
+      "64637c9febf4027d3368d0f589b542c321ed424b",
+      []
+     ],
+     "FileSystemWritableFileStream-write.js": [
+      "ea4915a14105497c06b3d6fea4197a60469b6d62",
+      []
+     ],
+     "FileSystemWritableFileStream.js": [
+      "1cebb993556f0da7785e9f9df8b3d47f4d4229cd",
+      []
+     ]
+    }
    },
    "fullscreen": {
     "DIR_METADATA": [
@@ -316890,11 +316966,15 @@
     ],
     "dedicated-worker": {
      "mediasource-message-util.js": [
-      "f2682e30bcf2632550f0f77fcf58c69f861815d1",
+      "247071db4f13f33f99f8db4c1ca201648d51554c",
       []
      ],
      "mediasource-worker-detach-element.js": [
       "a4df32e532ec131593323476bd113b7e0ae1d153",
+      []
+     ],
+     "mediasource-worker-duration.js": [
+      "80605945ee967f9135900574c8e1a7283b62fcd3",
       []
      ],
      "mediasource-worker-must-fail-if-unsupported.js": [
@@ -394068,6 +394148,13 @@
        {}
       ]
      ],
+     "mq-invalid-media-type-layer-002.html": [
+      "3f8b719bfab8eb29483ff94c271b30eced5abece",
+      [
+       null,
+       {}
+      ]
+     ],
      "navigation-controls.tentative.html": [
       "ac1087bb65b9a8fd85d924ad1ae0de797762dac5",
       [
@@ -427464,442 +427551,8 @@
       {}
      ]
     ],
-    "sandboxed_FileSystemBaseHandle-IndexedDB.https.any.js": [
-     "7f0fc4a7212db3c4bc19f59d0ce265ccf5536bae",
-     [
-      "file-system-access/sandboxed_FileSystemBaseHandle-IndexedDB.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-serialize-helpers.js"
-        ],
-        [
-         "script",
-         "/IndexedDB/support-promises.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemBaseHandle-IndexedDB.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "file-system-access/sandboxed_FileSystemBaseHandle-IndexedDB.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-serialize-helpers.js"
-        ],
-        [
-         "script",
-         "/IndexedDB/support-promises.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemBaseHandle-IndexedDB.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "sandboxed_FileSystemBaseHandle-isSameEntry.https.any.js": [
-     "67d36dfae8ae05a4013af598ec72cda89f964628",
-     [
-      "file-system-access/sandboxed_FileSystemBaseHandle-isSameEntry.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemBaseHandle-isSameEntry.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "file-system-access/sandboxed_FileSystemBaseHandle-isSameEntry.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemBaseHandle-isSameEntry.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "sandboxed_FileSystemBaseHandle-postMessage-BroadcastChannel.https.window.js": [
-     "ca25b548cbbb4920bda1175c7af160b95b4de0f7",
-     [
-      "file-system-access/sandboxed_FileSystemBaseHandle-postMessage-BroadcastChannel.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ],
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-serialize-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemBaseHandle-postMessage-BroadcastChannel.js"
-        ],
-        [
-         "timeout",
-         "long"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ]
-    ],
-    "sandboxed_FileSystemBaseHandle-postMessage-Error.https.window.js": [
-     "16a7002a2add7950393756074cc8a94e4b21c5a8",
-     [
-      "file-system-access/sandboxed_FileSystemBaseHandle-postMessage-Error.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/common/get-host-info.sub.js"
-        ],
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ],
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-blob-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-serialize-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemBaseHandle-postMessage-Error.js"
-        ],
-        [
-         "timeout",
-         "long"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ]
-    ],
-    "sandboxed_FileSystemBaseHandle-postMessage-MessagePort-frames.https.window.js": [
-     "612c823295b6a338d48160e662dae424904b9b2c",
-     [
-      "file-system-access/sandboxed_FileSystemBaseHandle-postMessage-MessagePort-frames.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-blob-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-serialize-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemBaseHandle-postMessage-MessagePort-frames.js"
-        ],
-        [
-         "timeout",
-         "long"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ]
-    ],
-    "sandboxed_FileSystemBaseHandle-postMessage-MessagePort-windows.https.window.js": [
-     "28cec810ee34906bf7566900b3993c8ea57f2ab9",
-     [
-      "file-system-access/sandboxed_FileSystemBaseHandle-postMessage-MessagePort-windows.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-blob-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-serialize-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemBaseHandle-postMessage-MessagePort-windows.js"
-        ],
-        [
-         "timeout",
-         "long"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ]
-    ],
-    "sandboxed_FileSystemBaseHandle-postMessage-MessagePort-workers.https.window.js": [
-     "1599ba969d87b54ee870ad2732466fa272658813",
-     [
-      "file-system-access/sandboxed_FileSystemBaseHandle-postMessage-MessagePort-workers.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ],
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-blob-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-serialize-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemBaseHandle-postMessage-MessagePort-workers.js"
-        ],
-        [
-         "timeout",
-         "long"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ]
-    ],
-    "sandboxed_FileSystemBaseHandle-postMessage-frames.https.window.js": [
-     "a0e41c51b181e0d787876811ae4e5949afcc7117",
-     [
-      "file-system-access/sandboxed_FileSystemBaseHandle-postMessage-frames.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-blob-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-serialize-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemBaseHandle-postMessage-frames.js"
-        ],
-        [
-         "timeout",
-         "long"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ]
-    ],
-    "sandboxed_FileSystemBaseHandle-postMessage-windows.https.window.js": [
-     "1e3de1ea399cf4b75531f3cf3a6c10242ca6c4f9",
-     [
-      "file-system-access/sandboxed_FileSystemBaseHandle-postMessage-windows.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-blob-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-serialize-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemBaseHandle-postMessage-windows.js"
-        ],
-        [
-         "timeout",
-         "long"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ]
-    ],
-    "sandboxed_FileSystemBaseHandle-postMessage-workers.https.window.js": [
-     "e690682b6ff7c388cfd8875665997f6b2e6f6283",
-     [
-      "file-system-access/sandboxed_FileSystemBaseHandle-postMessage-workers.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ],
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-blob-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-serialize-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemBaseHandle-postMessage-workers.js"
-        ],
-        [
-         "timeout",
-         "long"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ]
-    ],
     "sandboxed_FileSystemBaseHandle-remove.https.any.js": [
-     "64aa0bb126fd2112e965659108a3e7082591f150",
+     "6044f65ae6b21ad675627aa105e333a253318b7f",
      [
       "file-system-access/sandboxed_FileSystemBaseHandle-remove.https.any.html",
       {
@@ -427910,7 +427563,7 @@
         ],
         [
          "script",
-         "resources/sandboxed-fs-test-helpers.js"
+         "../fs/resources/sandboxed-fs-test-helpers.js"
         ],
         [
          "script",
@@ -427929,7 +427582,7 @@
         ],
         [
          "script",
-         "resources/sandboxed-fs-test-helpers.js"
+         "../fs/resources/sandboxed-fs-test-helpers.js"
         ],
         [
          "script",
@@ -427939,131 +427592,8 @@
       }
      ]
     ],
-    "sandboxed_FileSystemDirectoryHandle-getDirectoryHandle.https.any.js": [
-     "69ca2bf3677f25e2fac3dcc130894d783bc62231",
-     [
-      "file-system-access/sandboxed_FileSystemDirectoryHandle-getDirectoryHandle.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemDirectoryHandle-getDirectoryHandle.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "file-system-access/sandboxed_FileSystemDirectoryHandle-getDirectoryHandle.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemDirectoryHandle-getDirectoryHandle.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "sandboxed_FileSystemDirectoryHandle-getFileHandle.https.any.js": [
-     "afe362e757cf9ac98e840c31003a8a85d20100e5",
-     [
-      "file-system-access/sandboxed_FileSystemDirectoryHandle-getFileHandle.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemDirectoryHandle-getFileHandle.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "file-system-access/sandboxed_FileSystemDirectoryHandle-getFileHandle.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemDirectoryHandle-getFileHandle.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "sandboxed_FileSystemDirectoryHandle-iteration.https.any.js": [
-     "3961ea3ea86cd209d69485e8301850db193f5c8d",
-     [
-      "file-system-access/sandboxed_FileSystemDirectoryHandle-iteration.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemDirectoryHandle-iteration.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "file-system-access/sandboxed_FileSystemDirectoryHandle-iteration.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemDirectoryHandle-iteration.js"
-        ]
-       ]
-      }
-     ]
-    ],
     "sandboxed_FileSystemDirectoryHandle-move.https.any.js": [
-     "70a41a56740ddd0f84a174cc6925a38f4a82587d",
+     "00578f1c8bafa81a52d8d3c2eceb7d7abe11c7da",
      [
       "file-system-access/sandboxed_FileSystemDirectoryHandle-move.https.any.html",
       {
@@ -428074,7 +427604,7 @@
         ],
         [
          "script",
-         "resources/sandboxed-fs-test-helpers.js"
+         "../fs/resources/sandboxed-fs-test-helpers.js"
         ],
         [
          "script",
@@ -428093,374 +427623,11 @@
         ],
         [
          "script",
-         "resources/sandboxed-fs-test-helpers.js"
+         "../fs/resources/sandboxed-fs-test-helpers.js"
         ],
         [
          "script",
          "script-tests/FileSystemDirectoryHandle-move.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "sandboxed_FileSystemDirectoryHandle-removeEntry.https.any.js": [
-     "a4be8bd267e743ee617c29c1cce1188e6b9d377a",
-     [
-      "file-system-access/sandboxed_FileSystemDirectoryHandle-removeEntry.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemDirectoryHandle-removeEntry.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "file-system-access/sandboxed_FileSystemDirectoryHandle-removeEntry.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemDirectoryHandle-removeEntry.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "sandboxed_FileSystemDirectoryHandle-resolve.https.any.js": [
-     "6ee32709307cb930c8d56374841792fd70235915",
-     [
-      "file-system-access/sandboxed_FileSystemDirectoryHandle-resolve.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemDirectoryHandle-resolve.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "file-system-access/sandboxed_FileSystemDirectoryHandle-resolve.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemDirectoryHandle-resolve.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "sandboxed_FileSystemFileHandle-create-sync-access-handle.https.tentative.window.js": [
-     "aa4d91d15da1cb0cebd4e47ea7300ac6206ced30",
-     [
-      "file-system-access/sandboxed_FileSystemFileHandle-create-sync-access-handle.https.tentative.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/messaging-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemFileHandle-create-sync-access-handle.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "sandboxed_FileSystemFileHandle-getFile.https.any.js": [
-     "fb93858fe7934b27244fa0ff828eac75c34b6629",
-     [
-      "file-system-access/sandboxed_FileSystemFileHandle-getFile.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemFileHandle-getFile.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "file-system-access/sandboxed_FileSystemFileHandle-getFile.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemFileHandle-getFile.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "sandboxed_FileSystemFileHandle-move.https.any.js": [
-     "1f9678a041531ea8a8aed2208a2847816f54f5b4",
-     [
-      "file-system-access/sandboxed_FileSystemFileHandle-move.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemFileHandle-move.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "file-system-access/sandboxed_FileSystemFileHandle-move.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemFileHandle-move.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "sandboxed_FileSystemFileHandle-sync-access-handle-writable-lock.https.tentative.worker.js": [
-     "a2ed99db1d538ada4d76796ccd6a6c6cfba2565e",
-     [
-      "file-system-access/sandboxed_FileSystemFileHandle-sync-access-handle-writable-lock.https.tentative.worker.html",
-      {}
-     ]
-    ],
-    "sandboxed_FileSystemSyncAccessHandle-close.https.tentative.worker.js": [
-     "870eeb6e5fce47426bc6861f45d494f17c6ca8c8",
-     [
-      "file-system-access/sandboxed_FileSystemSyncAccessHandle-close.https.tentative.worker.html",
-      {}
-     ]
-    ],
-    "sandboxed_FileSystemSyncAccessHandle-flush.https.tentative.worker.js": [
-     "0893747ed9798d83da9a51f8a2b28fe4780d796a",
-     [
-      "file-system-access/sandboxed_FileSystemSyncAccessHandle-flush.https.tentative.worker.html",
-      {}
-     ]
-    ],
-    "sandboxed_FileSystemSyncAccessHandle-getSize.https.tentative.worker.js": [
-     "9a18b171b5d850953b5ecf10872b16c97a0aece1",
-     [
-      "file-system-access/sandboxed_FileSystemSyncAccessHandle-getSize.https.tentative.worker.html",
-      {}
-     ]
-    ],
-    "sandboxed_FileSystemSyncAccessHandle-read-write.https.tentative.worker.js": [
-     "eb93c0681b26c42685e35a9faf9952876e3e0f12",
-     [
-      "file-system-access/sandboxed_FileSystemSyncAccessHandle-read-write.https.tentative.worker.html",
-      {}
-     ]
-    ],
-    "sandboxed_FileSystemSyncAccessHandle-truncate.https.tentative.worker.js": [
-     "01ccbdb78e8102247acbbcf77596294f8f70e944",
-     [
-      "file-system-access/sandboxed_FileSystemSyncAccessHandle-truncate.https.tentative.worker.html",
-      {}
-     ]
-    ],
-    "sandboxed_FileSystemWritableFileStream-piped.https.any.js": [
-     "eed6a561dc40e658b6b6c8d51766cdacc42a024c",
-     [
-      "file-system-access/sandboxed_FileSystemWritableFileStream-piped.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "../streams/resources/recording-streams.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemWritableFileStream-piped.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "file-system-access/sandboxed_FileSystemWritableFileStream-piped.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "../streams/resources/recording-streams.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemWritableFileStream-piped.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "sandboxed_FileSystemWritableFileStream-write.https.any.js": [
-     "7ef0ea0ef82626eae74f152b94f898859aca6832",
-     [
-      "file-system-access/sandboxed_FileSystemWritableFileStream-write.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemWritableFileStream-write.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "file-system-access/sandboxed_FileSystemWritableFileStream-write.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemWritableFileStream-write.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "sandboxed_FileSystemWritableFileStream.https.any.js": [
-     "16dbbe6a808a603c9b81482f733dcf09e84670ff",
-     [
-      "file-system-access/sandboxed_FileSystemWritableFileStream.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemWritableFileStream.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "file-system-access/sandboxed_FileSystemWritableFileStream.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/test-helpers.js"
-        ],
-        [
-         "script",
-         "resources/sandboxed-fs-test-helpers.js"
-        ],
-        [
-         "script",
-         "script-tests/FileSystemWritableFileStream.js"
         ]
        ]
       }
@@ -428964,6 +428131,926 @@
     ]
    },
    "fs": {
+    "FileSystemBaseHandle-IndexedDB.https.any.js": [
+     "7f0fc4a7212db3c4bc19f59d0ce265ccf5536bae",
+     [
+      "fs/FileSystemBaseHandle-IndexedDB.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-serialize-helpers.js"
+        ],
+        [
+         "script",
+         "/IndexedDB/support-promises.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemBaseHandle-IndexedDB.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "fs/FileSystemBaseHandle-IndexedDB.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-serialize-helpers.js"
+        ],
+        [
+         "script",
+         "/IndexedDB/support-promises.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemBaseHandle-IndexedDB.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "FileSystemBaseHandle-isSameEntry.https.any.js": [
+     "67d36dfae8ae05a4013af598ec72cda89f964628",
+     [
+      "fs/FileSystemBaseHandle-isSameEntry.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemBaseHandle-isSameEntry.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "fs/FileSystemBaseHandle-isSameEntry.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemBaseHandle-isSameEntry.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "FileSystemBaseHandle-postMessage-BroadcastChannel.https.window.js": [
+     "ca25b548cbbb4920bda1175c7af160b95b4de0f7",
+     [
+      "fs/FileSystemBaseHandle-postMessage-BroadcastChannel.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-serialize-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemBaseHandle-postMessage-BroadcastChannel.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "FileSystemBaseHandle-postMessage-Error.https.window.js": [
+     "16a7002a2add7950393756074cc8a94e4b21c5a8",
+     [
+      "fs/FileSystemBaseHandle-postMessage-Error.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-blob-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-serialize-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemBaseHandle-postMessage-Error.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "FileSystemBaseHandle-postMessage-MessagePort-frames.https.window.js": [
+     "612c823295b6a338d48160e662dae424904b9b2c",
+     [
+      "fs/FileSystemBaseHandle-postMessage-MessagePort-frames.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-blob-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-serialize-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemBaseHandle-postMessage-MessagePort-frames.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "FileSystemBaseHandle-postMessage-MessagePort-windows.https.window.js": [
+     "28cec810ee34906bf7566900b3993c8ea57f2ab9",
+     [
+      "fs/FileSystemBaseHandle-postMessage-MessagePort-windows.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-blob-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-serialize-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemBaseHandle-postMessage-MessagePort-windows.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "FileSystemBaseHandle-postMessage-MessagePort-workers.https.window.js": [
+     "1599ba969d87b54ee870ad2732466fa272658813",
+     [
+      "fs/FileSystemBaseHandle-postMessage-MessagePort-workers.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-blob-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-serialize-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemBaseHandle-postMessage-MessagePort-workers.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "FileSystemBaseHandle-postMessage-frames.https.window.js": [
+     "a0e41c51b181e0d787876811ae4e5949afcc7117",
+     [
+      "fs/FileSystemBaseHandle-postMessage-frames.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-blob-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-serialize-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemBaseHandle-postMessage-frames.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "FileSystemBaseHandle-postMessage-windows.https.window.js": [
+     "1e3de1ea399cf4b75531f3cf3a6c10242ca6c4f9",
+     [
+      "fs/FileSystemBaseHandle-postMessage-windows.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-blob-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-serialize-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemBaseHandle-postMessage-windows.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "FileSystemBaseHandle-postMessage-workers.https.window.js": [
+     "e690682b6ff7c388cfd8875665997f6b2e6f6283",
+     [
+      "fs/FileSystemBaseHandle-postMessage-workers.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-blob-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-serialize-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemBaseHandle-postMessage-workers.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "FileSystemDirectoryHandle-getDirectoryHandle.https.any.js": [
+     "69ca2bf3677f25e2fac3dcc130894d783bc62231",
+     [
+      "fs/FileSystemDirectoryHandle-getDirectoryHandle.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemDirectoryHandle-getDirectoryHandle.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "fs/FileSystemDirectoryHandle-getDirectoryHandle.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemDirectoryHandle-getDirectoryHandle.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "FileSystemDirectoryHandle-getFileHandle.https.any.js": [
+     "afe362e757cf9ac98e840c31003a8a85d20100e5",
+     [
+      "fs/FileSystemDirectoryHandle-getFileHandle.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemDirectoryHandle-getFileHandle.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "fs/FileSystemDirectoryHandle-getFileHandle.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemDirectoryHandle-getFileHandle.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "FileSystemDirectoryHandle-iteration.https.any.js": [
+     "3961ea3ea86cd209d69485e8301850db193f5c8d",
+     [
+      "fs/FileSystemDirectoryHandle-iteration.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemDirectoryHandle-iteration.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "fs/FileSystemDirectoryHandle-iteration.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemDirectoryHandle-iteration.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "FileSystemDirectoryHandle-removeEntry.https.any.js": [
+     "a4be8bd267e743ee617c29c1cce1188e6b9d377a",
+     [
+      "fs/FileSystemDirectoryHandle-removeEntry.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemDirectoryHandle-removeEntry.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "fs/FileSystemDirectoryHandle-removeEntry.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemDirectoryHandle-removeEntry.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "FileSystemDirectoryHandle-resolve.https.any.js": [
+     "6ee32709307cb930c8d56374841792fd70235915",
+     [
+      "fs/FileSystemDirectoryHandle-resolve.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemDirectoryHandle-resolve.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "fs/FileSystemDirectoryHandle-resolve.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemDirectoryHandle-resolve.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "FileSystemFileHandle-create-sync-access-handle.https.tentative.window.js": [
+     "aa4d91d15da1cb0cebd4e47ea7300ac6206ced30",
+     [
+      "fs/FileSystemFileHandle-create-sync-access-handle.https.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/messaging-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemFileHandle-create-sync-access-handle.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "FileSystemFileHandle-getFile.https.any.js": [
+     "fb93858fe7934b27244fa0ff828eac75c34b6629",
+     [
+      "fs/FileSystemFileHandle-getFile.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemFileHandle-getFile.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "fs/FileSystemFileHandle-getFile.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemFileHandle-getFile.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "FileSystemFileHandle-move.https.any.js": [
+     "1f9678a041531ea8a8aed2208a2847816f54f5b4",
+     [
+      "fs/FileSystemFileHandle-move.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemFileHandle-move.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "fs/FileSystemFileHandle-move.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemFileHandle-move.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "FileSystemFileHandle-sync-access-handle-writable-lock.https.tentative.worker.js": [
+     "a2ed99db1d538ada4d76796ccd6a6c6cfba2565e",
+     [
+      "fs/FileSystemFileHandle-sync-access-handle-writable-lock.https.tentative.worker.html",
+      {}
+     ]
+    ],
+    "FileSystemSyncAccessHandle-close.https.tentative.worker.js": [
+     "870eeb6e5fce47426bc6861f45d494f17c6ca8c8",
+     [
+      "fs/FileSystemSyncAccessHandle-close.https.tentative.worker.html",
+      {}
+     ]
+    ],
+    "FileSystemSyncAccessHandle-flush.https.tentative.worker.js": [
+     "0893747ed9798d83da9a51f8a2b28fe4780d796a",
+     [
+      "fs/FileSystemSyncAccessHandle-flush.https.tentative.worker.html",
+      {}
+     ]
+    ],
+    "FileSystemSyncAccessHandle-getSize.https.tentative.worker.js": [
+     "9a18b171b5d850953b5ecf10872b16c97a0aece1",
+     [
+      "fs/FileSystemSyncAccessHandle-getSize.https.tentative.worker.html",
+      {}
+     ]
+    ],
+    "FileSystemSyncAccessHandle-read-write.https.tentative.worker.js": [
+     "eb93c0681b26c42685e35a9faf9952876e3e0f12",
+     [
+      "fs/FileSystemSyncAccessHandle-read-write.https.tentative.worker.html",
+      {}
+     ]
+    ],
+    "FileSystemSyncAccessHandle-truncate.https.tentative.worker.js": [
+     "01ccbdb78e8102247acbbcf77596294f8f70e944",
+     [
+      "fs/FileSystemSyncAccessHandle-truncate.https.tentative.worker.html",
+      {}
+     ]
+    ],
+    "FileSystemWritableFileStream-piped.https.any.js": [
+     "eed6a561dc40e658b6b6c8d51766cdacc42a024c",
+     [
+      "fs/FileSystemWritableFileStream-piped.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "../streams/resources/recording-streams.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemWritableFileStream-piped.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "fs/FileSystemWritableFileStream-piped.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "../streams/resources/recording-streams.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemWritableFileStream-piped.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "FileSystemWritableFileStream-write.https.any.js": [
+     "7ef0ea0ef82626eae74f152b94f898859aca6832",
+     [
+      "fs/FileSystemWritableFileStream-write.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemWritableFileStream-write.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "fs/FileSystemWritableFileStream-write.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemWritableFileStream-write.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "FileSystemWritableFileStream.https.any.js": [
+     "16dbbe6a808a603c9b81482f733dcf09e84670ff",
+     [
+      "fs/FileSystemWritableFileStream.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemWritableFileStream.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "fs/FileSystemWritableFileStream.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemWritableFileStream.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "idlharness.https.any.js": [
      "508beccc365d211c2b9e42ec162ef8c805b41220",
      [
@@ -429005,6 +429092,13 @@
        ],
        "timeout": "long"
       }
+     ]
+    ],
+    "opaque-origin.https.window.js": [
+     "63b4170bcd29117a48bf8d8a7a90feee17f62ccd",
+     [
+      "fs/opaque-origin.https.window.html",
+      {}
      ]
     ]
    },
@@ -483027,6 +483121,13 @@
        {}
       ]
      ],
+     "mediasource-worker-duration.html": [
+      "2cb834a54ef6d6a36d5d1197e0e6eda50b1b98af",
+      [
+       null,
+       {}
+      ]
+     ],
      "mediasource-worker-objecturl.html": [
       "5553b5c631e8919f1159c605b4ae3fadbe11ff7c",
       [
@@ -495216,6 +495317,15 @@
       {
        "testdriver": true,
        "timeout": "long"
+      }
+     ]
+    ],
+    "pointerevent_touch-action-modified_touch.html": [
+     "c53264d103da3c7a19664a9053184c43f93930bd",
+     [
+      null,
+      {
+       "testdriver": true
       }
      ]
     ],

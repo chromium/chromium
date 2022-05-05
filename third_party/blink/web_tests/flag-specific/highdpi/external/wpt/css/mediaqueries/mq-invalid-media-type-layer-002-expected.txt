@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL 'layer' used as media types is a syntax error assert_equals: expected "not all" but got "not layer"
+Harness: the test ran to completion.
+
