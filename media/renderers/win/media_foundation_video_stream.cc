@@ -26,6 +26,10 @@ namespace {
 // This is supported by Media Foundation.
 DEFINE_MEDIATYPE_GUID(MFVideoFormat_THEORA, FCC('theo'))
 
+// MF_MT_MIN_MASTERING_LUMINANCE values are in 1/10000th of a nit (0.0001 nit).
+// https://docs.microsoft.com/en-us/windows/win32/api/dxgi1_5/ns-dxgi1_5-dxgi_hdr_metadata_hdr10
+constexpr int kMasteringDispLuminanceScale = 10000;
+
 GUID VideoCodecToMFSubtype(VideoCodec codec, VideoCodecProfile profile) {
   switch (codec) {
     case VideoCodec::kH264:
@@ -160,6 +164,22 @@ MFVideoTransferFunction VideoTransferFunctionToMF(
   return MFVideoTransFunc_Unknown;
 }
 
+MT_CUSTOM_VIDEO_PRIMARIES CustomVideoPrimaryToMF(
+    gfx::ColorVolumeMetadata color_volume_metadata) {
+  // MT_CUSTOM_VIDEO_PRIMARIES stores value in float no scaling factor needed
+  // https://docs.microsoft.com/en-us/windows/win32/api/mfapi/ns-mfapi-mt_custom_video_primaries
+  MT_CUSTOM_VIDEO_PRIMARIES primaries = {0};
+  primaries.fRx = color_volume_metadata.primary_r.x();
+  primaries.fRy = color_volume_metadata.primary_r.y();
+  primaries.fGx = color_volume_metadata.primary_g.x();
+  primaries.fGy = color_volume_metadata.primary_g.y();
+  primaries.fBx = color_volume_metadata.primary_b.x();
+  primaries.fBy = color_volume_metadata.primary_b.y();
+  primaries.fWx = color_volume_metadata.white_point.x();
+  primaries.fWy = color_volume_metadata.white_point.y();
+  return primaries;
+}
+
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 // To MediaFoundation, DolbyVision renderer profile strings are always 7
 // characters. For HEVC based profiles, it's in the format "dvhe.xx". For AVC
@@ -261,6 +281,31 @@ HRESULT GetVideoType(const VideoDecoderConfig& config,
   RETURN_IF_FAILED(
       media_type->SetUINT32(MF_MT_VIDEO_PRIMARIES, mf_video_primary));
 
+  UINT32 video_nominal_range =
+      config.color_space_info().range == gfx::ColorSpace::RangeID::FULL
+          ? MFNominalRange_0_255
+          : MFNominalRange_16_235;
+  RETURN_IF_FAILED(
+      media_type->SetUINT32(MF_MT_VIDEO_NOMINAL_RANGE, video_nominal_range));
+
+  if (config.hdr_metadata().has_value()) {
+    UINT32 max_display_mastering_luminance =
+        config.hdr_metadata()->color_volume_metadata.luminance_max;
+    RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_MAX_MASTERING_LUMINANCE,
+                                           max_display_mastering_luminance));
+
+    UINT32 min_display_mastering_luminance =
+        config.hdr_metadata()->color_volume_metadata.luminance_min *
+        kMasteringDispLuminanceScale;
+    RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_MIN_MASTERING_LUMINANCE,
+                                           min_display_mastering_luminance));
+
+    MT_CUSTOM_VIDEO_PRIMARIES primaries =
+        CustomVideoPrimaryToMF(config.hdr_metadata()->color_volume_metadata);
+    RETURN_IF_FAILED(media_type->SetBlob(MF_MT_CUSTOM_VIDEO_PRIMARIES,
+                                         reinterpret_cast<UINT8*>(&primaries),
+                                         sizeof(MT_CUSTOM_VIDEO_PRIMARIES)));
+  }
   base::UmaHistogramEnumeration(
       "Media.MediaFoundation.VideoColorSpace.TransferID",
       config.color_space_info().transfer);
