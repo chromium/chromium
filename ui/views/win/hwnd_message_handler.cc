@@ -694,14 +694,6 @@ void HWNDMessageHandler::Show(ui::WindowShowState show_state,
         break;
     }
 
-    // In headless mode the platform window is always hidden, so instead of
-    // showing it just maintain a local flag to track the expected headless
-    // window visibility state.
-    if (delegate_->IsHeadless()) {
-      headless_window_visibility_state_ = true;
-      return;
-    }
-
     ShowWindow(hwnd(), native_show_state);
     // When launched from certain programs like bash and Windows Live
     // Messenger, show_state is set to SW_HIDE, so we need to correct that
@@ -728,14 +720,6 @@ void HWNDMessageHandler::Show(ui::WindowShowState show_state,
 }
 
 void HWNDMessageHandler::Hide() {
-  // In headless mode the platform window is always hidden, so instead of
-  // hiding it just maintain a local flag to track the expected headless
-  // window visibility state.
-  if (delegate_->IsHeadless()) {
-    headless_window_visibility_state_ = false;
-    return;
-  }
-
   if (IsWindow(hwnd())) {
     // NOTE: Be careful not to activate any windows here (for example, calling
     // ShowWindow(SW_HIDE) will automatically activate another window).  This
@@ -788,11 +772,7 @@ void HWNDMessageHandler::SetAlwaysOnTop(bool on_top) {
 }
 
 bool HWNDMessageHandler::IsVisible() const {
-  // In headless mode the platform window is always hidden, so instead of
-  // returning the actual window visibility state return the expected visibility
-  // state maintained by Show/Hide() calls.
-  return delegate_->IsHeadless() ? headless_window_visibility_state_
-                                 : !!::IsWindowVisible(hwnd());
+  return !!::IsWindowVisible(hwnd());
 }
 
 bool HWNDMessageHandler::IsActive() const {
@@ -927,10 +907,6 @@ void HWNDMessageHandler::SetWindowIcons(const gfx::ImageSkia& window_icon,
 }
 
 void HWNDMessageHandler::SetFullscreen(bool fullscreen) {
-  // Avoid setting fullscreen mode when in headless mode.
-  if (delegate_->IsHeadless())
-    return;
-
   background_fullscreen_hack_ = false;
   auto ref = msg_handler_weak_factory_.GetWeakPtr();
   fullscreen_handler()->SetFullscreen(fullscreen);

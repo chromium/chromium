@@ -78,9 +78,6 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   // Returns true if the delegate represents a modal window.
   virtual bool IsModal() const = 0;
 
-  // Returns true if the delegate represents a headless window.
-  virtual bool IsHeadless() const = 0;
-
   // Returns the show state that should be used for the application's first
   // window.
   virtual int GetInitialShowState() const = 0;

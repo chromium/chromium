@@ -802,10 +802,6 @@ bool DesktopWindowTreeHostWin::IsModal() const {
   return native_widget_delegate_->IsModal();
 }
 
-bool DesktopWindowTreeHostWin::IsHeadless() const {
-  return desktop_native_widget_aura_->IsHeadlessMode();
-}
-
 int DesktopWindowTreeHostWin::GetInitialShowState() const {
   return CanActivate() ? SW_SHOWNORMAL : SW_SHOWNOACTIVATE;
 }

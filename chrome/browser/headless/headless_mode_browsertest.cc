@@ -39,10 +39,6 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 namespace {
 const int kErrorResultCode = -1;
 }  // namespace
@@ -70,23 +66,10 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, OzonePlatformHeadless) {
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
-// A class to expose a protected method for testing purposes.
-class DesktopWindowTreeHostWinWrapper : public views::DesktopWindowTreeHostWin {
- public:
-  HWND GetHWND() const { return DesktopWindowTreeHostWin::GetHWND(); }
-};
-
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, BrowserDesktopWindowHidden) {
-  // On Windows, the Native Headless Chrome browser window exists and is
-  // visible, while the underlying platform window is hidden.
-  EXPECT_TRUE(browser()->window()->IsVisible());
-
-  DesktopWindowTreeHostWinWrapper* desktop_window_tree_host =
-      static_cast<DesktopWindowTreeHostWinWrapper*>(
-          browser()->window()->GetNativeWindow()->GetHost());
-  DWORD native_window_style =
-      ::GetWindowLong(desktop_window_tree_host->GetHWND(), GWL_STYLE);
-  EXPECT_EQ(native_window_style & WS_VISIBLE, 0u);
+  // On Windows the Native Headless Chrome browser window exists but is
+  // hidden.
+  EXPECT_FALSE(browser()->window()->IsVisible());
 }
 #endif  // BUILDFLAG(IS_WIN)
 
