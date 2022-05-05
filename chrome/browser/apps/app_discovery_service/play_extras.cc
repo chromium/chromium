@@ -37,6 +37,10 @@ std::unique_ptr<SourceExtras> PlayExtras::Clone() {
   return std::make_unique<PlayExtras>(*this);
 }
 
+PlayExtras* PlayExtras::AsPlayExtras() {
+  return this;
+}
+
 const std::string& PlayExtras::GetPackageName() const {
   return package_name_;
 }
@@ -75,10 +79,6 @@ bool PlayExtras::GetContainsAds() const {
 
 bool PlayExtras::GetOptimizedForChrome() const {
   return optimized_for_chrome_;
-}
-
-PlayExtras* PlayExtras::AsPlayExtras() {
-  return this;
 }
 
 }  // namespace apps

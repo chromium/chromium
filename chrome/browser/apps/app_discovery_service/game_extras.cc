@@ -30,6 +30,10 @@ std::unique_ptr<SourceExtras> GameExtras::Clone() {
   return std::make_unique<GameExtras>(*this);
 }
 
+GameExtras* GameExtras::AsGameExtras() {
+  return this;
+}
+
 const absl::optional<std::vector<std::u16string>>& GameExtras::GetPlatforms()
     const {
   return platforms_;
@@ -49,10 +53,6 @@ const base::FilePath& GameExtras::GetRelativeIconPath() const {
 
 const GURL& GameExtras::GetDeeplinkUrl() const {
   return deeplink_url_;
-}
-
-GameExtras* GameExtras::AsGameExtras() {
-  return this;
 }
 
 }  // namespace apps

@@ -26,7 +26,9 @@ class GameExtras : public SourceExtras {
   GameExtras& operator=(const GameExtras&) = delete;
   ~GameExtras() override;
 
+  // Result::SourceExtras:
   std::unique_ptr<SourceExtras> Clone() override;
+  GameExtras* AsGameExtras() override;
 
   // Platform(s) that host the game.
   const absl::optional<std::vector<std::u16string>>& GetPlatforms() const;
@@ -36,9 +38,6 @@ class GameExtras : public SourceExtras {
   const std::u16string& GetPublisher() const;
   const base::FilePath& GetRelativeIconPath() const;
   const GURL& GetDeeplinkUrl() const;
-
-  // Result::SourceExtras:
-  GameExtras* AsGameExtras() override;
 
  private:
   absl::optional<std::vector<std::u16string>> platforms_;
