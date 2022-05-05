@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_ICON_VIEW_H_
-#define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_ICON_VIEW_H_
+#ifndef ASH_WM_DESKS_TEMPLATES_SAVED_DESK_ICON_VIEW_H_
+#define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_ICON_VIEW_H_
 
 #include <string>
 
@@ -27,14 +27,14 @@ class RoundedImageView;
 // A class for loading and displaying the icon of apps/urls used in a
 // SavedDeskItemView. Depending on the `count_` and `icon_identifier_`,
 // this View may have only an icon, only a count label, or both.
-class DesksTemplatesIconView : public views::View {
+class SavedDeskIconView : public views::View {
  public:
-  METADATA_HEADER(DesksTemplatesIconView);
+  METADATA_HEADER(SavedDeskIconView);
 
-  DesksTemplatesIconView();
-  DesksTemplatesIconView(const DesksTemplatesIconView&) = delete;
-  DesksTemplatesIconView& operator=(const DesksTemplatesIconView&) = delete;
-  ~DesksTemplatesIconView() override;
+  SavedDeskIconView();
+  SavedDeskIconView(const SavedDeskIconView&) = delete;
+  SavedDeskIconView& operator=(const SavedDeskIconView&) = delete;
+  ~SavedDeskIconView() override;
 
   // The size of the background the icon sits inside of.
   static constexpr int kIconViewSize = 28;
@@ -62,7 +62,7 @@ class DesksTemplatesIconView : public views::View {
   void Layout() override;
 
  private:
-  friend class DesksTemplatesIconViewTestApi;
+  friend class SavedDeskIconViewTestApi;
 
   // Callbacks for when the app icon/favicon has been fetched. If the result is
   // non-null/empty then we'll set this's image to the result. Otherwise, we'll
@@ -78,7 +78,7 @@ class DesksTemplatesIconView : public views::View {
   std::string icon_identifier_;
 
   // The number of instances of this icon's respective app/url stored in this's
-  // respective DeskTemplate.
+  // respective SavedDesk.
   int count_ = 0;
 
   // Owned by the views hierarchy.
@@ -88,14 +88,14 @@ class DesksTemplatesIconView : public views::View {
   // Used for favicon loading tasks.
   base::CancelableTaskTracker cancelable_task_tracker_;
 
-  base::WeakPtrFactory<DesksTemplatesIconView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SavedDeskIconView> weak_ptr_factory_{this};
 };
 
-BEGIN_VIEW_BUILDER(/* no export */, DesksTemplatesIconView, views::View)
+BEGIN_VIEW_BUILDER(/* no export */, SavedDeskIconView, views::View)
 END_VIEW_BUILDER
 
 }  // namespace ash
 
-DEFINE_VIEW_BUILDER(/* no export */, ash::DesksTemplatesIconView)
+DEFINE_VIEW_BUILDER(/* no export */, ash::SavedDeskIconView)
 
-#endif  // ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_ICON_VIEW_H_
+#endif  // ASH_WM_DESKS_TEMPLATES_SAVED_DESK_ICON_VIEW_H_

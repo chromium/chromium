@@ -9,8 +9,8 @@
 
 #include "ash/public/cpp/desk_template.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
-#include "ash/wm/desks/templates/desks_templates_icon_container.h"
-#include "ash/wm/desks/templates/desks_templates_icon_view.h"
+#include "ash/wm/desks/templates/saved_desk_icon_container.h"
+#include "ash/wm/desks/templates/saved_desk_icon_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "base/callback_helpers.h"
@@ -85,23 +85,22 @@ class SavedDeskItemViewTestApi {
   }
 
   // Icons views are stored in the view hierarchy so this convenience function
-  // returns them as a vector of DesksTemplatesIconView*.
-  std::vector<DesksTemplatesIconView*> GetIconViews() const;
+  // returns them as a vector of SavedDeskIconView*.
+  std::vector<SavedDeskIconView*> GetIconViews() const;
 
  private:
   const SavedDeskItemView* item_view_;
 };
 
-// Wrapper for `DesksTemplatesIconView` that exposes internal state to test
+// Wrapper for `SavedDeskIconView` that exposes internal state to test
 // functions.
-class DesksTemplatesIconViewTestApi {
+class SavedDeskIconViewTestApi {
  public:
-  explicit DesksTemplatesIconViewTestApi(
-      const DesksTemplatesIconView* desks_templates_icon_view);
-  DesksTemplatesIconViewTestApi(const DesksTemplatesIconViewTestApi&) = delete;
-  DesksTemplatesIconViewTestApi& operator=(
-      const DesksTemplatesIconViewTestApi&) = delete;
-  ~DesksTemplatesIconViewTestApi();
+  explicit SavedDeskIconViewTestApi(
+      const SavedDeskIconView* desks_templates_icon_view);
+  SavedDeskIconViewTestApi(const SavedDeskIconViewTestApi&) = delete;
+  SavedDeskIconViewTestApi& operator=(const SavedDeskIconViewTestApi&) = delete;
+  ~SavedDeskIconViewTestApi();
 
   const views::Label* count_label() const {
     return desks_templates_icon_view_->count_label_;
@@ -111,12 +110,12 @@ class DesksTemplatesIconViewTestApi {
     return desks_templates_icon_view_->icon_view_;
   }
 
-  const DesksTemplatesIconView* desks_templates_icon_view() const {
+  const SavedDeskIconView* desks_templates_icon_view() const {
     return desks_templates_icon_view_;
   }
 
  private:
-  const DesksTemplatesIconView* desks_templates_icon_view_;
+  const SavedDeskIconView* desks_templates_icon_view_;
 };
 
 // Return the `grid_item_index`th `SavedDeskItemView` from the first

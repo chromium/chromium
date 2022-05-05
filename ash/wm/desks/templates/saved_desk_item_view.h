@@ -24,8 +24,8 @@ class Textfield;
 namespace ash {
 
 class CloseButton;
-class DesksTemplatesIconContainer;
 class PillButton;
+class SavedDeskIconContainer;
 class SavedDeskNameView;
 class ViewShadow;
 
@@ -47,7 +47,7 @@ class ViewShadow;
 // contains the name of the saved desk.
 // `time_view_`: middle-left: Label: A label that lets the user know when the
 // saved desk was created.
-// `icon_container_view_`: bottom-center: DesksTemplatesIconContainer: A
+// `icon_container_view_`: bottom-center: SavedDeskIconContainer: A
 // container that houses a couple icons/text that give an indication of which
 // apps are part of the saved desk.
 // `managed_status_indicator`: top-right: ImageView: A icon that is visible if
@@ -163,7 +163,7 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   // When template is managed by admin, `time_view_` will display management
   // description instead.
   views::Label* time_view_ = nullptr;
-  DesksTemplatesIconContainer* icon_container_view_ = nullptr;
+  SavedDeskIconContainer* icon_container_view_ = nullptr;
   CloseButton* delete_button_ = nullptr;
   PillButton* launch_button_ = nullptr;
   // Container used for holding all the views that appear on hover.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/templates/desks_templates_icon_container.h"
+#include "ash/wm/desks/templates/saved_desk_icon_container.h"
 
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
@@ -10,7 +10,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/wm/desks/templates/desks_templates_icon_view.h"
+#include "ash/wm/desks/templates/saved_desk_icon_view.h"
 #include "base/containers/contains.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
@@ -35,13 +35,13 @@ bool IsBrowserAppId(const std::string& app_id) {
 
 // Given a map of unique icon identifiers to icon info, returns a vector of the
 // same key, value pair ordered by icons' activation index.
-std::vector<DesksTemplatesIconContainer::IconIdentifierAndIconInfo>
+std::vector<SavedDeskIconContainer::IconIdentifierAndIconInfo>
 SortIconIdentifierToIconInfo(
-    std::map<std::string, DesksTemplatesIconContainer::IconInfo>&
+    std::map<std::string, SavedDeskIconContainer::IconInfo>&
         icon_identifier_to_icon_info) {
   // Create a vector using `sorted_icon_identifier_to_icon_info` that contains
   // pairs of identifiers and counts. This will initially be unsorted.
-  std::vector<DesksTemplatesIconContainer::IconIdentifierAndIconInfo>
+  std::vector<SavedDeskIconContainer::IconIdentifierAndIconInfo>
       sorted_icon_identifier_to_icon_info;
 
   for (const auto& entry : icon_identifier_to_icon_info) {
@@ -56,9 +56,8 @@ SortIconIdentifierToIconInfo(
       sorted_icon_identifier_to_icon_info.begin(),
       sorted_icon_identifier_to_icon_info.end(),
       [&icon_identifier_to_icon_info](
-          const DesksTemplatesIconContainer::IconIdentifierAndIconInfo& data_1,
-          const DesksTemplatesIconContainer::IconIdentifierAndIconInfo&
-              data_2) {
+          const SavedDeskIconContainer::IconIdentifierAndIconInfo& data_1,
+          const SavedDeskIconContainer::IconIdentifierAndIconInfo& data_2) {
         return icon_identifier_to_icon_info.at(data_1.first).activation_index <
                icon_identifier_to_icon_info.at(data_2.first).activation_index;
       });
@@ -74,7 +73,7 @@ void InsertIconIdentifierToIconInfo(
     const std::u16string& app_title,
     const std::string& identifier,
     int activation_index,
-    std::map<std::string, DesksTemplatesIconContainer::IconInfo>*
+    std::map<std::string, SavedDeskIconContainer::IconInfo>*
         out_icon_identifier_to_icon_info) {
   // A single app/site can have multiple windows so count their occurrences and
   // use the smallest activation index for sorting purposes.
@@ -95,7 +94,7 @@ void InsertIconIdentifierToIconInfo(
 void InsertIconIdentifierToIconInfoFromLaunchList(
     const std::string& app_id,
     const app_restore::RestoreData::LaunchList& launch_list,
-    std::map<std::string, DesksTemplatesIconContainer::IconInfo>*
+    std::map<std::string, SavedDeskIconContainer::IconInfo>*
         out_icon_identifier_to_icon_info) {
   // We want to group active tabs and apps ahead of inactive tabs so offsets
   // inactive tabs activation index by `kInactiveTabOffset`. In almost every use
@@ -152,16 +151,16 @@ void InsertIconIdentifierToIconInfoFromLaunchList(
 
 }  // namespace
 
-DesksTemplatesIconContainer::DesksTemplatesIconContainer() {
-  views::Builder<DesksTemplatesIconContainer>(this)
+SavedDeskIconContainer::SavedDeskIconContainer() {
+  views::Builder<SavedDeskIconContainer>(this)
       .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
       .SetBetweenChildSpacing(kIconSpacingDp)
       .BuildChildren();
 }
 
-DesksTemplatesIconContainer::~DesksTemplatesIconContainer() = default;
+SavedDeskIconContainer::~SavedDeskIconContainer() = default;
 
-void DesksTemplatesIconContainer::PopulateIconContainerFromTemplate(
+void SavedDeskIconContainer::PopulateIconContainerFromTemplate(
     DeskTemplate* desk_template) {
   const app_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
@@ -182,7 +181,7 @@ void DesksTemplatesIconContainer::PopulateIconContainerFromTemplate(
       SortIconIdentifierToIconInfo(icon_identifier_to_icon_info));
 }
 
-void DesksTemplatesIconContainer::PopulateIconContainerFromWindows(
+void SavedDeskIconContainer::PopulateIconContainerFromWindows(
     const std::vector<aura::Window*>& windows) {
   DCHECK(!windows.empty());
 
@@ -217,7 +216,7 @@ void DesksTemplatesIconContainer::PopulateIconContainerFromWindows(
       SortIconIdentifierToIconInfo(icon_identifier_to_icon_info));
 }
 
-void DesksTemplatesIconContainer::Layout() {
+void SavedDeskIconContainer::Layout() {
   views::BoxLayoutView::Layout();
 
   auto icon_views = children();
@@ -228,8 +227,7 @@ void DesksTemplatesIconContainer::Layout() {
   // Use the preferred size of this since this will provide the width as if
   // every view in `icon_views` is shown.
   int used_horizontal_space = GetPreferredSize().width();
-  auto* overflow_icon_view =
-      static_cast<DesksTemplatesIconView*>(icon_views.back());
+  auto* overflow_icon_view = static_cast<SavedDeskIconView*>(icon_views.back());
   if (used_horizontal_space > available_horizontal_space) {
     // Reverse iterate through `icon_views` starting with the first
     // non-overflow icon view (i.e. the second-last element). Hide as many icons
@@ -241,8 +239,7 @@ void DesksTemplatesIconContainer::Layout() {
         used_horizontal_space -=
             ((*it)->GetPreferredSize().width() + kIconSpacingDp);
         (*it)->SetVisible(false);
-        num_hidden_icons +=
-            static_cast<DesksTemplatesIconView*>((*it))->count();
+        num_hidden_icons += static_cast<SavedDeskIconView*>((*it))->count();
       }
 
       if (used_horizontal_space <= available_horizontal_space)
@@ -258,7 +255,7 @@ void DesksTemplatesIconContainer::Layout() {
   }
 }
 
-void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
+void SavedDeskIconContainer::CreateIconViewsFromIconIdentifiers(
     const std::vector<IconIdentifierAndIconInfo>&
         icon_identifier_to_icon_info) {
   DCHECK(children().empty());
@@ -274,18 +271,18 @@ void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
     // Don't create new icons once we have reached the max, or if the app is
     // unavailable (uninstalled or unsupported). Count the amount of skipped
     // apps so we know what to display on the overflow. In addition, dialog
-    // popups may show incognito window icons. Saved templates will not have
+    // popups may show incognito window icons. Saved desks will not have
     // incognito window icon identifiers and will not count them here.
     if (children().size() < kMaxIcons &&
         (icon_identifier == DeskTemplate::kIncognitoWindowIdentifier ||
          delegate->IsAppAvailable(icon_info.app_id))) {
-      DesksTemplatesIconView* icon_view =
-          AddChildView(views::Builder<DesksTemplatesIconView>()
+      SavedDeskIconView* icon_view =
+          AddChildView(views::Builder<SavedDeskIconView>()
                            .SetBackground(views::CreateRoundedRectBackground(
                                AshColorProvider::Get()->GetControlsLayerColor(
                                    AshColorProvider::ControlsLayerType::
                                        kControlBackgroundColorInactive),
-                               DesksTemplatesIconView::kIconViewSize / 2))
+                               SavedDeskIconView::kIconViewSize / 2))
                            .Build());
       icon_view->SetIconIdentifierAndCount(icon_identifier, icon_info.app_id,
                                            icon_info.app_title, icon_info.count,
@@ -299,15 +296,15 @@ void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
   // apps so we should *not* show plus.
   const bool show_plus = !children().empty();
 
-  // Always add a `DesksTemplatesIconView` overflow counter in case the width
+  // Always add a `SavedDeskIconView` overflow counter in case the width
   // of the view changes. It will be hidden if not needed.
-  DesksTemplatesIconView* overflow_icon_view =
-      AddChildView(views::Builder<DesksTemplatesIconView>()
+  SavedDeskIconView* overflow_icon_view =
+      AddChildView(views::Builder<SavedDeskIconView>()
                        .SetBackground(views::CreateRoundedRectBackground(
                            AshColorProvider::Get()->GetControlsLayerColor(
                                AshColorProvider::ControlsLayerType::
                                    kControlBackgroundColorInactive),
-                           DesksTemplatesIconView::kIconViewSize / 2))
+                           SavedDeskIconView::kIconViewSize / 2))
                        .Build());
 
   // Set `icon_identifier`, `app_id` and `app_title` to be empty strings for
@@ -318,7 +315,7 @@ void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
       /*count=*/num_hidden_icons, show_plus);
 }
 
-BEGIN_METADATA(DesksTemplatesIconContainer, views::BoxLayoutView)
+BEGIN_METADATA(SavedDeskIconContainer, views::BoxLayoutView)
 END_METADATA
 
 }  // namespace ash

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_ICON_CONTAINER_H_
-#define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_ICON_CONTAINER_H_
+#ifndef ASH_WM_DESKS_TEMPLATES_SAVED_DESK_ICON_CONTAINER_H_
+#define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_ICON_CONTAINER_H_
 
 #include <string>
 #include <utility>
@@ -19,11 +19,11 @@ class ColorProvider;
 namespace ash {
 
 class DeskTemplate;
-class DesksTemplatesIconView;
+class SavedDeskIconView;
 
 // This class for determines which app icons/favicons to show for a desk
-// template and creates the according DesksTemplatesIconView's for them.
-// The last DesksTemplatesIconView in the layout is used for storing the
+// template and creates the according SavedDeskIconView's for them.
+// The last SavedDeskIconView in the layout is used for storing the
 // overflow count of icons. Not every view in the container is visible.
 //   _______________________________________________________________________
 //   |  _________  _________   _________________   _________   _________   |
@@ -36,9 +36,9 @@ class DesksTemplatesIconView;
 // once with a +N label attached, up to +99. If there are too many icons to be
 // displayed within the given width, we draw as many and a label at the end that
 // says +N, up to +99.
-class DesksTemplatesIconContainer : public views::BoxLayoutView {
+class SavedDeskIconContainer : public views::BoxLayoutView {
  public:
-  METADATA_HEADER(DesksTemplatesIconContainer);
+  METADATA_HEADER(SavedDeskIconContainer);
 
   // A struct for storing the various information used to determine which app
   // icons/favicons to display.
@@ -51,11 +51,10 @@ class DesksTemplatesIconContainer : public views::BoxLayoutView {
 
   using IconIdentifierAndIconInfo = std::pair<std::string, IconInfo>;
 
-  DesksTemplatesIconContainer();
-  DesksTemplatesIconContainer(const DesksTemplatesIconContainer&) = delete;
-  DesksTemplatesIconContainer& operator=(const DesksTemplatesIconContainer&) =
-      delete;
-  ~DesksTemplatesIconContainer() override;
+  SavedDeskIconContainer();
+  SavedDeskIconContainer(const SavedDeskIconContainer&) = delete;
+  SavedDeskIconContainer& operator=(const SavedDeskIconContainer&) = delete;
+  ~SavedDeskIconContainer() override;
 
   // The maximum number of icons that can be displayed.
   static constexpr int kMaxIcons = 4;
@@ -64,12 +63,12 @@ class DesksTemplatesIconContainer : public views::BoxLayoutView {
     return incognito_window_color_provider_;
   }
 
-  // Given a desk template, determine which icons to show in this and create
-  // the according DesksTemplatesIconView's.
+  // Given a saved desk, determine which icons to show in this and create
+  // the according SavedDeskIconView's.
   void PopulateIconContainerFromTemplate(DeskTemplate* desk_template);
 
   // Given `windows`, determine which icons to show in this and create the
-  // according DesksTemplatesIconView's.
+  // according SavedDeskIconView's.
   void PopulateIconContainerFromWindows(
       const std::vector<aura::Window*>& windows);
 
@@ -89,7 +88,7 @@ class DesksTemplatesIconContainer : public views::BoxLayoutView {
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
-                   DesksTemplatesIconContainer,
+                   SavedDeskIconContainer,
                    views::BoxLayoutView)
 VIEW_BUILDER_METHOD(PopulateIconContainerFromTemplate, DeskTemplate*)
 VIEW_BUILDER_METHOD(PopulateIconContainerFromWindows,
@@ -98,6 +97,6 @@ END_VIEW_BUILDER
 
 }  // namespace ash
 
-DEFINE_VIEW_BUILDER(/* no export */, ash::DesksTemplatesIconContainer)
+DEFINE_VIEW_BUILDER(/* no export */, ash::SavedDeskIconContainer)
 
-#endif  // ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_ICON_CONTAINER_H_
+#endif  // ASH_WM_DESKS_TEMPLATES_SAVED_DESK_ICON_CONTAINER_H_

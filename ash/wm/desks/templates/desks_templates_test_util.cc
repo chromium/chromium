@@ -102,23 +102,21 @@ SavedDeskItemViewTestApi::SavedDeskItemViewTestApi(
 
 SavedDeskItemViewTestApi::~SavedDeskItemViewTestApi() = default;
 
-std::vector<DesksTemplatesIconView*> SavedDeskItemViewTestApi::GetIconViews()
-    const {
-  std::vector<DesksTemplatesIconView*> casted_icon_views;
+std::vector<SavedDeskIconView*> SavedDeskItemViewTestApi::GetIconViews() const {
+  std::vector<SavedDeskIconView*> casted_icon_views;
   for (auto* icon_view : item_view_->icon_container_view_->children()) {
-    casted_icon_views.push_back(
-        static_cast<DesksTemplatesIconView*>(icon_view));
+    casted_icon_views.push_back(static_cast<SavedDeskIconView*>(icon_view));
   }
   return casted_icon_views;
 }
 
-DesksTemplatesIconViewTestApi::DesksTemplatesIconViewTestApi(
-    const DesksTemplatesIconView* desks_templates_icon_view)
+SavedDeskIconViewTestApi::SavedDeskIconViewTestApi(
+    const SavedDeskIconView* desks_templates_icon_view)
     : desks_templates_icon_view_(desks_templates_icon_view) {
   DCHECK(desks_templates_icon_view_);
 }
 
-DesksTemplatesIconViewTestApi::~DesksTemplatesIconViewTestApi() = default;
+SavedDeskIconViewTestApi::~SavedDeskIconViewTestApi() = default;
 
 SavedDeskItemView* GetItemViewFromTemplatesGrid(int grid_item_index) {
   const auto* overview_grid = GetPrimaryOverviewGrid();

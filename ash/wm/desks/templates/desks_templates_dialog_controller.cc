@@ -10,8 +10,8 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
-#include "ash/wm/desks/templates/desks_templates_icon_container.h"
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
+#include "ash/wm/desks/templates/saved_desk_icon_container.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -215,7 +215,7 @@ void DesksTemplatesDialogController::ShowUnsupportedAppsDialog(
                               kTextColorPrimary))
                   .SetText(l10n_util::GetStringUTF16(
                       IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_HEADER)),
-              views::Builder<DesksTemplatesIconContainer>()
+              views::Builder<SavedDeskIconContainer>()
                   .PopulateIconContainerFromWindows(unsupported_apps))
           .Build();
   CreateDialogWidget(std::move(dialog), root_window);

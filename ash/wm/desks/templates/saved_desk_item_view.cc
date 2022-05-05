@@ -21,9 +21,9 @@
 #include "ash/wm/desks/desks_textfield.h"
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
-#include "ash/wm/desks/templates/desks_templates_icon_container.h"
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
+#include "ash/wm/desks/templates/saved_desk_icon_container.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -191,7 +191,7 @@ SavedDeskItemView::SavedDeskItemView(const DeskTemplate* desk_template)
                       views::FlexSpecification(
                           views::MinimumFlexSizeRule::kScaleToZero,
                           views::MaximumFlexSizeRule::kUnbounded)),
-                  views::Builder<DesksTemplatesIconContainer>()
+                  views::Builder<SavedDeskIconContainer>()
                       .CopyAddressTo(&icon_container_view_)
                       .PopulateIconContainerFromTemplate(desk_template_.get())
                       .SetVisible(true)),

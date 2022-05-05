@@ -26,13 +26,13 @@
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
-#include "ash/wm/desks/templates/desks_templates_icon_container.h"
-#include "ash/wm/desks/templates/desks_templates_icon_view.h"
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_test_util.h"
 #include "ash/wm/desks/templates/save_desk_template_button.h"
 #include "ash/wm/desks/templates/save_desk_template_button_container.h"
+#include "ash/wm/desks/templates/saved_desk_icon_container.h"
+#include "ash/wm/desks/templates/saved_desk_icon_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/zero_state_button.h"
@@ -1098,11 +1098,11 @@ TEST_F(DesksTemplatesTest, IconsOrder) {
   // Get the icon views.
   SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
-  const std::vector<DesksTemplatesIconView*>& icon_views =
+  const std::vector<SavedDeskIconView*>& icon_views =
       SavedDeskItemViewTestApi(item_view).GetIconViews();
 
   // The items previews should be ordered by activation index. Exclude the
-  // final DesksTemplatesIconView since it will be the overflow counter.
+  // final SavedDeskIconView since it will be the overflow counter.
   EXPECT_EQ(5u, icon_views.size());
   for (size_t i = 0; i < icon_views.size() - 2; ++i) {
     int current_id;
@@ -1161,7 +1161,7 @@ TEST_F(DesksTemplatesTest, NumIconsForBrowser) {
   // There is also the overflow icon, which is created but hidden.
   SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
-  const std::vector<DesksTemplatesIconView*>& icon_views =
+  const std::vector<SavedDeskIconView*>& icon_views =
       SavedDeskItemViewTestApi(item_view).GetIconViews();
   EXPECT_EQ(5u, icon_views.size());
 }
@@ -1213,7 +1213,7 @@ TEST_F(DesksTemplatesTest, IconsOrderWithInactiveTabs) {
   // Get the icon views.
   SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
-  const std::vector<DesksTemplatesIconView*>& icon_views =
+  const std::vector<SavedDeskIconView*>& icon_views =
       SavedDeskItemViewTestApi(item_view).GetIconViews();
 
   // Check the icon views. The first two items should be the active tabs,
@@ -1259,7 +1259,7 @@ TEST_F(DesksTemplatesTest, IdenticalURL) {
   // Get the icon views.
   SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
-  const std::vector<DesksTemplatesIconView*>& icon_views =
+  const std::vector<SavedDeskIconView*>& icon_views =
       SavedDeskItemViewTestApi(item_view).GetIconViews();
 
   // There should be one icon view for both the urls, and another icon view for
@@ -1276,13 +1276,13 @@ TEST_F(DesksTemplatesTest, IdenticalURL) {
 }
 
 // Tests that the overflow count view is visible, in bounds, displays the right
-// count when there is more than `DesksTemplatesIconContainer::kMaxIcons` icons.
+// count when there is more than `SavedDeskIconContainer::kMaxIcons` icons.
 TEST_F(DesksTemplatesTest, OverflowIconView) {
   // Create a `DeskTemplate` using which has 1 app more than the max and each
   // app has 1 window.
   const int kNumOverflowApps = 1;
   std::vector<int> window_info(
-      kNumOverflowApps + DesksTemplatesIconContainer::kMaxIcons, 1);
+      kNumOverflowApps + SavedDeskIconContainer::kMaxIcons, 1);
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateSource::kUser, DeskTemplateType::kTemplate,
            CreateRestoreData(window_info));
@@ -1292,17 +1292,17 @@ TEST_F(DesksTemplatesTest, OverflowIconView) {
   // Get the icon views.
   SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
-  const std::vector<DesksTemplatesIconView*>& icon_views =
+  const std::vector<SavedDeskIconView*>& icon_views =
       SavedDeskItemViewTestApi(item_view).GetIconViews();
 
   // There should only be the max number of icons plus the overflow icon.
-  EXPECT_EQ(DesksTemplatesIconContainer::kMaxIcons + 1,
+  EXPECT_EQ(SavedDeskIconContainer::kMaxIcons + 1,
             static_cast<int>(icon_views.size()));
 
   // The overflow counter should have no identifier and its count should be
   // non-zero. It should also be visible and within the bounds of the host
   // SavedDeskItemView.
-  DesksTemplatesIconViewTestApi overflow_icon_view{icon_views.back()};
+  SavedDeskIconViewTestApi overflow_icon_view{icon_views.back()};
   EXPECT_FALSE(overflow_icon_view.icon_view());
   EXPECT_TRUE(overflow_icon_view.count_label());
   EXPECT_EQ(u"+1", overflow_icon_view.count_label()->GetText());
@@ -1312,17 +1312,17 @@ TEST_F(DesksTemplatesTest, OverflowIconView) {
 }
 
 // Tests that when there isn't enough space to display
-// `DesksTemplatesIconContainer::kMaxIcons` icons and the overflow
+// `SavedDeskIconContainer::kMaxIcons` icons and the overflow
 // icon view, the overflow icon view is visible and its count incremented by the
 // number of icons that had to be hidden.
 TEST_F(DesksTemplatesTest, OverflowIconViewIncrementsForHiddenIcons) {
   // Create a `DeskTemplate` using which has 3 apps more than
-  // `DesksTemplatesIconContainer::kMaxIcons` and each app has 2 windows.
+  // `SavedDeskIconContainer::kMaxIcons` and each app has 2 windows.
   // With each app having 2 windows, only 2 app icon views and the overflow view
   // will be able to fit in the container, the rest will overflow.
   const int kNumOverflowApps = 3;
   std::vector<int> window_info(
-      kNumOverflowApps + DesksTemplatesIconContainer::kMaxIcons, 2);
+      kNumOverflowApps + SavedDeskIconContainer::kMaxIcons, 2);
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateSource::kUser, DeskTemplateType::kTemplate,
            CreateRestoreData(window_info));
@@ -1332,13 +1332,13 @@ TEST_F(DesksTemplatesTest, OverflowIconViewIncrementsForHiddenIcons) {
   // Get the icon views.
   SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
-  const std::vector<DesksTemplatesIconView*>& icon_views =
+  const std::vector<SavedDeskIconView*>& icon_views =
       SavedDeskItemViewTestApi(item_view).GetIconViews();
 
-  // Even though there are more than `DesksTemplatesIconContainer::kMaxIcons`,
-  // there should still be `DesksTemplatesIconContainer::kMaxIcons`+ 1
-  // DesksTemplatesIconView's created.
-  EXPECT_EQ(icon_views.size(), DesksTemplatesIconContainer::kMaxIcons + 1u);
+  // Even though there are more than `SavedDeskIconContainer::kMaxIcons`,
+  // there should still be `SavedDeskIconContainer::kMaxIcons`+ 1
+  // SavedDeskIconView's created.
+  EXPECT_EQ(icon_views.size(), SavedDeskIconContainer::kMaxIcons + 1u);
 
   // Count the number of hidden icon views and also check that there's a
   // contiguous block of visible icon views, followed by a contiguous block of
@@ -1365,7 +1365,7 @@ TEST_F(DesksTemplatesTest, OverflowIconViewIncrementsForHiddenIcons) {
   // non-zero, accounting for the number of windows that are not represented by
   // app icons. It should also be visible and within the bounds of the host
   // SavedDeskItemView.
-  DesksTemplatesIconViewTestApi overflow_icon_view{icon_views.back()};
+  SavedDeskIconViewTestApi overflow_icon_view{icon_views.back()};
   EXPECT_FALSE(overflow_icon_view.icon_view());
   EXPECT_TRUE(overflow_icon_view.count_label());
 
@@ -1401,7 +1401,7 @@ TEST_F(DesksTemplatesTest, IconViewMultipleWindows) {
   // Get the icon views.
   SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
-  const std::vector<DesksTemplatesIconView*>& icon_views =
+  const std::vector<SavedDeskIconView*>& icon_views =
       SavedDeskItemViewTestApi(item_view).GetIconViews();
 
   // There should be 1 * 2 icon views for the 2 apps with 1 window, 2 * 2 icon
@@ -1409,26 +1409,26 @@ TEST_F(DesksTemplatesTest, IconViewMultipleWindows) {
   EXPECT_EQ(5u, icon_views.size());
 
   // Verify each of the apps' count labels are correct.
-  DesksTemplatesIconViewTestApi icon_view_1(icon_views[0]);
+  SavedDeskIconViewTestApi icon_view_1(icon_views[0]);
   EXPECT_TRUE(icon_view_1.icon_view());
   EXPECT_FALSE(icon_view_1.count_label());
 
-  DesksTemplatesIconViewTestApi icon_view_2(icon_views[1]);
+  SavedDeskIconViewTestApi icon_view_2(icon_views[1]);
   EXPECT_TRUE(icon_view_2.icon_view());
   EXPECT_FALSE(icon_view_2.count_label());
 
-  DesksTemplatesIconViewTestApi icon_view_3(icon_views[2]);
+  SavedDeskIconViewTestApi icon_view_3(icon_views[2]);
   EXPECT_TRUE(icon_view_3.icon_view());
   EXPECT_TRUE(icon_view_3.count_label());
   EXPECT_EQ(u"+1", icon_view_3.count_label()->GetText());
 
-  DesksTemplatesIconViewTestApi icon_view_4(icon_views[3]);
+  SavedDeskIconViewTestApi icon_view_4(icon_views[3]);
   EXPECT_TRUE(icon_view_4.icon_view());
   EXPECT_TRUE(icon_view_4.count_label());
   EXPECT_EQ(u"+1", icon_view_4.count_label()->GetText());
 
   // The overflow counter should display the number of excess windows.
-  DesksTemplatesIconViewTestApi overflow_icon_view{icon_views.back()};
+  SavedDeskIconViewTestApi overflow_icon_view{icon_views.back()};
   EXPECT_FALSE(overflow_icon_view.icon_view());
   EXPECT_TRUE(overflow_icon_view.count_label());
   EXPECT_EQ(u"+5", overflow_icon_view.count_label()->GetText());
@@ -1448,7 +1448,7 @@ TEST_F(DesksTemplatesTest, IconViewMoreThan99Windows) {
   // Get the icon views.
   SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
-  const std::vector<DesksTemplatesIconView*>& icon_views =
+  const std::vector<SavedDeskIconView*>& icon_views =
       SavedDeskItemViewTestApi(item_view).GetIconViews();
 
   // There should only be 1 icon view for the app and 1 icon view for the
@@ -1456,7 +1456,7 @@ TEST_F(DesksTemplatesTest, IconViewMoreThan99Windows) {
   EXPECT_EQ(2u, icon_views.size());
 
   // The app's icon view should have a "+99" label.
-  DesksTemplatesIconViewTestApi icon_view(icon_views[0]);
+  SavedDeskIconViewTestApi icon_view(icon_views[0]);
   EXPECT_TRUE(icon_view.icon_view());
   EXPECT_TRUE(icon_view.count_label());
   EXPECT_EQ(u"+99", icon_view.count_label()->GetText());
@@ -1465,12 +1465,12 @@ TEST_F(DesksTemplatesTest, IconViewMoreThan99Windows) {
   EXPECT_FALSE(icon_views.back()->GetVisible());
 }
 
-// Tests that when there are less than `DesksTemplatesIconContainer::kMaxIcons`
+// Tests that when there are less than `SavedDeskIconContainer::kMaxIcons`
 // the overflow icon is not visible.
 TEST_F(DesksTemplatesTest, OverflowIconViewHiddenOnNoOverflow) {
   // Create a `DeskTemplate` using which has
-  // `DesksTemplatesIconContainer::kMaxIcons` apps and each app has 1 window.
-  std::vector<int> window_info(DesksTemplatesIconContainer::kMaxIcons, 1);
+  // `SavedDeskIconContainer::kMaxIcons` apps and each app has 1 window.
+  std::vector<int> window_info(SavedDeskIconContainer::kMaxIcons, 1);
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateSource::kUser, DeskTemplateType::kTemplate,
            CreateRestoreData(window_info));
@@ -1480,7 +1480,7 @@ TEST_F(DesksTemplatesTest, OverflowIconViewHiddenOnNoOverflow) {
   // Get the icon views.
   SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
-  const std::vector<DesksTemplatesIconView*>& icon_views =
+  const std::vector<SavedDeskIconView*>& icon_views =
       SavedDeskItemViewTestApi(item_view).GetIconViews();
 
   // All the icon views should be visible and the overflow icon view should be
@@ -1511,14 +1511,14 @@ TEST_F(DesksTemplatesTest, OverflowUnavailableLessThan5Icons) {
   // Get the icon views.
   SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
-  const std::vector<DesksTemplatesIconView*>& icon_views =
+  const std::vector<SavedDeskIconView*>& icon_views =
       SavedDeskItemViewTestApi(item_view).GetIconViews();
 
   // The 2 available app icons should be visible, and the overflow icon should
   // contain the hidden (0) + unavailable (2) app counts.
   EXPECT_EQ(3u, icon_views.size());
 
-  DesksTemplatesIconViewTestApi overflow_icon_view{icon_views.back()};
+  SavedDeskIconViewTestApi overflow_icon_view{icon_views.back()};
   EXPECT_FALSE(overflow_icon_view.icon_view());
   EXPECT_TRUE(overflow_icon_view.count_label());
   EXPECT_EQ(u"+2", overflow_icon_view.count_label()->GetText());
@@ -1545,14 +1545,14 @@ TEST_F(DesksTemplatesTest, OverflowUnavailableMoreThan5Icons) {
   // Get the icon views.
   SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
-  const std::vector<DesksTemplatesIconView*>& icon_views =
+  const std::vector<SavedDeskIconView*>& icon_views =
       SavedDeskItemViewTestApi(item_view).GetIconViews();
 
   // The 4 available app icons should be visible, and the overflow icon should
   // contain the hidden (2) + unavailable (2) app counts.
   EXPECT_EQ(5u, icon_views.size());
 
-  DesksTemplatesIconViewTestApi overflow_icon_view{icon_views.back()};
+  SavedDeskIconViewTestApi overflow_icon_view{icon_views.back()};
   EXPECT_FALSE(overflow_icon_view.icon_view());
   EXPECT_TRUE(overflow_icon_view.count_label());
   EXPECT_EQ(u"+4", overflow_icon_view.count_label()->GetText());
@@ -1578,14 +1578,14 @@ TEST_F(DesksTemplatesTest, OverflowUnavailableAllUnavailableIcons) {
   // Get the icon views.
   SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
-  const std::vector<DesksTemplatesIconView*>& icon_views =
+  const std::vector<SavedDeskIconView*>& icon_views =
       SavedDeskItemViewTestApi(item_view).GetIconViews();
 
   // The only added icon view is the overflow icon, and it should have a "10"
   // label without the plus sign.
   EXPECT_EQ(1u, icon_views.size());
 
-  DesksTemplatesIconViewTestApi overflow_icon_view{icon_views.back()};
+  SavedDeskIconViewTestApi overflow_icon_view{icon_views.back()};
   EXPECT_FALSE(overflow_icon_view.icon_view());
   EXPECT_TRUE(overflow_icon_view.count_label());
   EXPECT_EQ(u"10", overflow_icon_view.count_label()->GetText());

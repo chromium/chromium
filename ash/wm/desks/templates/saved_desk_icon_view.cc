@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/templates/desks_templates_icon_view.h"
+#include "ash/wm/desks/templates/saved_desk_icon_view.h"
 
 #include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/wm/desks/templates/desks_templates_icon_container.h"
+#include "ash/wm/desks/templates/saved_desk_icon_container.h"
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -66,11 +66,11 @@ gfx::ImageSkia CreateResizedImageToIconSize(const gfx::ImageSkia& icon,
 
 }  // namespace
 
-DesksTemplatesIconView::DesksTemplatesIconView() = default;
+SavedDeskIconView::SavedDeskIconView() = default;
 
-DesksTemplatesIconView::~DesksTemplatesIconView() = default;
+SavedDeskIconView::~SavedDeskIconView() = default;
 
-void DesksTemplatesIconView::SetIconIdentifierAndCount(
+void SavedDeskIconView::SetIconIdentifierAndCount(
     const std::string& icon_identifier,
     const std::string& app_id,
     const std::string& app_title,
@@ -120,7 +120,7 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
   auto* delegate = Shell::Get()->desks_templates_delegate();
   absl::optional<gfx::ImageSkia> chrome_icon =
       delegate->MaybeRetrieveIconForSpecialIdentifier(
-          icon_identifier_, static_cast<DesksTemplatesIconContainer*>(parent())
+          icon_identifier_, static_cast<SavedDeskIconContainer*>(parent())
                                 ->incognito_window_color_provider());
 
   icon_view_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kImage);
@@ -141,27 +141,25 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
   // app id. If `icon_identifier_` is not a valid url then it's an app id.
   GURL potential_url{icon_identifier_};
   if (!potential_url.is_valid()) {
-    delegate->GetIconForAppId(
-        icon_identifier_, kAppIdImageSize,
-        base::BindOnce(&DesksTemplatesIconView::OnIconLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
+    delegate->GetIconForAppId(icon_identifier_, kAppIdImageSize,
+                              base::BindOnce(&SavedDeskIconView::OnIconLoaded,
+                                             weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
-  delegate->GetFaviconForUrl(
-      icon_identifier_,
-      base::BindOnce(&DesksTemplatesIconView::OnIconLoaded,
-                     weak_ptr_factory_.GetWeakPtr()),
-      &cancelable_task_tracker_);
+  delegate->GetFaviconForUrl(icon_identifier_,
+                             base::BindOnce(&SavedDeskIconView::OnIconLoaded,
+                                            weak_ptr_factory_.GetWeakPtr()),
+                             &cancelable_task_tracker_);
 }
 
-void DesksTemplatesIconView::UpdateCount(int count) {
+void SavedDeskIconView::UpdateCount(int count) {
   count_ = count;
   DCHECK(count_label_);
   count_label_->SetText(GetCountString(count_, /*show_plus=*/true));
 }
 
-gfx::Size DesksTemplatesIconView::CalculatePreferredSize() const {
+gfx::Size SavedDeskIconView::CalculatePreferredSize() const {
   int width = (icon_view_ ? kIconViewSize : 0);
   if (count_ > 1 && count_label_) {
     width +=
@@ -170,7 +168,7 @@ gfx::Size DesksTemplatesIconView::CalculatePreferredSize() const {
   return gfx::Size(width, kIconViewSize);
 }
 
-void DesksTemplatesIconView::Layout() {
+void SavedDeskIconView::Layout() {
   if (icon_view_) {
     gfx::Size icon_preferred_size = icon_view_->CalculatePreferredSize();
     icon_view_->SetBoundsRect(gfx::Rect(
@@ -185,7 +183,7 @@ void DesksTemplatesIconView::Layout() {
   }
 }
 
-void DesksTemplatesIconView::OnIconLoaded(const gfx::ImageSkia& icon) {
+void SavedDeskIconView::OnIconLoaded(const gfx::ImageSkia& icon) {
   if (!icon.isNull()) {
     icon_view_->SetImage(
         CreateResizedImageToIconSize(icon, /*is_default=*/false));
@@ -194,7 +192,7 @@ void DesksTemplatesIconView::OnIconLoaded(const gfx::ImageSkia& icon) {
   LoadDefaultIcon();
 }
 
-void DesksTemplatesIconView::LoadDefaultIcon() {
+void SavedDeskIconView::LoadDefaultIcon() {
   const ui::NativeTheme* native_theme =
       ui::NativeTheme::GetInstanceForNativeUi();
   // Use a higher resolution image as it will look better after resizing.
@@ -223,7 +221,7 @@ void DesksTemplatesIconView::LoadDefaultIcon() {
   }
 }
 
-BEGIN_METADATA(DesksTemplatesIconView, views::View)
+BEGIN_METADATA(SavedDeskIconView, views::View)
 END_METADATA
 
 }  // namespace ash
