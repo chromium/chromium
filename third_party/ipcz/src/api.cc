@@ -10,6 +10,7 @@
 #include "ipcz/ipcz.h"
 #include "ipcz/node.h"
 #include "ipcz/portal.h"
+#include "ipcz/router.h"
 #include "util/ref_counted.h"
 
 extern "C" {
@@ -183,7 +184,18 @@ IpczResult Trap(IpczHandle portal_handle,
                 const void* options,
                 IpczTrapConditionFlags* satisfied_condition_flags,
                 IpczPortalStatus* status) {
-  return IPCZ_RESULT_UNIMPLEMENTED;
+  ipcz::Portal* portal = ipcz::Portal::FromHandle(portal_handle);
+  if (!portal || !handler || !conditions ||
+      conditions->size < sizeof(*conditions)) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  if (status && status->size < sizeof(*status)) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  return portal->router()->Trap(*conditions, handler, context,
+                                satisfied_condition_flags, status);
 }
 
 IpczResult Box(IpczHandle node_handle,

@@ -212,6 +212,10 @@ ipcz_source_set("impl") {
     "ipcz/router_link.h",
     "ipcz/test_messages.cc",
     "ipcz/test_messages_generator.h",
+    "ipcz/trap_event_dispatcher.cc",
+    "ipcz/trap_event_dispatcher.h",
+    "ipcz/trap_set.cc",
+    "ipcz/trap_set.h",
   ]
   public_deps = [
     ":ipcz_header",
@@ -257,6 +261,7 @@ ipcz_source_set("ipcz_tests_sources") {
     "test/mock_driver.h",
     "test/test_base.cc",
     "test/test_base.h",
+    "trap_test.cc",
     "util/ref_counted_test.cc",
     "util/stack_trace_test.cc",
   ]

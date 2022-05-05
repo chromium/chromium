@@ -38,9 +38,6 @@ TEST_F(APITest, Unimplemented) {
             ipcz().EndGet(IPCZ_INVALID_HANDLE, 0, 0, IPCZ_NO_FLAGS, nullptr,
                           nullptr));
   EXPECT_EQ(IPCZ_RESULT_UNIMPLEMENTED,
-            ipcz().Trap(IPCZ_INVALID_HANDLE, nullptr, nullptr, 0, IPCZ_NO_FLAGS,
-                        nullptr, nullptr, nullptr));
-  EXPECT_EQ(IPCZ_RESULT_UNIMPLEMENTED,
             ipcz().Box(IPCZ_INVALID_HANDLE, IPCZ_INVALID_DRIVER_HANDLE,
                        IPCZ_NO_FLAGS, nullptr, nullptr));
   EXPECT_EQ(IPCZ_RESULT_UNIMPLEMENTED,
@@ -75,9 +72,7 @@ TEST_F(APITest, CreateNode) {
 }
 
 TEST_F(APITest, OpenPortalsInvalid) {
-  IpczHandle node;
-  ipcz().CreateNode(&kDefaultDriver, IPCZ_INVALID_DRIVER_HANDLE, IPCZ_NO_FLAGS,
-                    nullptr, &node);
+  IpczHandle node = CreateNode(kDefaultDriver);
 
   IpczHandle a, b;
 
@@ -94,29 +89,22 @@ TEST_F(APITest, OpenPortalsInvalid) {
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
             ipcz().OpenPortals(node, IPCZ_NO_FLAGS, nullptr, nullptr, nullptr));
 
-  ipcz().Close(node, IPCZ_NO_FLAGS, nullptr);
+  Close(node);
 }
 
 TEST_F(APITest, OpenPortals) {
-  IpczHandle node;
-  ipcz().CreateNode(&kDefaultDriver, IPCZ_INVALID_DRIVER_HANDLE, IPCZ_NO_FLAGS,
-                    nullptr, &node);
+  IpczHandle node = CreateNode(kDefaultDriver);
 
   IpczHandle a, b;
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().OpenPortals(node, IPCZ_NO_FLAGS, nullptr, &a, &b));
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(a, IPCZ_NO_FLAGS, nullptr));
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(b, IPCZ_NO_FLAGS, nullptr));
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(node, IPCZ_NO_FLAGS, nullptr));
+
+  CloseAll({a, b, node});
 }
 
 TEST_F(APITest, QueryPortalStatusInvalid) {
-  IpczHandle node;
-  ipcz().CreateNode(&kDefaultDriver, IPCZ_INVALID_DRIVER_HANDLE, IPCZ_NO_FLAGS,
-                    nullptr, &node);
-  IpczHandle a, b;
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().OpenPortals(node, IPCZ_NO_FLAGS, nullptr, &a, &b));
+  IpczHandle node = CreateNode(kDefaultDriver);
+  auto [a, b] = OpenPortals(node);
 
   // Null portal.
   IpczPortalStatus status = {.size = sizeof(status)};
@@ -137,18 +125,12 @@ TEST_F(APITest, QueryPortalStatusInvalid) {
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
             ipcz().QueryPortalStatus(a, IPCZ_NO_FLAGS, nullptr, &status));
 
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(a, IPCZ_NO_FLAGS, nullptr));
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(b, IPCZ_NO_FLAGS, nullptr));
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(node, IPCZ_NO_FLAGS, nullptr));
+  CloseAll({a, b, node});
 }
 
 TEST_F(APITest, QueryPortalStatus) {
-  IpczHandle node;
-  ipcz().CreateNode(&kDefaultDriver, IPCZ_INVALID_DRIVER_HANDLE, IPCZ_NO_FLAGS,
-                    nullptr, &node);
-  IpczHandle a, b;
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().OpenPortals(node, IPCZ_NO_FLAGS, nullptr, &a, &b));
+  IpczHandle node = CreateNode(kDefaultDriver);
+  auto [a, b] = OpenPortals(node);
 
   IpczPortalStatus status = {.size = sizeof(status)};
   EXPECT_EQ(IPCZ_RESULT_OK,
@@ -160,24 +142,19 @@ TEST_F(APITest, QueryPortalStatus) {
   EXPECT_EQ(0u, status.num_remote_parcels);
   EXPECT_EQ(0u, status.num_remote_bytes);
 
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(b, IPCZ_NO_FLAGS, nullptr));
+  Close(b);
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().QueryPortalStatus(a, IPCZ_NO_FLAGS, nullptr, &status));
   EXPECT_EQ(IPCZ_PORTAL_STATUS_PEER_CLOSED,
             status.flags & IPCZ_PORTAL_STATUS_PEER_CLOSED);
   EXPECT_EQ(IPCZ_PORTAL_STATUS_DEAD, status.flags & IPCZ_PORTAL_STATUS_DEAD);
 
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(a, IPCZ_NO_FLAGS, nullptr));
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(node, IPCZ_NO_FLAGS, nullptr));
+  CloseAll({a, node});
 }
 
 TEST_F(APITest, PutGet) {
-  IpczHandle node;
-  ipcz().CreateNode(&kDefaultDriver, IPCZ_INVALID_DRIVER_HANDLE, IPCZ_NO_FLAGS,
-                    nullptr, &node);
-  IpczHandle a, b;
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().OpenPortals(node, IPCZ_NO_FLAGS, nullptr, &a, &b));
+  const IpczHandle node = CreateNode(kDefaultDriver);
+  auto [a, b] = OpenPortals(node);
 
   // Get from an empty portal.
   char data[4];
@@ -198,9 +175,7 @@ TEST_F(APITest, PutGet) {
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().Put(a, nullptr, 0, nullptr, 0, IPCZ_NO_FLAGS, nullptr));
 
-  IpczHandle c, d;
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().OpenPortals(node, IPCZ_NO_FLAGS, nullptr, &c, &d));
+  auto [c, d] = OpenPortals(node);
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().Put(a, nullptr, 0, &d, 1, IPCZ_NO_FLAGS, nullptr));
   d = IPCZ_INVALID_HANDLE;
@@ -252,7 +227,7 @@ TEST_F(APITest, PutGet) {
   EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Get(b, IPCZ_NO_FLAGS, nullptr, nullptr,
                                        nullptr, &d, &num_handles));
   EXPECT_EQ(1u, num_handles);
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(d, IPCZ_NO_FLAGS, nullptr));
+  Close(d);
 
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().QueryPortalStatus(c, IPCZ_NO_FLAGS, nullptr, &status));
@@ -260,10 +235,47 @@ TEST_F(APITest, PutGet) {
             status.flags & IPCZ_PORTAL_STATUS_PEER_CLOSED);
   EXPECT_EQ(IPCZ_PORTAL_STATUS_DEAD, status.flags & IPCZ_PORTAL_STATUS_DEAD);
 
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(a, IPCZ_NO_FLAGS, nullptr));
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(b, IPCZ_NO_FLAGS, nullptr));
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(c, IPCZ_NO_FLAGS, nullptr));
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(node, IPCZ_NO_FLAGS, nullptr));
+  CloseAll({a, b, c, node});
+}
+
+TEST_F(APITest, TrapInvalid) {
+  const IpczHandle node = CreateNode(kDefaultDriver);
+  auto [a, b] = OpenPortals(node);
+
+  const auto handler = [](const IpczTrapEvent* event) {};
+
+  // Null conditions.
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().Trap(b, nullptr, handler, 0, IPCZ_NO_FLAGS, nullptr, nullptr,
+                        nullptr));
+
+  // Invalid conditions.
+  IpczTrapConditions conditions = {.size = sizeof(conditions) - 1};
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().Trap(b, &conditions, handler, 0, IPCZ_NO_FLAGS, nullptr,
+                        nullptr, nullptr));
+
+  // Null handler.
+  conditions = {.size = sizeof(conditions)};
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().Trap(b, &conditions, nullptr, 0, IPCZ_NO_FLAGS, nullptr,
+                        nullptr, nullptr));
+
+  // Invalid or non-portal handle.
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().Trap(IPCZ_INVALID_HANDLE, &conditions, handler, 0,
+                        IPCZ_NO_FLAGS, nullptr, nullptr, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().Trap(node, &conditions, handler, 0, IPCZ_NO_FLAGS, nullptr,
+                        nullptr, nullptr));
+
+  // Invalid non-null output status.
+  IpczPortalStatus status = {.size = sizeof(status) - 1};
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().Trap(b, &conditions, handler, 0, IPCZ_NO_FLAGS, nullptr,
+                        nullptr, &status));
+
+  CloseAll({a, b, node});
 }
 
 }  // namespace

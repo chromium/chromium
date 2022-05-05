@@ -5,12 +5,14 @@
 #ifndef IPCZ_SRC_IPCZ_ROUTER_H_
 #define IPCZ_SRC_IPCZ_ROUTER_H_
 
+#include <cstdint>
 #include <utility>
 
 #include "ipcz/ipcz.h"
 #include "ipcz/parcel_queue.h"
 #include "ipcz/router_link.h"
 #include "ipcz/sequence_number.h"
+#include "ipcz/trap_set.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 #include "util/ref_counted.h"
 
@@ -93,6 +95,15 @@ class Router : public RefCounted {
                                   IpczHandle* handles,
                                   size_t* num_handles);
 
+  // Attempts to install a new trap on this Router, to invoke `handler` as soon
+  // as one or more conditions in `conditions` is met. This method effectively
+  // implements the ipcz Trap() API. See its description in ipcz.h for details.
+  IpczResult Trap(const IpczTrapConditions& conditions,
+                  IpczTrapEventHandler handler,
+                  uint64_t context,
+                  IpczTrapConditionFlags* satisfied_condition_flags,
+                  IpczPortalStatus* status);
+
  private:
   ~Router() override;
 
@@ -104,6 +115,10 @@ class Router : public RefCounted {
   // The current computed portal status to be reflected by a portal controlling
   // this router, iff this is a terminal router.
   IpczPortalStatus status_ ABSL_GUARDED_BY(mutex_) = {sizeof(status_)};
+
+  // A set of traps installed via a controlling portal where applicable. These
+  // traps are notified about any interesting state changes within the router.
+  TrapSet traps_ ABSL_GUARDED_BY(mutex_);
 
   // Parcels received from the other end of the route. If this is a terminal
   // router, these may be retrieved by the application via a controlling portal.
