@@ -42,6 +42,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ColdStartBackgroundTime" units="minutes"
+    expires_after="2023-04-27">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    This event is recorded on every cold start app open. The value represents
+    how long the app was away from the foreground.
+  </summary>
+</histogram>
+
 <histogram name="IOS.CommittedNavigationHasContext" enum="Boolean"
     expires_after="2022-09-24">
   <owner>ajuma@chromium.org</owner>
@@ -1556,6 +1566,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     The method used to detect language in the web page during the
     CLD3-&gt;TFlite transition.
+  </summary>
+</histogram>
+
+<histogram name="IOS.WarmStartBackgroundTime" units="minutes"
+    expires_after="2023-04-27">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    This event is recorded on every warm start app open. The value represents
+    how long the app was away from the foreground.
   </summary>
 </histogram>
 

@@ -149,6 +149,7 @@ source_set("app_state_header") {
     "app_state.h",
     "app_state_agent.h",
     "app_state_observer.h",
+    "startup_information.h",
   ]
   public_deps = [
     "//ios/chrome/browser/ui/main:scene_state_observer",
@@ -183,7 +184,6 @@ source_set("application_delegate_internal") {
     "browser_launcher.h",
     "metrics_mediator.h",
     "metrics_mediator.mm",
-    "startup_information.h",
     "tab_switching.h",
     "url_opener.h",
     "url_opener.mm",

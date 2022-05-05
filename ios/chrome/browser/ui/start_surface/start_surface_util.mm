@@ -31,8 +31,7 @@ NSTimeInterval GetTimeSinceMostRecentTabWasOpenForSceneState(
   NSDate* timestamp = (NSDate*)[sceneState
       sessionObjectForKey:kStartSurfaceSceneEnterIntoBackgroundTime];
 
-  if (timestamp == nil || [[NSDate date] timeIntervalSinceDate:timestamp] <
-                              GetReturnToStartSurfaceDuration()) {
+  if (timestamp == nil) {
     return 0;
   }
   return [[NSDate date] timeIntervalSinceDate:timestamp];

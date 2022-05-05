@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/ui/start_surface/start_surface_scene_agent.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/startup_information.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/chrome_url_util.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -73,13 +76,14 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
   if (level >= SceneActivationLevelForegroundInactive &&
       self.previousActivationLevel < SceneActivationLevelForegroundInactive) {
     if (IsStartSurfaceSplashStartupEnabled()) {
-      [self handleShowStartSurfaceIfNecessary];
+      [self logBackgroundDurationMetricForActivationLevel:level];
+      [self showStartSurfaceIfNecessary];
     }
   }
   self.previousActivationLevel = level;
 }
 
-- (void)handleShowStartSurfaceIfNecessary {
+- (void)showStartSurfaceIfNecessary {
   if (!ShouldShowStartSurfaceForSceneState(self.sceneState)) {
     return;
   }
@@ -191,6 +195,25 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
     int newActiveIndex =
         webStateList->GetIndexOfWebState(lastNtpWebStatesWithNavHistory);
     webStateList->ActivateWebStateAt(newActiveIndex);
+  }
+}
+
+- (void)logBackgroundDurationMetricForActivationLevel:
+    (SceneActivationLevel)level {
+  NSInteger timeSinceBackgroundInMinutes =
+      GetTimeSinceMostRecentTabWasOpenForSceneState(self.sceneState) / 60;
+  BOOL isColdStart = (level > SceneActivationLevelBackground &&
+                      self.sceneState.appState.startupInformation.isColdStart);
+  if (isColdStart) {
+    base::UmaHistogramCustomTimes("IOS.ColdStartBackgroundTime",
+                                  base::Minutes(timeSinceBackgroundInMinutes),
+                                  base::Seconds(0),
+                                  base::Seconds(12 * 60 /* 12 hours */), 24);
+  } else {
+    base::UmaHistogramCustomTimes("IOS.WarmStartBackgroundTime",
+                                  base::Minutes(timeSinceBackgroundInMinutes),
+                                  base::Seconds(0),
+                                  base::Seconds(12 * 60 /* 12 hours */), 24);
   }
 }
 

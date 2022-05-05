@@ -7,6 +7,10 @@
 
 #import "ios/chrome/browser/ui/main/scene_state.h"
 
+// Returns the time since the most recent tab was opened.
+NSTimeInterval GetTimeSinceMostRecentTabWasOpenForSceneState(
+    SceneState* sceneState);
+
 // Checks whether the Start Surface should be shown for the given scene state.
 bool ShouldShowStartSurfaceForSceneState(SceneState* sceneState);
 
