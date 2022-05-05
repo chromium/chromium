@@ -5262,6 +5262,8 @@ static_library("browser") {
       "lacros/account_manager/profile_account_manager_factory.h",
       "lacros/account_manager/signin_helper_lacros.cc",
       "lacros/account_manager/signin_helper_lacros.h",
+      "lacros/app_mode/chrome_kiosk_launch_controller_lacros.cc",
+      "lacros/app_mode/chrome_kiosk_launch_controller_lacros.h",
       "lacros/app_mode/kiosk_session_service_lacros.cc",
       "lacros/app_mode/kiosk_session_service_lacros.h",
       "lacros/arc/arc_icon_cache.cc",

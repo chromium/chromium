@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/lacros/app_mode/chrome_kiosk_launch_controller_lacros.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/arc/arc_icon_cache.h"
 #include "chrome/browser/lacros/automation_manager_lacros.h"
@@ -203,4 +204,10 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
       std::make_unique<quick_answers::QuickAnswersClient>(
           g_browser_process->shared_url_loader_factory(),
           QuickAnswersController::Get()->GetQuickAnswersDelegate()));
+
+  if (chromeos::LacrosService::Get()->init_params()->session_type ==
+      crosapi::mojom::SessionType::kAppKioskSession) {
+    chrome_kiosk_launch_controller_ =
+        std::make_unique<ChromeKioskLaunchControllerLacros>();
+  }
 }

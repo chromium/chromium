@@ -55,6 +55,8 @@ source_set("crosapi") {
     "browser_version_service_ash.h",
     "cert_database_ash.cc",
     "cert_database_ash.h",
+    "chrome_app_kiosk_service_ash.cc",
+    "chrome_app_kiosk_service_ash.h",
     "chrome_app_window_tracker_ash.cc",
     "chrome_app_window_tracker_ash.h",
     "clipboard_ash.cc",

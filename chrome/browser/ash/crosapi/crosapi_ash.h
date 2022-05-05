@@ -32,6 +32,7 @@ class AutomationAsh;
 class BrowserServiceHostAsh;
 class BrowserVersionServiceAsh;
 class CertDatabaseAsh;
+class ChromeAppKioskServiceAsh;
 class ChromeAppWindowTrackerAsh;
 class ClipboardAsh;
 class ClipboardHistoryAsh;
@@ -171,6 +172,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::KeystoreService> receiver) override;
   void BindKioskSessionService(
       mojo::PendingReceiver<mojom::KioskSessionService> receiver) override;
+  void BindChromeAppKioskService(
+      mojo::PendingReceiver<mojom::ChromeAppKioskService> receiver) override;
   void BindLocalPrinter(
       mojo::PendingReceiver<mojom::LocalPrinter> receiver) override;
   void BindLogin(mojo::PendingReceiver<mojom::Login> receiver) override;
@@ -278,6 +281,10 @@ class CrosapiAsh : public mojom::Crosapi {
     return kiosk_session_service_ash_.get();
   }
 
+  ChromeAppKioskServiceAsh* chrome_app_kiosk_service() {
+    return chrome_app_kiosk_service_ash_.get();
+  }
+
   SearchProviderAsh* search_provider_ash() {
     return search_provider_ash_.get();
   }
@@ -357,6 +364,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ImageWriterAsh> image_writer_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;
+  std::unique_ptr<ChromeAppKioskServiceAsh> chrome_app_kiosk_service_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<LoginAsh> login_ash_;
   std::unique_ptr<LoginScreenStorageAsh> login_screen_storage_ash_;

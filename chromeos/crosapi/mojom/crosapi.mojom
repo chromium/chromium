@@ -14,6 +14,7 @@ import "chromeos/crosapi/mojom/automation.mojom";
 import "chromeos/crosapi/mojom/browser_app_instance_registry.mojom";
 import "chromeos/crosapi/mojom/browser_version.mojom";
 import "chromeos/crosapi/mojom/cert_database.mojom";
+import "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/clipboard.mojom";
 import "chromeos/crosapi/mojom/clipboard_history.mojom";
 import "chromeos/crosapi/mojom/content_protection.mojom";
@@ -103,8 +104,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 73
-// Next method id: 76
+// Next version: 74
+// Next method id: 77
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -478,6 +479,11 @@ interface Crosapi {
   // Added in M96.
   [MinVersion=49] BindKioskSessionService@53(
     pending_receiver<KioskSessionService> receiver);
+
+  // Binds the chrome app kiosk service. This service is used to install and
+  // launch the chrome app inside lacros.
+  [MinVersion=73] BindChromeAppKioskService@76(
+    pending_receiver<ChromeAppKioskService> receiver);
 
   // Binds the web page info factory interface which allows ash to request web
   // page info from Lacros.
