@@ -110,8 +110,8 @@ void FakeDebugDaemonClient::GetNetworkInterfaces(
 }
 
 void FakeDebugDaemonClient::GetPerfOutput(
-    base::TimeDelta duration,
-    const std::vector<std::string>& perf_args,
+    const std::vector<std::string>& quipper_args,
+    bool disable_cpu_idle,
     int file_descriptor,
     DBusMethodCallback<uint64_t> error_callback) {}
 

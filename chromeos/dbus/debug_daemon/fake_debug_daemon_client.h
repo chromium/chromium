@@ -55,8 +55,8 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   void SetKstaledRatio(uint8_t val, KstaledRatioCallback callback) override;
   void GetNetworkStatus(DBusMethodCallback<std::string> callback) override;
   void GetNetworkInterfaces(DBusMethodCallback<std::string> callback) override;
-  void GetPerfOutput(base::TimeDelta duration,
-                     const std::vector<std::string>& perf_args,
+  void GetPerfOutput(const std::vector<std::string>& quipper_args,
+                     bool disable_cpu_idle,
                      int file_descriptor,
                      DBusMethodCallback<uint64_t> callback) override;
   void StopPerf(uint64_t session_id, VoidDBusMethodCallback callback) override;

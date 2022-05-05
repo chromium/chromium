@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "chrome/browser/metrics/perf/metric_collector.h"
 #include "chrome/browser/metrics/perf/perf_output.h"
 #include "chrome/browser/metrics/perf/random_selector.h"
@@ -47,8 +48,8 @@ class PerfCollector : public internal::MetricCollector {
  protected:
   // For testing to mock PerfOutputCall.
   virtual std::unique_ptr<PerfOutputCall> CreatePerfOutputCall(
-      base::TimeDelta duration,
-      const std::vector<std::string>& perf_args,
+      const std::vector<std::string>& quipper_args,
+      bool disable_cpu_idle,
       PerfOutputCall::DoneCallback callback);
 
   void OnPerfOutputComplete(
@@ -144,6 +145,15 @@ class PerfCollector : public internal::MetricCollector {
   SampledProfile::TriggerEvent current_trigger_ =
       SampledProfile::UNKNOWN_TRIGGER_EVENT;
 
+  // Enumeration representing event types that need additional treatment
+  // during or after the collection.
+  enum class EventType {
+    kOther,
+    kCycles,
+    kETM,
+  };
+  static EventType CommandEventType(const std::vector<std::string>& args);
+
  private:
   // Change the values in |collection_params_| and the commands in
   // |command_selector| for any keys that are present in |params|.
@@ -171,8 +181,9 @@ namespace internal {
 
 // Return the default set of perf commands and their odds of selection given
 // the identity of the CPU in |cpuid|.
-std::vector<RandomSelector::WeightAndValue> GetDefaultCommandsForCpu(
-    const CPUIdentity& cpuid);
+std::vector<RandomSelector::WeightAndValue> GetDefaultCommandsForCpuModel(
+    const CPUIdentity& cpuid,
+    const std::string& model);
 
 // For the "PerfCommand::"-prefixed keys in |params|, return the cpu specifier
 // that is the narrowest match for the CPU identified by |cpuid|.
