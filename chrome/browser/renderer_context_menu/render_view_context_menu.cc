@@ -1051,10 +1051,13 @@ void RenderViewContextMenu::InitMenu() {
     AppendCurrentExtensionItems();
   }
 
-  // Accessibility label items are appended to all menus when a screen reader
-  // is enabled. It can be difficult to open a specific context menu with a
-  // screen reader, so this is a UX approved solution.
-  bool added_accessibility_labels_items = AppendAccessibilityLabelsItems();
+  // Accessibility label items are appended to all menus (with the exception of
+  // within the dev tools) when a screen reader is enabled. It can be difficult
+  // to open a specific context menu with a screen reader, so this is a UX
+  // approved solution.
+  bool added_accessibility_labels_items = false;
+  if (!IsDevToolsURL(params_.page_url))
+    added_accessibility_labels_items = AppendAccessibilityLabelsItems();
 
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_DEVELOPER)) {
