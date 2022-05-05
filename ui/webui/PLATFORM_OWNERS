@@ -6,3 +6,7 @@ johntlee@chromium.org
 khorimoto@chromium.org  # For Chrome OS changes.
 michaelpg@chromium.org  # For Chrome OS changes.
 rbpotter@chromium.org
+
+# Only for backend infra changes e.g. //content/browser/webui,
+# //ui/webui/, //chrome/browser/ui/webui/, etc.
+ortuno@chromium.org
