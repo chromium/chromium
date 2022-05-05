@@ -112,7 +112,7 @@ AuthFactorType SmartLockAuthFactorModel::GetType() const {
 int SmartLockAuthFactorModel::GetLabelId() const {
   if (auth_result_.has_value()) {
     if (auth_result_.value()) {
-      return IDS_SMART_LOCK_LABEL_PHONE_LOCKED;
+      return IDS_AUTH_FACTOR_LABEL_UNLOCKED;
     }
 
     // Once the Smart Lock error message has timed out, prompt the
