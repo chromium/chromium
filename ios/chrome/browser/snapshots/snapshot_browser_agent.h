@@ -14,15 +14,14 @@
 @class SnapshotCache;
 
 // Associates a SnapshotCache to a Browser.
-class SnapshotBrowserAgent : BrowserObserver,
+class SnapshotBrowserAgent : public BrowserObserver,
                              public WebStateListObserver,
                              public BrowserUserData<SnapshotBrowserAgent> {
  public:
-  SnapshotBrowserAgent();
-  ~SnapshotBrowserAgent() override;
-
   SnapshotBrowserAgent(const SnapshotBrowserAgent&) = delete;
   SnapshotBrowserAgent& operator=(const SnapshotBrowserAgent&) = delete;
+
+  ~SnapshotBrowserAgent() override;
 
   // Set a session identification string that will be used to locate the
   // snapshots directory. Setting this more than once on the same agent is
