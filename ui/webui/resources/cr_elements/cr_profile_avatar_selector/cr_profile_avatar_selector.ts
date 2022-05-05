@@ -14,9 +14,11 @@ import '//resources/polymer/v3_0/paper-styles/color.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './cr_profile_avatar_selector_grid.js';
 
-import {DomRepeatEvent, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getImage} from '../../js/icon.js';
+
+import {getTemplate} from './cr_profile_avatar_selector.html.js';
 
 export type AvatarIcon = {
   url: string,
@@ -32,7 +34,7 @@ export class CrProfileAvatarSelectorElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

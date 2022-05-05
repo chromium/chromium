@@ -9,11 +9,12 @@ import '../../js/event_tracker.m.js';
 import '../hidden_style_css.m.js';
 import './cr_toast.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assert} from '../../js/assert_ts.js';
 
 import {CrToastElement} from './cr_toast.js';
+import {getTemplate} from './cr_toast_manager.html.js';
 
 let toastManagerInstance: CrToastManagerElement|null = null;
 
@@ -41,7 +42,7 @@ export class CrToastManagerElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -10,8 +10,9 @@ import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './cr_toolbar_search_field.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './cr_toolbar.html.js';
 import {CrToolbarSearchFieldElement} from './cr_toolbar_search_field.js';
 
 export interface CrToolbarElement {
@@ -26,7 +27,7 @@ export class CrToolbarElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

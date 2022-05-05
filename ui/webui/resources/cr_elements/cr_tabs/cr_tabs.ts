@@ -22,7 +22,9 @@
 import '../hidden_style_css.m.js';
 import '../shared_vars_css.m.js';
 
-import {DomRepeatEvent, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './cr_tabs.html.js';
 
 export class CrTabsElement extends PolymerElement {
   static get is() {
@@ -30,7 +32,7 @@ export class CrTabsElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

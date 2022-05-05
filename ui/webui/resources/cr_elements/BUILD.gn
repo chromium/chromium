@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -79,14 +80,34 @@ if (include_polymer) {
     in_folder = "."
     out_folder = preprocess_folder
     in_files = [
+      "cr_a11y_announcer/cr_a11y_announcer.ts",
+      "cr_action_menu/cr_action_menu.ts",
       "cr_auto_img/cr_auto_img.ts",
       "cr_container_shadow_mixin.ts",
+      "cr_drawer/cr_drawer.ts",
+      "cr_grid/cr_grid.ts",
+      "cr_link_row/cr_link_row.ts",
       "cr_menu_selector/cr_menu_selector.ts",
+      "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.ts",
+      "cr_profile_avatar_selector/cr_profile_avatar_selector.ts",
       "cr_search_field/cr_search_field_mixin.ts",
+      "cr_search_field/cr_search_field.ts",
+      "cr_slider/cr_slider.ts",
       "cr_splitter/cr_splitter.ts",
+      "cr_tabs/cr_tabs.ts",
+      "cr_toast/cr_toast_manager.ts",
+      "cr_toast/cr_toast.ts",
+      "cr_toolbar/cr_toolbar_search_field.ts",
+      "cr_toolbar/cr_toolbar_selection_overlay.ts",
+      "cr_toolbar/cr_toolbar.ts",
+      "cr_view_manager/cr_view_manager.ts",
       "find_shortcut_mixin.ts",
       "mouse_hoverable_mixin.ts",
     ]
+
+    if (is_chromeos) {
+      in_files += [ "cr_searchable_drop_down/cr_searchable_drop_down.ts" ]
+    }
   }
 }
 
@@ -214,34 +235,35 @@ preprocess_if_expr("preprocess_generated_ts") {
   out_folder = preprocess_folder
   in_files = [ "cr_tab_box/cr_tab_box.ts" ]
   if (include_polymer) {
+    deps += [ ":html_wrapper_files" ]
     in_files += [
-      "cr_a11y_announcer/cr_a11y_announcer.ts",
-      "cr_action_menu/cr_action_menu.ts",
-      "cr_drawer/cr_drawer.ts",
-      "cr_grid/cr_grid.ts",
-      "cr_link_row/cr_link_row.ts",
+      "cr_a11y_announcer/cr_a11y_announcer.html.ts",
+      "cr_action_menu/cr_action_menu.html.ts",
+      "cr_drawer/cr_drawer.html.ts",
+      "cr_grid/cr_grid.html.ts",
+      "cr_link_row/cr_link_row.html.ts",
       "cr_nav_menu_item_style.ts",
-      "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.ts",
-      "cr_profile_avatar_selector/cr_profile_avatar_selector.ts",
-      "cr_search_field/cr_search_field.ts",
-      "cr_slider/cr_slider.ts",
-      "cr_tabs/cr_tabs.ts",
-      "cr_toast/cr_toast_manager.ts",
-      "cr_toast/cr_toast.ts",
-      "cr_toolbar/cr_toolbar_search_field.ts",
-      "cr_toolbar/cr_toolbar_selection_overlay.ts",
-      "cr_toolbar/cr_toolbar.ts",
-      "cr_view_manager/cr_view_manager.ts",
+      "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.html.ts",
+      "cr_profile_avatar_selector/cr_profile_avatar_selector.html.ts",
+      "cr_search_field/cr_search_field.html.ts",
+      "cr_slider/cr_slider.html.ts",
+      "cr_tabs/cr_tabs.html.ts",
+      "cr_toast/cr_toast_manager.html.ts",
+      "cr_toast/cr_toast.html.ts",
+      "cr_toolbar/cr_toolbar_search_field.html.ts",
+      "cr_toolbar/cr_toolbar_selection_overlay.html.ts",
+      "cr_toolbar/cr_toolbar.html.ts",
+      "cr_view_manager/cr_view_manager.html.ts",
       "mwb_element_shared_style.ts",
       "mwb_shared_icons.ts",
       "mwb_shared_style.ts",
       "mwb_shared_vars.ts",
       "search_highlight_style_css.ts",
     ]
-  }
 
-  if (is_chromeos) {
-    in_files += [ "cr_searchable_drop_down/cr_searchable_drop_down.ts" ]
+    if (is_chromeos) {
+      in_files += [ "cr_searchable_drop_down/cr_searchable_drop_down.html.ts" ]
+    }
   }
 }
 
@@ -434,6 +456,33 @@ if (is_chromeos_ash) {
   }
 }
 
+if (include_polymer) {
+  html_to_wrapper("html_wrapper_files") {
+    in_files = [
+      "cr_a11y_announcer/cr_a11y_announcer.html",
+      "cr_action_menu/cr_action_menu.html",
+      "cr_drawer/cr_drawer.html",
+      "cr_grid/cr_grid.html",
+      "cr_link_row/cr_link_row.html",
+      "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.html",
+      "cr_profile_avatar_selector/cr_profile_avatar_selector.html",
+      "cr_search_field/cr_search_field.html",
+      "cr_slider/cr_slider.html",
+      "cr_tabs/cr_tabs.html",
+      "cr_toast/cr_toast.html",
+      "cr_toast/cr_toast_manager.html",
+      "cr_toolbar/cr_toolbar.html",
+      "cr_toolbar/cr_toolbar_search_field.html",
+      "cr_toolbar/cr_toolbar_selection_overlay.html",
+      "cr_view_manager/cr_view_manager.html",
+    ]
+
+    if (is_chromeos) {
+      in_files += [ "cr_searchable_drop_down/cr_searchable_drop_down.html" ]
+    }
+  }
+}
+
 html_to_js("web_components") {
   js_files = [ "cr_tab_box/cr_tab_box.ts" ]
   if (include_polymer) {
@@ -446,30 +495,6 @@ html_to_js("web_components") {
       "mwb_shared_style.ts",
       "mwb_shared_vars.ts",
       "search_highlight_style_css.ts",
-
-      # Subfolder files
-      "cr_a11y_announcer/cr_a11y_announcer.ts",
-      "cr_action_menu/cr_action_menu.ts",
-      "cr_drawer/cr_drawer.ts",
-      "cr_grid/cr_grid.ts",
-      "cr_link_row/cr_link_row.ts",
-      "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.ts",
-      "cr_profile_avatar_selector/cr_profile_avatar_selector.ts",
-      "cr_search_field/cr_search_field.ts",
-      "cr_slider/cr_slider.ts",
-      "cr_tabs/cr_tabs.ts",
-      "cr_toast/cr_toast_manager.ts",
-      "cr_toast/cr_toast.ts",
-      "cr_toolbar/cr_toolbar_search_field.ts",
-      "cr_toolbar/cr_toolbar_selection_overlay.ts",
-      "cr_toolbar/cr_toolbar.ts",
-      "cr_view_manager/cr_view_manager.ts",
     ]
-  }
-
-  if (is_chromeos) {
-    # cr-searchable-drop-down is only used in smb and cups dialogs, both of
-    # which are chromeos only.
-    js_files += [ "cr_searchable_drop_down/cr_searchable_drop_down.ts" ]
   }
 }

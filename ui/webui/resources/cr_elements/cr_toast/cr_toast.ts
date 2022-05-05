@@ -7,7 +7,9 @@
 import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../shared_vars_css.m.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './cr_toast.html.js';
 
 export interface CrToastElement {
   _setOpen(open: boolean): void;
@@ -19,7 +21,7 @@ export class CrToastElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

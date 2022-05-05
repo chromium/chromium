@@ -9,9 +9,11 @@ import '../shared_style_css.m.js';
 import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-import {DomIf, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomIf, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrSearchFieldMixin} from '../cr_search_field/cr_search_field_mixin.js';
+
+import {getTemplate} from './cr_toolbar_search_field.html.js';
 
 export interface CrToolbarSearchFieldElement {
   $: {
@@ -30,7 +32,7 @@ export class CrToolbarSearchFieldElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

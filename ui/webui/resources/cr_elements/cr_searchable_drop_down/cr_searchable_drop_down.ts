@@ -24,9 +24,11 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import {IronDropdownElement} from '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
-import {DomRepeatEvent, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrInputElement} from '../cr_input/cr_input.m.js';
+
+import {getTemplate} from './cr_searchable_drop_down.html.js';
 
 export interface CrSearchableDropDownElement {
   $: {
@@ -38,6 +40,10 @@ export interface CrSearchableDropDownElement {
 export class CrSearchableDropDownElement extends PolymerElement {
   static get is() {
     return 'cr-searchable-drop-down';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -468,10 +474,6 @@ export class CrSearchableDropDownElement extends PolymerElement {
   private updateInvalid_() {
     this.invalid =
         !this.updateValueOnInput && (this.value !== this.$.search.value);
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

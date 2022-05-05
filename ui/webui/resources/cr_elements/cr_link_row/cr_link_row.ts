@@ -17,9 +17,11 @@ import '../shared_style_css.m.js';
 import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.m.js';
+
+import {getTemplate} from './cr_link_row.html.js';
 
 export interface CrLinkRowElement {
   $: {
@@ -33,7 +35,7 @@ export class CrLinkRowElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

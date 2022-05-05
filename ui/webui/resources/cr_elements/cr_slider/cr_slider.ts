@@ -11,10 +11,12 @@ import '../hidden_style_css.m.js';
 import '../shared_vars_css.m.js';
 
 import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
-import {Debouncer, html, microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assert} from '../../js/assert_ts.js';
 import {EventTracker} from '../../js/event_tracker.m.js';
+
+import {getTemplate} from './cr_slider.html.js';
 
 /**
  * The |value| is the corresponding value that the current slider tick is
@@ -66,6 +68,10 @@ export interface CrSliderElement {
 export class CrSliderElement extends CrSliderElementBase {
   static get is() {
     return 'cr-slider';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -460,10 +466,6 @@ export class CrSliderElement extends CrSliderElementBase {
     ripple.setAttribute('recenters', '');
     ripple.classList.add('circle', 'toggle-ink');
     return ripple;
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

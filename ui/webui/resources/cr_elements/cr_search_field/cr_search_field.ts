@@ -16,10 +16,11 @@ import '../shared_style_css.m.js';
 import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrInputElement} from '../cr_input/cr_input.m.js';
 
+import {getTemplate} from './cr_search_field.html.js';
 import {CrSearchFieldMixin} from './cr_search_field_mixin.js';
 
 const CrSearchFieldElementBase = CrSearchFieldMixin(PolymerElement);
@@ -37,7 +38,7 @@ export class CrSearchFieldElement extends CrSearchFieldElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

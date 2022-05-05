@@ -19,9 +19,11 @@ import '../icons.m.js';
 import '../shared_vars_css.m.js';
 
 import {IronA11yAnnouncer} from '//resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {Debouncer, html, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrButtonElement} from '../cr_button/cr_button.m.js';
+
+import {getTemplate} from './cr_toolbar_selection_overlay.html.js';
 
 export class CrToolbarSelectionOverlayElement extends PolymerElement {
   static get is() {
@@ -29,7 +31,7 @@ export class CrToolbarSelectionOverlayElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
