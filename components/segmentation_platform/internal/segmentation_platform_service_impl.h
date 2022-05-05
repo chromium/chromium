@@ -144,8 +144,8 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
 
   std::unique_ptr<ServiceProxyImpl> proxy_;
 
-  // PrefService from browser's local state, not profile specific.
-  raw_ptr<PrefService> local_state_;
+  // PrefService from profile.
+  raw_ptr<PrefService> profile_prefs_;
 
   // For metrics only:
   const base::Time creation_time_;

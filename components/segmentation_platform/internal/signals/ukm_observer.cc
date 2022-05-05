@@ -6,6 +6,7 @@
 
 #include <cstdint>
 
+#include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/signals/ukm_config.h"
 #include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
 #include "components/segmentation_platform/public/local_state_helper.h"
@@ -82,20 +83,20 @@ void UkmObserver::PauseOrResumeObservation(bool pause) {
 }
 
 void UkmObserver::OnUkmAllowedStateChanged(bool allowed) {
-  base::Time most_recent_allowed =
-      LocalStateHelper::GetInstance().GetUkmMostRecentAllowedTime();
+  base::Time most_recent_allowed = LocalStateHelper::GetInstance().GetPrefTime(
+      kSegmentationUkmMostRecentAllowedTimeKey);
   if (!allowed) {
     if (most_recent_allowed != base::Time::Max()) {
-      LocalStateHelper::GetInstance().SetUkmMostRecentAllowedTime(
-          base::Time::Max());
+      LocalStateHelper::GetInstance().SetPrefTime(
+          kSegmentationUkmMostRecentAllowedTimeKey, base::Time::Max());
     }
     return;
   }
   // Update the most recent allowed time if needed.
   if (most_recent_allowed.is_null() ||
       most_recent_allowed == base::Time::Max()) {
-    LocalStateHelper::GetInstance().SetUkmMostRecentAllowedTime(
-        base::Time::Now());
+    LocalStateHelper::GetInstance().SetPrefTime(
+        kSegmentationUkmMostRecentAllowedTimeKey, base::Time::Now());
   }
 }
 

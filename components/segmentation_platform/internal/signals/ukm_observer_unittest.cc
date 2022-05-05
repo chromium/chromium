@@ -8,6 +8,7 @@
 
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/mock_ukm_database.h"
 #include "components/segmentation_platform/internal/signals/ukm_config.h"
 #include "components/segmentation_platform/internal/signals/url_signal_handler.h"
@@ -253,31 +254,35 @@ TEST_F(UkmObserverTest, GetUkmMostRecentAllowedTime) {
   LocalStateHelper& local_state_helper = LocalStateHelper::GetInstance();
   // Without pref entry, the |is_ukm_allowed| param passed to UkmObserver ctor
   // will determine the value to be returned.
-  EXPECT_LE(local_state_helper.GetUkmMostRecentAllowedTime(),
-            base::Time::Now());
+  EXPECT_LE(
+      local_state_helper.GetPrefTime(kSegmentationUkmMostRecentAllowedTimeKey),
+      base::Time::Now());
   InitializeUkmObserver(false /*is_ukm_allowed*/);
-  EXPECT_EQ(base::Time::Max(),
-            local_state_helper.GetUkmMostRecentAllowedTime());
+  EXPECT_EQ(base::Time::Max(), local_state_helper.GetPrefTime(
+                                   kSegmentationUkmMostRecentAllowedTimeKey));
 
   ukm_observer().OnUkmAllowedStateChanged(true);
-  EXPECT_LE(local_state_helper.GetUkmMostRecentAllowedTime(),
-            base::Time::Now());
+  EXPECT_LE(
+      local_state_helper.GetPrefTime(kSegmentationUkmMostRecentAllowedTimeKey),
+      base::Time::Now());
 
   // Change the allowed state to false, the start time should now be set to
   // Time::Max().
   ukm_recorder().OnUkmAllowedStateChanged(false);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(base::Time::Max(),
-            local_state_helper.GetUkmMostRecentAllowedTime());
+  EXPECT_EQ(base::Time::Max(), local_state_helper.GetPrefTime(
+                                   kSegmentationUkmMostRecentAllowedTimeKey));
 
   // Change the allowed state to true, the new start time should be close to
   // now.
   base::Time now = base::Time::Now();
   ukm_recorder().OnUkmAllowedStateChanged(true);
   base::RunLoop().RunUntilIdle();
-  EXPECT_LE(now, local_state_helper.GetUkmMostRecentAllowedTime());
-  EXPECT_LE(local_state_helper.GetUkmMostRecentAllowedTime(),
-            base::Time::Now());
+  EXPECT_LE(now, local_state_helper.GetPrefTime(
+                     kSegmentationUkmMostRecentAllowedTimeKey));
+  EXPECT_LE(
+      local_state_helper.GetPrefTime(kSegmentationUkmMostRecentAllowedTimeKey),
+      base::Time::Now());
 }
 
 }  // namespace segmentation_platform

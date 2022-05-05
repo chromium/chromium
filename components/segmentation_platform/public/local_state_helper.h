@@ -22,9 +22,9 @@ class LocalStateHelper {
   // methods.
   virtual void Initialize(PrefService* local_state) = 0;
 
-  // Sets and gets the most recent time when UKM is allowed.
-  virtual void SetUkmMostRecentAllowedTime(base::Time time) = 0;
-  virtual base::Time GetUkmMostRecentAllowedTime() const = 0;
+  // Sets and gets time in local state for the given pref name.
+  virtual void SetPrefTime(const char* pref_name, base::Time time) = 0;
+  virtual base::Time GetPrefTime(const char* pref_name) const = 0;
 
   virtual ~LocalStateHelper() = default;
 };

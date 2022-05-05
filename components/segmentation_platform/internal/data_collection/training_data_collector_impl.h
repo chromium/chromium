@@ -23,6 +23,8 @@
 using optimization_guide::proto::OptimizationTarget;
 
 namespace segmentation_platform {
+struct Config;
+class SegmentationResultPrefs;
 
 // Implementation of TrainingDataCollector.
 class TrainingDataCollectorImpl : public TrainingDataCollector,
@@ -32,6 +34,8 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
                             processing::FeatureListQueryProcessor* processor,
                             HistogramSignalHandler* histogram_signal_handler,
                             SignalStorageConfig* signal_storage_config,
+                            std::vector<std::unique_ptr<Config>>* configs,
+                            PrefService* profile_prefs,
                             base::Clock* clock);
   ~TrainingDataCollectorImpl() override;
 
@@ -75,7 +79,11 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   raw_ptr<processing::FeatureListQueryProcessor> feature_list_query_processor_;
   raw_ptr<HistogramSignalHandler> histogram_signal_handler_;
   raw_ptr<SignalStorageConfig> signal_storage_config_;
+  raw_ptr<std::vector<std::unique_ptr<Config>>> configs_;
   raw_ptr<base::Clock> clock_;
+
+  // Helper class to read/write results to the prefs.
+  std::unique_ptr<SegmentationResultPrefs> result_prefs_;
 
   // Hash of histograms for immediate training data collection. When any
   // histogram hash contained in the map is recorded, a UKM message is reported

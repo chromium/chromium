@@ -22,8 +22,8 @@ class LocalStateHelperImpl : public LocalStateHelper {
 
   // LocalStateHelper implementation.
   void Initialize(PrefService* local_state) override;
-  void SetUkmMostRecentAllowedTime(base::Time time) override;
-  base::Time GetUkmMostRecentAllowedTime() const override;
+  void SetPrefTime(const char* pref_name, base::Time time) override;
+  base::Time GetPrefTime(const char* pref_name) const override;
 
  private:
   friend base::NoDestructor<LocalStateHelperImpl>;

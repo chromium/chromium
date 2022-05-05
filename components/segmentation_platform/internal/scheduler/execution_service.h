@@ -22,8 +22,8 @@ namespace processing {
 class FeatureListQueryProcessor;
 }
 
+struct Config;
 struct PlatformOptions;
-class DataCollectionScheduler;
 class ModelExecutor;
 class ModelProviderFactory;
 class SignalHandler;
@@ -54,7 +54,8 @@ class ExecutionService {
       ModelProviderFactory* model_provider_factory,
       std::vector<ModelExecutionScheduler::Observer*>&& observers,
       const PlatformOptions& platform_options,
-      PrefService* local_state);
+      std::vector<std::unique_ptr<Config>>* configs,
+      PrefService* profile_prefs);
 
   // Called whenever a new or updated model is available. Must be a valid
   // SegmentInfo with valid metadata and features.
@@ -90,6 +91,9 @@ class ExecutionService {
   // Refreshes model results for all eligible models.
   void RefreshModelResults();
 
+  // Executes daily maintenance and collection tasks.
+  void RunDailyTasks(bool is_startup);
+
  private:
   // Training/inference input data generation.
   std::unique_ptr<processing::FeatureListQueryProcessor>
@@ -100,9 +104,6 @@ class ExecutionService {
 
   // Utility to execute model and return result.
   std::unique_ptr<ModelExecutor> model_executor_;
-
-  // Scheduler to launch tasks to report training data to the server.
-  std::unique_ptr<DataCollectionScheduler> data_collection_scheduler_;
 
   // Model execution.
   std::unique_ptr<ModelExecutionManagerImpl> model_execution_manager_;

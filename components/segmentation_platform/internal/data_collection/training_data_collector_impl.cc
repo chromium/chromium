@@ -8,17 +8,31 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
 #include "base/time/clock.h"
+#include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
+#include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/internal/stats.h"
+#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/local_state_helper.h"
 
 namespace segmentation_platform {
 namespace {
 using processing::FeatureListQueryProcessor;
+
+// Minimum intervals between collection.
+// TODO(qinmin): make this configurable through finch.
+static int kMinimumReportingIntervalInHours = 24;
+
+// Given the last report time, calculate the next report time.
+base::Time GetNextReportTime(base::Time last_report_time) {
+  // The next report time is determined by |kMinimumReportingIntervalInHours|
+  // hours after last report.
+  return last_report_time + base::Hours(kMinimumReportingIntervalInHours);
+}
 
 // Parse outputs into a map of metric hash of the uma output and its index in
 // the output list.
@@ -39,6 +53,21 @@ std::map<uint64_t, int> ParseUmaOutputs(
   return hash_index_map;
 }
 
+// Find the segmentation key from the configs that contains the segment ID.
+std::string GetSegmentationKey(std::vector<std::unique_ptr<Config>>* configs,
+                               OptimizationTarget segment_id) {
+  if (!configs)
+    return std::string();
+
+  for (const auto& config : *configs) {
+    if (std::find(config->segment_ids.begin(), config->segment_ids.end(),
+                  segment_id) != config->segment_ids.end()) {
+      return config->segmentation_key;
+    }
+  }
+  return std::string();
+}
+
 }  // namespace
 
 TrainingDataCollectorImpl::TrainingDataCollectorImpl(
@@ -46,12 +75,16 @@ TrainingDataCollectorImpl::TrainingDataCollectorImpl(
     processing::FeatureListQueryProcessor* processor,
     HistogramSignalHandler* histogram_signal_handler,
     SignalStorageConfig* signal_storage_config,
+    std::vector<std::unique_ptr<Config>>* configs,
+    PrefService* profile_prefs,
     base::Clock* clock)
     : segment_info_database_(segment_info_database),
       feature_list_query_processor_(processor),
       histogram_signal_handler_(histogram_signal_handler),
       signal_storage_config_(signal_storage_config),
-      clock_(clock) {}
+      configs_(configs),
+      clock_(clock),
+      result_prefs_(std::make_unique<SegmentationResultPrefs>(profile_prefs)) {}
 
 TrainingDataCollectorImpl::~TrainingDataCollectorImpl() {
   histogram_signal_handler_->RemoveObserver(this);
@@ -62,9 +95,11 @@ void TrainingDataCollectorImpl::OnModelMetadataUpdated() {
 }
 
 void TrainingDataCollectorImpl::OnServiceInitialized() {
-  segment_info_database_->GetAllSegmentInfo(
-      base::BindOnce(&TrainingDataCollectorImpl::OnGetSegmentsInfoList,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (!SegmentationUkmHelper::GetInstance()->allowed_segment_ids().empty()) {
+    segment_info_database_->GetAllSegmentInfo(
+        base::BindOnce(&TrainingDataCollectorImpl::OnGetSegmentsInfoList,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
@@ -109,6 +144,8 @@ void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
       immediate_collection_histograms_[hash_index.first].emplace(segment.first);
     }
   }
+
+  ReportCollectedContinuousTrainingData();
 }
 
 void TrainingDataCollectorImpl::OnHistogramSignalUpdated(
@@ -198,7 +235,8 @@ bool TrainingDataCollectorImpl::CanReportTrainingData(
   base::TimeDelta signal_storage_length =
       model_metadata.signal_storage_length() *
       metadata_utils::GetTimeUnit(model_metadata);
-  if (LocalStateHelper::GetInstance().GetUkmMostRecentAllowedTime() +
+  if (LocalStateHelper::GetInstance().GetPrefTime(
+          kSegmentationUkmMostRecentAllowedTimeKey) +
           signal_storage_length >=
       clock_->Now()) {
     RecordTrainingDataCollectionEvent(
@@ -249,9 +287,23 @@ void TrainingDataCollectorImpl::OnGetTrainingTensors(
     return;
   }
 
+  // TODO(qinmin): update SegmentationUkmHelper::RecordTrainingData()
+  // and ukm file for description of the prediction result as it is
+  // the segment selection result, rather than model result.
+  std::string segmentation_key =
+      GetSegmentationKey(configs_, segment_info.segment_id());
   absl::optional<proto::PredictionResult> result;
-  if (segment_info.has_prediction_result()) {
-    result = segment_info.prediction_result();
+  auto selected_segment =
+      result_prefs_->ReadSegmentationResultFromPref(segmentation_key);
+  if (selected_segment.has_value()) {
+    DCHECK(!segmentation_key.empty());
+    proto::PredictionResult prediction_result;
+    prediction_result.set_result(
+        static_cast<int>(selected_segment->segment_id));
+    prediction_result.set_timestamp_us(
+        selected_segment->selection_time.ToDeltaSinceWindowsEpoch()
+            .InMicroseconds());
+    result = prediction_result;
   }
 
   std::vector<int> output_indexes;
@@ -274,21 +326,34 @@ void TrainingDataCollectorImpl::OnGetTrainingTensors(
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
         stats::TrainingDataCollectionEvent::kUkmReportingFailed);
-  } else {
-    RecordTrainingDataCollectionEvent(
-        segment_info.segment_id(),
-        param.has_value()
-            ? stats::TrainingDataCollectionEvent::kImmediateCollectionSuccess
-            : stats::TrainingDataCollectionEvent::kContinousCollectionSuccess);
+    return;
+  }
+
+  RecordTrainingDataCollectionEvent(
+      segment_info.segment_id(),
+      param.has_value()
+          ? stats::TrainingDataCollectionEvent::kImmediateCollectionSuccess
+          : stats::TrainingDataCollectionEvent::kContinousCollectionSuccess);
+  if (!param.has_value()) {
+    LocalStateHelper::GetInstance().SetPrefTime(
+        kSegmentationLastCollectionTimePref, clock_->Now());
   }
 }
 
 void TrainingDataCollectorImpl::ReportCollectedContinuousTrainingData() {
-  segment_info_database_->GetSegmentInfoForSegments(
-      std::vector<OptimizationTarget>(continuous_collection_segments_.begin(),
-                                      continuous_collection_segments_.end()),
-      base::BindOnce(&TrainingDataCollectorImpl::ReportForSegmentsInfoList,
-                     weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
+  if (continuous_collection_segments_.empty())
+    return;
+
+  base::Time last_collection_time = LocalStateHelper::GetInstance().GetPrefTime(
+      kSegmentationLastCollectionTimePref);
+  base::Time next_collection_time = GetNextReportTime(last_collection_time);
+  if (clock_->Now() >= next_collection_time) {
+    segment_info_database_->GetSegmentInfoForSegments(
+        std::vector<OptimizationTarget>(continuous_collection_segments_.begin(),
+                                        continuous_collection_segments_.end()),
+        base::BindOnce(&TrainingDataCollectorImpl::ReportForSegmentsInfoList,
+                       weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
+  }
 }
 
 }  // namespace segmentation_platform

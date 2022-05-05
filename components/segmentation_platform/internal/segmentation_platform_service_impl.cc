@@ -58,7 +58,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       platform_options_(PlatformOptions::CreateDefault()),
       configs_(std::move(init_params->configs)),
       all_segment_ids_(GetAllSegmentIds(configs_)),
-      local_state_(init_params->local_state),
+      profile_prefs_(init_params->profile_prefs),
       creation_time_(clock_->Now()) {
   base::UmaHistogramMediumTimes(
       "SegmentationPlatform.Init.ProcessCreationToServiceCreationLatency",
@@ -172,7 +172,7 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
           &SegmentationPlatformServiceImpl::OnSegmentationModelUpdated,
           weak_ptr_factory_.GetWeakPtr()),
       task_runner_, all_segment_ids_, model_provider_factory_.get(),
-      std::move(observers), platform_options_, local_state_);
+      std::move(observers), platform_options_, &configs_, profile_prefs_);
 
   proxy_->SetExecutionService(&execution_service_);
 
@@ -214,7 +214,7 @@ void SegmentationPlatformServiceImpl::OnServiceStatusChanged() {
 }
 
 void SegmentationPlatformServiceImpl::RunDailyTasks(bool is_startup) {
-  execution_service_.RefreshModelResults();
+  execution_service_.RunDailyTasks(is_startup);
   storage_service_->ExecuteDatabaseMaintenanceTasks(is_startup);
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(

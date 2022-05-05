@@ -9,6 +9,8 @@
 
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 
+class PrefService;
+
 namespace base {
 class Clock;
 }  // namespace base
@@ -18,6 +20,8 @@ namespace segmentation_platform {
 namespace processing {
 class FeatureListQueryProcessor;
 }
+
+struct Config;
 class HistogramSignalHandler;
 class SegmentInfoDatabase;
 class SignalStorageConfig;
@@ -32,6 +36,8 @@ class TrainingDataCollector {
       processing::FeatureListQueryProcessor* processor,
       HistogramSignalHandler* histogram_signal_handler,
       SignalStorageConfig* signal_storage_config,
+      std::vector<std::unique_ptr<Config>>* configs,
+      PrefService* profile_prefs,
       base::Clock* clock);
 
   // Called when model metadata is updated. May result in training data
