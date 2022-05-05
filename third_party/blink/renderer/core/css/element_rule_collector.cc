@@ -313,7 +313,7 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
     int style_sheet_index,
     const SelectorChecker& checker,
     PartRequest* part_request) {
-  if (!rules)
+  if (!rules || rules->IsEmpty())
     return;
 
   SelectorChecker::StyleScopeFrame style_scope_frame(context_.GetElement());
