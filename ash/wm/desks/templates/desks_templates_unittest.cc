@@ -63,6 +63,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
+#include "components/desks_storage/core/desk_template_util.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -132,6 +133,12 @@ class DesksTemplatesTest : public OverviewTestBase {
     int32_t activation_index_counter = 0;
     for (size_t i = 0; i < num_windows.size(); ++i) {
       const std::string app_id = base::NumberToString(i);
+
+      // We need to add each `app_id` to app registry cache since our desk
+      // template serialization requires an updated app cache to get the app
+      // info.
+      desks_storage::desk_template_util::AddAppIdToAppRegistryCache(
+          account_id_, cache_.get(), app_id.c_str());
 
       for (int32_t window_id = 0; window_id < num_windows[i]; ++window_id) {
         restore_data->AddAppLaunchInfo(
@@ -901,6 +908,8 @@ TEST_F(DesksTemplatesTest, SaveDeskButtonContainerAligned) {
 // Tests that the save desk as template button and save for later button are
 // enabled and disabled as expected based on the number of templates.
 TEST_F(DesksTemplatesTest, SaveDeskButtonsEnabledDisabled) {
+  desks_storage::LocalDeskDataManager::
+      SetExcludeSaveAndRecallDeskInMaxEntryCountForTesting(true);
   // Create an app window which should be supported.
   auto no_app_id_window = CreateAppWindow();
   auto* delegate = Shell::Get()->desks_templates_delegate();
@@ -3492,7 +3501,7 @@ TEST_F(DesksTemplatesTest, NoDuplicateDisplayedName) {
   SavedDeskItemView* second_item = GetItemViewFromTemplatesGrid(1);
   auto new_desk_template = second_item->desk_template()->Clone();
   new_desk_template->set_template_name(u"Desk 2");
-  DeskTemplate* new_desk_template_ptr = new_desk_template.get();
+  const base::GUID uuid = new_desk_template->uuid();
 
   base::RunLoop loop;
   desk_model()->AddOrUpdateEntry(
@@ -3505,12 +3514,24 @@ TEST_F(DesksTemplatesTest, NoDuplicateDisplayedName) {
           }));
   loop.Run();
 
-  // `LocalDeskStorage` does not support `EntriesAddedOrUpdatedRemotely`, so
-  // manually call it to simluate what the real model would do.
-  DesksTemplatesPresenter::Get()->EntriesAddedOrUpdatedRemotely(
-      {new_desk_template_ptr});
-  ASSERT_EQ(u"Desk 2", second_item->name_view()->GetText());
-  ASSERT_EQ(u"Desk 2", second_item->desk_template()->template_name());
+  base::RunLoop loop1;
+  desk_model()->GetEntryByUUID(
+      uuid.AsLowercaseString(),
+      base::BindLambdaForTesting(
+          [&](desks_storage::DeskModel::GetEntryByUuidStatus status,
+              std::unique_ptr<ash::DeskTemplate> entry) {
+            EXPECT_EQ(desks_storage::DeskModel::GetEntryByUuidStatus::kOk,
+                      status);
+            // `LocalDeskStorage` does not support
+            // `EntriesAddedOrUpdatedRemotely`, so
+            // manually call it to simluate what the real model would do.
+            DesksTemplatesPresenter::Get()->EntriesAddedOrUpdatedRemotely(
+                {entry.get()});
+            ASSERT_EQ(u"Desk 2", second_item->name_view()->GetText());
+            ASSERT_EQ(u"Desk 2", second_item->desk_template()->template_name());
+            loop1.Quit();
+          }));
+  loop1.Run();
 
   // Save template 2 under new name and confirm, this will trigger replace
   // dialog.

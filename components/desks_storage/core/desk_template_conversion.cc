@@ -4,7 +4,6 @@
 
 #include "components/desks_storage/core/desk_template_conversion.h"
 
-#include "ash/public/cpp/desk_template.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
@@ -45,6 +44,7 @@ constexpr char kDeskTypeTemplate[] = "TEMPLATE";
 constexpr char kDeskTypeSaveAndRecall[] = "SAVE_AND_RECALL";
 constexpr char kDisplayId[] = "display_id";
 constexpr char kEventFlag[] = "event_flag";
+constexpr char kIsAppTypeBrowser[] = "is_app";
 constexpr char kLaunchContainer[] = "launch_container";
 constexpr char kLaunchContainerWindow[] = "LAUNCH_CONTAINER_WINDOW";
 constexpr char kLaunchContainerUnspecified[] = "LAUNCH_CONTAINER_UNSPECIFIED";
@@ -151,6 +151,20 @@ bool GetInt(const base::Value* dict, const char* key, int* out) {
 
 bool GetInt(const base::Value& dict, const char* key, int* out) {
   return GetInt(&dict, key, out);
+}
+
+bool GetBool(const base::Value* dict, const char* key, bool* out) {
+  const base::Value* value =
+      dict->FindKeyOfType(key, base::Value::Type::BOOLEAN);
+  if (!value)
+    return false;
+
+  *out = value->GetBool();
+  return true;
+}
+
+bool GetBool(const base::Value& dict, const char* key, bool* out) {
+  return GetBool(&dict, key, out);
 }
 
 // Get App ID from App proto.
@@ -292,6 +306,10 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
 
   // TODO(crbug.com/1311801): Add support for actual event_flag values.
   app_launch_info->event_flag = 0;
+
+  bool app_type_browser;
+  if (GetBool(app, kIsAppTypeBrowser, &app_type_browser))
+    app_launch_info->app_type_browser = app_type_browser;
 
   if (app_type == kAppTypeBrowser) {
     int active_tab_index;
@@ -679,6 +697,11 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
                     base::Value(app->active_tab_index.value()));
   }
 
+  if (app->app_type_browser.has_value()) {
+    app_data.SetKey(kIsAppTypeBrowser,
+                    base::Value(app->app_type_browser.value()));
+  }
+
   if (app_type != kAppTypeBrowser)
     app_data.SetKey(kAppId, base::Value(app_id));
 
@@ -774,8 +797,9 @@ int64_t TimeToProtoTime(const base::Time& t) {
   return t.ToDeltaSinceWindowsEpoch().InMicroseconds();
 }
 
-std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromPolicy(
-    const base::Value& policy_json) {
+std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromSource(
+    const base::Value& policy_json,
+    ash::DeskTemplateSource source) {
   if (!policy_json.is_dict())
     return nullptr;
 
@@ -812,7 +836,7 @@ std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromPolicy(
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       std::make_unique<ash::DeskTemplate>(
-          uuid, ash::DeskTemplateSource::kPolicy, name, created_time,
+          uuid, source, name, created_time,
           GetDeskTypeFromString(desk_type_string));
 
   desk_template->set_updated_time(updated_time);

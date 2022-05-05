@@ -595,7 +595,8 @@ TEST_F(DeskSyncBridgeTest, DeskTemplateJsonConversionShouldBeLossless) {
           desk_template.get(), app_cache());
 
   std::unique_ptr<ash::DeskTemplate> converted_desk_template =
-      desk_template_conversion::ParseDeskTemplateFromPolicy(template_value);
+      desk_template_conversion::ParseDeskTemplateFromSource(
+          template_value, ash::DeskTemplateSource::kPolicy);
 
   EXPECT_EQ(desk_template->desk_restore_data()->ConvertToValue(),
             converted_desk_template->desk_restore_data()->ConvertToValue());

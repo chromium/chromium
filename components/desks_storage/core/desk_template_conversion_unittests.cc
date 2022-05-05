@@ -112,8 +112,8 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
   EXPECT_TRUE(parsed_json.value->is_dict());
 
   std::unique_ptr<ash::DeskTemplate> dt =
-      desk_template_conversion::ParseDeskTemplateFromPolicy(
-          parsed_json.value.value());
+      desk_template_conversion::ParseDeskTemplateFromSource(
+          parsed_json.value.value(), ash::DeskTemplateSource::kPolicy);
 
   EXPECT_TRUE(dt != nullptr);
   EXPECT_EQ(dt->uuid(), base::GUID::ParseCaseInsensitive(kTestUuidBrowser));
@@ -170,8 +170,8 @@ TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
   EXPECT_TRUE(parsed_json.value->is_dict());
 
   std::unique_ptr<ash::DeskTemplate> dt =
-      desk_template_conversion::ParseDeskTemplateFromPolicy(
-          parsed_json.value.value());
+      desk_template_conversion::ParseDeskTemplateFromSource(
+          parsed_json.value.value(), ash::DeskTemplateSource::kPolicy);
 
   EXPECT_TRUE(dt != nullptr);
   EXPECT_EQ(dt->uuid(),
@@ -257,8 +257,8 @@ TEST_F(DeskTemplateConversionTest, EmptyJsonTest) {
   EXPECT_TRUE(parsed_json.value->is_dict());
 
   std::unique_ptr<ash::DeskTemplate> dt =
-      desk_template_conversion::ParseDeskTemplateFromPolicy(
-          parsed_json.value.value());
+      desk_template_conversion::ParseDeskTemplateFromSource(
+          parsed_json.value.value(), ash::DeskTemplateSource::kPolicy);
   EXPECT_TRUE(dt == nullptr);
 }
 
@@ -271,8 +271,8 @@ TEST_F(DeskTemplateConversionTest, ParsesWithDefaultValueSetToTemplates) {
   EXPECT_TRUE(parsed_json.value->is_dict());
 
   std::unique_ptr<ash::DeskTemplate> dt =
-      desk_template_conversion::ParseDeskTemplateFromPolicy(
-          parsed_json.value.value());
+      desk_template_conversion::ParseDeskTemplateFromSource(
+          parsed_json.value.value(), ash::DeskTemplateSource::kPolicy);
   EXPECT_TRUE(dt);
   EXPECT_EQ(ash::DeskTemplateType::kTemplate, dt->type());
 }
@@ -286,8 +286,8 @@ TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonBrowserTest) {
   EXPECT_TRUE(parsed_json.value->is_dict());
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
-      desk_template_conversion::ParseDeskTemplateFromPolicy(
-          parsed_json.value.value());
+      desk_template_conversion::ParseDeskTemplateFromSource(
+          parsed_json.value.value(), ash::DeskTemplateSource::kPolicy);
 
   apps::AppRegistryCache* app_cache =
       apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
@@ -309,8 +309,8 @@ TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonAppTest) {
   EXPECT_TRUE(parsed_json.value->is_dict());
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
-      desk_template_conversion::ParseDeskTemplateFromPolicy(
-          parsed_json.value.value());
+      desk_template_conversion::ParseDeskTemplateFromSource(
+          parsed_json.value.value(), ash::DeskTemplateSource::kPolicy);
 
   apps::AppRegistryCache* app_cache =
       apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);

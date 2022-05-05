@@ -13,7 +13,9 @@
 #include "ash/test/ash_test_base.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/account_id/account_id.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 
 namespace views {
 class Label;
@@ -111,13 +113,15 @@ class OverviewTestBase : public AshTestBase {
                           views::Widget* expected_next);
 
   base::HistogramTester histograms_;
+  std::unique_ptr<apps::AppRegistryCache> cache_;
+  AccountId account_id_;
 
  private:
   void CheckOverviewHistogram(const std::string& histogram,
                               const std::vector<int>& counts);
 
   std::unique_ptr<desks_storage::LocalDeskDataManager> desk_model_;
-  base::ScopedTempDir desk_model_temp_dir_;
+  base::ScopedTempDir user_data_temp_dir_;
   std::unique_ptr<ShelfViewTestAPI> shelf_view_test_api_;
   std::vector<std::string> trace_names_;
 };

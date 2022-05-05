@@ -25,6 +25,10 @@ std::u16string AppendDuplicateNumberToDuplicateName(
 void PopulateAppRegistryCache(AccountId account_id,
                               apps::AppRegistryCache* cache);
 
+void AddAppIdToAppRegistryCache(AccountId account_id,
+                                apps::AppRegistryCache* cache,
+                                const char* app_id);
+
 }  // namespace desk_template_util
 
 }  // namespace desks_storage

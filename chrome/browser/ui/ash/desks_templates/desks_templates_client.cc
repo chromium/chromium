@@ -193,7 +193,7 @@ void DesksTemplatesClient::OnActiveUserSessionChanged(
 
   if (!chromeos::features::IsDeskTemplateSyncEnabled()) {
     storage_manager_ = std::make_unique<desks_storage::LocalDeskDataManager>(
-        active_profile_->GetPath());
+        active_profile_->GetPath(), account_id);
   }
 
   auto policy_desk_templates_it =

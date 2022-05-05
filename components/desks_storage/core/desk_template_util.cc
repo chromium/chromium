@@ -90,6 +90,33 @@ void PopulateAppRegistryCache(AccountId account_id,
   apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id, cache);
 }
 
+void AddAppIdToAppRegistryCache(AccountId account_id,
+                                apps::AppRegistryCache* cache,
+                                const char* app_id) {
+  std::vector<apps::AppPtr> deltas;
+
+  // We need to add the app as any type that's not a `apps::AppType::kChromeApp`
+  // since there's a default hard coded string for that type, which will merge
+  // all app_id to it.
+  deltas.push_back(MakeApp(app_id, "Arc app", apps::AppType::kArc));
+
+  if (base::FeatureList::IsEnabled(apps::kAppServiceOnAppUpdateWithoutMojom)) {
+    cache->OnApps(std::move(deltas), apps::AppType::kUnknown,
+                  /*should_notify_initialized=*/false);
+  } else {
+    std::vector<apps::mojom::AppPtr> mojom_deltas;
+    for (const auto& delta : deltas) {
+      mojom_deltas.push_back(apps::ConvertAppToMojomApp(delta));
+    }
+    cache->OnApps(std::move(mojom_deltas), apps::mojom::AppType::kUnknown,
+                  /*should_notify_initialized=*/false);
+  }
+
+  cache->SetAccountId(account_id);
+
+  apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id, cache);
+}
+
 }  // namespace desk_template_util
 
 }  // namespace desks_storage

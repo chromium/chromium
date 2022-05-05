@@ -79,6 +79,8 @@ class DeskModel {
   DeskModel& operator=(const DeskModel&) = delete;
   virtual ~DeskModel();
 
+  // TODO(crbug.com/1320805): Once DeskSyncBridge is set to support saved desk,
+  // add methods to support operations on both types of templates.
   using GetAllEntriesCallback = base::OnceCallback<void(
       GetAllEntriesStatus status,
       const std::vector<const ash::DeskTemplate*>& entries)>;

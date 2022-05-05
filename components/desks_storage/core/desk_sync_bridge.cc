@@ -79,9 +79,7 @@ constexpr std::size_t kMaxTemplateCount = 6u;
 // chrome.storage.sync.QUOTA_BYTES_PER_ITEM.
 constexpr std::size_t kMaxTemplateSize = 8192u;
 
-// Allocate a EntityData and copies |specifics| into it.
-//
-// TODO(crbug/1304465): Switch symbol identifiers to new standard.
+// Allocate a EntityData and copies `specifics` into it.
 std::unique_ptr<syncer::EntityData> CopyToEntityData(
     const sync_pb::WorkspaceDeskSpecifics& specifics) {
   auto entity_data = std::make_unique<syncer::EntityData>();
@@ -92,7 +90,7 @@ std::unique_ptr<syncer::EntityData> CopyToEntityData(
   return entity_data;
 }
 
-// Parses the content of |record_list| into |*desk_templates|.
+// Parses the content of `record_list` into `*desk_templates`.
 absl::optional<syncer::ModelError> ParseDeskTemplatesOnBackendSequence(
     std::map<base::GUID, std::unique_ptr<DeskTemplate>>* desk_templates,
     std::unique_ptr<ModelTypeStore::RecordList> record_list) {
@@ -167,7 +165,7 @@ std::string GetAppId(const sync_pb::WorkspaceDeskSpecifics_App& app) {
   }
 }
 
-// Convert App proto to |app_restore::AppLaunchInfo|.
+// Convert App proto to `app_restore::AppLaunchInfo`.
 std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
     const sync_pb::WorkspaceDeskSpecifics_App& app) {
   const int32_t window_id = app.window_id();
@@ -196,7 +194,7 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
   if (app.has_app_name())
     app_launch_info->app_name = app.app_name();
 
-  // This is a short-term fix as |event_flag| is required to launch ArcApp.
+  // This is a short-term fix as `event_flag` is required to launch ArcApp.
   // Currently we don't support persisting user action in template
   // so always default to 0 which is no action.
   // https://source.chromium.org/chromium/chromium/src/
@@ -207,8 +205,8 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
 
   switch (app.app().app_case()) {
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::APP_NOT_SET:
-      // This should never happen. |APP_NOT_SET| corresponds to empty |app_id|.
-      // This method will early return when |app_id| is empty.
+      // This should never happen. `APP_NOT_SET` corresponds to empty `app_id`.
+      // This method will early return when `app_id` is empty.
       NOTREACHED();
       break;
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kBrowserAppWindow:
@@ -227,20 +225,20 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
 
       break;
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kChromeApp:
-      // |app_id| is enough to identify a Chrome app.
+      // `app_id` is enough to identify a Chrome app.
       break;
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kProgressWebApp:
-      // |app_id| is enough to identify a Progressive Web app.
+      // `app_id` is enough to identify a Progressive Web app.
       break;
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kArcApp:
-      // |app_id| is enough to identify an Arc app.
+      // `app_id` is enough to identify an Arc app.
       break;
   }
 
   return app_launch_info;
 }
 
-// Convert Sync proto WindowState |state| to ui::WindowShowState used by
+// Convert Sync proto WindowState `state` to ui::WindowShowState used by
 // the app_restore::WindowInfo struct.
 ui::WindowShowState ToUiWindowState(WindowState state) {
   switch (state) {
@@ -261,7 +259,7 @@ ui::WindowShowState ToUiWindowState(WindowState state) {
   }
 }
 
-// Convert Sync proto WindowState |state| to chromeos::WindowStateType used by
+// Convert Sync proto WindowState `state` to chromeos::WindowStateType used by
 // the app_restore::WindowInfo struct.
 chromeos::WindowStateType ToChromeOsWindowState(WindowState state) {
   switch (state) {
@@ -390,8 +388,8 @@ void FillAppWithWindowInfo(const app_restore::WindowInfo* window_info,
   if (window_info->app_title.has_value())
     out_app->set_title(base::UTF16ToUTF8(window_info->app_title.value()));
 
-  // AppRestoreData.GetWindowInfo does not include |display_id| in the returned
-  // WindowInfo. Therefore, we are not filling |display_id| here.
+  // AppRestoreData.GetWindowInfo does not include `display_id` in the returned
+  // WindowInfo. Therefore, we are not filling `display_id` here.
 }
 
 //  Fill `out_app` with the `display_id` from `app_restore_data`.
@@ -603,7 +601,7 @@ void FillWindowInfoFromProto(sync_pb::WorkspaceDeskSpecifics_App& app,
   }
 }
 
-// Convert a desk template to |app_restore::RestoreData|.
+// Convert a desk template to `app_restore::RestoreData`.
 std::unique_ptr<app_restore::RestoreData> ConvertToRestoreData(
     const sync_pb::WorkspaceDeskSpecifics& entry_proto) {
   auto restore_data = std::make_unique<app_restore::RestoreData>();
@@ -774,8 +772,8 @@ absl::optional<syncer::ModelError> DeskSyncBridge::ApplySyncChanges(
 
     switch (change->type()) {
       case syncer::EntityChange::ACTION_DELETE: {
-        if (entries_.find(uuid) != entries_.end()) {
-          entries_.erase(uuid);
+        if (desk_template_entries_.find(uuid) != desk_template_entries_.end()) {
+          desk_template_entries_.erase(uuid);
           batch->DeleteData(uuid.AsLowercaseString());
           removed.push_back(uuid.AsLowercaseString());
         }
@@ -797,7 +795,7 @@ absl::optional<syncer::ModelError> DeskSyncBridge::ApplySyncChanges(
         std::string serialized_remote_entry = specifics.SerializeAsString();
 
         // Add/update the remote_entry to the model.
-        entries_[uuid] = std::move(remote_entry);
+        desk_template_entries_[uuid] = std::move(remote_entry);
         added_or_updated.push_back(GetUserEntryByUUID(uuid));
 
         // Write to the store.
@@ -834,7 +832,7 @@ void DeskSyncBridge::GetData(StorageKeyList storage_keys,
 
 void DeskSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const auto& it : entries_) {
+  for (const auto& it : desk_template_entries_) {
     batch->Put(it.first.AsLowercaseString(),
                CopyToEntityData(ToSyncProto(it.second.get())));
   }
@@ -862,7 +860,7 @@ void DeskSyncBridge::GetAllEntries(GetAllEntriesCallback callback) {
   for (const auto& it : policy_entries_)
     entries.push_back(it.get());
 
-  for (const auto& it : entries_) {
+  for (const auto& it : desk_template_entries_) {
     DCHECK_EQ(it.first, it.second->uuid());
     entries.push_back(it.second.get());
   }
@@ -883,8 +881,8 @@ void DeskSyncBridge::GetEntryByUUID(const std::string& uuid_str,
     return;
   }
 
-  auto it = entries_.find(uuid);
-  if (it == entries_.end()) {
+  auto it = desk_template_entries_.find(uuid);
+  if (it == desk_template_entries_.end()) {
     std::unique_ptr<DeskTemplate> policy_entry =
         GetAdminDeskTemplateByUUID(uuid_str);
 
@@ -915,7 +913,7 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
     return;
   }
 
-  // When a user creates a desk template locally, the desk template has |kUser|
+  // When a user creates a desk template locally, the desk template has `kUser`
   // as its source. Only user desk templates should be saved to Sync.
   DCHECK_EQ(DeskTemplateSource::kUser, new_entry->source());
 
@@ -948,7 +946,7 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
                           batch->GetMetadataChangeList());
 
   std::unique_ptr<DeskTemplate> persisted_entry = FromSyncProto(sync_proto);
-  entries_[uuid] = std::move(persisted_entry);
+  desk_template_entries_[uuid] = std::move(persisted_entry);
   const DeskTemplate* result = GetUserEntryByUUID(uuid);
 
   batch->WriteData(uuid.AsLowercaseString(),
@@ -982,7 +980,7 @@ void DeskSyncBridge::DeleteEntry(const std::string& uuid_str,
   change_processor()->Delete(uuid.AsLowercaseString(),
                              batch->GetMetadataChangeList());
 
-  entries_.erase(uuid);
+  desk_template_entries_.erase(uuid);
 
   batch->DeleteData(uuid.AsLowercaseString());
 
@@ -1009,13 +1007,13 @@ void DeskSyncBridge::DeleteAllEntries(DeleteEntryCallback callback) {
                                batch->GetMetadataChangeList());
     batch->DeleteData(uuid.AsLowercaseString());
   }
-  entries_.clear();
+  desk_template_entries_.clear();
 
   std::move(callback).Run(DeleteEntryStatus::kOk);
 }
 
 std::size_t DeskSyncBridge::GetEntryCount() const {
-  return entries_.size() + policy_entries_.size();
+  return desk_template_entries_.size() + policy_entries_.size();
 }
 
 std::size_t DeskSyncBridge::GetMaxEntryCount() const {
@@ -1028,7 +1026,7 @@ std::vector<base::GUID> DeskSyncBridge::GetAllEntryUuids() const {
   for (const auto& it : policy_entries_)
     keys.push_back(it.get()->uuid());
 
-  for (const auto& it : entries_) {
+  for (const auto& it : desk_template_entries_) {
     DCHECK_EQ(it.first, it.second->uuid());
     keys.emplace_back(it.first);
   }
@@ -1074,8 +1072,8 @@ sync_pb::WorkspaceDeskSpecifics DeskSyncBridge::ToSyncProto(
 
 const DeskTemplate* DeskSyncBridge::GetUserEntryByUUID(
     const base::GUID& uuid) const {
-  auto it = entries_.find(uuid);
-  if (it == entries_.end())
+  auto it = desk_template_entries_.find(uuid);
+  if (it == desk_template_entries_.end())
     return nullptr;
   return it->second.get();
 }
@@ -1138,7 +1136,7 @@ void DeskSyncBridge::OnReadAllData(
     return;
   }
 
-  entries_ = std::move(*stored_desk_templates);
+  desk_template_entries_ = std::move(*stored_desk_templates);
 
   store_->ReadAllMetadata(base::BindOnce(&DeskSyncBridge::OnReadAllMetadata,
                                          weak_ptr_factory_.GetWeakPtr()));
@@ -1173,12 +1171,12 @@ void DeskSyncBridge::UploadLocalOnlyData(
     syncer::MetadataChangeList* metadata_change_list,
     const syncer::EntityChangeList& entity_data) {
   std::set<base::GUID> local_keys_to_upload;
-  for (const auto& it : entries_) {
+  for (const auto& it : desk_template_entries_) {
     DCHECK_EQ(DeskTemplateSource::kUser, it.second->source());
     local_keys_to_upload.insert(it.first);
   }
 
-  // Strip |local_keys_to_upload| of any key (UUID) that is already known to the
+  // Strip `local_keys_to_upload` of any key (UUID) that is already known to the
   // server.
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     local_keys_to_upload.erase(
@@ -1187,19 +1185,20 @@ void DeskSyncBridge::UploadLocalOnlyData(
 
   // Upload the local-only templates.
   for (const base::GUID& uuid : local_keys_to_upload) {
-    change_processor()->Put(uuid.AsLowercaseString(),
-                            CopyToEntityData(ToSyncProto(entries_[uuid].get())),
-                            metadata_change_list);
+    change_processor()->Put(
+        uuid.AsLowercaseString(),
+        CopyToEntityData(ToSyncProto(desk_template_entries_[uuid].get())),
+        metadata_change_list);
   }
 }
 
 bool DeskSyncBridge::HasUserTemplateWithName(const std::u16string& name) {
   return std::find_if(
-             entries_.begin(), entries_.end(),
+             desk_template_entries_.begin(), desk_template_entries_.end(),
              [&name](std::pair<const base::GUID,
                                std::unique_ptr<ash::DeskTemplate>>& entry) {
                return entry.second->template_name() == name;
-             }) != entries_.end();
+             }) != desk_template_entries_.end();
 }
 
 }  // namespace desks_storage

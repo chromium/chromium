@@ -21,6 +21,9 @@
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_preview_view.h"
+#include "components/app_constants/constants.h"
+#include "components/desks_storage/core/desk_template_util.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
@@ -169,10 +172,15 @@ void OverviewTestBase::SetUp() {
   AshTestBase::SetUp();
 
   // Set the created model as the one shell will reference.
-  EXPECT_TRUE(desk_model_temp_dir_.CreateUniqueTempDir());
+  EXPECT_TRUE(user_data_temp_dir_.CreateUniqueTempDir());
+  account_id_ = AccountId::FromUserEmail("test@gmail.com");
+  cache_ = std::make_unique<apps::AppRegistryCache>();
   desk_model_ = std::make_unique<desks_storage::LocalDeskDataManager>(
-      desk_model_temp_dir_.GetPath());
+      user_data_temp_dir_.GetPath(), account_id_);
+  desk_model_->SetExcludeSaveAndRecallDeskInMaxEntryCountForTesting(false);
   desk_model_->EnsureCacheIsLoaded();
+  desks_storage::desk_template_util::PopulateAppRegistryCache(account_id_,
+                                                              cache_.get());
   static_cast<TestDesksTemplatesDelegate*>(
       Shell::Get()->desks_templates_delegate())
       ->set_desk_model(desk_model_.get());

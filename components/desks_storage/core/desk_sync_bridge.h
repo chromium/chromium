@@ -94,12 +94,12 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   // Notify all observers that the model is loaded;
   void NotifyDeskModelLoaded();
 
-  // Notify all observers of any |new_entries| when they are added/updated via
+  // Notify all observers of any `new_entries` when they are added/updated via
   // sync.
   void NotifyRemoteDeskTemplateAddedOrUpdated(
       const std::vector<const ash::DeskTemplate*>& new_entries);
 
-  // Notify all observers when the entries with |uuids| have been removed via
+  // Notify all observers when the entries with `uuids` have been removed via
   // sync or disabling sync locally.
   void NotifyRemoteDeskTemplateDeleted(const std::vector<std::string>& uuids);
 
@@ -122,8 +122,8 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   // Returns true if `templates_` contains a desk template with `name`.
   bool HasUserTemplateWithName(const std::u16string& name);
 
-  // |entries_| is keyed by UUIDs.
-  DeskEntries entries_;
+  // `desk_template_entries_` is keyed by UUIDs.
+  DeskEntries desk_template_entries_;
 
   // Whether local data and metadata have finished loading and this sync bridge
   // is ready to be accessed.
