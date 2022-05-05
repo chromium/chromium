@@ -8022,26 +8022,6 @@
             ]
         }
     ],
-    "V8WasmDynamicTiering": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20211210",
-                    "enable_features": [
-                        "WebAssemblyDynamicTiering"
-                    ]
-                }
-            ]
-        }
-    ],
     "VaapiVideoDecoder": [
         {
             "platforms": [
