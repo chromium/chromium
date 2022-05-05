@@ -217,7 +217,8 @@ TEST(AttributionStorageDelegateImplTest, GetAggregatableReportTime) {
   base::Time trigger_time = base::Time::Now();
   EXPECT_THAT(
       AttributionStorageDelegateImpl().GetAggregatableReportTime(trigger_time),
-      AllOf(Ge(trigger_time), Lt(trigger_time + base::Hours(1))));
+      AllOf(Ge(trigger_time + base::Minutes(10)),
+            Lt(trigger_time + base::Hours(1))));
 }
 
 TEST(AttributionStorageDelegateImplTest, NewReportID_IsValidGUID) {
