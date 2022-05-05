@@ -261,6 +261,7 @@ def get_deps(ninja_path, build_dir, target):
 def compare_deps(first_dir, second_dir, ninja_path, targets):
   """Print difference of dependent files."""
   diffs = set()
+  print('Differences split by build targets:')
   for target in targets:
     first_deps = get_deps(ninja_path, first_dir, target)
     second_deps = get_deps(ninja_path, second_dir, target)
@@ -326,7 +327,8 @@ def compare_build_artifacts(first_dir, second_dir, ninja_path, target_platform,
   print('See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/deterministic_builds.md')
   print('for debugging non-determinisitic builds. Skip to "Unexpected diffs:" below')
   print('and search for "DIFFERENT (unexpected)" for clues about problems.')
-
+  print()
+  print('Differences of files in build directories:')
   equals = []
   expected_diffs = []
   unexpected_diffs = []
@@ -365,13 +367,14 @@ def compare_build_artifacts(first_dir, second_dir, ninja_path, target_platform,
   print('Expected diffs:   %d' % len(expected_diffs))
   print('Unexpected diffs: %d' % len(unexpected_diffs))
   if unexpected_diffs:
-    print('Unexpected files with diffs:\n')
+    print('Unexpected files with diffs:')
     for u in unexpected_diffs:
       print('  %s' % u)
   if unexpected_equals:
-    print('Unexpected files with no diffs:\n')
+    print('Unexpected files with no diffs:')
     for u in unexpected_equals:
       print('  %s' % u)
+  print()
 
   all_diffs = expected_diffs + unexpected_diffs
   diffs_to_investigate = sorted(set(all_diffs).difference(missing_files))
