@@ -102,7 +102,7 @@ HttpsLatencySampler::~HttpsLatencySampler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void HttpsLatencySampler::Collect(MetricCallback callback) {
+void HttpsLatencySampler::MaybeCollect(OptionalMetricCallback callback) {
   CHECK(base::SequencedTaskRunnerHandle::IsSet());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

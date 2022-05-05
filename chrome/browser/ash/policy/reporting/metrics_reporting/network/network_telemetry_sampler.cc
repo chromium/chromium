@@ -100,10 +100,12 @@ NetworkType GetNetworkType(const ::chromeos::NetworkTypePattern& type) {
   return NetworkType::NETWORK_TYPE_UNSPECIFIED;  // Unsupported
 }
 
-void OnHttpsLatencySamplerCompleted(MetricCallback callback,
+void OnHttpsLatencySamplerCompleted(OptionalMetricCallback callback,
                                     MetricData network_data,
-                                    MetricData latency_data) {
-  network_data.CheckTypeAndMergeFrom(latency_data);
+                                    absl::optional<MetricData> latency_data) {
+  if (latency_data.has_value()) {
+    network_data.CheckTypeAndMergeFrom(latency_data.value());
+  }
   std::move(callback).Run(std::move(network_data));
 }
 }  // namespace
@@ -113,7 +115,7 @@ NetworkTelemetrySampler::NetworkTelemetrySampler(Sampler* https_latency_sampler)
 
 NetworkTelemetrySampler::~NetworkTelemetrySampler() = default;
 
-void NetworkTelemetrySampler::Collect(MetricCallback callback) {
+void NetworkTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
   auto handle_probe_result_cb =
       base::BindOnce(&NetworkTelemetrySampler::HandleNetworkTelemetryResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
@@ -125,7 +127,7 @@ void NetworkTelemetrySampler::Collect(MetricCallback callback) {
 }
 
 void NetworkTelemetrySampler::HandleNetworkTelemetryResult(
-    MetricCallback callback,
+    OptionalMetricCallback callback,
     ::chromeos::cros_healthd::mojom::TelemetryInfoPtr result) {
   bool full_telemetry_reporting_enabled = base::FeatureList::IsEnabled(
       MetricReportingManager::kEnableNetworkTelemetryReporting);
@@ -146,6 +148,7 @@ void NetworkTelemetrySampler::HandleNetworkTelemetryResult(
       /*limit=*/0,  // no limit to number of results
       &network_state_list);
   if (network_state_list.empty()) {
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -237,11 +240,17 @@ void NetworkTelemetrySampler::HandleNetworkTelemetryResult(
   }
 
   if (should_collect_latency) {
-    https_latency_sampler_->Collect(
+    https_latency_sampler_->MaybeCollect(
         base::BindOnce(OnHttpsLatencySamplerCompleted, std::move(callback),
                        std::move(metric_data)));
-  } else if (should_report) {
-    std::move(callback).Run(std::move(metric_data));
+    return;
   }
+  if (should_report) {
+    std::move(callback).Run(std::move(metric_data));
+    return;
+  }
+
+  std::move(callback).Run(absl::nullopt);
 }
+
 }  // namespace reporting

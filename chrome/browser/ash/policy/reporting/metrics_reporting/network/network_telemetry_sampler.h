@@ -22,11 +22,11 @@ class NetworkTelemetrySampler : public Sampler {
 
   ~NetworkTelemetrySampler() override;
 
-  void Collect(MetricCallback callback) override;
+  void MaybeCollect(OptionalMetricCallback callback) override;
 
  private:
   void HandleNetworkTelemetryResult(
-      MetricCallback callback,
+      OptionalMetricCallback callback,
       ::chromeos::cros_healthd::mojom::TelemetryInfoPtr result);
 
   Sampler* const https_latency_sampler_;

@@ -52,7 +52,7 @@ class HttpsLatencySampler : public Sampler {
 
   ~HttpsLatencySampler() override;
 
-  void Collect(MetricCallback callback) override;
+  void MaybeCollect(OptionalMetricCallback callback) override;
 
  private:
   void OnHttpsLatencyRoutineCompleted(
@@ -63,7 +63,7 @@ class HttpsLatencySampler : public Sampler {
   mojo::Remote<
       ::chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
       network_diagnostics_service_;
-  base::queue<MetricCallback> metric_callbacks_;
+  base::queue<OptionalMetricCallback> metric_callbacks_;
 
   const std::unique_ptr<Delegate> delegate_;
 

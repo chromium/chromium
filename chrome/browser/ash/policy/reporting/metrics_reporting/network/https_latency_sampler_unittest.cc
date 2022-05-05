@@ -141,10 +141,14 @@ TEST(HttpsLatencySamplerTest, NoProblem) {
   HttpsLatencySampler sampler(
       std::make_unique<FakeHttpsLatencyDelegate>(&diagnostics));
 
-  test::TestEvent<MetricData> metric_collect_event;
-  sampler.Collect(metric_collect_event.cb());
+  test::TestEvent<absl::optional<MetricData>> metric_collect_event;
+  sampler.MaybeCollect(metric_collect_event.cb());
   diagnostics.ExecuteCallback();
-  const auto metric_result = metric_collect_event.result();
+  const absl::optional<MetricData> optional_result =
+      metric_collect_event.result();
+
+  ASSERT_TRUE(optional_result.has_value());
+  const MetricData& metric_result = optional_result.value();
 
   ASSERT_TRUE(metric_result.has_telemetry_data());
   EXPECT_EQ(metric_result.telemetry_data()
@@ -171,10 +175,14 @@ TEST(HttpsLatencySamplerTest, FailedRequests) {
   HttpsLatencySampler sampler(
       std::make_unique<FakeHttpsLatencyDelegate>(&diagnostics));
 
-  test::TestEvent<MetricData> metric_collect_event;
-  sampler.Collect(metric_collect_event.cb());
+  test::TestEvent<absl::optional<MetricData>> metric_collect_event;
+  sampler.MaybeCollect(metric_collect_event.cb());
   diagnostics.ExecuteCallback();
-  const auto metric_result = metric_collect_event.result();
+  const absl::optional<MetricData> optional_result =
+      metric_collect_event.result();
+
+  ASSERT_TRUE(optional_result.has_value());
+  const MetricData& metric_result = optional_result.value();
 
   ASSERT_TRUE(metric_result.has_telemetry_data());
   EXPECT_EQ(metric_result.telemetry_data()
@@ -201,12 +209,16 @@ TEST(HttpsLatencySamplerTest, OverlappingCalls) {
   HttpsLatencySampler sampler(
       std::make_unique<FakeHttpsLatencyDelegate>(&diagnostics));
 
-  test::TestEvent<MetricData> metric_collect_events[2];
-  sampler.Collect(metric_collect_events[0].cb());
-  sampler.Collect(metric_collect_events[1].cb());
+  test::TestEvent<absl::optional<MetricData>> metric_collect_events[2];
+  sampler.MaybeCollect(metric_collect_events[0].cb());
+  sampler.MaybeCollect(metric_collect_events[1].cb());
   diagnostics.ExecuteCallback();
+  const absl::optional<MetricData> first_optional_result =
+      metric_collect_events[0].result();
 
-  const auto first_metric_result = metric_collect_events[0].result();
+  ASSERT_TRUE(first_optional_result.has_value());
+  const MetricData& first_metric_result = first_optional_result.value();
+
   ASSERT_TRUE(first_metric_result.has_telemetry_data());
   EXPECT_EQ(first_metric_result.telemetry_data()
                 .networks_telemetry()
@@ -223,7 +235,12 @@ TEST(HttpsLatencySamplerTest, OverlappingCalls) {
                 .problem(),
             HttpsLatencyProblem::FAILED_DNS_RESOLUTIONS);
 
-  const auto second_metric_result = metric_collect_events[1].result();
+  const absl::optional<MetricData> second_optional_result =
+      metric_collect_events[1].result();
+
+  ASSERT_TRUE(second_optional_result.has_value());
+  const MetricData& second_metric_result = second_optional_result.value();
+
   ASSERT_TRUE(second_metric_result.has_telemetry_data());
   EXPECT_EQ(second_metric_result.telemetry_data()
                 .networks_telemetry()
@@ -252,10 +269,14 @@ TEST(HttpsLatencySamplerTest, SuccessiveCalls) {
     const int latency_ms = 1000;
     diagnostics.SetResultProblemLatency(HttpsLatencyProblemMojom::kHighLatency,
                                         latency_ms);
-    test::TestEvent<MetricData> metric_collect_event;
-    sampler.Collect(metric_collect_event.cb());
+    test::TestEvent<absl::optional<MetricData>> metric_collect_event;
+    sampler.MaybeCollect(metric_collect_event.cb());
     diagnostics.ExecuteCallback();
-    const auto first_metric_result = metric_collect_event.result();
+    const absl::optional<MetricData> first_optional_result =
+        metric_collect_event.result();
+
+    ASSERT_TRUE(first_optional_result.has_value());
+    const MetricData& first_metric_result = first_optional_result.value();
 
     ASSERT_TRUE(first_metric_result.has_telemetry_data());
     EXPECT_EQ(first_metric_result.telemetry_data()
@@ -279,10 +300,14 @@ TEST(HttpsLatencySamplerTest, SuccessiveCalls) {
     const int latency_ms = 5000;
     diagnostics.SetResultProblemLatency(
         HttpsLatencyProblemMojom::kVeryHighLatency, latency_ms);
-    test::TestEvent<MetricData> metric_collect_event;
-    sampler.Collect(metric_collect_event.cb());
+    test::TestEvent<absl::optional<MetricData>> metric_collect_event;
+    sampler.MaybeCollect(metric_collect_event.cb());
     diagnostics.ExecuteCallback();
-    const auto second_metric_result = metric_collect_event.result();
+    const absl::optional<MetricData> second_optional_result =
+        metric_collect_event.result();
+
+    ASSERT_TRUE(second_optional_result.has_value());
+    const MetricData& second_metric_result = second_optional_result.value();
 
     ASSERT_TRUE(second_metric_result.has_telemetry_data());
     EXPECT_EQ(second_metric_result.telemetry_data()
