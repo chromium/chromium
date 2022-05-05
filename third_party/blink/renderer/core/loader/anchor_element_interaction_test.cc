@@ -77,16 +77,71 @@ TEST_F(AnchorElementInteractionTest, InvalidHref) {
     <a id='anchor1' href='about:blank'>example</a>
     <script>
       const a = document.getElementById('anchor1');
-      var event = new PointerEvent('pointerdown');
+      var event = new PointerEvent('pointerdown', {isPrimary: true});
       a.dispatchEvent(event);
     </script>
   )HTML");
   base::RunLoop().RunUntilIdle();
-  absl::optional<KURL> expected_null_url = absl::nullopt;
   EXPECT_EQ(1u, hosts_.size());
   absl::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_FALSE(url_received.has_value());
-  EXPECT_EQ(expected_null_url, url_received);
+}
+
+TEST_F(AnchorElementInteractionTest, NonPointerEventType) {
+  String source("https://example.com/p1");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <a id='anchor1' href='https://anchor1.com/'>example</a>
+    <script>
+      const a = document.getElementById('anchor1');
+      var event = new Event('pointerdown');
+      a.dispatchEvent(event);
+    </script>
+  )HTML");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, hosts_.size());
+  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  EXPECT_FALSE(url_received.has_value());
+}
+
+TEST_F(AnchorElementInteractionTest, NonPrimary) {
+  String source("https://example.com/p1");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <a id='anchor1' href='https://anchor1.com/'>example</a>
+    <script>
+      const a = document.getElementById('anchor1');
+      var event = new PointerEvent('pointerdown', {isPrimary: false});
+      a.dispatchEvent(event);
+    </script>
+  )HTML");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, hosts_.size());
+  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  EXPECT_FALSE(url_received.has_value());
+}
+
+TEST_F(AnchorElementInteractionTest, RightClick) {
+  String source("https://example.com/p1");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <a id='anchor1' href='https://anchor1.com/'>example</a>
+    <script>
+      const a = document.getElementById('anchor1');
+      var event = new PointerEvent('pointerdown', {
+        isPrimary: true,
+        button: 2
+      });
+      a.dispatchEvent(event);
+    </script>
+  )HTML");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, hosts_.size());
+  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  EXPECT_FALSE(url_received.has_value());
 }
 
 TEST_F(AnchorElementInteractionTest, NestedAnchorElementCheck) {
@@ -98,7 +153,7 @@ TEST_F(AnchorElementInteractionTest, NestedAnchorElementCheck) {
       href='https://anchor2.com/'></a></a>
     <script>
       const a = document.getElementById('anchor2');
-      var event = new PointerEvent('pointerdown');
+      var event = new PointerEvent('pointerdown', {isPrimary: true});
       a.dispatchEvent(event);
     </script>
   )HTML");
@@ -119,7 +174,7 @@ TEST_F(AnchorElementInteractionTest, NestedDivAnchorElementCheck) {
       id='div1id'></div></a>
     <script>
       const a = document.getElementById('div1id');
-      var event = new PointerEvent('pointerdown');
+      var event = new PointerEvent('pointerdown', {isPrimary: true});
       a.dispatchEvent(event);
     </script>
   )HTML");
@@ -140,7 +195,7 @@ TEST_F(AnchorElementInteractionTest, MultipleNestedAnchorElementCheck) {
       id='div1id'><div id='div2id'></div></div></p></a>
     <script>
       const a = document.getElementById('div2id');
-      var event = new PointerEvent('pointerdown');
+      var event = new PointerEvent('pointerdown', {isPrimary: true});
       a.dispatchEvent(event);
     </script>
   )HTML");
@@ -160,16 +215,14 @@ TEST_F(AnchorElementInteractionTest, NoAnchorElementCheck) {
     <div id='div1id'></div>
     <script>
       const a = document.getElementById('div2id');
-      var event = new PointerEvent('pointerdown');
+      var event = new PointerEvent('pointerdown', {isPrimary: true});
       a.dispatchEvent(event);
     </script>
   )HTML");
   base::RunLoop().RunUntilIdle();
-  absl::optional<KURL> expected_null_url = absl::nullopt;
   EXPECT_EQ(1u, hosts_.size());
   absl::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_FALSE(url_received.has_value());
-  EXPECT_EQ(expected_null_url, url_received);
 }
 
 TEST_F(AnchorElementInteractionTest, OneAnchorElementCheck) {
@@ -180,7 +233,7 @@ TEST_F(AnchorElementInteractionTest, OneAnchorElementCheck) {
     <a id="anchor1" href="https://anchor1.com/">foo</a>
     <script>
       const a = document.getElementById('anchor1');
-      var event = new PointerEvent('pointerdown');
+      var event = new PointerEvent('pointerdown', {isPrimary: true});
       a.dispatchEvent(event);
     </script>
   )HTML");

@@ -3,15 +3,11 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/anchor_element_listener.h"
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-
-namespace {
-constexpr const int16_t kMainEventButtonValue = 0;
-constexpr const int16_t kAuxiliaryEventButtonValue = 1;
-}  // namespace
 
 namespace blink {
 
@@ -30,9 +26,21 @@ void AnchorElementListener::Invoke(ExecutionContext* execution_context,
   if (!event->target()->ToNode()->IsHTMLElement()) {
     return;
   }
+  PointerEvent* pointer_event = DynamicTo<PointerEvent>(event);
+  if (!pointer_event) {
+    // Pages are allowed to dispatch any event to the 'pointerdown' type, which
+    // may result in this code running with an |event| that is not of type
+    // PointerEvent.
+    return;
+  }
+  if (!pointer_event->isPrimary()) {
+    return;
+  }
   // TODO(crbug.com/1297312): Check if user changed the default mouse settings
-  if (DynamicTo<PointerEvent>(event)->button() != kMainEventButtonValue &&
-      DynamicTo<PointerEvent>(event)->button() != kAuxiliaryEventButtonValue) {
+  if (pointer_event->button() !=
+          static_cast<int>(WebPointerProperties::Button::kLeft) &&
+      pointer_event->button() !=
+          static_cast<int>(WebPointerProperties::Button::kMiddle)) {
     return;
   }
   Node* node = event->srcElement()->ToNode();

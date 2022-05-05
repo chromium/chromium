@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchorTest) {
       browser()->tab_strip_model()->GetActiveWebContents(),
       R"(
                 const a = document.getElementById('anchor1');
-                var e = new PointerEvent('pointerdown');
+                var e = new PointerEvent('pointerdown', {isPrimary: true});
                 a.dispatchEvent(e);
               )"));
   WaitForPreresolveCountForURL(1);
@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, InvalidHref) {
       browser()->tab_strip_model()->GetActiveWebContents(),
       R"(
                 const a = document.getElementById('anchor2');
-                var e = new PointerEvent('pointerdown');
+                var e = new PointerEvent('pointerdown', {isPrimary: true});
                 a.dispatchEvent(e);
               )"));
   EXPECT_EQ(0, preresolve_count_);
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, DISABLED_IframeTest) {
                 const iframe = document.getElementById('iframe1');
                 const iframe_doc = iframe.contentWindow.document;
                 const a = iframe_doc.getElementById('iframe_anchor');
-                var e = new PointerEvent('pointerdown');
+                var e = new PointerEvent('pointerdown', {isPrimary: true});
                 a.dispatchEvent(e);
              )"));
   WaitForPreresolveCountForURL(1);
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents(),
       R"(
                 const a = document.getElementById('anchor1');
-                var e = new PointerEvent('pointerdown');
+                var e = new PointerEvent('pointerdown', {isPrimary: true});
                 a.dispatchEvent(e);
              )"));
   EXPECT_EQ(0, preresolve_count_);
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderHoldbackBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents(),
       R"(
                 const a = document.getElementById('anchor1');
-                var e = new PointerEvent('pointerdown');
+                var e = new PointerEvent('pointerdown', {isPrimary: true});
                 a.dispatchEvent(e);
              )"));
   EXPECT_EQ(0, preresolve_count_);
