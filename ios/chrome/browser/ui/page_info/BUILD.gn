@@ -38,7 +38,7 @@ source_set("page_info") {
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common",
+    "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",

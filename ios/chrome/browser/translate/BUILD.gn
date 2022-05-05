@@ -88,7 +88,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/web:web_internal",
-    "//ios/chrome/common",
+    "//ios/chrome/common:string_util",
     "//ios/web/public",
     "//ios/web/public/test:test",
     "//ios/web/public/test:util",

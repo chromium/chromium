@@ -21,7 +21,7 @@ source_set("permissions") {
     "//ios/chrome/browser/ui/settings/cells:cells",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:styler",
-    "//ios/chrome/common",
+    "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/web/public/permissions",
     "//ui/base",

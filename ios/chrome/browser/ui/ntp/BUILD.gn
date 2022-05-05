@@ -195,7 +195,7 @@ source_set("ntp_internal") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web_state_list",
-    "//ios/chrome/common",
+    "//ios/chrome/common:string_util",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/ntp_tile",
     "//ios/chrome/common/ui/colors",

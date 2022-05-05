@@ -10,8 +10,6 @@ source_set("common") {
   sources = [
     "channel_info.h",
     "channel_info.mm",
-    "string_util.h",
-    "string_util.mm",
     "x_callback_url.cc",
     "x_callback_url.h",
   ]
@@ -25,10 +23,7 @@ source_set("common") {
     "//net",
     "//url",
   ]
-
   public_deps = [ ":timing" ]
-
-  frameworks = [ "QuartzCore.framework" ]
 }
 
 source_set("constants") {
@@ -38,6 +33,16 @@ source_set("constants") {
     "constants.mm",
   ]
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("string_util") {
+  sources = [
+    "string_util.h",
+    "string_util.mm",
+  ]
+  deps = [ "//base" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("timing") {
@@ -62,6 +67,7 @@ source_set("unit_tests") {
   deps = [
     ":common",
     ":noarc_unit_tests",
+    ":string_util",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/common/ui/colors",

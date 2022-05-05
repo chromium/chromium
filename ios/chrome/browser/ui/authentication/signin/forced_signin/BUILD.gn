@@ -49,7 +49,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/first_run:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/google_services:constants",
-    "//ios/chrome/common",
+    "//ios/chrome/common:string_util",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/public/provider/chrome/browser/signin:constants",
     "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
