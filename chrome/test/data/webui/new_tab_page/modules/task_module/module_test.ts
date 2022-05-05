@@ -7,6 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {DismissModuleEvent, recipeTasksDescriptor, TaskModuleElement, TaskModuleHandlerProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {TaskModuleHandlerRemote} from 'chrome://new-tab-page/task_module.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
@@ -240,5 +241,73 @@ suite('NewTabPageModulesTaskModuleTest', () => {
 
     // Assert.
     assertTrue(!!$$(moduleElement, 'ntp-info-dialog'));
+  });
+
+  [true, false].forEach(historicalArm => {
+    test(
+        `change text for historical experiment arm ${historicalArm}`,
+        async () => {
+          // Arrange.
+          loadTimeData.overrideValues({
+            modulesRecipeHistoricalExperimentEnabled: historicalArm,
+          });
+
+          const task = {
+            title: 'Hello world',
+            taskItems: [
+              {
+                name: 'foo',
+                imageUrl: {url: 'https://foo.com/img.png'},
+                siteName: 'Foo Site',
+                info: 'foo info',
+                targetUrl: {url: 'https://foo.com'},
+              },
+              {
+                name: 'bar',
+                imageUrl: {url: 'https://bar.com/img.png'},
+                siteName: 'Bar Site',
+                info: 'bar info',
+                targetUrl: {url: 'https://bar.com'},
+              },
+            ]
+          };
+          handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
+
+          // Act.
+          const moduleElement =
+              await recipeTasksDescriptor.initialize(0) as TaskModuleElement;
+          assertTrue(!!moduleElement);
+          document.body.append(moduleElement);
+          moduleElement.$.taskItemsRepeat.render();
+          moduleElement.$.relatedSearchesRepeat.render();
+
+          const headerElement =
+              moduleElement.shadowRoot!.querySelector('ntp-module-header')!;
+          const menuElement =
+              headerElement.shadowRoot!.querySelector('#actionMenu')!;
+          const dismissButton =
+              menuElement.querySelector<HTMLElement>('#dismissButton')!;
+          const disableButton =
+              menuElement.querySelector<HTMLElement>('#disableButton')!;
+
+          // Assert.
+          // check title
+          const title = historicalArm ?
+              loadTimeData.getString('modulesRecipeViewedTasksSentence') :
+              loadTimeData.getString('modulesRecipeTasksSentence');
+          assertEquals(title, headerElement.innerText);
+
+          // check menu hide text
+          const hideText = historicalArm ?
+              loadTimeData.getString('modulesRecipeViewedTasksLowerThese') :
+              loadTimeData.getString('modulesRecipeTasksLowerThese');
+          assertTrue(dismissButton.innerText.includes(hideText));
+
+          // check menu don't show texts
+          const showText = historicalArm ?
+              loadTimeData.getString('modulesRecipeViewedTasksLower') :
+              loadTimeData.getString('modulesRecipeTasksLower');
+          assertTrue(disableButton.innerText.includes(showText));
+        });
   });
 });
