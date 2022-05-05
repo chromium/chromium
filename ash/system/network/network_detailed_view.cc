@@ -42,20 +42,11 @@ NetworkDetailedView::NetworkDetailedView(
 
 NetworkDetailedView::~NetworkDetailedView() = default;
 
-void NetworkDetailedView::NotifyNetworkListChanged() {
-  scroll_content()->InvalidateLayout();
-  Layout();
-}
-
 void NetworkDetailedView::HandleViewClicked(views::View* view) {
   if (login_ == LoginStatus::LOCKED)
     return;
   delegate()->OnNetworkListItemSelected(
       static_cast<NetworkListItemView*>(view)->network_properties());
-}
-
-views::View* NetworkDetailedView::network_list() {
-  return scroll_content();
 }
 
 void NetworkDetailedView::CreateTitleRowButtons() {

@@ -9,6 +9,7 @@
 #include "ash/system/network/network_detailed_view.h"
 #include "ash/system/network/network_list_network_header_view.h"
 #include "ash/system/network/network_list_network_item_view.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -54,6 +55,9 @@ class ASH_EXPORT NetworkDetailedNetworkView {
       delete;
   virtual ~NetworkDetailedNetworkView() = default;
 
+  // Notifies that the network list has changed and the layout is invalid.
+  virtual void NotifyNetworkListChanged() = 0;
+
   // Returns the implementation casted to views::View*. This may be |nullptr|
   // when testing, where the implementation might not inherit from views::View.
   virtual views::View* GetAsView() = 0;
@@ -72,6 +76,9 @@ class ASH_EXPORT NetworkDetailedNetworkView {
   // network list. The client is expected to use the returned pointer for
   // removing and rearranging the sub-header.
   virtual NetworkListNetworkHeaderView* AddMobileSectionHeader() = 0;
+
+  // Returns the network list.
+  virtual views::View* network_list() = 0;
 
  protected:
   explicit NetworkDetailedNetworkView(Delegate* delegate);

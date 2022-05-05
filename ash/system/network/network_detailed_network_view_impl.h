@@ -11,6 +11,7 @@
 #include "ash/system/network/network_list_network_header_view.h"
 #include "ash/system/network/network_list_network_item_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -37,10 +38,12 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
   friend class NetworkDetailedNetworkViewTest;
 
   // NetworkDetailedNetworkView:
+  void NotifyNetworkListChanged() override;
   views::View* GetAsView() override;
   NetworkListNetworkItemView* AddNetworkListItem() override;
   NetworkListNetworkHeaderView* AddMobileSectionHeader() override;
   NetworkListNetworkHeaderView* AddWifiSectionHeader() override;
+  views::View* network_list() override;
 
   // NetworkListNetworkHeaderView::Delegate:
   void OnMobileToggleClicked(bool new_state) override;

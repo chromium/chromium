@@ -26,12 +26,19 @@ class ASH_EXPORT FakeNetworkDetailedNetworkView
       const FakeNetworkDetailedNetworkView&) = delete;
   ~FakeNetworkDetailedNetworkView() override;
 
+  size_t notify_network_list_changed_call_count() {
+    return notify_network_list_changed_call_count_;
+  }
+
   const NetworkListItemView* last_clicked_network_list_item() const {
     return last_clicked_network_list_item_;
   }
 
+  views::View* network_list() override;
+
  private:
   // NetworkDetailedNetworkView:
+  void NotifyNetworkListChanged() override;
   views::View* GetAsView() override;
   NetworkListNetworkItemView* AddNetworkListItem() override;
   NetworkListNetworkHeaderView* AddWifiSectionHeader() override;
@@ -41,6 +48,7 @@ class ASH_EXPORT FakeNetworkDetailedNetworkView
   void OnViewClicked(views::View* view) override;
 
   std::unique_ptr<views::View> network_list_;
+  size_t notify_network_list_changed_call_count_;
   NetworkListItemView* last_clicked_network_list_item_ = nullptr;
 };
 

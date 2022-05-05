@@ -26,6 +26,11 @@ NetworkDetailedNetworkViewImpl::NetworkDetailedNetworkViewImpl(
 
 NetworkDetailedNetworkViewImpl::~NetworkDetailedNetworkViewImpl() = default;
 
+void NetworkDetailedNetworkViewImpl::NotifyNetworkListChanged() {
+  scroll_content()->InvalidateLayout();
+  Layout();
+}
+
 views::View* NetworkDetailedNetworkViewImpl::GetAsView() {
   return this;
 }
@@ -46,6 +51,10 @@ NetworkListNetworkHeaderView*
 NetworkDetailedNetworkViewImpl::AddMobileSectionHeader() {
   return scroll_content()->AddChildView(
       new NetworkListMobileHeaderViewImpl(/*delegate=*/this));
+}
+
+views::View* NetworkDetailedNetworkViewImpl::network_list() {
+  return scroll_content();
 }
 
 void NetworkDetailedNetworkViewImpl::OnMobileToggleClicked(bool new_state) {

@@ -19,6 +19,14 @@ FakeNetworkDetailedNetworkView::FakeNetworkDetailedNetworkView(
 
 FakeNetworkDetailedNetworkView::~FakeNetworkDetailedNetworkView() = default;
 
+void FakeNetworkDetailedNetworkView::NotifyNetworkListChanged() {
+  notify_network_list_changed_call_count_++;
+}
+
+views::View* FakeNetworkDetailedNetworkView::network_list() {
+  return network_list_.get();
+};
+
 views::View* FakeNetworkDetailedNetworkView::GetAsView() {
   return this;
 }

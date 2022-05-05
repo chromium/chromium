@@ -47,12 +47,6 @@ class ASH_EXPORT NetworkDetailedView : public TrayDetailedView,
   NetworkDetailedView& operator=(const NetworkDetailedView&) = delete;
   ~NetworkDetailedView() override;
 
-  // Notifies that the network list has changed and the layout is invalid.
-  void NotifyNetworkListChanged();
-
-  // Returns the network list.
-  views::View* network_list();
-
  protected:
   enum ListType { LIST_TYPE_NETWORK, LIST_TYPE_VPN };
 
