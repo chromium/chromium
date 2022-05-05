@@ -80,8 +80,9 @@ class ClientSidePhishingModel {
   void NotifyCallbacksOnUI();
 
   // Callback when the local file overriding the model has been read.
-  void OnGetOverridenModelData(CSDModelType model_type,
-                               const std::string& model_data);
+  void OnGetOverridenModelData(
+      CSDModelType model_type,
+      std::pair<std::string, base::File> model_and_tflite);
 
   // The list of callbacks to notify when a new model is ready. Protected by
   // lock_. Will always be notified on the UI thread.
