@@ -47,8 +47,9 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
 
   // Informs the StreamConsumer that a new frame should be read asynchronously.
   // Eventually, the |frame_received_cb_| will be called with the data for this
-  // frame.
-  void ReadFrame();
+  // frame. |no_frames_available_cb| will be called if no frames are immediately
+  // available when this callback first tries to read them.
+  void ReadFrame(base::OnceClosure no_frames_available_cb);
 
   // Returns a WeakPtr associated with this instance;
   base::WeakPtr<StreamConsumer> GetWeakPtr();
@@ -93,6 +94,8 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   const base::TimeDelta frame_duration_;
 
   bool is_read_pending_ = false;
+
+  base::OnceClosure no_frames_available_cb_;
 
   // Closure called on every new frame.
   base::RepeatingClosure on_new_frame_;

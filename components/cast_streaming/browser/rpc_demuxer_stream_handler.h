@@ -62,6 +62,8 @@ class RpcDemuxerStreamHandler : public RpcDemuxerStreamCBMessageHandler {
   void OnAudioError();
   void OnVideoError();
 
+  base::WeakPtr<RpcDemuxerStreamHandler> GetWeakPtr();
+
  private:
   class MessageProcessor {
    public:
@@ -133,6 +135,8 @@ class RpcDemuxerStreamHandler : public RpcDemuxerStreamCBMessageHandler {
 
   std::unique_ptr<MessageProcessor> audio_message_processor_;
   std::unique_ptr<MessageProcessor> video_message_processor_;
+
+  base::WeakPtrFactory<RpcDemuxerStreamHandler> weak_factory_;
 };
 
 }  // namespace cast_streaming::remoting

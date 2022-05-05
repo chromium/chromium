@@ -47,6 +47,13 @@ class DemuxerStreamDataProviderTest : public testing::Test {
             base::Unretained(&callbacks_)),
         second_config_);
 
+    data_provider_->SetOnNoBuffersAvailableCallback(base::BindRepeating(
+        &DemuxerStreamDataProviderTest::Callbacks::OnNoBuffers,
+        base::Unretained(&callbacks_)));
+    data_provider_->SetOnErrorCallback(
+        base::BindRepeating(&DemuxerStreamDataProviderTest::Callbacks::OnError,
+                            base::Unretained(&callbacks_)));
+
     std::vector<uint8_t> data = {1, 2, 3};
     first_buffer_ = media::DecoderBuffer::CopyFrom(data.data(), 3);
     first_buffer_->set_duration(base::Seconds(1));
@@ -70,7 +77,9 @@ class DemuxerStreamDataProviderTest : public testing::Test {
  protected:
   class Callbacks {
    public:
-    MOCK_METHOD0(RequestBuffer, void());
+    MOCK_METHOD0(OnNoBuffers, void());
+    MOCK_METHOD0(OnError, void());
+    MOCK_METHOD1(RequestBuffer, void(base::OnceClosure));
     MOCK_METHOD0(OnMojoDisconnect, void());
 
     MOCK_METHOD0(OnGetBufferDoneCalled, void());
@@ -121,7 +130,7 @@ class DemuxerStreamDataProviderTest : public testing::Test {
 
 TEST_F(DemuxerStreamDataProviderTest, DataSentInOrderExpected) {
   // Test first call, providing a config and a buffer.
-  EXPECT_CALL(callbacks_, RequestBuffer());
+  EXPECT_CALL(callbacks_, RequestBuffer(testing::_));
   remote_->GetBuffer(base::BindOnce(
       &DemuxerStreamDataProviderTest::Callbacks::OnGetBufferDone,
       base::Unretained(&callbacks_), first_config_, first_buffer_));
@@ -138,7 +147,7 @@ TEST_F(DemuxerStreamDataProviderTest, DataSentInOrderExpected) {
   EXPECT_TRUE(first_config_.Matches(data_provider_->config()));
 
   // Test second call, providing NO config but do provide a buffer.
-  EXPECT_CALL(callbacks_, RequestBuffer());
+  EXPECT_CALL(callbacks_, RequestBuffer(testing::_));
   remote_->GetBuffer(base::BindOnce(
       &DemuxerStreamDataProviderTest::Callbacks::OnGetBufferDone,
       base::Unretained(&callbacks_), absl::nullopt, second_buffer_));
@@ -152,7 +161,7 @@ TEST_F(DemuxerStreamDataProviderTest, DataSentInOrderExpected) {
   task_environment_.RunUntilIdle();
 
   // Test third call, providing a different config and a buffer.
-  EXPECT_CALL(callbacks_, RequestBuffer());
+  EXPECT_CALL(callbacks_, RequestBuffer(testing::_));
   remote_->GetBuffer(base::BindOnce(
       &DemuxerStreamDataProviderTest::Callbacks::OnGetBufferDone,
       base::Unretained(&callbacks_), second_config_, third_buffer_));
@@ -166,6 +175,29 @@ TEST_F(DemuxerStreamDataProviderTest, DataSentInOrderExpected) {
   EXPECT_TRUE(second_config_.Matches(data_provider_->config()));
   data_provider_->ProvideBuffer(
       media::mojom::DecoderBuffer::From(*third_buffer_));
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(DemuxerStreamDataProviderTest, NoBuffersCallsWithCallback) {
+  EXPECT_CALL(callbacks_, RequestBuffer(testing::_))
+      .WillOnce([](base::OnceClosure no_buffers_cb) {
+        std::move(no_buffers_cb).Run();
+      });
+  EXPECT_CALL(callbacks_, OnNoBuffers());
+  remote_->GetBuffer(base::BindOnce(
+      &DemuxerStreamDataProviderTest::Callbacks::OnGetBufferDone,
+      base::Unretained(&callbacks_), first_config_, first_buffer_));
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(DemuxerStreamDataProviderTest, NoBuffersCallsNoCallback) {
+  data_provider_->SetOnNoBuffersAvailableCallback(base::RepeatingClosure());
+  EXPECT_CALL(callbacks_, RequestBuffer(testing::_))
+      .WillOnce(
+          [](base::OnceClosure no_buffers_cb) { ASSERT_FALSE(no_buffers_cb); });
+  remote_->GetBuffer(base::BindOnce(
+      &DemuxerStreamDataProviderTest::Callbacks::OnGetBufferDone,
+      base::Unretained(&callbacks_), first_config_, first_buffer_));
   task_environment_.RunUntilIdle();
 }
 

@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast_streaming/browser/cast_message_port_impl.h"
+#include "components/cast_streaming/browser/demuxer_stream_data_provider.h"
 #include "components/cast_streaming/browser/playback_command_dispatcher.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/cast_streaming/browser/remoting_session_client.h"
@@ -103,8 +104,8 @@ class CastStreamingSession {
   // Return a callback that may be used to request a buffer of the specified
   // type, to be returned asynchronously through the client API. May only be
   // called following a call to Start() and prior to a call to Stop().
-  base::RepeatingClosure GetAudioBufferRequester();
-  base::RepeatingClosure GetVideoBufferRequester();
+  AudioDemuxerStreamDataProvider::RequestBufferCB GetAudioBufferRequester();
+  VideoDemuxerStreamDataProvider::RequestBufferCB GetVideoBufferRequester();
 
  private:
   // Owns the Open Screen ReceiverSession. The Streaming Session is tied to the
@@ -127,8 +128,8 @@ class CastStreamingSession {
     // Requests a new buffer of the specified type, which will be provided
     // Return a callback that may be used to request a buffer of the specified
     // type, to be returned asynchronously through the |client_|.
-    base::RepeatingClosure GetAudioBufferRequester();
-    base::RepeatingClosure GetVideoBufferRequester();
+    AudioDemuxerStreamDataProvider::RequestBufferCB GetAudioBufferRequester();
+    VideoDemuxerStreamDataProvider::RequestBufferCB GetVideoBufferRequester();
 
    private:
     void OnInitializationTimeout();

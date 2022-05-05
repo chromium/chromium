@@ -41,15 +41,15 @@ StreamingInitializationInfo CreateMirroringInitializationInfo(
   absl::optional<StreamingInitializationInfo::AudioStreamInfo>
       audio_stream_info;
   if (receivers.audio_receiver) {
-    audio_stream_info = {ToAudioDecoderConfig(receivers.audio_config),
-                         receivers.audio_receiver};
+    audio_stream_info.emplace(ToAudioDecoderConfig(receivers.audio_config),
+                              receivers.audio_receiver);
   }
 
   absl::optional<StreamingInitializationInfo::VideoStreamInfo>
       video_stream_info;
   if (receivers.video_receiver) {
-    video_stream_info = {ToVideoDecoderConfig(receivers.video_config),
-                         receivers.video_receiver};
+    video_stream_info.emplace(ToVideoDecoderConfig(receivers.video_config),
+                              receivers.video_receiver);
   }
 
   return {session, std::move(audio_stream_info), std::move(video_stream_info)};
@@ -93,14 +93,14 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
           base::Unretained(this)));
 }
 
-base::RepeatingClosure
+AudioDemuxerStreamDataProvider::RequestBufferCB
 CastStreamingSession::ReceiverSessionClient::GetAudioBufferRequester() {
   DCHECK(audio_consumer_);
   return base::BindRepeating(&StreamConsumer::ReadFrame,
                              audio_consumer_->GetWeakPtr());
 }
 
-base::RepeatingClosure
+VideoDemuxerStreamDataProvider::RequestBufferCB
 CastStreamingSession::ReceiverSessionClient::GetVideoBufferRequester() {
   DCHECK(video_consumer_);
   return base::BindRepeating(&StreamConsumer::ReadFrame,
@@ -345,12 +345,14 @@ void CastStreamingSession::Stop() {
   receiver_session_.reset();
 }
 
-base::RepeatingClosure CastStreamingSession::GetAudioBufferRequester() {
+AudioDemuxerStreamDataProvider::RequestBufferCB
+CastStreamingSession::GetAudioBufferRequester() {
   DCHECK(receiver_session_);
   return receiver_session_->GetAudioBufferRequester();
 }
 
-base::RepeatingClosure CastStreamingSession::GetVideoBufferRequester() {
+VideoDemuxerStreamDataProvider::RequestBufferCB
+CastStreamingSession::GetVideoBufferRequester() {
   DCHECK(receiver_session_);
   return receiver_session_->GetVideoBufferRequester();
 }

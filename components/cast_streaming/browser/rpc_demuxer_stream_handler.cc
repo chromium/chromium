@@ -23,7 +23,8 @@ RpcDemuxerStreamHandler::RpcDemuxerStreamHandler(
     RpcProcessMessageCB message_processor)
     : client_(client),
       rpc_messenger_(rpc_messenger),
-      message_processor_(std::move(message_processor)) {
+      message_processor_(std::move(message_processor)),
+      weak_factory_(this) {
   DCHECK(rpc_messenger_);
   DCHECK(message_processor_);
 }
@@ -108,6 +109,10 @@ void RpcDemuxerStreamHandler::OnError(MessageProcessor* message_processor) {
   auto message = CreateMessageForDemuxerStreamError();
   message_processor_.Run(message_processor->remote_handle(),
                          std::move(message));
+}
+
+base::WeakPtr<RpcDemuxerStreamHandler> RpcDemuxerStreamHandler::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void RpcDemuxerStreamHandler::OnRpcInitializeCallback(

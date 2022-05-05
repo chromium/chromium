@@ -91,6 +91,7 @@ void PlaybackCommandDispatcher::ConfigureRemotingAsync(
     openscreen::cast::ReceiverSession::ConfiguredReceivers receivers) {
   DCHECK(dispatcher);
   DCHECK(session);
+  DCHECK(demuxer_stream_handler_);
   DCHECK(!streaming_init_info_);
 
   streaming_dispatcher_ = dispatcher;
@@ -99,18 +100,43 @@ void PlaybackCommandDispatcher::ConfigureRemotingAsync(
   absl::optional<StreamingInitializationInfo::AudioStreamInfo>
       audio_stream_info;
   if (receivers.audio_receiver) {
-    audio_stream_info = {media::AudioDecoderConfig(), receivers.audio_receiver};
+    auto no_buffers_cb = base::BindPostTask(
+        task_runner_,
+        base::BindRepeating(
+            &remoting::RpcDemuxerStreamHandler::RequestMoreAudioBuffers,
+            demuxer_stream_handler_->GetWeakPtr()),
+        FROM_HERE);
+    auto error_cb = base::BindPostTask(
+        task_runner_,
+        base::BindRepeating(&remoting::RpcDemuxerStreamHandler::OnAudioError,
+                            demuxer_stream_handler_->GetWeakPtr()),
+        FROM_HERE);
+    audio_stream_info.emplace(media::AudioDecoderConfig(),
+                              receivers.audio_receiver,
+                              std::move(no_buffers_cb), std::move(error_cb));
   }
 
   absl::optional<StreamingInitializationInfo::VideoStreamInfo>
       video_stream_info;
   if (receivers.video_receiver) {
-    video_stream_info = {media::VideoDecoderConfig(), receivers.video_receiver};
+    auto no_buffers_cb = base::BindPostTask(
+        task_runner_,
+        base::BindRepeating(
+            &remoting::RpcDemuxerStreamHandler::RequestMoreVideoBuffers,
+            demuxer_stream_handler_->GetWeakPtr()),
+        FROM_HERE);
+    auto error_cb = base::BindPostTask(
+        task_runner_,
+        base::BindRepeating(&remoting::RpcDemuxerStreamHandler::OnVideoError,
+                            demuxer_stream_handler_->GetWeakPtr()),
+        FROM_HERE);
+    video_stream_info.emplace(media::VideoDecoderConfig(),
+                              receivers.video_receiver,
+                              std::move(no_buffers_cb), std::move(error_cb));
   }
 
-  streaming_init_info_ = StreamingInitializationInfo{
-      receiver_session_, std::move(audio_stream_info),
-      std::move(video_stream_info)};
+  streaming_init_info_.emplace(receiver_session_, std::move(audio_stream_info),
+                               std::move(video_stream_info));
 }
 
 void PlaybackCommandDispatcher::OnRemotingSessionEnded() {
