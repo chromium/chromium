@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything.mojom.h"
+#include "content/public/browser/page.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
@@ -58,6 +59,7 @@ ReadAnythingController::~ReadAnythingController() {
   DCHECK(browser_);
   if (browser_->tab_strip_model())
     browser_->tab_strip_model()->RemoveObserver(this);
+  WebContentsObserver::Observe(nullptr);
 }
 
 void ReadAnythingController::OnFontChoiceChanged(int new_choice) {
@@ -77,12 +79,17 @@ void ReadAnythingController::OnTabStripModelChanged(
   DistillAXTree();
 }
 
+void ReadAnythingController::PrimaryPageChanged(content::Page& page) {
+  DistillAXTree();
+}
+
 void ReadAnythingController::DistillAXTree() {
   DCHECK(browser_);
   content::WebContents* web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   if (!web_contents)
     return;
+  WebContentsObserver::Observe(web_contents);
 
   // Read Anything just runs on the main frame and does not run on embedded
   // content.

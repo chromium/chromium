@@ -13,7 +13,12 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_page_handler.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+
+namespace content {
+class Page;
+}
 
 namespace ui {
 struct AXTreeUpdate;
@@ -34,7 +39,8 @@ class Browser;
 //
 class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
                                public ReadAnythingPageHandler::Delegate,
-                               public TabStripModelObserver {
+                               public TabStripModelObserver,
+                               public content::WebContentsObserver {
  public:
   ReadAnythingController(ReadAnythingModel* model, Browser* browser);
   ReadAnythingController(const ReadAnythingController&) = delete;
@@ -53,6 +59,9 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
 
   // Requests a distilled AXTree for the main frame of the currently active
   // web contents.
