@@ -16,6 +16,7 @@
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -34,6 +35,7 @@ namespace {
 constexpr int kButtonRadius = 20;
 constexpr int kBubbleWidth = 375;
 constexpr int kDesiredAvatarSize = 40;
+constexpr int kDesiredIconSize = 20;
 constexpr int kPadding = 5;
 constexpr int kProgressBarHeight = 2;
 
@@ -112,7 +114,10 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   SetTitle(l10n_util::GetStringFUTF16(
       IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
       base::UTF8ToUTF16(rp_etld_plus_one), idp_etld_plus_one_));
-  auto imageSkia = gfx::ImageSkia::CreateFrom1xBitmap(idp_metadata.brand_icon);
+  gfx::ImageSkia imageSkia =
+      gfx::ImageSkia::CreateFrom1xBitmap(skia::ImageOperations::Resize(
+          idp_metadata.brand_icon, skia::ImageOperations::RESIZE_LANCZOS3,
+          kDesiredIconSize, kDesiredIconSize));
   SetIcon(imageSkia);
   SetShowIcon(true);
   SetShowCloseButton(true);
