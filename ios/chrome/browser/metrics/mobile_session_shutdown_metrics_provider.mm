@@ -191,9 +191,8 @@ void LogStabilityIOSExperimentalCounts(
       return;
   };
 
-  UMA_STABILITY_HISTOGRAM_ENUMERATION(
-      "Stability.iOS.Experimental.Counts", type,
-      IOSStabilityUserVisibleCrashType::kMaxValue);
+  UMA_STABILITY_HISTOGRAM_ENUMERATION("Stability.iOS.Experimental.Counts2",
+                                      type);
 }
 
 // Logs |type| in the shutdown type histogram.

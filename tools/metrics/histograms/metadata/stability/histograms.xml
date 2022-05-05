@@ -362,8 +362,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Stability.IOS.Experimental.Counts"
-    enum="IOSStabilityUserVisibleTerminationType" expires_after="2022-06-15">
+<histogram name="Stability.IOS.Experimental.Counts2"
+    enum="IOSStabilityUserVisibleTerminationType" expires_after="2023-05-03">
   <owner>ajuma@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -373,9 +373,9 @@ chromium-metrics-reviews@google.com.
     crashes, hangs, UTEs and XTEs. This metric intends to complement
     Stability.Counts. Stability.Counts does include UTEs / XTEs and thus is a
     noisy metric which significantly overcounts user-visible crashes.
-    Stability.IOS.Experimental.Counts is not recorded on OOM crashes, so it does
-    not represent all user-visible crashes, but OOMs are so rare in Chrome for
-    iOS that Stability.IOS.Experimental.Counts is still a good proxy for
+    Stability.IOS.Experimental.Counts2 is not recorded on OOM crashes, so it
+    does not represent all user-visible crashes, but OOMs are so rare in Chrome
+    for iOS that Stability.IOS.Experimental.Counts2 is still a good proxy for
     user-visible crashes. IOS.MetricKit.ForegroundExitData includes OOM crashes
     (iOS 14 and higher) and can be used in conjunction with this metric.
   </summary>
