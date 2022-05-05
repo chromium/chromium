@@ -8,6 +8,7 @@
  */
 
 goog.provide('PanelNodeMenuData');
+goog.provide('PanelNodeMenuItemData');
 goog.provide('ALL_NODE_MENU_DATA');
 
 goog.require('AutomationPredicate');
@@ -15,6 +16,8 @@ goog.require('AutomationPredicate');
 /** @typedef {{titleId: string, predicate: !AutomationPredicate.Unary}} */
 let PanelNodeMenuData;
 
+/** @typedef {{title: string, callback: function(), isActive: boolean}} */
+let PanelNodeMenuItemData;
 
 /** @const {!Array<!PanelNodeMenuData>} */
 ALL_NODE_MENU_DATA = [

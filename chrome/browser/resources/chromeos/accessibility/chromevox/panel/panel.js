@@ -745,9 +745,7 @@ export class Panel extends PanelInterface {
    * @return {PanelMenu} The menu just created.
    */
   static addNodeMenu(menuData, node, isActivatedMenu) {
-    const menu = new PanelNodeMenu(
-        menuData.titleId, node, menuData.predicate,
-        /* defer= */ !isActivatedMenu);
+    const menu = new PanelNodeMenu(menuData, node, isActivatedMenu);
     $('menu-bar').appendChild(menu.menuBarItemElement);
     menu.menuBarItemElement.addEventListener('mouseover', () => {
       Panel.activateMenu(menu, true /* activateFirstItem */);

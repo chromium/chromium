@@ -9,25 +9,24 @@
 
 export class PanelNodeMenuBackground {
   /**
+   * @param {!PanelNodeMenuData} menuData
    * @param {chrome.automation.AutomationNode} node ChromeVox's current
    *     position.
-   * @param {AutomationPredicate.Unary} pred Filter to use on the document.
-   * @param {boolean} async If true, populates the menu asynchronously by
-   *     posting a task after searching each chunk of nodes.
-   * @param {Function} addMenuItem
-   * @param {Function} setActiveIndex
+   * @param {boolean} isActivated Whether the menu was explicitly activated.
+   *     If false, the menu is populated asynchronously by posting a task
+   *     after searching each chunk of nodes.
+   * @param {function(!PanelNodeMenuItemData)} addMenuItemFromData A callback
+   *     that adds an item to the corresponding menu in the panel.
    */
-  constructor(node, pred, async, addMenuItem, setActiveIndex) {
-    /** @private {AutomationNode} */
+  constructor(menuData, node, isActivated, addMenuItemFromData) {
+    /** @private {chrome.automation.AutomationNode} */
     this.node_ = node;
     /** @private {AutomationPredicate.Unary} */
-    this.pred_ = pred;
+    this.pred_ = menuData.predicate;
     /** @private {boolean} */
-    this.async_ = async;
-    /** @private {Function} */
-    this.addMenuItem_ = addMenuItem;
-    /** @private {Function} */
-    this.setActiveIndexToItemsLength_ = setActiveIndex;
+    this.isActivated_ = isActivated;
+    /** @private {function(!PanelNodeMenuItemData)} */
+    this.addMenuItemFromData_ = addMenuItemFromData;
     /** @private {AutomationTreeWalker|undefined} */
     this.walker_;
     /** @private {number} */
@@ -65,10 +64,10 @@ export class PanelNodeMenuBackground {
    * Iterate over nodes from the tree walker. If a node matches the
    * predicate, add an item to the menu.
    *
-   * If |this.async_| is true, then after MAX_NODES_BEFORE_ASYNC nodes
-   * have been scanned, call setTimeout to defer searching. This frees
-   * up the main event loop to keep the panel menu responsive, otherwise
-   * it basically freezes up until all of the nodes have been found.
+   * Unless |this.isActivated_| is true, then after MAX_NODES_BEFORE_ASYNC nodes
+   * have been scanned, call setTimeout to defer searching. This frees up the
+   * main event loop to keep the panel menu responsive, otherwise it basically
+   * freezes up until all of the nodes have been found.
    * @private
    */
   findMoreNodes_() {
@@ -80,19 +79,18 @@ export class PanelNodeMenuBackground {
         const range = cursors.Range.fromNode(node);
         output.withoutHints();
         output.withSpeech(range, range, OutputEventType.NAVIGATE);
-        const label = output.toString();
-        this.addMenuItem_(
-            label, '', '', '',
-            () => chrome.extension.getBackgroundPage()
-                      .ChromeVoxState.instance.navigateToRange(
-                          cursors.Range.fromNode(node)));
+        const title = output.toString();
 
-        if (node === this.node_ && !this.async_) {
-          this.setActiveIndexToItemsLength_();
-        }
+        const callback = (() => {
+          chrome.extension.getBackgroundPage()
+              .ChromeVoxState.instance.navigateToRange(
+                  cursors.Range.fromNode(node));
+        });
+        const isActive = node === this.node_ && this.isActivated_;
+        this.addMenuItemFromData_({title, callback, isActive});
       }
 
-      if (this.async_) {
+      if (!this.isActivated_) {
         this.nodeCount_++;
         if (this.nodeCount_ >= PanelNodeMenuBackground.MAX_NODES_BEFORE_ASYNC) {
           this.nodeCount_ = 0;
@@ -110,9 +108,12 @@ export class PanelNodeMenuBackground {
    * @private
    */
   finish_() {
-    if (this.isEmpty) {
-      this.addMenuItem_(
-          Msgs.getMsg('panel_menu_item_none'), '', '', '', function() {});
+    if (this.isEmpty_) {
+      this.addMenuItemFromData_({
+        title: Msgs.getMsg('panel_menu_item_none'),
+        callback() {},
+        isActive: false
+      });
     }
   }
 }

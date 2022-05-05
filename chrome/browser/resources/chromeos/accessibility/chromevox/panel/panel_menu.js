@@ -312,22 +312,19 @@ export class PanelMenu {
 
 export class PanelNodeMenu extends PanelMenu {
   /**
-   * @param {string} menuMsg The msg id of the menu.
+   * @param {!PanelNodeMenuData} data
    * @param {chrome.automation.AutomationNode} node ChromeVox's current
    *     position.
-   * @param {AutomationPredicate.Unary} pred Filter to use on the document.
-   * @param {boolean} async If true, populates the menu asynchronously by
-   *     posting a task after searching each chunk of nodes.
+   * @param {boolean} isActivated Whether the menu was explicitly activated.
+   *     If false, the menu is populated asynchronously by posting a task
+   *     after searching each chunk of nodes.
    */
-  constructor(menuMsg, node, pred, async) {
-    super(menuMsg);
-    // These callbacks are temporary as we transition to using message passing
-    // to communicate across renderer boundaries.
-    const addItem = () => this.addMenuItem.apply(this, arguments);
-    const setActiveIndex = () => this.activeIndex_ = this.items_.length - 1;
+  constructor(data, node, isActivated) {
+    super(data.titleId);
     /** @private {!PanelNodeMenuBackground} */
-    this.background_ =
-        new PanelNodeMenuBackground(node, pred, async, addItem, setActiveIndex);
+    this.background_ = new PanelNodeMenuBackground(
+        data, node, isActivated, (itemData) => this.addItemFromData_(itemData));
+
     this.background_.populate();
   }
 
@@ -339,6 +336,17 @@ export class PanelNodeMenu extends PanelMenu {
       // |findMoreNodes|. We want to start the menu there.
       const index = this.activeIndex_ === -1 ? 0 : this.activeIndex_;
       this.activateItem(index);
+    }
+  }
+
+  /**
+   * @param {!PanelNodeMenuItemData} data
+   * @private
+   */
+  addItemFromData_(data) {
+    this.addMenuItem(data.title, '', '', '', data.callback);
+    if (data.isActive) {
+      this.activeIndex_ = this.items_.length - 1;
     }
   }
 }
