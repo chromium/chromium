@@ -137,6 +137,8 @@ LargestContentfulPaintCalculator::TextCandidateTraceData(
   value->SetInteger("size", static_cast<int>(largest_text.first_size));
   value->SetInteger("candidateIndex", ++count_candidates_);
   auto* window = window_performance_->DomWindow();
+  value->SetBoolean("isOutermostMainFrame",
+                    window->GetFrame()->IsOutermostMainFrame());
   value->SetBoolean("isMainFrame", window->GetFrame()->IsMainFrame());
   value->SetString("navigationId",
                    IdentifiersFactory::LoaderId(window->document()->Loader()));
@@ -152,6 +154,8 @@ LargestContentfulPaintCalculator::ImageCandidateTraceData(
   value->SetInteger("size", static_cast<int>(largest_image->first_size));
   value->SetInteger("candidateIndex", ++count_candidates_);
   auto* window = window_performance_->DomWindow();
+  value->SetBoolean("isOutermostMainFrame",
+                    window->GetFrame()->IsOutermostMainFrame());
   value->SetBoolean("isMainFrame", window->GetFrame()->IsMainFrame());
   value->SetString("navigationId",
                    IdentifiersFactory::LoaderId(window->document()->Loader()));

@@ -114,8 +114,11 @@ void ImagePaintTimingDetector::PopulateTraceValue(
   value.SetInteger("size", static_cast<int>(first_image_paint.first_size));
   value.SetInteger("candidateIndex", ++count_candidates_);
   value.SetBoolean("isMainFrame", frame_view_->GetFrame().IsMainFrame());
-  value.SetBoolean("isOOPIF",
-                   !frame_view_->GetFrame().LocalFrameRoot().IsMainFrame());
+  value.SetBoolean("isOutermostMainFrame",
+                   frame_view_->GetFrame().IsOutermostMainFrame());
+  value.SetBoolean("isEmbeddedFrame",
+                   !frame_view_->GetFrame().LocalFrameRoot().IsMainFrame() ||
+                       frame_view_->GetFrame().IsInFencedFrameTree());
   if (first_image_paint.lcp_rect_info_) {
     first_image_paint.lcp_rect_info_->OutputToTraceValue(value);
   }
@@ -141,8 +144,11 @@ void ImagePaintTimingDetector::ReportNoCandidateToTrace() {
   auto value = std::make_unique<TracedValue>();
   value->SetInteger("candidateIndex", ++count_candidates_);
   value->SetBoolean("isMainFrame", frame_view_->GetFrame().IsMainFrame());
-  value->SetBoolean("isOOPIF",
-                    !frame_view_->GetFrame().LocalFrameRoot().IsMainFrame());
+  value->SetBoolean("isOutermostMainFrame",
+                    frame_view_->GetFrame().IsOutermostMainFrame());
+  value->SetBoolean("isEmbeddedFrame",
+                    !frame_view_->GetFrame().LocalFrameRoot().IsMainFrame() ||
+                        frame_view_->GetFrame().IsInFencedFrameTree());
   TRACE_EVENT2("loading", "LargestImagePaint::NoCandidate", "data",
                std::move(value), "frame",
                ToTraceValue(&frame_view_->GetFrame()));

@@ -305,9 +305,13 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TraceEvent_Candidate) {
   absl::optional<bool> is_main_frame = arg_dict.FindBool("isMainFrame");
   EXPECT_TRUE(is_main_frame.has_value());
   EXPECT_EQ(true, is_main_frame.value());
-  absl::optional<bool> is_oopif = arg_dict.FindBool("isOOPIF");
-  EXPECT_TRUE(is_oopif.has_value());
-  EXPECT_EQ(false, is_oopif.value());
+  absl::optional<bool> is_outermost_main_frame =
+      arg_dict.FindBool("isOutermostMainFrame");
+  EXPECT_TRUE(is_outermost_main_frame.has_value());
+  EXPECT_EQ(true, is_outermost_main_frame.value());
+  absl::optional<bool> is_embedded_frame = arg_dict.FindBool("isEmbeddedFrame");
+  EXPECT_TRUE(is_embedded_frame.has_value());
+  EXPECT_EQ(false, is_embedded_frame.value());
   EXPECT_GT(arg_dict.FindInt("frame_x").value_or(-1), 0);
   EXPECT_GT(arg_dict.FindInt("frame_y").value_or(-1), 0);
   EXPECT_GT(arg_dict.FindInt("frame_width").value_or(-1), 0);
@@ -353,9 +357,13 @@ TEST_F(TextPaintTimingDetectorTest,
   absl::optional<bool> is_main_frame = arg_dict.FindBool("isMainFrame");
   EXPECT_TRUE(is_main_frame.has_value());
   EXPECT_EQ(false, is_main_frame.value());
-  absl::optional<bool> is_oopif = arg_dict.FindBool("isOOPIF");
-  EXPECT_TRUE(is_oopif.has_value());
-  EXPECT_EQ(false, is_oopif.value());
+  absl::optional<bool> is_outermost_main_frame =
+      arg_dict.FindBool("isOutermostMainFrame");
+  EXPECT_TRUE(is_outermost_main_frame.has_value());
+  EXPECT_EQ(false, is_outermost_main_frame.value());
+  absl::optional<bool> is_embedded_frame = arg_dict.FindBool("isEmbeddedFrame");
+  EXPECT_TRUE(is_embedded_frame.has_value());
+  EXPECT_EQ(false, is_embedded_frame.value());
   // There's sometimes a 1 pixel offset for the y dimensions.
   EXPECT_EQ(arg_dict.FindInt("frame_x").value_or(-1), 10);
   EXPECT_GE(arg_dict.FindInt("frame_y").value_or(-1), 9);

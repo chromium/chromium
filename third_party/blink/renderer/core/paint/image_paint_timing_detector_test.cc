@@ -376,9 +376,13 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_Candidate) {
   absl::optional<bool> isMainFrame = arg_dict.FindBool("isMainFrame");
   EXPECT_TRUE(isMainFrame.has_value());
   EXPECT_EQ(true, isMainFrame.value());
-  absl::optional<bool> isOOPIF = arg_dict.FindBool("isOOPIF");
-  EXPECT_TRUE(isOOPIF.has_value());
-  EXPECT_EQ(false, isOOPIF.value());
+  absl::optional<bool> is_outermost_main_frame =
+      arg_dict.FindBool("isOutermostMainFrame");
+  EXPECT_TRUE(is_outermost_main_frame.has_value());
+  EXPECT_EQ(true, is_outermost_main_frame.value());
+  absl::optional<bool> is_embedded_frame = arg_dict.FindBool("isEmbeddedFrame");
+  EXPECT_TRUE(is_embedded_frame.has_value());
+  EXPECT_EQ(false, is_embedded_frame.value());
   EXPECT_EQ(arg_dict.FindInt("frame_x").value_or(-1), 8);
   EXPECT_EQ(arg_dict.FindInt("frame_y").value_or(-1), 8);
   EXPECT_EQ(arg_dict.FindInt("frame_width").value_or(-1), 5);
@@ -425,9 +429,13 @@ TEST_P(ImagePaintTimingDetectorTest,
   absl::optional<bool> isMainFrame = arg_dict.FindBool("isMainFrame");
   EXPECT_TRUE(isMainFrame.has_value());
   EXPECT_EQ(false, isMainFrame.value());
-  absl::optional<bool> isOOPIF = arg_dict.FindBool("isOOPIF");
-  EXPECT_TRUE(isOOPIF.has_value());
-  EXPECT_EQ(false, isOOPIF.value());
+  absl::optional<bool> is_outermost_main_frame =
+      arg_dict.FindBool("isOutermostMainFrame");
+  EXPECT_TRUE(is_outermost_main_frame.has_value());
+  EXPECT_EQ(false, is_outermost_main_frame.value());
+  absl::optional<bool> is_embedded_frame = arg_dict.FindBool("isEmbeddedFrame");
+  EXPECT_TRUE(is_embedded_frame.has_value());
+  EXPECT_EQ(false, is_embedded_frame.value());
   EXPECT_EQ(arg_dict.FindInt("frame_x").value_or(-1), 10);
   EXPECT_EQ(arg_dict.FindInt("frame_y").value_or(-1), 10);
   EXPECT_EQ(arg_dict.FindInt("frame_width").value_or(-1), 200);
@@ -464,7 +472,8 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_NoCandidate) {
   base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
   EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 1);
   EXPECT_THAT(arg_dict.FindBool("isMainFrame"), Optional(true));
-  EXPECT_THAT(arg_dict.FindBool("isOOPIF"), Optional(false));
+  EXPECT_THAT(arg_dict.FindBool("isOutermostMainFrame"), Optional(true));
+  EXPECT_THAT(arg_dict.FindBool("isEmbeddedFrame"), Optional(false));
 }
 
 TEST_P(ImagePaintTimingDetectorTest, UpdatePerformanceTiming) {
