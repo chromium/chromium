@@ -21,8 +21,6 @@ namespace gin {
 
 class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
  public:
-  ArrayBufferAllocator();
-
   void* Allocate(size_t length) override;
   void* AllocateUninitialized(size_t length) override;
   void Free(void* data, size_t length) override;
@@ -30,7 +28,19 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
   GIN_EXPORT static ArrayBufferAllocator* SharedInstance();
 
  private:
-  base::PartitionAllocator partition_;
+  friend class V8Initializer;
+
+  // Initialize the PartitionAlloc partition from which instances of this class
+  // allocate memory. This is called after initializing V8 since, when enabled,
+  // the V8 sandbox must be initialized first.
+  static void InitializePartition();
+
+  // The PartitionAlloc partition that instances of this class allocate memory
+  // chunks from. When the V8 sandbox is enabled, this partition must be placed
+  // inside of it. For that, PA's ConfigurablePool is created inside the V8
+  // sandbox during initialization of V8, and this partition is then placed
+  // inside the configurable pool during InitializePartition().
+  static base::ThreadSafePartitionRoot* partition_;
 };
 
 class GIN_EXPORT ArrayBuffer {

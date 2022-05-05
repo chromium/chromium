@@ -34,6 +34,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "gin/array_buffer.h"
 #include "gin/gin_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8-initialization.h"
@@ -486,6 +487,11 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
     CHECK_NE(nullptr, GetSharedMemoryMapperForArrayBuffers());
   }
 #endif  // V8_SANDBOX
+
+  // Initialize the partition used by gin::ArrayBufferAllocator instances. This
+  // needs to happen now, after the V8 sandbox has been initialized, so that
+  // the partition is placed inside the configurable pool initialized above.
+  ArrayBufferAllocator::InitializePartition();
 }
 
 // static
