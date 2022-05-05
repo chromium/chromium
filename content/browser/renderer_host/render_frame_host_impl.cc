@@ -1580,7 +1580,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // RenderFrameHost during cleanup.
   ClearWebUI();
 
-  SetLastCommittedSiteInfo(GURL());
+  SetLastCommittedSiteInfo(UrlInfo());
 
   g_token_frame_map.Get().erase(frame_token_);
 
@@ -10405,17 +10405,13 @@ void RenderFrameHostImpl::BeforeUnloadTimeout() {
   SimulateBeforeUnloadCompleted(/*proceed=*/true);
 }
 
-void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
-  // Since |url| has already committed, OriginIsolationRequest should be set to
-  // kNone: this is done implicitly in the UrlInfoInit constructor.
+void RenderFrameHostImpl::SetLastCommittedSiteInfo(const UrlInfo& url_info) {
   BrowserContext* browser_context = GetSiteInstance()->GetBrowserContext();
   SiteInfo site_info =
-      url.is_empty()
+      url_info.url.is_empty()
           ? SiteInfo(browser_context)
-          : SiteInfo::Create(
-                GetSiteInstance()->GetIsolationContext(),
-                UrlInfo(UrlInfoInit(url).WithWebExposedIsolationInfo(
-                    GetSiteInstance()->GetWebExposedIsolationInfo())));
+          : SiteInfo::Create(GetSiteInstance()->GetIsolationContext(),
+                             url_info);
 
   if (last_committed_site_info_ == site_info)
     return;
@@ -10789,14 +10785,6 @@ bool RenderFrameHostImpl::ValidateURLAndOrigin(
   return true;
 }
 
-void RenderFrameHostImpl::UpdateSiteURL(const GURL& url, bool is_error_page) {
-  if (is_error_page) {
-    SetLastCommittedSiteInfo(GURL());
-  } else {
-    SetLastCommittedSiteInfo(url);
-  }
-}
-
 // Simulates the calculation for DidCommitProvisionalLoadParams' `referrer`.
 // This is written to preserve the behavior of the calculations that happened in
 // the renderer before being moved to the browser. In the future, we might want
@@ -10982,7 +10970,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // request.
   navigation_request->set_transition(params->transition);
 
-  UpdateSiteURL(params->url, navigation_request->DidEncounterError());
+  SetLastCommittedSiteInfo(navigation_request->DidEncounterError()
+                               ? UrlInfo()
+                               : navigation_request->GetUrlInfo());
 
   isolation_info_ = navigation_request->isolation_info_for_subresources();
 

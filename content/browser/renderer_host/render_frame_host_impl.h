@@ -3046,15 +3046,19 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Update this frame's last committed origin.
   void SetLastCommittedOrigin(const url::Origin& origin);
 
-  // Called when a navigation commits successfully to |url|. This will update
-  // |last_committed_site_info_| with the SiteInfo corresponding to |url|.
-  // Note that this will recompute the SiteInfo from |url| rather than using
-  // GetSiteInstance()->GetSiteInfo(), so that |last_committed_site_info_| is
-  // always meaningful: e.g., without site isolation, b.com could commit in a
-  // SiteInstance for a.com, but this function will still compute the last
-  // committed SiteInfo as b.com.  For example, this can be used to track which
-  // sites have committed in which process.
-  void SetLastCommittedSiteInfo(const GURL& url);
+  // Called when a navigation commits successfully to |url_info->url|. This
+  // will update |last_committed_site_info_| with the SiteInfo corresponding to
+  // |url_info|.  If |url_info| is empty, |last_committed_site_info_| will be
+  // cleared.
+  //
+  // Note that this will recompute the SiteInfo from |url_info| rather than
+  // using GetSiteInstance()->GetSiteInfo(), so that
+  // |last_committed_site_info_| is always meaningful: e.g., without site
+  // isolation, b.com could commit in a SiteInstance for a.com, but this
+  // function will still compute the last committed SiteInfo as b.com.  For
+  // example, this can be used to track which sites have committed in which
+  // process.
+  void SetLastCommittedSiteInfo(const UrlInfo& url_info);
 
   // Clears any existing policy and constructs a new policy for this frame,
   // based on its parent frame.
@@ -3099,10 +3103,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
                             const url::Origin& origin,
                             bool is_same_document_navigation,
                             NavigationRequest* navigation_request);
-
-  // Updates the site url if the navigation was successful and the page is not
-  // an interstitial.
-  void UpdateSiteURL(const GURL& url, bool is_error_page);
 
   // The actual implementation of committing a navigation in the browser
   // process. Called by the DidCommitProvisionalLoad IPC handler.
@@ -3463,7 +3463,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
       network::mojom::PrivateNetworkRequestPolicy::kBlock;
 
   // Track the SiteInfo of the last site we committed successfully, as obtained
-  // from SiteInstanceImpl::GetSiteInfoForURL().
+  // from SiteInfo::CreateInternal() called on the last committed UrlInfo.
+  // Note that this might be different from this frame's SiteInfo (i.e.,
+  // GetSiteInstance()->GetSiteInfo()) on platforms with no site isolation.
+  // This is used for tracking which sites have committed in various renderer
+  // processes to support process reuse policies.
   SiteInfo last_committed_site_info_;
 
   // The most recent non-error URL to commit in this frame.

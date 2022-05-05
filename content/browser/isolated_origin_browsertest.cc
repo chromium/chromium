@@ -1014,6 +1014,52 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
               1)));
 }
 
+// Check that two same-site Origin-Agent-Cluster subframes in unrelated windows
+// obey the subframe process reuse policy.
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
+                       OriginAgentClusterProcessReuse) {
+  SetHeaderValue("?1");
+  // Start off with an a(a) page, then navigate the subframe to an isolated
+  // suborigin.
+  GURL test_url(https_server()->GetURL("foo.com",
+                                       "/cross_site_iframe_factory.html?"
+                                       "foo.com(foo.com)"));
+  GURL isolated_suborigin_url(
+      https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* child = root->child_at(0);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child, isolated_suborigin_url));
+  EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+            child->current_frame_host()->GetSiteInstance());
+  EXPECT_TRUE(child->current_frame_host()
+                  ->GetSiteInstance()
+                  ->GetSiteInfo()
+                  .requires_origin_keyed_process());
+
+  // Open an unrelated window and set up the same frame hierarchy there.
+  Shell* new_shell = CreateBrowser();
+  EXPECT_TRUE(NavigateToURL(new_shell, test_url));
+  FrameTreeNode* new_root =
+      static_cast<WebContentsImpl*>(new_shell->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
+  FrameTreeNode* new_child = new_root->child_at(0);
+  EXPECT_TRUE(NavigateToURLFromRenderer(new_child, isolated_suborigin_url));
+  EXPECT_NE(new_root->current_frame_host()->GetSiteInstance(),
+            new_child->current_frame_host()->GetSiteInstance());
+
+  // Even though the two subframes should be in different BrowsingInstances,
+  // they should share the same process due to the subframe process reuse
+  // policy.
+  EXPECT_FALSE(
+      child->current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+          new_child->current_frame_host()->GetSiteInstance()));
+  EXPECT_EQ(child->current_frame_host()->GetProcess(),
+            new_child->current_frame_host()->GetProcess());
+}
+
 // In this test the sub-origin is isolated because the header requests it. It
 // will have the same site instance as the main frame, and it will be in the
 // same process.
@@ -6529,6 +6575,48 @@ IN_PROC_BROWSER_TEST_F(JITIsolationTest, SubFrameTest) {
   child_frame_node = root->child_at(0);
   EXPECT_FALSE(
       child_frame_node->current_frame_host()->GetProcess()->IsJitDisabled());
+}
+
+// Check that jitless subframes obey process reuse policies.
+IN_PROC_BROWSER_TEST_F(JITIsolationTest, SubFrameProcessReuse) {
+  // Set JIT to be enabled by default.
+  ScopedBrowserClientOverride policy(
+      /* jit_disabled_default */ false,
+      /* disable_site_isolation_entirely */ false);
+
+  GURL default_embeds_disabled(embedded_test_server()->GetURL(
+      "foo.com", "/cross_site_iframe_factory.html?foo.com(jit-disabled.com)"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), default_embeds_disabled));
+
+  // Top frame 'foo.com' should have JIT enabled as that's the default.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  EXPECT_FALSE(root->current_frame_host()->GetProcess()->IsJitDisabled());
+  // The frame containing jit-disabled.com should have JIT disabled.
+  FrameTreeNode* child = root->child_at(0);
+  EXPECT_TRUE(child->current_frame_host()->GetProcess()->IsJitDisabled());
+
+  // Create a new window, unrelated to the current one, and set up the same
+  // frame hierarchy.
+  Shell* new_shell = CreateBrowser();
+  EXPECT_TRUE(NavigateToURL(new_shell, default_embeds_disabled));
+
+  FrameTreeNode* new_root =
+      static_cast<WebContentsImpl*>(new_shell->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
+  EXPECT_FALSE(new_root->current_frame_host()->GetProcess()->IsJitDisabled());
+
+  FrameTreeNode* new_child = new_root->child_at(0);
+  EXPECT_TRUE(new_child->current_frame_host()->GetProcess()->IsJitDisabled());
+
+  // The subframes should be in separate BrowsingInstances, but because they
+  // have the same site, they should share the same process.
+  EXPECT_FALSE(
+      new_child->current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+          child->current_frame_host()->GetSiteInstance()));
+  EXPECT_EQ(new_child->current_frame_host()->GetProcess(),
+            child->current_frame_host()->GetProcess());
 }
 
 }  // namespace content
