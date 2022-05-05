@@ -9,7 +9,10 @@ import UIKit
 // necessary because Objective C can't see SwiftUI types.
 @available(iOS 15, *)
 @objcMembers public class OverflowMenuViewProvider: NSObject {
-  public static func makeViewController(withModel model: OverflowMenuModel) -> UIViewController {
-    return OverflowMenuHostingController(rootView: OverflowMenuView().environmentObject(model))
+  public static func makeViewController(
+    withModel model: OverflowMenuModel, metricsHandler: PopupMenuMetricsHandler
+  ) -> UIViewController {
+    return OverflowMenuHostingController(
+      rootView: OverflowMenuView(model: model, metricsHandler: metricsHandler))
   }
 }

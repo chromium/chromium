@@ -10,7 +10,10 @@ struct OverflowMenuView: View {
     static let destinationListHeight: CGFloat = 123
   }
 
-  @EnvironmentObject var model: OverflowMenuModel
+  var model: OverflowMenuModel
+
+  weak var metricsHandler: PopupMenuMetricsHandler?
+
   var body: some View {
     VStack(
       alignment: .leading,
@@ -18,10 +21,10 @@ struct OverflowMenuView: View {
       // include proper spacing.
       spacing: 0
     ) {
-      OverflowMenuDestinationList(destinations: model.destinations)
+      OverflowMenuDestinationList(destinations: model.destinations, metricsHandler: metricsHandler)
         .frame(height: Dimensions.destinationListHeight)
       Divider()
-      OverflowMenuActionList(actionGroups: model.actionGroups)
+      OverflowMenuActionList(actionGroups: model.actionGroups, metricsHandler: metricsHandler)
     }.background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
   }
 }
