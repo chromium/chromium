@@ -282,6 +282,9 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
 
 void CalendarDateCellView::PaintButtonContents(gfx::Canvas* canvas) {
   views::LabelButton::PaintButtonContents(canvas);
+  if (grayed_out_)
+    return;
+
   const AshColorProvider* color_provider = AshColorProvider::Get();
   if (calendar_utils::IsToday(date_)) {
     const SkColor text_color = color_provider->GetContentLayerColor(
