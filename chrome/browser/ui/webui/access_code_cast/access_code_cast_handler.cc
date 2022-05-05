@@ -155,9 +155,12 @@ AccessCodeCastHandler::AccessCodeCastHandler(
       receiver_(this, std::move(page_handler)),
       cast_mode_set_(cast_mode_set),
       media_route_starter_(std::move(media_route_starter)) {
-  access_code_sink_service_ = AccessCodeCastSinkServiceFactory::GetForProfile(
-      media_route_starter_->GetProfile());
-  Init();
+  if (media_route_starter_) {
+    access_code_sink_service_ =
+        AccessCodeCastSinkServiceFactory::GetForProfile(
+            media_route_starter_->GetProfile());
+    Init();
+  }
 }
 
 AccessCodeCastHandler::AccessCodeCastHandler(
@@ -175,7 +178,8 @@ AccessCodeCastHandler::AccessCodeCastHandler(
 }
 
 AccessCodeCastHandler::~AccessCodeCastHandler() {
-  media_route_starter_->RemoveMediaSinkWithCastModesObserver(this);
+  if (media_route_starter_)
+    media_route_starter_->RemoveMediaSinkWithCastModesObserver(this);
 }
 
 void AccessCodeCastHandler::Init() {
@@ -191,6 +195,11 @@ void AccessCodeCastHandler::AddSink(
     const std::string& access_code,
     access_code_cast::mojom::CastDiscoveryMethod discovery_method,
     AddSinkCallback callback) {
+  DCHECK(media_route_starter_) << "Must have a MediaRouteStarter";
+  if (!media_route_starter_) {
+    std::move(callback).Run(AddSinkResultCode::UNKNOWN_ERROR);
+    return;
+  }
   AddSinkCallback callback_with_metrics =
       std::move(base::BindOnce(&AddSinkMetricsCallback))
           .Then(std::move(callback));
@@ -212,6 +221,7 @@ void AccessCodeCastHandler::CheckForDiscoveryCompletion() {
   if (!add_sink_callback_)
     return;
   DCHECK(sink_id_) << "Must have a sink id to complete!";
+  DCHECK(media_route_starter_) << "Must have a MediaRouteStarter to complete!";
 
   // Verify that the sink is in QRM.
   if (std::find_if(cast_mode_set_.begin(), cast_mode_set_.end(),
@@ -271,6 +281,12 @@ void AccessCodeCastHandler::OnSinksUpdated(
 }
 
 void AccessCodeCastHandler::CastToSink(CastToSinkCallback callback) {
+  DCHECK(media_route_starter_) << "Must have a MediaRouteStarter";
+  if (!media_route_starter_) {
+    std::move(callback).Run(RouteRequestResultCode::UNKNOWN_ERROR);
+    return;
+  }
+
   DCHECK(sink_id_) << "Cast called without a valid sink id!";
 
   GetMediaRouter()->GetLogger()->LogInfo(
