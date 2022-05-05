@@ -329,7 +329,7 @@ TEST_F(SupportedResolutionResolverTest, AV1ProfileProSupports8k) {
                      kSquare8k, kSquare8k, kSquare8k);
 }
 
-TEST_F(SupportedResolutionResolverTest, H265Supports4kIfEnabled) {
+TEST_F(SupportedResolutionResolverTest, H265Supports8kIfEnabled) {
   DONT_RUN_ON_WIN_7();
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
@@ -344,9 +344,10 @@ TEST_F(SupportedResolutionResolverTest, H265Supports4kIfEnabled) {
 
   // enable the feature and try again
   scoped_feature_list.InitAndEnableFeature(kD3D11HEVCDecoding);
+  SetMaxResolution(D3D11_DECODER_PROFILE_HEVC_VLD_MAIN, kSquare8k);
   const auto resolutions_for_feature = GetSupportedD3D11VideoDecoderResolutions(
       mock_d3d11_device_, gpu_workarounds_);
-  ASSERT_EQ(4u, no_feature_resolutions.size());
+  ASSERT_EQ(4u, resolutions_for_feature.size());
   const auto it = resolutions_for_feature.find(HEVCPROFILE_MAIN);
   ASSERT_NE(it, resolutions_for_feature.end());
   ASSERT_EQ(it->second.max_landscape_resolution, kSquare8k);
