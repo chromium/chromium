@@ -37,7 +37,7 @@
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}one{# d}few{# d}other{# d}}</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2161656808144014275">Tekst</translation>
-<translation id="2168039046890040389">Stranica prema gore</translation>
+<translation id="2168039046890040389">Tipka Page Up</translation>
 <translation id="2190355936436201913">(prazno)</translation>
 <translation id="2192232475740621500">Koristi nisku gustoću</translation>
 <translation id="2267918077332197517">Blokiraj sva obavještenja s ove web lokacije</translation>
@@ -188,7 +188,7 @@
 <translation id="8134065097954893699">Ponovno učitavanje stranice</translation>
 <translation id="815598010540052116">Klizni prema dolje</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8210608804940886430">Stranica prema dolje</translation>
+<translation id="8210608804940886430">Tipka Page Down</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8245914219290430011">Tab</translation>
 <translation id="8259556432390118667">Hex vrijednost boje</translation>

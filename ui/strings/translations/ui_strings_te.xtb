@@ -37,7 +37,7 @@
 <translation id="2141853158323869627">{DAYS,plural, =1{1రో}other{#రో}}</translation>
 <translation id="2148716181193084225">ఈ రోజు</translation>
 <translation id="2161656808144014275">వచనం</translation>
-<translation id="2168039046890040389">పేజీ పైకి</translation>
+<translation id="2168039046890040389">Page Up</translation>
 <translation id="2190355936436201913">(ఖాళీ)</translation>
 <translation id="2192232475740621500">తక్కువ సాంద్రతను ఉపయోగించు</translation>
 <translation id="2267918077332197517">ఈ సైట్ నుండి నోటిఫికేషన్‌లన్నీ బ్లాక్ చేయండి</translation>
@@ -188,7 +188,7 @@
 <translation id="8134065097954893699">ఈ పేజీని మళ్లీ లోడ్ చేస్తోంది</translation>
 <translation id="815598010540052116">కిందికి స్క్రోల్ చేయి</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8210608804940886430">పేజీ క్రిందికి</translation>
+<translation id="8210608804940886430">Page Down</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8245914219290430011">ట్యాబ్</translation>
 <translation id="8259556432390118667">హెక్స్ రంగు విలువ</translation>

@@ -37,7 +37,7 @@
 <translation id="2141853158323869627">{DAYS,plural, =1{1दि}other{#दि}}</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2161656808144014275">मजकूर</translation>
-<translation id="2168039046890040389">पृष्ठ वर</translation>
+<translation id="2168039046890040389">पेज अप</translation>
 <translation id="2190355936436201913">(रिक्त)</translation>
 <translation id="2192232475740621500">कमी घनता वापरा</translation>
 <translation id="2267918077332197517">या साइटच्या सर्व सूचना ब्‍लॉक करा</translation>
@@ -188,7 +188,7 @@
 <translation id="8134065097954893699">हे पेज रीलोड करत आहे</translation>
 <translation id="815598010540052116">खाली स्क्रोल करा</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8210608804940886430">पृष्ठ खाली</translation>
+<translation id="8210608804940886430">पेज डाउन</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8245914219290430011">टॅब</translation>
 <translation id="8259556432390118667">हेक्स रंग मूल्य</translation>

@@ -37,7 +37,7 @@
 <translation id="2141853158323869627">{DAYS,plural, =1{1ദിവസം}other{# ദിവസം}}</translation>
 <translation id="2148716181193084225">ഇന്ന്</translation>
 <translation id="2161656808144014275">വാചകം</translation>
-<translation id="2168039046890040389">പേജ് മുകളിലേയ്ക്ക്</translation>
+<translation id="2168039046890040389">Page Up</translation>
 <translation id="2190355936436201913">(ശൂന്യം)</translation>
 <translation id="2192232475740621500">കുറഞ്ഞ സാന്ദ്രത ഉപയോഗിക്കുക</translation>
 <translation id="2267918077332197517">ഈ സൈറ്റിൽ നിന്നുള്ള എല്ലാ അറിയിപ്പുകളും ബ്ലോക്ക് ചെയ്യുക</translation>
@@ -188,7 +188,7 @@
 <translation id="8134065097954893699">ഈ പേജ് റീലോഡ് ചെയ്യുന്നു</translation>
 <translation id="815598010540052116">താഴേയ്‌ക്ക് സ്ക്രോൾ ചെയ്യുക</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8210608804940886430">താഴെയുള്ള പേജുകള്‍</translation>
+<translation id="8210608804940886430">Page Down</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8245914219290430011">ടാബ്</translation>
 <translation id="8259556432390118667">ഹെക്‌സ് വർണ മൂല്യം</translation>
