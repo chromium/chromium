@@ -249,6 +249,8 @@ static_library("test_support") {
     "../public/test/test_browser_context.h",
     "../public/test/test_content_client_initializer.cc",
     "../public/test/test_content_client_initializer.h",
+    "../public/test/test_devtools_protocol_client.cc",
+    "../public/test/test_devtools_protocol_client.h",
     "../public/test/test_download_http_response.cc",
     "../public/test/test_download_http_response.h",
     "../public/test/test_file_error_injector.cc",

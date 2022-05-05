@@ -19,6 +19,9 @@ per-file attribution_simulator*=file://content/browser/attribution_reporting/OWN
 # Network Service
 per-file network_service_test_helper.*=file://services/network/OWNERS
 
+# DevTools-specific changes
+per-file *devtools*=file://content/browser/devtools/OWNERS
+
 # For security presubmit checks, though test mojom really don't need review.
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
