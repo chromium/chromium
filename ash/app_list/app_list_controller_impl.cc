@@ -2062,6 +2062,11 @@ void AppListControllerImpl::Shutdown() {
   DCHECK(!is_shutdown_);
   is_shutdown_ = true;
 
+  // Cancel any pending assistant UI close requests to avoid attempts to update
+  // assistant UI state mid shutdown (possibly after assistant has started
+  // shutting down).
+  IgnoreResult(close_assistant_ui_runner_.Release());
+
   // Always shutdown the bubble presenter, even if ProductivityLauncher is
   // disabled, because tests might have temporarily enabled the feature and
   // the widget needs to be closed.

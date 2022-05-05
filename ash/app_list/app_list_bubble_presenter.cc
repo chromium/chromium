@@ -340,7 +340,13 @@ bool AppListBubblePresenter::IsShowing() const {
 bool AppListBubblePresenter::IsShowingEmbeddedAssistantUI() const {
   if (!is_target_visibility_show_)
     return false;
-  DCHECK(bubble_widget_);
+
+  // Bubble view is null while the bubble widget is being initialized for show.
+  // In this case, return true iff the app list will show the assistant page
+  // when initialized.
+  if (!bubble_view_)
+    return target_page_ == AppListBubblePage::kAssistant;
+
   return bubble_view_->IsShowingEmbeddedAssistantUI();
 }
 

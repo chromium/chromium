@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -213,6 +215,10 @@ class AssistantTimersBrowserTest : public MixinBasedInProcessBrowserTest {
   void ShowAssistantUi() {
     if (!tester()->IsVisible())
       tester()->PressAssistantKey();
+    if (ash::features::IsProductivityLauncherEnabled()) {
+      ash::AppListTestApi().WaitForBubbleWindow(
+          /*wait_for_opening_animation=*/true);
+    }
   }
 
   AssistantTestMixin* tester() { return &tester_; }
