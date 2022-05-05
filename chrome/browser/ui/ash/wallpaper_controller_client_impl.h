@@ -84,6 +84,9 @@ class WallpaperControllerClientImpl
       const std::string& album_id,
       const absl::optional<std::string>& current_photo_id,
       FetchGooglePhotosPhotoCallback callback) override;
+  void FetchGooglePhotosAccessToken(
+      const AccountId& account_id,
+      FetchGooglePhotosAccessTokenCallback callback) override;
   void SaveWallpaperToDriveFs(
       const AccountId& account_id,
       const base::FilePath& origin,
@@ -210,6 +213,12 @@ class WallpaperControllerClientImpl
       FetchGooglePhotosPhotoCallback callback,
       ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr
           response);
+
+  void OnGooglePhotosTokenFetched(
+      FetchGooglePhotosAccessTokenCallback callback,
+      std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> fetcher,
+      GoogleServiceAuthError error,
+      signin::AccessTokenInfo access_token_info);
 
   void ObserveVolumeManagerForAccountId(const AccountId& account_id);
 

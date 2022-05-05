@@ -86,6 +86,12 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
       const std::string& album_id,
       const absl::optional<std::string>& current_photo_id,
       FetchGooglePhotosPhotoCallback callback) = 0;
+
+  using FetchGooglePhotosAccessTokenCallback =
+      base::OnceCallback<void(const absl::optional<std::string>& token)>;
+  virtual void FetchGooglePhotosAccessToken(
+      const AccountId& account_id,
+      FetchGooglePhotosAccessTokenCallback callback) = 0;
 };
 
 }  // namespace ash

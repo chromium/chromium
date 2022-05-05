@@ -137,6 +137,12 @@ void TestWallpaperControllerClient::FetchDailyGooglePhotosPhoto(
   FetchGooglePhotosPhoto(account_id, photo_id, std::move(callback));
 }
 
+void TestWallpaperControllerClient::FetchGooglePhotosAccessToken(
+    const AccountId& account_id,
+    FetchGooglePhotosAccessTokenCallback callback) {
+  std::move(callback).Run(absl::nullopt);
+}
+
 void TestWallpaperControllerClient::SaveWallpaperToDriveFs(
     const AccountId& account_id,
     const base::FilePath& origin,
