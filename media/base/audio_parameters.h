@@ -125,9 +125,10 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     AUDIO_BITSTREAM_EAC3 = 0x08,      // Compressed E-AC3 bitstream.
     AUDIO_BITSTREAM_DTS = 0x10,       // Compressed DTS bitstream.
     AUDIO_BITSTREAM_DTS_HD = 0x20,    // Compressed DTS-HD bitstream.
-    AUDIO_BITSTREAM_IEC61937 = 0x40,  // Compressed IEC61937 bitstream.
+    AUDIO_BITSTREAM_DTSX_P2 = 0x40,   // Compressed DTS-HD bitstream.
+    AUDIO_BITSTREAM_IEC61937 = 0x80,  // Compressed IEC61937 bitstream.
     AUDIO_FORMAT_LAST =
-        AUDIO_BITSTREAM_IEC61937,     // Only used for validation of format.
+        AUDIO_BITSTREAM_IEC61937,  // Only used for validation of format.
   };
 
   enum {

@@ -26,6 +26,7 @@
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_features.h"
 #include "media/base/media_switches.h"
+#include "media/base/win/mf_helpers.h"
 
 using Microsoft::WRL::ComPtr;
 using base::win::ScopedCoMem;
@@ -98,55 +99,6 @@ void LogUMAPreferredOutputParams(UmaLogStep step, HRESULT hr) {
     case UmaLogStep::GET_SHARED_MODE_ENGINE_PERIOD:
       // TODO(crbug.com/892044): add histogram logging.
       break;
-  }
-}
-
-// Converts Microsoft's channel configuration to ChannelLayout.
-// This mapping is not perfect but the best we can do given the current
-// ChannelLayout enumerator and the Windows-specific speaker configurations
-// defined in ksmedia.h. Don't assume that the channel ordering in
-// ChannelLayout is exactly the same as the Windows specific configuration.
-// As an example: KSAUDIO_SPEAKER_7POINT1_SURROUND is mapped to
-// CHANNEL_LAYOUT_7_1 but the positions of Back L, Back R and Side L, Side R
-// speakers are different in these two definitions.
-ChannelLayout ChannelConfigToChannelLayout(ChannelConfig config) {
-  switch (config) {
-    case KSAUDIO_SPEAKER_MONO:
-      DVLOG(2) << "KSAUDIO_SPEAKER_MONO=>CHANNEL_LAYOUT_MONO";
-      return CHANNEL_LAYOUT_MONO;
-    case KSAUDIO_SPEAKER_STEREO:
-      DVLOG(2) << "KSAUDIO_SPEAKER_STEREO=>CHANNEL_LAYOUT_STEREO";
-      return CHANNEL_LAYOUT_STEREO;
-    case KSAUDIO_SPEAKER_QUAD:
-      DVLOG(2) << "KSAUDIO_SPEAKER_QUAD=>CHANNEL_LAYOUT_QUAD";
-      return CHANNEL_LAYOUT_QUAD;
-    case KSAUDIO_SPEAKER_SURROUND:
-      DVLOG(2) << "KSAUDIO_SPEAKER_SURROUND=>CHANNEL_LAYOUT_4_0";
-      return CHANNEL_LAYOUT_4_0;
-    case KSAUDIO_SPEAKER_5POINT1:
-      DVLOG(2) << "KSAUDIO_SPEAKER_5POINT1=>CHANNEL_LAYOUT_5_1_BACK";
-      return CHANNEL_LAYOUT_5_1_BACK;
-    case KSAUDIO_SPEAKER_5POINT1_SURROUND:
-      DVLOG(2) << "KSAUDIO_SPEAKER_5POINT1_SURROUND=>CHANNEL_LAYOUT_5_1";
-      return CHANNEL_LAYOUT_5_1;
-    case KSAUDIO_SPEAKER_7POINT1:
-      DVLOG(2) << "KSAUDIO_SPEAKER_7POINT1=>CHANNEL_LAYOUT_7_1_WIDE";
-      return CHANNEL_LAYOUT_7_1_WIDE;
-    case KSAUDIO_SPEAKER_7POINT1_SURROUND:
-      DVLOG(2) << "KSAUDIO_SPEAKER_7POINT1_SURROUND=>CHANNEL_LAYOUT_7_1";
-      return CHANNEL_LAYOUT_7_1;
-    case KSAUDIO_SPEAKER_DIRECTOUT:
-      // When specifying the wave format for a direct-out stream, an application
-      // should set the dwChannelMask member of the WAVEFORMATEXTENSIBLE
-      // structure to the value KSAUDIO_SPEAKER_DIRECTOUT, which is zero.
-      // A channel mask of zero indicates that no speaker positions are defined.
-      // As always, the number of channels in the stream is specified in the
-      // Format.nChannels member.
-      DVLOG(2) << "KSAUDIO_SPEAKER_DIRECTOUT=>CHANNEL_LAYOUT_DISCRETE";
-      return CHANNEL_LAYOUT_DISCRETE;
-    default:
-      DVLOG(2) << "Unsupported channel configuration: " << config;
-      return CHANNEL_LAYOUT_UNSUPPORTED;
   }
 }
 

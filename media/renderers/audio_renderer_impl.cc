@@ -483,6 +483,9 @@ void AudioRendererImpl::OnDeviceInfoReceived(
     } else if (codec == AudioCodec::kDTS) {
       format = AudioParameters::AUDIO_BITSTREAM_DTS;
       target_output_sample_format = kSampleFormatDts;
+    } else if (codec == AudioCodec::kDTSXP2) {
+      format = AudioParameters::AUDIO_BITSTREAM_DTSX_P2;
+      target_output_sample_format = kSampleFormatDtsxP2;
     } else {
       NOTREACHED();
     }

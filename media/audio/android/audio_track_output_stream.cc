@@ -69,6 +69,7 @@ bool AudioTrackOutputStream::Open() {
       case AudioParameters::AUDIO_BITSTREAM_IEC61937:
         format = kEncodingIec61937;
         break;
+      case AudioParameters::AUDIO_BITSTREAM_DTSX_P2:
       case AudioParameters::AUDIO_FAKE:
       case AudioParameters::AUDIO_PCM_LINEAR:
       case AudioParameters::AUDIO_PCM_LOW_LATENCY:

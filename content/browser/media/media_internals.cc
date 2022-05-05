@@ -106,6 +106,8 @@ std::string FormatToString(media::AudioParameters::Format format) {
       return "dts";
     case media::AudioParameters::AUDIO_BITSTREAM_DTS_HD:
       return "dtshd";
+    case media::AudioParameters::AUDIO_BITSTREAM_DTSX_P2:
+      return "dtsxp2";
     case media::AudioParameters::AUDIO_BITSTREAM_IEC61937:
       return "iec61937";
     case media::AudioParameters::AUDIO_FAKE:

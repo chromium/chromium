@@ -36,6 +36,8 @@ const char* FormatToString(AudioParameters::Format format) {
       return "BITSTREAM_DTS";
     case AudioParameters::AUDIO_BITSTREAM_DTS_HD:
       return "BITSTREAM_DTS_HD";
+    case AudioParameters::AUDIO_BITSTREAM_DTSX_P2:
+      return "BITSTREAM_DTSX_P2";
     case AudioParameters::AUDIO_BITSTREAM_IEC61937:
       return "BITSTREAM_IEC61937";
     case AudioParameters::AUDIO_FAKE:
@@ -200,6 +202,7 @@ bool AudioParameters::IsBitstreamFormat() const {
     case AUDIO_BITSTREAM_EAC3:
     case AUDIO_BITSTREAM_DTS:
     case AUDIO_BITSTREAM_DTS_HD:
+    case AUDIO_BITSTREAM_DTSX_P2:
     case AUDIO_BITSTREAM_IEC61937:
       return true;
     default:

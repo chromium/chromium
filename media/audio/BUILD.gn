@@ -205,6 +205,8 @@ source_set("audio") {
       "win/waveout_output_win.h",
     ]
 
+    deps += [ "//media/base/win:media_foundation_util" ]
+
     libs += [
       "dxguid.lib",
       "setupapi.lib",

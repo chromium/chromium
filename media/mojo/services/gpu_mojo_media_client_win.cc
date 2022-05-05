@@ -9,6 +9,10 @@
 #include "media/base/audio_decoder.h"
 #include "media/base/media_switches.h"
 #include "media/base/offloading_audio_encoder.h"
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#include "media/filters/win/media_foundation_audio_decoder.h"
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
+        // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 #include "media/gpu/ipc/service/vda_video_decoder.h"
 #include "media/gpu/windows/d3d11_video_decoder.h"
 #include "media/gpu/windows/mf_audio_encoder.h"
@@ -81,7 +85,12 @@ GetPlatformSupportedVideoDecoderConfigs(
 
 std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  return MediaFoundationAudioDecoder::Create(std::move(task_runner));
+#else
   return nullptr;
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
+        // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 }
 
 VideoDecoderType GetPlatformDecoderImplementationType(

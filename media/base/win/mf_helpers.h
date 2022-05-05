@@ -10,6 +10,7 @@
 #include <wrl/client.h>
 
 #include "base/logging.h"
+#include "media/base/channel_layout.h"
 #include "media/base/win/mf_util_export.h"
 
 struct ID3D11DeviceChild;
@@ -91,6 +92,21 @@ MF_UTIL_EXPORT HRESULT SetDebugName(ID3D11Device* d3d11_device,
                                     const char* debug_string);
 MF_UTIL_EXPORT HRESULT SetDebugName(IDXGIObject* dxgi_object,
                                     const char* debug_string);
+
+// Represents audio channel configuration constants as understood by Windows.
+// E.g. KSAUDIO_SPEAKER_MONO.  For a list of possible values see:
+// http://msdn.microsoft.com/en-us/library/windows/hardware/ff537083(v=vs.85).aspx
+using ChannelConfig = uint32_t;
+
+// Converts Microsoft's channel configuration to ChannelLayout.
+// This mapping is not perfect but the best we can do given the current
+// ChannelLayout enumerator and the Windows-specific speaker configurations
+// defined in ksmedia.h. Don't assume that the channel ordering in
+// ChannelLayout is exactly the same as the Windows specific configuration.
+// As an example: KSAUDIO_SPEAKER_7POINT1_SURROUND is mapped to
+// CHANNEL_LAYOUT_7_1 but the positions of Back L, Back R and Side L, Side R
+// speakers are different in these two definitions.
+MF_UTIL_EXPORT ChannelLayout ChannelConfigToChannelLayout(ChannelConfig config);
 
 }  // namespace media
 

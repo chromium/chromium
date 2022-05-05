@@ -5,6 +5,8 @@
 #include "media/base/win/mf_helpers.h"
 
 #include <d3d11.h>
+#include <ks.h>
+#include <ksmedia.h>
 
 #include "base/check_op.h"
 #include "base/win/windows_version.h"
@@ -92,6 +94,38 @@ HRESULT SetDebugName(ID3D11Device* d3d11_device, const char* debug_string) {
 
 HRESULT SetDebugName(IDXGIObject* dxgi_object, const char* debug_string) {
   return SetDebugNameInternal(dxgi_object, debug_string);
+}
+
+ChannelLayout ChannelConfigToChannelLayout(ChannelConfig config) {
+  switch (config) {
+    case KSAUDIO_SPEAKER_MONO:
+      return CHANNEL_LAYOUT_MONO;
+    case KSAUDIO_SPEAKER_STEREO:
+      return CHANNEL_LAYOUT_STEREO;
+    case KSAUDIO_SPEAKER_QUAD:
+      return CHANNEL_LAYOUT_QUAD;
+    case KSAUDIO_SPEAKER_SURROUND:
+      return CHANNEL_LAYOUT_4_0;
+    case KSAUDIO_SPEAKER_5POINT1:
+      return CHANNEL_LAYOUT_5_1_BACK;
+    case KSAUDIO_SPEAKER_5POINT1_SURROUND:
+      return CHANNEL_LAYOUT_5_1;
+    case KSAUDIO_SPEAKER_7POINT1:
+      return CHANNEL_LAYOUT_7_1_WIDE;
+    case KSAUDIO_SPEAKER_7POINT1_SURROUND:
+      return CHANNEL_LAYOUT_7_1;
+    case KSAUDIO_SPEAKER_DIRECTOUT:
+      // When specifying the wave format for a direct-out stream, an application
+      // should set the dwChannelMask member of the WAVEFORMATEXTENSIBLE
+      // structure to the value KSAUDIO_SPEAKER_DIRECTOUT, which is zero.
+      // A channel mask of zero indicates that no speaker positions are defined.
+      // As always, the number of channels in the stream is specified in the
+      // Format.nChannels member.
+      return CHANNEL_LAYOUT_DISCRETE;
+    default:
+      DVLOG(2) << "Unsupported channel configuration: " << config;
+      return CHANNEL_LAYOUT_UNSUPPORTED;
+  }
 }
 
 }  // namespace media

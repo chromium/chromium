@@ -200,7 +200,7 @@ if (is_chromecast) {
     "video_decoder",
   ]
   _default_mojo_media_host = "gpu"
-} else if (is_mac) {
+} else if (is_mac || (is_win && enable_platform_dts_audio)) {
   _default_mojo_media_services = [
     "audio_decoder",
     "audio_encoder",
