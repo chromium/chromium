@@ -458,7 +458,6 @@ SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,
       return gfx::kGoogleGrey500;
     case ContentLayerType::kIconColorSecondaryBackground:
       return use_dark_color ? gfx::kGoogleGrey100 : gfx::kGoogleGrey800;
-    case ContentLayerType::kAppStateIndicatorColor:
     case ContentLayerType::kScrollBarColor:
     case ContentLayerType::kSliderColorInactive:
     case ContentLayerType::kRadioColorInactive:
@@ -498,6 +497,7 @@ SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,
     case ContentLayerType::kHighlightColorHover:
       return use_dark_color ? SkColorSetA(SK_ColorWHITE, 0x0D)
                             : SkColorSetA(SK_ColorBLACK, 0x14);
+    case ContentLayerType::kAppStateIndicatorColor:
     case ContentLayerType::kButtonIconColor:
     case ContentLayerType::kButtonLabelColor:
       return use_dark_color ? gfx::kGoogleGrey200 : gfx::kGoogleGrey900;

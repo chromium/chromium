@@ -163,6 +163,11 @@ class ShelfAppButton::AppStatusIndicatorView
   }
 
   // views::View:
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    SchedulePaint();
+  }
+
   void OnPaint(gfx::Canvas* canvas) override {
     gfx::ScopedCanvas scoped(canvas);
     if (show_attention_) {
