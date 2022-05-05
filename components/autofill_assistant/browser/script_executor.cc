@@ -985,9 +985,9 @@ void ScriptExecutor::OnProcessedAction(
   previous_action_type_ = processed_action_proto->action().action_info_case();
   processed_actions_.emplace_back(*processed_action_proto);
 
-  VLOG(2) << "Action completed with status "
-          << processed_action_proto->status();
-#ifndef NDEBUG
+#ifdef NDEBUG
+  VLOG(2) << "Action completed";
+#else
   VLOG(2) << "Requested delay ms: "
           << processed_action_proto->timing_stats().delay_ms();
   VLOG(2) << "Active time ms: "
