@@ -17,7 +17,6 @@
 namespace blink {
 
 class LocalDOMWindow;
-class WorkerOrWorkletGlobalScope;
 
 // https://html.spec.whatwg.org/C/#concept-script
 class CORE_EXPORT Script : public GarbageCollected<Script> {
@@ -67,10 +66,6 @@ class CORE_EXPORT Script : public GarbageCollected<Script> {
           ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled,
       V8ScriptRunner::RethrowErrorsOption =
           V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
-  // For worker top-level scripts and worklets.
-  // Returns true if evaluated successfully.
-  // TODO(crbug.com/1111134): Remove RunScriptOnWorkerOrWorklet().
-  virtual bool RunScriptOnWorkerOrWorklet(WorkerOrWorkletGlobalScope&) = 0;
 
   const ScriptFetchOptions& FetchOptions() const { return fetch_options_; }
   const KURL& BaseURL() const { return base_url_; }

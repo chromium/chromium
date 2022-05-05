@@ -74,7 +74,6 @@ class CORE_EXPORT ModuleScript : public Script {
   mojom::blink::ScriptType GetScriptType() const override {
     return mojom::blink::ScriptType::kModule;
   }
-  bool RunScriptOnWorkerOrWorklet(WorkerOrWorkletGlobalScope&) override;
 
   friend class ModuleTreeLinkerTestModulator;
 

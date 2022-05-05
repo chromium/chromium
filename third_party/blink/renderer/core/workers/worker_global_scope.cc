@@ -491,7 +491,8 @@ void WorkerGlobalScope::RunWorkerScript() {
   if (debugger && stack_id_)
     debugger->ExternalAsyncTaskStarted(*stack_id_);
 
-  switch (worker_script_->GetScriptType()) {
+  const auto script_type = worker_script_->GetScriptType();
+  switch (script_type) {
     case mojom::blink::ScriptType::kClassic: {
       ReportingProxy().WillEvaluateClassicScript();
       break;
@@ -503,9 +504,50 @@ void WorkerGlobalScope::RunWorkerScript() {
 
   // Step 24. If script is a classic script, then run the classic script script.
   // Otherwise, it is a module script; run the module script script. [spec text]
-  bool is_success =
-      std::move(worker_script_)->RunScriptOnWorkerOrWorklet(*this);
-
+  bool is_success = false;
+  if (ScriptState* script_state = ScriptController()->GetScriptState()) {
+    v8::HandleScope handle_scope(script_state->GetIsolate());
+    ScriptEvaluationResult result =
+        std::move(worker_script_)
+            ->RunScriptOnScriptStateAndReturnValue(script_state);
+    switch (script_type) {
+      case mojom::blink::ScriptType::kClassic:
+        is_success = result.GetResultType() ==
+                     ScriptEvaluationResult::ResultType::kSuccess;
+        break;
+      case mojom::blink::ScriptType::kModule:
+        // Service workers prohibit async module graphs (those with top-level
+        // await), so the promise result from executing a service worker module
+        // is always settled. To maintain compatibility with synchronous module
+        // graphs, rejected promises are considered synchronous failures in
+        // service workers.
+        //
+        // https://w3c.github.io/ServiceWorker/#run-service-worker
+        // Step 14.2-14.4 https://github.com/w3c/ServiceWorker/pull/1444
+        if (IsServiceWorkerGlobalScope() &&
+            result.GetResultType() ==
+                ScriptEvaluationResult::ResultType::kSuccess) {
+          v8::Local<v8::Promise> promise =
+              result.GetSuccessValue().As<v8::Promise>();
+          switch (promise->State()) {
+            case v8::Promise::kFulfilled:
+              is_success = true;
+              break;
+            case v8::Promise::kRejected:
+              is_success = false;
+              break;
+            case v8::Promise::kPending:
+              NOTREACHED();
+              is_success = false;
+              break;
+          }
+        } else {
+          is_success = result.GetResultType() ==
+                       ScriptEvaluationResult::ResultType::kSuccess;
+        }
+        break;
+    }
+  }
   ReportingProxy().DidEvaluateTopLevelScript(is_success);
 
   if (debugger && stack_id_)

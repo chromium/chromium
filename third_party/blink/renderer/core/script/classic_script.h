@@ -98,10 +98,8 @@ class CORE_EXPORT ClassicScript final : public Script {
 
   const String& SourceMapUrl() const { return source_map_url_; }
 
-  bool RunScriptOnWorkerOrWorklet(WorkerOrWorkletGlobalScope&) override;
-
-  // Unlike RunScript() and RunScriptOnWorkerOrWorklet(), callers of the
-  // following methods must enter a v8::HandleScope before calling.
+  // Unlike RunScript(), callers of the following methods must enter a
+  // v8::HandleScope before calling.
   [[nodiscard]] ScriptEvaluationResult RunScriptOnScriptStateAndReturnValue(
       ScriptState*,
       ExecuteScriptPolicy =

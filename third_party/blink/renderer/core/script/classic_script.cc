@@ -195,15 +195,4 @@ ScriptEvaluationResult ClassicScript::RunScriptInIsolatedWorldAndReturnValue(
       script_state, ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
 }
 
-bool ClassicScript::RunScriptOnWorkerOrWorklet(
-    WorkerOrWorkletGlobalScope& global_scope) {
-  DCHECK(global_scope.IsContextThread());
-
-  v8::HandleScope handle_scope(
-      global_scope.ScriptController()->GetScriptState()->GetIsolate());
-  ScriptEvaluationResult result = RunScriptOnScriptStateAndReturnValue(
-      global_scope.ScriptController()->GetScriptState());
-  return result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess;
-}
-
 }  // namespace blink

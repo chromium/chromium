@@ -108,36 +108,6 @@ void ModuleScript::Trace(Visitor* visitor) const {
   Script::Trace(visitor);
 }
 
-bool ModuleScript::RunScriptOnWorkerOrWorklet(
-    WorkerOrWorkletGlobalScope& global_scope) {
-  // We need a HandleScope for the `ScriptEvaluationResult` returned from
-  // `RunScriptAndReturnValue`.
-  v8::HandleScope scope(SettingsObject()->GetScriptState()->GetIsolate());
-  DCHECK_EQ(global_scope.ScriptController()->GetScriptState(),
-            SettingsObject()->GetScriptState());
-  DCHECK(global_scope.IsContextThread());
-
-  // TODO(nhiroki): Catch an error when an evaluation error happens.
-  // (https://crbug.com/680046)
-  ScriptEvaluationResult result =
-      RunScriptOnScriptStateAndReturnValue(SettingsObject()->GetScriptState());
-
-  // Service workers prohibit async module graphs (those with top-level await),
-  // so the promise result from executing a service worker module is always
-  // settled. To maintain compatibility with synchronous module graphs, rejected
-  // promises are considered synchronous failures in service workers.
-  //
-  // https://github.com/w3c/ServiceWorker/pull/1444
-  if (global_scope.IsServiceWorkerGlobalScope() &&
-      result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess) {
-    v8::Local<v8::Promise> promise = result.GetSuccessValue().As<v8::Promise>();
-    DCHECK_NE(promise->State(), v8::Promise::kPending);
-    return promise->State() == v8::Promise::kFulfilled;
-  }
-
-  return result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess;
-}
-
 ScriptEvaluationResult ModuleScript::RunScriptOnScriptStateAndReturnValue(
     ScriptState* script_state,
     ExecuteScriptPolicy execute_script_policy,
