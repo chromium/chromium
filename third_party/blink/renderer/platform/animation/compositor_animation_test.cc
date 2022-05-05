@@ -8,9 +8,9 @@
 
 #include "base/time/time.h"
 #include "cc/animation/animation_id_provider.h"
+#include "cc/animation/animation_timeline.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_client.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
-#include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
 #include "third_party/blink/renderer/platform/testing/compositor_test.h"
 
 namespace blink {
@@ -60,12 +60,13 @@ TEST_F(CompositorAnimationTest, NullDelegate) {
   std::unique_ptr<CompositorAnimationDelegateForTesting> delegate(
       new CompositorAnimationDelegateForTesting);
 
-  auto timeline = std::make_unique<CompositorAnimationTimeline>();
+  auto timeline =
+      cc::AnimationTimeline::Create(cc::AnimationIdProvider::NextTimelineId());
   std::unique_ptr<CompositorAnimationTestClient> client(
       new CompositorAnimationTestClient);
   CompositorAnimation* animation = client->GetCompositorAnimation();
   cc::Animation* cc_animation = animation->CcAnimation();
-  timeline->AnimationAttached(*client);
+  timeline->AttachAnimation(cc_animation);
   int timeline_id = cc_animation->animation_timeline()->id();
 
   auto curve = gfx::KeyframedFloatAnimationCurve::Create();
@@ -94,12 +95,13 @@ TEST_F(CompositorAnimationTest, NotifyFromCCAfterCompositorAnimationDeletion) {
   std::unique_ptr<CompositorAnimationDelegateForTesting> delegate(
       new CompositorAnimationDelegateForTesting);
 
-  auto timeline = std::make_unique<CompositorAnimationTimeline>();
+  auto timeline =
+      cc::AnimationTimeline::Create(cc::AnimationIdProvider::NextTimelineId());
   std::unique_ptr<CompositorAnimationTestClient> client(
       new CompositorAnimationTestClient);
   CompositorAnimation* animation = client->GetCompositorAnimation();
   scoped_refptr<cc::Animation> cc_animation = animation->CcAnimation();
-  timeline->AnimationAttached(*client);
+  timeline->AttachAnimation(cc_animation);
   int timeline_id = cc_animation->animation_timeline()->id();
 
   auto curve = gfx::KeyframedFloatAnimationCurve::Create();
@@ -128,24 +130,23 @@ TEST_F(CompositorAnimationTest, NotifyFromCCAfterCompositorAnimationDeletion) {
 
 TEST_F(CompositorAnimationTest,
        CompositorAnimationDeletionDetachesFromCCTimeline) {
-  auto timeline = std::make_unique<CompositorAnimationTimeline>();
+  auto timeline =
+      cc::AnimationTimeline::Create(cc::AnimationIdProvider::NextTimelineId());
   std::unique_ptr<CompositorAnimationTestClient> client(
       new CompositorAnimationTestClient);
 
-  scoped_refptr<cc::AnimationTimeline> cc_timeline =
-      timeline->GetAnimationTimeline();
   scoped_refptr<cc::Animation> cc_animation = client->animation_->CcAnimation();
   EXPECT_FALSE(cc_animation->animation_timeline());
 
-  timeline->AnimationAttached(*client);
+  timeline->AttachAnimation(cc_animation);
   EXPECT_TRUE(cc_animation->animation_timeline());
-  EXPECT_TRUE(cc_timeline->GetAnimationById(cc_animation->id()));
+  EXPECT_TRUE(timeline->GetAnimationById(cc_animation->id()));
 
   // Delete client and CompositorAnimation while attached to timeline.
   client = nullptr;
 
   EXPECT_FALSE(cc_animation->animation_timeline());
-  EXPECT_FALSE(cc_timeline->GetAnimationById(cc_animation->id()));
+  EXPECT_FALSE(timeline->GetAnimationById(cc_animation->id()));
 }
 
 }  // namespace blink

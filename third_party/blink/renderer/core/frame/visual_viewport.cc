@@ -1111,8 +1111,7 @@ cc::AnimationHost* VisualViewport::GetCompositorAnimationHost() const {
   return c ? c->GetCompositorAnimationHost() : nullptr;
 }
 
-CompositorAnimationTimeline* VisualViewport::GetCompositorAnimationTimeline()
-    const {
+cc::AnimationTimeline* VisualViewport::GetCompositorAnimationTimeline() const {
   DCHECK(GetPage().MainFrame()->IsLocalFrame());
   ScrollingCoordinator* c = GetPage().GetScrollingCoordinator();
   return c ? c->GetCompositorAnimationTimeline() : nullptr;

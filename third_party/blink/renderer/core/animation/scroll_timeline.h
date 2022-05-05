@@ -99,7 +99,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // See DocumentAnimations::ValidateTimelines
   void ValidateState();
 
-  CompositorAnimationTimeline* EnsureCompositorTimeline() override;
+  cc::AnimationTimeline* EnsureCompositorTimeline() override;
   void UpdateCompositorTimeline() override;
 
   // TODO(crbug.com/896249): This method is temporary and currently required

@@ -86,6 +86,10 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
+namespace cc {
+class AnimationTimeline;
+}
+
 namespace gfx {
 class QuadF;
 class RectF;
@@ -123,7 +127,6 @@ class CSSStyleSheet;
 class CanvasFontCache;
 class ChromeClient;
 class Comment;
-class CompositorAnimationTimeline;
 class ComputedAccessibleNode;
 class DOMWrapperWorld;
 class DisplayLockDocumentState;
@@ -1482,7 +1485,7 @@ class CORE_EXPORT Document : public ContainerNode,
     return *worklet_animation_controller_;
   }
 
-  void AttachCompositorTimeline(CompositorAnimationTimeline*) const;
+  void AttachCompositorTimeline(cc::AnimationTimeline*) const;
 
   void AddToTopLayer(Element*, const Element* before = nullptr);
   void RemoveFromTopLayer(Element*);

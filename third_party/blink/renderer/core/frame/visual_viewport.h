@@ -50,6 +50,7 @@
 
 namespace cc {
 class AnimationHost;
+class AnimationTimeline;
 class ScrollbarLayerBase;
 }
 
@@ -229,7 +230,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   bool ScheduleAnimation() override;
   bool UsesCompositedScrolling() const override { return true; }
   cc::AnimationHost* GetCompositorAnimationHost() const override;
-  CompositorAnimationTimeline* GetCompositorAnimationTimeline() const override;
+  cc::AnimationTimeline* GetCompositorAnimationTimeline() const override;
   gfx::Rect VisibleContentRect(
       IncludeScrollbarsInRect = kExcludeScrollbars) const override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner()

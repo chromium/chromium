@@ -39,6 +39,7 @@
 #include "base/timer/lap_timer.h"
 #include "base/trace_event/typed_macros.h"
 #include "cc/animation/animation_host.h"
+#include "cc/animation/animation_timeline.h"
 #include "cc/document_transition/document_transition_request.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/picture_layer.h"
@@ -603,8 +604,7 @@ cc::AnimationHost* LocalFrameView::GetCompositorAnimationHost() const {
   return c ? c->GetCompositorAnimationHost() : nullptr;
 }
 
-CompositorAnimationTimeline* LocalFrameView::GetCompositorAnimationTimeline()
-    const {
+cc::AnimationTimeline* LocalFrameView::GetCompositorAnimationTimeline() const {
   if (GetScrollingContext()->GetCompositorAnimationTimeline())
     return GetScrollingContext()->GetCompositorAnimationTimeline();
 

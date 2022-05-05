@@ -54,12 +54,12 @@ class SingleThreadTaskRunner;
 
 namespace cc {
 class AnimationHost;
+class AnimationTimeline;
 class Layer;
 }  // namespace cc
 
 namespace blink {
 class ChromeClient;
-class CompositorAnimationTimeline;
 class Document;
 class LayoutBox;
 class LayoutObject;
@@ -251,7 +251,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual cc::AnimationHost* GetCompositorAnimationHost() const {
     return nullptr;
   }
-  virtual CompositorAnimationTimeline* GetCompositorAnimationTimeline() const {
+  virtual cc::AnimationTimeline* GetCompositorAnimationTimeline() const {
     return nullptr;
   }
 

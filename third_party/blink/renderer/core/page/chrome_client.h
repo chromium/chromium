@@ -61,6 +61,7 @@
 #undef CreateWindow
 
 namespace cc {
+class AnimationTimeline;
 struct ElementId;
 class Layer;
 struct OverscrollBehavior;
@@ -79,7 +80,6 @@ namespace blink {
 
 class ColorChooser;
 class ColorChooserClient;
-class CompositorAnimationTimeline;
 class DateTimeChooser;
 class DateTimeChooserClient;
 class Element;
@@ -386,14 +386,14 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void AttachRootLayer(scoped_refptr<cc::Layer>,
                                LocalFrame* local_root) = 0;
 
-  // Set the CompositorAnimationTimeline for a local root. Should later be unset
+  // Set the cc::AnimationTimeline for a local root. Should later be unset
   // by a call to DetachCompositorAnimationTimeline().
-  virtual void AttachCompositorAnimationTimeline(CompositorAnimationTimeline*,
+  virtual void AttachCompositorAnimationTimeline(cc::AnimationTimeline*,
                                                  LocalFrame* local_root) {}
-  // Removes the CompositorAnimationTimeline for a local root. The timeline
+  // Removes the cc::AnimationTimeline for a local root. The timeline
   // would have previously been given to AttachCompositorAnimationTimeline() but
   // it's valid to call this even if the timeline was never attached.
-  virtual void DetachCompositorAnimationTimeline(CompositorAnimationTimeline*,
+  virtual void DetachCompositorAnimationTimeline(cc::AnimationTimeline*,
                                                  LocalFrame* local_root) {}
 
   virtual void EnterFullscreen(LocalFrame&,

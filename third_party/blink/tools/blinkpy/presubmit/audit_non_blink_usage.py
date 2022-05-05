@@ -431,6 +431,7 @@ _CONFIG = [
             # Animation
             'cc::AnimationHost',
             "cc::AnimationIdProvider",
+            "cc::AnimationTimeline",
             "cc::FilterKeyframe",
             "cc::KeyframedFilterAnimationCurve",
             "cc::KeyframeModel",

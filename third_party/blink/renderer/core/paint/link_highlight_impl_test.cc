@@ -27,6 +27,7 @@
 
 #include <memory>
 
+#include "cc/animation/animation_timeline.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/layer_tree_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,7 +46,6 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/link_highlight.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -137,9 +137,8 @@ class LinkHighlightImplTest : public testing::Test,
   }
 
   cc::AnimationHost* GetAnimationHost() {
-    EXPECT_EQ(
-        GetLinkHighlight().timeline_->GetAnimationTimeline()->animation_host(),
-        GetLinkHighlight().animation_host_);
+    EXPECT_EQ(GetLinkHighlight().timeline_->animation_host(),
+              GetLinkHighlight().animation_host_);
     return GetLinkHighlight().animation_host_;
   }
 

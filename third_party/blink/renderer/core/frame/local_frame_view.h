@@ -64,6 +64,7 @@ class sk_sp;
 
 namespace cc {
 class AnimationHost;
+class AnimationTimeline;
 class Layer;
 class PaintOpBuffer;
 enum class PaintHoldingCommitTrigger;
@@ -82,7 +83,6 @@ class Cursor;
 namespace blink {
 class AXObjectCache;
 class ChromeClient;
-class CompositorAnimationTimeline;
 class DeferredShapingDisallowScope;
 class DeferredShapingMinimumTopScope;
 class DeferredShapingViewportScope;
@@ -742,7 +742,7 @@ class CORE_EXPORT LocalFrameView final
 
   ScrollingCoordinatorContext* GetScrollingContext() const;
   cc::AnimationHost* GetCompositorAnimationHost() const;
-  CompositorAnimationTimeline* GetCompositorAnimationTimeline() const;
+  cc::AnimationTimeline* GetCompositorAnimationTimeline() const;
 
   LayoutShiftTracker& GetLayoutShiftTracker() { return *layout_shift_tracker_; }
   PaintTimingDetector& GetPaintTimingDetector() const {

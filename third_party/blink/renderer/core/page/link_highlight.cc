@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "cc/animation/animation_host.h"
+#include "cc/animation/animation_id_provider.h"
+#include "cc/animation/animation_timeline.h"
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -15,7 +17,6 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/link_highlight_impl.h"
-#include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
 
 namespace blink {
 
@@ -33,8 +34,9 @@ void LinkHighlight::RemoveHighlight() {
   if (!impl_)
     return;
 
-  if (timeline_)
-    timeline_->AnimationDestroyed(*impl_);
+  if (timeline_ && impl_->GetCompositorAnimation())
+    timeline_->DetachAnimation(impl_->GetCompositorAnimation()->CcAnimation());
+
   impl_.reset();
 }
 
@@ -63,8 +65,8 @@ void LinkHighlight::SetTapHighlight(Node* node) {
     return;
 
   impl_ = std::make_unique<LinkHighlightImpl>(node);
-  if (timeline_)
-    timeline_->AnimationAttached(*impl_);
+  if (timeline_ && impl_->GetCompositorAnimation())
+    timeline_->AttachAnimation(impl_->GetCompositorAnimation()->CcAnimation());
 }
 
 LocalFrame* LinkHighlight::MainFrame() const {
@@ -85,15 +87,16 @@ void LinkHighlight::AnimationHostInitialized(
     cc::AnimationHost& animation_host) {
   animation_host_ = &animation_host;
   if (Platform::Current()->IsThreadedAnimationEnabled()) {
-    timeline_ = std::make_unique<CompositorAnimationTimeline>();
-    animation_host_->AddAnimationTimeline(timeline_->GetAnimationTimeline());
+    timeline_ = cc::AnimationTimeline::Create(
+        cc::AnimationIdProvider::NextTimelineId());
+    animation_host_->AddAnimationTimeline(timeline_.get());
   }
 }
 
 void LinkHighlight::WillCloseAnimationHost() {
   RemoveHighlight();
   if (timeline_) {
-    animation_host_->RemoveAnimationTimeline(timeline_->GetAnimationTimeline());
+    animation_host_->RemoveAnimationTimeline(timeline_.get());
     timeline_.reset();
   }
   animation_host_ = nullptr;

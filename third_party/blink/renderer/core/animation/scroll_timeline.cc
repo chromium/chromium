@@ -567,21 +567,21 @@ void ScrollTimeline::ValidateState() {
   InvalidateEffectTargetStyle();
 }
 
-CompositorAnimationTimeline* ScrollTimeline::EnsureCompositorTimeline() {
+cc::AnimationTimeline* ScrollTimeline::EnsureCompositorTimeline() {
   if (compositor_timeline_)
     return compositor_timeline_.get();
 
-  compositor_timeline_ = std::make_unique<CompositorAnimationTimeline>(
-      scroll_timeline_util::ToCompositorScrollTimeline(this));
+  compositor_timeline_ = scroll_timeline_util::ToCompositorScrollTimeline(this);
   return compositor_timeline_.get();
 }
 
 void ScrollTimeline::UpdateCompositorTimeline() {
   if (!compositor_timeline_)
     return;
-  compositor_timeline_->UpdateCompositorTimeline(
-      scroll_timeline_util::GetCompositorScrollElementId(resolved_source_),
-      GetResolvedScrollOffsets());
+  ToScrollTimeline(compositor_timeline_.get())
+      ->UpdateScrollerIdAndScrollOffsets(
+          scroll_timeline_util::GetCompositorScrollElementId(resolved_source_),
+          GetResolvedScrollOffsets());
 }
 
 }  // namespace blink

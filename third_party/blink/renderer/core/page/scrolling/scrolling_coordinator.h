@@ -38,11 +38,11 @@
 
 namespace cc {
 class AnimationHost;
+class AnimationTimeline;
 class ScrollbarLayerBase;
 }  // namespace cc
 
 namespace blink {
-class CompositorAnimationTimeline;
 class LocalFrame;
 class LocalFrameView;
 class Page;
@@ -90,7 +90,7 @@ class CORE_EXPORT ScrollingCoordinator final
   bool UpdateCompositorScrollOffset(const LocalFrame&, const ScrollableArea&);
 
   cc::AnimationHost* GetCompositorAnimationHost() { return animation_host_; }
-  CompositorAnimationTimeline* GetCompositorAnimationTimeline() {
+  cc::AnimationTimeline* GetCompositorAnimationTimeline() {
     return programmatic_scroll_animator_timeline_.get();
   }
 
@@ -128,8 +128,7 @@ class CORE_EXPORT ScrollingCoordinator final
   void RemoveScrollbarLayer(ScrollableArea*, ScrollbarOrientation);
 
   cc::AnimationHost* animation_host_ = nullptr;
-  std::unique_ptr<CompositorAnimationTimeline>
-      programmatic_scroll_animator_timeline_;
+  scoped_refptr<cc::AnimationTimeline> programmatic_scroll_animator_timeline_;
 
   using ScrollbarMap = HeapHashMap<Member<ScrollableArea>,
                                    scoped_refptr<cc::ScrollbarLayerBase>>;

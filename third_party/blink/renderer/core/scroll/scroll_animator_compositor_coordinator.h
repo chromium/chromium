@@ -19,11 +19,14 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 
+namespace cc {
+class AnimationTimeline;
+}
+
 namespace blink {
 
 class ScrollableArea;
 class CompositorAnimation;
-class CompositorAnimationTimeline;
 
 // ScrollAnimatorCompositorCoordinator is the common base class of user scroll
 // animators and programmatic scroll animators, and holds logic related to
@@ -145,7 +148,7 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
 
   void CompositorAnimationFinished(int group_id);
   // Returns true if the compositor animation was attached to a new layer.
-  bool ReattachCompositorAnimationIfNeeded(CompositorAnimationTimeline*);
+  bool ReattachCompositorAnimationIfNeeded(cc::AnimationTimeline*);
 
   // CompositorAnimationDelegate implementation.
   void NotifyAnimationStarted(base::TimeDelta monotonic_time,

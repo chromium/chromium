@@ -4,13 +4,13 @@
 
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 
+#include "cc/animation/animation_timeline.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 using ::testing::_;
@@ -34,7 +34,7 @@ class MockAnimationTimeline : public AnimationTimeline {
   MOCK_METHOD1(ServiceAnimations, void(TimingUpdateReason));
   MOCK_CONST_METHOD0(AnimationsNeedingUpdateCount, wtf_size_t());
   MOCK_METHOD0(ScheduleNextService, void());
-  MOCK_METHOD0(EnsureCompositorTimeline, CompositorAnimationTimeline*());
+  MOCK_METHOD0(EnsureCompositorTimeline, cc::AnimationTimeline*());
 
   void Trace(Visitor* visitor) const override {
     AnimationTimeline::Trace(visitor);

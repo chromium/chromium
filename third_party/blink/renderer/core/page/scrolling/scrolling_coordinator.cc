@@ -30,6 +30,8 @@
 
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
+#include "cc/animation/animation_id_provider.h"
+#include "cc/animation/animation_timeline.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/layers/picture_layer.h"
@@ -179,29 +181,30 @@ void ScrollingCoordinator::AnimationHostInitialized(
   if (!Platform::Current()->IsThreadedAnimationEnabled())
     return;
 
-  auto timeline = std::make_unique<CompositorAnimationTimeline>();
+  auto timeline =
+      cc::AnimationTimeline::Create(cc::AnimationIdProvider::NextTimelineId());
   if (view && view->GetFrame().LocalFrameRoot() != page_->MainFrame()) {
     view->GetScrollingContext()->SetAnimationHost(&animation_host);
     view->GetScrollingContext()->SetAnimationTimeline(std::move(timeline));
     view->GetCompositorAnimationHost()->AddAnimationTimeline(
-        view->GetCompositorAnimationTimeline()->GetAnimationTimeline());
+        view->GetCompositorAnimationTimeline());
   } else {
     animation_host_ = &animation_host;
     programmatic_scroll_animator_timeline_ = std::move(timeline);
     animation_host_->AddAnimationTimeline(
-        programmatic_scroll_animator_timeline_->GetAnimationTimeline());
+        programmatic_scroll_animator_timeline_);
   }
 }
 
 void ScrollingCoordinator::WillCloseAnimationHost(LocalFrameView* view) {
   if (view && view->GetFrame().LocalFrameRoot() != page_->MainFrame()) {
     view->GetCompositorAnimationHost()->RemoveAnimationTimeline(
-        view->GetCompositorAnimationTimeline()->GetAnimationTimeline());
+        view->GetCompositorAnimationTimeline());
     view->GetScrollingContext()->SetAnimationTimeline(nullptr);
     view->GetScrollingContext()->SetAnimationHost(nullptr);
   } else if (programmatic_scroll_animator_timeline_) {
     animation_host_->RemoveAnimationTimeline(
-        programmatic_scroll_animator_timeline_->GetAnimationTimeline());
+        programmatic_scroll_animator_timeline_);
     programmatic_scroll_animator_timeline_ = nullptr;
     animation_host_ = nullptr;
   }

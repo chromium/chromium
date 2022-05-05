@@ -44,6 +44,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "cc/animation/animation_timeline.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/scroll_snap_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -2592,14 +2593,12 @@ void Document::LayoutUpdated() {
   Markers().InvalidateRectsForAllTextMatchMarkers();
 }
 
-void Document::AttachCompositorTimeline(
-    CompositorAnimationTimeline* timeline) const {
+void Document::AttachCompositorTimeline(cc::AnimationTimeline* timeline) const {
   if (!Platform::Current()->IsThreadedAnimationEnabled() ||
       !GetSettings()->GetAcceleratedCompositingEnabled())
     return;
 
-  if (timeline->GetAnimationTimeline()->IsScrollTimeline() &&
-      timeline->GetAnimationTimeline()->animation_host())
+  if (timeline->IsScrollTimeline() && timeline->animation_host())
     return;
 
   GetPage()->GetChromeClient().AttachCompositorAnimationTimeline(timeline,

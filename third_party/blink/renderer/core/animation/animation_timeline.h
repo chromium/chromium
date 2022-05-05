@@ -5,11 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ANIMATION_TIMELINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ANIMATION_TIMELINE_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "cc/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
-#include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -96,10 +97,10 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
     return animations_;
   }
 
-  CompositorAnimationTimeline* CompositorTimeline() const {
+  cc::AnimationTimeline* CompositorTimeline() const {
     return compositor_timeline_.get();
   }
-  virtual CompositorAnimationTimeline* EnsureCompositorTimeline() = 0;
+  virtual cc::AnimationTimeline* EnsureCompositorTimeline() = 0;
   virtual void UpdateCompositorTimeline() {}
 
   void MarkAnimationsCompositorPending(bool source_changed = false);
@@ -131,7 +132,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   // All animations attached to this timeline.
   HeapHashSet<WeakMember<Animation>> animations_;
 
-  std::unique_ptr<CompositorAnimationTimeline> compositor_timeline_;
+  scoped_refptr<cc::AnimationTimeline> compositor_timeline_;
 
   absl::optional<PhaseAndTime> last_current_phase_and_time_;
 };

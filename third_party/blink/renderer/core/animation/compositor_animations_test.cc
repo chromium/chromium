@@ -2410,10 +2410,10 @@ TEST_P(AnimationCompositorAnimationsTest, DetachCompositorTimelinesTest) {
       *target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_TRUE(animation.GetCompositorAnimation());
 
-  CompositorAnimationTimeline* compositor_timeline =
+  cc::AnimationTimeline* compositor_timeline =
       animation.timeline()->CompositorTimeline();
   ASSERT_TRUE(compositor_timeline);
-  int id = compositor_timeline->GetAnimationTimeline()->id();
+  int id = compositor_timeline->id();
   ASSERT_TRUE(host->GetTimelineById(id));
   document->GetDocumentAnimations().DetachCompositorTimelines();
   ASSERT_FALSE(host->GetTimelineById(id));

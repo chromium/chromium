@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_SCROLLING_COORDINATOR_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_SCROLLING_COORDINATOR_CONTEXT_H_
 
+#include "base/memory/scoped_refptr.h"
+#include "cc/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace cc {
@@ -28,19 +29,18 @@ class CORE_EXPORT ScrollingCoordinatorContext final {
       delete;
   virtual ~ScrollingCoordinatorContext() = default;
 
-  void SetAnimationTimeline(
-      std::unique_ptr<CompositorAnimationTimeline> timeline) {
-    animation_timeline_ = std::move(timeline);
+  void SetAnimationTimeline(scoped_refptr<cc::AnimationTimeline> timeline) {
+    animation_timeline_ = timeline;
   }
   void SetAnimationHost(cc::AnimationHost* host) { animation_host_ = host; }
 
-  CompositorAnimationTimeline* GetCompositorAnimationTimeline() {
+  cc::AnimationTimeline* GetCompositorAnimationTimeline() {
     return animation_timeline_.get();
   }
   cc::AnimationHost* GetCompositorAnimationHost() { return animation_host_; }
 
  private:
-  std::unique_ptr<CompositorAnimationTimeline> animation_timeline_;
+  scoped_refptr<cc::AnimationTimeline> animation_timeline_;
   cc::AnimationHost* animation_host_ = nullptr;
 };
 

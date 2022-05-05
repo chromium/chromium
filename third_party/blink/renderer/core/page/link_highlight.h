@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -14,10 +15,10 @@
 
 namespace cc {
 class AnimationHost;
+class AnimationTimeline;
 }
 
 namespace blink {
-class CompositorAnimationTimeline;
 class GraphicsContext;
 class LinkHighlightImpl;
 class LayoutObject;
@@ -68,7 +69,7 @@ class CORE_EXPORT LinkHighlight final : public GarbageCollected<LinkHighlight> {
   Member<Page> page_;
   std::unique_ptr<LinkHighlightImpl> impl_;
   cc::AnimationHost* animation_host_ = nullptr;
-  std::unique_ptr<CompositorAnimationTimeline> timeline_;
+  scoped_refptr<cc::AnimationTimeline> timeline_;
 };
 
 }  // namespace blink

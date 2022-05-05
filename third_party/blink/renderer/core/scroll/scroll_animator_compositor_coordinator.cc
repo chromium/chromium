@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "cc/animation/animation_host.h"
+#include "cc/animation/animation_timeline.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
-#include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
 
 namespace blink {
 
@@ -190,7 +190,7 @@ void ScrollAnimatorCompositorCoordinator::CompositorAnimationFinished(
 }
 
 bool ScrollAnimatorCompositorCoordinator::ReattachCompositorAnimationIfNeeded(
-    CompositorAnimationTimeline* timeline) {
+    cc::AnimationTimeline* timeline) {
   bool reattached = false;
   CompositorElementId element_id;
   if (!element_detached_) {
@@ -202,12 +202,14 @@ bool ScrollAnimatorCompositorCoordinator::ReattachCompositorAnimationIfNeeded(
       if (element_id_) {
         if (compositor_animation_->IsElementAttached())
           compositor_animation_->DetachElement();
-        timeline->AnimationDestroyed(*this);
+        if (GetCompositorAnimation())
+          timeline->DetachAnimation(GetCompositorAnimation()->CcAnimation());
       }
       // Attach to new layer (if any).
       if (element_id) {
         DCHECK(!compositor_animation_->IsElementAttached());
-        timeline->AnimationAttached(*this);
+        if (GetCompositorAnimation())
+          timeline->AttachAnimation(GetCompositorAnimation()->CcAnimation());
         compositor_animation_->AttachElement(element_id);
         reattached = true;
       }

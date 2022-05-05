@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "base/metrics/histogram_macros.h"
+#include "cc/animation/animation_timeline.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
@@ -67,7 +68,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
-#include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -2463,27 +2463,32 @@ void Animation::AttachCompositorTimeline() {
 
   // Register ourselves on the compositor timeline. This will cause our cc-side
   // animation animation to be registered.
-  CompositorAnimationTimeline* compositor_timeline =
+  cc::AnimationTimeline* compositor_timeline =
       timeline_ ? timeline_->EnsureCompositorTimeline() : nullptr;
   if (!compositor_timeline)
     return;
 
-  compositor_timeline->AnimationAttached(*this);
+  if (CompositorAnimation* compositor_animation = GetCompositorAnimation()) {
+    compositor_timeline->AttachAnimation(compositor_animation->CcAnimation());
+  }
+
   // Note that while we attach here but we don't detach because the
   // |compositor_timeline| is detached in its destructor.
-  if (compositor_timeline->GetAnimationTimeline()->IsScrollTimeline())
+  if (compositor_timeline->IsScrollTimeline())
     document_->AttachCompositorTimeline(compositor_timeline);
 }
 
 void Animation::DetachCompositorTimeline() {
   DCHECK(compositor_animation_);
 
-  CompositorAnimationTimeline* compositor_timeline =
+  cc::AnimationTimeline* compositor_timeline =
       timeline_ ? timeline_->CompositorTimeline() : nullptr;
   if (!compositor_timeline)
     return;
 
-  compositor_timeline->AnimationDestroyed(*this);
+  if (CompositorAnimation* compositor_animation = GetCompositorAnimation()) {
+    compositor_timeline->DetachAnimation(compositor_animation->CcAnimation());
+  }
 }
 
 void Animation::AttachCompositedLayers() {

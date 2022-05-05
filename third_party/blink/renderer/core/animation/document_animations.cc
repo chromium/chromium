@@ -33,6 +33,7 @@
 #include <algorithm>
 
 #include "cc/animation/animation_host.h"
+#include "cc/animation/animation_timeline.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
@@ -195,8 +196,7 @@ void DocumentAnimations::DetachCompositorTimelines() {
     return;
 
   for (auto& timeline : timelines_) {
-    CompositorAnimationTimeline* compositor_timeline =
-        timeline->CompositorTimeline();
+    cc::AnimationTimeline* compositor_timeline = timeline->CompositorTimeline();
     if (!compositor_timeline)
       continue;
 
