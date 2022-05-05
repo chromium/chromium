@@ -1971,6 +1971,7 @@
 <translation id="2832124733806557606">Детето може да користи PIN за најавување или отклучување на уредот.</translation>
 <translation id="2835177225987815960">Вашето тековно поставување за скенирање ќе се ресетира, вклучително и сите доделени прекинувачи и поставките за брзината на автоматското скенирање.</translation>
 <translation id="2835547721736623118">Услуга за препознавање говор</translation>
+<translation id="2836232638504556905">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето име, адресата на е-пошта и профилната слика со сајтов. Погледнете ја <ph name="BEGIN_LINK" />Политиката за приватност<ph name="END_LINK" /> на сајтов.</translation>
 <translation id="2836269494620652131">Пад</translation>
 <translation id="2836635946302913370">Администраторот го оневозможи најавувањето со ова корисничко име.</translation>
 <translation id="283669119850230892">За да ја користите мрежата <ph name="NETWORK_ID" />, прво завршете со поврзувањето на интернет подолу.</translation>
@@ -2252,6 +2253,7 @@
 <translation id="3105796011181310544">Да се врати на Google?</translation>
 <translation id="310671807099593501">Сајтот користи Bluetooth</translation>
 <translation id="3108931485517391283">Не може да се прими</translation>
+<translation id="3109206895301430738">Зачувани групи картички</translation>
 <translation id="3109724472072898302">Собрано</translation>
 <translation id="311214366526552035">Сепак преземи</translation>
 <translation id="3112292765614504292">Големина на апликацијата: <ph name="APP_SIZE" /></translation>

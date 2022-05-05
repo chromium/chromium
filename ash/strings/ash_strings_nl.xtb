@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C-apparaat (poort aan voorkant)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> gewijzigd in <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik op Bevestigen om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
 <translation id="1013923882670373915">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen. Voer de volgende pincode in op dat apparaat: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Screencasttools</translation>
 <translation id="1024261588257374085">Gedeeltelijk screenshot geselecteerd</translation>
 <translation id="1024364763893396229">Je <ph name="NAME" /> opslaan</translation>
 <translation id="1032891413405719768">Batterij van stylus bijna leeg</translation>
@@ -82,7 +81,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1351937230027495976">Menu samenvouwen</translation>
 <translation id="1364382257761975320">Gebruik je vingerafdruk om je Chromebook te ontgrendelen</translation>
-<translation id="1364618750746929654">Kan geen transcriptie genereren</translation>
 <translation id="1372545819342940910">Bureau opslaan voor later</translation>
 <translation id="1383597849754832576">Kan spraakbestanden niet downloaden. Probeer het later opnieuw.</translation>
 <translation id="1383876407941801731">Zoeken</translation>
@@ -457,7 +455,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3702846122927433391">Bevolking van Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Eerder verbonden</translation>
-<translation id="3712317119236351467">Kan de opname niet opslaan</translation>
 <translation id="371370241367527062">Microfoon aan voorzijde</translation>
 <translation id="3713734891607377840">Openen na afronding</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> en nog <ph name="UNAVAILABLE_APPS_COUNT" /> staan niet op dit apparaat.</translation>
@@ -851,6 +848,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6166852626429024716">Zoek op je apparaat, in apps en instellingen en op internet...</translation>
 <translation id="6179832488876878285">Je kunt hier je belangrijke bestanden vastzetten. Open de app Bestanden om aan de slag te gaan.</translation>
 <translation id="619279033188484792">Recente foto's, media en meldingen van je telefoon bekijken op je <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Nu volledig opladen</translation>
 <translation id="6220928844947387476">Je kunt jezelf en je scherm nu tegelijkertijd opnemen</translation>
 <translation id="622484624075952240">Omlaag</translation>
 <translation id="6231419273573514727">De prestaties van randapparaten kunnen beperkt zijn</translation>
@@ -1185,6 +1183,7 @@ Nieuwe installatie</translation>
 <translation id="826107067893790409">Druk op Enter om te ontgrendelen voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="8270450402312105425">{0,plural, =1{Zet het apparaat binnen een uur terug naar een oudere versie}other{Zet het apparaat binnen # uur terug naar een oudere versie}}</translation>
+<translation id="8271580342040932214">Je batterij is tijdelijk opgeladen tot 80% terwijl deze is aangesloten om de batterijduur te verlengen. De batterij wordt vóór <ph name="FULLY_CHARGE_TIME" /> volledig opgeladen.</translation>
 <translation id="8284362522226889623">Swipe met 4 vingers naar links om naar het vorige bureau te schakelen</translation>
 <translation id="828708037801473432">Uit</translation>
 <translation id="8297006494302853456">Zwak</translation>
@@ -1268,6 +1267,7 @@ Nieuwe installatie</translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="881757059229893486">Instellingen voor invoermethoden</translation>
 <translation id="8818320199597151042">Profiel verwijderen. Wacht een paar minuten.</translation>
+<translation id="8819728065740986820">Aangepast opladen staat aan</translation>
 <translation id="8825863694328519386">Swipe vanaf de linkerkant om terug te gaan</translation>
 <translation id="8834539327799336565">Momenteel verbonden</translation>
 <translation id="8841375032071747811">Knop Terug</translation>
@@ -1314,6 +1314,7 @@ Nieuwe installatie</translation>
 <translation id="9080132581049224423">Swipe omhoog om naar het startscherm te gaan</translation>
 <translation id="9080206825613744995">Microfoon wordt gebruikt.</translation>
 <translation id="9084606467167974638">Positie van menu wijzigen</translation>
+<translation id="9085962983642906571">Je batterij wordt op 80% gehouden terwijl deze is aangesloten om de batterijduur te verlengen.</translation>
 <translation id="9089416786594320554">Invoermethoden</translation>
 <translation id="9091626656156419976">Scherm <ph name="DISPLAY_NAME" /> is verwijderd</translation>
 <translation id="9098969848082897657">Geluid van telefoon uitzetten</translation>

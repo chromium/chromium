@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">อุปกรณ์ USB-C (พอร์ตด้านหน้า)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> เปลี่ยนเป็น <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) แล้ว คลิก "ยืนยัน" เพื่อเก็บการเปลี่ยนแปลงไว้ ระบบจะคืนการตั้งค่าก่อนหน้าใน <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="1013923882670373915">อุปกรณ์บลูทูธ "<ph name="DEVICE_NAME" />" ต้องการสิทธิ์ในการจับคู่ โปรดป้อนรหัส PIN นี้บนอุปกรณ์นั้น: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">เครื่องมือ Screencast</translation>
 <translation id="1024261588257374085">เลือกภาพหน้าจอบางส่วนแล้ว</translation>
 <translation id="1024364763893396229">บันทึก <ph name="NAME" /> ของคุณ</translation>
 <translation id="1032891413405719768">แบตเตอรี่สไตลัสเหลือน้อย</translation>
@@ -82,7 +81,6 @@
 <translation id="1346748346194534595">ขวา</translation>
 <translation id="1351937230027495976">ยุบเมนู</translation>
 <translation id="1364382257761975320">ใช้ลายนิ้วมือเพื่อปลดล็อก Chromebook</translation>
-<translation id="1364618750746929654">สร้างข้อความถอดเสียงไม่ได้</translation>
 <translation id="1372545819342940910">บันทึกเดสก์ไว้ใช้ในภายหลัง</translation>
 <translation id="1383597849754832576">ดาวน์โหลดไฟล์คำพูดไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
@@ -457,7 +455,6 @@
 <translation id="3702846122927433391">ประชากรในประเทศไนจีเรีย</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">อุปกรณ์ที่เคยเชื่อมต่อ</translation>
-<translation id="3712317119236351467">บันทึกไฟล์ที่อัดไว้ไม่ได้</translation>
 <translation id="371370241367527062">ไมโครโฟนด้านหน้า</translation>
 <translation id="3713734891607377840">เปิดเมื่อดาวน์โหลดเสร็จ</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> และอีก<ph name="UNAVAILABLE_APPS_COUNT" /> แอปไม่ได้อยู่ในอุปกรณ์</translation>

@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Пристрій із портом USB типу C (на передній панелі)</translation>
 <translation id="1013598600051641573">Роздільну здатність дисплея "<ph name="DISPLAY_NAME" />" змінено на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Щоб зберегти зміни, натисніть "Підтвердити". Попередні налаштування відновляться через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення. Введіть на пристрої цей PIN-код: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Інструменти для скрінкастингу</translation>
 <translation id="1024261588257374085">Вибрано знімок частини екрана</translation>
 <translation id="1024364763893396229">Збережіть пристрій "<ph name="NAME" />"</translation>
 <translation id="1032891413405719768">Низький заряд акумулятора стилуса</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">Праворуч</translation>
 <translation id="1351937230027495976">Згорнути меню</translation>
 <translation id="1364382257761975320">Щоб розблокувати Chromebook, скористайтеся відбитком пальця</translation>
-<translation id="1364618750746929654">Не вдається створити транскрипцію</translation>
 <translation id="1372545819342940910">Зберегти робочий стіл</translation>
 <translation id="1383597849754832576">Не вдалося завантажити файли живих субтитрів. Повторіть спробу пізніше.</translation>
 <translation id="1383876407941801731">Пошук</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">Яка чисельність населення в Нігерії</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Підключені раніше</translation>
-<translation id="3712317119236351467">Не вдається зберегти запис</translation>
 <translation id="371370241367527062">Мікрофон на передній панелі</translation>
 <translation id="3713734891607377840">Відкриється після завершення</translation>
 <translation id="3726171378575546917">На цьому пристрої не встановлено додатки <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> і ще <ph name="UNAVAILABLE_APPS_COUNT" />.</translation>

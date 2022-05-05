@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C cihazı (ön port)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> <ph name="RESOLUTION" /> ilə dəyişdirilib (<ph name="REFRESH_RATE" /> Hz). Dəyişiklikləri saxlamaq üçün "təsdiq edin" seçiminə toxunun. Əvvəlki ayarlar <ph name="TIMEOUT_SECONDS" /> ərzində bərpa ediləcək.</translation>
 <translation id="1013923882670373915">Bluetooth cihazı "<ph name="DEVICE_NAME" />" cütlənmək üçün icazə istəyir. Həmin cihaza PIN kodu daxil edin: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Ekran yayımı alətləri</translation>
 <translation id="1024261588257374085">Qismən skrinşot seçilib</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> cihazınızı yadda saxlayın</translation>
 <translation id="1032891413405719768">Qramafon iynəsinin batareyası azdır</translation>
@@ -85,7 +84,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1346748346194534595">Sağ</translation>
 <translation id="1351937230027495976">Menyunu yığcamlaşdırın</translation>
 <translation id="1364382257761975320">Chromebook'u kiliddən çıxarmaq üçün barmaq izinizi istifadə edin</translation>
-<translation id="1364618750746929654">Transkripsiya yaratmaq mümkün deyil</translation>
 <translation id="1372545819342940910">Sonra baxmaq üçün masanı yadda saxlayın</translation>
 <translation id="1383597849754832576">Nitq fayllarını endirmək olmur. Sonra yenidən cəhd edin.</translation>
 <translation id="1383876407941801731">Axtar</translation>
@@ -460,7 +458,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3702846122927433391">Nigeriyanın əhalisi</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Öncə qoşulmuş cihazlar</translation>
-<translation id="3712317119236351467">Çəkilişi yadda saxlamaq mümkün deyil</translation>
 <translation id="371370241367527062">Ön mikrofon</translation>
 <translation id="3713734891607377840">Tamamlandıqda açın</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> və daha <ph name="UNAVAILABLE_APPS_COUNT" /> tətbiq bu cihazda yoxdur.</translation>

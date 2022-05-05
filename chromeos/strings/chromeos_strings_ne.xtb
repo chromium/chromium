@@ -113,6 +113,7 @@
 <translation id="2085089206770112532">डिस्प्लेको चमक घटाउने की</translation>
 <translation id="2104796393919810494">मर्मत गरियो</translation>
 <translation id="2105810540595158374">यो डिभाइस गेम कन्ट्रोलर हो।</translation>
+<translation id="2115956742084455574">कोड गलत छ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, संस्करण <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> जि.बि. मध्ये <ph name="AVAILABLE_MEMORY" /> जि.बि. उपलब्ध छ</translation>
 <translation id="2138109643290557664">Float on by</translation>
@@ -142,6 +143,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">नजिकैका डिभाइसहरू पत्ता लगाउन ब्लुटुथ अन गर्नुहोस्</translation>
 <translation id="2346474577291266260">उत्कृष्ट (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2360257214555822463"><ph name="LINK_BEGIN" />अयोग्य कम्पोनेन्टहरू<ph name="LINK_END" /> भेटिए। तपाईं यो कम्पोनेन्ट इन्स्टल गरिएको छ भन्ने कुरा पुष्टि गर्ने विकल्प रोज्न चाहनुहुन्छ भने कृपया अहिले नै उक्त विकल्प रोज्नुहोस्।</translation>
 <translation id="2363636958541445404">स्क्रिनसेभरसम्बन्धी विकल्पहरू चयन गर्न यो सुविधा अन गर्नुहोस्</translation>
 <translation id="2364498172489649528">सुरक्षा जाँचमा पास भयो</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -191,6 +193,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">इन्डपोइन्ट</translation>
 <translation id="3069085583900247081">परीक्षण गर्न सकिएन</translation>
+<translation id="3076243757415932261">कम्पोनेन्टहरू पुष्टि गरिँदै छ...</translation>
 <translation id="3083667275341675831">कनेक्टिभिटी डाइगोनेस्टिक्स</translation>
 <translation id="3084958266922136097">स्क्रिन सेभर असक्षम पार्नुहोस्</translation>
 <translation id="3091839911843451378">प्रिन्ट गर्न सकिएन - प्रिन्ट गर्दा गर्दै रोकियो</translation>
@@ -219,6 +222,7 @@
 <translation id="3368922792935385530">जडित</translation>
 <translation id="3369013195428705271">आफूले गरेका प्रिन्टको सबै इतिहास मेटाउन खोज्नुभएकै हो? भइरहेका प्रिन्टिङ कार्यहरू मेटाइने छैनन्।</translation>
 <translation id="3404249063913988450">स्क्रिन सेभर सक्षम पार्नुहोस्</translation>
+<translation id="3404770484521709967">कम्पोनेन्टहरू सही तरिकाले इन्स्टल गरिएका छन्।</translation>
 <translation id="3413935475507503304">तपाईं यो अपडेट प्राप्त गर्न चाहनुहुन्छ भने अर्को नामक बटन क्लिक गर्नुहोस्।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
@@ -371,6 +375,7 @@
 <translation id="4890353053343094602">तुरुन्तै एउटा नयाँ पासवर्ड राख्नुहोस्</translation>
 <translation id="4891842000192098784">स्ट्रेस</translation>
 <translation id="4897058166682006107">यो डिभाइसको बायाँपट्टिको बडमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
+<translation id="4915052247106771211">तपाईंले यो विकल्प रोज्नुभयो भने डिभाइस रिसेट गरी पूर्वनिर्धारित सेटिङ लागू गरिने छ (पावरवास)।</translation>
 <translation id="4917385247580444890">बलियो</translation>
 <translation id="4917889632206600977">रोकियो - प्रिन्टरमा कागज सकियो</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकेन्डमा <ph name="RATE" /> चार्ज भयो।</translation>
@@ -424,6 +429,7 @@
 <translation id="5358174242040570474">केही चिज गडबड भयो। फेरि कुनै वालपेपर छनौट गरी हेर्नुहोस् वा यो एप पुनः खोल्नुहोस्।</translation>
 <translation id="5372659122375744710">WiFi नेटवर्क सुरक्षित छैन</translation>
 <translation id="5376354385557966694">स्वचालित उज्यालो मोड</translation>
+<translation id="537872351913703572">अर्कै प्रयोगकर्ता वा संस्थालाई डिभाइसको स्वामित्व दिइने छ</translation>
 <translation id="5400907029458559844">डिभाइस कनेक्ट गरिँदै छ।</translation>
 <translation id="5401938042319910061">सबै रुटिनहरू चलाउनुहोस्</translation>
 <translation id="5423849171846380976">सक्रिय भयो</translation>
@@ -565,6 +571,7 @@
 <translation id="6768237774506518020">DNS रिजोल्युसन पूरा हुन नसक्ने दर उच्च छ</translation>
 <translation id="680983167891198932">की</translation>
 <translation id="6816797338148849397">तपाईंले चयन गर्नुभएको पाठसँग सम्बन्धित जानकारी उपलब्ध छ। उक्त जानकारी प्राप्त गर्न अप एरो की प्रयोग गर्नुहोस्।</translation>
+<translation id="6840315122969944400"><ph name="DEVICE_TYPE" /> मर्मत प्रक्रिया</translation>
 <translation id="6853312040151791195">डिस्चार्ज हुने दर</translation>
 <translation id="6889786074662672253">रिस्टार्ट भइरहेका बेला यो बाह्य डिभाइस अनप्लग गर्ने वा कम्प्युटर सट डाउन गर्ने काम नगर्नुहोस्। तपाईं यो विन्डो मिनिमाइज गर्न सक्नुहुन्छ। यो कार्य पूरा हुन केही मिनेट लाग्न सक्छ र यस समयमा तपाईंको बाह्य डिभाइसले काम नगर्न सक्छ।</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> मा फर्कनुहोस्</translation>
@@ -673,6 +680,7 @@
 <translation id="8045012663542226664">माइक्रोफोन म्युट गर्ने की</translation>
 <translation id="8075838845814659848">बाँकी ब्याट्री</translation>
 <translation id="8082366717211101304">Android एपहरूबाट DNS समाधान गर्न सकिएन</translation>
+<translation id="8083281199617904460">यो मर्मत प्रक्रिया तालिम प्राप्त मर्मत प्राविधिकका लागि तयार पारिएको हो। खराब कम्पोनेन्टहरू बदलेपछि मात्र उक्त प्रक्रिया सुरु गर्नुहोस्।</translation>
 <translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>
 <translation id="8104083085214006426">तपाईं खुला र असुरक्षित नेटवर्क प्रयोग गर्दै हुनुहुन्छ</translation>
 <translation id="811820734797650957">(Android) गेटवे पिङ गर्न सकिन्छ</translation>
@@ -726,6 +734,7 @@
 <translation id="8671972493856476349">अपडेट गरी <ph name="VERSION_NUMBER" /> बनाउनुहोस् र रिस्टार्ट गर्नुहोस्</translation>
 <translation id="8675354002693747642">पहिलै साझा गरिएको साँचो</translation>
 <translation id="8677859815076891398">कुनै पनि एल्बम छैन। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मा गई एउटा एल्बम बनाउनुहोस्।</translation>
+<translation id="8680431479333800907">सोही प्रयोगकर्तालाई डिभाइसको स्वामित्व दिइने छ</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> यो सुविधा व्यवस्थापन गर्न लेफ्ट वा राइट एरो की प्रयोग गर्नुहोस्।</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="871560550817059752">प्रिन्ट गर्न सकिएन - मसी सकियो</translation>

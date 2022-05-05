@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C పరికరం (ముందువైపు పోర్ట్)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz)కు మార్చబడింది. మార్పులను అలాగే ఉంచడానికి 'నిర్ధారించు'ను క్లిక్ చేయండి. మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />లో రీస్టోర్ చేయబడతాయి.</translation>
 <translation id="1013923882670373915">బ్లూటూత్ పరికరం "<ph name="DEVICE_NAME" />" జత కావడానికి అనుమతి కోరుతోంది. దయచేసి ఆ పరికరంలో ఈ PIN కోడ్‌ను నమోదు చేయండి: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">స్క్రీన్‌కాస్ట్ టూల్స్</translation>
 <translation id="1024261588257374085">పాక్షిక స్క్రీన్‌షాట్ ఎంచుకోబడింది</translation>
 <translation id="1024364763893396229">మీ <ph name="NAME" />‌ను సేవ్ చేయండి</translation>
 <translation id="1032891413405719768">స్టైలస్ బ్యాటరీ తక్కువగా ఉంది</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">కుడి</translation>
 <translation id="1351937230027495976">మెనూను కుదించు</translation>
 <translation id="1364382257761975320">మీ Chromebookను అన్‌లాక్ చేయడానికి, మీ వేలిముద్రను ఉపయోగించండి</translation>
-<translation id="1364618750746929654">టైప్ చేసిన మాటల ఫైల్‌ను జెనరేట్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="1372545819342940910">తర్వాతి వినియోగం కోసం డెస్క్‌ను సేవ్ చేయండి</translation>
 <translation id="1383597849754832576">స్పీచ్ ఫైళ్లను డౌన్‌లోడ్ చేయడం సాధ్యం కాదు. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">నైజీరియాలో జనాభా</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">ఇంతకు మునుపు కనెక్ట్ చేయబడినవి</translation>
-<translation id="3712317119236351467">రికార్డింగ్‌ను సేవ్ చేయడం సాధ్యం కాదు</translation>
 <translation id="371370241367527062">ముందువైపు మైక్రోఫోన్</translation>
 <translation id="3713734891607377840">పూర్తయినప్పుడు తెరవండి</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, మరో<ph name="UNAVAILABLE_APPS_COUNT" /> యాప్‌లు ఈ పరికరంలో అందుబాటులో లేవు.</translation>
@@ -855,6 +852,7 @@
 <translation id="6166852626429024716">మీ పరికరం, యాప్‌లు, సెట్టింగ్‌లు, వెబ్‌ను వెతకండి...</translation>
 <translation id="6179832488876878285">మీ ముఖ్యమైన ఫైళ్లను మీరు ఇక్కడ పిన్ చేయవచ్చు. ప్రారంభించడానికి Files యాప్‌ను తెరవండి.</translation>
 <translation id="619279033188484792">మీ ఫోన్‌లోని తాజా ఫోటోలు, మీడియా, మీ <ph name="DEVICE_TYPE" />‌లోని నోటిఫికేషన్‌లను చూడండి</translation>
+<translation id="619335566042889110">ఇప్పుడు పూర్తిగా ఛార్జ్ అయింది</translation>
 <translation id="6220928844947387476">ఇప్పుడు మీరు మిమ్మల్ని, మీ స్క్రీన్‌ను ఒకే సమయంలో రికార్డ్ చేయవచ్చు</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">పెరిఫెరల్ పనితీరు పరిమితంగా ఉండవచ్చు</translation>
@@ -1190,6 +1188,7 @@
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> కోసం అన్‌లాక్ చేయడానికి నమోదును నొక్కండి</translation>
 <translation id="8261506727792406068">తొలగించు</translation>
 <translation id="8270450402312105425">{0,plural, =1{ఒక గంటలోపు పరికరాన్ని మునుపటి వెర్షన్‌కు మార్చండి}other{# గంటల్లోపు పరికరాన్ని మునుపటి వెర్షన్‌కు మార్చండి}}</translation>
+<translation id="8271580342040932214">బ్యాటరీ జీవితకాలాన్ని పొడిగించడానికి ప్లగ్-ఇన్ చేసినప్పుడు మీ బ్యాటరీ ఛార్జింగ్ స్థాయి తాత్కాలికంగా 80% వద్ద ఉంది. మీ బ్యాటరీ <ph name="FULLY_CHARGE_TIME" /> కల్లా పూర్తిగా ఛార్జ్ అవుతుంది.</translation>
 <translation id="8284362522226889623">మునుపటి డెస్క్‌కు మారడానికి నాలుగు వేళ్లతో ఎడమ వైపు స్వైప్ చేయండి</translation>
 <translation id="828708037801473432">ఆఫ్</translation>
 <translation id="8297006494302853456">బలహీనం</translation>
@@ -1273,6 +1272,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">ఇన్‌పుట్ విధానాల సెట్టింగ్‌లు</translation>
 <translation id="8818320199597151042">ప్రొఫైల్‌ను తీసివేస్తోంది. కొన్ని నిమిషాలు వేచి ఉండండి.</translation>
+<translation id="8819728065740986820">అనుకూల ఛార్జింగ్ ఆన్‌లో ఉంది</translation>
 <translation id="8825863694328519386">వెనుకకు వెళ్లడానికి ఎడమ వైపు నుండి స్వైప్ చేయండి</translation>
 <translation id="8834539327799336565">ప్రస్తుతం కనెక్ట్ చేయబడింది</translation>
 <translation id="8841375032071747811">వెనుకకు బటన్</translation>
@@ -1319,6 +1319,7 @@
 <translation id="9080132581049224423">హోమ్‌కు వెళ్లడానికి పైకి స్వైప్ చేయండి</translation>
 <translation id="9080206825613744995">మైక్రోఫోన్ ఉపయోగంలో ఉంది.</translation>
 <translation id="9084606467167974638">మెనూ స్థానం టోగుల్ చేయండి</translation>
+<translation id="9085962983642906571">బ్యాటరీ జీవితకాలాన్ని పొడిగించడానికి ప్లగ్-ఇన్ చేసినప్పుడు మీ బ్యాటరీ ఛార్జింగ్ స్థాయి 80% వద్ద ఉంది.</translation>
 <translation id="9089416786594320554">ఇన్‌పుట్ పద్ధతులు</translation>
 <translation id="9091626656156419976">డిస్‌ప్లే <ph name="DISPLAY_NAME" /> తీసివేయబడింది</translation>
 <translation id="9098969848082897657">ఫోన్‌ను సైలెంట్ చేయండి</translation>

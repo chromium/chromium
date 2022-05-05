@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C 设备（前方端口）</translation>
 <translation id="1013598600051641573">“<ph name="DISPLAY_NAME" />”的分辨率已改为 <ph name="RESOLUTION" />（<ph name="REFRESH_RATE" /> 赫兹）。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
 <translation id="1013923882670373915">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。请在该设备上输入以下PIN码：<ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">抓屏工具</translation>
 <translation id="1024261588257374085">已选择截取局部屏幕</translation>
 <translation id="1024364763893396229">保存您的“<ph name="NAME" />”</translation>
 <translation id="1032891413405719768">触控笔电池电量较低</translation>
@@ -82,7 +81,6 @@
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">收起菜单</translation>
 <translation id="1364382257761975320">若要解锁 Chromebook，请使用指纹</translation>
-<translation id="1364618750746929654">无法生成转录</translation>
 <translation id="1372545819342940910">保存桌面以备后用</translation>
 <translation id="1383597849754832576">无法下载实时字幕文件。请稍后再试。</translation>
 <translation id="1383876407941801731">搜索</translation>
@@ -457,7 +455,6 @@
 <translation id="3702846122927433391">尼日利亚的人口</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">曾经连接过</translation>
-<translation id="3712317119236351467">无法保存录制内容</translation>
 <translation id="371370241367527062">前置麦克风</translation>
 <translation id="3713734891607377840">下载完成后打开</translation>
 <translation id="3726171378575546917">无法在此设备上使用<ph name="UNAVAILABLE_APPS_ONE" />、<ph name="UNAVAILABLE_APPS_TWO" />以及另外 <ph name="UNAVAILABLE_APPS_COUNT" /> 个应用。</translation>
@@ -851,6 +848,7 @@
 <translation id="6166852626429024716">搜索您的设备、应用、设置、网站…</translation>
 <translation id="6179832488876878285">您可将自己的重要文件固定在此处。打开“文件”应用即可开始操作。</translation>
 <translation id="619279033188484792">在 <ph name="DEVICE_TYPE" /> 上查看手机中近期拍摄的照片、播放的媒体和收到的通知</translation>
+<translation id="619335566042889110">立即充满电</translation>
 <translation id="6220928844947387476">现在，您可以同时录制您本人和屏幕内容</translation>
 <translation id="622484624075952240">向下箭头键</translation>
 <translation id="6231419273573514727">外围设备的性能可能会受到限制</translation>
@@ -1185,6 +1183,7 @@
 <translation id="826107067893790409">按 Enter 键即可为 <ph name="USER_EMAIL_ADDRESS" /> 解锁</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="8270450402312105425">{0,plural, =1{请在 1 小时内将设备回滚到上一个版本}other{请在 # 小时内将设备回滚到上一个版本}}</translation>
+<translation id="8271580342040932214">您的电池已接通电源，但电量会暂时保持在 80% 以延长电池续航时间。您的电池最晚将于<ph name="FULLY_CHARGE_TIME" /> 充满电。</translation>
 <translation id="8284362522226889623">若要切换到上一个桌面，请用四根手指向左滑动</translation>
 <translation id="828708037801473432">已关闭</translation>
 <translation id="8297006494302853456">弱</translation>
@@ -1268,6 +1267,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">输入法设置</translation>
 <translation id="8818320199597151042">正在移除配置文件。请稍等几分钟。</translation>
+<translation id="8819728065740986820">已开启“自动调节充电”功能</translation>
 <translation id="8825863694328519386">从左侧向右滑动手指即可返回</translation>
 <translation id="8834539327799336565">目前已连接</translation>
 <translation id="8841375032071747811">“返回”按钮</translation>
@@ -1314,6 +1314,7 @@
 <translation id="9080132581049224423">向上滑动可转到主屏幕</translation>
 <translation id="9080206825613744995">麦克风目前处于使用状态。</translation>
 <translation id="9084606467167974638">切换菜单位置</translation>
+<translation id="9085962983642906571">您的电池已接通电源，但电量会保持在 80% 以延长电池续航时间。</translation>
 <translation id="9089416786594320554">输入法</translation>
 <translation id="9091626656156419976">已移除显示器“<ph name="DISPLAY_NAME" />”</translation>
 <translation id="9098969848082897657">将手机设为静音</translation>

@@ -288,7 +288,7 @@
 <translation id="1272508081857842302">Abertura de <ph name="BEGIN_LINK" />links compatíveis<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">Esta conta de usuário não pertence ao domínio no qual o dispositivo está inscrito. Para se inscrever em um domínio diferente, é preciso passar pela recuperação do dispositivo primeiro.</translation>
 <translation id="1274997165432133392">Cookies e outros dados do site</translation>
-<translation id="1275718070701477396">Selecionado</translation>
+<translation id="1275718070701477396">Linha selecionada</translation>
 <translation id="1276994519141842946">Não foi possível desinstalar o app <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Crie um PIN diferente do atual</translation>
 <translation id="1278859221870828664">Revise os apps e serviços do Google Play</translation>
@@ -1971,6 +1971,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="2832124733806557606">A criança pode usar um PIN para fazer login ou desbloquear o dispositivo.</translation>
 <translation id="2835177225987815960">Sua configuração de leitura atual será redefinida, incluindo interruptores atribuídos e preferências da velocidade de leitura automática.</translation>
 <translation id="2835547721736623118">Serviço de reconhecimento de fala</translation>
+<translation id="2836232638504556905">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu nome, endereço de e-mail e foto do perfil com esse site. Consulte a <ph name="BEGIN_LINK" />Política de Privacidade<ph name="END_LINK" /> do site.</translation>
 <translation id="2836269494620652131">Falha</translation>
 <translation id="2836635946302913370">O login com este nome foi desativado pelo administrador.</translation>
 <translation id="283669119850230892">Para usar a rede <ph name="NETWORK_ID" />, conclua primeiro sua conexão com a Internet abaixo.</translation>
@@ -2252,6 +2253,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3105796011181310544">Voltar a usar o Google?</translation>
 <translation id="310671807099593501">O site está usando o Bluetooth</translation>
 <translation id="3108931485517391283">Não foi possível receber</translation>
+<translation id="3109206895301430738">Grupos de guias salvos</translation>
 <translation id="3109724472072898302">Recolhido</translation>
 <translation id="311214366526552035">Fazer o download mesmo assim</translation>
 <translation id="3112292765614504292">Tamanho do app: <ph name="APP_SIZE" /></translation>

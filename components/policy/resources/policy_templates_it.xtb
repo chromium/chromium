@@ -625,6 +625,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="1678137412645922426">Controlla l'uso di <ph name="AES_KL_NAME" /> per la crittografia dello spazio di archiviazione degli utenti, se è supportata</translation>
+<translation id="1681688654564283886">Disattiva Tempo di utilizzo per i siti web</translation>
 <translation id="1682063842123336408">Spazio libero su disco (in GB) necessario per installare <ph name="PLUGIN_VM_NAME" />.
 
       Se il criterio non viene configurato, l'installazione di <ph name="PLUGIN_VM_NAME" /> non va a buon fine se lo spazio libero disponibile sul dispositivo è inferiore a 20 GB (valore predefinito).
@@ -1116,6 +1117,10 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2149957154942061013">Solo per uso interno</translation>
 <translation id="2151831603578119302">Attiva le scorciatoie delle funzioni di accessibilità</translation>
 <translation id="2156132677421487971">Consente di configurare le norme per <ph name="PRODUCT_NAME" />, una funzione che permette agli utenti di inviare i contenuti di schede, siti o del desktop dal browser a schermi remoti e sistemi audio.</translation>
+<translation id="2156179920247248678">Questo criterio consente a <ph name="PRODUCT_NAME" /> di usare la funzionalità Tempo di utilizzo di <ph name="MAC_OS_NAME" />.
+
+      Se il criterio viene attivato o se non viene configurato, le origini visitate verranno segnalate al sistema operativo, mentre per le origini che sono state bloccate nelle impostazioni di Tempo di utilizzo verrà visualizzata una schermata di blocco.
+      Se il criterio viene disattivato, le origini visitate non verranno segnalate al sistema operativo, mentre le origini che sono state bloccate nelle impostazioni di Tempo di utilizzo saranno accessibili.</translation>
 <translation id="2156755242840687300">Server di stampa esterni attivi</translation>
 <translation id="2157842368188031417">Il criterio viene applicato soltanto alle sessioni Ospite gestite. Deve essere attivato per consentire il cambio di utente all'interno della sessione nella modalità di workstation condivisa di Imprivata.
       Se il criterio viene impostato su Vero, vengono sostituiti forzatamente alcuni criteri per le funzionalità, che memorizzano dati utente sensibili e non vengono gestite tramite il meccanismo di pulizia usato per il cambio di utente all'interno della sessione con la modalità di workstation condivisa di Imprivata.
@@ -3238,6 +3243,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
       Tieni presente che questo criterio esegue l'override sia di DisabledPlugins sia di DisabledPluginsExceptions.
 
       Se il criterio non è impostato, l'utente può disattivare qualsiasi plug-in installato sul sistema.</translation>
+<translation id="4549405078915181477">Attiva Tempo di utilizzo per i siti web</translation>
 <translation id="4554651132977135445">Modalità di elaborazione loopback dei criteri relativi agli utenti</translation>
 <translation id="4555850956567117258">Attivazione dell'attestazione da remoto per l'utente</translation>
 <translation id="4557134566541205630">URL pagina Nuova scheda provider di ricerca predefinito</translation>
@@ -3736,6 +3742,16 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 <translation id="5179853299156742425">L'URL da cui è possibile scaricare il modello di scrivania.</translation>
 <translation id="5182055907976889880">Configura Google Drive in <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5182483318861266793">Posiziona la barra delle app sul lato destro dello schermo</translation>
+<translation id="5184298474980725716">Questo criterio consente di stabilire la visibilità dei percorsi nella pagina Cronologia di Chrome.
+
+      Se il criterio viene impostato su Enabled, i percorsi saranno visibili all'indirizzo chrome://history/journeys.
+
+      Se viene impostato su Disabled, i percorsi non saranno visibili all'indirizzo chrome://history/journeys.
+
+      Se non viene configurato, i percorsi saranno visibili in chrome://history/journeys per impostazione predefinita e gli utenti potranno modificare la visibilità di tali percorsi.
+
+      Tieni presente che se il criterio <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> viene impostato su Disabled, ma il criterio <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> viene impostato su Enabled o non viene configurato, i percorsi continueranno a essere disponibili all'indirizzo chrome://history/journeys, ma potrebbero non essere presenti nella omnibox ed essere meno pertinenti per l'utente.
+      </translation>
 <translation id="51859390023061147">Disattiva la funzionalità di ripristino completo.</translation>
 <translation id="5189360528842591274">Consenti solo la connessione con i servizi Bluetooth nell'elenco</translation>
 <translation id="5190426551516379357">La configurazione del criterio applica un livello minimo della Modalità con restrizioni su YouTube e impedisce agli utenti di scegliere un livello meno restrittivo della modalità. Se il criterio viene impostato su:

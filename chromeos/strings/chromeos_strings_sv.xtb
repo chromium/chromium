@@ -229,6 +229,7 @@
 <translation id="3484914941826596830">Koppla inte från den externa enheten eller stäng av datorn medan firmware uppdateras. Du kan minimera fönstret. Uppdateringen kan ta en stund och din externa enhet kanske inte fungerar under tiden.</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3488065109653206955">Delvis aktiverat</translation>
+<translation id="3517001332549868749">ChromeOS-uppdatering</translation>
 <translation id="3527036260304016759">Misslyckades – okänt fel</translation>
 <translation id="3532980081107202182">Ungefär <ph name="MIN_REMAINING" /> minuter kvar</translation>
 <translation id="3557205324756024651">Lokal identitet (valfritt)</translation>
@@ -554,6 +555,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6692996468359469499">Få information utifrån det du markerar</translation>
 <translation id="6704062477274546131">DNS-matchning</translation>
 <translation id="6723839937902243910">Batteri</translation>
+<translation id="6723847290197874913">Tangentbordets bakgrundsbelysning</translation>
 <translation id="672609503628871915">Kolla nyheterna</translation>
 <translation id="6747215703636344499">Har stoppats – utmatningsfacket är fullt</translation>
 <translation id="6749473226660745022">Foton</translation>

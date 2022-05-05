@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C ഉപകരണം (മുൻവശത്തെ പോർട്ട്)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" />, <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) എന്ന റെസല്യൂഷനിലേക്ക് മാറ്റി. മാറ്റങ്ങൾ നിലനിർത്താൻ 'സ്ഥിരീകരിക്കുക' ക്ലിക്ക് ചെയ്യുക. മുമ്പത്തെ ക്രമീകരണം <ph name="TIMEOUT_SECONDS" /> പുനഃസ്ഥാപിക്കും.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" എന്ന Bluetooth ഉപകരണം ജോടിയാക്കുന്നതിനുള്ള അനുമതി ആവശ്യപ്പെടുന്നു. ആ ഉപകരണത്തിൽ ഈ പിൻ കോഡ് നൽകുക: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">സ്ക്രീന്‍കാസ്റ്റ് ടൂളുകൾ</translation>
 <translation id="1024261588257374085">ഭാഗിക സ്ക്രീൻഷോട്ട് തിരഞ്ഞെടുത്തു</translation>
 <translation id="1024364763893396229">നിങ്ങളുടെ <ph name="NAME" /> സംരക്ഷിക്കുക</translation>
 <translation id="1032891413405719768">സ്‌റ്റൈലസ് ബാറ്ററി കുറവാണ്</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">ശരി</translation>
 <translation id="1351937230027495976">മെനു ചുരുക്കുക</translation>
 <translation id="1364382257761975320">Chromebook അൺലോക്ക് ചെയ്യാൻ നിങ്ങളുടെ ഫിംഗർപ്രിന്റ് ഉപയോഗിക്കുക</translation>
-<translation id="1364618750746929654">ട്രാൻസ്‌ക്രിപ്ഷൻ സൃഷ്ടിക്കാനാകുന്നില്ല</translation>
 <translation id="1372545819342940910">പിന്നീട് ഉപയോഗിക്കാൻ ഡെസ്ക്ക് സംരക്ഷിക്കുക</translation>
 <translation id="1383597849754832576">സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1383876407941801731">Search</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">നൈജീരിയയിലെ ജനസംഖ്യ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">മുമ്പ് കണക്റ്റ് ചെയ്തവ</translation>
-<translation id="3712317119236351467">റെക്കോർഡിംഗ് സംരക്ഷിക്കാനാകുന്നില്ല</translation>
 <translation id="371370241367527062">മുൻവശത്തുള്ള മൈക്രോഫോൺ</translation>
 <translation id="3713734891607377840">പൂർത്തിയാകുമ്പോൾ തുറക്കുക</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> എന്നിവയും മറ്റ് <ph name="UNAVAILABLE_APPS_COUNT" /> എണ്ണവും ഈ ഉപകരണത്തിൽ ലഭ്യമല്ല.</translation>
@@ -854,6 +851,7 @@
 <translation id="6166852626429024716">നിങ്ങളുടെ ഉപകരണവും ആപ്പുകളും ക്രമീകരണവും വെബും തിരയുക...</translation>
 <translation id="6179832488876878285">നിങ്ങളുടെ പ്രധാനപ്പെട്ട ഫയലുകൾ ഇവിടെ പിൻ ചെയ്യാം. ആരംഭിക്കാൻ Files ആപ്പ് തുറക്കുക.</translation>
 <translation id="619279033188484792"><ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ നിങ്ങളുടെ ഫോണിന്റെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും കാണുക</translation>
+<translation id="619335566042889110">ഇപ്പോൾ തന്നെ പൂർണ്ണമായി ചാർജ് ചെയ്യുക</translation>
 <translation id="6220928844947387476">നിങ്ങൾക്ക് ഇപ്പോൾ നിങ്ങളെയും ഒപ്പം സ്ക്രീനും ഒരേസമയം റെക്കോർഡ് ചെയ്യാം</translation>
 <translation id="622484624075952240">താഴേക്കുള്ള കീ</translation>
 <translation id="6231419273573514727">പെരിഫറൽ പ്രകടനം പരിമിതപ്പെട്ടേക്കാം</translation>
@@ -1189,6 +1187,7 @@
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> എന്നതിനായി അൺലോക്ക് ചെയ്യാൻ 'Enter' അമർത്തുക</translation>
 <translation id="8261506727792406068">ഇല്ലാതാക്കുക</translation>
 <translation id="8270450402312105425">{0,plural, =1{ഒരു മണിക്കൂറിനുള്ളിൽ മുമ്പത്തെ പതിപ്പിലേക്ക് ഉപകരണം മാറ്റുക}other{# മണിക്കൂറിനുള്ളിൽ മുമ്പത്തെ പതിപ്പിലേക്ക് ഉപകരണം മാറ്റുക}}</translation>
+<translation id="8271580342040932214">ബാറ്ററി ലൈഫ് മെച്ചപ്പെടുത്തുന്നതിന്, പ്ലഗ് ഇൻ ചെയ്തിട്ടുണ്ടെങ്കിലും തൽക്കാലത്തേക്ക് ബാറ്ററി ചാർജ് 80%-ൽ നിർത്തിയിരിക്കുന്നു. <ph name="FULLY_CHARGE_TIME" /> ആകുമ്പോൾ ബാറ്ററി പൂർണ്ണമായും ചാർജ് ചെയ്യും.</translation>
 <translation id="8284362522226889623">മുമ്പത്തെ ഡെസ്‌ക്കിലേക്ക് മാറാൻ, നാല് വിരലുകൾ ഉപയോഗിച്ച് ഇടത്തേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="828708037801473432">ഓഫാണ്</translation>
 <translation id="8297006494302853456">ദുര്‍ബലം</translation>
@@ -1272,6 +1271,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">ഇൻപുട്ട് രീതികളുടെ ക്രമീകരണം</translation>
 <translation id="8818320199597151042">പ്രൊഫൈല്‍ നീക്കം ചെയ്യുന്നു. അൽപ്പസമയം കാത്തിരിക്കുക.</translation>
+<translation id="8819728065740986820">അഡാപ്റ്റീവ് ചാർജിംഗ് ഓണാണ്</translation>
 <translation id="8825863694328519386">തിരികെ പോകാൻ ഇടതുഭാഗത്ത് നിന്ന് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="8834539327799336565">നിലവിൽ കണക്റ്റ് ചെയ്‌തവ</translation>
 <translation id="8841375032071747811">ബാക്ക് ബട്ടൺ</translation>
@@ -1318,6 +1318,7 @@
 <translation id="9080132581049224423">ഹോമിലേക്ക് പോകാൻ മുകളിലേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="9080206825613744995">മൈക്രോഫോൺ ഉപയോഗത്തിലാണ്.</translation>
 <translation id="9084606467167974638">മെനുവിൻ്റെ സ്ഥാനം മാറ്റുക</translation>
+<translation id="9085962983642906571">ബാറ്ററി ലൈഫ് മെച്ചപ്പെടുത്തുന്നതിന്, പ്ലഗ് ഇൻ ചെയ്തിട്ടുണ്ടെങ്കിലും ബാറ്ററി ചാർജ് 80%-ൽ നിർത്തിയിരിക്കുന്നു.</translation>
 <translation id="9089416786594320554">ഇൻപുട്ട്  രീതികൾ</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> ഡിസ്‌പ്ലേ നീക്കംചെയ്‌തു</translation>
 <translation id="9098969848082897657">ഫോൺ നിശബ്ദമാക്കുക</translation>

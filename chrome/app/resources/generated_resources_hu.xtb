@@ -287,7 +287,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1272508081857842302">A <ph name="BEGIN_LINK" />támogatott linkek<ph name="END_LINK" /> megnyitása</translation>
 <translation id="1272978324304772054">Ez a felhasználói fiók nem ahhoz a domainhez tartozik, amelyhez az eszköz. Ha másik domainen kívánja regisztrálni azt, először vissza kell állítania az eszköz beállításait.</translation>
 <translation id="1274997165432133392">Cookie-k és egyéb webhelyadatok</translation>
-<translation id="1275718070701477396">Kijelölt</translation>
+<translation id="1275718070701477396">Kijelölve</translation>
 <translation id="1276994519141842946">A(z) <ph name="APP_NAME" /> eltávolítása nem sikerült</translation>
 <translation id="1277020343994096713">Hozzon létre új, a jelenlegitől eltérő PIN-kódot.</translation>
 <translation id="1278859221870828664">A Google Play-alkalmazások és -szolgáltatások áttekintése</translation>
@@ -5642,6 +5642,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6520876759015997832"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" />. találat: <ph name="SEARCH_RESULT_TEXT" />. A szakasz megnyitásához nyomja meg az Enter billentyűt.</translation>
 <translation id="6521214596282732365">A webhelyek általában az Ön betűtípusait használják, így az eredetivel egyező minőségű tartalmakat hozhat létre online tervező- és grafikus eszközökkel</translation>
 <translation id="6523303810310758032">Az összes böngészési előzmény vagy csak adott webhely böngészési előzményeinek törlésekor a kapcsolódó mérési adatokat is törli a böngésző. Tekintse meg a <ph name="BEGIN_LINK" />böngészési előzményeit<ph name="END_LINK" />.</translation>
+<translation id="6523574494641144162">A Google Jelszókezelő nem tudta menteni ezeket a jelszavakat az Ön Google-fiókjába. Mentheti őket erre az eszközre.</translation>
 <translation id="6524735478670290456">A következőképpen használjuk fel ezeket az adatokat:</translation>
 <translation id="652492607360843641">A következő típusú hálózatra csatlakozik: <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Megosztás</translation>
@@ -5947,6 +5948,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6818198425579322765">Az oldal fordítani kívánt nyelve</translation>
 <translation id="6818547713623251698">Megtekintheti a telefonon található fotókat, médiatartalmakat, értesítéseket és alkalmazásokat</translation>
 <translation id="6818802132960437751">Beépített vírusvédelem</translation>
+<translation id="6818920801736417483">Menti a jelszavakat?</translation>
 <translation id="6823174134746916417">Koppintással kattintás az érintőpadon</translation>
 <translation id="6824564591481349393">&amp;E-mail cím másolása</translation>
 <translation id="6824584962142919697">&amp;Elemek vizsgálata</translation>

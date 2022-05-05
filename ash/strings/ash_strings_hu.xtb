@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">C típusú USB-vel kompatibilis eszköz (elülső port)</translation>
 <translation id="1013598600051641573">A(z) <ph name="DISPLAY_NAME" /> felbontása a következőre módosult: <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). A módosítás megtartásához kattintson a Megerősítés gombra. A beállítás <ph name="TIMEOUT_SECONDS" /> múlva visszaáll a korábbi értékre.</translation>
 <translation id="1013923882670373915">A(z) „<ph name="DEVICE_NAME" />” Bluetooth-eszköz engedélyt kér a párosításra. Kérjük, adja meg ezt a PIN kódot azon az eszközön: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Képernyőképeszközök</translation>
 <translation id="1024261588257374085">Részleges képernyőkép kiválasztva</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> eszközének mentése</translation>
 <translation id="1032891413405719768">Az érintőceruza töltöttségi szintje alacsony</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">Jobbra</translation>
 <translation id="1351937230027495976">Menü összecsukása</translation>
 <translation id="1364382257761975320">A Chromebook zárolásának feloldásához használja ujjlenyomatát.</translation>
-<translation id="1364618750746929654">Nem sikerült átiratot létrehozni</translation>
 <translation id="1372545819342940910">Asztal mentése későbbre</translation>
 <translation id="1383597849754832576">Nem sikerült a beszédfájlok letöltése. Próbálja újra később.</translation>
 <translation id="1383876407941801731">Keresés</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">Nigéria népessége</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Korábban csatlakoztatva</translation>
-<translation id="3712317119236351467">Nem lehet menteni a felvételt</translation>
 <translation id="371370241367527062">Elülső mikrofon</translation>
 <translation id="3713734891607377840">Megnyitás, ha kész</translation>
 <translation id="3726171378575546917">A(z) <ph name="UNAVAILABLE_APPS_ONE" />, a(z) <ph name="UNAVAILABLE_APPS_TWO" /> és <ph name="UNAVAILABLE_APPS_COUNT" /> további alkalmazás nincs telepítve erre az eszközre.</translation>

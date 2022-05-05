@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Прылада USB-C (пярэдні порт)</translation>
 <translation id="1013598600051641573">Для дысплэя "<ph name="DISPLAY_NAME" />" зададзена раздзяляльнасць <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Прылада Bluetooth "<ph name="DEVICE_NAME" />" запытвае дазвол на спалучэнне. Увядзіце на гэтай прыладзе PIN-код: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Інструменты трансляцыі экрана</translation>
 <translation id="1024261588257374085">Быў выбраны здымак часткі экрана</translation>
 <translation id="1024364763893396229">Захаванне прылады "<ph name="NAME" />"</translation>
 <translation id="1032891413405719768">Нізкі зарад акумулятара стыла</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1351937230027495976">Згарнуць меню</translation>
 <translation id="1364382257761975320">Каб разблакіраваць Chromebook, выкарыстайце функцыю разблакіравання адбіткам пальца</translation>
-<translation id="1364618750746929654">Не ўдалося стварыць расшыфроўку</translation>
 <translation id="1372545819342940910">Захаваць працоўны стол для прагляду пазней</translation>
 <translation id="1383597849754832576">Не ўдалося спампаваць файлы для ператварэння маўлення ў тэкст. Паўтарыце спробу пазней.</translation>
 <translation id="1383876407941801731">Пошук</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">Насельніцтва Нігерыі</translation>
 <translation id="3705722231355495246">–</translation>
 <translation id="3708186454126126312">Падключаныя раней прылады</translation>
-<translation id="3712317119236351467">Не ўдалося захаваць запіс</translation>
 <translation id="371370241367527062">Пярэдні мікрафон</translation>
 <translation id="3713734891607377840">Адкрыць пасля завяршэння</translation>
 <translation id="3726171378575546917">На гэтай прыладзе няма праграм "<ph name="UNAVAILABLE_APPS_ONE" />", "<ph name="UNAVAILABLE_APPS_TWO" />" і яшчэ <ph name="UNAVAILABLE_APPS_COUNT" />.</translation>
@@ -854,6 +851,7 @@
 <translation id="6166852626429024716">Пошук на прыладзе, у праграмах, наладах і інтэрнэце...</translation>
 <translation id="6179832488876878285">Тут можна замацаваць важныя файлы. Каб пачаць, адкрыйце праграму "Файлы".</translation>
 <translation id="619279033188484792">Праглядайце на прыладзе <ph name="DEVICE_TYPE" /> нядаўнія апавяшчэнні з тэлефона, а таксама медыяфайлы і фота</translation>
+<translation id="619335566042889110">Зарадзіць акумулятар поўнасцю</translation>
 <translation id="6220928844947387476">Цяпер можна адначасова весці запіс экрана і відарыса з камеры</translation>
 <translation id="622484624075952240">Уніз</translation>
 <translation id="6231419273573514727">Прадукцыйнасць перыферыйных прылад можа быць абмежаванай</translation>
@@ -1189,6 +1187,7 @@
 <translation id="826107067893790409">Націсніце Enter, каб разблакіраваць для карыстальніка <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Выдаліць</translation>
 <translation id="8270450402312105425">{0,plural, =1{Вярніцеся да ранейшай версіі АС на працягу гадзіны}one{Вярніцеся да ранейшай версіі АС на працягу # гадзіны}few{Вярніцеся да ранейшай версіі АС на працягу # гадзін}many{Вярніцеся да ранейшай версіі АС на працягу # гадзін}other{Вярніцеся да ранейшай версіі АС на працягу # гадзіны}}</translation>
+<translation id="8271580342040932214">Каб падоўжыць тэрмін службы акумулятара, яго зарад будзе часова заставацца на ўзроўні 80%, пакуль прылада падключана да сілкавання. Акумулятар зарадзіцца поўнасцю к <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Правядзіце па сэнсарнай панэлі чатырма пальцамі ўлева, каб перайсці на папярэдні працоўны стол</translation>
 <translation id="828708037801473432">Выключана</translation>
 <translation id="8297006494302853456">Слабы</translation>
@@ -1272,6 +1271,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Налады метадаў уводу</translation>
 <translation id="8818320199597151042">Ідзе выдаленне профілю. Пачакайце некалькі хвілін.</translation>
+<translation id="8819728065740986820">Адаптыўная зарадка ўключана</translation>
 <translation id="8825863694328519386">Каб вярнуцца назад, правядзіце пальцам з левага краю</translation>
 <translation id="8834539327799336565">Падключаныя цяпер прылады</translation>
 <translation id="8841375032071747811">Кнопка "Назад"</translation>
@@ -1318,6 +1318,7 @@
 <translation id="9080132581049224423">Каб перайсці на галоўны экран, правядзіце пальцам уверх</translation>
 <translation id="9080206825613744995">Мікрафон выкарыстоўваецца.</translation>
 <translation id="9084606467167974638">Змяніць месцазнаходжанне меню</translation>
+<translation id="9085962983642906571">Каб падоўжыць тэрмін службы акумулятара, яго зарад будзе заставацца на ўзроўні 80%, пакуль прылада падключана да сілкавання.</translation>
 <translation id="9089416786594320554">Метады ўводу</translation>
 <translation id="9091626656156419976">Дысплэй "<ph name="DISPLAY_NAME" />" выдалены</translation>
 <translation id="9098969848082897657">Тэлефон без гуку</translation>

@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Устройство USB-C (порт спереди)</translation>
 <translation id="1013598600051641573">Для экрана "<ph name="DISPLAY_NAME" />" установлено разрешение <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth. Введите на нем PIN-код: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Инструменты для скринкастинга</translation>
 <translation id="1024261588257374085">Выбран режим "Снимок части экрана"</translation>
 <translation id="1024364763893396229">Сохраните <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Батарея стилуса почти разряжена</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1351937230027495976">Свернуть меню</translation>
 <translation id="1364382257761975320">Чтобы разблокировать Chromebook, используйте отпечаток пальца.</translation>
-<translation id="1364618750746929654">Не удается создать расшифровку.</translation>
 <translation id="1372545819342940910">Сохранить рабочий стол</translation>
 <translation id="1383597849754832576">Не удалось скачать файлы автоматических субтитров. Повторите попытку позже.</translation>
 <translation id="1383876407941801731">Поиск</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">Население Нигерии</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Ранее подключенные устройства</translation>
-<translation id="3712317119236351467">Не удается сохранить запись</translation>
 <translation id="371370241367527062">Фронтальный микрофон</translation>
 <translation id="3713734891607377840">Открыть после скачивания</translation>
 <translation id="3726171378575546917">Приложения "<ph name="UNAVAILABLE_APPS_ONE" />", "<ph name="UNAVAILABLE_APPS_TWO" />" и ещё несколько сервисов (<ph name="UNAVAILABLE_APPS_COUNT" />) не установлены на этом устройстве.</translation>
@@ -854,6 +851,7 @@
 <translation id="6166852626429024716">Поиск на устройстве, в приложениях, настройках и Интернете…</translation>
 <translation id="6179832488876878285">Вы можете закрепить здесь важные документы. Чтобы начать, откройте приложение "Файлы".</translation>
 <translation id="619279033188484792">Позволяет просматривать на устройстве <ph name="DEVICE_TYPE" /> уведомления с телефона, а также недавно добавленные на телефон фотографии и медиафайлы</translation>
+<translation id="619335566042889110">Зарядить до конца сейчас</translation>
 <translation id="6220928844947387476">Теперь можно вести запись экрана и изображения с веб-камеры одновременно.</translation>
 <translation id="622484624075952240">Вниз</translation>
 <translation id="6231419273573514727">Производительность периферийных устройств может быть ограничена</translation>
@@ -1189,6 +1187,7 @@
 <translation id="826107067893790409">Чтобы разблокировать устройство для пользователя <ph name="USER_EMAIL_ADDRESS" />, нажмите Ввод</translation>
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="8270450402312105425">{0,plural, =1{Вернитесь к предыдущей версии ОС в течение 1 часа}one{Вернитесь к предыдущей версии ОС в течение # часа}few{Вернитесь к предыдущей версии ОС в течение # часов}many{Вернитесь к предыдущей версии ОС в течение # часов}other{Вернитесь к предыдущей версии ОС в течение # часа}}</translation>
+<translation id="8271580342040932214">Устройство будет поддерживать заряд на уровне 80 %, чтобы продлить срок службы батареи. Полностью оно зарядится к <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Чтобы перейти на предыдущий рабочий стол, проведите четырьмя пальцами влево.</translation>
 <translation id="828708037801473432">Отключено</translation>
 <translation id="8297006494302853456">Слабый</translation>
@@ -1272,6 +1271,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Настройки способов ввода</translation>
 <translation id="8818320199597151042">Профиль удаляется. Подождите несколько минут.</translation>
+<translation id="8819728065740986820">Адаптивная зарядка включена</translation>
 <translation id="8825863694328519386">Чтобы вернуться, проведите по экрану от левого края</translation>
 <translation id="8834539327799336565">Текущие подключения</translation>
 <translation id="8841375032071747811">Назад</translation>
@@ -1318,6 +1318,7 @@
 <translation id="9080132581049224423">Чтобы перейти на главный экран, проведите вверх.</translation>
 <translation id="9080206825613744995">Микрофон используется</translation>
 <translation id="9084606467167974638">Переместить меню</translation>
+<translation id="9085962983642906571">Устройство будет поддерживать заряд на уровне 80 %, чтобы продлить срок службы батареи.</translation>
 <translation id="9089416786594320554">Способы ввода</translation>
 <translation id="9091626656156419976">Удален экран "<ph name="DISPLAY_NAME" />"</translation>
 <translation id="9098969848082897657">Отключить звук на телефоне</translation>

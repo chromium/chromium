@@ -375,6 +375,7 @@
 <translation id="4890353053343094602">Odmah odaberite novu</translation>
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4897058166682006107">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije za lijevu slušalicu.</translation>
+<translation id="4915052247106771211">Time će se uređaj vratiti na tvorničke postavke (Powerwash).</translation>
 <translation id="4917385247580444890">Jak</translation>
 <translation id="4917889632206600977">Zaustavljeno – nema papira</translation>
 <translation id="4921665434385737356">Napunjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
@@ -429,6 +430,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="5358174242040570474">Nešto nije u redu. Ponovno odaberite pozadinu ili ponovno otvorite aplikaciju.</translation>
 <translation id="5372659122375744710">Wi-Fi mreža nije sigurna</translation>
 <translation id="5376354385557966694">Automatski svijetli način</translation>
+<translation id="537872351913703572">Uređaj će se vratiti drugom korisniku ili organizaciji</translation>
 <translation id="5400907029458559844">Uređaj se povezuje.</translation>
 <translation id="5401938042319910061">Pokreni sve rutine</translation>
 <translation id="5423849171846380976">Aktivirano</translation>
@@ -733,6 +735,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="8671972493856476349">Ažuriraj na <ph name="VERSION_NUMBER" /> i pokreni ponovo</translation>
 <translation id="8675354002693747642">Unaprijed podijeljen ključ</translation>
 <translation id="8677859815076891398">Nema albuma. Izradite album u <ph name="LINK_BEGIN" />Google fotografijama<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Uređaj će se vratiti izvornom korisniku</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tipkom sa strelicom ulijevo ili strelicom udesno upravljajte ovom značajkom.</translation>
 <translation id="8712637175834984815">Shvaćam</translation>
 <translation id="871560550817059752">Nije uspjelo – nema tinte</translation>

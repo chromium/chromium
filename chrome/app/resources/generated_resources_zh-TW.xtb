@@ -130,6 +130,7 @@
 <translation id="1124772482545689468">使用者</translation>
 <translation id="1125550662859510761">螢幕解析度：<ph name="WIDTH" /> x <ph name="HEIGHT" /> (原生)</translation>
 <translation id="1126809382673880764">無法封鎖不安全的網站、下載內容和擴充功能。在 Gmail 和 Google 搜尋等其他 Google 服務中，安全瀏覽功能的防護機制仍然會發揮作用 (在適用情況下)。</translation>
+<translation id="1128090040635299943">目前正在設定 Linux，需要幾分鐘才能完成作業。</translation>
 <translation id="1128591060186966949">編輯搜尋引擎</translation>
 <translation id="1129420403709586868">查看手機上的相片和媒體</translation>
 <translation id="1129850422003387628">管理應用程式</translation>
@@ -331,6 +332,7 @@
 <translation id="1327794256477341646">需要位置資訊的功能將無法運作</translation>
 <translation id="1329191040029425999">確認裝置為最新版本，然後再試一次</translation>
 <translation id="1330145147221172764">啟用螢幕小鍵盤</translation>
+<translation id="1331625853030156663">如要開啟「<ph name="APP_NAME" />」，請啟用「從休眠狀態喚醒時顯示螢幕鎖定」功能</translation>
 <translation id="1331977651797684645">這是我。</translation>
 <translation id="1333489022424033687">在你清除裝置上其他網站所儲存的資料之前，<ph name="ORIGIN" /> 上的部分功能可能無法正常運作</translation>
 <translation id="1333965224356556482">禁止網站查看你的位置資訊</translation>
@@ -3328,6 +3330,7 @@
 <translation id="420283545744377356">關閉螢幕保護程式</translation>
 <translation id="4203065553461038553">檔案名稱或路徑名稱過長</translation>
 <translation id="4204851595694839599">你的遊戲過程體驗如何？</translation>
+<translation id="4205157409548006256">設定 Linux 時發生錯誤。</translation>
 <translation id="4206144641569145248">外星人</translation>
 <translation id="4206323443866416204">意見回饋報告</translation>
 <translation id="4207522141889799150">編輯 <ph name="SITE" /> 的網站權限</translation>
@@ -5788,6 +5791,7 @@
 <translation id="6686665106869989887">分頁已移動到右側</translation>
 <translation id="6686817083349815241">儲存你的密碼</translation>
 <translation id="6687079240787935001">隱藏「<ph name="MODULE_TITLE" />」</translation>
+<translation id="6688391094668641513">正在要求讀取及變更 <ph name="ORIGIN" />：</translation>
 <translation id="6689714331348768690">請<ph name="SUPERVISED_USER_NAME" />坐到電腦前。你的孩子將朗讀螢幕畫面上的一些短句，藉此建立他們的語音模型。
     <ph name="BR" />
     如果<ph name="SUPERVISED_USER_NAME" />在朗讀過程中需要協助，請讓孩子跟著你朗讀。你必須遠離麥克風並降低音量，這樣 Google 助理才能學習辨識你孩子的聲音，而非你的聲音。</translation>
@@ -6300,6 +6304,7 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{離開網頁}other{離開網頁}}</translation>
 <translation id="7207457272187520234">傳送使用狀況與診斷資料。這部裝置目前會自動將診斷資料、裝置和應用程式的使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。這項設定是由裝置擁有者強制執行。如果你將「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在你的 Google 帳戶中。</translation>
 <translation id="7207631048330366454">搜尋應用程式</translation>
+<translation id="720808544705441386">無法開啟應用程式</translation>
 <translation id="7210499381659830293">擴充印表機</translation>
 <translation id="7211783048245131419">尚未指派切換按鍵</translation>
 <translation id="7212097698621322584">請輸入目前的 PIN 碼以進行變更。如果你不知道自己的 PIN 碼，請重設安全金鑰，然後建立新的 PIN 碼。</translation>
@@ -7457,6 +7462,7 @@
 <translation id="8324784016256120271">網站可使用 Cookie 查看你在各網站的瀏覽活動，並提供個人化廣告等服務</translation>
 <translation id="8325413836429495820">不得查看剪貼簿</translation>
 <translation id="8326478304147373412">PKCS #7，憑證鏈結</translation>
+<translation id="8327386430364625757">數學字型</translation>
 <translation id="8327676037044516220">權限和內容設定</translation>
 <translation id="8330617762701840933">重新導向至替代瀏覽器的網站清單。</translation>
 <translation id="8330689128072902965">附近的聯絡人可與你分享內容。按一下即可變更。</translation>

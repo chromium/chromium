@@ -5621,6 +5621,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6520876759015997832">Suchergebnis <ph name="LIST_POSITION" /> von <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Drücke die Eingabetaste, um dorthin zu wechseln.</translation>
 <translation id="6521214596282732365">Websites verwenden deine Schriftarten normalerweise, damit du mit Onlinetools für Design und Grafik High-Fidelity-Inhalte erstellen kannst</translation>
 <translation id="6523303810310758032">Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bestimmte Website –, werden auch die damit verbundenen Analysedaten gelöscht. <ph name="BEGIN_LINK" />Hier kannst du deinen Browserverlauf aufrufen.<ph name="END_LINK" /></translation>
+<translation id="6523574494641144162">Google Passwortmanager konnte diese Passwörter nicht in deinem Google-Konto speichern. Du kannst sie auf diesem Gerät speichern.</translation>
 <translation id="6524735478670290456">So verwenden wir diese Daten:</translation>
 <translation id="652492607360843641">Du bist mit einem <ph name="NETWORK_TYPE" />-Netzwerk verbunden.</translation>
 <translation id="6527303717912515753">Teilen</translation>
@@ -5926,6 +5927,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6818198425579322765">Sprache der Seite, die übersetzt wird</translation>
 <translation id="6818547713623251698">Fotos, Medien, Benachrichtigungen und Apps von deinem Smartphone abrufen</translation>
 <translation id="6818802132960437751">Integrierter Virenschutz</translation>
+<translation id="6818920801736417483">Passwörter speichern?</translation>
 <translation id="6823174134746916417">Touchpad-Klick</translation>
 <translation id="6824564591481349393">E-Mail-Adr&amp;esse kopieren</translation>
 <translation id="6824584962142919697">&amp;Elemente untersuchen</translation>

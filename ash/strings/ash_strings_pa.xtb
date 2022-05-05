@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C ਡੀਵਾਈਸ (ਅੱਗੇ ਦਾ ਪੋਰਟ)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> ਨੂੰ <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) 'ਤੇ ਬਦਲਿਆ ਗਿਆ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਬਣਾਈ ਰੱਖਣ ਲਈ 'ਤਸਦੀਕ ਕਰੋ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1013923882670373915">Bluetooth ਡੀਵਾਈਸ "<ph name="DEVICE_NAME" />" ਜੋੜਾਬੱਧ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੁੰਦਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਉਸ ਡੀਵਾਈਸ 'ਤੇ ਇਹ ਪਿੰਨ ਦਾਖਲ ਕਰੋ: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">ਸਕ੍ਰੀਨਕਾਸਟ ਟੂਲ</translation>
 <translation id="1024261588257374085">ਅੰਸ਼ਕ ਸਕ੍ਰੀਨਸ਼ਾਟ ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="1024364763893396229">ਆਪਣਾ <ph name="NAME" /> ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="1032891413405719768">ਸਟਾਈਲਸ ਦੀ ਬੈਟਰੀ ਘੱਟ ਹੈ</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">ਸੱਜਾ</translation>
 <translation id="1351937230027495976">ਮੀਨੂ ਸਮੇਟੋ</translation>
 <translation id="1364382257761975320">ਆਪਣੀ Chromebook ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਆਪਣੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
-<translation id="1364618750746929654">ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਦਾ</translation>
 <translation id="1372545819342940910">ਬਾਅਦ ਵਿੱਚ ਦੇਖਣ ਲਈ ਡੈਸਕ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="1383597849754832576">ਬੋਲੀ ਵਾਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="1383876407941801731">ਖੋਜੋ</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">ਨਾਈਜੀਰੀਆ ਦੀ ਜਨਸੰਖਿਆ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">ਪਹਿਲਾਂ ਤੋਂ ਕਨੈਕਟ ਕੀਤੇ</translation>
-<translation id="3712317119236351467">ਰਿਕਾਰਡਿੰਗ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="371370241367527062">ਮੂਹਰਲਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ</translation>
 <translation id="3713734891607377840">ਪੂਰਾ ਹੋਣ 'ਤੇ ਖੁੱਲ੍ਹੇ</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ਅਤੇ <ph name="UNAVAILABLE_APPS_COUNT" /> ਹੋਰ ਐਪਾਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹਨ।</translation>
@@ -855,6 +852,7 @@
 <translation id="6166852626429024716">ਆਪਣਾ ਡੀਵਾਈਸ, ਐਪਾਂ, ਸੈਟਿੰਗਾਂ, ਵੈੱਬ ਖੋਜੋ...</translation>
 <translation id="6179832488876878285">ਇੱਥੇ ਤੁਸੀਂ ਆਪਣੀਆਂ ਮਹੱਤਵਪੂਰਨ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪਿੰਨ ਕਰ ਸਕਦੇ ਹੋ। ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ Files ਐਪ ਨੂੰ ਖੋਲ੍ਹੋ।</translation>
 <translation id="619279033188484792">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ ਅਤੇ ਸੂਚਨਾਵਾਂ ਦੇਖੋ</translation>
+<translation id="619335566042889110">ਹੁਣ ਪੂਰੀ ਤਰ੍ਹਾਂ ਚਾਰਜ ਕਰੋ</translation>
 <translation id="6220928844947387476">ਤੁਸੀਂ ਹੁਣ ਖੁਦ ਨੂੰ ਅਤੇ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਇੱਕੋ ਸਮੇਂ ਰਿਕਾਰਡ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="622484624075952240">ਹੇਠਾਂ</translation>
 <translation id="6231419273573514727">ਪੈਰੀਫੈਰਲ ਕਾਰਗੁਜ਼ਾਰੀ ਸੀਮਤ ਹੋ ਸਕਦੀ ਹੈ</translation>
@@ -1190,6 +1188,7 @@
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> ਵਾਸਤੇ ਅਣਲਾਕ ਕਰਨ ਲਈ ਐਂਟਰ ਦਬਾਓ</translation>
 <translation id="8261506727792406068">ਮਿਟਾਓ</translation>
 <translation id="8270450402312105425">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ ਇੱਕ ਘੰਟੇ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਘੰਟੇ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਘੰਟਿਆਂ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}}</translation>
+<translation id="8271580342040932214">ਬੈਟਰੀ ਲਾਈਫ਼ ਵਧਾਉਣ ਲਈ ਪਲੱਗ-ਇਨ ਕਰਨ ਸਮੇਂ ਤੁਹਾਡੀ ਬੈਟਰੀ ਅਸਥਾਈ ਤੌਰ 'ਤੇ 80% 'ਤੇ ਹੈ। ਤੁਹਾਡੀ ਬੈਟਰੀ <ph name="FULLY_CHARGE_TIME" /> ਤੱਕ ਪੂਰੀ ਤਰ੍ਹਾਂ ਚਾਰਜ ਹੋ ਜਾਵੇਗੀ।</translation>
 <translation id="8284362522226889623">ਪਿਛਲੇ ਡੈਸਕ 'ਤੇ ਜਾਣ ਲਈ ਚਾਰ ਉਂਗਲਾਂ ਨਾਲ ਖੱਬੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="828708037801473432">ਬੰਦ</translation>
 <translation id="8297006494302853456">ਕਮਜ਼ੋਰ</translation>
@@ -1273,6 +1272,7 @@
 <translation id="8814190375133053267">ਵਾਈ-ਫਾਈ</translation>
 <translation id="881757059229893486">ਇਨਪੁੱਟ ਵਿਧੀਆਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8818320199597151042">ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ। ਕੁਝ ਮਿੰਟਾਂ ਲਈ ਉਡੀਕ ਕਰੋ।</translation>
+<translation id="8819728065740986820">ਅਡੈਪਟਿਵ ਚਾਰਜਿੰਗ ਚਾਲੂ ਹੈ</translation>
 <translation id="8825863694328519386">ਪਿੱਛੇ ਜਾਣ ਲਈ ਖੱਬੇ ਪਾਸੇ ਤੋਂ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="8834539327799336565">ਇਸ ਵੇਲੇ ਕਨੈਕਟ ਹੈ</translation>
 <translation id="8841375032071747811">'ਪਿੱਛੇ' ਬਟਨ</translation>
@@ -1319,6 +1319,7 @@
 <translation id="9080132581049224423">ਹੋਮ 'ਤੇ ਜਾਣ ਲਈ ਉੱਪਰ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="9080206825613744995">ਮਾਈਕ੍ਰੋਫੋਨ ਵਰਤੋਂ ਵਿੱਚ ਹੈ।</translation>
 <translation id="9084606467167974638">ਮੀਨੂ ਸਥਿਤੀ ਟੌਗਲ ਕਰੋ</translation>
+<translation id="9085962983642906571">ਬੈਟਰੀ ਲਾਈਫ਼ ਵਧਾਉਣ ਲਈ ਪਲੱਗ-ਇਨ ਕਰਨ ਸਮੇਂ ਤੁਹਾਡੀ ਬੈਟਰੀ ਨੂੰ 80% 'ਤੇ ਰੱਖਿਆ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="9089416786594320554">ਇਨਪੁਟ ਵਿਧੀਆਂ</translation>
 <translation id="9091626656156419976">ਡਿਲਪਲੇ <ph name="DISPLAY_NAME" /> ਨੂੰ ਹਟਾਇਆ ਗਿਆ</translation>
 <translation id="9098969848082897657">ਫ਼ੋਨ ਖਮੋਸ਼ ਕਰੋ</translation>

@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C gailua (aurrealdeko ataka)</translation>
 <translation id="1013598600051641573"><ph name="RESOLUTION" />-ko bereizmenera (<ph name="REFRESH_RATE" /> Hz) aldatu da <ph name="DISPLAY_NAME" /> pantaila. Aldaketak gordetzeko, sakatu berresteko botoia. <ph name="TIMEOUT_SECONDS" /> barru aurreko ezarpenak leheneratuko dira.</translation>
 <translation id="1013923882670373915">Bluetooth bidezko "<ph name="DEVICE_NAME" />" gailuak parekatzeko baimena nahi du. Idatzi PIN kode hau gailuan: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Pantaila-bideoen tresnak</translation>
 <translation id="1024261588257374085">Pantaila-argazki partziala hautatu da</translation>
 <translation id="1024364763893396229">Gorde <ph name="NAME" /> gailua</translation>
 <translation id="1032891413405719768">Pila agortzen ari zaio arkatzari</translation>
@@ -85,7 +84,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1346748346194534595">Eskuinera</translation>
 <translation id="1351937230027495976">Tolestu menua</translation>
 <translation id="1364382257761975320">Chromebook-a desblokeatzeko, erabili hatz-marka</translation>
-<translation id="1364618750746929654">Ezin da sortu transkripzioa</translation>
 <translation id="1372545819342940910">Gorde lan-eremua gerorako</translation>
 <translation id="1383597849754832576">Ezin dira deskargatu hizketa-fitxategiak. Saiatu berriro geroago.</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
@@ -460,7 +458,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3702846122927433391">Zenbat biztanle ditu Nigeriak</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Aurretik konektatutakoak</translation>
-<translation id="3712317119236351467">Ezin da gorde grabaketa</translation>
 <translation id="371370241367527062">Aurreko mikrofonoa</translation>
 <translation id="3713734891607377840">Deskarga amaitzen denean irekiko da</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> eta beste <ph name="UNAVAILABLE_APPS_COUNT" /> ez daude gailuan.</translation>

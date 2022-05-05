@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C ierīce (priekšējā pieslēgvieta)</translation>
 <translation id="1013598600051641573">Displeja “<ph name="DISPLAY_NAME" />” izšķirtspēja tika mainīta uz <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Lai saglabātu izmaiņas, noklikšķiniet uz “Apstiprināt”. Iepriekšējie iestatījumi tiks atjaunoti pēc šāda laika: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth ierīce “<ph name="DEVICE_NAME" />” vēlas saņemt atļauju, lai izveidotu savienojumu pārī. Lūdzu, ierīcē ievadiet šo PIN: <ph name="PINCODE" />.</translation>
-<translation id="1014111206066007277">Ekrānieraksta rīki</translation>
 <translation id="1024261588257374085">Atlasīta daļēja ekrānuzņēmuma izveide</translation>
 <translation id="1024364763893396229">Ierīces (<ph name="NAME" />) saglabāšana</translation>
 <translation id="1032891413405719768">Skārienekrāna pildspalvas akumulatora līmenis ir zems</translation>
@@ -85,7 +84,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1346748346194534595">Pa labi</translation>
 <translation id="1351937230027495976">Sakļaut izvēlni</translation>
 <translation id="1364382257761975320">Lai atbloķētu Chromebook datoru, izmantojiet pirksta nospiedumu.</translation>
-<translation id="1364618750746929654">Nevar izveidot transkripciju</translation>
 <translation id="1372545819342940910">Saglabāt darbvietu vēlākai izmantošanai</translation>
 <translation id="1383597849754832576">Nevar lejupielādēt automātisko subtitru failus. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="1383876407941801731">Meklēt</translation>
@@ -460,7 +458,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3702846122927433391">Nigērijas iedzīvotāju skaits</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Ierīces, ar kurām iepriekš tika izveidots savienojums</translation>
-<translation id="3712317119236351467">Nevar saglabāt ierakstu</translation>
 <translation id="371370241367527062">Priekšējais mikrofons</translation>
 <translation id="3713734891607377840">Kad gatavs, atvērt</translation>
 <translation id="3726171378575546917">Šajā ierīcē nav lietotņu <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> un vēl <ph name="UNAVAILABLE_APPS_COUNT" /> lietotnes(-ņu).</translation>

@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Нідэрландская (Нідэрланды)</translation>
 <translation id="174937106936716857">Агульная колькасць файлаў</translation>
 <translation id="1755345808328621801">Гэты файл створаны для ПК з праграмным забеспячэннем Windows. Ён несумяшчальны з вашай прыладай Chrome OS. Пашукайце ў Вэб-краме Chrome адпаведную праграму на замену.</translation>
+<translation id="1757915090001272240">Шырокая лацініца</translation>
 <translation id="1773212559869067373">Сертыфікат аўтэнтыфікацыі адхілены ў лакальнай сетцы</translation>
 <translation id="1775381402323441512">Звесткі пра відэа</translation>
 <translation id="180035236176489073">Каб атрымаць доступ да гэтых файлаў, трэба выйсці ў інтэрнэт.</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">Сэрвісы</translation>
 <translation id="1829129547161959350">Пінгвін</translation>
 <translation id="183183971458492120">Ідзе загрузка інфармацыі...</translation>
+<translation id="1832073788765803750">Катакана палавіннай шырыні</translation>
 <translation id="1834290891154666894">Несапраўдны запіс супадзення па альтэрнатыўным імені суб'екта</translation>
 <translation id="1838709767668011582">Сайт Google</translation>
 <translation id="1844692022597038441">Файл недаступны па-за сеткай.</translation>
@@ -516,6 +518,7 @@
 <translation id="5335458522276292100">Ідзе рэзервовае капіраванне файлаў (<ph name="FILE_COUNT" />) на <ph name="BEGIN_LINK" />Google Дыск<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Чалавек з катамі</translation>
 <translation id="5358764674931277">Частата кадраў</translation>
+<translation id="5363339716524495120">Мова ўводу – кітайская</translation>
 <translation id="5368191757080475556">Абагульванне папкі з сістэмай Linux</translation>
 <translation id="5402367795255837559">Шрыфт Брайля</translation>
 <translation id="5411472733320185105">Не выкарыстоўваць налады проксі-сервера для гэтых хостаў і даменаў:</translation>
@@ -538,6 +541,7 @@
 <translation id="5534520101572674276">Разлічваецца памер</translation>
 <translation id="554153475311314364">Грэчаская (транслітарацыя)</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">Шырыня знакаў пунктуацыі – поўная</translation>
 <translation id="5602622065581044566">Балгарская (фанетычная раскладка)</translation>
 <translation id="5605830556594064952">ЗША (раскладка Дворака)</translation>
 <translation id="5618330573454123917">Гэты файл прызначаны для камп'ютара з праграмным забеспячэннем Macintosh. Ён несумяшчальны з вашай прыладай Chrome OS. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
@@ -706,6 +710,7 @@
 <translation id="7037472120706603960">Тамільская (транслітарацыя)</translation>
 <translation id="7040138676081995583">Адкрыць з дапамогай...</translation>
 <translation id="7048024426273850086">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" />%, падключыцеся да сеткі</translation>
+<translation id="7070804685954057874">Прамы ўвод</translation>
 <translation id="7075931588889865715">Тайская (раскладка TIS 820-2531)</translation>
 <translation id="708278670402572152">Каб уключыць пошук, адключыцеся</translation>
 <translation id="7086590977277044826">Тамільская (з раскладкай InScript)</translation>
@@ -746,6 +751,7 @@
 <translation id="7489215562877293245">Знойдзена: <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Гатова для рэзервовага капіравання на <ph name="BEGIN_LINK" />Google Дыск<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Хірагана</translation>
 <translation id="7495372004724182530">Малаялам (фанетычная раскладка)</translation>
 <translation id="7505167922889582512">Паказаць схаваныя файлы</translation>
 <translation id="7514365320538308">Спампаваць</translation>
@@ -806,6 +812,7 @@
 <translation id="7868774406711971383">Польская</translation>
 <translation id="7874321682039004450">Філіпіна</translation>
 <translation id="78946041517601018">Абагуленыя дыскі</translation>
+<translation id="7903984238293908205">Катакана</translation>
 <translation id="7908793776359722643">Фармаціраванне раздзела прывядзе да сцірання ўсіх захаваных у ім даных. Гэта дзеянне немагчыма адрабіць.</translation>
 <translation id="7925247922861151263">Не ўдалося выканаць праверку AAA</translation>
 <translation id="7925686952655276919">Не выкарыстоўваць мабільную перадачу даных для сінхранізацыі</translation>
@@ -833,6 +840,7 @@
 <translation id="8128733386027980860">Англійская (Вялікабрытанія) з раскладкай Дворака</translation>
 <translation id="8137331602592933310">Файл "<ph name="FILENAME" />" абагулены з вамі. Вы не можаце выдаліць гэты файл, бо не з'яўляецеся яго ўладальнікам.</translation>
 <translation id="813913629614996137">Ідзе ініцыялізацыя...</translation>
+<translation id="8147028810663464959">Шырыня сімвалаў – поўная</translation>
 <translation id="8151638057146502721">Наладзіць</translation>
 <translation id="8154842056504218462">Выбраны ўсе элементы.</translation>
 <translation id="8157684860301034423">Не ўдалося атрымаць звесткі пра праграму.</translation>
@@ -842,6 +850,7 @@
 <translation id="8208580316430297579">Плакат</translation>
 <translation id="8223479393428528563">Каб захаваць гэтыя файлы для выкарыстання ў аўтаномным рэжыме, падключыцеся зноў да інтэрнэту, націсніце правай кнопкай мышы на патрэбныя файлы і выберыце параметр <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Скасаваць</translation>
+<translation id="8250690786522693009">Лацініца</translation>
 <translation id="8250920743982581267">Дакументы</translation>
 <translation id="8261506727792406068">Выдаліць</translation>
 <translation id="8261561378965667560">Кітайская (структурны метад уводу)</translation>

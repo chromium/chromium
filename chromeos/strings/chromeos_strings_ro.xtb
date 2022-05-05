@@ -113,6 +113,7 @@
 <translation id="2085089206770112532">Reducerea luminozității ecranului</translation>
 <translation id="2104796393919810494">Reparația a fost terminată</translation>
 <translation id="2105810540595158374">Dispozitivul este un controler de jocuri.</translation>
+<translation id="2115956742084455574">Cod greșit</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiunea <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB din <ph name="TOTAL_MEMORY" /> GB disponibili</translation>
 <translation id="2138109643290557664">Float on by</translation>
@@ -142,6 +143,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Pentru a descoperi dispozitivele din apropiere, activează Bluetooth</translation>
 <translation id="2346474577291266260">Excelentă (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2360257214555822463">S-au detectat <ph name="LINK_BEGIN" />componente necalificate<ph name="LINK_END" />. Dacă alegi să confirmi că s-au instalat, fă acest lucru acum.</translation>
 <translation id="2363636958541445404">Activează funcția ca să selectezi opțiuni pentru screensaver</translation>
 <translation id="2364498172489649528">Reușită</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -191,6 +193,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Punct final</translation>
 <translation id="3069085583900247081">Testul nu a reușit</translation>
+<translation id="3076243757415932261">Se validează componentele…</translation>
 <translation id="3083667275341675831">Diagnosticare pentru conectivitate</translation>
 <translation id="3084958266922136097">Dezactivează screensaverul</translation>
 <translation id="3091839911843451378">Nereușită – Oprită</translation>
@@ -219,6 +222,7 @@
 <translation id="3368922792935385530">Conectat</translation>
 <translation id="3369013195428705271">Sigur vrei să ștergi tot istoricul printărilor? Sarcinile de printare în curs nu vor fi șterse.</translation>
 <translation id="3404249063913988450">Activează screensaverul</translation>
+<translation id="3404770484521709967">Componentele sunt instalate corect.</translation>
 <translation id="3413935475507503304">Ca să continui cu actualizarea, dă clic pe Înainte.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Securitate</translation>
@@ -371,6 +375,7 @@
 <translation id="4890353053343094602">Alege imediat una nouă</translation>
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4897058166682006107">Nivelul bateriei căștii stângi a dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4915052247106771211">Astfel, dispozitivul va reveni la setările din fabrică (Powerwash).</translation>
 <translation id="4917385247580444890">Puternic</translation>
 <translation id="4917889632206600977">Oprită – Hârtie epuizată</translation>
 <translation id="4921665434385737356">S-a încărcat cu <ph name="RATE" /> în <ph name="NUM_SECONDS" /> secunde.</translation>
@@ -425,6 +430,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5358174242040570474">A apărut o eroare. Încearcă din nou să alegi o imagine de fundal sau redeschide aplicația.</translation>
 <translation id="5372659122375744710">Rețeaua Wi-Fi nu este sigură</translation>
 <translation id="5376354385557966694">Modul luminos automat</translation>
+<translation id="537872351913703572">Dispozitivul va avea alt utilizator sau altă organizație</translation>
 <translation id="5400907029458559844">Dispozitivul se conectează.</translation>
 <translation id="5401938042319910061">Rulează toate rutinele</translation>
 <translation id="5423849171846380976">Activat</translation>
@@ -566,6 +572,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6768237774506518020">Rată de eroare ridicată a rezolvărilor DNS</translation>
 <translation id="680983167891198932">Cheie</translation>
 <translation id="6816797338148849397">Sunt disponibile informații despre selecția ta. Folosește tasta săgeată în sus pentru a le accesa.</translation>
+<translation id="6840315122969944400">Reparație <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Rata de descărcare</translation>
 <translation id="6889786074662672253">Nu deconecta dispozitivul extern și nu închide computerul în timpul repornirii. Poți să minimizezi fereastra. Actualizarea poate să dureze câteva minute și este posibil ca dispozitivul extern să nu funcționeze în această perioadă.</translation>
 <translation id="6905724422583748843">Înapoi la <ph name="PAGE_NAME" /></translation>
@@ -674,6 +681,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8045012663542226664">Dezactivează sunetul microfonului</translation>
 <translation id="8075838845814659848">Nivel de încărcare rămas</translation>
 <translation id="8082366717211101304">Nu se poate rezolva solicitarea DNS din aplicații pentru Android</translation>
+<translation id="8083281199617904460">Procesul de reparare este menit pentru un tehnician specializat. Începe numai după ce înlocuiești componentele care nu funcționează.</translation>
 <translation id="808894953321890993">Schimbă parola</translation>
 <translation id="8104083085214006426">Folosești o rețea deschisă și nesigură</translation>
 <translation id="811820734797650957">(Android) Gateway-ul acceptă testul de ping</translation>
@@ -727,6 +735,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8671972493856476349">Actualizează la <ph name="VERSION_NUMBER" /> și repornește</translation>
 <translation id="8675354002693747642">Cheie predistribuită</translation>
 <translation id="8677859815076891398">Niciun album. Creează un album în <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Dispozitivul va avea același utilizator</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> folosește tastele săgeată la stânga sau la dreapta ca să gestionezi această funcție.</translation>
 <translation id="8712637175834984815">Am înțeles</translation>
 <translation id="871560550817059752">Nereușită – Cerneală epuizată</translation>

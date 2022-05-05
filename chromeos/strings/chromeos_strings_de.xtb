@@ -233,6 +233,7 @@
 <translation id="3484914941826596830">Während die Firmware aktualisiert wird, darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Du kannst dieses Fenster minimieren. Die Aktualisierung dauert einige Minuten und dein externes Gerät funktioniert während dieser Zeit eventuell nicht.</translation>
 <translation id="3486220673238053218">Definition</translation>
 <translation id="3488065109653206955">Teilweise aktiviert</translation>
+<translation id="3517001332549868749">Chrome OS-Update</translation>
 <translation id="3527036260304016759">Fehlgeschlagen – Unbekannter Fehler</translation>
 <translation id="3532980081107202182">Noch etwa <ph name="MIN_REMAINING" /> Minuten</translation>
 <translation id="3557205324756024651">Lokale Identität (optional)</translation>
@@ -558,6 +559,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6692996468359469499">Informationen zu deiner Auswahl erhalten</translation>
 <translation id="6704062477274546131">DNS-Auflösung</translation>
 <translation id="6723839937902243910">Leistung</translation>
+<translation id="6723847290197874913">Hintergrundbeleuchtung der Tastatur</translation>
 <translation id="672609503628871915">Neuigkeiten</translation>
 <translation id="6747215703636344499">Angehalten – Ausgabefach ist voll</translation>
 <translation id="6749473226660745022">Fotos</translation>

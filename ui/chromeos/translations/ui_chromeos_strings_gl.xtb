@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Neerlandés (Países Baixos)</translation>
 <translation id="174937106936716857">Reconto total de ficheiros</translation>
 <translation id="1755345808328621801">Este ficheiro está deseñado para un ordenador con software Windows. Non é compatible co teu dispositivo, que ten Chrome OS. Busca en Chrome Web Store unha aplicación equivalente axeitada.</translation>
+<translation id="1757915090001272240">Alfabeto latino amplo</translation>
 <translation id="1773212559869067373">Certificado de autenticación rexeitado localmente</translation>
 <translation id="1775381402323441512">Información do vídeo</translation>
 <translation id="180035236176489073">Debes estar conectado para poder acceder a estes ficheiros.</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">Servizos</translation>
 <translation id="1829129547161959350">Pingüín</translation>
 <translation id="183183971458492120">Cargando información…</translation>
+<translation id="1832073788765803750">Katakana de largura media</translation>
 <translation id="1834290891154666894">A entrada da coincidencia do nome alternativo do asunto non é válida</translation>
 <translation id="1838709767668011582">Sitio de Google</translation>
 <translation id="1844692022597038441">Este ficheiro non está dispoñible sen conexión.</translation>
@@ -516,7 +518,7 @@
 <translation id="5335458522276292100">Facendo unha copia de seguranza de <ph name="FILE_COUNT" /> en <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Persoa con gatos</translation>
 <translation id="5358764674931277">Fotogramas por segundo</translation>
-<translation id="5363339716524495120">O idioma de introdución de texto é o chinés</translation>
+<translation id="5363339716524495120">O idioma de escritura é o chinés</translation>
 <translation id="5368191757080475556">Compartir cartafol con Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Non utilizar a configuración de proxy para estes servidores e dominios:</translation>
@@ -749,6 +751,7 @@
 <translation id="7489215562877293245">Atopáronse <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Listo para crear unha copia de seguranza en <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malabar (fonético)</translation>
 <translation id="7505167922889582512">Mostrar ficheiros ocultos</translation>
 <translation id="7514365320538308">Descargar</translation>
@@ -847,6 +850,7 @@
 <translation id="8208580316430297579">Material gráfico</translation>
 <translation id="8223479393428528563">Para gardar estes ficheiros para o uso sen conexión, accede en liña, fai clic co botón dereito nos ficheiros e selecciona a opción <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Cancelar</translation>
+<translation id="8250690786522693009">Alfabeto latino</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8261561378965667560">Chinés (matriz)</translation>

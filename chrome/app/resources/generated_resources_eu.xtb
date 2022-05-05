@@ -5623,6 +5623,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6520876759015997832"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" /> bilaketa-emaitza: "<ph name="SEARCH_RESULT_TEXT" />". Atal horretara joateko, sakatu Sartu.</translation>
 <translation id="6521214596282732365">Webguneek zure letrak erabil ohi dituzte goi-fidelitateko edukia sortzeko sareko tresna grafikoak eta diseinuzkoak erabilita.</translation>
 <translation id="6523303810310758032">Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketari buruzko informazio erlazionatua ere ezabatuko duzu. Ikusi <ph name="BEGIN_LINK" />arakatze-historia<ph name="END_LINK" />.</translation>
+<translation id="6523574494641144162">Google-ren Pasahitz-kudeatzailea aplikazioak ezin izan ditu gorde aplikazioak Google-ko kontuan, baina gailuan gorde ditzakezu.</translation>
 <translation id="6524735478670290456">Nola erabiltzen ditugu datu horiek?</translation>
 <translation id="652492607360843641">Sare <ph name="NETWORK_TYPE" /> batera zaude konektatuta.</translation>
 <translation id="6527303717912515753">Partekatu</translation>
@@ -5928,6 +5929,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6818198425579322765">Orriaren jatorrizko hizkuntza</translation>
 <translation id="6818547713623251698">Ikusi telefonoko argazkiak, multimedia-elementuak, jakinarazpenak eta aplikazioak</translation>
 <translation id="6818802132960437751">Birusen aurkako babes integratua</translation>
+<translation id="6818920801736417483">Pasahitzak gorde nahi dituzu?</translation>
 <translation id="6823174134746916417">Ukipen-panela sakatuta klik egiteko aukera</translation>
 <translation id="6824564591481349393">Kopiatu &amp;helbide elektronikoa</translation>
 <translation id="6824584962142919697">&amp;Aztertu elementuak</translation>

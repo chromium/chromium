@@ -519,7 +519,7 @@
 <translation id="5335458522276292100">Realizando una copia de seguridad de <ph name="FILE_COUNT" /> en <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Persona con gatos</translation>
 <translation id="5358764674931277">Velocidad de fotogramas</translation>
-<translation id="5363339716524495120">El idioma de entrada es chino.</translation>
+<translation id="5363339716524495120">El idioma de entrada es chino</translation>
 <translation id="5368191757080475556">Compartir carpeta con Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">No usar la configuración proxy para estos dominios y hosts:</translation>
@@ -542,7 +542,7 @@
 <translation id="5534520101572674276">Calculando tamaño...</translation>
 <translation id="554153475311314364">Griego (transliteración)</translation>
 <translation id="5583640892426849032">Tecla de retroceso</translation>
-<translation id="5583664733673201137">El ancho de la puntuación es el ancho completo.</translation>
+<translation id="5583664733673201137">El ancho de la puntuación es el ancho completo</translation>
 <translation id="5602622065581044566">Búlgaro con teclado fonético</translation>
 <translation id="5605830556594064952">Inglés (Estados Unidos; Dvorak)</translation>
 <translation id="5618330573454123917">Este archivo se diseñó para computadoras que usan software Macintosh. No es compatible con tu dispositivo, el cual ejecuta Chrome OS. <ph name="BEGIN_LINK_HELP" />Obtén más información<ph name="END_LINK_HELP" /> para abrir archivos en Chrome OS.</translation>
@@ -841,7 +841,7 @@
 <translation id="8128733386027980860">Inglés (Reino Unido) con teclado Dvorak</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" se compartió contigo. No puedes eliminarlo porque no eres el propietario.</translation>
 <translation id="813913629614996137">Inicializando…</translation>
-<translation id="8147028810663464959">El ancho del carácter es el ancho completo.</translation>
+<translation id="8147028810663464959">El ancho del carácter es el ancho completo</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154842056504218462">Se seleccionaron todas las entradas.</translation>
 <translation id="8157684860301034423">No se pudo recuperar la información de la app.</translation>

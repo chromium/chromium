@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">‏מכשיר עם יציאת USB-C (יציאה קדמית)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> השתנה ל-<ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> הרץ). לשמירת השינויים, יש ללחוץ על 'אישור'. ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לבצע התאמה. יש להזין את קוד האימות הבא במכשיר: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">כלים להקלטת מסך</translation>
 <translation id="1024261588257374085">נבחר צילום מסך חלקי</translation>
 <translation id="1024364763893396229">שמירה של <ph name="NAME" /></translation>
 <translation id="1032891413405719768">סוללת הסטיילוס חלשה</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">ימינה</translation>
 <translation id="1351937230027495976">כיווץ התפריט</translation>
 <translation id="1364382257761975320">‏כדי לבטל את נעילת ה-Chromebook, עליך להשתמש בטביעת האצבע שלך</translation>
-<translation id="1364618750746929654">לא ניתן ליצור תמליל</translation>
 <translation id="1372545819342940910">שמירת שולחן העבודה הווירטואלי למועד מאוחר יותר</translation>
 <translation id="1383597849754832576">אין אפשרות להוריד קובצי דיבור. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="1383876407941801731">חיפוש</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">אוכלוסיית ניגריה</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">מכשירים שחוברו בעבר</translation>
-<translation id="3712317119236351467">לא ניתן לשמור את ההקלטה</translation>
 <translation id="371370241367527062">מיקרופון קדמי</translation>
 <translation id="3713734891607377840">פתיחה לאחר השלמת ההורדה</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ועוד <ph name="UNAVAILABLE_APPS_COUNT" /> אפליקציות נוספות לא נמצאות במכשיר הזה.</translation>

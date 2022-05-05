@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Dyfais USB-C (porth blaen)</translation>
 <translation id="1013598600051641573">Mae <ph name="DISPLAY_NAME" /> wedi newid i <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Cliciwch Cadarnhau i gadw'r newidiadau. Bydd y gosodiadau blaenorol yn cael eu hadfer mewn <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Hoffai'r ddyfais Bluetooth "<ph name="DEVICE_NAME" />" gael caniatâd i baru. Rhowch y cod PIN hwn ar y ddyfais honno: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Offer sgrinlediad</translation>
 <translation id="1024261588257374085">Dewiswyd sgrinlun rhannol</translation>
 <translation id="1024364763893396229">Cadw eich <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Mae batri'r pwyntil yn isel</translation>
@@ -85,7 +84,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1346748346194534595">De</translation>
 <translation id="1351937230027495976">Crebachu'r ddewislen</translation>
 <translation id="1364382257761975320">I ddatgloi eich Chromebook, defnyddiwch eich olion bysedd</translation>
-<translation id="1364618750746929654">Methu â chynhyrchu trawsgrifiad</translation>
 <translation id="1372545819342940910">Cadw'r ddesg ar gyfer nes ymlaen</translation>
 <translation id="1383597849754832576">Methu â lawrlwytho ffeiliau lleferydd. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="1383876407941801731">Chwilio</translation>
@@ -460,7 +458,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3702846122927433391">Poblogaeth Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Wedi cysylltu'n flaenorol</translation>
-<translation id="3712317119236351467">Methu â chadw'r recordiad</translation>
 <translation id="371370241367527062">Meicroffon blaen</translation>
 <translation id="3713734891607377840">Agor pan fydd wedi'i gwblhau</translation>
 <translation id="3726171378575546917">Nid yw <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, a <ph name="UNAVAILABLE_APPS_COUNT" /> arall ar y ddyfais hon.</translation>
@@ -854,6 +851,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="6166852626429024716">Chwilio eich dyfais, apiau, gosodiadau, gwe...</translation>
 <translation id="6179832488876878285">Gallwch binio'ch ffeiliau pwysig yma. Agorwch yr ap Files i gychwyn arni.</translation>
 <translation id="619279033188484792">Gweld lluniau, cyfryngau, a hysbysebion diweddar eich ffôn ar eich <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Gwefru'n llawn nawr</translation>
 <translation id="6220928844947387476">Gallwch bellach recordio eich hun a'ch sgrîn ar yr un pryd</translation>
 <translation id="622484624075952240">I lawr</translation>
 <translation id="6231419273573514727">Mae'n bosib y bydd perfformiad y perifferol yn gyfyngedig</translation>
@@ -1189,6 +1187,7 @@ Gosodiad newydd</translation>
 <translation id="826107067893790409">Pwyswch Enter i ddatgloi ar gyfer <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Dileu</translation>
 <translation id="8270450402312105425">{0,plural, =1{Newid dyfais i'r fersiwn flaenorol o fewn awr}zero{Newid dyfais i'r fersiwn flaenorol o fewn # awr}two{Newid dyfais i'r fersiwn flaenorol o fewn # awr}few{Newid dyfais i'r fersiwn flaenorol o fewn # awr}many{Newid dyfais i'r fersiwn flaenorol o fewn # awr}other{Newid dyfais i'r fersiwn flaenorol o fewn # awr}}</translation>
+<translation id="8271580342040932214">Mae eich batri dros dro ar 80% pan fo wedi'i blygio i mewn er mwyn ymestyn oes y batri. Bydd eich batri yn gwefru'n llawn erbyn <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Sweipiwch i'r chwith gyda phedwar bys i newid i'r ddesg flaenorol</translation>
 <translation id="828708037801473432">Diffodd</translation>
 <translation id="8297006494302853456">Gwan</translation>
@@ -1272,6 +1271,7 @@ Gosodiad newydd</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Gosodiadau Dulliau Mewnbynnu</translation>
 <translation id="8818320199597151042">Wrthi'n tynnu'r proffil. Arhoswch ychydig funudau.</translation>
+<translation id="8819728065740986820">Mae gwefru addasedig wedi'i droi ymlaen</translation>
 <translation id="8825863694328519386">Sweipiwch o'r chwith i fynd yn ôl</translation>
 <translation id="8834539327799336565">Wedi'i gysylltu ar hyn o bryd</translation>
 <translation id="8841375032071747811">Botwm mynd yn ôl</translation>
@@ -1318,6 +1318,7 @@ Gosodiad newydd</translation>
 <translation id="9080132581049224423">Sweipiwch i fyny i fynd i'r dudalen hafan</translation>
 <translation id="9080206825613744995">Mae'r meicroffon yn cael ei ddefnyddio.</translation>
 <translation id="9084606467167974638">Toglo safle'r ddewislen</translation>
+<translation id="9085962983642906571">Cedwir eich batri ar 80% pan fo wedi'i blygio i mewn er mwyn ymestyn oes y batri.</translation>
 <translation id="9089416786594320554">Dulliau mewnbynnu</translation>
 <translation id="9091626656156419976">Tynnwyd y sgrîn <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Distewi'r ffôn</translation>

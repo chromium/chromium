@@ -284,7 +284,7 @@
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />対応リンク<ph name="END_LINK" />を開く</translation>
 <translation id="1272978324304772054">このユーザー アカウントは、デバイスが登録されているドメインに属していません。別のドメインに登録する場合は、まず、デバイス リカバリ操作を行う必要があります。</translation>
 <translation id="1274997165432133392">Cookie と他のサイトデータ</translation>
-<translation id="1275718070701477396">選択されています</translation>
+<translation id="1275718070701477396">選択中</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> をアンインストールできませんでした</translation>
 <translation id="1277020343994096713">現在の PIN とは異なる新しい PIN を作成してください</translation>
 <translation id="1278859221870828664">Google Play のアプリとサービスの確認</translation>
@@ -5607,6 +5607,7 @@
 <translation id="6520876759015997832"><ph name="SEARCH_RESULT_TEXT" /> の検索結果 <ph name="LIST_SIZE" /> 件中 <ph name="LIST_POSITION" /> 件目です。Enter キーを押すと、そのセクションに移動します。</translation>
 <translation id="6521214596282732365">多くのサイトはデバイスのフォントを使用して、オンラインのデザインツールや画像編集ツールで高品質のコンテンツを作成できるようにしています</translation>
 <translation id="6523303810310758032">全サイトまたは特定のサイトの閲覧履歴を削除すると、関連する測定情報も削除されます。<ph name="BEGIN_LINK" />閲覧履歴<ph name="END_LINK" />をご覧ください。</translation>
+<translation id="6523574494641144162">Google パスワード マネージャー では、次のパスワードを Google アカウントに保存できませんでした。このデバイスには保存できます。</translation>
 <translation id="6524735478670290456">Google によるデータの使用:</translation>
 <translation id="652492607360843641"><ph name="NETWORK_TYPE" /> ネットワークに接続しています。</translation>
 <translation id="6527303717912515753">共有</translation>
@@ -5909,6 +5910,7 @@
 <translation id="6818198425579322765">翻訳するページの言語</translation>
 <translation id="6818547713623251698">スマートフォンの写真、メディア、通知、アプリを表示します</translation>
 <translation id="6818802132960437751">組み込みのウィルス対策</translation>
+<translation id="6818920801736417483">パスワードを保存しますか？</translation>
 <translation id="6823174134746916417">タッチパッドのタップによるクリック</translation>
 <translation id="6824564591481349393">メール アドレスをコピー(&amp;E)</translation>
 <translation id="6824584962142919697">要素の検証(&amp;I)</translation>

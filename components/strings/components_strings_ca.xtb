@@ -1061,6 +1061,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3835233591525155343">L'ús que fas del dispositiu</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per crear un document de Google ràpidament</translation>
 <translation id="385051799172605136">Enrere</translation>
+<translation id="3851515670389017037">Els recorreguts s'han tancat</translation>
 <translation id="3858027520442213535">Actualitza la data i l'hora</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3872834068356954457">Ciència</translation>
@@ -1356,6 +1357,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="470284880436071933">Justícia i crim</translation>
 <translation id="4704732901923281920">Biologia</translation>
 <translation id="4708268264240856090">La connexió s'ha interromput</translation>
+<translation id="4709819737903924300">Els recorreguts s'han obert a alçada completa</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Executar el diagnòstic de xarxes de Windows<ph name="END_LINK" />.</translation>
 <translation id="4722735765955348426">Contrasenya per a <ph name="USERNAME" /></translation>
@@ -1819,6 +1821,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5989320800837274978">No s'especifiquen servidors intermediaris ni URL de script .pac.</translation>
 <translation id="5992691462791905444">Plegat en Z per a enginyeria</translation>
 <translation id="5995727681868049093">Gestiona la teva informació, privadesa i seguretat al Compte de Google</translation>
+<translation id="5997247540087773573">La contrasenya que acabes d'utilitzar s'ha trobat en una violació de les dades. Per protegir els teus comptes, el gestor de contrasenyes de Google recomana que la canviïs ara i que comprovis les contrasenyes desades.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultats per a "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6006484371116297560">Clàssic</translation>
 <translation id="6008122969617370890">Ordre de N a 1</translation>
@@ -1857,6 +1860,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6061154937977953833">Lluita</translation>
 <translation id="6064217302520318294">Bloqueig de pantalla</translation>
 <translation id="6064602040258638498">Cupons i ofertes de descompte</translation>
+<translation id="6078813287646374487">Mostra més informació sobre aquesta pàgina</translation>
 <translation id="6080696365213338172">Has accedit a contingut mitjançant un certificat proporcionat per l'administrador. Per tant, l'administrador por interceptar les dades que proporcioneu a <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">Cerques relacionades</translation>
 <translation id="6094273045989040137">Anota</translation>
@@ -2595,6 +2599,7 @@ Detalls addicionals:
 <translation id="8163866351304776260">Encunyació quàdruple a l'esquerra</translation>
 <translation id="8175796834047840627">Chrome t'està oferint desar les targetes al Compte de Google perquè tens la sessió iniciada. Pots canviar aquest comportament a la configuració.</translation>
 <translation id="8176440868214972690">L'administrador d'aquest dispositiu ha enviat informació als llocs web següents, com ara opcions de configuració o polítiques.</translation>
+<translation id="8179003511148538426">Els recorreguts s'han obert a mitja alçada</translation>
 <translation id="8184538546369750125">Utilitza l'opció predeterminada global (Permet)</translation>
 <translation id="8186706823560132848">Programari</translation>
 <translation id="8190193880870196235">Gestionat per una extensió</translation>

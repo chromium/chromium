@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB C-toestel (poort aan voorkant)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> het verander na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik Bevestig om veranderinge te hou. Die vorige instellings sal oor <ph name="TIMEOUT_SECONDS" /> teruggestel word.</translation>
 <translation id="1013923882670373915">Bluetooth-toestel "<ph name="DEVICE_NAME" />" vra toestemming om saam te bind. Voer asseblief hierdie PIN-kode op daardie toestel in: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Skermuitsendingnutsgoed</translation>
 <translation id="1024261588257374085">Gedeeltelike skermkiekie gekies</translation>
 <translation id="1024364763893396229">Stoor jou <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Stilus se battery is amper pap</translation>
@@ -85,7 +84,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1346748346194534595">Regs</translation>
 <translation id="1351937230027495976">Vou kieslys in</translation>
 <translation id="1364382257761975320">Gebruik jou vingerafdruk om jou Chromebook te ontsluit</translation>
-<translation id="1364618750746929654">Kan nie transkripsie genereer nie</translation>
 <translation id="1372545819342940910">Stoor lessenaar vir later</translation>
 <translation id="1383597849754832576">Kan nie spraaklêers aflaai nie Probeer later weer.</translation>
 <translation id="1383876407941801731">Soek</translation>
@@ -460,7 +458,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3702846122927433391">Bevolking in Nigerië</translation>
 <translation id="3705722231355495246">–</translation>
 <translation id="3708186454126126312">Voorheen gekoppel</translation>
-<translation id="3712317119236351467">Kan nie opname stoor nie</translation>
 <translation id="371370241367527062">Voorste mikrofoon</translation>
 <translation id="3713734891607377840">Maak oop wanneer dit volledig is</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> en nog <ph name="UNAVAILABLE_APPS_COUNT" /> is nie op hierdie toestel nie.</translation>
@@ -855,6 +852,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6166852626429024716">Deursoek jou toestel, programme, instellings en die web …</translation>
 <translation id="6179832488876878285">Jy kan jou belangrike lêers hier vasspeld. Maak Lêers-program oop om te begin.</translation>
 <translation id="619279033188484792">Bekyk jou foon se onlangse foto's, media en kennisgewings op jou <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Laai nou ten volle</translation>
 <translation id="6220928844947387476">Jy kan jouself en jou skerm nou op dieselfde tyd opneem</translation>
 <translation id="622484624075952240">Af</translation>
 <translation id="6231419273573514727">Randtoestelwerkverrigting kan beperk wees</translation>
@@ -1190,6 +1188,7 @@ Nuwe installasie</translation>
 <translation id="826107067893790409">Druk Enter om <ph name="USER_EMAIL_ADDRESS" /> te ontsluit</translation>
 <translation id="8261506727792406068">Vee uit</translation>
 <translation id="8270450402312105425">{0,plural, =1{Verander toestel binne 'n uur na vorige weergawe}other{Verander toestel binne # uur na vorige weergawe}}</translation>
+<translation id="8271580342040932214">Jou battery is tydelik op 80% terwyl dit ingeprop is om die batterylewe te verleng. Jou battery sal teen <ph name="FULLY_CHARGE_TIME" /> vol gelaai wees.</translation>
 <translation id="8284362522226889623">Swiep met vier vingers links om na die vorige lessenaar toe te wissel</translation>
 <translation id="828708037801473432">Af</translation>
 <translation id="8297006494302853456">Swak</translation>
@@ -1273,6 +1272,7 @@ Nuwe installasie</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Invoermetodesinstellings</translation>
 <translation id="8818320199597151042">Verwyder tans profiel. Wag 'n paar minute.</translation>
+<translation id="8819728065740986820">Aanpasbare laai is aan</translation>
 <translation id="8825863694328519386">Swiep van links af om terug te gaan</translation>
 <translation id="8834539327799336565">Tans gekoppel</translation>
 <translation id="8841375032071747811">Terugknoppie</translation>
@@ -1319,6 +1319,7 @@ Nuwe installasie</translation>
 <translation id="9080132581049224423">Swiep op om na die tuisskerm toe te gaan</translation>
 <translation id="9080206825613744995">Mikrofoon word gebruik.</translation>
 <translation id="9084606467167974638">Wissel kieslysposisie</translation>
+<translation id="9085962983642906571">Jou battery word op 80% gehou terwyl dit ingeprop is om die batterylewe te verleng.</translation>
 <translation id="9089416786594320554">Invoermetodes</translation>
 <translation id="9091626656156419976">Het skerm <ph name="DISPLAY_NAME" /> verwyder</translation>
 <translation id="9098969848082897657">Maak foon stil</translation>

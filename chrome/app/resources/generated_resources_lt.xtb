@@ -133,6 +133,7 @@
 <translation id="1124772482545689468">Naudotojas</translation>
 <translation id="1125550662859510761">Atrodo kaip <ph name="WIDTH" /> × <ph name="HEIGHT" /> (savasis)</translation>
 <translation id="1126809382673880764">Neapsaugo jūsų nuo pavojingų svetainių, atsisiuntimų ir plėtinių. Kai yra galimybė, vis tiek gausite saugaus naršymo pranešimus kitose „Google“ paslaugose, pvz., „Gmail“ ir paieškoje.</translation>
+<translation id="1128090040635299943">„Linux“ šiuo metu konfigūruojama. Konfigūravimas užtruks kelias minutes</translation>
 <translation id="1128591060186966949">Paieškos variklio redagavimas</translation>
 <translation id="1129420403709586868">Peržiūrėkite telefono nuotraukas ir mediją</translation>
 <translation id="1129850422003387628">Valdyti programas</translation>
@@ -337,6 +338,7 @@
 <translation id="1327794256477341646">Funkcijos, kurioms reikalinga jūsų vietovės informacija, neveiks</translation>
 <translation id="1329191040029425999">Įsitikinkite, kad įrenginys atnaujintas, ir bandykite dar kartą</translation>
 <translation id="1330145147221172764">Įgalinti ekrano klaviatūrą</translation>
+<translation id="1331625853030156663">Jei norite atidaryti „<ph name="APP_NAME" />“, įgalinkite parinktį „Rodyti užrakto ekraną pažadinant iš miego būsenos“.</translation>
 <translation id="1331977651797684645">Tai buvau aš.</translation>
 <translation id="1333489022424033687">Kai kurios svetainės <ph name="ORIGIN" /> funkcijos gali neveikti, iki kol išvalysite duomenis, kuriuos kitos svetainės išsaugojo jūsų įrenginyje</translation>
 <translation id="1333965224356556482">Neleisti svetainėms peržiūrėti vietovės informacijos</translation>
@@ -3351,6 +3353,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="420283545744377356">Išjungti ekrano užsklandą</translation>
 <translation id="4203065553461038553">Per ilgas failo pavadinimas ar vieta</translation>
 <translation id="4204851595694839599">Kaip įvertintumėte savo žaidimo eigos patirtį?</translation>
+<translation id="4205157409548006256">Konfigūruojant „Linux“ įvyko klaida.</translation>
 <translation id="4206144641569145248">Ateivis</translation>
 <translation id="4206323443866416204">Pranešimai apie atsiliepimus</translation>
 <translation id="4207522141889799150">Redaguoti svetainės leidimus: <ph name="SITE" /></translation>
@@ -5823,6 +5826,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6686665106869989887">Skirtukas perkeltas dešinėn</translation>
 <translation id="6686817083349815241">Išsaugokite slaptažodį</translation>
 <translation id="6687079240787935001">Slėpti: <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Prašoma leidimo skaityti ir keisti <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Paprašykite, kad <ph name="SUPERVISED_USER_NAME" /> prieitų prie kompiuterio. Vaikas turės perskaityti kelias frazes šiame ekrane, kad būtų sukurtas balso modelis.
     <ph name="BR" />
     Jei <ph name="SUPERVISED_USER_NAME" /> reikia pagalbos skaitant, nurodykite vaikui kartoti, ką sakote. Šnabždėkite toliau nuo mikrofono, kad Padėjėjas girdėtų ne jūsų, o vaiko balsą.</translation>
@@ -6335,6 +6339,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Išeiti iš puslapio}one{Išeiti iš puslapių}few{Išeiti iš puslapių}many{Išeiti iš puslapių}other{Išeiti iš puslapių}}</translation>
 <translation id="7207457272187520234">Siųskite naudojimo ir diagnostikos duomenis. Šiuo metu šis įrenginys automatiškai siunčia „Google“ diagnostikos, įrenginio ir programų naudojimo duomenis. Tai padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie sukaupti duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Šį nustatymą taiko savininkas. Jei papildomas Žiniatinklio ir programų veiklos nustatymas įjungtas, šie duomenys gali būti išsaugoti „Google“ paskyroje.</translation>
 <translation id="7207631048330366454">Ieškoti programų</translation>
+<translation id="720808544705441386">Nepavyko atidaryti programos</translation>
 <translation id="7210499381659830293">Plėtinio spausdintuvai</translation>
 <translation id="7211783048245131419">Dar nepriskirtas joks jungiklis</translation>
 <translation id="7212097698621322584">Įveskite dabartinį PIN kodą, jei norite jį pakeisti. Jei dabartinio PIN kodo nežinote, turėsite nustatyti saugos raktą iš naujo ir sukurti naują PIN kodą.</translation>
@@ -7492,6 +7497,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8324784016256120271">Svetainės gali naudoti slapukus, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus</translation>
 <translation id="8325413836429495820">Neleidžiama peržiūrėti iškarpinės</translation>
 <translation id="8326478304147373412">PKCS Nr. 7, sertifikato grandinė</translation>
+<translation id="8327386430364625757">Matematinis šriftas</translation>
 <translation id="8327676037044516220">Leidimai ir turinio nustatymai</translation>
 <translation id="8330617762701840933">Svetainių, kurios peradresuoja į alternatyvią naršyklę, sąrašas.</translation>
 <translation id="8330689128072902965">Netoliese esantys kontaktai gali su jumis bendrinti. Spustelėkite ir pakeiskite.</translation>

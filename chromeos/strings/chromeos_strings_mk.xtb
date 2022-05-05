@@ -375,6 +375,7 @@
 <translation id="4890353053343094602">Веднаш изберете нова</translation>
 <translation id="4891842000192098784">Стрес</translation>
 <translation id="4897058166682006107">Нивото на батерија на левата слушалка е <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4915052247106771211">Ова ќе го ресетира уредот на фабрички поставки (Фабричко ресетирање).</translation>
 <translation id="4917385247580444890">Силен</translation>
 <translation id="4917889632206600977">Запрено - нема хартија</translation>
 <translation id="4921665434385737356">Наполнета <ph name="RATE" /> за <ph name="NUM_SECONDS" /> секунди.</translation>
@@ -429,6 +430,7 @@
 <translation id="5358174242040570474">Нешто тргна наопаку. Обидете се повторно да изберете тапет или повторно отворете ја апликацијата.</translation>
 <translation id="5372659122375744710">WiFi мрежата не е безбедна</translation>
 <translation id="5376354385557966694">Автоматски светол режим</translation>
+<translation id="537872351913703572">Уредот ќе се префрли на друг корисник или организација</translation>
 <translation id="5400907029458559844">Уредот се поврзува.</translation>
 <translation id="5401938042319910061">Изврши ги сите рутини</translation>
 <translation id="5423849171846380976">Активиран</translation>
@@ -733,6 +735,7 @@
 <translation id="8671972493856476349">Ажурирајте на <ph name="VERSION_NUMBER" /> и рестартирајте</translation>
 <translation id="8675354002693747642">Претходно споделен клуч</translation>
 <translation id="8677859815076891398">Нема албуми. Создајте албум во <ph name="LINK_BEGIN" />Фотографии на Google<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Уредот ќе остане кај истиот корисник</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Користете го копчето со стрелка налево или со стрелка надесно за да управувате со функцијава.</translation>
 <translation id="8712637175834984815">Сфатив</translation>
 <translation id="871560550817059752">Неуспешно - нема мастило</translation>

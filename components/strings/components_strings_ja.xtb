@@ -1061,6 +1061,7 @@
 <translation id="3835233591525155343">デバイスのアクティブ状態</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、新しい Google ドキュメントをすばやく作成します</translation>
 <translation id="385051799172605136">戻る</translation>
+<translation id="3851515670389017037">ジャーニーを閉じています</translation>
 <translation id="3858027520442213535">日時を更新</translation>
 <translation id="3858860766373142691">名前</translation>
 <translation id="3872834068356954457">科学</translation>
@@ -1356,6 +1357,7 @@
 <translation id="470284880436071933">犯罪、裁判</translation>
 <translation id="4704732901923281920">生物科学</translation>
 <translation id="4708268264240856090">接続が中断されました</translation>
+<translation id="4709819737903924300">ジャーニーを最大高さで開いています</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows ネットワーク診断ツールを実行する<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> のパスワード</translation>
@@ -1819,6 +1821,7 @@
 <translation id="5989320800837274978">固定プロキシ サーバーと .pac スクリプト URL のどちらも指定されていません。</translation>
 <translation id="5992691462791905444">工学 Z 折り</translation>
 <translation id="5995727681868049093">Google アカウントで情報、プライバシー、セキュリティを管理します</translation>
+<translation id="5997247540087773573">たった今使用したパスワードがデータ侵害で検出されました。Google パスワード マネージャーでは、アカウントを保護するために今すぐパスワードを変更して、保存したパスワードを確認することをおすすめします。</translation>
 <translation id="6000758707621254961">「<ph name="SEARCH_TEXT" />」に対する <ph name="RESULT_COUNT" /> 件の検索結果</translation>
 <translation id="6006484371116297560">クラシック</translation>
 <translation id="6008122969617370890">N～1 の順</translation>
@@ -1857,6 +1860,7 @@
 <translation id="6061154937977953833">レスリング</translation>
 <translation id="6064217302520318294">画面ロック</translation>
 <translation id="6064602040258638498">クーポン、優待情報</translation>
+<translation id="6078813287646374487">このページの詳細情報を表示します</translation>
 <translation id="6080696365213338172">管理者が提供する証明書を使用してコンテンツにアクセスしています。<ph name="DOMAIN" /> に提供するデータは管理者によって傍受される可能性があります。</translation>
 <translation id="6087312102907839798">他のキーワード</translation>
 <translation id="6094273045989040137">注釈を追加</translation>
@@ -2595,6 +2599,7 @@
 <translation id="8163866351304776260">4 穴パンチ（左）</translation>
 <translation id="8175796834047840627">ログインしている場合は、その Google アカウントにカードを保存できます。この動作は設定で変更できます。</translation>
 <translation id="8176440868214972690">このデバイスの管理者は、次のウェブサイトに設定やポリシーなどの情報を送信するよう設定しています。</translation>
+<translation id="8179003511148538426">ジャーニーを半分の高さで開いています</translation>
 <translation id="8184538546369750125">グローバルのデフォルト値（[許可]）を使用</translation>
 <translation id="8186706823560132848">ソフトウェア</translation>
 <translation id="8190193880870196235">拡張機能によって管理されています</translation>

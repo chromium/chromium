@@ -133,6 +133,7 @@
 <translation id="1124772482545689468">Notandi</translation>
 <translation id="1125550662859510761">Virðist vera <ph name="WIDTH" /> x <ph name="HEIGHT" /> (sérhannað)</translation>
 <translation id="1126809382673880764">Ver þig ekki gegn hættulegum vefsvæðum, niðurhali eða viðbótum. Þú munt áfram geta notað örugga vefskoðun, þar sem hún er í boði, í annarri þjónustu Google á borð við Gmail og leit.</translation>
+<translation id="1128090040635299943">Verið er að stilla Linux Þetta tekur nokkrar mínútur.</translation>
 <translation id="1128591060186966949">Breyta leitarvél</translation>
 <translation id="1129420403709586868">Skoðaðu myndir og margmiðlunarefni símans</translation>
 <translation id="1129850422003387628">Stjórna forritum</translation>
@@ -335,6 +336,7 @@
 <translation id="1327794256477341646">Eiginleikar sem þurfa staðsetningu þína munu ekki virka</translation>
 <translation id="1329191040029425999">Gakktu úr skugga um að tækið sé uppfært og reyndu aftur</translation>
 <translation id="1330145147221172764">Kveikja á skjályklaborði</translation>
+<translation id="1331625853030156663">Til að opna <ph name="APP_NAME" /> skaltu opna „Sýna lásskjá þegar komið er úr hvíldarstillingu“</translation>
 <translation id="1331977651797684645">Þetta var ég.</translation>
 <translation id="1333489022424033687">Sumir eiginleikar á <ph name="ORIGIN" /> virka hugsanlega ekki þar til þú hreinsar gögn sem önnur vefsvæði hafa vistað í tækinu þínu</translation>
 <translation id="1333965224356556482">Ekki leyfa vefsvæðum að sjá staðsetninguna þína</translation>
@@ -3346,6 +3348,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="420283545744377356">Slökkva á skjávara</translation>
 <translation id="4203065553461038553">Skáarheiti eða staðsetning of löng</translation>
 <translation id="4204851595694839599">Hver var upplifun þín af spiluninni?</translation>
+<translation id="4205157409548006256">Villa kom upp við stillingu Linux.</translation>
 <translation id="4206144641569145248">Geimvera</translation>
 <translation id="4206323443866416204">Ábendingaskýrsla</translation>
 <translation id="4207522141889799150">Breyta heimildum vefsvæðis fyrir <ph name="SITE" /></translation>
@@ -5640,6 +5643,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í  <ph name="GOOGLE_PASSWORD_MANA
 <translation id="6520876759015997832">Leitarniðurstaða <ph name="LIST_POSITION" /> af <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Ýttu á færslulykilinn til að fara í næsta hluta.</translation>
 <translation id="6521214596282732365">Yfirleitt nota vefsvæði leturgerðirnar þínar svo að þú getir búið til hágæðaefni með vefhönnun og grafíkverkfærum</translation>
 <translation id="6523303810310758032">Þegar þú eyðir vafraferlinum — í heild sinni eða fyrir tiltekið vefsvæði — er tengdum mæligögnum einnig eytt. Skoða <ph name="BEGIN_LINK" />vafraferil<ph name="END_LINK" /></translation>
+<translation id="6523574494641144162">Google aðgangsorðastjórnun tókst ekki að vista aðgangsorðin á Google reikningnum. Þú getur vistað þau á þessu tæki</translation>
 <translation id="6524735478670290456">Svona notum við þessi gögn:</translation>
 <translation id="652492607360843641">Tegund kerfis sem þú tengist: <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Deila</translation>
@@ -5812,6 +5816,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í  <ph name="GOOGLE_PASSWORD_MANA
 <translation id="6686665106869989887">Flipi færður til hægri</translation>
 <translation id="6686817083349815241">Vista aðgangsorðið</translation>
 <translation id="6687079240787935001">Fela <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Beiðni um að lesa og breyta <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Biddu <ph name="SUPERVISED_USER_NAME" /> um að koma nær tölvunni. Barnið þitt les upp nokkrar setningar á þessum skjá til að búa til raddlíkan þess.
     <ph name="BR" />
     Ef <ph name="SUPERVISED_USER_NAME" /> þarf aðstoð við lesturinn skaltu láta barnið herma eftir þér. Hvíslaðu til að hljóðneminn heyri ekki í þér og Hjálparinn læri inn á rödd barnsins frekar en rödd þína.</translation>
@@ -5946,6 +5951,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í  <ph name="GOOGLE_PASSWORD_MANA
 <translation id="6818198425579322765">Tungumál síðu sem þýða á af</translation>
 <translation id="6818547713623251698">Skoðaðu myndir, margmiðlunarefni, tilkynningar og forrit símans</translation>
 <translation id="6818802132960437751">Innbyggð vírusvörn</translation>
+<translation id="6818920801736417483">Vista aðgangsorð?</translation>
 <translation id="6823174134746916417">Ýta til að smella á snertifleti</translation>
 <translation id="6824564591481349393">Afrita n&amp;etfang</translation>
 <translation id="6824584962142919697">&amp;Kanna einingar</translation>
@@ -6323,6 +6329,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í  <ph name="GOOGLE_PASSWORD_MANA
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Loka síðu}one{Loka síðum}other{Loka síðum}}</translation>
 <translation id="7207457272187520234">Senda notkunar- og greiningargögn. Þetta tæki sendir núna sjálfkrafa greiningargögn, tækisgögn og upplýsingar um forritanotkun til Google. Þetta mun stuðla að stöðugleika kerfa og forrita og öðrum endurbótum. Sum uppsöfnuð gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Eigandi valdi þessa stillingu. Ef kveikt er á ítarlegri vef- og forritavirkni geta þessi gögn verið vistuð á Google reikningnum þínum.</translation>
 <translation id="7207631048330366454">Leita í forritum</translation>
+<translation id="720808544705441386">Ekki er hægt að opna forritið</translation>
 <translation id="7210499381659830293">Prentaraviðbætur</translation>
 <translation id="7211783048245131419">Ekki er búið að úthluta neinum rofa</translation>
 <translation id="7212097698621322584">Sláðu inn núverandi PIN-númer til að breyta því. Ef þú veist ekki PIN-númerið þitt þarftu að endurstilla öryggislykilinn og búa svo til nýtt PIN-númer.</translation>
@@ -7479,6 +7486,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8324784016256120271">Vefsvæði geta notað fótspor til að sjá vafranotkun þína á vefsvæðum, til dæmis til að sérsníða auglýsingar</translation>
 <translation id="8325413836429495820">Mega ekki sjá klippiborðið</translation>
 <translation id="8326478304147373412">PKCS #7, vottorðakeðja</translation>
+<translation id="8327386430364625757">Stærðfræðileg leturgerð</translation>
 <translation id="8327676037044516220">Heimildir og efnisstillingar</translation>
 <translation id="8330617762701840933">Listi vefsvæða sem eru framsend á annan vafra.</translation>
 <translation id="8330689128072902965">Nálægir tengiliðir geta deilt með þér. Smelltu til að breyta.</translation>

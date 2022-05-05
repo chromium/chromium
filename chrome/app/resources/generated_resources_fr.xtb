@@ -3171,7 +3171,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4031179711345676612">Micro autorisé</translation>
 <translation id="4031308539321678562">Cette action supprimera définitivement les données de navigation de cet appareil. Les comptes Google de ce profil pourront être utilisés par d'autres applis sur votre Chromebook. Vous pouvez supprimer ces comptes dans <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4031527940632463547">Capteurs bloqués</translation>
-<translation id="4033415645631238123">Vous ne pouvez plus vous connecter avec Smart Lock, mais pouvez encore l'utiliser pour le déverrouillage.</translation>
+<translation id="4033415645631238123">La connexion avec Smart Lock n'est plus disponible, mais vous pouvez encore l'utiliser pour le déverrouillage.</translation>
 <translation id="4033471457476425443">Ajouter un dossier</translation>
 <translation id="4033963223187371752">Les sites sécurisés peuvent intégrer du contenu tel que des images ou des cadres Web non sécurisés</translation>
 <translation id="4034824040120875894">Imprimante</translation>

@@ -133,6 +133,7 @@
 <translation id="1124772482545689468">Kasutaja</translation>
 <translation id="1125550662859510761">Näib kui <ph name="WIDTH" /> × <ph name="HEIGHT" /> (loomulik eraldusvõime)</translation>
 <translation id="1126809382673880764">Ei kaitse teid ohtlike veebisaitide, allalaadimiste ega laienduste eest. Google'i ohutu sirvimine kaitseb teid siiski muudes Google'i teenustes, kus see saadaval on (nt Gmail ja Otsing).</translation>
+<translation id="1128090040635299943">Linuxit seadistatakse praegu. Seadistamine võtab mõne minuti.</translation>
 <translation id="1128591060186966949">Otsingumootori muutmine</translation>
 <translation id="1129420403709586868">Teie telefoni fotode ja meedia vaatamine</translation>
 <translation id="1129850422003387628">Rakenduste haldamine</translation>
@@ -334,6 +335,7 @@
 <translation id="1327794256477341646">Teie asukohateavet vajavad funktsioonid ei tööta</translation>
 <translation id="1329191040029425999">Veenduge, et teie seade oleks ajakohane, ja proovige uuesti</translation>
 <translation id="1330145147221172764">Luba ekraanil kuvatav klaviatuur</translation>
+<translation id="1331625853030156663">Rakenduse <ph name="APP_NAME" /> avamiseks lubage seade „Kuva unerežiimist ärgates lukustuskuva“</translation>
 <translation id="1331977651797684645">See olin mina.</translation>
 <translation id="1333489022424033687">Mõni funktsioon saidil <ph name="ORIGIN" /> ei pruugi töötada enne, kui kustutate andmed, mille teised saidid on teie seadmesse salvestanud</translation>
 <translation id="1333965224356556482">Ära luba saitidel minu asukohta näha</translation>
@@ -3337,6 +3339,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="420283545744377356">Lülita ekraanisäästja välja</translation>
 <translation id="4203065553461038553">Faili nimi või tee on liiga pikk</translation>
 <translation id="4204851595694839599">Milline oli teie mängukogemus?</translation>
+<translation id="4205157409548006256">Linuxi seadistamisel ilmnes viga.</translation>
 <translation id="4206144641569145248">Tulnukas</translation>
 <translation id="4206323443866416204">Tagasisidearuanne</translation>
 <translation id="4207522141889799150">Saidi <ph name="SITE" /> lubade muutmine</translation>
@@ -5801,6 +5804,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6686665106869989887">Vaheleht teisaldati paremale</translation>
 <translation id="6686817083349815241">Parooli salvestamine</translation>
 <translation id="6687079240787935001">Peida <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Saidi <ph name="ORIGIN" /> lugemise ja muutmise taotlemine:</translation>
 <translation id="6689714331348768690">Paluge kasutajal <ph name="SUPERVISED_USER_NAME" /> arvuti juurde tulla. Häälemudeli loomiseks peab laps ekraanikuvalt lugema ette mõned fraasid.
     <ph name="BR" />
     Kui <ph name="SUPERVISED_USER_NAME" /> vajab lugemisel abi, paluge lapsel korrata enda järel. Sosistage mikrofonist eemal, et assistent kuuleks teie hääle asemel lapse häält.</translation>
@@ -6313,6 +6317,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Välju lehelt}other{Välju lehtedelt}}</translation>
 <translation id="7207457272187520234">Kasutus- ja diagnostikaandmete saatmine. See seade saadab Google'ile praegu automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. See aitab parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Selle seade on jõustanud omanik. Kui täiendavad veebi- ja rakendustegevused on sisse lülitatud, võidakse need andmed salvestada teie Google'i kontole.</translation>
 <translation id="7207631048330366454">Otsi rakendusi</translation>
+<translation id="720808544705441386">Rakendust ei saa avada</translation>
 <translation id="7210499381659830293">Laienduse printerid</translation>
 <translation id="7211783048245131419">Ühtegi lülitit pole veel määratud</translation>
 <translation id="7212097698621322584">PIN-koodi muutmiseks sisestage see. Kui te oma PIN-koodi ei tea, peate lähtestama turvavõtme ja looma siis uue PIN-koodi.</translation>
@@ -7470,6 +7475,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8324784016256120271">Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, näiteks reklaamide isikupärastamiseks</translation>
 <translation id="8325413836429495820">Pole lubatud näha teie lõikelauda</translation>
 <translation id="8326478304147373412">PKCS 7, sertifikaadiahel</translation>
+<translation id="8327386430364625757">Matemaatika font</translation>
 <translation id="8327676037044516220">Load ja sisu seaded</translation>
 <translation id="8330617762701840933">Loend veebisaitidest, mis suunatakse ümber alternatiivsesse brauserisse.</translation>
 <translation id="8330689128072902965">Läheduses olevad kontaktid saavad teiega jagada. Klõpsake muutmiseks.</translation>

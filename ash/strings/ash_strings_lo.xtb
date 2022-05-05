@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">ອຸ​ປະ​ກອນ USB-C (ຜອດດ້ານໜ້າ)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> ໄດ້ປ່ຽນເປັນ <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ແລ້ວ. ຄລິກຢືນຢັນເພື່ອຮັກສາການປ່ຽນແປງໄວ້. ລະບົບຈະກູ້ຄືນການຕັ້ງຄ່າກ່ອນໜ້າໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">ອຸປະກອນ Bluetooth "<ph name="DEVICE_NAME" />" ຢາກຂໍອະນຸຍາດຈັບຄູ່. ກະລຸນາປ້ອນລະຫັດ PIN ນີ້ເຂົ້າໄປໃນອຸປະກອນນັ້ນ: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">ເຄື່ອງມື Screencast</translation>
 <translation id="1024261588257374085">ເລືອກຮູບໜ້າຈໍບາງສ່ວນແລ້ວ</translation>
 <translation id="1024364763893396229">ບັນທຶກ <ph name="NAME" /> ຂອງທ່ານ</translation>
 <translation id="1032891413405719768">ແບັດເຕີຣີປາຍປາກກາເຫຼືອໜ້ອຍ</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">ເບື້ອງຂວາ</translation>
 <translation id="1351937230027495976">ຫຍໍ້ເມນູ</translation>
 <translation id="1364382257761975320">ເພື່ອປົດລັອກ Chromebook ຂອງທ່ານ, ໃຫ້ໃຊ້ລາຍນິ້ວມືຂອງທ່ານ</translation>
-<translation id="1364618750746929654">ບໍ່ສາມາດສ້າງການຖອດຖ່າຍຂໍ້ຄວາມໄດ້</translation>
 <translation id="1372545819342940910">ບັນທຶກໂຕະໄວ້ພາຍຫຼັງ</translation>
 <translation id="1383597849754832576">ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ສຽງເວົ້າໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="1383876407941801731">ຊອກຫາ</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">ປະຊາກອນໃນໄນຈີເຣຍ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">ເຊື່ອມຕໍ່ກ່ອນໜ້ານີ້</translation>
-<translation id="3712317119236351467">ບໍ່ສາມາດຈັດເກັບການບັນທຶກໄດ້</translation>
 <translation id="371370241367527062">ໄມໂຄຣໂຟນໜ້າ</translation>
 <translation id="3713734891607377840">ເປີດເມື່ອສຳເລັດ</translation>
 <translation id="3726171378575546917">ບໍ່ມີ <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ແລະ ອີກ <ph name="UNAVAILABLE_APPS_COUNT" /> ແອັບຢູ່ອຸປະກອນນີ້.</translation>

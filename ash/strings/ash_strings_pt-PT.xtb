@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Dispositivo USB-C (porta frontal)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> alterado para <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Clique em confirmar para manter as alterações. As definições anteriores serão restauradas dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar. Introduza este código PIN nesse dispositivo: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Ferramentas de gravação de ecrã</translation>
 <translation id="1024261588257374085">Captura de ecrã parcial selecionada</translation>
 <translation id="1024364763893396229">Guarde o dispositivo <ph name="NAME" /></translation>
 <translation id="1032891413405719768">A pilha da caneta stylus está fraca</translation>
@@ -85,7 +84,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1346748346194534595">Direita</translation>
 <translation id="1351937230027495976">Reduzir menu</translation>
 <translation id="1364382257761975320">Para desbloquear o Chromebook, utilize a sua impressão digital</translation>
-<translation id="1364618750746929654">Não é possível gerar a transcrição</translation>
 <translation id="1372545819342940910">Guardar espaço de trabalho para mais tarde</translation>
 <translation id="1383597849754832576">Não é possível transferir os ficheiros de voz. Tente novamente mais tarde.</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
@@ -460,7 +458,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3702846122927433391">População da Nigéria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Ligados anteriormente</translation>
-<translation id="3712317119236351467">Não é possível guardar a gravação</translation>
 <translation id="371370241367527062">Microfone frontal</translation>
 <translation id="3713734891607377840">Abrir ao concluir</translation>
 <translation id="3726171378575546917">A app <ph name="UNAVAILABLE_APPS_ONE" />, a app <ph name="UNAVAILABLE_APPS_TWO" /> e mais <ph name="UNAVAILABLE_APPS_COUNT" /> apps não se encontram neste dispositivo.</translation>

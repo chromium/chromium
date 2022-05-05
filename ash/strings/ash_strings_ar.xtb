@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">‏جهاز USB-C (المنفذ الأمامي)</translation>
 <translation id="1013598600051641573">تم تغيير درجة دقة <ph name="DISPLAY_NAME" /> إلى <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> هرتز). يُرجى النقر على "تأكيد" لحفظ التغييرات. وستتم استعادة الإعدادات السابقة خلال <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">يريد جهاز بلوتوث "<ph name="DEVICE_NAME" />" الحصول على إذن للإقران. يُرجى إدخال رقم التعريف الشخصي هذا في هذا الجهاز: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">أدوات التسجيل الرقمي للشاشة</translation>
 <translation id="1024261588257374085">تم اختيار لقطة شاشة جزئية.</translation>
 <translation id="1024364763893396229">حفظ بيانات جهاز <ph name="NAME" /></translation>
 <translation id="1032891413405719768">بطارية قلم الشاشة منخفضة</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">يمين</translation>
 <translation id="1351937230027495976">تصغير القائمة</translation>
 <translation id="1364382257761975320">‏لفتح قفل جهاز Chromebook، استخدِم بصمة إصبعك.</translation>
-<translation id="1364618750746929654">يتعذَّر تحويل الصوت إلى نص.</translation>
 <translation id="1372545819342940910">حفظ سطح المكتب لوقت لاحق</translation>
 <translation id="1383597849754832576">يتعذّر تنزيل ملفات ميزة "النسخ النصي التلقائي". يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="1383876407941801731">البحث</translation>
@@ -461,7 +459,6 @@
 <translation id="3702846122927433391">تعداد السكان في نيجيريا</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">الأجهزة المتصلة سابقًا</translation>
-<translation id="3712317119236351467">يتعذّر حفظ التسجيل</translation>
 <translation id="371370241367527062">الميكروفون الأمامي</translation>
 <translation id="3713734891607377840">فتح الملف بعد اكتمال تنزيله</translation>
 <translation id="3726171378575546917">التطبيقات <ph name="UNAVAILABLE_APPS_ONE" /> و<ph name="UNAVAILABLE_APPS_TWO" /> و<ph name="UNAVAILABLE_APPS_COUNT" /> غير مثبَّتة على هذا الجهاز.</translation>
@@ -855,6 +852,7 @@
 <translation id="6166852626429024716">البحث في الجهاز والتطبيقات والإعدادات والويب...</translation>
 <translation id="6179832488876878285">يمكنك تثبيت الملفات المهمّة هنا. افتح تطبيق "الملفات" للبدء.</translation>
 <translation id="619279033188484792">يمكنك عرض الصور والوسائط والإشعارات الحديثة في هاتفك على <ph name="DEVICE_TYPE" />.</translation>
+<translation id="619335566042889110">الشحن بالكامل الآن</translation>
 <translation id="6220928844947387476">يمكنك الآن تسجيل فيديو لنفسك ولشاشتك في الوقت نفسه.</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">قد يصبح أداء الأجهزة الملحقة محدودًا</translation>
@@ -1190,6 +1188,7 @@
 <translation id="826107067893790409">‏عليك الضغط على Enter لفتح قفل <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8270450402312105425">{0,plural, =1{إعادة الجهاز إلى الإصدار السابق في غضون ساعة واحدة}zero{إعادة الجهاز إلى الإصدار السابق في غضون # ساعة}two{إعادة الجهاز إلى الإصدار السابق في غضون ساعتين}few{إعادة الجهاز إلى الإصدار السابق في غضون # ساعات}many{إعادة الجهاز إلى الإصدار السابق في غضون # ساعة}other{إعادة الجهاز إلى الإصدار السابق في غضون # ساعة}}</translation>
+<translation id="8271580342040932214">سيبقى مستوى شحن البطارية عند %80 بشكل مؤقّت أثناء توصيل الجهاز بمصدر طاقة، وذلك لإطالة عمر البطارية. سيتم شحن البطارية بالكامل بحلول الساعة <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">يمكنك التمرير سريعًا لليمين بأربعة أصابع للتبديل إلى سطح المكتب السابق.</translation>
 <translation id="828708037801473432">غير مُفعَّلة</translation>
 <translation id="8297006494302853456">ضعيفة</translation>
@@ -1273,6 +1272,7 @@
 <translation id="8814190375133053267">‏لاسلكي، Wi-Fi</translation>
 <translation id="881757059229893486">إعدادات أساليب الإدخال</translation>
 <translation id="8818320199597151042">جارٍ إزالة الملف التعريفي. يُرجى الانتظار بضع دقائق.</translation>
+<translation id="8819728065740986820">ميزة "الشحن التكيُّفي" مفعّلة</translation>
 <translation id="8825863694328519386">التمرير السريع من اليسار للرجوع</translation>
 <translation id="8834539327799336565">الأجهزة المتصلة حاليًا</translation>
 <translation id="8841375032071747811">زر الرجوع</translation>
@@ -1319,6 +1319,7 @@
 <translation id="9080132581049224423">يُرجى التمرير السريع إلى الأعلى للانتقال إلى الصفحة الرئيسية.</translation>
 <translation id="9080206825613744995">الميكروفون قيد الاستخدام</translation>
 <translation id="9084606467167974638">تبديل موضع القائمة</translation>
+<translation id="9085962983642906571">سيبقى مستوى شحن البطارية عند %80 أثناء توصيل الجهاز بمصدر طاقة، وذلك لإطالة عمر البطارية.</translation>
 <translation id="9089416786594320554">أساليب الإدخال</translation>
 <translation id="9091626656156419976">تمت إزالة عرض <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">كتم صوت الهاتف</translation>

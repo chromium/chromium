@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C устройство (предният порт)</translation>
 <translation id="1013598600051641573">Разделителната способност на <ph name="DISPLAY_NAME" /> бе променена на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Хц). Кликнете върху бутона за потвърждаване, за да запазите промените. Предишните настройки ще бъдат възстановени след <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Устройството с Bluetooth „<ph name="DEVICE_NAME" />“ иска разрешение за сдвояване. Моля, въведете на него следния ПИН код: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Инструменти за скрийнкаст</translation>
 <translation id="1024261588257374085">Избрана е частична екранна снимка</translation>
 <translation id="1024364763893396229">Запазете устройството си <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Батериите на писалката са изтощени</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">Надясно</translation>
 <translation id="1351937230027495976">Свиване на менюто</translation>
 <translation id="1364382257761975320">За да отключите своя Chromebook, използвайте отпечатъка си</translation>
-<translation id="1364618750746929654">Не може да бъде генериран препис</translation>
 <translation id="1372545819342940910">Запазване на работния кът за по-късно</translation>
 <translation id="1383597849754832576">Файловете за говор не могат да бъдат изтеглени. Опитайте отново по-късно.</translation>
 <translation id="1383876407941801731">Търсене</translation>
@@ -204,7 +202,7 @@
 <translation id="2127372758936585790">Зарядно устройство с малка мощност</translation>
 <translation id="2132302418721800944">Записване на целия екран</translation>
 <translation id="2135456203358955318">Лупа в прикрепен режим</translation>
-<translation id="2148716181193084225">Днес</translation>
+<translation id="2148716181193084225">днес</translation>
 <translation id="2159930836979502091">Към този раздел</translation>
 <translation id="2170530631236737939">Прекарайте три пръста надолу, за да затворите общия преглед</translation>
 <translation id="219905428774326614">Стартов панел, всички приложения</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">Population in Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Свързвани преди</translation>
-<translation id="3712317119236351467">Записът не се запази</translation>
 <translation id="371370241367527062">Преден микрофон</translation>
 <translation id="3713734891607377840">Отваряне, когато е завършено</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> и още <ph name="UNAVAILABLE_APPS_COUNT" /> приложения не са инсталирани на това устройство.</translation>
@@ -854,6 +851,7 @@
 <translation id="6166852626429024716">Търсете в устройството, приложенията, настройките и мрежата...</translation>
 <translation id="6179832488876878285">Тук можете да фиксирате важните за вас файлове. Отворете приложението „Файлове“, за да започнете.</translation>
 <translation id="619279033188484792">Преглед на скорошните снимки, мултимедийни файлове и известия от телефона ви на вашия <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Пълно зареждане сега</translation>
 <translation id="6220928844947387476">Вече можете да записвате себе си и екрана си едновременно</translation>
 <translation id="622484624075952240">Клавиш за надолу</translation>
 <translation id="6231419273573514727">Ефективността на периферните устройства може да е ограничена</translation>
@@ -1189,6 +1187,7 @@
 <translation id="826107067893790409">Натиснете Enter за отключване за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="8270450402312105425">{0,plural, =1{Връщане на устройството към предишна версия в рамките на един час}other{Връщане на устройството към предишна версия в рамките на # часа}}</translation>
+<translation id="8271580342040932214">С цел удължаване на живота на батерията нивото ѝ временно е на 80%, докато устройството е включено в захранването. Тя ще бъде заредена докрай до <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Прекарайте четири пръста наляво, за да превключите към предишния работен кът</translation>
 <translation id="828708037801473432">Изключено</translation>
 <translation id="8297006494302853456">Слаб</translation>
@@ -1272,6 +1271,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Настройки на методите на въвеждане</translation>
 <translation id="8818320199597151042">Профилът за мобилна мрежа се премахва. Изчакайте няколко минути.</translation>
+<translation id="8819728065740986820">Функцията за адаптивно зареждане е включена</translation>
 <translation id="8825863694328519386">Прекарайте пръст от ляво, за да се върнете назад</translation>
 <translation id="8834539327799336565">Свързани сега</translation>
 <translation id="8841375032071747811">Бутон за връщане назад</translation>
@@ -1318,6 +1318,7 @@
 <translation id="9080132581049224423">Прекарайте пръст нагоре, за да отворите началния екран</translation>
 <translation id="9080206825613744995">Микрофонът се използва.</translation>
 <translation id="9084606467167974638">Промяна на позицията на менюто</translation>
+<translation id="9085962983642906571">С цел удължаване на живота на батерията се поддържа ниво от 80%, докато устройството е включено в захранването.</translation>
 <translation id="9089416786594320554">Метод за въвеждане</translation>
 <translation id="9091626656156419976">Екранът „<ph name="DISPLAY_NAME" />“ бе премахнат</translation>
 <translation id="9098969848082897657">Заглушаване на телефона</translation>

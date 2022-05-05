@@ -133,6 +133,7 @@
 <translation id="1124772482545689468">User</translation>
 <translation id="1125550662859510761">Looks like <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Native)</translation>
 <translation id="1126809382673880764">Does not protect you against dangerous websites, downloads and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.</translation>
+<translation id="1128090040635299943">Linux is currently being configured. Configuration will take a few minutes.</translation>
 <translation id="1128591060186966949">Edit search engine</translation>
 <translation id="1129420403709586868">View your phone's photos and media</translation>
 <translation id="1129850422003387628">Manage apps</translation>
@@ -334,6 +335,7 @@
 <translation id="1327794256477341646">Features that need your location won't work</translation>
 <translation id="1329191040029425999">Ensure that your device is up to date and please try again</translation>
 <translation id="1330145147221172764">Enable on-screen keyboard</translation>
+<translation id="1331625853030156663">To open <ph name="APP_NAME" />, enable ‘Show lock screen when waking from sleep’</translation>
 <translation id="1331977651797684645">This was me.</translation>
 <translation id="1333489022424033687">Some features on <ph name="ORIGIN" /> might not work until you clear data that other sites have stored on your device</translation>
 <translation id="1333965224356556482">Don't allow sites to see your location</translation>
@@ -3348,6 +3350,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="420283545744377356">Turn off screensaver</translation>
 <translation id="4203065553461038553">File name or location is too long</translation>
 <translation id="4204851595694839599">How was your gameplay experience?</translation>
+<translation id="4205157409548006256">There was an error while configuring Linux.</translation>
 <translation id="4206144641569145248">Alien</translation>
 <translation id="4206323443866416204">Feedback Report</translation>
 <translation id="4207522141889799150">Edit site permissions for <ph name="SITE" /></translation>
@@ -5813,6 +5816,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6686665106869989887">Tab moved right</translation>
 <translation id="6686817083349815241">Save your password</translation>
 <translation id="6687079240787935001">Hide <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Requesting to read and change <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Ask <ph name="SUPERVISED_USER_NAME" /> to come to the computer. Your child will be reading a few phrases on this screen to create their voice model.
     <ph name="BR" />
     If <ph name="SUPERVISED_USER_NAME" /> needs help with reading, have your child repeat after you. Whisper away from the mic so that the Assistant learns your child’s voice instead of yours.</translation>
@@ -6325,6 +6329,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Exit page}other{Exit pages}}</translation>
 <translation id="7207457272187520234">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account.</translation>
 <translation id="7207631048330366454">Search apps</translation>
+<translation id="720808544705441386">Can't open app</translation>
 <translation id="7210499381659830293">Extension printers</translation>
 <translation id="7211783048245131419">No switch has been assigned yet</translation>
 <translation id="7212097698621322584">Enter your current PIN to change it. If you don’t know your PIN, you’ll need to reset the security key, then create a new PIN.</translation>
@@ -7482,6 +7487,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8324784016256120271">Sites can use cookies to see your browsing activity across different sites, for example, to personalise ads</translation>
 <translation id="8325413836429495820">Not allowed to see your clipboard</translation>
 <translation id="8326478304147373412">PKCS #7, certificate chain</translation>
+<translation id="8327386430364625757">Mathematical font</translation>
 <translation id="8327676037044516220">Permissions and content settings</translation>
 <translation id="8330617762701840933">The list of websites that redirect to alternative browser.</translation>
 <translation id="8330689128072902965">Nearby contacts can share with you. Click to change.</translation>

@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Dispozitiv USB-C (portul din față)</translation>
 <translation id="1013598600051641573">Rezoluția pentru <ph name="DISPLAY_NAME" /> a fost modificată la <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Dă clic pe Confirmă pentru a păstra modificările. Setările anterioare vor fi restabilite în <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Dispozitivul Bluetooth „<ph name="DEVICE_NAME" />” solicită permisiunea de a se conecta. Introduceți acest cod PIN pe dispozitivul respectiv: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Instrumente de înregistrare de pe ecran</translation>
 <translation id="1024261588257374085">Modul Captură de ecran parțială selectat</translation>
 <translation id="1024364763893396229">Salvează <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Bateria creionului este descărcată</translation>
@@ -85,7 +84,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1346748346194534595">Dreapta</translation>
 <translation id="1351937230027495976">Restrânge meniul</translation>
 <translation id="1364382257761975320">Pentru a debloca Chromebookul, folosește amprenta</translation>
-<translation id="1364618750746929654">Nu se poate genera transcrierea</translation>
 <translation id="1372545819342940910">Salvează desktopul pentru mai târziu</translation>
 <translation id="1383597849754832576">Nu se pot descărca fișierele de redare în scris a vorbirii. Încearcă din nou mai târziu.</translation>
 <translation id="1383876407941801731">Caută</translation>
@@ -460,7 +458,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3702846122927433391">Populația Nigeriei</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Conectat anterior</translation>
-<translation id="3712317119236351467">Nu se poate salva înregistrarea</translation>
 <translation id="371370241367527062">Microfonul din față</translation>
 <translation id="3713734891607377840">Deschide după finalizare</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> și încă <ph name="UNAVAILABLE_APPS_COUNT" /> nu sunt disponibile pe acest dispozitiv.</translation>
@@ -854,6 +851,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6166852626429024716">Caută pe dispozitiv, în aplicații, în setări și pe web...</translation>
 <translation id="6179832488876878285">Poți să fixezi fișierele importante aici. Deschide aplicația Fișiere pentru a începe.</translation>
 <translation id="619279033188484792">Afișează fotografiile, elementele media și notificările recente ale telefonului pe <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Încarcă complet acum</translation>
 <translation id="6220928844947387476">Acum poți să te înregistrezi pe tine și ecranul tău în același timp</translation>
 <translation id="622484624075952240">Jos</translation>
 <translation id="6231419273573514727">Performanța dispozitivelor periferice poate fi limitată</translation>
@@ -1189,6 +1187,7 @@ Instalare nouă</translation>
 <translation id="826107067893790409">Apasă pe Enter ca să deblochezi pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Șterge</translation>
 <translation id="8270450402312105425">{0,plural, =1{Treci la versiunea anterioară a dispozitivului în cel mult o oră}few{Treci la versiunea anterioară a dispozitivului în # ore}other{Treci la versiunea anterioară a dispozitivului în # de ore}}</translation>
+<translation id="8271580342040932214">Bateria este temporar la 80 % în timp ce este conectată, pentru a-i extinde autonomia. Bateria se va încărca până la <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Glisează spre stânga cu patru degete pentru a comuta la desktopul anterior</translation>
 <translation id="828708037801473432">Dezactivat</translation>
 <translation id="8297006494302853456">Slab</translation>
@@ -1272,6 +1271,7 @@ Instalare nouă</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Setări pentru metode de introducere a textului</translation>
 <translation id="8818320199597151042">Se elimină profilul. Așteaptă câteva minute.</translation>
+<translation id="8819728065740986820">S-a activat încărcarea adaptativă</translation>
 <translation id="8825863694328519386">Glisează dinspre stânga pentru a reveni</translation>
 <translation id="8834539327799336565">Conectat</translation>
 <translation id="8841375032071747811">Butonul Înapoi</translation>
@@ -1318,6 +1318,7 @@ Instalare nouă</translation>
 <translation id="9080132581049224423">Glisează în sus pentru a accesa pagina principală</translation>
 <translation id="9080206825613744995">Microfonul este în uz.</translation>
 <translation id="9084606467167974638">Comută poziția meniului</translation>
+<translation id="9085962983642906571">Bateria este menținută la 80 % în timp ce este conectată, pentru a-i extinde autonomia.</translation>
 <translation id="9089416786594320554">Introducere</translation>
 <translation id="9091626656156419976">S-a eliminat afișajul <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Dezactivează sunetul telefonului</translation>

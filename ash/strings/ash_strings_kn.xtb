@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C ಸಾಧನ (ಮುಂದಿನ ಪೋರ್ಟ್)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> ರೆಸಲ್ಯೂಷನ್ <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ಗೆ ಬದಲಾಗಿದೆ. ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಲು 'ಖಚಿತಪಡಿಸಿ' ಕ್ಲಿಕ್ ಮಾಡಿ. ಈ ಹಿಂದಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು <ph name="TIMEOUT_SECONDS" /> ನಲ್ಲಿ ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="1013923882670373915">ಬ್ಲೂಟೂತ್‌ ಸಾಧನವು "<ph name="DEVICE_NAME" />" ಜೋಡಣೆಗಾಗಿ ಅನುಮತಿಯನ್ನು ಬಯಸುತ್ತದೆ. ದಯವಿಟ್ಟು ಆ ಸಾಧನದಲ್ಲಿ ಈ PIN ಕೋಡ್ ನಮೂದಿಸಿ: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">ಸ್ಕ್ರೀನ್‌ಕ್ಯಾಸ್ಟ್ ಪರಿಕರಗಳು</translation>
 <translation id="1024261588257374085">ಭಾಗಶಃ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1024364763893396229">ನಿಮ್ಮ <ph name="NAME" /> ಅನ್ನು ಉಳಿಸಿ</translation>
 <translation id="1032891413405719768">ಸ್ಟೈಲಸ್ ಬ್ಯಾಟರಿ ಕಡಿಮೆಯಾಗಿದೆ</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">ಬಲಕ್ಕೆ</translation>
 <translation id="1351937230027495976">ಮೆನುವನ್ನು ಕುಗ್ಗಿಸಿ</translation>
 <translation id="1364382257761975320">ನಿಮ್ಮ Chromebook ಅನ್‌ಲಾಕ್ ಮಾಡಲು, ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಬಳಸಿ</translation>
-<translation id="1364618750746929654">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="1372545819342940910">ಡೆಸ್ಕ್ ಅನ್ನು ನಂತರದ ಬಳಕೆಗಾಗಿ ಉಳಿಸಿ</translation>
 <translation id="1383597849754832576">ಧ್ವನಿ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1383876407941801731">Search</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">ನೈಜೀರಿಯಾದಲ್ಲಿನ ಜನಸಂಖ್ಯೆ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">ಮುಂಚೆ ಕನೆಕ್ಟ್ ಮಾಡಿದವು</translation>
-<translation id="3712317119236351467">ರೆಕಾರ್ಡಿಂಗ್ ಉಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="371370241367527062">ಮುಂಭಾಗದ ಮೈಕ್ರೊಫೋನ್</translation>
 <translation id="3713734891607377840">ಪೂರ್ಣವಾದಾಗ ತೆರೆಯಿರಿ</translation>
 <translation id="3726171378575546917">ಈ ಸಾಧನದಲ್ಲಿ <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ಮತ್ತು ಇನ್ನೂ <ph name="UNAVAILABLE_APPS_COUNT" /> ಆ್ಯಪ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ.</translation>
@@ -855,6 +852,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6166852626429024716">ನಿಮ್ಮ ಸಾಧನ, ಆ್ಯಪ್‌ಗಳು, ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ನಲ್ಲಿ ಹುಡುಕಿ...</translation>
 <translation id="6179832488876878285">ನಿಮ್ಮ ಪ್ರಮುಖವಾದ ಫೈಲ್‌ಗಳನ್ನು ನೀವು ಇಲ್ಲಿ ಪಿನ್ ಮಾಡಬಹುದು. ಪ್ರಾರಂಭಿಸಲು Files ಆ್ಯಪ್ ಅನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="619279033188484792">ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು, ಮೀಡಿಯಾ ಮತ್ತು ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ವೀಕ್ಷಿಸಿ</translation>
+<translation id="619335566042889110">ಸಂಪೂರ್ಣವಾಗಿ ಚಾರ್ಚ್ ಮಾಡಿ</translation>
 <translation id="6220928844947387476">ಈಗ ನೀವು ಮತ್ತು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಒಂದೇ ಸಮಯದಲ್ಲಿ ರೆಕಾರ್ಡ್ ಮಾಡಬಹುದು</translation>
 <translation id="622484624075952240">ಕೆಳಗೆ</translation>
 <translation id="6231419273573514727">ಬಾಹ್ಯ ಸಾಧನದ ಕಾರ್ಯಕ್ಷಮತೆಯು ಸೀಮಿತವಾಗಿರಬಹುದು</translation>
@@ -1190,6 +1188,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು Enter ಅನ್ನು ಒತ್ತಿ.</translation>
 <translation id="8261506727792406068">ಅಳಿಸಿ</translation>
 <translation id="8270450402312105425">{0,plural, =1{ಒಂದು ಗಂಟೆಯಲ್ಲಿ ಸಾಧನವನ್ನು ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಬದಲಾಯಿಸಿ}one{# ಗಂಟೆಗಳಲ್ಲಿ ಸಾಧನವನ್ನು ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಬದಲಾಯಿಸಿ}other{# ಗಂಟೆಗಳಲ್ಲಿ ಸಾಧನವನ್ನು ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಬದಲಾಯಿಸಿ}}</translation>
+<translation id="8271580342040932214">ಬ್ಯಾಟರಿ ಬಾಳಿಕೆಯನ್ನು ವಿಸ್ತರಿಸಲು ಪ್ಲಗ್ ಇನ್ ಮಾಡಿದಾಗ ನಿಮ್ಮ ಬ್ಯಾಟರಿಯು ತಾತ್ಕಾಲಿಕವಾಗಿ 80% ರಷ್ಟಿದೆ. ನಿಮ್ಮ ಬ್ಯಾಟರಿ <ph name="FULLY_CHARGE_TIME" /> ರೊಳಗೆ ಸಂಪೂರ್ಣವಾಗಿ ಚಾರ್ಜ್ ಆಗುತ್ತದೆ.</translation>
 <translation id="8284362522226889623">ಹಿಂದಿನ ಡೆಸ್ಕ್‌ಗೆ ಬದಲಿಸಲು, ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಎಡಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="828708037801473432">ಆಫ್</translation>
 <translation id="8297006494302853456">ದುರ್ಬಲ</translation>
@@ -1273,6 +1272,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8814190375133053267">ವೈ-ಫೈ</translation>
 <translation id="881757059229893486">ಇನ್‌ಪುಟ್ ವಿಧಾನಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8818320199597151042">ಪ್ರೊಫೈಲ್ ತೆಗೆದುಹಾಕಲಾಗುತ್ತಿದೆ. ಕೆಲವು ನಿಮಿಷಗಳು ಕಾಯಿರಿ.</translation>
+<translation id="8819728065740986820">ಅಡಾಪ್ಟಿವ್ ಚಾರ್ಜಿಂಗ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="8825863694328519386">ಹಿಂದಕ್ಕೆ ಹೋಗಲು, ಎಡದಿಂದ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="8834539327799336565">ಪ್ರಸ್ತುತ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8841375032071747811">ಹಿಂದೆ ಬಟನ್</translation>
@@ -1319,6 +1319,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="9080132581049224423">ಮುಖಪುಟಕ್ಕೆ ಹೋಗಲು ಮೇಲೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="9080206825613744995">ಮೈಕ್ರೊಫೋನ್ ಬಳಕೆಯಲ್ಲಿದೆ.</translation>
 <translation id="9084606467167974638">ಮೆನುವಿನ ಸ್ಥಾನವನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
+<translation id="9085962983642906571">ಬ್ಯಾಟರಿ ಬಾಳಿಕೆಯನ್ನು ವಿಸ್ತರಿಸಲು ಪ್ಲಗ್ ಇನ್ ಮಾಡಿದಾಗ ನಿಮ್ಮ ಬ್ಯಾಟರಿಯನ್ನು 80% ರಷ್ಟು ಇರಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="9089416786594320554">ಇನ್‌ಪುಟ್ ವಿಧಾನಗಳು</translation>
 <translation id="9091626656156419976">ಡಿಸ್‌ಪ್ಲೇ <ph name="DISPLAY_NAME" /> ಅನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="9098969848082897657">ಫೋನ್ ನಿಶ್ಯಬ್ದಗೊಳಿಸಿ</translation>

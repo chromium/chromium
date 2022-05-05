@@ -133,6 +133,7 @@
 <translation id="1124772482545689468">Uporabnik</translation>
 <translation id="1125550662859510761">Videti je <ph name="WIDTH" /> x <ph name="HEIGHT" /> (izvorna)</translation>
 <translation id="1126809382673880764">Ne ščiti pred nevarnimi spletnimi mesti, prenosi in razširitvami. Še vedno boste deležni zaščite Varnega brskanja, kjer je na voljo, v drugih Googlovih storitvah, kot sta Gmail in Iskanje Google.</translation>
+<translation id="1128090040635299943">Linux se trenutno konfigurira. Konfiguriranje bo trajalo nekaj minut.</translation>
 <translation id="1128591060186966949">Urejanje iskalnika</translation>
 <translation id="1129420403709586868">Ogled fotografij in predstavnosti telefona</translation>
 <translation id="1129850422003387628">Upravljanje aplikacij</translation>
@@ -337,6 +338,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1327794256477341646">Funkcije, ki potrebujejo lokacijo, ne bodo delovale</translation>
 <translation id="1329191040029425999">Preverite, ali je naprava posodobljena, in poskusite znova.</translation>
 <translation id="1330145147221172764">Omogoči zaslonsko tipkovnico</translation>
+<translation id="1331625853030156663">Če želite odpreti aplikacijo <ph name="APP_NAME" />, omogočite možnost »Prikaži zaklenjen zaslon pri preklopu iz stanja pripravljenosti«.</translation>
 <translation id="1331977651797684645">To sem bil(-a) jaz.</translation>
 <translation id="1333489022424033687">Nekatere funkcije na <ph name="ORIGIN" /> morda ne bodo delovale, dokler ne izbrišete podatkov, ki so jih druga spletna mesta shranila na napravi</translation>
 <translation id="1333965224356556482">Spletnim mestom ni dovoljen ogled vaše lokacije.</translation>
@@ -3349,6 +3351,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="420283545744377356">Izklop ohranjevalnika zaslona</translation>
 <translation id="4203065553461038553">Ime ali lokacija datoteke je predolgo oziroma predolga</translation>
 <translation id="4204851595694839599">Kakšna je bila vaša izkušnja igranja igre?</translation>
+<translation id="4205157409548006256">Med konfiguriranjem Linuxa je prišlo do napake.</translation>
 <translation id="4206144641569145248">Zunajzemeljsko bitje</translation>
 <translation id="4206323443866416204">Poročilo s povratnimi informacijami</translation>
 <translation id="4207522141889799150">Urejanje dovoljenj za spletno mesto za <ph name="SITE" /></translation>
@@ -5822,6 +5825,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6686665106869989887">Zavihek je premaknjen desno.</translation>
 <translation id="6686817083349815241">Shranite geslo</translation>
 <translation id="6687079240787935001">Skrij <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Zahtevanje branja in spreminjanja mesta <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Prosite otroka <ph name="SUPERVISED_USER_NAME" />, naj pride k računalniku. Otrok bo prebral nekaj besednih zvez na zaslonu zaradi ustvarjanja glasovnega modela.
     <ph name="BR" />
     Če <ph name="SUPERVISED_USER_NAME" /> potrebuje pomoč pri branju, naj otrok ponovi za vami. Šepetajte proč od mikrofona, da se bo Pomočnik naučil otrokovega glasu, ne pa vašega.</translation>
@@ -6334,6 +6338,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Zapri stran}one{Zapri strani}two{Zapri strani}few{Zapri strani}other{Zapri strani}}</translation>
 <translation id="7207457272187520234">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Ta naprava trenutno Googlu samodejno pošilja diagnostične podatke ter podatke o uporabi naprave in aplikacij. Te podatke uporabljamo za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. To nastavitev je uveljavil lastnik naprave. Če ste vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v vašem računu Google.</translation>
 <translation id="7207631048330366454">Iščite aplikacije</translation>
+<translation id="720808544705441386">Aplikacije ni mogoče odpreti</translation>
 <translation id="7210499381659830293">Tiskalniki razširitev</translation>
 <translation id="7211783048245131419">Dodeljeno ni bilo še nobeno stikalo.</translation>
 <translation id="7212097698621322584">Vnesite trenutno kodo PIN, da jo spremenite. Če kode PIN ne poznate, morate ponastaviti varnostni ključ, nato ustvarite novo kodo PIN.</translation>
@@ -7491,6 +7496,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8324784016256120271">Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na različnih spletnih mestih, na primer za osebno prilagajanje oglasov</translation>
 <translation id="8325413836429495820">Ni dovoljen ogled odložišča</translation>
 <translation id="8326478304147373412">PKCS #7, veriga potrdil</translation>
+<translation id="8327386430364625757">Matematična pisava</translation>
 <translation id="8327676037044516220">Nastavitve dovoljenj in vsebine</translation>
 <translation id="8330617762701840933">Seznam spletnih mest, ki preusmerijo v nadomestni brskalnik.</translation>
 <translation id="8330689128072902965">Stiki v bližini lahko delijo z vami. Kliknite za zamenjavo.</translation>

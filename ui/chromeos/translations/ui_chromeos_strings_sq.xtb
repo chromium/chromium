@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Holandisht (Holandë)</translation>
 <translation id="174937106936716857">Numri total i skedarëve</translation>
 <translation id="1755345808328621801">Ky skedar është i projektuar për një kompjuter që përdor softuerë të Windows. Kjo nuk përputhet me pajisjen tënde e cila funksionon me ChromeOS. Kërko "Dyqanin e uebit të Chrome" për një aplikacion të përshtatshëm zëvendësimi.</translation>
+<translation id="1757915090001272240">Alfabet latin me gjerësi të plotë</translation>
 <translation id="1773212559869067373">Certifikata e vërtetimit u refuzua nga afër</translation>
 <translation id="1775381402323441512">Informacionet e videos</translation>
 <translation id="180035236176489073">Duhet të jesh në linjë për t'u qasur te këta skedarë.</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">Shërbimet</translation>
 <translation id="1829129547161959350">Pinguini</translation>
 <translation id="183183971458492120">Informacionet po ngarkohen...</translation>
+<translation id="1832073788765803750">Katakana me gjysmë gjerësi</translation>
 <translation id="1834290891154666894">Hyrje e pavlefshme për përputhjen e emrit alternativ të subjektit</translation>
 <translation id="1838709767668011582">Sajti i Google</translation>
 <translation id="1844692022597038441">Ky skedar nuk ofrohet jashtë linje.</translation>
@@ -516,6 +518,7 @@
 <translation id="5335458522276292100">Po rezervohen <ph name="FILE_COUNT" /> te <ph name="BEGIN_LINK" />Disku i Google<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Person me mace</translation>
 <translation id="5358764674931277">Shpejtësia e kuadrove</translation>
+<translation id="5363339716524495120">Gjuha e hyrjes është kinezisht</translation>
 <translation id="5368191757080475556">Ndaje dosjen me Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Mos i përdor cilësimet e përfaqësuesit për këta strehues dhe domene:</translation>
@@ -538,6 +541,7 @@
 <translation id="5534520101572674276">Po llogarit madhësinë</translation>
 <translation id="554153475311314364">Greqisht me transliterim</translation>
 <translation id="5583640892426849032">Hapësirë prapa</translation>
+<translation id="5583664733673201137">Gjerësia e shenjave të pikësimit është e plotë</translation>
 <translation id="5602622065581044566">Bullgarisht me tastierë fonetike</translation>
 <translation id="5605830556594064952">Amerikane Dvorak</translation>
 <translation id="5618330573454123917">Ky skedar është i projektuar për kompjuterë që përdorin softuerë të Macintosh. Kjo nuk përputhet me pajisjen tënde e cila punon me ChromeOS. <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /> në lidhje me hapjen e skedarëve në ChromeOS.</translation>
@@ -747,6 +751,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> të gjetura
     <ph name="LINE_BREAK1" />
     Gati për të rezervuar te <ph name="BEGIN_LINK" />Disku i Google<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malajalamisht fonetike</translation>
 <translation id="7505167922889582512">Shfaq skedarët e fshehur</translation>
 <translation id="7514365320538308">Shkarko</translation>
@@ -835,6 +840,7 @@
 <translation id="8128733386027980860">Anglisht (MB) me tastierë Dvorak</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" është ndarë me ty. Nuk mund ta fshish sepse nuk je zotëruesi i saj.</translation>
 <translation id="813913629614996137">Po fillon...</translation>
+<translation id="8147028810663464959">Gjerësia e karaktereve është e plotë</translation>
 <translation id="8151638057146502721">Konfiguro</translation>
 <translation id="8154842056504218462">U zgjodhën të gjitha regjistrimet.</translation>
 <translation id="8157684860301034423">Marrja e informacioneve të aplikacionit dështoi.</translation>
@@ -844,6 +850,7 @@
 <translation id="8208580316430297579">Punim artistik</translation>
 <translation id="8223479393428528563">Për të ruajtur këta skedarë për përdorim jashtë linje, kthehu në linjë, kliko me të djathtën te skedarët dhe zgjidh opsionin <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Ndërprite</translation>
+<translation id="8250690786522693009">Alfabet latin</translation>
 <translation id="8250920743982581267">Dokumentet</translation>
 <translation id="8261506727792406068">Fshi</translation>
 <translation id="8261561378965667560">Radhitje kinezisht</translation>

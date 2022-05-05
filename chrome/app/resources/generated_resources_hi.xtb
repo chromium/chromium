@@ -1968,6 +1968,7 @@
 <translation id="2832124733806557606">इस डिवाइस में साइन इन करने या इसे अनलॉक करने के लिए, आपका बच्चा पिन का इस्तेमाल कर सकता है.</translation>
 <translation id="2835177225987815960">स्कैन करने वाला आपका मौजूदा सेट अप रीसेट हो जाएगा. इसमें, असाइन किए गए स्विच और अपने-आप तेज़ी से स्कैन होने की सेटिंग शामिल हैं.</translation>
 <translation id="2835547721736623118">बोली पहचानने की सुविधा</translation>
+<translation id="2836232638504556905">जारी रखने के लिए, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> इस साइट के साथ आपका नाम, ईमेल पता, और प्रोफ़ाइल फ़ोटो शेयर करेगा. इस साइट की <ph name="BEGIN_LINK" />निजता नीति<ph name="END_LINK" /> देखें.</translation>
 <translation id="2836269494620652131">खराबी</translation>
 <translation id="2836635946302913370">आपके व्यवस्थापक द्वारा इस उपयोगकर्ता नाम से प्रवेश करना अक्षम कर दिया गया है.</translation>
 <translation id="283669119850230892">नेटवर्क <ph name="NETWORK_ID" /> का उपयोग करने के लिए, सबसे पहले नीचे इंटरनेट से अपना कनेक्‍शन पूरा करें.</translation>
@@ -2249,6 +2250,7 @@
 <translation id="3105796011181310544">इसे बदलकर फिर से Google करें?</translation>
 <translation id="310671807099593501">साइट ब्लूटूथ का इस्तेमाल कर रही है</translation>
 <translation id="3108931485517391283">फ़ाइल नहीं मिल सकी</translation>
+<translation id="3109206895301430738">सेव किए हुए टैब ग्रुप</translation>
 <translation id="3109724472072898302">संक्षिप्त</translation>
 <translation id="311214366526552035">फिर भी डाउनलोड करें</translation>
 <translation id="3112292765614504292">ऐप्लिकेशन का साइज़: <ph name="APP_SIZE" /></translation>

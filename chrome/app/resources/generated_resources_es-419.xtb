@@ -284,7 +284,7 @@
 <translation id="1272508081857842302">Abriendo los <ph name="BEGIN_LINK" />vínculos compatibles<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">Esta cuenta de usuario no pertenece al dominio en el que se inscribió el dispositivo. Si deseas inscribirte en un dominio diferente, primero tendrás que realizar el proceso de recuperación del dispositivo.</translation>
 <translation id="1274997165432133392">Cookies y otros datos de sitios</translation>
-<translation id="1275718070701477396">Seleccionado</translation>
+<translation id="1275718070701477396">Seleccionada</translation>
 <translation id="1276994519141842946">No se pudo desinstalar <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Crea un nuevo PIN diferente al actual.</translation>
 <translation id="1278859221870828664">Revisa las apps y los servicios que se ofrecen a través de Google Play</translation>
@@ -5621,6 +5621,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6520876759015997832">Resultado de la búsqueda <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Presiona Intro para navegar a la sección.</translation>
 <translation id="6521214596282732365">Los sitios suelen usar tus fuentes para que puedas crear contenido de alta fidelidad con herramientas en línea de diseño y gráficos</translation>
 <translation id="6523303810310758032">Si borras el historial de navegación por completo o un sitio en específico, también se borra la información de medición relacionada. Consulta <ph name="BEGIN_LINK" />tu historial de navegación<ph name="END_LINK" />.</translation>
+<translation id="6523574494641144162">El Administrador de contraseñas de Google no pudo guardar estas contraseñas en tu Cuenta de Google. Puedes guardarlas en este dispositivo.</translation>
 <translation id="6524735478670290456">Cómo usamos esta información:</translation>
 <translation id="652492607360843641">Estás conectado a una red <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Compartir</translation>
@@ -5925,6 +5926,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6818198425579322765">Idioma de la página para traducir</translation>
 <translation id="6818547713623251698">Ve las fotos, el contenido multimedia, las notificaciones y las apps del teléfono</translation>
 <translation id="6818802132960437751">Protección antivirus integrada</translation>
+<translation id="6818920801736417483">¿Quieres guardar las contraseñas?</translation>
 <translation id="6823174134746916417">Tocar para hacer clic del panel táctil</translation>
 <translation id="6824564591481349393">Copiar la dir&amp;ección de correo electrónico</translation>
 <translation id="6824584962142919697">Analizar elementos</translation>

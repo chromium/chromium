@@ -1064,6 +1064,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3835233591525155343">Përdorimi i pajisjes sate</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një "Dokument të Google"</translation>
 <translation id="385051799172605136">Prapa</translation>
+<translation id="3851515670389017037">"Udhëtimet" u mbyllën</translation>
 <translation id="3858027520442213535">Përditëso datën dhe kohën</translation>
 <translation id="3858860766373142691">Emri</translation>
 <translation id="3872834068356954457">Shkenca</translation>
@@ -1362,6 +1363,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="470284880436071933">Krimi dhe drejtësia</translation>
 <translation id="4704732901923281920">Shkencat biologjike</translation>
 <translation id="4708268264240856090">Lidhja jote u ndërpre</translation>
+<translation id="4709819737903924300">"Udhëtimet" u hapën në lartësi të plotë</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Po ekzekuton diagnostikimin e rrjetit të Windows<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426">Fjalëkalimi për <ph name="USERNAME" /></translation>
@@ -1825,6 +1827,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5989320800837274978">Nuk janë specifikuar serverë përfaqësues fiksë dhe as ndonjë URL e skriptit .pac.</translation>
 <translation id="5992691462791905444">Palosje inxhinierike Z</translation>
 <translation id="5995727681868049093">Menaxho informacionin, privatësinë dhe sigurinë tënde në "Llogarinë tënde të Google"</translation>
+<translation id="5997247540087773573">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve" i Google rekomandon ta ndryshosh atë tani dhe të kontrollosh fjalëkalimet e ruajtura.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultate për "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6006484371116297560">Klasike</translation>
 <translation id="6008122969617370890">Renditja N deri në 1</translation>
@@ -1863,6 +1866,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6061154937977953833">Mundja</translation>
 <translation id="6064217302520318294">Kyçja e ekranit</translation>
 <translation id="6064602040258638498">Kuponët dhe ofertat e zbritjeve</translation>
+<translation id="6078813287646374487">Shfaq më shumë informacione për këtë faqe</translation>
 <translation id="6080696365213338172">Je qasur në përmbajtje duke përdorur një certifikatë të dhënë nga administratori. Të dhënat që jep për <ph name="DOMAIN" /> mund të zbulohen nga administratori yt.</translation>
 <translation id="6087312102907839798">Kërkime të ngjashme</translation>
 <translation id="6094273045989040137">Shëno</translation>
@@ -2600,6 +2604,7 @@ Detaje shtesë:
 <translation id="8163866351304776260">Katër shpime majtas</translation>
 <translation id="8175796834047840627">Chrome po ofron që të ruash kartat e tua në "Llogarinë tënde të Google" sepse je identifikuar. Mund ta ndryshosh këtë sjellje te cilësimet.</translation>
 <translation id="8176440868214972690">Administratori i kësaj pajisjeje ka dërguar disa informacione te sajtet e mëposhtme të uebit, si p.sh. cilësime ose politika.</translation>
+<translation id="8179003511148538426">"Udhëtimet" u hapën në gjysmë lartësi</translation>
 <translation id="8184538546369750125">Përdor parazgjedhjen globale (Lejo)</translation>
 <translation id="8186706823560132848">Softuer</translation>
 <translation id="8190193880870196235">Menaxhuar nga një shtesë</translation>

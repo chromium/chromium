@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">C-tyypin USB-laite (etuportti)</translation>
 <translation id="1013598600051641573">Näytön <ph name="DISPLAY_NAME" /> resoluutioksi vaihdettiin <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Pidä muutokset valitsemalla Vahvista. Aiempi asetus palautetaan <ph name="TIMEOUT_SECONDS" /> päästä.</translation>
 <translation id="1013923882670373915">Bluetooth-laite <ph name="DEVICE_NAME" /> pyytää lupaa laiteparin muodostamiseen. Anna tämä PIN-koodi kyseisellä laitteella: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Ruutukaappausvideon työkalut</translation>
 <translation id="1024261588257374085">Osittainen kuvakaappaus valittu</translation>
 <translation id="1024364763893396229">Tallenna <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Näyttökynän akku on vähissä</translation>
@@ -84,7 +83,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1346748346194534595">Oikealla</translation>
 <translation id="1351937230027495976">Tiivistä valikko</translation>
 <translation id="1364382257761975320">Voit avata Chromebookin lukituksen käyttämällä sormenjälkeäsi</translation>
-<translation id="1364618750746929654">Transkriptiota ei voida luoda</translation>
 <translation id="1372545819342940910">Tallenna työpöytä myöhempää käyttöä varten</translation>
 <translation id="1383597849754832576">Puhetiedostoja ei voi ladata. Yritä myöhemmin uudelleen.</translation>
 <translation id="1383876407941801731">Haku</translation>
@@ -459,7 +457,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3702846122927433391">Nigerian väkiluku</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Aiemmin yhdistetyt</translation>
-<translation id="3712317119236351467">Tallennetta ei voi tallentaa</translation>
 <translation id="371370241367527062">Etumikrofoni</translation>
 <translation id="3713734891607377840">Avaa kun valmis</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ja <ph name="UNAVAILABLE_APPS_COUNT" /> muuta puuttuvat laitteelta.</translation>
@@ -853,6 +850,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6166852626429024716">Hae laitteelta, sovelluksista, asetuksista, verkosta…</translation>
 <translation id="6179832488876878285">Voit kiinnittää tärkeitä tiedostoja tähän. Aloita avaamalla Files-sovellus.</translation>
 <translation id="619279033188484792">Katsele puhelimesi viimeisimpiä kuvia, mediaa ja ilmoituksia <ph name="DEVICE_TYPE" />-laitteella</translation>
+<translation id="619335566042889110">Lataa täyteen nyt</translation>
 <translation id="6220928844947387476">Voit nyt kuvata itseäsi ja näyttöäsi samaan aikaan</translation>
 <translation id="622484624075952240">Alas</translation>
 <translation id="6231419273573514727">Lisälaitteen toiminta voi olla rajoitettua</translation>
@@ -1188,6 +1186,7 @@ Uusi asennus</translation>
 <translation id="826107067893790409">Avaa painamalla Enter: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Poista</translation>
 <translation id="8270450402312105425">{0,plural, =1{Päivitä laite aiempaan versioon tunnin kuluessa}other{Päivitä laite aiempaan versioon # tunnin kuluessa}}</translation>
+<translation id="8271580342040932214">Akunkestoa pidennetään pitämällä akun varaustaso väliaikaisesti 80 %:ssa, kun laite on latauspistokkeessa. Akku ladataan täyteen klo <ph name="FULLY_CHARGE_TIME" /> mennessä.</translation>
 <translation id="8284362522226889623">Siirry edelliseen työpöytään pyyhkäisemälle vasemmalle neljällä sormella</translation>
 <translation id="828708037801473432">Poissa päältä</translation>
 <translation id="8297006494302853456">Heikko</translation>
@@ -1271,6 +1270,7 @@ Uusi asennus</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Syöttötapojen asetukset</translation>
 <translation id="8818320199597151042">Poistetaan profiilia. Odota muutama minuutti.</translation>
+<translation id="8819728065740986820">Mukautuva lataus on päällä</translation>
 <translation id="8825863694328519386">Palaa takaisin pyyhkäisemällä vasemmasta reunasta</translation>
 <translation id="8834539327799336565">Yhdistetty tällä hetkellä</translation>
 <translation id="8841375032071747811">Takaisin-painike</translation>
@@ -1317,6 +1317,7 @@ Uusi asennus</translation>
 <translation id="9080132581049224423">Siirry aloitusnäytölle pyyhkäisemällä ylös</translation>
 <translation id="9080206825613744995">Mikrofoni on käytössä.</translation>
 <translation id="9084606467167974638">Vaihda valikon paikkaa</translation>
+<translation id="9085962983642906571">Akunkestoa pidennetään pitämällä akun varaustaso 80 %:ssa, kun laite on latauspistokkeessa.</translation>
 <translation id="9089416786594320554">Syöttötavat</translation>
 <translation id="9091626656156419976">Näyttö <ph name="DISPLAY_NAME" /> poistettu</translation>
 <translation id="9098969848082897657">Mykistä puhelin</translation>

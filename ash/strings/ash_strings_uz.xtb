@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C qurilma (old port)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> tasviri <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) tiniqligiga oʻtkazildi. Tasdiqlash uchun bosing. Eski sozlamalar <ph name="TIMEOUT_SECONDS" /> dan keyin tiklanadi.</translation>
 <translation id="1013923882670373915">“<ph name="DEVICE_NAME" />” qurilmasi Bluetooth orqali bog‘lanishga ruxsat so‘ramoqda. Bu qurilmada quyidagi PIN-kodni kiriting: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Skrinkast vositalari</translation>
 <translation id="1024261588257374085">Ekran qismi tanlandi</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> nomli qurilmangizni saqlang</translation>
 <translation id="1032891413405719768">Stilus batareyasi quvvati kam</translation>
@@ -85,7 +84,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1346748346194534595">O‘ngga</translation>
 <translation id="1351937230027495976">Menyuni yopish</translation>
 <translation id="1364382257761975320">Chromebook qulfini ochish uchun barmoq izidan foydalaning</translation>
-<translation id="1364618750746929654">Transkripsiya yaratilmadi</translation>
 <translation id="1372545819342940910">Ish stolini keyinroqqa qoldirish</translation>
 <translation id="1383597849754832576">Avtomatik subtitr fayllarni yuklanmadi. Keyinroq urining.</translation>
 <translation id="1383876407941801731">Qidiruv</translation>
@@ -460,7 +458,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3702846122927433391">Nigeriyada aholi soni</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Avval ulangan qurilmalar</translation>
-<translation id="3712317119236351467">Yozuv saqlanmadi</translation>
 <translation id="371370241367527062">Old mikrofon</translation>
 <translation id="3713734891607377840">Yuklab olinganda ochish</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> va yana <ph name="UNAVAILABLE_APPS_COUNT" /> ta ilova bu qurilmada emas.</translation>
@@ -854,6 +851,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6166852626429024716">Qurilma, ilovalar va internetdan qidirish...</translation>
 <translation id="6179832488876878285">Bu yerga muhim fayllarni mahkamlash mumkin. Boshlash uchun Files ilovasini oching.</translation>
 <translation id="619279033188484792">Telefoningizdagi oxirgi rasmlar, media va bildirishnomalarni <ph name="DEVICE_TYPE" /> qurilmasida koʻring</translation>
+<translation id="619335566042889110">Toʻliq quvvatlang</translation>
 <translation id="6220928844947387476">Endi siz bir vaqtda ekran va veb kamera tasvirlarini yozib olishingiz mumkin.</translation>
 <translation id="622484624075952240">Pastga</translation>
 <translation id="6231419273573514727">Tashqi qurilmalar samaradorligi cheklanishi mumkin</translation>
@@ -1189,6 +1187,7 @@ yangi oʻrnatilgan</translation>
 <translation id="826107067893790409">Qurilmani <ph name="USER_EMAIL_ADDRESS" /> uchun qulfdan chiqarish uchun Enter tugmasini bosing</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
 <translation id="8270450402312105425">{0,plural, =1{Qurilma tizimini bir soat ichida eski versiyaga qaytaring}other{Qurilma tizimini # soat ichida eski versiyaga qaytaring}}</translation>
+<translation id="8271580342040932214">Batareya quvvatini uzaytirish uchun ulanganda batareya vaqtincha 80% qoladi. Batareya <ph name="FULLY_CHARGE_TIME" /> gacha toʻliq quvvatlanadi.</translation>
 <translation id="8284362522226889623">Avvalgi ish stoliga qaytish uchun 4 ta barmoq bilan chapga suring</translation>
 <translation id="828708037801473432">Yoqilmagan</translation>
 <translation id="8297006494302853456">Zaif</translation>
@@ -1272,6 +1271,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Matn kiritish sozlamalari</translation>
 <translation id="8818320199597151042">Profil olib tashlanmoqda. Bir necha daqiqa kuting.</translation>
+<translation id="8819728065740986820">Moslashuvchan quvvatlash yoniq</translation>
 <translation id="8825863694328519386">Orqaga qaytish uchun chapdan suring</translation>
 <translation id="8834539327799336565">Hozirda ulangan</translation>
 <translation id="8841375032071747811">Orqaga tugmasi</translation>
@@ -1318,6 +1318,7 @@ yangi oʻrnatilgan</translation>
 <translation id="9080132581049224423">Boshiga qaytish uchun tepaga suring</translation>
 <translation id="9080206825613744995">Mikrofon ishlatilmoqda.</translation>
 <translation id="9084606467167974638">Menyu holatini almashtirish</translation>
+<translation id="9085962983642906571">Batareyaning ishlash muddatini uzaytirish uchun ulanganda batareya 80% darajada saqlanadi.</translation>
 <translation id="9089416786594320554">Matn kiritish</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> ekrani olib tashlandi</translation>
 <translation id="9098969848082897657">Soatni sukut qilish</translation>

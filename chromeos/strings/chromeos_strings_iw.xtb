@@ -233,6 +233,7 @@
 <translation id="3484914941826596830">במהלך עדכון הקושחה אין לנתק את המכשיר החיצוני הזה או לכבות את המחשב. אפשר למזער את החלון הזה. העדכון הזה עשוי לקחת כמה דקות ויכול להיות שהמכשיר החיצוני לא יפעל במהלכו.</translation>
 <translation id="3486220673238053218">הגדרה</translation>
 <translation id="3488065109653206955">מופעל חלקית</translation>
+<translation id="3517001332549868749">‏עדכון של ChromeOS</translation>
 <translation id="3527036260304016759">נכשלה – שגיאה לא ידועה</translation>
 <translation id="3532980081107202182">נותרו <ph name="MIN_REMAINING" /> דקות בערך</translation>
 <translation id="3557205324756024651">זהות מקומית (אופציונלי)</translation>
@@ -374,6 +375,7 @@
 <translation id="4890353053343094602">יש לבחור מיד סיסמה חדשה</translation>
 <translation id="4891842000192098784">בדיקת עומסים</translation>
 <translation id="4897058166682006107">רמת הטעינה של האוזנייה השמאלית במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
+<translation id="4915052247106771211">‏המכשיר יאופס להגדרות המקוריות (Powerwash).</translation>
 <translation id="4917385247580444890">חזק</translation>
 <translation id="4917889632206600977">הפסיקה – הנייר נגמר</translation>
 <translation id="4921665434385737356">התבצעה טעינה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
@@ -428,6 +430,7 @@
 <translation id="5358174242040570474">משהו השתבש. כדאי לנסות לבחור טפט מחדש או לפתוח מחדש את האפליקציה.</translation>
 <translation id="5372659122375744710">‏רשת ה-Wi-Fi לא מאובטחת</translation>
 <translation id="5376354385557966694">מצב בהיר אוטומטי</translation>
+<translation id="537872351913703572">המכשיר יועבר למשתמש או לארגון אחר</translation>
 <translation id="5400907029458559844">המכשיר בתהליך התחברות.</translation>
 <translation id="5401938042319910061">הרצה של כל התרחישים</translation>
 <translation id="5423849171846380976">מופעל</translation>
@@ -558,6 +561,7 @@
 <translation id="6692996468359469499">קבלת מידע בקשר לבחירה שלך</translation>
 <translation id="6704062477274546131">‏פענוח DNS</translation>
 <translation id="6723839937902243910">חשמל</translation>
+<translation id="6723847290197874913">התאורה האחורית של המקלדת</translation>
 <translation id="672609503628871915">מה חדש</translation>
 <translation id="6747215703636344499">הפסיקה – מגש הפלט מלא</translation>
 <translation id="6749473226660745022">תמונות</translation>
@@ -731,6 +735,7 @@
 <translation id="8671972493856476349">עדכון לגרסה <ph name="VERSION_NUMBER" /> והפעלה מחדש</translation>
 <translation id="8675354002693747642">מפתח משותף מראש</translation>
 <translation id="8677859815076891398">‏אין אלבומים. ניתן ליצור אלבום ב<ph name="LINK_BEGIN" />תמונות Google<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">המכשיר יוחזר למשתמש המקורי</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> כדי לנהל את התכונה הזו, יש להקיש על מקש החץ הימני או השמאלי.</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="871560550817059752">נכשלה – הדיו נגמר</translation>

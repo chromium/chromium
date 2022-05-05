@@ -3687,6 +3687,16 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="5179853299156742425">De URL waarop de bureautemplate kan worden gedownload.</translation>
 <translation id="5182055907976889880">Google Drive in <ph name="PRODUCT_OS_NAME" /> configureren.</translation>
 <translation id="5182483318861266793">De plank aan de rechterkant van het scherm plaatsen</translation>
+<translation id="5184298474980725716">Dit beleid bepaalt de zichtbaarheid van Trajecten op de Chrome-geschiedenispagina.
+
+      Als je het beleid toepast, zijn Trajecten zichtbaar op chrome://history/journeys.
+
+      Als je het beleid niet toepast, zijn Trajecten niet zichtbaar op chrome://history/journeys.
+
+      Als je het beleid niet instelt, zijn Trajecten standaard zichtbaar op chrome://history/journeys en kunnen gebruikers de zichtbaarheid van Trajecten wijzigen.
+
+      Als het beleid <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> niet wordt toegepast, maar <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> wel wordt toegepast of niet is ingesteld, zijn Trajecten nog steeds beschikbaar op chrome://history/journeys, maar misschien niet aanwezig in de omnibox en minder relevant voor de gebruiker.
+      </translation>
 <translation id="51859390023061147">De functie voor volledig herstel uitzetten.</translation>
 <translation id="5189360528842591274">Alleen verbinding met de bluetooth-services in de lijst toestaan</translation>
 <translation id="5190426551516379357">Als je het beleid instelt, werkt YouTube in een minimale beperkte modus en kunnen gebruikers geen minder beperkte modus kiezen. Als je het instelt op:

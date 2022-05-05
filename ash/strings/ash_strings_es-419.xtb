@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Dispositivo USB-C (puerto delantero)</translation>
 <translation id="1013598600051641573">Se cambió la resolución de <ph name="DISPLAY_NAME" /> a <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Para mantener este cambio, haz clic en Confirmar. En <ph name="TIMEOUT_SECONDS" />, se restablecerá la configuración anterior.</translation>
 <translation id="1013923882670373915">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para sincronizarse. Ingresa el siguiente código de PIN en el dispositivo: <ph name="PINCODE" />.</translation>
-<translation id="1014111206066007277">Herramientas de presentación en pantalla</translation>
 <translation id="1024261588257374085">Se seleccionó la captura de pantalla parcial</translation>
 <translation id="1024364763893396229">Guarda tu <ph name="NAME" /></translation>
 <translation id="1032891413405719768">El nivel de la batería de la pluma stylus está bajo</translation>
@@ -85,7 +84,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1346748346194534595">Derecha</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
 <translation id="1364382257761975320">Para desbloquear la Chromebook, utiliza la huella dactilar</translation>
-<translation id="1364618750746929654">No se puede generar una transcripción</translation>
 <translation id="1372545819342940910">Guardar el escritorio para más tarde</translation>
 <translation id="1383597849754832576">No se pueden descargar los videos de Subtitulado instantáneo. Vuelve a intentarlo más tarde.</translation>
 <translation id="1383876407941801731">Buscar</translation>
@@ -460,7 +458,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3702846122927433391">Población de Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
-<translation id="3712317119236351467">No se guardó la grabación</translation>
 <translation id="371370241367527062">Micrófono delantero</translation>
 <translation id="3713734891607377840">Abrir cuando se complete la descarga</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> y<ph name="UNAVAILABLE_APPS_COUNT" /> más no están disponibles en este dispositivo.</translation>

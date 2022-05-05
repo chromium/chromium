@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">հոլանդերեն (Նիդեռլանդներ)</translation>
 <translation id="174937106936716857">Ֆայլերի ընդհանուր թիվը</translation>
 <translation id="1755345808328621801">Այս ֆայլը նախատեսված է Windows-ի ծրագրակազմով համակարգիչների համար։ Այն համատեղելի չէ ձեր ChromeOS-ով աշխատող սարքի հետ։ Որոնեք համապատասխան փոխարինող հավելված Chrome Web Store-ում։</translation>
+<translation id="1757915090001272240">Լայն լատինատառ</translation>
 <translation id="1773212559869067373">Իսկորոշման վկայագիրը մերժվեց տեղում</translation>
 <translation id="1775381402323441512">Տեղեկություններ տեսանյութի մասին</translation>
 <translation id="180035236176489073">Այս ֆայլերն օգտագործելու համար դուք պետք է առցանց լինեք:</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">Services</translation>
 <translation id="1829129547161959350">Պինգվին</translation>
 <translation id="183183971458492120">Տեղեկությունները բեռնվում են...</translation>
+<translation id="1832073788765803750">կիսալայն կատականա</translation>
 <translation id="1834290891154666894">Սուբյեկտի այլընտրանքային անվան հետ համընկնման սխալ գրառում</translation>
 <translation id="1838709767668011582">Google site</translation>
 <translation id="1844692022597038441">Այս ֆայլը մատչելի չէ անցանց ռեժիմում:</translation>
@@ -516,6 +518,7 @@
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> ֆայլ պահուստավորվում է <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />-ում</translation>
 <translation id="535792325654997756">Կատուներով մարդ</translation>
 <translation id="5358764674931277">Կադրերի արագությունը</translation>
+<translation id="5363339716524495120">Ներածման լեզուն չինարենն է</translation>
 <translation id="5368191757080475556">Կիսվեք պանակով Լինուքսի հետ</translation>
 <translation id="5402367795255837559">Բրայլի գրատիպ</translation>
 <translation id="5411472733320185105">Չօգտագործել պրոքսի-սերվերի կարգավորումները այս խնամորդների և տիրույթների համար՝</translation>
@@ -538,6 +541,7 @@
 <translation id="5534520101572674276">Չափի հաշվարկում</translation>
 <translation id="554153475311314364">հունարեն (տառադարձություն)</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">Կետադրական նշանների լայնությունը՝ լիալայնք</translation>
 <translation id="5602622065581044566">բուլղարերեն (հնչյունային ստեղնաշար)</translation>
 <translation id="5605830556594064952">ԱՄՆ Դվորակ</translation>
 <translation id="5618330573454123917">Այս ֆայլը նախատեսված է Macintosh-ի ծրագրակազմով համակարգիչների համար։ Այն համատեղելի չէ ChromeOS-ով աշխատող ձեր սարքի հետ։ <ph name="BEGIN_LINK_HELP" />Իմացեք ավելին<ph name="END_LINK_HELP" />, թե ինչպես ֆայլերը բացել ChromeOS-ում։</translation>
@@ -747,6 +751,7 @@
 <translation id="7489215562877293245">Գտնվել է <ph name="FILE_COUNT" /> ֆայլ
     <ph name="LINE_BREAK1" />
     Ֆայլերը պատրաստ են պահուստավորման <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />-ում</translation>
+<translation id="749452993132003881">հիրագանա</translation>
 <translation id="7495372004724182530">մալայալամ (հնչյունային)</translation>
 <translation id="7505167922889582512">Ցուցադրել թաքցված ֆայլերը</translation>
 <translation id="7514365320538308">Ներբեռնել</translation>
@@ -835,6 +840,7 @@
 <translation id="8128733386027980860">անգլերեն (ՄԹ)՝ Dvorak ստեղնաշարով</translation>
 <translation id="8137331602592933310">«<ph name="FILENAME" />» ֆայլը համօգտագործվել է ձեզ հետ: Դուք չեք կարող ջնջել այն, քանի որ այն ձերը չէ:</translation>
 <translation id="813913629614996137">Նախապատրաստվում է...</translation>
+<translation id="8147028810663464959">Նիշերի լայնությունը՝ լիալայքն</translation>
 <translation id="8151638057146502721">Կազմաձևել</translation>
 <translation id="8154842056504218462">Բոլոր գրառումներն ընտրվեցին:</translation>
 <translation id="8157684860301034423">Չհաջողվեց բեռնել հավելվածի մասին տեղեկությունները։</translation>
@@ -844,6 +850,7 @@
 <translation id="8208580316430297579">Արվեստի գործ</translation>
 <translation id="8223479393428528563">Այս ֆայլերը անցանց ռեժիմում օգտագործելու համար, նորից կապակցվեք համացանցին, ֆայլերի վրա աջ սեղմումով ընտրեք <ph name="OFFLINE_CHECKBOX_NAME" /> ընտրանքը:</translation>
 <translation id="8249296373107784235">Ընդհատել</translation>
+<translation id="8250690786522693009">լատիներեն</translation>
 <translation id="8250920743982581267">Փաստաթղթեր</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
 <translation id="8261561378965667560">չինարեն (կառուցվածքային մուտքագրում)</translation>

@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C-Gerät (Port vorne)</translation>
 <translation id="1013598600051641573">"<ph name="DISPLAY_NAME" />" wurde auf <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) umgestellt. Bitte bestätigen, um die Änderungen beizubehalten. Die vorherigen Einstellungen werden in <ph name="TIMEOUT_SECONDS" /> wiederhergestellt.</translation>
 <translation id="1013923882670373915">Das Bluetooth-Gerät „<ph name="DEVICE_NAME" />“ bittet um Erlaubnis für Kopplung. Gib folgenden PIN-Code auf dem Gerät ein: <ph name="PINCODE" />.</translation>
-<translation id="1014111206066007277">Screencast-Tools</translation>
 <translation id="1024261588257374085">Screenshot eines Bildschirmausschnitts ausgewählt</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> speichern</translation>
 <translation id="1032891413405719768">Die Batterie des Eingabestifts ist schwach</translation>
@@ -82,7 +81,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1351937230027495976">Menü minimieren</translation>
 <translation id="1364382257761975320">Zum Entsperren des Chromebooks Fingerabdruck verwenden</translation>
-<translation id="1364618750746929654">Transkript konnte nicht erstellt werden</translation>
 <translation id="1372545819342940910">Desktop für später speichern</translation>
 <translation id="1383597849754832576">Sprachdateien können nicht heruntergeladen werden. Versuch es später noch einmal.</translation>
 <translation id="1383876407941801731">Durchsuchen</translation>
@@ -457,7 +455,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3702846122927433391">Einwohnerzahl von Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Zuletzt verbundene Geräte</translation>
-<translation id="3712317119236351467">Aufnahme kann nicht gespeichert werden</translation>
 <translation id="371370241367527062">Mikrofon auf der Vorderseite</translation>
 <translation id="3713734891607377840">Nach dem Herunterladen öffnen</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> und <ph name="UNAVAILABLE_APPS_COUNT" /> weitere sind nicht auf diesem Gerät installiert.</translation>

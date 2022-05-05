@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C მოწყობილობა (წინა პორტი)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" />-ის გარჩევადობა შეიცვალა <ph name="RESOLUTION" />-ით (<ph name="REFRESH_RATE" /> ჰც). დააწკაპუნეთ ცვლილებების შენარჩუნების დასადასტურებლად. წინა პარამეტრების აღდგენამდე დარჩენილია <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth მოწყობილობა „<ph name="DEVICE_NAME" />“ ითხოვს ნებართვას დაწყვილებისთვის. გთხოვთ შეიყვანეთ ეს PIN კოდი, იმ მოწყობილობაზე: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">სკრინკასტის ხელსაწყოები</translation>
 <translation id="1024261588257374085">არჩეულია ეკრანის ნაწილობრივი ანაბეჭდი</translation>
 <translation id="1024364763893396229">შეინახეთ თქვენი <ph name="NAME" /></translation>
 <translation id="1032891413405719768">სტილუსის ბატარეა იცლება</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">მარჯვნივ</translation>
 <translation id="1351937230027495976">მენიუს ჩაკეცვა</translation>
 <translation id="1364382257761975320">თქვენი Chromebook-ის განსაბლოკად გამოიყენეთ თქვენი თითის ანაბეჭდი</translation>
-<translation id="1364618750746929654">ტრანსკრიპტის შექმნა ვერ მოხერხდა</translation>
 <translation id="1372545819342940910">სამუშაო მაგიდის შენახვა სამომავლოდ</translation>
 <translation id="1383597849754832576">მეტყველების ფაილების ჩამოტვირთვა ვერ მოხერხდა. ცადეთ მოგვიანებით.</translation>
 <translation id="1383876407941801731">ძიება</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">ნიგერიის მოსახლეობა</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">ადრე დაკავშირებული</translation>
-<translation id="3712317119236351467">ჩანაწერის შენახვა ვერ მოხერხდა</translation>
 <translation id="371370241367527062">წინა მიკროფონი</translation>
 <translation id="3713734891607377840">დასრულებისას გახსნა</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> და <ph name="UNAVAILABLE_APPS_COUNT" /> სხვა აპი არ არის ამ მოწყობილობაზე.</translation>

@@ -113,6 +113,7 @@
 <translation id="2085089206770112532">డిస్‌ప్లే బ్రైట్‌నెస్‌ను తగ్గించండి</translation>
 <translation id="2104796393919810494">రిపేర్ చేయడం పూర్తయింది</translation>
 <translation id="2105810540595158374">పరికర రకం గేమ్ కంట్రోలర్.</translation>
+<translation id="2115956742084455574">కోడ్ తప్పు</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, వెర్షన్ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GBలో <ph name="AVAILABLE_MEMORY" /> GB అందుబాటులో ఉంది</translation>
 <translation id="2138109643290557664">స్మృతులలో తేలిపోండి</translation>
@@ -142,6 +143,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">సమీప పరికరాలను కనుగొనడానికి బ్లూటూత్‌ను ఆన్ చేయండి</translation>
 <translation id="2346474577291266260">అద్భుతంగా ఉంది (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2360257214555822463"><ph name="LINK_BEGIN" />అర్హత లేని భాగాలు<ph name="LINK_END" /> గుర్తించబడ్డాయి. ఇది ఇన్‌స్టాల్ చేయబడిందని నిర్ధారించాలని మీరు ఎంచుకుంటే, దయచేసి ఇప్పుడే దాన్ని చెక్ చేయండి.</translation>
 <translation id="2363636958541445404">ఫీచర్‌ను ఆన్ చేసి, స్క్రీన్ సేవర్ ఆప్షన్‌లను ఎంచుకోండి</translation>
 <translation id="2364498172489649528">ఆమోదించినవి</translation>
 <translation id="2380886658946992094">చట్టపరం</translation>
@@ -191,6 +193,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ముగింపుపాయింట్</translation>
 <translation id="3069085583900247081">పరీక్ష విఫలమైంది</translation>
+<translation id="3076243757415932261">భాగాలను వెరిఫై చేస్తోంది...</translation>
 <translation id="3083667275341675831">కనెక్టివిటీ సమస్య విశ్లేషణ</translation>
 <translation id="3084958266922136097">స్క్రీన్ సేవర్‌ను డిజేబుల్ చేయి</translation>
 <translation id="3091839911843451378">విఫలమైంది - ఆగిపోయింది</translation>
@@ -219,6 +222,7 @@
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
 <translation id="3369013195428705271">మీరు ఖచ్చితంగా ప్రింట్ చరిత్ర మొత్తాన్ని క్లియర్ చేయాలనుకుంటున్నారా? మీ కొనసాగుతున్న ప్రింట్ టాస్క్‌లు క్లియర్ చేయబడవు.</translation>
 <translation id="3404249063913988450">స్క్రీన్ సేవర్‌ను ఎనేబుల్ చేయి</translation>
+<translation id="3404770484521709967">భాగాలు సరిగ్గా ఇన్‌స్టాల్ చేయబడ్డాయి.</translation>
 <translation id="3413935475507503304">అప్‌డేట్ చేయడాన్ని కొనసాగించడానికి, 'తర్వాత'ను క్లిక్ చేయండి.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">భద్రత</translation>
@@ -371,6 +375,7 @@
 <translation id="4890353053343094602">వెంటనే ఒక కొత్త దానిని ఎంచుకోండి</translation>
 <translation id="4891842000192098784">ఒత్తిడి</translation>
 <translation id="4897058166682006107">పరికరంలో ఎడమ వైపు బడ్ బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />% ఉంది.</translation>
+<translation id="4915052247106771211">ఇది పరికరాన్ని ఫ్యాక్టరీ సెట్టింగ్‌లకు (పవర్‌వాష్) రీసెట్ చేస్తుంది.</translation>
 <translation id="4917385247580444890">బలమైన</translation>
 <translation id="4917889632206600977">ఆగిపోయింది - పేపర్లు లేవు</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> ఛార్జ్ అయ్యింది.</translation>
@@ -424,6 +429,7 @@
 <translation id="5358174242040570474">ఏదో తప్పు జరిగింది. వాల్‌పేపర్‌ను ఎంచుకోవడానికి మళ్లీ ట్రై చేయండి లేదా యాప్‌ను మళ్లీ తెరవండి.</translation>
 <translation id="5372659122375744710">WiFi నెట్‌వర్క్ సురక్షితంగా లేదు</translation>
 <translation id="5376354385557966694">ఆటోమేటిక్ లైట్ మోడ్</translation>
+<translation id="537872351913703572">పరికరం వేరే యూజర్‌కు లేదా సంస్థకు బదిలీ చేయబడుతుంది</translation>
 <translation id="5400907029458559844">పరికరం కనెక్ట్ అవుతోంది.</translation>
 <translation id="5401938042319910061">అన్ని కమాండ్ రొటీన్‌లను రన్ చేయండి</translation>
 <translation id="5423849171846380976">సక్రియం చెయ్యబడింది</translation>
@@ -565,6 +571,7 @@
 <translation id="6768237774506518020">అధిక DNS రిజల్యూషన్ వైఫల్య రేటు</translation>
 <translation id="680983167891198932">కీ</translation>
 <translation id="6816797338148849397">మీ ఎంచుకున్న దానికి సంబంధించిన సమాచారం అందుబాటులో ఉంది. యాక్సెస్ చేయడానికి పై వైపు బాణం కీని ఉపయోగించండి.</translation>
+<translation id="6840315122969944400"><ph name="DEVICE_TYPE" />‌ను రిపేర్ చేయండి</translation>
 <translation id="6853312040151791195">డిశ్చార్జింగ్ రేట్</translation>
 <translation id="6889786074662672253">రీస్టార్ట్ అవుతున్నప్పుడు, ఈ బాహ్య పరికరాన్ని అన్‌ప్లగ్ చేయవద్దు లేదా మీ కంప్యూటర్‌ను షట్ డౌన్ చేయవద్దు. మీరు ఈ విండోను చిన్నదిగా చేయవచ్చు. ఇందుకు కొన్ని నిమిషాల సమయం పట్టవచ్చు, ఇంకా ఈ సమయంలో మీ బాహ్య పరికరం పని చేయకపోవచ్చు.</translation>
 <translation id="6905724422583748843">తిరిగి <ph name="PAGE_NAME" />‌కు</translation>
@@ -673,6 +680,7 @@
 <translation id="8045012663542226664">మైక్రోఫోన్ మ్యూట్</translation>
 <translation id="8075838845814659848">మిగిలిన ఛార్జ్</translation>
 <translation id="8082366717211101304">Android యాప్‌ల నుండి DNSను పరిష్కరించడం సాధ్యపడదు</translation>
+<translation id="8083281199617904460">ఈ రిపేర్ ప్రాసెస్ శిక్షణ పొందిన రిపేర్ టెక్నీషియన్ కోసం ఉద్దేశించబడింది. సరిగ్గా పని చేయని భాగాలను రీప్లేస్ చేసిన తర్వాత మాత్రమే ప్రారంభించండి.</translation>
 <translation id="808894953321890993">పాస్‌వర్డ్‌ను మార్చు</translation>
 <translation id="8104083085214006426">మీరు ఓపెన్, అసురక్షిత నెట్‌వర్క్‌ను ఉపయోగిస్తున్నారు</translation>
 <translation id="811820734797650957">(Android) గేట్‌వేను పింగ్ చేయవచ్చు</translation>
@@ -726,6 +734,7 @@
 <translation id="8671972493856476349"><ph name="VERSION_NUMBER" />‌కు అప్‌డేట్ చేసి &amp; రీస్టార్ట్ చేయండి</translation>
 <translation id="8675354002693747642">ముందే షేర్ చేసిన కీ</translation>
 <translation id="8677859815076891398">ఆల్బమ్‌లు ఏవీ లేవు. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />లో ఆల్బమ్‌ను క్రియేట్ చేయండి.</translation>
+<translation id="8680431479333800907">పరికరం అదే యూజర్‌కు బదిలీ చేయబడుతుంది</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ఈ ఫీచర్‌ను మేనేజ్ చేయడానికి ఎడమ వైపు బాణం లేదా కుడి వైపు బాణం కీలను ఉపయోగించండి.</translation>
 <translation id="8712637175834984815">అర్థమైంది</translation>
 <translation id="871560550817059752">విఫలమైంది - ఇంక్ అయిపోయింది</translation>

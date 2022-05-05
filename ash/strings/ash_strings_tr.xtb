@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C cihaz (ön bağlantı noktası)</translation>
 <translation id="1013598600051641573">Çözünürlük <ph name="DISPLAY_NAME" /> için <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) olarak değiştirildi. Değişiklikleri korumak için Onayla'yı tıklayın. Önceki ayarlar <ph name="TIMEOUT_SECONDS" /> saniye içinde geri yüklenecek.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" adlı Bluetooth cihaz eşleme izni istiyor. Lütfen söz konusu cihazda şu PIN kodunu girin: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Ekran video kaydı araçları</translation>
 <translation id="1024261588257374085">Kısmi ekran görüntüsü seçildi</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> cihazınızı kaydedin</translation>
 <translation id="1032891413405719768">Ekran kaleminin pili düşük</translation>
@@ -85,7 +84,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1346748346194534595">Sağa</translation>
 <translation id="1351937230027495976">Menüyü daralt</translation>
 <translation id="1364382257761975320">Chromebook'unuzun kilidini açmak için parmak izinizi kullanın</translation>
-<translation id="1364618750746929654">Metne dönüştürme işlemi gerçekleştirilemiyor</translation>
 <translation id="1372545819342940910">Masayı daha sonra kullanmak için kaydet</translation>
 <translation id="1383597849754832576">Canlı Altyazı dosyaları indirilemiyor. Daha sonra tekrar deneyin.</translation>
 <translation id="1383876407941801731">Ara</translation>
@@ -460,7 +458,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3702846122927433391">Nijerya'nın nüfusu</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Daha önce bağlanılmış cihazlar</translation>
-<translation id="3712317119236351467">Kayıt saklanamıyor</translation>
 <translation id="371370241367527062">Ön mikrofon</translation>
 <translation id="3713734891607377840">Tamamlandığında aç</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ve <ph name="UNAVAILABLE_APPS_COUNT" /> uygulama daha bu cihazda yok.</translation>
@@ -854,6 +851,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6166852626429024716">Cihazınızda, uygulamalarda, ayarlarda, web'de arama yapın</translation>
 <translation id="6179832488876878285">Önemli dosyalarınızı buraya sabitleyebilirsiniz. Başlamak için Dosyalar uygulamasını açın.</translation>
 <translation id="619279033188484792">Telefonunuzdaki son fotoğrafları, medya içeriklerini ve bildirimleri <ph name="DEVICE_TYPE" /> cihazınızda görün</translation>
+<translation id="619335566042889110">Şimdi tamamen şarj et</translation>
 <translation id="6220928844947387476">Artık aynı anda hem kendinizi hem ekranınızı kaydedebilirsiniz</translation>
 <translation id="622484624075952240">Aşağı</translation>
 <translation id="6231419273573514727">Çevre birimlerinin performansı sınırlı olabilir</translation>
@@ -1189,6 +1187,7 @@ Yeni yüklenmiş</translation>
 <translation id="826107067893790409">Enter tuşuna basarak <ph name="USER_EMAIL_ADDRESS" /> için kilidi açın</translation>
 <translation id="8261506727792406068">Sil</translation>
 <translation id="8270450402312105425">{0,plural, =1{Cihazı bir saat içinde önceki sürüme geçirin}other{Cihazı # saat içinde önceki sürüme geçirin}}</translation>
+<translation id="8271580342040932214">Pil ömrünü uzatmak için piliniz fişe takılıyken geçici olarak %80 dolu kalır. Piliniz saat <ph name="FULLY_CHARGE_TIME" /> olana kadar tamamen şarj olur.</translation>
 <translation id="8284362522226889623">Önceki masaya geçmek için dört parmakla sola kaydırın</translation>
 <translation id="828708037801473432">Kapalı</translation>
 <translation id="8297006494302853456">Zayıf</translation>
@@ -1272,6 +1271,7 @@ Yeni yüklenmiş</translation>
 <translation id="8814190375133053267">Kablosuz Ağ</translation>
 <translation id="881757059229893486">Giriş Yöntemi Ayarları</translation>
 <translation id="8818320199597151042">Profil kaldırılıyor. Birkaç dakika bekleyin.</translation>
+<translation id="8819728065740986820">Uyarlanabilir Şarj açık</translation>
 <translation id="8825863694328519386">Geri gitmek için soldan kaydırın</translation>
 <translation id="8834539327799336565">Şu anda bağlı</translation>
 <translation id="8841375032071747811">Geri düğmesi</translation>
@@ -1318,6 +1318,7 @@ Yeni yüklenmiş</translation>
 <translation id="9080132581049224423">Ana ekrana gitmek için yukarı kaydırın</translation>
 <translation id="9080206825613744995">Mikrofon kullanımda.</translation>
 <translation id="9084606467167974638">Menü konumunu değiştir</translation>
+<translation id="9085962983642906571">Pil ömrünü uzatmak için piliniz fişe takılıyken geçici olarak %80'de kalır.</translation>
 <translation id="9089416786594320554">Giriş yöntemleri</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> adlı ekran kaldırıldı</translation>
 <translation id="9098969848082897657">Telefonu sessize al</translation>

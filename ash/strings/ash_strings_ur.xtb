@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">‏USB-C آلہ (سانے کا پورٹ)</translation>
 <translation id="1013598600051641573">‏<ph name="DISPLAY_NAME" /> کو <ph name="RESOLUTION" /> (Hz<ph name="REFRESH_RATE" />) پر تبدیل کر دیا گیا ہے۔ تبدیلیاں باقی رکھنے کے لیے تصدیق کریں پر کلک کریں۔ گزشتہ ترتیبات کو <ph name="TIMEOUT_SECONDS" /> میں بحال کر دیا جائے گا۔</translation>
 <translation id="1013923882670373915">‏بلوٹوتھ آلہ "<ph name="DEVICE_NAME" />" جوڑا بنانے کی اجازت چاہتا ہے۔ براہ کرم اس PIN کوڈ کو اس آلہ پر درج کریں: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">اسکرین کاسٹ ٹولز</translation>
 <translation id="1024261588257374085">جزوی اسکرین شاٹ کا انتخاب کیا گیا</translation>
 <translation id="1024364763893396229">اپنا <ph name="NAME" /> محفوظ کریں</translation>
 <translation id="1032891413405719768">اسٹائلس کی بیٹری کم ہے</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">دائیں</translation>
 <translation id="1351937230027495976">مینو کو سکیڑیں</translation>
 <translation id="1364382257761975320">‏اپنے Chromebook کو غیر مقفل کرنے کے لیے، اپنے فنگر پرنٹ کا استعمال کریں</translation>
-<translation id="1364618750746929654">ٹرانسکرپشن تخلیق نہیں کر سکتے</translation>
 <translation id="1372545819342940910">بعد کے لیے ڈیسک کو محفوظ کریں</translation>
 <translation id="1383597849754832576">اسپیچ فائلز ڈاؤن لوڈ نہیں کر سکتے۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">نائیجیریا میں آبادی</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">پہلے سے منسلک کردہ</translation>
-<translation id="3712317119236351467">ریکارڈنگ کو محفوظ نہیں کیا جا سکتا</translation>
 <translation id="371370241367527062">سامنے کا مائیکروفون</translation>
 <translation id="3713734891607377840">مکمل ہونے پر کھولیں</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />، <ph name="UNAVAILABLE_APPS_TWO" />، اور <ph name="UNAVAILABLE_APPS_COUNT" /> مزید اس آلہ پر موجود نہیں ہے۔</translation>
@@ -854,6 +851,7 @@
 <translation id="6166852626429024716">اپنا آلہ، ایپس، ترتیبات ویب تلاش کریں...</translation>
 <translation id="6179832488876878285">آپ اپنی اہم فائلز کو یہاں پن کر سکتے ہیں۔ شروع کرنے کیلئے فائلز ایپ کھولیں۔</translation>
 <translation id="619279033188484792">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھیں</translation>
+<translation id="619335566042889110">اب پوری طرح چارج کریں</translation>
 <translation id="6220928844947387476">اب آپ اپنے آپ کو اور اپنی اسکرین کو ایک ہی وقت میں ریکارڈ کر سکتے ہیں</translation>
 <translation id="622484624075952240">نیچے</translation>
 <translation id="6231419273573514727">پیریفیرل کی کارکردگی محدود ہو سکتی ہے</translation>
@@ -1188,6 +1186,7 @@
 <translation id="826107067893790409">‏<ph name="USER_EMAIL_ADDRESS" /> کی خاطر غیر مقفل کرنے کے لیے Enter دبائیں</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
 <translation id="8270450402312105425">{0,plural, =1{ایک گھنٹے کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}other{# گھنٹے کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}}</translation>
+<translation id="8271580342040932214">بیٹری لائف بڑھانے کے لیے پلگ ان کے دوران آپ کی بیٹری عارضی طور پر 80 فیصد ہوتی ہے۔ آپ کی بیٹری <ph name="FULLY_CHARGE_TIME" /> تک پوری طرح چارج ہو جائے گی۔</translation>
 <translation id="8284362522226889623">پچھلے ڈیسک پر سوئچ کرنے کے لیے، چار انگلیوں سے بائیں سوائپ کریں</translation>
 <translation id="828708037801473432">آف</translation>
 <translation id="8297006494302853456">کمزور</translation>
@@ -1271,6 +1270,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">اندراج کے طریقے کی ترتیبات</translation>
 <translation id="8818320199597151042">پروفائل ہٹائی جا رہی ہے۔ کچھ منٹ انتظار کریں۔</translation>
+<translation id="8819728065740986820">اڈاپٹیو چارجنگ آن ہے</translation>
 <translation id="8825863694328519386">پیچھے جانے کیلئے بائیں سے سوائپ کریں</translation>
 <translation id="8834539327799336565">فی الحال منسلک ہے</translation>
 <translation id="8841375032071747811">'پیچھے' بٹن</translation>
@@ -1317,6 +1317,7 @@
 <translation id="9080132581049224423">ہوم پر جانے کے لیے اوپر سوائپ کریں</translation>
 <translation id="9080206825613744995">مائیکروفون زیر استعمال ہے۔</translation>
 <translation id="9084606467167974638">مینو پوزیشن کو ٹوگل کریں</translation>
+<translation id="9085962983642906571">بیٹری لائف بڑھانے کے لیے پلگ ان کے دوران آپ کی بیٹری عارضی طور پر 80 فیصد پر رکھی جاتی ہے۔</translation>
 <translation id="9089416786594320554">اندراج کے طریقے</translation>
 <translation id="9091626656156419976">ڈسپلے <ph name="DISPLAY_NAME" /> کو ہٹا دیا گیا</translation>
 <translation id="9098969848082897657">فون کو خاموش کریں</translation>

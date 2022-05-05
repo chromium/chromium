@@ -133,6 +133,7 @@
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1125550662859510761">Lyk soos <ph name="WIDTH" /> x <ph name="HEIGHT" /> (oorspronlik)</translation>
 <translation id="1126809382673880764">Beskerm jou nie teen gevaarlike webwerwe, aflaaie en uitbreidings nie. Jy sal steeds Veiligblaai-beskerming kry, indien beskikbaar, in ander Google-dienste, soos Gmail en Search.</translation>
+<translation id="1128090040635299943">Linux word tans opgestel. Die opstelling sal ’n paar minute neem.</translation>
 <translation id="1128591060186966949">Wysig soekenjin</translation>
 <translation id="1129420403709586868">Bekyk jou foon se foto's en media</translation>
 <translation id="1129850422003387628">Bestuur programme</translation>
@@ -334,6 +335,7 @@
 <translation id="1327794256477341646">Kenmerke wat jou ligging nodig het, sal nie werk nie</translation>
 <translation id="1329191040029425999">Maak seker dat jou toestel bygewerk is, en probeer weer</translation>
 <translation id="1330145147221172764">Aktiveer opskerm-sleutelbord</translation>
+<translation id="1331625853030156663">Aktiveer "Wys sluitskerm wanneer dit uit slaap wakker word" om <ph name="APP_NAME" /> oop te maak</translation>
 <translation id="1331977651797684645">Dit was ek.</translation>
 <translation id="1333489022424033687">Sommige kenmerke op <ph name="ORIGIN" /> sal dalk nie werk voordat jy data uitgevee het wat ander werwe op jou toestel geberg het nie</translation>
 <translation id="1333965224356556482">Moenie werwe toelaat om jou ligging te sien nie</translation>
@@ -1968,6 +1970,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="2832124733806557606">Jou kind kan 'n PIN gebruik om by die toestel aan te meld of dit te ontsluit.</translation>
 <translation id="2835177225987815960">Jou huidige skanderingopstelling sal teruggestel word, insluitend enige toegewysde skakelaars en outoskandeerspoedvoorkeure.</translation>
 <translation id="2835547721736623118">Spraakherkenningdiens</translation>
+<translation id="2836232638504556905">Om voort te gaan, sal <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jou naam, e-posadres en profielfoto met hierdie werf deel. Lees hierdie werf se <ph name="BEGIN_LINK" />privaatheidsbeleid<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Omval</translation>
 <translation id="2836635946302913370">Aanmelding met hierdie gebruikersnaam is deur jou administrateur gedeaktiveer.</translation>
 <translation id="283669119850230892">Om die netwerk <ph name="NETWORK_ID" /> te gebruik, moet jy eers klaar aan die internet koppel hieronder.</translation>
@@ -2249,6 +2252,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3105796011181310544">Verander terug na Google?</translation>
 <translation id="310671807099593501">Werf gebruik tans Bluetooth</translation>
 <translation id="3108931485517391283">Kan nie ontvang nie</translation>
+<translation id="3109206895301430738">Gestoorde oortjiegroepe</translation>
 <translation id="3109724472072898302">Ingevou</translation>
 <translation id="311214366526552035">Laai in elk geval af</translation>
 <translation id="3112292765614504292">Programgrootte: <ph name="APP_SIZE" /></translation>
@@ -3346,6 +3350,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="420283545744377356">Skakel sluimerskerm af</translation>
 <translation id="4203065553461038553">Lêernaam of -ligging is te lank</translation>
 <translation id="4204851595694839599">Hoe was jou speluitleg-ervaring?</translation>
+<translation id="4205157409548006256">Kon nie Linux opstel nie.</translation>
 <translation id="4206144641569145248">Ruimtewese</translation>
 <translation id="4206323443866416204">Terugvoerverslag</translation>
 <translation id="4207522141889799150">Wysig werftoestemmings vir <ph name="SITE" /></translation>
@@ -5812,6 +5817,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6686665106869989887">Oortjie is na regs geskuif</translation>
 <translation id="6686817083349815241">Stoor jou wagwoord</translation>
 <translation id="6687079240787935001">Versteek <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Versoek tans om <ph name="ORIGIN" /> te lees en te verander:</translation>
 <translation id="6689714331348768690">Vra <ph name="SUPERVISED_USER_NAME" /> om na die rekenaar toe te kom. Jou kind sal 'n paar frases op hierdie skerm lees om hul stemmodel te skep.
     <ph name="BR" />
     As <ph name="SUPERVISED_USER_NAME" /> hulp nodig het om te lees, laat jou kind agter jou aan sê. Fluister weg van die mikrofoon af sodat die Assistent jou kind se stem en nie joune leer nie.</translation>
@@ -6324,6 +6330,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Verlaat bladsy}other{Verlaat bladsye}}</translation>
 <translation id="7207457272187520234">Stuur gebruik- en diagnostiese data. Hierdie toestel stuur tans diagnostiese, toestel- en programgebruikdata outomaties na Google toe. Dit sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. Hierdie instelling word deur die eienaar toegepas. As jou bykomende Web- en Programaktiwiteit-instelling aangeskakel is, kan hierdie data in jou Google-rekening gestoor word.</translation>
 <translation id="7207631048330366454">Deursoek programme</translation>
+<translation id="720808544705441386">Kan nie app oopmaak nie</translation>
 <translation id="7210499381659830293">Uitbreidingdrukkers</translation>
 <translation id="7211783048245131419">Geen skakelaar is nog toegeken nie</translation>
 <translation id="7212097698621322584">Voer jou huidige PIN in om dit te verander. As jy nie jou PIN ken nie, moet jy die sekuriteitsleutel terugstel en dan 'n nuwe PIN skep.</translation>
@@ -7480,6 +7487,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8324784016256120271">Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien, byvoorbeeld, om advertensies te personaliseer</translation>
 <translation id="8325413836429495820">Mag nie jou knipbord sien nie</translation>
 <translation id="8326478304147373412">PKCS # 7, sertifikaatketting</translation>
+<translation id="8327386430364625757">Wiskundige lettertipe</translation>
 <translation id="8327676037044516220">Toestemmings en inhoudinstellings</translation>
 <translation id="8330617762701840933">Die lys webwerwe wat na ’n alternatiewe blaaier herlei word.</translation>
 <translation id="8330689128072902965">Kontakte in die omtrek kan met jou deel. Klik om te verander.</translation>

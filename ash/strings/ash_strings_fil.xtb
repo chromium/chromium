@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C device (port sa harap)</translation>
 <translation id="1013598600051641573">Ginawang <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ang <ph name="DISPLAY_NAME" />. I-click ang kumpirmahin para panatilihin ang mga pagbabago. Ire-restore ang mga nakaraang setting pagkalipas ng <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Gusto ng bluetooth device na "<ph name="DEVICE_NAME" />" ng pahintulot na magpares. Pakilagay ang PIN na ito sa device na iyon: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Mga tool sa pag-screencast</translation>
 <translation id="1024261588257374085">Pinili ang screenshot ng isang bahagi ng screen</translation>
 <translation id="1024364763893396229">I-save ang iyong <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Mahina na ang baterya ng stylus</translation>
@@ -85,7 +84,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1351937230027495976">I-collapse ang menu</translation>
 <translation id="1364382257761975320">Para i-unlock ang iyong Chromebook, gamitin ang fingerprint mo</translation>
-<translation id="1364618750746929654">Hindi mabuo ang transcription</translation>
 <translation id="1372545819342940910">I-save ang desk para sa ibang pagkakataon</translation>
 <translation id="1383597849754832576">Hindi ma-download ang mga speech file. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="1383876407941801731">Hanapin</translation>
@@ -204,7 +202,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2127372758936585790">Low-power charger</translation>
 <translation id="2132302418721800944">I-record ang full screen</translation>
 <translation id="2135456203358955318">Naka-dock na magnifier</translation>
-<translation id="2148716181193084225">Ngayon</translation>
+<translation id="2148716181193084225">Ngayong Araw</translation>
 <translation id="2159930836979502091">Pumunta sa tab na ito</translation>
 <translation id="2170530631236737939">Mag-swipe pababa gamit ang tatlong daliri para lumabas sa Overview</translation>
 <translation id="219905428774326614">Launcher, lahat ng app</translation>
@@ -460,7 +458,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3702846122927433391">Populasyon sa Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Dating nakakonekta</translation>
-<translation id="3712317119236351467">Hindi ma-save ang recording</translation>
 <translation id="371370241367527062">Mikropono sa harap</translation>
 <translation id="3713734891607377840">Buksan kapag kumpleto na</translation>
 <translation id="3726171378575546917">Wala ang <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, at <ph name="UNAVAILABLE_APPS_COUNT" /> pa sa device na ito.</translation>

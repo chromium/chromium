@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C-tæki (tengi að framan)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> var breytt í <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Veldu „Staðfesta“ til að halda breytingunum. Fyrri stillingar verða endurheimtar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth-tækið „<ph name="DEVICE_NAME" />“ óskar eftir heimild til pörunar. Sláðu þetta PIN-númer inn í því tæki: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Verkfæri skjáupptöku</translation>
 <translation id="1024261588257374085">Skjámynd af hluta skjás valin</translation>
 <translation id="1024364763893396229">Vistaðu <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Lítil hleðsla á pennarafhlöðu</translation>
@@ -85,7 +84,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1346748346194534595">Réttsælis</translation>
 <translation id="1351937230027495976">Draga valmynd saman</translation>
 <translation id="1364382257761975320">Notaðu fingrafar til að taka Chromebook úr lás</translation>
-<translation id="1364618750746929654">Ekki tókst að búa til umritun</translation>
 <translation id="1372545819342940910">Vista skrifborð til síðari nota</translation>
 <translation id="1383597849754832576">Ekki er hægt að sækja talskrár. Reyndu aftur síðar.</translation>
 <translation id="1383876407941801731">Leita</translation>
@@ -460,7 +458,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3702846122927433391">Íbúafjöldi í Nígeríu</translation>
 <translation id="3705722231355495246">–</translation>
 <translation id="3708186454126126312">Áður tengt</translation>
-<translation id="3712317119236351467">Ekki er hægt að vista upptöku</translation>
 <translation id="371370241367527062">Fremri hljóðnemi</translation>
 <translation id="3713734891607377840">Opna þegar niðurhali lýkur</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> og <ph name="UNAVAILABLE_APPS_COUNT" /> í viðbót eru ekki í þessu tæki.</translation>
@@ -854,6 +851,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6166852626429024716">Leitaðu í tækinu þínu, forritum, stillingum, á vefnum...</translation>
 <translation id="6179832488876878285">Hér geturðu fest mikilvægar skrár. Opnaðu forritið Skrár til að hefjast handa.</translation>
 <translation id="619279033188484792">Skoðaðu nýlegar myndir, margmiðlunarefni og tilkynningar símans í <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Fullhlaða núna</translation>
 <translation id="6220928844947387476">Nú geturðu tekið þig og skjáinn upp á sama tíma</translation>
 <translation id="622484624075952240">Niður</translation>
 <translation id="6231419273573514727">Afköst jaðartækja gætu verið takmörkuð</translation>
@@ -1189,6 +1187,7 @@ Ný uppsetning</translation>
 <translation id="826107067893790409">Ýttu á Enter til að opna fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Eyða</translation>
 <translation id="8270450402312105425">{0,plural, =1{Færa verður tækið í fyrri útgáfu innan klukkustundar}one{Færa verður tækið í fyrri útgáfu innan # klukkustundar}other{Færa verður tækið í fyrri útgáfu innan # klukkustunda}}</translation>
+<translation id="8271580342040932214">Hleðsla rafhlöðunnar er tímabundið í 80% á meðan hún er sambandi til að lengja rafhlöðuendinguna. Rafhlaðan verður fullhlaðin klukkan <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Strjúktu til vinstri með fjórum fingrum til að skipta yfir í fyrra skrifborð.</translation>
 <translation id="828708037801473432">Slökkt</translation>
 <translation id="8297006494302853456">Veikt</translation>
@@ -1272,6 +1271,7 @@ Ný uppsetning</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Stillingar innfærsluaðferða</translation>
 <translation id="8818320199597151042">Fjarlægir prófíl. Hinkraðu í nokkrar mínútur.</translation>
+<translation id="8819728065740986820">Kveikt er á aðlagaðri hleðslu</translation>
 <translation id="8825863694328519386">Strjúktu frá vinstri til að fara til baka</translation>
 <translation id="8834539327799336565">Tengt núna</translation>
 <translation id="8841375032071747811">Bakkhnappur</translation>
@@ -1318,6 +1318,7 @@ Ný uppsetning</translation>
 <translation id="9080132581049224423">Strjúktu upp til að fara á heimaskjáinn</translation>
 <translation id="9080206825613744995">Hljóðnemi er í notkun.</translation>
 <translation id="9084606467167974638">Víxla staðsetningu valmyndar</translation>
+<translation id="9085962983642906571">Hleðslu rafhlöðunnar er haldið í 80% á meðan hún er sambandi til að lengja rafhlöðuendinguna.</translation>
 <translation id="9089416786594320554">Innsláttaraðferðir</translation>
 <translation id="9091626656156419976">Skjárinn <ph name="DISPLAY_NAME" /> var fjarlægður</translation>
 <translation id="9098969848082897657">Slökkva á hljóði síma</translation>

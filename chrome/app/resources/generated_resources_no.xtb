@@ -133,6 +133,7 @@
 <translation id="1124772482545689468">Bruker</translation>
 <translation id="1125550662859510761">Ser ut som <ph name="WIDTH" /> x <ph name="HEIGHT" /> (innebygd)</translation>
 <translation id="1126809382673880764">Beskytter deg ikke mot farlige nettsteder, nedlastinger eller utvidelser. Du får fremdeles beskyttelse fra Safe Browsing der dette er tilgjengelig, på andre Google-tjenester, som Gmail og Søk.</translation>
+<translation id="1128090040635299943">Linux holder på å bli konfigurert. Det kommer til å ta noen minutter.</translation>
 <translation id="1128591060186966949">Endre i søkemotoren</translation>
 <translation id="1129420403709586868">Se bildene og mediene på telefonen din</translation>
 <translation id="1129850422003387628">Administrer apper</translation>
@@ -334,6 +335,7 @@
 <translation id="1327794256477341646">Funksjoner som krever posisjonen din, kommer ikke til å virke</translation>
 <translation id="1329191040029425999">Sørg for at enheten er oppdatert, og prøv på nytt</translation>
 <translation id="1330145147221172764">Slå på skjermtastaturet</translation>
+<translation id="1331625853030156663">For å åpne <ph name="APP_NAME" />, slå på «Vis låseskjermen ved oppvåkning etter hvilemodus».</translation>
 <translation id="1331977651797684645">Dette var meg.</translation>
 <translation id="1333489022424033687">Noen funksjoner på <ph name="ORIGIN" /> fungerer kanskje ikke før du sletter data som andre nettsteder har lagret på enheten</translation>
 <translation id="1333965224356556482">Ikke la nettsteder se posisjonen din</translation>
@@ -1962,6 +1964,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="2832124733806557606">Barnet ditt kan bruke en PIN-kode for å logge på eller låse opp enheten.</translation>
 <translation id="2835177225987815960">Den nåværende konfigurasjonen din for skanning blir tilbakestilt, inkludert eventuelle brytere som er tilordnet, og hastighetsinnstillinger for automatisk skanning.</translation>
 <translation id="2835547721736623118">Tjeneste for talegjenkjenning</translation>
+<translation id="2836232638504556905">For at du skal kunne fortsette, må <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dele navnet ditt, e-postadressen din og profilbildet ditt med dette nettstedet. Se nettstedets <ph name="BEGIN_LINK" />personvernregler<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Programstopp</translation>
 <translation id="2836635946302913370">Pålogging med dette brukernavnet er deaktivert av administratoren din.</translation>
 <translation id="283669119850230892">Fullfør tilkoblingen til Internett nedenfor for å bruke nettverket <ph name="NETWORK_ID" />.</translation>
@@ -2243,6 +2246,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3105796011181310544">Vil du bytte tilbake til Google?</translation>
 <translation id="310671807099593501">Nettstedet bruker Bluetooth</translation>
 <translation id="3108931485517391283">Kan ikke motta</translation>
+<translation id="3109206895301430738">Lagrede fanegrupper</translation>
 <translation id="3109724472072898302">Skjult</translation>
 <translation id="311214366526552035">Last ned likevel</translation>
 <translation id="3112292765614504292">Appstørrelse: <ph name="APP_SIZE" /></translation>
@@ -3338,6 +3342,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="420283545744377356">Slå av skjermspareren</translation>
 <translation id="4203065553461038553">Filnavnet eller -plasseringen er for lang</translation>
 <translation id="4204851595694839599">Hvordan var spillopplevelsen din?</translation>
+<translation id="4205157409548006256">Det oppsto en feil under konfigureringen av Linux.</translation>
 <translation id="4206144641569145248">Romvesen</translation>
 <translation id="4206323443866416204">Tilbakemeldingsrapport</translation>
 <translation id="4207522141889799150">Rediger nettstedstillatelser for <ph name="SITE" /></translation>
@@ -5801,6 +5806,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6686665106869989887">Fanen er flyttet til høyre</translation>
 <translation id="6686817083349815241">Lagre passordet ditt</translation>
 <translation id="6687079240787935001">Skjul <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Ber om å få lese og endre <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Be <ph name="SUPERVISED_USER_NAME" /> om å komme til datamaskinen. Barnet ditt skal lese noen fraser på denne skjermen for å lage stemmemodellen sin.
     <ph name="BR" />
     Hvis <ph name="SUPERVISED_USER_NAME" /> trenger hjelp med å lese, kan du få barnet til å gjenta etter deg. Hvisk bort fra mikrofonen, slik at assistenten lærer seg barnets stemme og ikke din.</translation>
@@ -6313,6 +6319,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Lukk siden}other{Lukk sidene}}</translation>
 <translation id="7207457272187520234">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Denne innstillingen håndheves av eieren. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din.</translation>
 <translation id="7207631048330366454">Søk etter apper</translation>
+<translation id="720808544705441386">Kan ikke åpne appen</translation>
 <translation id="7210499381659830293">Utvidelsesskrivere</translation>
 <translation id="7211783048245131419">Ingen bryter er tilordnet ennå</translation>
 <translation id="7212097698621322584">Skriv inn den nåværende PIN-koden for å endre den. Hvis du ikke kan PIN-koden, må du tilbakestille sikkerhetsnøkkelen og deretter opprette en ny PIN-kode.</translation>
@@ -7469,6 +7476,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8324784016256120271">Nettsteder kan bruke informasjonskapsler for å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser</translation>
 <translation id="8325413836429495820">Nettsteder som ikke har lov til å se utklippstavlen din</translation>
 <translation id="8326478304147373412">PKCS #7, sertifikat-kjede</translation>
+<translation id="8327386430364625757">Matematisk skrifttype</translation>
 <translation id="8327676037044516220">Tillatelser og innholdsinnstillinger</translation>
 <translation id="8330617762701840933">Listen over nettsteder som omdirigeres til den alternative nettleseren.</translation>
 <translation id="8330689128072902965">Kontakter i nærheten kan dele med deg. Klikk for å endre.</translation>

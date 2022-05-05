@@ -43,7 +43,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="1254117744268754948">Vybrať priečinok</translation>
 <translation id="1265739287306757398">Ako na to</translation>
 <translation id="1272079795634619415">Zastaviť</translation>
-<translation id="1275718070701477396">Vybraté</translation>
+<translation id="1275718070701477396">Riadok bol vybratý</translation>
 <translation id="1281818060020671000">Správa údajov</translation>
 <translation id="1283524564873030414">Posledných 24 hodín</translation>
 <translation id="1285320974508926690">Nikdy neprekladať tieto webové stránky</translation>
@@ -227,6 +227,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2898963176829412617">Nový priečinok…</translation>
 <translation id="2916171785467530738">Automatické dopĺňanie vyhľadávaní a webových adries</translation>
 <translation id="291754862089661335">Umiestnite QR kód alebo čiarový kód do tohto rámčeka</translation>
+<translation id="2920866371965792875">Ak si chcete pozrieť aktuality z tohto webu, prejdite tu.</translation>
 <translation id="2921219216347069551">Str. sa nedá zdieľať</translation>
 <translation id="2923448633003185837">Prilepiť a prejsť</translation>
 <translation id="292639812446257861">Označiť ako neprečítané</translation>

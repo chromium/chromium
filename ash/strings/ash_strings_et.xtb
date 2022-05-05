@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">C-tüüpi USB-seade (eesmine port)</translation>
 <translation id="1013598600051641573">Seadme <ph name="DISPLAY_NAME" /> eraldusvõimeks määrati <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Muudatuste säilitamiseks klõpsake nupul Kinnita. Eelmised seaded taastatakse <ph name="TIMEOUT_SECONDS" /> pärast.</translation>
 <translation id="1013923882670373915">Bluetoothi seade „<ph name="DEVICE_NAME" />” küsib luba sidumiseks. Sisestage seadmes järgmine PIN-kood: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Ekraaniülekande tööriistad</translation>
 <translation id="1024261588257374085">Valitud on osaline ekraanipilt</translation>
 <translation id="1024364763893396229">Salvestage oma <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Elektronpliiatsi aku hakkab tühjaks saama</translation>
@@ -85,7 +84,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1346748346194534595">Paremale</translation>
 <translation id="1351937230027495976">Ahenda menüü</translation>
 <translation id="1364382257761975320">Chromebooki avamiseks kasutage oma sõrmejälge</translation>
-<translation id="1364618750746929654">Ei saa transkriptsiooni luua</translation>
 <translation id="1372545819342940910">Salvesta töölaud hilisemaks</translation>
 <translation id="1383597849754832576">Kõnefaile ei saa alla laadida. Proovige hiljem uuesti.</translation>
 <translation id="1383876407941801731">Otsi</translation>
@@ -460,7 +458,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3702846122927433391">Nigeeria rahvaarv</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Varem ühendatud</translation>
-<translation id="3712317119236351467">Salvestist ei saa salvestada</translation>
 <translation id="371370241367527062">Eesmine mikrofon</translation>
 <translation id="3713734891607377840">Lõpetamisel avatakse</translation>
 <translation id="3726171378575546917">Rakendusi <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ja veel <ph name="UNAVAILABLE_APPS_COUNT" /> rakendust pole selles seadmes.</translation>
@@ -855,6 +852,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6166852626429024716">Otsige oma seadmest, rakendustest, seadetest, veebist …</translation>
 <translation id="6179832488876878285">Saate oma olulised failid siia kinnitada. Alustamiseks avage rakendus Failid.</translation>
 <translation id="619279033188484792">Seadmes <ph name="DEVICE_TYPE" /> oma telefoni hiljutiste fotode, meedia ja märguannete vaatamine</translation>
+<translation id="619335566042889110">Laadi nüüd täielikult täis</translation>
 <translation id="6220928844947387476">Saate nüüd ennast ja oma ekraanikuva salvestada samaaegselt</translation>
 <translation id="622484624075952240">Alla</translation>
 <translation id="6231419273573514727">Välisseadme toimivus võib olla piiratud</translation>
@@ -1190,6 +1188,7 @@ Uus installimine</translation>
 <translation id="826107067893790409">E-posti aadressi <ph name="USER_EMAIL_ADDRESS" /> puhul avamiseks vajutage sisestusklahvi</translation>
 <translation id="8261506727792406068">Kustuta</translation>
 <translation id="8270450402312105425">{0,plural, =1{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega üks tund}other{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega # tundi}}</translation>
+<translation id="8271580342040932214">Kui teie aku on vooluvõrguga ühendatud, hoitakse seda ajutiselt 80% täislaetuna, et pikendada aku tööiga. Teie aku laetakse täielikult täis järgmiseks ajaks: <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Eelmisele töölauale lülitumiseks pühkige nelja sõrmega vasakule</translation>
 <translation id="828708037801473432">Väljas</translation>
 <translation id="8297006494302853456">Nõrk</translation>
@@ -1273,6 +1272,7 @@ Uus installimine</translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="881757059229893486">Sisestusmeetodi seaded</translation>
 <translation id="8818320199597151042">Profiil eemaldatakse. Oodake mõni minut.</translation>
+<translation id="8819728065740986820">Adaptiivne laadimine on sisse lülitatud</translation>
 <translation id="8825863694328519386">Tagasiliikumiseks pühkige vasakult paremale</translation>
 <translation id="8834539327799336565">Praegu ühendatud</translation>
 <translation id="8841375032071747811">Nupp Tagasi</translation>
@@ -1319,6 +1319,7 @@ Uus installimine</translation>
 <translation id="9080132581049224423">Avalehele liikumiseks pühkige üles</translation>
 <translation id="9080206825613744995">Mikrofon on kasutusel.</translation>
 <translation id="9084606467167974638">Menüü asendi vahetamine</translation>
+<translation id="9085962983642906571">Kui teie aku on vooluvõrguga ühendatud, hoitakse seda 80% täislaetuna, et pikendada aku tööiga.</translation>
 <translation id="9089416786594320554">Sisestusviisid</translation>
 <translation id="9091626656156419976">Ekraan <ph name="DISPLAY_NAME" /> eemaldati</translation>
 <translation id="9098969848082897657">Telefoni vaigistamine</translation>

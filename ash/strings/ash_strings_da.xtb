@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C-enhed (port foran)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> blev ændret til <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik på Bekræft for at gemme ændringerne. De tidligere indstillinger gendannes om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth-enheden "<ph name="DEVICE_NAME" />" vil gerne have parringstilladelse. Angiv denne pinkode på den pågældende enhed: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Screencastværktøjer</translation>
 <translation id="1024261588257374085">Et afgrænset screenshot er valgt</translation>
 <translation id="1024364763893396229">Gem dine <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Styluspennen er ved at løbe tør for batteri</translation>
@@ -85,7 +84,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1346748346194534595">Højre</translation>
 <translation id="1351937230027495976">Skjul menu</translation>
 <translation id="1364382257761975320">Hvis du vil låse din Chromebook op, skal du bruge dit fingeraftryk</translation>
-<translation id="1364618750746929654">Transskriptionen kunne ikke genereres</translation>
 <translation id="1372545819342940910">Gem skrivebord til senere</translation>
 <translation id="1383597849754832576">Talefilerne kan ikke downloades. Prøv igen senere.</translation>
 <translation id="1383876407941801731">Søg</translation>
@@ -460,7 +458,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3702846122927433391">Befolkningstallet i Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Tidligere forbundne enheder</translation>
-<translation id="3712317119236351467">Optagelsen kan ikke gemmes</translation>
 <translation id="371370241367527062">Mikrofon på forsiden</translation>
 <translation id="3713734891607377840">Åbn efter download</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> og <ph name="UNAVAILABLE_APPS_COUNT" /> mere er ikke på denne enhed.</translation>
@@ -854,6 +851,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6166852626429024716">Søg på din enhed, i dine apps, i indstillingerne, på nettet...</translation>
 <translation id="6179832488876878285">Du kan fastgøre dine vigtige filer her. Åbn appen Filer for at komme i gang.</translation>
 <translation id="619279033188484792">Se de seneste billeder, mediefiler og notifikationer fra din telefon på din <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Oplad helt nu</translation>
 <translation id="6220928844947387476">Du kan nu optage dig selv og din skærm på samme tid</translation>
 <translation id="622484624075952240">Ned</translation>
 <translation id="6231419273573514727">Din eksterne enheds ydeevne kan være begrænset</translation>
@@ -1189,6 +1187,7 @@ Installeret for nylig</translation>
 <translation id="826107067893790409">Tryk på Enter for at låse op for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Slet</translation>
 <translation id="8270450402312105425">{0,plural, =1{Skift til en tidligere version af enheden inden for en time}one{Skift til en tidligere version af enheden inden for # time}other{Skift til en tidligere version af enheden inden for # timer}}</translation>
+<translation id="8271580342040932214">Dit batteri er midlertidigt på 80 %, mens enheden oplader. Dette forlænger batteritiden. Dit batteri vil være fuldt opladet senest kl. <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Stryg mod venstre med fire fingre for at skifte til forrige skrivebord</translation>
 <translation id="828708037801473432">Fra</translation>
 <translation id="8297006494302853456">Svag</translation>
@@ -1272,6 +1271,7 @@ Installeret for nylig</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Indstillinger for indtastningsmetoder</translation>
 <translation id="8818320199597151042">Profilen fjernes. Vent et par minutter.</translation>
+<translation id="8819728065740986820">Adaptiv opladning er aktiveret</translation>
 <translation id="8825863694328519386">Stryg fra venstre for at gå tilbage</translation>
 <translation id="8834539327799336565">Forbundet lige nu</translation>
 <translation id="8841375032071747811">Knappen Tilbage</translation>
@@ -1318,6 +1318,7 @@ Installeret for nylig</translation>
 <translation id="9080132581049224423">Stryg opad for at gå til startsiden</translation>
 <translation id="9080206825613744995">Mikrofonen er i brug.</translation>
 <translation id="9084606467167974638">Skift menuposition</translation>
+<translation id="9085962983642906571">Dit batteri forbliver på 80 %, mens enheden oplader. Dette forlænger batteritiden.</translation>
 <translation id="9089416786594320554">Inputmetoder</translation>
 <translation id="9091626656156419976">Skærmen <ph name="DISPLAY_NAME" /> blev fjernet</translation>
 <translation id="9098969848082897657">Sæt telefonen på lydløs</translation>

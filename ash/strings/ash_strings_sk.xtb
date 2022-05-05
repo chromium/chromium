@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Zariadenie USB-C (port vpredu)</translation>
 <translation id="1013598600051641573">Obrazovka <ph name="DISPLAY_NAME" /> bola zmenená na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Zmeny ponecháte kliknutím na Potvrdiť. Predchádzajúce nastavenia budú obnovené o <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Zariadenie Bluetooth s názvom <ph name="DEVICE_NAME" /> žiada o povolenie párovania. Zadajte na danom zariadení toto číslo PIN: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Nástroje na prenos obrazovky</translation>
 <translation id="1024261588257374085">Bola vybraná čiastočná snímka obrazovky</translation>
 <translation id="1024364763893396229">Uložte zariadenie <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Batéria dotykového pera je takmer vybitá</translation>
@@ -85,7 +84,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1346748346194534595">Doprava</translation>
 <translation id="1351937230027495976">Zbaliť ponuku</translation>
 <translation id="1364382257761975320">Ak chcete Chromebook odomknúť, použite odtlačok prsta</translation>
-<translation id="1364618750746929654">Prepis sa nedá vygenerovať</translation>
 <translation id="1372545819342940910">Uložiť plochu na neskôr</translation>
 <translation id="1383597849754832576">Súbory s balíkmi reči sa nedajú stiahnuť. Skúste to neskôr.</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
@@ -460,7 +458,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3702846122927433391">Počet obyvateľov Nigérie</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Predtým pripojené zariadenia</translation>
-<translation id="3712317119236351467">Nahrávka sa nedá uložiť</translation>
 <translation id="371370241367527062">Predný mikrofón</translation>
 <translation id="3713734891607377840">Po dokončení otvoriť</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> a ďalšie (<ph name="UNAVAILABLE_APPS_COUNT" />) nie sú v tomto zariadení.</translation>
@@ -854,6 +851,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6166852626429024716">Vyhľadávajte v zariadení, aplikáciách, nastaveniach a na internete…</translation>
 <translation id="6179832488876878285">Tu si môžete pripnúť dôležité súbory. Začnite otvorením aplikácie Súbory.</translation>
 <translation id="619279033188484792">V zariadení <ph name="DEVICE_TYPE" /> si môžete pozrieť najnovšie fotky, médiá a upozornenia zo svojho telefónu</translation>
+<translation id="619335566042889110">Úplne nabiť</translation>
 <translation id="6220928844947387476">Teraz môžete súčasne nahrať seba aj svoju obrazovku</translation>
 <translation id="622484624075952240">Dole</translation>
 <translation id="6231419273573514727">Výkonnosť periférie môže byť obmedzená</translation>
@@ -1189,6 +1187,7 @@ Nová inštalácia</translation>
 <translation id="826107067893790409">Stlačením tlačidla Enter odomknite pre účet <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Odstrániť</translation>
 <translation id="8270450402312105425">{0,plural, =1{Do hodiny obnovte v zariadení predchádzajúcu verziu}few{Do # hodín obnovte v zariadení predchádzajúcu verziu}many{Do # hodiny obnovte v zariadení predchádzajúcu verziu}other{Do # hodín obnovte v zariadení predchádzajúcu verziu}}</translation>
+<translation id="8271580342040932214">Keď je zariadenie zapojené, stav batérie je dočasne na úrovni 80 %, čo predlžuje jej výdrž. Batéria bude úplne nabitá do <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Na predchádzajúcu plochu prepnete potiahnutím štyrmi prstami doľava</translation>
 <translation id="828708037801473432">Vypnuté</translation>
 <translation id="8297006494302853456">Slabé</translation>
@@ -1272,6 +1271,7 @@ Nová inštalácia</translation>
 <translation id="8814190375133053267">Wi‑Fi</translation>
 <translation id="881757059229893486">Nastavenia metód vstupu</translation>
 <translation id="8818320199597151042">Odstraňuje sa profil. Počkajte niekoľko minút.</translation>
+<translation id="8819728065740986820">Je zapnuté adaptívne nabíjanie.</translation>
 <translation id="8825863694328519386">Vrátite sa potiahnutím zľava</translation>
 <translation id="8834539327799336565">Aktuálne pripojené</translation>
 <translation id="8841375032071747811">Tlačidlo Späť</translation>
@@ -1318,6 +1318,7 @@ Nová inštalácia</translation>
 <translation id="9080132581049224423">Potiahnutím nahor prejdete na plochu</translation>
 <translation id="9080206825613744995">Mikrofón sa používa.</translation>
 <translation id="9084606467167974638">Prepnúť pozíciu ponuky</translation>
+<translation id="9085962983642906571">Keď je zariadenie zapojené, stav batérie je na úrovni 80 %, čo predlžuje jej výdrž.</translation>
 <translation id="9089416786594320554">Metódy vstupu</translation>
 <translation id="9091626656156419976">Obrazovka <ph name="DISPLAY_NAME" /> bola odstránená</translation>
 <translation id="9098969848082897657">Vypnutie zvuku telefónu</translation>

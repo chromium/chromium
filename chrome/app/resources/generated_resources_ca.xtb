@@ -284,7 +284,7 @@
 <translation id="1272508081857842302">Obertura d'<ph name="BEGIN_LINK" />enllaços compatibles<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">Aquest compte d'usuari no pertany al domini on s'ha registrat el dispositiu. Si el voleu registrar en un domini diferent, primer cal que apliqueu el procés de recuperació del dispositiu.</translation>
 <translation id="1274997165432133392">Galetes i altres dades dels llocs web</translation>
-<translation id="1275718070701477396">Seleccionat</translation>
+<translation id="1275718070701477396">Seleccionada</translation>
 <translation id="1276994519141842946">No s'ha pogut instal·lar <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Crea un altre PIN que sigui diferent del teu PIN actual</translation>
 <translation id="1278859221870828664">Revisa les aplicacions i els serveis de Google Play</translation>
@@ -773,7 +773,7 @@
 <translation id="1736419249208073774">Explora</translation>
 <translation id="1737968601308870607">Arxiva l'error</translation>
 <translation id="1739684185846730053">Les proves de Privacy Sandbox encara s'estan desenvolupant i només estan disponibles en determinades regions. Per ara, és possible que els llocs web provin Privacy Sandbox mentre continuen utilitzant les tecnologies web actuals, com ara les galetes de tercers.</translation>
-<translation id="1741190788710022490">Càrrega adaptativa</translation>
+<translation id="1741190788710022490">Càrrega intel·ligent</translation>
 <translation id="174123615272205933">Personalitzats</translation>
 <translation id="1741314857973421784">Continua</translation>
 <translation id="1743970419083351269">Tanca la barra de baixades</translation>
@@ -5622,6 +5622,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6520876759015997832">Resultat de cerca <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Prem Retorn per navegar a la secció.</translation>
 <translation id="6521214596282732365">Els llocs web solen utilitzar els teus tipus de lletra perquè puguis crear continguts d'alta fidelitat amb eines de disseny i de gràfics en línia</translation>
 <translation id="6523303810310758032">Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web específic) també suprimeixes la informació de mesurament associada. Consulta <ph name="BEGIN_LINK" />el teu historial de navegació<ph name="END_LINK" />.</translation>
+<translation id="6523574494641144162">El gestor de contrasenyes de Google no ha pogut desar aquestes contrasenyes al teu Compte de Google. Pots desar-les en aquest dispositiu.</translation>
 <translation id="6524735478670290456">Com utilitzem aquestes dades:</translation>
 <translation id="652492607360843641">Tens connexió a una xarxa <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Comparteix</translation>
@@ -5926,6 +5927,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6818198425579322765">Idioma de la pàgina que cal traduir</translation>
 <translation id="6818547713623251698">Mostra les fotos, els fitxers multimèdia, les notificacions i les aplicacions del telèfon</translation>
 <translation id="6818802132960437751">Protecció antivirus integrada</translation>
+<translation id="6818920801736417483">Vols desar les contrasenyes?</translation>
 <translation id="6823174134746916417">Toca per fer clic amb el ratolí tàctil</translation>
 <translation id="6824564591481349393">Copi&amp;a l'adreça electrònica</translation>
 <translation id="6824584962142919697">&amp;Inspecciona els elements</translation>
@@ -7349,7 +7351,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8214489666383623925">Obre un fitxer...</translation>
 <translation id="8215129063232901118">Accedeix a les capacitats del teu telèfon des del teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217399928341212914">Continua bloquejant les baixades automàtiques de diversos fitxers</translation>
-<translation id="822050276545350872">Ja no hauràs d'esperar més vegades</translation>
+<translation id="822050276545350872">A partir d'ara, ja no hauràs d'esperar més</translation>
 <translation id="8221491193165283816">Normalment bloqueges les notificacions. Per permetre que aquest lloc web et mostri notificacions, fes clic aquí.</translation>
 <translation id="822347941086490485">S'estan cercant dispositius d'interfície humana...</translation>
 <translation id="8225046344534779393">Comprova la connexió a Internet</translation>

@@ -133,6 +133,7 @@
 <translation id="1124772482545689468">Bruger</translation>
 <translation id="1125550662859510761">Ligner <ph name="WIDTH" /> x <ph name="HEIGHT" /> (oprindelig)</translation>
 <translation id="1126809382673880764">Beskytter dig ikke mod skadelige websites, downloads og udvidelser. Du er stadig beskyttet med Beskyttet browsing i andre Google-tjenester som f.eks. Gmail og Søgning, hvor dette er tilgængeligt.</translation>
+<translation id="1128090040635299943">Linux konfigureres i øjeblikket. Konfigurationen tager et par minutter.</translation>
 <translation id="1128591060186966949">Rediger søgemaskine</translation>
 <translation id="1129420403709586868">Se din telefons billeder og mediefiler</translation>
 <translation id="1129850422003387628">Administrer apps</translation>
@@ -335,6 +336,7 @@
 <translation id="1327794256477341646">Funktioner, der skal bruge din lokation, fungerer ikke</translation>
 <translation id="1329191040029425999">Tjek, at din enhed er opdateret, og prøv igen</translation>
 <translation id="1330145147221172764">Aktivér skærmtastatur</translation>
+<translation id="1331625853030156663">Hvis du vil åbne <ph name="APP_NAME" />, skal du aktivere "Vis låseskærmen, når enheden vågner fra dvale"</translation>
 <translation id="1331977651797684645">Det var mig.</translation>
 <translation id="1333489022424033687">Visse funktioner på <ph name="ORIGIN" /> fungerer muligvis ikke, før du har ryddet data, som andre websites har gemt på enheden</translation>
 <translation id="1333965224356556482">Tillad ikke, at websites ser din lokation</translation>
@@ -3347,6 +3349,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="420283545744377356">Deaktiver Pauseskærm</translation>
 <translation id="4203065553461038553">Navnet på filen eller lokationen er for langt</translation>
 <translation id="4204851595694839599">Hvordan var din spiloplevelse?</translation>
+<translation id="4205157409548006256">Der opstod en fejl under konfigurationen af Linux.</translation>
 <translation id="4206144641569145248">Rumvæsen</translation>
 <translation id="4206323443866416204">Feedbackrapport</translation>
 <translation id="4207522141889799150">Rediger websitetilladelser for <ph name="SITE" /></translation>
@@ -5814,6 +5817,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6686665106869989887">Fanen blev flyttet til højre</translation>
 <translation id="6686817083349815241">Gem din adgangskode</translation>
 <translation id="6687079240787935001">Skjul <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Der anmodes om tilladelse til at læse og ændre <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Bed <ph name="SUPERVISED_USER_NAME" /> om at komme hen til computeren. Dit barn skal læse et par sætninger på skærmen højt for at oprette sin stemmemodel.
     <ph name="BR" />
     Hvis <ph name="SUPERVISED_USER_NAME" /> har brug for hjælp til at læse sætningerne, kan du bede dit barn om at gentage det, du siger. Hvisk sætningerne et stykke væk fra mikrofonen, så Google Assistent lærer dit barns stemme og ikke din.</translation>
@@ -6326,6 +6330,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Forlad side}one{Forlad side}other{Forlad sider}}</translation>
 <translation id="7207457272187520234">Send brugs- og diagnosticeringsdata. Denne enhed sender i øjeblikket automatisk diagnosticerings- og enhedsdata samt data om brug af apps til Google. Dataene bruges til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Denne indstilling håndhæves af ejeren. Hvis indstillingen for yderligere web- og appaktivitet er aktiveret, gemmes disse data muligvis på din Google-konto.</translation>
 <translation id="7207631048330366454">Søg efter apps</translation>
+<translation id="720808544705441386">Appen kan ikke åbnes</translation>
 <translation id="7210499381659830293">Udvidelsesprintere</translation>
 <translation id="7211783048245131419">Der er endnu ikke blevet tildelt nogen kontakt</translation>
 <translation id="7212097698621322584">Angiv din aktuelle pinkode for at ændre den. Hvis du ikke kender din pinkode, skal du nulstille sikkerhedsnøglen og derefter oprette en ny pinkode.</translation>
@@ -7482,6 +7487,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8324784016256120271">Websites kan anvende cookies til at se din browseraktivitet på forskellige websites for f.eks. at tilpasse annoncer</translation>
 <translation id="8325413836429495820">Har ikke tilladelse til at se din udklipsholder</translation>
 <translation id="8326478304147373412">PKCS #7, certifikatkæde</translation>
+<translation id="8327386430364625757">Matematisk skrifttype</translation>
 <translation id="8327676037044516220">Tilladelser og indstillinger for indhold</translation>
 <translation id="8330617762701840933">Liste over de websites, der omdirigerer til en alternativ browser.</translation>
 <translation id="8330689128072902965">Kontakter i nærheden kan dele med dig. Klik for at ændre.</translation>

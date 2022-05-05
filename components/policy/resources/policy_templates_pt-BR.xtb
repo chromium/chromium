@@ -621,6 +621,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="1678137412645922426">Controla o uso de <ph name="AES_KL_NAME" /> na criptografia de armazenamento do usuário, se compatível</translation>
+<translation id="1681688654564283886">Desativar o Tempo de Uso para sites</translation>
 <translation id="1682063842123336408">É necessário ter espaço livre em disco (em GB) para instalar o <ph name="PLUGIN_VM_NAME" />.
 
       Se esta política não for definida, haverá falha na instalação do <ph name="PLUGIN_VM_NAME" /> caso o espaço livre disponível em disco seja inferior a 20 GB (valor padrão).
@@ -1114,6 +1115,10 @@ Web e PWAs. No momento, com suporte apenas no
 <translation id="2149957154942061013">Somente interna</translation>
 <translation id="2151831603578119302">Ativar atalhos de recursos de acessibilidade</translation>
 <translation id="2156132677421487971">"Configurar políticas para o <ph name="PRODUCT_NAME" />", um recurso que permite que os usuários enviem o conteúdo de guias, sites ou a área de trabalho do navegador para telas e sistemas de som remotos.</translation>
+<translation id="2156179920247248678">Esta política permite que o <ph name="PRODUCT_NAME" /> participe do recurso Tempo de Uso do <ph name="MAC_OS_NAME" />.
+
+      Se a política for ativada ou deixada sem definição, as origens visitadas serão informadas ao SO e as origens bloqueadas nas configurações do Tempo de Uso vão mostrar uma tela de bloqueio.
+      Se a política for desativada, as origens visitadas não serão informadas ao SO e será possível acessar as origens que foram bloqueadas nas configurações do Tempo de Uso.</translation>
 <translation id="2156755242840687300">Servidores de impressão externos ativados</translation>
 <translation id="2157842368188031417">Esta política se aplica apenas a sessões de visitante gerenciadas. Ela precisa ser ativada para que o modo de estação de trabalho compartilhada do Imprivata permita trocas de usuário dentro da sessão.
       Definir a política como verdadeira substituirá forçadamente certas políticas para recursos, que mantêm dados de usuários sensíveis e não são gerenciadas pelo mecanismo de limpeza usado para troca de usuários dentro da sessão com a estação de trabalho compartilhada do Imprivata.
@@ -3246,6 +3251,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       Esta política substitui DisabledPlugins e DisabledPluginsExceptions.
 
       Se esta política não for definida, o usuário poderá desativar qualquer plug-in instalado no sistema.</translation>
+<translation id="4549405078915181477">Ativar o Tempo de Uso para sites</translation>
 <translation id="4554651132977135445">Modo de processamento loopback da política do usuário</translation>
 <translation id="4555850956567117258">Ativar declaração remota para o usuário</translation>
 <translation id="4557134566541205630">URL da página "Nova guia" do provedor de pesquisa padrão</translation>

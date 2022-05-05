@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">‏دستگاه USB-C (درگاه جلو)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> به <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> هرتز) تغییر کرد. برای حفظ تغییرات، روی تأیید کلیک کنید. تنظیمات قبلی <ph name="TIMEOUT_SECONDS" /> دیگر بازیابی خواهد شد.</translation>
 <translation id="1013923882670373915">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد. لطفاً این کد پین را در آن دستگاه وارد کنید: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">ابزارهای ضبط ویدیویی از صفحه</translation>
 <translation id="1024261588257374085">نماگرفت جزئی انتخاب شد</translation>
 <translation id="1024364763893396229">ذخیره کردن <ph name="NAME" /></translation>
 <translation id="1032891413405719768">شارژ باتری قلم کم است</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">راست</translation>
 <translation id="1351937230027495976">کوچک کردن منو</translation>
 <translation id="1364382257761975320">‏برای باز کردن قفل Chromebook، از اثر انگشتتان استفاده کنید</translation>
-<translation id="1364618750746929654">ترانویسی ایجاد نمی‌شود</translation>
 <translation id="1372545819342940910">ذخیره میزکار برای زمانی دیگر</translation>
 <translation id="1383597849754832576">نمی‌توان فایل‌های گفتاری را بارگیری کرد. بعداً دوباره امتحان کنید.</translation>
 <translation id="1383876407941801731">جستجو</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">‏Population in Nigeria (جمعیت نیجریه)</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">قبلاً متصل‌شده</translation>
-<translation id="3712317119236351467">قطعه ضبط‌شده ذخیره نشد</translation>
 <translation id="371370241367527062">میکروفون جلو</translation>
 <translation id="3713734891607377840">بعداز تکمیل بارگیری باز می‌شود</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />، <ph name="UNAVAILABLE_APPS_TWO" />، و <ph name="UNAVAILABLE_APPS_COUNT" /> برنامه دیگر در این دستگاه وجود ندارند.</translation>

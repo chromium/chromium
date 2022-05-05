@@ -131,6 +131,7 @@
 <translation id="1124772482545689468">Utilizator</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Nativ)</translation>
 <translation id="1126809382673880764">Nu te protejează împotriva site-urilor, descărcărilor și extensiilor periculoase. Te vei bucura în continuare de protecția oferită de Navigarea sigură, dacă este disponibilă, în alte servicii Google, cum ar fi Gmail și Căutarea.</translation>
+<translation id="1128090040635299943">Se configurează Linux. Configurarea va dura câteva minute.</translation>
 <translation id="1128591060186966949">Editează motorul de căutare</translation>
 <translation id="1129420403709586868">Afișează fotografiile și conținutul media de pe telefon</translation>
 <translation id="1129850422003387628">Gestionează aplicații</translation>
@@ -333,6 +334,7 @@
 <translation id="1327794256477341646">Funcțiile care au nevoie de locația ta nu vor funcționa</translation>
 <translation id="1329191040029425999">Asigură-te că dispozitivul este actualizat și încearcă din nou</translation>
 <translation id="1330145147221172764">Activați tastatura pe ecran</translation>
+<translation id="1331625853030156663">Ca să deschizi <ph name="APP_NAME" />, activează opțiunea Afișează blocarea ecranului când dispozitivul este activat</translation>
 <translation id="1331977651797684645">Eu am fost.</translation>
 <translation id="1333489022424033687">Unele funcții din <ph name="ORIGIN" /> pot să nu funcționeze până când nu golești datele pe care alte site-uri le-au stocat pe dispozitiv</translation>
 <translation id="1333965224356556482">Nu permite site-urilor să-ți vadă locația</translation>
@@ -1954,6 +1956,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2832124733806557606">Copilul tău poate folosi un cod PIN pentru a se conecta sau a debloca dispozitivul.</translation>
 <translation id="2835177225987815960">Configurația actuală de scanare va fi resetată, inclusiv comutatoarele atribuite și setările pentru viteza de scanare automată.</translation>
 <translation id="2835547721736623118">Serviciul de recunoaștere vocală</translation>
+<translation id="2836232638504556905">Pentru a continua, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> va permite accesul site-ului la numele, adresa de e-mail și fotografia ta de profil. Consultă <ph name="BEGIN_LINK" />politica de confidențialitate<ph name="END_LINK" /> a site-ului.</translation>
 <translation id="2836269494620652131">Blocare</translation>
 <translation id="2836635946302913370">Conectarea cu acest nume de utilizator a fost dezactivată de către administratorul dvs.</translation>
 <translation id="283669119850230892">Pentru a utiliza rețeaua <ph name="NETWORK_ID" />, finalizați mai întâi conexiunea la internet mai jos.</translation>
@@ -2235,6 +2238,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3105796011181310544">Revii la Google?</translation>
 <translation id="310671807099593501">Site-ul folosește Bluetooth</translation>
 <translation id="3108931485517391283">Nu se poate primi</translation>
+<translation id="3109206895301430738">Grupuri de file salvate</translation>
 <translation id="3109724472072898302">Restrâns</translation>
 <translation id="311214366526552035">Descarcă oricum</translation>
 <translation id="3112292765614504292">Dimensiunea aplicației: <ph name="APP_SIZE" /></translation>
@@ -3332,6 +3336,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="420283545744377356">Dezactivează screensaverul</translation>
 <translation id="4203065553461038553">Numele sau locația fișierului este prea lungă</translation>
 <translation id="4204851595694839599">Cum a fost experiența de joc?</translation>
+<translation id="4205157409548006256">A apărut o eroare la configurarea Linux.</translation>
 <translation id="4206144641569145248">Extraterestru</translation>
 <translation id="4206323443866416204">Raport de feedback</translation>
 <translation id="4207522141889799150">Editează permisiunile pentru site pentru <ph name="SITE" /></translation>
@@ -5798,6 +5803,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6686665106869989887">Fila a fost mutată spre dreapta</translation>
 <translation id="6686817083349815241">Salvați parola</translation>
 <translation id="6687079240787935001">Ascunde <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Se solicită citirea și modificarea <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Solicită-i lui <ph name="SUPERVISED_USER_NAME" /> să vină la computer. Copilul tău va citi câteva expresii de pe acest ecran pentru crearea propriului model vocal.
     <ph name="BR" />
     Dacă <ph name="SUPERVISED_USER_NAME" /> are nevoie de ajutor la citire, spune-i să repete după tine. Șoptește la distanță de microfon, astfel încât Asistentul să învețe vocea copilului, nu pe a ta.</translation>
@@ -6310,6 +6316,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Închide pagina}few{Închide paginile}other{Închide paginile}}</translation>
 <translation id="7207457272187520234">Trimite date de utilizare și diagnosticare. Momentan, dispozitivul trimite automat date de diagnosticare și de utilizare a dispozitivului și aplicațiilor la Google. Aceasta va ajuta la stabilitatea sistemului, a aplicației și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Această setare este impusă de proprietar. Dacă setarea Activitatea suplimentară de pe web și din aplicații este activată, aceste date pot fi salvate în Contul tău Google.</translation>
 <translation id="7207631048330366454">Caută aplicații</translation>
+<translation id="720808544705441386">Nu se poate deschide aplicația</translation>
 <translation id="7210499381659830293">Imprimante de extensie</translation>
 <translation id="7211783048245131419">Nu a fost încă atribuită nicio tastă de comutare</translation>
 <translation id="7212097698621322584">Introdu codul PIN actual pentru a-l schimba. Dacă nu știi codul PIN, trebuie să resetezi cheia de securitate, apoi să creezi un nou cod PIN.</translation>
@@ -7466,6 +7473,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8324784016256120271">Site-urile pot folosi cookie-uri pentru a-ți vedea activitatea de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile</translation>
 <translation id="8325413836429495820">Nu au permisiunea de a vedea clipboardul</translation>
 <translation id="8326478304147373412">PKCS #7, lanț de certificate</translation>
+<translation id="8327386430364625757">Font matematic</translation>
 <translation id="8327676037044516220">Permisiuni și setări privind conținutul</translation>
 <translation id="8330617762701840933">Lista de site-uri care redirecționează la browserul secundar.</translation>
 <translation id="8330689128072902965">Persoanele de contact din apropiere îți pot trimite fișiere. Dă clic pentru a schimba.</translation>

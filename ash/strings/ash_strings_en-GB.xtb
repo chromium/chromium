@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C device (front port)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> changed to <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Please enter this PIN code on that device: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Screencast tools</translation>
 <translation id="1024261588257374085">Partial screenshot selected</translation>
 <translation id="1024364763893396229">Save your <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Stylus battery is low</translation>
@@ -85,7 +84,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1346748346194534595">Right</translation>
 <translation id="1351937230027495976">Collapse menu</translation>
 <translation id="1364382257761975320">To unlock your Chromebook, use your fingerprint</translation>
-<translation id="1364618750746929654">Can't generate transcription</translation>
 <translation id="1372545819342940910">Save desk for later</translation>
 <translation id="1383597849754832576">Can't download speech files. Try again later.</translation>
 <translation id="1383876407941801731">Search</translation>
@@ -460,7 +458,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="3702846122927433391">Population in Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Previously connected</translation>
-<translation id="3712317119236351467">Can’t save recording</translation>
 <translation id="371370241367527062">Front microphone</translation>
 <translation id="3713734891607377840">Open when complete</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> and <ph name="UNAVAILABLE_APPS_COUNT" /> more aren't on this device.</translation>
@@ -854,6 +851,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6166852626429024716">Search your device, apps, settings, web…</translation>
 <translation id="6179832488876878285">You can pin your important files here. Open Files app to get started.</translation>
 <translation id="619279033188484792">View your phone's recent photos, media and notifications on your <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Fully charge now</translation>
 <translation id="6220928844947387476">You can now record yourself and your screen at the same time</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">Peripheral performance may be limited</translation>
@@ -1189,6 +1187,7 @@ New install</translation>
 <translation id="826107067893790409">Press Enter to unlock for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8270450402312105425">{0,plural, =1{Change device to previous version within an hour}other{Change device to previous version within # hours}}</translation>
+<translation id="8271580342040932214">Your battery is temporarily at 80% while plugged in to extend battery life. Your battery will fully charge by <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Swipe left with four fingers to switch to the previous desk</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Weak</translation>
@@ -1272,6 +1271,7 @@ New install</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Input methods settings</translation>
 <translation id="8818320199597151042">Removing profile. Wait a few minutes.</translation>
+<translation id="8819728065740986820">Adaptive charging is on</translation>
 <translation id="8825863694328519386">Swipe from the left to go back</translation>
 <translation id="8834539327799336565">Currently connected</translation>
 <translation id="8841375032071747811">Back button</translation>
@@ -1318,6 +1318,7 @@ New install</translation>
 <translation id="9080132581049224423">Swipe up to go home</translation>
 <translation id="9080206825613744995">Microphone is in use.</translation>
 <translation id="9084606467167974638">Toggle menu position</translation>
+<translation id="9085962983642906571">Your battery is kept at 80% while plugged in to extend battery life.</translation>
 <translation id="9089416786594320554">Input methods</translation>
 <translation id="9091626656156419976">Removed display <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silence phone</translation>

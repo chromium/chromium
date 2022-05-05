@@ -229,6 +229,7 @@
 <translation id="3484914941826596830">No desconectes este dispositivo externo ni apagues la computadora mientras se actualiza el firmware. Puedes minimizar esta ventana. Es posible que esta actualización demore unos minutos y que el dispositivo externo no funcione hasta que termine.</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3488065109653206955">Parcialmente activado</translation>
+<translation id="3517001332549868749">Actualización del SO</translation>
 <translation id="3527036260304016759">Error: Problema desconocido</translation>
 <translation id="3532980081107202182">Quedan aproximadamente <ph name="MIN_REMAINING" /> minutos</translation>
 <translation id="3557205324756024651">Identidad local (opcional)</translation>
@@ -554,6 +555,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6692996468359469499">Obtén información relacionada con tu selección</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
 <translation id="6723839937902243910">Alimentación</translation>
+<translation id="6723847290197874913">Retroiluminación del teclado</translation>
 <translation id="672609503628871915">Novedades</translation>
 <translation id="6747215703636344499">Se detuvo: la bandeja de salida está llena</translation>
 <translation id="6749473226660745022">Fotos</translation>

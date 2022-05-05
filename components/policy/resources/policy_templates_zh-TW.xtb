@@ -3686,6 +3686,16 @@
 <translation id="5179853299156742425">可下載桌面範本的網址。</translation>
 <translation id="5182055907976889880">設定在 <ph name="PRODUCT_OS_NAME" /> 中使用 Google 雲端硬碟。</translation>
 <translation id="5182483318861266793">將檔案櫃放在畫面的右側</translation>
+<translation id="5184298474980725716">這項政策可控管 Chrome 歷史記錄頁面上的瀏覽歷程顯示設定。
+
+      如果將這項政策設為啟用，瀏覽歷程會顯示在 chrome://history/journeys 頁面上。
+
+      如果將這項政策設為停用，瀏覽歷程就不會顯示在 chrome://history/journeys 頁面上。
+
+      如果不設定這項政策，系統預設會在 chrome://history/journeys 頁面上顯示瀏覽歷程，且使用者可以變更瀏覽歷程的顯示設定。
+
+      請注意，如果 <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> 政策設為停用，但將 <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> 政策設為啟用或不設定，系統仍會在 chrome://history/journeys 頁面上顯示瀏覽歷程，但可能不會顯示在網址列中，且與使用者的關聯性也會降低。
+      </translation>
 <translation id="51859390023061147">停用完整還原功能。</translation>
 <translation id="5189360528842591274">僅允許連接至清單中的藍牙服務</translation>
 <translation id="5190426551516379357">如果設定這項政策，系統會在 YouTube 上強制執行低度的嚴格篩選模式，並禁止使用者選擇更寬鬆的模式。這項政策可設定的選項如下：

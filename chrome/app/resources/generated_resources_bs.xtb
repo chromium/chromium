@@ -133,7 +133,7 @@
 <translation id="1124772482545689468">Korisnik</translation>
 <translation id="1125550662859510761">Izgleda kao <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Izvorno)</translation>
 <translation id="1126809382673880764">Ne štiti vas od opasnih web lokacija, preuzimanja i ekstenzija. I dalje ćete dobijati zaštitu Sigurno pregledanje, tamo gdje je dostupna, na drugim Googleovim uslugama kao što su Gmail i Pretraživanje.</translation>
-<translation id="1128090040635299943">Linux se trenutačno konfigurira. Konfiguracija će potrajati nekoliko minuta.</translation>
+<translation id="1128090040635299943">Linux se trenutno konfigurira. Konfiguracija će potrajati nekoliko minuta.</translation>
 <translation id="1128591060186966949">Uređivanje pretraživača</translation>
 <translation id="1129420403709586868">Pregledajte fotografije i medijski sadržaj telefona</translation>
 <translation id="1129850422003387628">Upravljajte aplikacijama</translation>
@@ -337,7 +337,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1327794256477341646">Funkcije za koje je potrebna vaša lokacija neće funkcionirati</translation>
 <translation id="1329191040029425999">Provjerite je li uređaj ažuriran i pokušajte ponovo</translation>
 <translation id="1330145147221172764">Omogući tastaturu na ekranu</translation>
-<translation id="1331625853030156663">Da biste otvorili aplikaciju <ph name="APP_NAME" />, omogućite opciju "Prikaži zaključan zaslon prilikom vraćanja iz mirovanja"</translation>
+<translation id="1331625853030156663">Da otvorite aplikaciju <ph name="APP_NAME" />, omogućite opciju "Prikaži zaključani ekran prilikom vraćanja iz mirovanja"</translation>
 <translation id="1331977651797684645">To sam ja.</translation>
 <translation id="1333489022424033687">Neke funkcije web lokacije <ph name="ORIGIN" /> možda neće raditi dok ne obrišete podatke koje su druge web lokacije pohranile na vašem uređaju</translation>
 <translation id="1333965224356556482">Nemoj dozvoliti web lokacijama prikaz lokacije</translation>
@@ -1968,6 +1968,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2832124733806557606">Vaše dijete može koristiti PIN da se prijavi na uređaj ili da ga otključa.</translation>
 <translation id="2835177225987815960">Vaše trenutne postavke skeniranja će se poništiti, uključujući sve dodijeljene prekidače i preference za brzinu automatskog skeniranja.</translation>
 <translation id="2835547721736623118">Usluga prepoznavanja govora</translation>
+<translation id="2836232638504556905">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> podijelit će vaše ime, e-adresu i profilnu sliku s ovom web-lokacijom. Pogledajte <ph name="BEGIN_LINK" />pravila o privatnosti<ph name="END_LINK" /> ove web-lokacije.</translation>
 <translation id="2836269494620652131">Pad aplikacije</translation>
 <translation id="2836635946302913370">Administrator je onemogućio prijavu s ovim korisničkim imenom.</translation>
 <translation id="283669119850230892">Da koristite mrežu <ph name="NETWORK_ID" />, najprije se povežite na internet prema uputama u nastavku.</translation>
@@ -2249,6 +2250,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3105796011181310544">Vratiti na Google?</translation>
 <translation id="310671807099593501">Web lokacija koristi bluetooth</translation>
 <translation id="3108931485517391283">Nije moguće primiti</translation>
+<translation id="3109206895301430738">Spremljeno u grupe kartica</translation>
 <translation id="3109724472072898302">Skupljeno</translation>
 <translation id="311214366526552035">Ipak preuzmi</translation>
 <translation id="3112292765614504292">Veličina aplikacije: <ph name="APP_SIZE" /></translation>
@@ -3185,7 +3187,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4031179711345676612">Mikrofon je dozvoljen</translation>
 <translation id="4031308539321678562">Ovo će trajno izbrisati podatke o pregledanju s ovog uređaja. Google račune na ovom profilu mogu koristiti druge aplikacije na vašem Chromebooku. Ove račune možete ukloniti u odjeljku <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4031527940632463547">Senzori su blokirani</translation>
-<translation id="4033415645631238123">Prijava putem Pametnog zaključavanja više nije dostupna. I dalje možete otključavati putem Pametnog zaključavanja.</translation>
+<translation id="4033415645631238123">Prijava pomoću Smart Locka više nije dostupna. I dalje možete otključavati pomoću Smart Locka.</translation>
 <translation id="4033471457476425443">Dodaj novi folder</translation>
 <translation id="4033963223187371752">Sigurne web lokacije mogu ugraditi sadržaj kao što su slike ili web okviri koji nisu sigurni</translation>
 <translation id="4034824040120875894">Štampač</translation>
@@ -3346,7 +3348,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="420283545744377356">Isključite čuvara ekrana</translation>
 <translation id="4203065553461038553">Naziv fajla ili lokacije je predug</translation>
 <translation id="4204851595694839599">Kakvo vam je bilo iskustvo s igranjem igre?</translation>
-<translation id="4205157409548006256">Došlo je do pogreške prilikom konfiguriranja Linuxa.</translation>
+<translation id="4205157409548006256">Došlo je do greške prilikom konfiguriranja Linuxa.</translation>
 <translation id="4206144641569145248">Vanzemaljac</translation>
 <translation id="4206323443866416204">Izvještaj o povratnim informacijama</translation>
 <translation id="4207522141889799150">Uredite odobrenja web lokacije za <ph name="SITE" /></translation>
@@ -5816,7 +5818,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6686665106869989887">Kartica je pomjerena udesno</translation>
 <translation id="6686817083349815241">Sačuvajte svoju lozinku</translation>
 <translation id="6687079240787935001">Sakrij: <ph name="MODULE_TITLE" /></translation>
-<translation id="6688391094668641513">Zahtijevanje čitanja i promjene web-lokacije <ph name="ORIGIN" />:</translation>
+<translation id="6688391094668641513">Zahtijevanje čitanja i promjene web lokacije <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Zamolite dijete (<ph name="SUPERVISED_USER_NAME" />) da dođe do računara. Dijete će pročitati nekoliko fraza s ovog ekrana da kreira svoj model glasa.
     <ph name="BR" />
     Ako <ph name="SUPERVISED_USER_NAME" /> treba pomoć s čitanjem, neka ponavlja tekst za vama. Šapćite tekst dalje od mikrofona tako da Asistent uči glas vašeg djeteta, a ne vaš.</translation>
@@ -6329,7 +6331,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Napusti stranicu}one{Napusti stranice}few{Napusti stranice}other{Napusti stranice}}</translation>
 <translation id="7207457272187520234">Šaljite podatke o korištenju i dijagnostici. Ovaj uređaj trenutno automatski šalje Googleu podatke o dijagnostici, uređaju i korištenju aplikacija. To će pomoći stabilnosti sistema i aplikacija, kao i drugim poboljšanjima. Neki zbirni podaci će također pomoći Googleovim aplikacijama i partnerima, kao što su Androidovi programeri. Ovu postavku je nametnuo vlasnik. Ako vam je uključena postavka dodatna Aktivnost na webu i u aplikacijama, ti podaci će možda biti sačuvani na vašem Google računu.</translation>
 <translation id="7207631048330366454">Pretražite aplikacije</translation>
-<translation id="720808544705441386">Aplikacija se ne može otvoriti</translation>
+<translation id="720808544705441386">Nije moguće otvoriti aplikaciju</translation>
 <translation id="7210499381659830293">Štampači ekstenzija</translation>
 <translation id="7211783048245131419">Još uvijek nije dodijeljen nijedan prekidač za pristup</translation>
 <translation id="7212097698621322584">Unesite sadašnji PIN da ga promijenite. Ako ne znate svoj PIN, moraćete poništiti sigurnosni ključ, a zatim kreirati novi PIN.</translation>

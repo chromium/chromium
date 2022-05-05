@@ -43,7 +43,7 @@
 <translation id="1254117744268754948">Избор директоријума</translation>
 <translation id="1265739287306757398">Сазнајте како</translation>
 <translation id="1272079795634619415">Заустави</translation>
-<translation id="1275718070701477396">Изабрано</translation>
+<translation id="1275718070701477396">Изабрано је</translation>
 <translation id="1281818060020671000">Управљајте подацима</translation>
 <translation id="1283524564873030414">Последња 24 сата</translation>
 <translation id="1285320974508926690">Никад не преводи овај сајт</translation>
@@ -227,6 +227,7 @@
 <translation id="2898963176829412617">Нови директоријум...</translation>
 <translation id="2916171785467530738">Аутоматски довршавај претраге и URL-ове</translation>
 <translation id="291754862089661335">Поставите QR или бар-код у овај оквир</translation>
+<translation id="2920866371965792875">Да бисте видели новости са овог сајта, идите овде.</translation>
 <translation id="2921219216347069551">Дељење странице није могуће</translation>
 <translation id="2923448633003185837">Налепи и иди</translation>
 <translation id="292639812446257861">Означи као непрочитано</translation>
@@ -451,6 +452,7 @@
 <translation id="4840495572919996524">Обележивачи, историја, лозинке и други подаци више се неће синхронизовати са Google налогом.</translation>
 <translation id="4844899002472726590">Прегледајте и мењајте теме које вас интересују</translation>
 <translation id="4854345657858711387">Подесите шифру</translation>
+<translation id="4858786880085262208">Надоградите на HTTPS када је то могуће. Безбедни сајтови могу да уграде садржај који није безбедан.</translation>
 <translation id="4860895144060829044">Позовите</translation>
 <translation id="4872323082491632254">Проверите лозинке</translation>
 <translation id="4881695831933465202">Отвори</translation>
@@ -800,6 +802,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7781069478569868053">Страница нове картице</translation>
 <translation id="7781829728241885113">Јуче</translation>
 <translation id="778855399387580014">Започните претрагу на новој Chrome картици.</translation>
+<translation id="7790892308048519147">Пробај да користиш безбедне везе</translation>
 <translation id="7791543448312431591">Додај</translation>
 <translation id="7807060072011926525">Пружа Google</translation>
 <translation id="7839985698273989086">Офлајн страница</translation>

@@ -155,6 +155,7 @@
 <translation id="2446553403094072641">ওপঙি থকা বিন্দুৰ সঠিকতা</translation>
 <translation id="2448312741937722512">প্রকাৰ</translation>
 <translation id="2461822463642141190">বৰ্তমান</translation>
+<translation id="2480034874476596812">মেনুৱেলী অফ কৰক</translation>
 <translation id="2491955442992294626">আপুনি আন এখন ৱিণ্ড’ ব্যৱহাৰ কৰি থাকোঁতে কীসমূহ পৰীক্ষা কৰা নহয়</translation>
 <translation id="2493126929778606526">স্বয়ংক্ৰিয়ভাৱে বাছনি কৰা আপোনাৰ শ্ৰেষ্ঠ ফট’সমূহ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -250,6 +251,7 @@
 <translation id="3606583719724308068">HTTPS ৱেবছাইটলৈ অধিক বিলম্বতা</translation>
 <translation id="3621202678540785336">ইনপুট</translation>
 <translation id="3632579075709132555">গোপনীয়তাৰ স্ক্ৰীন ট’গল কৰা</translation>
+<translation id="3678765385266369662">আপুনি ৰাইট কৰিব নোৱৰাকৈ সুৰক্ষিত কৰাৰ সুবিধাটো কেনেকৈ অফ কৰিব বিচাৰে সেয়া বাছনি কৰক</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> পৰীক্ষা</translation>
 <translation id="370665806235115550">ল'ড হৈ আছে...</translation>
 <translation id="3708186454126126312">আগতে সংযোগ কৰা</translation>
@@ -304,6 +306,7 @@
 <translation id="4244962993387259361">মেম’ৰী পৰীক্ষাটো চলাবলৈ আপোনাক অতি কমেও ৫০০ এমবি খালী ঠাই লাগিব। ঠাই খালী কৰিবলৈ, ছেটিং &gt; ষ্ট’ৰেজ পৰিচালনালৈ যাওক</translation>
 <translation id="4250229828105606438">স্ক্রীণশ্বট</translation>
 <translation id="4258281355379922695">HTTPৰ বিলম্বতা</translation>
+<translation id="4258561075226177474">ডিভাইচটো একেগৰাকী ব্যৱহাৰকাৰীৰ ওচৰলৈ যাব। ব্যৱহাৰকাৰীৰ ডেটা মচিবনে?</translation>
 <translation id="4271957103967917607">পূৰ্ণ স্ক্ৰীনত চাওক</translation>
 <translation id="4275799948641988986">মেৰামতি কৰাৰ পাছত ডিভাইচটো কোনে ব্যৱহাৰ কৰিব?</translation>
 <translation id="4289540628985791613">ৰূপৰেখা</translation>
@@ -352,6 +355,7 @@
 <translation id="473775607612524610">আপডে'ট কৰক</translation>
 <translation id="4744944742468440486">আপুনি কৰা বাছনি সম্পৰ্কীয় তথ্য</translation>
 <translation id="4773299976671772492">বন্ধ হৈছে</translation>
+<translation id="4774530504324923332">আপোনাক এটা RSU সক্ষম কৰা সুৰক্ষা সম্পৰ্কীয় চাবি, এটা কিউআৰ ক’ড স্কেনাৰ আৰু ইণ্টাৰনেট সংযোগ থকা এটা দ্বিতীয় ডিভাইচৰ প্ৰয়োজন হ’ব</translation>
 <translation id="4782311465517282004">আপুনি ৰাইট ক্লিক কৰিলে অথবা পাঠ দীঘলীয়াকৈ টিপি ধৰি থাকিলে সংজ্ঞা, অনুবাদ অথবা একক ৰূপান্তৰণ পাওক</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> খন ফট’</translation>
 <translation id="4793710386569335688">অধিক সহায়ৰ বাবে <ph name="BEGIN_LINK" />সহায় কেন্দ্ৰ<ph name="END_LINK" />লৈ যাওক।</translation>
@@ -375,6 +379,7 @@
 <translation id="4890353053343094602">তৎক্ষণাত নতুন এটা বাছনি কৰক</translation>
 <translation id="4891842000192098784">চাপ</translation>
 <translation id="4897058166682006107">ডিভাইচটোৰ বাওঁফালৰ বাডটোত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>
+<translation id="4915052247106771211">এইটোৱে ডিভাইচটো ফেক্টৰীৰ ছেটিঙলৈ ৰিছেট কৰিব (পাৱাৰৱাশ্ব)।</translation>
 <translation id="4917385247580444890">শক্তিশালী</translation>
 <translation id="4917889632206600977">বন্ধ হৈছে - কাগজ শেষ হৈছে</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ হৈছে।</translation>
@@ -429,6 +434,8 @@
 <translation id="5358174242040570474">কিবা ভুল হ’ল। পুনৰ এখন ৱালপেপাৰ বাছনি কৰি অথবা পুনৰ এপ্‌টো খুলি চেষ্টা কৰি চাওক।</translation>
 <translation id="5372659122375744710">ৱাই-ফাইৰ নেটৱৰ্কটো সুৰক্ষিত নহয়</translation>
 <translation id="5376354385557966694">স্বয়ংক্ৰিয় উজ্জ্বল ম’ড</translation>
+<translation id="537872351913703572">ডিভাইচটো অন্য কোনো ব্যৱহাৰকাৰী অথবা প্ৰতিষ্ঠানলৈ যাব</translation>
+<translation id="5395600419410242651">আটাইবোৰ ডেটা মচক</translation>
 <translation id="5400907029458559844">ডিভাইচটো সংযোগ হৈ আছে।</translation>
 <translation id="5401938042319910061">সকলো ৰুটিন চলাওক</translation>
 <translation id="5423849171846380976">সক্ৰিয় কৰা হৈছে</translation>
@@ -639,6 +646,7 @@
 <translation id="7570674786725311828">ইউএছবি টাচ্চস্ক্ৰীন</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> বাকী</translation>
 <translation id="7620771111601174153">সহায় কেন্দ্ৰত অধিক জানক</translation>
+<translation id="7626501172915339021">RMA ছাৰ্ভাৰ আনলক (RSU) সম্পাদন কৰক</translation>
 <translation id="763165478673169849">অন্তিমবাৰ ৰিছেট কৰাৰ সময়</translation>
 <translation id="7648838807254605802">HTTPSৰ বেছি বিলম্বতা</translation>
 <translation id="7656388927906093505">ডিভাইচটো এটা মাউচ।</translation>
@@ -733,6 +741,7 @@
 <translation id="8671972493856476349"><ph name="VERSION_NUMBER" />লৈ আপডে’ট কৰক আৰু ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="8675354002693747642">আগতীয়াকৈ শ্বেয়াৰ কৰা চাবি</translation>
 <translation id="8677859815076891398">কোনো এলবাম নাই। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />ত এটা এলবাম সৃষ্টি কৰক।</translation>
+<translation id="8680431479333800907">ডিভাইচটো একেগৰাকী ব্যৱহাৰকাৰীৰ ওচৰলৈ যাব</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> এই সুবিধাটো পৰিচালনা কৰিবলৈ বাওঁমুৱা অথবা সোঁমুৱা কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰক।</translation>
 <translation id="8712637175834984815">বুজি পালোঁ</translation>
 <translation id="871560550817059752">বিফল হৈছে - চিয়াহী শেষ হৈছে</translation>
@@ -782,6 +791,8 @@
 <translation id="9087578468327036362">এই প্ৰশ্নটোৰ অভিযোগ দিয়ক</translation>
 <translation id="9088306295921699330">এতিয়ালৈকে কৰা ব্যৱহাৰৰ পৰিমাণ</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">আপুনি ডিভাইচটোৰ অংশবোৰ পৃথক কৰিব লাগিব</translation>
+<translation id="9098156406873149060">ব্যৱহাৰকাৰীৰ ডেটা ৰাখক</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />ৰ টিকেট ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> নম্বৰ পৃষ্ঠাখন স্কেন কৰি থকা হৈছে</translation>
 <translation id="9111102763498581341">আনলক</translation>

@@ -286,7 +286,7 @@
 <translation id="1272508081857842302">Kufungua <ph name="BEGIN_LINK" />viungo vinavyoweza kutumika<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">Akaunti hii ya mtumiaji siyo ya kikoa ambacho kifaa kimesajiliwa. Ikiwa unataka kujisajili kwenye kikoa tofauti unahitaji kuenda katika ufufuaji wa kifaa kwanza.</translation>
 <translation id="1274997165432133392">Vidakuzi na data ya tovuti nyingine</translation>
-<translation id="1275718070701477396">Imechaguliwa</translation>
+<translation id="1275718070701477396">Umeichagua</translation>
 <translation id="1276994519141842946">Imeshindwa kuondoa <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Tunga PIN mpya ambayo ni tofauti na PIN yako ya sasa</translation>
 <translation id="1278859221870828664">Kagua programu na huduma za Google Play</translation>
@@ -5635,6 +5635,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6520876759015997832">Tokeo la utafutaji la <ph name="LIST_POSITION" /> kati ya <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Bonyeza Enter ili uende kwenye sehemu.</translation>
 <translation id="6521214596282732365">Tovuti hutumia fonti zako ili uweze kuunda maudhui yenye usahihi wa hali ya juu kwa kutumia zana za mtandaoni za usanifu na uchoraji</translation>
 <translation id="6523303810310758032">Unapofuta historia yako ya kuvinjari — yote au kwa tovuti mahususi — unafuta pia maelezo ya vipimo yanayohusiana na tovuti hizo. Tazama <ph name="BEGIN_LINK" />historia yako ya kuvinjari<ph name="END_LINK" /></translation>
+<translation id="6523574494641144162">Kidhibiti cha Manenosiri cha Google kimeshindwa kuhifadhi manenosiri haya kwenye Akaunti yako ya Google. Unaweza kuyahifadhi katika kifaa hiki.</translation>
 <translation id="6524735478670290456">Jinsi tunavyotumia data hii:</translation>
 <translation id="652492607360843641">Umeunganishwa kwenye mtandao wa <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Shiriki</translation>
@@ -5939,6 +5940,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6818198425579322765">Lugha ya Ukurasa Unaotafsiriwa</translation>
 <translation id="6818547713623251698">Angalia picha, maudhui, arifa na programu za simu yako</translation>
 <translation id="6818802132960437751">Ulinzi uliojumuishwa dhidi ya virusi</translation>
+<translation id="6818920801736417483">Ungependa kuhifadhi manenosiri?</translation>
 <translation id="6823174134746916417">Kipengele cha 'gusa ili ubofye' kwenye padi ya kugusa</translation>
 <translation id="6824564591481349393">Nakili Anwani ya Barua P&amp;epe</translation>
 <translation id="6824584962142919697">&amp;Kagua vipengee</translation>

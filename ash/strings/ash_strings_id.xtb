@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Perangkat USB-C (port depan)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> diubah ke <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik konfirmasi untuk menyimpan perubahan. Setelan sebelumnya akan dipulihkan dalam <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Perangkat Bluetooth "<ph name="DEVICE_NAME" />" meminta izin untuk bersanding. Masukan kode PIN ini pada perangkat tersebut: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Alat screencast</translation>
 <translation id="1024261588257374085">Screenshot sebagian dipilih</translation>
 <translation id="1024364763893396229">Simpan <ph name="NAME" /> Anda</translation>
 <translation id="1032891413405719768">Baterai stilus lemah</translation>
@@ -85,7 +84,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1351937230027495976">Ciutkan menu</translation>
 <translation id="1364382257761975320">Untuk membuka kunci Chromebook, gunakan sidik jari</translation>
-<translation id="1364618750746929654">Tidak dapat membuat transkripsi</translation>
 <translation id="1372545819342940910">Simpan desktop untuk nanti</translation>
 <translation id="1383597849754832576">Tidak dapat mendownload file ucapan. Coba lagi nanti.</translation>
 <translation id="1383876407941801731">Telusuri</translation>
@@ -460,7 +458,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3702846122927433391">Populasi di Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Terhubung sebelumnya</translation>
-<translation id="3712317119236351467">Tidak dapat menyimpan rekaman</translation>
 <translation id="371370241367527062">Mikrofon depan</translation>
 <translation id="3713734891607377840">Buka saat selesai</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, dan <ph name="UNAVAILABLE_APPS_COUNT" /> lainnya tidak ada di perangkat ini.</translation>
@@ -854,6 +851,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6166852626429024716">Telusuri perangkat, aplikasi, setelan, web ...</translation>
 <translation id="6179832488876878285">Anda dapat menyematkan file penting di sini. Buka aplikasi File untuk memulai.</translation>
 <translation id="619279033188484792">Lihat foto terbaru, media, dan notifikasi dari ponsel Anda di <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Diisi penuh sekarang</translation>
 <translation id="6220928844947387476">Anda kini dapat merekam diri Anda dan layar secara bersamaan</translation>
 <translation id="622484624075952240">Bawah</translation>
 <translation id="6231419273573514727">Performa periferal mungkin dibatasi</translation>
@@ -1189,6 +1187,7 @@ Baru diinstal</translation>
 <translation id="826107067893790409">Tekan Enter untuk membuka kunci <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Hapus</translation>
 <translation id="8270450402312105425">{0,plural, =1{Ubah perangkat ke versi sebelumnya dalam 1 jam}other{Ubah perangkat ke versi sebelumnya dalam # jam}}</translation>
+<translation id="8271580342040932214">Baterai sementara waktu diisi daya sampai 80% saat dicolokkan ke sumber listrik untuk memperpanjang masa pakai baterai. Baterai akan terisi penuh sekitar pukul <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Geser ke kiri dengan empat jari untuk beralih ke desktop sebelumnya</translation>
 <translation id="828708037801473432">Nonaktif</translation>
 <translation id="8297006494302853456">Lemah</translation>
@@ -1272,6 +1271,7 @@ Baru diinstal</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Setelan Metode Input</translation>
 <translation id="8818320199597151042">Menghapus profil. Tunggu beberapa menit.</translation>
+<translation id="8819728065740986820">Pengisian daya adaptif aktif</translation>
 <translation id="8825863694328519386">Geser dari kiri untuk kembali</translation>
 <translation id="8834539327799336565">Saat ini terhubung</translation>
 <translation id="8841375032071747811">Tombol kembali</translation>
@@ -1318,6 +1318,7 @@ Baru diinstal</translation>
 <translation id="9080132581049224423">Geser ke atas untuk membuka beranda</translation>
 <translation id="9080206825613744995">Mikrofon sedang digunakan.</translation>
 <translation id="9084606467167974638">Beralih posisi menu</translation>
+<translation id="9085962983642906571">Baterai diisi daya sampai 80% saat dicolokkan ke sumber listrik untuk memperpanjang masa pakai baterai.</translation>
 <translation id="9089416786594320554">Metode masukan</translation>
 <translation id="9091626656156419976">Tampilan <ph name="DISPLAY_NAME" /> dihapus</translation>
 <translation id="9098969848082897657">Senyapkan suara ponsel</translation>

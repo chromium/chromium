@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C įrenginys (prievadas priekyje)</translation>
 <translation id="1013598600051641573">„<ph name="DISPLAY_NAME" />“ pakeistas į <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Spustelėkite patvirtinimo mygtuką, kad išsaugotumėte pakeitimus. Ankstesni nustatymai bus atkurti po <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">„Bluetooth“ įrenginys „<ph name="DEVICE_NAME" />“ prašo leidimo susieti. Šiame įrenginyje įveskite šį PIN kodą: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Ekrano vaizdo įrašymo įrankiai</translation>
 <translation id="1024261588257374085">Pasirinkta dalinė ekrano kopija</translation>
 <translation id="1024364763893396229">Išsaugokite „<ph name="NAME" />“</translation>
 <translation id="1032891413405719768">Rašiklio akumuliatorius senka</translation>
@@ -85,7 +84,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1346748346194534595">Dešinė</translation>
 <translation id="1351937230027495976">Sutraukti meniu</translation>
 <translation id="1364382257761975320">Kad atrakintumėte „Chromebook“, naudokite kontrolinį kodą</translation>
-<translation id="1364618750746929654">Nepavyko sugeneruoti transkribuoto teksto</translation>
 <translation id="1372545819342940910">Išsaugoti darbalaukį naudoti vėliau</translation>
 <translation id="1383597849754832576">Nepavyko atsisiųsti kalbos failų. Vėliau bandykite dar kartą.</translation>
 <translation id="1383876407941801731">Ieškoti</translation>
@@ -460,7 +458,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3702846122927433391">Populiacija Nigerijoje</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Anksčiau susieti</translation>
-<translation id="3712317119236351467">Nepavyko išsaugoti įrašo</translation>
 <translation id="371370241367527062">Priekinis mikrofonas</translation>
 <translation id="3713734891607377840">Baigus atidaryti</translation>
 <translation id="3726171378575546917">Šiame įrenginyje nėra „<ph name="UNAVAILABLE_APPS_ONE" />“, „<ph name="UNAVAILABLE_APPS_TWO" />“ ir dar <ph name="UNAVAILABLE_APPS_COUNT" /> program.</translation>
@@ -854,6 +851,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6166852626429024716">Ieškokite įrenginyje, programose, nustatymuose, žiniatinklyje...</translation>
 <translation id="6179832488876878285">Čia galite prisegti svarbius failus. Jei norite pradėti, atidarykite Failų programą.</translation>
 <translation id="619279033188484792">Peržiūrėkite telefono naujausias nuotraukas, mediją ir pranešimus „<ph name="DEVICE_TYPE" />“ įrenginyje</translation>
+<translation id="619335566042889110">Visiškai įkrauti dabar</translation>
 <translation id="6220928844947387476">Dabar galite įrašyti save ir savo ekraną tuo pačiu metu</translation>
 <translation id="622484624075952240">Žemiau</translation>
 <translation id="6231419273573514727">Išorinių įrenginių našumas gali būti apribotas</translation>
@@ -1189,6 +1187,7 @@ Naujas įdiegimas</translation>
 <translation id="826107067893790409">Paspauskite „Enter“, kad atrakinę leistumėte pasiekti <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Ištrinti</translation>
 <translation id="8270450402312105425">{0,plural, =1{Grąžinkite ankstesnę įrenginio versiją per valandą}one{Grąžinkite ankstesnę įrenginio versiją per # valandą}few{Grąžinkite ankstesnę įrenginio versiją per # valandas}many{Grąžinkite ankstesnę įrenginio versiją per # valandos}other{Grąžinkite ankstesnę įrenginio versiją per # valandų}}</translation>
+<translation id="8271580342040932214">Kol prijungtas prie maitinimo šaltinio, akumuliatorius laikinai įkrautas iki 80 proc., kad būtų prailgintas akumuliatoriaus veikimo laikas. Akumuliatorius bus visiškai įkrautas <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Perbraukite į kairę keturiais pirštais, kad perjungtumėte į ankstesnį darbalaukį</translation>
 <translation id="828708037801473432">Išjungta</translation>
 <translation id="8297006494302853456">Silpnas</translation>
@@ -1272,6 +1271,7 @@ Naujas įdiegimas</translation>
 <translation id="8814190375133053267">WI-Fi</translation>
 <translation id="881757059229893486">Įvesties metodų nustatymai</translation>
 <translation id="8818320199597151042">Pašalinamas profilis. Palaukite kelias minutes.</translation>
+<translation id="8819728065740986820">Prisitaikantis įkrovimas įjungtas</translation>
 <translation id="8825863694328519386">Kad grįžtumėte, perbraukite iš kairės</translation>
 <translation id="8834539327799336565">Šiuo metu susieti</translation>
 <translation id="8841375032071747811">Mygtukas „Atgal“</translation>
@@ -1318,6 +1318,7 @@ Naujas įdiegimas</translation>
 <translation id="9080132581049224423">Perbraukite aukštyn, kad grįžtumėte į pagrindinį ekraną</translation>
 <translation id="9080206825613744995">Mikrofonas naudojamas.</translation>
 <translation id="9084606467167974638">Perjunkite meniu padėtį</translation>
+<translation id="9085962983642906571">Kol prijungtas prie maitinimo šaltinio, akumuliatorius paliekamas įkrautas iki 80 proc., kad būtų prailgintas akumuliatoriaus veikimo laikas.</translation>
 <translation id="9089416786594320554">Įvesties metodai</translation>
 <translation id="9091626656156419976">Pašalintas vaizdas „<ph name="DISPLAY_NAME" />“</translation>
 <translation id="9098969848082897657">Telefono nutildymas</translation>

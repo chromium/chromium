@@ -155,6 +155,7 @@
 <translation id="2446553403094072641">Хөвөгч цэгийн нарийвчлал</translation>
 <translation id="2448312741937722512">Төрөл</translation>
 <translation id="2461822463642141190">Одоогийн</translation>
+<translation id="2480034874476596812">Гар аргаар унтраах</translation>
 <translation id="2491955442992294626">Таныг өөр цонх ашиглаж байх үед товчийг шалгадаггүй</translation>
 <translation id="2493126929778606526">Автоматаар сонгогдсон таны шилдэг зургууд</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -250,6 +251,7 @@
 <translation id="3606583719724308068">HTTPS вебсайтууд руу өндөр хоцролттой</translation>
 <translation id="3621202678540785336">Оролт</translation>
 <translation id="3632579075709132555">Нууцлалын дэлгэцийг асаах/унтраах</translation>
+<translation id="3678765385266369662">Та Write Protect-г хэрхэн унтраахыг хүсэж байгаагаа сонгоно уу</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тест</translation>
 <translation id="370665806235115550">Уншиж байна...</translation>
 <translation id="3708186454126126312">Өмнө нь холбогдсон</translation>
@@ -304,6 +306,7 @@
 <translation id="4244962993387259361">Танд Санах ойн туршилтыг ажиллуулахын тулд хамгийн багадаа 500 МБ-ын сул зай шаардлагатай. Сул зай гаргахын тулд Тохиргоо &gt; Хадгалах сангийн менежмент рүү очно уу.</translation>
 <translation id="4250229828105606438">Дэлгэцийн агшин</translation>
 <translation id="4258281355379922695">HTTP-н хоцролт</translation>
+<translation id="4258561075226177474">Төхөөрөмж ижил хэрэглэгчид очих гэж байна. Хэрэглэгчийн мэдээллийг устгах уу?</translation>
 <translation id="4271957103967917607">Бүтэн дэлгэцээр үзэх</translation>
 <translation id="4275799948641988986">Засварласны дараа төхөөрөмжийг хэн ашиглах вэ?</translation>
 <translation id="4289540628985791613">Тойм</translation>
@@ -352,6 +355,7 @@
 <translation id="473775607612524610">Шинэчлэх</translation>
 <translation id="4744944742468440486">Таны сонголттой холбоотой мэдээлэл</translation>
 <translation id="4773299976671772492">Зогссон</translation>
+<translation id="4774530504324923332">Танд RSU-г идэвхжүүлсэн аюулгүй байдлын түлхүүр, QR код сканнер болон интернэт холболттой хоёр дахь төхөөрөмж шаардлагатай</translation>
 <translation id="4782311465517282004">Та баруун талыг товших эсвэл текстийг удаан дарах үедээ тодорхойлолт, орчуулга эсвэл нэгж хөрвүүлэлт аваарай</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> зураг</translation>
 <translation id="4793710386569335688">Илүү их тусламж авах бол <ph name="BEGIN_LINK" />Тусламжийн төв<ph name="END_LINK" /> рүү очно уу.</translation>
@@ -431,6 +435,7 @@
 <translation id="5372659122375744710">Wi-Fi сүлжээ аюулгүй биш байна</translation>
 <translation id="5376354385557966694">Автомат гэрэлтэй горим</translation>
 <translation id="537872351913703572">Төхөөрөмж өөр хэрэглэгч эсвэл байгууллага руу очих болно</translation>
+<translation id="5395600419410242651">Бүх өгөгдлийг устгах</translation>
 <translation id="5400907029458559844">Төхөөрөмж холбогдож байна.</translation>
 <translation id="5401938042319910061">Бүх хэвшлийг ажиллуулах</translation>
 <translation id="5423849171846380976">Идэвхжүүлсэн байна</translation>
@@ -641,6 +646,7 @@
 <translation id="7570674786725311828">USB мэдрэмтгий дэлгэц</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> үлдсэн</translation>
 <translation id="7620771111601174153">Тусламжийн төвөөс нэмэлт мэдээлэл авах</translation>
+<translation id="7626501172915339021">RMA серверийн түгжээг тайлах (RSU) үйлдлийг гүйцэтгэх</translation>
 <translation id="763165478673169849">Хамгийн сүүлд шинэчилсэн цаг</translation>
 <translation id="7648838807254605802">Өндөр HTTPS хоцролт</translation>
 <translation id="7656388927906093505">Төхөөрөмж нь хулгана байна.</translation>
@@ -785,6 +791,8 @@
 <translation id="9087578468327036362">Энэ асуулгыг мэдээлэх</translation>
 <translation id="9088306295921699330">Одоогийн ашиглалт</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">Та төхөөрөмжийг задлах шаардлагатай болно</translation>
+<translation id="9098156406873149060">Хэрэглэгчийн өгөгдлийг хадгалах</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-н тасалбарыг дахин шинэчлэх</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна</translation>
 <translation id="9111102763498581341">Нээх</translation>

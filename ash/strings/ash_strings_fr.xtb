@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Appareil USB de type C (port situé sur l'avant de l'appareil)</translation>
 <translation id="1013598600051641573">La résolution de "<ph name="DISPLAY_NAME" />" est passée à <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Cliquez sur "Confirmer" pour valider cette modification. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">L'appareil Bluetooth "<ph name="DEVICE_NAME" />" demande l'autorisation de s'associer. Veuillez saisir le code suivant sur l'appareil : <ph name="PINCODE" />.</translation>
-<translation id="1014111206066007277">Outils d'enregistrement d'écran</translation>
 <translation id="1024261588257374085">Capture d'écran partielle sélectionnée</translation>
 <translation id="1024364763893396229">Enregistrez "<ph name="NAME" />"</translation>
 <translation id="1032891413405719768">Le niveau de charge des piles du stylet est faible</translation>
@@ -85,7 +84,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1346748346194534595">À droite</translation>
 <translation id="1351937230027495976">Réduire le menu</translation>
 <translation id="1364382257761975320">Pour déverrouiller votre Chromebook, utilisez votre empreinte</translation>
-<translation id="1364618750746929654">Impossible de générer la transcription</translation>
 <translation id="1372545819342940910">Enregistrer le bureau pour plus tard</translation>
 <translation id="1383597849754832576">Impossible de télécharger les fichiers vocaux. Réessayez plus tard.</translation>
 <translation id="1383876407941801731">Rechercher</translation>
@@ -460,7 +458,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3702846122927433391">Population au Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Connectés précédemment</translation>
-<translation id="3712317119236351467">Impossible de sauvegarder l'enregistrement</translation>
 <translation id="371370241367527062">Micro avant</translation>
 <translation id="3713734891607377840">Ouvrir une fois terminé</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> et <ph name="UNAVAILABLE_APPS_COUNT" /> autres applis ne sont pas sur cet appareil.</translation>

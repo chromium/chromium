@@ -5640,6 +5640,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6520876759015997832">Sökresultat <ph name="LIST_POSITION" /> av <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Tryck på Retur om du vill navigera till avsnittet.</translation>
 <translation id="6521214596282732365">Webbplatser använder normalt dina teckensnitt så att du kan skapa innehåll av hög kvalitet med onlineverktyg för design och grafik</translation>
 <translation id="6523303810310758032">När du raderar webbhistoriken, oavsett om det är all historik eller bara för en viss webbplats, raderar du också alla tillhörande mätningsuppgifter. Se <ph name="BEGIN_LINK" />webbhistoriken<ph name="END_LINK" /></translation>
+<translation id="6523574494641144162">Google Lösenordshantering kunde inte spara lösenorden i Google-kontot. Du kan spara dem på den här enheten.</translation>
 <translation id="6524735478670290456">Så här använder vi denna data:</translation>
 <translation id="652492607360843641">Du är ansluten till ett <ph name="NETWORK_TYPE" />-nätverk.</translation>
 <translation id="6527303717912515753">Dela</translation>
@@ -5944,6 +5945,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6818198425579322765">Språk på sidan som ska översättas</translation>
 <translation id="6818547713623251698">Visa foton, mediefiler, aviseringar och appar från telefonen</translation>
 <translation id="6818802132960437751">Inbyggt virusskydd</translation>
+<translation id="6818920801736417483">Vill du spara lösenord?</translation>
 <translation id="6823174134746916417">Lätt klick på styrplattan</translation>
 <translation id="6824564591481349393">Kopiera &amp;e-postadress</translation>
 <translation id="6824584962142919697">&amp;Inspektera element</translation>

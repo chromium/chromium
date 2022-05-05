@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Urządzenie USB-C (przedni port)</translation>
 <translation id="1013598600051641573">Rozdzielczość ekranu <ph name="DISPLAY_NAME" /> została zmieniona na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Kliknij „Potwierdź”, by zachować zmiany. Poprzednie ustawienia zostaną przywrócone za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Wpisz na nim ten kod PIN: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Narzędzia do screencastów</translation>
 <translation id="1024261588257374085">Wybrano zrzut części ekranu</translation>
 <translation id="1024364763893396229">Zapisz urządzenie <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Niski poziom baterii rysika</translation>
@@ -85,7 +84,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1346748346194534595">W prawo</translation>
 <translation id="1351937230027495976">Zwiń menu</translation>
 <translation id="1364382257761975320">Aby odblokować Chromebooka, użyj odcisku palca</translation>
-<translation id="1364618750746929654">Nie można wygenerować transkrypcji</translation>
 <translation id="1372545819342940910">Zapisz biurko do późniejszego wykorzystania</translation>
 <translation id="1383597849754832576">Nie udało się pobrać plików z mową. Spróbuj później.</translation>
 <translation id="1383876407941801731">Szukaj</translation>
@@ -460,7 +458,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3702846122927433391">Populacja Nigerii</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Wcześniej połączone</translation>
-<translation id="3712317119236351467">Nie udało się zapisać nagrania</translation>
 <translation id="371370241367527062">Przedni mikrofon</translation>
 <translation id="3713734891607377840">Otwórz po pobraniu</translation>
 <translation id="3726171378575546917">Aplikacji <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ani jeszcze <ph name="UNAVAILABLE_APPS_COUNT" /> nie ma na tym urządzeniu.</translation>

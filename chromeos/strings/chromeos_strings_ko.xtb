@@ -233,6 +233,7 @@
 <translation id="3484914941826596830">펌웨어 업데이트 도중에 외부 기기를 분리하거나 컴퓨터를 종료하지 마세요. 이 창을 최소화할 수 있습니다. 업데이트되는 데 몇 분 정도 걸릴 수 있으며 이 시간 동안 외부 기기가 작동하지 않을 수도 있습니다.</translation>
 <translation id="3486220673238053218">정의</translation>
 <translation id="3488065109653206955">부분적으로 활성화됨</translation>
+<translation id="3517001332549868749">Chrome OS 업데이트</translation>
 <translation id="3527036260304016759">실패 - 알 수 없는 오류</translation>
 <translation id="3532980081107202182">약 <ph name="MIN_REMAINING" />분 남음</translation>
 <translation id="3557205324756024651">로컬 ID(선택사항)</translation>
@@ -558,6 +559,7 @@
 <translation id="6692996468359469499">선택 항목과 관련된 정보 얻기</translation>
 <translation id="6704062477274546131">DNS 변환</translation>
 <translation id="6723839937902243910">전원</translation>
+<translation id="6723847290197874913">키보드 백라이트</translation>
 <translation id="672609503628871915">새로운 기능 알아보기</translation>
 <translation id="6747215703636344499">중지됨 - 배지대 가득 참</translation>
 <translation id="6749473226660745022">사진</translation>

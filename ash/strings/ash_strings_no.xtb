@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C-enhet (porten foran)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> endret til <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klikk på bekreft for å beholde endringene. De forrige innstillingene blir gjenopprettet om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til. Skriv inn denne PIN-koden på den aktuelle enheten: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Verktøy for skjermdeling</translation>
 <translation id="1024261588257374085">Delvis skjermdump er valgt</translation>
 <translation id="1024364763893396229">Lagre <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Pekepennen har lite batteri</translation>
@@ -85,7 +84,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1346748346194534595">Høyre</translation>
 <translation id="1351937230027495976">Skjul menyen</translation>
 <translation id="1364382257761975320">For å låse opp Chromebooken, bruk fingeravtrykket</translation>
-<translation id="1364618750746929654">Kan ikke generere transkripsjon</translation>
 <translation id="1372545819342940910">Lagre skrivebordet til senere</translation>
 <translation id="1383597849754832576">Kan ikke laste ned talefiler. Prøv på nytt senere.</translation>
 <translation id="1383876407941801731">Søk</translation>
@@ -460,7 +458,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3702846122927433391">Antall innbyggere i Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Tidligere tilkoblet</translation>
-<translation id="3712317119236351467">Kan ikke lagre opptaket</translation>
 <translation id="371370241367527062">Mikrofon foran</translation>
 <translation id="3713734891607377840">Åpne når nedlastingen er fullført</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> og <ph name="UNAVAILABLE_APPS_COUNT" /> til er ikke på denne enheten.</translation>
@@ -854,6 +851,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6166852626429024716">Søk på enheten, i apper, i innstillinger og på nettet.</translation>
 <translation id="6179832488876878285">Du kan feste viktige filer her. Åpne Filer-appen for å komme i gang.</translation>
 <translation id="619279033188484792">Se nylige bilder, medier og varsler fra telefonen din på <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Lad helt nå</translation>
 <translation id="6220928844947387476">Nå kan du ta opp deg selv og skjermen din samtidig</translation>
 <translation id="622484624075952240">Ned</translation>
 <translation id="6231419273573514727">Ytelsen til eksterne enheter kan være begrenset</translation>
@@ -1189,6 +1187,7 @@ Nylig installert</translation>
 <translation id="826107067893790409">Trykk på Enter for å låse opp for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Slett</translation>
 <translation id="8270450402312105425">{0,plural, =1{Nedgrader enheten til en tidligere versjon innen en time}other{Nedgrader enheten til en tidligere versjon innen # timer}}</translation>
+<translation id="8271580342040932214">Batteriet holdes midlertidig på 80 % mens enheten er koblet til strøm, slik at batterilevetiden forlenges. Batteriet kommer til å være fulladet innen <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Sveip til venstre med fire fingre for å bytte til forrige skrivebord</translation>
 <translation id="828708037801473432">Av</translation>
 <translation id="8297006494302853456">Svakt</translation>
@@ -1272,6 +1271,7 @@ Nylig installert</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Innstillinger for inndatametoder</translation>
 <translation id="8818320199597151042">Fjerner profilen. Vent i noen minutter.</translation>
+<translation id="8819728065740986820">Tilpasset lading er på</translation>
 <translation id="8825863694328519386">Sveip fra venstre for å gå tilbake</translation>
 <translation id="8834539327799336565">Tilkoblet nå</translation>
 <translation id="8841375032071747811">Tilbakeknapp</translation>
@@ -1318,6 +1318,7 @@ Nylig installert</translation>
 <translation id="9080132581049224423">Sveip opp for å gå til startskjermen</translation>
 <translation id="9080206825613744995">Mikrofonen er i bruk.</translation>
 <translation id="9084606467167974638">Endre menyplasseringen</translation>
+<translation id="9085962983642906571">Batteriet holdes på 80 % mens enheten er koblet til strøm, slik at batterilevetiden forlenges.</translation>
 <translation id="9089416786594320554">Inndatametoder</translation>
 <translation id="9091626656156419976">Fjernet skjermen <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Demp telefonen</translation>

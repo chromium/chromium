@@ -1970,6 +1970,7 @@
 <translation id="2832124733806557606">לילד או לילדה שלך יש אפשרות להשתמש בקוד אימות כדי להיכנס למכשיר הזה או לבטל את הנעילה שלו.</translation>
 <translation id="2835177225987815960">הגדרת הסריקה הנוכחית שלך תאופס, לרבות העדפות למהירות הסריקה האוטומטית ומתגים שהוקצו.</translation>
 <translation id="2835547721736623118">שירות של זיהוי דיבור</translation>
+<translation id="2836232638504556905">כדי להמשיך, הפרטים הבאים ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה: השם, האימייל, הכתובת ותמונת הפרופיל שלך. <ph name="BEGIN_LINK" />כאן מפורטת מדיניות הפרטיות<ph name="END_LINK" /> של האתר הזה.</translation>
 <translation id="2836269494620652131">קריסה</translation>
 <translation id="2836635946302913370">הכניסה עם שם משתמש זה הושבתה על ידי מנהל המערכת.</translation>
 <translation id="283669119850230892">כדי להשתמש ב-<ph name="NETWORK_ID" /> של הרשת, יש להשלים קודם את ההתחברות לאינטרנט, למטה.</translation>
@@ -2251,6 +2252,7 @@
 <translation id="3105796011181310544">‏להחזיר אל Google?</translation>
 <translation id="310671807099593501">‏האתר משתמש ב-Bluetooth</translation>
 <translation id="3108931485517391283">לא ניתן לקבל את הקובץ</translation>
+<translation id="3109206895301430738">קבוצות כרטיסיות שמורות</translation>
 <translation id="3109724472072898302">מכווץ</translation>
 <translation id="311214366526552035">להוריד בכל זאת</translation>
 <translation id="3112292765614504292">גודל האפליקציה: <ph name="APP_SIZE" /></translation>
@@ -5643,6 +5645,7 @@
 <translation id="6520876759015997832">‏תוצאת חיפוש <ph name="LIST_POSITION" /> מתוך <ph name="LIST_SIZE" />:‏ <ph name="SEARCH_RESULT_TEXT" />. כדי לעבור לקטע הזה, יש להקיש על Enter.</translation>
 <translation id="6521214596282732365">לרוב, אתרים משתמשים בגופנים שלך, כך שניתן ליצור תוכן באיכות גבוהה באמצעות כלי עיצוב וגרפיקה שזמינים אונליין</translation>
 <translation id="6523303810310758032">כשמוחקים את היסטוריית הגלישה, במלואה או של אתר מסוים, נמחקים גם הפרטים המשויכים אליה. כדאי לעיין ב<ph name="BEGIN_LINK" />היסטוריית הגלישה<ph name="END_LINK" /></translation>
+<translation id="6523574494641144162">‏למנהל הסיסמאות של Google לא הייתה אפשרות לשמור את הסיסמאות האלה בחשבון Google שלך. אפשר לשמור אותן במכשיר הזה.</translation>
 <translation id="6524735478670290456">איך אנחנו משתמשים בנתונים האלה:</translation>
 <translation id="652492607360843641">התחברת אל רשת <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">שיתוף</translation>
@@ -5952,6 +5955,7 @@
 <translation id="6818198425579322765">שפת הדף שיש לתרגם</translation>
 <translation id="6818547713623251698">הצגת התמונות, המדיה, ההתראות והאפליקציות שבטלפון</translation>
 <translation id="6818802132960437751">הגנה מובנית מפני וירוסים</translation>
+<translation id="6818920801736417483">לשמור את הסיסמאות?</translation>
 <translation id="6823174134746916417">שימוש בנגיעה קלה בלוח המגע</translation>
 <translation id="6824564591481349393">העתקת כתובת &amp;אימייל</translation>
 <translation id="6824584962142919697">&amp;בדיקת רכיבים</translation>

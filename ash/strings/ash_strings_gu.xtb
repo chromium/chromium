@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C ઉપકરણ (આગળનું પોર્ટ)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> બદલાઈને <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) થયું. ફેરફારો રાખવા માટે કન્ફર્મ કરો પર ક્લિક કરો. અગાઉના સેટિંગ <ph name="TIMEOUT_SECONDS" />માં રિસ્ટોર કરવામાં આવશે.</translation>
 <translation id="1013923882670373915">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે. કૃપા કરીને તે ડિવાઇસ પર આ PIN કોડ દાખલ કરો: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">સ્ક્રીનકાસ્ટના ટૂલ</translation>
 <translation id="1024261588257374085">આંશિક સ્ક્રીનશૉટ પસંદ કર્યો</translation>
 <translation id="1024364763893396229">તમારું <ph name="NAME" /> સાચવો</translation>
 <translation id="1032891413405719768">સ્ટાઇલસની બૅટરી ઓછી છે</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">જમણે</translation>
 <translation id="1351937230027495976">મેનૂ સંકુચિત કરો</translation>
 <translation id="1364382257761975320">તમારી Chromebook અનલૉક કરવા માટે, તમારી ફિંગરપ્રિન્ટનો ઉપયોગ કરો</translation>
-<translation id="1364618750746929654">ટ્રાન્સક્રિપ્શન જનરેટ કરી શકતા નથી</translation>
 <translation id="1372545819342940910">પછીથી ઉપયોગ માટે ડૅસ્ક સાચવો</translation>
 <translation id="1383597849754832576">સ્પીચ ફાઇલો ડાઉનલોડ કરી શકાતી નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="1383876407941801731">શોધો</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">નાઇજીરીયાની વસ્તી</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">પહેલાં કનેક્ટ કરેલા</translation>
-<translation id="3712317119236351467">રેકોર્ડિંગ સાચવી શકાતું નથી</translation>
 <translation id="371370241367527062">આગળનો માઇક્રોફોન</translation>
 <translation id="3713734891607377840">પૂર્ણ થાય ત્યારે ખોલો</translation>
 <translation id="3726171378575546917">આ ડિવાઇસ પર <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> અને વધુ <ph name="UNAVAILABLE_APPS_COUNT" /> ઍપ ઉપલબ્ધ નથી.</translation>
@@ -854,6 +851,7 @@
 <translation id="6166852626429024716">તમારા ડિવાઇસ, ઍપ, સેટિંગ અને વેબ પર શોધો...</translation>
 <translation id="6179832488876878285">તમે તમારી મહત્ત્વની ફાઇલો અહીં પિન કરી શકો છો. શરૂ કરવા માટે Files ઍપ ખોલો.</translation>
 <translation id="619279033188484792">તમારા <ph name="DEVICE_TYPE" /> પર તમારા ફોનના તાજેતરના ફોટા, મીડિયા અને નોટિફિકેશન જુઓ</translation>
+<translation id="619335566042889110">હવે પૂર્ણ ચાર્જ કરો</translation>
 <translation id="6220928844947387476">હવે તમે તમારું અને તમારી સ્ક્રીનનું રેકોર્ડિંગ એક સાથે કરી શકો છો</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">પેરિફેરલનું કાર્યપ્રદર્શન કદાચ મર્યાદિત કરવામાં આવી શકે</translation>
@@ -1189,6 +1187,7 @@
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> માટે અનલૉક કરવા Enter દબાવો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
 <translation id="8270450402312105425">{0,plural, =1{એક કલાકની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}one{# કલાકની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}other{# કલાકની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}}</translation>
+<translation id="8271580342040932214">બૅટરીની આવરદા વધારવા માટે તે પ્લગ-ઇન કરેલી હોય ત્યારે, તમારી બૅટરી હંગામી ધોરણે 80% ચાર્જ થયેલી હોય છે. તમારી બૅટરી <ph name="FULLY_CHARGE_TIME" /> વાગ્યા સુધીમાં પૂરી ચાર્જ થઈ જશે.</translation>
 <translation id="8284362522226889623">પાછલી ડેસ્ક પર સ્વિચ કરવા માટે ચાર આંગળી વડે ડાબી તરફ સ્વાઇપ કરો</translation>
 <translation id="828708037801473432">બંધ</translation>
 <translation id="8297006494302853456">નબળું</translation>
@@ -1272,6 +1271,7 @@
 <translation id="8814190375133053267">વાઇ-ફાઇ</translation>
 <translation id="881757059229893486">ઇનપુટ પદ્ધતિના સેટિંગ</translation>
 <translation id="8818320199597151042">પ્રોફાઇલ કાઢી નાખી રહ્યાં છીએ. થોડીવાર રાહ જુઓ.</translation>
+<translation id="8819728065740986820">અડૅપ્ટિવ ચાર્જિંગ ચાલુ છે</translation>
 <translation id="8825863694328519386">પાછળ જવા ડાબેથી સ્વાઇપ કરો</translation>
 <translation id="8834539327799336565">હાલમાં કનેક્ટેડ</translation>
 <translation id="8841375032071747811">પાછળ બટન</translation>
@@ -1318,6 +1318,7 @@
 <translation id="9080132581049224423">હોમ પર જવા માટે ઉપર સ્વાઇપ કરો</translation>
 <translation id="9080206825613744995">માઇકોફોન ઉપયોગમાં છે.</translation>
 <translation id="9084606467167974638">મેનૂની સ્થિતિને ટૉગલ કરો</translation>
+<translation id="9085962983642906571">તમારી બૅટરીની આવરદા વધારવા માટે તે પ્લગ-ઇન કરેલી હોય ત્યારે તેને 80% ચાર્જ થયેલી રાખવામાં આવે છે.</translation>
 <translation id="9089416786594320554">ઇનપુટ પદ્ધતિઓ</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> ડિસ્પ્લે કાઢી નાખ્યું</translation>
 <translation id="9098969848082897657">ફોન સાઇલન્ટ રાખો</translation>

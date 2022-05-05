@@ -131,6 +131,7 @@
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1125550662859510761">Ziet eruit als <ph name="WIDTH" /> x <ph name="HEIGHT" /> (systeemeigen resolutie)</translation>
 <translation id="1126809382673880764">Beschermt je niet tegen gevaarlijke websites, downloads en extensies. Je wordt voor andere services, zoals Gmail en Zoeken, nog steeds beschermd door Safe Browsing als dat beschikbaar is.</translation>
+<translation id="1128090040635299943">Linux wordt momenteel ingesteld. De configuratie neemt een paar minuten in beslag.</translation>
 <translation id="1128591060186966949">Zoekmachine bewerken</translation>
 <translation id="1129420403709586868">Foto's en media van je telefoon bekijken</translation>
 <translation id="1129850422003387628">Apps beheren</translation>
@@ -332,6 +333,7 @@
 <translation id="1327794256477341646">Functies waarvoor je locatie nodig is, werken niet</translation>
 <translation id="1329191040029425999">Zorg dat je apparaat up-to-date is en probeer het opnieuw</translation>
 <translation id="1330145147221172764">Schermtoetsenbord aanzetten</translation>
+<translation id="1331625853030156663">Als je <ph name="APP_NAME" /> wilt openen, zet je 'Vergrendelscherm bekijken bij activering vanuit de slaapstand' aan</translation>
 <translation id="1331977651797684645">Dit was ik.</translation>
 <translation id="1333489022424033687">Sommige functies op <ph name="ORIGIN" /> werken mogelijk pas als je gegevens wist die andere sites op je apparaat hebben opgeslagen</translation>
 <translation id="1333965224356556482">Niet toestaan dat sites je locatie zien</translation>
@@ -3329,6 +3331,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="420283545744377356">Screensaver uitzetten</translation>
 <translation id="4203065553461038553">Bestandsnaam of -locatie is te lang</translation>
 <translation id="4204851595694839599">Hoe vond je de gameplay?</translation>
+<translation id="4205157409548006256">Er is een fout opgetreden bij het instellen van Linux.</translation>
 <translation id="4206144641569145248">Alien</translation>
 <translation id="4206323443866416204">Feedbackrapport</translation>
 <translation id="4207522141889799150">Siterechten bewerken voor <ph name="SITE" /></translation>
@@ -5788,6 +5791,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6686665106869989887">Tabblad naar rechts verplaatst</translation>
 <translation id="6686817083349815241">Je wachtwoord opslaan</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> verbergen</translation>
+<translation id="6688391094668641513">Verzoek om <ph name="ORIGIN" /> te lezen en te wijzigen:</translation>
 <translation id="6689714331348768690">Vraag <ph name="SUPERVISED_USER_NAME" /> om naar de computer te komen. Je kind leest een paar zinnen op dit scherm voor om een eigen spraakmodel te maken.
     <ph name="BR" />
 Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je kind jou dan nazeggen. Fluister weg van de microfoon zodat de Assistent de stem van je kind leert herkennen in plaats van die van jou.</translation>
@@ -6300,6 +6304,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Pagina afsluiten}other{Pagina's afsluiten}}</translation>
 <translation id="7207457272187520234">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt momenteel automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze instelling wordt afgedwongen door de eigenaar. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet, kunnen deze gegevens worden opgeslagen in je Google-account.</translation>
 <translation id="7207631048330366454">Apps zoeken</translation>
+<translation id="720808544705441386">Kan app niet openen</translation>
 <translation id="7210499381659830293">Printers via extensie</translation>
 <translation id="7211783048245131419">Er is nog geen schakelaar toegewezen</translation>
 <translation id="7212097698621322584">Voer je huidige pincode in om deze te wijzigen. Als je je pincode niet weet, moet je de beveiligingssleutel resetten en vervolgens een nieuwe pincode maken.</translation>
@@ -7454,6 +7459,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8324784016256120271">Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te bekijken, bijvoorbeeld om advertenties te personaliseren</translation>
 <translation id="8325413836429495820">Geen toestemming om je klembord te bekijken</translation>
 <translation id="8326478304147373412">PKCS nr. 7, certificaatketen</translation>
+<translation id="8327386430364625757">Wiskundig lettertype</translation>
 <translation id="8327676037044516220">Rechten en contentinstellingen</translation>
 <translation id="8330617762701840933">De lijst met websites die omleiden naar een alternatieve browser.</translation>
 <translation id="8330689128072902965">Contacten dichtbij kunnen met je delen. Klik om te wijzigen.</translation>

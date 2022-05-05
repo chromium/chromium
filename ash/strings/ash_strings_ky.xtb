@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C түзмөгү (маңдайкы оюкча)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> дааналыгы төмөнкүгө өзгөртүлдү: <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Герц). Өзгөртүүлөрдү сактоо үчүн "Ырастоо" баскычын басыңыз. Мурунку жөндөөлөр <ph name="TIMEOUT_SECONDS" /> кийин калыбына келтирилет.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth түзмөгү жупташуу үчүн уруксат сурап жатат. Ал түзмөккө бул PIN кодду киргизиңиз: <ph name="PINCODE" />.</translation>
-<translation id="1014111206066007277">Скринкаст куралдары</translation>
 <translation id="1024261588257374085">Сүрөткө тартып алуу үчүн терезенин бир бөлүгү тандалды</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> түзмөгүңүздү сактаңыз</translation>
 <translation id="1032891413405719768">Стилус батареясынын кубаты аз</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">Оң</translation>
 <translation id="1351937230027495976">Менюну жыйыштыруу</translation>
 <translation id="1364382257761975320">Chromebook'тун кулпусун ачуу үчүн манжаңыздын изин колдонуңуз</translation>
-<translation id="1364618750746929654">Транскрипция түзүлгөн жок</translation>
 <translation id="1372545819342940910">Иш тактаны кийинкиге сактоо</translation>
 <translation id="1383597849754832576">Кеп файлдары жүктөлүп алынган жок. Кийинчерээк кайталаңыз.</translation>
 <translation id="1383876407941801731">Издөө</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">Нигерия калкынын саны</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Буга чейин туташкан түзмөктөр</translation>
-<translation id="3712317119236351467">Жаздыруу сакталган жок</translation>
 <translation id="371370241367527062">Маңдайкы микрофон</translation>
 <translation id="3713734891607377840">Жүктөлүп бүткөндөн кийин ачылсын</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> жана дагы<ph name="UNAVAILABLE_APPS_COUNT" /> колдонмо бул түзмөктө жок.</translation>
@@ -854,6 +851,7 @@
 <translation id="6166852626429024716">Түзмөктөн, колдонмолордон, жөндөөлөрдөн жана Интернеттен издеңиз...</translation>
 <translation id="6179832488876878285">Маанилүү файлдарыңызды бул жерге кадап койсоңуз болот. Баштоо үчүн Файлдар колдонмосун ачыңыз.</translation>
 <translation id="619279033188484792">Телефонуңуздагы соңку сүрөттөрдү, медианы жана билдирмелерди <ph name="DEVICE_TYPE" /> түзмөгүңүздөн көрөсүз</translation>
+<translation id="619335566042889110">Азыр толук кубаттоо</translation>
 <translation id="6220928844947387476">Эми бир эле убакта өзүңүздү жана экранды жаздыра аласыз</translation>
 <translation id="622484624075952240">Төмөн</translation>
 <translation id="6231419273573514727">Перифериялык жөндөөлөр чектелиши мүмкүн</translation>
@@ -1084,7 +1082,7 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ээси)</translation>
 <translation id="7647488630410863958">Эскертмелериңизди көрүү үчүн түзмөгүңүздү бөгөттөн чыгарыңыз</translation>
 <translation id="7649070708921625228">Жардам</translation>
-<translation id="7654687942625752712">Экрандагы текстти окуп берүү функциясын өчүрүү үчүн үндү чоңойтуп/кичирейтүү баскычтарынын экөөн тең беш секунд коё бербей басып туруңуз.</translation>
+<translation id="7654687942625752712">Экрандагы текстти окуп берүү функциясын өчүрүү үчүн үндү катуулатуу/акырындатуу баскычтарынын экөөн тең беш секунд коё бербей басып туруңуз.</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7659861092419699379">Иш такта жана терезелер жабылды</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> түзмөгү <ph name="EMAIL" /> менен байланыштырылган түзмөктөрдө көрүнөт</translation>
@@ -1189,6 +1187,7 @@
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> аккаунтунун кулпусун ачуу үчүн "Enter" баскычын басыңыз</translation>
 <translation id="8261506727792406068">Жок кылуу</translation>
 <translation id="8270450402312105425">{0,plural, =1{Түзмөктү бир сааттын ичинде мурунку версияга өзгөртүңүз}other{Түзмөктү # сааттын ичинде мурунку версияга өзгөртүңүз}}</translation>
+<translation id="8271580342040932214">Батареянын кубатынын мөөнөтүн узартуу үчүн түзмөк сайылып турганда убактылуу 80% чейин кубатталат. Батарея саат <ph name="FULLY_CHARGE_TIME" /> толук кубатталат.</translation>
 <translation id="8284362522226889623">Мурунку иш тактага которулуу үчүн экранды төрт манжаңыз менен солго сүрүп коюңуз</translation>
 <translation id="828708037801473432">Өчүк</translation>
 <translation id="8297006494302853456">Начар</translation>
@@ -1272,6 +1271,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Киргизүү ыкмаларынын жөндөөлөрү</translation>
 <translation id="8818320199597151042">Профиль өчүрүлүүдө. Бир нече мүнөт күтө туруңуз.</translation>
+<translation id="8819728065740986820">Ыңгайлашып кубаттоо күйүк</translation>
 <translation id="8825863694328519386">Артка кайтуу үчүн экраныңыздын сол четинен сүрүп коюңуз</translation>
 <translation id="8834539327799336565">Учурда туташып турган түзмөктөр</translation>
 <translation id="8841375032071747811">Артка баскычы</translation>
@@ -1318,6 +1318,7 @@
 <translation id="9080132581049224423">Башкы бетке өтүү үчүн экранды сүрүп коюңуз</translation>
 <translation id="9080206825613744995">Микрофон колдонулууда.</translation>
 <translation id="9084606467167974638">Менюнун абалын өчүрүү/күйгүзүү</translation>
+<translation id="9085962983642906571">Батареянын кубатынын мөөнөтүн узартуу үчүн түзмөк сайылып турганда 80% чейин кубатталат.</translation>
 <translation id="9089416786594320554">Киргизүү ыкмалары</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> дисплейи өчүрүлдү</translation>
 <translation id="9098969848082897657">Телефондун үнүн өчүрүү</translation>

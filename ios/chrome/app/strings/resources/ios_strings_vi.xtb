@@ -222,10 +222,12 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="2876369937070532032">Gửi URL của một số trang mà bạn truy cập cho Google khi bạn gặp rủi ro về bảo mật</translation>
 <translation id="2883151425485251736">Xem và chỉnh sửa những chủ đề bạn đã chọn ẩn khỏi tài khoản</translation>
 <translation id="288655811176831528">Đóng thẻ</translation>
+<translation id="2890171748217283516">Các trang web bạn theo dõi sẽ được lưu trong tài khoản Google của bạn. Bạn có thể quản lý các trang web đó trong phần cài đặt của trang Khám phá.</translation>
 <translation id="2893180576842394309">Google có thể sử dụng nhật ký hoạt động của bạn để điều chỉnh tính năng Tìm kiếm và các dịch vụ khác của Google cho phù hợp hơn với bạn</translation>
 <translation id="2898963176829412617">Thư mục mới…</translation>
 <translation id="2916171785467530738">Tự động hoàn thành cụm từ tìm kiếm và URL</translation>
 <translation id="291754862089661335">Đặt mã QR hoặc mã vạch vào khung này</translation>
+<translation id="2920866371965792875">Để xem thông tin cập nhật của trang web này, hãy theo dõi tại đây.</translation>
 <translation id="2921219216347069551">Ko thể chia sẻ trang</translation>
 <translation id="2923448633003185837">Dán và truy cập</translation>
 <translation id="292639812446257861">Đánh dấu là chưa đọc</translation>
@@ -355,6 +357,7 @@ Hãy làm theo các bước sau:</translation>
 <translation id="4038354071007134711">Không ứng dụng nào trên thiết bị này có thể mở tệp.</translation>
 <translation id="4042870976416480368">Tìm trong trang</translation>
 <translation id="4049507953662678203">Hãy đảm bảo rằng bạn có kết nối mạng và thử lại.</translation>
+<translation id="4063300985191096908">Chuyển đến nguồn cấp dữ liệu</translation>
 <translation id="408404951701638773">Thanh tìm kiếm giờ đây dễ truy cập hơn</translation>
 <translation id="4108998448622696017">Phát hiện và cảnh báo bạn các sự kiện nguy hiểm khi các sự kiện đó diễn ra.</translation>
 <translation id="411254640334432676">Tải xuống không thành công.</translation>
@@ -963,6 +966,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="9203116392574189331">Tiếp nối</translation>
 <translation id="9223358826628549784">Đã gửi báo cáo lỗi.</translation>
 <translation id="952704832371081537">Hủy</translation>
+<translation id="959066944189734975">Bạn đang theo dõi <ph name="CHANNEL_NAME" /></translation>
 <translation id="981498610235328462">Tổ chức của bạn chỉ cho phép bạn đăng nhập bằng một số tài khoản nhất định. Các tài khoản không được phép sẽ bị ẩn.</translation>
 <translation id="984509647832111802">Tính năng đồng bộ hóa hiện không hoạt động.</translation>
 <translation id="988141524645182168">Thiết bị khác</translation>

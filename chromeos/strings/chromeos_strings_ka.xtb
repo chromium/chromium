@@ -155,6 +155,7 @@
 <translation id="2446553403094072641">მოლივლივე წერტილის სიზუსტე</translation>
 <translation id="2448312741937722512">ტიპი</translation>
 <translation id="2461822463642141190">ამჟამინდელი</translation>
+<translation id="2480034874476596812">ხელით გამორთვა</translation>
 <translation id="2491955442992294626">კლავიშების ტესტირება ვერ მოხერხდება, როცა სხვა ფანჯარას იყენებთ</translation>
 <translation id="2493126929778606526">ავტომატურად არჩეული თქვენი საუკეთესო ფოტოები</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -250,6 +251,7 @@
 <translation id="3606583719724308068">HTTPS ვებსაიტების რეაგირების დიდი დრო</translation>
 <translation id="3621202678540785336">შეყვანა</translation>
 <translation id="3632579075709132555">კონფიდენციალური ეკრანის გადართვა</translation>
+<translation id="3678765385266369662">აირჩიეთ, როგორ გსურთ, გამორთოთ Write Protect</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> — ტესტი</translation>
 <translation id="370665806235115550">იტვირთება…</translation>
 <translation id="3708186454126126312">ადრე დაკავშირებული</translation>
@@ -304,6 +306,7 @@
 <translation id="4244962993387259361">მეხსიერების ტესტის გასაშვებად მინიმუმ 500 მბაიტი უნდა გქონდეთ თავისუფალი. მეხსიერების გასათავისუფლებლად გადადით აქ: პარამეტრები &gt; მეხსიერების მართვა.</translation>
 <translation id="4250229828105606438">ეკრანის ანაბეჭდი</translation>
 <translation id="4258281355379922695">HTTP რეაგირების დრო</translation>
+<translation id="4258561075226177474">მოწყობილობას იმავე მომხმარებელს დარჩება. გსურთ, წაშალოთ მომხმარებლის მონაცემები?</translation>
 <translation id="4271957103967917607">სრულ ეკრანზე ნახვა</translation>
 <translation id="4275799948641988986">შეკეთების შემდეგ ვინ გამოიყენებს მოწყობილობას?</translation>
 <translation id="4289540628985791613">მიმოხილვა</translation>
@@ -352,6 +355,7 @@
 <translation id="473775607612524610">განახლება</translation>
 <translation id="4744944742468440486">თქვენს არჩევანთან დაკავშირებული ინფორმაცია</translation>
 <translation id="4773299976671772492">შეწყვეტილია</translation>
+<translation id="4774530504324923332">დაგჭირდებათ RSU-იანი უსაფრთხოების გასაღები, QR კოდების სკანერი და მეორე მოწყობილობა ინტერნეტთან კავშირით</translation>
 <translation id="4782311465517282004">მიიღეთ განმარტებები, თარგმნეთ ან გადაიყვანეთ საზომი ერთეულები ტექსტზე მარჯვენა დაწკაპუნების ან ხანგრძლივად შეხების მეშვეობით</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ფოტო</translation>
 <translation id="4793710386569335688">დამატებითი დახმარებისთვის გადადით <ph name="BEGIN_LINK" />დახმარების ცენტრზე<ph name="END_LINK" />.</translation>
@@ -431,6 +435,7 @@
 <translation id="5372659122375744710">Wi-Fi ქსელი არ არის დაცული</translation>
 <translation id="5376354385557966694">ავტომატური ღია რეჟიმი</translation>
 <translation id="537872351913703572">მოწყობილობას სხვა მომხმარებელი ან ორგანიზაცია მიიღებს</translation>
+<translation id="5395600419410242651">ყველა მონაცემის ამოშლა</translation>
 <translation id="5400907029458559844">მოწყობილობა უკავშირდება.</translation>
 <translation id="5401938042319910061">ყველა რუტინის გაშვება</translation>
 <translation id="5423849171846380976">გააქტიურებულია</translation>
@@ -641,6 +646,7 @@
 <translation id="7570674786725311828">USB სენსორული ეკრანი</translation>
 <translation id="7595982850646262331">დარჩენილია <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">შეიტყვეთ მეტი დახმარების ცენტრში</translation>
+<translation id="7626501172915339021">RMA სერვერის განბლოკვა (RSU)</translation>
 <translation id="763165478673169849">ბოლო გადაყენების დრო</translation>
 <translation id="7648838807254605802">HTTPS რეაგირების დრო დიდია</translation>
 <translation id="7656388927906093505">მოწყობილობა არის მაუსი.</translation>
@@ -785,6 +791,8 @@
 <translation id="9087578468327036362">მოხსენება ამ მოთხოვნის შესახებ</translation>
 <translation id="9088306295921699330">ამჟამად გამოყენებული</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">მოწყობილობის დაშლა დაგჭირდებათ</translation>
+<translation id="9098156406873149060">მომხმარებლების მონაცემების შენარჩუნება</translation>
 <translation id="910415269708673980">განაახლეთ ბილეთი <ph name="PRINCIPAL_NAME" />-ისთვის</translation>
 <translation id="9106415115617144481">სკანირდება გვერდი <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">განბლოკვა</translation>

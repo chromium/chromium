@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Dispositivo USB‑C (porto frontal)</translation>
 <translation id="1013598600051641573">A resolución do dispositivo <ph name="DISPLAY_NAME" /> cambiouse a <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Para gardar os cambios, fai clic en Confirmar. A configuración anterior restaurarase en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" quere recibir permiso para sincronizarse. Introduce este código PIN nese dispositivo: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Ferramentas de gravación da pantalla</translation>
 <translation id="1024261588257374085">Seleccionouse unha captura de pantalla parcial</translation>
 <translation id="1024364763893396229">Garda o dispositivo (<ph name="NAME" />)</translation>
 <translation id="1032891413405719768">O lapis óptico ten pouca batería</translation>
@@ -85,7 +84,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1346748346194534595">Dereita</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
 <translation id="1364382257761975320">Para desbloquear o Chromebook, utiliza a impresión dixital</translation>
-<translation id="1364618750746929654">Non se puido xerar a transcrición</translation>
 <translation id="1372545819342940910">Gardar escritorio para máis tarde</translation>
 <translation id="1383597849754832576">Non se puideron descargar os ficheiros de voz. Téntao máis tarde.</translation>
 <translation id="1383876407941801731">Buscar</translation>
@@ -460,7 +458,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3702846122927433391">Poboación de Nixeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Dispositivos conectados previamente</translation>
-<translation id="3712317119236351467">Non se puido gardar a gravación</translation>
 <translation id="371370241367527062">Micrófono frontal</translation>
 <translation id="3713734891607377840">Abrir ao finalizar</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> e <ph name="UNAVAILABLE_APPS_COUNT" /> aplicacións máis non están neste dispositivo.</translation>

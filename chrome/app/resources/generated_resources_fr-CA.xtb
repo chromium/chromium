@@ -5626,6 +5626,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6520876759015997832">Résultat de recherche <ph name="LIST_POSITION" /> sur <ph name="LIST_SIZE" /> : <ph name="SEARCH_RESULT_TEXT" />. Appuyez sur la touche Entrée pour naviguer jusqu'à cette section.</translation>
 <translation id="6521214596282732365">Les sites utilisent généralement vos polices pour que vous puissiez créer du contenu haute fidélité grâce à des outils de conception et de graphisme en ligne</translation>
 <translation id="6523303810310758032">Lorsque vous supprimez votre historique de navigation (pour un site en particulier ou pour tous les sites), vous supprimez également les informations de mesure associées. Consultez <ph name="BEGIN_LINK" />votre historique de navigation<ph name="END_LINK" /></translation>
+<translation id="6523574494641144162">Le gestionnaire de mots de passe de Google n'a pas pu enregistrer ces mots de passe dans votre compte Google. Vous pouvez les enregistrer sur cet appareil.</translation>
 <translation id="6524735478670290456">Comment nous utilisons ces données :</translation>
 <translation id="652492607360843641">Vous êtes connecté à un réseau <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Partager</translation>
@@ -5932,6 +5933,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6818198425579322765">Langue source</translation>
 <translation id="6818547713623251698">Affichez les photos, les fichiers multimédias, les notifications et les applications de votre téléphone</translation>
 <translation id="6818802132960437751">Protection antivirus intégrée</translation>
+<translation id="6818920801736417483">Enregistrer les mots de passe?</translation>
 <translation id="6823174134746916417">Toucher pour cliquer sur le pavé tactile</translation>
 <translation id="6824564591481349393">Copier l'adresse de courri&amp;el</translation>
 <translation id="6824584962142919697">&amp;Inspecter des éléments</translation>

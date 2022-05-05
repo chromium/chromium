@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C uređaj (prednji priključak)</translation>
 <translation id="1013598600051641573">Razlučivost zaslona <ph name="DISPLAY_NAME" /> promijenjena je u <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Kliknite Potvrdi da biste zadržali promjene. Prethodne postavke vratit će se za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži dopuštenje za uparivanje. Unesite ovaj PIN na tom uređaju: <ph name="PINCODE" />.</translation>
-<translation id="1014111206066007277">Alati za zaslonske prezentacije</translation>
 <translation id="1024261588257374085">Odabrana je djelomična snimka zaslona</translation>
 <translation id="1024364763893396229">Spremite uređaj <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Baterija pisaljke gotovo je prazna</translation>
@@ -85,7 +84,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1346748346194534595">Udesno</translation>
 <translation id="1351937230027495976">Sažmi izbornik</translation>
 <translation id="1364382257761975320">Da biste otključali Chromebook, upotrijebite otisak prsta</translation>
-<translation id="1364618750746929654">Generiranje prijepisa nije uspjelo</translation>
 <translation id="1372545819342940910">Spremi radnu površinu za kasnije</translation>
 <translation id="1383597849754832576">Preuzimanje govornih datoteka nije uspjelo. Pokušajte ponovo kasnije.</translation>
 <translation id="1383876407941801731">Traži</translation>
@@ -460,7 +458,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3702846122927433391">Broj stanovnika u Nigeriji</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Prethodno povezano</translation>
-<translation id="3712317119236351467">Nije moguće spremiti snimku</translation>
 <translation id="371370241367527062">Prednji mikrofon</translation>
 <translation id="3713734891607377840">Otvaranje nakon završetka</translation>
 <translation id="3726171378575546917">Aplikacije <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> i njih još <ph name="UNAVAILABLE_APPS_COUNT" /> nisu instalirane na ovom uređaju.</translation>

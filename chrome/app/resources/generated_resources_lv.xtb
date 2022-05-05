@@ -5623,6 +5623,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6520876759015997832">Meklēšanas rezultātu skaits ir <ph name="LIST_SIZE" />. Meklēšanas rezultāts numur <ph name="LIST_POSITION" />: <ph name="SEARCH_RESULT_TEXT" />. Lai pārietu uz sadaļu, nospiediet taustiņu Enter.</translation>
 <translation id="6521214596282732365">Vietnēs parasti tiek izmantoti jūsu fonti, lai jūs varētu veidot saturu ar augstu precizitāti, izmantojot tiešsaistes noformējuma un grafikas rīkus.</translation>
 <translation id="6523303810310758032">Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek dzēsta arī saistītā izvērtēšanas informācija. Skatiet <ph name="BEGIN_LINK" />savu pārlūkošanas vēsturi<ph name="END_LINK" />.</translation>
+<translation id="6523574494641144162">Google paroļu pārvaldnieks nevarēja saglabāt šīs paroles jūsu Google kontā. Varat saglabāt paroles šajā ierīcē.</translation>
 <translation id="6524735478670290456">Datu izmantošanas veidi</translation>
 <translation id="652492607360843641">Jūs esat izveidojis savienojumu ar šāda veida tīklu: <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Kopīgot</translation>
@@ -5931,6 +5932,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6818198425579322765">Lapas valoda, no kuras jātulko saturs</translation>
 <translation id="6818547713623251698">Skatiet tālruņa fotoattēlus, multivides saturu, paziņojumus un lietotnes.</translation>
 <translation id="6818802132960437751">Iebūvēta aizsardzība pret vīrusiem</translation>
+<translation id="6818920801736417483">Vai saglabāt paroles?</translation>
 <translation id="6823174134746916417">Pieskaršanās skārienpanelim</translation>
 <translation id="6824564591481349393">Kopēt &amp;e-pasta adresi</translation>
 <translation id="6824584962142919697">&amp;Pārbaudīt elementus</translation>

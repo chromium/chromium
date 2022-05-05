@@ -3757,6 +3757,16 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="5179853299156742425">URL tempat template desktop dapat didownload.</translation>
 <translation id="5182055907976889880">Konfigurasi Google Drive di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5182483318861266793">Posisikan rak di sisi kanan layar</translation>
+<translation id="5184298474980725716">Kebijakan ini mengontrol visibilitas Perjalanan di halaman histori Chrome.
+
+      Jika kebijakan disetel ke Aktif, Perjalanan akan dapat dilihat di chrome://history/journeys.
+
+      Jika kebijakan disetel ke Nonaktif, Perjalanan tidak akan dapat dilihat di chrome://history/journeys.
+
+      Jika kebijakan tidak disetel, Perjalanan akan dapat dilihat di chrome://history/journeys secara default dan pengguna dapat mengubah visibilitas Perjalanan.
+
+      Perlu diketahui, jika kebijakan <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> disetel ke Nonaktif, tetapi <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> disetel ke Aktif atau tidak disetel, Perjalanan akan tetap dapat dilihat di chrome://history/journeys. Namun, Perjalanan ini mungkin tidak ditampilkan di omnibox dan kurang relevan bagi pengguna.
+      </translation>
 <translation id="51859390023061147">Nonaktifkan fitur pemulihan penuh.</translation>
 <translation id="5189360528842591274">Hanya mengizinkan koneksi ke layanan Bluetooth dalam daftar</translation>
 <translation id="5190426551516379357">Menyetel kebijakan akan menerapkan Mode Terbatas minimum di YouTube dan mencegah pengguna memilih mode yang kurang dibatasi. Jika disetel ke:

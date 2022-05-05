@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">ພາສາດັດຈ (ເນເທີແລນ)</translation>
 <translation id="174937106936716857">ຈຳນວນໄຟລ໌ທັງໝົດ</translation>
 <translation id="1755345808328621801">ໄຟລ໌ນີ້ຖືກອອກແບບສໍາລັບ PC ໂດຍການໃຊ້ຊອບແວ Windows. ສິ່ງນີ້ບໍ່ເຂົ້າກັນໄດ້ກັບອຸປະກອນຂອງທ່ານເຊິ່ງໃຊ້ ChromeOS. ກະລຸນາຊອກຫາ Chrome Web Store ສໍາລັບແອັບທົດແທນທີ່ເໝາະສົມ.</translation>
+<translation id="1757915090001272240">ລາຕິນແບບກວ້າງ</translation>
 <translation id="1773212559869067373">ປະຕິເສດໃບຢັ້ງຢືນການຮັບຮອງກັບທີ່ແລ້ວ</translation>
 <translation id="1775381402323441512">ຂໍ້ມູນວິດີໂອ</translation>
 <translation id="180035236176489073">ທ່ານ​ຈະ​ຕ້ອງ​ອອນ​ລາຍ​ນ​໌​ເພື່ອເຂົ້າຫາໄຟລ​໌​ເຫຼົ່ານີ້​.</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">ການ​ບໍ​ລິ​ການ</translation>
 <translation id="1829129547161959350">ນົກເພັນກວິນ</translation>
 <translation id="183183971458492120">ກຳລັງໂຫຼດຂໍ້ມູນ...</translation>
+<translation id="1832073788765803750">ຄາຕາຄານະເຄິ່ງຄວາມກວ້າງ</translation>
 <translation id="1834290891154666894">ຂໍ້ມູນການຈັບຄູ່ຊື່ສຳຮອງຫົວຂໍ້ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="1838709767668011582">ເວັບໄຊ Google</translation>
 <translation id="1844692022597038441">ໄຟລ໌ນີ້ບໍ່​ມີ​ໃຫ້​ແບບອອຟລາຍນ໌.</translation>
@@ -516,6 +518,7 @@
 <translation id="5335458522276292100">ກຳລັງສຳຮອງ <ph name="FILE_COUNT" /> ໄວ້ໃນ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">ຄົນກັບແມວ</translation>
 <translation id="5358764674931277">ອັດຕາພາບ</translation>
+<translation id="5363339716524495120">ພາສາປ້ອນເຂົ້າແມ່ນຈີນ</translation>
 <translation id="5368191757080475556">ແບ່ງປັນໂຟນເດີກັບ Linux</translation>
 <translation id="5402367795255837559">ຕົວໜັງສືນູນ</translation>
 <translation id="5411472733320185105">ຢ່າໃຊ້ການຕັ້ງຄ່າພຣັອກຊີສໍາລັບແມ່ຂ່າຍ ແລະໂດເມນເຫຼົ່ານີ້:</translation>
@@ -538,6 +541,7 @@
 <translation id="5534520101572674276">ກໍາລັງຄິດໄລ່ຂະໜາດ</translation>
 <translation id="554153475311314364">ການແປທັບສັບພາສາກຣີກ</translation>
 <translation id="5583640892426849032">ລຶບຄືນຫຼັງ</translation>
+<translation id="5583664733673201137">ຄວາມກວ້າງເຄື່ອງໝາຍວັກຕອນເຕັມແລ້ວ</translation>
 <translation id="5602622065581044566">ພາສາບຸນກາຣີທີ່ໃຊ້ແປ້ນພິມຕາມການອອກສຽງ</translation>
 <translation id="5605830556594064952">ດີ​ໂວຣັກ ສະຫະລັດ</translation>
 <translation id="5618330573454123917">ໄຟລ໌ນີ້ຖືກອອກແບບມາສໍາລັບຄອມພິວເຕີທີ່ໃຊ້ຊອບແວ Macintosh. ສິ່ງນີ້ບໍ່ເຂົ້າກັນໄດ້ກັບອຸປະກອນຂອງທ່ານເຊິ່ງໃຊ້ ChromeOS. <ph name="BEGIN_LINK_HELP" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_HELP" /> ກ່ຽວກັບການເປີດໄຟລ໌ຢູ່ ChromeOS.</translation>
@@ -747,6 +751,7 @@
 <translation id="7489215562877293245">ພົບ <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     ພ້ອມສຳຮອງໄວ້ໃນ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> ແລ້ວ</translation>
+<translation id="749452993132003881">ຮິຣະງະນະ</translation>
 <translation id="7495372004724182530">ການອອກສຽງພາສາມາລາຢາລຳ</translation>
 <translation id="7505167922889582512">ສະ​ແດງ​ໄຟ​ລ໌​ທີ່​ເຊື່ອງ​ໄວ້</translation>
 <translation id="7514365320538308">ດາວ​ໂຫລດ</translation>
@@ -835,6 +840,7 @@
 <translation id="8128733386027980860">ພາສາອັງກິດ (ສະຫະລາດຊະອານາຈັກ) ທີ່ໃຊ້ແປ້ນພິມ Dvorak</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" ໄດ້ຖືກແຊຣ໌ກັບທ່ານ. ທ່ານບໍ່ສາມາດລຶບມັນໄດ້ ເພາະວ່າທ່ານບໍ່ເປັນເຈົ້າຂອງມັນ.</translation>
 <translation id="813913629614996137">ກຳລັງລິເລີ່ມ...</translation>
+<translation id="8147028810663464959">ຄວາມກວ້າງຕົວອັກສອນເຕັມແລ້ວ</translation>
 <translation id="8151638057146502721">ປັບ​ຕັ້ງ​ຄ່າ</translation>
 <translation id="8154842056504218462">ເລືອກລາຍການທັງໝົດແລ້ວ</translation>
 <translation id="8157684860301034423">ກູ້ຂໍ້ມູນແອັບຄືນບໍ່ສຳເລັດ.</translation>
@@ -844,6 +850,7 @@
 <translation id="8208580316430297579">ຮູບປົກ</translation>
 <translation id="8223479393428528563">ເພື່ອ​ບັນ​ທຶກ​ໄຟ​ລ໌​ເຫຼົ່າ​ນີ້​ໄວ້​ໃຊ້​ອອ​ຟ​ລາຍ​ນ໌, ກັບ​ຄືນ​ໄປ​ອອນ​ລາຍ​ນ໌, ຄ​ລິກ​ເບື້ອງ​ຂວາ​ໃສ່​ໄຟ​ລ໌, ແລະ​ເລືອກ​ທາງ​ເລືອກ <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">ຍົກເລີກ</translation>
+<translation id="8250690786522693009">ລາຕິນ</translation>
 <translation id="8250920743982581267">ເອກະສານ</translation>
 <translation id="8261506727792406068">ລຶບ</translation>
 <translation id="8261561378965667560">ອາເຣພາສາຈີນ</translation>

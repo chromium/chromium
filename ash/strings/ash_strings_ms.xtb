@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Peranti USB-C (port depan)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> diubah kepada <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik sahkan untuk menyimpan perubahan. Tetapan terdahulu akan dipulihkan dalam masa <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Peranti Bluetooth "<ph name="DEVICE_NAME" />" ingin kebenaran untuk berpasangan. Sila masukkan kod PIN ini pada peranti tersebut: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Alatan rakaman skrin</translation>
 <translation id="1024261588257374085">Tangkapan skrin separa dipilih</translation>
 <translation id="1024364763893396229">Simpan <ph name="NAME" /> anda</translation>
 <translation id="1032891413405719768">Bateri stilus lemah</translation>
@@ -85,7 +84,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1351937230027495976">Runtuhkan menu</translation>
 <translation id="1364382257761975320">Untuk membuka kunci Chromebook anda, gunakan cap jari anda</translation>
-<translation id="1364618750746929654">Tidak dapat menjana transkripsi</translation>
 <translation id="1372545819342940910">Simpan meja untuk dirujuk lagi</translation>
 <translation id="1383597849754832576">Tidak dapat memuat turun fail pertuturan. Cuba lagi nanti.</translation>
 <translation id="1383876407941801731">Carian</translation>
@@ -460,7 +458,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3702846122927433391">Populasi di Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Disambungkan sebelum ini</translation>
-<translation id="3712317119236351467">Tidak dapat menyimpan rakaman</translation>
 <translation id="371370241367527062">Mikrofon depan</translation>
 <translation id="3713734891607377840">Buka apabila sudah selesai</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> dan <ph name="UNAVAILABLE_APPS_COUNT" /> lagi tidak tersedia pada peranti ini.</translation>

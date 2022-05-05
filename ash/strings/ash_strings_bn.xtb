@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C ডিভাইস (সামনের পোর্ট)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" />-এর রেজোলিউশন পরিবর্তন করে <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> হার্জ) করা হয়েছে। পরিবর্তিত সেটিংস রেখে দিতে 'কনফার্ম করুন' বিকল্পে ক্লিক করুন। <ph name="TIMEOUT_SECONDS" />-এর মধ্যে পুরনো সেটিংসে ফিরিয়ে নিয়ে যাওয়া হবে।</translation>
 <translation id="1013923882670373915">ব্লুটুথ ডিভাইস "<ph name="DEVICE_NAME" />" যুক্ত করার অনুমতি চাইছে। ডিভাইসটিতে এই পিন কোড দিন: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">স্ক্রিনকাস্ট করার টুল</translation>
 <translation id="1024261588257374085">আংশিক স্ক্রিনশট বেছে নেওয়া হয়েছে</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> সেভ করুন</translation>
 <translation id="1032891413405719768">স্টাইলাসের চার্জ কমে গেছে</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">ডানে</translation>
 <translation id="1351937230027495976">মেনুটি আড়াল করুন</translation>
 <translation id="1364382257761975320">Chromebook আনলক করতে, আপনার ফিঙ্গারপ্রিন্ট ব্যবহার করুন</translation>
-<translation id="1364618750746929654">ট্রান্সক্রিপশন জেনারেট করা যাচ্ছে না</translation>
 <translation id="1372545819342940910">পরে ব্যবহার করার জন্য ডেস্ক সেভ করুন</translation>
 <translation id="1383597849754832576">স্পিচ ফাইল ডাউনলোড করা যাবে না। পরে আবার চেষ্টা করুন।</translation>
 <translation id="1383876407941801731">Search</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">নাইজিরিয়াতে জনপ্রিয়</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">আগে কানেক্ট করা ছিল</translation>
-<translation id="3712317119236351467">রেকর্ডিং সেভ করা যাচ্ছে না</translation>
 <translation id="371370241367527062">সামনের মাইক্রোফোন</translation>
 <translation id="3713734891607377840">সম্পূর্ণ হলে খুলুন</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> এবং আরও <ph name="UNAVAILABLE_APPS_COUNT" />টি অ্যাপ এই ডিভাইসে উপলভ্য নেই।</translation>
@@ -854,6 +851,7 @@
 <translation id="6166852626429024716">আপনার ডিভাইস, অ্যাপ, সেটিংস, ওয়েবে সার্চ করুন...</translation>
 <translation id="6179832488876878285">গুরুত্বপূর্ণ ফাইলগুলি আপনি এখানে পিন করে রাখতে পারবেন। শুরু করার জন্য, Files অ্যাপ খুলুন।</translation>
 <translation id="619279033188484792">আপনার <ph name="DEVICE_TYPE" />-এ আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া এবং বিজ্ঞপ্তি দেখুন</translation>
+<translation id="619335566042889110">এখন সম্পূর্ণ চার্জ করুন</translation>
 <translation id="6220928844947387476">আপনি এখন একই সময়ে নিজে এবং আপনার স্ক্রিন রেকর্ড করতে পারবেন</translation>
 <translation id="622484624075952240">নিচের</translation>
 <translation id="6231419273573514727">পেরিফেরাল পারফর্ম্যন্স সীমাবদ্ধ হতে পারে</translation>
@@ -1189,6 +1187,7 @@
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> আনলক করতে এন্টার বোতামে প্রেস করুন</translation>
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="8270450402312105425">{0,plural, =1{১ ঘণ্টার মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}one{# ঘণ্টার মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}other{# ঘণ্টার মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}}</translation>
+<translation id="8271580342040932214">ব্যাটারির আয়ু বাড়ানোর জন্য প্লাগ-ইন করার সময় আপনার ব্যাটারি সাময়িকভাবে ৮০% এ থাকে। <ph name="FULLY_CHARGE_TIME" />-এ আপনার ব্যাটারির সম্পূর্ণ চার্জ শেষ হবে।</translation>
 <translation id="8284362522226889623">পূর্ববর্তী ডেস্কে সুইচ করতে, চার আঙুল ব্যবহার করে বাঁদিকে সোয়াইপ করুন</translation>
 <translation id="828708037801473432">বন্ধ করা আছে</translation>
 <translation id="8297006494302853456">দুর্বল</translation>
@@ -1272,6 +1271,7 @@
 <translation id="8814190375133053267">ওয়াই-ফাই</translation>
 <translation id="881757059229893486">'ইনপুট পদ্ধতি' সেটিংস</translation>
 <translation id="8818320199597151042">প্রোফাইল সরানো হচ্ছে। কয়েক মিনিট অপেক্ষা করুন।</translation>
+<translation id="8819728065740986820">'অ্যাডাপ্টিভ চার্জিং' ফিচারটি চালু আছে</translation>
 <translation id="8825863694328519386">ফিরে যেতে আপনার স্ক্রিনের বাম প্রান্ত থেকে সোয়াইপ করুন</translation>
 <translation id="8834539327799336565">এখন কানেক্ট করা রয়েছে</translation>
 <translation id="8841375032071747811">ফিরে যাওয়ার বোতাম</translation>
@@ -1318,6 +1318,7 @@
 <translation id="9080132581049224423">'হোম' স্ক্রিনে যাওয়ার জন্য উপরের দিকে সোয়াইপ করুন</translation>
 <translation id="9080206825613744995">মাইক্রোফোন ব্যবহার করা হচ্ছে।</translation>
 <translation id="9084606467167974638">মেনুর অবস্থান টগল করুন</translation>
+<translation id="9085962983642906571">ব্যাটারির আয়ু বাড়ানোর জন্য প্লাগ-ইন করার সময় আপনার ব্যাটারি ৮০% এ রাখা হয়।</translation>
 <translation id="9089416786594320554">ইনপুট পদ্ধতিগুলি</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> প্রদর্শন সরানো হয়েছে</translation>
 <translation id="9098969848082897657">সাইলেন্স ফোন</translation>

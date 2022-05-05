@@ -131,6 +131,7 @@
 <translation id="1124772482545689468">Utente</translation>
 <translation id="1125550662859510761">Risoluzione di <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1126809382673880764">Non ti protegge da estensioni, download e siti web pericolosi. La protezione di Navigazione sicura, se disponibile, sarà ancora attiva in altri servizi Google, come Gmail e Ricerca.</translation>
+<translation id="1128090040635299943">È in corso la configurazione di Linux. L'operazione richiederà alcuni minuti.</translation>
 <translation id="1128591060186966949">Modifica motore di ricerca</translation>
 <translation id="1129420403709586868">Visualizza foto e contenuti multimediali del tuo telefono</translation>
 <translation id="1129850422003387628">Gestire app</translation>
@@ -332,6 +333,7 @@
 <translation id="1327794256477341646">Le funzionalità che richiedono la tua posizione non funzioneranno</translation>
 <translation id="1329191040029425999">Assicurati che il dispositivo sia aggiornato e riprova</translation>
 <translation id="1330145147221172764">Attiva tastiera sullo schermo</translation>
+<translation id="1331625853030156663">Per aprire l'app <ph name="APP_NAME" /> devi attivare l'opzione "Mostra la schermata di blocco quando il dispositivo viene riattivato dopo la sospensione"</translation>
 <translation id="1331977651797684645">Ero io.</translation>
 <translation id="1333489022424033687">Alcune funzionalità sul sito <ph name="ORIGIN" /> potrebbero non funzionare se non cancelli i dati memorizzati da altri siti sul dispositivo</translation>
 <translation id="1333965224356556482">Non consentire ai siti di vedere la tua posizione</translation>
@@ -1953,6 +1955,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="2832124733806557606">Tuo figlio può usare il PIN per accedere al dispositivo o per sbloccarlo.</translation>
 <translation id="2835177225987815960">Se ripeti la configurazione della scansione, tutte le assegnazioni verranno reimpostate, compresi eventuali sensori assegnati e le preferenze di velocità per la scansione automatica.</translation>
 <translation id="2835547721736623118">Servizio di riconoscimento vocale</translation>
+<translation id="2836232638504556905">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e l'immagine del tuo profilo con questo sito. Leggi le <ph name="BEGIN_LINK" />norme sulla privacy<ph name="END_LINK" /> del sito.</translation>
 <translation id="2836269494620652131">Interruzione anomala</translation>
 <translation id="2836635946302913370">L'accesso con questo nome utente è stato disattivato dall'amministratore.</translation>
 <translation id="283669119850230892">Per poter utilizzare la rete <ph name="NETWORK_ID" /> devi completare la connessione a Internet sotto.</translation>
@@ -2234,6 +2237,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3105796011181310544">Tornare a Google?</translation>
 <translation id="310671807099593501">Il sito sta usando il Bluetooth</translation>
 <translation id="3108931485517391283">Impossibile ricevere</translation>
+<translation id="3109206895301430738">Gruppi di schede salvati</translation>
 <translation id="3109724472072898302">Compresso</translation>
 <translation id="311214366526552035">Scarica comunque</translation>
 <translation id="3112292765614504292">Dimensioni app: <ph name="APP_SIZE" /></translation>
@@ -3331,6 +3335,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="420283545744377356">Disattiva salvaschermo</translation>
 <translation id="4203065553461038553">La posizione o il nome del file sono troppo lunghi</translation>
 <translation id="4204851595694839599">Com'è stata la tua esperienza di gameplay?</translation>
+<translation id="4205157409548006256">Si è verificato un errore durante la configurazione di Linux.</translation>
 <translation id="4206144641569145248">Alieno</translation>
 <translation id="4206323443866416204">Report di feedback</translation>
 <translation id="4207522141889799150">Modifica autorizzazioni del sito per <ph name="SITE" /></translation>
@@ -5621,6 +5626,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6520876759015997832">Risultato di ricerca <ph name="LIST_POSITION" /> di <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Premi Invio per andare alla sezione.</translation>
 <translation id="6521214596282732365">In genere i siti utilizzano i tuoi caratteri, così puoi creare contenuti ad alta fedeltà con strumenti di grafica e design online</translation>
 <translation id="6523303810310758032">Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quella relativa a un sito specifico), vengono eliminate anche le informazioni sulla misurazione associate. Visualizza la <ph name="BEGIN_LINK" />cronologia di navigazione<ph name="END_LINK" /></translation>
+<translation id="6523574494641144162">Gestore delle password di Google non ha potuto salvare queste password nel tuo Account Google. Puoi salvarle su questo dispositivo.</translation>
 <translation id="6524735478670290456">Come utilizziamo questi dati:</translation>
 <translation id="652492607360843641">È attiva la connessione a una rete <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Condividi</translation>
@@ -5791,6 +5797,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6686665106869989887">Scheda spostata a destra</translation>
 <translation id="6686817083349815241">Salva la password</translation>
 <translation id="6687079240787935001">Nascondi <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Richiesta di lettura e modifica del sito <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Fai venire al computer <ph name="SUPERVISED_USER_NAME" />. Tuo figlio leggerà alcune frasi sullo schermo per creare il suo modello vocale.
     <ph name="BR" />
     Se <ph name="SUPERVISED_USER_NAME" /> ha bisogno di aiuto nella lettura, chiedi di ripetere quello che leggi tu. Rimani a una certa distanza dal microfono, in modo che l'assistente possa identificare la voce di tuo figlio e non la tua.</translation>
@@ -5925,6 +5932,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6818198425579322765">Lingua della pagina da tradurre</translation>
 <translation id="6818547713623251698">Visualizza foto, contenuti multimediali, notifiche e app del tuo telefono</translation>
 <translation id="6818802132960437751">Protezione antivirus integrata</translation>
+<translation id="6818920801736417483">Salvare le password?</translation>
 <translation id="6823174134746916417">Tocco per fare clic sul touchpad</translation>
 <translation id="6824564591481349393">Copia indirizzo &amp;email</translation>
 <translation id="6824584962142919697">&amp;Ispeziona elementi</translation>
@@ -6302,6 +6310,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Esci dalla pagina}other{Esci dalle pagine}}</translation>
 <translation id="7207457272187520234">Invia dati diagnostici e sull'utilizzo. Attualmente, questo dispositivo invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Tali dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Questa impostazione è applicata dal proprietario. Se hai attivato l'impostazione Attività web e app aggiuntiva, queste informazioni potrebbero essere salvate nel tuo Account Google.</translation>
 <translation id="7207631048330366454">Cerca nelle app</translation>
+<translation id="720808544705441386">Impossibile aprire l'app</translation>
 <translation id="7210499381659830293">Stampanti estensione</translation>
 <translation id="7211783048245131419">Nessun sensore assegnato per il momento</translation>
 <translation id="7212097698621322584">Inserisci il PIN attuale per modificarlo. Se non conosci il PIN, devi reimpostare il token di sicurezza, quindi creare un nuovo PIN.</translation>
@@ -7459,6 +7468,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8324784016256120271">I siti possono utilizzare i cookie per conoscere la tua attività di navigazione su siti diversi, ad esempio per personalizzare gli annunci</translation>
 <translation id="8325413836429495820">Non possono accedere agli appunti</translation>
 <translation id="8326478304147373412">PKCS #7, catena di certificati</translation>
+<translation id="8327386430364625757">Carattere matematico</translation>
 <translation id="8327676037044516220">Autorizzazioni e impostazioni contenuti</translation>
 <translation id="8330617762701840933">L'elenco di siti web che vengono reindirizzati al browser alternativo.</translation>
 <translation id="8330689128072902965">I contatti nelle vicinanze possono condividere contenuti con te. Fai clic per modificare.</translation>

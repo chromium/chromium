@@ -1971,6 +1971,7 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="2832124733806557606">Puwedeng gumamit ng PIN ang iyong anak para mag-sign in sa o i-unlock ang device.</translation>
 <translation id="2835177225987815960">Mare-reset ang iyong kasalukuyang setup ng pag-scan, kasama ang anumang nakatalagang switch at kagustuhan sa bilis ng awtomatikong pag-scan.</translation>
 <translation id="2835547721736623118">Serbisyo ng pagkilala sa speech</translation>
+<translation id="2836232638504556905">Para magpatuloy, ibabahagi ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong pangalan, email address, at larawan sa profile sa site na ito. Tingnan ang <ph name="BEGIN_LINK" />patakaran sa privacy<ph name="END_LINK" /> ng site na ito.</translation>
 <translation id="2836269494620652131">Nag-crash</translation>
 <translation id="2836635946302913370">Hindi pinagana ng iyong administrator ang pag-sign in gamit ang username na ito.</translation>
 <translation id="283669119850230892">Upang gamitin ang network na <ph name="NETWORK_ID" />, kumpletuhin muna ang iyong koneksyon sa Internet sa ibaba.</translation>
@@ -2252,6 +2253,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3105796011181310544">Bumalik sa Google?</translation>
 <translation id="310671807099593501">Gumagamit ng bluetooth ang site</translation>
 <translation id="3108931485517391283">Hindi matanggap</translation>
+<translation id="3109206895301430738">Mga na-save na Mga Grupo ng Tab</translation>
 <translation id="3109724472072898302">Naka-collapse</translation>
 <translation id="311214366526552035">I-download Pa Rin</translation>
 <translation id="3112292765614504292">Laki ng app: <ph name="APP_SIZE" /></translation>
@@ -5644,6 +5646,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6520876759015997832">Resulta ng paghahanap sa <ph name="LIST_POSITION" /> sa <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Pindutin ang Enter para mag-navigate sa seksyon.</translation>
 <translation id="6521214596282732365">Karaniwang ginagamit ng mga site ang mga font mo para makagawa ka ng high-fidelity na content gamit ang mga online na tool para sa pagdidisenyo at graphics</translation>
 <translation id="6523303810310758032">Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang partikular na site — made-delete mo rin ang nauugnay na impormasyon ng pagsukat. Tingnan ang <ph name="BEGIN_LINK" />iyong history ng pag-browse<ph name="END_LINK" /></translation>
+<translation id="6523574494641144162">Hindi ma-save ng Google Password Manager ang mga password na ito sa iyong Google Account. Puwede mong i-save ang mga iyon sa device na ito.</translation>
 <translation id="6524735478670290456">Paano namin ginagamit ang data na ito:</translation>
 <translation id="652492607360843641">Nakakonekta ka sa isang <ph name="NETWORK_TYPE" /> network.</translation>
 <translation id="6527303717912515753">Ibahagi</translation>
@@ -5951,6 +5954,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6818198425579322765">Wika ng Page na Isasalin</translation>
 <translation id="6818547713623251698">Tingnan ang mga larawan, media, notification, at app ng iyong telepono</translation>
 <translation id="6818802132960437751">Built-in na proteksyon laban sa virus</translation>
+<translation id="6818920801736417483">I-save ang mga password?</translation>
 <translation id="6823174134746916417">Tap-to-click gamit ang touchpad</translation>
 <translation id="6824564591481349393">Kopyahin ang &amp;Email Address</translation>
 <translation id="6824584962142919697">&amp;Siyasatin ang mga element</translation>

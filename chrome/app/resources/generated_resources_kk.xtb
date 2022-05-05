@@ -3166,7 +3166,7 @@
 <translation id="4031179711345676612">Микрофонды пайдалануға рұқсат берілген</translation>
 <translation id="4031308539321678562">Мұның нәтижесінде осы құрылғыдағы браузерді пайдалану деректері біржола жойылады. Осы профильдегі Google аккаунтарыңызды Chromebook құрылғысындағы басқа қолданбалар пайдалануы мүмкін. Бұл аккаунттарды <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" /> бөлімінен өшіре аласыз.</translation>
 <translation id="4031527940632463547">Датчиктер құлыпталды</translation>
-<translation id="4033415645631238123">Енді Smart Lock арқылы кіре алмайсыз. Smart Lock арқылы құлыпты аша бересіз.</translation>
+<translation id="4033415645631238123">Енді Smart Lock арқылы аккаунтқа кіре алмайсыз, бірақ құлыпты аша бересіз.</translation>
 <translation id="4033471457476425443">Жаңа қалта енгізу</translation>
 <translation id="4033963223187371752">Қорғалған сайттар қауіпсіз емес суреттер немесе веб-кадрлар сияқты мазмұнды ендіруі мүмкін.</translation>
 <translation id="4034824040120875894">Принтер</translation>
@@ -4981,7 +4981,7 @@
 <translation id="5895138241574237353">Қайта іске қосу</translation>
 <translation id="5895335062901455404">Google аккаунтыңызбен кірген кезде сақталған параметрлер мен әрекеттер кез келген ChromeOS Flex құрылғысында тұрады. Синхрондалатын мазмұнды "Параметрлер" бөлімінде таңдай аласыз.</translation>
 <translation id="5896436821193322561">Рұқсат бермеу</translation>
-<translation id="5900186025777217044">Smart Lock өзгертілді</translation>
+<translation id="5900186025777217044">Smart Lock өзгерді</translation>
 <translation id="5900302528761731119">Google профиль фотосуреті</translation>
 <translation id="590036993063074298">Экран көшірмесін көрсету сапасы туралы мәліметтер</translation>
 <translation id="5901069264981746702">Саусағыңыздың ізі туралы деректер қауіпсіз сақталған және <ph name="DEVICE_TYPE" /> құрылғысынан басқа ешқайда жіберілмейді. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>

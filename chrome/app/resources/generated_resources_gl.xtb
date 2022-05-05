@@ -5619,6 +5619,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6520876759015997832">Resultado da busca <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Preme Intro para acceder á sección.</translation>
 <translation id="6521214596282732365">Os sitios adoitan utilizar os teus tipos de letra para que poidas crear contido de alta fidelidade con ferramentas gráficas e de deseño en liña</translation>
 <translation id="6523303810310758032">Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto), tamén eliminas a información de medición asociada. Consulta <ph name="BEGIN_LINK" />o teu historial de navegación<ph name="END_LINK" /></translation>
+<translation id="6523574494641144162">O xestor de contrasinais de Google non puido gardar estes contrasinais na túa Conta de Google. Podes gardalos neste dispositivo.</translation>
 <translation id="6524735478670290456">Como usamos estes datos?</translation>
 <translation id="652492607360843641">Estás utilizando unha rede <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Compartir</translation>
@@ -5923,6 +5924,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6818198425579322765">Idioma da páxina que se quere traducir</translation>
 <translation id="6818547713623251698">Accede ás fotos, ao contido multimedia, ás notificacións e ás aplicacións do teu teléfono</translation>
 <translation id="6818802132960437751">Protección antivirus integrada</translation>
+<translation id="6818920801736417483">Queres gardar os contrasinais?</translation>
 <translation id="6823174134746916417">Tocar para facer clic do panel táctil</translation>
 <translation id="6824564591481349393">Copiar &amp;enderezo de correo electrónico</translation>
 <translation id="6824584962142919697">&amp;Inspeccionar elementos</translation>

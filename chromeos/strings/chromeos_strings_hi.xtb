@@ -371,6 +371,7 @@
 <translation id="4890353053343094602">तुरंत कोई नया पासवर्ड चुनें</translation>
 <translation id="4891842000192098784">स्ट्रेस</translation>
 <translation id="4897058166682006107">डिवाइस के बाएं बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
+<translation id="4915052247106771211">इससे, डिवाइस को फ़ैक्ट्री सेटिंग पर रीसेट कर दिया जाएगा (पावरवॉश).</translation>
 <translation id="4917385247580444890">मज़बूत</translation>
 <translation id="4917889632206600977">बंद हो गया - काग़ज़ खत्म हो गया</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंड में <ph name="RATE" /> चार्ज हुई.</translation>
@@ -425,6 +426,7 @@
 <translation id="5358174242040570474">कोई गड़बड़ी हुई. कोई वॉलपेपर चुनकर कोशिश करें या ऐप्लिकेशन को फिर से खोलें.</translation>
 <translation id="5372659122375744710">यह वाई-फ़ाई नेटवर्क सुरक्षित नहीं है</translation>
 <translation id="5376354385557966694">अपने-आप हल्के रंग वाला मोड</translation>
+<translation id="537872351913703572">डिवाइस किसी दूसरे उपयोगकर्ता या संगठन को दिया जाएगा</translation>
 <translation id="5400907029458559844">डिवाइस कनेक्ट हो रहा है.</translation>
 <translation id="5401938042319910061">सभी रूटीन चलाएं</translation>
 <translation id="5423849171846380976">सक्रिय हुआ</translation>
@@ -727,6 +729,7 @@
 <translation id="8671972493856476349"><ph name="VERSION_NUMBER" /> वर्शन में अपडेट करें और रीस्टार्ट करें</translation>
 <translation id="8675354002693747642">पहले से शेयर की गई कुंजी</translation>
 <translation id="8677859815076891398">कोई एल्बम नहीं. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> में एल्बम बनाएं.</translation>
+<translation id="8680431479333800907">डिवाइस मौजूदा उपयोगकर्ता को दिया जाएगा</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> इस सुविधा को प्रबंधित करने के लिए लेफ़्ट और राइट ऐरो बटन इस्तेमाल करें.</translation>
 <translation id="8712637175834984815">समझ लिया</translation>
 <translation id="871560550817059752">प्रिंट नहीं हो पाया - स्याही खत्म हो गई</translation>

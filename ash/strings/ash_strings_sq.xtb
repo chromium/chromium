@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Pajisja USB-C (porta përpara)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> ndryshoi në <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Kliko te "Konfirmo" për t'i mbajtur ndryshimet. Cilësimet e mëparshme do të restaurohen për <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Pajisja me Bluetooth, "<ph name="DEVICE_NAME" />" kërkon leje për çiftim. Fut këtë kod PIN në atë pajisje: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Veglat e transmetimit të ekranit</translation>
 <translation id="1024261588257374085">U zgjodh pamja e pjesshme e ekranit</translation>
 <translation id="1024364763893396229">Ruaj <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Bateria e stilolapsit është e ulët</translation>
@@ -85,7 +84,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1346748346194534595">Djathtas</translation>
 <translation id="1351937230027495976">Palos menynë</translation>
 <translation id="1364382257761975320">Për të shkyçur Chromebook-un tënd, përdor gjurmën e gishtit</translation>
-<translation id="1364618750746929654">Transkriptimi nuk mund të gjenerohet</translation>
 <translation id="1372545819342940910">Ruaj tavolinën e punës për më vonë</translation>
 <translation id="1383597849754832576">Skedarët e ligjërimit nuk mund të shkarkohen. Provo përsëri më vonë.</translation>
 <translation id="1383876407941801731">Kërko</translation>
@@ -460,7 +458,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3702846122927433391">Popullsia në Nigeri</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Të lidhura më parë</translation>
-<translation id="3712317119236351467">Regjistrimi nuk mund të ruhet</translation>
 <translation id="371370241367527062">Mikrofoni i përparmë</translation>
 <translation id="3713734891607377840">Hape kur të përfundojë</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> dhe <ph name="UNAVAILABLE_APPS_COUNT" /> të tjera nuk gjenden në këtë pajisje.</translation>

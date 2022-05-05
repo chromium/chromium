@@ -3684,6 +3684,16 @@
 <translation id="5179853299156742425">可供下载桌面模板的网址。</translation>
 <translation id="5182055907976889880">在 <ph name="PRODUCT_OS_NAME" />中配置 Google 云端硬盘。</translation>
 <translation id="5182483318861266793">将文件架放置到屏幕右侧</translation>
+<translation id="5184298474980725716">此政策用于控制是否将历程显示在“Chrome 历史记录”页面上。
+
+      如果此政策已启用，历程将会显示在 chrome://history/journeys 页面上。
+
+      如果此政策已停用，历程将不会显示在 chrome://history/journeys 页面上。
+
+      如果将此政策保留未设置状态，历程将默认显示在 chrome://history/journeys 页面上，但用户可以更改历程的显示设置。
+
+      请注意，如果 <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> 政策已停用，但 <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> 已启用或保留未设置状态，历程仍会显示在 chrome://history/journeys 页面上，但可能不会显示在多功能框中，而且与用户的相关程度会变低。
+      </translation>
 <translation id="51859390023061147">停用“完全还原”功能。</translation>
 <translation id="5189360528842591274">仅允许连接到此列表中的蓝牙服务</translation>
 <translation id="5190426551516379357">通过设置此政策，您可以强制启用最基本的 YouTube 受限模式，并禁止用户选择限制条件更加宽松的模式。如果此政策设为：

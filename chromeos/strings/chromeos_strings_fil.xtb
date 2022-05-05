@@ -233,6 +233,7 @@
 <translation id="3484914941826596830">Habang nag-a-update ang firmware, huwag alisin sa pagkakasaksak ang external device na ito o i-shut down ang iyong computer. Puwede mong i-minimize ang window na ito. Posibleng tumagal nang ilang minuto ang update na ito at posibleng hindi gumana ang iyong external device sa panahong ito.</translation>
 <translation id="3486220673238053218">kahulugan</translation>
 <translation id="3488065109653206955">Bahagyang na-activate</translation>
+<translation id="3517001332549868749">Update sa Chrome OS</translation>
 <translation id="3527036260304016759">Hindi na-print - Hindi kilalang error</translation>
 <translation id="3532980081107202182">Humigit-kumulang <ph name="MIN_REMAINING" /> (na) minuto ang natitira</translation>
 <translation id="3557205324756024651">Lokal na pagkakakilanlan (opsyonal)</translation>
@@ -374,6 +375,7 @@
 <translation id="4890353053343094602">Pumili agad ng bago</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">May <ph name="BATTERY_PERCENTAGE" />% baterya ang kaliwang bud ng device.</translation>
+<translation id="4915052247106771211">Ire-reset nito ang device sa mga factory setting</translation>
 <translation id="4917385247580444890">Malakas</translation>
 <translation id="4917889632206600977">Huminto - Wala nang papel</translation>
 <translation id="4921665434385737356">Na-charge nang <ph name="RATE" /> sa loob ng <ph name="NUM_SECONDS" /> (na) segundo.</translation>
@@ -428,6 +430,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5358174242040570474">Nagkaproblema. Subukang pumili ulit ng wallpaper o buksan ulit ang app.</translation>
 <translation id="5372659122375744710">Hindi secure ang WiFi network</translation>
 <translation id="5376354385557966694">Awtomatikong light mode</translation>
+<translation id="537872351913703572">Mapupunta ang device sa ibang user o organisayon</translation>
 <translation id="5400907029458559844">Kumokonekta ang device.</translation>
 <translation id="5401938042319910061">Patakbuhin ang Lahat ng Routine</translation>
 <translation id="5423849171846380976">Na-activate</translation>
@@ -558,6 +561,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6692996468359469499">Kumuha ng impormasyon kaugnay ng iyong pinili</translation>
 <translation id="6704062477274546131">Resolution ng DNS</translation>
 <translation id="6723839937902243910">Power</translation>
+<translation id="6723847290197874913">Backlight ng keyboard</translation>
 <translation id="672609503628871915">Tingnan kung ano'ng bago</translation>
 <translation id="6747215703636344499">Huminto - Puno na ang output</translation>
 <translation id="6749473226660745022">Mga Larawan</translation>
@@ -731,6 +735,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8671972493856476349">Mag-update sa <ph name="VERSION_NUMBER" /> at mag-restart</translation>
 <translation id="8675354002693747642">Pre-shared key:</translation>
 <translation id="8677859815076891398">Walang album. Gumawa ng album sa <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Mapupunta ang device sa parehong user</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gamitin ang mga Kaliwa o Pakanang arrow key para pamahalaan ang feature na ito.</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="871560550817059752">Hindi na-print - Wala nang ink</translation>

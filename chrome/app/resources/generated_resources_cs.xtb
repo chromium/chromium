@@ -131,6 +131,7 @@
 <translation id="1124772482545689468">Uživatel</translation>
 <translation id="1125550662859510761">Vypadá jako <ph name="WIDTH" /> × <ph name="HEIGHT" /> (nativní)</translation>
 <translation id="1126809382673880764">Nebudete chráněni před nebezpečnými weby, soubory ke stažení a rozšířeními. V jiných službách Google, v nichž je ochrana pomocí Bezpečného prohlížení k dispozici (např. Gmail a Vyhledávání), ji budete mít i nadále.</translation>
+<translation id="1128090040635299943">Linux se právě konfiguruje. Konfigurace zabere několik minut.</translation>
 <translation id="1128591060186966949">Úprava vyhledávače</translation>
 <translation id="1129420403709586868">Zobrazovat fotky a média z telefonu</translation>
 <translation id="1129850422003387628">Správa aplikací</translation>
@@ -334,6 +335,7 @@
 <translation id="1327794256477341646">Funkce vyžadující polohu nebudou k dispozici</translation>
 <translation id="1329191040029425999">Aktualizujte zařízení a zkuste to znovu</translation>
 <translation id="1330145147221172764">Povolit softwarovou klávesnici</translation>
+<translation id="1331625853030156663">Pokud chcete otevřít aplikaci <ph name="APP_NAME" />, povolte možnost Při probuzení z režimu spánku zobrazit obrazovku uzamčení</translation>
 <translation id="1331977651797684645">To jsem byl(a) já.</translation>
 <translation id="1333489022424033687">Některé funkce ze zdroje <ph name="ORIGIN" /> nemusí fungovat, dokud neuvolníte data uložená do zařízení z jiných webů</translation>
 <translation id="1333965224356556482">Nepovolovat webům přístup k poloze</translation>
@@ -3331,6 +3333,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="420283545744377356">Vypnout spořič obrazovky</translation>
 <translation id="4203065553461038553">Název nebo umístění souboru jsou příliš dlouhé</translation>
 <translation id="4204851595694839599">Jak se vám líbilo hraní?</translation>
+<translation id="4205157409548006256">Při konfiguraci Linuxu došlo k chybě.</translation>
 <translation id="4206144641569145248">Mimozemšťan</translation>
 <translation id="4206323443866416204">Zpětná vazba</translation>
 <translation id="4207522141889799150">Upravit oprávnění webu <ph name="SITE" /></translation>
@@ -5796,6 +5799,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6686665106869989887">Karta byla přesunuta doprava</translation>
 <translation id="6686817083349815241">Uložte si heslo</translation>
 <translation id="6687079240787935001">Skrýt <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Žádost o oprávnění ke čtení a provádění změn pro <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Požádejte uživatele <ph name="SUPERVISED_USER_NAME" />, aby přišel k počítači. Dítě si vytvoří hlasový model přečtením několika vět z obrazovky.
     <ph name="BR" />
     Pokud uživatel <ph name="SUPERVISED_USER_NAME" /> potřebuje se čtením pomoct, ať věty opakuje po vás. Šeptejte je dál od mikrofonu, aby Asistent zaznamenal hlas dítěte a ne váš.</translation>
@@ -6308,6 +6312,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Opustit stránku}few{Opustit stránky}many{Opustit stránky}other{Opustit stránky}}</translation>
 <translation id="7207457272187520234">Odesílat údaje o využití a diagnostice. Toto zařízení aktuálně automaticky odesílá do Googlu diagnostické údaje a údaje o zařízení a aplikacích a jejich využití. Tyto údaje nám pomohou se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Toto nastavení je vyžadováno vlastníkem. Pokud je zapnuto dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do vašeho účtu Google.</translation>
 <translation id="7207631048330366454">Hledat v aplikacích</translation>
+<translation id="720808544705441386">Aplikaci  nelze otevřít</translation>
 <translation id="7210499381659830293">Rozšíření pro tiskárny</translation>
 <translation id="7211783048245131419">Zatím nebyl přiřazen žádný přepínač</translation>
 <translation id="7212097698621322584">Chcete-li změnit PIN, zadejte aktuální PIN. Pokud svůj PIN neznáte, budete bezpečnostní klíč muset resetovat a poté vytvořit nový PIN.</translation>
@@ -7464,6 +7469,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8324784016256120271">Weby mohou pomocí souborů cookie sledovat vaši aktivitu prohlížení na různých webech, například k personalizaci reklam</translation>
 <translation id="8325413836429495820">Zákaz přístupu ke schránce</translation>
 <translation id="8326478304147373412">PKCS #7, řetězec certifikátu</translation>
+<translation id="8327386430364625757">Matematické písmo</translation>
 <translation id="8327676037044516220">Oprávnění a nastavení obsahu</translation>
 <translation id="8330617762701840933">Seznam webů, které přesměrovávají na alternativní prohlížeč.</translation>
 <translation id="8330689128072902965">Kontakty v okolí s vámi mohou sdílet obsah. Kliknutím změníte.</translation>

@@ -131,6 +131,7 @@
 <translation id="1124772482545689468">ተጠቃሚ</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ይመስላል (ቤተኛ)</translation>
 <translation id="1126809382673880764">እርስዎን አደገኛ ከሆኑ የድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች አይጠብቀዎትም። አሁንም የሚገኝ በሆነበት ጊዜ እንደ Gmail እና ፍለጋ ባሉ ሌሎች የGoogle አገልግሎቶች ላይ የጥንቃቄ አሰሳ ጥበቃን ያገኛሉ።</translation>
+<translation id="1128090040635299943">Linux በአሁኑ ጊዜ እየተዋቀረ ነው። ማዋቀር ጥቂት ደቂቃዎችን ይወስዳል።</translation>
 <translation id="1128591060186966949">የፍለጋ ፕሮግራምን ያርትዑ</translation>
 <translation id="1129420403709586868">የስልክዎን ፎቶዎች እና ሚዲያ ይመልከቱ</translation>
 <translation id="1129850422003387628">መተግበሪያዎችን አቀናብር</translation>
@@ -285,7 +286,7 @@
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />የሚደገፉ አገናኞች<ph name="END_LINK" />ን በመክፈት ላይ</translation>
 <translation id="1272978324304772054">ይህ የተጠቃሚ መለያ መሣሪያው የተመዘገበበት ጎራ አካል አይደለም።  ወደተለየ ጎራ መመዝገብ ከፈለጉ መጀመሪያ የመሣሪያ ዳግም ማግኛን ማከናወን አለብዎት።</translation>
 <translation id="1274997165432133392">ኩኪዎች እና የሌላ ጣቢያ ውሂብ</translation>
-<translation id="1275718070701477396">ተመርጧል</translation>
+<translation id="1275718070701477396">የተመረጡ</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" />ን ማራገፍ አልተቻለም</translation>
 <translation id="1277020343994096713">ከአሁኑ ፒንዎ የተለየ አዲስ ፒን ይፍጠሩ</translation>
 <translation id="1278859221870828664">የGoogle Play መተግበሪያዎችን እና አገልግሎቶችን ይገምግሙ</translation>
@@ -333,6 +334,7 @@
 <translation id="1327794256477341646">አካባቢዎን የሚፈልጉ ባህሪዎች አይሰሩም</translation>
 <translation id="1329191040029425999">መሣሪያዎ ወቅታዊ መሆኑን ያረጋግጡ እና እባክዎ እንደገና ይሞክሩ</translation>
 <translation id="1330145147221172764">የታይታ የቁልፍ ሰሌዳን አንቃ</translation>
+<translation id="1331625853030156663"><ph name="APP_NAME" />ን ለመክፈት «ከእንቅልፍ ሲነቁ ማያ ገጽ ቆልፍን አሳይ» የሚለውን ያንቁ</translation>
 <translation id="1331977651797684645">ይሄ እኔ ነበርኩ።</translation>
 <translation id="1333489022424033687">ሌሎች ጣቢያዎች በመሣሪያዎ ላይ ያከማቹት ውሂብ እስኪያጸዱ ድረስ በ<ph name="ORIGIN" /> ላይ ያሉ አንዳንድ ባህሪያት ላይሰሩ ይችላሉ</translation>
 <translation id="1333965224356556482">ጣቢያዎች አካባቢዎን እንዲያዩ አይፍቀዱ</translation>
@@ -3338,6 +3340,7 @@
 <translation id="420283545744377356">የማያ ገጽ ማቆያን አጥፋ</translation>
 <translation id="4203065553461038553">የፋይል ስም ወይም ቦታ በጣም ረጅም ነው</translation>
 <translation id="4204851595694839599">የጨዋታ ዘዴ ልምድዎ እንዴት ነበር?</translation>
+<translation id="4205157409548006256">Linuxን በማዋቀር ላይ ሳለ አንድ ስህተት ተከስቶ ነበር።</translation>
 <translation id="4206144641569145248">በዓድ ፍጥረት</translation>
 <translation id="4206323443866416204">የግብረመልስ ሪፖርት</translation>
 <translation id="4207522141889799150">ለ<ph name="SITE" /> የጣቢያ ፈቃዶችን ያርትዑ</translation>
@@ -5804,6 +5807,7 @@
 <translation id="6686665106869989887">ትር ወደ ቀኝ ተወስዷል</translation>
 <translation id="6686817083349815241">የይለፍ ቃልዎን ያስቀምጡ</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> ደብቅ</translation>
+<translation id="6688391094668641513"><ph name="ORIGIN" /> የማንበብ እና የመቀየር ፈቃድን በመጠየቅ ላይ፦</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> ወደ ኮምፒዩተሩ እንዲመጡ ይጠይቁ። የልጅዎን የድምጽ ሞዴል ለመፍጠር ልጅዎ በዚህ ማያ ገጽ ላይ ጥቂት ሐረጎችን ያነብባሉ።
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" /> በንባብ ላይ እገዛ ከፈለጉ ልጅዎ ከእርስዎ በኋላ እንዲደግሙት ያድርጉ። ረዳቱ ከእርስዎ ይልቅ የልጅዎን ድምፅ እንዲማር ከማይክሮፎኑ ራቅ ብለው ያንሾካሹኩ።</translation>
@@ -6316,6 +6320,7 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{ከገጽ ውጣ}one{ከገጾች ውጣ}other{ከገጾች ውጣ}}</translation>
 <translation id="7207457272187520234">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። ይህ መሣሪያ በአሁኑ ጊዜ በራስ-ሰር የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ ወደ Google እየላከ ነው። ይህ የሥርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። ይህ ቅንብር በባለቤቱ ተፈጻሚ ይደረጋል። የእርስዎ የተጨማሪ ድር እና መተግበሪያ እንቅስቃሴ ቅንብር በርቶ ከሆነ ይህ ውሂብ በGoogle መለያዎ ላይ ሊቀመጥ ይችላል።</translation>
 <translation id="7207631048330366454">መተግበሪያዎችን ይፈልጉ</translation>
+<translation id="720808544705441386">መተግበሪያን መክፈት አይቻልም</translation>
 <translation id="7210499381659830293">የቅጥያ አታሚዎች</translation>
 <translation id="7211783048245131419">ገና ምንም ማብሪያ/ማጥፊያ አልተመደበም</translation>
 <translation id="7212097698621322584">ለመለወጥ የእርስዎን አሁን ያለውን ፒን ያስገቡ። የእርስዎን ፒን የማያውቁት ከሆነ፣ የእርስዎን የደህንነት ቁልፍ ዳግም ማቀናበር እና በመቀጠል አዲስ ፒን መፍጠር ይኖርብዎታል።</translation>
@@ -7478,6 +7483,7 @@ nil</translation>
 <translation id="8324784016256120271">ጣቢያዎች በተለያዩ ጣቢያዎች ላይ ለምሳሌ ማስታወቂያዎችን ግላዊነት ለማላበስ የእርስዎን የአሰሳ እንቅስቃሴ ለመመልከት ኩኪዎችን መጠቀም ይችላሉ</translation>
 <translation id="8325413836429495820">ቅንጥብ ሰሌዳዎን ለማየት አልተፈቀደም</translation>
 <translation id="8326478304147373412">PKCS #7፣ የሰርቲፊኬት ሰንሰለት</translation>
+<translation id="8327386430364625757">የሂሳብ ቅርጸ-ቁምፊ</translation>
 <translation id="8327676037044516220">ፈቃዶች እና የይዘት ቅንብሮች</translation>
 <translation id="8330617762701840933">ወደ አማራጭ አሳሽ የሚያዞሩ ድር ጣቢያዎች ዝርዝር።</translation>
 <translation id="8330689128072902965">በአቅራቢያ ያሉ እውቂያዎች ለእርስዎ ማጋራት ይችላሉ። ለመቀየር ጠቅ ያድርጉ።</translation>

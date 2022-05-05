@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C यन्त्र (अगाडि पोर्ट)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> को रिजोल्युसन परिवर्तन गरी <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> हर्ज) बनाइयो। यो परिवर्तन सुरक्षित गर्न पुष्टि गर्नुहोस् नामक बटनमा क्लिक गर्नुहोस्। अबको <ph name="TIMEOUT_SECONDS" /> मा यी सेटिङ परिवर्तन गरी पहिलेको जस्तै बनाइने छ।</translation>
 <translation id="1013923882670373915">ब्लुटुथ यन्त्र "<ph name="DEVICE_NAME" />" जोडा मिलाउने अनुमति चाहन्छ। कृपया त्यस यन्त्रमा यो पिन कोड प्रविष्टि गर्नुहोस्: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">स्क्रिनकास्टसम्बन्धी टुलहरू</translation>
 <translation id="1024261588257374085">स्रोतका रूपमा स्क्रिनको केही भाग चयन गरियो</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> सेभ गर्नुहोस्</translation>
 <translation id="1032891413405719768">स्टाइलसको ब्याट्री कम छ</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">दायाँ</translation>
 <translation id="1351937230027495976">मेनु संक्षिप्त गर्नुहोस्</translation>
 <translation id="1364382257761975320">तपाईं आफ्नो Chromebook अनलक गर्न चाहनुहुन्छ भने आफ्नो फिंगरप्रिन्ट प्रयोग गर्नुहोस्</translation>
-<translation id="1364618750746929654">ट्रान्सक्रिप्ट सिर्जना गर्न सकिएन</translation>
 <translation id="1372545819342940910">यो डेस्क पछिका लागि सेभ गर्नुहोस्</translation>
 <translation id="1383597849754832576">बोलीसम्बन्धी फाइलहरू डाउनलोड गर्न सकिएन। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">नाइजेरियाको जनसङ्ख्या कति छ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">यसअघि कनेक्ट गरिएका डिभाइस</translation>
-<translation id="3712317119236351467">रेकर्डिङ सेभ गर्न सकिएन</translation>
 <translation id="371370241367527062">अगाडिको माइक्रोफोन</translation>
 <translation id="3713734891607377840">डाउनलोड भएपछि खुल्ने छ</translation>
 <translation id="3726171378575546917">यो डिभाइसमा <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> र <ph name="UNAVAILABLE_APPS_COUNT" /> उपलब्ध छैनन्।</translation>
@@ -854,6 +851,7 @@
 <translation id="6166852626429024716">आफ्नो यन्त्र, एप, सेटिङ, वेबमा खोज्नुहोस्...</translation>
 <translation id="6179832488876878285">तपाईं यहाँ आफ्ना महत्त्वपूर्ण फाइलहरू पिन गर्न सक्नुहुन्छ। पिन गर्न थाल्न फाइलहरू नामक एप खोल्नुहोस्।</translation>
 <translation id="619279033188484792"><ph name="DEVICE_TYPE" /> मा आफ्नो फोनका हालसालैका फोटो, मिडिया र सूचनाहरू हेर्नुहोस्</translation>
+<translation id="619335566042889110">अहिले नै फुल चार्ज गर्नुहोस्</translation>
 <translation id="6220928844947387476">तपाईं अब एकै पटक आफूसँगै आफ्नो स्क्रिन रेकर्ड गर्न सक्नुहुन्छ</translation>
 <translation id="622484624075952240">तल</translation>
 <translation id="6231419273573514727">सहायक यन्त्रले पूर्ण रूपमा काम नगर्न सक्छ</translation>
@@ -1189,6 +1187,7 @@
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> का लागि अनलक गर्न Enter थिच्नुहोस्</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8270450402312105425">{0,plural, =1{एक घन्टाभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{# घन्टाभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
+<translation id="8271580342040932214">तपाईंको डिभाइस बिजुलीको स्रोतमा जोडिएकै भए तापनि उक्त डिभाइसको ब्याट्रीको आयु बढाउन ब्याट्री केही समयका लागि ८०% चार्ज भएर बसेको छ। तपाईंको डिभाइसको ब्याट्री <ph name="FULLY_CHARGE_TIME" /> अघि नै फुल चार्ज हुने छ।</translation>
 <translation id="8284362522226889623">अघिल्लो डेस्कमा जान टचप्याडमा चारवटा औँलाले बायाँतिर स्वाइप गर्नुहोस्</translation>
 <translation id="828708037801473432">अफ</translation>
 <translation id="8297006494302853456">कमजोर</translation>
@@ -1272,6 +1271,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">इनपुट विधिसम्बन्धी सेटिङ</translation>
 <translation id="8818320199597151042">प्रोफाइल हटाइँदै छ। केही मिनेट पर्खनुहोस्।</translation>
+<translation id="8819728065740986820">एड्याप्टिभ चार्जिङ अन छ</translation>
 <translation id="8825863694328519386">पछि फर्कन दायाँबाट स्वाइप गर्नुहोस्</translation>
 <translation id="8834539327799336565">हाल कनेक्ट गरिएका डिभाइस</translation>
 <translation id="8841375032071747811">पछाडि नामक बटन</translation>
@@ -1318,6 +1318,7 @@
 <translation id="9080132581049224423">गृहपृष्ठमा जान माथितिर स्वाइप गर्नुहोस्</translation>
 <translation id="9080206825613744995">माइक्रोफोन प्रयोगमा छ।</translation>
 <translation id="9084606467167974638">मेनुको अवस्था टगल गर्नुहोस्</translation>
+<translation id="9085962983642906571">तपाईंको डिभाइस बिजुलीको स्रोतमा जोडिएकै भए तापनि उक्त डिभाइसको ब्याट्रीको आयु बढाउन ब्याट्री केही समयका लागि ८०% चार्ज गरेर राखिएको छ।</translation>
 <translation id="9089416786594320554">आगत विधिहरू</translation>
 <translation id="9091626656156419976">हटाइएको प्रदर्शन <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">फोन मौन राख्नुहोस्</translation>

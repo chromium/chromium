@@ -131,6 +131,7 @@
 <translation id="1124772482545689468">用户</translation>
 <translation id="1125550662859510761">有效分辨率：<ph name="WIDTH" /> x <ph name="HEIGHT" />（原生）</translation>
 <translation id="1126809382673880764">不会保护您免受危险网站、下载内容和扩展程序的侵害。在 Gmail 和 Google 搜索等其他 Google 服务中，若安全浏览保护可用，您仍将获得该保护。</translation>
+<translation id="1128090040635299943">目前正在配置 Linux。整个配置流程将需要几分钟的时间。</translation>
 <translation id="1128591060186966949">修改搜索引擎</translation>
 <translation id="1129420403709586868">查看您手机上的照片和媒体内容</translation>
 <translation id="1129850422003387628">管理应用</translation>
@@ -284,7 +285,7 @@
 <translation id="1272508081857842302">如何打开<ph name="BEGIN_LINK" />支持的链接<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">此用户帐号不属于设备所注册的域。如果想注册其他域，那么您首先需要执行设备恢复。</translation>
 <translation id="1274997165432133392">Cookie 及其他网站数据</translation>
-<translation id="1275718070701477396">已选中</translation>
+<translation id="1275718070701477396">已选择</translation>
 <translation id="1276994519141842946">无法卸载 <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">请创建一个与您的当前 PIN 码不同的新 PIN 码</translation>
 <translation id="1278859221870828664">查看 Google Play 应用和服务</translation>
@@ -332,6 +333,7 @@
 <translation id="1327794256477341646">所有需要使用您的位置信息的功能都将无法正常运行</translation>
 <translation id="1329191040029425999">请确保您的设备已更新到最新版本，然后重试</translation>
 <translation id="1330145147221172764">启用屏幕键盘</translation>
+<translation id="1331625853030156663">若要打开<ph name="APP_NAME" />，请启用“从休眠状态唤醒时显示锁定屏幕”</translation>
 <translation id="1331977651797684645">是我本人。</translation>
 <translation id="1333489022424033687">请清除您设备上存储的其他网站的数据，否则 <ph name="ORIGIN" /> 上的某些功能可能无法正常运行</translation>
 <translation id="1333965224356556482">不允许网站查看您所在的位置</translation>
@@ -3160,7 +3162,7 @@
 <translation id="4031179711345676612">已允许使用麦克风</translation>
 <translation id="4031308539321678562">此操作会将相关浏览数据从这部设备上永久删除。这份个人资料名下的 Google 帐号可能会被您 Chromebook 上的其他应用使用。若要移除这些帐号，请前往<ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />。</translation>
 <translation id="4031527940632463547">已禁止使用传感器</translation>
-<translation id="4033415645631238123">系统不再支持使用 Smart Lock 登录。您仍然可以通过 Smart Lock 解锁。</translation>
+<translation id="4033415645631238123">您无法再使用 Smart Lock 登录，但仍然可以通过 Smart Lock 解锁。</translation>
 <translation id="4033471457476425443">添加新文件夹</translation>
 <translation id="4033963223187371752">安全网站可能会内嵌不安全的内容，例如图片或 Web 框架</translation>
 <translation id="4034824040120875894">打印机</translation>
@@ -3321,6 +3323,7 @@
 <translation id="420283545744377356">关闭屏保功能</translation>
 <translation id="4203065553461038553">文件名或路径太长</translation>
 <translation id="4204851595694839599">您的游戏体验如何？</translation>
+<translation id="4205157409548006256">配置 Linux 时出错。</translation>
 <translation id="4206144641569145248">外星人</translation>
 <translation id="4206323443866416204">反馈报告</translation>
 <translation id="4207522141889799150">修改 <ph name="SITE" /> 的网站权限</translation>
@@ -4973,7 +4976,7 @@
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5895335062901455404">无论是在哪部 ChromeOS Flex 设备上，您只需登录自己的 Google 帐号，便能使用您保存的偏好设置和活动记录。您可在“设置”中选择要同步的内容。</translation>
 <translation id="5896436821193322561">不允许</translation>
-<translation id="5900186025777217044">Smart Lock 发生变更</translation>
+<translation id="5900186025777217044">Smart Lock 的功能有变化</translation>
 <translation id="5900302528761731119">Google 个人资料照片</translation>
 <translation id="590036993063074298">镜像品质详细信息</translation>
 <translation id="5901069264981746702">您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" />上，绝不会外泄。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -5780,6 +5783,7 @@
 <translation id="6686665106869989887">此标签页已移至右侧</translation>
 <translation id="6686817083349815241">保存您的密码</translation>
 <translation id="6687079240787935001">隐藏<ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">正在请求读取和更改 <ph name="ORIGIN" />：</translation>
 <translation id="6689714331348768690">请让<ph name="SUPERVISED_USER_NAME" />面对计算机。您的孩子将会读出此屏幕上的一些短语以创建其语音模型。
     <ph name="BR" />
     如果<ph name="SUPERVISED_USER_NAME" />有阅读障碍，请让孩子跟着您读。记得要远离麦克风轻声耳语，以便 Google 助理能够了解您孩子（而非您）的语音。</translation>
@@ -6292,6 +6296,7 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{退出网页}other{退出网页}}</translation>
 <translation id="7207457272187520234">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项设置是由此设备的所有者强制指定的。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 帐号中。</translation>
 <translation id="7207631048330366454">搜索应用</translation>
+<translation id="720808544705441386">无法打开应用</translation>
 <translation id="7210499381659830293">扩展打印机</translation>
 <translation id="7211783048245131419">尚未分配任何开关</translation>
 <translation id="7212097698621322584">请输入您的当前 PIN 码以更改它。如果您不知道 PIN 码，则需要重置安全密钥，然后创建新 PIN 码。</translation>
@@ -7448,6 +7453,7 @@
 <translation id="8324784016256120271">网站可以使用 Cookie 查看您在各个不同网站上的浏览活动，以便实现某些功能或目的（例如为您展示个性化广告）</translation>
 <translation id="8325413836429495820">不允许查看您的剪贴板</translation>
 <translation id="8326478304147373412">PKCS #7，证书链</translation>
+<translation id="8327386430364625757">数学字体</translation>
 <translation id="8327676037044516220">权限和内容设置</translation>
 <translation id="8330617762701840933">会重定向到备用浏览器的网站的列表。</translation>
 <translation id="8330689128072902965">附近的联系人可与您分享内容。点击即可更改。</translation>

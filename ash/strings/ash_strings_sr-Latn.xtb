@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Uređaj sa USB priključkom tipa C (prednji port)</translation>
 <translation id="1013598600051641573">Rezolucija prikaza <ph name="DISPLAY_NAME" /> je promenjena u <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Kliknite na Potvrdi da biste zadržali promene. Prethodna podešavanja će biti vraćena za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth uređaj „<ph name="DEVICE_NAME" />“ želi dozvolu za uparivanje. Unesite ovaj PIN kôd na tom uređaju: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Alatke za video snimak ekrana</translation>
 <translation id="1024261588257374085">Delimičan snimak ekrana je izabran</translation>
 <translation id="1024364763893396229">Sačuvajte uređaj <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Baterija pisaljke je skoro prazna</translation>
@@ -85,7 +84,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1346748346194534595">Udesno</translation>
 <translation id="1351937230027495976">Skupi meni</translation>
 <translation id="1364382257761975320">Da biste otključali Chromebook, koristite otisak prsta</translation>
-<translation id="1364618750746929654">Generisanje transkripcije nije uspelo</translation>
 <translation id="1372545819342940910">Sačuvaj radnu površinu za kasnije</translation>
 <translation id="1383597849754832576">Preuzimanje fajlova govora nije uspelo. Probajte kasnije.</translation>
 <translation id="1383876407941801731">Pretraži</translation>
@@ -460,7 +458,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3702846122927433391">Populacija Nigerije</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Prethodno povezani</translation>
-<translation id="3712317119236351467">Čuvanje snimka nije uspelo</translation>
 <translation id="371370241367527062">Prednji mikrofon</translation>
 <translation id="3713734891607377840">Otvori kada bude završeno</translation>
 <translation id="3726171378575546917">Aplikacije <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> i još <ph name="UNAVAILABLE_APPS_COUNT" /> nisu na ovom uređaju.</translation>
@@ -854,6 +851,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="6166852626429024716">Pretražujte uređaj, aplikacije, podešavanja, veb...</translation>
 <translation id="6179832488876878285">Ovde možete da zakačite najvažnije fajlove. Otvorite aplikaciju Fajlovi da biste započeli.</translation>
 <translation id="619279033188484792">Pregledajte nedavne slike, medijski sadržaj i obaveštenja telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Odmah napunite do kraja</translation>
 <translation id="6220928844947387476">Sada istovremeno možete da snimate sebe i ekran</translation>
 <translation id="622484624075952240">Nadole</translation>
 <translation id="6231419273573514727">Učinak perifernih uređaja će možda biti ograničen</translation>
@@ -1189,6 +1187,7 @@ Novo instaliranje</translation>
 <translation id="826107067893790409">Pritisnite Enter da biste otključali za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8270450402312105425">{0,plural, =1{Promenite verziju uređaja u prethodnu verziju u roku od jednog sata}one{Promenite verziju uređaja u prethodnu verziju u roku od # sata}few{Promenite verziju uređaja u prethodnu verziju u roku od # sata}other{Promenite verziju uređaja u prethodnu verziju u roku od # sati}}</translation>
+<translation id="8271580342040932214">Baterija je trenutno na 80% dok je priključena da bi se produžilo trajanje baterije. Baterija će se napuniti do kraja do <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Prevucite ulevo pomoću četiri prsta da biste prešli na prethodnu radnu površinu</translation>
 <translation id="828708037801473432">Isključeno</translation>
 <translation id="8297006494302853456">Slab</translation>
@@ -1272,6 +1271,7 @@ Novo instaliranje</translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="881757059229893486">Podešavanja metoda unosa</translation>
 <translation id="8818320199597151042">Profil se uklanja. Sačekajte nekoliko minuta.</translation>
+<translation id="8819728065740986820">Adaptivno punjenje je uključeno</translation>
 <translation id="8825863694328519386">Prevucite sa leve strane da biste se vratili</translation>
 <translation id="8834539327799336565">Trenutno povezani</translation>
 <translation id="8841375032071747811">Dugme Nazad</translation>
@@ -1318,6 +1318,7 @@ Novo instaliranje</translation>
 <translation id="9080132581049224423">Prevucite nagore da biste otišli na početni ekran</translation>
 <translation id="9080206825613744995">Mikrofon se koristi.</translation>
 <translation id="9084606467167974638">Promenite položaj menija</translation>
+<translation id="9085962983642906571">Baterija se održava na nivou od 80% dok je priključena da bi se produžilo trajanje baterije.</translation>
 <translation id="9089416786594320554">Metodi unosa</translation>
 <translation id="9091626656156419976">Uklonjen je prikaz <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Isključi zvuk telefona</translation>

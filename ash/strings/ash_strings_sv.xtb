@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C-enhet (främre port)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> har ändrats till <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klicka på bekräfta om du vill behålla ändringarna. De gamla inställningarna återställs om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Ange den här pinkoden på den enheten: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Screencast-verktyg</translation>
 <translation id="1024261588257374085">Skärmbild av en del av skärmen har valts</translation>
 <translation id="1024364763893396229">Spara <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Batteriet håller på att ta slut i e-pennan</translation>
@@ -85,7 +84,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1346748346194534595">Höger</translation>
 <translation id="1351937230027495976">Komprimera menyn</translation>
 <translation id="1364382257761975320">Använd ditt fingeravtryck om du vill låsa upp Chromebook</translation>
-<translation id="1364618750746929654">Det gick inte att generera transkriptionen</translation>
 <translation id="1372545819342940910">Spara skrivbordet till senare</translation>
 <translation id="1383597849754832576">Det gick inte att ladda ned röstfilerna. Försök igen senare.</translation>
 <translation id="1383876407941801731">Sök</translation>
@@ -460,7 +458,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3702846122927433391">Befolkning i Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Tidigare anslutna enheter</translation>
-<translation id="3712317119236351467">Det gick inte att spara inspelningen</translation>
 <translation id="371370241367527062">Mikrofonen på framsidan</translation>
 <translation id="3713734891607377840">Öppna när nedladdningen är klar</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> och <ph name="UNAVAILABLE_APPS_COUNT" /> till finns inte på enheten.</translation>

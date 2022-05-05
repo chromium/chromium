@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C 裝置 (前方連接埠)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> 已變更為 <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz)。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
 <translation id="1013923882670373915">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限，請在裝置上輸入以下 PIN 碼：<ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">螢幕側錄工具</translation>
 <translation id="1024261588257374085">已選取部分螢幕畫面</translation>
 <translation id="1024364763893396229">儲存 <ph name="NAME" /></translation>
 <translation id="1032891413405719768">觸控筆電量偏低</translation>
@@ -82,7 +81,6 @@
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">收合選單</translation>
 <translation id="1364382257761975320">如要解鎖 Chromebook，請使用指紋</translation>
-<translation id="1364618750746929654">無法產生語音轉錄</translation>
 <translation id="1372545819342940910">儲存桌面以供日後使用</translation>
 <translation id="1383597849754832576">無法下載即時字幕檔案，請稍後再試。</translation>
 <translation id="1383876407941801731">搜尋</translation>
@@ -457,7 +455,6 @@
 <translation id="3702846122927433391">奈及利亞的人口</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">先前連線的裝置</translation>
-<translation id="3712317119236351467">無法儲存錄製內容</translation>
 <translation id="371370241367527062">前置麥克風</translation>
 <translation id="3713734891607377840">下載完成後開啟</translation>
 <translation id="3726171378575546917">這部裝置未安裝「<ph name="UNAVAILABLE_APPS_ONE" />」、「<ph name="UNAVAILABLE_APPS_TWO" />」和另外 <ph name="UNAVAILABLE_APPS_COUNT" /> 個應用程式。</translation>
@@ -851,6 +848,7 @@
 <translation id="6166852626429024716">搜尋你的裝置、應用程式、設定、網路...</translation>
 <translation id="6179832488876878285">你可以將重要的檔案固定在這裡，只要開啟「檔案」應用程式即可開始使用。</translation>
 <translation id="619279033188484792">透過 <ph name="DEVICE_TYPE" /> 查看手機上最近的相片、媒體和通知</translation>
+<translation id="619335566042889110">立即充飽電</translation>
 <translation id="6220928844947387476">你現在可以同時錄製鏡頭畫面和螢幕畫面</translation>
 <translation id="622484624075952240">向下鍵</translation>
 <translation id="6231419273573514727">周邊裝置效能可能受到限制</translation>
@@ -1184,6 +1182,7 @@
 <translation id="826107067893790409">按下 Enter 鍵即可解除鎖定 <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8270450402312105425">{0,plural, =1{在 1 小時內將裝置復原為先前的版本}other{在 # 小時內將裝置復原為先前的版本}}</translation>
+<translation id="8271580342040932214">接上電源時，電池電量會暫時保持在 80% 以延長電池壽命。電池電量將在<ph name="FULLY_CHARGE_TIME" /> 充飽。</translation>
 <translation id="8284362522226889623">以四指向左滑動即可切換至上一個桌面</translation>
 <translation id="828708037801473432">關閉</translation>
 <translation id="8297006494302853456">弱</translation>
@@ -1267,6 +1266,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">輸入法設定</translation>
 <translation id="8818320199597151042">正在移除設定檔，請稍後片刻。</translation>
+<translation id="8819728065740986820">自動調節充電功能已開啟</translation>
 <translation id="8825863694328519386">從螢幕左側向右滑動即可返回</translation>
 <translation id="8834539327799336565">目前已連線的裝置</translation>
 <translation id="8841375032071747811">返回按鈕</translation>
@@ -1313,6 +1313,7 @@
 <translation id="9080132581049224423">向上滑動即可開啟主畫面</translation>
 <translation id="9080206825613744995">麥克風正在使用中。</translation>
 <translation id="9084606467167974638">切換選單位置</translation>
+<translation id="9085962983642906571">接上電源時，電池電量會保持在 80% 以延長電池壽命。</translation>
 <translation id="9089416786594320554">輸入法</translation>
 <translation id="9091626656156419976">「<ph name="DISPLAY_NAME" />」螢幕已移除</translation>
 <translation id="9098969848082897657">將手機設為靜音</translation>

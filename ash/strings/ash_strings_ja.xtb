@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C デバイス（前面のポート）</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> を <ph name="RESOLUTION" />（<ph name="REFRESH_RATE" /> Hz）に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
 <translation id="1013923882670373915">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。このデバイスに次の PIN コードを入力してください: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">スクリーンキャスト ツール</translation>
 <translation id="1024261588257374085">画面の一部のスクリーンショットを選択しました</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> を保存</translation>
 <translation id="1032891413405719768">タッチペンのバッテリー残量が少なくなっています</translation>
@@ -85,7 +84,6 @@
 <translation id="1346748346194534595">右</translation>
 <translation id="1351937230027495976">メニューを折りたたむ</translation>
 <translation id="1364382257761975320">Chromebook のロックを解除するには、指紋認証を使用します</translation>
-<translation id="1364618750746929654">音声文字変換を生成できません</translation>
 <translation id="1372545819342940910">後で使用するためにデスクを保存</translation>
 <translation id="1383597849754832576">読み上げファイルをダウンロードできません。しばらくしてからもう一度お試しください。</translation>
 <translation id="1383876407941801731">検索</translation>
@@ -460,7 +458,6 @@
 <translation id="3702846122927433391">ナイジェリアの人口を教えて</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">以前に接続したデバイス</translation>
-<translation id="3712317119236351467">録画を保存できません</translation>
 <translation id="371370241367527062">前方のマイク</translation>
 <translation id="3713734891607377840">完了したら開く</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />、<ph name="UNAVAILABLE_APPS_TWO" />、<ph name="UNAVAILABLE_APPS_COUNT" /> はこのデバイスにありません。</translation>

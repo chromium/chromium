@@ -133,6 +133,7 @@
 <translation id="1124772482545689468">Käyttäjä</translation>
 <translation id="1125550662859510761">Näyttää olevan <ph name="WIDTH" /> x <ph name="HEIGHT" /> (natiivi)</translation>
 <translation id="1126809382673880764">Ei suojaa sinua vaarallisilta sivustoilta, latauksilta ja laajennuksilta. Voit silti käyttää Selaussuojaa muissa Googlen palveluissa, joissa se on saatavilla, kuten Gmailissa ja Haussa.</translation>
+<translation id="1128090040635299943">Linuxia määritetään. Määritys kestää muutaman minuutin.</translation>
 <translation id="1128591060186966949">Muokkaa hakukonetta</translation>
 <translation id="1129420403709586868">Katsele puhelimesi kuvia ja mediaa</translation>
 <translation id="1129850422003387628">Sovellusvalinnat</translation>
@@ -334,6 +335,7 @@
 <translation id="1327794256477341646">Sijaintia edellyttävät ominaisuudet eivät enää toimi</translation>
 <translation id="1329191040029425999">Varmista, että laite on ajan tasalla, ja yritä uudelleen</translation>
 <translation id="1330145147221172764">Ota näyttönäppäimistö käyttöön</translation>
+<translation id="1331625853030156663"><ph name="APP_NAME" /> voidaan avata, kun "Näytä lukitusnäyttö, kun laite poistuu virransäästötilasta" on käytössä</translation>
 <translation id="1331977651797684645">Käytä nykyistä profiilia.</translation>
 <translation id="1333489022424033687">Jotkin ominaisuudet osoitteessa <ph name="ORIGIN" /> eivät ehkä toimi, ennen kuin tyhjennät dataa, jota muut sivustot ovat tallentaneet laitteellesi</translation>
 <translation id="1333965224356556482">Älä salli sivustojen nähdä sijaintiasi</translation>
@@ -2097,7 +2099,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="2948300991547862301">Siirry kohtaan <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Nopea, yksinkertainen ja turvallinen verkkoselain, joka on suunniteltu nykypäivän verkon tarpeisiin.</translation>
 <translation id="2949289451367477459">Käytä sijaintia. Salli laitteen sijainnin käyttäminen sovelluksille ja palveluille, joilla on sijaintilupa. Google voi ajoittain kerätä sijaintitietoja ja käyttää niitä ei-yksilöivästi sijainnin tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen. <ph name="BEGIN_LINK1" />Lue lisää<ph name="END_LINK1" /></translation>
-<translation id="2950666755714083615">Lähden mukaan</translation>
+<translation id="2950666755714083615">Kyllä kiitos</translation>
 <translation id="2953019166882260872">Liitä puhelin johdolla</translation>
 <translation id="2956070239128776395">Osio sisällytetty ryhmään: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Varoitus: pakattu laajennus</translation>
@@ -3342,6 +3344,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="420283545744377356">Laita näytönsäästäjä pois päältä</translation>
 <translation id="4203065553461038553">Tiedoston nimi tai polku on liian pitkä</translation>
 <translation id="4204851595694839599">Miten kuvailisit pelikokemusta?</translation>
+<translation id="4205157409548006256">Linuxin määrityksessä tapahtui virhe.</translation>
 <translation id="4206144641569145248">Avaruusolio</translation>
 <translation id="4206323443866416204">Palauteilmoitus</translation>
 <translation id="4207522141889799150">Muokkaa sivustolupia: <ph name="SITE" /></translation>
@@ -5807,6 +5810,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6686665106869989887">Välilehti siirretty oikealle</translation>
 <translation id="6686817083349815241">Tallenna salasanasi</translation>
 <translation id="6687079240787935001">Piilota <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Pyytää lupaa lukea ja muuttaa sivustoa (<ph name="ORIGIN" />):</translation>
 <translation id="6689714331348768690">Pyydä, että <ph name="SUPERVISED_USER_NAME" /> tulee tietokoneelle. Lapsi lukee muutamia näytöllä näkyviä lauseita äänimallin luomiseksi.
     <ph name="BR" />
     Jos <ph name="SUPERVISED_USER_NAME" /> tarvitsee apua lukemiseen, pyydä häntä toistamaan perässäsi. Kuiskaa lauseet poispäin mikrofonista, jotta Assistant oppii lapsen äänen sinun äänesi sijaan.</translation>
@@ -6319,6 +6323,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Sulje sivu}other{Sulje sivut}}</translation>
 <translation id="7207457272187520234">Lähetä käyttö- ja diagnostiikkadataa. Laite lähettää tällä hetkellä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Datan avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, kuten Android-kehittäjille. Omistaja on ottanut tämän asetuksen käyttöön. Jos olet laittanut päälle muun verkko- ja sovellustoiminnan asetuksen, tätä dataa voidaan tallentaa Google-tilillesi.</translation>
 <translation id="7207631048330366454">Hae sovelluksia</translation>
+<translation id="720808544705441386">Sovellusta ei voi avata</translation>
 <translation id="7210499381659830293">Laajennustulostimet</translation>
 <translation id="7211783048245131419">Kytkimiä ei ole vielä määritetty</translation>
 <translation id="7212097698621322584">Lisää nykyinen PIN-koodisi muuttaaksesi sen. Jos et tiedä PIN-koodiasi, sinun on nollattava suojausavaimesi ja luotava uusi PIN-koodi.</translation>
@@ -7475,6 +7480,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8324784016256120271">Sivustot voivat nähdä evästeiden kautta selaustoimintasi eri sivustoilla esim. personoidakseen mainoksia</translation>
 <translation id="8325413836429495820">Leikepöydän tarkastelu kielletty</translation>
 <translation id="8326478304147373412">PKCS #7, varmenneketju</translation>
+<translation id="8327386430364625757">Matemaattinen fontti</translation>
 <translation id="8327676037044516220">Luvat ja sisältöasetukset</translation>
 <translation id="8330617762701840933">Verkkosivustot, jotka uudelleenohjataan vaihtoehtoiseen selaimeen.</translation>
 <translation id="8330689128072902965">Lähistön kontaktit voivat jakaa sinulle sisältöä. Muuta klikkaamalla.</translation>

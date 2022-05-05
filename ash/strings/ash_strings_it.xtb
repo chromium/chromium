@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Dispositivo USB-C (porta anteriore)</translation>
 <translation id="1013598600051641573">La risoluzione di <ph name="DISPLAY_NAME" /> è stata impostata su <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Il dispositivo Bluetooth "<ph name="DEVICE_NAME" />" chiede l'autorizzazione per essere accoppiato. Inserisci questo codice PIN sul dispositivo: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Strumenti per screencast</translation>
 <translation id="1024261588257374085">Screenshot parziale selezionato</translation>
 <translation id="1024364763893396229">Salva <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Batteria dello stilo in esaurimento</translation>
@@ -82,7 +81,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1346748346194534595">Destra</translation>
 <translation id="1351937230027495976">Comprimi il menu</translation>
 <translation id="1364382257761975320">Per sbloccare Chromebook, utilizza la tua impronta</translation>
-<translation id="1364618750746929654">Impossibile generare la trascrizione</translation>
 <translation id="1372545819342940910">Salva scrivania per dopo</translation>
 <translation id="1383597849754832576">Impossibile scaricare i file di contenuti vocali. Riprova più tardi.</translation>
 <translation id="1383876407941801731">Cerca</translation>
@@ -457,7 +455,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3702846122927433391">Popolazione della Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Connessi in precedenza</translation>
-<translation id="3712317119236351467">Impossibile salvare la registrazione</translation>
 <translation id="371370241367527062">Microfono anteriore</translation>
 <translation id="3713734891607377840">Apri dopo il completamento</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> e altre <ph name="UNAVAILABLE_APPS_COUNT" /> app non sono disponibili su questo dispositivo.</translation>
@@ -852,6 +849,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6166852626429024716">Cerca sul dispositivo, nelle app, nelle impostazioni e sul Web.</translation>
 <translation id="6179832488876878285">Puoi bloccare qui i tuoi file importanti. Apri l'app File per iniziare.</translation>
 <translation id="619279033188484792">Visualizza le foto, i contenuti multimediali e le notifiche recenti del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Ricarica completamente adesso</translation>
 <translation id="6220928844947387476">Ora puoi registrarti e registrare il tuo schermo nello stesso momento</translation>
 <translation id="622484624075952240">Giù</translation>
 <translation id="6231419273573514727">Le prestazioni delle periferiche potrebbero essere limitate</translation>
@@ -1186,6 +1184,7 @@ Nuova installazione</translation>
 <translation id="826107067893790409">Premi INVIO per sbloccare per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8270450402312105425">{0,plural, =1{Ripristina la versione precedente del dispositivo entro un'ora}other{Ripristina la versione precedente del dispositivo entro # ore}}</translation>
+<translation id="8271580342040932214">La batteria è momentaneamente all'80%, anche se il dispositivo è collegato alla corrente, per prolungarne la durata. La batteria verrà ricaricata completamente entro le ore <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Scorri verso sinistra con quattro dita per passare alla scrivania precedente</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Debole</translation>
@@ -1269,6 +1268,7 @@ Nuova installazione</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Impostazioni metodi di immissione</translation>
 <translation id="8818320199597151042">Rimozione del profilo in corso… Attendi qualche minuto.</translation>
+<translation id="8819728065740986820">Ricarica adattiva attiva</translation>
 <translation id="8825863694328519386">Scorri da sinistra per tornare indietro</translation>
 <translation id="8834539327799336565">Attualmente connesso</translation>
 <translation id="8841375032071747811">Pulsante Indietro</translation>
@@ -1315,6 +1315,7 @@ Nuova installazione</translation>
 <translation id="9080132581049224423">Scorri verso l'alto per andare alla Home page</translation>
 <translation id="9080206825613744995">Il microfono è in uso.</translation>
 <translation id="9084606467167974638">Attiva/disattiva posizione menu</translation>
+<translation id="9085962983642906571">La batteria viene mantenuta all'80%, anche se il dispositivo è collegato alla corrente, per prolungarne la durata.</translation>
 <translation id="9089416786594320554">Metodi immissione</translation>
 <translation id="9091626656156419976">Schermo <ph name="DISPLAY_NAME" /> rimosso</translation>
 <translation id="9098969848082897657">Disattiva audio</translation>
