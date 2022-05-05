@@ -1,142 +1,142 @@
 {
     "Fuchsia x64": {
-        "master": "chromium.linux",
+        "main": "chromium.linux",
         "port_name": "fuchsia",
         "specifiers": ["Fuchsia", "Release"]
     },
     "Linux Tests": {
-        "master": "chromium.linux",
+        "main": "chromium.linux",
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"]
     },
     "Linux Tests (dbg)(1)": {
-        "master": "chromium.linux",
+        "main": "chromium.linux",
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Debug"]
     },
     "Mac10.12 Tests": {
-        "master": "chromium.mac",
+        "main": "chromium.mac",
         "port_name": "mac-mac10.12",
         "specifiers": ["Mac10.12", "Release"]
     },
     "Mac10.13 Tests": {
-        "master": "chromium.mac",
+        "main": "chromium.mac",
         "port_name": "mac-mac10.13",
         "specifiers": ["Mac10.13", "Release"]
     },
     "Mac10.14 Tests": {
-        "master": "chromium.mac",
+        "main": "chromium.mac",
         "port_name": "mac-mac10.14",
         "specifiers": ["Mac10.14", "Release"]
     },
     "Mac10.15 Tests": {
-        "master": "chromium.mac",
+        "main": "chromium.mac",
         "port_name": "mac-mac10.15",
         "specifiers": ["Mac10.15", "Release"]
     },
     "Mac11 Tests (dbg)": {
-        "master": "chromium.mac",
+        "main": "chromium.mac",
         "port_name": "mac-mac11",
         "specifiers": ["Mac11", "Debug"]
     },
     "Mac11.0 Tests": {
-        "master": "chromium.fyi",
+        "main": "chromium.fyi",
         "port_name": "mac-mac11",
         "specifiers": ["Mac11", "Release"]
     },
     "mac-arm64-rel-tests": {
-        "master": "chromium.fyi",
+        "main": "chromium.fyi",
         "port_name": "mac-mac11-arm64",
         "specifiers": ["Mac11-arm64", "Release"]
     },
     "Win7 Tests (1)": {
-        "master": "chromium.win",
+        "main": "chromium.win",
         "port_name": "win-win7",
         "specifiers": ["Win7", "Release"]
     },
     "Win10 Tests x64": {
-        "master": "chromium.win",
+        "main": "chromium.win",
         "port_name": "win-win10.20h2",
         "specifiers": ["Win10.20h2", "Release"]
     },
     "fuchsia_x64": {
-        "master": "tryserver.chromium.linux",
+        "main": "tryserver.chromium.linux",
         "port_name": "fuchsia",
         "specifiers": ["Fuchsia", "Release"],
         "step_name": "blink_web_tests (with patch)",
         "is_try_builder": true
     },
     "linux-wpt-identity-fyi-rel": {
-        "master": "tryserver.chromium.linux",
+        "main": "tryserver.chromium.linux",
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
         "is_try_builder": true,
         "step_name": "wpt_tests_suite (with patch)"
     },
     "linux-wpt-input-fyi-rel": {
-        "master": "tryserver.chromium.linux",
+        "main": "tryserver.chromium.linux",
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
         "is_try_builder": true,
         "step_name": "wpt_tests_suite (with patch, experimental)"
     },
     "linux-blink-rel": {
-        "master": "tryserver.blink",
+        "main": "tryserver.blink",
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
         "has_webdriver_tests": true,
         "is_try_builder": true
     },
     "mac10.12-blink-rel": {
-        "master": "tryserver.blink",
+        "main": "tryserver.blink",
         "port_name": "mac-mac10.12",
         "specifiers": ["Mac10.12", "Release"],
         "is_try_builder": true
     },
     "mac10.13-blink-rel": {
-        "master": "tryserver.blink",
+        "main": "tryserver.blink",
         "port_name": "mac-mac10.13",
         "specifiers": ["Mac10.13", "Release"],
         "is_try_builder": true
     },
     "mac10.14-blink-rel": {
-        "master": "tryserver.blink",
+        "main": "tryserver.blink",
         "port_name": "mac-mac10.14",
         "specifiers": ["Mac10.14", "Release"],
         "is_try_builder": true
     },
     "mac10.15-blink-rel": {
-        "master": "tryserver.blink",
+        "main": "tryserver.blink",
         "port_name": "mac-mac10.15",
         "specifiers": ["Mac10.15", "Release"],
         "is_try_builder": true
     },
     "mac11.0-blink-rel": {
-        "master": "tryserver.blink",
+        "main": "tryserver.blink",
         "port_name": "mac-mac11",
         "specifiers": ["Mac11", "Release"],
         "is_try_builder": true
     },
     "mac11.0.arm64-blink-rel": {
-        "master": "tryserver.blink",
+        "main": "tryserver.blink",
         "port_name": "mac-mac11-arm64",
         "specifiers": ["Mac11-arm64", "Release"],
         "is_try_builder": true
     },
     "win7-blink-rel": {
-        "master": "tryserver.blink",
+        "main": "tryserver.blink",
         "port_name": "win-win7",
         "specifiers": ["Win7", "Release"],
         "is_try_builder": true
     },
     "win10.20h2-blink-rel": {
-        "master": "tryserver.blink",
+        "main": "tryserver.blink",
         "port_name": "win-win10.20h2",
         "specifiers": ["Win10.20h2", "Release"],
         "is_try_builder": true
     },
     "linux-rel": {
-        "master": "tryserver.chromium.linux",
+        "main": "tryserver.chromium.linux",
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
         "has_webdriver_tests": true,
@@ -145,21 +145,21 @@
         "is_cq_builder":true
     },
     "mac-rel": {
-        "master": "tryserver.chromium.mac",
+        "main": "tryserver.chromium.mac",
         "port_name": "mac-mac11",
         "specifiers": ["Mac11", "Release"],
         "is_try_builder": true,
         "is_cq_builder":true
     },
     "win10_chromium_x64_rel_ng": {
-        "master": "tryserver.chromium.win",
+        "main": "tryserver.chromium.win",
         "port_name": "win-win10.20h2",
         "specifiers": ["Win10.20h2", "Release"],
         "is_try_builder": true,
         "is_cq_builder":true
     },
     "linux_layout_tests_layout_ng_disabled": {
-        "master": "tryserver.chromium.linux",
+        "main": "tryserver.chromium.linux",
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
         "flag_specific": "disable-layout-ng",
@@ -169,14 +169,14 @@
     },
     "android-weblayer-pie-x86-wpt-fyi-rel": {
         "port_name": "android-android-pie",
-        "master": "chromium.android.fyi",
+        "main": "chromium.android.fyi",
         "specifiers": [
             "Android", "android_weblayer", "Release"
         ]
     },
     "android-weblayer-pie-x86-wpt-smoketest": {
         "port_name": "android-android-pie",
-        "master": "chromium.android.fyi",
+        "main": "chromium.android.fyi",
         "specifiers": [
             "Android", "android_weblayer", "Release"
         ],
@@ -184,12 +184,12 @@
     },
     "android-chrome-pie-x86-wpt-fyi-rel": {
         "port_name": "android-android-pie",
-        "master": "chromium.android.fyi",
+        "main": "chromium.android.fyi",
         "specifiers": [
             "Android", "chrome_android", "Release"]
     },
     "linux-blink-optional-highdpi-rel": {
-        "master": "tryserver.blink",
+        "main": "tryserver.blink",
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
         "flag_specific": "highdpi",
