@@ -192,6 +192,12 @@ try_.builder(
     ),
 )
 
+try_.builder(
+    name = "win-fieldtrial-fyi-rel",
+    os = os.WINDOWS_DEFAULT,
+    mirrors = ["ci/win-fieldtrial-rel"],
+)
+
 try_.gpu.optional_tests_builder(
     name = "win_optional_gpu_tests_rel",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
