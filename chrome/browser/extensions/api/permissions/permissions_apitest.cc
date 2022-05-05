@@ -115,15 +115,8 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, MAYBE_FaviconPermission) {
 
 // Test functions and APIs that are always allowed (even if you ask for no
 // permissions).
-// Flaky on MacOS, Linux and CrOS (see crbug/1064929, crbug/1101043,
-// crbug/1181237).
-#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-     BUILDFLAG(IS_WIN))
-#define MAYBE_AlwaysAllowed DISABLED_AlwaysAllowed
-#else
-#define MAYBE_AlwaysAllowed AlwaysAllowed
-#endif
-IN_PROC_BROWSER_TEST_F(PermissionsApiTest, MAYBE_AlwaysAllowed) {
+// TODO(https://crbug.com/1181237): Fix flake and re-enable test.
+IN_PROC_BROWSER_TEST_F(PermissionsApiTest, DISABLED_AlwaysAllowed) {
   ASSERT_TRUE(RunExtensionTest("permissions/always_allowed")) << message_;
 }
 
