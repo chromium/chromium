@@ -5,6 +5,7 @@
 #include "services/audio/mixing_graph_impl.h"
 
 #include "base/compiler_specific.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/loopback_audio_converter.h"
@@ -42,6 +43,37 @@ bool SameChannelSetup(const media::AudioParameters& a,
 }
 }  // namespace
 
+// Counts how often mixing callback duration exceeded the given time limit and
+// logs it as a UMA histogram.
+class MixingGraphImpl::OvertimeLogger {
+ public:
+  // Logs once every 10s, assuming 10ms buffers.
+  constexpr static int kCallbacksPerLogPeriod = 1000;
+
+  explicit OvertimeLogger(base::TimeDelta timeout) : timeout_(timeout) {}
+
+  void Log(base::TimeTicks callback_start) {
+    ++callback_count_;
+
+    if (base::TimeTicks::Now() - callback_start > timeout_)
+      overtime_count_++;
+
+    if (callback_count_ % kCallbacksPerLogPeriod)
+      return;
+
+    // Clipped to 100 to give more resolution to lower values.
+    base::UmaHistogramCounts100(
+        "Media.Audio.OutputDeviceMixer.OvertimeCount", overtime_count_);
+
+    overtime_count_ = 0;
+  }
+
+ private:
+  const base::TimeDelta timeout_;
+  int callback_count_ = 0;
+  int overtime_count_ = 0;
+};
+
 MixingGraphImpl::MixingGraphImpl(const media::AudioParameters& output_params,
                                  OnMoreDataCallback on_more_data_cb,
                                  OnErrorCallback on_error_cb)
@@ -58,6 +90,8 @@ MixingGraphImpl::MixingGraphImpl(const media::AudioParameters& output_params,
       on_more_data_cb_(std::move(on_more_data_cb)),
       on_error_cb_(std::move(on_error_cb)),
       create_converter_cb_(std::move(create_converter_cb)),
+      overtime_logger_(
+          std::make_unique<OvertimeLogger>(output_params.GetBufferDuration())),
       main_converter_(output_params, output_params, /*disable_fifo=*/true) {}
 
 MixingGraphImpl::~MixingGraphImpl() {
@@ -190,13 +224,13 @@ int MixingGraphImpl::OnMoreData(base::TimeDelta delay,
                                 base::TimeTicks delay_timestamp,
                                 int prior_frames_skipped,
                                 media::AudioBus* dest) {
+  const base::TimeTicks start_time(base::TimeTicks::Now());
   TRACE_EVENT_BEGIN2(TRACE_DISABLED_BY_DEFAULT("audio"),
                      "MixingGraphImpl::OnMoreData", "delay", delay,
                      "delay_timestamp", delay_timestamp);
 
   // The expected playout time is |delay_timestamp| + |delay|.
-  base::TimeDelta total_delay =
-      delay_timestamp + delay - base::TimeTicks::Now();
+  base::TimeDelta total_delay = delay_timestamp + delay - start_time;
   if (total_delay < base::TimeDelta())
     total_delay = base::TimeDelta();
 
@@ -214,6 +248,7 @@ int MixingGraphImpl::OnMoreData(base::TimeDelta delay,
   TRACE_EVENT_END2(TRACE_DISABLED_BY_DEFAULT("audio"),
                    "MixingGraphImpl::OnMoreData", "total_delay", total_delay,
                    "frames_delayed", frames_delayed);
+  overtime_logger_->Log(start_time);
   return dest->frames();
 }
 

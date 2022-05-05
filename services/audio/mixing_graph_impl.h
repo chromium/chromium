@@ -47,6 +47,8 @@ class MixingGraphImpl : public MixingGraph {
   void OnError(ErrorType type) final;
 
  protected:
+  class OvertimeLogger;
+
   media::LoopbackAudioConverter* FindOrAddConverter(
       const media::AudioParameters& input_params,
       const media::AudioParameters& output_params,
@@ -111,6 +113,9 @@ class MixingGraphImpl : public MixingGraph {
   const OnErrorCallback on_error_cb_;
   // Called when a new converter needs to be created.
   const CreateConverterCallback create_converter_cb_;
+
+  // UMA logging.
+  const std::unique_ptr<OvertimeLogger> overtime_logger_;
 
   base::Lock lock_;
 
