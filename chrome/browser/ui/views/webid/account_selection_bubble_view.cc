@@ -144,7 +144,8 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
     const content::IdentityRequestAccount& account) {
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+      views::BoxLayout::Orientation::kVertical, gfx::Insets::TLBR(0, 0, 4, 0)));
+
   row->AddChildView(CreateAccountRow(account, /*should_hover=*/false));
 
   // Prefer using the given name if it is provided, otherwise fallback to name.
@@ -175,6 +176,12 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
       row->AddChildView(std::make_unique<views::StyledLabel>());
   disclosure_label->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
+
+  // Set custom top margin for `disclosure_label` in order to take
+  // (line_height - font_height) into account.
+  disclosure_label->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(14, 0, 0, 0)));
+
   std::vector<size_t> offsets;
   if (client_data_.terms_of_service_url.is_empty()) {
     // Case for when we only need to add a link for privacy policy URL, but not
