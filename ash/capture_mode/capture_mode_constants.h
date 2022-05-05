@@ -55,6 +55,9 @@ constexpr int kCaptureSurfaceShortSideDivider = 4;
 // diameter.
 constexpr int kCollapsedPreviewDivider = 2;
 
+// Size of the camera preview border.
+constexpr int kCameraPreviewBorderSize = 4;
+
 // The space between the camera preview and edges of the bounds that will be
 // recorded.
 constexpr int kSpaceBetweenCameraPreviewAndEdges = 16;

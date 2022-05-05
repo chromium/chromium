@@ -328,7 +328,8 @@ class CameraPreviewTargeter : public aura::WindowTargeter {
           camera_preview_window_->GetBoundsInScreen();
       const gfx::Point camera_preview_center_point =
           camera_preview_bounds.CenterPoint();
-      const int camera_preview_radius = camera_preview_bounds.width() / 2;
+      const int camera_preview_radius = camera_preview_bounds.width() / 2 -
+                                        capture_mode::kCameraPreviewBorderSize;
 
       // Check if events are outside of the camera preview circle by comparing
       // if the distance between screen location and center of camera preview is

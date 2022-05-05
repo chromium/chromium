@@ -107,6 +107,11 @@ CameraPreviewView::CameraPreviewView(
               camera_controller_->is_camera_preview_collapsed())))),
       scoped_a11y_overrider_(
           std::make_unique<ScopedA11yOverrideWindowSetter>()) {
+  // Add an empty border to the camera preview. This is done to keep some gap
+  // between the focus ring and the contents of the camera preview, as focus
+  // ring will extend a little beyond the border.
+  SetBorder(views::CreateEmptyBorder(capture_mode::kCameraPreviewBorderSize));
+
   resize_button_->SetPaintToLayer();
   resize_button_->layer()->SetFillsBoundsOpaquely(false);
   resize_button_->SetBackground(views::CreateRoundedRectBackground(
@@ -300,7 +305,8 @@ void CameraPreviewView::Layout() {
   const gfx::Rect bounds(
       (width() - resize_button_size.width()) / 2.f,
       height() - resize_button_size.height() -
-          capture_mode::kSpaceBetweenResizeButtonAndCameraPreview,
+          capture_mode::kSpaceBetweenResizeButtonAndCameraPreview -
+          capture_mode::kCameraPreviewBorderSize,
       resize_button_size.width(), resize_button_size.height());
   resize_button_->SetBoundsRect(bounds);
 
