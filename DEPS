@@ -1838,7 +1838,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/assistant/ambient',
-        'version': 'version:float_on_by_slower',
+        'version': 'version:background_color_name_change',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

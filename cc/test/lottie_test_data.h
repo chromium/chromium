@@ -54,6 +54,12 @@ constexpr base::StringPiece kLottieDataWithoutAssets1Color2Node = "Color 2";
 constexpr SkColor kLottieDataWithoutAssets1Color1 = SK_ColorGREEN;
 constexpr SkColor kLottieDataWithoutAssets1Color2 = SK_ColorBLUE;
 
+// Returns an animation with the same structure as |kLottieDataWithoutAssets1|
+// except with color node names specified by the caller.
+std::string CreateCustomLottieDataWith2ColorNodes(
+    base::StringPiece color_node_1,
+    base::StringPiece color_node_2);
+
 // A skottie animation with solid green color for the first second and then
 // a solid blue color for the next second.
 constexpr base::StringPiece kLottieDataWithoutAssets2 =

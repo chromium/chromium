@@ -13,6 +13,7 @@
 #include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 #include "ash/ambient/ui/ambient_animation_attribution_transformer.h"
+#include "ash/ambient/ui/ambient_animation_background_color.h"
 #include "ash/ambient/ui/ambient_animation_player.h"
 #include "ash/ambient/ui/ambient_animation_resizer.h"
 #include "ash/ambient/ui/ambient_animation_shield_controller.h"
@@ -157,6 +158,14 @@ void AmbientAnimationView::Init(AmbientViewDelegate* view_delegate) {
   animation_container_view->SetUseDefaultFillLayout(true);
   // Purely for performance reasons. Gains 3-4 fps.
   animation_container_view->SetPaintToLayer();
+  // In portrait mode, the landscape animation file is currently being used. Its
+  // width is scaled down to match the width of the portrait screen, and it's
+  // center-aligned leaving empty space on the top and bottom of the screen. To
+  // make this look less obvious to the user, make the empty space exactly match
+  // the background color of the animation itself. This may be removed in the
+  // future if portrait versions of the animations are made.
+  animation_container_view->SetBackground(views::CreateSolidBackground(
+      GetAnimationBackgroundColor(*static_resources_->GetSkottieWrapper())));
 
   animated_image_view_ = animation_container_view->AddChildView(
       std::make_unique<views::AnimatedImageView>());
