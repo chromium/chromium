@@ -145,6 +145,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void SetExternalDisplayALSBrightness(bool enabled) override;
   void GetExternalDisplayALSBrightness(
       DBusMethodCallback<bool> callback) override;
+  void ChargeNowForAdaptiveCharging() override;
 
   // Pops the first report from |video_activity_reports_|, returning whether the
   // activity was fullscreen or not. There must be at least one report.

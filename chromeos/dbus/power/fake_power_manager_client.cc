@@ -417,6 +417,10 @@ void FakePowerManagerClient::GetExternalDisplayALSBrightness(
                                 external_display_als_brightness_enabled_));
 }
 
+// The real implementation of ChargeNowForAdaptiveCharging is just a simple
+// Dbus call without any callback, so there is not much to test for now.
+void FakePowerManagerClient::ChargeNowForAdaptiveCharging() {}
+
 bool FakePowerManagerClient::PopVideoActivityReport() {
   CHECK(!video_activity_reports_.empty());
   bool fullscreen = video_activity_reports_.front();

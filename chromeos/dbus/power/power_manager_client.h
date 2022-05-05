@@ -374,6 +374,12 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   virtual void GetExternalDisplayALSBrightness(
       DBusMethodCallback<bool> callback) = 0;
 
+  // Stop delaying charging for Adaptive Charging for this charge session.
+  // This should be called when AdaptiveCharging is active (although calling it
+  // when AdaptiveCharging is inactive will not cause any issue except extra
+  // execution which does nothing).
+  virtual void ChargeNowForAdaptiveCharging() = 0;
+
   PowerManagerClient();
 
   PowerManagerClient(const PowerManagerClient&) = delete;

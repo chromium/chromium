@@ -659,6 +659,15 @@ class PowerManagerClientImpl : public PowerManagerClient {
             weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void ChargeNowForAdaptiveCharging() override {
+    dbus::MethodCall method_call(
+        power_manager::kPowerManagerInterface,
+        power_manager::kChargeNowForAdaptiveChargingMethod);
+    power_manager_proxy_->CallMethod(&method_call,
+                                     dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                     base::DoNothing());
+  }
+
  private:
   // Returns true if the current thread is the origin thread.
   bool OnOriginThread() {
