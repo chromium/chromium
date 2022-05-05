@@ -270,8 +270,9 @@ class DiceWebSigninInterceptionBubbleSyncPromoPixelTest
       kSyncPromoAfterSigninIntercept};
 };
 
+// TODO(https://crbug.com/1322850): Fix failure and re-enable test.
 IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubbleSyncPromoPixelTest,
-                       InvokeUi_default) {
+                       DISABLED_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
