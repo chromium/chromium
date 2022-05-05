@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-// clang-format on
-
 /** @interface */
 export class OsBluetoothDevicesSubpageBrowserProxy {
   /**
@@ -23,8 +19,18 @@ export class OsBluetoothDevicesSubpageBrowserProxyImpl {
   requestFastPairDeviceSupport() {
     chrome.send('requestFastPairDeviceSupportStatus');
   }
+
+  /** @return {!OsBluetoothDevicesSubpageBrowserProxy} */
+  static getInstance() {
+    return instance ||
+        (instance = new OsBluetoothDevicesSubpageBrowserProxyImpl());
+  }
+
+  /** @param {!OsBluetoothDevicesSubpageBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-// The singleton instance_ is replaced with a test version of this wrapper
-// during testing.
-addSingletonGetter(OsBluetoothDevicesSubpageBrowserProxyImpl);
+/** @type {?OsBluetoothDevicesSubpageBrowserProxy} */
+let instance = null;
