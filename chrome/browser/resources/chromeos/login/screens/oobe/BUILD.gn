@@ -179,7 +179,7 @@ js_library("update.m") {
     "../../components/buttons:oobe_back_button.m",
     "../../components/buttons:oobe_next_button.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
-    "../../components/oobe_slide:oobe_slide.m",
+    "../../components:oobe_slide.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":update_module" ]
