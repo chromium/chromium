@@ -43,7 +43,7 @@ window.onload = () => {
       "This test assumes that the height and width of 'standardDivFast' are equivalent. If this changes please update SCROLL_AMOUNT to be X/Y specific");
   const SCROLL_AMOUNT = getScrollbarButtonScrollDelta(standardDivFast).y;
 
-  async function testArrows() {
+  promise_test (async () => {
     // Scrollbars on Mac don't have arrows. This test is irrelevant.
     if(navigator.userAgent.includes("Mac OS X"))
       return;
@@ -51,120 +51,67 @@ window.onload = () => {
     await waitForCompositorCommit();
     resetScrollOffset(standardDivFast);
 
-    // For testing on RTL divs, two things are different. The vertical scrollbar is on the opposite side,
-    // including the scroll corner. Horizontal scrolling on RTL starts at 0 for the rightmost position
-    // and counts downwards into the negatives.
-    const rtl = standardDivFast.style.direction === "rtl";
-
     // Click on the Down arrow for standardRectFast.
-    let x = rtl ? standardRectFast.left + BUTTON_WIDTH / 2 : standardRectFast.right - BUTTON_WIDTH / 2;
+    let x = standardRectFast.right - BUTTON_WIDTH / 2;
     let y = standardRectFast.bottom - SCROLL_CORNER - BUTTON_WIDTH / 2;
     await mouseClickOn(x, y);
     await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
     assert_equals(standardDivFast.scrollTop, SCROLL_AMOUNT, "Pressing the down arrow didn't scroll.");
 
     // Click on the Up arrow for standardRectFast.
-    x = rtl ? standardRectFast.left + BUTTON_WIDTH / 2 : standardRectFast.right - BUTTON_WIDTH / 2;
+    x = standardRectFast.right - BUTTON_WIDTH / 2;
     y = standardRectFast.top + BUTTON_WIDTH / 2;
     await mouseClickOn(x, y);
     await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
     assert_equals(standardDivFast.scrollTop, 0, "Pressing the up arrow didn't scroll.");
 
-    async function scrollRight() {
-      // Click on the Right arrow for standardRectFast.
-      x = rtl ? standardRectFast.right - BUTTON_WIDTH / 2 : standardRectFast.right - SCROLL_CORNER - BUTTON_WIDTH / 2;
-      y = standardRectFast.bottom - BUTTON_WIDTH / 2;
-      await mouseClickOn(x, y);
-      await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollLeft;});
-      assert_equals(standardDivFast.scrollLeft, rtl ? 0 : SCROLL_AMOUNT, "Pressing the right arrow didn't scroll.");
-    }
+    // Click on the Right arrow for standardRectFast.
+    x = standardRectFast.right - SCROLL_CORNER - BUTTON_WIDTH / 2;
+    y = standardRectFast.bottom - BUTTON_WIDTH / 2;
+    await mouseClickOn(x, y);
+    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollLeft;});
+    assert_equals(standardDivFast.scrollLeft, SCROLL_AMOUNT, "Pressing the right arrow didn't scroll.");
 
-    async function scrollLeft() {
-      // Click on the Left arrow for standardRectFast.
-      x = rtl ? standardRectFast.left + SCROLL_CORNER + BUTTON_WIDTH / 2 : standardRectFast.left + BUTTON_WIDTH / 2;
-      y = standardRectFast.bottom - BUTTON_WIDTH / 2;
-      await mouseClickOn(x, y);
-      await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollLeft;});
-      assert_equals(standardDivFast.scrollLeft, rtl ? -SCROLL_AMOUNT : 0, "Pressing the left arrow didn't scroll.");
-    }
+    // Click on the Left arrow for standardRectFast.
+    x = standardRectFast.left + BUTTON_WIDTH / 2;
+    y = standardRectFast.bottom - BUTTON_WIDTH / 2;
+    await mouseClickOn(x, y);
+    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollLeft;});
+    assert_equals(standardDivFast.scrollLeft, 0, "Pressing the left arrow didn't scroll.");
+  }, "Test mouse click on non-custom composited div scrollbar arrows.");
 
-    //For RTL, horizontal scrollbar starts on the rightmost position, so we need to scroll left first;
-    if (rtl) {
-      await scrollLeft();
-      await scrollRight();
-    } else {
-      await scrollRight();
-      await scrollLeft();
-    }
-  }; //
-
-  async function testTrackparts() {
+  promise_test (async () => {
     await waitForCompositorCommit();
     resetScrollOffset(standardDivFast);
 
-    // For testing on RTL divs, two things are different. The vertical scrollbar is on the opposite side,
-    // including the scroll corner. Horizontal scrolling on RTL starts at 0 for the rightmost position
-    // and counts downwards into the negatives.
-    const rtl = standardDivFast.style.direction === "rtl";
-
     // Click on the track part just above the down arrow.
     assert_equals(standardDivFast.scrollTop, 0, "Div is not at 0 offset.");
-    let x = rtl ? standardRectFast.left + BUTTON_WIDTH / 2 : standardRectFast.right - BUTTON_WIDTH / 2;
+    let x = standardRectFast.right - BUTTON_WIDTH / 2;
     let y = standardRectFast.bottom - SCROLL_CORNER - BUTTON_WIDTH - 2;
     await mouseClickOn(x, y);
     await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
     assert_approx_equals(standardDivFast.scrollTop, 74, 1, "Pressing the down trackpart didn't scroll.");
 
     // Click on the track part just below the up arrow.
-    x = rtl ? standardRectFast.left + BUTTON_WIDTH / 2 : standardRectFast.right - BUTTON_WIDTH / 2;
+    x = standardRectFast.right - BUTTON_WIDTH / 2;
     y = standardRectFast.top + BUTTON_WIDTH + 2;
     await mouseClickOn(x, y);
     await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
     assert_equals(standardDivFast.scrollTop, 0, "Pressing the up trackpart didn't scroll.");
 
-    async function scrollRight() {
-      // Click on the track part just to the left of the right arrow.
-      x = rtl ? standardRectFast.right - BUTTON_WIDTH - 2 : standardRectFast.right - SCROLL_CORNER - BUTTON_WIDTH - 2;
-      y = standardRectFast.bottom - BUTTON_WIDTH / 2;
-      await mouseClickOn(x, y);
-      await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollLeft;});
-      assert_approx_equals(standardDivFast.scrollLeft, rtl ? 0 : 74, 1, "Pressing the right trackpart didn't scroll.");
-    }
+    // Click on the track part just to the left of the right arrow.
+    x = standardRectFast.right - SCROLL_CORNER - BUTTON_WIDTH - 2;
+    y = standardRectFast.bottom - BUTTON_WIDTH / 2;
+    await mouseClickOn(x, y);
+    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollLeft;});
+    assert_approx_equals(standardDivFast.scrollLeft, 74, 1, "Pressing the right trackpart didn't scroll.");
 
-    async function scrollLeft() {
-      // Click on the track part just to the right of the left arrow.
-      x = rtl ? standardRectFast.left + SCROLL_CORNER + BUTTON_WIDTH + 2 : standardRectFast.left + BUTTON_WIDTH + 2;
-      y = standardRectFast.bottom - BUTTON_WIDTH / 2;
-      await mouseClickOn(x, y);
-      await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollLeft;});
-      assert_approx_equals(standardDivFast.scrollLeft, rtl ? -74 : 0, 1, "Pressing the left trackpart didn't scroll.");
-    }
-
-    if (rtl) {
-      await scrollLeft();
-      await scrollRight();
-    } else {
-      await scrollRight();
-      await scrollLeft();
-    }
-  }// "Test mouse click on non-custom composited div scrollbar empty trackparts.");
-
-  function ltr(test) {
-    return async function () {
-      standardDivFast.style.direction = "ltr";
-      await test();
-    };
-  }
-  function rtl(test) {
-    return async function () {
-      standardDivFast.style.direction = "rtl";
-      await test();
-    };
-  }
-
-  promise_test(ltr(testArrows), "Test mouse click on non-custom composited div scrollbar arrows.");
-  promise_test(ltr(testTrackparts), "Test mouse click on non-custom composited div scrollbar empty trackparts.");
-  promise_test(rtl(testArrows), "Test mouse click on non-custom composited div scrollbar arrows. (RTL)");
-  promise_test(rtl(testTrackparts), "Test mouse click on non-custom composited div scrollbar empty trackparts. (RTL)");
+    // Click on the track part just to the right of the left arrow.
+    x = standardRectFast.left + BUTTON_WIDTH + 2;
+    y = standardRectFast.bottom - BUTTON_WIDTH / 2;
+    await mouseClickOn(x, y);
+    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollLeft;});
+    assert_equals(standardDivFast.scrollLeft, 0, "Pressing the left trackpart didn't scroll.");
+  }, "Test mouse click on non-custom composited div scrollbar empty trackparts.");
 }
 </script>
