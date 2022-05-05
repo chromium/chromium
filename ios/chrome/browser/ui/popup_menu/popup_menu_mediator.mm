@@ -27,6 +27,8 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
+#import "ios/chrome/browser/follow/follow_menu_updater.h"
+#import "ios/chrome/browser/follow/follow_tab_helper.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
@@ -138,6 +140,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
 @interface PopupMenuMediator () <BookmarkModelBridgeObserver,
                                  CRWWebStateObserver,
+                                 FollowMenuUpdater,
                                  IOSLanguageDetectionTabHelperObserving,
                                  OverlayPresenterObserving,
                                  PrefObserverDelegate,
@@ -242,6 +245,9 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   if (_webState) {
     _webState->RemoveObserver(_webStateObserver.get());
     _webStateObserver.reset();
+    if (IsWebChannelsEnabled()) {
+      FollowTabHelper::FromWebState(_webState)->remove_follow_menu_updater();
+    }
     _webState = nullptr;
   }
 
@@ -407,7 +413,6 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
         std::make_unique<language::IOSLanguageDetectionTabHelperObserverBridge>(
             language::IOSLanguageDetectionTabHelper::FromWebState(_webState),
             self);
-
     if (self.popupMenu) {
       [self updatePopupMenu];
     }
@@ -500,6 +505,10 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
     switch (self.type) {
       case PopupMenuTypeToolsMenu:
         [self createToolsMenuItems];
+        if (self.webState && IsWebChannelsEnabled()) {
+          FollowTabHelper::FromWebState(self.webState)
+              ->set_follow_menu_updater(self);
+        }
         break;
       case PopupMenuTypeNavigationForward:
         DCHECK(!ShouldUseUIKitPopupMenu());
@@ -652,6 +661,20 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
   self.readingListItem.badgeNumber = unreadCount;
   [self.popupMenu itemsHaveChanged:@[ self.readingListItem ]];
+}
+
+#pragma mark - FollowMenuUpdater
+
+- (void)updateFollowMenuItemWithFollowStatus:(BOOL)status
+                                       title:(NSString*)title
+                                     enabled:(BOOL)enable {
+  DCHECK(IsWebChannelsEnabled());
+  self.followItem.enabled = enable;
+  self.followItem.title = title;
+  self.followItem.image = [[UIImage
+      imageNamed:status ? @"popup_menu_unfollow" : @"popup_menu_follow"]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  [self.popupMenu itemsHaveChanged:@[ self.followItem ]];
 }
 
 #pragma mark - BrowserContainerConsumer

@@ -16,7 +16,9 @@ namespace web {
 class WebState;
 }
 
+@class FollowWebPageURLs;
 @protocol FollowIPHPresenter;
+@protocol FollowMenuUpdater;
 
 // FollowTabHelper encapsulates tab behavior related to following channels.
 class FollowTabHelper : public web::WebStateObserver,
@@ -37,16 +39,36 @@ class FollowTabHelper : public web::WebStateObserver,
     follow_iph_presenter_ = presenter;
   }
 
+  // Sets the value of shoud_update_follow_item_.
+  void set_should_update_follow_item(bool shoud_update_follow_item) {
+    should_update_follow_item_ = shoud_update_follow_item;
+  }
+
+  // Sets the follow meue updater. |follow_menu_updater| is not retained by this
+  // tab helper.
+  void set_follow_menu_updater(id<FollowMenuUpdater> follow_menu_updater);
+
+  // Removes the follow meue updater.
+  void remove_follow_menu_updater();
+
  private:
   friend class web::WebStateUserData<FollowTabHelper>;
 
   explicit FollowTabHelper(web::WebState* web_state);
 
   // web::WebStateObserver implementation.
+  void DidStartNavigation(web::WebState* web_state,
+                          web::NavigationContext* navigation_context) override;
+  void DidRedirectNavigation(
+      web::WebState* web_state,
+      web::NavigationContext* navigation_context) override;
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
   void WebStateDestroyed(web::WebState* web_state) override;
+
+  // Helper functions.
+  void UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls);
 
   web::WebState* web_state_ = nullptr;
 
@@ -56,6 +78,14 @@ class FollowTabHelper : public web::WebStateObserver,
   // Manages this object as an observer of |web_state_|.
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
+
+  // True if the follow menu item should be updated. Ex. Set to true when a new
+  // navigation starts, to ensure the follow menu item would be updated when the
+  // page finishes loading.
+  bool should_update_follow_item_ = false;
+
+  // Used to update the follow menu item.
+  __weak id<FollowMenuUpdater> follow_menu_updater_ = nil;
 
   base::WeakPtrFactory<FollowTabHelper> weak_ptr_factory_;
 

@@ -257,3 +257,12 @@ imageset("popup_menu_follow") {
     "popup_menu_follow.imageset/popup_menu_follow@3x.png",
   ]
 }
+
+imageset("popup_menu_unfollow") {
+  sources = [
+    "popup_menu_unfollow.imageset/Contents.json",
+    "popup_menu_unfollow.imageset/popup_menu_unfollow.png",
+    "popup_menu_unfollow.imageset/popup_menu_unfollow@2x.png",
+    "popup_menu_unfollow.imageset/popup_menu_unfollow@3x.png",
+  ]
+}

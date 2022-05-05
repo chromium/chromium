@@ -45,6 +45,7 @@ source_set("enums") {
 source_set("tab_helper") {
   sources = [
     "follow_iph_presenter.h",
+    "follow_menu_updater.h",
     "follow_tab_helper.h",
     "follow_tab_helper.mm",
   ]
@@ -53,12 +54,17 @@ source_set("tab_helper") {
     "//base",
     "//components/feature_engagement/public",
     "//components/feature_engagement/public",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/feature_engagement",
+    "//ios/chrome/browser/follow:enums",
+    "//ios/chrome/browser/follow:utils",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/follow",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ui/base",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
