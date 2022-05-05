@@ -227,6 +227,9 @@ class SingleClientBookmarksSyncTestWithEnabledThrottling : public SyncTest {
   void SetupBookmarksSync() {
     // Only enable bookmarks so that sync is not nudged by another data type
     // (with a shorter delay).
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    GetSyncService(0)->GetUserSettings()->SetSelectedOsTypes(false, {});
+#endif
     ASSERT_TRUE(GetClient(0)->SetupSyncNoWaitForCompletion(
         {syncer::UserSelectableType::kBookmarks}));
     ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
@@ -1948,6 +1951,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
                     kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
                     GetFakeServer())
                     .Wait());
+    // The quota should *just* be depleted now.
     EXPECT_EQ(1, histogram_tester.GetBucketCount(
                      "Sync.ModelTypeCommitMessageHasDepletedQuota",
                      ModelTypeHistogramValue(syncer::BOOKMARKS)));
@@ -1956,20 +1960,19 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
   // Need to send another bookmark in the next cycle. As the current cycle
   // determines the next nudge delay. Thus, only now the next commit is
   // scheduled in 3s from now.
-  std::string client_title = "Foo";
-  AddFolder(kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0,
-            client_title);
+  AddFolder(kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0, "Foo");
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
                   kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
                   GetFakeServer())
                   .Wait());
 
   {
-    // Adding another entity does not trigger an update (long nudge delay).
+    base::HistogramTester histogram_tester;
+
+    // Adding another bookmark does not trigger an immediate commit: The
+    // bookmarks data type is out of quota, so gets a long nudge delay.
     base::TimeTicks time = base::TimeTicks::Now();
-    std::string client_title = "Bar";
-    AddFolder(kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0,
-              client_title);
+    AddFolder(kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0, "Bar");
 
     // Since the extra nudge delay is only two seconds, it still manages to
     // commit before test timeout.
@@ -1980,6 +1983,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
     // Check that it takes at least one second, that should be robust enough to
     // not flake.
     EXPECT_GT(base::TimeTicks::Now() - time, base::Seconds(1));
+
+    EXPECT_EQ(1, histogram_tester.GetBucketCount(
+                     "Sync.ModelTypeCommitMessageHasDepletedQuota",
+                     ModelTypeHistogramValue(syncer::BOOKMARKS)));
+    EXPECT_GT(histogram_tester.GetBucketCount(
+                  "Sync.ModelTypeCommitWithDepletedQuota",
+                  ModelTypeHistogramValue(syncer::BOOKMARKS)),
+              0);
   }
 }
 
