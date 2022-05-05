@@ -140,10 +140,11 @@ void AXTreeDistiller::SnapshotAXTree() {
 
 void AXTreeDistiller::DistillAXTree() {
   // If content_node_ids_ is already cached, do nothing.
-  if (content_node_ids_)
+  if (content_node_ids_) {
     OnAXTreeDistilled();
+    return;
+  }
   content_node_ids_ = std::make_unique<std::vector<ui::AXNodeID>>();
-
   DCHECK(snapshot_);
 
   // If Read Anything with Screen 2x is enabled, kick off Screen 2x run, which
@@ -174,12 +175,16 @@ void AXTreeDistiller::DistillAXTree() {
 }
 
 void AXTreeDistiller::OnAXTreeDistilled() {
+  DCHECK(callback_);
+  DCHECK(snapshot_);
+  DCHECK(content_node_ids_);
   std::move(callback_).Run(*snapshot_.get(), *content_node_ids_.get());
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void AXTreeDistiller::ScheduleScreen2xRun() {
   DCHECK(main_content_extractor_.is_bound());
+  DCHECK(snapshot_);
   main_content_extractor_->ExtractMainContent(
       *snapshot_, base::BindOnce(&AXTreeDistiller::ProcessScreen2xResult,
                                  weak_ptr_factory_.GetWeakPtr()));
