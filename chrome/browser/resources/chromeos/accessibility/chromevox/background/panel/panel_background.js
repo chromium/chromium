@@ -69,15 +69,13 @@ export class PanelBackground {
   }
 
   /**
-   * @param {AutomationNode} node
-   * @param {function(!PanelNodeMenuItemData, !PanelNodeMenuId)}
-   *     addMenuItemFromData A callback to add a menu item to the specified
-   *     menu.
+   * @param {function(!PanelNodeMenuItemData)} addMenuItemFromData A callback
+   *     to add a menu item to the specified menu.
    * @param {string=} opt_activateMenuTitleId Optional string specifying the
    *     activated menu.
    */
-  createAllNodeMenuBackgrounds(
-      node, addMenuItemFromData, opt_activateMenuTitleId) {
+  createAllNodeMenuBackgrounds(addMenuItemFromData, opt_activateMenuTitleId) {
+    const node = ChromeVoxState.instance.currentRange.start.node;
     for (const data of ALL_NODE_MENU_DATA) {
       const isActivatedMenu = opt_activateMenuTitleId === data.titleId;
       const menuBackground = new PanelNodeMenuBackground(

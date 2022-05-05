@@ -500,7 +500,7 @@ export class Panel extends PanelInterface {
       }
       chrome.extension.getBackgroundPage()
           .panelBackground.createAllNodeMenuBackgrounds(
-              node, Panel.addNodeMenuItem, opt_activateMenuTitle);
+              Panel.addNodeMenuItem, opt_activateMenuTitle);
 
       const actions =
           await BackgroundBridge.PanelBackground.getActionsForCurrentNode();
