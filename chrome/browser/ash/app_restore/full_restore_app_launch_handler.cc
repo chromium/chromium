@@ -34,6 +34,10 @@
 #include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/full_restore_save_handler.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace ash {
 namespace full_restore {
 

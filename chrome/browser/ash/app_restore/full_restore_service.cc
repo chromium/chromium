@@ -41,6 +41,10 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/public/cpp/notification.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace ash {
 namespace full_restore {
 
