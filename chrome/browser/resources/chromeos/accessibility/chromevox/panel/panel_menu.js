@@ -5,7 +5,6 @@
 /**
  * @fileoverview A drop-down menu in the ChromeVox panel.
  */
-import {PanelNodeMenuBackground} from '/chromevox/background/panel/panel_node_menu_background.js';
 import {PanelMenuItem} from '/chromevox/panel/panel_menu_item.js';
 
 export class PanelMenu {
@@ -311,23 +310,6 @@ export class PanelMenu {
 
 
 export class PanelNodeMenu extends PanelMenu {
-  /**
-   * @param {!PanelNodeMenuData} data
-   * @param {chrome.automation.AutomationNode} node ChromeVox's current
-   *     position.
-   * @param {boolean} isActivated Whether the menu was explicitly activated.
-   *     If false, the menu is populated asynchronously by posting a task
-   *     after searching each chunk of nodes.
-   */
-  constructor(data, node, isActivated) {
-    super(data.titleId);
-    /** @private {!PanelNodeMenuBackground} */
-    this.background_ = new PanelNodeMenuBackground(
-        data, node, isActivated, (itemData) => this.addItemFromData_(itemData));
-
-    this.background_.populate();
-  }
-
   /** @override */
   activate(activateFirstItem) {
     super.activate(false);
@@ -339,11 +321,8 @@ export class PanelNodeMenu extends PanelMenu {
     }
   }
 
-  /**
-   * @param {!PanelNodeMenuItemData} data
-   * @private
-   */
-  addItemFromData_(data) {
+  /** @param {!PanelNodeMenuItemData} data */
+  addItemFromData(data) {
     this.addMenuItem(data.title, '', '', '', data.callback);
     if (data.isActive) {
       this.activeIndex_ = this.items_.length - 1;

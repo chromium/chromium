@@ -7,11 +7,12 @@
  * panel.
  */
 
+const AutomationNode = chrome.automation.AutomationNode;
+
 export class PanelNodeMenuBackground {
   /**
    * @param {!PanelNodeMenuData} menuData
-   * @param {chrome.automation.AutomationNode} node ChromeVox's current
-   *     position.
+   * @param {AutomationNode} node ChromeVox's current position.
    * @param {boolean} isActivated Whether the menu was explicitly activated.
    *     If false, the menu is populated asynchronously by posting a task
    *     after searching each chunk of nodes.
@@ -19,10 +20,12 @@ export class PanelNodeMenuBackground {
    *     that adds an item to the corresponding menu in the panel.
    */
   constructor(menuData, node, isActivated, addMenuItemFromData) {
-    /** @private {chrome.automation.AutomationNode} */
+    /** @private {AutomationNode} */
     this.node_ = node;
     /** @private {AutomationPredicate.Unary} */
     this.pred_ = menuData.predicate;
+    /** @private {!PanelNodeMenuId} */
+    this.menuId_ = menuData.menuId;
     /** @private {boolean} */
     this.isActivated_ = isActivated;
     /** @private {function(!PanelNodeMenuItemData)} */
@@ -87,7 +90,8 @@ export class PanelNodeMenuBackground {
                   cursors.Range.fromNode(node));
         });
         const isActive = node === this.node_ && this.isActivated_;
-        this.addMenuItemFromData_({title, callback, isActive});
+        const menuId = this.menuId_;
+        this.addMenuItemFromData_({title, callback, isActive, menuId});
       }
 
       if (!this.isActivated_) {
@@ -112,7 +116,8 @@ export class PanelNodeMenuBackground {
       this.addMenuItemFromData_({
         title: Msgs.getMsg('panel_menu_item_none'),
         callback() {},
-        isActive: false
+        isActive: false,
+        menuId: this.menuId_,
       });
     }
   }

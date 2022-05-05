@@ -8,25 +8,65 @@
  */
 
 goog.provide('PanelNodeMenuData');
+goog.provide('PanelNodeMenuId');
 goog.provide('PanelNodeMenuItemData');
 goog.provide('ALL_NODE_MENU_DATA');
 
 goog.require('AutomationPredicate');
 
-/** @typedef {{titleId: string, predicate: !AutomationPredicate.Unary}} */
+/** @enum {number} */
+PanelNodeMenuId = {
+  HEADING: 1,
+  LANDMARK: 2,
+  LINK: 3,
+  FORM_CONTROL: 4,
+  TABLE: 5
+};
+
+/**
+ * @typedef {{
+ *     menuId: !PanelNodeMenuId,
+ *     titleId: string,
+ *     predicate: !AutomationPredicate.Unary
+ * }}
+ */
 let PanelNodeMenuData;
 
-/** @typedef {{title: string, callback: function(), isActive: boolean}} */
+/**
+ * @typedef {{
+ *     title: string,
+ *     callback: function(),
+ *     isActive: boolean,
+ *     menuId: !PanelNodeMenuId
+ * }}
+ */
 let PanelNodeMenuItemData;
 
 /** @const {!Array<!PanelNodeMenuData>} */
 ALL_NODE_MENU_DATA = [
-  {titleId: 'role_heading', predicate: AutomationPredicate.heading},
-  {titleId: 'role_landmark', predicate: AutomationPredicate.landmark},
-  {titleId: 'role_link', predicate: AutomationPredicate.link},
   {
+    menuId: PanelNodeMenuId.HEADING,
+    titleId: 'role_heading',
+    predicate: AutomationPredicate.heading
+  },
+  {
+    menuId: PanelNodeMenuId.LANDMARK,
+    titleId: 'role_landmark',
+    predicate: AutomationPredicate.landmark
+  },
+  {
+    menuId: PanelNodeMenuId.LINK,
+    titleId: 'role_link',
+    predicate: AutomationPredicate.link
+  },
+  {
+    menuId: PanelNodeMenuId.FORM_CONTROL,
     titleId: 'panel_menu_form_controls',
     predicate: AutomationPredicate.formField
   },
-  {titleId: 'role_table', predicate: AutomationPredicate.table},
+  {
+    menuId: PanelNodeMenuId.TABLE,
+    titleId: 'role_table',
+    predicate: AutomationPredicate.table
+  },
 ];

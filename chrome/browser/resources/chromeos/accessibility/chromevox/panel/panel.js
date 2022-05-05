@@ -496,12 +496,11 @@ export class Panel extends PanelInterface {
           });
 
       for (const menuData of ALL_NODE_MENU_DATA) {
-        // Create node menus asynchronously (because it may require
-        // searching a long document) unless that's the specific menu the
-        // user requested.
-        const isActivatedMenu = (menuData.titleId === opt_activateMenuTitle);
-        Panel.addNodeMenu(menuData, node, isActivatedMenu);
+        Panel.addNodeMenu(menuData);
       }
+      chrome.extension.getBackgroundPage()
+          .panelBackground.createAllNodeMenuBackgrounds(
+              node, Panel.addNodeMenuItem, opt_activateMenuTitle);
 
       const actions =
           await BackgroundBridge.PanelBackground.getActionsForCurrentNode();
@@ -739,13 +738,9 @@ export class Panel extends PanelInterface {
   /**
    * Create a new node menu with the given name and add it to the menu bar.
    * @param {!PanelNodeMenuData} menuData The title/predicate for the new menu.
-   * @param {!chrome.automation.AutomationNode} node
-   * @param {boolean} isActivatedMenu Whether the menu was explicitly activated
-   *     or not. If not, defer population to asynchronous callbacks.
-   * @return {PanelMenu} The menu just created.
    */
-  static addNodeMenu(menuData, node, isActivatedMenu) {
-    const menu = new PanelNodeMenu(menuData, node, isActivatedMenu);
+  static addNodeMenu(menuData) {
+    const menu = new PanelNodeMenu(menuData.titleId);
     $('menu-bar').appendChild(menu.menuBarItemElement);
     menu.menuBarItemElement.addEventListener('mouseover', () => {
       Panel.activateMenu(menu, true /* activateFirstItem */);
@@ -754,7 +749,12 @@ export class Panel extends PanelInterface {
         'mouseup', event => Panel.onMouseUpOnMenuTitle_(menu, event));
     $('menus_background').appendChild(menu.menuContainerElement);
     Panel.menus_.push(menu);
-    return menu;
+    Panel.nodeMenuDictionary_[menuData.menuId] = menu;
+  }
+
+  /** @param {!PanelNodeMenuItemData} itemData */
+  static addNodeMenuItem(itemData) {
+    Panel.nodeMenuDictionary_[itemData.menuId].addItemFromData(itemData);
   }
 
   /**
@@ -1255,6 +1255,9 @@ Panel.ACTION_TO_MSG_ID = {
 
 /** @private {string} */
 Panel.lastMenu_ = '';
+
+/** @private {!Object<!PanelNodeMenuId, !PanelNodeMenu>} */
+Panel.nodeMenuDictionary_ = {};
 
 window.addEventListener('load', function() {
   Panel.init();

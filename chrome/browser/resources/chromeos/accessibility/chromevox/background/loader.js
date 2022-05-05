@@ -36,6 +36,7 @@ goog.require('NavBraille');
 goog.require('Output');
 goog.require('OutputEventType');
 goog.require('PanelCommand');
+goog.require('PanelNodeMenuData');
 goog.require('PhoneticData');
 goog.require('QueueMode');
 goog.require('Spannable');
@@ -50,3 +51,5 @@ goog.require('ValueSpan');
 goog.require('constants');
 goog.require('cursors.Cursor');
 goog.require('cursors.Range');
+
+goog.require('ALL_NODE_MENU_DATA');

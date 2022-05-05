@@ -6,15 +6,18 @@
  * @fileoverview Handles logic for the ChromeVox panel that requires state from
  * the background context.
  */
-import {ISearch} from './i_search.js';
-import {ISearchHandler} from './i_search_handler.js';
+import {ISearch} from '/chromevox/background/panel/i_search.js';
+import {ISearchHandler} from '/chromevox/background/panel/i_search_handler.js';
+import {PanelNodeMenuBackground} from '/chromevox/background/panel/panel_node_menu_background.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
 
 /** @implements {ISearchHandler} */
 export class PanelBackground {
   constructor() {
     /** @private {ISearch} */
     this.iSearch_;
-    /** @private {chrome.automation.AutomationNode} */
+    /** @private {AutomationNode} */
     this.nodeForActions_;
   }
 
@@ -23,6 +26,11 @@ export class PanelBackground {
       throw 'Trying to create two copies of singleton PanelBackground';
     }
     PanelBackground.instance = new PanelBackground();
+    // Temporarily expose the panel background instance on the window object so
+    // it can be accessed from other renderers as we transition the logic to the
+    // background context.
+    window.panelBackground = PanelBackground.instance;
+
     PanelBackground.stateObserver_ = new PanelStateObserver();
 
     BridgeHelper.registerHandler(
@@ -58,6 +66,24 @@ export class PanelBackground {
     BridgeHelper.registerHandler(
         BridgeTarget.PANEL_BACKGROUND, BridgeAction.WAIT_FOR_PANEL_COLLAPSE,
         () => PanelBackground.instance.waitForPanelCollapse_());
+  }
+
+  /**
+   * @param {AutomationNode} node
+   * @param {function(!PanelNodeMenuItemData, !PanelNodeMenuId)}
+   *     addMenuItemFromData A callback to add a menu item to the specified
+   *     menu.
+   * @param {string=} opt_activateMenuTitleId Optional string specifying the
+   *     activated menu.
+   */
+  createAllNodeMenuBackgrounds(
+      node, addMenuItemFromData, opt_activateMenuTitleId) {
+    for (const data of ALL_NODE_MENU_DATA) {
+      const isActivatedMenu = opt_activateMenuTitleId === data.titleId;
+      const menuBackground = new PanelNodeMenuBackground(
+          data, node, isActivatedMenu, addMenuItemFromData);
+      menuBackground.populate();
+    }
   }
 
   /**
