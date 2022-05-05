@@ -15,7 +15,6 @@
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/base/task_runner_impl.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
-#include "chromecast/media/audio/audio_clock_simulator.h"
 #include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
 #include "chromecast/media/audio/net/conversions.h"
@@ -47,6 +46,9 @@ namespace {
 
 const int kInitialFillSizeFrames = 512;
 const double kPlaybackRateEpsilon = 0.001;
+
+constexpr double kMinAudioClockRate = 0.99;
+constexpr double kMaxAudioClockRate = 1.01;
 
 const int64_t kDefaultInputQueueMs = 200;
 constexpr base::TimeDelta kFadeTime = base::Milliseconds(5);
@@ -269,8 +271,8 @@ float AudioDecoderForMixer::SetPlaybackRate(float rate) {
 }
 
 double AudioDecoderForMixer::SetAvSyncPlaybackRate(double rate) {
-  av_sync_clock_rate_ = std::max(AudioClockSimulator::kMinRate,
-                                 std::min(rate, AudioClockSimulator::kMaxRate));
+  av_sync_clock_rate_ =
+      std::max(kMinAudioClockRate, std::min(rate, kMaxAudioClockRate));
   if (mixer_input_)
     mixer_input_->SetAudioClockRate(av_sync_clock_rate_);
   return av_sync_clock_rate_;

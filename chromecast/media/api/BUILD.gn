@@ -6,6 +6,8 @@ import("//chromecast/chromecast.gni")
 
 cast_source_set("api") {
   sources = [
+    "audio_clock_simulator.h",
+    "audio_provider.h",
     "cast_audio_decoder.h",
     "cast_audio_demuxer.h",
     "cast_audio_resampler.h",
