@@ -2,22 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 
 import {createElementFromText} from './utils.js';
 
-const nextTaskLogSeq = 1;
-
 /**
  * Handles per-task log event.
- * @param {!{
- *   duration: number,
- *   task_description: string,
- *   result_description: string,
- *   details: !Array,
- * }} taskLog
  */
-function onTaskLogRecorded(taskLog) {
+function onTaskLogRecorded(taskLog: {
+  duration: number,
+  task_description: string,
+  result_description: string,
+  details: string[],
+}) {
   const details = document.createElement('td');
   details.classList.add('task-log-details');
 
@@ -31,7 +29,7 @@ function onTaskLogRecorded(taskLog) {
 
   const ul = document.createElement('ul');
   for (let i = 0; i < taskLog.details.length; ++i) {
-    ul.appendChild(createElementFromText('li', taskLog.details[i]));
+    ul.appendChild(createElementFromText('li', taskLog.details[i]!));
   }
   label.appendChild(ul);
 
@@ -44,7 +42,8 @@ function onTaskLogRecorded(taskLog) {
       'td', taskLog.result_description, {'class': 'task-log-result'}));
   tr.appendChild(details);
 
-  const entries = document.querySelector('#task-log-entries');
+  const entries = document.querySelector<HTMLElement>('#task-log-entries');
+  assert(entries);
   entries.appendChild(tr);
 }
 

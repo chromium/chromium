@@ -139,7 +139,6 @@ if (enable_js_type_check) {
         "ntp4:closure_compile",
         "omnibox:closure_compile",
         "settings:closure_compile",
-        "sync_file_system_internals:closure_compile",
         "usb_internals:closure_compile",
       ]
     }

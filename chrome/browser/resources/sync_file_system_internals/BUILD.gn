@@ -4,9 +4,9 @@
 
 import("//chrome/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(enable_extensions, "enable extensions check failed")
@@ -32,18 +32,16 @@ grit("resources") {
 generate_grd("build_grd") {
   grd_prefix = "sync_file_system_internals"
   out_grd = "$target_gen_dir/resources.grd"
-  input_files = [
-    "dump_database.js",
-    "extension_statuses.js",
-    "file_metadata.js",
-    "main.html",
-    "sync_service.js",
-    "task_log.js",
-    "utils.js",
-  ]
+  input_files = [ "main.html" ]
   input_files_base_dir = rebase_path(".", "//")
-  manifest_files = [ "$target_gen_dir/$preprocess_manifest" ]
-  deps = [ ":preprocess" ]
+  manifest_files = [
+    "$target_gen_dir/$preprocess_manifest",
+    "$target_gen_dir/tsconfig.manifest",
+  ]
+  deps = [
+    ":build_ts",
+    ":preprocess",
+  ]
 }
 
 preprocess_if_expr("preprocess") {
@@ -53,52 +51,17 @@ preprocess_if_expr("preprocess") {
   in_files = [ "main.css" ]
 }
 
-js_type_check("closure_compile") {
-  deps = [
-    ":dump_database",
-    ":extension_statuses",
-    ":file_metadata",
-    ":sync_service",
-    ":task_log",
-    ":utils",
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  in_files = [
+    "dump_database.ts",
+    "extension_statuses.ts",
+    "file_metadata.ts",
+    "sync_service.ts",
+    "task_log.ts",
+    "utils.ts",
   ]
-}
-
-js_library("dump_database") {
-  deps = [
-    ":utils",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("extension_statuses") {
-  deps = [
-    ":utils",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("file_metadata") {
-  deps = [
-    ":utils",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:icon",
-  ]
-}
-
-js_library("sync_service") {
-  deps = [
-    ":utils",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("task_log") {
-  deps = [
-    ":utils",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("utils") {
+  deps = [ "//ui/webui/resources:library" ]
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 }

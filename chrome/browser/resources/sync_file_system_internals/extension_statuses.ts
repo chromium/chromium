@@ -6,6 +6,7 @@
  * Handles the Extension ID -> SyncStatus tab for syncfs-internals.
  */
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {createElementFromText} from './utils.js';
@@ -20,18 +21,19 @@ function refreshExtensionStatuses() {
 
 /**
  * Handles callback from onGetExtensionStatuses.
- * @param {!Array<!{
- *   extensionName: string,
- *   extensionID: string,
- *   status: string,
- * }>} extensionStatuses
  */
-function onGetExtensionStatuses(extensionStatuses) {
-  const itemContainer = document.querySelector('#extension-entries');
+function onGetExtensionStatuses(extensionStatuses: Array<{
+  extensionName: string,
+  extensionID: string,
+  status: string,
+}>) {
+  const itemContainer =
+      document.querySelector<HTMLElement>('#extension-entries');
+  assert(itemContainer);
   itemContainer.textContent = '';
 
   for (let i = 0; i < extensionStatuses.length; i++) {
-    const originEntry = extensionStatuses[i];
+    const originEntry = extensionStatuses[i]!;
     const tr = document.createElement('tr');
     tr.appendChild(createElementFromText('td', originEntry.extensionName));
     tr.appendChild(createElementFromText('td', originEntry.extensionID));
@@ -42,7 +44,9 @@ function onGetExtensionStatuses(extensionStatuses) {
 
 function main() {
   refreshExtensionStatuses();
-  const refresh = document.querySelector('#refresh-extensions-statuses');
+  const refresh =
+      document.querySelector<HTMLElement>('#refresh-extensions-statuses');
+  assert(refresh);
   refresh.addEventListener('click', refreshExtensionStatuses);
 }
 

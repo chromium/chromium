@@ -6,15 +6,17 @@
  * WebUI to monitor File Metadata per Extension ID.
  */
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {getImage} from 'chrome://resources/js/icon.js';
 
 import {createElementFromDictionary, createElementFromText} from './utils.js';
 
-/** @return {!HTMLSelectElement} */
-function getSelect() {
-  return /** @type {!HTMLSelectElement} */ (
-      document.querySelector('#extensions-select'));
+function getSelect(): HTMLSelectElement {
+  const select =
+      document.querySelector<HTMLSelectElement>('#extensions-select');
+  assert(select);
+  return select;
 }
 
 /**
@@ -26,14 +28,12 @@ function refreshExtensions() {
 
 /**
  * Renders result of getFileMetadata as a table.
- * @param {!Array<!{
- *   extensionName: string,
- *   extensionID: string,
- *   status: string,
- * }>} extensionStatuses of dictionaries containing 'extensionName',
- *     'extensionID', 'status'.
  */
-function onGetExtensions(extensionStatuses) {
+function onGetExtensions(extensionStatuses: Array<{
+  extensionName: string,
+  extensionID: string,
+  status: string,
+}>) {
   const select = getSelect();
 
   // Record existing drop down extension ID. If it's still there after the
@@ -42,8 +42,7 @@ function onGetExtensions(extensionStatuses) {
 
   select.textContent = '';
   for (let i = 0; i < extensionStatuses.length; i++) {
-    const originEntry = extensionStatuses[i];
-    const tr = document.createElement('tr');
+    const originEntry = extensionStatuses[i]!;
     const title = originEntry.extensionName + ' [' + originEntry.status + ']';
     select.options.add(new Option(title, originEntry.extensionID));
 
@@ -51,7 +50,7 @@ function onGetExtensions(extensionStatuses) {
     if (originEntry.extensionID !== oldSelectedExtension) {
       continue;
     }
-    select.options[select.options.length - 1].selected = true;
+    select.options[select.options.length - 1]!.selected = true;
   }
 
   // After drop down has been loaded with options, file metadata can be loaded
@@ -59,12 +58,12 @@ function onGetExtensions(extensionStatuses) {
 }
 
 /**
- * @return {?string} extension ID that's currently selected in drop down box.
+ * @return extension ID that's currently selected in drop down box.
  */
-function getSelectedExtensionId() {
+function getSelectedExtensionId(): string|null {
   const select = getSelect();
   if (select.selectedIndex >= 0) {
-    return select.options[select.selectedIndex].value;
+    return select.options[select.selectedIndex]!.value;
   }
 
   return null;
@@ -77,9 +76,12 @@ function getSelectedExtensionId() {
 function refreshFileMetadata() {
   const dropDown = getSelect();
   if (dropDown.options.length === 0) {
-    const header = document.querySelector('#file-metadata-header');
+    const header = document.querySelector<HTMLElement>('#file-metadata-header');
+    assert(header);
     header.textContent = '';
-    const entries = document.querySelector('#file-metadata-entries');
+    const entries =
+        document.querySelector<HTMLElement>('#file-metadata-entries');
+    assert(entries);
     entries.textContent = 'No file metadata available.';
     return;
   }
@@ -92,8 +94,14 @@ function refreshFileMetadata() {
 /**
  * Renders result of getFileMetadata as a table.
  */
-function onGetFileMetadata(fileMetadataMap) {
-  const header = document.querySelector('#file-metadata-header');
+function onGetFileMetadata(fileMetadataMap: Array<{
+  type: string,
+  status: string,
+  path: string,
+  details: {[key: string]: string},
+}>) {
+  const header = document.querySelector<HTMLElement>('#file-metadata-header');
+  assert(header);
   // Only draw the header if it hasn't been drawn yet
   if (header.children.length === 0) {
     const tr = document.createElement('tr');
@@ -105,10 +113,12 @@ function onGetFileMetadata(fileMetadataMap) {
   }
 
   // Add row entries.
-  const itemContainer = document.querySelector('#file-metadata-entries');
+  const itemContainer =
+      document.querySelector<HTMLElement>('#file-metadata-entries');
+  assert(itemContainer);
   itemContainer.textContent = '';
   for (let i = 0; i < fileMetadataMap.length; i++) {
-    const metadatEntry = fileMetadataMap[i];
+    const metadatEntry = fileMetadataMap[i]!;
     const tr = document.createElement('tr');
     tr.appendChild(createFileIconCell(metadatEntry.type));
     tr.appendChild(createElementFromText('td', metadatEntry.status));
@@ -119,10 +129,10 @@ function onGetFileMetadata(fileMetadataMap) {
 }
 
 /**
- * @param {string} type file type string.
- * @return {!HTMLElement} TD with file or folder icon depending on type.
+ * @param type file type string.
+ * @return TD with file or folder icon depending on type.
  */
-function createFileIconCell(type) {
+function createFileIconCell(type: string): HTMLElement {
   const img = document.createElement('div');
   const lowerType = type.toLowerCase();
   if (lowerType === 'file') {
@@ -135,7 +145,7 @@ function createFileIconCell(type) {
   const imgWrapper = document.createElement('div');
   imgWrapper.appendChild(img);
 
-  const td = /** @type {!HTMLElement} */ (document.createElement('td'));
+  const td = document.createElement('td');
   td.className = 'file-icon-cell';
   td.appendChild(imgWrapper);
   td.appendChild(document.createTextNode(type));
@@ -144,7 +154,9 @@ function createFileIconCell(type) {
 
 function main() {
   refreshExtensions();
-  const refresh = document.querySelector('#refresh-metadata-button');
+  const refresh =
+      document.querySelector<HTMLElement>('#refresh-metadata-button');
+  assert(refresh);
   refresh.addEventListener('click', refreshExtensions);
   getSelect().addEventListener('change', refreshFileMetadata);
 }

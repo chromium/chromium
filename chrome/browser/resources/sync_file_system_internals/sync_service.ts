@@ -8,6 +8,7 @@
 
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {createElementFromText} from './utils.js';
@@ -21,10 +22,11 @@ function refreshServiceStatus() {
 
 /**
  * Called when service status is initially retrieved or updated via events.
- * @param {string} statusString Service status enum as a string.
+ * @param statusString Service status enum as a string.
  */
-function onGetServiceStatus(statusString) {
-  const serviceStatus = document.querySelector('#service-status');
+function onGetServiceStatus(statusString: string) {
+  const serviceStatus = document.querySelector<HTMLElement>('#service-status');
+  assert(serviceStatus);
   serviceStatus.textContent = statusString;
 }
 
@@ -37,15 +39,17 @@ function refreshNotificationSource() {
 
 /**
  * Handles callback from getNotificationSource.
- * @param {string} sourceString Notification source as a string.
+ * @param sourceString Notification source as a string.
  */
-function onGetNotificationSource(sourceString) {
-  const notificationSource = document.querySelector('#notification-source');
+function onGetNotificationSource(sourceString: string) {
+  const notificationSource =
+      document.querySelector<HTMLElement>('#notification-source');
+  assert(notificationSource);
   notificationSource.textContent = sourceString;
 }
 
 // Keeps track of the last log event seen so it's not reprinted.
-let lastLogEventId = -1;
+let lastLogEventId: number = -1;
 
 /**
  * Request debug log.
@@ -59,22 +63,21 @@ function refreshLog() {
  */
 function clearLogs() {
   chrome.send('clearLogs');
-  const logEntries = document.querySelector('#log-entries');
-  logEntries.innerHTML = trustedTypes.emptyHTML;
+  const logEntries = document.querySelector<HTMLElement>('#log-entries');
+  assert(logEntries);
+  assert(window.trustedTypes);
+  logEntries.innerHTML = window.trustedTypes.emptyHTML as unknown as string;
 }
 
 /**
  * Handles callback from getUpdateLog.
- * @param {!Array<!{
- *   id: number,
- *   logEvent: string,
- *   time: string,
- * }>} logEntries List of dictionaries containing 'id', 'time', 'logEvent'.
  */
-function onGetLog(logEntries) {
-  const itemContainer = document.querySelector('#log-entries');
+function onGetLog(
+    logEntries: Array<{id: number, logEvent: string, time: string}>) {
+  const itemContainer = document.querySelector<HTMLElement>('#log-entries');
+  assert(itemContainer);
   for (let i = 0; i < logEntries.length; i++) {
-    const logEntry = logEntries[i];
+    const logEntry = logEntries[i]!;
     const tr = document.createElement('tr');
     const error = /ERROR/.test(logEntry.logEvent) ? ' error' : '';
     tr.appendChild(
@@ -92,8 +95,10 @@ function onGetLog(logEntries) {
  */
 function main() {
   const tabBox = document.querySelector('cr-tab-box');
+  assert(tabBox);
   tabBox.hidden = false;
-  const clearButton = document.querySelector('#clear-log-button');
+  const clearButton = document.querySelector<HTMLElement>('#clear-log-button');
+  assert(clearButton);
   clearButton.addEventListener('click', clearLogs);
   refreshServiceStatus();
   refreshNotificationSource();
