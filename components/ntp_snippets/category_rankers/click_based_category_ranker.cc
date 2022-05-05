@@ -381,17 +381,18 @@ bool ClickBasedCategoryRanker::ReadOrderFromPrefs(
 
 void ClickBasedCategoryRanker::StoreOrderToPrefs(
     const std::vector<RankedCategory>& ordered_categories) {
-  base::ListValue list;
+  base::Value::List list;
   for (const RankedCategory& category : ordered_categories) {
-    auto dictionary = std::make_unique<base::DictionaryValue>();
-    dictionary->SetIntKey(kCategoryIdKey, category.category.id());
-    dictionary->SetIntKey(kClicksKey, category.clicks);
-    dictionary->SetStringKey(
+    base::Value::Dict dictionary;
+    dictionary.Set(kCategoryIdKey, category.category.id());
+    dictionary.Set(kClicksKey, category.clicks);
+    dictionary.Set(
         kLastDismissedKey,
         base::NumberToString(SerializeTime(category.last_dismissed)));
     list.Append(std::move(dictionary));
   }
-  pref_service_->Set(prefs::kClickBasedCategoryRankerOrderWithClicks, list);
+  pref_service_->Set(prefs::kClickBasedCategoryRankerOrderWithClicks,
+                     base::Value(std::move(list)));
 }
 
 std::vector<ClickBasedCategoryRanker::RankedCategory>::iterator

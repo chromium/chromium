@@ -1619,23 +1619,24 @@ void RemoteSuggestionsProviderImpl::StoreCategoriesToPrefs() {
               return category_ranker_->Compare(left.first, right.first);
             });
   // Convert the relevant info into a base::ListValue for storage.
-  base::ListValue list;
+  base::Value::List list;
   for (const auto& entry : to_store) {
     const Category& category = entry.first;
     const CategoryContent& content = *entry.second;
-    auto dict = std::make_unique<base::DictionaryValue>();
-    dict->SetIntKey(kCategoryContentId, category.id());
+    base::Value::Dict dict;
+    dict.Set(kCategoryContentId, category.id());
     // TODO(tschumann): Persist other properties of the CategoryInfo.
-    dict->SetStringKey(kCategoryContentTitle, content.info.title());
-    dict->SetBoolKey(kCategoryContentProvidedByServer,
-                     content.included_in_last_server_response);
+    dict.Set(kCategoryContentTitle, content.info.title());
+    dict.Set(kCategoryContentProvidedByServer,
+             content.included_in_last_server_response);
     bool has_fetch_action = content.info.additional_action() ==
                             ContentSuggestionsAdditionalAction::FETCH;
-    dict->SetBoolKey(kCategoryContentAllowFetchingMore, has_fetch_action);
+    dict.Set(kCategoryContentAllowFetchingMore, has_fetch_action);
     list.Append(std::move(dict));
   }
   // Finally, store the result in the pref service.
-  pref_service_->Set(prefs::kRemoteSuggestionCategories, list);
+  pref_service_->Set(prefs::kRemoteSuggestionCategories,
+                     base::Value(std::move(list)));
 }
 
 RemoteSuggestionsProviderImpl::CategoryContent::CategoryContent(

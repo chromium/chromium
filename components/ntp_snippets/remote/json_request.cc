@@ -98,11 +98,11 @@ std::string ISO639FromPosixLocale(const std::string& locale) {
   return language;
 }
 
-void AppendLanguageInfoToList(base::ListValue* list,
+void AppendLanguageInfoToList(base::Value::List* list,
                               const UrlLanguageHistogram::LanguageInfo& info) {
-  auto lang = std::make_unique<base::DictionaryValue>();
-  lang->SetStringKey("language", info.language_code);
-  lang->SetDoubleKey("frequency", info.frequency);
+  base::Value::Dict lang;
+  lang.Set("language", info.language_code);
+  lang.Set("frequency", info.frequency);
   list->Append(std::move(lang));
 }
 
@@ -306,60 +306,58 @@ JsonRequest::Builder::BuildResourceRequest() const {
 }
 
 std::string JsonRequest::Builder::BuildBody() const {
-  auto request = std::make_unique<base::DictionaryValue>();
+  base::Value::Dict request;
   std::string user_locale = PosixLocaleFromBCP47Language(params_.language_code);
   if (!user_locale.empty()) {
-    request->SetStringKey("uiLanguage", user_locale);
+    request.Set("uiLanguage", user_locale);
   }
 
-  request->SetStringKey("priority", params_.interactive_request
-                                        ? "USER_ACTION"
-                                        : "BACKGROUND_PREFETCH");
+  request.Set("priority", params_.interactive_request ? "USER_ACTION"
+                                                      : "BACKGROUND_PREFETCH");
 
-  auto excluded = std::make_unique<base::ListValue>();
+  base::Value::List excluded;
   for (const auto& id : params_.excluded_ids) {
-    excluded->Append(id);
+    excluded.Append(id);
   }
-  request->Set("excludedSuggestionIds", std::move(excluded));
+  request.Set("excludedSuggestionIds", std::move(excluded));
 
   if (!user_class_.empty()) {
-    request->SetStringKey("userActivenessClass", user_class_);
+    request.Set("userActivenessClass", user_class_);
   }
 
   if (!display_capability_.empty()) {
-    request->SetStringKey("displayCapability", display_capability_);
+    request.Set("displayCapability", display_capability_);
   }
 
   language::UrlLanguageHistogram::LanguageInfo ui_language;
   language::UrlLanguageHistogram::LanguageInfo other_top_language;
   PrepareLanguages(&ui_language, &other_top_language);
   if (ui_language.frequency != 0 || other_top_language.frequency != 0) {
-    auto language_list = std::make_unique<base::ListValue>();
+    base::Value::List language_list;
     if (ui_language.frequency > 0) {
-      AppendLanguageInfoToList(language_list.get(), ui_language);
+      AppendLanguageInfoToList(&language_list, ui_language);
     }
     if (other_top_language.frequency > 0) {
-      AppendLanguageInfoToList(language_list.get(), other_top_language);
+      AppendLanguageInfoToList(&language_list, other_top_language);
     }
-    request->Set("topLanguages", std::move(language_list));
+    request.Set("topLanguages", std::move(language_list));
   }
 
   // TODO(vitaliii): Support count_to_fetch without requiring
   // |exclusive_category|.
   if (params_.exclusive_category.has_value()) {
-    base::DictionaryValue exclusive_category_parameters;
-    exclusive_category_parameters.SetIntKey(
-        "id", params_.exclusive_category->remote_id());
-    exclusive_category_parameters.SetIntKey("numSuggestions",
-                                            params_.count_to_fetch);
-    base::ListValue category_parameters;
+    base::Value::Dict exclusive_category_parameters;
+    exclusive_category_parameters.Set("id",
+                                      params_.exclusive_category->remote_id());
+    exclusive_category_parameters.Set("numSuggestions", params_.count_to_fetch);
+    base::Value::List category_parameters;
     category_parameters.Append(std::move(exclusive_category_parameters));
-    request->SetKey("categoryParameters", std::move(category_parameters));
+    request.Set("categoryParameters", std::move(category_parameters));
   }
 
   std::string request_json;
   bool success = base::JSONWriter::WriteWithOptions(
-      *request, base::JSONWriter::OPTIONS_PRETTY_PRINT, &request_json);
+      request, base::JSONWriter::OPTIONS_PRETTY_PRINT, &request_json);
   DCHECK(success);
   return request_json;
 }
