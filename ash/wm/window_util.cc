@@ -86,8 +86,11 @@ class InteriorResizeHandleTargeterAsh
 }  // namespace
 
 aura::Window* GetActiveWindow() {
-  return ::wm::GetActivationClient(Shell::GetPrimaryRootWindow())
-      ->GetActiveWindow();
+  if (auto* activation_client =
+          wm::GetActivationClient(Shell::GetPrimaryRootWindow())) {
+    return activation_client->GetActiveWindow();
+  }
+  return nullptr;
 }
 
 aura::Window* GetFocusedWindow() {
