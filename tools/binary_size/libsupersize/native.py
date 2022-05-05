@@ -105,10 +105,9 @@ def _AddSourcePathsUsingObjectPaths(ninja_source_mapper, raw_symbols):
 
 
 def _AddSourcePathsUsingAddress(dwarf_source_mapper, raw_symbols):
-  logging.info('Looking up source paths from dwarfdump')
+  logging.debug('Looking up source paths from dwarfdump')
   query_count = 0
   match_count = 0
-  abs_count = 0
   for symbol in raw_symbols:
     if symbol.section_name != models.SECTION_TEXT:
       continue
@@ -116,17 +115,9 @@ def _AddSourcePathsUsingAddress(dwarf_source_mapper, raw_symbols):
     source_path = dwarf_source_mapper.FindSourceForTextAddress(symbol.address)
     if source_path:
       match_count += 1
-      if os.path.isabs(source_path):
-        # Use basename for any absolute path. NDK prebuilts have these.
-        # E.g.: /buildbot/src/android/ndk-release-r23/toolchain/llvm-project/
-        #       libcxx/src/vector.cpp
-        symbol.source_path = os.path.join(models.SYSTEM_PREFIX_PATH,
-                                          os.path.basename(source_path))
-        abs_count += 1
-      else:
-        symbol.source_path = source_path
-  logging.info('dwarfdump found %d of %d .text symbols. Ignored %d abs paths',
-               match_count, query_count, abs_count)
+      symbol.source_path = source_path
+  logging.info('dwarfdump found paths for %d of %d .text symbols.', match_count,
+               query_count)
   # Majority of unmatched queries are for assembly source files (ex libav1d)
   # and v8 builtins.
   if query_count > 0:
