@@ -34,6 +34,7 @@
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/bookmarks/browser/url_index.h"
 #include "components/bookmarks/common/bookmark_constants.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -822,6 +823,10 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
       store_ ? base::BindRepeating(&BookmarkStorage::ScheduleSave,
                                    base::Unretained(store_.get()))
              : base::DoNothing());
+
+  const base::TimeDelta load_duration =
+      base::TimeTicks::Now() - details->load_start();
+  metrics::RecordTimeToLoadAtStartup(load_duration);
 
   // Notify our direct observers.
   for (BookmarkModelObserver& observer : observers_)

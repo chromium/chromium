@@ -13,7 +13,8 @@ namespace bookmarks {
 
 BookmarkLoadDetails::BookmarkLoadDetails(BookmarkClient* client)
     : load_managed_node_callback_(client->GetLoadManagedNodeCallback()),
-      index_(std::make_unique<TitledUrlIndex>()) {
+      index_(std::make_unique<TitledUrlIndex>()),
+      load_start_(base::TimeTicks::Now()) {
   // WARNING: do NOT add |client| as a member. Much of this code runs on another
   // thread, and |client_| is not thread safe, and/or may be destroyed before
   // this.

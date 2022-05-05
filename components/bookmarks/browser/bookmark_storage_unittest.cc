@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -31,6 +32,7 @@ std::unique_ptr<BookmarkModel> CreateModelWithOneBookmark() {
 }  // namespace
 
 TEST(BookmarkStorageTest, ShouldSaveFileToDiskAfterDelay) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -56,6 +58,8 @@ TEST(BookmarkStorageTest, ShouldSaveFileToDiskAfterDelay) {
   task_environment.FastForwardBy(base::Milliseconds(20));
   EXPECT_FALSE(storage.HasScheduledSaveForTesting());
   EXPECT_TRUE(base::PathExists(temp_dir.GetPath().Append(kBookmarksFileName)));
+  histogram_tester.ExpectTotalCount(
+      "Bookmarks.Storage.TimeSinceLastScheduledSave", 1);
 }
 
 TEST(BookmarkStorageTest, ShouldSaveFileDespiteShutdownWhileScheduled) {
@@ -113,6 +117,38 @@ TEST(BookmarkStorageTest, ShouldGenerateBackupFileUponFirstSave) {
   storage.ScheduleSave();
   task_environment.FastForwardUntilNoTasksRemain();
   EXPECT_FALSE(base::PathExists(backup_file_path));
+}
+
+TEST(BookmarkStorageTest, RecordTimeSinceLastScheduledSave) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  BookmarkStorage storage(model.get(), temp_dir.GetPath());
+
+  ASSERT_FALSE(storage.HasScheduledSaveForTesting());
+  ASSERT_FALSE(base::PathExists(temp_dir.GetPath().Append(kBookmarksFileName)));
+
+  storage.ScheduleSave();
+
+  base::TimeDelta delay_ms = base::Milliseconds(10);
+  // Advance clock until immediately before saving takes place.
+  task_environment.FastForwardBy(delay_ms);
+  storage.ScheduleSave();
+  EXPECT_TRUE(storage.HasScheduledSaveForTesting());
+  EXPECT_FALSE(base::PathExists(temp_dir.GetPath().Append(kBookmarksFileName)));
+
+  // Advance clock past the saving moment.
+  task_environment.FastForwardBy(BookmarkStorage::kSaveDelay + delay_ms);
+  EXPECT_FALSE(storage.HasScheduledSaveForTesting());
+  EXPECT_TRUE(base::PathExists(temp_dir.GetPath().Append(kBookmarksFileName)));
+  histogram_tester.ExpectTotalCount(
+      "Bookmarks.Storage.TimeSinceLastScheduledSave", 2);
+  histogram_tester.ExpectTimeBucketCount(
+      "Bookmarks.Storage.TimeSinceLastScheduledSave", delay_ms, 1);
 }
 
 }  // namespace bookmarks

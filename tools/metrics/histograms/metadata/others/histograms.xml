@@ -80,6 +80,17 @@ chromium-metrics-reviews@google.com.
       summary="the message introducing price chips"/>
 </variants>
 
+<variants name="ImportantFileClients">
+  <variant name="" summary="Unknown file"/>
+  <variant name=".BookmarkStorage" summary="Bookmarks file"/>
+  <variant name=".FeedbackReport" summary="Feedback Report file"/>
+  <variant name=".Local_State" summary="Local State file"/>
+  <variant name=".Preferences" summary="Preferences file"/>
+  <variant name=".Secure_Preferences" summary="Secure Preferences file"/>
+  <variant name=".StructuredMetricsPersistentProto"
+      summary="Structured metrics persistent proto"/>
+</variants>
+
 <variants name="InterestGroupRequestType">
   <variant name="BiddingScriptJS" summary="buyer JavaScript bidding script"/>
   <variant name="BiddingScriptWasm" summary="buyer WebAssembly bidding script"/>
@@ -6377,8 +6388,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ImportantFile.SerializationDuration{File}" units="ms"
-    expires_after="2022-12-12">
+<histogram name="ImportantFile.SerializationDuration{ImportantFileClients}"
+    units="ms" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -6388,16 +6399,7 @@ chromium-metrics-reviews@google.com.
     serialization (e.g. bookmarks), it excludes the time spent on the background
     thread, and only logs the time spent on the foreground thread.
   </summary>
-  <token key="File">
-    <variant name="" summary="Unknown file"/>
-    <variant name=".BookmarkStorage" summary="Bookmarks file"/>
-    <variant name=".FeedbackReport" summary="Feedback Report file"/>
-    <variant name=".Local_State" summary="Local State file"/>
-    <variant name=".Preferences" summary="Preferences file"/>
-    <variant name=".Secure_Preferences" summary="Secure Preferences file"/>
-    <variant name=".StructuredMetricsPersistentProto"
-        summary="Structured metrics persistent proto"/>
-  </token>
+  <token key="ImportantFileClients" variants="ImportantFileClients"/>
 </histogram>
 
 <histogram name="ImportantFile.TempFileFailures" enum="TempFileFailure"
@@ -6411,6 +6413,17 @@ chromium-metrics-reviews@google.com.
     Count of various failures in ImportantFileWrite when manipulating a temp
     file to write to before moving it into place (replacing another file).
   </summary>
+</histogram>
+
+<histogram name="ImportantFile.WriteDuration{ImportantFileClients}" units="ms"
+    expires_after="2023-04-21">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    CPU time used in the background thread to write serialized data into an
+    important file. Recorded when the file is written.
+  </summary>
+  <token key="ImportantFileClients" variants="ImportantFileClients"/>
 </histogram>
 
 <histogram name="Incognito.ClearBrowsingDataDialog.ActionType"
