@@ -268,6 +268,9 @@ try_.builder(
 
 try_.builder(
     name = "linux-gcc-rel",
+    mirrors = [
+        "ci/linux-gcc-rel",
+    ],
     goma_backend = None,
 )
 
