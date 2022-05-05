@@ -3538,6 +3538,9 @@ enum WebFeature {
   kCookieHasNotBeenRefreshedIn301To350Days = 4217,
   kCookieHasNotBeenRefreshedIn351To400Days = 4218,
   kAnonymousIframe = 4219,
+  kGestureScrollStart = 4220,
+  kGestureScrollUpdate = 4221,
+  kGestureScrollEnd = 4222,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

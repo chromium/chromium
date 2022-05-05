@@ -541,6 +541,12 @@ void EventTarget::AddedEventListener(
         UseCounter::Count(*document, WebFeature::kSlotChangeEventAddListener);
       } else if (event_type == event_type_names::kBeforematch) {
         UseCounter::Count(*document, WebFeature::kBeforematchHandlerRegistered);
+      } else if (event_type == event_type_names::kGesturescrollstart) {
+        UseCounter::Count(*document, WebFeature::kGestureScrollStart);
+      } else if (event_type == event_type_names::kGesturescrollupdate) {
+        UseCounter::Count(*document, WebFeature::kGestureScrollUpdate);
+      } else if (event_type == event_type_names::kGesturescrollend) {
+        UseCounter::Count(*document, WebFeature::kGestureScrollEnd);
       }
     }
   }

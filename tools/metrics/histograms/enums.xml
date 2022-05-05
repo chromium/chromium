@@ -38163,6 +38163,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4217" label="CookieHasNotBeenRefreshedIn301To350Days"/>
   <int value="4218" label="CookieHasNotBeenRefreshedIn351To400Days"/>
   <int value="4219" label="AnonymousIframe"/>
+  <int value="4220" label="GestureScrollStart"/>
+  <int value="4221" label="GestureScrollUpdate"/>
+  <int value="4222" label="GestureScrollEnd"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
