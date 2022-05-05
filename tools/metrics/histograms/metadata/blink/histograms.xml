@@ -873,9 +873,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Fetch.ReducedUserAgent" enum="Boolean"
-    expires_after="M102">
-  <owner>abeyad@chromium.org</owner>
-  <owner>aarontag@chromium.org</owner>
+    expires_after="M110">
+  <owner>miketaylr@chromium.org</owner>
+  <owner>victortan@chromium.org</owner>
   <summary>
     Whether the User-Agent header that was sent for a subresource request had a
     reduced user agent string value. The reduced user agent string is only sent
