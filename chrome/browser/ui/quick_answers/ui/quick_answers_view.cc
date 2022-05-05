@@ -81,6 +81,7 @@ constexpr int kLabelSpacingDip = 2;
 
 // Buttons view.
 constexpr int kButtonsViewMarginDip = 4;
+constexpr int kButtonsSpacingDip = 4;
 constexpr int kDogfoodButtonSizeDip = 20;
 constexpr int kSettingsButtonSizeDip = 14;
 constexpr int kSettingsButtonBorderDip = 3;
@@ -507,7 +508,8 @@ void QuickAnswersView::InitLayout() {
 
   AddContentView();
 
-  AddSettingsButton();
+  // Add util buttons in the top-right corner.
+  AddFrameButtons();
 }
 
 void QuickAnswersView::InitWidget() {
@@ -547,14 +549,16 @@ void QuickAnswersView::AddContentView() {
       std::make_unique<QuickAnswersTextLabel>(QuickAnswerResultText(loading)));
 }
 
-void QuickAnswersView::AddSettingsButton() {
+void QuickAnswersView::AddFrameButtons() {
   auto* buttons_view = AddChildView(std::make_unique<views::View>());
   auto* layout =
       buttons_view->SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetInteriorMargin(gfx::Insets(kButtonsViewMarginDip))
       .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetInteriorMargin(gfx::Insets(kButtonsViewMarginDip))
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::TLBR(0, kButtonsSpacingDip, 0, 0));
 
   if (is_internal_) {
     dogfood_feedback_button_ = buttons_view->AddChildView(

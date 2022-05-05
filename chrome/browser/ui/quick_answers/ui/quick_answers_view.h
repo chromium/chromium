@@ -62,7 +62,7 @@ class QuickAnswersView : public views::View {
   void InitLayout();
   void InitWidget();
   void AddContentView();
-  void AddSettingsButton();
+  void AddFrameButtons();
   void AddPhoneticsAudioButton(
       const quick_answers::PhoneticsInfo& phonetics_info,
       View* container);
