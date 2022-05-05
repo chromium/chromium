@@ -128,7 +128,7 @@ views::Button* GetExpandedStateDesksTemplatesButton();
 views::Button* GetSaveDeskAsTemplateButton();
 views::Button* GetTemplateItemButton(int index);
 views::Button* GetTemplateItemDeleteButton(int index);
-views::Button* GetDesksTemplatesDialogAcceptButton();
+views::Button* GetSavedDeskDialogAcceptButton();
 
 // A lot of the UI relies on calling into the local desk data manager to
 // update, which sends callbacks via posting tasks. Call

@@ -8,8 +8,8 @@
 #include "ash/style/close_button.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
+#include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -180,9 +180,9 @@ views::Button* GetTemplateItemDeleteButton(int index) {
               : nullptr;
 }
 
-views::Button* GetDesksTemplatesDialogAcceptButton() {
+views::Button* GetSavedDeskDialogAcceptButton() {
   const views::Widget* dialog_widget =
-      DesksTemplatesDialogController::Get()->dialog_widget();
+      SavedDeskDialogController::Get()->dialog_widget();
   if (!dialog_widget)
     return nullptr;
   return dialog_widget->widget_delegate()->AsDialogDelegate()->GetOkButton();

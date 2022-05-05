@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_DIALOG_CONTROLLER_H_
-#define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_DIALOG_CONTROLLER_H_
+#ifndef ASH_WM_DESKS_TEMPLATES_SAVED_DESK_DIALOG_CONTROLLER_H_
+#define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_DIALOG_CONTROLLER_H_
 
 #include <memory>
 
@@ -22,22 +22,21 @@ class Window;
 
 namespace ash {
 
-class DesksTemplatesDialog;
+class SavedDeskDialog;
 
-// DesksTemplatesDialogController controls when to show the various confirmation
+// SavedDeskDialogController controls when to show the various confirmation
 // dialogs for modifying desk templates.
-class ASH_EXPORT DesksTemplatesDialogController : public views::WidgetObserver {
+class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
  public:
-  DesksTemplatesDialogController();
-  DesksTemplatesDialogController(const DesksTemplatesDialogController&) =
+  SavedDeskDialogController();
+  SavedDeskDialogController(const SavedDeskDialogController&) = delete;
+  SavedDeskDialogController& operator=(const SavedDeskDialogController&) =
       delete;
-  DesksTemplatesDialogController& operator=(
-      const DesksTemplatesDialogController&) = delete;
-  ~DesksTemplatesDialogController() override;
+  ~SavedDeskDialogController() override;
 
   // Convenience function to get the controller instance, which is created and
   // owned by OverviewSession.
-  static DesksTemplatesDialogController* Get();
+  static SavedDeskDialogController* Get();
 
   const views::Widget* dialog_widget() const { return dialog_widget_; }
 
@@ -66,7 +65,7 @@ class ASH_EXPORT DesksTemplatesDialogController : public views::WidgetObserver {
 
  private:
   // Creates and shows the dialog on `root_window`.
-  void CreateDialogWidget(std::unique_ptr<DesksTemplatesDialog> dialog,
+  void CreateDialogWidget(std::unique_ptr<SavedDeskDialog> dialog,
                           aura::Window* root_window);
 
   // Callbacks for when a user has either accepted the unsupported apps dialog
@@ -86,9 +85,9 @@ class ASH_EXPORT DesksTemplatesDialogController : public views::WidgetObserver {
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       dialog_widget_observation_{this};
 
-  base::WeakPtrFactory<DesksTemplatesDialogController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SavedDeskDialogController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_DIALOG_CONTROLLER_H_
+#endif  // ASH_WM_DESKS_TEMPLATES_SAVED_DESK_DIALOG_CONTROLLER_H_

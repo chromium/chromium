@@ -31,9 +31,9 @@
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_util.h"
+#include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_delegate.h"
@@ -187,8 +187,8 @@ void OverviewSession::Init(const WindowList& windows,
       !desks_templates_presenter_) {
     desks_templates_presenter_ =
         std::make_unique<DesksTemplatesPresenter>(this);
-    desks_templates_dialog_controller_ =
-        std::make_unique<DesksTemplatesDialogController>();
+    saved_desk_dialog_controller_ =
+        std::make_unique<SavedDeskDialogController>();
   }
 
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -302,7 +302,7 @@ void OverviewSession::Shutdown() {
 
   // Resetting here will close any dialogs, and DCHECK anyone trying to open a
   // dialog past this point.
-  desks_templates_dialog_controller_.reset();
+  saved_desk_dialog_controller_.reset();
 
   // Stop observing screen metrics changes first to avoid auto-positioning
   // windows in response to work area changes from window activation.
@@ -796,10 +796,8 @@ void OverviewSession::OnWindowActivating(
   // Activating or deactivating one of the confirmation dialogs associated with
   // desks templates should not end overview.
   if (gained_active && desks_templates_util::IsSavedDesksEnabled()) {
-    if (ShouldKeepOverviewOpenForDesksTemplatesDialog(gained_active,
-                                                      lost_active)) {
+    if (ShouldKeepOverviewOpenForSavedDeskDialog(gained_active, lost_active))
       return;
-    }
   }
 
   if (DesksController::Get()->AreDesksBeingModified()) {
@@ -899,10 +897,10 @@ bool OverviewSession::IsTemplatesUiLosingActivation(aura::Window* lost_active) {
     }
   }
 
-  return desks_templates_dialog_controller_ &&
-         desks_templates_dialog_controller_->dialog_widget() &&
-         desks_templates_dialog_controller_->dialog_widget()
-                 ->GetNativeWindow() == lost_active;
+  return saved_desk_dialog_controller_ &&
+         saved_desk_dialog_controller_->dialog_widget() &&
+         saved_desk_dialog_controller_->dialog_widget()->GetNativeWindow() ==
+             lost_active;
 }
 
 aura::Window* OverviewSession::GetOverviewFocusWindow() {
@@ -1218,8 +1216,8 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   }
 
   // If a desk templates dialog is visible it should receive the key events.
-  if (desks_templates_dialog_controller_ &&
-      desks_templates_dialog_controller_->dialog_widget()) {
+  if (saved_desk_dialog_controller_ &&
+      saved_desk_dialog_controller_->dialog_widget()) {
     return;
   }
 
@@ -1518,12 +1516,12 @@ void OverviewSession::OnItemAdded(aura::Window* window) {
   UpdateAccessibilityFocus();
 }
 
-bool OverviewSession::ShouldKeepOverviewOpenForDesksTemplatesDialog(
+bool OverviewSession::ShouldKeepOverviewOpenForSavedDeskDialog(
     aura::Window* gained_active,
     aura::Window* lost_active) {
   DCHECK(desks_templates_util::IsSavedDesksEnabled());
   const views::Widget* dialog_widget =
-      desks_templates_dialog_controller_->dialog_widget();
+      saved_desk_dialog_controller_->dialog_widget();
   if (!dialog_widget)
     return false;
 

@@ -19,10 +19,10 @@
 #include "ash/style/system_shadow.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_textfield.h"
-#include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
+#include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -480,7 +480,7 @@ void SavedDeskItemView::MaybeShowReplaceDialog(
   // Show replace template dialog. If accepted, replace old template and commit
   // name change.
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
-  DesksTemplatesDialogController::Get()->ShowReplaceDialog(
+  SavedDeskDialogController::Get()->ShowReplaceDialog(
       root_window, name_view_->GetText(),
       base::BindOnce(
           &SavedDeskItemView::ReplaceTemplate, weak_ptr_factory_.GetWeakPtr(),
@@ -635,7 +635,7 @@ void SavedDeskItemView::OnDeleteTemplate() {
 
 void SavedDeskItemView::OnDeleteButtonPressed() {
   // Show the dialog to confirm the deletion.
-  auto* dialog_controller = DesksTemplatesDialogController::Get();
+  auto* dialog_controller = SavedDeskDialogController::Get();
   dialog_controller->ShowDeleteDialog(
       GetWidget()->GetNativeWindow()->GetRootWindow(),
       name_view_->GetAccessibleName(),

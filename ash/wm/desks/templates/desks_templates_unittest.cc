@@ -24,13 +24,13 @@
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_test_util.h"
 #include "ash/wm/desks/templates/save_desk_template_button.h"
 #include "ash/wm/desks/templates/save_desk_template_button_container.h"
+#include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
 #include "ash/wm/desks/templates/saved_desk_icon_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
@@ -284,7 +284,7 @@ class DesksTemplatesTest : public OverviewTestBase {
 
     // Click the delete button on the delete dialog. Show delete dialog and
     // select accept.
-    auto* dialog_controller = DesksTemplatesDialogController::Get();
+    auto* dialog_controller = SavedDeskDialogController::Get();
     auto* dialog_delegate = dialog_controller->dialog_widget()
                                 ->widget_delegate()
                                 ->AsDialogDelegate();
@@ -722,7 +722,7 @@ TEST_F(DesksTemplatesTest, DialogSystemModal) {
   ASSERT_TRUE(GetOverviewSession());
 
   // Show one of the dialogs. Activating the dialog keeps us in overview mode.
-  auto* dialog_controller = DesksTemplatesDialogController::Get();
+  auto* dialog_controller = SavedDeskDialogController::Get();
   dialog_controller->ShowReplaceDialog(Shell::GetPrimaryRootWindow(), u"Bento",
                                        base::DoNothing(), base::DoNothing());
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
@@ -1849,7 +1849,7 @@ TEST_F(DesksTemplatesTest, UnsupportedAppsDialog) {
 
   // Decline the dialog. We should stay in overview and no template should have
   // been saved.
-  auto* dialog_controller = DesksTemplatesDialogController::Get();
+  auto* dialog_controller = SavedDeskDialogController::Get();
   dialog_controller->dialog_widget()
       ->widget_delegate()
       ->AsDialogDelegate()
@@ -1865,7 +1865,7 @@ TEST_F(DesksTemplatesTest, UnsupportedAppsDialog) {
 
   // Accept the dialog. The template should have been saved and the templates
   // grid should now be shown.
-  dialog_controller = DesksTemplatesDialogController::Get();
+  dialog_controller = SavedDeskDialogController::Get();
   dialog_controller->dialog_widget()
       ->widget_delegate()
       ->AsDialogDelegate()
@@ -2992,7 +2992,7 @@ TEST_F(DesksTemplatesTest, ReplaceTemplateMetric) {
   SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/1);
   // Show replace dialogs.
-  auto* dialog_controller = DesksTemplatesDialogController::Get();
+  auto* dialog_controller = SavedDeskDialogController::Get();
   auto callback = base::BindLambdaForTesting(
       [&]() { item_view->ReplaceTemplate(uuid_1.AsLowercaseString()); });
 
