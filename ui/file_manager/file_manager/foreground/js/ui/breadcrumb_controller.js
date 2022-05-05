@@ -5,19 +5,19 @@
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
 import {metrics} from '../../../common/js/metrics.js';
-import {util} from '../../../common/js/util.js';
 import {FakeEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
-import {FilesTooltip} from '../../elements/files_tooltip.js';
 import {PathComponent} from '../path_component.js';
 
 import {BreadCrumb} from './breadcrumb.js';
 import {ListContainer} from './list_container.js';
 
 /**
- * Location line.
+ * The controller of breadcrumb. The Breadcrumb element only renders a given
+ * path. This controller component is responsible for constructing the path
+ * and passing it to the Breadcrumb element.
  */
-export class LocationLine extends EventTarget {
+export class BreadcrumbController extends EventTarget {
   /**
    * @param {!Element} breadcrumbs Container element for breadcrumbs.
    * @param {!VolumeManager} volumeManager Volume manager.
@@ -32,19 +32,6 @@ export class LocationLine extends EventTarget {
     this.listContainer_ = listContainer;
     this.entry_ = null;
     this.components_ = [];
-
-    /** @private {?FilesTooltip} */
-    this.filesTooltip_ = null;
-  }
-
-  /**
-   * @param {?FilesTooltip} filesTooltip
-   * */
-  set filesTooltip(filesTooltip) {
-    this.filesTooltip_ = filesTooltip;
-
-    this.filesTooltip_.addTargets(
-        this.breadcrumbs_.querySelectorAll('[has-tooltip]'));
   }
 
   /**

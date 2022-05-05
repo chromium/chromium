@@ -25,6 +25,7 @@ group("js_modules") {
     ":action_model_ui",
     ":actions_submenu",
     ":autocomplete_list",
+    ":breadcrumb_controller",
     ":combobutton",
     ":commandbutton",
     ":default_task_dialog",
@@ -46,7 +47,6 @@ group("js_modules") {
     ":import_crostini_image_dialog",
     ":install_linux_package_dialog",
     ":list_container",
-    ":location_line",
     ":multi_menu",
     ":multi_menu_button",
     ":progress_center_panel",
@@ -75,6 +75,7 @@ js_type_check("closure_compile_jsmodules") {
     ":actions_submenu",
     ":autocomplete_list",
     ":breadcrumb",
+    ":breadcrumb_controller",
     ":combobutton",
     ":commandbutton",
     ":default_task_dialog",
@@ -96,7 +97,6 @@ js_type_check("closure_compile_jsmodules") {
     ":import_crostini_image_dialog",
     ":install_linux_package_dialog",
     ":list_container",
-    ":location_line",
     ":multi_menu",
     ":multi_menu_button",
     ":progress_center_panel",
@@ -314,6 +314,7 @@ js_library("file_manager_ui") {
     ":a11y_announce",
     ":action_model_ui",
     ":actions_submenu",
+    ":breadcrumb_controller",
     ":combobutton",
     ":default_task_dialog",
     ":dialog_footer",
@@ -327,7 +328,6 @@ js_library("file_manager_ui") {
     ":import_crostini_image_dialog",
     ":install_linux_package_dialog",
     ":list_container",
-    ":location_line",
     ":multi_menu",
     ":multi_menu_button",
     ":progress_center_panel",
@@ -530,15 +530,13 @@ js_library("list_container") {
   ]
 }
 
-js_library("location_line") {
+js_library("breadcrumb_controller") {
   deps = [
     ":breadcrumb",
     ":list_container",
     "//ui/file_manager/file_manager/common/js:metrics",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
     "//ui/file_manager/file_manager/foreground/js:path_component",
     "//ui/webui/resources/js/cr:event_target.m",
   ]

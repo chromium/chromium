@@ -301,7 +301,7 @@ preprocess_if_expr("preprocess_static") {
     "file_manager/foreground/js/ui/import_crostini_image_dialog.js",
     "file_manager/foreground/js/ui/install_linux_package_dialog.js",
     "file_manager/foreground/js/ui/list_container.js",
-    "file_manager/foreground/js/ui/location_line.js",
+    "file_manager/foreground/js/ui/breadcrumb_controller.js",
     "file_manager/foreground/js/ui/multi_menu.js",
     "file_manager/foreground/js/ui/multi_menu_button.js",
     "file_manager/foreground/js/ui/progress_center_panel.js",

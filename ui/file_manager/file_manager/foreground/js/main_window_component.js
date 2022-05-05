@@ -141,7 +141,7 @@ export class MainWindowComponent {
         'focus', this.onFileListFocus_.bind(this));
     ui.listContainer.grid.addEventListener(
         'focus', this.onFileListFocus_.bind(this));
-    ui.locationLine.addEventListener(
+    ui.breadcrumbController.addEventListener(
         'pathclick', this.onBreadcrumbClick_.bind(this));
     /**
      * We are binding both click/keyup event here because "click" event will
@@ -407,7 +407,8 @@ export class MainWindowComponent {
     switch (util.getKeyModifiers(event) + event.key) {
       case 'Backspace':  // Backspace => Up one directory.
         event.preventDefault();
-        const components = this.ui_.locationLine.getCurrentPathComponents();
+        const components =
+            this.ui_.breadcrumbController.getCurrentPathComponents();
         if (components.length < 2) {
           break;
         }
@@ -476,7 +477,7 @@ export class MainWindowComponent {
     this.ui_.element.toggleAttribute('unformatted', /*force=*/ unformatted);
 
     if (event.newDirEntry) {
-      this.ui_.locationLine.show(event.newDirEntry);
+      this.ui_.breadcrumbController.show(event.newDirEntry);
       // Updates UI.
       if (this.dialogType_ === DialogType.FULL_PAGE) {
         const locationInfo =
@@ -491,7 +492,7 @@ export class MainWindowComponent {
         }
       }
     } else {
-      this.ui_.locationLine.hide();
+      this.ui_.breadcrumbController.hide();
     }
   }
 

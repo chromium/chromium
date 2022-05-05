@@ -466,7 +466,7 @@ test.util.sync.unload = contentWindow => {
 };
 
 /**
- * Returns the path shown in the location line breadcrumb.
+ * Returns the path shown in the breadcrumb.
  *
  * @param {Window} contentWindow Window to be tested.
  * @return {string} The breadcrumb path.

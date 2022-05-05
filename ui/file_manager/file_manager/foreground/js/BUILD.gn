@@ -1179,8 +1179,8 @@ js_library("search_controller") {
   deps = [
     ":directory_model",
     ":task_controller",
+    "ui:breadcrumb_controller",
     "ui:file_manager_ui",
-    "ui:location_line",
     "ui:search_box",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
