@@ -8042,40 +8042,6 @@
             ]
         }
     ],
-    "V8WasmMemoryProtection": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledPku",
-                    "enable_features": [
-                        "WebAssemblyCodeProtectionPku"
-                    ]
-                },
-                {
-                    "name": "EnabledMprotect",
-                    "enable_features": [
-                        "WebAssemblyCodeProtection"
-                    ]
-                },
-                {
-                    "name": "EnabledPkuWithMprotectFallback",
-                    "enable_features": [
-                        "WebAssemblyCodeProtection",
-                        "WebAssemblyCodeProtectionPku"
-                    ]
-                }
-            ]
-        }
-    ],
     "VaapiVideoDecoder": [
         {
             "platforms": [
