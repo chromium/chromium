@@ -8,8 +8,7 @@
 #error "This file requires ARC support."
 #endif
 
-const base::Feature kTabsSearch{"TabsSearch",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kTabsSearch{"TabsSearch", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kTabsSearchRegularResultsSuggestedActions{
     "TabsSearchRegularResultsSuggestedActions",
