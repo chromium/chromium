@@ -33,22 +33,6 @@ using mojom::blink::RevokeStatus;
 
 constexpr char kFederatedCredentialType[] = "federated";
 
-bool MaybeRejectDueToCSP(ContentSecurityPolicy* policy,
-                         ScriptPromiseResolver* resolver,
-                         const KURL& provider_url) {
-  if (policy->AllowConnectToSource(provider_url, provider_url,
-                                   RedirectStatus::kNoRedirect)) {
-    return true;
-  }
-
-  WTF::String error =
-      "Refused to connect to '" + provider_url.ElidedString() +
-      "' because it violates the document's Content Security Policy.";
-  resolver->Reject(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNetworkError, error));
-  return false;
-}
-
 // Abort an ongoing FederatedCredential login() operation.
 void AbortFederatedCredentialRequest(ScriptState* script_state) {
   if (!script_state->ContextIsValid())
@@ -183,6 +167,23 @@ FederatedCredential* FederatedCredential::Create(
                                                    hint, options);
 }
 
+bool FederatedCredential::IsRejectingPromiseDueToCSP(
+    ContentSecurityPolicy* policy,
+    ScriptPromiseResolver* resolver,
+    const KURL& provider_url) {
+  if (policy->AllowConnectToSource(provider_url, provider_url,
+                                   RedirectStatus::kNoRedirect)) {
+    return false;
+  }
+
+  WTF::String error =
+      "Refused to connect to '" + provider_url.ElidedString() +
+      "' because it violates the document's Content Security Policy.";
+  resolver->Reject(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNetworkError, error));
+  return true;
+}
+
 FederatedCredential::FederatedCredential(
     const String& id,
     scoped_refptr<const SecurityOrigin> provider_origin,
@@ -257,7 +258,7 @@ ScriptPromise FederatedCredential::login(
           ->GetContentSecurityPolicyForCurrentWorld();
   // We disallow redirects (in idp_network_request_manager.cc), so it is
   // enough to check the initial URL here.
-  if (!MaybeRejectDueToCSP(policy, resolver, provider_url_))
+  if (IsRejectingPromiseDueToCSP(policy, resolver, provider_url_))
     return promise;
   if (request->hasSignal()) {
     if (request->signal()->aborted()) {
@@ -318,7 +319,7 @@ ScriptPromise FederatedCredential::logoutRps(
           DOMExceptionCode::kSyntaxError, "Invalid logout endpoint URL."));
       return promise;
     }
-    if (!MaybeRejectDueToCSP(policy, resolver, logout_request->url))
+    if (IsRejectingPromiseDueToCSP(policy, resolver, logout_request->url))
       return promise;
     if (logout_request->account_id.IsEmpty()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -368,7 +369,7 @@ ScriptPromise FederatedCredential::revoke(ScriptState* script_state,
   ContentSecurityPolicy* policy =
       resolver->GetExecutionContext()
           ->GetContentSecurityPolicyForCurrentWorld();
-  if (!MaybeRejectDueToCSP(policy, resolver, provider_url_))
+  if (IsRejectingPromiseDueToCSP(policy, resolver, provider_url_))
     return promise;
 
   auth_request->Revoke(provider_url_, client_id_, hint,

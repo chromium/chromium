@@ -1110,13 +1110,8 @@ ScriptPromise CredentialsContainer::get(
         }
         // We disallow redirects (in idp_network_request_manager.cc), so it is
         // enough to check the initial URL here.
-        if (!policy->AllowConnectToSource(provider_url, provider_url,
-                                          RedirectStatus::kNoRedirect)) {
-          WTF::String error =
-              "Refused to connect to '" + provider_url.ElidedString() +
-              "' because it violates the document's Content Security Policy.";
-          resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kNetworkError, error));
+        if (FederatedCredential::IsRejectingPromiseDueToCSP(policy, resolver,
+                                                            provider_url)) {
           return promise;
         }
 

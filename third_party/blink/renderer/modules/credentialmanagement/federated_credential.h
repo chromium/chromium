@@ -36,6 +36,10 @@ class MODULES_EXPORT FederatedCredential final : public Credential {
                                      const String& hint,
                                      const CredentialRequestOptions* options);
 
+  static bool IsRejectingPromiseDueToCSP(ContentSecurityPolicy* policy,
+                                         ScriptPromiseResolver* resolver,
+                                         const KURL& provider_url);
+
   FederatedCredential(const String& id,
                       scoped_refptr<const SecurityOrigin> provider,
                       const String& name,
