@@ -17,7 +17,9 @@ bool MaskFilterInfo::Transform(const gfx::Transform& transform) {
   if (!transform.TransformRRectF(&rounded_corner_bounds_))
     return false;
 
-  gradient_mask_.Transform(transform);
+  if (!gradient_mask_.IsEmpty())
+    gradient_mask_.Transform(transform);
+
   return true;
 }
 

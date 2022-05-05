@@ -1007,6 +1007,7 @@ void MathUtil::AddCornerRadiiToTracedValue(
   res->AppendDouble(rect.GetCornerRadii(gfx::RRectF::Corner::kLowerRight).y());
   res->AppendDouble(rect.GetCornerRadii(gfx::RRectF::Corner::kLowerLeft).x());
   res->AppendDouble(rect.GetCornerRadii(gfx::RRectF::Corner::kLowerLeft).y());
+  res->EndArray();
 }
 
 void MathUtil::AddToTracedValue(const char* name,

@@ -171,6 +171,21 @@ AnimationSequenceBlock& AnimationSequenceBlock::SetRoundedCorners(
   return SetRoundedCorners(target->layer(), rounded_corners, tween_type);
 }
 
+AnimationSequenceBlock& AnimationSequenceBlock::SetGradientMask(
+    ui::Layer* target,
+    const gfx::LinearGradient& gradient_mask,
+    gfx::Tween::Type tween_type) {
+  return AddAnimation({target, ui::LayerAnimationElement::GRADIENT_MASK},
+                      Element(gradient_mask, tween_type));
+}
+
+AnimationSequenceBlock& AnimationSequenceBlock::SetGradientMask(
+    ui::LayerOwner* target,
+    const gfx::LinearGradient& gradient_mask,
+    gfx::Tween::Type tween_type) {
+  return SetGradientMask(target->layer(), gradient_mask, tween_type);
+}
+
 AnimationSequenceBlock& AnimationSequenceBlock::SetVisibility(
     ui::Layer* target,
     bool visible,
@@ -271,6 +286,11 @@ void AnimationSequenceBlock::TerminateBlock() {
       case ui::LayerAnimationElement::ROUNDED_CORNERS:
         element = ui::LayerAnimationElement::CreateRoundedCornersElement(
             absl::get<gfx::RoundedCornersF>(pair.second.animation_value_),
+            duration);
+        break;
+      case ui::LayerAnimationElement::GRADIENT_MASK:
+        element = ui::LayerAnimationElement::CreateGradientMaskElement(
+            absl::get<gfx::LinearGradient>(pair.second.animation_value_),
             duration);
         break;
       default:

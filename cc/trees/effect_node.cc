@@ -182,7 +182,7 @@ void EffectNode::AsValueInto(base::trace_event::TracedValue* value) const {
                                value);
     if (mask_filter_info.HasRoundedCorners()) {
       MathUtil::AddCornerRadiiToTracedValue(
-          "mask_filter_rounded_corner_raii",
+          "mask_filter_rounded_corners_radii",
           mask_filter_info.rounded_corner_bounds(), value);
       value->SetBoolean("mask_filter_is_fast_rounded_corner",
                         is_fast_rounded_corner);

@@ -63,7 +63,7 @@ class GEOMETRY_SKIA_EXPORT MaskFilterInfo {
   RRectF rounded_corner_bounds_;
 
   // Shader based linear gradient mask to be applied to a layer.
-  gfx::LinearGradient gradient_mask_;
+  gfx::LinearGradient gradient_mask_ = gfx::LinearGradient::GetEmpty();
 };
 
 inline bool operator==(const MaskFilterInfo& lhs, const MaskFilterInfo& rhs) {
