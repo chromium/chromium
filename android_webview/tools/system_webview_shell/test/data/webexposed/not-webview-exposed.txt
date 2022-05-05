@@ -121,7 +121,6 @@ interface MediaDevices : EventTarget
 
 # Because getDisplayMedia() is not supported on Android,
 # dependent features such as Capture Handle are also unsupported.
-interface CaptureHandleChangeEvent : Event
 interface MediaStreamTrack : EventTarget
   getter oncapturehandlechange
   setter oncapturehandlechange
