@@ -105,7 +105,7 @@
 
       Si se le asigna un valor a esta política, los usuarios no podrán cambiarlo.</translation>
 <translation id="1123650965531933634">Niega el permiso de colocación de ventanas en todos los sitios de forma predeterminada</translation>
-<translation id="1133622335785078255">Permite que los usuarios creen y utilicen perfiles secundarios, y que usen el modo Invitados en el navegador <ph name="LACROS_NAME" /></translation>
+<translation id="1133622335785078255">Permite que los usuarios creen y utilicen perfiles secundarios, y que usen el modo Invitado en el navegador <ph name="LACROS_NAME" /></translation>
 <translation id="1133814529606590009">Si se habilita esta política, siempre estará activa la recogida de datos anónima con clave de URL, que enviará las URL de las páginas que el usuario visite a Google para mejorar las búsquedas y la navegación.
 
       Si se inhabilita esta política, no se activará la recogida de datos anónima con clave de URL.
@@ -278,7 +278,7 @@
 <translation id="13356285923490863">Nombre de la política</translation>
 <translation id="1338603603553894503">Especifica si el selector de perfil se habilita, se inhabilita o se fuerza al iniciar el navegador.
 
-      De forma predeterminada no se muestra el selector de perfil si se dan las siguientes situaciones: el navegador se inicia en el modo Invitados o de incógnito, se especifica un directorio de perfil o URLs en línea de comandos, se solicita explícitamente abrir una aplicación, una notificación nativa abre el navegador, solo hay un perfil disponible o se le asigna el valor "true" a la política ForceBrowserSignin.
+      De forma predeterminada no se muestra el selector de perfil si se dan las siguientes situaciones: el navegador se inicia en el modo Invitado o de incógnito, se especifica un directorio de perfil o URLs en línea de comandos, se solicita explícitamente abrir una aplicación, una notificación nativa abre el navegador, solo hay un perfil disponible o se le asigna el valor "true" a la política ForceBrowserSignin.
 
       Si se selecciona "Habilitado" (0) o no se establece la política, el selector de perfil se mostrará de forma predeterminada al inicio, pero los usuarios podrán habilitarlo o inhabilitarlo.
 
@@ -573,7 +573,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Si no se le asigna ningún valor, se utilizará el tamaño de caché predeterminado y los usuarios podrán cambiarlo con el indicador "--media-cache-size".</translation>
 <translation id="1648816843164517573">Lista de nombres que omitirán la comprobación de la política de HSTS</translation>
-<translation id="1654087023995670109">Forzar el modo Invitados en el navegador</translation>
+<translation id="1654087023995670109">Forzar el modo Invitado en el navegador</translation>
 <translation id="1655229863189977773">Establecer tamaño de caché de disco en bytes</translation>
 <translation id="165769015320654523">Concede permiso automáticamente a estos sitios para que se conecten a dispositivos HID con los IDs de proveedor y producto facilitados.</translation>
 <translation id="166427968280387991">Servidor proxy</translation>
@@ -1019,7 +1019,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2061810934846663491">Configurar los nombres de dominio obligatorios para hosts de acceso remoto</translation>
 <translation id="2069350366303315077">Si se habilita la política, <ph name="PRODUCT_NAME" /> usará sesiones de invitado e impedirá inicios de sesión de perfiles. Las sesiones de invitado son perfiles de <ph name="PRODUCT_NAME" /> en los que las ventanas están en modo Incógnito.
 
-      Si se inhabilita la política, no se establece o se inhabilita el modo Invitados del navegador (mediante <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), se permitirá el uso de perfiles nuevos y de perfiles ya existentes.</translation>
+      Si se inhabilita la política, no se establece o se inhabilita el modo Invitado del navegador (mediante <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), se permitirá el uso de perfiles nuevos y de perfiles ya existentes.</translation>
 <translation id="2070744136203607632">No realizar comprobaciones de interceptación de DNS</translation>
 <translation id="2073552873076775140">Permitir inicio de sesión en <ph name="PRODUCT_NAME" /></translation>
 <translation id="2075732129949889165">Playbook de Ansible para Crostini</translation>
@@ -2820,7 +2820,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Estas restricciones se aplican a las descargas activadas desde el contenido de las páginas web o a través de la opción "Descargar enlace" del menú. No se aplican a la opción para guardar o descargar de la página actual ni a la opción para guardar como PDF de las opciones de impresión.
 
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
-<translation id="4043796890723386527">Evita que los usuarios creen y utilicen perfiles secundarios, y que usen el modo Invitados en el navegador <ph name="LACROS_NAME" />.</translation>
+<translation id="4043796890723386527">Evita que los usuarios creen y utilicen perfiles secundarios, y que usen el modo Invitado en el navegador <ph name="LACROS_NAME" />.</translation>
 <translation id="4051723201852944592">Habilitar la oclusión de ventana</translation>
 <translation id="4056910949759281379">Inhabilitar protocolo SPDY</translation>
 <translation id="4061107397839125009">Si se establece la política, podrás definir una lista de patrones de URL donde se especifique qué sitios no pueden mostrar notificaciones.
@@ -3521,13 +3521,13 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
       Si se le asigna un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ningún valor, los usuarios podrán decidir si quieren enviar informes o no.
 
       Consulta más información sobre Navegación segura en https://developers.google.com/safe-browsing.</translation>
-<translation id="4955566229684195326">Esta opción permite que los usuarios creen y utilicen perfiles secundarios, y que usen el modo Invitados en el navegador <ph name="LACROS_NAME" />.
+<translation id="4955566229684195326">Esta opción permite que los usuarios creen y utilicen perfiles secundarios, y que usen el modo Invitado en el navegador <ph name="LACROS_NAME" />.
 
-      Al igual que en el caso de <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> y <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />, si se asigna el valor false a esta política o no se le asigna ningún valor, el usuario no podrá crear ni utilizar perfiles secundarios, ni usar el modo Invitados. Los perfiles secundarios creados anteriormente (si los hubiera) no estarán disponibles.
+      Al igual que en el caso de <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> y <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />, si se asigna el valor false a esta política o no se le asigna ningún valor, el usuario no podrá crear ni utilizar perfiles secundarios, ni usar el modo Invitado. Los perfiles secundarios creados anteriormente (si los hubiera) no estarán disponibles.
 
-      Si se le asigna el valor true, el usuario podrá crear y utilizar perfiles secundarios, y usar el modo Invitados.
+      Si se le asigna el valor true, el usuario podrá crear y utilizar perfiles secundarios, y usar el modo Invitado.
 
-      Nota: Si se le asigna el valor true a esta política, pero <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> tiene asignado el valor false, el usuario no podrá crear perfiles secundarios. Ocurre lo mismo con <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> y el modo Invitados.</translation>
+      Nota: Si se le asigna el valor true a esta política, pero <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> tiene asignado el valor false, el usuario no podrá crear perfiles secundarios. Ocurre lo mismo con <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> y el modo Invitado.</translation>
 <translation id="4960597185231686653">Un indicador booleano que especifica si el teclado en pantalla permite usar la función de entrada de voz.</translation>
 <translation id="4970046075219007744">Permite que las aplicaciones web soliciten al usuario que les conceda acceso a ciertos tipos de archivo a través de la API File Handling</translation>
 <translation id="4970855112942626932">Inhabilitar inicio de sesión en el navegador</translation>
@@ -3963,7 +3963,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Esta política afecta a los usuarios que se hayan autenticado mediante SAML.
 
       El valor de esta política debe especificarse en número de días.</translation>
-<translation id="5457065417344056871">Habilitar el modo Invitados en el navegador</translation>
+<translation id="5457065417344056871">Habilitar el modo Invitado en el navegador</translation>
 <translation id="5457387982448145430">Si se asigna el valor "Habilitada" a esta política, se importarán las contraseñas guardadas del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importará ninguna contraseña al ejecutarse por primera vez.
 
       Los usuarios pueden abrir un cuadro de diálogo de importación y la casilla de contraseñas guardadas aparecerá marcada o desmarcada en función del valor de esta política.</translation>

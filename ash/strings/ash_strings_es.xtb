@@ -60,7 +60,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
         <ph name="EVENT_SUMMARY" />. Selecciónalo para ver más detalles en Google Calendar.</translation>
 <translation id="1266097335951928626">Iniciar cámara frontal</translation>
 <translation id="1267032506238418139">Cambio de la combinación de teclas</translation>
-<translation id="1269405891096105529">No se puede usar el periférico en el modo Invitados</translation>
+<translation id="1269405891096105529">No se puede usar el periférico en el modo Invitado</translation>
 <translation id="1270290102613614947">Teclado en pantalla inhabilitado</translation>
 <translation id="1272079795634619415">Detener</translation>
 <translation id="1275285675049378717">Alimentando a <ph name="POWER_SOURCE" /></translation>
@@ -1182,7 +1182,7 @@ Nueva instalación</translation>
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8364673525741149932">Activa o desactiva Grupo de estanterías. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Avanzar por carácter</translation>
-<translation id="8371991222807690464">Es posible que el rendimiento de los periféricos esté limitado en el Modo Invitados</translation>
+<translation id="8371991222807690464">Es posible que el rendimiento de los periféricos esté limitado en el Modo Invitado</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> y tu teléfono se conectarán automáticamente</translation>
 <translation id="8380784334203145311">Buenas noches,</translation>
 <translation id="8382715499079447151">Protección frente a visualizaciones</translation>
