@@ -9,6 +9,7 @@
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
 #include "components/exo/wm_helper_chromeos.h"
+#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 
 namespace ash {
 namespace {
@@ -79,7 +80,14 @@ TEST_F(ArcInputMethodSurfaceManagerTest, Observer) {
   auto surface = std::make_unique<exo::Surface>();
   auto input_method_surface = std::make_unique<exo::InputMethodSurface>(
       &manager, surface.get(), /*default_scale_cancellation=*/false);
-  surface->SetViewport(gfx::SizeF(500, 500));
+  auto buffer = std::make_unique<exo::Buffer>(
+      aura::Env::GetInstance()
+          ->context_factory()
+          ->GetGpuMemoryBufferManager()
+          ->CreateGpuMemoryBuffer(gfx::Size(500, 500), gfx::BufferFormat::R_8,
+                                  gfx::BufferUsage::GPU_READ,
+                                  gpu::kNullSurfaceHandle, nullptr));
+  surface->Attach(buffer.get());
   surface->Commit();
 
   gfx::Rect test_bounds(10, 10, 100, 100);

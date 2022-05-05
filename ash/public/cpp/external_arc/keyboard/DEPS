@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "arc_input_method_surface_manager_unittest\.cc": [
+    "+gpu/command_buffer/client",
+  ],
+}

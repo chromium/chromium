@@ -1535,29 +1535,31 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
 
 void Surface::UpdateContentSize() {
   gfx::SizeF content_size;
-  if (!state_.basic_state.viewport.IsEmpty()) {
-    content_size = state_.basic_state.viewport;
-  } else if (!state_.basic_state.crop.IsEmpty()) {
-    DLOG_IF(WARNING, !base::IsValueInRangeForNumericType<int>(
-                         state_.basic_state.crop.width()) ||
-                         !base::IsValueInRangeForNumericType<int>(
-                             state_.basic_state.crop.height()))
-        << "Crop rectangle size (" << state_.basic_state.crop.size().ToString()
-        << ") most be expressible using integers when viewport is not set";
-    content_size = state_.basic_state.crop.size();
-  } else {
-    content_size = gfx::ScaleSize(
-        gfx::SizeF(ToTransformedSize(
-            state_.buffer.has_value() ? state_.buffer->size() : gfx::Size(),
-            state_.basic_state.buffer_transform)),
-        1.0f / state_.basic_state.buffer_scale);
-  }
-
   // Enable/disable sub-surface based on if it has contents.
-  if (has_contents())
+  if (has_contents()) {
+    if (!state_.basic_state.viewport.IsEmpty()) {
+      content_size = state_.basic_state.viewport;
+    } else if (!state_.basic_state.crop.IsEmpty()) {
+      DLOG_IF(WARNING, !base::IsValueInRangeForNumericType<int>(
+                           state_.basic_state.crop.width()) ||
+                           !base::IsValueInRangeForNumericType<int>(
+                               state_.basic_state.crop.height()))
+          << "Crop rectangle size ("
+          << state_.basic_state.crop.size().ToString()
+          << ") most be expressible using integers when viewport is not set";
+      content_size = state_.basic_state.crop.size();
+    } else {
+      content_size = gfx::ScaleSize(
+          gfx::SizeF(ToTransformedSize(
+              state_.buffer.has_value() ? state_.buffer->size() : gfx::Size(),
+              state_.basic_state.buffer_transform)),
+          1.0f / state_.basic_state.buffer_scale);
+    }
+
     window_->Show();
-  else
+  } else {
     window_->Hide();
+  }
 
   if (content_size_ != content_size) {
     content_size_ = content_size;

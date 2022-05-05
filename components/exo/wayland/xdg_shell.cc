@@ -649,9 +649,6 @@ void xdg_surface_get_popup(wl_client* client,
   xdg_popup_send_configure(xdg_popup_resource, position.origin.x(),
                            position.origin.y(), position.size.width(),
                            position.size.height());
-  uint32_t serial = shell_surface_data->serial_tracker->GetNextSerial(
-      SerialTracker::EventType::OTHER_EVENT);
-  xdg_surface_send_configure(resource, serial);
 }
 
 void xdg_surface_set_window_geometry(wl_client* client,
