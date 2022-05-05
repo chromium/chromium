@@ -1,0 +1,13 @@
+{
+  "name": "Platform App Test: webview webRequest regression crbug.com/1309302",
+  "manifest_version": 2,
+  "version": "2",
+  "permissions": [
+    "webview"
+  ],
+  "app": {
+    "background": {
+      "scripts": ["test.js"]
+    }
+  }
+}

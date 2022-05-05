@@ -1744,6 +1744,32 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
   ASSERT_NE(empty_guest_opener, empty_guest_embedder->GetMainFrame());
 }
 
+// This is a regression test for crbug.com/1309302. It launches an app
+// with two iframes and a webview within each of the iframes. The
+// purpose of the test is to ensure that webRequest subevent names are
+// unique across all webviews within the app.
+IN_PROC_BROWSER_TEST_P(WebViewTest, TwoIframesWebRequest) {
+  ASSERT_TRUE(StartEmbeddedTestServer());  // For serving webview pages.
+  ExtensionTestMessageListener ready1("ready1", true);
+  ExtensionTestMessageListener ready2("ready2", true);
+
+  LoadAndLaunchPlatformApp("web_view/two_iframes_web_request", "Launched");
+  EXPECT_TRUE(ready1.WaitUntilSatisfied());
+  EXPECT_TRUE(ready2.WaitUntilSatisfied());
+
+  ExtensionTestMessageListener finished1("success1", false);
+  finished1.set_failure_message("fail1");
+  ExtensionTestMessageListener finished2("success2", false);
+  finished2.set_failure_message("fail2");
+
+  // Reply to the listeners to start the navigations and wait for the
+  // results.
+  ready1.Reply("");
+  ready2.Reply("");
+  EXPECT_TRUE(finished1.WaitUntilSatisfied());
+  EXPECT_TRUE(finished2.WaitUntilSatisfied());
+}
+
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
                        NewWindow_AttachAfterOpenerDestroyed) {
   TestHelper("testNewWindowAttachAfterOpenerDestroyed", "web_view/newwindow",
