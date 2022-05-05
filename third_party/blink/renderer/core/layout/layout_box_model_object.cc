@@ -375,25 +375,6 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
     SetNeedsPaintPropertyUpdate();
   }
 
-  if (old_style && HasLayer() && !Layer()->SelfNeedsRepaint() &&
-      diff.TransformChanged()) {
-    // PaintLayerPainter::PaintLayerWithAdjustedRoot skips painting of a layer
-    // whose transform is not invertible, so we need to repaint the layer when
-    // invertible status changes.
-    TransformationMatrix old_transform;
-    TransformationMatrix new_transform;
-    old_style->ApplyTransform(
-        old_transform, LayoutSize(), ComputedStyle::kExcludeTransformOrigin,
-        ComputedStyle::kExcludeMotionPath,
-        ComputedStyle::kIncludeIndependentTransformProperties);
-    StyleRef().ApplyTransform(
-        new_transform, LayoutSize(), ComputedStyle::kExcludeTransformOrigin,
-        ComputedStyle::kExcludeMotionPath,
-        ComputedStyle::kIncludeIndependentTransformProperties);
-    if (old_transform.IsInvertible() != new_transform.IsInvertible())
-      Layer()->SetNeedsRepaint();
-  }
-
   // We can't squash across a layout containment boundary. So, if the
   // containment changes, we need to update the compositing inputs.
   if (old_style &&

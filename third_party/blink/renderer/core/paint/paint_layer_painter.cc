@@ -92,20 +92,6 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
       !paint_layer_.HasSelfPaintingLayerDescendant())
     return kFullyPainted;
 
-  // If the transform can't be inverted, don't paint anything. We still need to
-  // paint if there are animations to ensure the animation can be setup to run
-  // on the compositor.
-  bool paint_non_invertible_transforms = false;
-  const auto* properties = layout_object.FirstFragment().PaintProperties();
-  if (properties && properties->Transform() &&
-      properties->Transform()->HasActiveTransformAnimation()) {
-    paint_non_invertible_transforms = true;
-  }
-  if (!paint_non_invertible_transforms && paint_layer_.Transform() &&
-      !paint_layer_.Transform()->IsInvertible()) {
-    return kFullyPainted;
-  }
-
   return PaintLayerContents(context, paint_flags);
 }
 

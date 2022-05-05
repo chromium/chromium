@@ -4718,9 +4718,13 @@ crbug.com/936827 external/wpt/fullscreen/api/element-request-fullscreen-and-remo
 
 # Paint Timing failures
 crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-gradient.html [ Failure ]
-crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-invisible-3d-rotate-descendant.html [ Failure Timeout ]
-crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-invisible-3d-rotate.html [ Failure ]
 crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-text-input.html [ Failure ]
+
+# Contentful First Paint failures
+crbug.com/1322629 external/wpt/paint-timing/fcp-only/fcp-invisible-3d-rotate.html [ Failure ]
+crbug.com/1322629 external/wpt/paint-timing/fcp-only/fcp-invisible-3d-rotate-descendant.html [ Failure ]
+crbug.com/1322629 external/wpt/paint-timing/fcp-only/fcp-invisible-scale.html [ Failure ]
+crbug.com/1322629 external/wpt/paint-timing/fcp-only/fcp-invisible-scale-transition.html [ Failure ]
 
 # Also crbug.com/1044535
 crbug.com/937416 http/tests/devtools/resource-tree/resource-tree-frame-navigate.js [ Failure Pass Timeout ]
