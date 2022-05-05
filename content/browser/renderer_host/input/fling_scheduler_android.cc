@@ -14,9 +14,7 @@
 namespace content {
 
 FlingSchedulerAndroid::FlingSchedulerAndroid(RenderWidgetHostImpl* host)
-    : host_(host),
-      use_simple_observer_(
-          base::FeatureList::IsEnabled(features::kIndependentFlingAnimation)) {
+    : host_(host) {
   DCHECK(host);
 }
 
@@ -106,17 +104,13 @@ void FlingSchedulerAndroid::RequestCompositorTick() {
     observed_window_ = window;
   }
 
-  if (use_simple_observer_) {
-    CompositorImpl* compositor =
-        static_cast<CompositorImpl*>(window->GetCompositor());
-    if (!compositor)
-      return;
+  CompositorImpl* compositor =
+      static_cast<CompositorImpl*>(window->GetCompositor());
+  if (!compositor)
+    return;
 
-    compositor->AddSimpleBeginFrameObserver(this);
-    observed_compositor_ = compositor;
-  } else {
-    observed_window_->SetNeedsAnimate();
-  }
+  compositor->AddSimpleBeginFrameObserver(this);
+  observed_compositor_ = compositor;
 }
 
 void FlingSchedulerAndroid::RemoveCompositorTick() {
@@ -156,15 +150,8 @@ void FlingSchedulerAndroid::OnViewAndroidDestroyed() {
   RemoveCompositorTick();
 }
 
-void FlingSchedulerAndroid::OnAnimate(base::TimeTicks frame_begin_time) {
-  DCHECK(observed_window_);
-  if (!use_simple_observer_ && fling_controller_)
-    fling_controller_->ProgressFling(frame_begin_time);
-}
-
 void FlingSchedulerAndroid::OnBeginFrame(base::TimeTicks frame_begin_time) {
   DCHECK(observed_compositor_);
-  DCHECK(use_simple_observer_);
   if (fling_controller_)
     fling_controller_->ProgressFling(frame_begin_time);
 }

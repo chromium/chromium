@@ -54,7 +54,7 @@ class CONTENT_EXPORT FlingSchedulerAndroid
   void OnRootWindowVisibilityChanged(bool visible) override {}
   void OnAttachCompositor() override;
   void OnDetachCompositor() override;
-  void OnAnimate(base::TimeTicks begin_frame_time) override;
+  void OnAnimate(base::TimeTicks begin_frame_time) override {}
   void OnActivityStopped() override {}
   void OnActivityStarted() override {}
 
@@ -69,7 +69,6 @@ class CONTENT_EXPORT FlingSchedulerAndroid
   raw_ptr<ui::ViewAndroid> observed_view_ = nullptr;
   raw_ptr<ui::WindowAndroid> observed_window_ = nullptr;
   raw_ptr<CompositorImpl> observed_compositor_ = nullptr;
-  const bool use_simple_observer_;
 };
 
 }  // namespace content

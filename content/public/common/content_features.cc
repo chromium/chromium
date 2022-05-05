@@ -1169,10 +1169,6 @@ const base::Feature kBackgroundMediaRendererHasModerateBinding{
 const base::Feature kBigLittleScheduling{"BigLittleScheduling",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Tick fling animation independent from the browser compositor.
-const base::Feature kIndependentFlingAnimation{
-    "IndependentFlingAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Allows the use of an experimental feature to drop any AccessibilityEvents
 // that are not relevant to currently enabled accessibility services.
 const base::Feature kOnDemandAccessibilityEvents{
