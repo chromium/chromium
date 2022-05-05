@@ -3603,7 +3603,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ash.Smoothness.PercentDroppedFrames_1sWindow" units="%"
+<histogram name="Ash.Smoothness.PercentDroppedFrames_1sWindow{Stage}" units="%"
     expires_after="2022-12-15">
   <owner>xiyuan@chromium.org</owner>
   <owner>chromeos-perfmetrics-eng@google.com</owner>
@@ -3614,7 +3614,16 @@ chromium-metrics-reviews@google.com.
     not displayed on screen out of the total number of frames expected to be
     produced and displayed. In other words, the lower this number is, the
     smoother experience.
+
+    The metric is reported {Stage}.
   </summary>
+  <token key="Stage">
+    <variant name="" summary="all the time"/>
+    <variant name=".BeforeLogin" summary="before login"/>
+    <variant name=".DuringLogin"
+        summary="after cryptohome mount but before login animations finish"/>
+    <variant name=".InSession" summary="for active user session"/>
+  </token>
 </histogram>
 
 <histogram name="Ash.SplitView.DeviceOrientation.{DeviceUIMode}"

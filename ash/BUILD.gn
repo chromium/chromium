@@ -735,6 +735,8 @@ component("ash") {
     "metrics/task_switch_source.h",
     "metrics/task_switch_time_tracker.cc",
     "metrics/task_switch_time_tracker.h",
+    "metrics/ui_throughput_recorder.cc",
+    "metrics/ui_throughput_recorder.h",
     "metrics/user_metrics_recorder.cc",
     "metrics/user_metrics_recorder.h",
     "multi_device_setup/multi_device_notification_presenter.cc",

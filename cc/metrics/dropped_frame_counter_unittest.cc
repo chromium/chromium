@@ -9,10 +9,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/animation/animation_host.h"
+#include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_frame_info.h"
 #include "cc/test/fake_picture_layer.h"
@@ -28,6 +28,31 @@ FrameInfo CreateStubFrameInfo(bool is_dropped) {
                                  ? FrameInfo::FrameFinalState::kDropped
                                  : FrameInfo::FrameFinalState::kPresentedAll);
 }
+
+class TestCustomMetricsRecorder : public CustomMetricRecorder {
+ public:
+  TestCustomMetricsRecorder() = default;
+  ~TestCustomMetricsRecorder() override = default;
+
+  // CustomMetricRecorder:
+  void ReportPercentDroppedFramesInOneSecoundWindow(
+      double percentage) override {
+    ++percent_dropped_frames_count_;
+    last_percent_dropped_frames_ = percentage;
+  }
+
+  int percent_dropped_frames_count() const {
+    return percent_dropped_frames_count_;
+  }
+
+  double last_percent_dropped_frames() const {
+    return last_percent_dropped_frames_;
+  }
+
+ private:
+  int percent_dropped_frames_count_ = 0;
+  double last_percent_dropped_frames_ = 0;
+};
 
 class DroppedFrameCounterTestBase : public LayerTreeTest {
  public:
@@ -917,7 +942,6 @@ TEST_F(DroppedFrameCounterTest, WorstSmoothnessTiming) {
   EXPECT_FLOAT_EQ(MaxPercentDroppedFrameAfter5Sec(), 100);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(DroppedFrameCounterTest, ReportForUI) {
   constexpr auto kInterval = base::Milliseconds(10);
   constexpr size_t kFps = base::Seconds(1) / kInterval;
@@ -927,17 +951,15 @@ TEST_F(DroppedFrameCounterTest, ReportForUI) {
   SetInterval(kInterval);
 
   dropped_frame_counter_.EnableReporForUI();
-  base::HistogramTester histogram_tester;
+  TestCustomMetricsRecorder recorder;
 
   // 4 seconds with 20% dropped frames.
   SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 4);
 
   // Recorded more than 1 samples of 20% dropped frame percentage.
-  EXPECT_GE(histogram_tester.GetBucketCount(
-                "Ash.Smoothness.PercentDroppedFrames_1sWindow", 20),
-            1);
+  EXPECT_GE(recorder.percent_dropped_frames_count(), 1);
+  EXPECT_EQ(recorder.last_percent_dropped_frames(), 20.0f);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 }  // namespace cc

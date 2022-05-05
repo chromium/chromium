@@ -178,6 +178,8 @@ cc_component("cc") {
     "metrics/compositor_frame_reporting_controller.h",
     "metrics/compositor_timing_history.cc",
     "metrics/compositor_timing_history.h",
+    "metrics/custom_metrics_recorder.cc",
+    "metrics/custom_metrics_recorder.h",
     "metrics/dropped_frame_counter.cc",
     "metrics/dropped_frame_counter.h",
     "metrics/event_latency_tracing_recorder.cc",

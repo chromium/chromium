@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/features.h"
+#include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/total_frame_counter.h"
 #include "cc/metrics/ukm_smoothness_data.h"
@@ -397,10 +398,13 @@ void DroppedFrameCounter::ReportFrames() {
 
 void DroppedFrameCounter::ReportFramesForUI() {
   DCHECK(report_for_ui_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  UMA_HISTOGRAM_PERCENTAGE("Ash.Smoothness.PercentDroppedFrames_1sWindow",
-                           sliding_window_current_percent_dropped_);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  auto* recorder = CustomMetricRecorder::Get();
+  if (!recorder)
+    return;
+
+  recorder->ReportPercentDroppedFramesInOneSecoundWindow(
+      sliding_window_current_percent_dropped_);
 }
 
 double DroppedFrameCounter::GetMostRecentAverageSmoothness() const {
