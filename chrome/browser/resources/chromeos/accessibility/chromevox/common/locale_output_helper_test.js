@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../../testing/chromevox_next_e2e_test_base.js']);
+GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
 
 /**
  * Test fixture for LocaleOutputHelper.
