@@ -5,6 +5,7 @@
 #include "ash/services/device_sync/public/cpp/device_sync_prefs.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/services/device_sync/attestation_certificates_syncer_impl.h"
 #include "ash/services/device_sync/cryptauth_device_manager.h"
 #include "ash/services/device_sync/cryptauth_device_registry_impl.h"
 #include "ash/services/device_sync/cryptauth_enrollment_manager_impl.h"
@@ -36,6 +37,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
     CryptAuthDeviceRegistryImpl::RegisterPrefs(registry);
     CryptAuthMetadataSyncerImpl::RegisterPrefs(registry);
     SyncedBluetoothAddressTrackerImpl::RegisterPrefs(registry);
+  }
+
+  if (base::FeatureList::IsEnabled(chromeos::features::kEcheSWA)) {
+    AttestationCertificatesSyncerImpl::RegisterPrefs(registry);
   }
 }
 
