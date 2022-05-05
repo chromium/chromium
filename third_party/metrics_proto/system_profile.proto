@@ -229,7 +229,7 @@ message SystemProfileProto {
   optional OS os = 5;
 
   // Information on the user's hardware.
-  // Next tag: 23
+  // Next tag: 24
   message Hardware {
     // OS CPU architecture. Taken from uname -m and modified in Chromium logic.
     // Common options are: x86, x86_64, armv7l, armv8l, aarch64.
@@ -407,6 +407,19 @@ message SystemProfileProto {
     optional Drive app_drive = 16;
     // The drive that the current user data directory was loaded from.
     optional Drive user_data_drive = 17;
+
+    // Type of TPM on the device. This field is only filled in on ChromeOS. This
+    // includes Chromebooks with TPM1.2 or GSC (cr50 and ti50), and also
+    // includes flex devices (ChromeOS installed on devices with other OS),
+    // which has TPM type "runtime selection".
+    enum TpmType {
+      TPM_TYPE_UNKNOWN = 0;
+      TPM_TYPE_1 = 1;
+      TPM_TYPE_CR50 = 2;
+      TPM_TYPE_TI50 = 3;
+      TPM_TYPE_RUNTIME_SELECTION = 4;
+    }
+    optional TpmType tpm_type = 23;
   }
   optional Hardware hardware = 6;
 
@@ -557,6 +570,8 @@ message SystemProfileProto {
     // launches, since page load count roughly corresponds to usage.
     optional int32 page_load_count = 2;
     optional int32 renderer_crash_count = 3;
+    // Logged on Android only as of Q2 2022. Used by only Android WebView. Other
+    // platforms should use Stability.Counts2.
     optional int32 renderer_launch_count = 26;
 
     // Number of renderer launches, crashes and failed launches that were for
@@ -590,7 +605,8 @@ message SystemProfileProto {
     // early during startup), making this value greater than 1. For subsequent
     // metrics uploads, this value will be 0.
     //
-    // Logged on Android only. Used by only Android WebView.
+    // Logged on Android only as of Q1 2022. Used by only Android WebView. Other
+    // platforms should use Stability.Counts2.
     optional int32 launch_count = 15;
     // The number of times that it didn't exit cleanly (which we assume to be
     // mostly crashes). On Android M71+ this does not include times when the Gms
