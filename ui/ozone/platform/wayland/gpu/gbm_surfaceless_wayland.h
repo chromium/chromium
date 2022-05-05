@@ -68,6 +68,7 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
               float scale_factor,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
+  void SetForceGlFlushOnSwapBuffers() override;
 
   BufferId GetOrCreateSolidColorBuffer(SkColor color, const gfx::Size& size);
 
@@ -180,11 +181,13 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
   // PendingFrames that have received OnSubmission(), pending OnPresentation()
   // calls.
   std::vector<std::unique_ptr<PendingFrame>> pending_presentation_frames_;
-  bool has_implicit_external_sync_;
+  const bool has_implicit_external_sync_;
+  const bool has_image_flush_external_;
   bool last_swap_buffers_result_ = true;
   bool use_egl_fence_sync_ = true;
 
   bool no_gl_flush_for_tests_ = false;
+  bool requires_gl_flush_on_swap_buffers_ = false;
 
   // Scale factor of the current surface.
   float surface_scale_factor_ = 1.f;
