@@ -55,7 +55,7 @@ class ASH_EXPORT OverviewHighlightController {
   // Activates or closes the currently highlighted view (if any) if it supports
   // the activation or closing operations respectively.
   bool MaybeActivateHighlightedView();
-  bool MaybeCloseHighlightedView();
+  bool MaybeCloseHighlightedView(bool primary_action);
 
   // Swaps the currently highlighted view with its neighbor views.
   bool MaybeSwapHighlightedView(bool right);

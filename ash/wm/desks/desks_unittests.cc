@@ -7405,6 +7405,43 @@ TEST_F(DesksCloseAllTest, HideCombineDesksOptionWhenNoWindowsOnDesk) {
       DeskActionContextMenu::CommandId::kCombineDesks));
 }
 
+// Tests that the shortcut to close all (Ctrl + Shift + W) on a desk mini view
+// works as expected.
+TEST_F(DesksCloseAllTest, ShortcutCloseAll) {
+  WindowHolder window1(CreateAppWindow());
+  WindowHolder window2(CreateAppWindow());
+  NewDesk();
+  auto* controller = DesksController::Get();
+  ASSERT_EQ(2u, controller->desks().size());
+  Desk* desk_1 = controller->desks()[0].get();
+  ASSERT_TRUE(desk_1->is_active());
+  ASSERT_TRUE(base::Contains(desk_1->windows(), window1.window()));
+  ASSERT_TRUE(base::Contains(desk_1->windows(), window2.window()));
+
+  EnterOverview();
+  auto* overview_session =
+      Shell::Get()->overview_controller()->overview_session();
+  ASSERT_TRUE(overview_session);
+
+  auto* desks_bar =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+  auto* mini_view = desks_bar->mini_views()[0];
+
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  ASSERT_EQ(mini_view,
+            overview_session->highlight_controller()->highlighted_view());
+
+  // Tests that after hitting Ctrl + Shift + W, the desk is destroyed along with
+  // all it's app windows.
+  SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  WaitForMilliseconds(ToastData::kDefaultToastDuration.InMilliseconds());
+  EXPECT_EQ(1u, controller->desks().size());
+  EXPECT_FALSE(window1.is_valid());
+  EXPECT_FALSE(window2.is_valid());
+}
+
 // TODO(crbug.com/1308429): Should have tests for opening and closing the
 // DeskActionContextMenu (which should also add and remove the highlight
 // overview on the desk preview).

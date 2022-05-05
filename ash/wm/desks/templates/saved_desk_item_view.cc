@@ -690,8 +690,9 @@ void SavedDeskItemView::MaybeActivateHighlightedView() {
   MaybeLaunchTemplate(/*should_delay=*/false);
 }
 
-void SavedDeskItemView::MaybeCloseHighlightedView() {
-  OnDeleteButtonPressed();
+void SavedDeskItemView::MaybeCloseHighlightedView(bool primary_action) {
+  if (primary_action)
+    OnDeleteButtonPressed();
 }
 
 void SavedDeskItemView::MaybeSwapHighlightedView(bool right) {}

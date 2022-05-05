@@ -130,11 +130,12 @@ bool OverviewHighlightController::MaybeActivateHighlightedView() {
   return true;
 }
 
-bool OverviewHighlightController::MaybeCloseHighlightedView() {
+bool OverviewHighlightController::MaybeCloseHighlightedView(
+    bool primary_action) {
   if (!highlighted_view_)
     return false;
 
-  highlighted_view_->MaybeCloseHighlightedView();
+  highlighted_view_->MaybeCloseHighlightedView(primary_action);
   return true;
 }
 

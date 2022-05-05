@@ -47,7 +47,7 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
   // OverviewHighlightableView:
   views::View* GetView() override;
   void MaybeActivateHighlightedView() override;
-  void MaybeCloseHighlightedView() override;
+  void MaybeCloseHighlightedView(bool primary_action) override;
   void MaybeSwapHighlightedView(bool right) override;
   void OnViewHighlighted() override;
   void OnViewUnhighlighted() override;

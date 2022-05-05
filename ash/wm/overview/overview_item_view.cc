@@ -243,8 +243,8 @@ void OverviewItemView::MaybeActivateHighlightedView() {
     overview_item_->OnHighlightedViewActivated();
 }
 
-void OverviewItemView::MaybeCloseHighlightedView() {
-  if (overview_item_)
+void OverviewItemView::MaybeCloseHighlightedView(bool primary_action) {
+  if (overview_item_ && primary_action)
     overview_item_->OnHighlightedViewClosed();
 }
 

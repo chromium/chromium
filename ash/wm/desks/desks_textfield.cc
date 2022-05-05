@@ -152,7 +152,7 @@ void DesksTextfield::MaybeActivateHighlightedView() {
   RequestFocus();
 }
 
-void DesksTextfield::MaybeCloseHighlightedView() {}
+void DesksTextfield::MaybeCloseHighlightedView(bool primary_action) {}
 
 void DesksTextfield::MaybeSwapHighlightedView(bool right) {}
 

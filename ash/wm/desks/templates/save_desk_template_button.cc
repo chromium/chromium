@@ -33,7 +33,7 @@ void SaveDeskTemplateButton::MaybeActivateHighlightedView() {
   callback_.Run();
 }
 
-void SaveDeskTemplateButton::MaybeCloseHighlightedView() {}
+void SaveDeskTemplateButton::MaybeCloseHighlightedView(bool primary_action) {}
 
 void SaveDeskTemplateButton::MaybeSwapHighlightedView(bool right) {}
 

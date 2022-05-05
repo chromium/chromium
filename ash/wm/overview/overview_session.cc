@@ -1252,7 +1252,7 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   if (!is_key_press)
     return;
 
-  bool is_control_down = event->IsControlDown();
+  const bool is_control_down = event->IsControlDown();
 
   switch (key_code) {
     case ui::VKEY_BROWSER_BACK:
@@ -1275,7 +1275,7 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
       }
       break;
     case ui::VKEY_TAB: {
-      const bool reverse = event->flags() & ui::EF_SHIFT_DOWN;
+      const bool reverse = event->IsShiftDown();
       ++num_key_presses_;
       Move(reverse);
       break;
@@ -1314,10 +1314,11 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
 #endif
     }
     case ui::VKEY_W: {
-      if (!(event->flags() & ui::EF_CONTROL_DOWN))
+      if (!is_control_down)
         return;
 
-      if (!highlight_controller_->MaybeCloseHighlightedView())
+      const bool primary_action = !event->IsShiftDown();
+      if (!highlight_controller_->MaybeCloseHighlightedView(primary_action))
         return;
       break;
     }

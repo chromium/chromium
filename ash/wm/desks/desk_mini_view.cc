@@ -328,6 +328,8 @@ void DeskMiniView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 
   if (DesksController::Get()->CanRemoveDesks()) {
+    // TODO(sammiequon): Update this once we get strings from UX writing since
+    // close all supports Ctrl+Shift+W.
     node_data->AddStringAttribute(
         ax::mojom::StringAttribute::kDescription,
         l10n_util::GetStringUTF8(
@@ -385,11 +387,11 @@ void DeskMiniView::MaybeActivateHighlightedView() {
                                        DesksSwitchSource::kMiniViewButton);
 }
 
-void DeskMiniView::MaybeCloseHighlightedView() {
-  // TODO(crbug.com/1307011): This function is called when we press ctrl+W
-  // while highlighted over a desk mini view to combine desks. Should be
-  // reworked when we add an accelerator for close-all.
-  OnRemovingDesk(DeskCloseType::kCombineDesks);
+void DeskMiniView::MaybeCloseHighlightedView(bool primary_action) {
+  // The primary action (Ctrl + W) is to remove the desk and not close the
+  // windows (combine the desk with one on the right or left). The secondary
+  // action (Ctrl + Shift + W) is to close the desk and all its applications.
+  OnRemovingDesk(/*close_windows=*/!primary_action);
 }
 
 void DeskMiniView::MaybeSwapHighlightedView(bool right) {

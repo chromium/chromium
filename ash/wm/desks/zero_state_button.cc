@@ -112,9 +112,9 @@ void DeskButtonBase::MaybeActivateHighlightedView() {
   OnButtonPressed();
 }
 
-void DeskButtonBase::MaybeSwapHighlightedView(bool right) {}
+void DeskButtonBase::MaybeCloseHighlightedView(bool primary_action) {}
 
-void DeskButtonBase::MaybeCloseHighlightedView() {}
+void DeskButtonBase::MaybeSwapHighlightedView(bool right) {}
 
 void DeskButtonBase::OnViewHighlighted() {
   UpdateBorderState();

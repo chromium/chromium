@@ -22,9 +22,11 @@ class ASH_EXPORT OverviewHighlightableView {
   // Get the view class associated with |this|.
   virtual views::View* GetView() = 0;
 
-  // Attempts to activate or close this view. Overriders may do nothing.
+  // Attempts to activate or close this view. Overriders may do nothing. Closing
+  // supports a primary action and a secondary action, as some overrides may
+  // have two actions that are related to closing.
   virtual void MaybeActivateHighlightedView() = 0;
-  virtual void MaybeCloseHighlightedView() = 0;
+  virtual void MaybeCloseHighlightedView(bool primary_action) = 0;
 
   // Attempts to swap the view with its neighbor views. (Mainly used for
   // |DeskMiniView|).
