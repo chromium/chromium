@@ -91,7 +91,7 @@ std::unique_ptr<base::ListValue> TopicInvalidationMap::ToValue() const {
   std::unique_ptr<base::ListValue> value(new base::ListValue());
   for (const auto& topic_to_invalidations : map_) {
     for (const Invalidation& invalidation : topic_to_invalidations.second) {
-      value->Append(invalidation.ToValue());
+      value->GetList().Append(invalidation.ToValue());
     }
   }
   return value;

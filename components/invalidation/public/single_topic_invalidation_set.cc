@@ -81,7 +81,7 @@ const Invalidation& SingleTopicInvalidationSet::back() const {
 std::unique_ptr<base::ListValue> SingleTopicInvalidationSet::ToValue() const {
   std::unique_ptr<base::ListValue> value(new base::ListValue);
   for (const Invalidation& invalidation : invalidations_) {
-    value->Append(invalidation.ToValue());
+    value->GetList().Append(invalidation.ToValue());
   }
   return value;
 }

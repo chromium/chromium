@@ -89,7 +89,7 @@ class INVALIDATION_EXPORT Invalidation {
   // Acknowledge() on the most recently dropped inavlidation.
   void Drop();
 
-  std::unique_ptr<base::DictionaryValue> ToValue() const;
+  base::Value::Dict ToValue() const;
   std::string ToString() const;
 
  private:
