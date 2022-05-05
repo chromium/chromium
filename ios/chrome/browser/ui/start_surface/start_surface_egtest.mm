@@ -46,7 +46,8 @@ const CGFloat kWaitElementTimeout = 2;
 
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile.
-- (void)testColdStartOpenStartSurface {
+// TODO(crbug.com/1323001): Fix flakiness.
+- (void)DISABLED_testColdStartOpenStartSurface {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
@@ -69,7 +70,8 @@ const CGFloat kWaitElementTimeout = 2;
 // Tests that navigating to a page and then backgrounding and foregrounding, an
 // NTP page is opened. Then, switching to the last tab and then back to the NTP
 // does not show the Return to Recent Tab tile.
-- (void)testWarmStartOpenStartSurface {
+// TODO(crbug.com/1323001): Fix flakiness.
+- (void)DISABLED_testWarmStartOpenStartSurface {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
@@ -105,7 +107,8 @@ const CGFloat kWaitElementTimeout = 2;
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile. Then, removing that last tab
 // also removes the tile while that NTP is still being shown.
-- (void)testRemoveRecentTabRemovesReturnToRecenTabTile {
+// TODO(crbug.com/1323001): Fix flakiness.
+- (void)DISABLED_testRemoveRecentTabRemovesReturnToRecenTabTile {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
