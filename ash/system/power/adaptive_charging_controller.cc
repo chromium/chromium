@@ -10,7 +10,10 @@
 
 namespace ash {
 
-AdaptiveChargingController::AdaptiveChargingController() {
+AdaptiveChargingController::AdaptiveChargingController()
+    : nudge_controller_(std::make_unique<AdaptiveChargingNudgeController>()),
+      notification_controller_(
+          std::make_unique<AdaptiveChargingNotificationController>()) {
   power_manager_observation_.Observe(chromeos::PowerManagerClient::Get());
 }
 
@@ -30,7 +33,26 @@ void AdaptiveChargingController::PowerChanged(
   if (!proto.has_adaptive_delaying_charge())
     return;
 
+  // We only care about the change in this field.
+  if (is_adaptive_delaying_charge_ == proto.adaptive_delaying_charge())
+    return;
+
   is_adaptive_delaying_charge_ = proto.adaptive_delaying_charge();
+
+  if (!is_adaptive_delaying_charge_)
+    return;
+
+  // The nudge will only be shown alongside the notification once.
+  nudge_controller_->ShowNudge();
+
+  if (proto.has_battery_time_to_full_sec() &&
+      proto.battery_time_to_full_sec() > 0) {
+    // Converts time to full from second to hours.
+    notification_controller_->ShowAdaptiveChargingNotification(
+        static_cast<int>(proto.battery_time_to_full_sec() / 3600));
+  } else {
+    notification_controller_->ShowAdaptiveChargingNotification();
+  }
 }
 
 }  // namespace ash

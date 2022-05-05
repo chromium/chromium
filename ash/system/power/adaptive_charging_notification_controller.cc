@@ -13,6 +13,8 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/i18n/time_formatting.h"
+#include "base/notreached.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -86,8 +88,13 @@ bool AdaptiveChargingNotificationController::ShouldShowNotification() {
 void AdaptiveChargingNotificationController::Click(
     const absl::optional<int>& button_index,
     const absl::optional<std::u16string>& reply) {
-  // TODO(b/216035329): Add logic to this function when "Charge now" function is
-  // available.
+  if (!button_index.has_value())
+    return;
+  if (button_index.value() == 0) {
+    PowerManagerClient::Get()->ChargeNowForAdaptiveCharging();
+  } else {
+    NOTREACHED() << "Unknown button index value";
+  }
 }
 
 }  // namespace ash
