@@ -39,6 +39,7 @@ UsageTracker::UsageTracker(
     client_tracker_map_[client_type].push_back(
         std::make_unique<ClientUsageTracker>(this, client, type,
                                              special_storage_policy));
+    client_tracker_count_ += 1;
   }
 }
 
@@ -86,7 +87,7 @@ void UsageTracker::GetBucketUsageWithBreakdown(
   auto info = std::make_unique<AccumulateInfo>();
   auto* info_ptr = info.get();
   base::RepeatingClosure barrier = base::BarrierClosure(
-      client_tracker_map_.size(),
+      client_tracker_count_,
       base::BindOnce(&UsageTracker::FinallySendBucketUsageWithBreakdown,
                      weak_factory_.GetWeakPtr(), std::move(info), bucket));
 
@@ -195,7 +196,7 @@ void UsageTracker::DidGetBucketsForType(
 
   auto* info_ptr = info.get();
   base::RepeatingClosure barrier = base::BarrierClosure(
-      client_tracker_map_.size(),
+      client_tracker_count_,
       base::BindOnce(&UsageTracker::FinallySendGlobalUsage,
                      weak_factory_.GetWeakPtr(), std::move(info)));
 
@@ -235,7 +236,7 @@ void UsageTracker::DidGetBucketsForHost(
 
   auto* info_ptr = info.get();
   base::RepeatingClosure barrier = base::BarrierClosure(
-      client_tracker_map_.size(),
+      client_tracker_count_,
       base::BindOnce(&UsageTracker::FinallySendHostUsageWithBreakdown,
                      weak_factory_.GetWeakPtr(), std::move(info), host));
 

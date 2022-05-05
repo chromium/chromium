@@ -145,6 +145,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   base::flat_map<QuotaClientType,
                  std::vector<std::unique_ptr<ClientUsageTracker>>>
       client_tracker_map_;
+  int client_tracker_count_ = 0;
 
   std::vector<UsageCallback> global_usage_callbacks_;
   std::map<std::string, std::vector<UsageWithBreakdownCallback>>
