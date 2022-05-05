@@ -640,8 +640,7 @@ Frame* Frame::Parent(FrameTreeBoundary frame_tree_boundary) const {
   // fenced frames implementation, instead of the
   // `FencedFrameShadowDOMDelegate`.
   if (frame_tree_boundary == FrameTreeBoundary::kFenced &&
-      RuntimeEnabledFeatures::FencedFramesEnabled(
-          DomWindow()->GetExecutionContext()) &&
+      RuntimeEnabledFeatures::FencedFramesEnabledByRuntimeFlag() &&
       features::kFencedFramesImplementationTypeParam.Get() ==
           features::FencedFramesImplementationType::kShadowDOM &&
       Owner() && Owner()->GetFramePolicy().is_fenced) {
