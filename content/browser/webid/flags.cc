@@ -11,10 +11,6 @@
 
 namespace content {
 
-bool IsFedCmEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCm);
-}
-
 bool IsFedCmAutoSigninEnabled() {
   return GetFieldTrialParamByFeatureAsBool(
       features::kFedCm, features::kFedCmAutoSigninFieldTrialParamName, false);

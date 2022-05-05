@@ -192,6 +192,14 @@ ContentIndexProvider* ShellBrowserContext::GetContentIndexProvider() {
   return content_index_provider_.get();
 }
 
+FederatedIdentityApiPermissionContextDelegate*
+ShellBrowserContext::GetFederatedIdentityApiPermissionContext() {
+  if (!federated_permission_context_)
+    federated_permission_context_ =
+        std::make_unique<ShellFederatedPermissionContext>();
+  return federated_permission_context_.get();
+}
+
 FederatedIdentitySharingPermissionContextDelegate*
 ShellBrowserContext::GetFederatedIdentitySharingPermissionContext() {
   if (!federated_permission_context_)

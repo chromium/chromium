@@ -38,8 +38,8 @@ class FederatedIdentityApiPermissionContext
       const FederatedIdentityApiPermissionContext&) = delete;
 
   // content::FederatedIdentityApiPermissionContextDelegate:
-  bool HasApiPermission(const url::Origin& rp_origin) override;
-  bool AreThirdPartyCookiesBlocked() override;
+  content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus
+  GetApiPermissionStatus(const url::Origin& rp_origin) override;
   void RecordDismissAndEmbargo(const url::Origin& rp_origin) override;
   void RemoveEmbargoAndResetCounts(const url::Origin& rp_origin) override;
 

@@ -46,16 +46,18 @@ using blink::mojom::LogoutRpsRequestPtr;
 using blink::mojom::LogoutRpsStatus;
 using blink::mojom::RequestIdTokenStatus;
 using blink::mojom::RevokeStatus;
+using AccountList = content::IdpNetworkRequestManager::AccountList;
+using ApiPermissionStatus =
+    content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
 using Entry = ukm::builders::Blink_FedCm;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
+using IdTokenStatus = content::FedCmRequestIdTokenStatus;
+using LoginState = content::IdentityRequestAccount::LoginState;
 using LogoutResponse = content::IdpNetworkRequestManager::LogoutResponse;
 using RevokeResponse = content::IdpNetworkRequestManager::RevokeResponse;
-using UserApproval = content::IdentityRequestDialogController::UserApproval;
-using AccountList = content::IdpNetworkRequestManager::AccountList;
-using LoginState = content::IdentityRequestAccount::LoginState;
-using SignInMode = content::IdentityRequestAccount::SignInMode;
-using IdTokenStatus = content::FedCmRequestIdTokenStatus;
 using RevokeStatusForMetrics = content::FedCmRevokeStatus;
+using SignInMode = content::IdentityRequestAccount::SignInMode;
+using UserApproval = content::IdentityRequestDialogController::UserApproval;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
@@ -523,16 +525,18 @@ class IdpNetworkRequestManagerParamChecker
 
 class TestApiPermissionDelegate : public MockApiPermissionDelegate {
  public:
-  url::Origin blocked_origin_;
+  std::pair<url::Origin, ApiPermissionStatus> permission_override_ =
+      std::make_pair(url::Origin(), ApiPermissionStatus::GRANTED);
   std::set<url::Origin> embargoed_origins_;
-  bool third_party_cookies_blocked_{false};
 
-  bool HasApiPermission(const url::Origin& origin) override {
-    return !embargoed_origins_.count(origin) && origin != blocked_origin_;
-  }
+  ApiPermissionStatus GetApiPermissionStatus(
+      const url::Origin& origin) override {
+    if (embargoed_origins_.count(origin))
+      return ApiPermissionStatus::BLOCKED_EMBARGO;
 
-  bool AreThirdPartyCookiesBlocked() override {
-    return third_party_cookies_blocked_;
+    return (origin == permission_override_.first)
+               ? permission_override_.second
+               : ApiPermissionStatus::GRANTED;
   }
 
   void RecordDismissAndEmbargo(const url::Origin& origin) override {
@@ -1630,7 +1634,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
 
 TEST_F(BasicFederatedAuthRequestImplTest,
        DisabledWhenThirdPartyCookiesBlocked) {
-  test_api_permission_delegate_->third_party_cookies_blocked_ = true;
+  test_api_permission_delegate_->permission_override_ =
+      std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
+                     ApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED);
 
   RequestExpectations expectations = {RequestIdTokenStatus::kError,
                                       FederatedAuthRequestResult::kError,
@@ -1644,8 +1650,9 @@ TEST_F(BasicFederatedAuthRequestImplTest,
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest, MetricsForFeatureIsDisabled) {
-  base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCm);
+  test_api_permission_delegate_->permission_override_ =
+      std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
+                     ApiPermissionStatus::BLOCKED_VARIATIONS);
 
   RequestExpectations expectations = {RequestIdTokenStatus::kError,
                                       FederatedAuthRequestResult::kError,
@@ -1698,8 +1705,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, RemoveEmbargoOnUserConsent) {
 // Test that token request fails if FEDERATED_IDENTITY_API content setting is
 // disabled for the RP origin.
 TEST_F(BasicFederatedAuthRequestImplTest, ApiBlockedForOrigin) {
-  test_api_permission_delegate_->blocked_origin_ =
-      main_test_rfh()->GetLastCommittedOrigin();
+  test_api_permission_delegate_->permission_override_ =
+      std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
+                     ApiPermissionStatus::BLOCKED_SETTINGS);
   RequestExpectations expectations = {
       RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorDisabledInSettings,
@@ -1713,7 +1721,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, ApiBlockedForUnrelatedOrigin) {
   const url::Origin kUnrelatedOrigin =
       url::Origin::Create(GURL("https://rp2.example/"));
 
-  test_api_permission_delegate_->blocked_origin_ = kUnrelatedOrigin;
+  test_api_permission_delegate_->permission_override_ =
+      std::make_pair(kUnrelatedOrigin, ApiPermissionStatus::BLOCKED_SETTINGS);
   ASSERT_NE(main_test_rfh()->GetLastCommittedOrigin(), kUnrelatedOrigin);
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
@@ -1733,9 +1742,11 @@ INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
 TEST_P(FederatedAuthRequestImplTestCancelConsistency, AccountNotSelected) {
   const bool fedcm_disabled = GetParam();
 
-  base::test::ScopedFeatureList list;
-  if (fedcm_disabled)
-    list.InitAndDisableFeature(features::kFedCm);
+  if (fedcm_disabled) {
+    test_api_permission_delegate_->permission_override_ =
+        std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
+                       ApiPermissionStatus::BLOCKED_VARIATIONS);
+  }
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.customized_dialog = true;

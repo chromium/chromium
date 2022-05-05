@@ -38335,6 +38335,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="25" label="ManifestListInvalidResponse"/>
   <int value="26" label="ManifestNotInManifestList"/>
   <int value="27" label="ManifestListTooBig"/>
+  <int value="28" label="DisabledEmbargo"/>
 </enum>
 
 <enum name="FedCmRevokeStatus">
@@ -38350,6 +38351,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="9" label="ManifestInvalidResponse"/>
   <int value="10" label="DisabledInSettings"/>
   <int value="11" label="DisabledInFlags"/>
+  <int value="12" label="ManifestListHttpNotFound"/>
+  <int value="13" label="ManifestListNoResponse"/>
+  <int value="14" label="ManifestListInvalidResponse"/>
+  <int value="15" label="ManifestNotInManifestList"/>
+  <int value="16" label="ManifestListTooBig"/>
+  <int value="17" label="ThirdPartyCookiesBlocked"/>
 </enum>
 
 <enum name="FeedAutoplayEvent">

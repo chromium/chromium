@@ -15,15 +15,20 @@ namespace content {
 // API is enabled in Site Settings.
 class FederatedIdentityApiPermissionContextDelegate {
  public:
+  enum class PermissionStatus {
+    GRANTED,
+    BLOCKED_VARIATIONS,
+    BLOCKED_THIRD_PARTY_COOKIES_BLOCKED,
+    BLOCKED_SETTINGS,
+    BLOCKED_EMBARGO,
+  };
+
   FederatedIdentityApiPermissionContextDelegate() = default;
   virtual ~FederatedIdentityApiPermissionContextDelegate() = default;
 
-  // Returns whether the FedCM API is enabled in site settings for the passed-in
-  // |rp_origin|.
-  virtual bool HasApiPermission(const url::Origin& rp_origin) = 0;
-
-  // Returns whether third party cookies are blocked.
-  virtual bool AreThirdPartyCookiesBlocked() = 0;
+  // Returns the status of the FedCM API for the passed-in |rp_origin|.
+  virtual PermissionStatus GetApiPermissionStatus(
+      const url::Origin& rp_origin) = 0;
 
   // Records that the FedCM prompt was explicitly dismissed and places the
   // permission under embargo for the passed-in |rp_origin|.

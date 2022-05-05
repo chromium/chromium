@@ -25,8 +25,9 @@ class MockApiPermissionDelegate
   MockApiPermissionDelegate& operator=(const MockApiPermissionDelegate&) =
       delete;
 
-  MOCK_METHOD1(HasApiPermission, bool(const url::Origin&));
-  MOCK_METHOD0(AreThirdPartyCookiesBlocked, bool());
+  MOCK_METHOD1(GetApiPermissionStatus,
+               FederatedIdentityApiPermissionContextDelegate::PermissionStatus(
+                   const url::Origin&));
   MOCK_METHOD1(RecordDismissAndEmbargo, void(const url::Origin&));
   MOCK_METHOD1(RemoveEmbargoAndResetCounts, void(const url::Origin&));
 };

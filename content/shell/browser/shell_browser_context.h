@@ -63,6 +63,8 @@ class ShellBrowserContext : public BrowserContext {
   BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate() override;
   ContentIndexProvider* GetContentIndexProvider() override;
   ClientHintsControllerDelegate* GetClientHintsControllerDelegate() override;
+  FederatedIdentityApiPermissionContextDelegate*
+  GetFederatedIdentityApiPermissionContext() override;
   FederatedIdentitySharingPermissionContextDelegate*
   GetFederatedIdentitySharingPermissionContext() override;
   FederatedIdentityActiveSessionPermissionContextDelegate*

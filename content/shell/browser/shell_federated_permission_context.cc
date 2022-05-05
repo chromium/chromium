@@ -4,11 +4,28 @@
 
 #include "content/shell/browser/shell_federated_permission_context.h"
 
+#include "base/feature_list.h"
+#include "content/public/common/content_features.h"
+
 namespace content {
 
 ShellFederatedPermissionContext::ShellFederatedPermissionContext() = default;
 
 ShellFederatedPermissionContext::~ShellFederatedPermissionContext() = default;
+
+content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus
+ShellFederatedPermissionContext::GetApiPermissionStatus(
+    const url::Origin& rp_origin) {
+  return base::FeatureList::IsEnabled(features::kFedCm)
+             ? PermissionStatus::GRANTED
+             : PermissionStatus::BLOCKED_VARIATIONS;
+}
+
+void ShellFederatedPermissionContext::RecordDismissAndEmbargo(
+    const url::Origin& rp_origin) {}
+
+void ShellFederatedPermissionContext::RemoveEmbargoAndResetCounts(
+    const url::Origin& rp_origin) {}
 
 bool ShellFederatedPermissionContext::HasSharingPermissionForAnyAccount(
     const url::Origin& relying_party,

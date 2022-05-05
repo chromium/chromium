@@ -10,6 +10,7 @@
 #include <tuple>
 
 #include "content/public/browser/federated_identity_active_session_permission_context_delegate.h"
+#include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
 
 namespace content {
@@ -18,11 +19,18 @@ namespace content {
 // It is used to store permission and login state in memory, so that we
 // can run wpt tests against it.
 class ShellFederatedPermissionContext
-    : public FederatedIdentityActiveSessionPermissionContextDelegate,
+    : public FederatedIdentityApiPermissionContextDelegate,
+      public FederatedIdentityActiveSessionPermissionContextDelegate,
       public FederatedIdentitySharingPermissionContextDelegate {
  public:
   ShellFederatedPermissionContext();
   ~ShellFederatedPermissionContext() override;
+
+  // FederatedIdentityApiPermissionContextDelegate
+  content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus
+  GetApiPermissionStatus(const url::Origin& rp_origin) override;
+  void RecordDismissAndEmbargo(const url::Origin& rp_origin) override;
+  void RemoveEmbargoAndResetCounts(const url::Origin& rp_origin) override;
 
   // FederatedIdentitySharingPermissionContextDelegate
   bool HasSharingPermissionForAnyAccount(

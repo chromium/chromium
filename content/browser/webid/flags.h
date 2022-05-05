@@ -9,9 +9,6 @@
 
 namespace content {
 
-// Whether the FedCM JavaScript API is enabled.
-bool IsFedCmEnabled();
-
 // Whether FedCM auto sign-in is enabled.
 bool IsFedCmAutoSigninEnabled();
 

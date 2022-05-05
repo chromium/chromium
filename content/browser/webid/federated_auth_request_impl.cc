@@ -35,10 +35,12 @@ using blink::mojom::LogoutRpsStatus;
 using blink::mojom::LogoutStatus;
 using blink::mojom::RequestIdTokenStatus;
 using blink::mojom::RevokeStatus;
-using LoginState = content::IdentityRequestAccount::LoginState;
-using SignInMode = content::IdentityRequestAccount::SignInMode;
+using FederatedApiPermissionStatus =
+    content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
 using IdTokenStatus = content::FedCmRequestIdTokenStatus;
+using LoginState = content::IdentityRequestAccount::LoginState;
 using RevokeStatusForMetrics = content::FedCmRevokeStatus;
+using SignInMode = content::IdentityRequestAccount::SignInMode;
 
 namespace content {
 
@@ -274,25 +276,12 @@ void FederatedAuthRequestImpl::RequestIdToken(
   start_time_ = base::TimeTicks::Now();
   delay_timer_.Reset();
 
-  if (!IsFedCmEnabled()) {
-    RecordRequestIdTokenStatus(IdTokenStatus::kDisabledInFlags,
-                               render_frame_host_->GetPageUkmSourceId());
+  if (!GetApiPermissionContext()) {
     CompleteRequest(FederatedAuthRequestResult::kError, "",
-                    /*should_call_callback=*/false);
+                    /*should_call_callback=*/true);
     return;
   }
 
-  // TODO(npm): FedCM is currently restricted to contexts where third party
-  // cookies are not blocked.  Once the privacy improvements for the API are
-  // implemented, remove this restriction. See https://crbug.com/1304396.
-  if (GetApiPermissionContext() &&
-      GetApiPermissionContext()->AreThirdPartyCookiesBlocked()) {
-    RecordRequestIdTokenStatus(IdTokenStatus::kThirdPartyCookiesBlocked,
-                               render_frame_host_->GetPageUkmSourceId());
-    CompleteRequest(FederatedAuthRequestResult::kError, "",
-                    /*should_call_callback=*/false);
-    return;
-  }
   network_manager_ = CreateNetworkManager(provider);
   if (!network_manager_) {
     RecordRequestIdTokenStatus(IdTokenStatus::kNoNetworkManager,
@@ -304,12 +293,40 @@ void FederatedAuthRequestImpl::RequestIdToken(
     return;
   }
 
-  if (GetApiPermissionContext() &&
-      !GetApiPermissionContext()->HasApiPermission(origin_)) {
-    RecordRequestIdTokenStatus(IdTokenStatus::kDisabledInSettings,
+  FederatedApiPermissionStatus permission_status =
+      GetApiPermissionContext()->GetApiPermissionStatus(origin_);
+
+  absl::optional<IdTokenStatus> error_id_token_status;
+  FederatedAuthRequestResult request_result =
+      FederatedAuthRequestResult::kError;
+
+  switch (permission_status) {
+    case FederatedApiPermissionStatus::BLOCKED_VARIATIONS:
+      error_id_token_status = IdTokenStatus::kDisabledInFlags;
+      break;
+    case FederatedApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED:
+      error_id_token_status = IdTokenStatus::kThirdPartyCookiesBlocked;
+      break;
+    case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
+      error_id_token_status = IdTokenStatus::kDisabledInSettings;
+      request_result = FederatedAuthRequestResult::kErrorDisabledInSettings;
+      break;
+    case FederatedApiPermissionStatus::BLOCKED_EMBARGO:
+      error_id_token_status = IdTokenStatus::kDisabledEmbargo;
+      request_result = FederatedAuthRequestResult::kErrorDisabledInSettings;
+      break;
+    case FederatedApiPermissionStatus::GRANTED:
+      // Intentional fall-through.
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  if (error_id_token_status) {
+    RecordRequestIdTokenStatus(*error_id_token_status,
                                render_frame_host_->GetPageUkmSourceId());
-    CompleteRequest(FederatedAuthRequestResult::kErrorDisabledInSettings, "",
-                    /*should_call_callback=*/false);
+    CompleteRequest(request_result, "", /*should_call_callback=*/false);
     return;
   }
 
@@ -348,9 +365,7 @@ void FederatedAuthRequestImpl::Revoke(
   delay_timer_.Reset();
   revoke_callback_ = std::move(callback);
 
-  if (!IsFedCmEnabled()) {
-    RecordRevokeStatus(RevokeStatusForMetrics::kDisabledInFlags,
-                       render_frame_host_->GetPageUkmSourceId());
+  if (!GetApiPermissionContext()) {
     CompleteRevokeRequest(RevokeStatus::kError,
                           /*should_call_callback=*/false);
     return;
@@ -365,9 +380,31 @@ void FederatedAuthRequestImpl::Revoke(
     return;
   }
 
-  if (GetApiPermissionContext() &&
-      !GetApiPermissionContext()->HasApiPermission(origin_)) {
-    RecordRevokeStatus(RevokeStatusForMetrics::kDisabledInSettings,
+  FederatedApiPermissionStatus permission_status =
+      GetApiPermissionContext()->GetApiPermissionStatus(origin_);
+
+  absl::optional<RevokeStatusForMetrics> error_revoke_status;
+  switch (permission_status) {
+    case FederatedApiPermissionStatus::BLOCKED_VARIATIONS:
+      error_revoke_status = RevokeStatusForMetrics::kDisabledInFlags;
+      break;
+    case FederatedApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED:
+      error_revoke_status = RevokeStatusForMetrics::kThirdPartyCookiesBlocked;
+      break;
+    case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
+    case FederatedApiPermissionStatus::BLOCKED_EMBARGO:
+      error_revoke_status = RevokeStatusForMetrics::kDisabledInSettings;
+      break;
+    case FederatedApiPermissionStatus::GRANTED:
+      // Intentional fall-through.
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  if (error_revoke_status) {
+    RecordRevokeStatus(*error_revoke_status,
                        render_frame_host_->GetPageUkmSourceId());
     CompleteRevokeRequest(RevokeStatus::kError, /*should_call_callback=*/false);
     return;
@@ -392,11 +429,18 @@ void FederatedAuthRequestImpl::Logout(
     blink::mojom::FederatedAuthRequest::LogoutCallback callback) {
   url::Origin idp_origin(url::Origin::Create(provider));
   auto* context = GetActiveSessionPermissionContext();
-  if (!context || !context->HasActiveSession(origin_, idp_origin, account_id) ||
-      !IsFedCmEnabled()) {
+  if (!context || !context->HasActiveSession(origin_, idp_origin, account_id)) {
     std::move(callback).Run(LogoutStatus::kNotLoggedIn);
     return;
   }
+
+  if (!GetApiPermissionContext() ||
+      GetApiPermissionContext()->GetApiPermissionStatus(origin_) !=
+          FederatedApiPermissionStatus::GRANTED) {
+    std::move(callback).Run(LogoutStatus::kNotLoggedIn);
+    return;
+  }
+
   context->RevokeActiveSession(origin_, idp_origin, account_id);
   std::move(callback).Run(LogoutStatus::kSuccess);
 }
@@ -410,16 +454,6 @@ void FederatedAuthRequestImpl::Logout(
 void FederatedAuthRequestImpl::LogoutRps(
     std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
     blink::mojom::FederatedAuthRequest::LogoutRpsCallback callback) {
-  if (!IsFedCmEnabled()) {
-    std::move(callback).Run(LogoutRpsStatus::kError);
-    return;
-  }
-
-  if (!IsFedCmIdpSignoutEnabled()) {
-    std::move(callback).Run(LogoutRpsStatus::kError);
-    return;
-  }
-
   if (HasPendingRequest()) {
     std::move(callback).Run(LogoutRpsStatus::kErrorTooManyRequests);
     return;
@@ -428,12 +462,6 @@ void FederatedAuthRequestImpl::LogoutRps(
   DCHECK(logout_requests_.empty());
 
   logout_callback_ = std::move(callback);
-
-  if (GetApiPermissionContext() &&
-      !GetApiPermissionContext()->HasApiPermission(origin_)) {
-    CompleteLogoutRequest(LogoutRpsStatus::kError);
-    return;
-  }
 
   if (logout_requests.empty()) {
     CompleteLogoutRequest(LogoutRpsStatus::kError);
@@ -454,7 +482,18 @@ void FederatedAuthRequestImpl::LogoutRps(
   }
 
   network_manager_ = CreateNetworkManager(origin_.GetURL());
-  if (!network_manager_) {
+  if (!network_manager_ || !GetApiPermissionContext()) {
+    CompleteLogoutRequest(LogoutRpsStatus::kError);
+    return;
+  }
+
+  if (!IsFedCmIdpSignoutEnabled()) {
+    CompleteLogoutRequest(LogoutRpsStatus::kError);
+    return;
+  }
+
+  if (GetApiPermissionContext()->GetApiPermissionStatus(origin_) !=
+      FederatedApiPermissionStatus::GRANTED) {
     CompleteLogoutRequest(LogoutRpsStatus::kError);
     return;
   }

@@ -11,7 +11,11 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_result.h"
+#include "content/public/common/content_features.h"
 #include "url/origin.h"
+
+using PermissionStatus =
+    content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
 
 FederatedIdentityApiPermissionContext::FederatedIdentityApiPermissionContext(
     content::BrowserContext* browser_context)
@@ -26,8 +30,18 @@ FederatedIdentityApiPermissionContext::FederatedIdentityApiPermissionContext(
 FederatedIdentityApiPermissionContext::
     ~FederatedIdentityApiPermissionContext() = default;
 
-bool FederatedIdentityApiPermissionContext::HasApiPermission(
+content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus
+FederatedIdentityApiPermissionContext::GetApiPermissionStatus(
     const url::Origin& rp_origin) {
+  if (!base::FeatureList::IsEnabled(features::kFedCm))
+    return PermissionStatus::BLOCKED_VARIATIONS;
+
+  // TODO(npm): FedCM is currently restricted to contexts where third party
+  // cookies are not blocked.  Once the privacy improvements for the API are
+  // implemented, remove this restriction. See https://crbug.com/13043
+  if (cookie_settings_->ShouldBlockThirdPartyCookies())
+    return PermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED;
+
   const GURL rp_url = rp_origin.GetURL();
   const ContentSetting setting = host_content_settings_map_->GetContentSetting(
       rp_url, rp_url, ContentSettingsType::FEDERATED_IDENTITY_API);
@@ -35,21 +49,18 @@ bool FederatedIdentityApiPermissionContext::HasApiPermission(
     case CONTENT_SETTING_ALLOW:
       break;
     case CONTENT_SETTING_BLOCK:
-      return false;
+      return PermissionStatus::BLOCKED_SETTINGS;
     default:
       NOTREACHED();
-      return false;
+      return PermissionStatus::BLOCKED_SETTINGS;
   }
 
-  permissions::PermissionResult permission_result =
+  permissions::PermissionResult embargo_result =
       permission_autoblocker_->GetEmbargoResult(
           rp_url, ContentSettingsType::FEDERATED_IDENTITY_API);
-  return (permission_result.content_setting !=
-          ContentSetting::CONTENT_SETTING_BLOCK);
-}
-
-bool FederatedIdentityApiPermissionContext::AreThirdPartyCookiesBlocked() {
-  return cookie_settings_->ShouldBlockThirdPartyCookies();
+  if (embargo_result.content_setting == ContentSetting::CONTENT_SETTING_BLOCK)
+    return PermissionStatus::BLOCKED_EMBARGO;
+  return PermissionStatus::GRANTED;
 }
 
 void FederatedIdentityApiPermissionContext::RecordDismissAndEmbargo(
