@@ -604,9 +604,7 @@ try_.builder(
     # This builder produces the clang binaries used on all builders. Since it
     # uses the system's sysroot when compiling, the builder needs to run on the
     # OS version that's the oldest used on any bot.
-    # TODO(crbug.com/1199405): Move this to bionic once _all_ builders have
-    # migrated.
-    os = os.LINUX_TRUSTY,
+    os = os.LINUX_BIONIC,
     notifies = ["chrome-rust-toolchain"],
 )
 
