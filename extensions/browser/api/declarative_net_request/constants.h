@@ -212,6 +212,11 @@ extern const char kEnabledRulesetCountExceeded[];
 extern const char kTabNotFoundError[];
 extern const char kIncrementActionCountWithoutUseAsBadgeTextError[];
 
+// testMatchOutcome API errors.
+extern const char kInvalidTestURLError[];
+extern const char kInvalidTestInitiatorError[];
+extern const char kInvalidTestTabIdError[];
+
 // Histogram names.
 extern const char kIndexAndPersistRulesTimeHistogram[];
 extern const char kManifestEnabledRulesCountHistogram[];

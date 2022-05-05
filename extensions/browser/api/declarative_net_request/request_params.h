@@ -33,6 +33,12 @@ struct RequestParams {
   // this instance.
   explicit RequestParams(content::RenderFrameHost* host,
                          bool is_post_navigation);
+  explicit RequestParams(
+      const GURL& url,
+      const url::Origin& initiator,
+      const api::declarative_net_request::ResourceType request_type,
+      const api::declarative_net_request::RequestMethod request_method,
+      int tab_id);
   RequestParams();
   RequestParams(const RequestParams&) = delete;
   RequestParams& operator=(const RequestParams&) = delete;

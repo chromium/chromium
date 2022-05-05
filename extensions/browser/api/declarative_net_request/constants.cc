@@ -125,6 +125,10 @@ const char kIncrementActionCountWithoutUseAsBadgeTextError[] =
     "Cannot increment action count unless displaying action count as badge "
     "text.";
 
+const char kInvalidTestURLError[] = "Invalid test request URL.";
+const char kInvalidTestInitiatorError[] = "Invalid test request initiator.";
+const char kInvalidTestTabIdError[] = "Invalid test request tab ID.";
+
 const char kIndexAndPersistRulesTimeHistogram[] =
     "Extensions.DeclarativeNetRequest.IndexAndPersistRulesTime";
 const char kManifestEnabledRulesCountHistogram[] =

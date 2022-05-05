@@ -32535,6 +32535,7 @@ Called by update_extension_histograms.py.-->
   <int value="1650" label="PASSWORDSPRIVATE_RECORDCHANGEPASSWORDFLOWSTARTED"/>
   <int value="1651" label="ENTERPRISEREPORTINGPRIVATE_ENQUEUERECORD"/>
   <int value="1652" label="FILEMANAGERPRIVATE_SENDFEEDBACK"/>
+  <int value="1653" label="DECLARATIVENETREQUEST_TESTMATCHOUTCOME"/>
 </enum>
 
 <enum name="ExtensionIconState">

@@ -154,6 +154,10 @@
     "dependencies": ["permission:declarativeNetRequestFeedback", "permission:declarativeNetRequestWithHostAccess"],
     "location": "unpacked"
   }],
+  "declarativeNetRequest.testMatchOutcome": {
+    "dependencies": ["permission:declarativeNetRequest"],
+    "location": "unpacked"
+  },
   "declarativeWebRequest": {
     "dependencies": ["permission:declarativeWebRequest"],
     "contexts": ["blessed_extension"]

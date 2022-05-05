@@ -468,6 +468,26 @@ namespace declarativeNetRequest {
     ResourceType type;
   };
 
+  dictionary TestMatchRequestDetails {
+    // The URL of the hypothetical request.
+    DOMString url;
+
+    // The initiator URL (if any) for the hypothetical request.
+    DOMString? initiator;
+
+    // Standard HTTP method of the hypothetical request. Defaults to "get" for
+    // HTTP requests and is ignored for non-HTTP requests.
+    RequestMethod? method;
+
+    // The resource type of the hypothetical request.
+    ResourceType type;
+
+    // The ID of the tab in which the hypothetical request takes place. Does
+    // not need to correspond to a real tab ID. Default is -1, meaning that
+    // the request isn't related to a tab.
+    long? tabId;
+  };
+
   dictionary MatchedRuleInfoDebug {
     MatchedRule rule;
 
@@ -503,6 +523,11 @@ namespace declarativeNetRequest {
     // Specifies the reason why the regular expression is not supported. Only
     // provided if <code>isSupported</code> is false.
     UnsupportedRegexReason? reason;
+  };
+
+  dictionary TestMatchOutcomeResult {
+    // The rules (if any) that match the hypothetical request.
+    MatchedRule[] matchedRules;
   };
 
   dictionary UpdateRuleOptions {
@@ -544,6 +569,7 @@ namespace declarativeNetRequest {
   callback GetEnabledRulesetsCallback = void(DOMString[] rulesetIds);
   callback IsRegexSupportedCallback = void(IsRegexSupportedResult result);
   callback GetAvailableStaticRuleCountCallback = void(long count);
+  callback TestMatchOutcomeCallback = void(TestMatchOutcomeResult result);
 
   interface Functions {
 
@@ -658,6 +684,16 @@ namespace declarativeNetRequest {
     // <a href="#global-rule-limit">global static rule limit</a> is reached.
     [supportsPromises] static void getAvailableStaticRuleCount(
         GetAvailableStaticRuleCountCallback callback);
+
+    // Checks if any of the extension's declarativeNetRequest rules would match
+    // a hypothetical request.
+    // Note: Only available for unpacked extensions as this is only intended to
+    // be used during extension development.
+    // |requestDetails|: The request details to test.
+    // |callback|: Called with the details of matched rules.
+    [supportsPromises] static void testMatchOutcome(
+        TestMatchRequestDetails request,
+        TestMatchOutcomeCallback callback);
   };
 
   interface Properties {

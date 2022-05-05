@@ -1,0 +1,27 @@
+{
+  "name": "Test extension",
+  "declarative_net_request": {
+    "rule_resources": [{
+      "id": "rules1",
+      "path": "rules1.json",
+      "enabled": true
+    }, {
+      "id": "rules2",
+      "path": "rules2.json",
+      "enabled": true
+    }]
+  },
+  "manifest_version": 2,
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback",
+    "tabs"
+  ],
+  "version": "1.0",
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  }
+}

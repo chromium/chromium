@@ -15,6 +15,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -29,82 +30,6 @@ namespace declarative_net_request {
 
 namespace {
 namespace flat_rule = url_pattern_index::flat;
-
-// Maps WebRequestResourceType to flat_rule::ElementType.
-flat_rule::ElementType GetElementType(WebRequestResourceType web_request_type) {
-  switch (web_request_type) {
-    case WebRequestResourceType::OTHER:
-      return flat_rule::ElementType_OTHER;
-    case WebRequestResourceType::MAIN_FRAME:
-      return flat_rule::ElementType_MAIN_FRAME;
-    case WebRequestResourceType::CSP_REPORT:
-      return flat_rule::ElementType_CSP_REPORT;
-    case WebRequestResourceType::SCRIPT:
-      return flat_rule::ElementType_SCRIPT;
-    case WebRequestResourceType::IMAGE:
-      return flat_rule::ElementType_IMAGE;
-    case WebRequestResourceType::STYLESHEET:
-      return flat_rule::ElementType_STYLESHEET;
-    case WebRequestResourceType::OBJECT:
-      return flat_rule::ElementType_OBJECT;
-    case WebRequestResourceType::XHR:
-      return flat_rule::ElementType_XMLHTTPREQUEST;
-    case WebRequestResourceType::SUB_FRAME:
-      return flat_rule::ElementType_SUBDOCUMENT;
-    case WebRequestResourceType::PING:
-      return flat_rule::ElementType_PING;
-    case WebRequestResourceType::MEDIA:
-      return flat_rule::ElementType_MEDIA;
-    case WebRequestResourceType::FONT:
-      return flat_rule::ElementType_FONT;
-    case WebRequestResourceType::WEBBUNDLE:
-      return flat_rule::ElementType_WEBBUNDLE;
-    case WebRequestResourceType::WEB_SOCKET:
-      return flat_rule::ElementType_WEBSOCKET;
-    case WebRequestResourceType::WEB_TRANSPORT:
-      return flat_rule::ElementType_WEBTRANSPORT;
-  }
-  NOTREACHED();
-  return flat_rule::ElementType_OTHER;
-}
-
-// Maps an HTTP request method string to flat_rule::RequestMethod.
-// Returns `flat::RequestMethod_NON_HTTP` for non-HTTP(s) requests.
-flat_rule::RequestMethod GetRequestMethod(bool http_or_https,
-                                          const std::string& method) {
-  if (!http_or_https)
-    return flat_rule::RequestMethod_NON_HTTP;
-
-  using net::HttpRequestHeaders;
-  static const base::NoDestructor<
-      base::flat_map<base::StringPiece, flat_rule::RequestMethod>>
-      kRequestMethods(
-          {{HttpRequestHeaders::kDeleteMethod, flat_rule::RequestMethod_DELETE},
-           {HttpRequestHeaders::kGetMethod, flat_rule::RequestMethod_GET},
-           {HttpRequestHeaders::kHeadMethod, flat_rule::RequestMethod_HEAD},
-           {HttpRequestHeaders::kOptionsMethod,
-            flat_rule::RequestMethod_OPTIONS},
-           {HttpRequestHeaders::kPatchMethod, flat_rule::RequestMethod_PATCH},
-           {HttpRequestHeaders::kPostMethod, flat_rule::RequestMethod_POST},
-           {HttpRequestHeaders::kPutMethod, flat_rule::RequestMethod_PUT},
-           {HttpRequestHeaders::kConnectMethod,
-            flat_rule::RequestMethod_CONNECT}});
-
-  DCHECK(std::all_of(kRequestMethods->begin(), kRequestMethods->end(),
-                     [](const auto& key_value) {
-                       auto method = key_value.first;
-                       return std::none_of(method.begin(), method.end(),
-                                           base::IsAsciiLower<char>);
-                     }));
-
-  std::string normalized_method = base::ToUpperASCII(method);
-  auto it = kRequestMethods->find(normalized_method);
-  if (it == kRequestMethods->end()) {
-    NOTREACHED() << "Request method " << normalized_method << " not handled.";
-    return flat_rule::RequestMethod_GET;
-  }
-  return it->second;
-}
 
 // Returns whether the request to |url| is third party to its |document_origin|.
 // TODO(crbug.com/696822): Look into caching this.
@@ -219,6 +144,20 @@ RequestParams::RequestParams(content::RenderFrameHost* host,
   embedder_conditions_matcher =
       base::BindRepeating(DoEmbedderConditionsMatch, tab_id);
 }
+
+RequestParams::RequestParams(
+    const GURL& url,
+    const url::Origin& initiator,
+    const api::declarative_net_request::ResourceType request_type,
+    const api::declarative_net_request::RequestMethod request_method,
+    int tab_id)
+    : url(&url),
+      first_party_origin(initiator),
+      element_type(GetElementType(request_type)),
+      is_third_party(IsThirdPartyRequest(url, first_party_origin)),
+      method(GetRequestMethod(url.SchemeIsHTTPOrHTTPS(), request_method)),
+      embedder_conditions_matcher(
+          base::BindRepeating(DoEmbedderConditionsMatch, tab_id)) {}
 
 RequestParams::RequestParams() = default;
 RequestParams::~RequestParams() = default;

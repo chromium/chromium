@@ -175,6 +175,19 @@ class DeclarativeNetRequestGetAvailableStaticRuleCountFunction
   ExtensionFunction::ResponseAction Run() override;
 };
 
+class DeclarativeNetRequestTestMatchOutcomeFunction : public ExtensionFunction {
+ public:
+  DeclarativeNetRequestTestMatchOutcomeFunction();
+  DECLARE_EXTENSION_FUNCTION("declarativeNetRequest.testMatchOutcome",
+                             DECLARATIVENETREQUEST_TESTMATCHOUTCOME)
+
+ protected:
+  ~DeclarativeNetRequestTestMatchOutcomeFunction() override;
+
+  // ExtensionFunction override:
+  ExtensionFunction::ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_DECLARATIVE_NET_REQUEST_API_H_

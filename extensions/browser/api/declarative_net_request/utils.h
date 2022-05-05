@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
+#include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -145,6 +146,23 @@ bool HasDNRFeedbackPermission(const Extension* extension,
 
 // Returns the appropriate error string for an unsuccessful rule parsing result.
 std::string GetParseError(ParseResult error_reason, int rule_id);
+
+// Maps resource types to flat_rule::ElementType.
+url_pattern_index::flat::ElementType GetElementType(
+    WebRequestResourceType web_request_type);
+url_pattern_index::flat::ElementType GetElementType(
+    api::declarative_net_request::ResourceType resource_type);
+
+// Maps HTTP request methods to flat_rule::RequestMethod.
+// Returns `flat::RequestMethod_NON_HTTP` for non-HTTP(s) requests.
+url_pattern_index::flat::RequestMethod GetRequestMethod(
+    bool http_or_https,
+    const std::string& method);
+url_pattern_index::flat::RequestMethod GetRequestMethod(
+    api::declarative_net_request::RequestMethod request_method);
+url_pattern_index::flat::RequestMethod GetRequestMethod(
+    bool http_or_https,
+    api::declarative_net_request::RequestMethod request_method);
 
 }  // namespace declarative_net_request
 }  // namespace extensions

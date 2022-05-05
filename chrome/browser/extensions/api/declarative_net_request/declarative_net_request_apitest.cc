@@ -109,6 +109,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, IsRegexSupported) {
   ASSERT_TRUE(RunExtensionTest("is_regex_supported")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, TestMatchOutcome) {
+  ASSERT_TRUE(RunExtensionTest("test_match_outcome")) << message_;
+}
+
 class DeclarativeNetRequestApiFencedFrameTest
     : public DeclarativeNetRequestApiTest,
       public testing::WithParamInterface<bool /* shadow_dom_fenced_frame */> {
