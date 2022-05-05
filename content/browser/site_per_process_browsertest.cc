@@ -2399,6 +2399,46 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                    .is_sandboxed());
 }
 
+// A test to verify that an iframe that is sandboxed using the 'csp' attribute
+// instead of the 'sandbox' attribute gets process isolation when the
+// kIsolatedSandboxedIframes flag is enabled.
+IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
+                       CspIsolatedSandbox) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  // The child needs to have the same origin as the parent.
+  GURL child_url(main_url);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create csp-sandboxed child frame, same-origin.
+  {
+    std::string js_str = base::StringPrintf(
+        "var frame = document.createElement('iframe'); "
+        "frame.csp = 'sandbox'; "
+        "frame.src = '%s'; "
+        "document.body.appendChild(frame);",
+        child_url.spec().c_str());
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+
+  // Check frame-tree.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kAll,
+            child->current_frame_host()->active_sandbox_flags());
+  EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+            child->current_frame_host()->GetSiteInstance());
+  EXPECT_TRUE(child->current_frame_host()
+                  ->GetSiteInstance()
+                  ->GetSiteInfo()
+                  .is_sandboxed());
+  EXPECT_FALSE(root->current_frame_host()
+                   ->GetSiteInstance()
+                   ->GetSiteInfo()
+                   .is_sandboxed());
+}
+
 // A test to verify that an iframe with a fully-restrictive sandbox is rendered
 // in a separate process from its parent frame even if they have the same
 // origin.
