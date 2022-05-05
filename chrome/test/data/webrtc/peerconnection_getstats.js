@@ -56,16 +56,16 @@ class MergedRTCStats {
 
 /**
  * Maps "RTCStats.type" values to MergedRTCStats. These are descriptions of
- * whitelisted (allowed to be exposed to the web) RTCStats-derived dictionaries,
+ * allowlisted (allowed to be exposed to the web) RTCStats-derived dictionaries,
  * see RTCStats definitions below.
  * @private
  */
-const gStatsWhitelist = new Map();
+const gStatsAllowlist = new Map();
 
-function addRTCStatsToWhitelist(presence, type, stats) {
-  mergedStats = gStatsWhitelist.get(type);
+function addRTCStatsToAllowlist(presence, type, stats) {
+  mergedStats = gStatsAllowlist.get(type);
   if (!mergedStats) {
-    gStatsWhitelist.set(type, new MergedRTCStats(presence, type, stats));
+    gStatsAllowlist.set(type, new MergedRTCStats(presence, type, stats));
   } else {
     mergedStats.merge(presence, stats);
   }
@@ -157,7 +157,7 @@ let kRTCInboundRtpStreamStats = new RTCStats(kRTCReceivedRtpStreamStats, {
   fractionLost: 'number',  // Obsolete, moved to RTCRemoteInboundRtpStreamStats.
   decoderImplementation: 'string',
 });
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.MANDATORY, 'inbound-rtp', kRTCInboundRtpStreamStats);
 
 /*
@@ -176,7 +176,7 @@ let kRTCRemoteInboundRtpStreamStats =
 // TODO(https://crbug.com/967382): Update the browser_tests to wait for the
 // existence of remote-inbound-rtp as well (these are created later than
 // outbound-rtp). When this is done, change presence to MANDATORY.
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.OPTIONAL, 'remote-inbound-rtp', kRTCRemoteInboundRtpStreamStats);
 
 /**
@@ -231,7 +231,7 @@ let kRTCOutboundRtpStreamStats = new RTCStats(kRTCSentRtpStreamStats, {
   framesSent: 'number',
   hugeFramesSent: 'number',
 });
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.MANDATORY, 'outbound-rtp', kRTCOutboundRtpStreamStats);
 
 /*
@@ -248,7 +248,7 @@ let kRTCRemoteOutboundRtpStreamStats = new RTCStats(kRTCSentRtpStreamStats, {
   roundTripTimeMeasurements: 'number',
 });
 // TODO(hbos): When remote-outbound-rtp is implemented, make presence MANDATORY.
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.OPTIONAL, 'remote-outbound-rtp', kRTCRemoteOutboundRtpStreamStats);
 
 /**
@@ -273,7 +273,7 @@ const kRTCAudioSourceStats = new RTCStats(kRTCMediaSourceStats, {
   echoReturnLoss: 'number',
   echoReturnLossEnhancement: 'number',
 });
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.MANDATORY, 'media-source', kRTCAudioSourceStats);
 
 /**
@@ -288,7 +288,7 @@ const kRTCVideoSourceStats = new RTCStats(kRTCMediaSourceStats, {
   frames: 'number',
   framesPerSecond: 'number',
 });
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.MANDATORY, 'media-source', kRTCVideoSourceStats);
 
 /*
@@ -303,7 +303,7 @@ let kRTCRtpContributingSourceStats = new RTCStats(null, {
   audioLevel: 'number',
 });
 // TODO(hbos): When csrc is implemented, make presence MANDATORY.
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.OPTIONAL, 'csrc', kRTCRtpContributingSourceStats);
 
 /*
@@ -319,7 +319,7 @@ let kRTCCodecStats = new RTCStats(null, {
   channels: 'number',
   sdpFmtpLine: 'string',
 });
-addRTCStatsToWhitelist(Presence.MANDATORY, 'codec', kRTCCodecStats);
+addRTCStatsToAllowlist(Presence.MANDATORY, 'codec', kRTCCodecStats);
 
 /*
  * RTCPeerConnectionStats
@@ -332,7 +332,7 @@ let kRTCPeerConnectionStats = new RTCStats(null, {
   dataChannelsRequested: 'number',
   dataChannelsAccepted: 'number',
 });
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.MANDATORY, 'peer-connection', kRTCPeerConnectionStats);
 
 /*
@@ -344,7 +344,7 @@ let kRTCMediaStreamStats = new RTCStats(null, {
   streamIdentifier: 'string',
   trackIds: 'sequence_string',
 });
-addRTCStatsToWhitelist(Presence.MANDATORY, 'stream', kRTCMediaStreamStats);
+addRTCStatsToAllowlist(Presence.MANDATORY, 'stream', kRTCMediaStreamStats);
 
 /**
  * RTCMediaHandlerStats
@@ -383,7 +383,7 @@ let kRTCVideoSenderStats = new RTCStats(kRTCVideoHandlerStats, {
   hugeFramesSent: 'number',
 });
 // TODO(hbos): When sender is implemented, make presence MANDATORY.
-addRTCStatsToWhitelist(Presence.OPTIONAL, 'sender', kRTCVideoSenderStats);
+addRTCStatsToAllowlist(Presence.OPTIONAL, 'sender', kRTCVideoSenderStats);
 
 /*
  * RTCSenderVideoTrackAttachmentStats
@@ -392,7 +392,7 @@ addRTCStatsToWhitelist(Presence.OPTIONAL, 'sender', kRTCVideoSenderStats);
  */
 let kRTCSenderVideoTrackAttachmentStats = new RTCStats(kRTCVideoSenderStats, {
 });
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.MANDATORY, 'track', kRTCSenderVideoTrackAttachmentStats);
 
 /*
@@ -411,7 +411,7 @@ let kRTCVideoReceiverStats = new RTCStats(kRTCVideoHandlerStats, {
   fullFramesLost: 'number',
 });
 // TODO(hbos): When receiver is implemented, make presence MANDATORY.
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.OPTIONAL, 'receiver', kRTCVideoReceiverStats);
 
 /*
@@ -422,7 +422,7 @@ addRTCStatsToWhitelist(
 let kRTCReceiverVideoTrackAttachmentStats =
     new RTCStats(kRTCVideoReceiverStats, {
 });
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.MANDATORY, 'track', kRTCReceiverVideoTrackAttachmentStats);
 
 /*
@@ -449,7 +449,7 @@ let kRTCAudioSenderStats = new RTCStats(kRTCAudioHandlerStats, {
   totalSamplesSent: 'number',
 });
 // TODO(hbos): When sender is implemented, make presence MANDATORY.
-addRTCStatsToWhitelist(Presence.OPTIONAL, 'sender', kRTCAudioSenderStats);
+addRTCStatsToAllowlist(Presence.OPTIONAL, 'sender', kRTCAudioSenderStats);
 
 /*
  * RTCSenderAudioTrackAttachmentStats
@@ -458,7 +458,7 @@ addRTCStatsToWhitelist(Presence.OPTIONAL, 'sender', kRTCAudioSenderStats);
  */
 let kRTCSenderAudioTrackAttachmentStats = new RTCStats(kRTCAudioSenderStats, {
 });
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.MANDATORY, 'track', kRTCSenderAudioTrackAttachmentStats);
 
 /*
@@ -478,7 +478,7 @@ let kRTCAudioReceiverStats = new RTCStats(kRTCAudioHandlerStats, {
   removedSamplesForAcceleration: 'number',
 });
 // TODO(hbos): When receiver is implemented, make presence MANDATORY.
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.OPTIONAL, 'receiver', kRTCAudioReceiverStats);
 
 /*
@@ -489,7 +489,7 @@ addRTCStatsToWhitelist(
 let kRTCReceiverAudioTrackAttachmentStats =
     new RTCStats(kRTCAudioReceiverStats, {
 });
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.MANDATORY, 'track', kRTCReceiverAudioTrackAttachmentStats);
 
 /*
@@ -507,7 +507,7 @@ let kRTCDataChannelStats = new RTCStats(null, {
   messagesReceived: 'number',
   bytesReceived: 'number',
 });
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.MANDATORY, 'data-channel', kRTCDataChannelStats);
 
 /*
@@ -533,7 +533,7 @@ let kRTCTransportStats = new RTCStats(null, {
   iceRole: 'string',
   iceLocalUsernameFragment: 'string',
 });
-addRTCStatsToWhitelist(Presence.MANDATORY, 'transport', kRTCTransportStats);
+addRTCStatsToAllowlist(Presence.MANDATORY, 'transport', kRTCTransportStats);
 
 /*
  * RTCIceCandidateStats
@@ -554,9 +554,9 @@ let kRTCIceCandidateStats = new RTCStats(null, {
   url: 'string',
   deleted: 'boolean',
 });
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.MANDATORY, 'local-candidate', kRTCIceCandidateStats);
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.MANDATORY, 'remote-candidate', kRTCIceCandidateStats);
 
 /*
@@ -594,7 +594,7 @@ let kRTCIceCandidatePairStats = new RTCStats(null, {
   packetsDiscardedOnSend: 'number',
   bytesDiscardedOnSend: 'number',
 });
-addRTCStatsToWhitelist(
+addRTCStatsToAllowlist(
     Presence.MANDATORY, 'candidate-pair', kRTCIceCandidatePairStats);
 
 /*
@@ -608,7 +608,7 @@ let kRTCCertificateStats = new RTCStats(null, {
   base64Certificate: 'string',
   issuerCertificateId: 'string',
 });
-addRTCStatsToWhitelist(Presence.MANDATORY, 'certificate', kRTCCertificateStats);
+addRTCStatsToAllowlist(Presence.MANDATORY, 'certificate', kRTCCertificateStats);
 
 // Public interface to tests. These are expected to be called with
 // ExecuteJavascript invocations from the browser tests and will return answers
@@ -617,7 +617,7 @@ addRTCStatsToWhitelist(Presence.MANDATORY, 'certificate', kRTCCertificateStats);
 /**
  * Verifies that the promise-based |RTCPeerConnection.getStats| returns stats,
  * makes sure that all returned stats have the base RTCStats-members and that
- * all stats are allowed by the whitelist.
+ * all stats are allowed by the allowlist.
  *
  * Returns "ok-" followed by JSON-stringified array of "RTCStats.type" values
  * to the test, these being the different types of stats that was returned by
@@ -631,7 +631,7 @@ function verifyStatsGeneratedPromise() {
       let statsTypes = new Set();
       let ids = new Set();
       for (let stats of report.values()) {
-        verifyStatsIsWhitelisted_(stats);
+        verifyStatsIsAllowlisted_(stats);
         statsTypes.add(stats.type);
         if (ids.has(stats.id))
           throw failTest('stats.id is not a unique identifier.');
@@ -671,7 +671,7 @@ function getStatsReportDictionary() {
  * Measures the performance of the promise-based |RTCPeerConnection.getStats|
  * and returns the time it took in milliseconds as a double
  * (DOMHighResTimeStamp, accurate to one thousandth of a millisecond).
- * Verifies that all stats types of the whitelist were contained in the result.
+ * Verifies that all stats types of the allowlist were contained in the result.
  *
  * Returns "ok-" followed by a double on success.
  */
@@ -681,7 +681,7 @@ function measureGetStatsPerformance() {
     .then(function(report) {
       let t1 = performance.now();
       for (let stats of report.values()) {
-        verifyStatsIsWhitelisted_(stats);
+        verifyStatsIsAllowlisted_(stats);
       }
       for (let mandatoryType of mandatoryStatsTypes()) {
         let mandatoryTypeExists = false;
@@ -704,7 +704,7 @@ function measureGetStatsPerformance() {
 
 /**
  * Returns a complete list of mandatory "RTCStats.type" values from the
- * whitelist as a JSON-stringified array of strings to the test.
+ * allowlist as a JSON-stringified array of strings to the test.
  */
 function getMandatoryStatsTypes() {
   returnToTest(JSON.stringify(Array.from(mandatoryStatsTypes())));
@@ -715,23 +715,23 @@ function getMandatoryStatsTypes() {
 /** Gets a set of all mandatory stats types. */
 function mandatoryStatsTypes() {
   const mandatoryTypes = new Set();
-  for (let whitelistedStats of gStatsWhitelist.values()) {
-    if (whitelistedStats.presence() == Presence.MANDATORY)
-      mandatoryTypes.add(whitelistedStats.type());
+  for (let allowlistedStats of gStatsAllowlist.values()) {
+    if (allowlistedStats.presence() == Presence.MANDATORY)
+      mandatoryTypes.add(allowlistedStats.type());
   }
   return mandatoryTypes;
 }
 
 /**
- * Checks if |stats| correctly maps to a a whitelisted RTCStats-derived
- * dictionary, throwing |failTest| if it doesn't. See |gStatsWhitelist|.
+ * Checks if |stats| correctly maps to a a allowlisted RTCStats-derived
+ * dictionary, throwing |failTest| if it doesn't. See |gStatsAllowlist|.
  *
  * The "RTCStats.type" must map to a known dictionary description. Every member
- * is optional, but if present it must be present in the whitelisted dictionary
+ * is optional, but if present it must be present in the allowlisted dictionary
  * description and its type must match.
  * @private
  */
-function verifyStatsIsWhitelisted_(stats) {
+function verifyStatsIsAllowlisted_(stats) {
   if (stats == null)
     throw failTest('stats is null or undefined: ' + stats);
   if (typeof(stats.id) !== 'string')
@@ -743,42 +743,42 @@ function verifyStatsIsWhitelisted_(stats) {
   }
   if (typeof(stats.type) !== 'string')
     throw failTest('stats.type is not a string: ' + stats.type);
-  let whitelistedStats = gStatsWhitelist.get(stats.type);
-  if (whitelistedStats == null)
-    throw failTest('stats.type is not a whitelisted type: ' + stats.type);
-  whitelistedStats = whitelistedStats.stats();
+  let allowlistedStats = gStatsAllowlist.get(stats.type);
+  if (allowlistedStats == null)
+    throw failTest('stats.type is not a allowlisted type: ' + stats.type);
+  allowlistedStats = allowlistedStats.stats();
   for (let propertyName in stats) {
     if (propertyName === 'id' || propertyName === 'timestamp' ||
         propertyName === 'type') {
       continue;
     }
-    if (!whitelistedStats.hasOwnProperty(propertyName)) {
+    if (!allowlistedStats.hasOwnProperty(propertyName)) {
       throw failTest(
-          stats.type + '.' + propertyName + ' is not a whitelisted ' +
+          stats.type + '.' + propertyName + ' is not a allowlisted ' +
           'member: ' + stats[propertyName]);
     }
-    if (whitelistedStats[propertyName] === 'any')
+    if (allowlistedStats[propertyName] === 'any')
       continue;
-    if (!whitelistedStats[propertyName].startsWith('sequence_')) {
-      if (typeof(stats[propertyName]) !== whitelistedStats[propertyName]) {
+    if (!allowlistedStats[propertyName].startsWith('sequence_')) {
+      if (typeof(stats[propertyName]) !== allowlistedStats[propertyName]) {
         throw failTest('stats.' + propertyName + ' should have a different ' +
-            'type according to the whitelist: ' + stats[propertyName] + ' vs ' +
-            whitelistedStats[propertyName]);
+            'type according to the allowlist: ' + stats[propertyName] + ' vs ' +
+            allowlistedStats[propertyName]);
       }
     } else {
       if (!Array.isArray(stats[propertyName])) {
         throw failTest('stats.' + propertyName + ' should have a different ' +
-            'type according to the whitelist (should be an array): ' +
+            'type according to the allowlist (should be an array): ' +
             JSON.stringify(stats[propertyName]) + ' vs ' +
-            whitelistedStats[propertyName]);
+            allowlistedStats[propertyName]);
       }
-      let elementType = whitelistedStats[propertyName].substring(9);
+      let elementType = allowlistedStats[propertyName].substring(9);
       for (let element in stats[propertyName]) {
         if (typeof(element) !== elementType) {
           throw failTest('stats.' + propertyName + ' should have a different ' +
-              'type according to the whitelist (an element of the array has ' +
+              'type according to the allowlist (an element of the array has ' +
               'the incorrect type): ' + JSON.stringify(stats[propertyName]) +
-              ' vs ' + whitelistedStats[propertyName]);
+              ' vs ' + allowlistedStats[propertyName]);
         }
       }
     }
