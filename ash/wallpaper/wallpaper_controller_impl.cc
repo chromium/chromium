@@ -769,6 +769,23 @@ GURL AddDimensionsToGooglePhotosURL(GURL url) {
                                  kLargeWallpaperMaxHeight));
 }
 
+void DownloadGooglePhotosImage(
+    const GURL& url,
+    const AccountId& account_id,
+    ImageDownloader::DownloadCallback callback,
+    const absl::optional<std::string>& access_token) {
+  GURL url_with_dimensions = AddDimensionsToGooglePhotosURL(url);
+
+  net::HttpRequestHeaders headers;
+  if (access_token.has_value()) {
+    headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
+                      "Bearer " + access_token.value());
+  }
+  ImageDownloader::Get()->Download(url_with_dimensions,
+                                   kDownloadGooglePhotoTrafficAnnotation,
+                                   headers, absl::nullopt, std::move(callback));
+}
+
 // Returns an appropriate ColorMode value based on the Light/Dark mode state.
 OnlineWallpaperVariantInfoFetcher::ColorMode GetColorMode() {
   return Shell::Get()->ash_color_provider()->IsDarkModeEnabled()
@@ -2415,15 +2432,13 @@ void WallpaperControllerImpl::OnDailyGooglePhotosPhotoFetched(
     return;
   }
 
-  GURL url = AddDimensionsToGooglePhotosURL(photo->url);
-
   ImageDownloader::DownloadCallback download_callback = base::BindOnce(
       &WallpaperControllerImpl::OnDailyGooglePhotosWallpaperDownloaded,
       set_wallpaper_weak_factory_.GetWeakPtr(), account_id, photo->id, album_id,
       std::move(callback));
-  ImageDownloader::Get()->Download(url, kDownloadGooglePhotoTrafficAnnotation,
-                                   {}, account_id,
-                                   std::move(download_callback));
+  wallpaper_controller_client_->FetchGooglePhotosAccessToken(
+      account_id, base::BindOnce(&DownloadGooglePhotosImage, photo->url,
+                                 account_id, std::move(download_callback)));
 }
 
 void WallpaperControllerImpl::OnDailyGooglePhotosWallpaperDownloaded(
@@ -2477,14 +2492,13 @@ void WallpaperControllerImpl::GetGooglePhotosWallpaperFromCacheOrDownload(
                        std::move(callback)),
         cached_path);
   } else {
-    GURL url = AddDimensionsToGooglePhotosURL(photo->url);
-
     ImageDownloader::DownloadCallback download_callback = base::BindOnce(
         &WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded,
         set_wallpaper_weak_factory_.GetWeakPtr(), params, std::move(callback));
-    ImageDownloader::Get()->Download(url, kDownloadGooglePhotoTrafficAnnotation,
-                                     {}, params.account_id,
-                                     std::move(download_callback));
+    wallpaper_controller_client_->FetchGooglePhotosAccessToken(
+        params.account_id,
+        base::BindOnce(&DownloadGooglePhotosImage, photo->url,
+                       params.account_id, std::move(download_callback)));
   }
 }
 
