@@ -30,7 +30,7 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/permissions/permissions_data.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/public_session_permission_helper.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #endif
@@ -51,7 +51,7 @@ const char kTemporaryFileError[] = "Failed to create a temporary file.";
 const char kTabClosedError[] = "Cannot find the tab for this request.";
 const char kPageCaptureNotAllowed[] =
     "Don't have permissions required to capture this page.";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kUserDenied[] = "User denied request.";
 #endif
 constexpr base::TaskTraits kCreateTemporaryFileTaskTraits = {
@@ -91,7 +91,7 @@ ExtensionFunction::ResponseAction PageCaptureSaveAsMHTMLFunction::Run() {
   params_ = SaveAsMHTML::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // In Public Sessions, extensions (and apps) are force-installed by admin
   // policy so the user does not get a chance to review the permissions for
   // these extensions. This is not acceptable from a security/privacy
@@ -187,7 +187,7 @@ void PageCaptureSaveAsMHTMLFunction::OnServiceWorkerAck() {
   Release();  // Balanced in Run()
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void PageCaptureSaveAsMHTMLFunction::ResolvePermissionRequest(
     const PermissionIDSet& allowed_permissions) {
   if (allowed_permissions.ContainsID(

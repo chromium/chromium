@@ -13,12 +13,12 @@
 #include "base/callback_helpers.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/lazy_instance.h"
-#include "chrome/browser/chromeos/extensions/device_local_account_management_policy_provider.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/device_local_account_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/api_permission_set.h"
@@ -41,8 +41,7 @@ std::unique_ptr<ExtensionInstallPrompt> CreateExtensionInstallPrompt(
 }
 
 bool PermissionCheckNeeded(const Extension* extension) {
-  return !chromeos::DeviceLocalAccountManagementPolicyProvider::IsWhitelisted(
-      extension->id());
+  return !extensions::IsAllowlistedForPublicSession(extension->id());
 }
 
 // This class is the internal implementation of HandlePermissionRequest(). It

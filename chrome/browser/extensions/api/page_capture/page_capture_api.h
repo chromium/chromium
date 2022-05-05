@@ -25,7 +25,7 @@ class WebContents;
 
 namespace extensions {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class PermissionIDSet;
 #endif
 
@@ -51,7 +51,7 @@ class PageCaptureSaveAsMHTMLFunction : public ExtensionFunction {
   ResponseAction Run() override;
   bool OnMessageReceived(const IPC::Message& message) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Resolves the API permission request in Public Sessions.
   void ResolvePermissionRequest(const PermissionIDSet& allowed_permissions);
 #endif
