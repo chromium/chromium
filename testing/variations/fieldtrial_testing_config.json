@@ -597,6 +597,21 @@
             ]
         }
     ],
+    "AudioProcessHighPriorityWin": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AudioProcessHighPriorityWin"
+                    ]
+                }
+            ]
+        }
+    ],
     "AudioServiceSandboxLinux": [
         {
             "platforms": [
