@@ -1,10 +1,7 @@
 create {
   source {
-    git {
-      repo: "https://r8.googlesource.com/r8"
-      tag_pattern: "%s-dev"
-    }
-    patch_dir: "patches"
+    script { name: "fetch.py" }
+    unpack_archive: true
   }
 
   build {
