@@ -15,10 +15,8 @@ class SyncEngineHostStub : public SyncEngineHost {
   ~SyncEngineHostStub() override;
 
   // SyncEngineHost implementation.
-  void OnEngineInitialized(
-      const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
-      bool success,
-      bool is_first_time_sync_configure) override;
+  void OnEngineInitialized(bool success,
+                           bool is_first_time_sync_configure) override;
   void OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) override;
   void OnProtocolEvent(const ProtocolEvent& event) override;
   void OnConnectionStatusChange(ConnectionStatus status) override;

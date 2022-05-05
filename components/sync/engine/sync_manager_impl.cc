@@ -460,10 +460,6 @@ SyncManagerImpl::GetModelTypeConnectorProxy() {
       model_type_registry_->AsWeakPtr());
 }
 
-WeakHandle<DataTypeDebugInfoListener> SyncManagerImpl::GetDebugInfoListener() {
-  return MakeWeakHandle(debug_info_event_listener_.GetWeakPtr());
-}
-
 std::string SyncManagerImpl::cache_guid() {
   DCHECK(initialized_);
   return cycle_context_->cache_guid();

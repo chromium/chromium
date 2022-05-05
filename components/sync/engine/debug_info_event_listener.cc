@@ -144,23 +144,6 @@ void DebugInfoEventListener::ClearDebugInfo() {
   events_dropped_ = false;
 }
 
-base::WeakPtr<DataTypeDebugInfoListener> DebugInfoEventListener::GetWeakPtr() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
-void DebugInfoEventListener::OnDataTypeConfigureComplete(
-    const std::vector<DataTypeConfigurationStats>& configuration_stats) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  for (const DataTypeConfigurationStats& configuration_stat :
-       configuration_stats) {
-    DCHECK(ProtocolTypes().Has(configuration_stat.model_type));
-    sync_pb::DebugEventInfo association_event;
-    AddEventToQueue(association_event);
-  }
-}
-
 void DebugInfoEventListener::CreateAndAddEvent(
     sync_pb::SyncEnums::SingletonDebugEventType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -62,8 +62,7 @@ class TestSyncEngineHost : public SyncEngineHostStub {
  public:
   TestSyncEngineHost() = default;
 
-  void OnEngineInitialized(const WeakHandle<DataTypeDebugInfoListener>&,
-                           bool success,
+  void OnEngineInitialized(bool success,
                            bool is_first_time_sync_configure) override {
     EXPECT_EQ(expect_success_, success);
     std::move(quit_closure_).Run();

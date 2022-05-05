@@ -75,7 +75,6 @@ class SyncManagerImpl
   void ShutdownOnSyncThread() override;
   ModelTypeConnector* GetModelTypeConnector() override;
   std::unique_ptr<ModelTypeConnector> GetModelTypeConnectorProxy() override;
-  WeakHandle<DataTypeDebugInfoListener> GetDebugInfoListener() override;
   std::string cache_guid() override;
   std::string birthday() override;
   std::string bag_of_chips() override;

@@ -69,8 +69,6 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
 
   // SyncApiComponentFactory implementation:
   std::unique_ptr<syncer::DataTypeManager> CreateDataTypeManager(
-      const syncer::WeakHandle<syncer::DataTypeDebugInfoListener>&
-          debug_info_listener,
       const syncer::DataTypeController::TypeMap* controllers,
       const syncer::DataTypeEncryptionHandler* encryption_handler,
       syncer::ModelTypeConfigurer* configurer,

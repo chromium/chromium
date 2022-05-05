@@ -709,10 +709,8 @@ void SyncServiceImpl::DataTypePreconditionChanged(ModelType type) {
   data_type_manager_->DataTypePreconditionChanged(type);
 }
 
-void SyncServiceImpl::OnEngineInitialized(
-    const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
-    bool success,
-    bool is_first_time_sync_configure) {
+void SyncServiceImpl::OnEngineInitialized(bool success,
+                                          bool is_first_time_sync_configure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(treib): Based on some crash reports, it seems like the user could have
@@ -738,8 +736,7 @@ void SyncServiceImpl::OnEngineInitialized(
 
   data_type_manager_ =
       sync_client_->GetSyncApiComponentFactory()->CreateDataTypeManager(
-          debug_info_listener, &data_type_controllers_, &crypto_, engine_.get(),
-          this);
+          &data_type_controllers_, &crypto_, engine_.get(), this);
 
   crypto_.SetSyncEngine(GetAccountInfo(), engine_.get());
 

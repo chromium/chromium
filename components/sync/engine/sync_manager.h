@@ -20,7 +20,6 @@
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_invalidation.h"
-#include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/connection_status.h"
@@ -37,7 +36,6 @@
 namespace syncer {
 
 class CancelationSignal;
-class DataTypeDebugInfoListener;
 class EngineComponentsFactory;
 class ExtensionsActivity;
 class ProtocolEvent;
@@ -188,8 +186,6 @@ class SyncManager {
   // Returns an instance of the main interface for registering sync types with
   // sync engine.
   virtual std::unique_ptr<ModelTypeConnector> GetModelTypeConnectorProxy() = 0;
-
-  virtual WeakHandle<DataTypeDebugInfoListener> GetDebugInfoListener() = 0;
 
   // Returns the cache_guid of the currently open database.
   // Requires that the SyncManager be initialized.

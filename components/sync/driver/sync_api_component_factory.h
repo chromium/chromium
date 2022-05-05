@@ -9,7 +9,6 @@
 #include <string>
 
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/weak_handle.h"
 #include "components/sync/driver/data_type_controller.h"
 
 namespace invalidation {
@@ -18,7 +17,6 @@ class InvalidationService;
 
 namespace syncer {
 
-class DataTypeDebugInfoListener;
 class DataTypeEncryptionHandler;
 class DataTypeManager;
 class DataTypeManagerObserver;
@@ -33,7 +31,6 @@ class SyncApiComponentFactory {
   virtual ~SyncApiComponentFactory() = default;
 
   virtual std::unique_ptr<DataTypeManager> CreateDataTypeManager(
-      const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
       const DataTypeController::TypeMap* controllers,
       const DataTypeEncryptionHandler* encryption_handler,
       ModelTypeConfigurer* configurer,

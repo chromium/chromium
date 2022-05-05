@@ -31,8 +31,7 @@ void FakeSyncEngine::TriggerInitializationCompletion(bool success) {
 
   initialized_ = success;
 
-  host_->OnEngineInitialized(WeakHandle<DataTypeDebugInfoListener>(), success,
-                             is_first_time_sync_configure_);
+  host_->OnEngineInitialized(success, is_first_time_sync_configure_);
 }
 
 void FakeSyncEngine::Initialize(InitParams params) {

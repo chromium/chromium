@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/sync/base/weak_handle.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/data_type_manager.h"
 #include "components/sync/driver/model_load_manager.h"
@@ -20,20 +19,16 @@
 namespace syncer {
 
 class DataTypeController;
-class DataTypeDebugInfoListener;
 class DataTypeEncryptionHandler;
 class DataTypeManagerObserver;
-struct DataTypeConfigurationStats;
 
 class DataTypeManagerImpl : public DataTypeManager,
                             public ModelLoadManagerDelegate {
  public:
-  DataTypeManagerImpl(
-      const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
-      const DataTypeController::TypeMap* controllers,
-      const DataTypeEncryptionHandler* encryption_handler,
-      ModelTypeConfigurer* configurer,
-      DataTypeManagerObserver* observer);
+  DataTypeManagerImpl(const DataTypeController::TypeMap* controllers,
+                      const DataTypeEncryptionHandler* encryption_handler,
+                      ModelTypeConfigurer* configurer,
+                      DataTypeManagerObserver* observer);
 
   DataTypeManagerImpl(const DataTypeManagerImpl&) = delete;
   DataTypeManagerImpl& operator=(const DataTypeManagerImpl&) = delete;
@@ -153,11 +148,6 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   void RecordConfigurationStats(
       const AssociationTypesInfo& association_types_info);
-  void RecordConfigurationStatsImpl(
-      const AssociationTypesInfo& association_types_info,
-      ModelType type,
-      ModelTypeSet same_priority_types_configured_before);
-
   void StopImpl(ShutdownReason reason);
 
   ModelTypeSet GetEnabledTypes() const;
@@ -203,10 +193,6 @@ class DataTypeManagerImpl : public DataTypeManager,
   // The last time Restart() was called.
   base::Time last_restart_time_;
 
-  // Sync's datatype debug info listener, which we pass model configuration
-  // statistics to.
-  const WeakHandle<DataTypeDebugInfoListener> debug_info_listener_;
-
   // The manager that loads the local models of the data types.
   ModelLoadManager model_load_manager_;
 
@@ -224,9 +210,6 @@ class DataTypeManagerImpl : public DataTypeManager,
   // The encryption handler lets the DataTypeManager know the state of sync
   // datatype encryption.
   raw_ptr<const DataTypeEncryptionHandler> encryption_handler_;
-
-  // Timing stats of data type configuration.
-  std::map<ModelType, DataTypeConfigurationStats> configuration_stats_;
 
   base::WeakPtrFactory<DataTypeManagerImpl> weak_ptr_factory_{this};
 };

@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -21,7 +20,6 @@
 #include "components/sync/driver/data_type_manager_observer.h"
 #include "components/sync/driver/data_type_status_table.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/engine/data_type_debug_info_listener.h"
 
 namespace syncer {
 
@@ -89,14 +87,12 @@ DataTypeManagerImpl::AssociationTypesInfo::AssociationTypesInfo(
 DataTypeManagerImpl::AssociationTypesInfo::~AssociationTypesInfo() = default;
 
 DataTypeManagerImpl::DataTypeManagerImpl(
-    const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
     const DataTypeController::TypeMap* controllers,
     const DataTypeEncryptionHandler* encryption_handler,
     ModelTypeConfigurer* configurer,
     DataTypeManagerObserver* observer)
     : configurer_(configurer),
       controllers_(controllers),
-      debug_info_listener_(debug_info_listener),
       model_load_manager_(controllers, this),
       observer_(observer),
       encryption_handler_(encryption_handler) {
@@ -353,7 +349,6 @@ void DataTypeManagerImpl::Restart() {
   UpdatePreconditionErrors(preferred_types_);
 
   last_restart_time_ = base::Time::Now();
-  configuration_stats_.clear();
 
   DCHECK(state_ == STOPPED || state_ == CONFIGURED || state_ == RETRYING);
 
@@ -640,11 +635,8 @@ void DataTypeManagerImpl::RecordConfigurationStats(
 
   ModelTypeSet same_priority_types_configured_before;
   for (ModelType type : association_types_info.types) {
-    if (ProtocolTypes().Has(type)) {
-      RecordConfigurationStatsImpl(association_types_info, type,
-                                   same_priority_types_configured_before);
+    if (ProtocolTypes().Has(type))
       same_priority_types_configured_before.Put(type);
-    }
   }
 }
 
@@ -665,31 +657,6 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&DataTypeManagerImpl::ProcessReconfigure,
                                   weak_ptr_factory_.GetWeakPtr()));
-  }
-}
-
-void DataTypeManagerImpl::RecordConfigurationStatsImpl(
-    const AssociationTypesInfo& association_types_info,
-    ModelType type,
-    ModelTypeSet same_priority_types_configured_before) {
-  if (!debug_info_listener_.IsInitialized())
-    return;
-
-  DCHECK_EQ(configuration_stats_.count(type), 0u);
-
-  configuration_stats_[type].model_type = type;
-  if (association_types_info.types.Has(type)) {
-    configuration_stats_[type].download_wait_time =
-        association_types_info.download_start_time - last_restart_time_;
-    if (association_types_info.first_sync_types.Has(type)) {
-      configuration_stats_[type].download_time =
-          association_types_info.download_ready_time -
-          association_types_info.download_start_time;
-    }
-    configuration_stats_[type].high_priority_types_configured_before =
-        association_types_info.higher_priority_types_before;
-    configuration_stats_[type].same_priority_types_configured_before =
-        same_priority_types_configured_before;
   }
 }
 
@@ -745,19 +712,6 @@ void DataTypeManagerImpl::NotifyDone(const ConfigureResult& raw_result) {
     case DataTypeManager::OK:
       DVLOG(1) << "NotifyDone called with result: OK";
       base::UmaHistogramLongTimes(prefix_uma + ".OK", configure_time);
-      if (debug_info_listener_.IsInitialized() &&
-          !configuration_stats_.empty()) {
-        std::vector<DataTypeConfigurationStats> stats;
-        for (auto& [type, stat] : configuration_stats_) {
-          // Note: |configuration_stats_| gets cleared below, so it's okay to
-          // destroy its contents here.
-          stats.push_back(std::move(stat));
-        }
-        debug_info_listener_.Call(
-            FROM_HERE, &DataTypeDebugInfoListener::OnDataTypeConfigureComplete,
-            stats);
-      }
-      configuration_stats_.clear();
       break;
     case DataTypeManager::ABORTED:
       DVLOG(1) << "NotifyDone called with result: ABORTED";

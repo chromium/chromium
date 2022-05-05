@@ -5,17 +5,12 @@
 #ifndef COMPONENTS_SYNC_ENGINE_DEBUG_INFO_EVENT_LISTENER_H_
 #define COMPONENTS_SYNC_ENGINE_DEBUG_INFO_EVENT_LISTENER_H_
 
-#include <string>
-#include <vector>
-
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/cycle/debug_info_getter.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
-#include "components/sync/engine/data_type_debug_info_listener.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_manager.h"
 #include "components/sync/protocol/client_debug_info.pb.h"
@@ -37,8 +32,7 @@ const unsigned int kMaxEntries = GetNumModelTypes() + 10;
 // This class is not thread safe and should only be accessed on the sync thread.
 class DebugInfoEventListener : public SyncManager::Observer,
                                public SyncEncryptionHandler::Observer,
-                               public DebugInfoGetter,
-                               public DataTypeDebugInfoListener {
+                               public DebugInfoGetter {
  public:
   DebugInfoEventListener();
 
@@ -80,14 +74,6 @@ class DebugInfoEventListener : public SyncManager::Observer,
   // DebugInfoGetter implementation.
   void ClearDebugInfo() override;
 
-  // DataTypeDebugInfoListener implementation.
-  void OnDataTypeConfigureComplete(
-      const std::vector<DataTypeConfigurationStats>& configuration_stats)
-      override;
-
-  // Returns a weak pointer to this object.
-  base::WeakPtr<DataTypeDebugInfoListener> GetWeakPtr();
-
  private:
   FRIEND_TEST_ALL_PREFIXES(DebugInfoEventListenerTest, VerifyEventsAdded);
   FRIEND_TEST_ALL_PREFIXES(DebugInfoEventListenerTest, VerifyQueueSize);
@@ -112,8 +98,6 @@ class DebugInfoEventListener : public SyncManager::Observer,
   bool cryptographer_can_encrypt_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<DebugInfoEventListener> weak_ptr_factory_{this};
 };
 
 }  // namespace syncer

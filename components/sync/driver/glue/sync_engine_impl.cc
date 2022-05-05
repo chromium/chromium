@@ -408,7 +408,6 @@ void SyncEngineImpl::FinishConfigureDataTypesOnFrontendLoop(
 }
 
 void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
-    const WeakHandle<DataTypeDebugInfoListener> debug_info_listener,
     std::unique_ptr<ModelTypeConnector> model_type_connector,
     const std::string& birthday,
     const std::string& bag_of_chips) {
@@ -458,15 +457,14 @@ void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
     UpdateLastSyncedTime();
   }
 
-  host_->OnEngineInitialized(debug_info_listener, /*success=*/true,
-                             is_first_time_sync_configure);
+  host_->OnEngineInitialized(/*success=*/true, is_first_time_sync_configure);
 }
 
 void SyncEngineImpl::HandleInitializationFailureOnFrontendLoop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  host_->OnEngineInitialized(WeakHandle<DataTypeDebugInfoListener>(),
-                             /*success=*/false,
-                             /*is_first_time_sync_configure=*/false);
+  host_->OnEngineInitialized(
+      /*success=*/false,
+      /*is_first_time_sync_configure=*/false);
 }
 
 void SyncEngineImpl::HandleSyncCycleCompletedOnFrontendLoop(

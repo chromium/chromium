@@ -10,7 +10,6 @@ SyncEngineHostStub::SyncEngineHostStub() = default;
 SyncEngineHostStub::~SyncEngineHostStub() = default;
 
 void SyncEngineHostStub::OnEngineInitialized(
-    const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
     bool success,
     bool is_first_time_sync_configure) {}
 

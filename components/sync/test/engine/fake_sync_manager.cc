@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/test/engine/fake_model_type_connector.h"
@@ -133,10 +132,6 @@ ModelTypeConnector* FakeSyncManager::GetModelTypeConnector() {
 std::unique_ptr<ModelTypeConnector>
 FakeSyncManager::GetModelTypeConnectorProxy() {
   return std::make_unique<FakeModelTypeConnector>();
-}
-
-WeakHandle<DataTypeDebugInfoListener> FakeSyncManager::GetDebugInfoListener() {
-  return WeakHandle<DataTypeDebugInfoListener>();
 }
 
 std::string FakeSyncManager::cache_guid() {
