@@ -639,11 +639,10 @@ Frame* Frame::Parent(FrameTreeBoundary frame_tree_boundary) const {
   // TODO(crbug.com/1123606): Remove this once we use MPArch as the underlying
   // fenced frames implementation, instead of the
   // `FencedFrameShadowDOMDelegate`.
-  if (frame_tree_boundary == FrameTreeBoundary::kFenced &&
-      RuntimeEnabledFeatures::FencedFramesEnabledByRuntimeFlag() &&
-      features::kFencedFramesImplementationTypeParam.Get() ==
-          features::FencedFramesImplementationType::kShadowDOM &&
-      Owner() && Owner()->GetFramePolicy().is_fenced) {
+  if (frame_tree_boundary == FrameTreeBoundary::kFenced && Owner() &&
+      Owner()->GetFramePolicy().is_fenced &&
+      features::IsFencedFramesEnabled() &&
+      features::IsFencedFramesShadowDOMBased()) {
     return nullptr;
   }
 
