@@ -113,9 +113,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         mWindowApplicationInsetSupplier.addSupplier(mInsetSupplier);
 
         BottomSheetContent currentSheetContent = controller.getCurrentSheetContent();
-        boolean shouldReuseContent = currentSheetContent instanceof AssistantBottomSheetContent
-                && ((AssistantBottomSheetContent) currentSheetContent).isReusable();
-        if (shouldReuseContent) {
+        if (currentSheetContent instanceof AssistantBottomSheetContent) {
             mContent = (AssistantBottomSheetContent) currentSheetContent;
             mContent.setDelegate(model::getBottomBarDelegate);
         } else {

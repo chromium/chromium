@@ -456,10 +456,6 @@ void Starter::CanStart(
   Start(std::move(trigger_context));
 }
 
-void Starter::OnDirectActionTriggered() {
-  CancelPendingStartup(Metrics::TriggerScriptFinishedState::CANCELED);
-}
-
 void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
   DCHECK(trigger_context);
   DCHECK(!trigger_context->GetDirectAction());

@@ -25,7 +25,6 @@ import org.chromium.components.autofill_assistant.AutofillAssistantDirectAction;
 import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntry;
 import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntryProvider;
 import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
-import org.chromium.components.autofill_assistant.Starter;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 
@@ -189,16 +188,6 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
 
         String experimentIds = arguments.getString(EXPERIMENT_IDS, "");
         arguments.remove(EXPERIMENT_IDS);
-
-        // In case a trigger UI is open, request closing it.
-        // See b/209399694.
-        Tab tab = mActivityTabProvider.get();
-        if (tab != null) {
-            Starter starter = AutofillAssistantTabHelper.get(tab);
-            if (starter != null) {
-                starter.onDirectActionTriggered();
-            }
-        }
 
         getDelegate(/* installIfNecessary= */ true, (delegate) -> {
             if (delegate == null) {

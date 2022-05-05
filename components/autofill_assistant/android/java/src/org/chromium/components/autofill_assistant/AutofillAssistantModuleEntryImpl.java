@@ -34,6 +34,6 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                         staticDependencies.getBrowserContext(), browserControlsFactory, rootView,
                         staticDependencies.getAccessibilityUtil(),
                         staticDependencies.createInfoPageUtil()),
-                webContentsSupplier, staticDependencies, bottomSheetController);
+                webContentsSupplier, staticDependencies);
     }
 }
