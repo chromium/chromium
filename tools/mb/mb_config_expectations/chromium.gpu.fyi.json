@@ -98,8 +98,9 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_bundled_weston": true,
-      "use_goma": true,
-      "use_ozone": true
+      "use_ozone": true,
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "GPU FYI Linux Builder": {

@@ -280,6 +280,9 @@ ci.gpu.linux_builder(
         category = "Lacros|Builder",
         short_name = "rel",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.linux_builder(

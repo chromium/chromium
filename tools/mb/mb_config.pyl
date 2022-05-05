@@ -170,7 +170,7 @@
       'chromeos-arm64-generic-rel': 'chromeos_arm64-generic_dchecks',
       'chromeos-kevin-rel': 'chromeos_kevin_dchecks_reclient',
       'chromeos-kevin-rel (reclient shadow)': 'chromeos_kevin_dchecks_reclient',
-      'lacros-amd64-generic-binary-size-rel': 'chromeos_amd64-generic_lacros_rel',
+      'lacros-amd64-generic-binary-size-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_reclient',
       'linux-ash-chromium-generator-rel': 'chromeos_with_codecs_release_bot',
@@ -179,7 +179,7 @@
       'linux-chromeos-rel': 'chromeos_with_codecs_with_lacros_release_bot',
       'linux-chromeos-rel': 'chromeos_with_codecs_with_lacros_release_bot_reclient',
       'linux-lacros-builder-rel': 'lacros_on_linux_release_bot_reclient',
-      'linux-lacros-dbg': 'lacros_on_linux_debug_bot',
+      'linux-lacros-dbg': 'lacros_on_linux_debug_bot_reclient',
       'linux-lacros-tester-rel': 'lacros_on_linux_release_bot',
     },
 
@@ -407,14 +407,14 @@
       'linux-example-builder': 'release_bot_reclient',
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols',
       'linux-headless-shell-rel': 'headless_shell_release_bot_reclient',
-      'linux-lacros-builder-fyi-rel': 'lacros_on_linux_release_bot',
+      'linux-lacros-builder-fyi-rel': 'lacros_on_linux_release_bot_reclient',
       'linux-lacros-builder-rel (goma cache silo)': 'lacros_on_linux_release_bot',
       'linux-lacros-builder-rel (reclient)': 'lacros_on_linux_release_bot_reclient',
-      'linux-lacros-code-coverage': 'lacros_on_linux_clang_code_coverage',
-      'linux-lacros-dbg-fyi': 'lacros_on_linux_debug_bot',
+      'linux-lacros-code-coverage': 'lacros_on_linux_clang_code_coverage_reclient',
+      'linux-lacros-dbg-fyi': 'lacros_on_linux_debug_bot_reclient',
       'linux-lacros-dbg-tests-fyi': 'lacros_on_linux_debug_bot',
       'linux-lacros-tester-fyi-rel': 'lacros_on_linux_release_bot',
-      'linux-lacros-version-skew-fyi': 'lacros_on_linux_release_not_build_ash_bot',
+      'linux-lacros-version-skew-fyi': 'lacros_on_linux_release_not_build_ash_bot_reclient',
       'linux-perfetto-rel': 'perfetto_release_bot_reclient',
       'linux-upload-perfetto': 'release_bot_perfetto_zlib_reclient',
       'linux-wpt-fyi-rel': 'release_trybot_minimal_symbols_reclient',
@@ -530,7 +530,7 @@
       'ChromeOS FYI Release (kevin)': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols_reclient',
       'GPU FYI Android arm Builder': 'gpu_tests_android_release_trybot_reclient',
       'GPU FYI Android arm64 Builder': 'gpu_tests_android_release_trybot_arm64_reclient',
-      'GPU FYI Lacros x64 Builder': 'gpu_tests_ozone_linux_non_x11_release_trybot',
+      'GPU FYI Lacros x64 Builder': 'gpu_tests_ozone_linux_non_x11_release_trybot_reclient',
       'GPU FYI Linux Builder': 'gpu_fyi_tests_release_trybot_reclient',
       'GPU FYI Linux Builder (dbg)': 'gpu_fyi_tests_debug_trybot_reclient',
       'GPU FYI Mac Builder': 'gpu_fyi_tests_release_trybot',
@@ -2601,6 +2601,10 @@
       'gpu_tests', 'ozone_linux', 'ozone_linux_non_x11', 'release_trybot_minimal_symbols',
     ],
 
+    'gpu_tests_ozone_linux_non_x11_release_trybot_reclient': [
+      'gpu_tests', 'ozone_linux', 'ozone_linux_non_x11', 'release_trybot_minimal_symbols_reclient',
+    ],
+
     'gpu_tests_release_bot': [
       'gpu_tests', 'release_bot',
     ],
@@ -2809,12 +2813,16 @@
         'ios', 'ios_simulator', 'ios_cpu_x64', 'release_bot', 'asan', 'xctest', 'ios_disable_xcode_project_generation',
     ],
 
-    'lacros_on_linux_clang_code_coverage': [
-      'lacros_on_linux', 'release_bot', 'also_build_ash_chrome', 'clang', 'use_clang_coverage', 'no_symbols',
+    'lacros_on_linux_clang_code_coverage_reclient': [
+      'lacros_on_linux', 'release_bot_reclient', 'also_build_ash_chrome', 'clang', 'use_clang_coverage', 'no_symbols',
     ],
 
     'lacros_on_linux_debug_bot': [
       'lacros_on_linux', 'debug_bot', 'also_build_ash_chrome',
+    ],
+
+    'lacros_on_linux_debug_bot_reclient': [
+      'lacros_on_linux', 'debug_bot_reclient', 'also_build_ash_chrome',
     ],
 
     'lacros_on_linux_release_bot': [
@@ -2827,6 +2835,10 @@
 
     'lacros_on_linux_release_not_build_ash_bot': [
       'lacros_on_linux', 'release_bot',
+    ],
+
+    'lacros_on_linux_release_not_build_ash_bot_reclient': [
+      'lacros_on_linux', 'release_bot_reclient',
     ],
 
     'lacros_on_linux_release_trybot': [

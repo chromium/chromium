@@ -364,6 +364,9 @@ ci.builder(
         category = "default",
     ),
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -483,6 +486,9 @@ ci.builder(
         category = "linux",
     ),
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.thin_tester(
@@ -499,6 +505,9 @@ ci.builder(
         category = "linux",
     ),
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.thin_tester(
@@ -1177,6 +1186,9 @@ fyi_coverage_builder(
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     use_clang_coverage = True,
     coverage_test_types = ["overall", "unit"],
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 fyi_coverage_builder(
