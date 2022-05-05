@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/search/games/game_result.h"
 
+#include <cmath>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -13,27 +14,18 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/task/thread_pool.h"
-#include "base/time/time.h"
+#include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/common/search_result_util.h"
-#include "chrome/browser/ui/app_list/search/search_tags_util.h"
-#include "chrome/browser/ui/ash/thumbnail_loader.h"
-#include "chromeos/components/string_matching/tokenized_string.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/chromeos/styles/cros_styles.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 namespace app_list {
@@ -62,6 +54,13 @@ bool IsDarkModeEnabled() {
          provider->IsDarkModeEnabled();
 }
 
+// Calculates the side length of the largest square that will fit in a circle of
+// the given diameter.
+int MaxSquareLengthForRadius(const int radius) {
+  const double hypotenuse = sqrt(2.0 * radius * radius);
+  return floor(hypotenuse);
+}
+
 }  // namespace
 
 GameResult::GameResult(Profile* profile,
@@ -70,7 +69,9 @@ GameResult::GameResult(Profile* profile,
                        const apps::Result& game,
                        double relevance,
                        const std::u16string& query)
-    : profile_(profile), list_controller_(list_controller) {
+    : profile_(profile),
+      list_controller_(list_controller),
+      dimension_(GetAppIconDimension()) {
   DCHECK(profile);
   DCHECK(list_controller);
   DCHECK(app_discovery_service);
@@ -89,10 +90,9 @@ GameResult::GameResult(Profile* profile,
   SetCategory(Category::kGames);
 
   UpdateText(game, query);
-
-  SetGenericIcon();
-  // TODO(crbug.com/1305880): Request icon from app disocvery service once API
-  // added.
+  app_discovery_service->GetIcon(
+      game.GetAppId(), dimension_, apps::ResultType::kGameSearchCatalog,
+      base::BindOnce(&GameResult::OnIconLoaded, weak_factory_.GetWeakPtr()));
 }
 
 GameResult::~GameResult() = default;
@@ -107,7 +107,6 @@ void GameResult::UpdateText(const apps::Result& game,
   const apps::GameExtras* extras = game.GetSourceExtras()->AsGameExtras();
 
   SetTitle(game.GetAppTitle());
-  SetTitleTags(CalculateTags(query, title()));
 
   std::vector<ash::SearchResultTextItem> details;
   std::vector<std::u16string> accessible_name;
@@ -146,25 +145,38 @@ void GameResult::UpdateText(const apps::Result& game,
   SetAccessibleName(base::StrCat(accessible_name));
 }
 
+void GameResult::OnIconLoaded(const gfx::ImageSkia& image,
+                              apps::DiscoveryError error) {
+  // TODO(crbug.com/1305880): Report the error to UMA.
+  if (error != apps::DiscoveryError::kSuccess) {
+    SetGenericIcon();
+    return;
+  }
+
+  // TODO(crbug.com/1305880): This code resizes and sets the provided image into
+  // a white circle. This may change if more game sources are introduced.
+  const int radius = dimension_ / 2;
+  const int size = MaxSquareLengthForRadius(radius);
+  const gfx::ImageSkia resized_image =
+      gfx::ImageSkiaOperations::CreateResizedImage(
+          image, skia::ImageOperations::ResizeMethod::RESIZE_GOOD,
+          gfx::Size(size, size));
+
+  const gfx::ImageSkia icon =
+      gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+          radius, SK_ColorWHITE, resized_image);
+
+  SetIcon(IconInfo(icon, GetAppIconDimension()));
+}
+
 void GameResult::SetGenericIcon() {
   const auto color = cros_styles::ResolveColor(
       cros_styles::ColorName::kIconColorPrimary, IsDarkModeEnabled(),
       /*use_debug_colors=*/false);
-  const gfx::IconDescription description(ash::kGameGenericIcon,
-                                         GetAppIconDimension(), color);
-  SetIcon(IconInfo(gfx::CreateVectorIcon(description), GetAppIconDimension(),
-                   IconShape::kRectangle));
-}
+  const gfx::ImageSkia icon =
+      gfx::CreateVectorIcon(ash::kGameGenericIcon, kSystemIconDimension, color);
 
-void GameResult::OnIconLoaded(const SkBitmap* bitmap) {
-  // TODO(crbug.com/1305880): This is not used yet. Should be passed as the
-  // callback to the app discovery icon fetching method once available.
-  if (!bitmap || bitmap->isNull())
-    return;
-  // TODO(crbug.com/1305880): Possibly change the icon shape to a square with a
-  // border circle, once UI decision is finalized.
-  SetIcon(IconInfo(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap),
-                   GetAppIconDimension(), IconShape::kRoundedRectangle));
+  SetIcon(IconInfo(icon, kSystemIconDimension));
 }
 
 }  // namespace app_list

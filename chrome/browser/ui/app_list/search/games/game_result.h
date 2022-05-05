@@ -6,14 +6,21 @@
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_GAMES_GAME_RESULT_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
+#include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/result.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "url/gurl.h"
 
 class AppListControllerDelegate;
 class Profile;
-class SkBitmap;
+
+namespace apps {
+class AppDiscoveryService;
+}
+
+namespace gfx {
+class ImageSkia;
+}
 
 namespace app_list {
 
@@ -36,15 +43,16 @@ class GameResult : public ChromeSearchResult {
 
  private:
   void UpdateText(const apps::Result& game, const std::u16string& query);
+  void OnIconLoaded(const gfx::ImageSkia& image, apps::DiscoveryError error);
   void SetGenericIcon();
-  void OnIconLoaded(const SkBitmap* bitmap);
 
   Profile* profile_;
   AppListControllerDelegate* list_controller_;
 
   GURL launch_url_;
+  const int dimension_;
 
-  base::WeakPtrFactory<GameResult> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GameResult> weak_factory_{this};
 };
 
 }  // namespace app_list
