@@ -112,6 +112,21 @@ public class TouchToFillIntegrationTest {
 
     @Test
     @MediumTest
+    public void testClickingButtonTriggersCallback() {
+        runOnUiThreadBlocking(() -> {
+            mTouchToFill.showCredentials(sExampleUrl, true, Collections.singletonList(sAna), false);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        pollUiThread(() -> getCredentials().getChildAt(2) != null);
+        TouchCommon.singleClickView(getCredentials().getChildAt(2));
+
+        waitForEvent(mMockBridge).onCredentialSelected(sAna);
+        verify(mMockBridge, never()).onDismissed();
+    }
+
+    @Test
+    @MediumTest
     public void testBackDismissesAndCallsCallback() {
         runOnUiThreadBlocking(() -> {
             mTouchToFill.showCredentials(sExampleUrl, true, Arrays.asList(sAna, sBob), false);
