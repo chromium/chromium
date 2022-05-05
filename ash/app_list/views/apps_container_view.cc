@@ -390,17 +390,10 @@ AppsContainerView::~AppsContainerView() {
 
 void AppsContainerView::UpdateTopLevelGridDimensions() {
   const GridLayout grid_layout = CalculateGridLayout();
-  if (features::IsProductivityLauncherEnabled()) {
-    apps_grid_view_->SetMaxColumnsAndRows(
-        /*max_columns=*/grid_layout.columns,
-        /*max_rows_on_first_page=*/grid_layout.first_page_rows,
-        /*max_rows=*/grid_layout.rows);
-  } else {
-    apps_grid_view_->SetMaxColumnsAndRows(
-        /*max_columns=*/grid_layout.columns,
-        /*max_rows_on_first_page=*/grid_layout.first_page_rows,
-        /*max_rows=*/grid_layout.rows);
-  }
+  apps_grid_view_->SetMaxColumnsAndRows(
+      /*max_columns=*/grid_layout.columns,
+      /*max_rows_on_first_page=*/grid_layout.first_page_rows,
+      /*max_rows=*/grid_layout.rows);
 }
 
 gfx::Rect AppsContainerView::CalculateAvailableBoundsForAppsGrid(
