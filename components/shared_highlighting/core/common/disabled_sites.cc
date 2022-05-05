@@ -13,24 +13,42 @@
 #include "third_party/re2/src/re2/re2.h"
 
 namespace shared_highlighting {
+static auto CreateBlocklist() {
+  if (base::FeatureList::IsEnabled(kSharedHighlightingRefinedBlocklist)) {
+    return base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
+        {{"facebook.com", "(?!.*(about)).*"},
+         // TODO(crbug.com/1157981): special case this to cover other Google
+         // TLDs
+         {"google.com", "^\\/amp\\/.*"},
+         {"instagram.com", "(?!.*(/p/)).*"},
+         {"mail.google.com", ".*"},
+         {"outlook.live.com", ".*"},
+         {"reddit.com", "(?!.*(comments)).*"},
+         {"twitter.com", "(?!.*(status)).*"},
+         {"web.whatsapp.com", ".*"},
+         {"youtube.com", "?!.*(about|community)).*"}});
+  } else {
+    return base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
+        {{"facebook.com", ".*"},
+         // TODO(crbug.com/1157981): special case this to cover other Google
+         // TLDs
+         {"google.com", "^\\/amp\\/.*"},
+         {"instagram.com", ".*"},
+         {"mail.google.com", ".*"},
+         {"outlook.live.com", ".*"},
+         {"reddit.com", ".*"},
+         {"twitter.com", ".*"},
+         {"web.whatsapp.com", ".*"},
+         {"youtube.com", ".*"}});
+  }
+}
 
 bool ShouldOfferLinkToText(const GURL& url) {
   // If a URL's host matches a key in this map, then the path will be tested
   // against the RE stored in the value. For example, {"foo.com", ".*"} means
   // any page on the foo.com domain.
-  static constexpr auto kBlocklist =
-      base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
-          {{"facebook.com", ".*"},
-           // TODO(crbug.com/1157981): special case this to cover other Google
-           // TLDs
-           {"google.com", "^\\/amp\\/.*"},
-           {"instagram.com", ".*"},
-           {"mail.google.com", ".*"},
-           {"outlook.live.com", ".*"},
-           {"reddit.com", ".*"},
-           {"twitter.com", ".*"},
-           {"web.whatsapp.com", ".*"},
-           {"youtube.com", ".*"}});
+
+  static auto kBlocklist = CreateBlocklist();
 
   std::string domain = url.host();
   if (domain.compare(0, 4, "www.") == 0) {

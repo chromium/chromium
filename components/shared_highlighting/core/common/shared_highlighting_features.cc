@@ -29,6 +29,9 @@ const base::Feature kSharedHighlightingAmp {
 const base::Feature kIOSSharedHighlightingV2{"IOSSharedHighlightingV2",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSharedHighlightingRefinedBlocklist{
+    "SharedHighlightingRefinedBlocklist", base::FEATURE_DISABLED_BY_DEFAULT};
+
 int GetPreemptiveLinkGenTimeoutLengthMs() {
   return kPreemptiveLinkGenTimeoutLengthMs.Get();
 }
