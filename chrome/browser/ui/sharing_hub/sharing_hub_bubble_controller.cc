@@ -253,9 +253,9 @@ void SharingHubBubbleController::ShowSharesheet(
       &GetWebContents(), std::move(intent),
       sharesheet::LaunchSource::kOmniboxShare,
       base::BindOnce(&SharingHubBubbleController::OnShareDelivered,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     AsWeakPtr()),
       base::BindOnce(&SharingHubBubbleController::OnSharesheetClosed,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     AsWeakPtr()));
 
   // Save the window in order to close the sharesheet if the tab is closed. This
   // will return the incorrect window if called later.
