@@ -2,45 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, ENTRIES, EntryType, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {addEntries, ENTRIES, EntryType, getDateWithinLastMonth, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {mountCrostini, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {mountCrostini, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {BASIC_CROSTINI_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, NESTED_ENTRY_SET, RECENT_ENTRY_SET} from './test_data.js';
 
 // Test entry for a recently-modified video file.
-const RECENTLY_MODIFIED_VIDEO = new TestEntryInfo({
-  type: EntryType.FILE,
-  sourceFileName: 'video.ogv',
-  targetPath: 'world.ogv',
-  mimeType: 'video/ogg',
-  lastModifiedTime: 'Jul 4, 2038, 10:35 AM',
-  nameText: 'world.ogv',
-  sizeText: '59 KB',
-  typeText: 'OGG video'
-});
-const RECENTLY_MODIFIED_MOV_VIDEO = new TestEntryInfo({
-  type: EntryType.FILE,
-  sourceFileName: 'video.mov',
-  targetPath: 'mac.mov',
-  lastModifiedTime: 'Jul 4, 2038, 10:35 AM',
-  nameText: 'mac.mov',
-  sizeText: '875 bytes',
-  typeText: 'QuickTime video'
-});
+const RECENTLY_MODIFIED_VIDEO =
+    ENTRIES.world.cloneWithModifiedDate(getDateWithinLastMonth());
+const RECENTLY_MODIFIED_MOV_VIDEO =
+    ENTRIES.movFile.cloneWithModifiedDate(getDateWithinLastMonth());
 
 // Test entry for a recently-modified document file.
-const RECENTLY_MODIFIED_DOCUMENT = new TestEntryInfo({
-  type: EntryType.FILE,
-  sourceFileName: 'text.docx',
-  targetPath: 'word.docx',
-  mimeType: 'application/vnd.openxmlformats-officedocument' +
-      '.wordprocessingml.document',
-  lastModifiedTime: 'Jul 4, 2038, 10:35 AM',
-  nameText: 'word.docx',
-  sizeText: '9 KB',
-  typeText: 'Word document'
-});
+const RECENTLY_MODIFIED_DOCUMENT =
+    ENTRIES.docxFile.cloneWithModifiedDate(getDateWithinLastMonth());
+
+// Test entries for recent-modified android files.
+const RECENT_MODIFIED_ANDROID_DOCUMENT =
+    ENTRIES.documentsText.cloneWithModifiedDate(getDateWithinLastMonth());
+const RECENT_MODIFIED_ANDROID_IMAGE =
+    ENTRIES.picturesImage.cloneWithModifiedDate(getDateWithinLastMonth());
+const RECENT_MODIFIED_ANDROID_AUDIO =
+    ENTRIES.musicAudio.cloneWithModifiedDate(getDateWithinLastMonth());
+const RECENT_MODIFIED_ANDROID_VIDEO =
+    ENTRIES.moviesVideo.cloneWithModifiedDate(getDateWithinLastMonth());
 
 /**
  * Enum for supported recent filter types.
@@ -55,9 +41,24 @@ const RecentFilterType = {
 };
 
 /**
+ * Add file entries to the Play Files folder and update media view root.
+ */
+async function addPlayFileEntries() {
+  // We can't add file entries to Play Files ('android_files') directly,
+  // because they won't be picked up by the fake ARC file system. Instead,
+  // we need to add file entries to the corresponding media view root.
+  await sendTestMessage({name: 'mountMediaView'});
+  await addEntries(['media_view_audio'], [RECENT_MODIFIED_ANDROID_AUDIO]);
+  await addEntries(['media_view_images'], [RECENT_MODIFIED_ANDROID_IMAGE]);
+  await addEntries(['media_view_videos'], [RECENT_MODIFIED_ANDROID_VIDEO]);
+  await addEntries(
+      ['media_view_documents'], [RECENT_MODIFIED_ANDROID_DOCUMENT]);
+}
+
+/**
  * Checks if the #file-filters-in-recents flag has been enabled or not.
  *
- * @returns {!Promise<boolean>} Flag enabled or not.
+ * @return {!Promise<boolean>} Flag enabled or not.
  */
 async function isFiltersInRecentsEnabled() {
   const isFiltersInRecentsEnabled =
@@ -260,6 +261,24 @@ testcase.recentsDrive = async () => {
 };
 
 /**
+ * Tests that file entries populated in Play Files folder recently will be
+ * displayed in Recent folder.
+ */
+testcase.recentsPlayFiles = async () => {
+  // Populate Play Files.
+  await addPlayFileEntries();
+  const appId = await openNewWindow(RootPath.ANDROID_FILES, {});
+  await remoteCall.waitFor('isFileManagerLoaded', appId, true);
+
+  // Verifies file list in Recents. Audio files from Play Files folder are
+  // not supported in Recents.
+  await verifyRecents(appId, [
+    RECENT_MODIFIED_ANDROID_DOCUMENT, RECENT_MODIFIED_ANDROID_IMAGE,
+    RECENT_MODIFIED_ANDROID_VIDEO
+  ]);
+};
+
+/**
  * Tests that file entries populated in Crostini folder recently won't be
  * displayed in Recent folder when Crostini has not been mounted.
  */
@@ -295,6 +314,23 @@ testcase.recentsDownloadsAndDrive = async () => {
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.hello, ENTRIES.photos],
       [ENTRIES.desktop, ENTRIES.world, ENTRIES.testDocument]);
   await verifyRecents(appId);
+};
+
+/**
+ * Tests that file entries populated in Downloads, Drive and Play Files folder
+ * recently will be displayed in Recent folder.
+ */
+testcase.recentsDownloadsAndDriveAndPlayFiles = async () => {
+  // Populate downloads, drive and play files.
+  await addPlayFileEntries();
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.hello, ENTRIES.photos],
+      [ENTRIES.desktop, ENTRIES.world, ENTRIES.testDocument]);
+
+  await verifyRecents(appId, RECENT_ENTRY_SET.concat([
+    RECENT_MODIFIED_ANDROID_DOCUMENT, RECENT_MODIFIED_ANDROID_IMAGE,
+    RECENT_MODIFIED_ANDROID_VIDEO
+  ]));
 };
 
 /**
@@ -373,6 +409,20 @@ testcase.recentAudioDownloadsAndDrive = async () => {
 };
 
 /**
+ * Tests that the audio file entries populated in Downloads, Drive and Play
+ * Files folder recently will be displayed in Recent Audio folder.
+ */
+testcase.recentAudioDownloadsAndDriveAndPlayFiles = async () => {
+  await addPlayFileEntries();
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, BASIC_DRIVE_ENTRY_SET);
+  // ENTRIES.beautiful in BASIC_DRIVE_ENTRY_SET does not have mime type, so it
+  // won't be included. Also, Play Files recents doesn't support audio root,
+  // so audio file in Play Files won't be included.
+  await verifyRecentAudio(appId, [ENTRIES.beautiful]);
+};
+
+/**
  * Tests that the image file entries populated in Downloads folder recently will
  * be displayed in Recents Image folder.
  */
@@ -397,8 +447,19 @@ testcase.recentImagesDownloadsAndDrive = async () => {
 };
 
 /**
+ * Tests that the image file entries populated in Downloads, Drive and Play
+ * Files folder recently will be displayed in Recents Image folder.
+ */
+testcase.recentImagesDownloadsAndDriveAndPlayFiles = async () => {
+  await addPlayFileEntries();
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  await verifyRecentImages(
+      appId, [ENTRIES.desktop, ENTRIES.desktop, RECENT_MODIFIED_ANDROID_IMAGE]);
+};
+
+/**
  * Tests that the video file entries populated in Downloads folder recently will
- * be displayed in Recent Image folder.
+ * be displayed in Recent Videos folder.
  */
 testcase.recentVideosDownloads = async () => {
   // RECENTLY_MODIFIED_VIDEO is recently-modified and has .ogv file extension.
@@ -430,6 +491,22 @@ testcase.recentVideosDownloadsAndDrive = async () => {
 };
 
 /**
+ * Tests that the video file entries populated in Downloads, Drive and Play
+ * Files folder recently will be displayed in Recent Image folder.
+ */
+testcase.recentVideosDownloadsAndDriveAndPlayFiles = async () => {
+  await addPlayFileEntries();
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS,
+      BASIC_LOCAL_ENTRY_SET.concat([RECENTLY_MODIFIED_VIDEO]),
+      BASIC_DRIVE_ENTRY_SET.concat([RECENTLY_MODIFIED_VIDEO]));
+  await verifyRecentVideos(appId, [
+    RECENTLY_MODIFIED_VIDEO, RECENTLY_MODIFIED_VIDEO,
+    RECENT_MODIFIED_ANDROID_VIDEO
+  ]);
+};
+
+/**
  * Tests that the document file entries populated in Downloads folder recently
  * will be displayed in Recent Document folder.
  */
@@ -453,6 +530,21 @@ testcase.recentDocumentsDownloadsAndDrive = async () => {
   // file will appear twice in the result.
   await verifyRecentDocuments(
       appId, [RECENTLY_MODIFIED_DOCUMENT, RECENTLY_MODIFIED_DOCUMENT]);
+};
+
+/**
+ * Tests that the document file entries populated in Downloads, Drive and Play
+ * Files folder recently will be displayed in Recent Document folder.
+ */
+testcase.recentDocumentsDownloadsAndDriveAndPlayFiles = async () => {
+  await addPlayFileEntries();
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [RECENTLY_MODIFIED_DOCUMENT],
+      [RECENTLY_MODIFIED_DOCUMENT]);
+  await verifyRecentDocuments(appId, [
+    RECENTLY_MODIFIED_DOCUMENT, RECENTLY_MODIFIED_DOCUMENT,
+    RECENT_MODIFIED_ANDROID_DOCUMENT
+  ]);
 };
 
 /**

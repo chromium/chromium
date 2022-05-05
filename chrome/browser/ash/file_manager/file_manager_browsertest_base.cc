@@ -235,6 +235,7 @@ struct AddEntriesMessage {
     MEDIA_VIEW_AUDIO,
     MEDIA_VIEW_IMAGES,
     MEDIA_VIEW_VIDEOS,
+    MEDIA_VIEW_DOCUMENTS,
     SMBFS_VOLUME,
   };
 
@@ -291,6 +292,8 @@ struct AddEntriesMessage {
       *volume = MEDIA_VIEW_IMAGES;
     else if (value == "media_view_videos")
       *volume = MEDIA_VIEW_VIDEOS;
+    else if (value == "media_view_documents")
+      *volume = MEDIA_VIEW_DOCUMENTS;
     else if (value == "smbfs")
       *volume = SMBFS_VOLUME;
     else
@@ -1438,6 +1441,14 @@ class DocumentsProviderTestVolume : public TestVolume {
     if (entry.type != AddEntriesMessage::FILE)
       return;
 
+    // arc::FakeFileSystemInstance has a dedicated method AddRecentDocument(),
+    // to make the newly added file entry work with Recents view, we need to
+    // manually call that method to add the new entry to recent file list.
+    base::Time cutoff_time = base::Time::Now() - base::Days(30);
+    if (entry.last_modified_time > cutoff_time) {
+      file_system_instance_->AddRecentDocument(root_document_id_, document);
+    }
+
     std::string canonical_url = base::StrCat(
         {"content://", authority_, "/document/", EncodeURI(entry.name_text)});
     arc::FakeFileSystemInstance::File file(
@@ -2557,6 +2568,13 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
             LOG(FATAL) << "Add entry: but no MediaView Videos volume.";
           }
           break;
+        case AddEntriesMessage::MEDIA_VIEW_DOCUMENTS:
+          if (media_view_documents_) {
+            media_view_documents_->CreateEntry(*message.entries[i]);
+          } else {
+            LOG(FATAL) << "Add entry: but no MediaView Documents volume.";
+          }
+          break;
         case AddEntriesMessage::SMBFS_VOLUME:
           CHECK(smbfs_volume_);
           ASSERT_TRUE(smbfs_volume_->Initialize(profile()));
@@ -2699,10 +2717,14 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     media_view_audio_ = std::make_unique<MediaViewTestVolume>(
         arc_file_system_instance_.get(),
         "com.android.providers.media.documents", arc::kAudioRootDocumentId);
+    media_view_documents_ = std::make_unique<MediaViewTestVolume>(
+        arc_file_system_instance_.get(),
+        "com.android.providers.media.documents", arc::kDocumentsRootDocumentId);
 
     ASSERT_TRUE(media_view_images_->Mount(profile()));
     ASSERT_TRUE(media_view_videos_->Mount(profile()));
     ASSERT_TRUE(media_view_audio_->Mount(profile()));
+    ASSERT_TRUE(media_view_documents_->Mount(profile()));
     return;
   }
 

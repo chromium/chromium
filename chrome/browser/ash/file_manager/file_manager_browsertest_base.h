@@ -255,6 +255,7 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   std::unique_ptr<MediaViewTestVolume> media_view_images_;
   std::unique_ptr<MediaViewTestVolume> media_view_videos_;
   std::unique_ptr<MediaViewTestVolume> media_view_audio_;
+  std::unique_ptr<MediaViewTestVolume> media_view_documents_;
   std::unique_ptr<SmbfsTestVolume> smbfs_volume_;
   std::unique_ptr<HiddenTestVolume> hidden_volume_;
 
