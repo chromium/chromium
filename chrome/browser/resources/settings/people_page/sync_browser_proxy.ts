@@ -16,6 +16,8 @@ export type StoredAccount = {
 };
 
 /**
+ * TODO(crbug.com/1322559): signedIn doesn't indicate if the user is signed-in,
+ * but instead if the user is syncing.
  * TODO(crbug.com/1107771): childUser and supervisedUser are only consumed
  * together and the latter implies the former, so it should be enough to have
  * only one of them here. The linked bug has other clean-up suggestions.
