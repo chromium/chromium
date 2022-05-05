@@ -71,9 +71,7 @@ class DeviceDisabled extends DeviceDisabledElementBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('DeviceDisabledScreen', {
-      resetAllowed: false,
-    });
+    this.initializeLoginScreen('DeviceDisabledScreen');
   }
 
   /** @override */

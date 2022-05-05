@@ -55,9 +55,7 @@ class HWDataCollectionScreen extends HWDataCollectionScreenElementBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('HWDataCollectionScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('HWDataCollectionScreen');
   }
 
   /**

@@ -132,9 +132,7 @@ class FingerprintSetup extends FingerprintSetupBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('FingerprintSetupScreen', {
-      resetAllowed: false,
-    });
+    this.initializeLoginScreen('FingerprintSetupScreen');
   }
 
   /** Initial UI State for screen */

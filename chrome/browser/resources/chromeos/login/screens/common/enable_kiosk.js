@@ -62,9 +62,7 @@ class EnableKiosk extends EnableKioskBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('KioskEnableScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('KioskEnableScreen');
   }
 
   /** Called after resources are updated. */

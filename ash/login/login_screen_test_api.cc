@@ -20,6 +20,8 @@
 #include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/pin_request_view.h"
 #include "ash/login/ui/pin_request_widget.h"
+#include "ash/public/cpp/login_screen.h"
+#include "ash/public/cpp/login_screen_client.h"
 #include "ash/shelf/login_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
@@ -28,6 +30,7 @@
 #include "base/check.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -482,8 +485,27 @@ bool LoginScreenTestApi::ClickOsInstallButton() {
 
 // static
 bool LoginScreenTestApi::PressAccelerator(const ui::Accelerator& accelerator) {
+  // TODO(https://crbug.com/1321609): Migrate to SendAcceleratorNatively.
   LockScreen::TestApi lock_screen_test(LockScreen::Get());
   return lock_screen_test.contents_view()->AcceleratorPressed(accelerator);
+}
+
+// static
+bool LoginScreenTestApi::SendAcceleratorNatively(
+    const ui::Accelerator& accelerator) {
+  gfx::NativeWindow login_window = nullptr;
+  if (LockScreen::HasInstance()) {
+    login_window = LockScreen::Get()->widget()->GetNativeWindow();
+  } else {
+    login_window =
+        LoginScreen::Get()->GetLoginWindowWidget()->GetNativeWindow();
+  }
+  if (!login_window)
+    return false;
+  return ui_controls::SendKeyPress(
+      login_window, accelerator.key_code(), accelerator.IsCtrlDown(),
+      accelerator.IsShiftDown(), accelerator.IsAltDown(),
+      accelerator.IsCmdDown());
 }
 
 // static

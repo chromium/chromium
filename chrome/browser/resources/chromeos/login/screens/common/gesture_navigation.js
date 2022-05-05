@@ -54,7 +54,7 @@ class GestureNavigation extends GestureScreenElementBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('GestureNavigationScreen', {resetAllowed: true});
+    this.initializeLoginScreen('GestureNavigationScreen');
   }
 
   /**

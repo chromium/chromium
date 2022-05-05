@@ -106,9 +106,7 @@ class UpdateRequired extends UpdateRequiredBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('UpdateRequiredScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('UpdateRequiredScreen');
     this.updateEolDeleteUsersDataMessage_();
   }
 

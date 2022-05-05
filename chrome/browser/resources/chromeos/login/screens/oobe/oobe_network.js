@@ -112,9 +112,7 @@ class NetworkScreen extends NetworkScreenBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('NetworkScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('NetworkScreen');
     this.updateLocalizedContent();
   }
 

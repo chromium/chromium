@@ -43,7 +43,7 @@ class PackagedLicenseScreen extends PackagedLicenseScreenBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('PackagedLicenseScreen', {resetAllowed: true});
+    this.initializeLoginScreen('PackagedLicenseScreen');
   }
 
   /**

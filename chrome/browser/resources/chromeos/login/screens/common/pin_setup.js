@@ -117,9 +117,7 @@ class PinSetup extends PinSetupBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('PinSetupScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('PinSetupScreen');
   }
 
   defaultUIStep() {

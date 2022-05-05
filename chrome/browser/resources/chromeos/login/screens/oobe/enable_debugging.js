@@ -81,9 +81,7 @@ class EnableDebugging extends EnableDebuggingBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('EnableDebuggingScreen', {
-      resetAllowed: false,
-    });
+    this.initializeLoginScreen('EnableDebuggingScreen');
   }
 
   defaultUIStep() {

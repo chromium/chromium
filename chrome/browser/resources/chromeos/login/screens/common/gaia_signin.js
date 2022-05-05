@@ -380,9 +380,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     this.authenticator_.recordSAMLProviderCallback =
         this.recordSAMLProvider_.bind(this);
 
-    this.initializeLoginScreen('GaiaSigninScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('GaiaSigninScreen');
   }
 
   /**

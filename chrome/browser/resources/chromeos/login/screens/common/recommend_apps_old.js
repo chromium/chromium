@@ -79,9 +79,7 @@ class RecommendAppsOldElement extends RecommendAppsOldElementBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('RecommendAppsOldScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('RecommendAppsOldScreen');
     window.addEventListener('message', this.onMessage_.bind(this));
   }
 

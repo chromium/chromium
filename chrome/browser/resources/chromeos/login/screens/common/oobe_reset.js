@@ -205,7 +205,7 @@ class OobeReset extends ResetScreenElementBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('ResetScreen', {resetAllowed: false});
+    this.initializeLoginScreen('ResetScreen');
   }
 
   /**

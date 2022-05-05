@@ -222,9 +222,7 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('ErrorMessageScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('ErrorMessageScreen');
 
     this.updateLocalizedContent();
   }

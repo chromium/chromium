@@ -75,9 +75,7 @@ class OsInstall extends OsInstallScreenElementBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('OsInstallScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('OsInstallScreen');
   }
 
   /**

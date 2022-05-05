@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
-#include "chrome/browser/ash/login/screens/reset_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_size_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -35,7 +34,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/demo_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
-#include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
@@ -129,7 +127,6 @@ void CoreOobeHandler::RegisterMessages() {
   AddCallback("skipToLoginForTesting",
               &CoreOobeHandler::HandleSkipToLoginForTesting);
   AddCallback("launchHelpApp", &CoreOobeHandler::HandleLaunchHelpApp);
-  AddCallback("toggleResetScreen", &CoreOobeHandler::HandleToggleResetScreen);
   AddCallback("raiseTabKeyEvent", &CoreOobeHandler::HandleRaiseTabKeyEvent);
   AddCallback("startDemoModeSetupForTesting",
               &CoreOobeHandler::HandleStartDemoModeSetupForTesting);
@@ -179,29 +176,6 @@ void CoreOobeHandler::HandleSkipToLoginForTesting() {
   WizardController* controller = WizardController::default_controller();
   if (controller && controller->is_initialized())
     WizardController::default_controller()->SkipToLoginForTesting();
-}
-
-void CoreOobeHandler::HandleToggleResetScreen() {
-  base::OnceCallback<void(bool, absl::optional<tpm_firmware_update::Mode>)>
-      callback =
-          base::BindOnce(&CoreOobeHandler::HandleToggleResetScreenCallback,
-                         weak_ptr_factory_.GetWeakPtr());
-  ResetScreen::CheckIfPowerwashAllowed(std::move(callback));
-}
-
-void CoreOobeHandler::HandleToggleResetScreenCallback(
-    bool is_reset_allowed,
-    absl::optional<tpm_firmware_update::Mode> tpm_firmware_update_mode) {
-  if (!is_reset_allowed)
-    return;
-  if (tpm_firmware_update_mode.has_value()) {
-    // Force the TPM firmware update option to be enabled.
-    g_browser_process->local_state()->SetInteger(
-        prefs::kFactoryResetTPMFirmwareUpdateMode,
-        static_cast<int>(tpm_firmware_update_mode.value()));
-  }
-  DCHECK(LoginDisplayHost::default_host());
-  LoginDisplayHost::default_host()->StartWizard(ResetView::kScreenId);
 }
 
 void CoreOobeHandler::ShowOobeUI(bool show) {

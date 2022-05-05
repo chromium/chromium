@@ -126,7 +126,7 @@ class MarketingOptIn extends MarketingScreenElementBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('MarketingOptInScreen', {resetAllowed: true});
+    this.initializeLoginScreen('MarketingOptInScreen');
   }
 
   /** Shortcut method to control animation */

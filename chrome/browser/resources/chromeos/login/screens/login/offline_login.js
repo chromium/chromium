@@ -129,9 +129,7 @@ class OfflineLogin extends OfflineLoginBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('OfflineLoginScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('OfflineLoginScreen');
   }
 
   attached() {

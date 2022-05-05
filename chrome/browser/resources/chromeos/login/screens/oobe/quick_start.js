@@ -61,9 +61,7 @@ class QuickStartScreen extends QuickStartScreenBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('QuickStartScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('QuickStartScreen');
   }
 
   /** @override */

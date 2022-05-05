@@ -122,9 +122,7 @@ class ActiveDirectoryPasswordChange extends ActiveDirectoryPasswordChangeBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('ActiveDirectoryPasswordChangeScreen', {
-      resetAllowed: false,
-    });
+    this.initializeLoginScreen('ActiveDirectoryPasswordChangeScreen');
   }
 
   /**

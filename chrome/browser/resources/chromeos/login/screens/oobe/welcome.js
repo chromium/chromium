@@ -187,9 +187,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('WelcomeScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('WelcomeScreen');
     this.updateLocalizedContent();
   }
 

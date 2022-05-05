@@ -55,9 +55,7 @@ class OsTrial extends OsTrialScreenElementBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('OsTrialScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('OsTrialScreen');
   }
 
   /**

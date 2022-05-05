@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
+#include "chrome/browser/ash/login/screens/reset_screen.h"
 #include "chrome/browser/ash/login/screens/saml_confirm_password_screen.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -40,10 +41,12 @@
 #include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/strings/grit/components_strings.h"
@@ -417,6 +420,18 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
       GetWizardController()->HandleAccelerator(action)) {
     return true;
   }
+
+  // We check the reset screen accelerator after checking with the
+  // WizardController because this accelerator is also handled by the
+  // reset screen itself - triggering the rollback option. In such case we
+  // return in the previous statement.
+  if (action == LoginAcceleratorAction::kShowResetScreen) {
+    ResetScreen::CheckIfPowerwashAllowed(
+        base::BindOnce(&LoginDisplayHostCommon::OnPowerwashAllowedCallback,
+                       weak_factory_.GetWeakPtr()));
+    return true;
+  }
+
   // There are currently no global accelerators for the lock screen that
   // require WebUI. So we do not need to specifically load it when user is
   // logged in.
@@ -437,6 +452,20 @@ void LoginDisplayHostCommon::SetScreenAfterManagedTos(OobeScreenId screen_id) {
   if (screen_id == TermsOfServiceScreenView::kScreenId)
     screen_id = FamilyLinkNoticeView::kScreenId;
   wizard_context_->screen_after_managed_tos = screen_id;
+}
+
+void LoginDisplayHostCommon::OnPowerwashAllowedCallback(
+    bool is_reset_allowed,
+    absl::optional<tpm_firmware_update::Mode> tpm_firmware_update_mode) {
+  if (!is_reset_allowed)
+    return;
+  if (tpm_firmware_update_mode.has_value()) {
+    // Force the TPM firmware update option to be enabled.
+    g_browser_process->local_state()->SetInteger(
+        prefs::kFactoryResetTPMFirmwareUpdateMode,
+        static_cast<int>(tpm_firmware_update_mode.value()));
+  }
+  StartWizard(ResetView::kScreenId);
 }
 
 void LoginDisplayHostCommon::StartUserOnboarding() {

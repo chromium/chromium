@@ -34,9 +34,7 @@ class WrongHWID extends WrongHWIDBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('WrongHWIDMessageScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('WrongHWIDMessageScreen');
   }
 
   /** Initial UI State for screen */

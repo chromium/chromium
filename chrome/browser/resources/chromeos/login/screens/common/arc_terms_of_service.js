@@ -236,9 +236,7 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('ArcTermsOfServiceScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('ArcTermsOfServiceScreen');
 
     if (loadTimeData.valueExists('arcTosHostNameForTesting')) {
       this.setTosHostNameForTesting_(

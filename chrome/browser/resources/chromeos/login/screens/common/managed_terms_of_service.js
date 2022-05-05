@@ -106,9 +106,7 @@ class ManagedTermsOfService extends ManagedTermsOfServiceBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('TermsOfServiceScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('TermsOfServiceScreen');
   }
 
   focus() {

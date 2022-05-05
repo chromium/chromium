@@ -80,9 +80,7 @@ class DemoSetupScreen extends DemoSetupScreenBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('DemoSetupScreen', {
-      resetAllowed: false,
-    });
+    this.initializeLoginScreen('DemoSetupScreen');
   }
 
   defaultUIStep() {

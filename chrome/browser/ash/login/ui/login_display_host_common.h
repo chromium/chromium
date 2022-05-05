@@ -132,6 +132,10 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   // TermsOfServiceScreen.
   void SetScreenAfterManagedTos(OobeScreenId screen_id);
 
+  void OnPowerwashAllowedCallback(
+      bool is_reset_allowed,
+      absl::optional<tpm_firmware_update::Mode> tpm_firmware_update_mode);
+
   // True if session start is in progress.
   bool session_starting_ = false;
 

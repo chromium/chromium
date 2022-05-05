@@ -80,9 +80,7 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('DemoPreferencesScreen', {
-      resetAllowed: false,
-    });
+    this.initializeLoginScreen('DemoPreferencesScreen');
     this.updateLocalizedContent();
   }
 

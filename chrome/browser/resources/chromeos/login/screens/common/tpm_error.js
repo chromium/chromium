@@ -51,9 +51,7 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('TPMErrorMessageScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('TPMErrorMessageScreen');
   }
 
   /** @override */

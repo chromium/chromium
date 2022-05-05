@@ -11,7 +11,6 @@
 
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
@@ -113,17 +112,10 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void HandleUpdateCurrentScreen(const std::string& screen);
   void HandleSkipToLoginForTesting();
   void HandleLaunchHelpApp(int help_topic_id);
-  void HandleToggleResetScreen();
   // Handles demo mode setup for tests. Accepts 'online' and 'offline' as
   // `demo_config`.
   void HandleStartDemoModeSetupForTesting(const std::string& demo_config);
   void HandleUpdateOobeUIState(int state);
-
-  // Shows the reset screen if `is_reset_allowed` and updates the
-  // tpm_firmware_update in settings.
-  void HandleToggleResetScreenCallback(
-      bool is_reset_allowed,
-      absl::optional<tpm_firmware_update::Mode> tpm_firmware_update_mode);
 
   // When keyboard_utils.js arrow key down event is reached, raise it
   // to tab/shift-tab event.
@@ -143,8 +135,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
 
   // Help application used for help dialogs.
   scoped_refptr<HelpAppLauncher> help_app_;
-
-  base::WeakPtrFactory<CoreOobeHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos

@@ -136,9 +136,7 @@ class UserCreation extends UserCreationScreenElementBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('UserCreationScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('UserCreationScreen');
   }
 
   getOobeUIInitialState() {

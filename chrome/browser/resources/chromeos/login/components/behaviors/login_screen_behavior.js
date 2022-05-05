@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {OOBE_UI_STATE, DisplayManagerScreenAttributes} from '../display_manager_types.m.js';
+// #import {OOBE_UI_STATE} from '../display_manager_types.m.js';
 // #import {OobeTypes} from '../oobe_types.m.js';
 // #import {Oobe} from '../../cr_ui.m.js';
 
@@ -24,9 +24,8 @@ const CALLBACK_USER_ACTED = 'userActed';
   /**
    * Initialize screen behavior.
    * @param {string} screenName Name of created class (external api prefix).
-   * @param {DisplayManagerScreenAttributes} attributes
    */
-  initializeLoginScreen(screenName, attributes) {
+  initializeLoginScreen(screenName) {
     const api = {};
 
     if (this.EXTERNAL_API.length != 0) {
@@ -42,7 +41,7 @@ const CALLBACK_USER_ACTED = 'userActed';
     }
     this.sendPrefix_ = 'login.' + screenName + '.';
     this.registerScreenApi_(screenName, api);
-    Oobe.getInstance().registerScreen(this, attributes);
+    Oobe.getInstance().registerScreen(this);
   },
 
 
@@ -158,9 +157,8 @@ LoginScreenBehavior.Proto;
 /* #export */ class LoginScreenBehaviorInterface {
   /**
    * @param {string} screenName
-   * @param {DisplayManagerScreenAttributes} attributes
    */
-  initializeLoginScreen(screenName, attributes) {}
+  initializeLoginScreen(screenName) {}
 
   userActed(action_id) {}
 

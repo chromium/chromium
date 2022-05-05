@@ -360,9 +360,7 @@ class EulaScreen extends EulaScreenBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('EulaScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('EulaScreen');
   }
 
   /**

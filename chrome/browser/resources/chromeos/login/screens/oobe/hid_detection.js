@@ -157,9 +157,7 @@ class HidDetectionScreen extends HidDetectionScreenBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('HIDDetectionScreen', {
-      resetAllowed: false,
-    });
+    this.initializeLoginScreen('HIDDetectionScreen');
   }
 
   getPrerequisitesText_(locale, touchscreenDetected) {

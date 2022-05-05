@@ -84,9 +84,7 @@ class SigninFatalScreen extends SigninFatalErrorBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('SignInFatalErrorScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('SignInFatalErrorScreen');
   }
 
   /** Initial UI State for screen */

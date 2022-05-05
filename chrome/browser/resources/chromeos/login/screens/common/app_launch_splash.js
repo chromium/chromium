@@ -57,9 +57,7 @@ class AppLaunchSplash extends AppLaunchSplashBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('AppLaunchSplashScreen', {
-      resetAllowed: false,
-    });
+    this.initializeLoginScreen('AppLaunchSplashScreen');
 
     const networkContainer = this.$.configNetworkContainer;
     networkContainer.addEventListener(

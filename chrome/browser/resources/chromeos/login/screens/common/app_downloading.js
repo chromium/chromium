@@ -32,9 +32,7 @@ class AppDownloading extends AppDownloadingBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('AppDownloadingScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('AppDownloadingScreen');
   }
 
   /** Initial UI State for screen */

@@ -194,9 +194,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('OAuthEnrollmentScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('OAuthEnrollmentScreen');
 
     // Establish an initial messaging between content script and
     // host script so that content script can message back.

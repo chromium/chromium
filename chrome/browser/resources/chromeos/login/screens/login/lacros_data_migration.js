@@ -105,9 +105,7 @@ class LacrosDataMigrationScreen extends LacrosDataMigrationScreenElementBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('LacrosDataMigrationScreen', {
-      resetAllowed: false,
-    });
+    this.initializeLoginScreen('LacrosDataMigrationScreen');
   }
 
   onSkipButtonClicked_() {

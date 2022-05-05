@@ -181,9 +181,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('ConsolidatedConsentScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('ConsolidatedConsentScreen');
     this.updateLocalizedContent();
 
     if (loadTimeData.valueExists(

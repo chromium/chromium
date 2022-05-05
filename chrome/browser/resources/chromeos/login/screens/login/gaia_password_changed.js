@@ -76,9 +76,7 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
    */
   ready() {
     super.ready();
-    this.initializeLoginScreen('GaiaPasswordChangedScreen', {
-      resetAllowed: false,
-    });
+    this.initializeLoginScreen('GaiaPasswordChangedScreen');
 
     cr.ui.LoginUITools.addSubmitListener(
         this.$.oldPasswordInput, this.submit_.bind(this));

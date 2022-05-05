@@ -35,9 +35,7 @@ class AssistantOptin extends AssistantOptinBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('AssistantOptInFlowScreen', {
-      resetAllowed: false,
-    });
+    this.initializeLoginScreen('AssistantOptInFlowScreen');
   }
 
   /**

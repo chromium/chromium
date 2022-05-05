@@ -141,7 +141,7 @@ class MultiDeviceSetupScreen extends MultiDeviceSetupScreenBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('MultiDeviceSetupScreen', {});
+    this.initializeLoginScreen('MultiDeviceSetupScreen');
     this.updateLocalizedContent();
   }
 

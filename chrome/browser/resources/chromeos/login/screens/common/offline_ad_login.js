@@ -258,9 +258,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
     if (this.isDomainJoin) {
       this.setupEncList();
     } else {
-      this.initializeLoginScreen('ActiveDirectoryLoginScreen', {
-        resetAllowed: true,
-      });
+      this.initializeLoginScreen('ActiveDirectoryLoginScreen');
     }
   }
 

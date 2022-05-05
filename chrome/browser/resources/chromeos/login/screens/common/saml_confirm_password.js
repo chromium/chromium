@@ -75,9 +75,7 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('ConfirmSamlPasswordScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('ConfirmSamlPasswordScreen');
 
     cr.ui.LoginUITools.addSubmitListener(
         this.$.passwordInput, this.submit_.bind(this));

@@ -64,9 +64,7 @@ class AdbSideloading extends AdbSideloadingBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('EnableAdbSideloadingScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('EnableAdbSideloadingScreen');
   }
 
   /*

@@ -74,9 +74,7 @@ class SmartPrivacyProtectionScreen extends
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('SmartPrivacyProtectionScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('SmartPrivacyProtectionScreen');
   }
 
   /**

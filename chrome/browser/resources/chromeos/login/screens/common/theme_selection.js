@@ -68,9 +68,7 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('ThemeSelectionScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('ThemeSelectionScreen');
     this.selectedTheme = 'auto';
   }
 

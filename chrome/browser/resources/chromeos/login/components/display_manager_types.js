@@ -8,19 +8,6 @@
  */
 
 /**
- * @typedef {{
- *   resetAllowed: (boolean|undefined),
- * }}
- */
-/* #export */ const DisplayManagerScreenAttributes = {};
-
-/**
- * True if device reset is allowed on the screen.
- * @type {boolean|undefined}
- */
-DisplayManagerScreenAttributes.resetAllowed;
-
-/**
  * Possible types of UI.
  * @enum {string}
  */
@@ -61,65 +48,11 @@ DisplayManagerScreenAttributes.resetAllowed;
 
 // TODO(crbug.com/1229130) - Refactor/remove these constants.
 /* #export */ const SCREEN_WELCOME = 'connect';
-/* #export */ const SCREEN_OOBE_NETWORK = 'network-selection';
-/* #export */ const SCREEN_OOBE_HID_DETECTION = 'hid-detection';
-/* #export */ const SCREEN_OOBE_ENABLE_DEBUGGING = 'debugging';
-/* #export */ const SCREEN_OOBE_UPDATE = 'oobe-update';
-/* #export */ const SCREEN_OOBE_RESET = 'reset';
-/* #export */ const SCREEN_OOBE_ENROLLMENT = 'enterprise-enrollment';
-/* #export */ const SCREEN_OOBE_DEMO_SETUP = 'demo-setup';
-/* #export */ const SCREEN_OOBE_DEMO_PREFERENCES = 'demo-preferences';
-/* #export */ const SCREEN_OOBE_KIOSK_ENABLE = 'kiosk-enable';
-/* #export */ const SCREEN_PACKAGED_LICENSE = 'packaged-license';
 /* #export */ const SCREEN_GAIA_SIGNIN = 'gaia-signin';
-/* #export */ const SCREEN_ERROR_MESSAGE = 'error-message';
-/* #export */ const SCREEN_PASSWORD_CHANGED = 'gaia-password-changed';
-/* #export */ const SCREEN_CONFIRM_PASSWORD = 'saml-confirm-password';
-/* #export */ const SCREEN_FATAL_ERROR = 'fatal-error';
-/* #export */ const SCREEN_KIOSK_ENABLE = 'kiosk-enable';
-/* #export */ const SCREEN_TERMS_OF_SERVICE = 'terms-of-service';
-/* #export */ const SCREEN_ARC_TERMS_OF_SERVICE = 'arc-tos';
 /* #export */ const SCREEN_DEVICE_DISABLED = 'device-disabled';
-/* #export */ const SCREEN_UPDATE_REQUIRED = 'update-required';
-/* #export */ const SCREEN_ACTIVE_DIRECTORY_PASSWORD_CHANGE =
-'ad-password-change';
-/* #export */ const SCREEN_SYNC_CONSENT = 'sync-consent';
-/* #export */ const SCREEN_FINGERPRINT_SETUP = 'fingerprint-setup';
-// TODO(crbug.com/1261902): Remove.
-/* #export */ const SCREEN_RECOMMEND_APPS_OLD = 'recommend-apps-old';
-/* #export */ const SCREEN_RECOMMEND_APPS = 'recommend-apps';
-/* #export */ const SCREEN_APP_DOWNLOADING = 'app-downloading';
-/* #export */ const SCREEN_PIN_SETUP = 'pin-setup';
-/* #export */ const SCREEN_MARKETING_OPT_IN = 'marketing-opt-in';
 
 /* Accelerator identifiers.
  * Must be kept in sync with webui_accelerator_mapping.cc.
  */
 /* #export */ const ACCELERATOR_CANCEL = 'cancel';
 /* #export */ const ACCELERATOR_VERSION = 'version';
-/* #export */ const ACCELERATOR_RESET = 'reset';
-
-/* #export */ const USER_ACTION_ROLLBACK_TOGGLED = 'rollback-toggled';
-
-
-/**
- * Group of screens (screen IDs) where factory-reset screen invocation is
- * available. Newer screens using Polymer use the attribute
- * `resetAllowed` in their `ready()` method.
- * @type Array<string>
- * @const
- */
-/* #export */ var RESET_AVAILABLE_SCREEN_GROUP = [
-  SCREEN_OOBE_NETWORK,
-  SCREEN_GAIA_SIGNIN,
-  SCREEN_KIOSK_ENABLE,
-  SCREEN_ERROR_MESSAGE,
-  SCREEN_PASSWORD_CHANGED,
-  SCREEN_ARC_TERMS_OF_SERVICE,
-  SCREEN_CONFIRM_PASSWORD,
-  SCREEN_UPDATE_REQUIRED,
-  SCREEN_SYNC_CONSENT,
-  SCREEN_APP_DOWNLOADING,
-  SCREEN_PIN_SETUP,
-  SCREEN_MARKETING_OPT_IN,
-];

@@ -66,9 +66,7 @@ class ParentalHandoff extends ParentalHandoffElementBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('ParentalHandoffScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('ParentalHandoffScreen');
   }
 
   /*

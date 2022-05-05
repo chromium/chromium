@@ -78,9 +78,7 @@ class RecommendAppsElement extends RecommendAppsElementBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('RecommendAppsScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('RecommendAppsScreen');
     window.addEventListener('message', this.onMessage_.bind(this));
   }
 

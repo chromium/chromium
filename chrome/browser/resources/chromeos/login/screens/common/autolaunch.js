@@ -52,9 +52,7 @@ class Autolaunch extends AutolaunchBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('AutolaunchScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('AutolaunchScreen');
   }
 
   onConfirm_() {

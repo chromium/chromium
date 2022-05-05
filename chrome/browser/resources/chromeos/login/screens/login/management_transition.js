@@ -81,9 +81,7 @@ class ManagementTransitionScreen extends ManagementTransitionScreenBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('ManagementTransitionScreen', {
-      resetAllowed: false,
-    });
+    this.initializeLoginScreen('ManagementTransitionScreen');
   }
 
   onBeforeShow(data) {

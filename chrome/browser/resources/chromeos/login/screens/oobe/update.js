@@ -176,9 +176,7 @@ class Update extends UpdateBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('UpdateScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('UpdateScreen');
   }
 
   /**

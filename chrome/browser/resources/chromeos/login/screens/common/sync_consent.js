@@ -117,9 +117,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('SyncConsentScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('SyncConsentScreen');
 
     if (this.locale === '') {
       // Update the locale just in case the locale switched between the element

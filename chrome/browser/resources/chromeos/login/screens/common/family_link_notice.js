@@ -79,7 +79,7 @@ class FamilyLinkNotice extends FamilyLinkScreenElementBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('FamilyLinkNoticeScreen', {resetAllowed: true});
+    this.initializeLoginScreen('FamilyLinkNoticeScreen');
   }
 
   /**

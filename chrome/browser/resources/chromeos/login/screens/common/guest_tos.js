@@ -76,9 +76,7 @@ class GuestTos extends GuestTosScreenElementBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('GuestTosScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('GuestTosScreen');
     this.updateLocalizedContent();
   }
 

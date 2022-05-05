@@ -134,9 +134,7 @@ class EncryptionMigration extends EncryptionMigrationBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('EncryptionMigrationScreen', {
-      resetAllowed: false,
-    });
+    this.initializeLoginScreen('EncryptionMigrationScreen');
   }
 
   /**

@@ -27,9 +27,7 @@ class AutoEnrollmentCheckElement extends AutoEnrollmentCheckElementBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('AutoEnrollmentCheckScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('AutoEnrollmentCheckScreen');
   }
 }
 
