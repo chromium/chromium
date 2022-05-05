@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/android_affiliation/lookup_affiliation_response_parser.h"
 
+#include "base/containers/flat_set.h"
+
 namespace password_manager {
 
 namespace {
@@ -16,6 +18,8 @@ bool ParseFacets(const std::vector<FacetURI>& requested_facet_uris,
                  const MessageT& response,
                  std::vector<std::vector<Facet>>& result) {
   std::map<FacetURI, size_t> facet_uri_to_class_index;
+  base::flat_set<FacetURI> requested_facets(requested_facet_uris);
+
   for (const auto& equivalence_class : response) {
     std::vector<Facet> facets;
     facets.reserve(equivalence_class.facet().size());
@@ -44,8 +48,12 @@ bool ParseFacets(const std::vector<FacetURI>& requested_facet_uris,
 
     // Ignore equivalence classes that are duplicates of earlier ones. However,
     // fail in the case of a partial overlap, which violates the invariant that
-    // affiliations must form an equivalence relation.
+    // affiliations must form an equivalence relation. Also check, if the class
+    // was requested.
+    bool is_class_requested = false;
     for (const Facet& facet : facets) {
+      if (requested_facets.count(facet.uri))
+        is_class_requested = true;
       if (!facet_uri_to_class_index.count(facet.uri))
         facet_uri_to_class_index[facet.uri] = result.size();
       if (facet_uri_to_class_index[facet.uri] !=
@@ -54,8 +62,9 @@ bool ParseFacets(const std::vector<FacetURI>& requested_facet_uris,
       }
     }
 
-    // Filter out duplicate equivalence classes in the response.
-    if (facet_uri_to_class_index[facets[0].uri] == result.size()) {
+    // Filter out duplicate or nonrequested equivalence classes in the response.
+    if (is_class_requested &&
+        facet_uri_to_class_index[facets[0].uri] == result.size()) {
       result.push_back(std::move(facets));
     }
   }
