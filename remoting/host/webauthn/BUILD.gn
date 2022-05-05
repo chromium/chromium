@@ -6,6 +6,8 @@ import("//remoting/build/config/remoting_build.gni")
 
 source_set("webauthn") {
   sources = [
+    "remote_webauthn_caller_security_utils.cc",
+    "remote_webauthn_caller_security_utils.h",
     "remote_webauthn_constants.cc",
     "remote_webauthn_constants.h",
     "remote_webauthn_extension_notifier.cc",
@@ -21,6 +23,7 @@ source_set("webauthn") {
     "//base",
     "//extensions/browser/api/messaging:native_messaging",
     "//remoting/host:chromoting_host_services_client",
+    "//remoting/host/base",
     "//remoting/host/mojom",
     "//remoting/host/native_messaging",
     "//remoting/proto",

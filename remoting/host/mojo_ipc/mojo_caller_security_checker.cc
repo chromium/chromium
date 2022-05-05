@@ -8,19 +8,15 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "remoting/host/base/process_util.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <windows.h>
-
-#include "base/win/scoped_handle.h"
 #include "remoting/host/win/trust_util.h"
 #endif
 
@@ -38,34 +34,6 @@ constexpr auto kAllowedCallerProgramNames =
       "unsupported",
 #endif
     });
-
-base::FilePath GetProcessImagePath(base::ProcessId pid) {
-#if BUILDFLAG(IS_LINUX)
-  // We don't get the image path from the command line, since it's spoofable by
-  // the process itself.
-  base::FilePath process_exe_path(
-      base::StringPrintf("/proc/%" CrPRIdPid "/exe", pid));
-  base::FilePath process_image_path;
-  base::ReadSymbolicLink(process_exe_path, &process_image_path);
-  return process_image_path;
-#elif BUILDFLAG(IS_WIN)
-  base::win::ScopedHandle process_handle(
-      OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, pid));
-  std::array<wchar_t, MAX_PATH + 1> buffer;
-  DWORD size = buffer.size();
-  if (!QueryFullProcessImageName(process_handle.Get(), 0, buffer.data(),
-                                 &size)) {
-    PLOG(ERROR) << "QueryFullProcessImageName failed";
-    return base::FilePath();
-  }
-  DCHECK_GT(size, 0u);
-  DCHECK_LT(size, buffer.size());
-  return base::FilePath(base::FilePath::StringPieceType(buffer.data(), size));
-#else
-  NOTIMPLEMENTED();
-  return base::FilePath();
-#endif
-}
 
 }  // namespace
 
