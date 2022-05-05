@@ -1006,7 +1006,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::printing::printing_manager::PrintManagementUI>;
   if (url.host_piece() == ash::kChromeUIScanningAppHost)
     return &NewWebUI<ash::ScanningUI>;
-  if (ash::features::IsShimlessRMAFlowEnabled() &&
+  if ((ash::shimless_rma::HasLaunchRmaSwitchAndIsAllowed() ||
+       ash::features::IsShimlessRMAStandaloneAppEnabled()) &&
       url.host_piece() == ash::kChromeUIShimlessRMAHost) {
     return &NewWebUI<ash::ShimlessRMADialogUI>;
   }

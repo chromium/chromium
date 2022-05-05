@@ -2124,6 +2124,11 @@ bool IsShimlessRMAFlowEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMAFlow);
 }
 
+bool IsShimlessRMAStandaloneAppEnabled() {
+  return base::FeatureList::IsEnabled(kShimlessRMAEnableStandalone) &&
+         IsShimlessRMAFlowEnabled();
+}
+
 bool IsSimLockPolicyEnabled() {
   return base::FeatureList::IsEnabled(kSimLockPolicy);
 }
