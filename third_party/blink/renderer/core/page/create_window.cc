@@ -201,9 +201,13 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       window_features.persistent = true;
     } else if (attribution_reporting_enabled &&
                key_string == "attributionsrc") {
+      // attributionsrc values are encoded in order to support embedded special
+      // characters, such as '='.
+      const String decoded = DecodeURLEscapeSequences(value_string.ToString(),
+                                                      DecodeURLMode::kUTF8);
       window_features.impression =
           dom_window->GetFrame()->GetAttributionSrcLoader()->RegisterNavigation(
-              dom_window->CompleteURL(value_string.ToString()));
+              dom_window->CompleteURL(decoded));
     }
   }
 
