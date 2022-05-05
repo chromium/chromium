@@ -861,6 +861,36 @@ v8::Maybe<bool> V8ScriptValueSerializer::WriteHostObject(
   }
   return v8::Nothing<bool>();
 }
+namespace {
+DOMSharedArrayBuffer* ToSharedArrayBuffer(v8::Isolate* isolate,
+                                          v8::Local<v8::Value> value,
+                                          ExceptionState& exception_state) {
+  if (UNLIKELY(!value->IsSharedArrayBuffer())) {
+    exception_state.ThrowTypeError(
+        ExceptionMessages::FailedToConvertJSValue("SharedArrayBuffer"));
+    return nullptr;
+  }
+
+  v8::Local<v8::SharedArrayBuffer> v8_shared_array_buffer =
+      value.As<v8::SharedArrayBuffer>();
+  if (DOMSharedArrayBuffer* shared_array_buffer =
+          ToScriptWrappable(v8_shared_array_buffer)
+              ->ToImpl<DOMSharedArrayBuffer>()) {
+    return shared_array_buffer;
+  }
+
+  // Transfer the ownership of the allocated memory to a DOMArrayBuffer without
+  // copying.
+  ArrayBufferContents contents(v8_shared_array_buffer->GetBackingStore());
+  DOMSharedArrayBuffer* shared_array_buffer =
+      DOMSharedArrayBuffer::Create(contents);
+  v8::Local<v8::Object> wrapper = shared_array_buffer->AssociateWithWrapper(
+      isolate, shared_array_buffer->GetWrapperTypeInfo(),
+      v8_shared_array_buffer);
+  DCHECK(wrapper == v8_shared_array_buffer);
+  return shared_array_buffer;
+}
+}  // namespace
 
 v8::Maybe<uint32_t> V8ScriptValueSerializer::GetSharedArrayBufferId(
     v8::Isolate* isolate,
@@ -877,9 +907,16 @@ v8::Maybe<uint32_t> V8ScriptValueSerializer::GetSharedArrayBufferId(
     return v8::Nothing<uint32_t>();
   }
 
+  // The SharedArrayBuffer here may be a WebAssembly memory and can therefore be
+  // bigger than the 2GB limit of JavaScript SharedArrayBuffers that gets
+  // checked in NativeValueTraits<DOMSharedArrayBuffer>::NativeValue(). The
+  // code here can handle bigger SharedArrayBuffers, because the ByteLength
+  // field of the Shared ArrayBuffer does not get accessed. However, it is not
+  // possible to reuse NativeValueTraits<DOMSharedArrayBuffer>::NativeValue().
+  // TODO(1201109): Use NativeValueTraits<DOMSharedArrayBuffer>::NativeValue()
+  // again once the bounds check there got removed.
   DOMSharedArrayBuffer* shared_array_buffer =
-      NativeValueTraits<DOMSharedArrayBuffer>::NativeValue(
-          isolate, v8_shared_array_buffer, exception_state);
+      ToSharedArrayBuffer(isolate, v8_shared_array_buffer, exception_state);
   if (exception_state.HadException())
     return v8::Nothing<uint32_t>();
 
