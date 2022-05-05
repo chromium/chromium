@@ -1149,6 +1149,9 @@ void WebContentsViewAura::StartDragging(
   // that case.
   base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr =
       source_rwh->GetWeakPtr();
+  // It's also possible for portal activation and adoption to destroy `this`
+  // during the nested run loop. See https://crbug.com/1312144.
+  base::WeakPtr<WebContentsViewAura> weak_this = weak_ptr_factory_.GetWeakPtr();
 
   drag_start_ =
       DragStart(source_rwh->GetSiteInstanceGroup()->GetId(),
@@ -1192,6 +1195,13 @@ void WebContentsViewAura::StartDragging(
                                event_info.source);
   }
 
+  if (!weak_this) {
+    if (source_rwh_weak_ptr) {
+      source_rwh_weak_ptr->DragSourceSystemDragEnded();
+    }
+    return;
+  }
+
   // Bail out immediately if the contents view window is gone. Note that it is
   // not safe to access any class members in this case since |this| may already
   // be destroyed. The local variable |drag_source| will still be valid though,
@@ -1208,9 +1218,9 @@ void WebContentsViewAura::StartDragging(
   if (!drag_in_progress_) {
     EndDrag(std::move(source_rwh_weak_ptr), result_op);
   } else {
-    end_drag_runner_.ReplaceClosure(base::BindOnce(
-        &WebContentsViewAura::EndDrag, weak_ptr_factory_.GetWeakPtr(),
-        std::move(source_rwh_weak_ptr), result_op));
+    end_drag_runner_.ReplaceClosure(
+        base::BindOnce(&WebContentsViewAura::EndDrag, std::move(weak_this),
+                       std::move(source_rwh_weak_ptr), result_op));
   }
 }
 
