@@ -1176,10 +1176,6 @@ interface CanvasRenderingContext2D
     setter textBaseline
     setter textRendering
     setter wordSpacing
-interface CaptureHandleChangeEvent : Event
-    attribute @@toStringTag
-    method captureHandle
-    method constructor
 interface ChannelMergerNode : AudioNode
     attribute @@toStringTag
     method constructor

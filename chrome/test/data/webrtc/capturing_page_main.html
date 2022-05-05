@@ -81,13 +81,10 @@
       }
 
       function onCaptureHandleChange(event) {
-        if (!event || !event.captureHandle) {
-          throw "Unexpected event type.";
-        }
         // Note that JSON.stringify(null) yields 'null'. On the other hand,
         // JSON.stringify(undefined) yields undefined (not the string).
         window.domAutomationController.send(
-          JSON.stringify(event.captureHandle())
+          JSON.stringify(event.target.getCaptureHandle())
         );
       }
 
