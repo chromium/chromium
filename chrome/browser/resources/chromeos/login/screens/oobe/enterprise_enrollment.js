@@ -580,6 +580,19 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
   }
 
   /**
+   * Returns icon for enrollment steps.
+   * @param {*} licenseType
+   * @returns {string}
+   * @private
+   */
+  getIcon_(licenseType) {
+    if (licenseType == OobeTypes.LicenseType.ENTERPRISE) {
+      return 'oobe-32:enterprise';
+    }
+    return 'oobe-32:kiosk';
+  }
+
+  /**
    * Return title for success enrollment screen.
    * @param {string} licenseType
    * @returns {string}

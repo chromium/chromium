@@ -12,6 +12,10 @@ Polymer({
       type: String,
     },
 
+    titleLabelKey: {
+      type: String,
+    },
+
     subtitleKey: {
       type: String,
       value: '',

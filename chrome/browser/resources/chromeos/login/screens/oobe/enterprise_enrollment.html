@@ -83,8 +83,9 @@
 
     <!-- ENROLLMENT IN PROGRESS (SPINNER) DIALOG -->
     <oobe-loading-dialog title-key="[[getWorkingTitleKey_(licenseType_)]]"
-        id="step-working" for-step="working">
-      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
+        title-label-key="enollmentInProgress" id="step-working"
+        for-step="working">
+      <iron-icon slot="icon" icon="[[getIcon_(licenseType_)]]"></iron-icon>
     </oobe-loading-dialog>
 
     <!-- ACCOUNT CHECK IN PROGRESS (SPINNER) DIALOG -->
@@ -123,7 +124,7 @@
       <div id="errorMsg" slot="subtitle">[[errorText_]]</div>
       <div slot="content"
           class="flex layout vertical center center-justified">
-        <img src="images/error.svg" class="oobe-illustration">
+        <img src="images/error.svg" alt="" class="oobe-illustration">
       </div>
       <div slot="back-navigation">
         <!-- BACK - Shown when the generic cancel button is hidden -->
@@ -170,10 +171,9 @@
     </oobe-adaptive-dialog>
 
     <!-- KIOSK CONFIRM DIALOG -->
-    <!-- TODO(crbug.com/1308403): Update image, recheck back button. -->
     <oobe-adaptive-dialog id="step-kiosk-enrollment" for-step="kiosk-enrollment"
         role="alert" footer-shrinkable>
-      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:kiosk"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'oauthEnrollKioskEnrollmentConfirmTitle')]]
       </h1>
@@ -183,14 +183,12 @@
           'oauthEnrollKioskEnrollmentConfirmPowerwashMessage')]]
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
-        <img src="images/enrollment_complete.svg"
-            class="oobe-illustration">
-      </div>
-      <div slot="back-navigation">
-        <oobe-back-button id="cancelKioskEnrollmentButton"
-            on-click="onCancelKiosk_"></oobe-back-button>
+        <img src="images/kiosk_enrollment.svg" alt="" class="oobe-illustration">
       </div>
       <div slot="bottom-buttons">
+        <oobe-text-button id="cancelKioskEnrollmentButton"
+            text-key="oauthEnrollKioskCancelEnrollmentButton"
+            on-click="onCancelKiosk_"></oobe-text-button>
         <oobe-text-button inverse id="enrollKioskButton"
             text-key="oauthEnrollKioskEnrollmentConfirmButton"
             on-click="onEnrollKiosk_" class="focus-on-show"></oobe-text-button>
@@ -200,7 +198,7 @@
     <!-- SUCCESS DIALOG -->
     <oobe-adaptive-dialog id="step-success" for-step="success" role="alert"
         footer-shrinkable>
-      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
+      <iron-icon slot="icon" icon="[[getIcon_(licenseType_)]]"></iron-icon>
       <h1 slot="title">
         [[getSuccessTitle_(locale, licenseType_)]]
       </h1>
@@ -218,9 +216,9 @@
         </div>
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
-        <img src="images/enrollment_complete.svg"
+        <img src="images/enrollment_complete.svg" alt=""
             class="oobe-illustration" hidden="[[isMeet_]]">
-        <img src="images/cfm/enrollment.svg"
+        <img src="images/cfm/enrollment.svg" alt=""
             class="oobe-illustration" hidden="[[!isMeet_]]">
       </div>
       <div slot="bottom-buttons">

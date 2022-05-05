@@ -29,7 +29,9 @@
     <oobe-adaptive-dialog id="dialog" role="dialog">
       <slot slot="icon" name="icon"></slot>
       <h1 slot="title">
-        <slot name="title">[[i18nDynamic(locale, titleKey)]]</slot>
+        <slot name="title" aria-label="[[i18nDynamic(locale, titleLabelKey)]]">
+          [[i18nDynamic(locale, titleKey)]]
+        </slot>
       </h1>
       <div slot="subtitle">[[localizeSubtitle_(locale, subtitleKey)]]</div>
       <div slot="content" class="flex layout vertical center center-justified">

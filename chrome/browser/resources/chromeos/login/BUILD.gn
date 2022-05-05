@@ -102,6 +102,7 @@ generate_grd("build_oobe_grd") {
     "images/enrollment_complete.svg",
     "images/error.svg",
     "images/kids_turn.svg",
+    "images/kiosk_enrollment.svg",
     "images/parental_control.svg",
     "images/powerwash.svg",
     "images/pin_illustration.svg",
