@@ -530,6 +530,8 @@ let kRTCTransportStats = new RTCStats(null, {
   dtlsRole: 'string',
   srtpCipher: 'string',
   selectedCandidatePairChanges: 'number',
+  iceRole: 'string',
+  iceLocalUsernameFragment: 'string',
 });
 addRTCStatsToWhitelist(Presence.MANDATORY, 'transport', kRTCTransportStats);
 
