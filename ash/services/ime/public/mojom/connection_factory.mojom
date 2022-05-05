@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 1
+// Next MinVersion: 2
 
 module ash.ime.mojom;
 
@@ -21,6 +21,7 @@ interface ConnectionFactory {
   ConnectToInputMethod@0(
     string ime_spec,
     pending_associated_receiver<InputMethod> input_method,
-    pending_associated_remote<InputMethodHost> input_method_host)
+    pending_associated_remote<InputMethodHost> input_method_host,
+    [MinVersion=2] InputMethodSettings? settings)
     => (bool success);
 };

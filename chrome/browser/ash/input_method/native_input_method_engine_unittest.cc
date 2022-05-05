@@ -149,6 +149,7 @@ class FakeConnectionFactory : public ime::mojom::ConnectionFactory {
       mojo::PendingAssociatedReceiver<ime::mojom::InputMethod> input_method,
       mojo::PendingAssociatedRemote<ime::mojom::InputMethodHost>
           input_method_host,
+      ime::mojom::InputMethodSettingsPtr settings,
       ConnectToInputMethodCallback callback) override {
     mock_input_method_->Bind(std::move(input_method),
                              std::move(input_method_host));

@@ -709,9 +709,12 @@ void NativeInputMethodEngine::ImeObserver::ConnectToImeService(
   mojo::PendingAssociatedRemote<ime::mojom::InputMethodHost> input_method_host;
   host_receiver_.Bind(input_method_host.InitWithNewEndpointAndPassReceiver());
 
+  ime::mojom::InputMethodSettingsPtr settings =
+      CreateSettingsFromPrefs(*prefs_, engine_id, InputFieldContext{});
   connection_factory_->ConnectToInputMethod(
       engine_id, input_method_.BindNewEndpointAndPassReceiver(),
-      std::move(input_method_host), base::BindOnce(&OnConnected));
+      std::move(input_method_host), std::move(settings),
+      base::BindOnce(&OnConnected));
 }
 
 void NativeInputMethodEngine::ImeObserver::ActivateTextClient(

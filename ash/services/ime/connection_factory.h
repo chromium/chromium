@@ -37,6 +37,7 @@ class ConnectionFactory : public mojom::ConnectionFactory {
       mojo::PendingAssociatedReceiver<mojom::InputMethod> pending_input_method,
       mojo::PendingAssociatedRemote<mojom::InputMethodHost>
           pending_input_method_host,
+      mojom::InputMethodSettingsPtr settings,
       ConnectToInputMethodCallback callback) override;
 
   // Is the current connection factory connected to a rule based engine?

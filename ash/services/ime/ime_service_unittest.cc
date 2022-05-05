@@ -69,6 +69,7 @@ class TestDecoderState : public mojom::ConnectionFactory {
       mojo::PendingAssociatedReceiver<ime::mojom::InputMethod> input_method,
       mojo::PendingAssociatedRemote<ime::mojom::InputMethodHost>
           input_method_host,
+      mojom::InputMethodSettingsPtr settings,
       ConnectToInputMethodCallback callback) override {
     std::move(callback).Run(/*bound=*/false);
   }
@@ -389,7 +390,8 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleModifierKeys) {
   host.Bind(host_remote.InitWithNewEndpointAndPassReceiver());
   connection_factory->ConnectToInputMethod(
       "m17n:ar", input_method.BindNewEndpointAndPassReceiver(),
-      std::move(host_remote), base::BindOnce(&ConnectCallback, &success2));
+      std::move(host_remote), nullptr,
+      base::BindOnce(&ConnectCallback, &success2));
   connection_factory.FlushForTesting();
   EXPECT_TRUE(success2);
 
@@ -433,7 +435,8 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleCtrlShortCut) {
   host.Bind(host_remote.InitWithNewEndpointAndPassReceiver());
   connection_factory->ConnectToInputMethod(
       "m17n:ar", input_method.BindNewEndpointAndPassReceiver(),
-      std::move(host_remote), base::BindOnce(&ConnectCallback, &success2));
+      std::move(host_remote), nullptr,
+      base::BindOnce(&ConnectCallback, &success2));
   connection_factory.FlushForTesting();
   EXPECT_TRUE(success2);
 
@@ -478,7 +481,8 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleAltShortCut) {
   host.Bind(host_remote.InitWithNewEndpointAndPassReceiver());
   connection_factory->ConnectToInputMethod(
       "m17n:ar", input_method.BindNewEndpointAndPassReceiver(),
-      std::move(host_remote), base::BindOnce(&ConnectCallback, &success2));
+      std::move(host_remote), nullptr,
+      base::BindOnce(&ConnectCallback, &success2));
   connection_factory.FlushForTesting();
   EXPECT_TRUE(success2);
 
@@ -524,7 +528,8 @@ TEST_F(ImeServiceTest, RuleBasedHandlesAltRight) {
   host.Bind(host_remote.InitWithNewEndpointAndPassReceiver());
   connection_factory->ConnectToInputMethod(
       "m17n:ar", input_method.BindNewEndpointAndPassReceiver(),
-      std::move(host_remote), base::BindOnce(&ConnectCallback, &success2));
+      std::move(host_remote), nullptr,
+      base::BindOnce(&ConnectCallback, &success2));
   connection_factory.FlushForTesting();
   EXPECT_TRUE(success2);
 
@@ -572,7 +577,8 @@ TEST_F(ImeServiceTest, RuleBasedArabic) {
   host.Bind(host_remote.InitWithNewEndpointAndPassReceiver());
   connection_factory->ConnectToInputMethod(
       "m17n:ar", input_method.BindNewEndpointAndPassReceiver(),
-      std::move(host_remote), base::BindOnce(&ConnectCallback, &success2));
+      std::move(host_remote), nullptr,
+      base::BindOnce(&ConnectCallback, &success2));
   connection_factory.FlushForTesting();
   EXPECT_TRUE(success2);
 
@@ -652,7 +658,8 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
   host.Bind(host_remote.InitWithNewEndpointAndPassReceiver());
   connection_factory->ConnectToInputMethod(
       "m17n:deva_phone", input_method.BindNewEndpointAndPassReceiver(),
-      std::move(host_remote), base::BindOnce(&ConnectCallback, &success2));
+      std::move(host_remote), nullptr,
+      base::BindOnce(&ConnectCallback, &success2));
   connection_factory.FlushForTesting();
   EXPECT_TRUE(success2);
 
@@ -731,7 +738,8 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotEscapeCharacters) {
   host.Bind(host_remote.InitWithNewEndpointAndPassReceiver());
   connection_factory->ConnectToInputMethod(
       "m17n:deva_phone", input_method.BindNewEndpointAndPassReceiver(),
-      std::move(host_remote), base::BindOnce(&ConnectCallback, &success2));
+      std::move(host_remote), nullptr,
+      base::BindOnce(&ConnectCallback, &success2));
   connection_factory.FlushForTesting();
   EXPECT_TRUE(success2);
 
@@ -795,7 +803,8 @@ TEST_F(ImeServiceTest, KhmerKeyboardAltGr) {
   host.Bind(host_remote.InitWithNewEndpointAndPassReceiver());
   connection_factory->ConnectToInputMethod(
       "m17n:km", input_method.BindNewEndpointAndPassReceiver(),
-      std::move(host_remote), base::BindOnce(&ConnectCallback, &success2));
+      std::move(host_remote), nullptr,
+      base::BindOnce(&ConnectCallback, &success2));
   connection_factory.FlushForTesting();
   EXPECT_TRUE(success2);
 
