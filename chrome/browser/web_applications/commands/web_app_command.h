@@ -23,7 +23,11 @@ class WebAppCommandLock {
   using LockRequestSet =
       base::flat_set<content::DisjointRangeLockManager::LeveledLockRequest>;
 
-  WebAppCommandLock(const WebAppCommandLock& lock);
+  WebAppCommandLock(WebAppCommandLock&&);
+
+  WebAppCommandLock(const WebAppCommandLock&) = delete;
+  WebAppCommandLock& operator=(const WebAppCommandLock&) = delete;
+
   ~WebAppCommandLock();
 
   //  Creates a lock that guarantees isolation against all commands.
@@ -70,9 +74,9 @@ class WebAppCommandLock {
     kMaxValue = kApp,
   };
 
-  const base::flat_set<AppId> app_ids_{};
-  const LockType lock_type_;
-  const LockRequestSet lock_requests_{};
+  base::flat_set<AppId> app_ids_{};
+  LockType lock_type_;
+  LockRequestSet lock_requests_{};
 };
 
 enum class CommandResult { kSuccess, kFailure, kShutdown };

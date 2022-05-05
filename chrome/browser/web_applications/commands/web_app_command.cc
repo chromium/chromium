@@ -31,7 +31,7 @@ WebAppCommandLock::WebAppCommandLock(base::flat_set<AppId> app_ids,
       lock_type_(lock_type),
       lock_requests_(std::move(lock_requests)) {}
 
-WebAppCommandLock::WebAppCommandLock(const WebAppCommandLock& lock) = default;
+WebAppCommandLock::WebAppCommandLock(WebAppCommandLock&&) = default;
 
 WebAppCommandLock::~WebAppCommandLock() = default;
 
