@@ -283,6 +283,8 @@ polymer_modulizer("hd_iron_icon") {
   js_file = "hd_iron_icon.js"
   html_file = "hd_iron_icon.html"
   html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
 }
 
 polymer_modulizer("long_touch_detector") {
