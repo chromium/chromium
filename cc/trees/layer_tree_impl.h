@@ -493,11 +493,6 @@ class CC_EXPORT LayerTreeImpl {
 
   void ForceRedrawNextActivation() { next_activation_forces_redraw_ = true; }
 
-  void set_has_ever_been_drawn(bool has_drawn) {
-    has_ever_been_drawn_ = has_drawn;
-  }
-  bool has_ever_been_drawn() const { return has_ever_been_drawn_; }
-
   void set_ui_resource_request_queue(UIResourceRequestQueue queue);
 
   const RenderSurfaceList& GetRenderSurfaceList() const;
@@ -896,8 +891,6 @@ class CC_EXPORT LayerTreeImpl {
   bool needs_surface_ranges_sync_;
 
   bool next_activation_forces_redraw_;
-
-  bool has_ever_been_drawn_;
 
   bool handle_visibility_changed_;
 

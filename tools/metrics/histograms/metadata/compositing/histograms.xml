@@ -712,51 +712,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Compositing.RenderPass.AppendQuadData.CheckerboardedNeedRasterContentArea"
-    units="pixels/frame" expires_after="2020-04-19">
-  <owner>weiliangc@chromium.org</owner>
-  <summary>
-    Checkerboarded area, in number of pixels, that has recording but does not
-    have time to finish rastering yet. A sample is recorded everytime a frame is
-    drawn while a scroll is in progress. Tracking bug 535732.
-  </summary>
-</histogram>
-
-<histogram
-    name="Compositing.RenderPass.AppendQuadData.CheckerboardedNoRecordingContentArea"
-    units="pixels/frame" expires_after="M82">
-  <owner>weiliangc@chromium.org</owner>
-  <summary>
-    Checkerboarded area, in number of pixels, that has no recording to raster
-    from. A sample is recorded everytime a frame is drawn while a scroll is in
-    progress. Tracking bug 535732.
-  </summary>
-</histogram>
-
-<histogram name="Compositing.RenderPass.AppendQuadData.NumIncompleteTiles"
-    units="units" expires_after="M81">
-  <owner>weiliangc@chromium.org</owner>
-  <summary>
-    Keeps track of number of incomplete tiles in a drawn compositor frame while
-    scrolling. This is a rough measurement of ugliness during user interaction.
-    Incomplete tiles are non ideal scaled. A sample is recorded everytime a
-    frame is drawn while a scroll is in progress. Tracking bug 381695.
-  </summary>
-</histogram>
-
-<histogram name="Compositing.RenderPass.AppendQuadData.NumMissingTiles"
-    units="units" expires_after="M81">
-  <owner>weiliangc@chromium.org</owner>
-  <summary>
-    Keeps track of number of missing tiles in a drawn compositor frame while
-    scrolling. This is a rough measurement of ugliness during user interaction.
-    Incomplete tiles are checkerboard or solid color. A sample is recorded
-    everytime a frame is drawn while a scroll is in progress. Tracking bug
-    381695.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Compositing.ResourcePoolMemoryUsage" units="MB"
     expires_after="2022-05-01">
   <owner>sunnyps@chromium.org</owner>

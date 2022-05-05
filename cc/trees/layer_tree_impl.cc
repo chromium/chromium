@@ -166,7 +166,6 @@ LayerTreeImpl::LayerTreeImpl(
       needs_full_tree_sync_(true),
       needs_surface_ranges_sync_(false),
       next_activation_forces_redraw_(false),
-      has_ever_been_drawn_(false),
       handle_visibility_changed_(false),
       have_scroll_event_handlers_(false),
       event_listener_properties_(),
@@ -735,8 +734,6 @@ void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {
   if (commit_state.force_send_metadata_request)
     RequestForceSendMetadata();
 
-  set_has_ever_been_drawn(false);
-
   // TODO(ericrk): The viewport changes caused by |top_controls_shown_ratio_|
   // changes should propagate back to the main tree. This does not currently
   // happen, so we must force the impl tree to update its viewports if
@@ -861,8 +858,6 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
         target_tree->LayerById(hud_layer()->id())));
   else
     target_tree->set_hud_layer(nullptr);
-
-  target_tree->has_ever_been_drawn_ = false;
 
   // Note: this needs to happen after SetPropertyTrees.
   target_tree->HandleTickmarksVisibilityChange();

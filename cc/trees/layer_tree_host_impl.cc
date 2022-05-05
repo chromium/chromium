@@ -1486,23 +1486,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
         num_missing_tiles, total_visible_area);
   }
 
-  if (active_tree_->has_ever_been_drawn()) {
-    UMA_HISTOGRAM_COUNTS_100(
-        "Compositing.RenderPass.AppendQuadData.NumMissingTiles",
-        num_missing_tiles);
-    UMA_HISTOGRAM_COUNTS_100(
-        "Compositing.RenderPass.AppendQuadData.NumIncompleteTiles",
-        num_incomplete_tiles);
-    UMA_HISTOGRAM_COUNTS_1M(
-        "Compositing.RenderPass.AppendQuadData."
-        "CheckerboardedNoRecordingContentArea",
-        checkerboarded_no_recording_content_area);
-    UMA_HISTOGRAM_COUNTS_1M(
-        "Compositing.RenderPass.AppendQuadData."
-        "CheckerboardedNeedRasterContentArea",
-        checkerboarded_needs_raster_content_area);
-  }
-
   TRACE_EVENT_END2("cc,benchmark", "LayerTreeHostImpl::CalculateRenderPasses",
                    "draw_result", draw_result, "missing tiles",
                    num_missing_tiles);
@@ -2561,7 +2544,6 @@ absl::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
   }
   active_tree_->ResetAllChangeTracking();
 
-  active_tree_->set_has_ever_been_drawn(true);
   devtools_instrumentation::DidDrawFrame(
       id_, frame->begin_frame_ack.frame_id.sequence_number);
   benchmark_instrumentation::IssueImplThreadRenderingStatsEvent(
