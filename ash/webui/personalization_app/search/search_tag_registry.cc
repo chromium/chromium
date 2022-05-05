@@ -13,6 +13,7 @@
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
+#include "ash/webui/personalization_app/search/search.mojom-shared.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_concept.h"
 #include "base/bind.h"
@@ -31,7 +32,9 @@ namespace personalization_app {
 namespace {
 
 std::string SearchConceptToId(const SearchConcept& search_concept) {
-  return base::NumberToString(search_concept.message_id);
+  return base::NumberToString(
+      static_cast<std::underlying_type_t<mojom::SearchConceptId>>(
+          search_concept.id));
 }
 
 std::vector<int> GetMessageIds(const SearchConcept& search_concept) {
@@ -62,6 +65,7 @@ SearchConceptToContentVector(const SearchConcept& search_concept) {
 const std::vector<const SearchConcept>& GetPersonalizationSearchConcepts() {
   static const base::NoDestructor<std::vector<const SearchConcept>> search_concepts({
       {
+          .id = mojom::SearchConceptId::kPersonalization,
           .message_id = IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE,
           .alternate_message_ids =
               {
@@ -71,6 +75,7 @@ const std::vector<const SearchConcept>& GetPersonalizationSearchConcepts() {
           .relative_url = "",
       },
       {
+          .id = mojom::SearchConceptId::kChangeWallpaper,
           .message_id = IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER,
           .alternate_message_ids =
               {
@@ -80,6 +85,7 @@ const std::vector<const SearchConcept>& GetPersonalizationSearchConcepts() {
           .relative_url = kWallpaperSubpageRelativeUrl,
       },
       {
+          .id = mojom::SearchConceptId::kChangeDeviceAccountImage,
           .message_id =
               IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_DEVICE_ACCOUNT_IMAGE,
           .alternate_message_ids =
@@ -98,6 +104,7 @@ const std::vector<const SearchConcept>& GetPersonalizationSearchConcepts() {
 const std::vector<const SearchConcept>& GetAmbientSearchConcepts() {
   static const base::NoDestructor<std::vector<const SearchConcept>> tags({
       {
+          .id = mojom::SearchConceptId::kAmbientMode,
           .message_id = IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE,
           .alternate_message_ids = {},
           .relative_url = kAmbientSubpageRelativeUrl,
@@ -109,12 +116,14 @@ const std::vector<const SearchConcept>& GetAmbientSearchConcepts() {
 const std::vector<const SearchConcept>& GetAmbientOnSearchConcepts() {
   static const base::NoDestructor<std::vector<const SearchConcept>> tags({
       {
+          .id = mojom::SearchConceptId::kAmbientModeChooseSource,
           .message_id =
               IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_CHOOSE_SOURCE,
           .alternate_message_ids = {},
           .relative_url = kAmbientSubpageRelativeUrl,
       },
       {
+          .id = mojom::SearchConceptId::kAmbientModeTurnOff,
           .message_id =
               IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TURN_OFF,
           .alternate_message_ids =
@@ -122,12 +131,14 @@ const std::vector<const SearchConcept>& GetAmbientOnSearchConcepts() {
           .relative_url = kAmbientSubpageRelativeUrl,
       },
       {
+          .id = mojom::SearchConceptId::kAmbientModeGooglePhotos,
           .message_id =
               IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_GOOGLE_PHOTOS_ALBUM,
           .alternate_message_ids = {},
           .relative_url = kAmbientSubpageRelativeUrl,
       },
       {
+          .id = mojom::SearchConceptId::kAmbientModeArtGallery,
           .message_id =
               IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_ART_GALLERY_ALBUM,
           .alternate_message_ids = {},
@@ -140,6 +151,7 @@ const std::vector<const SearchConcept>& GetAmbientOnSearchConcepts() {
 const std::vector<const SearchConcept>& GetAmbientOffSearchConcepts() {
   static const base::NoDestructor<std::vector<const SearchConcept>> tags({
       {
+          .id = mojom::SearchConceptId::kAmbientModeTurnOn,
           .message_id =
               IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TURN_ON,
           .alternate_message_ids =
@@ -153,6 +165,7 @@ const std::vector<const SearchConcept>& GetAmbientOffSearchConcepts() {
 const std::vector<const SearchConcept>& GetDarkModeSearchConcepts() {
   static const base::NoDestructor<std::vector<const SearchConcept>> tags({
       {
+          .id = mojom::SearchConceptId::kDarkMode,
           .message_id = IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE,
           .alternate_message_ids =
               {
@@ -163,6 +176,7 @@ const std::vector<const SearchConcept>& GetDarkModeSearchConcepts() {
           .relative_url = "",
       },
       {
+          .id = mojom::SearchConceptId::kDarkModeSchedule,
           .message_id =
               IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_SCHEDULE,
           .alternate_message_ids =
@@ -181,6 +195,7 @@ const std::vector<const SearchConcept>& GetDarkModeSearchConcepts() {
 const std::vector<const SearchConcept>& GetDarkModeOnSearchConcepts() {
   static const base::NoDestructor<std::vector<const SearchConcept>> tags({
       {
+          .id = mojom::SearchConceptId::kDarkModeTurnOff,
           .message_id =
               IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_OFF,
           .alternate_message_ids =
@@ -200,6 +215,7 @@ const std::vector<const SearchConcept>& GetDarkModeOnSearchConcepts() {
 const std::vector<const SearchConcept>& GetDarkModeOffSearchConcepts() {
   static const base::NoDestructor<std::vector<const SearchConcept>> tags({
       {
+          .id = mojom::SearchConceptId::kDarkModeTurnOn,
           .message_id = IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_ON,
           .alternate_message_ids =
               {

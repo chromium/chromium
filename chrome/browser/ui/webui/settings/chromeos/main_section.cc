@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
+#include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "base/feature_list.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
@@ -49,6 +50,11 @@ void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {
       {"clearSearch", IDS_CLEAR_SEARCH},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  // Used to link to personalization app search results.
+  html_source->AddString(
+      "personalizationAppUrl",
+      ash::personalization_app::kChromeUIPersonalizationAppURL);
 }
 
 void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {

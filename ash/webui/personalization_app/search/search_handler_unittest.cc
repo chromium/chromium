@@ -13,6 +13,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
+#include "ash/webui/personalization_app/search/search.mojom-shared.h"
 #include "ash/webui/personalization_app/search/search.mojom-test-utils.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_concept.h"
@@ -24,6 +25,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
+#include "chromeos/components/local_search_service/public/mojom/index.mojom-test-utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -47,6 +49,13 @@ bool HasSearchResult(const std::vector<mojom::SearchResultPtr>& search_results,
     }
   }
   return false;
+}
+
+std::string SearchConceptIdToString(
+    mojom::SearchConceptId search_result_concept) {
+  return base::NumberToString(
+      static_cast<std::underlying_type_t<mojom::SearchConceptId>>(
+          search_result_concept));
 }
 
 class TestSearchResultsObserver : public mojom::SearchResultsObserver {
@@ -155,6 +164,14 @@ class PersonalizationAppSearchHandlerTest : public testing::Test {
     return search_results;
   }
 
+  // Remove all existing search concepts saved in the registry.
+  void ClearSearchTagRegistry() {
+    ::chromeos::local_search_service::mojom::IndexAsyncWaiter(
+        search_tag_registry()->index_remote_.get())
+        .ClearIndex();
+    search_tag_registry()->result_id_to_search_concept_.clear();
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -181,9 +198,11 @@ TEST_F(PersonalizationAppSearchHandlerTest, AnswersPersonalizationQuery) {
 }
 
 TEST_F(PersonalizationAppSearchHandlerTest, ObserverFiresWhenResultsUpdated) {
+  ClearSearchTagRegistry();
   TestSearchResultsObserver test_observer;
   search_handler_remote()->get()->AddObserver(test_observer.GetRemote());
   SearchConcept concept = {
+      .id = mojom::SearchConceptId::kChangeWallpaper,
       .message_id = IDS_PERSONALIZATION_APP_WALLPAPER_LABEL,
       .relative_url = "testing",
   };
@@ -192,9 +211,8 @@ TEST_F(PersonalizationAppSearchHandlerTest, ObserverFiresWhenResultsUpdated) {
   search_tag_registry()->UpdateSearchConcepts({{&concept, /*add=*/true}});
   test_observer.WaitForSearchResultsChanged();
 
-  EXPECT_EQ(&concept,
-            search_tag_registry()->GetSearchConceptById(
-                base::NumberToString(IDS_PERSONALIZATION_APP_WALLPAPER_LABEL)))
+  EXPECT_EQ(&concept, search_tag_registry()->GetSearchConceptById(
+                          SearchConceptIdToString(concept.id)))
       << "Search concept was added";
 
   // Remove the search concept.
@@ -301,12 +319,25 @@ TEST_F(PersonalizationAppSearchHandlerTest, HasDarkModeSearchResults) {
 }
 
 TEST_F(PersonalizationAppSearchHandlerTest, SortsAndTruncatesResults) {
+  ClearSearchTagRegistry();
   // Test search concepts.
   std::vector<const SearchConcept> test_search_concepts = {
-      {.message_id = IDS_PERSONALIZATION_APP_WALLPAPER_LABEL},
-      {.message_id = IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE},
-      {.message_id = IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL},
-      {.message_id = IDS_PERSONALIZATION_APP_AVATAR_LABEL},
+      {
+          .id = mojom::SearchConceptId::kChangeWallpaper,
+          .message_id = IDS_PERSONALIZATION_APP_WALLPAPER_LABEL,
+      },
+      {
+          .id = mojom::SearchConceptId::kPersonalization,
+          .message_id = IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE,
+      },
+      {
+          .id = mojom::SearchConceptId::kAmbientMode,
+          .message_id = IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL,
+      },
+      {
+          .id = mojom::SearchConceptId::kChangeDeviceAccountImage,
+          .message_id = IDS_PERSONALIZATION_APP_AVATAR_LABEL,
+      },
   };
   SearchTagRegistry::SearchConceptUpdates updates;
   for (const auto& concept : test_search_concepts) {
@@ -323,7 +354,7 @@ TEST_F(PersonalizationAppSearchHandlerTest, SortsAndTruncatesResults) {
                                test_search_concepts.at(i).message_id),
                            /*start=*/0, /*length=*/0);
     fake_local_results.emplace_back(
-        /*id=*/base::NumberToString(test_search_concepts.at(i).message_id),
+        /*id=*/SearchConceptIdToString(test_search_concepts.at(i).id),
         /*score=*/scores.at(i), std::move(positions));
   }
 

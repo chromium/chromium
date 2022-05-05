@@ -224,6 +224,7 @@
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
+#include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/print_management/mojom/printing_manager.mojom.h"
 #include "ash/webui/print_management/print_management_ui.h"
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
@@ -965,6 +966,12 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       chromeos::settings::mojom::SearchHandler,
       chromeos::settings::OSSettingsUI>(map);
+
+  if (ash::features::IsPersonalizationHubEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        ash::personalization_app::mojom::SearchHandler,
+        chromeos::settings::OSSettingsUI>(map);
+  }
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::settings::app_notification::mojom::AppNotificationsHandler,

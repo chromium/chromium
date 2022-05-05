@@ -92,9 +92,18 @@ if (optimize_webui) {
   }
 }
 
+copy("personalization_search_mojo_bindings") {
+  sources = [
+    "$root_gen_dir/ash/webui/personalization_app/search/search.mojom-lite.js",
+  ]
+  outputs = [ "$root_gen_dir/chrome/browser/ui/webui/settings/chromeos/search/personalization_{{source_file_part}}" ]
+  deps = [ "//ash/webui/personalization_app/search:mojo_bindings_js" ]
+}
+
 # OS Settings specific mojo files, bundled in optimized builds.
 preprocess_if_expr("preprocess_mojo_v3") {
   deps = [
+    ":personalization_search_mojo_bindings",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js",
     "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js",
   ]
@@ -107,6 +116,7 @@ preprocess_if_expr("preprocess_mojo_v3") {
     "search/search.mojom-lite.js",
     "search/search_result_icon.mojom-lite.js",
     "search/user_action_recorder.mojom-lite.js",
+    "search/personalization_search.mojom-lite.js",
   ]
 }
 
@@ -261,7 +271,9 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/metrics_recorder.js",
     "chromeos/os_settings_routes.js",
     "chromeos/route_origin_behavior.js",
-    "chromeos/search_handler.js",
+    "chromeos/combined_search_handler.js",
+    "chromeos/personalization_search_handler.js",
+    "chromeos/settings_search_handler.js",
     "chromeos/os_route.js",
     "chromeos/os_page_visibility.js",
     "chromeos/os_people_page/lock_state_behavior.js",
@@ -664,8 +676,9 @@ group("closure_compile_module") {
 
 js_type_check("closure_compile_local_module") {
   is_polymer3 = true
-  closure_flags = os_settings_closure_flags
+  closure_flags = os_settings_closure_flags + mojom_js_args
   deps = [
+    ":combined_search_handler",
     ":global_scroll_target_behavior",
     ":lazy_load",
     ":metrics_recorder",
@@ -675,11 +688,12 @@ js_type_check("closure_compile_local_module") {
     ":os_settings",
     ":os_settings_icons_css",
     ":os_settings_routes",
+    ":personalization_search_handler",
     ":pref_to_setting_metric_converter",
     ":prefs_behavior",
     ":route_observer_behavior",
     ":route_origin_behavior",
-    ":search_handler",
+    ":settings_search_handler",
   ]
 }
 
@@ -764,7 +778,19 @@ js_library("route_origin_behavior") {
   ]
 }
 
-js_library("search_handler") {
+js_library("combined_search_handler") {
+  deps = [
+    ":personalization_search_handler",
+    ":settings_search_handler",
+    "//mojo/public/mojom/base:base_webui_js",
+  ]
+}
+
+js_library("personalization_search_handler") {
+  deps = [ "//ash/webui/personalization_app/search:mojo_bindings_js_library_for_compile" ]
+}
+
+js_library("settings_search_handler") {
   deps = [
     "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",

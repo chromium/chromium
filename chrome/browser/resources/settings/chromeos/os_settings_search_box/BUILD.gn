@@ -7,7 +7,7 @@ import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
-  closure_flags = os_settings_closure_flags
+  closure_flags = os_settings_closure_flags + mojom_js_args
   is_polymer3 = true
   deps = [
     ":os_search_result_row",
@@ -17,10 +17,10 @@ js_type_check("closure_compile_module") {
 
 js_library("os_search_result_row") {
   deps = [
+    "..:combined_search_handler",
     "..:os_icons",
     "..:os_route",
     "..:route_observer_behavior",
-    "..:search_handler",
     "../..:open_window_proxy",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -37,10 +37,10 @@ js_library("os_search_result_row") {
 js_library("os_settings_search_box") {
   deps = [
     ":os_search_result_row",
+    "..:combined_search_handler",
     "..:metrics_recorder",
     "..:os_route",
     "..:route_observer_behavior",
-    "..:search_handler",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/iron-dropdown:iron-dropdown",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",

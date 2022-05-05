@@ -57,6 +57,8 @@ class SearchTagRegistry {
   void RemoveObserver(Observer* observer);
 
  private:
+  friend class PersonalizationAppSearchHandlerTest;
+
   void OnIndexUpdateComplete(uint32_t num_deleted);
 
   void OnAmbientPrefChanged();

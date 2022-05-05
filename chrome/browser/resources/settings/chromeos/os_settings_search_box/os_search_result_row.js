@@ -12,14 +12,15 @@ import '../../settings_shared_css.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {FocusRowBehavior} from '//resources/js/cr/ui/focus_row_behavior.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 
 import {OpenWindowProxyImpl} from '../../open_window_proxy.js';
 import {Route, Router} from '../../router.js';
+import {SearchResult} from '../combined_search_handler.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
-import {getSearchHandler, setSearchHandlerForTesting} from '../search_handler.js';
 
 /**
  * This solution uses DP and has the complexity of O(M*N), where M and N are
@@ -57,6 +58,10 @@ function longestCommonSubstrings(string1, string2) {
   return string1StartingIndices.map(idx => {
     return string1.substr(idx, maxLength);
   });
+}
+
+function isPersonalizationSearchResult(result) {
+  return result && typeof result.relativeUrl === 'string';
 }
 
   /**
@@ -161,7 +166,7 @@ function longestCommonSubstrings(string1, string2) {
       /** The query used to fetch this result. */
       searchQuery: String,
 
-      /** @type {!chromeos.settings.mojom.SearchResult} */
+      /** @type {!SearchResult} */
       searchResult: Object,
 
       /** Number of rows in the list this row is part of. */
@@ -549,6 +554,13 @@ function longestCommonSubstrings(string1, string2) {
 
     /** @private */
     recordSearchResultMetrics_() {
+      if (isPersonalizationSearchResult(this.searchResult)) {
+        chrome.metricsPrivate.recordSparseValue(
+            'ChromeOS.Settings.SearchResultPersonalizationSelected',
+            /** @type {!ash.personalizationApp.mojom.SearchResult} */
+            (this.searchResult).searchConceptId);
+        return;
+      }
       const SearchResultType = chromeos.settings.mojom.SearchResultType;
 
       chrome.metricsPrivate.recordEnumerationValue(
@@ -587,6 +599,13 @@ function longestCommonSubstrings(string1, string2) {
      * the search result's id.
      */
     onSearchResultSelected() {
+      if (isPersonalizationSearchResult(this.searchResult)) {
+        this.recordSearchResultMetrics_();
+        OpenWindowProxyImpl.getInstance().openURL(
+            loadTimeData.getString('personalizationAppUrl') +
+            this.searchResult.relativeUrl);
+        return;
+      }
       assert(this.searchResult.urlPathWithParameters, 'Url path is empty.');
       this.recordSearchResultMetrics_();
 
@@ -615,6 +634,9 @@ function longestCommonSubstrings(string1, string2) {
      * @private
      */
     getResultIcon_() {
+      if (isPersonalizationSearchResult(this.searchResult)) {
+        return 'os-settings:paint-brush';
+      }
       const Icon = chromeos.settings.mojom.SearchResultIcon;
       switch (this.searchResult.icon) {
         case Icon.kA11y:
@@ -700,5 +722,15 @@ function longestCommonSubstrings(string1, string2) {
         default:
           return 'os-settings:settings-general';
       }
+    },
+
+    /**
+     * @return {string} The name of the icon to use.
+     * @private
+     */
+    getActionTypeIcon_() {
+      return isPersonalizationSearchResult(this.searchResult) ?
+          'cr:open-in-new' :
+          'cr:arrow-forward';
     },
   });

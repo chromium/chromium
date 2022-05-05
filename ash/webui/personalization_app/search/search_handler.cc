@@ -8,11 +8,13 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/search/search.mojom-forward.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_concept.h"
 #include "ash/webui/personalization_app/search/search_tag_registry.h"
+#include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
@@ -43,6 +45,8 @@ SearchHandler::SearchHandler(
     : search_tag_registry_(
           std::make_unique<SearchTagRegistry>(local_search_service_proxy,
                                               pref_service)) {
+  DCHECK(ash::features::IsPersonalizationHubEnabled())
+      << "Personalization search requires personalization hub feature";
   local_search_service_proxy.GetIndex(
       local_search_service::IndexId::kPersonalization,
       local_search_service::Backend::kLinearMap,
@@ -115,11 +119,11 @@ void SearchHandler::OnLocalSearchDone(
       continue;
     }
 
-    search_results.push_back(
-        mojom::SearchResult::New(/*text=*/
-                                 l10n_util::GetStringUTF16(matching_content_id),
-                                 /*relative_url=*/search_concept->relative_url,
-                                 /*relevance_score=*/local_result.score));
+    search_results.push_back(mojom::SearchResult::New(
+        /*id=*/search_concept->id,
+        /*text=*/l10n_util::GetStringUTF16(matching_content_id),
+        /*relative_url=*/search_concept->relative_url,
+        /*relevance_score=*/local_result.score));
   }
 
   // Limit to top |max_num_results| results. Use partial_sort and then resize.

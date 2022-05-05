@@ -23,14 +23,14 @@ let settingsSearchHandler = null;
  * @param {!chromeos.settings.mojom.SearchHandlerInterface}
  *     testSearchHandler A test search handler.
  */
-export function setSearchHandlerForTesting(testSearchHandler) {
+export function setSettingsSearchHandlerForTesting(testSearchHandler) {
   settingsSearchHandler = testSearchHandler;
 }
 
-  /**
-   * @return {!chromeos.settings.mojom.SearchHandlerInterface} Search handler.
-   */
-export function getSearchHandler() {
+/**
+ * @return {!chromeos.settings.mojom.SearchHandlerInterface} Search handler.
+ */
+export function getSettingsSearchHandler() {
   if (settingsSearchHandler) {
     return settingsSearchHandler;
   }

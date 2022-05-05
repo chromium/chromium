@@ -8,10 +8,15 @@
 #include <array>
 #include <string>
 
+#include "ash/webui/personalization_app/search/search.mojom.h"
+
 namespace ash {
 namespace personalization_app {
 
 struct SearchConcept {
+  // The id of this search concept. Used for metrics.
+  mojom::SearchConceptId id;
+
   // The identifier for the string displayed to the user.
   int message_id;
   // Alternate message ids that map to this concept. There is a maximum of 5

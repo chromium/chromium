@@ -7,19 +7,27 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
   deps = [
+    ":fake_personalization_search_handler",
     ":fake_settings_search_handler",
     ":fake_user_action_recorder",
   ]
 }
 
-js_library("fake_user_action_recorder") {
+js_library("fake_personalization_search_handler") {
+  deps = [
+    "//ash/webui/personalization_app/search:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("fake_settings_search_handler") {
   deps = [
     "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:cr",
   ]
 }
 
-js_library("fake_settings_search_handler") {
+js_library("fake_user_action_recorder") {
   deps = [
     "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:cr",

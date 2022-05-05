@@ -157,4 +157,5 @@ export {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './
 export {ChangePictureBrowserProxy, ChangePictureBrowserProxyImpl} from './personalization_page/change_picture_browser_proxy.js';
 export {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from './personalization_page/personalization_hub_browser_proxy.js';
 export {WallpaperBrowserProxyImpl} from './personalization_page/wallpaper_browser_proxy.js';
-export {getSearchHandler, setSearchHandlerForTesting} from './search_handler.js';
+export {getPersonalizationSearchHandler, setPersonalizationSearchHandlerForTesting} from './personalization_search_handler.js';
+export {getSettingsSearchHandler, setSettingsSearchHandlerForTesting} from './settings_search_handler.js';

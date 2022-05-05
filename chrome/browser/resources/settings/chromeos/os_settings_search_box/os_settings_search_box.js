@@ -15,14 +15,17 @@ import '../../settings_shared_css.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 
 import {Route, Router} from '../../router.js';
+import {combinedSearch, SearchResult} from '../combined_search_handler.js';
 import {recordSearch} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
+import {getPersonalizationSearchHandler} from '../personalization_search_handler.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
-import {getSearchHandler, setSearchHandlerForTesting} from '../search_handler.js';
+import {getSettingsSearchHandler} from '../settings_search_handler.js';
 
 const MAX_NUM_SEARCH_RESULTS = 5;
 
@@ -52,6 +55,11 @@ const OsSettingSearchBoxUserAction = {
   CLICKED_OUT_OF_SEARCH_BOX: 1,
 };
 
+
+/**
+ * @implements {ash.personalizationApp.mojom.SearchResultObserverInterface}
+ * @implements {chromeos.settings.mojom.SearchResultObserverInterface}
+ */
 Polymer({
   _template: html`{__html_template__}`,
   is: 'os-settings-search-box',
@@ -59,11 +67,16 @@ Polymer({
   behaviors: [I18nBehavior],
 
   /**
-   * Receiver responsible for observing search result availability changes.
-   * @private {
-   *  ?chromeos.settings.mojom.SearchResultsObserverReceiver}
+   * Receiver for observing settings search result availability changes.
+   * @private {?chromeos.settings.mojom.SearchResultsObserverReceiver}
    */
-  searchResultObserverReceiver_: null,
+  settingsSearchResultObserverReceiver_: null,
+
+  /**
+   * Receiver for observing personalization search result changes.
+   * @private {?ash.personalizationApp.mojom.SearchResultsObserverReceiver}
+   */
+  personalizationSearchResultObserverReceiver_: null,
 
   properties: {
     // True when the toolbar is displaying in narrow mode.
@@ -96,7 +109,7 @@ Polymer({
      * <os-search-result-row>. This property is bound to the <iron-list>. Note
      * that when an item is selected, its associated <os-search-result-row>
      * is not focus()ed at the same time unless it is explicitly clicked/tapped.
-     * @private {!chromeos.settings.mojom.SearchResult}
+     * @private {!SearchResult}
      */
     selectedItem_: {
       type: Object,
@@ -106,7 +119,7 @@ Polymer({
      * Prevent user deselection by tracking last item selected. This item must
      * only be assigned to an item within |this.$.searchResultList|, and not
      * directly to |this.selectedItem_| or an item within |this.searchResults_|.
-     * @private {!chromeos.settings.mojom.SearchResult}
+     * @private {!SearchResult}
      */
     lastSelectedItem_: {
       type: Object,
@@ -114,7 +127,7 @@ Polymer({
 
     /**
      * Passed into <iron-list>. Exactly one result is the selectedItem_.
-     * @private {!Array<!chromeos.settings.mojom.SearchResult>}
+     * @private {!Array<!SearchResult>}
      */
     searchResults_: {
       type: Array,
@@ -196,24 +209,45 @@ Polymer({
           this.searchRequestCount_);
     });
 
-    // Observe for availability changes of results.
-    this.searchResultObserverReceiver_ =
+    if (loadTimeData.getBoolean('isPersonalizationHubEnabled')) {
+      // Observe changes to personalization search results.
+      this.personalizationSearchResultObserverReceiver_ =
+          new ash.personalizationApp.mojom.SearchResultsObserverReceiver(
+              /**
+               * @type {!ash.personalizationApp.mojom.SearchResultsObserverInterface}
+               */
+              (this));
+      getPersonalizationSearchHandler().addObserver(
+          this.personalizationSearchResultObserverReceiver_.$
+              .bindNewPipeAndPassRemote());
+    }
+
+    // Observe for availability changes of settings results.
+    this.settingsSearchResultObserverReceiver_ =
         new chromeos.settings.mojom.SearchResultsObserverReceiver(
             /**
              * @type {!chromeos.settings.mojom.SearchResultsObserverInterface}
              */
             (this));
-    getSearchHandler().observe(
-        this.searchResultObserverReceiver_.$.bindNewPipeAndPassRemote());
+    getSettingsSearchHandler().observe(
+        this.settingsSearchResultObserverReceiver_.$
+            .bindNewPipeAndPassRemote());
   },
 
   /** @override */
   detached() {
-    this.searchResultObserverReceiver_.$.close();
+    if (loadTimeData.getBoolean('isPersonalizationHubEnabled')) {
+      assert(
+          this.personalizationSearchResultObserverReceiver_ !== null,
+          'personalization search observer should be initialized');
+      this.personalizationSearchResultObserverReceiver_.$.close();
+    }
+    this.settingsSearchResultObserverReceiver_.$.close();
   },
 
   /**
    * Overrides chromeos.settings.mojom.SearchResultsObserverInterface
+   * Overrides ash.personalizationApp.mojom.SearchResultsObserverInterface
    */
   onSearchResultsChanged() {
     this.fetchSearchResults_();
@@ -269,10 +303,9 @@ Polymer({
     // an array of 16 bit character codes that match std::u16string.
     const queryMojoString16 = {data: Array.from(query, c => c.charCodeAt())};
     const timeOfSearchRequest = Date.now();
-    getSearchHandler()
-        .search(
-            queryMojoString16, MAX_NUM_SEARCH_RESULTS,
-            chromeos.settings.mojom.ParentResultBehavior.kAllowParentResults)
+    combinedSearch(
+        queryMojoString16, MAX_NUM_SEARCH_RESULTS,
+        chromeos.settings.mojom.ParentResultBehavior.kAllowParentResults)
         .then(response => {
           const latencyMs = Date.now() - timeOfSearchRequest;
           chrome.metricsPrivate.recordTime(
@@ -293,8 +326,7 @@ Polymer({
   /**
    * Updates search results UI when settings search results are fetched.
    * @param {string} query The string used to find search results.
-   * @param {!Array<!chromeos.settings.mojom.SearchResult>} results Array of
-   * search results.
+   * @param {!Array<!SearchResult>} results Array of search results.
    * @private
    */
   onSearchResultsReceived_(query, results) {
@@ -392,8 +424,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.settings.mojom.SearchResult} item The search result item
-   * in searchResults_.
+   * @param {!SearchResult} item The search result item in searchResults_.
    * @return {boolean} True if the item is selected.
    * @private
    */
@@ -414,8 +445,7 @@ Polymer({
    * Returns the correct tab index since <iron-list>'s default tabIndex property
    * does not automatically add selectedItem_'s <os-search-result-row> to the
    * default navigation flow, unless the user explicitly clicks on the row.
-   * @param {!chromeos.settings.mojom.SearchResult} item The search result item
-   * in searchResults_.
+   * @param {!SearchResult} item The search result item in searchResults_.
    * @return {number} A 0 if the row should be in the navigation flow, or a -1
    *     if the row should not be in the navigation flow.
    * @private
