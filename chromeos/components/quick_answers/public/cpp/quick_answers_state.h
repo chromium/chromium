@@ -34,6 +34,7 @@ class QuickAnswersStateObserver : public base::CheckedObserver {
  public:
   virtual void OnSettingsEnabled(bool enabled) {}
   virtual void OnApplicationLocaleReady(const std::string& locale) {}
+  virtual void OnEligibilityChanged(bool eligible) {}
 };
 
 // A class that holds Quick Answers related prefs and states.

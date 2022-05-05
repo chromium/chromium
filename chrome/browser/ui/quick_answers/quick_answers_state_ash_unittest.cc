@@ -35,13 +35,16 @@ class TestQuickAnswersStateObserver : public QuickAnswersStateObserver {
       const std::string& application_locale) override {
     application_locale_ = application_locale;
   }
+  void OnEligibilityChanged(bool eligible) override { is_eligible_ = eligible; }
 
   bool settings_enabled() const { return settings_enabled_; }
   const std::string& application_locale() const { return application_locale_; }
+  bool is_eligible() const { return is_eligible_; }
 
  private:
   bool settings_enabled_ = false;
   std::string application_locale_;
+  bool is_eligible_ = false;
 };
 
 class QuickAnswersStateAshTest : public ChromeQuickAnswersTestBase {
@@ -187,19 +190,31 @@ TEST_F(QuickAnswersStateAshTest, UpdateSpokenFeedbackEnabled) {
 }
 
 TEST_F(QuickAnswersStateAshTest, LocaleEligible) {
+  QuickAnswersState::Get()->AddObserver(observer());
+
+  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_FALSE(observer()->is_eligible());
+
   UErrorCode error_code = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale(ULOC_US), error_code);
   prefs()->SetString(language::prefs::kApplicationLocale, "en");
 
   SimulateUserLogin(kTestUser);
   EXPECT_TRUE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_TRUE(observer()->is_eligible());
 }
 
 TEST_F(QuickAnswersStateAshTest, LocaleIneligible) {
+  QuickAnswersState::Get()->AddObserver(observer());
+
+  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_FALSE(observer()->is_eligible());
+
   UErrorCode error_code = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale(ULOC_CHINESE), error_code);
   prefs()->SetString(language::prefs::kApplicationLocale, "zh");
 
   SimulateUserLogin(kTestUser);
   EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_FALSE(observer()->is_eligible());
 }

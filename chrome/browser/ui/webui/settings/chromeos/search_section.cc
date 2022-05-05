@@ -269,9 +269,6 @@ SearchSection::SearchSection(Profile* profile,
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetSearchPageSearchConcepts());
 
-  if (ShouldShowQuickAnswersSettings())
-    updater.AddSearchTags(GetQuickAnswersSearchConcepts());
-
   ash::AssistantState* assistant_state = ash::AssistantState::Get();
   if (IsAssistantAllowed() && assistant_state) {
     updater.AddSearchTags(GetAssistantSearchConcepts());
@@ -280,7 +277,7 @@ SearchSection::SearchSection(Profile* profile,
     UpdateAssistantSearchTags();
   }
 
-  if (ShouldShowQuickAnswersSettings()) {
+  if (QuickAnswersState::Get()) {
     QuickAnswersState::Get()->AddObserver(this);
     UpdateQuickAnswersSearchTags();
   }
@@ -405,6 +402,10 @@ void SearchSection::OnSettingsEnabled(bool enabled) {
   UpdateQuickAnswersSearchTags();
 }
 
+void SearchSection::OnEligibilityChanged(bool eligible) {
+  UpdateQuickAnswersSearchTags();
+}
+
 bool SearchSection::IsAssistantAllowed() const {
   // NOTE: This will be false when the flag is disabled.
   return ::assistant::IsAssistantAllowedForProfile(profile()) ==
@@ -444,7 +445,14 @@ void SearchSection::UpdateQuickAnswersSearchTags() {
   DCHECK(QuickAnswersState::Get());
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+
+  updater.RemoveSearchTags(GetQuickAnswersSearchConcepts());
   updater.RemoveSearchTags(GetQuickAnswersOnSearchConcepts());
+
+  if (!ShouldShowQuickAnswersSettings())
+    return;
+
+  updater.AddSearchTags(GetQuickAnswersSearchConcepts());
 
   if (chromeos::features::IsQuickAnswersV2SettingsSubToggleEnabled() &&
       QuickAnswersState::Get()->settings_enabled()) {

@@ -48,6 +48,7 @@ class SearchSection : public OsSettingsSection,
 
   // QuickAnswersStateObserver:
   void OnSettingsEnabled(bool enabled) override;
+  void OnEligibilityChanged(bool eligible) override;
 
   bool IsAssistantAllowed() const;
   void UpdateAssistantSearchTags();

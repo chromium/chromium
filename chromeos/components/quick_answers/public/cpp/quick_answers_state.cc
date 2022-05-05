@@ -82,6 +82,7 @@ void QuickAnswersState::InitializeObserver(
   if (prefs_initialized_) {
     observer->OnSettingsEnabled(settings_enabled_);
     observer->OnApplicationLocaleReady(resolved_application_locale_);
+    observer->OnEligibilityChanged(is_eligible_);
   }
 }
 
@@ -91,6 +92,10 @@ void QuickAnswersState::UpdateEligibility() {
 
   is_eligible_ = IsQuickAnswersAllowedForLocale(
       resolved_application_locale_, icu::Locale::getDefault().getName());
+
+  for (auto& observer : observers_) {
+    observer.OnEligibilityChanged(is_eligible_);
+  }
 }
 
 void QuickAnswersState::RecordConsentResult(ConsentResultType type,
