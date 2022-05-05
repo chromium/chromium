@@ -183,11 +183,8 @@ bool IsFailedHttpsUpgrade(NSError* error,
           navigationItem];
       if (item) {
         item->SetUserAgentType(userAgentType);
-        if (base::FeatureList::IsEnabled(
-                web::features::kCreatePendingItemForPostFormSubmission)) {
-          if (web::wk_navigation_util::IsRestoreSessionUrl(item->GetURL())) {
-            self.webStateImpl->SetUserAgent(userAgentType);
-          }
+        if (web::wk_navigation_util::IsRestoreSessionUrl(item->GetURL())) {
+          self.webStateImpl->SetUserAgent(userAgentType);
         }
       }
     }
