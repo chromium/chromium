@@ -1231,6 +1231,7 @@ export class FakeShimlessRmaService {
 
     this.methods_.register('setSameOwner');
     this.methods_.register('setDifferentOwner');
+    this.methods_.register('setWipeDevice');
 
     this.methods_.register('chooseManuallyDisableWriteProtect');
     this.methods_.register('chooseRsuDisableWriteProtect');
