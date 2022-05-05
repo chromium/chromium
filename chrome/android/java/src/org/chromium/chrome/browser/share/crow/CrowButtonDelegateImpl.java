@@ -10,8 +10,11 @@ import android.net.Uri;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
@@ -39,11 +42,9 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
     }
 
     @Override
-    public void launchCustomTab(Activity currentActivity, GURL pageUrl) {
-        // TODO(skare): Fetch canonical URL, based on ShareDelegate.shouldFetchCanonicalUrl()
-        // and ShareDelegate.getUrlToShare.
-        String customTabUrl = buildServerUrl(
-                new GURL(getServerUrl()), pageUrl, pageUrl, getPublicationId(pageUrl));
+    public void launchCustomTab(Activity currentActivity, GURL pageUrl, GURL canonicalUrl) {
+        String customTabUrl = buildServerUrl(new GURL(getServerUrl()), pageUrl, canonicalUrl,
+                getPublicationId(pageUrl), areMetricsEnabled());
 
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         builder.setShowTitle(true);
@@ -102,14 +103,28 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
                 ChromeFeatureList.SHARE_CROW_BUTTON, APP_MENU_BUTTON_TEXT_PARAM);
     }
 
+    @Override
+    public void requestCanonicalUrl(Tab tab, Callback<GURL> callback) {
+        if (tab.getWebContents() == null || tab.getWebContents().getMainFrame() == null
+                || tab.getUrl().isEmpty()) {
+            callback.onResult(GURL.emptyGURL());
+            return;
+        }
+        tab.getWebContents().getMainFrame().getCanonicalUrlForSharing(callback);
+    }
+
     private String getServerUrl() {
         return ChromeFeatureList.getFieldTrialParamByFeature(
                 ChromeFeatureList.SHARE_CROW_BUTTON, DEBUG_SERVER_URL_PARAM);
     }
 
+    private boolean areMetricsEnabled() {
+        return PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted();
+    }
+
     @VisibleForTesting
-    public String buildServerUrl(
-            GURL serverUrl, GURL pageUrl, GURL canonicalPageUrl, String publicationId) {
+    public String buildServerUrl(GURL serverUrl, GURL pageUrl, GURL canonicalPageUrl,
+            String publicationId, boolean allowMetrics) {
         String serverSpec = serverUrl.getSpec();
         if (serverSpec.isEmpty()) return "";
         Uri.Builder builder = Uri.parse(serverSpec).buildUpon();
@@ -117,8 +132,7 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
         builder.appendQueryParameter("entry", "menu");
         builder.appendQueryParameter("relCanonUrl", canonicalPageUrl.getSpec());
         builder.appendQueryParameter("publicationId", publicationId);
-        // TODO(skare): query PrivacyPreferencesManagerImpl
-        builder.appendQueryParameter("metrics", "false");
+        builder.appendQueryParameter("metrics", allowMetrics ? "true" : "false");
         return builder.build().toString();
     }
 }

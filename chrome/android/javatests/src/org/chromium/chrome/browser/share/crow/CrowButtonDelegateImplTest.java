@@ -39,29 +39,38 @@ public class CrowButtonDelegateImplTest {
         final GURL serverUrlWithoutQueryString = new GURL("http://www.foo.com/v1/api");
         final GURL shareUrl1 = new GURL("https://testSiteWeAreSharing.com/blog/entry");
         final GURL shareUrl2 = new GURL("https://testSiteWeAreSharing.com/?blog=1&entry=2");
+        boolean allowMetrics = true;
 
-        assertEquals("", delegate.buildServerUrl(GURL.emptyGURL(), shareUrl1, shareUrl1, ""));
+        assertEquals("",
+                delegate.buildServerUrl(GURL.emptyGURL(), shareUrl1, shareUrl1, "", allowMetrics));
 
         // Baseline/common case.
         assertEquals(
-                "https://www.foo.com/v1/api?q=hi&pageUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&entry=menu&relCanonUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&publicationId=pubId1&metrics=false",
-                delegate.buildServerUrl(serverUrl, shareUrl1, shareUrl1, "pubId1"));
+                "https://www.foo.com/v1/api?q=hi&pageUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&entry=menu&relCanonUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&publicationId=pubId1&metrics=true",
+                delegate.buildServerUrl(serverUrl, shareUrl1, shareUrl1, "pubId1", allowMetrics));
 
         // Sending a URL with urlparams of its own.
         assertEquals(
-                "https://www.foo.com/v1/api?q=hi&pageUrl=https%3A%2F%2Ftestsitewearesharing.com%2F%3Fblog%3D1%26entry%3D2&entry=menu&relCanonUrl=https%3A%2F%2Ftestsitewearesharing.com%2F%3Fblog%3D1%26entry%3D2&publicationId=pubId2&metrics=false",
-                delegate.buildServerUrl(serverUrl, shareUrl2, shareUrl2, "pubId2"));
+                "https://www.foo.com/v1/api?q=hi&pageUrl=https%3A%2F%2Ftestsitewearesharing.com%2F%3Fblog%3D1%26entry%3D2&entry=menu&relCanonUrl=https%3A%2F%2Ftestsitewearesharing.com%2F%3Fblog%3D1%26entry%3D2&publicationId=pubId2&metrics=true",
+                delegate.buildServerUrl(serverUrl, shareUrl2, shareUrl2, "pubId2", allowMetrics));
 
         // Empty canonical URL is ok, passes as empty param.
         assertEquals(
-                "https://www.foo.com/v1/api?q=hi&pageUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&entry=menu&relCanonUrl=&publicationId=pubId1&metrics=false",
-                delegate.buildServerUrl(serverUrl, shareUrl1, GURL.emptyGURL(), "pubId1"));
+                "https://www.foo.com/v1/api?q=hi&pageUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&entry=menu&relCanonUrl=&publicationId=pubId1&metrics=true",
+                delegate.buildServerUrl(
+                        serverUrl, shareUrl1, GURL.emptyGURL(), "pubId1", allowMetrics));
 
         // Experimental URL can be passed with an empty set of params.
         assertEquals(
-                "http://www.foo.com/v1/api?pageUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&entry=menu&relCanonUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&publicationId=pubId1&metrics=false",
+                "http://www.foo.com/v1/api?pageUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&entry=menu&relCanonUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&publicationId=pubId1&metrics=true",
                 delegate.buildServerUrl(
-                        serverUrlWithoutQueryString, shareUrl1, shareUrl1, "pubId1"));
+                        serverUrlWithoutQueryString, shareUrl1, shareUrl1, "pubId1", allowMetrics));
+
+        // Metrics off should be reflected.
+        allowMetrics = false;
+        assertEquals(
+                "https://www.foo.com/v1/api?q=hi&pageUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&entry=menu&relCanonUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&publicationId=pubId1&metrics=false",
+                delegate.buildServerUrl(serverUrl, shareUrl1, shareUrl1, "pubId1", allowMetrics));
     }
 
     @Test

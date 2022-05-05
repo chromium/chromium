@@ -274,7 +274,9 @@ public class WebFeedMainMenuItem extends FrameLayout {
             if (mTab == null) return;
             RecordUserAction.record("Crow.LaunchCustomTab.AppMenu");
             Activity activity = mTab.getWindowAndroid().getActivity().get();
-            mCrowButtonDelegate.launchCustomTab(activity, mUrl);
+            mCrowButtonDelegate.requestCanonicalUrl(mTab, (canonicalUrl) -> {
+                mCrowButtonDelegate.launchCustomTab(activity, mUrl, canonicalUrl);
+            });
         });
         RecordUserAction.record("Crow.EntryPointShown.AppMenu");
         mCrowButton.setVisibility(View.VISIBLE);

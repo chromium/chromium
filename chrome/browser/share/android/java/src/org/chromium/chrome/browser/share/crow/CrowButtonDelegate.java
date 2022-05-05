@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.share.crow;
 
 import android.app.Activity;
 
+import org.chromium.base.Callback;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
 
 /**
@@ -28,11 +30,19 @@ public interface CrowButtonDelegate {
      *                        entry point.
      * @param pageUrl URL for the page; passed in rather than derived from currentTab
      *     or WebContents's lastCommittedURL as it was used to construct UI in the caller.
+     * @param canonicalUrl Canonical URL for 'pageUrl.' May be empty.
      */
-    void launchCustomTab(Activity currentActivity, GURL pageUrl);
+    void launchCustomTab(Activity currentActivity, GURL pageUrl, GURL canonicalUrl);
 
     /**
      * @return experiment-configured chip text.
      */
     String getButtonText();
+
+    /**
+     * Obtains the Canonical URL for a Tab.
+     * @param tab The tab for which to find the canonical URL.
+     * @param Callback<String> callback returning the canonical URL, or empty.
+     */
+    void requestCanonicalUrl(Tab tab, Callback<GURL> url);
 }
