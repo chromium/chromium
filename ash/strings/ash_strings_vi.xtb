@@ -37,6 +37,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1175572348579024023">Cuộn</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
 <translation id="1181037720776840403">Xóa</translation>
+<translation id="1183863904939664422">Không quan tâm đến nội dung đề xuất này</translation>
 <translation id="118437560755358292">Hãy nhập mật khẩu hoặc mã PIN để tăng cường bảo mật</translation>
 <translation id="118532027333893379">Nhấn vào vị trí bất kỳ để chụp toàn màn hình</translation>
 <translation id="1190609913194133056">Trung tâm thông báo</translation>
@@ -607,6 +608,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4560576029703263363">Đang bật</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ẩn mật khẩu</translation>
+<translation id="4566144812051858745">Không quan tâm đến nội dung đề xuất</translation>
 <translation id="4570957409596482333">Nút Chọn để nói</translation>
 <translation id="4573176682887762361">"Nhập [từ/cụm từ]"</translation>
 <translation id="4577274620589681794">Hết giờ · <ph name="LABEL" /></translation>
@@ -660,6 +662,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4868492592575313542">đã bật</translation>
 <translation id="4872237917498892622">Alt+Search hoặc Shift</translation>
 <translation id="4881695831933465202">Mở</translation>
+<translation id="4889868803215848840">Đóng góp ý kiến phản hồi (không bắt buộc) để cải thiện nội dung đề xuất:</translation>
 <translation id="4890187583552566966">Quản trị viên của bạn đã tắt Trợ lý Google.</translation>
 <translation id="4890408602550914571">Hãy đảm bảo điện thoại của bạn ở gần và đã bật Bluetooth.</translation>
 <translation id="4895488851634969361">Pin đầy.</translation>
@@ -846,6 +849,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6054305421211936131">Đăng nhập bằng thẻ thông minh</translation>
 <translation id="6059276912018042191">Các thẻ Chrome mở gần đây</translation>
 <translation id="6062360702481658777">Bạn sẽ tự động được đăng xuất sau <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6064463340679478396">Đã dùng xong tệp này</translation>
 <translation id="6073451960410192870">Dừng ghi</translation>
 <translation id="6099678161144790572">Chỉnh sửa tháng trước</translation>
 <translation id="6103838137565245112">hệ thống</translation>
@@ -1133,6 +1137,7 @@ Mới cài đặt</translation>
 <translation id="7886169021410746335">Điều chỉnh các tùy chọn cài đặt quyền riêng tư</translation>
 <translation id="7886277072580235377">Phiên hoạt động trên Internet của bạn sẽ bị xóa khi bạn đăng xuất. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Gửi email</translation>
+<translation id="7893503627044934815">Không muốn hiện tệp này</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Bạn đã nhấn phím tắt để xoay màn hình. Bạn có muốn xoay màn hình không?</translation>
 <translation id="7901405293566323524">Trung tâm điều khiển điện thoại</translation>

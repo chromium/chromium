@@ -879,6 +879,7 @@ web và Ứng dụng web tiến bộ. Hiện chỉ được hỗ trợ trên
         |TIME_LIMITS| áp dụng giới hạn mức sử dụng hằng ngày và khiến người dùng không thể sử dụng ứng dụng sau khi đạt đến giới hạn đó vào ngày cụ thể. Giới hạn mức sử dụng được chỉ định theo |daily_limit_mins|. Hằng ngày, hệ thống sẽ đặt lại giới hạn mức sử dụng vào thời gian (theo giờ UTC) đã chỉ định trong |reset_at|.
         Chính sách này chỉ dùng cho người dùng là trẻ em.
         Chính sách này sẽ bổ sung cho 'UsageTimeLimit'. Các giới hạn đã chỉ định trong 'UsageTimeLimit' như thời gian sử dụng thiết bị và giờ đi ngủ sẽ được thực thi bất kể 'PerAppTimeLimits' là như thế nào.</translation>
+<translation id="1913629775420987861">Hiện hộp thoại nhắc nhở khi người dùng định thoát</translation>
 <translation id="1916266055944569995">Việc đặt chính sách này sẽ xác định giá trị mà API Cấu hình được quản lý trả về cho nguồn gốc đã cho.
 
       API Cấu hình được quản lý là cấu hình khóa-giá trị có thể truy cập qua lệnh gọi javascript navigator.managed.getManagedConfiguration(). API này chỉ dành cho các nguồn gốc tương ứng với các ứng dụng web bị buộc cài đặt qua <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
@@ -1627,6 +1628,7 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
       Chính sách này áp dụng cho màn hình đăng nhập. Vui lòng xem cả chính sách <ph name="SITE_PER_PROCESS_POLICY_NAME" /> áp dụng cho phiên người dùng. Bạn nên đặt cả hai chính sách về cùng một giá trị. Nếu các giá trị không khớp nhau, thì có thể xảy ra tình trạng chậm trễ khi vào một phiên người dùng mặc dù đang áp dụng giá trị do chính sách người dùng chỉ định.
       </translation>
 <translation id="2702023190395322609">Bật tính năng đề xuất nội dung nghe nhìn</translation>
+<translation id="270582584528242502">Không hiện hộp thoại nhắc nhở khi người dùng định thoát</translation>
 <translation id="2706708761587205154">Chỉ cho phép in khi có mã PIN</translation>
 <translation id="2707873794476722903">Tính năng Duyệt web an toàn đang hoạt động ở chế độ chuẩn.</translation>
 <translation id="2709516037105925701">Tự động điền</translation>
@@ -2497,6 +2499,7 @@ Khi chính sách này được đặt thành false hoặc không được địn
 <translation id="3634125384445314047">Cho phép truy cập ảnh và video mới chụp/quay trên điện thoại thông qua Trung tâm điều khiển điện thoại.</translation>
 <translation id="3643284063603988867">Bật tính năng 'Nhớ mật khẩu'</translation>
 <translation id="3644278943784332493">Bật thử nghiệm nội bộ Projector cho người dùng Family Link</translation>
+<translation id="3644735978203799620">Cho phép tự động chọn để chụp ảnh nhiều màn hình</translation>
 <translation id="3646859102161347133">Đặt loại kính lúp màn hình</translation>
 <translation id="3647212518036289905">Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định thư viện GSSAPI dùng để xác thực HTTP. Hãy đặt chính sách này thành tên thư viện hoặc đường dẫn đầy đủ.
 
@@ -5019,6 +5022,10 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 <translation id="654303922206238013">Chiến lược di chuyển cho ecryptfs</translation>
 <translation id="6543277347547044538">Kết thúc khoảng thời gian, không bao gồm giá trị đầu và giá trị cuối.</translation>
 <translation id="6544601600794014309">Bật tính năng dịch của thông tin nhanh</translation>
+<translation id="6544759513632821565">API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> cho phép các ứng dụng web chụp nhiều bề mặt cùng lúc.
+      Chính sách này mở khoá thuộc tính <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> cho các ứng dụng web có nguồn gốc xác định.
+      Nếu thuộc tính <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> được xác định trong một yêu cầu <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, thì tất cả bề mặt màn hình sẽ tự động được chụp mà không cần người dùng cho phép rõ ràng.
+      Nếu bạn chưa thiết lập chính sách này, thì mọi ứng dụng web đều không thể sử dụng <ph name="AUTO_SELECT_ALL_SCREENS_NAME" />.</translation>
 <translation id="654546276700640113">Nếu bạn đặt chính sách này, người dùng sẽ phải tuân thủ độ dài tối đa đã định cấu hình của mã PIN. Giá trị bằng 0 trở xuống nghĩa là người dùng có thể đặt mã PIN với độ dài tùy ý. Nếu giá trị nhỏ hơn <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" /> nhưng lớn hơn 0, thì độ dài tối đa sẽ được đặt thành độ dài tối thiểu.
 
       Nếu bạn không đặt chính sách này, người dùng sẽ không phải tuân thủ độ dài tối đa.</translation>
@@ -6685,6 +6692,11 @@ Bạn nên định cấu hình chính sách trên Windows qua GPO, mặc dù vi�
       Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi được. Nếu bạn không đặt chính sách này, thì chính sách sẽ bật nhưng người dùng có thể thay đổi tùy chọn cài đặt này.</translation>
 <translation id="8300992833374611099">Kiểm soát vị trí có thể sử dụng Công cụ dành cho nhà phát triển</translation>
 <translation id="8301065459352777588">Người dùng Phiên khách được quản lý có thể lưu trữ các chế độ cài đặt cách hiển thị trên toàn thiết bị</translation>
+<translation id="8303923135132440974">Điều khiển hộp thoại "Warn Before Quitting (⌘Q)" (Nhắc nhở trước khi thoát (⌘Q)) khi người dùng định thoát trình duyệt.
+
+      Nếu bạn đặt chính sách này thành Bật hoặc chưa thiết lập chính sách này, một hộp thoại nhắc nhở sẽ xuất hiện khi người dùng định thoát.
+
+      Nếu bạn đặt chính sách này thành Tắt, hộp thoại nhắc nhở sẽ không xuất hiện khi người dùng định thoát.</translation>
 <translation id="830440838848984847">Cho phép người dùng đăng nhập vào <ph name="PRODUCT_NAME" /></translation>
 <translation id="8306117673860983372">Cài đặt đăng nhập</translation>
 <translation id="830819203330820450">Nếu bạn bật hoặc không định cấu hình (mặc định), thì trang web có thể dùng
