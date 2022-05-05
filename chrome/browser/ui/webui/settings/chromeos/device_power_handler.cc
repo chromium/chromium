@@ -363,19 +363,19 @@ void PowerHandler::SendPowerSources() {
   const absl::optional<power_manager::PowerSupplyProperties>& proto =
       PowerManagerClient::Get()->GetLastStatus();
   DCHECK(proto);
-  base::ListValue sources_list;
+  base::Value::List sources_list;
   for (int i = 0; i < proto->available_external_power_source_size(); i++) {
     const auto& source = proto->available_external_power_source(i);
-    std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-    dict->SetStringKey("id", source.id());
-    dict->SetBoolKey("is_dedicated_charger", source.active_by_default());
-    dict->SetStringKey("description", l10n_util::GetStringUTF16(
-                                          PowerSourceToDisplayId(source)));
+    base::Value::Dict dict;
+    dict.Set("id", source.id());
+    dict.Set("is_dedicated_charger", source.active_by_default());
+    dict.Set("description",
+             l10n_util::GetStringUTF16(PowerSourceToDisplayId(source)));
     sources_list.Append(std::move(dict));
   }
 
   FireWebUIListener(
-      "power-sources-changed", sources_list,
+      "power-sources-changed", base::Value(std::move(sources_list)),
       base::Value(proto->external_power_source_id()),
       base::Value(proto->external_power() ==
                   power_manager::PowerSupplyProperties_ExternalPower_USB));

@@ -87,7 +87,7 @@ void StylusHandler::OnDeviceListsComplete() {
 void StylusHandler::UpdateNoteTakingApps() {
   bool waiting_for_android = false;
   note_taking_app_ids_.clear();
-  base::ListValue apps_list;
+  base::Value::List apps_list;
 
   NoteTakingHelper* helper = NoteTakingHelper::Get();
   if (helper->play_store_enabled() && !helper->android_apps_received()) {
@@ -98,19 +98,20 @@ void StylusHandler::UpdateNoteTakingApps() {
     std::vector<NoteTakingAppInfo> available_apps =
         helper->GetAvailableApps(Profile::FromWebUI(web_ui()));
     for (const NoteTakingAppInfo& info : available_apps) {
-      auto dict = std::make_unique<base::DictionaryValue>();
-      dict->SetStringKey(kAppNameKey, info.name);
-      dict->SetStringKey(kAppIdKey, info.app_id);
-      dict->SetBoolKey(kAppPreferredKey, info.preferred);
-      dict->SetIntKey(kAppLockScreenSupportKey,
-                      static_cast<int>(info.lock_screen_support));
+      base::Value::Dict dict;
+      dict.Set(kAppNameKey, info.name);
+      dict.Set(kAppIdKey, info.app_id);
+      dict.Set(kAppPreferredKey, info.preferred);
+      dict.Set(kAppLockScreenSupportKey,
+               static_cast<int>(info.lock_screen_support));
       apps_list.Append(std::move(dict));
 
       note_taking_app_ids_.insert(info.app_id);
     }
   }
 
-  FireWebUIListener("onNoteTakingAppsUpdated", apps_list,
+  FireWebUIListener("onNoteTakingAppsUpdated",
+                    base::Value(std::move(apps_list)),
                     base::Value(waiting_for_android));
 }
 
