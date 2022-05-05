@@ -2,8 +2,70 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
+assert(!is_android)
+
+preprocess_folder = "preprocessed"
 html_to_js("web_components") {
-  js_files = [ "token_list_item.js" ]
+  js_files = [ "token_list_item.ts" ]
+}
+
+preprocess_if_expr("preprocess_src") {
+  in_folder = "."
+  in_files = [ "identity_internals.ts" ]
+  out_folder = "$target_gen_dir/$preprocess_folder"
+}
+
+preprocess_if_expr("preprocess_gen") {
+  in_folder = target_gen_dir
+  in_files = [ "token_list_item.ts" ]
+  deps = [ ":web_components" ]
+  out_folder = "$target_gen_dir/$preprocess_folder"
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  in_files = [
+    "identity_internals.ts",
+    "token_list_item.ts",
+  ]
+  deps = [ "//ui/webui/resources:library" ]
+  extra_deps = [
+    ":preprocess_gen",
+    ":preprocess_src",
+  ]
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "identity_internals"
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [
+    "identity_internals.css",
+    "identity_internals.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  deps = [ ":build_ts" ]
+}
+
+grit("resources") {
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+  enable_input_discovery_for_gn_analyze = false
+  defines = chrome_grit_defines
+  outputs = [
+    "grit/identity_internals_resources.h",
+    "grit/identity_internals_resources_map.cc",
+    "grit/identity_internals_resources_map.h",
+    "identity_internals_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
 }

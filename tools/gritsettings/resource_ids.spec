@@ -188,6 +188,10 @@
     "META": {"sizes": {"includes": [40]}},
     "includes": [1620],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/identity_internals/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [1621],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/image_editor/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [1625],

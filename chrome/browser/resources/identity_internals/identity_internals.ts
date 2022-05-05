@@ -4,33 +4,34 @@
 
 import './token_list_item.js';
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-let data = [];
-let list;
+let data: Array<{[key: string]: string | string[]}> = [];
+let list: HTMLElement;
 
 /**
  * Removes a token node related to the specified token ID from both the
  * internals data source as well as the user interface.
- * @param {CustomEvent<string>} e Contains the id of the token to remove.
+ * @param e Contains the id of the token to remove.
  */
-function removeTokenNode(e) {
+function removeTokenNode(e: CustomEvent<string>) {
   const accessToken = e.detail;
-  let tokenIndex;
+  let tokenIndex: number = -1;
   for (let index = 0; index < data.length; index++) {
-    if (data[index].accessToken === accessToken) {
+    if (data[index]!['accessToken'] === accessToken) {
       tokenIndex = index;
       break;
     }
   }
 
   // Remove from the tokens_ source if token found.
-  if (tokenIndex) {
+  if (tokenIndex > -1) {
     data.splice(tokenIndex, 1);
   }
 
   // Remove from the user interface.
-  const tokenNode = list.querySelector(`#${accessToken}`);
+  const tokenNode = list.querySelector<HTMLElement>(`#${accessToken}`);
   if (tokenNode) {
     list.removeChild(tokenNode);
   }
@@ -40,10 +41,12 @@ function removeTokenNode(e) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  list = document.querySelector('#token-list');
+  const listEl = document.querySelector<HTMLElement>('#token-list');
+  assert(listEl);
+  list = listEl;
   sendWithPromise('identityInternalsGetTokens').then(tokens => {
     data = tokens;
-    tokens.forEach(tokenInfo => {
+    data.forEach(tokenInfo => {
       const item = document.createElement('token-list-item');
       list.appendChild(item);
       item.configure(tokenInfo);

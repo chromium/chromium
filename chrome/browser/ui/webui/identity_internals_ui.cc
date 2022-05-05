@@ -16,8 +16,9 @@
 #include "chrome/browser/extensions/api/identity/identity_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/identity_internals_resources.h"
+#include "chrome/grit/identity_internals_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -316,13 +317,10 @@ IdentityInternalsUI::IdentityInternalsUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(chrome::kChromeUIIdentityInternalsHost);
 
   // Required resources
-  html_source->AddResourcePath("identity_internals.css",
-      IDR_IDENTITY_INTERNALS_CSS);
-  html_source->AddResourcePath("identity_internals.js",
-                               IDR_IDENTITY_INTERNALS_IDENTITY_INTERNALS_JS);
-  html_source->AddResourcePath("token_list_item.js",
-                               IDR_IDENTITY_INTERNALS_TOKEN_LIST_ITEM_JS);
-  html_source->SetDefaultResource(IDR_IDENTITY_INTERNALS_HTML);
+  html_source->AddResourcePaths(base::make_span(
+      kIdentityInternalsResources, kIdentityInternalsResourcesSize));
+  html_source->SetDefaultResource(
+      IDR_IDENTITY_INTERNALS_IDENTITY_INTERNALS_HTML);
 
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,

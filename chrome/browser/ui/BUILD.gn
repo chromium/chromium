@@ -1757,6 +1757,7 @@ static_library("ui") {
       "//chrome/browser/profile_resetter:profile_reset_report_proto",
       "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
       "//chrome/browser/resource_coordinator/tab_ranker",
+      "//chrome/browser/resources/identity_internals:resources",
       "//chrome/browser/resources/support_tool:resources",
       "//chrome/browser/safe_browsing",
       "//chrome/browser/safe_browsing:advanced_protection",
