@@ -10,6 +10,7 @@
 #include "ash/bubble/bubble_constants.h"
 #include "base/check_op.h"
 #include "base/time/time.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -105,5 +106,8 @@ void AppListBubbleSearchPage::AbortAllAnimations() {
 ui::Layer* AppListBubbleSearchPage::GetPageAnimationLayerForTest() {
   return search_view_->GetPageAnimationLayer();
 }
+
+BEGIN_METADATA(AppListBubbleSearchPage, views::View)
+END_METADATA
 
 }  // namespace ash
