@@ -7,7 +7,10 @@
 
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chrome/browser/icon_transcoder/svg_icon_transcoder.h"
+#include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+
 // A splash screen for borealis, displays when borealis is clicked and closed
 // when the first borealis window shows.
 namespace borealis {
@@ -29,14 +32,16 @@ class BorealisSplashScreenView
       borealis::BorealisWindowManager* window_manager) override;
   // Close this view when borealis window launches
   void OnSessionStarted() override;
-  void OnGetRootPath(const std::string& path);
 
  private:
-  void CreateImageView(gfx::Image image);
+  void FetchLogo();
+  void CreateImageView(std::string);
+  void OnImageFetched(const std::string& image_data,
+                      const image_fetcher::RequestMetadata& request_metadata);
 
   Profile* profile_ = nullptr;
-  base::raw_ptr<views::Label> steam_label_;
   base::raw_ptr<views::Label> starting_label_;
+  std::unique_ptr<apps::SvgIconTranscoder> transcoder_;
   base::WeakPtrFactory<BorealisSplashScreenView> weak_factory_;
 };
 
