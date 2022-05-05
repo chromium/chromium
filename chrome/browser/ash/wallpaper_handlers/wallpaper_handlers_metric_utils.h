@@ -17,7 +17,6 @@ enum class GooglePhotosApi {
   kGetEnabled,
   kGetPhoto,
   kGetPhotos,
-  kGetPhotosCount,
 };
 
 // Records the following on Google Photos API response parsing completion:

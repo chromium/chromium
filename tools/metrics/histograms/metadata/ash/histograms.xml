@@ -48,7 +48,6 @@ chromium-metrics-reviews@google.com.
   <variant name="GetEnabled" summary="returns enablement state"/>
   <variant name="GetPhoto" summary="returns a single photo"/>
   <variant name="GetPhotos" summary="returns all photos"/>
-  <variant name="GetPhotosCount" summary="returns the count of all photos"/>
 </variants>
 
 <variants name="HotseatTransitionType">

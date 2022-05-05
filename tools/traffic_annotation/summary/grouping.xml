@@ -97,7 +97,6 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="wallpaper_fetcher"/>
       <traffic_annotation unique_id="wallpaper_download_google_photo"/>
       <traffic_annotation unique_id="wallpaper_google_photos_albums"/>
-      <traffic_annotation unique_id="wallpaper_google_photos_count"/>
       <traffic_annotation unique_id="wallpaper_google_photos_enabled"/>
       <traffic_annotation unique_id="wallpaper_google_photos_photos"/>
     </sender>

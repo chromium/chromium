@@ -47,7 +47,6 @@ namespace wallpaper_handlers {
 class BackdropCollectionInfoFetcher;
 class BackdropImageInfoFetcher;
 class GooglePhotosAlbumsFetcher;
-class GooglePhotosCountFetcher;
 class GooglePhotosEnabledFetcher;
 class GooglePhotosPhotosFetcher;
 }  // namespace wallpaper_handlers
@@ -100,8 +99,6 @@ class PersonalizationAppWallpaperProviderImpl
   void FetchGooglePhotosAlbums(
       const absl::optional<std::string>& resume_token,
       FetchGooglePhotosAlbumsCallback callback) override;
-
-  void FetchGooglePhotosCount(FetchGooglePhotosCountCallback callback) override;
 
   void FetchGooglePhotosEnabled(
       FetchGooglePhotosEnabledCallback callback) override;
@@ -174,10 +171,6 @@ class PersonalizationAppWallpaperProviderImpl
   wallpaper_handlers::GooglePhotosAlbumsFetcher*
   SetGooglePhotosAlbumsFetcherForTest(
       std::unique_ptr<wallpaper_handlers::GooglePhotosAlbumsFetcher> fetcher);
-
-  wallpaper_handlers::GooglePhotosCountFetcher*
-  SetGooglePhotosCountFetcherForTest(
-      std::unique_ptr<wallpaper_handlers::GooglePhotosCountFetcher> fetcher);
 
   wallpaper_handlers::GooglePhotosEnabledFetcher*
   SetGooglePhotosEnabledFetcherForTest(
@@ -276,13 +269,6 @@ class PersonalizationAppWallpaperProviderImpl
   // in a test.
   std::unique_ptr<wallpaper_handlers::GooglePhotosAlbumsFetcher>
       google_photos_albums_fetcher_;
-
-  // Fetches the number of photos in the user's Google Photos library.
-  // Constructed lazily at the time of the first request and then persists for
-  // the rest of the delegate's lifetime, unless preemptively or subsequently
-  // replaced by a mock in a test.
-  std::unique_ptr<wallpaper_handlers::GooglePhotosCountFetcher>
-      google_photos_count_fetcher_;
 
   // Fetches the state of the user's permission to access Google Photos data.
   // Constructed lazily at the time of the first request and then persists for

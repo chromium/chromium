@@ -23,8 +23,6 @@ std::string ToHistogramBase(GooglePhotosApi api) {
       return "Ash.Wallpaper.GooglePhotos.Api.GetPhoto";
     case GooglePhotosApi::kGetPhotos:
       return "Ash.Wallpaper.GooglePhotos.Api.GetPhotos";
-    case GooglePhotosApi::kGetPhotosCount:
-      return "Ash.Wallpaper.GooglePhotos.Api.GetPhotosCount";
   }
 }
 

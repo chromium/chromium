@@ -71,11 +71,6 @@ void FakePersonalizationAppWallpaperProvider::FetchGooglePhotosAlbums(
       ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponse::New());
 }
 
-void FakePersonalizationAppWallpaperProvider::FetchGooglePhotosCount(
-    FetchGooglePhotosCountCallback callback) {
-  std::move(callback).Run(0);
-}
-
 void FakePersonalizationAppWallpaperProvider::FetchGooglePhotosEnabled(
     FetchGooglePhotosEnabledCallback callback) {
   std::move(callback).Run(

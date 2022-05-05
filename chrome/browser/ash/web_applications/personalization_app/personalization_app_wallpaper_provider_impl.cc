@@ -227,33 +227,6 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosAlbums(
       resume_token, std::move(callback));
 }
 
-void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosCount(
-    FetchGooglePhotosCountCallback callback) {
-  if (!ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
-    mojo::ReportBadMessage(
-        "Cannot call `FetchGooglePhotosCount()` without Google Photos "
-        "Wallpaper integration enabled.");
-    std::move(callback).Run(-1);
-    return;
-  }
-
-  if (!is_google_photos_enterprise_enabled_) {
-    mojo::ReportBadMessage(
-        "Cannot call `FetchGooglePhotosCount()` without confirming that the "
-        "Google Photos enterprise setting is enabled.");
-    std::move(callback).Run(-1);
-    return;
-  }
-
-  if (!google_photos_count_fetcher_) {
-    google_photos_count_fetcher_ =
-        std::make_unique<wallpaper_handlers::GooglePhotosCountFetcher>(
-            profile_);
-  }
-  google_photos_count_fetcher_->AddRequestAndStartIfNecessary(
-      std::move(callback));
-}
-
 void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosEnabled(
     FetchGooglePhotosEnabledCallback callback) {
   if (!ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
@@ -659,13 +632,6 @@ PersonalizationAppWallpaperProviderImpl::SetGooglePhotosAlbumsFetcherForTest(
     std::unique_ptr<wallpaper_handlers::GooglePhotosAlbumsFetcher> fetcher) {
   google_photos_albums_fetcher_ = std::move(fetcher);
   return google_photos_albums_fetcher_.get();
-}
-
-wallpaper_handlers::GooglePhotosCountFetcher*
-PersonalizationAppWallpaperProviderImpl::SetGooglePhotosCountFetcherForTest(
-    std::unique_ptr<wallpaper_handlers::GooglePhotosCountFetcher> fetcher) {
-  google_photos_count_fetcher_ = std::move(fetcher);
-  return google_photos_count_fetcher_.get();
 }
 
 wallpaper_handlers::GooglePhotosEnabledFetcher*

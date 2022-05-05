@@ -41,33 +41,6 @@ class MockGooglePhotosAlbumsFetcher : public GooglePhotosAlbumsFetcher {
       const GooglePhotosAlbumsCbkArgs& result) override;
 };
 
-// Fetcher that returns a dummy value for the number of photos in a user's
-// Google Photos library. Used to avoid network requests in unit tests.
-class MockGooglePhotosCountFetcher : public GooglePhotosCountFetcher {
- public:
-  explicit MockGooglePhotosCountFetcher(Profile* profile);
-
-  MockGooglePhotosCountFetcher(const MockGooglePhotosCountFetcher&) = delete;
-  MockGooglePhotosCountFetcher& operator=(const MockGooglePhotosCountFetcher&) =
-      delete;
-
-  ~MockGooglePhotosCountFetcher() override;
-
-  // GooglePhotosCountFetcher:
-  MOCK_METHOD(void,
-              AddRequestAndStartIfNecessary,
-              (base::OnceCallback<void(int)> callback),
-              (override));
-
-  MOCK_METHOD(int,
-              ParseResponse,
-              (const base::Value::Dict* response),
-              (override));
-
-  // Overridden to increase visibility.
-  absl::optional<size_t> GetResultCount(const int& result) override;
-};
-
 // Fetcher that claims the user is allowed to access Google Photos data. Used to
 // avoid network requests in unit tests.
 class MockGooglePhotosEnabledFetcher : public GooglePhotosEnabledFetcher {

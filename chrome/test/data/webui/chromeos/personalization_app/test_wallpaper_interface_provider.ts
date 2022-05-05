@@ -5,7 +5,7 @@
 import {CurrentWallpaper, FetchGooglePhotosAlbumsResponse, FetchGooglePhotosPhotosResponse, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverRemote, WallpaperProviderInterface, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestWallpaperProvider extends
@@ -18,7 +18,6 @@ export class TestWallpaperProvider extends
       'fetchCollections',
       'fetchImagesForCollection',
       'fetchGooglePhotosAlbums',
-      'fetchGooglePhotosCount',
       'fetchGooglePhotosEnabled',
       'fetchGooglePhotosPhotos',
       'getDefaultImageThumbnail',
@@ -172,11 +171,6 @@ export class TestWallpaperProvider extends
         undefined;
     response.resumeToken = this.googlePhotosAlbumsResumeToken_;
     return Promise.resolve({response});
-  }
-
-  fetchGooglePhotosCount() {
-    assertNotReached();
-    return Promise.resolve({count: -1});
   }
 
   fetchGooglePhotosEnabled() {

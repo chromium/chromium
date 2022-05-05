@@ -241,25 +241,6 @@ class GooglePhotosAlbumsFetcher
       const GooglePhotosAlbumsCbkArgs& result) override;
 };
 
-// Downloads the number of photos in a user's Google Photos library.
-class GooglePhotosCountFetcher : public GooglePhotosFetcher<int> {
- public:
-  explicit GooglePhotosCountFetcher(Profile* profile);
-
-  GooglePhotosCountFetcher(const GooglePhotosCountFetcher&) = delete;
-  GooglePhotosCountFetcher& operator=(const GooglePhotosCountFetcher&) = delete;
-
-  ~GooglePhotosCountFetcher() override;
-
-  virtual void AddRequestAndStartIfNecessary(
-      base::OnceCallback<void(int)> callback);
-
- protected:
-  // GooglePhotosFetcher:
-  int ParseResponse(const base::Value::Dict* response) override;
-  absl::optional<size_t> GetResultCount(const int& result) override;
-};
-
 using ash::personalization_app::mojom::GooglePhotosEnablementState;
 // Downloads whether the user is allowed to access Google Photos data.
 class GooglePhotosEnabledFetcher

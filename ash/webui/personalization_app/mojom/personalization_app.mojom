@@ -219,10 +219,6 @@ interface WallpaperProvider {
     FetchGooglePhotosAlbums(string? resume_token) =>
         (FetchGooglePhotosAlbumsResponse response);
 
-    // Fetch the number of photos the user has stored in Google Photos. |count|
-    // will be -1 on failure.
-    FetchGooglePhotosCount() => (int32 count);
-
     // Fetch whether the user is allowed to access Google Photos data.
     FetchGooglePhotosEnabled() => (GooglePhotosEnablementState state);
 

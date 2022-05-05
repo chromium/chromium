@@ -105,30 +105,6 @@ constexpr net::NetworkTrafficAnnotationTag
           "Not implemented, considered not necessary."
       })");
 
-// The URL to download the number of photos in a user's Google Photos library.
-constexpr char kGooglePhotosCountUrl[] =
-    "https://photosfirstparty-pa.googleapis.com/v1/chromeos/user:read";
-
-constexpr net::NetworkTrafficAnnotationTag kGooglePhotosCountTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("wallpaper_google_photos_count",
-                                        R"(
-      semantics {
-        sender: "ChromeOS Wallpaper Picker"
-        description:
-          "The ChromeOS Wallpaper Picker displays a tile to view and pick from "
-          "a user's Google Photos library. The tile shows the library's number "
-          "of photos, which this query fetches."
-        trigger: "When the user opens the ChromeOS Wallpaper Picker app."
-        data: "OAuth credentials for the user's Google Photos account."
-        destination: GOOGLE_OWNED_SERVICE
-      }
-      policy {
-        cookies_allowed: NO
-        setting: "N/A"
-        policy_exception_justification:
-          "Not implemented, considered not necessary."
-      })");
-
 // The URL to download whether the user is allowed to access Google Photos data.
 constexpr char kGooglePhotosEnabledUrl[] =
     "https://photosfirstparty-pa.googleapis.com/v1/chromeos/userenabled:read";
@@ -258,8 +234,6 @@ absl::optional<GooglePhotosApi> ToGooglePhotosApi(const GURL& url) {
     return GooglePhotosApi::kGetPhoto;
   if (base::StartsWith(spec, kGooglePhotosPhotosUrl))
     return GooglePhotosApi::kGetPhotos;
-  if (base::StartsWith(spec, kGooglePhotosCountUrl))
-    return GooglePhotosApi::kGetPhotosCount;
   return absl::nullopt;
 }
 
@@ -771,40 +745,6 @@ absl::optional<size_t> GooglePhotosAlbumsFetcher::GetResultCount(
     const GooglePhotosAlbumsCbkArgs& result) {
   return result && result->albums ? absl::make_optional(result->albums->size())
                                   : absl::nullopt;
-}
-
-GooglePhotosCountFetcher::GooglePhotosCountFetcher(Profile* profile)
-    : GooglePhotosFetcher(profile, kGooglePhotosCountTrafficAnnotation) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-}
-
-GooglePhotosCountFetcher::~GooglePhotosCountFetcher() = default;
-
-void GooglePhotosCountFetcher::AddRequestAndStartIfNecessary(
-    base::OnceCallback<void(int)> callback) {
-  GooglePhotosFetcher::AddRequestAndStartIfNecessary(
-      GURL(kGooglePhotosCountUrl), std::move(callback));
-}
-
-int GooglePhotosCountFetcher::ParseResponse(const base::Value::Dict* response) {
-  if (!response)
-    return -1;
-
-  const auto* count_string = response->FindStringByDottedPath("user.numPhotos");
-
-  int64_t count;
-  if (!count_string || !base::StringToInt64(*count_string, &count) ||
-      count < 0) {
-    LOG(ERROR) << "Failed to parse Google Photos count response.";
-    return -1;
-  }
-
-  return base::saturated_cast<int>(count);
-}
-
-absl::optional<size_t> GooglePhotosCountFetcher::GetResultCount(
-    const int& result) {
-  return result >= 0 ? absl::make_optional(1u) : absl::nullopt;
 }
 
 GooglePhotosEnabledFetcher::GooglePhotosEnabledFetcher(Profile* profile)
