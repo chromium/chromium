@@ -92,9 +92,8 @@ TouchAction AdjustTouchActionForElement(TouchAction touch_action,
     // Body scrolls overflow if html root overflow is not visible or the
     // propagation of overflow is stopped by containment.
     if (parent_style.IsOverflowVisibleAlongBothAxes()) {
-      if (!RuntimeEnabledFeatures::CSSContainedBodyPropagationEnabled() ||
-          (!parent_style.ShouldApplyAnyContainment(*document_element) &&
-           !style.ShouldApplyAnyContainment(*element))) {
+      if (!parent_style.ShouldApplyAnyContainment(*document_element) &&
+          !style.ShouldApplyAnyContainment(*element)) {
         scrolls_overflow = false;
       }
     }

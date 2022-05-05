@@ -1491,15 +1491,12 @@ bool LayoutBoxModelObject::BackgroundTransfersToView(
   DCHECK(document_element_style);
   if (document_element_style->HasBackground())
     return false;
-
   if (GetNode() != GetDocument().FirstBodyElement())
     return false;
-
-  if (RuntimeEnabledFeatures::CSSContainedBodyPropagationEnabled()) {
-    return !document_element_style->ShouldApplyAnyContainment(
-               *document_element) &&
-           !StyleRef().ShouldApplyAnyContainment(*To<Element>(GetNode()));
-  }
+  if (document_element_style->ShouldApplyAnyContainment(*document_element))
+    return false;
+  if (StyleRef().ShouldApplyAnyContainment(*To<Element>(GetNode())))
+    return false;
   return true;
 }
 

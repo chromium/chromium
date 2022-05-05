@@ -2185,8 +2185,6 @@ bool StyleResolver::ShouldStopBodyPropagation(const Element& body_or_html) {
                                          ? WebFeature::kHTMLRootContained
                                          : WebFeature::kHTMLBodyContained);
   }
-  if (!RuntimeEnabledFeatures::CSSContainedBodyPropagationEnabled())
-    return false;
   DCHECK_EQ(contained,
             layout_object->StyleRef().ShouldApplyAnyContainment(body_or_html))
       << "Applied containment must give the same result from LayoutObject and "

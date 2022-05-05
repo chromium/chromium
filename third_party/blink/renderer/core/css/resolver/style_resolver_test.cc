@@ -1627,7 +1627,6 @@ TEST_F(StyleResolverTest, CascadeLayersAndPageRules) {
 }
 
 TEST_F(StyleResolverTest, BodyPropagationLayoutImageContain) {
-  ScopedCSSContainedBodyPropagationForTest enable_scope(true);
   GetDocument().documentElement()->setAttribute(
       html_names::kStyleAttr,
       "contain:size; display:inline-table; content:url(img);");

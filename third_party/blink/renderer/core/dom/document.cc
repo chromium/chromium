@@ -3475,11 +3475,9 @@ Element* Document::ViewportDefiningElement() const {
   const ComputedStyle* body_style = body_element->GetComputedStyle();
   if (!body_style || body_style->IsEnsuredInDisplayNone())
     return root_element;
-  if (RuntimeEnabledFeatures::CSSContainedBodyPropagationEnabled()) {
-    if (root_style->ShouldApplyAnyContainment(*root_element) ||
-        body_style->ShouldApplyAnyContainment(*body_element)) {
-      return root_element;
-    }
+  if (root_style->ShouldApplyAnyContainment(*root_element) ||
+      body_style->ShouldApplyAnyContainment(*body_element)) {
+    return root_element;
   }
   return body_element;
 }
