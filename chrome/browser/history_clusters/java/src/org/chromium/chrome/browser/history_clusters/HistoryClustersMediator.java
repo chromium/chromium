@@ -9,14 +9,17 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersToolbarProperties.QueryState;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -24,7 +27,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -41,6 +47,7 @@ class HistoryClustersMediator extends EmptyBottomSheetObserver implements Search
     private final int mFaviconSize;
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetContent mBottomSheetContent;
+    private final Supplier<Tab> mTabSupplier;
     private Promise<HistoryClustersResult> mPromise;
     private Supplier<Intent> mHistoryActivityIntentFactory;
 
@@ -58,6 +65,8 @@ class HistoryClustersMediator extends EmptyBottomSheetObserver implements Search
      *         request to show our content.
      * @param bottomSheetContent {@link BottomSheetContent} instance that tells the BottomSheet
      * @param historyActivityIntentFactory Supplier of an intent that targets the History activity.
+     * @param tabSupplier Supplier of the currently active tab. Null in cases where there isn't a
+     *         tab, e.g. when we're operating in a dedicated history activity.
      */
     HistoryClustersMediator(@NonNull HistoryClustersBridge historyClustersBridge,
             LargeIconBridge largeIconBridge, @NonNull Context context, @NonNull Resources resources,
@@ -65,7 +74,7 @@ class HistoryClustersMediator extends EmptyBottomSheetObserver implements Search
             @NonNull PropertyModel toolbarModel,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull BottomSheetContent bottomSheetContent,
-            Supplier<Intent> historyActivityIntentFactory) {
+            Supplier<Intent> historyActivityIntentFactory, @Nullable Supplier<Tab> tabSupplier) {
         mHistoryClustersBridge = historyClustersBridge;
         mLargeIconBridge = largeIconBridge;
         mModelList = modelList;
@@ -76,6 +85,7 @@ class HistoryClustersMediator extends EmptyBottomSheetObserver implements Search
         mBottomSheetController = bottomSheetController;
         mBottomSheetContent = bottomSheetContent;
         mHistoryActivityIntentFactory = historyActivityIntentFactory;
+        mTabSupplier = tabSupplier;
         mFaviconSize = mResources.getDimensionPixelSize(R.dimen.default_favicon_min_size);
         mIconGenerator = FaviconUtils.createCircularIconGenerator(mContext);
     }
@@ -125,14 +135,32 @@ class HistoryClustersMediator extends EmptyBottomSheetObserver implements Search
             mBottomSheetController.addObserver(this);
             mBottomSheetToolbarModel.set(
                     HistoryClustersBottomSheetToolbarProperties.OPEN_ACTIVITY_BUTTON_CLICK_LISTENER,
-                    (unused) -> openHistoryClustersInNewActivity(query));
+                    (unused) -> openHistoryClustersInFullPage(query));
         }
     }
 
-    private void openHistoryClustersInNewActivity(String query) {
+    private void openHistoryClustersInFullPage(String query) {
+        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
+        if (isTablet) {
+            Tab currentTab = mTabSupplier.get();
+            if (currentTab == null) return;
+            Uri journeysUri =
+                    new Uri.Builder()
+                            .scheme(UrlConstants.CHROME_SCHEME)
+                            .authority(UrlConstants.HISTORY_HOST)
+                            .path(HistoryClustersConstants.JOURNEYS_PATH)
+                            .appendQueryParameter(
+                                    HistoryClustersConstants.HISTORY_CLUSTERS_QUERY_KEY, query)
+                            .build();
+            LoadUrlParams loadUrlParams = new LoadUrlParams(journeysUri.toString());
+            currentTab.loadUrl(loadUrlParams);
+            return;
+        }
+
         Intent historyActivityIntent = mHistoryActivityIntentFactory.get();
-        historyActivityIntent.putExtra(HistoryClustersIntent.EXTRA_SHOW_HISTORY_CLUSTERS, true);
-        historyActivityIntent.putExtra(HistoryClustersIntent.EXTRA_HISTORY_CLUSTERS_QUERY, query);
+        historyActivityIntent.putExtra(HistoryClustersConstants.EXTRA_SHOW_HISTORY_CLUSTERS, true);
+        historyActivityIntent.putExtra(
+                HistoryClustersConstants.EXTRA_HISTORY_CLUSTERS_QUERY, query);
         mContext.startActivity(historyActivityIntent);
     }
 

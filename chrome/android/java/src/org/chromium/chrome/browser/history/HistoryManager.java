@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.history;
 
 import android.app.Activity;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,8 +25,10 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
@@ -64,12 +67,14 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     private final Activity mActivity;
     private final boolean mIsIncognito;
     private final boolean mIsSeparateActivity;
+    private final ViewGroup mRootView;
     private SelectableListLayout<HistoryItem> mSelectableListLayout;
     private HistoryContentManager mContentManager;
     private SelectionDelegate<HistoryItem> mSelectionDelegate;
     private HistoryManagerToolbar mToolbar;
     private TextView mEmptyView;
     private final SnackbarManager mSnackbarManager;
+    private @Nullable HistoryClustersCoordinator mHistoryClustersCoordinator;
 
     private boolean mIsSearching;
 
@@ -82,11 +87,15 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
      * @param isIncognito Whether the incognito tab model is currently selected.
      * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
      *                    separate activity.
+     * @param showHistoryClustersImmediately Whether the Journeys (history clusters) UI should be
+     *         shown immediately instead of the normal history UI.
+     * @param historyClustersQuery The preset query that the Journeys UI should use.
      */
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public HistoryManager(@NonNull Activity activity, boolean isSeparateActivity,
             @NonNull SnackbarManager snackbarManager, boolean isIncognito,
-            @Nullable Supplier<Tab> tabSupplier) {
+            @Nullable Supplier<Tab> tabSupplier, boolean showHistoryClustersImmediately,
+            String historyClustersQuery) {
         mActivity = activity;
         mIsSeparateActivity = isSeparateActivity;
         mSnackbarManager = snackbarManager;
@@ -95,6 +104,22 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         recordUserAction("Show");
         // If incognito placeholder is shown, we don't need to create History UI elements.
         if (shouldShowIncognitoPlaceholder()) {
+            mRootView = getIncognitoHistoryPlaceholderView();
+            return;
+        }
+
+        boolean historyClustersEnabled =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_JOURNEYS);
+        if (historyClustersEnabled) {
+            mHistoryClustersCoordinator = new HistoryClustersCoordinator(
+                    Profile.getLastUsedRegularProfile(), activity, null, null, tabSupplier);
+            if (!TextUtils.isEmpty(historyClustersQuery)) {
+                mHistoryClustersCoordinator.setQuery(historyClustersQuery);
+            }
+        }
+
+        if (showHistoryClustersImmediately) {
+            mRootView = mHistoryClustersCoordinator.getActivityContentView();
             return;
         }
 
@@ -104,6 +129,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                         R.layout.history_main, null);
         mSelectionDelegate = new SelectionDelegate<>();
         mSelectionDelegate.addObserver(this);
+        mRootView = mSelectableListLayout;
 
         // 2. Create HistoryContentManager and initialize recycler view.
         boolean shouldShowInfoHeader = SharedPreferencesManager.getInstance().readBoolean(
@@ -225,8 +251,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
      * @return The view that shows the main browsing history UI.
      */
     public ViewGroup getView() {
-        return shouldShowIncognitoPlaceholder() ? getIncognitoHistoryPlaceholderView()
-                                                : mSelectableListLayout;
+        return mRootView;
     }
 
     private boolean shouldShowIncognitoPlaceholder() {
@@ -261,8 +286,14 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             // If Incognito placeholder is shown no need to call any destroy method.
             return;
         }
-        mSelectableListLayout.onDestroyed();
-        mContentManager.onDestroyed();
+        if (mHistoryClustersCoordinator != null) {
+            mHistoryClustersCoordinator.destroy();
+        }
+
+        if (mSelectableListLayout != null) {
+            mSelectableListLayout.onDestroyed();
+            mContentManager.onDestroyed();
+        }
     }
 
     /**

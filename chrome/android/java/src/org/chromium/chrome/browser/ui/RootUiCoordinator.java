@@ -719,7 +719,9 @@ public class RootUiCoordinator
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_JOURNEYS)) {
             mHistoryClustersCoordinator =
                     new HistoryClustersCoordinator(profile, mActivity, mBottomSheetController,
-                            () -> new Intent().setClass(mActivity, HistoryActivity.class));
+                            ()
+                                    -> new Intent().setClass(mActivity, HistoryActivity.class),
+                            mActivityTabProvider);
             mHistoryClustersCoordinatorSupplier.set(mHistoryClustersCoordinator);
         }
     }

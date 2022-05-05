@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,6 +21,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersToolbarProperties.QueryState;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
@@ -44,7 +46,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
     private boolean mActivityViewInflated;
     private final PropertyModel mBottomSheetToolbarModel;
     private final PropertyModel mToolbarModel;
-    private View mActivityContentView;
+    private ViewGroup mActivityContentView;
     private HistoryClustersToolbar mToolbar;
     private SelectionDelegate mSelectionDelegate;
     private SelectableListLayout mSelectableListLayout;
@@ -58,10 +60,12 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
      *         request to show our content.
      * @param historyActivityIntentFactory Supplier of an intent that targets the History activity.
      *         We can't directly set the class ourselves without creating a circular dependency.
+     * @param tabSupplier Supplier of the currently active tab. Null in cases where there isn't a
+     *         tab, e.g. when we're operating in a dedicated history activity.
      */
     public HistoryClustersCoordinator(@NonNull Profile profile, @NonNull Context context,
             BottomSheetController bottomSheetController,
-            Supplier<Intent> historyActivityIntentFactory) {
+            Supplier<Intent> historyActivityIntentFactory, @Nullable Supplier<Tab> tabSupplier) {
         mContext = context;
         mModelList = new ModelList();
         mBottomSheetContent = new HistoryClustersBottomSheetContent();
@@ -74,7 +78,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         mMediator = new HistoryClustersMediator(HistoryClustersBridge.getForProfile(profile),
                 new LargeIconBridge(profile), context, context.getResources(), mModelList,
                 mBottomSheetToolbarModel, mToolbarModel, bottomSheetController, mBottomSheetContent,
-                historyActivityIntentFactory);
+                historyActivityIntentFactory, tabSupplier);
     }
 
     public void destroy() {
@@ -86,7 +90,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
     }
 
     /** Gets the root view for a "full activity" presentation of the user's history clusters. */
-    public View getActivityContentView() {
+    public ViewGroup getActivityContentView() {
         if (!mActivityViewInflated) {
             inflateActivityView();
         }
@@ -108,8 +112,8 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
                 ItemType.VISIT, this::buildVisitView, HistoryClustersViewBinder::bindVisitView);
 
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-        mActivityContentView =
-                layoutInflater.inflate(R.layout.history_clusters_activity_content, null);
+        mActivityContentView = (ViewGroup) layoutInflater.inflate(
+                R.layout.history_clusters_activity_content, null);
 
         mSelectableListLayout = mActivityContentView.findViewById(R.id.selectable_list);
         RecyclerView recyclerView = mSelectableListLayout.initializeRecyclerView(mAdapter);

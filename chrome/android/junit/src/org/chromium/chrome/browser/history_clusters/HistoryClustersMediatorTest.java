@@ -81,7 +81,7 @@ public class HistoryClustersMediatorTest {
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
                 mModelList, new PropertyModel(HistoryClustersBottomSheetToolbarProperties.ALL_KEYS),
                 new PropertyModel(HistoryClustersToolbarProperties.ALL_KEYS),
-                mBottomSheetController, mBottomSheetContent, mHistoryActivityIntentFactory);
+                mBottomSheetController, mBottomSheetContent, mHistoryActivityIntentFactory, null);
         mVisit1 = new ClusterVisit(1.0F, mGurl1, "Title 1");
         mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 1");
         mVisit3 = new ClusterVisit(1.0F, mGurl3, "Title 1");

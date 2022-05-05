@@ -113,7 +113,7 @@ public class NativePageFactoryTest {
         }
 
         @Override
-        public NativePage buildHistoryPage(Tab tab) {
+        public NativePage buildHistoryPage(Tab tab, String url) {
             return new MockNativePage(NativePageType.HISTORY);
         }
     }
