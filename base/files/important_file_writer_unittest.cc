@@ -358,7 +358,6 @@ TEST_F(ImportantFileWriterTest, DoScheduledWrite_FailToSerialize) {
   EXPECT_FALSE(PathExists(writer.path()));
   // We don't record metrics in case the serialization fails.
   histogram_tester.ExpectTotalCount("ImportantFile.SerializationDuration", 0);
-  histogram_tester.ExpectTotalCount("ImportantFile.WriteDuration", 0);
 }
 
 TEST_F(ImportantFileWriterTest, ScheduleWriteWithBackgroundDataSerializer) {
@@ -394,7 +393,6 @@ TEST_F(ImportantFileWriterTest, ScheduleWriteWithBackgroundDataSerializer) {
   ASSERT_TRUE(PathExists(writer.path()));
   EXPECT_EQ("foo", GetFileContent(writer.path()));
   histogram_tester.ExpectTotalCount("ImportantFile.SerializationDuration", 1);
-  histogram_tester.ExpectTotalCount("ImportantFile.WriteDuration", 1);
 }
 
 TEST_F(ImportantFileWriterTest,
@@ -430,7 +428,6 @@ TEST_F(ImportantFileWriterTest,
   // We record the foreground serialization metric despite later failure in
   // background sequence.
   histogram_tester.ExpectTotalCount("ImportantFile.SerializationDuration", 1);
-  histogram_tester.ExpectTotalCount("ImportantFile.WriteDuration", 0);
 }
 
 // Test that the chunking to avoid very large writes works.
@@ -453,7 +450,6 @@ TEST_F(ImportantFileWriterTest, SerializationDuration) {
   writer.DoScheduledWrite();
   RunLoop().RunUntilIdle();
   histogram_tester.ExpectTotalCount("ImportantFile.SerializationDuration", 1);
-  histogram_tester.ExpectTotalCount("ImportantFile.WriteDuration", 1);
 }
 
 // Verify that a UMA metric for the serialization duration is recorded if the
@@ -467,7 +463,6 @@ TEST_F(ImportantFileWriterTest, SerializationDurationWithCustomSuffix) {
   RunLoop().RunUntilIdle();
   histogram_tester.ExpectTotalCount("ImportantFile.SerializationDuration.Foo",
                                     1);
-  histogram_tester.ExpectTotalCount("ImportantFile.WriteDuration.Foo", 1);
 }
 
 }  // namespace base

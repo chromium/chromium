@@ -147,7 +147,6 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
                                                   StringPiece data,
                                                   StringPiece histogram_suffix,
                                                   bool from_instance) {
-  const TimeTicks write_start = TimeTicks::Now();
   if (!from_instance)
     ImportantFileWriterCleaner::AddDirectory(path.DirName());
 
@@ -259,10 +258,6 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
     DPLOG(WARNING) << "Failed to replace " << path << " with " << tmp_file_path;
     DeleteTmpFileWithRetry(File(), tmp_file_path);
   }
-
-  const TimeDelta write_duration = TimeTicks::Now() - write_start;
-  UmaHistogramTimesWithSuffix("ImportantFile.WriteDuration", histogram_suffix,
-                              write_duration);
 
   return result;
 }
