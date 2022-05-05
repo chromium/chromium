@@ -56,6 +56,28 @@ ci.builder(
 
 ci.builder(
     name = "android-archive-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_platform = builder_config.target_platform.ANDROID,
+            target_arch = builder_config.target_arch.ARM,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "android",
         short_name = "rel",
