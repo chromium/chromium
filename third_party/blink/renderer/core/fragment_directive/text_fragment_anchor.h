@@ -58,8 +58,6 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor,
 
   void Installed() override;
 
-  void DidScroll(mojom::blink::ScrollType type) override;
-
   void PerformPreRafActions() override;
 
   // Removes text match highlights if any highlight is in view.
@@ -70,9 +68,7 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor,
   void Trace(Visitor*) const override;
 
   // TextFragmentFinder::Client interface
-  void DidFindMatch(const RangeInFlatTree& range,
-                    const TextFragmentAnchorMetrics::Match match_metrics,
-                    bool is_unique) override;
+  void DidFindMatch(const RangeInFlatTree& range, bool is_unique) override;
 
   void NoMatchFound() override {}
 
@@ -114,9 +110,6 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor,
   // If the text fragment anchor is defined as a fragment directive and we don't
   // find a match, we fall back to the element anchor if it is present.
   Member<ElementFragmentAnchor> element_fragment_anchor_;
-  // Whether we performed a non-zero scroll to scroll a match into view. Used
-  // to determine whether the user subsequently scrolls back to the top.
-  bool did_non_zero_scroll_ = false;
   // Whether PerformPreRafActions should run at the next rAF.
   bool needs_perform_pre_raf_actions_ = false;
 

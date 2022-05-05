@@ -18,17 +18,6 @@ namespace blink {
 class CORE_EXPORT TextFragmentAnchorMetrics final
     : public GarbageCollected<TextFragmentAnchorMetrics> {
  public:
-  struct Match {
-    explicit Match(TextFragmentSelector text_fragment_selector)
-        : selector(text_fragment_selector) {}
-
-    String text;
-    TextFragmentSelector selector;
-    bool is_list_item = false;
-    bool is_table_cell = false;
-    bool spans_multiple_blocks = false;
-  };
-
   // An enum to indicate which parameters were specified in the text fragment.
   enum class TextFragmentAnchorParameters {
     kUnknown = 0,
@@ -56,26 +45,18 @@ class CORE_EXPORT TextFragmentAnchorMetrics final
   static TextFragmentAnchorParameters GetParametersForSelector(
       const TextFragmentSelector& selector);
 
-  void DidCreateAnchor(int selector_count, int directive_length);
+  void DidCreateAnchor(int selector_count);
 
-  void DidFindMatch(Match match);
+  void DidFindMatch();
   void ResetMatchCount();
 
   void DidFindAmbiguousMatch();
 
-  void ScrollCancelled();
-
   void DidStartSearch();
 
-  void DidScroll();
-
-  void DidNonZeroScroll();
-
-  void DidScrollToTop();
+  void DidInvokeScrollIntoView();
 
   void ReportMetrics();
-
-  void Dismissed();
 
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
@@ -92,15 +73,11 @@ class CORE_EXPORT TextFragmentAnchorMetrics final
   bool metrics_reported_ = false;
 #endif
 
-  wtf_size_t selector_count_ = 0;
-  wtf_size_t directive_length_ = 0;
-  Vector<Match> matches_;
+  int selector_count_ = 0;
+  int matches_count_ = 0;
   bool ambiguous_match_ = false;
-  bool scroll_cancelled_ = false;
   base::TimeTicks search_start_time_;
   base::TimeTicks first_scroll_into_view_time_;
-  bool did_non_zero_scroll_ = false;
-  bool did_scroll_to_top_ = false;
   bool has_search_engine_source_ = false;
 
   const base::TickClock* tick_clock_;

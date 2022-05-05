@@ -50,14 +50,6 @@ class FragmentDirective : public ScriptWrappable {
     return last_navigation_had_fragment_directive_;
   }
 
-  // Returns the length of the unparsed fragment directive string.
-  // TODO(bokan): This is used only for metrics. It's not clear how useful they
-  // still are. We should either remove the metrics and this method or move
-  // this method to where the FragmentDirective is read and stripped.
-  wtf_size_t LengthForMetrics() const {
-    return fragment_directive_string_length_;
-  }
-
   void Trace(Visitor*) const override;
 
   // Web-exposed FragmentDirective interface.

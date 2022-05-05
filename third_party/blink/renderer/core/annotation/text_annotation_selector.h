@@ -33,9 +33,7 @@ class TextAnnotationSelector : public AnnotationSelector,
                  FinishedCallback finished_cb) override;
 
   // TextFragmentFinder::Client Interface
-  void DidFindMatch(const RangeInFlatTree& range,
-                    const TextFragmentAnchorMetrics::Match match_metrics,
-                    bool is_unique) override;
+  void DidFindMatch(const RangeInFlatTree& range, bool is_unique) override;
   void NoMatchFound() override;
 
  private:

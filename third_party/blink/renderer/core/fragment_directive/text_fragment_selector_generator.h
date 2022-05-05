@@ -129,9 +129,7 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   };
 
   // TextFragmentFinder::Client interface
-  void DidFindMatch(const RangeInFlatTree& match,
-                    const TextFragmentAnchorMetrics::Match match_metrics,
-                    bool is_unique) override;
+  void DidFindMatch(const RangeInFlatTree& match, bool is_unique) override;
   void NoMatchFound() override;
 
   // Adjust the selection start/end to a valid position. That includes skipping

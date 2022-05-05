@@ -176,10 +176,8 @@ void TextFragmentSelectorGenerator::RecordSelectorStateUma() const {
                                 state_);
 }
 
-void TextFragmentSelectorGenerator::DidFindMatch(
-    const RangeInFlatTree& match,
-    const TextFragmentAnchorMetrics::Match match_metrics,
-    bool is_unique) {
+void TextFragmentSelectorGenerator::DidFindMatch(const RangeInFlatTree& match,
+                                                 bool is_unique) {
   if (is_unique &&
       PlainText(match.ToEphemeralRange()).StripWhiteSpace().length() ==
           PlainText(range_->ToEphemeralRange()).StripWhiteSpace().length()) {

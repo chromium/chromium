@@ -31,33 +31,16 @@ FragmentAnchor* FragmentAnchor::TryCreate(const KURL& url,
 
   // The text fragment anchor will be created if we successfully parsed the
   // text directive but we only do the text matching later on.
-  bool selector_fragment_anchor_created = false;
-  if (text_fragment_identifiers_enabled) {
+  if (text_fragment_identifiers_enabled)
     anchor = TextFragmentAnchor::TryCreate(url, frame, should_scroll);
-    selector_fragment_anchor_created = anchor;
-  }
 
   // TODO(crbug.com/1265726): Do highlighting related to all fragment
   // directives and scroll the first one into view
-  if (!anchor && RuntimeEnabledFeatures::CSSSelectorFragmentAnchorEnabled()) {
+  if (!anchor && RuntimeEnabledFeatures::CSSSelectorFragmentAnchorEnabled())
     anchor = CssSelectorFragmentAnchor::TryCreate(url, frame, should_scroll);
-    selector_fragment_anchor_created = anchor;
-  }
 
-  bool element_id_anchor_found = false;
-  if (!anchor) {
+  if (!anchor)
     anchor = ElementFragmentAnchor::TryCreate(url, frame, should_scroll);
-    element_id_anchor_found = anchor;
-  }
-
-  // Track how often we have an element fragment that we can't find. Only track
-  // if we didn't match a selector fragment since we expect those would inflate
-  // the "failed" case.
-  if (IsA<HTMLDocument>(frame.GetDocument()) && url.HasFragmentIdentifier() &&
-      !selector_fragment_anchor_created) {
-    UMA_HISTOGRAM_BOOLEAN("TextFragmentAnchor.ElementIdFragmentFound",
-                          element_id_anchor_found);
-  }
 
   return anchor;
 }

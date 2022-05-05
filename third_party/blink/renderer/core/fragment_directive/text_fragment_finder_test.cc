@@ -30,9 +30,7 @@ class TextFragmentFinderTest : public SimTest,
 
   void NoMatchFound() override { no_match_called_ = true; }
 
-  void DidFindMatch(const RangeInFlatTree& match,
-                    const TextFragmentAnchorMetrics::Match match_metrics,
-                    bool is_unique) override {}
+  void DidFindMatch(const RangeInFlatTree& match, bool is_unique) override {}
   bool IsNoMatchFoundCalled() { return no_match_called_; }
 
  private:

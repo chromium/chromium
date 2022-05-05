@@ -38,10 +38,8 @@ void TextAnnotationSelector::FindRange(Document& document,
   finder_->FindMatch();
 }
 
-void TextAnnotationSelector::DidFindMatch(
-    const RangeInFlatTree& range,
-    const TextFragmentAnchorMetrics::Match match_metrics,
-    bool is_unique) {
+void TextAnnotationSelector::DidFindMatch(const RangeInFlatTree& range,
+                                          bool is_unique) {
   DCHECK(finished_callback_);
   std::move(finished_callback_).Run(&range);
 

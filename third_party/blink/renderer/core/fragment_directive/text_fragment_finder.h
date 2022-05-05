@@ -30,10 +30,7 @@ class CORE_EXPORT TextFragmentFinder
  public:
   class Client {
    public:
-    virtual void DidFindMatch(
-        const RangeInFlatTree& range,
-        const TextFragmentAnchorMetrics::Match match_metrics,
-        bool is_unique) = 0;
+    virtual void DidFindMatch(const RangeInFlatTree& range, bool is_unique) = 0;
     virtual void NoMatchFound() = 0;
   };
 

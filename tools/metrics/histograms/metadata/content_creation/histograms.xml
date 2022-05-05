@@ -516,6 +516,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TextFragmentAnchor.ElementIdFragmentFound" enum="Boolean"
     expires_after="2022-09-11">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -560,6 +563,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.DidScrollIntoView"
     enum="Boolean" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -574,6 +580,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.DirectiveLength"
     units="characters" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -589,6 +598,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.EndTextLength"
     units="characters" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -603,6 +615,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.ExactTextLength"
     units="characters" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -617,6 +632,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.ListItemMatch"
     units="Boolean" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -644,6 +662,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.Parameters"
     enum="TextFragmentAnchorParameters" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -658,6 +679,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.RangeMatchLength"
     units="characters" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -672,6 +696,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.ScrollCancelled"
     enum="Boolean" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -686,6 +713,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.SelectorCount"
     units="selectors" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -699,6 +729,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.SpansMultipleBlocks"
     units="Boolean" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -715,6 +748,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.StartTextLength"
     units="characters" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -729,6 +765,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.TableCellMatch"
     units="Boolean" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -748,8 +787,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time between creating the TextFragmentAnchor (i.e. when it is parsed)
     and scrolling the target into view. Only recorded if there is a match and we
-    scroll it into view. Recorded when TextFragmentAnchor finishes searching
-    once the page is loaded.
+    tried to scroll it into view (it may already have been in view). Recorded
+    when TextFragmentAnchor finishes searching once the page is loaded.
 
     Recorded from text fragment links followed from {TextFragmentSource}.
   </summary>
@@ -758,6 +797,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.TimeToScrollToTop"
     units="ms" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>

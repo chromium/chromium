@@ -87,28 +87,6 @@ PositionInFlatTree FirstWordBoundaryAfter(PositionInFlatTree position) {
   return itr.ComputePosition();
 }
 
-bool ContainedByListItem(const EphemeralRangeInFlatTree& range) {
-  Node* node = range.CommonAncestorContainer();
-  while (node) {
-    if (ListItemOrdinal::IsListItem(*node)) {
-      return true;
-    }
-    node = node->parentNode();
-  }
-  return false;
-}
-
-bool ContainedByTableCell(const EphemeralRangeInFlatTree& range) {
-  Node* node = range.CommonAncestorContainer();
-  while (node) {
-    if (IsTableCell(node)) {
-      return true;
-    }
-    node = node->parentNode();
-  }
-  return false;
-}
-
 }  // namespace
 
 // static
@@ -451,27 +429,8 @@ void TextFragmentFinder::OnMatchComplete() {
     first_match_ = potential_match_;
     FindMatchFromPosition(first_match_->EndPosition());
   } else {
-    TextFragmentAnchorMetrics::Match match_metrics(selector_);
     EphemeralRangeInFlatTree potential_match = first_match_->ToEphemeralRange();
-    if (selector_.Type() == TextFragmentSelector::SelectorType::kExact) {
-      // If it's an exact match, we don't need to do the PlainText conversion,
-      // we can just use the text from the selector.
-      DCHECK_EQ(selector_.Start().length(),
-                PlainText(potential_match).length());
-      match_metrics.text = selector_.Start();
-
-      if (ContainedByListItem(potential_match)) {
-        match_metrics.is_list_item = true;
-      }
-      if (ContainedByTableCell(potential_match)) {
-        match_metrics.is_table_cell = true;
-      }
-    } else if (selector_.Type() == TextFragmentSelector::SelectorType::kRange) {
-      match_metrics.text = PlainText(potential_match);
-      match_metrics.spans_multiple_blocks = !IsInSameUninterruptedBlock(
-          potential_match.StartPosition(), potential_match.EndPosition());
-    }
-    client_.DidFindMatch(*first_match_, match_metrics, !potential_match_);
+    client_.DidFindMatch(*first_match_, !potential_match_);
   }
 }
 
