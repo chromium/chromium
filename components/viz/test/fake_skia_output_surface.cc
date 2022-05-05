@@ -195,6 +195,7 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
     ResourceFormat format,
     bool mipmap,
     sk_sp<SkColorSpace> color_space,
+    bool is_overlay,
     const gpu::Mailbox& mailbox) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Make sure there is no unsubmitted PaintFrame or PaintRenderPass.
@@ -334,23 +335,6 @@ gpu::SyncToken FakeSkiaOutputSurface::Flush() {
 bool FakeSkiaOutputSurface::EnsureMinNumberOfBuffers(int n) {
   return false;
 }
-
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
-SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPassOverlay(
-    const gfx::Size& size,
-    ResourceFormat format,
-    bool mipmap,
-    sk_sp<SkColorSpace> color_space) {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
-sk_sp<SkDeferredDisplayList>
-FakeSkiaOutputSurface::EndPaintRenderPassOverlay() {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-#endif
 
 void FakeSkiaOutputSurface::SetOutOfOrderCallbacks(
     bool out_of_order_callbacks) {

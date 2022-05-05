@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -326,42 +327,88 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   absl::optional<DisplayResourceProviderSkia::LockSetForExternalUse>
       lock_set_for_external_use_;
 
-  // Locks for overlays are pending for swapbuffers.
-  base::circular_deque<
-      std::vector<DisplayResourceProviderSkia::ScopedReadLockSharedImage>>
-      pending_overlay_locks_;
+  struct OverlayLock {
+    OverlayLock(DisplayResourceProvider* resource_provider,
+                ResourceId resource_id);
 
-  // Locks for overlays have been committed. |pending_overlay_locks_| will
-  // be moved to |committed_overlay_locks_| after SwapBuffers() completed.
-  std::vector<DisplayResourceProviderSkia::ScopedReadLockSharedImage>
-      committed_overlay_locks_;
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+    explicit OverlayLock(gpu::Mailbox mailbox);
+#endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+
+    ~OverlayLock();
+
+    OverlayLock(OverlayLock&& other);
+    OverlayLock& operator=(OverlayLock&& other);
+
+    OverlayLock(const OverlayLock&) = delete;
+    OverlayLock& operator=(const OverlayLock&) = delete;
+
+    const gpu::Mailbox& mailbox() const {
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+      if (render_pass_lock.has_value()) {
+        return *render_pass_lock;
+      }
+#endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+
+      DCHECK(resource_lock.has_value());
+      return resource_lock->mailbox();
+    }
+
+    const gpu::SyncToken& sync_token() const {
+      DCHECK(resource_lock.has_value());
+      return resource_lock->sync_token();
+    }
+
+    void SetReleaseFence(gfx::GpuFenceHandle release_fence) {
+      if (resource_lock.has_value()) {
+        resource_lock->SetReleaseFence(std::move(release_fence));
+      }
+    }
+
+    bool HasReadLockFence() {
+      if (resource_lock.has_value()) {
+        return resource_lock->HasReadLockFence();
+      }
+      return false;
+    }
+
+    // Either resource_lock is set for non render pass overlays (i.e. videos),
+    // or render_pass_lock is set for render pass overlays.
+    absl::optional<DisplayResourceProviderSkia::ScopedReadLockSharedImage>
+        resource_lock;
+
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+    absl::optional<gpu::Mailbox> render_pass_lock;
+#endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+  };
+
+  // Locks for overlays that are pending for SwapBuffers().
+  base::circular_deque<std::vector<OverlayLock>> pending_overlay_locks_;
+
+  // Locks for overlays that have been committed. |pending_overlay_locks_| will
+  // be moved to |committed_overlay_locks_| after SwapBuffers() is completed.
+  std::vector<OverlayLock> committed_overlay_locks_;
 
   // Locks for overlays that have release fences and read lock fences.
-  base::circular_deque<
-      std::vector<DisplayResourceProviderSkia::ScopedReadLockSharedImage>>
+  base::circular_deque<std::vector<OverlayLock>>
       read_lock_release_fence_overlay_locks_;
 
 #if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
-  class ScopedReadLockComparator {
+  class OverlayLockComparator {
    public:
     using is_transparent = void;
-    bool operator()(
-        const DisplayResourceProviderSkia::ScopedReadLockSharedImage& lhs,
-        const DisplayResourceProviderSkia::ScopedReadLockSharedImage& rhs)
-        const;
-    bool operator()(
-        const DisplayResourceProviderSkia::ScopedReadLockSharedImage& lhs,
-        const gpu::Mailbox& rhs) const;
-    bool operator()(
-        const gpu::Mailbox& lhs,
-        const DisplayResourceProviderSkia::ScopedReadLockSharedImage& rhs)
-        const;
+    bool operator()(const OverlayLock& lhs, const OverlayLock& rhs) const;
   };
-  // a set for locks of overlays which are waiting for releasing.
-  // The set is using lock.mailbox() as the unique key.
-  base::flat_set<DisplayResourceProviderSkia::ScopedReadLockSharedImage,
-                 ScopedReadLockComparator>
+
+  // A set for locks of overlays which are waiting to be released, using
+  // mailbox() as the unique key.
+  base::flat_set<OverlayLock, OverlayLockComparator>
       awaiting_release_overlay_locks_;
+
+  // Tracks render pass overlay backings that are currently in use and available
+  // for re-using via mailboxes. RenderPassBacking.generate_mipmap is not used.
+  std::vector<RenderPassBacking> in_flight_render_pass_overlay_backings_;
+  std::vector<RenderPassBacking> available_render_pass_overlay_backings_;
 #endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 
   gfx::ColorConversionSkFilterCache color_filter_cache_;

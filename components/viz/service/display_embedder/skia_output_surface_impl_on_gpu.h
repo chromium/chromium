@@ -184,9 +184,7 @@ class SkiaOutputSurfaceImplOnGpu
   void ReleaseImageContexts(
       std::vector<std::unique_ptr<ExternalUseClient::ImageContext>>
           image_contexts);
-  void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays,
-                        std::vector<ImageContextImpl*> image_contexts,
-                        base::OnceClosure on_finished);
+  void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays);
 
   void SetEnableDCLayers(bool enable);
   void SetGpuVSyncEnabled(bool enabled);
@@ -382,12 +380,6 @@ class SkiaOutputSurfaceImplOnGpu
 
   void ReleaseAsyncReadResultHelpers();
 
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
-  std::unique_ptr<gpu::SharedImageRepresentationSkia>
-  GetOrCreateRenderPassOverlayBacking(
-      const SkSurfaceCharacterization& characterization);
-#endif
-
   class ReleaseCurrent {
    public:
     ReleaseCurrent(scoped_refptr<gl::GLSurface> gl_surface,
@@ -489,34 +481,6 @@ class SkiaOutputSurfaceImplOnGpu
 
   // Tracking for ongoing AsyncReadResults.
   base::flat_set<AsyncReadResultHelper*> async_read_result_helpers_;
-
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
-  using UniqueBackingPtr = std::unique_ptr<gpu::SharedImageRepresentationSkia>;
-  class BackingComparator {
-   public:
-    using is_transparent = void;
-    bool operator()(const UniqueBackingPtr& lhs,
-                    const UniqueBackingPtr& rhs) const {
-      return lhs->mailbox() < rhs->mailbox();
-    }
-    bool operator()(const UniqueBackingPtr& lhs,
-                    const gpu::Mailbox& rhs) const {
-      return lhs->mailbox() < rhs;
-    }
-    bool operator()(const gpu::Mailbox& lhs,
-                    const UniqueBackingPtr& rhs) const {
-      return lhs < rhs->mailbox();
-    }
-  };
-  // Render pass overlay backings are in flight.
-  // The base::flat_set uses backing->mailbox() as the unique key.
-  base::flat_set<UniqueBackingPtr, BackingComparator>
-      in_flight_render_pass_overlay_backings_;
-
-  // Render pass overlay backings are available for reusing.
-  std::vector<std::unique_ptr<gpu::SharedImageRepresentationSkia>>
-      available_render_pass_overlay_backings_;
-#endif
 
   THREAD_CHECKER(thread_checker_);
 

@@ -1393,67 +1393,9 @@ void SkiaOutputSurfaceImplOnGpu::ReleaseImageContexts(
 }
 
 void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
-    SkiaOutputSurface::OverlayList overlays,
-    std::vector<ImageContextImpl*> image_contexts,
-    base::OnceClosure on_finished) {
+    SkiaOutputSurface::OverlayList overlays) {
   TRACE_EVENT1("viz", "SkiaOutputSurfaceImplOnGpu::ScheduleOverlays",
                "num_overlays", overlays.size());
-
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
-  if (context_is_lost_)
-    return;
-
-  bool have_image_contexts = !image_contexts.empty();
-  if (have_image_contexts) {
-    DCHECK(context_state_->GrContextIsGL());
-
-    // GL doesn't use semaphores.
-    promise_image_access_helper_.BeginAccess(std::move(image_contexts),
-                                             /*begin_semaphores=*/nullptr,
-                                             /*end_semaphores=*/nullptr);
-  }
-
-  using ScopedWriteAccess =
-      std::unique_ptr<gpu::SharedImageRepresentationSkia::ScopedWriteAccess>;
-  std::vector<ScopedWriteAccess> scoped_write_accesses;
-  for (auto& overlay : overlays) {
-    if (!overlay.ddl)
-      continue;
-    const auto& characterization = overlay.ddl->characterization();
-    auto backing = GetOrCreateRenderPassOverlayBacking(characterization);
-    if (!backing)
-      break;
-    DCHECK(overlay.mailbox.IsZero());
-    overlay.mailbox = backing->mailbox();
-    auto scoped_access = backing->BeginScopedWriteAccess(
-        characterization.sampleCount(), characterization.surfaceProps(),
-        /*begin_semaphores=*/nullptr,
-        /*end_semaphores=*/nullptr,
-        gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
-    bool result = scoped_access->surface()->draw(overlay.ddl);
-    DCHECK(result);
-    scoped_write_accesses.push_back(std::move(scoped_access));
-    backing->SetCleared();
-    in_flight_render_pass_overlay_backings_.insert(std::move(backing));
-  }
-
-  if (!scoped_write_accesses.empty()) {
-    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
-    if (dependency_->GetGrShaderCache()) {
-      cache_use.emplace(dependency_->GetGrShaderCache(),
-                        gpu::kDisplayCompositorClientId);
-    }
-
-    GrFlushInfo flush_info = {};
-    if (on_finished)
-      gpu::AddCleanupTaskForSkiaFlush(std::move(on_finished), &flush_info);
-    context_state_->gr_context()->flush(flush_info);
-    context_state_->gr_context()->submit();
-    scoped_write_accesses.clear();
-  }
-
-  if (have_image_contexts)
-    promise_image_access_helper_.EndAccess();
 
   constexpr base::TimeDelta kHistogramMinTime = base::Microseconds(5);
   constexpr base::TimeDelta kHistogramMaxTime = base::Milliseconds(16);
@@ -1461,14 +1403,11 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
   base::TimeTicks start_time = base::TimeTicks::Now();
 
   output_device_->ScheduleOverlays(std::move(overlays));
+
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Gpu.OutputSurface.ScheduleOverlaysUs",
       base::TimeTicks::Now() - start_time, kHistogramMinTime, kHistogramMaxTime,
       kHistogramTimeBuckets);
-#else
-  DCHECK(image_contexts.empty());
-  output_device_->ScheduleOverlays(std::move(overlays));
-#endif
 }
 
 void SkiaOutputSurfaceImplOnGpu::SetEnableDCLayers(bool enable) {
@@ -1789,17 +1728,6 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(output_device_);
 
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
-  // Release any backings which are not reused by the current frame, probably
-  // because the properties of render passes are changed or render passes are
-  // removed
-  if (context_is_lost_) {
-    for (auto& image : available_render_pass_overlay_backings_)
-      image->OnContextLost();
-  }
-  available_render_pass_overlay_backings_.clear();
-#endif
-
   if (context_is_lost_)
     return;
 
@@ -1955,36 +1883,6 @@ void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersCompleteInternal(
     waiting_for_full_damage_ = true;
   }
 
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
-  // |available_render_pass_overlay_backings_| are used or released in
-  // SwapBuffers() for every frames. For Ozone-Wayland
-  // |available_render_pass_overlay_backings_| is not always empty because the
-  // buffer management in 'GbmSurfacelessWayland::SwapBuffersAsync' will cause
-  // an accumulation of unsubmitted frames in |unsubmitted_frames_|. These are
-  // submitted in 'GbmSurfacelessWayland::MaybeSubmitFrames'. Later
-  // 'GbmSurfacelessWayland::OnSubmission' will then call the callback of these
-  // |submitted_frames| more than once. This means that this function
-  // 'DidSwapBuffersCompleteInternal' will get executed again before the
-  // corresponding 'SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal' has cleared
-  // 'available_render_pass_overlay_backings_'.
-#if !defined(USE_OZONE)
-  DCHECK(available_render_pass_overlay_backings_.empty());
-#endif
-  // Erase mailboxes of render pass overlays from |params.released_overlays| and
-  // move released backings for those render pass overlays from
-  // |in_flight_render_pass_overlay_backings_| to
-  // |available_render_pass_overlay_backings_| for reusing.
-  base::EraseIf(params.released_overlays, [this](const gpu::Mailbox& mailbox) {
-    auto it = in_flight_render_pass_overlay_backings_.find(mailbox);
-    if (it == in_flight_render_pass_overlay_backings_.end())
-      return false;
-    available_render_pass_overlay_backings_.push_back(std::move(*it));
-    in_flight_render_pass_overlay_backings_.erase(it);
-    return true;
-  });
-
-#endif
-
   PostTaskToClientThread(base::BindOnce(did_swap_buffer_complete_callback_,
                                         params, pixel_size,
                                         std::move(release_fence)));
@@ -2043,76 +1941,6 @@ void SkiaOutputSurfaceImplOnGpu::PreserveChildSurfaceControls() {
   if (gl_surface_)
     gl_surface_->PreserveChildSurfaceControls();
 }
-
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
-std::unique_ptr<gpu::SharedImageRepresentationSkia>
-SkiaOutputSurfaceImplOnGpu::GetOrCreateRenderPassOverlayBacking(
-    const SkSurfaceCharacterization& characterization) {
-  ResourceFormat resource_format;
-  switch (characterization.colorType()) {
-    case kRGBA_8888_SkColorType:
-      resource_format = ResourceFormat::RGBA_8888;
-      break;
-    case kBGRA_8888_SkColorType:
-      resource_format = ResourceFormat::BGRA_8888;
-      break;
-    case kRGBA_F16_SkColorType:
-      resource_format = ResourceFormat::RGBA_F16;
-      break;
-    default:
-      resource_format = ResourceFormat::RGBA_8888;
-      NOTREACHED();
-  }
-
-  gfx::Size size(characterization.width(), characterization.height());
-  gfx::ColorSpace color_space;
-  if (characterization.colorSpace())
-    color_space = gfx::ColorSpace(*characterization.colorSpace());
-  auto it = std::find_if(
-      available_render_pass_overlay_backings_.begin(),
-      available_render_pass_overlay_backings_.end(),
-      [&characterization, &resource_format, &size, &color_space](
-          const std::unique_ptr<gpu::SharedImageRepresentationSkia>& backing) {
-        return backing->format() == resource_format &&
-               backing->size() == size &&
-               backing->color_space() == color_space &&
-               backing->surface_origin() == characterization.origin() &&
-               backing->alpha_type() ==
-                   characterization.imageInfo().alphaType();
-      });
-
-  if (it != available_render_pass_overlay_backings_.end()) {
-    auto backing = std::move(*it);
-    available_render_pass_overlay_backings_.erase(it);
-    return backing;
-  }
-
-  auto mailbox = gpu::Mailbox::GenerateForSharedImage();
-  constexpr auto kOverlayUsage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                                 gpu::SHARED_IMAGE_USAGE_DISPLAY |
-                                 gpu::SHARED_IMAGE_USAGE_RASTER;
-
-  bool result = shared_image_factory_->CreateSharedImage(
-      mailbox, resource_format, size, color_space, characterization.origin(),
-      characterization.imageInfo().alphaType(), gpu::kNullSurfaceHandle,
-      kOverlayUsage);
-  if (!result) {
-    LOG(ERROR) << "CreateSharedImage() failed.";
-    MarkContextLost(CONTEXT_LOST_OUT_OF_MEMORY);
-    return nullptr;
-  }
-
-  auto backing = shared_image_representation_factory_->ProduceSkia(
-      mailbox, context_state_.get());
-  DCHECK(backing);
-
-  // The |backing| will keep a ref on the shared image, so the image will not be
-  // released until |backing| is released.
-  shared_image_factory_->DestroySharedImage(mailbox);
-
-  return backing;
-}
-#endif  // BUILDFLAG(IS_APPLE)  || defined(USE_OZONE)
 
 void SkiaOutputSurfaceImplOnGpu::InitDelegatedInkPointRendererReceiver(
     mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>

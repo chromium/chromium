@@ -29,10 +29,6 @@
 class SkCanvas;
 class SkImage;
 
-#if BUILDFLAG(IS_APPLE)
-class SkDeferredDisplayList;
-#endif
-
 namespace gfx {
 class ColorSpace;
 }  // namespace gfx
@@ -121,6 +117,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
                                          ResourceFormat format,
                                          bool mipmap,
                                          sk_sp<SkColorSpace> color_space,
+                                         bool is_overlay,
                                          const gpu::Mailbox& mailbox) = 0;
 
   // Finish painting the current frame or current render pass, depends on which
@@ -162,8 +159,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // the GPU has finished processing all submitted commands. The callback may be
   // called on a different thread.
   virtual void ScheduleOverlays(OverlayList overlays,
-                                std::vector<gpu::SyncToken> sync_tokens,
-                                base::OnceClosure on_finished) = 0;
+                                std::vector<gpu::SyncToken> sync_tokens) = 0;
 
   // Add context lost observer.
   virtual void AddContextLostObserver(ContextLostObserver* observer) = 0;
@@ -194,15 +190,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // 0 < n <= capabilities_.number_of_buffers.
   // Return true if new buffers are allocated.
   virtual bool EnsureMinNumberOfBuffers(int n) = 0;
-
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
-  virtual SkCanvas* BeginPaintRenderPassOverlay(
-      const gfx::Size& size,
-      ResourceFormat format,
-      bool mipmap,
-      sk_sp<SkColorSpace> color_space) = 0;
-  virtual sk_sp<SkDeferredDisplayList> EndPaintRenderPassOverlay() = 0;
-#endif
 };
 
 }  // namespace viz
