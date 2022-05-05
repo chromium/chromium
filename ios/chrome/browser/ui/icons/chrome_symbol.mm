@@ -69,6 +69,7 @@ NSString* const kXMarkSymbol = @"xmark";
 NSString* const kPlusSymbol = @"plus";
 NSString* const kSearchSymbol = @"magnifyingglass";
 NSString* const kCheckmarkSymbol = @"checkmark";
+NSString* const kArrowDownCircleFillSymbol = @"arrow.down.circle.fill";
 
 UIImage* DefaultSymbolWithConfiguration(NSString* symbolName,
                                         UIImageConfiguration* configuration) {
