@@ -98,8 +98,7 @@ bool MockInputMethodManager::State::ReplaceEnabledInputMethods(
 }
 
 bool MockInputMethodManager::State::SetAllowedInputMethods(
-    const std::vector<std::string>& new_allowed_input_method_ids,
-    bool enable_allowed_input_methods) {
+    const std::vector<std::string>& new_allowed_input_method_ids) {
   allowed_input_method_ids_ = new_allowed_input_method_ids;
   return true;
 }
@@ -107,6 +106,11 @@ bool MockInputMethodManager::State::SetAllowedInputMethods(
 const std::vector<std::string>&
 MockInputMethodManager::State::GetAllowedInputMethodIds() const {
   return allowed_input_method_ids_;
+}
+
+std::string MockInputMethodManager::State::GetAllowedFallBackKeyboardLayout()
+    const {
+  return "input_method_id";
 }
 
 void MockInputMethodManager::State::EnableInputView() {}

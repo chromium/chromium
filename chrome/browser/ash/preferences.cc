@@ -988,7 +988,14 @@ void Preferences::ApplyPreferences(ApplyReason reason,
         allowed_input_methods_.GetValue();
 
     bool managed_by_policy =
-        ime_state_->SetAllowedInputMethods(allowed_input_methods, false);
+        ime_state_->SetAllowedInputMethods(allowed_input_methods);
+    bool success = ime_state_->ReplaceEnabledInputMethods(
+        ime_state_->GetEnabledInputMethodIds());
+    if (!success) {
+      const std::vector<std::string> fallback = {
+          ime_state_->GetAllowedFallBackKeyboardLayout()};
+      ime_state_->ReplaceEnabledInputMethods(fallback);
+    }
 
     if (managed_by_policy) {
       preload_engines_.SetValue(

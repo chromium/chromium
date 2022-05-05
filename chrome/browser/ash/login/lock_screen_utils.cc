@@ -136,21 +136,24 @@ void EnforceDevicePolicyInputMethods(std::string user_input_method_id) {
     if (input_method_entry.is_string())
       allowed_input_method_ids.push_back(input_method_entry.GetString());
   }
-  auto* imm = input_method::InputMethodManager::Get();
-  imm->GetActiveIMEState()->SetAllowedInputMethods(allowed_input_method_ids,
-                                                   true);
+  auto imm_state = input_method::InputMethodManager::Get()->GetActiveIMEState();
+  bool managed_by_policy =
+      imm_state->SetAllowedInputMethods(allowed_input_method_ids);
+  if (managed_by_policy) {
+    imm_state->ReplaceEnabledInputMethods(
+        imm_state->GetAllowedInputMethodIds());
+  }
   if (ImeControllerClientImpl::Get())  // Can be null in tests.
     ImeControllerClientImpl::Get()->SetImesManagedByPolicy(true);
 }
 
 void StopEnforcingPolicyInputMethods() {
   // Empty means all input methods are allowed
-  std::vector<std::string> allowed_input_methods;
-  auto* imm = input_method::InputMethodManager::Get();
-  imm->GetActiveIMEState()->SetAllowedInputMethods(allowed_input_methods, true);
+  auto imm_state = input_method::InputMethodManager::Get()->GetActiveIMEState();
+  imm_state->SetAllowedInputMethods(std::vector<std::string>());
   if (ImeControllerClientImpl::Get())  // Can be null in tests.
     ImeControllerClientImpl::Get()->SetImesManagedByPolicy(false);
-  imm->GetActiveIMEState()->SetInputMethodLoginDefault();
+  imm_state->SetInputMethodLoginDefault();
 }
 
 void SetKeyboardSettings(const AccountId& account_id) {

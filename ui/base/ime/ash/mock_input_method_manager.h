@@ -64,9 +64,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockInputMethodManager
     bool ReplaceEnabledInputMethods(
         const std::vector<std::string>& new_enabled_input_method_ids) override;
     bool SetAllowedInputMethods(
-        const std::vector<std::string>& new_allowed_input_method_ids,
-        bool enable_allowed_input_methods) override;
+        const std::vector<std::string>& new_allowed_input_method_ids) override;
     const std::vector<std::string>& GetAllowedInputMethodIds() const override;
+    std::string GetAllowedFallBackKeyboardLayout() const override;
     void EnableInputView() override;
     void DisableInputView() override;
     const GURL& GetInputViewUrl() const override;
