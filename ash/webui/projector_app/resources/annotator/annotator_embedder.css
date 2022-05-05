@@ -5,14 +5,15 @@
 body {
   background-color: transparent;
   height: 100vh;
-  width: 100vw;
+  margin: 0;
   overflow: hidden;
+  width: 100vw;
 }
 
 .marker-iframe {
-  border:0px;
-  height:100vh;
-  margin:0px;
-  overflow:hidden;
-  width:100vw;
+  border: none;
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  width: 100vw;
 }
