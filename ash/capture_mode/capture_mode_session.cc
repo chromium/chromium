@@ -1871,7 +1871,6 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   }
 
   DCHECK(is_capture_region);
-  DCHECK(cursor_setter_);
   // Allow events that are located on the capture mode bar or settings menu to
   // pass through so we can click the buttons.
   if (!is_event_on_capture_bar &&

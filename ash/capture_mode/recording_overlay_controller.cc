@@ -18,6 +18,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/window_properties.h"
 
 namespace ash {
 
@@ -58,6 +59,19 @@ aura::Window* GetWidgetParent(aura::Window* window_being_recorded) {
   return window_being_recorded->IsRootWindow()
              ? window_being_recorded->GetChildById(kShellWindowId_MenuContainer)
              : window_being_recorded;
+}
+
+// Given the `bounds_in_parent` of the overlay widget, returns the bounds in the
+// correct coordinate system depending on whether the `overlay_window_parent`
+// uses screen coordinates or not.
+gfx::Rect MaybeAdjustOverlayBounds(const gfx::Rect& bounds_in_parent,
+                                   aura::Window* overlay_window_parent) {
+  DCHECK(overlay_window_parent);
+  if (!overlay_window_parent->GetProperty(wm::kUsesScreenCoordinatesKey))
+    return bounds_in_parent;
+  gfx::Rect bounds_in_screen = bounds_in_parent;
+  wm::ConvertRectToScreen(overlay_window_parent, &bounds_in_screen);
+  return bounds_in_screen;
 }
 
 // Defines a window targeter that will be installed on the overlay widget's
@@ -155,11 +169,13 @@ RecordingOverlayController::RecordingOverlayController(
   params.name = "RecordingOverlayWidget";
   params.child = true;
   params.parent = GetWidgetParent(window_being_recorded);
+
   // The overlay hosts transparent contents so actual contents of the window
   // being recorded shows up underneath.
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.bounds = initial_bounds_in_parent;
+  params.bounds =
+      MaybeAdjustOverlayBounds(initial_bounds_in_parent, params.parent);
   // The overlay window does not receive any events until it's shown and
   // enabled. See |Start()| below.
   params.activatable = views::Widget::InitParams::Activatable::kNo;
@@ -182,7 +198,8 @@ void RecordingOverlayController::Toggle() {
 }
 
 void RecordingOverlayController::SetBounds(const gfx::Rect& bounds_in_parent) {
-  overlay_widget_->SetBounds(bounds_in_parent);
+  overlay_widget_->SetBounds(MaybeAdjustOverlayBounds(
+      bounds_in_parent, overlay_widget_->GetNativeWindow()));
 }
 
 aura::Window* RecordingOverlayController::GetOverlayNativeWindow() {

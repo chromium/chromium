@@ -4570,6 +4570,7 @@ class ProjectorCaptureModeIntegrationTests
   MockProjectorClient* projector_client() {
     return projector_helper_.projector_client();
   }
+  aura::Window* window() const { return window_.get(); }
 
   // CaptureModeTest:
   void SetUp() override {
@@ -4632,8 +4633,9 @@ class ProjectorCaptureModeIntegrationTests
       ASSERT_EQ(parent, window_being_recorded);
       EXPECT_EQ(window_being_recorded->children().back(), overlay_window);
     } else {
-      auto* menu_container = overlay_window->GetRootWindow()->GetChildById(
-          kShellWindowId_MenuContainer);
+      auto* menu_container =
+          window_being_recorded->GetRootWindow()->GetChildById(
+              kShellWindowId_MenuContainer);
       ASSERT_EQ(parent, menu_container);
       EXPECT_EQ(menu_container->children().front(), overlay_window);
     }
@@ -4641,9 +4643,7 @@ class ProjectorCaptureModeIntegrationTests
 
   void VerifyOverlayWindow(aura::Window* overlay_window,
                            CaptureModeSource source) {
-    auto* controller = CaptureModeController::Get();
-    auto* recording_watcher = controller->video_recording_watcher_for_testing();
-    auto* window_being_recorded = recording_watcher->window_being_recorded();
+    auto* window_being_recorded = GetWindowBeingRecorded();
 
     VerifyOverlayStacking(overlay_window, window_being_recorded, source);
 
@@ -4658,6 +4658,13 @@ class ProjectorCaptureModeIntegrationTests
         EXPECT_EQ(overlay_window->bounds(), kUserRegion);
         break;
     }
+  }
+
+  aura::Window* GetWindowBeingRecorded() const {
+    auto* controller = CaptureModeController::Get();
+    DCHECK(controller->is_recording_in_progress());
+    return controller->video_recording_watcher_for_testing()
+        ->window_being_recorded();
   }
 
  protected:
@@ -5015,6 +5022,31 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayDockedMagnifier) {
 TEST_P(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidgetBounds) {
   const auto capture_source = GetParam();
   StartRecordingForProjectorFromSource(capture_source);
+  CaptureModeTestApi test_api;
+  RecordingOverlayController* overlay_controller =
+      test_api.GetRecordingOverlayController();
+  EXPECT_FALSE(overlay_controller->is_enabled());
+  auto* overlay_window = overlay_controller->GetOverlayNativeWindow();
+  VerifyOverlayWindow(overlay_window, capture_source);
+}
+
+// Regression test for https://crbug.com/1322655.
+TEST_P(ProjectorCaptureModeIntegrationTests,
+       RecordingOverlayWidgetBoundsSecondDisplay) {
+  UpdateDisplay("800x700,801+0-800x700");
+  const gfx::Point point_in_second_display = gfx::Point(1000, 500);
+  auto* event_generator = GetEventGenerator();
+  MoveMouseToAndUpdateCursorDisplay(point_in_second_display, event_generator);
+  window()->SetBoundsInScreen(
+      gfx::Rect(900, 0, 600, 500),
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          Shell::GetAllRootWindows()[1]));
+
+  const auto capture_source = GetParam();
+  StartRecordingForProjectorFromSource(capture_source);
+  const auto roots = Shell::GetAllRootWindows();
+  EXPECT_EQ(roots[1], GetWindowBeingRecorded()->GetRootWindow());
+
   CaptureModeTestApi test_api;
   RecordingOverlayController* overlay_controller =
       test_api.GetRecordingOverlayController();
