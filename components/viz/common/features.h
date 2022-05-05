@@ -89,8 +89,8 @@ VIZ_COMMON_EXPORT bool ShouldUseSetPresentDuration();
 VIZ_COMMON_EXPORT absl::optional<int> ShouldDrawPredictedInkPoints();
 VIZ_COMMON_EXPORT std::string InkPredictor();
 VIZ_COMMON_EXPORT bool ShouldUsePlatformDelegatedInk();
-#if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT bool UseSurfaceLayerForVideo();
+#if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT bool UseRealVideoColorSpaceForDisplay();
 #endif
 VIZ_COMMON_EXPORT bool IsSurfaceSyncThrottling();

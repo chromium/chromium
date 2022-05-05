@@ -191,7 +191,6 @@ MEDIA_EXPORT extern const base::Feature
     kShareThisTabInsteadButtonGetDisplayMediaAudio;
 MEDIA_EXPORT extern const base::Feature kSpeakerChangeDetection;
 MEDIA_EXPORT extern const base::Feature kSpecCompliantCanPlayThrough;
-MEDIA_EXPORT extern const base::Feature kSurfaceLayerForMediaStreams;
 MEDIA_EXPORT extern const base::Feature kSuspendMutedAudio;
 MEDIA_EXPORT extern const base::Feature kUnifiedAutoplay;
 MEDIA_EXPORT extern const base::Feature kUseAndroidOverlayForSecureOnly;

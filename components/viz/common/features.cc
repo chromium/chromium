@@ -296,8 +296,8 @@ bool ShouldUsePlatformDelegatedInk() {
   return base::FeatureList::IsEnabled(kUsePlatformDelegatedInk);
 }
 
-#if BUILDFLAG(IS_ANDROID)
 bool UseSurfaceLayerForVideo() {
+#if BUILDFLAG(IS_ANDROID)
   // SurfaceLayer video should work fine with new heuristic.
   if (base::FeatureList::IsEnabled(kWebViewNewInvalidateHeuristic))
     return true;
@@ -307,8 +307,12 @@ bool UseSurfaceLayerForVideo() {
     return true;
   }
   return base::FeatureList::IsEnabled(kUseSurfaceLayerForVideoDefault);
+#else
+  return true;
+#endif
 }
 
+#if BUILDFLAG(IS_ANDROID)
 bool UseRealVideoColorSpaceForDisplay() {
   // We need Android S for proper color space support in SurfaceControl.
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
