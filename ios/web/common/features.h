@@ -89,7 +89,7 @@ extern const base::Feature kEnableFullscreenAPI;
 // loadSimulatedRequest:responseHTMLString: API to display error pages in
 // CRWWKNavigationHandler. The helper method IsLoadSimulatedRequestAPIEnabled()
 // should be used instead of directly checking this feature.
-extern const base::Feature kUseLoadSimulatedRequestForErrorPageNavigation;
+extern const base::Feature kUseLoadSimulatedRequestForOfflinePage;
 
 // When true, the native context menu for the web content are used.
 bool UseWebViewNativeContextMenuWeb();

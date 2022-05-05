@@ -544,8 +544,8 @@ extern const char kUseLensToSearchForImageDescription[];
 // Title and description for the flag to enable using the
 // loadSimulatedRequest:responseHTMLString: API for displaying error pages in
 // CRWWKNavigationHandler.
-extern const char kUseLoadSimulatedRequestForErrorPageNavigationName[];
-extern const char kUseLoadSimulatedRequestForErrorPageNavigationDescription[];
+extern const char kUseLoadSimulatedRequestForOfflinePageName[];
+extern const char kUseLoadSimulatedRequestForOfflinePageDescription[];
 
 // Title and description for the flag to enable the replacement of some images
 // by SFSymbols.

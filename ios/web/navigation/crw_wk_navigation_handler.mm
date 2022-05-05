@@ -81,12 +81,6 @@ bool IsFailedHttpsUpgrade(NSError* error,
   return (error_code != net::OK || web::IsWKWebViewSSLCertError(error));
 }
 
-// Header field name for error pages.
-NSString* const kErrorHeaderField = @"Chromium-Error-Page";
-
-// Value for error page header when the request is simulated.
-NSString* const kSimulatedErrorHeaderValue = @"Chromium_Simulated_Error_Page";
-
 }  // namespace
 
 @interface CRWWKNavigationHandler () <DownloadNativeTaskBridgeDelegate> {
@@ -242,18 +236,6 @@ NSString* const kSimulatedErrorHeaderValue = @"Chromium_Simulated_Error_Page";
     }
   }
 
-  if (action.targetFrame.mainFrame &&
-      [[action.request valueForHTTPHeaderField:kErrorHeaderField]
-          isEqualToString:kSimulatedErrorHeaderValue]) {
-    web::NavigationContextImpl* context =
-        [self contextForPendingMainFrameNavigationWithURL:requestURL];
-    if (context && context->IsLoadingErrorPage() && !action.sourceFrame) {
-      self.pendingNavigationInfo.loadingErrorPage = YES;
-      decisionHandler(WKNavigationActionPolicyAllow);
-      return;
-    }
-  }
-
   // If this is a error navigation, pass through.
   if ([CRWErrorPageHelper isErrorPageFileURL:requestURL]) {
     if (action.sourceFrame.mainFrame) {
@@ -406,9 +388,7 @@ NSString* const kSimulatedErrorHeaderValue = @"Chromium_Simulated_Error_Page";
 
   // If this is a error navigation, pass through.
   GURL responseURL = net::GURLWithNSURL(WKResponse.response.URL);
-  if ([CRWErrorPageHelper isErrorPageFileURL:responseURL] ||
-      (self.pendingNavigationInfo.loadingErrorPage &&
-       WKResponse.forMainFrame)) {
+  if ([CRWErrorPageHelper isErrorPageFileURL:responseURL]) {
     if (self.webStateImpl->ShouldAllowErrorPageToBeDisplayed(
             WKResponse.response, WKResponse.forMainFrame)) {
       handler(WKNavigationResponsePolicyAllow);
@@ -919,25 +899,10 @@ NSString* const kSimulatedErrorHeaderValue = @"Chromium_Simulated_Error_Page";
       context->SetUrl(currentWKItemURL);
     }
 
-    NSError* error = context->GetError();
-    if (error) {
-      if (web::features::IsLoadSimulatedRequestAPIEnabled()) {
-        context->SetHasCommitted(true);
-        self.webStateImpl->OnNavigationFinished(context);
-
-        [self.delegate navigationHandler:self
-              didCompleteLoadWithSuccess:NO
-                              forContext:context];
-
-        NSString* failingURLString =
-            error.userInfo[NSURLErrorFailingURLStringErrorKey];
-        GURL failingURL(base::SysNSStringToUTF8(failingURLString));
-        self.webStateImpl->OnPageLoaded(failingURL, NO);
-      } else {
-        [self loadErrorPageForNavigationItem:item
-                           navigationContext:navigation
-                                     webView:webView];
-      }
+    if (context->GetError()) {
+      [self loadErrorPageForNavigationItem:item
+                         navigationContext:navigation
+                                   webView:webView];
     }
   }
 
@@ -1783,87 +1748,18 @@ NSString* const kSimulatedErrorHeaderValue = @"Chromium_Simulated_Error_Page";
     return;
   }
 
-  if (web::features::IsLoadSimulatedRequestAPIEnabled()) {
-    NSString* failingURLString =
-        contextError.userInfo[NSURLErrorFailingURLStringErrorKey];
-    GURL failingURL(base::SysNSStringToUTF8(failingURLString));
+  WKNavigation* errorNavigation =
+      [self displayErrorPageWithError:error
+                            inWebView:webView
+                    isProvisionalLoad:provisionalLoad];
 
-    net::SSLInfo info;
-    absl::optional<net::SSLInfo> SSLInfo = absl::nullopt;
-
-    if (web::IsWKWebViewSSLCertError(error)) {
-      web::GetSSLInfoFromWKWebViewSSLCertError(contextError, &info);
-      if (info.cert) {
-        // Retrieve verification results from _certVerificationErrors cache to
-        // avoid unnecessary recalculations. Verification results are cached for
-        // the leaf cert, because the cert chain in
-        // |didReceiveAuthenticationChallenge:| is the OS constructed chain,
-        // while |chain| is the chain from the server.
-        NSArray* chain =
-            contextError.userInfo[web::kNSErrorPeerCertificateChainKey];
-        NSURL* requestURL = contextError.userInfo[web::kNSErrorFailingURLKey];
-        NSString* host = requestURL.host;
-        scoped_refptr<net::X509Certificate> leafCert;
-        if (chain.count && host.length) {
-          // The complete cert chain may not be available, so the leaf cert is
-          // used as a key to retrieve _certVerificationErrors, as well as for
-          // storing the cert decision.
-          leafCert = web::CreateCertFromChain(@[ chain.firstObject ]);
-          if (leafCert) {
-            auto error = _certVerificationErrors->Get(
-                {leafCert, base::SysNSStringToUTF8(host)});
-            bool cacheHit = error != _certVerificationErrors->end();
-            if (cacheHit) {
-              info.is_fatal_cert_error = error->second.is_recoverable;
-              info.cert_status = error->second.status;
-            }
-            UMA_HISTOGRAM_BOOLEAN(
-                "WebController.CertVerificationErrorsCacheHit", cacheHit);
-          }
-        }
-        SSLInfo = absl::make_optional<net::SSLInfo>(info);
-      }
-    }
-
-    GURL itemURL = item->GetURL();
-    if (itemURL != failingURL)
-      item->SetVirtualURL(failingURL);
-
-    // Saves original context before, as the original context can be deleted
-    // before the callback is called.
-    __block std::unique_ptr<web::NavigationContextImpl> originalContext =
-        [self.navigationStates removeNavigation:navigation];
-
-    [self displayErrorPageWithWebView:webView
-                             webState:self.webStateImpl
-                                  URL:failingURL
-                                error:contextError
-                               isPost:navigationContext->IsPost()
-                         isOffRecords:self.webStateImpl->GetBrowserState()
-                                          ->IsOffTheRecord()
-                              SSLInfo:SSLInfo
-                         navigationId:originalContext->GetNavigationId()
-                             callback:base::BindOnce(^(
-                                          WKNavigation* errorNavigation) {
-                               originalContext->SetLoadingErrorPage(true);
-                               [self.navigationStates
-                                      setContext:std::move(originalContext)
-                                   forNavigation:errorNavigation];
-                             })];
-  } else {
-    WKNavigation* errorNavigation =
-        [self displayErrorPageWithError:error
-                              inWebView:webView
-                      isProvisionalLoad:provisionalLoad];
-
-    std::unique_ptr<web::NavigationContextImpl> originalContext =
-        [self.navigationStates removeNavigation:navigation];
-    originalContext->SetLoadingErrorPage(true);
-    [self.navigationStates setContext:std::move(originalContext)
-                        forNavigation:errorNavigation];
-    // Return as the context was moved.
-    return;
-  }
+  std::unique_ptr<web::NavigationContextImpl> originalContext =
+      [self.navigationStates removeNavigation:navigation];
+  originalContext->SetLoadingErrorPage(true);
+  [self.navigationStates setContext:std::move(originalContext)
+                      forNavigation:errorNavigation];
+  // Return as the context was moved.
+  return;
 }
 
 // Displays an error page with details from |error| in |webView|. The error page
@@ -1887,76 +1783,34 @@ NSString* const kSimulatedErrorHeaderValue = @"Chromium_Simulated_Error_Page";
                             userInfo:updatedUserInfo];
   }
 
-  if (web::features::IsLoadSimulatedRequestAPIEnabled()) {
-    // Create pending item.
-    self.navigationManagerImpl->AddPendingItem(
-        blockedURL, web::Referrer(), transition,
-        web::NavigationInitiationType::BROWSER_INITIATED,
-        /*is_post_navigation=*/false,
-        /*is_using_https_as_default_scheme=*/false);
+  WKNavigation* errorNavigation = [self displayErrorPageWithError:error
+                                                        inWebView:webView
+                                                isProvisionalLoad:YES];
 
-    // Create context.
-    __block std::unique_ptr<web::NavigationContextImpl> context =
-        web::NavigationContextImpl::CreateNavigationContext(
-            self.webStateImpl, blockedURL,
-            /*has_user_gesture=*/true, transition,
-            /*is_renderer_initiated=*/false);
-    std::unique_ptr<web::NavigationItemImpl> item =
-        self.navigationManagerImpl->ReleasePendingItem();
-    context->SetNavigationItemUniqueID(item->GetUniqueID());
-    context->SetItem(std::move(item));
-    context->SetError(error);
+  // Create pending item.
+  self.navigationManagerImpl->AddPendingItem(
+      blockedURL, web::Referrer(), transition,
+      web::NavigationInitiationType::BROWSER_INITIATED,
+      /*is_post_navigation=*/false,
+      /*is_using_https_as_default_scheme=*/false);
 
-    [self
-        displayErrorPageWithWebView:webView
-                           webState:self.webStateImpl
-                                URL:blockedURL
-                              error:error
-                             isPost:false
-                       isOffRecords:self.webStateImpl->GetBrowserState()
-                                        ->IsOffTheRecord()
-                            SSLInfo:absl::nullopt
-                       navigationId:context->GetNavigationId()
-                           callback:base::BindOnce(^(
-                                        WKNavigation* errorNavigation) {
-                             context->SetLoadingErrorPage(true);
-                             [self.navigationStates
-                                    setContext:std::move(context)
-                                 forNavigation:errorNavigation];
-                             [self.navigationStates
-                                      setState:web::WKNavigationState::REQUESTED
-                                 forNavigation:errorNavigation];
-                           })];
-  } else {
-    WKNavigation* errorNavigation = [self displayErrorPageWithError:error
-                                                          inWebView:webView
-                                                  isProvisionalLoad:YES];
+  // Create context.
+  std::unique_ptr<web::NavigationContextImpl> context =
+      web::NavigationContextImpl::CreateNavigationContext(
+          self.webStateImpl, blockedURL,
+          /*has_user_gesture=*/true, transition,
+          /*is_renderer_initiated=*/false);
+  std::unique_ptr<web::NavigationItemImpl> item =
+      self.navigationManagerImpl->ReleasePendingItem();
+  context->SetNavigationItemUniqueID(item->GetUniqueID());
+  context->SetItem(std::move(item));
+  context->SetError(error);
+  context->SetLoadingErrorPage(true);
 
-    // Create pending item.
-    self.navigationManagerImpl->AddPendingItem(
-        blockedURL, web::Referrer(), transition,
-        web::NavigationInitiationType::BROWSER_INITIATED,
-        /*is_post_navigation=*/false,
-        /*is_using_https_as_default_scheme=*/false);
+  self.webStateImpl->OnNavigationStarted(context.get());
 
-    // Create context.
-    std::unique_ptr<web::NavigationContextImpl> context =
-        web::NavigationContextImpl::CreateNavigationContext(
-            self.webStateImpl, blockedURL,
-            /*has_user_gesture=*/true, transition,
-            /*is_renderer_initiated=*/false);
-    std::unique_ptr<web::NavigationItemImpl> item =
-        self.navigationManagerImpl->ReleasePendingItem();
-    context->SetNavigationItemUniqueID(item->GetUniqueID());
-    context->SetItem(std::move(item));
-    context->SetError(error);
-    context->SetLoadingErrorPage(true);
-
-    self.webStateImpl->OnNavigationStarted(context.get());
-
-    [self.navigationStates setContext:std::move(context)
-                        forNavigation:errorNavigation];
-  }
+  [self.navigationStates setContext:std::move(context)
+                      forNavigation:errorNavigation];
 }
 
 // Creates and returns a new WKNavigation to load an error page displaying
@@ -1996,58 +1850,6 @@ NSString* const kSimulatedErrorHeaderValue = @"Chromium_Simulated_Error_Page";
                     forNavigation:errorNavigation];
 
   return errorNavigation;
-}
-
-// Displays error page using the iOS 15 loadSimulatedRequest API.
-- (void)displayErrorPageWithWebView:(WKWebView*)webView
-                           webState:(web::WebState*)webState
-                                URL:(GURL)URL
-                              error:(NSError*)error
-                             isPost:(BOOL)isPost
-                       isOffRecords:(BOOL)isOffTheRecord
-                            SSLInfo:(absl::optional<net::SSLInfo>)SSLInfo
-                       navigationId:(int64_t)navigationId
-                           callback:(base::OnceCallback<void(WKNavigation*)>)
-                                        callback {
-  web::GetWebClient()->PrepareErrorPage(
-      webState, URL, error, isPost, isOffTheRecord, SSLInfo, navigationId,
-      base::BindOnce(^(NSString* errorHTML) {
-        WKNavigation* errorNavigation = nil;
-        if (@available(iOS 15, *)) {
-          NSBundle* bundleForHTMLFile =
-              [NSBundle bundleForClass:CRWWKNavigationHandler.class];
-          NSString* path =
-              [bundleForHTMLFile pathForResource:@"error_page_reloaded"
-                                          ofType:@"html"];
-          // Script which reloads the error page if the error page is being
-          // served from the browser cache.
-          NSString* reloadPageHTMLTemplate =
-              [NSString stringWithContentsOfFile:path
-                                        encoding:NSUTF8StringEncoding
-                                           error:nil];
-          NSString* failingURLString =
-              error.userInfo[NSURLErrorFailingURLStringErrorKey];
-          NSURL* failingURL = [NSURL URLWithString:failingURLString];
-          NSMutableURLRequest* URLRequest =
-              [NSMutableURLRequest requestWithURL:failingURL];
-          [URLRequest setValue:kSimulatedErrorHeaderValue
-              forHTTPHeaderField:kErrorHeaderField];
-          if (errorHTML) {
-            NSString* injectedHTML =
-                [reloadPageHTMLTemplate stringByAppendingString:errorHTML];
-            if (self.navigationManagerImpl->IsCommittedAfterRestore()) {
-              errorNavigation = [webView loadSimulatedRequest:URLRequest
-                                           responseHTMLString:injectedHTML];
-            } else {
-              [webView loadHTMLString:injectedHTML baseURL:failingURL];
-            }
-          } else {
-            errorNavigation = [webView loadSimulatedRequest:URLRequest
-                                         responseHTMLString:@""];
-          }
-        }
-        return errorNavigation;
-      }).Then(std::move(callback)));
 }
 
 // Handles cancelled load in WKWebView (error with NSURLErrorCancelled code).

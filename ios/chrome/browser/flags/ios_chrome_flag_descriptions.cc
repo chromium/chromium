@@ -604,11 +604,12 @@ const char kUseLensToSearchForImageDescription[] =
     "When enabled, use Lens to search for images from the long press context "
     "menu when Google is the selected search engine.";
 
-const char kUseLoadSimulatedRequestForErrorPageNavigationName[] =
-    "Use loadSimulatedRequest:responseHTMLString: when displaying error pages";
-const char kUseLoadSimulatedRequestForErrorPageNavigationDescription[] =
-    "When enabled, CRWWKNavigationHandler uses the iOS 15 "
-    "loadSimulatedRequest:responseHTMLString: API for displaying error pages";
+const char kUseLoadSimulatedRequestForOfflinePageName[] =
+    "Use loadSimulatedRequest:responseHTMLString: when displaying offline "
+    "pages";
+const char kUseLoadSimulatedRequestForOfflinePageDescription[] =
+    "When enabled, the offline pages uses the iOS 15 "
+    "loadSimulatedRequest:responseHTMLString: API";
 
 const char kUseSFSymbolsSamplesName[] = "Replace Image by SFSymbols";
 const char kUseSFSymbolsSamplesDescription[] =

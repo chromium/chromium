@@ -653,12 +653,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseLensToSearchForImageDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kUseLensToSearchForImage)},
     {"use-load-simulated-request-for-error-page-navigation",
-     flag_descriptions::kUseLoadSimulatedRequestForErrorPageNavigationName,
-     flag_descriptions::
-         kUseLoadSimulatedRequestForErrorPageNavigationDescription,
+     flag_descriptions::kUseLoadSimulatedRequestForOfflinePageName,
+     flag_descriptions::kUseLoadSimulatedRequestForOfflinePageDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         web::features::kUseLoadSimulatedRequestForErrorPageNavigation)},
+     FEATURE_VALUE_TYPE(web::features::kUseLoadSimulatedRequestForOfflinePage)},
     {"enable-discover-feed-static-resource-serving",
      flag_descriptions::kEnableDiscoverFeedStaticResourceServingName,
      flag_descriptions::kEnableDiscoverFeedStaticResourceServingDescription,
