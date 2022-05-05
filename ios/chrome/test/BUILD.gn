@@ -24,7 +24,11 @@ group("all_tests") {
 
 group("all_fuzzer_tests") {
   testonly = true
-  deps = [ "//ios/chrome/browser/crash_report:crashpad_fuzzer_tests" ]
+  deps = [
+    "//components/autofill/ios/form_util:form_activity_tab_helper_fuzzer",
+    "//ios/chrome/browser/crash_report:crashpad_fuzzer_tests",
+    "//ios/chrome/browser/web/image_fetch:image_fetch_java_script_feature_fuzzer",
+  ]
 }
 
 source_set("test_support") {

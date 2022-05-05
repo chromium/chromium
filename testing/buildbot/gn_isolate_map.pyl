@@ -858,12 +858,6 @@
     "script": "//testing/scripts/run_flatbuffers_unittests.py",
     "type": "script",
   },
-  # TODO(crbug.com/1256485): The target is not needed after iOS clusterfuzz
-  # upload bot is set up.
-  "form_activity_tab_helper_fuzzer": {
-    "label": "//components/autofill/ios/form_util:form_activity_tab_helper_fuzzer",
-    "type": "additional_compile_target",
-  },
   "fuchsia_mojo_unittests": {
     "label": "//fuchsia/mojom:fuchsia_mojo_unittests",
     "type": "console_test_launcher",
@@ -976,6 +970,10 @@
   },
   "ios/chrome/app:chrome": {
     "label": "//ios/chrome/app:chrome",
+    "type": "additional_compile_target",
+  },
+  "ios/chrome/test:all_fuzzer_tests": {
+    "label": "//ios/chrome/test:all_fuzzer_tests",
     "type": "additional_compile_target",
   },
   "ios_chrome_bookmarks_egtests": {
