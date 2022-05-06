@@ -19,11 +19,12 @@ inline constexpr base::StringPiece kClipTopAssetId = "clip_top.png";
 inline constexpr base::StringPiece kFrameImage1AssetId = "frame_image_1.png";
 inline constexpr base::StringPiece kFrameImage2AssetId = "frame_image_2.png";
 inline constexpr base::StringPiece kTreeShadowAssetId = "tree_shadow.png";
-inline constexpr int kFeelTheBreezeNumStaticAssets = 5;
+inline constexpr base::StringPiece kStringAssetId = "string.png";
+inline constexpr int kFeelTheBreezeNumStaticAssets = 6;
 inline constexpr std::array<base::StringPiece, kFeelTheBreezeNumStaticAssets>
-    kAllFeelTheBreezeStaticAssets = {kClipBottomAssetId, kClipTopAssetId,
+    kAllFeelTheBreezeStaticAssets = {kClipBottomAssetId,  kClipTopAssetId,
                                      kFrameImage1AssetId, kFrameImage2AssetId,
-                                     kTreeShadowAssetId};
+                                     kTreeShadowAssetId,  kStringAssetId};
 
 // Float on by.
 inline constexpr base::StringPiece kShadowA1AssetId = "shadow_a_1.png";

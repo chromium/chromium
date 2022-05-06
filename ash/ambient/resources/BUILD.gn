@@ -22,6 +22,7 @@ generate_grd("build_lottie_grd") {
     "lottie/feel_the_breeze/clip_top.png",
     "lottie/feel_the_breeze/frame_image_1.png",
     "lottie/feel_the_breeze/frame_image_2.png",
+    "lottie/feel_the_breeze/string.png",
     "lottie/feel_the_breeze/tree_shadow.png",
     "lottie/float_on_by/animation.json",
     "lottie/float_on_by/shadow_a_1.png",

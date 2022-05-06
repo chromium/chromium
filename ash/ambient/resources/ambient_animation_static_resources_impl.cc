@@ -55,6 +55,8 @@ AssetIdToResourceIdMap GetAssetIdToResourceIdMapForTheme(
                IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_FRAME_IMAGE_2_PNG},
               {ambient::resources::kTreeShadowAssetId,
                IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_TREE_SHADOW_PNG},
+              {ambient::resources::kStringAssetId,
+               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_STRING_PNG},
               // End Assets
           }
           // End Theme: Feel the Breeze
