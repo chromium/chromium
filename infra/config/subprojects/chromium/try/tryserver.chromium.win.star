@@ -35,6 +35,9 @@ try_.builder(
 
 try_.builder(
     name = "win-asan",
+    mirrors = [
+        "ci/win-asan",
+    ],
     goma_jobs = goma.jobs.J150,
     execution_timeout = 5 * time.hour,
 )

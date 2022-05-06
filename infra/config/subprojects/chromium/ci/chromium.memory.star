@@ -5,6 +5,7 @@
 
 load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
+load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "goma", "os", "sheriff_rotations")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
@@ -261,6 +262,20 @@ ci.builder(
 
 ci.builder(
     name = "win-asan",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_win_clang_asan",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-memory-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "win",
         short_name = "asn",
