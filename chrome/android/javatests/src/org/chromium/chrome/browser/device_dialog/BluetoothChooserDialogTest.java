@@ -223,6 +223,34 @@ public class BluetoothChooserDialogTest {
 
     @Test
     @SmallTest
+    public void testDismiss() {
+        ItemChooserDialog itemChooser = mChooserDialog.mItemChooserDialog;
+        Dialog dialog = itemChooser.getDialogForTesting();
+        Assert.assertTrue(dialog.isShowing());
+
+        TextViewWithClickableSpans statusView =
+                (TextViewWithClickableSpans) dialog.findViewById(R.id.status);
+        final ListView items = (ListView) dialog.findViewById(R.id.items);
+        final Button button = (Button) dialog.findViewById(R.id.positive);
+
+        // Before we add items to the dialog, the 'searching' message should be
+        // showing, the Commit button should be disabled and the list view hidden.
+        Assert.assertEquals(removeLinkTags(sActivityTestRule.getActivity().getString(
+                                    R.string.bluetooth_searching)),
+                statusView.getText().toString());
+        Assert.assertFalse(button.isEnabled());
+        Assert.assertEquals(View.GONE, items.getVisibility());
+
+        dialog.dismiss();
+
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mFinishedEventType, Matchers.not(-1)));
+
+        Assert.assertEquals(BluetoothChooserEvent.CANCELLED, mFinishedEventType);
+        Assert.assertEquals("", mFinishedDeviceId);
+    }
+
+    @Test
+    @SmallTest
     public void testSelectItem() {
         Dialog dialog = mChooserDialog.mItemChooserDialog.getDialogForTesting();
 
