@@ -1433,6 +1433,17 @@ message NetworkAdapterInfo {
   repeated string driver = 7;
 }
 
+// Information about the list of browsers and profiles that are
+// running and installed on the device in the DeviceStatusReport
+message LaCrOsBrowserReport {
+  // Limited to one user since LaCrosBrowserReport is repeated based on each
+  // user. If multiple lacros user profiles exist, each LaCrOsBrowserReport
+  // message (one per lacros user profile) will contain the same |device_user|.
+  optional DeviceUser device_user = 1;
+  // Group of data regarding the browser and user profile.
+  optional BrowserReport browser_report = 2;
+}
+
 // Report device level status.
 message DeviceStatusReportRequest {
   reserved 4, 7, 13, 20;
@@ -1572,6 +1583,7 @@ message DeviceStatusReportRequest {
   // Information about the device's network hardware.
   repeated NetworkAdapterInfo network_adapter_info = 45;
 
+  // Information about LaCrOs
   repeated LaCrOsBrowserReport lacros_browser_report = 46;
 }
 
@@ -4416,13 +4428,4 @@ message DeviceManagementResponse {
 message DeviceStateRetrievalInfo {
   // Whether the device should retrieve initial state or not.
   optional bool has_initial_state = 1;
-}
-
-// Report device user with browser report
-message LaCrOsBrowserReport {
-  optional DeviceUser device_user = 1;
-
-  optional BrowserReport browser_report = 2;
-
-  // Next id: 3.
 }
