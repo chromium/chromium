@@ -3,15 +3,10 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
-js_type_check("closure_compile") {
-  closure_flags = default_closure_args + mojom_js_args
-  deps = [
-    ":browser_proxy",
-    ":colors_css_updater",
-  ]
-}
+preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/color_change_listener"
 
 mojom("mojom") {
   sources = [ "color_change_listener.mojom" ]
@@ -19,10 +14,41 @@ mojom("mojom") {
   webui_module_path = "chrome://resources/cr_components/color_change_listener/"
 }
 
-js_library("browser_proxy") {
+copy("copy_mojom") {
   deps = [ ":mojom_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
-js_library("colors_css_updater") {
-  deps = [ ":browser_proxy" ]
+copy("copy_src") {
+  sources = [
+    "browser_proxy.ts",
+    "colors_css_updater.ts",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = target_gen_dir
+  out_dir = preprocess_folder
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "browser_proxy.ts",
+    "colors_css_updater.ts",
+    "color_change_listener.mojom-webui.js",
+  ]
+  deps = [ "//ui/webui/resources/mojo:library" ]
+  extra_deps = [
+    ":copy_mojom",
+    ":copy_src",
+  ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "cr_components_color_change_listener"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "cr_components/color_change_listener"
 }

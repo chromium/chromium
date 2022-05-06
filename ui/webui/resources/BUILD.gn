@@ -16,6 +16,7 @@ generate_grd("build_grd") {
 
   deps = [
     ":build_ts_grdp",
+    "cr_components/color_change_listener:build_grdp",
     "css:build_grdp",
     "html:build_grdp",
     "images:build_grdp",
@@ -33,6 +34,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/js/resources.grdp",
     "$target_gen_dir/resources_ts.grdp",
     "$root_gen_dir/third_party/jstemplate/resources.grdp",
+    "$root_gen_dir/ui/webui/resources/cr_components/color_change_listener/resources.grdp",
   ]
 
   if (!is_chromeos_ash && !is_android) {
@@ -135,10 +137,11 @@ group("closure_compile") {
   ]
 
   if (include_polymer) {
-    deps += [
-      "cr_components:closure_compile",
-      "cr_elements:closure_compile",
-    ]
+    deps += [ "cr_elements:closure_compile" ]
+
+    if (is_chromeos_ash) {
+      deps += [ "cr_components/chromeos:closure_compile" ]
+    }
   }
 }
 

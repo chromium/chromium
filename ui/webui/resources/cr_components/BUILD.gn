@@ -12,7 +12,6 @@ assert(!is_android && !is_ios)
 
 preprocess_folder =
     "$root_gen_dir/ui/webui/resources/preprocessed/cr_components"
-preprocess_mojom_manifest = "preprocessed_mojom_manifest.json"
 if (is_chromeos_ash) {
   preprocess_gen_manifest = "preprocessed_gen_manifest.json"
   preprocess_polymer2_manifest = "preprocessed_polymer2_manifest.json"
@@ -63,10 +62,7 @@ generate_grd("build_grdp") {
       "chromeos/network_health/test_warning.png",
     ]
   }
-  manifest_files = [
-    "$target_gen_dir/$preprocess_mojom_manifest",
-    "$target_gen_dir/$preprocess_src_manifest",
-  ]
+  manifest_files = [ "$target_gen_dir/$preprocess_src_manifest" ]
 
   # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
   if (is_chromeos_ash) {
@@ -82,7 +78,6 @@ generate_grd("build_grdp") {
 group("preprocess") {
   public_deps = [
     ":preprocess_generated_ts",
-    ":preprocess_mojom",
     ":preprocess_src",
   ]
 
@@ -109,17 +104,7 @@ preprocess_if_expr("preprocess_src") {
     "chromeos/network_health/mojo_interface_provider.js",
     "chromeos/network_health/network_diagnostics_types.js",
     "chromeos/smb_shares/smb_browser_proxy.js",
-    "color_change_listener/browser_proxy.js",
-    "color_change_listener/colors_css_updater.js",
   ]
-}
-
-preprocess_if_expr("preprocess_mojom") {
-  deps = [ "color_change_listener:mojom_webui_js" ]
-  in_folder = "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components"
-  out_folder = "$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_mojom_manifest"
-  in_files = [ "color_change_listener/color_change_listener.mojom-webui.js" ]
 }
 
 if (is_chromeos_ash) {
@@ -377,14 +362,6 @@ if (is_chromeos_ash) {
       "chromeos/quick_unlock/setup_pin_keyboard.html",
       "chromeos/quick_unlock/setup_pin_keyboard.js",
     ]
-  }
-}
-
-group("closure_compile") {
-  deps = [ "color_change_listener:closure_compile" ]
-
-  if (is_chromeos_ash) {
-    deps += [ "chromeos:closure_compile" ]
   }
 }
 

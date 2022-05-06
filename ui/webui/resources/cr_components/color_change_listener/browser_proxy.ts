@@ -12,27 +12,23 @@
 
 import {PageCallbackRouter, PageHandler} from './color_change_listener.mojom-webui.js';
 
-/** @type {?BrowserProxy} */
-let instance = null;
+let instance: BrowserProxy|null = null;
 
 export class BrowserProxy {
+  callbackRouter: PageCallbackRouter;
+
   constructor() {
-    /** @type {!PageCallbackRouter} */
     this.callbackRouter = new PageCallbackRouter();
 
     const pageHandlerRemote = PageHandler.getRemote();
     pageHandlerRemote.setPage(this.callbackRouter.$.bindNewPipeAndPassRemote());
   }
 
-  /** @return {!BrowserProxy} */
-  static getInstance() {
+  static getInstance(): BrowserProxy {
     return instance || (instance = new BrowserProxy());
   }
 
-  /**
-   * @param {!BrowserProxy} newInstance
-   */
-  static setInstance(newInstance) {
+  static setInstance(newInstance: BrowserProxy) {
     instance = newInstance;
   }
 }

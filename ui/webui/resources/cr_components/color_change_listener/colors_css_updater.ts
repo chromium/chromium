@@ -5,25 +5,21 @@
 /**
  * @fileoverview This file holds the functions that allow WebUI to update its
  * colors CSS stylesheet when a ColorProvider change in the browser is detected.
- * TODO(tluk): Convert this into typescript once all dependencies have been
- * fully migrated.
  */
 
 import {BrowserProxy} from './browser_proxy.js';
 
 /**
  * The CSS selector used to get the <link> node with the colors.css stylesheet.
- * @type {string}
  */
-export const COLORS_CSS_SELECTOR = 'link[href$=\'colors.css\']';
+export const COLORS_CSS_SELECTOR: string = 'link[href$=\'colors.css\']';
 
 /**
  * Forces the document to refresh its colors.css stylesheet. This is used to
  * fetch an updated stylesheet when the ColorProvider associated with the WebUI
  * has changed.
- * @return {boolean}
  */
-export function refreshColorCss() {
+export function refreshColorCss(): boolean {
   const colorCssNode = document.querySelector(COLORS_CSS_SELECTOR);
   if (!colorCssNode) {
     return false;
@@ -33,20 +29,20 @@ export function refreshColorCss() {
     return false;
   }
   const hrefURL = new URL(href);
-  const params = new URLSearchParams([['version', new Date().getTime()]]);
+  const params =
+      new URLSearchParams([['version', new Date().getTime().toString()]]);
   const newHref = `${hrefURL.origin}${hrefURL.pathname}?${params.toString()}`;
   colorCssNode.setAttribute('href', newHref);
   return true;
 }
 
-/** @type {?number} */
-let listenerId;
+let listenerId: number|null = null;
 
 /**
  * Starts listening for ColorProvider change updates from the browser.
  */
 export function startColorChangeUpdater() {
-  if (listenerId === undefined) {
+  if (listenerId === null) {
     listenerId =
         BrowserProxy.getInstance()
             .callbackRouter.onColorProviderChanged.addListener(refreshColorCss);
