@@ -65,7 +65,7 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     private ObjectAnimator mVisiblityAnimator;
 
     private boolean mIsGridTabSwitcherEnabled;
-    private boolean mIsTabletGtsPolishEnabled;
+    private boolean mIsFullscreenToolbar;
     private boolean mShowZoomingAnimation;
 
     public TabSwitcherModeTopToolbar(Context context, AttributeSet attrs) {
@@ -89,10 +89,10 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         mNewTabViewButton.setOnClickListener(this);
     }
 
-    void initialize(boolean isGridTabSwitcherEnabled, boolean isTabletGtsPolishEnabled,
+    void initialize(boolean isGridTabSwitcherEnabled, boolean isFullscreenToolbar,
             boolean isTabToGtsAnimationEnabled, BooleanSupplier isIncognitoModeEnabledSupplier) {
         mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
-        mIsTabletGtsPolishEnabled = isTabletGtsPolishEnabled;
+        mIsFullscreenToolbar = isFullscreenToolbar;
         mShowZoomingAnimation = isGridTabSwitcherEnabled && isTabToGtsAnimationEnabled;
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
 
@@ -149,7 +149,7 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
 
         // Skip the animations and visibility logic when Tablet GTS polish param is enabled, since
         // they will instead be handled by the container view.
-        if (mIsTabletGtsPolishEnabled) return;
+        if (mIsFullscreenToolbar) return;
 
         if (mVisiblityAnimator != null) mVisiblityAnimator.cancel();
 
@@ -371,7 +371,7 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     private boolean shouldShowIncognitoToggle() {
         return mIsGridTabSwitcherEnabled && mIsIncognitoModeEnabledSupplier.getAsBoolean()
                 && (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
-                        || mIsTabletGtsPolishEnabled);
+                        || mIsFullscreenToolbar);
     }
 
     /**
