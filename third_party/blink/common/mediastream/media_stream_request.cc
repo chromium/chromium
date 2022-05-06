@@ -47,7 +47,6 @@ bool IsVideoDesktopCaptureMediaType(mojom::MediaStreamType type) {
 bool IsTabCaptureMediaType(mojom::MediaStreamType type) {
   return (type == mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE ||
           type == mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE ||
-          type == mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE ||
           type == mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB);
 }
 
