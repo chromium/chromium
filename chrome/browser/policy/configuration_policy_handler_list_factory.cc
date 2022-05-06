@@ -1870,7 +1870,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kWebAppInstallForceList, prefs::kWebAppInstallForceList,
-      chrome_schema, SCHEMA_ALLOW_UNKNOWN,
+      chrome_schema, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
   handlers->AddHandler(std::make_unique<WebHidDevicePolicyHandler>(
