@@ -2744,8 +2744,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ComponentUpdater.Calls" enum="ComponentUpdaterCalls"
-    expires_after="2020-12-20">
+    expires_after="2022-12-20">
   <owner>sorin@chromium.org</owner>
+  <owner>src/components/component_updater/OWNERS</owner>
   <summary>
     The number of times the component updater called UpdateClient::Install or
     UpdateClient::Update. These correspond to the number of manual component
@@ -2769,20 +2770,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ComponentUpdater.UpdateCompleteError"
-    enum="UpdateClientErrors" expires_after="2020-07-26">
+    enum="UpdateClientErrors" expires_after="2022-12-20">
   <owner>sorin@chromium.org</owner>
+  <owner>src/components/component_updater/OWNERS</owner>
   <summary>The result of an install or an update check.</summary>
 </histogram>
 
 <histogram name="ComponentUpdater.UpdateCompleteResult" enum="BooleanError"
-    expires_after="2020-07-26">
+    expires_after="2022-12-20">
   <owner>sorin@chromium.org</owner>
+  <owner>src/components/component_updater/OWNERS</owner>
   <summary>The result of an install or an update check.</summary>
 </histogram>
 
 <histogram name="ComponentUpdater.UpdateCompleteTime" units="ms"
-    expires_after="2020-02-16">
+    expires_after="2022-12-20">
   <owner>sorin@chromium.org</owner>
+  <owner>src/components/component_updater/OWNERS</owner>
   <summary>
     Time to complete an Install or an Update component update call.
   </summary>
