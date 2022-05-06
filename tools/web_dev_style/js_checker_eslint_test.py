@@ -55,17 +55,6 @@ class JsCheckerEsLintTest(unittest.TestCase):
     self.assertEqual(rule_id, message.get('ruleId'))
     self.assertEqual(line, message.get('line'))
 
-  def testGetElementByIdCheck(self):
-    results = self._runChecks("const a = document.getElementById('foo');", 'js')
-    self._assertError(results, 'no-restricted-properties', 1)
-
-    results = self._runChecks(
-        '''
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const a: HTMLELement = document.getElementById('foo');
-''', 'ts')
-    self._assertError(results, 'no-restricted-properties', 3)
-
   def testPrimitiveWrappersCheck(self):
     results = self._runChecks('const a = new Number(1);', 'js')
     self._assertError(results, 'no-new-wrappers', 1)
