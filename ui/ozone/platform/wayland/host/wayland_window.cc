@@ -974,21 +974,25 @@ gfx::Rect WaylandWindow::AdjustBoundsToConstraintsPx(
     gfx::Size min_size_in_px =
         delegate()->ConvertRectToPixels(gfx::Rect(*min_size)).size();
     if (min_size_in_px.width() > 0 &&
-        adjusted_bounds_px.width() < min_size_in_px.width())
+        adjusted_bounds_px.width() < min_size_in_px.width()) {
       adjusted_bounds_px.set_width(min_size_in_px.width());
+    }
     if (min_size_in_px.height() > 0 &&
-        adjusted_bounds_px.height() < min_size_in_px.height())
+        adjusted_bounds_px.height() < min_size_in_px.height()) {
       adjusted_bounds_px.set_height(min_size_in_px.height());
+    }
   }
   if (const auto max_size = delegate_->GetMaximumSizeForWindow()) {
     gfx::Size max_size_in_px =
         delegate()->ConvertRectToPixels(gfx::Rect(*max_size)).size();
     if (max_size_in_px.width() > 0 &&
-        adjusted_bounds_px.width() > max_size_in_px.width())
+        adjusted_bounds_px.width() > max_size_in_px.width()) {
       adjusted_bounds_px.set_width(max_size_in_px.width());
+    }
     if (max_size_in_px.height() > 0 &&
-        adjusted_bounds_px.height() > max_size_in_px.height())
+        adjusted_bounds_px.height() > max_size_in_px.height()) {
       adjusted_bounds_px.set_height(max_size_in_px.height());
+    }
   }
   return adjusted_bounds_px;
 }
