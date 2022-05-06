@@ -9,13 +9,19 @@ import java.util.List;
 class HistoryCluster {
     private final List<String> mKeywords;
     private final List<ClusterVisit> mVisits;
+    private final String mLabel;
 
-    public HistoryCluster(List<String> keywords, List<ClusterVisit> visits) {
+    public HistoryCluster(List<String> keywords, List<ClusterVisit> visits, String label) {
         mKeywords = keywords;
         mVisits = visits;
+        mLabel = label;
     }
 
     public List<ClusterVisit> getVisits() {
         return mVisits;
+    }
+
+    public String getLabel() {
+        return mLabel;
     }
 }

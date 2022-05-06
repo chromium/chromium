@@ -113,12 +113,14 @@ void HistoryClustersBridge::ClustersQueryDone(
     }
     ScopedJavaLocalRef<jclass> cluster_visit_type = base::android::GetClass(
         env, "org/chromium/chrome/browser/history_clusters/ClusterVisit");
+    std::u16string label = cluster.label.value_or(u"no_label");
     const ScopedJavaLocalRef<jobject>& j_cluster =
         Java_HistoryClustersBridge_buildCluster(
             env,
             base::android::ToTypedJavaArrayOfObjects(env, cluster_visits,
                                                      cluster_visit_type),
-            base::android::ToJavaArrayOfStrings(env, cluster.keywords));
+            base::android::ToJavaArrayOfStrings(env, cluster.keywords),
+            base::android::ConvertUTF16ToJavaString(env, label));
     j_clusters.push_back(j_cluster);
   }
   ScopedJavaLocalRef<jclass> cluster_type = base::android::GetClass(

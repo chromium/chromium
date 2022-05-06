@@ -59,10 +59,10 @@ class HistoryClustersBridge {
     }
 
     @CalledByNative
-    static HistoryCluster buildCluster(ClusterVisit[] visits, String[] keywords) {
+    static HistoryCluster buildCluster(ClusterVisit[] visits, String[] keywords, String label) {
         List<String> keywordList = Arrays.asList(keywords);
         List<ClusterVisit> clusterVisitList = Arrays.asList(visits);
-        return new HistoryCluster(keywordList, clusterVisitList);
+        return new HistoryCluster(keywordList, clusterVisitList, label);
     }
 
     @CalledByNative
