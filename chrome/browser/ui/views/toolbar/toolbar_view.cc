@@ -116,7 +116,6 @@
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/signin/signin_global_error_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bubble_sign_in_delegate.h"
 #include "chrome/browser/ui/dialogs/outdated_upgrade_bubble.h"
 #endif
@@ -387,12 +386,9 @@ void ToolbarView::Init() {
   LoadImages();
 
   // Start global error services now so we set the icon on the menu correctly.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  SigninGlobalErrorFactory::GetForProfile(browser_->profile());
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   RecoveryInstallGlobalErrorFactory::GetForProfile(browser_->profile());
-#endif
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   // Set the button icon based on the system state. Do this after
   // |app_menu_button_| has been added as a bubble may be shown that needs

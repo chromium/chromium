@@ -9982,39 +9982,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
       </if>
 
-      <if expr="not use_titlecase">
-        <message name="IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_ACCEPT" desc="The accept button in the sync error bubble view when sync is not available for their domain.">
-          OK...
-        </message>
-        <if expr="chromeos_ash">
-          <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_ACCEPT" desc="The accept button in the sync error bubble view/notification when the user needs to sign out and sign in again to ChromeOS.">
-            Sign out then sign in again...
-          </message>
-          <message name="IDS_SYNC_SIGN_IN_ERROR_WRENCH_MENU_ITEM" desc="The sync error wrench menu item when the user needs to sign out and sign in again to ChromeOS.">
-            Sign out then sign in again...
-          </message>
-        </if>
-        <if expr="not chromeos_ash">
-          <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_ACCEPT" desc="The accept button in the sync error bubble view when the user needs to sign in again.">
-            Sign in again...
-          </message>
-          <message name="IDS_SYNC_SIGN_IN_ERROR_WRENCH_MENU_ITEM" desc="The sync error wrench menu item when the user needs to sign in again.">
-              Sign in again...
-          </message>
-        </if>
-      </if>
-      <if expr="use_titlecase">
-        <message name="IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_ACCEPT" desc="The accept button in the sync error bubble view when sync is not available for their domain.">
-          OK...
-        </message>
-        <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_ACCEPT" desc="The accept button in the sync error bubble view when the user needs to sign in again.">
-          Sign in Again...
-        </message>
-        <message name="IDS_SYNC_SIGN_IN_ERROR_WRENCH_MENU_ITEM" desc="The sync error wrench menu item when the user needs to sign in again.">
-          Sign in Again...
-        </message>
-      </if>
-
       <!-- Android uses native UI to handle Sync settings -->
       <if expr="not is_android">
         <!-- Sync options dialog strings -->

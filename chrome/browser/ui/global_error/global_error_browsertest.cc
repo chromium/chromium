@@ -45,11 +45,6 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/feature_switch.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/signin/signin_global_error.h"
-#include "chrome/browser/signin/signin_global_error_factory.h"
-#endif
-
 namespace {
 
 // Shows the first GlobalError with associated UI associated with |browser|.
@@ -206,10 +201,6 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
         prefs::kRecoveryComponentNeedsElevation, true);
     waiter.Wait();
     ShowPendingError(browser());
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  } else if (name == "SigninGlobalError") {
-    SigninGlobalErrorFactory::GetForProfile(profile)->ShowBubbleView(browser());
-#endif
   } else {
     ADD_FAILURE();
   }
@@ -246,13 +237,6 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
                        InvokeUi_RecoveryInstallGlobalError) {
-  ShowAndVerifyUi();
-}
-#endif
-
-// Signin global errors never happon on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest, InvokeUi_SigninGlobalError) {
   ShowAndVerifyUi();
 }
 #endif

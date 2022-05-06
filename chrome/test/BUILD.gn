@@ -8188,7 +8188,6 @@ test("unit_tests") {
       "../browser/policy/client_data_delegate_desktop_unittest.cc",
       "../browser/profiles/profile_activity_metrics_recorder_unittest.cc",
       "../browser/signin/force_signin_verifier_unittest.cc",
-      "../browser/signin/signin_global_error_unittest.cc",
       "../browser/signin/signin_manager_unittest.cc",
       "../browser/signin/signin_ui_util_unittest.cc",
       "../browser/signin/signin_util_unittest.cc",

@@ -1029,10 +1029,6 @@ bool AppMenuModel::AddGlobalErrorMenuItems() {
       SetIcon(GetIndexOfCommandId(error->MenuItemCommandID()),
               error->MenuItemIcon());
       menu_items_added = true;
-      if (IDC_SHOW_SIGNIN_ERROR == error->MenuItemCommandID()) {
-        signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
-            signin_metrics::AccessPoint::ACCESS_POINT_MENU);
-      }
     }
   }
   return menu_items_added;

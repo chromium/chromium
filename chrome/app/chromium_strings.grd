@@ -915,17 +915,6 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <!-- Sync/sign-in error messages -->
-      <if expr="not chromeos_ash">
-        <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view when the user's sign-in credentials are out of date.">
-          Chromium could not sync your data because your account sign-in details are out of date.
-        </message>
-        <message name="IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view when sync is not available for their domain.">
-          Chromium could not sync your data because Sync is not available for your domain.
-        </message>
-        <message name="IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view when there's an error signing in.">
-          Chromium could not sync your data due to an error signing in.
-        </message>
-      </if>
       <if expr="chromeos_ash">
         <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification for ChromiumOS Secondary Accounts.">
           ChromiumOS System
@@ -1470,7 +1459,7 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_BOTTOM_SUMMARY" desc="A conclusion paragraph for the entire page. It sits beneath the “More control over the ads you see” subtitle but it’s no more associated with that topic than “Limit sharing between sites”. * “in Chrome settings”: The URL is chrome://settings/privacySandbox. We don’t make it a live link because we need the users to stay in this moment until they make a choice.">
         You can learn more about these features in Chromium settings.
       </message>
-      
+
       <!-- ChromiumUpdater Strings -->
       <if expr="is_win">
         <message name="IDS_FRIENDLY_COMPANY_NAME" desc="Company name">
