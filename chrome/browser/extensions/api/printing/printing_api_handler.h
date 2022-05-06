@@ -44,7 +44,7 @@ namespace extensions {
 class ExtensionRegistry;
 class PrintJobController;
 
-// Handles chrome.printing API functions calls, observes NotificationService,
+// Handles chrome.printing API functions calls, acts as a PrintJobObserver,
 // and generates OnJobStatusChanged() events of chrome.printing API.
 // The callback function is never run directly - it is posted to
 // base::SequencedTaskRunnerHandle::Get().

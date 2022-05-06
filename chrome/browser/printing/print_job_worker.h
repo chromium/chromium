@@ -159,12 +159,6 @@ class PrintJobWorker {
   base::SequencedTaskRunner* task_runner() { return task_runner_.get(); }
 
  private:
-  // The shared NotificationService service can only be accessed from the UI
-  // thread, so this class encloses the necessary information to send the
-  // notification from the right thread. All NOTIFY_PRINT_JOB_EVENT
-  // notifications are sent this way.
-  class NotificationTask;
-
   // Posts a task to call OnNewPage(). Used to wait for pages/document to be
   // available.
   void PostWaitForPage();
