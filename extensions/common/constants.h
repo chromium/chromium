@@ -226,16 +226,15 @@ EXTENSIONS_EXPORT extern const int kUnknownWindowId;
 // Matches chrome.windows.WINDOW_ID_CURRENT.
 EXTENSIONS_EXPORT extern const int kCurrentWindowId;
 
-enum ExtensionIcons {
-  EXTENSION_ICON_GIGANTOR = 512,
-  EXTENSION_ICON_EXTRA_LARGE = 256,
-  EXTENSION_ICON_LARGE = 128,
-  EXTENSION_ICON_MEDIUM = 48,
-  EXTENSION_ICON_SMALL = 32,
-  EXTENSION_ICON_SMALLISH = 24,
-  EXTENSION_ICON_BITTY = 16,
-  EXTENSION_ICON_INVALID = 0,
-};
+using ExtensionIcons = int;
+constexpr ExtensionIcons EXTENSION_ICON_GIGANTOR = 512;
+constexpr ExtensionIcons EXTENSION_ICON_EXTRA_LARGE = 256;
+constexpr ExtensionIcons EXTENSION_ICON_LARGE = 128;
+constexpr ExtensionIcons EXTENSION_ICON_MEDIUM = 48;
+constexpr ExtensionIcons EXTENSION_ICON_SMALL = 32;
+constexpr ExtensionIcons EXTENSION_ICON_SMALLISH = 24;
+constexpr ExtensionIcons EXTENSION_ICON_BITTY = 16;
+constexpr ExtensionIcons EXTENSION_ICON_INVALID = 0;
 
 // The extension id of the ChromeVox extension.
 EXTENSIONS_EXPORT extern const char kChromeVoxExtensionId[];

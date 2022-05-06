@@ -81,13 +81,8 @@ class BaseSetOperators {
 
   ~BaseSetOperators() {}
 
-  bool operator==(const T& rhs) const {
-    return Equal(rhs);
-  }
-
-  bool operator!=(const T& rhs) const {
-    return !operator==(rhs);
-  }
+  bool operator==(const BaseSetOperators<T>& rhs) const { return Equal(rhs); }
+  bool operator!=(const BaseSetOperators<T>& rhs) const { return !Equal(rhs); }
 
   T Clone() const {
     T result;
@@ -96,7 +91,7 @@ class BaseSetOperators {
     return result;
   }
 
-  bool Equal(const T& rhs) const {
+  bool Equal(const BaseSetOperators<T>& rhs) const {
     const_iterator it = begin();
     const_iterator rhs_it = rhs.begin();
     const_iterator it_end = end();
@@ -115,7 +110,7 @@ class BaseSetOperators {
     return it == it_end && rhs_it == rhs_it_end;
   }
 
-  bool Contains(const T& rhs) const {
+  bool Contains(const BaseSetOperators<T>& rhs) const {
     const_iterator it1 = begin();
     const_iterator it2 = rhs.begin();
     const_iterator end1 = end();
@@ -137,7 +132,9 @@ class BaseSetOperators {
     return it2 == end2;
   }
 
-  static void Difference(const T& set1, const T& set2, T* set3) {
+  static void Difference(const BaseSetOperators<T>& set1,
+                         const BaseSetOperators<T>& set2,
+                         T* set3) {
     CHECK(set3);
     set3->clear();
 
@@ -167,7 +164,9 @@ class BaseSetOperators {
     }
   }
 
-  static void Intersection(const T& set1, const T& set2, T* set3) {
+  static void Intersection(const BaseSetOperators<T>& set1,
+                           const BaseSetOperators<T>& set2,
+                           T* set3) {
     DCHECK(set3);
     set3->clear();
 
@@ -191,7 +190,9 @@ class BaseSetOperators {
     }
   }
 
-  static void Union(const T& set1, const T& set2, T* set3) {
+  static void Union(const BaseSetOperators<T>& set1,
+                    const BaseSetOperators<T>& set2,
+                    T* set3) {
     DCHECK(set3);
     set3->clear();
 
