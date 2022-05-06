@@ -18,6 +18,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "url/gurl.h"
@@ -757,13 +758,12 @@ void CertBuilder::InitFromCert(const der::Input& cert) {
                                               &unused));
 
   // extensions
-  bool has_extensions = false;
-  der::Input extensions_tlv;
+  absl::optional<der::Input> extensions_tlv;
   ASSERT_TRUE(tbs_certificate.ReadOptionalTag(
-      der::ContextSpecificConstructed(3), &extensions_tlv, &has_extensions));
-  if (has_extensions) {
+      der::ContextSpecificConstructed(3), &extensions_tlv));
+  if (extensions_tlv) {
     std::map<der::Input, ParsedExtension> parsed_extensions;
-    ASSERT_TRUE(ParseExtensions(extensions_tlv, &parsed_extensions));
+    ASSERT_TRUE(ParseExtensions(extensions_tlv.value(), &parsed_extensions));
 
     for (const auto& parsed_extension : parsed_extensions) {
       SetExtension(parsed_extension.second.oid,

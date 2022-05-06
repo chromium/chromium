@@ -900,17 +900,21 @@ void PathVerifier::PrepareForNextCertificate(const ParsedCertificate& cert,
     //         (1)  If requireExplicitPolicy is present and is less than
     //              explicit_policy, set explicit_policy to the value of
     //              requireExplicitPolicy.
-    if (cert.policy_constraints().has_require_explicit_policy &&
-        cert.policy_constraints().require_explicit_policy < explicit_policy_) {
-      explicit_policy_ = cert.policy_constraints().require_explicit_policy;
+    if (cert.policy_constraints().require_explicit_policy &&
+        cert.policy_constraints().require_explicit_policy.value() <
+            explicit_policy_) {
+      explicit_policy_ =
+          cert.policy_constraints().require_explicit_policy.value();
     }
 
     //         (2)  If inhibitPolicyMapping is present and is less than
     //              policy_mapping, set policy_mapping to the value of
     //              inhibitPolicyMapping.
-    if (cert.policy_constraints().has_inhibit_policy_mapping &&
-        cert.policy_constraints().inhibit_policy_mapping < policy_mapping_) {
-      policy_mapping_ = cert.policy_constraints().inhibit_policy_mapping;
+    if (cert.policy_constraints().inhibit_policy_mapping &&
+        cert.policy_constraints().inhibit_policy_mapping.value() <
+            policy_mapping_) {
+      policy_mapping_ =
+          cert.policy_constraints().inhibit_policy_mapping.value();
     }
   }
 
@@ -1038,7 +1042,7 @@ void PathVerifier::WrapUp(const ParsedCertificate& cert, CertErrors* errors) {
   //           certificate and requireExplicitPolicy is present and has a
   //           value of 0, set the explicit_policy state variable to 0.
   if (cert.has_policy_constraints() &&
-      cert.policy_constraints().has_require_explicit_policy &&
+      cert.policy_constraints().require_explicit_policy.has_value() &&
       cert.policy_constraints().require_explicit_policy == 0) {
     explicit_policy_ = 0;
   }

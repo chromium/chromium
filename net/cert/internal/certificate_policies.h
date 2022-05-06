@@ -11,6 +11,7 @@
 
 #include "net/base/net_export.h"
 #include "net/der/input.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -101,11 +102,9 @@ NET_EXPORT bool ParseCertificatePoliciesExtensionOids(
     CertErrors* errors);
 
 struct ParsedPolicyConstraints {
-  bool has_require_explicit_policy = false;
-  uint8_t require_explicit_policy = 0;
+  absl::optional<uint8_t> require_explicit_policy;
 
-  bool has_inhibit_policy_mapping = false;
-  uint8_t inhibit_policy_mapping = 0;
+  absl::optional<uint8_t> inhibit_policy_mapping;
 };
 
 // Parses a PolicyConstraints SEQUENCE as defined by RFC 5280. Returns true on

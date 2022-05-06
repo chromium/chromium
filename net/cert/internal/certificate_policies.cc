@@ -265,35 +265,36 @@ bool ParsePolicyConstraints(const der::Input& policy_constraints_tlv,
   if (!sequence_parser.HasMore())
     return false;
 
-  der::Input value;
-  if (!sequence_parser.ReadOptionalTag(der::ContextSpecificPrimitive(0), &value,
-                                       &out->has_require_explicit_policy)) {
+  absl::optional<der::Input> require_value;
+  if (!sequence_parser.ReadOptionalTag(der::ContextSpecificPrimitive(0),
+                                       &require_value)) {
     return false;
   }
 
-  if (out->has_require_explicit_policy) {
-    if (!ParseUint8(value, &out->require_explicit_policy)) {
+  if (require_value) {
+    uint8_t require_explicit_policy;
+    if (!ParseUint8(require_value.value(), &require_explicit_policy)) {
       // TODO(eroman): Surface reason for failure if length was longer than
       // uint8.
       return false;
     }
-  } else {
-    out->require_explicit_policy = 0;
+    out->require_explicit_policy = require_explicit_policy;
   }
 
-  if (!sequence_parser.ReadOptionalTag(der::ContextSpecificPrimitive(1), &value,
-                                       &out->has_inhibit_policy_mapping)) {
+  absl::optional<der::Input> inhibit_value;
+  if (!sequence_parser.ReadOptionalTag(der::ContextSpecificPrimitive(1),
+                                       &inhibit_value)) {
     return false;
   }
 
-  if (out->has_inhibit_policy_mapping) {
-    if (!ParseUint8(value, &out->inhibit_policy_mapping)) {
+  if (inhibit_value) {
+    uint8_t inhibit_policy_mapping;
+    if (!ParseUint8(inhibit_value.value(), &inhibit_policy_mapping)) {
       // TODO(eroman): Surface reason for failure if length was longer than
       // uint8.
       return false;
     }
-  } else {
-    out->inhibit_policy_mapping = 0;
+    out->inhibit_policy_mapping = inhibit_policy_mapping;
   }
 
   // There should be no remaining data.

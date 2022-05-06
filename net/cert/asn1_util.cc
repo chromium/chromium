@@ -7,6 +7,7 @@
 #include "net/cert/internal/parse_certificate.h"
 #include "net/der/input.h"
 #include "net/der/parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -116,14 +117,13 @@ bool SeekToExtensions(der::Input in,
     return false;
   }
 
-  der::Input extensions;
+  absl::optional<der::Input> extensions;
   if (!tbs_cert_parser.ReadOptionalTag(
-          der::kTagConstructed | der::kTagContextSpecific | 3, &extensions,
-          &present)) {
+          der::kTagConstructed | der::kTagContextSpecific | 3, &extensions)) {
     return false;
   }
 
-  if (!present) {
+  if (!extensions) {
     *extensions_present = false;
     return true;
   }
@@ -136,7 +136,7 @@ bool SeekToExtensions(der::Input in,
 
   // |extensions| was EXPLICITly tagged, so we still need to remove the
   // ASN.1 SEQUENCE header.
-  der::Parser explicit_extensions_parser(extensions);
+  der::Parser explicit_extensions_parser(extensions.value());
   if (!explicit_extensions_parser.ReadSequence(extensions_parser))
     return false;
 
