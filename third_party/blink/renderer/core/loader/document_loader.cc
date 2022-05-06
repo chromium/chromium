@@ -2083,7 +2083,7 @@ bool ShouldReuseDOMWindow(LocalDOMWindow* window,
   }
 
   // Anonymous is tracked per-Window, so if it does not match, do not reuse it.
-  if (anonymous != window->anonymous()) {
+  if (anonymous != window->isAnonymouslyFramed()) {
     return false;
   }
 

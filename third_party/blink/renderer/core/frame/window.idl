@@ -208,8 +208,8 @@
     [RuntimeEnabled=TrustedDOMTypes, CallWith=ScriptState] readonly attribute TrustedTypePolicyFactory trustedTypes;
 
     // Anonymous iframe:
-    // https://github.com/camillelamy/explainers/blob/main/anonymous_iframes.md
-    [RuntimeEnabled=AnonymousIframe] readonly attribute boolean anonymous;
+    // https://wicg.github.io/anonymous-iframe/#spec-window-attribute
+    [RuntimeEnabled=AnonymousIframe] readonly attribute boolean isAnonymouslyFramed;
 
     // Collection of fenced frame APIs
     // https://github.com/shivanigithub/fenced-frame/issues/14

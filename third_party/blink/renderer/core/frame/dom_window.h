@@ -156,8 +156,6 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   // marked as "CrossOrigin" in the window.idl.
   void ReportCoopAccess(const char* property_name);
 
-  bool anonymous() const { return anonymous_; }
-
   // Records metrics for cross-origin access to the WindowProxy properties,
   void RecordWindowProxyAccessMetrics(
       mojom::blink::WebFeature property_access,
@@ -222,10 +220,6 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
     WTF::String reported_window_url;
   };
   WTF::Vector<CoopAccessMonitor> coop_access_monitor_;
-
-  // Anonymous Iframe:
-  // https://github.com/camillelamy/explainers/blob/main/anonymous_iframes.md
-  const bool anonymous_ = false;
 };
 
 }  // namespace blink

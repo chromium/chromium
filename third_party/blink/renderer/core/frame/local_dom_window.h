@@ -470,7 +470,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
 
   // Whether the window is anonymous or not.
-  bool anonymous() const { return anonymous_; }
+  bool isAnonymouslyFramed() const { return isAnonymouslyFramed_; }
 
   Fence* fence();
 
@@ -603,7 +603,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // Anonymous Iframe:
   // https://github.com/camillelamy/explainers/blob/main/anonymous_iframes.md
-  const bool anonymous_;
+  const bool isAnonymouslyFramed_;
 
   // Collection of fenced frame APIs.
   // https://github.com/shivanigithub/fenced-frame/issues/14

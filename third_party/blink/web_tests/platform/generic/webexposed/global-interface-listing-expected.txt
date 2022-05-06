@@ -11518,7 +11518,6 @@ namespace CSS
     attribute propertyNamesInGlobal
     attribute testRunner
     attribute textInputController
-    getter anonymous
     getter attributionReporting
     getter caches
     getter clientInformation
@@ -11539,6 +11538,7 @@ namespace CSS
     getter indexedDB
     getter innerHeight
     getter innerWidth
+    getter isAnonymouslyFramed
     getter isSecureContext
     getter launchQueue
     getter length

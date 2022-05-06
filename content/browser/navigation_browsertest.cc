@@ -5860,7 +5860,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   EXPECT_EQ(iframe_url_1, child->current_url());
   EXPECT_FALSE(child->anonymous());
   EXPECT_FALSE(child->current_frame_host()->anonymous());
-  EXPECT_EQ(false, EvalJs(child->current_frame_host(), "window.anonymous"));
+  EXPECT_EQ(false,
+            EvalJs(child->current_frame_host(), "window.isAnonymouslyFramed"));
 
   // Changes to the iframe 'anonymous' attribute are propagated to the
   // FrameTreeNode. The RenderFrameHost, however, is updated only on navigation.
@@ -5869,7 +5870,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
              "document.getElementById('test_iframe').anonymous = true;"));
   EXPECT_TRUE(child->anonymous());
   EXPECT_FALSE(child->current_frame_host()->anonymous());
-  EXPECT_EQ(false, EvalJs(child->current_frame_host(), "window.anonymous"));
+  EXPECT_EQ(false,
+            EvalJs(child->current_frame_host(), "window.isAnonymouslyFramed"));
 
   // Create a grandchild iframe.
   EXPECT_TRUE(ExecJs(
@@ -5881,13 +5883,13 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   EXPECT_EQ(1U, child->child_count());
   FrameTreeNode* grandchild = child->child_at(0);
 
-  // The grandchild FrameTreeNode does not set the 'anonymous' attribute. The
-  // grandchild RenderFrameHost is not anonymous, since its parent
-  // RenderFrameHost is not anonymous.
+  // The grandchild FrameTreeNode does not set the 'anonymous'
+  // attribute. The grandchild RenderFrameHost is not anonymous, since its
+  // parent RenderFrameHost is not anonymous.
   EXPECT_FALSE(grandchild->anonymous());
   EXPECT_FALSE(grandchild->current_frame_host()->anonymous());
-  EXPECT_EQ(false,
-            EvalJs(grandchild->current_frame_host(), "window.anonymous"));
+  EXPECT_EQ(false, EvalJs(grandchild->current_frame_host(),
+                          "window.isAnonymouslyFramed"));
 
   // Navigate the child iframe same-document. This does not change anything.
   EXPECT_TRUE(ExecJs(main_frame(),
@@ -5897,7 +5899,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   WaitForLoadStop(web_contents());
   EXPECT_TRUE(child->anonymous());
   EXPECT_FALSE(child->current_frame_host()->anonymous());
-  EXPECT_EQ(false, EvalJs(child->current_frame_host(), "window.anonymous"));
+  EXPECT_EQ(false,
+            EvalJs(child->current_frame_host(), "window.isAnonymouslyFramed"));
 
   // Now navigate the child iframe cross-document.
   EXPECT_TRUE(ExecJs(
@@ -5906,7 +5909,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   WaitForLoadStop(web_contents());
   EXPECT_TRUE(child->anonymous());
   EXPECT_TRUE(child->current_frame_host()->anonymous());
-  EXPECT_EQ(true, EvalJs(child->current_frame_host(), "window.anonymous"));
+  EXPECT_EQ(true,
+            EvalJs(child->current_frame_host(), "window.isAnonymouslyFramed"));
   // An anonymous document has a storage key with a nonce.
   EXPECT_TRUE(child->current_frame_host()->storage_key().nonce().has_value());
   base::UnguessableToken anonymous_nonce =
@@ -5927,10 +5931,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   // document is anonymous.
   EXPECT_FALSE(grandchild->anonymous());
   EXPECT_TRUE(grandchild->current_frame_host()->anonymous());
-  // TODO(https://crbug.com/1251084): Fill navigation_params->anonymous for the
-  // initial empty document.
-  EXPECT_EQ(false,
-            EvalJs(grandchild->current_frame_host(), "window.anonymous"));
+  // TODO(https://crbug.com/1251084): Fill
+  // navigation_params->anonymous for the initial empty document.
+  EXPECT_EQ(false, EvalJs(grandchild->current_frame_host(),
+                          "window.isAnonymouslyFramed"));
 
   // The storage key's nonce is the same for all anonymous documents in the same
   // page.
@@ -5944,7 +5948,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
                        iframe_url_2)));
   WaitForLoadStop(web_contents());
   EXPECT_TRUE(grandchild->current_frame_host()->anonymous());
-  EXPECT_EQ(true, EvalJs(grandchild->current_frame_host(), "window.anonymous"));
+  EXPECT_EQ(true, EvalJs(grandchild->current_frame_host(),
+                         "window.isAnonymouslyFramed"));
 
   // The storage key's nonce is still the same.
   EXPECT_TRUE(child->current_frame_host()->storage_key().nonce().has_value());
@@ -5958,7 +5963,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
              "document.getElementById('test_iframe').anonymous = false;"));
   EXPECT_FALSE(child->anonymous());
   EXPECT_TRUE(child->current_frame_host()->anonymous());
-  EXPECT_EQ(true, EvalJs(child->current_frame_host(), "window.anonymous"));
+  EXPECT_EQ(true,
+            EvalJs(child->current_frame_host(), "window.isAnonymouslyFramed"));
   EXPECT_TRUE(child->current_frame_host()->storage_key().nonce().has_value());
   EXPECT_EQ(anonymous_nonce,
             child->current_frame_host()->storage_key().nonce().value());
@@ -5977,8 +5983,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   EXPECT_TRUE(grandchild2->current_frame_host()->anonymous());
   // TODO(https://crbug.com/1251084): Fill navigation_params->anonymous for the
   // initial empty document.
-  EXPECT_EQ(false,
-            EvalJs(grandchild2->current_frame_host(), "window.anonymous"));
+  EXPECT_EQ(false, EvalJs(grandchild2->current_frame_host(),
+                          "window.isAnonymouslyFramed"));
   EXPECT_TRUE(
       grandchild2->current_frame_host()->storage_key().nonce().has_value());
   EXPECT_EQ(anonymous_nonce,
@@ -5993,7 +5999,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   WaitForLoadStop(web_contents());
   EXPECT_FALSE(child->anonymous());
   EXPECT_FALSE(child->current_frame_host()->anonymous());
-  EXPECT_EQ(false, EvalJs(child->current_frame_host(), "window.anonymous"));
+  EXPECT_EQ(false,
+            EvalJs(child->current_frame_host(), "window.isAnonymouslyFramed"));
   EXPECT_FALSE(child->current_frame_host()->storage_key().nonce().has_value());
 
   // Now navigate the whole page away.
@@ -6008,7 +6015,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   EXPECT_EQ(iframe_url_b, child_b->current_url());
   EXPECT_TRUE(child_b->anonymous());
   EXPECT_TRUE(child_b->current_frame_host()->anonymous());
-  EXPECT_EQ(true, EvalJs(child_b->current_frame_host(), "window.anonymous"));
+  EXPECT_EQ(true, EvalJs(child_b->current_frame_host(),
+                         "window.isAnonymouslyFramed"));
 
   EXPECT_TRUE(child_b->current_frame_host()->storage_key().nonce().has_value());
   base::UnguessableToken anonymous_nonce_b =
