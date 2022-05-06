@@ -74,8 +74,15 @@ void ValidateTraceEvents(std::unique_ptr<TraceAnalyzer> analyzer) {
 
 }  // namespace
 
-// TODO(crbug.com/1223602): Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_LargestContentfulPaint) {
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
+  // Add the pageload metrics waiter to wait for the value of the desired
+  // metrics to be sent from renderer to browser.
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kLargestContentfulPaint);
+  waiter->AddLargestContentfulPaintExpectation(3);
+
   Start();
   StartTracing({"loading"});
   Load("/largest_contentful_paint.html");
@@ -113,6 +120,8 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_LargestContentfulPaint) {
       << "The first LCP report should be before the second";
   EXPECT_LT(lcp_timestamps[1], lcp_timestamps[2])
       << "The second LCP report should be before the third";
+
+  waiter->Wait();
 
   // Need to navigate away from the test html page to force metrics to get
   // flushed/synced.
