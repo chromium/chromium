@@ -20,13 +20,15 @@ USE_PYTHON3 = True
 
 _EXCLUDED_PATHS = (
     # Generated file
-    (r'chrome[\\/]android[\\/]webapk[\\/]shell_apk[\\/]src[\\/]org[\\/]chromium'
-     r'[\\/]webapk[\\/]lib[\\/]runtime_library[\\/]IWebApkApi.java'),
+    (r"chrome[\\/]android[\\/]webapk[\\/]shell_apk[\\/]src[\\/]org[\\/]chromium"
+     r"[\\/]webapk[\\/]lib[\\/]runtime_library[\\/]IWebApkApi.java"),
     # File needs to write to stdout to emulate a tool it's replacing.
     r"chrome[\\/]updater[\\/]mac[\\/]keystone[\\/]ksadmin.mm",
     # Generated file.
     (r"^components[\\/]variations[\\/]proto[\\/]devtools[\\/]"
      r"client_variations.js"),
+    # These are video files, not typescript.
+    r"^media[\\/]test[\\/]data[\\/].*.ts",
     r"^native_client_sdksrc[\\/]build_tools[\\/]make_rules.py",
     r"^native_client_sdk[\\/]src[\\/]build_tools[\\/]make_simple.py",
     r"^native_client_sdk[\\/]src[\\/]tools[\\/].*.mk",
