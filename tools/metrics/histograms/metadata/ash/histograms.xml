@@ -620,7 +620,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Calendar.CalendarKeyboardNavigationSource"
     enum="CalendarKeyboardNavigationSource" expires_after="2023-02-16">
-  <owner>kradtke@google.com</owner>
+  <owner>kradtke@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records which keys are used when the user navigates the Monthly Calendar
@@ -2799,7 +2799,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.NotifierFramework.Toast.ShownCount"
     enum="ToastCatalogName" expires_after="2022-10-01">
-  <owner>kradtke@google.com</owner>
+  <owner>kradtke@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Tracks the number of times a specific toast is shown to users. This metric
@@ -2809,7 +2809,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.NotifierFramework.Toast.TimeInQueue" units="seconds"
     expires_after="2022-10-01">
-  <owner>kradtke@google.com</owner>
+  <owner>kradtke@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records the time a toast spends in queue before it's shown on screen.
@@ -3216,6 +3216,17 @@ chromium-metrics-reviews@google.com.
     after a recording ends.
   </summary>
   <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Ash.QuickSettings.UserJourneyTime" units="ms"
+    expires_after="2023-04-01">
+  <owner>kradtke@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records time user spent in Quick Settings opened through the Status Area
+    button. Starts measuring time whenever the QS bubble is opened, and records
+    metric when the QS bubble is closed.
+  </summary>
 </histogram>
 
 <histogram name="Ash.Rotation.AnimationSmoothness" units="%"

@@ -42,6 +42,7 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -509,12 +510,15 @@ bool UnifiedSystemTray::PerformAction(const ui::Event& event) {
 void UnifiedSystemTray::ShowBubble() {
   // ShowBubbleInternal will be called from UiDelegate.
   if (!bubble_) {
+    time_opened_ = base::TimeTicks::Now();
     ui_delegate_->ui_controller()->ShowMessageCenterBubble();
     Shell::Get()->system_tray_notifier()->NotifySystemTrayBubbleShown();
   }
 }
 
 void UnifiedSystemTray::CloseBubble() {
+  base::UmaHistogramMediumTimes("Ash.QuickSettings.UserJourneyTime",
+                                base::TimeTicks::Now() - time_opened_);
   // HideMessageCenterBubbleInternal will be called from UiDelegate.
   ui_delegate_->ui_controller()->HideMessageCenterBubble();
 

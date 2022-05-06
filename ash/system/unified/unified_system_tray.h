@@ -298,6 +298,9 @@ class ASH_EXPORT UnifiedSystemTray
 
   base::ObserverList<Observer> observers_;
 
+  // Records time the QS bubble was shown. Used for metrics.
+  base::TimeTicks time_opened_;
+
   base::WeakPtrFactory<UnifiedSystemTray> weak_factory_{this};
 };
 
