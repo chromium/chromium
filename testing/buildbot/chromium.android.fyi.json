@@ -8215,7 +8215,8 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "weblayer_instrumentation_test_apk",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_apk/"
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_apk/",
+        "variant_id": "ToT_Tests"
       },
       {
         "args": [
@@ -8299,7 +8300,8 @@
           "shards": 2
         },
         "test": "weblayer_skew_tests",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/",
+        "variant_id": "with_client_from_100"
       },
       {
         "args": [
@@ -8383,7 +8385,8 @@
           "shards": 2
         },
         "test": "weblayer_skew_tests",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/",
+        "variant_id": "with_client_from_101"
       },
       {
         "args": [
@@ -8467,7 +8470,8 @@
           "shards": 2
         },
         "test": "weblayer_skew_tests",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/",
+        "variant_id": "with_client_from_96"
       },
       {
         "args": [
@@ -8551,7 +8555,8 @@
           "shards": 2
         },
         "test": "weblayer_skew_tests",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/",
+        "variant_id": "with_client_from_97"
       },
       {
         "args": [
@@ -8635,7 +8640,8 @@
           "shards": 2
         },
         "test": "weblayer_skew_tests",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/",
+        "variant_id": "with_client_from_98"
       },
       {
         "args": [
@@ -8719,7 +8725,8 @@
           "shards": 2
         },
         "test": "weblayer_skew_tests",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/",
+        "variant_id": "with_client_from_99"
       },
       {
         "args": [
@@ -8803,7 +8810,8 @@
           "shards": 2
         },
         "test": "weblayer_skew_tests",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/",
+        "variant_id": "with_impl_from_100"
       },
       {
         "args": [
@@ -8887,7 +8895,8 @@
           "shards": 2
         },
         "test": "weblayer_skew_tests",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/",
+        "variant_id": "with_impl_from_101"
       },
       {
         "args": [
@@ -8971,7 +8980,8 @@
           "shards": 2
         },
         "test": "weblayer_skew_tests",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/",
+        "variant_id": "with_impl_from_96"
       },
       {
         "args": [
@@ -9055,7 +9065,8 @@
           "shards": 2
         },
         "test": "weblayer_skew_tests",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/",
+        "variant_id": "with_impl_from_97"
       },
       {
         "args": [
@@ -9139,7 +9150,8 @@
           "shards": 2
         },
         "test": "weblayer_skew_tests",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/",
+        "variant_id": "with_impl_from_98"
       },
       {
         "args": [
@@ -9223,7 +9235,8 @@
           "shards": 2
         },
         "test": "weblayer_skew_tests",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/",
+        "variant_id": "with_impl_from_99"
       }
     ]
   },

@@ -1132,7 +1132,8 @@
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_fyi_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_fyi_tast_tests/",
-        "timeout_sec": 10800
+        "timeout_sec": 10800,
+        "variant_id": "OCTOPUS_RELEASE_BETA"
       },
       {
         "args": [],
@@ -1143,7 +1144,8 @@
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_fyi_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_fyi_tast_tests/",
-        "timeout_sec": 10800
+        "timeout_sec": 10800,
+        "variant_id": "OCTOPUS_RELEASE_STABLE"
       },
       {
         "args": [],
@@ -1153,7 +1155,8 @@
         "swarming": {},
         "test": "ozone_unittests",
         "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
-        "timeout_sec": 3600
+        "timeout_sec": 3600,
+        "variant_id": "OCTOPUS_RELEASE_BETA"
       },
       {
         "args": [],
@@ -1163,7 +1166,8 @@
         "swarming": {},
         "test": "ozone_unittests",
         "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
-        "timeout_sec": 3600
+        "timeout_sec": 3600,
+        "variant_id": "OCTOPUS_RELEASE_STABLE"
       }
     ]
   },
@@ -1182,7 +1186,8 @@
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "timeout_sec": 10800
+        "timeout_sec": 10800,
+        "variant_id": "STRONGBAD_RELEASE_BETA"
       },
       {
         "args": [],
@@ -1193,7 +1198,8 @@
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "timeout_sec": 10800
+        "timeout_sec": 10800,
+        "variant_id": "STRONGBAD_RELEASE_STABLE"
       },
       {
         "args": [],
@@ -1203,7 +1209,8 @@
         "swarming": {},
         "test": "ozone_unittests",
         "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
-        "timeout_sec": 3600
+        "timeout_sec": 3600,
+        "variant_id": "STRONGBAD_RELEASE_BETA"
       },
       {
         "args": [],
@@ -1213,7 +1220,8 @@
         "swarming": {},
         "test": "ozone_unittests",
         "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
-        "timeout_sec": 3600
+        "timeout_sec": 3600,
+        "variant_id": "STRONGBAD_RELEASE_STABLE"
       },
       {
         "args": [],
@@ -1223,7 +1231,8 @@
         "swarming": {},
         "test": "viz_unittests",
         "test_id_prefix": "ninja://components/viz:viz_unittests/",
-        "timeout_sec": 3600
+        "timeout_sec": 3600,
+        "variant_id": "STRONGBAD_RELEASE_BETA"
       },
       {
         "args": [],
@@ -1233,7 +1242,8 @@
         "swarming": {},
         "test": "viz_unittests",
         "test_id_prefix": "ninja://components/viz:viz_unittests/",
-        "timeout_sec": 3600
+        "timeout_sec": 3600,
+        "variant_id": "STRONGBAD_RELEASE_STABLE"
       }
     ]
   }
