@@ -70,8 +70,14 @@ void ChromeBrowserCloudManagementRegistrar::
   registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
       policy_client.get(),
       enterprise_management::DeviceRegisterRequest::BROWSER);
+
+  // Check if token enrollment is mandatory
+  bool is_enrollment_mandatory =
+      BrowserDMTokenStorage::Get()->ShouldDisplayErrorMessageOnFailure();
+
   registration_helper_->StartRegistrationWithEnrollmentToken(
       enrollment_token, client_id, client_data_delegate,
+      is_enrollment_mandatory,
       base::BindOnce(&ChromeBrowserCloudManagementRegistrar::
                          CallCloudManagementRegistrationCallback,
                      base::Unretained(this), std::move(policy_client),

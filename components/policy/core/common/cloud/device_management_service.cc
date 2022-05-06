@@ -360,6 +360,10 @@ DeviceManagementService::Job::RetryMethod JobConfigurationBase::ShouldRetry(
   return DeviceManagementService::Job::NO_RETRY;
 }
 
+absl::optional<base::TimeDelta> JobConfigurationBase::GetTimeoutDuration() {
+  return timeout_;
+}
+
 // A device management service job implementation.
 class DeviceManagementService::JobImpl : public Job {
  public:
@@ -427,6 +431,8 @@ void DeviceManagementService::JobImpl::CreateUrlLoader() {
   url_loader_ = network::SimpleURLLoader::Create(std::move(rr), annotation);
   url_loader_->AttachStringForUpload(config_->GetPayload(), kPostContentType);
   url_loader_->SetAllowHttpErrorResults(true);
+  if (config_->GetTimeoutDuration())
+    url_loader_->SetTimeoutDuration(config_->GetTimeoutDuration().value());
 }
 
 void DeviceManagementService::JobImpl::OnURLLoaderComplete(

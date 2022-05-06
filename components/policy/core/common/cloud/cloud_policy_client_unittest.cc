@@ -524,6 +524,7 @@ class CloudPolicyClientTest : public testing::Test {
         .WillOnce(DoAll(service_.CaptureJobType(&job_type_),
                         service_.CaptureAuthData(&auth_data_),
                         service_.CaptureQueryParams(&query_params_),
+                        service_.CaptureTimeout(&timeout_),
                         service_.CaptureRequest(&job_request_),
                         service_.SendJobOKAsync(response)));
   }
@@ -533,6 +534,7 @@ class CloudPolicyClientTest : public testing::Test {
         .WillOnce(DoAll(service_.CaptureJobType(&job_type_),
                         service_.CaptureAuthData(&auth_data_),
                         service_.CaptureQueryParams(&query_params_),
+                        service_.CaptureTimeout(&timeout_),
                         service_.CapturePayload(&job_payload_),
                         service_.SendJobOKAsync(response)));
   }
@@ -543,6 +545,7 @@ class CloudPolicyClientTest : public testing::Test {
             DoAll(service_.CaptureJobType(&job_type_),
                   service_.CaptureAuthData(&auth_data_),
                   service_.CaptureQueryParams(&query_params_),
+                  service_.CaptureTimeout(&timeout_),
                   service_.CaptureRequest(&job_request_),
                   service_.SendJobResponseAsync(net_error, response_code)));
   }
@@ -577,6 +580,7 @@ class CloudPolicyClientTest : public testing::Test {
   DeviceManagementService::JobConfiguration::JobType job_type_;
   DeviceManagementService::JobConfiguration::ParameterMap query_params_;
   DMAuth auth_data_;
+  base::TimeDelta timeout_;
   em::DeviceManagementRequest job_request_;
   std::string job_payload_;
   std::string client_id_;
@@ -673,7 +677,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithTokenAndPolicyFetch) {
       .WillOnce(Return(kDeviceDMToken));
   FakeClientDataDelegate client_data_delegate;
   client_->RegisterWithToken(kEnrollmentToken, "device_id",
-                             client_data_delegate);
+                             client_data_delegate, /*is_mandatory=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_TOKEN_ENROLLMENT,
             job_type_);
@@ -682,6 +686,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithTokenAndPolicyFetch) {
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(base::Seconds(0), timeout_);
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
@@ -694,6 +699,24 @@ TEST_F(CloudPolicyClientTest, RegistrationWithTokenAndPolicyFetch) {
             GetPolicyRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
   CheckPolicyResponse(policy_response);
+}
+
+TEST_F(CloudPolicyClientTest, RegistrationWithTokenTestTimeout) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kUploadBrowserDeviceIdentifier);
+
+  ExpectAndCaptureJob(GetRegistrationResponse());
+  EXPECT_CALL(observer_, OnRegistrationStateChanged);
+  EXPECT_CALL(device_dmtoken_callback_observer_,
+              OnDeviceDMTokenRequested(
+                  /*user_affiliation_ids=*/std::vector<std::string>()))
+      .WillOnce(Return(kDeviceDMToken));
+  FakeClientDataDelegate client_data_delegate;
+  client_->RegisterWithToken(kEnrollmentToken, "device_id",
+                             client_data_delegate, /*is_mandatory=*/false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(base::Seconds(30), timeout_);
 }
 #endif
 
@@ -720,6 +743,7 @@ TEST_F(CloudPolicyClientTest, RegistrationAndPolicyFetch) {
   VerifyQueryParameter();
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
+  EXPECT_EQ(base::Seconds(0), timeout_);
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
 
   ExpectAndCaptureJob(policy_response);

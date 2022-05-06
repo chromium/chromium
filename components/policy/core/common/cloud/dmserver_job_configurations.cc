@@ -299,6 +299,10 @@ RegistrationJobConfiguration::RegistrationJobConfiguration(
                                oauth_token,
                                std::move(callback)) {}
 
+void RegistrationJobConfiguration::SetTimeoutDuration(base::TimeDelta timeout) {
+  timeout_ = timeout;
+}
+
 void RegistrationJobConfiguration::OnBeforeRetry(
     int response_code,
     const std::string& response_body) {

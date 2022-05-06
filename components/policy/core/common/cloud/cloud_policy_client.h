@@ -249,11 +249,12 @@ class POLICY_EXPORT CloudPolicyClient {
   // token. Results in a registration change or error notification.
   // This method is used to register browser (e.g. for machine-level policies).
   // Device registration with enrollment token should be performed using
-  // RegisterWithCertificate method.
-  virtual void RegisterWithToken(
-      const std::string& token,
-      const std::string& client_id,
-      const ClientDataDelegate& client_data_delegate);
+  // RegisterWithCertificate method, and this request will timeout after 30
+  // seconds if the enrollment is not mandatory.
+  virtual void RegisterWithToken(const std::string& token,
+                                 const std::string& client_id,
+                                 const ClientDataDelegate& client_data_delegate,
+                                 bool is_mandatory);
 
   // Sets information about a policy invalidation. Subsequent fetch operations
   // will use the given info, and callers can use fetched_invalidation_version

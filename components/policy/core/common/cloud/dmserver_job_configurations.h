@@ -106,6 +106,8 @@ class POLICY_EXPORT RegistrationJobConfiguration
   RegistrationJobConfiguration& operator=(const RegistrationJobConfiguration&) =
       delete;
 
+  void SetTimeoutDuration(base::TimeDelta timeout);
+
  private:
   // JobConfiguration interface.
   void OnBeforeRetry(int response_code,

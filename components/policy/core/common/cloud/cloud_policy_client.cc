@@ -327,7 +327,8 @@ void CloudPolicyClient::RegisterWithCertificate(
 void CloudPolicyClient::RegisterWithToken(
     const std::string& token,
     const std::string& client_id,
-    const ClientDataDelegate& client_data_delegate) {
+    const ClientDataDelegate& client_data_delegate,
+    bool is_mandatory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(service_);
   DCHECK(!token.empty());
@@ -343,6 +344,10 @@ void CloudPolicyClient::RegisterWithToken(
           /*oauth_token=*/absl::nullopt,
           base::BindOnce(&CloudPolicyClient::OnRegisterCompleted,
                          weak_ptr_factory_.GetWeakPtr()));
+
+  // sets CBCM enrollment timeout to 30 seconds when CBCM enrollment is optional
+  if (!is_mandatory)
+    config->SetTimeoutDuration(base::Seconds(30));
 
   enterprise_management::RegisterBrowserRequest* request =
       config->request()->mutable_register_browser_request();

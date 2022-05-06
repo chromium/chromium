@@ -149,6 +149,17 @@ FakeDeviceManagementService::CaptureRequest(
 }
 
 FakeDeviceManagementService::JobAction
+FakeDeviceManagementService::CaptureTimeout(base::TimeDelta* timeout) {
+  return [timeout](DeviceManagementService::JobForTesting job) mutable {
+    if (job.IsActive()) {
+      auto to = job.GetConfigurationForTesting()->GetTimeoutDuration();
+      if (to)
+        *timeout = to.value();
+    }
+  };
+}
+
+FakeDeviceManagementService::JobAction
 FakeDeviceManagementService::SendJobResponseAsync(int net_error,
                                                   int response_code,
                                                   const std::string& response,
@@ -268,6 +279,10 @@ void FakeJobConfiguration::SetRequestPayload(
 void FakeJobConfiguration::SetShouldRetryResponse(
     DeviceManagementService::Job::RetryMethod method) {
   should_retry_response_ = method;
+}
+
+void FakeJobConfiguration::SetTimeoutDuration(base::TimeDelta timeout) {
+  timeout_ = timeout;
 }
 
 DeviceManagementService::Job::RetryMethod FakeJobConfiguration::ShouldRetry(

@@ -67,7 +67,9 @@ const char kOAuthAuthorizationHeaderPrefix[] = "OAuth ";
 // without calling into the actual network stack.
 class DeviceManagementServiceTestBase : public testing::Test {
  protected:
-  DeviceManagementServiceTestBase() {
+  explicit DeviceManagementServiceTestBase(
+      base::test::TaskEnvironment::TimeSource time_source)
+      : task_environment_(time_source) {
     // Set retry delay to prevent timeouts.
     policy::DeviceManagementService::SetRetryDelayForTesting(0);
 
@@ -77,6 +79,10 @@ class DeviceManagementServiceTestBase : public testing::Test {
     ResetService();
     InitializeService();
   }
+
+  DeviceManagementServiceTestBase()
+      : DeviceManagementServiceTestBase(
+            base::test::TaskEnvironment::TimeSource::DEFAULT) {}
 
   ~DeviceManagementServiceTestBase() override {
     service_.reset();
@@ -126,7 +132,8 @@ class DeviceManagementServiceTestBase : public testing::Test {
       absl::optional<std::string> oauth_token,
       const std::string& payload = std::string(),
       DeviceManagementService::Job::RetryMethod method =
-          DeviceManagementService::Job::NO_RETRY) {
+          DeviceManagementService::Job::NO_RETRY,
+      base::TimeDelta timeout = base::Seconds(0)) {
     last_job_type_ =
         DeviceManagementService::JobConfiguration::GetJobTypeAsString(type);
     std::unique_ptr<FakeJobConfiguration> config =
@@ -142,6 +149,7 @@ class DeviceManagementServiceTestBase : public testing::Test {
                 base::Unretained(this)));
     config->SetRequestPayload(payload);
     config->SetShouldRetryResponse(method);
+    config->SetTimeoutDuration(timeout);
     return service_->CreateJob(std::move(config));
   }
 
@@ -166,11 +174,12 @@ class DeviceManagementServiceTestBase : public testing::Test {
   std::unique_ptr<DeviceManagementService::Job> StartTokenEnrollmentJob(
       const std::string& payload = std::string(),
       DeviceManagementService::Job::RetryMethod method =
-          DeviceManagementService::Job::NO_RETRY) {
+          DeviceManagementService::Job::NO_RETRY,
+      base::TimeDelta timeout = base::Seconds(0)) {
     return StartJob(
         DeviceManagementService::JobConfiguration::TYPE_TOKEN_ENROLLMENT,
         /*critical=*/false, DMAuth::FromEnrollmentToken(kEnrollmentToken),
-        std::string(), payload, method);
+        std::string(), payload, method, timeout);
   }
 
   std::unique_ptr<DeviceManagementService::Job> StartApiAuthCodeFetchJob(
@@ -441,6 +450,10 @@ INSTANTIATE_TEST_SUITE_P(
     DeviceManagementServiceFailedRequestTest,
     testing::Values(
         FailedRequestParams(DM_STATUS_REQUEST_FAILED, net::ERR_FAILED, 0, ""),
+        FailedRequestParams(DM_STATUS_REQUEST_FAILED,
+                            net::ERR_TIMED_OUT,
+                            0,
+                            ""),
         FailedRequestParams(DM_STATUS_HTTP_STATUS_ERROR,
                             net::OK,
                             666,
@@ -1218,5 +1231,31 @@ TEST_F(DeviceManagementRequestAuthTest, CannotUseOAuthTokenAsAuthData) {
                "");
 }
 #endif  // GTEST_HAS_DEATH_TEST
+
+class DeviceManagementServiceTestWithTimeManipulation
+    : public DeviceManagementServiceTestBase {
+ protected:
+  DeviceManagementServiceTestWithTimeManipulation()
+      : DeviceManagementServiceTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  base::TimeDelta GetTimeoutDuration() const { return timeout_test_duration_; }
+  static constexpr base::TimeDelta timeout_test_duration_ = base::Seconds(30);
+};
+
+TEST_F(DeviceManagementServiceTestWithTimeManipulation,
+       TokenEnrollmentRequestWithTimeout) {
+  // In enrollment timeout cases, expected status is DM_STATUS_REQUEST_FAILED,
+  // and expected net error is NET_ERROR(TIMED_OUT, -7)
+  EXPECT_CALL(*this, OnJobDone(_, DM_STATUS_REQUEST_FAILED, _, ""));
+  EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
+
+  std::unique_ptr<DeviceManagementService::Job> request_job(
+      StartTokenEnrollmentJob("", DeviceManagementService::Job::NO_RETRY,
+                              GetTimeoutDuration()));
+  ASSERT_TRUE(GetPendingRequest());
+
+  // fast forward 30+ seconds
+  task_environment_.FastForwardBy(GetTimeoutDuration() + base::Seconds(1));
+}
 
 }  // namespace policy

@@ -62,6 +62,7 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
       const std::string& token,
       const std::string& client_id,
       const ClientDataDelegate& client_data_delegate,
+      bool is_mandatory,
       base::OnceClosure callback);
 
  private:
