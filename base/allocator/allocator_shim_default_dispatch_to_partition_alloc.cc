@@ -95,7 +95,17 @@ class LeakySingleton {
   T* GetSlowPath();
 
   std::atomic<T*> instance_;
+  // Before C++20, having an initializer here causes a "variable does not have a
+  // constant initializer" error.  In C++20, omitting it causes a similar error.
+  // Presumably this is due to the C++20 changes to make atomic initialization
+  // (of the other members of this class) sane, so guarding under that
+  // feature-test.
+#if !defined(__cpp_lib_atomic_value_initialization) || \
+    __cpp_lib_atomic_value_initialization < 201911L
   alignas(T) uint8_t instance_buffer_[sizeof(T)];
+#else
+  alignas(T) uint8_t instance_buffer_[sizeof(T)] = {0};
+#endif
   std::atomic<bool> initialization_lock_;
 };
 

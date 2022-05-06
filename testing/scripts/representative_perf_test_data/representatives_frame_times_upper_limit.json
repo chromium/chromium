@@ -7,7 +7,7 @@
     },
     "filter_terrain_svg": {
       "ci_095": 0.111,
-      "avg": 19.173,
+      "avg": 23.175,
       "cpu_wall_time_ratio": 0.396
     },
     "web_animation_value_type_transform_complex": {
