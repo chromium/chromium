@@ -26,10 +26,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_router {
-namespace {
-const std::string& network1 = "foo_network";
-const std::string& network2 = "bar_network";
-}  // namespace
 
 class AccessCodeCastPrefUpdaterTest : public testing::Test {
  public:
@@ -86,87 +82,6 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDevicesDictOverwrite) {
   EXPECT_EQ(*sink_id_dict, CreateValueDictFromMediaSinkInternal(cast_sink1));
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest, UpdateDiscoveredNetworksDictRecorded) {
-  MediaSinkInternal cast_sink = CreateCastSink(1);
-
-  pref_updater()->UpdateDiscoveredNetworksDict(cast_sink.id(), network1);
-
-  auto expected_network_list =
-      std::make_unique<base::Value>(base::Value::Type::LIST);
-  expected_network_list->Append(cast_sink.id());
-
-  auto* dict = prefs()->GetDictionary(prefs::kAccessCodeCastDiscoveredNetworks);
-  auto* network_list = dict->FindKey(network1);
-
-  EXPECT_EQ(*network_list, *expected_network_list.get());
-}
-
-TEST_F(AccessCodeCastPrefUpdaterTest,
-       UpdateDiscoveredNetworksDictMultipleSinks) {
-  MediaSinkInternal cast_sink = CreateCastSink(1);
-  MediaSinkInternal cast_sink2 = CreateCastSink(2);
-
-  pref_updater()->UpdateDiscoveredNetworksDict(cast_sink.id(), network1);
-  pref_updater()->UpdateDiscoveredNetworksDict(cast_sink2.id(), network1);
-
-  auto expected_network_list =
-      std::make_unique<base::Value>(base::Value::Type::LIST);
-  expected_network_list->Append(cast_sink.id());
-  expected_network_list->Append(cast_sink2.id());
-
-  auto* dict = prefs()->GetDictionary(prefs::kAccessCodeCastDiscoveredNetworks);
-  auto* network_list = dict->FindKey(network1);
-
-  EXPECT_EQ(*network_list, *expected_network_list.get());
-}
-
-TEST_F(AccessCodeCastPrefUpdaterTest,
-       UpdateDiscoveredNetworksDictMultipleNetworks) {
-  MediaSinkInternal cast_sink = CreateCastSink(1);
-  MediaSinkInternal cast_sink2 = CreateCastSink(2);
-  MediaSinkInternal cast_sink3 = CreateCastSink(3);
-  MediaSinkInternal cast_sink4 = CreateCastSink(4);
-
-  pref_updater()->UpdateDiscoveredNetworksDict(cast_sink.id(), network1);
-  pref_updater()->UpdateDiscoveredNetworksDict(cast_sink2.id(), network1);
-  pref_updater()->UpdateDiscoveredNetworksDict(cast_sink3.id(), network2);
-  pref_updater()->UpdateDiscoveredNetworksDict(cast_sink4.id(), network2);
-
-  auto expected_network1_list =
-      std::make_unique<base::Value>(base::Value::Type::LIST);
-  expected_network1_list->Append(cast_sink.id());
-  expected_network1_list->Append(cast_sink2.id());
-
-  auto expected_network2_list =
-      std::make_unique<base::Value>(base::Value::Type::LIST);
-  expected_network2_list->Append(cast_sink3.id());
-  expected_network2_list->Append(cast_sink4.id());
-
-  auto* dict = prefs()->GetDictionary(prefs::kAccessCodeCastDiscoveredNetworks);
-
-  auto* network_list1 = dict->FindKey(network1);
-  EXPECT_EQ(*network_list1, *expected_network1_list.get());
-
-  auto* network_list2 = dict->FindKey(network2);
-  EXPECT_EQ(*network_list2, *expected_network2_list.get());
-}
-
-TEST_F(AccessCodeCastPrefUpdaterTest, EnsureNoDuplicatesInSameNetworkList) {
-  MediaSinkInternal cast_sink = CreateCastSink(1);
-
-  pref_updater()->UpdateDiscoveredNetworksDict(cast_sink.id(), network1);
-  pref_updater()->UpdateDiscoveredNetworksDict(cast_sink.id(), network1);
-
-  auto expected_network_list =
-      std::make_unique<base::Value>(base::Value::Type::LIST);
-  expected_network_list->Append(cast_sink.id());
-
-  auto* dict = prefs()->GetDictionary(prefs::kAccessCodeCastDiscoveredNetworks);
-  auto* network_list = dict->FindKey(network1);
-
-  EXPECT_EQ(*network_list, *expected_network_list.get());
-}
-
 TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDeviceAddedTimeDict) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
 
@@ -194,15 +109,6 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDeviceAddedTimeDictOverwrite) {
   EXPECT_GE(final_time_of_addition, initial_time_of_addition);
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest, TestGetSinkIdsByNetworkId) {
-  MediaSinkInternal cast_sink = CreateCastSink(1);
-
-  pref_updater()->UpdateDiscoveredNetworksDict(cast_sink.id(), network1);
-
-  EXPECT_TRUE(pref_updater()->GetSinkIdsByNetworkId(network1));
-  EXPECT_FALSE(pref_updater()->GetSinkIdsByNetworkId(network2));
-}
-
 TEST_F(AccessCodeCastPrefUpdaterTest, TestGetMediaSinkInternalValueBySinkId) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
   MediaSinkInternal cast_sink2 = CreateCastSink(2);
@@ -227,92 +133,6 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestRemoveSinkIdFromDevicesDict) {
   pref_updater()->RemoveSinkIdFromDevicesDict(cast_sink2.id());
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest,
-       TestRemoveSinkIdFromDiscoveredNetworksDict) {
-  MediaSinkInternal cast_sink = CreateCastSink(1);
-  MediaSinkInternal cast_sink2 = CreateCastSink(2);
-
-  pref_updater()->UpdateDiscoveredNetworksDict(cast_sink.id(), network1);
-
-  pref_updater()->RemoveSinkIdFromDiscoveredNetworksDict(cast_sink.id());
-  auto& dict = prefs()
-                   ->GetDictionary(prefs::kAccessCodeCastDiscoveredNetworks)
-                   ->GetDict();
-  EXPECT_FALSE(dict.FindList(network1));
-}
-
-TEST_F(AccessCodeCastPrefUpdaterTest,
-       TestRemoveSinkIdFromDiscoveredNetworksDictMultipleSinks) {
-  MediaSinkInternal cast_sink = CreateCastSink(1);
-  MediaSinkInternal cast_sink2 = CreateCastSink(2);
-
-  pref_updater()->UpdateDiscoveredNetworksDict(cast_sink.id(), network1);
-  pref_updater()->UpdateDiscoveredNetworksDict(cast_sink2.id(), network1);
-
-  // After removal of a single sink_id, the network key should still exist but
-  // the list no longer should contain the removed cast sink id.
-
-  pref_updater()->RemoveSinkIdFromDiscoveredNetworksDict(cast_sink.id());
-  auto& dict = prefs()
-                   ->GetDictionary(prefs::kAccessCodeCastDiscoveredNetworks)
-                   ->GetDict();
-  auto network_list_value = dict.FindList(network1)->Clone();
-
-  // This method returns the amount of values erased from the list. The second
-  // cast sink should still be in this network list so it should return 1.
-  EXPECT_FALSE(network_list_value.EraseValue(base::Value(cast_sink.id())));
-  EXPECT_EQ(1u, network_list_value.EraseValue(base::Value(cast_sink2.id())));
-
-  // Remove the final sink.
-
-  pref_updater()->RemoveSinkIdFromDiscoveredNetworksDict(cast_sink2.id());
-  auto& updated_dict =
-      prefs()
-          ->GetDictionary(prefs::kAccessCodeCastDiscoveredNetworks)
-          ->GetDict();
-  EXPECT_FALSE(updated_dict.FindList(network1));
-}
-
-TEST_F(AccessCodeCastPrefUpdaterTest,
-       TestRemoveSinkIdFromDiscoveredNetworksDictMultipleNetworks) {
-  MediaSinkInternal cast_sink = CreateCastSink(1);
-  MediaSinkInternal cast_sink2 = CreateCastSink(2);
-  MediaSinkInternal cast_sink3 = CreateCastSink(3);
-
-  pref_updater()->UpdateDiscoveredNetworksDict(cast_sink.id(), network1);
-  pref_updater()->UpdateDiscoveredNetworksDict(cast_sink2.id(), network1);
-  pref_updater()->UpdateDiscoveredNetworksDict(cast_sink3.id(), network2);
-
-  // After removal of a single sink_id, the network key should still exist but
-  // the list no longer should contain the removed cast sink id.
-
-  pref_updater()->RemoveSinkIdFromDiscoveredNetworksDict(cast_sink.id());
-  auto& dict = prefs()
-                   ->GetDictionary(prefs::kAccessCodeCastDiscoveredNetworks)
-                   ->GetDict();
-  auto network1_list_value = dict.FindList(network1)->Clone();
-  auto network2_list_value = dict.FindList(network2)->Clone();
-
-  // This method returns the amount of values erased from the list. The second
-  // cast sink should still be in this network list so it should return 1.
-  EXPECT_FALSE(network1_list_value.EraseValue(base::Value(cast_sink.id())));
-  EXPECT_EQ(1u, network1_list_value.EraseValue(base::Value(cast_sink2.id())));
-  EXPECT_EQ(1u, network2_list_value.EraseValue(base::Value(cast_sink3.id())));
-
-  // Remove the final two sinks.
-
-  pref_updater()->RemoveSinkIdFromDiscoveredNetworksDict(cast_sink2.id());
-
-  pref_updater()->RemoveSinkIdFromDiscoveredNetworksDict(cast_sink3.id());
-  auto& updated_dict =
-      prefs()
-          ->GetDictionary(prefs::kAccessCodeCastDiscoveredNetworks)
-          ->GetDict();
-
-  EXPECT_FALSE(updated_dict.FindList(network1));
-  EXPECT_FALSE(updated_dict.FindList(network2));
-}
-
 TEST_F(AccessCodeCastPrefUpdaterTest, TestRemoveSinkIdFromDeviceAddedTimeDict) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
   MediaSinkInternal cast_sink2 = CreateCastSink(2);
@@ -334,6 +154,20 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestGetDeviceAddedTime) {
 
   EXPECT_TRUE(pref_updater()->GetDeviceAddedTime(cast_sink.id()));
   EXPECT_FALSE(pref_updater()->GetDeviceAddedTime(cast_sink2.id()));
+}
+
+TEST_F(AccessCodeCastPrefUpdaterTest, TestGetSinkIdsFromDevicesDict) {
+  MediaSinkInternal cast_sink = CreateCastSink(1);
+  MediaSinkInternal cast_sink2 = CreateCastSink(2);
+
+  pref_updater()->UpdateDevicesDict(cast_sink);
+  pref_updater()->UpdateDevicesDict(cast_sink2);
+
+  auto expected_sink_ids = base::Value::List();
+  expected_sink_ids.Append(cast_sink.id());
+  expected_sink_ids.Append(cast_sink2.id());
+
+  EXPECT_EQ(pref_updater()->GetSinkIdsFromDevicesDict(), expected_sink_ids);
 }
 
 }  // namespace media_router

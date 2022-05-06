@@ -141,7 +141,6 @@ class AccessCodeCastSinkService : public KeyedService,
                            TestChangeNetworksNoExpiration);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            TestChangeNetworksExpiration);
-
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            TestAddInvalidDevicesNoMediaSinkInternal);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
@@ -186,8 +185,7 @@ class AccessCodeCastSinkService : public KeyedService,
   absl::optional<const MediaRoute::Id> HasActiveRoute(
       const MediaSink::Id& sink_id);
 
-  void Init();
-  void InitStoredDeviceConnectionsFromNetworkId(const std::string& network_id);
+  void InitAllStoredDevices();
   void InitExpirationTimers(const std::vector<MediaSinkInternal> cast_sinks);
   void ResetExpirationTimers();
 
@@ -195,8 +193,7 @@ class AccessCodeCastSinkService : public KeyedService,
   void OnExpiration(const MediaSinkInternal& sink);
   void RemoveMediaSinkFromRouter(const MediaSinkInternal* sink);
 
-  absl::optional<const base::Value::List> FetchStoredDevicesOnNetwork(
-      const std::string& network_id);
+  const base::Value::List FetchStoredDevices();
 
   // Iterates through the list of sink_ids and attempts to validate the
   // base::Value into a MediaSinkInternal. If validation fails for some reason
@@ -257,9 +254,9 @@ class AccessCodeCastSinkService : public KeyedService,
   std::map<MediaSink::Id, AddSinkResultCallback> pending_callbacks_;
 
   // Map of sink_ids keyed to a value of expiration timers for the current
-  // network.
+  // session (this is updated when the profile session or network is changed).
   std::map<MediaSink::Id, std::unique_ptr<base::OneShotTimer>>
-      current_network_expiration_timers_;
+      current_session_expiration_timers_;
 
   // Set of devices that have expired but still have an open route.
   std::set<MediaSink::Id> pending_expirations_;

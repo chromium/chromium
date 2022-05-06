@@ -43,14 +43,6 @@ constexpr char kAccessCodeCastDeviceDuration[] =
 constexpr char kAccessCodeCastDevices[] =
     "media_router.access_code_cast.devices";
 
-// Pref that keeps track of which cast devices were discovered on which
-// networks. It is registered as a dictionary pref with each key being a
-// std::string network_id and value being a list of MediaSink::Id. Whenever a
-// device is added or updated, this dictionary will be updated with that device.
-// If the device expires it will be removed from that network list.
-constexpr char kAccessCodeCastDiscoveredNetworks[] =
-    "media_router.access_code_cast.discovered_networks";
-
 // Pref that keeps track of when a cast device is added. It is be registered
 // as a dictionary pref with each key being a MediaSink::Id and value being a
 // base::Time.

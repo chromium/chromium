@@ -121,7 +121,7 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
     // from which they registered."
     pref_updater_ = std::make_unique<AccessCodeCastPrefUpdater>(prefs);
     network_monitor_->AddObserver(this);
-    Init();
+    InitAllStoredDevices();
   }
 }
 
@@ -419,65 +419,26 @@ void AccessCodeCastSinkService::StoreSinkInPrefs(
         "", "", "");
     return;
   }
-  // The UpdateDiscoveredNetworksDict() callback needs to be be
-  // bound with BindPostTask() to ensure that the callback is invoked on this
-  // specific task runner.
-  auto network_cb =
-      base::BindOnce(&AccessCodeCastPrefUpdater::UpdateDiscoveredNetworksDict,
-                     pref_updater_->GetWeakPtr(), sink->id());
-
-  auto returned_network_cb =
-      base::BindPostTask(task_runner_, std::move(network_cb));
-
-  // We need to run this task on the IO thread since the DiscoveryNetworkMonitor
-  // runs on the IO thread.
-  cast_media_sink_service_impl_->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&DiscoveryNetworkMonitor::GetNetworkId,
-                                base::Unretained(network_monitor_),
-                                std::move(returned_network_cb)));
-
   pref_updater_->UpdateDevicesDict(*sink);
   pref_updater_->UpdateDeviceAddedTimeDict(sink->id());
 }
 
-void AccessCodeCastSinkService::Init() {
-  // The AddStoredDevicesToMediaRouter() callback needs to be be
-  // bound with BindPostTask() to ensure that the callback is invoked on this
-  // specific task runner.
-  auto network_cb = base::BindOnce(
-      &AccessCodeCastSinkService::InitStoredDeviceConnectionsFromNetworkId,
-      weak_ptr_factory_.GetWeakPtr());
-
-  auto returned_network_cb =
-      base::BindPostTask(task_runner_, std::move(network_cb));
-
-  // We need to run this task on the IO thread since the DiscoveryNetworkMonitor
-  // runs on the IO thread.
-  cast_media_sink_service_impl_->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&DiscoveryNetworkMonitor::Refresh,
-                                base::Unretained(network_monitor_),
-                                std::move(returned_network_cb)));
-}
-
-void AccessCodeCastSinkService::InitStoredDeviceConnectionsFromNetworkId(
-    const std::string& network_id) {
-  auto sink_ids = FetchStoredDevicesOnNetwork(network_id);
-  if (!sink_ids.has_value()) {
+void AccessCodeCastSinkService::InitAllStoredDevices() {
+  auto sink_ids = FetchStoredDevices();
+  if (sink_ids.empty()) {
     media_router_->GetLogger()->LogInfo(
         mojom::LogCategory::kDiscovery, kLoggerComponent,
-        "There are no saved Access Code Cast devices on the network_id: " +
-            network_id,
-        "", "", "");
+        "There are no saved Access Code Cast devices for this profile.", "", "",
+        "");
     return;
   }
   media_router_->GetLogger()->LogInfo(
       mojom::LogCategory::kDiscovery, kLoggerComponent,
-      "Found Access Code Cast devices on the network_id: " + network_id +
-          " : " + sink_ids.value().DebugString() +
+      "Found Access Code Cast devices for this profile: " +
+          sink_ids.DebugString() +
           ". Attempting to validate and then add these cast devices.",
       "", "", "");
-
-  auto validated_devices = ValidateStoredDevices(sink_ids.value());
+  auto validated_devices = ValidateStoredDevices(sink_ids);
   if (validated_devices.empty()) {
     // We don't need anymore logging here since it is already handled in the
     // ValidateStoredDevices function.
@@ -496,10 +457,10 @@ void AccessCodeCastSinkService::InitExpirationTimers(
 
 void AccessCodeCastSinkService::ResetExpirationTimers() {
   // We must cancel the task of each timer before we clear the map.
-  for (auto& timer_pair : current_network_expiration_timers_) {
+  for (auto& timer_pair : current_session_expiration_timers_) {
     timer_pair.second->Stop();
   }
-  current_network_expiration_timers_.clear();
+  current_session_expiration_timers_.clear();
 }
 
 void AccessCodeCastSinkService::SetExpirationTimerById(
@@ -527,8 +488,8 @@ void AccessCodeCastSinkService::SetExpirationTimer(
 
   // Either retrieve collection or create it if it doesn't exist before an
   // operation can occur.
-  auto existing_timer = current_network_expiration_timers_.find(sink->id());
-  if (existing_timer != current_network_expiration_timers_.end()) {
+  auto existing_timer = current_session_expiration_timers_.find(sink->id());
+  if (existing_timer != current_session_expiration_timers_.end()) {
     // We must first stop the timer before resetting it.
     existing_timer->second->Stop();
   }
@@ -542,7 +503,7 @@ void AccessCodeCastSinkService::SetExpirationTimer(
       base::BindOnce(&AccessCodeCastSinkService::OnExpiration,
                      weak_ptr_factory_.GetWeakPtr(), *sink));
 
-  current_network_expiration_timers_[sink->id()] = std::move(expiration_timer);
+  current_session_expiration_timers_[sink->id()] = std::move(expiration_timer);
 }
 
 base::TimeDelta AccessCodeCastSinkService::CalculateDurationTillExpiration(
@@ -573,31 +534,21 @@ base::TimeDelta AccessCodeCastSinkService::CalculateDurationTillExpiration(
   return time_till_expiration;
 }
 
-absl::optional<const base::Value::List>
-AccessCodeCastSinkService::FetchStoredDevicesOnNetwork(
-    const std::string& network_id) {
-  const base::Value::List* network_list =
-      pref_updater_->GetSinkIdsByNetworkId(network_id);
-  if (!network_list) {
-    return absl::nullopt;
-  }
-  return network_list->Clone();
+const base::Value::List AccessCodeCastSinkService::FetchStoredDevices() {
+  return pref_updater_->GetSinkIdsFromDevicesDict();
 }
 
 const std::vector<MediaSinkInternal>
 AccessCodeCastSinkService::ValidateStoredDevices(
     const base::Value::List& sink_ids) {
-  // We can assume the network_list variable will never be empty since after
-  // removal of a device, a check is made to ensure that keys with empty lists
-  // are removed.
   std::vector<MediaSinkInternal> cast_sinks;
   for (const auto& sink_id : sink_ids) {
     const std::string* sink_id_string = sink_id.GetIfString();
     DCHECK(sink_id_string)
-        << "The Media Sink id is not stored as a string in the network list: " +
+        << "The Media Sink id is not stored as a string in the prefs: " +
                sink_ids.DebugString() +
-               ". This means something went wrong when storing cast devices on "
-               "this network.";
+               ". This means something went wrong when storing cast devices "
+               "on.";
     auto validation_result = ValidateDeviceFromSinkId(*sink_id_string);
 
     // Ensure that stored media sink_id corresponds to a properly stored
@@ -665,11 +616,6 @@ void AccessCodeCastSinkService::OnExpiration(const MediaSinkInternal& sink) {
 void AccessCodeCastSinkService::RemoveMediaSinkFromRouter(
     const MediaSinkInternal* sink) {
   if (!sink) {
-    media_router_->GetLogger()->LogError(
-        mojom::LogCategory::kDiscovery, kLoggerComponent,
-        "Removal of cast sink from the media router failed since the sink does "
-        "not exist in the media router.",
-        "", "", "");
     return;
   }
   media_router_->GetLogger()->LogInfo(
@@ -688,7 +634,6 @@ void AccessCodeCastSinkService::RemoveMediaSinkFromRouter(
 void AccessCodeCastSinkService::RemoveSinkIdFromAllEntries(
     const MediaSink::Id& sink_id) {
   pref_updater_->RemoveSinkIdFromDevicesDict(sink_id);
-  pref_updater_->RemoveSinkIdFromDiscoveredNetworksDict(sink_id);
   pref_updater_->RemoveSinkIdFromDeviceAddedTimeDict(sink_id);
 }
 
@@ -732,7 +677,7 @@ AccessCodeCastSinkService::ValidateDeviceFromSinkId(
 }
 
 void AccessCodeCastSinkService::RemoveExistingSinksOnNetwork() {
-  for (auto& sink_id_keypair : current_network_expiration_timers_) {
+  for (auto& sink_id_keypair : current_session_expiration_timers_) {
     // Must find the sink from media router for removal since it has more total
     // information.
     base::PostTaskAndReplyWithResult(
@@ -751,7 +696,7 @@ void AccessCodeCastSinkService::OnNetworksChanged(
     RemoveExistingSinksOnNetwork();
     ResetExpirationTimers();
     pending_expirations_.clear();
-    InitStoredDeviceConnectionsFromNetworkId(network_id);
+    InitAllStoredDevices();
   }
 }
 

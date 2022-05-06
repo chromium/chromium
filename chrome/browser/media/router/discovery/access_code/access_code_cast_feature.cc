@@ -34,7 +34,6 @@ void RegisterAccessCodeProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kAccessCodeCastDeviceDuration, 0,
                                 PrefRegistry::PUBLIC);
   registry->RegisterDictionaryPref(prefs::kAccessCodeCastDevices);
-  registry->RegisterDictionaryPref(prefs::kAccessCodeCastDiscoveredNetworks);
   registry->RegisterDictionaryPref(prefs::kAccessCodeCastDeviceAdditionTime);
 }
 

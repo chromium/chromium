@@ -30,12 +30,6 @@ class AccessCodeCastPrefUpdater {
   // function will overwrite a sink id if it already exists.
   void UpdateDevicesDict(const MediaSinkInternal& sink);
 
-  // Tries to find an existing |network_id| within the dict pref. If a list is
-  // found then append the |sink_id| to that list, otherwise create new list
-  // with the |sink_id| as the sole value.
-  void UpdateDiscoveredNetworksDict(const MediaSink::Id sink_id,
-                                    const std::string& network_id);
-
   // Sets the key for the |sink_id| with the time it is added. This is
   // calculated at the time of the functions calling. If the |sink_id| already
   // exist, then update the value of that |sink_id| with a new time.
@@ -45,17 +39,12 @@ class AccessCodeCastPrefUpdater {
   // service for some reason.
   const base::Value* GetDevicesDict();
 
-  // Returns a nullptr if the network dictionary does not exist in the pref
-  // service for some reason.
-  const base::Value* GetDiscoveredNetworksDict();
-
   // Returns a nullptr if the device Added dictionary does not exist in the
   // pref service for some reason.
   const base::Value* GetDeviceAddedTimeDict();
 
-  // If found, it returns a pointer to the element. Otherwise it returns
-  // nullptr.
-  const base::Value::List* GetSinkIdsByNetworkId(const std::string& network_id);
+  // Gets a list of all sink ids currently stored in the pref service.
+  const base::Value::List GetSinkIdsFromDevicesDict();
 
   // If found, it returns a pointer to the element. Otherwise it returns
   // nullptr.
@@ -69,11 +58,6 @@ class AccessCodeCastPrefUpdater {
   // stored in the pref service. Nothing occurs if the |sink_id| was not there
   // in the first place.
   void RemoveSinkIdFromDevicesDict(const MediaSink::Id sink_id);
-
-  // Removes the given |sink_id| from all instances in the network dictionary
-  // stored in the pref service. Nothing occurs if the |sink_id| was not there
-  // in the first place.
-  void RemoveSinkIdFromDiscoveredNetworksDict(const MediaSink::Id sink_id);
 
   // Removes the given |sink_id| from all instances in the device Added
   // dictionary stored in the pref service. Nothing occurs if the |sink_id| was

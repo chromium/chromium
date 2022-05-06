@@ -51,46 +51,6 @@ void AccessCodeCastPrefUpdater::UpdateDevicesDict(
 }
 
 // This stored preference looks like:
-//   "prefs::kAccessCodeCastDiscoveredNetworks": {
-//     "<network_id_1>": [<sink_id_1>, <sink_id_2>],
-//     "<network_id_2>": [<sink_id_4>, <sink_id_6>],
-//   }
-void AccessCodeCastPrefUpdater::UpdateDiscoveredNetworksDict(
-    const MediaSink::Id sink_id,
-    const std::string& network_id) {
-  ScopedDictionaryPrefUpdate update(pref_service_,
-                                    prefs::kAccessCodeCastDiscoveredNetworks);
-  std::unique_ptr<DictionaryValueUpdate> discovered_networks_pref =
-      update.Get();
-  DCHECK(discovered_networks_pref)
-      << "The " << prefs::kAccessCodeCastDiscoveredNetworks
-      << " pref does not exist.";
-
-  base::ListValue* current_network_list = nullptr;
-  bool network_id_exists =
-      discovered_networks_pref->GetList(network_id, &current_network_list);
-
-  // There already exists a list with remembered devices on the current
-  // network_id. Simply append the sink_id to this network_id.
-  if (network_id_exists) {
-    // Make sure the sink_id doesn't already exist so we don't duplicate the
-    // the entry.
-    for (const base::Value& current_sink_id :
-         current_network_list->GetListDeprecated()) {
-      if (*current_sink_id.GetIfString() == sink_id)
-        return;
-    }
-    current_network_list->Append(sink_id);
-  } else {
-    // There does not exist any remembered devices on this network yet. Create a
-    // new list with the current sink_id and set that list in the dictionary.
-    auto sink_ids = std::make_unique<base::Value>(base::Value::Type::LIST);
-    sink_ids->Append(sink_id);
-    discovered_networks_pref->Set(network_id, std::move(sink_ids));
-  }
-}
-
-// This stored preference looks like:
 //   "prefs::kAccessCodeCastDeviceAdditionTime": {
 //     A string-flavored base::value representing the int64_t number of
 //     microseconds since the Windows epoch, using base::TimeToValue().
@@ -115,27 +75,20 @@ const base::Value* AccessCodeCastPrefUpdater::GetDevicesDict() {
   return pref_service_->GetDictionary(prefs::kAccessCodeCastDevices);
 }
 
-const base::Value* AccessCodeCastPrefUpdater::GetDiscoveredNetworksDict() {
-  return pref_service_->GetDictionary(prefs::kAccessCodeCastDiscoveredNetworks);
-}
-
 const base::Value* AccessCodeCastPrefUpdater::GetDeviceAddedTimeDict() {
   return pref_service_->GetDictionary(prefs::kAccessCodeCastDeviceAdditionTime);
 }
 
-const base::Value::List* AccessCodeCastPrefUpdater::GetSinkIdsByNetworkId(
-    const std::string& network_id) {
-  auto* network_dict = GetDiscoveredNetworksDict();
-  if (!network_dict)
-    return nullptr;
+const base::Value::List AccessCodeCastPrefUpdater::GetSinkIdsFromDevicesDict() {
+  auto sink_ids = base::Value::List();
 
-  // If found, it returns a pointer to the element. Otherwise it returns
-  // nullptr.
-  auto* network_list = network_dict->FindKey(network_id);
-
-  if (!network_list)
-    return nullptr;
-  return network_list->GetIfList();
+  auto* devices_dict = GetDevicesDict();
+  if (devices_dict) {
+    for (auto sink_id_keypair : devices_dict->GetDict()) {
+      sink_ids.Append(sink_id_keypair.first);
+    }
+  }
+  return sink_ids;
 }
 
 const base::Value* AccessCodeCastPrefUpdater::GetMediaSinkInternalValueBySinkId(
@@ -176,47 +129,6 @@ void AccessCodeCastPrefUpdater::RemoveSinkIdFromDevicesDict(
   DCHECK(devices_pref) << "The " << prefs::kAccessCodeCastDevices
                        << " pref does not exist.";
   devices_pref->Remove(sink_id);
-}
-
-void AccessCodeCastPrefUpdater::RemoveSinkIdFromDiscoveredNetworksDict(
-    const MediaSink::Id sink_id) {
-  ScopedDictionaryPrefUpdate update(pref_service_,
-                                    prefs::kAccessCodeCastDiscoveredNetworks);
-  std::unique_ptr<DictionaryValueUpdate> discovered_networks_pref =
-      update.Get();
-  DCHECK(discovered_networks_pref)
-      << "The " << prefs::kAccessCodeCastDiscoveredNetworks
-      << " pref does not exist.";
-
-  const base::Value::Dict network_dict =
-      GetDiscoveredNetworksDict()->GetDict().Clone();
-
-  // Iterate through network id's
-  for (auto key_value_pair : network_dict) {
-    const auto network_id = key_value_pair.first;
-
-    // We need to clone here because the GetList() method returns a const value
-    // and we might need to modify it later on.
-    base::Value::List network_list = key_value_pair.second.GetList().Clone();
-
-    // Check to see if the media sink was erased from the list. If there is no
-    // value in the list simply continue in the iteration.
-    if (!network_list.EraseValue(base::Value(sink_id)))
-      continue;
-
-    // If the list is now empty, remove the key from the dictionary
-    // entirely and continue from this iteration.
-
-    if (network_list.empty()) {
-      bool removal_result = discovered_networks_pref->Remove(network_id);
-      DCHECK(removal_result)
-          << "The network_id list value exists but the key does not.";
-      continue;
-    }
-    discovered_networks_pref->Set(
-        network_id,
-        base::Value::ToUniquePtrValue(base::Value(std::move(network_list))));
-  }
 }
 
 void AccessCodeCastPrefUpdater::RemoveSinkIdFromDeviceAddedTimeDict(

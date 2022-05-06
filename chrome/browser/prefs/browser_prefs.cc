@@ -246,6 +246,7 @@
 #include "chrome/browser/gcm/gcm_product_util.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
 #include "chrome/browser/intranet_redirect_detector.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/unified_autoplay_config.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
@@ -771,6 +772,12 @@ const char kTimeOnOobe[] = "settings.time_on_oobe";
 const char kOptimizationGuideRemoteFetchingEnabled[] =
     "optimization_guide.remote_fetching_enabled";
 
+#if !BUILDFLAG(IS_ANDROID)
+// Deprecated 05/2022.
+const char kAccessCodeCastDiscoveredNetworks[] =
+    "media_router.access_code_cast.discovered_networks";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1015,6 +1022,10 @@ void RegisterProfilePrefsForMigration(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   registry->RegisterBooleanPref(kOptimizationGuideRemoteFetchingEnabled, true);
+
+#if !BUILDFLAG(IS_ANDROID)
+  registry->RegisterDictionaryPref(kAccessCodeCastDiscoveredNetworks);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -1975,6 +1986,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 04/2022
   profile_prefs->ClearPref(kOptimizationGuideRemoteFetchingEnabled);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Added 05/2022
+  profile_prefs->ClearPref(kAccessCodeCastDiscoveredNetworks);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
