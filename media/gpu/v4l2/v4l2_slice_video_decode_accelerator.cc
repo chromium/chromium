@@ -47,7 +47,6 @@
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp8.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp8_legacy.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9.h"
-#include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9_chromium.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9_legacy.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/gl_context.h"
@@ -319,17 +318,11 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
 #endif
       const bool supports_stable_api =
           device_->IsCtrlExposed(V4L2_CID_STATELESS_VP9_FRAME);
+      CHECK(supports_stable_api);
+      decoder_ = std::make_unique<VP9Decoder>(
+          std::make_unique<V4L2VideoDecoderDelegateVP9>(this, device_.get()),
+          video_profile_, config.container_color_space);
 
-      if (supports_stable_api) {
-        decoder_ = std::make_unique<VP9Decoder>(
-            std::make_unique<V4L2VideoDecoderDelegateVP9>(this, device_.get()),
-            video_profile_, config.container_color_space);
-      } else {
-        decoder_ = std::make_unique<VP9Decoder>(
-            std::make_unique<V4L2VideoDecoderDelegateVP9Chromium>(
-                this, device_.get()),
-            video_profile_, config.container_color_space);
-      }
     } else {
       decoder_ = std::make_unique<VP9Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateVP9Legacy>(this,
