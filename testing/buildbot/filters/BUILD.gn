@@ -213,12 +213,6 @@ source_set("services_unittests_filters") {
   data = [ "//testing/buildbot/filters/fuchsia.services_unittests.filter" ]
 }
 
-source_set("storage_unittests_filters") {
-  testonly = true
-
-  data = [ "//testing/buildbot/filters/fuchsia.storage_unittests.filter" ]
-}
-
 source_set("ui_base_unittests_filters") {
   testonly = true
 

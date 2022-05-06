@@ -1845,11 +1845,7 @@
       'skia_unittests': {},
       'snapshot_unittests': {},
       'sql_unittests': {},
-      'storage_unittests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.storage_unittests.filter',
-        ],
-      },
+      'storage_unittests': {},
       'ui_base_unittests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter',

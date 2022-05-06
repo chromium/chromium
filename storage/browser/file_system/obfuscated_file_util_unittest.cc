@@ -1233,6 +1233,12 @@ TEST_P(ObfuscatedFileUtilTest, TestReadDirectoryOnFile) {
   EXPECT_TRUE(ofu()->IsDirectoryEmpty(context.get(), url));
 }
 
+// TODO(https://crbug.com/702990): Remove this test once last_access_time has
+// been removed after PPAPI has been deprecated. Fuchsia does not support touch,
+// which breaks this test that relies on it. Since PPAPI is being deprecated,
+// this test is excluded from the Fuchsia build.
+// See https://crbug.com/1077456 for details.
+#if !BUILDFLAG(IS_FUCHSIA)
 TEST_P(ObfuscatedFileUtilTest, TestTouch) {
   FileSystemURL url = CreateURLFromUTF8("file");
   std::unique_ptr<FileSystemOperationContext> context = NewContext(nullptr);
@@ -1262,6 +1268,7 @@ TEST_P(ObfuscatedFileUtilTest, TestTouch) {
             ofu()->CreateDirectory(context.get(), url, exclusive, recursive));
   TestTouchHelper(url, false);
 }
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 TEST_P(ObfuscatedFileUtilTest, TestPathQuotas) {
   FileSystemURL url = CreateURLFromUTF8("fake/file");

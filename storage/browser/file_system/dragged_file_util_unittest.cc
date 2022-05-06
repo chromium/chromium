@@ -476,6 +476,12 @@ TEST_F(DraggedFileUtilTest, CopyOutDirectoryTest) {
   }
 }
 
+// TODO(https://crbug.com/702990): Remove this test once last_access_time has
+// been removed after PPAPI has been deprecated. Fuchsia does not support touch,
+// which breaks this test that relies on it. Since PPAPI is being deprecated,
+// this test is excluded from the Fuchsia build.
+// See https://crbug.com/1077456 for details.
+#if !BUILDFLAG(IS_FUCHSIA)
 TEST_F(DraggedFileUtilTest, TouchTest) {
   for (size_t i = 0; i < kRegularFileSystemTestCaseSize; ++i) {
     const FileSystemTestCaseRecord& test_case = kRegularFileSystemTestCases[i];
@@ -501,6 +507,7 @@ TEST_F(DraggedFileUtilTest, TouchTest) {
     EXPECT_EQ(last_modified_time.ToTimeT(), info.last_modified.ToTimeT());
   }
 }
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 TEST_F(DraggedFileUtilTest, TruncateTest) {
   for (size_t i = 0; i < kRegularFileSystemTestCaseSize; ++i) {

@@ -174,6 +174,12 @@ TEST_F(LocalFileUtilTest, EnsureFileExists) {
   EXPECT_FALSE(created);
 }
 
+// TODO(https://crbug.com/702990): Remove this test once last_access_time has
+// been removed after PPAPI has been deprecated. Fuchsia does not support touch,
+// which breaks this test that relies on it. Since PPAPI is being deprecated,
+// this test is excluded from the Fuchsia build.
+// See https://crbug.com/1077456 for details.
+#if !BUILDFLAG(IS_FUCHSIA)
 TEST_F(LocalFileUtilTest, TouchFile) {
   const char* file_name = "test_file";
   base::File file = CreateFile(file_name);
@@ -217,6 +223,7 @@ TEST_F(LocalFileUtilTest, TouchDirectory) {
   EXPECT_EQ(new_accessed, info.last_accessed);
   EXPECT_EQ(new_modified, info.last_modified);
 }
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 TEST_F(LocalFileUtilTest, Truncate) {
   const char* file_name = "truncated";
