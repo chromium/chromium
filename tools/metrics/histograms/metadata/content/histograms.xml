@@ -1541,6 +1541,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ContentSuggestions.{FeedType}.InfoCard.{Action}"
+    units="FeedInfoCardType" expires_after="2023-05-01">
+  <owner>jianli@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Reports when {Action} has occurred for an info card. The type of
+    the info card was reported.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
+  <token key="Action">
+    <variant name="Clicked" summary="clicked"/>
+    <variant name="Dismissed" summary="dismissed explicitly"/>
+    <variant name="Reset" summary="state reset"/>
+    <variant name="Started" summary="started to track view"/>
+    <variant name="Viewed" summary="viewed"/>
+  </token>
+</histogram>
+
 <histogram name="ContentSuggestions.{FeedType}.InvalidNoticeKey" enum="Boolean"
     expires_after="2023-03-01">
   <owner>jianli@chromium.org</owner>

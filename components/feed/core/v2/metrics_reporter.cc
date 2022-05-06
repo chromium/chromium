@@ -172,6 +172,12 @@ std::string NoticeUmaName(const StreamType& stream_type,
                        uma_base_name, ".", normalized_key});
 }
 
+std::string InfoCardActionUmaName(const StreamType& stream_type,
+                                  base::StringPiece action_name) {
+  return base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
+                       "InfoCard.", action_name});
+}
+
 UserSettingsOnStart GetUserSettingsOnStart(
     bool isEnabledByEnterprisePolicy,
     bool isFeedVisible,
@@ -1027,6 +1033,37 @@ void MetricsReporter::OnNoticeAcknowledged(
   base::UmaHistogramEnumeration(
       NoticeUmaName(stream_type, key, "NoticeAcknowledgementPath"),
       acknowledgement_path);
+}
+
+void MetricsReporter::OnInfoCardTrackViewStarted(const StreamType& stream_type,
+                                                 int info_card_type) {
+  base::UmaHistogramSparse(InfoCardActionUmaName(stream_type, "Started"),
+                           info_card_type);
+}
+
+void MetricsReporter::OnInfoCardViewed(const StreamType& stream_type,
+                                       int info_card_type) {
+  base::UmaHistogramSparse(InfoCardActionUmaName(stream_type, "Viewed"),
+                           info_card_type);
+}
+
+void MetricsReporter::OnInfoCardClicked(const StreamType& stream_type,
+                                        int info_card_type) {
+  base::UmaHistogramSparse(InfoCardActionUmaName(stream_type, "Clicked"),
+                           info_card_type);
+}
+
+void MetricsReporter::OnInfoCardDismissedExplicitly(
+    const StreamType& stream_type,
+    int info_card_type) {
+  base::UmaHistogramSparse(InfoCardActionUmaName(stream_type, "Dismissed"),
+                           info_card_type);
+}
+
+void MetricsReporter::OnInfoCardStateReset(const StreamType& stream_type,
+                                           int info_card_type) {
+  base::UmaHistogramSparse(InfoCardActionUmaName(stream_type, "Reset"),
+                           info_card_type);
 }
 
 }  // namespace feed

@@ -484,6 +484,17 @@ class TextProtoPrinter {
     EndMessage();
     return *this;
   }
+  TextProtoPrinter& operator<<(const feedwire::InfoCardTrackingState& v) {
+    BeginMessage();
+    PRINT_FIELD(type);
+    PRINT_FIELD(explicitly_dismissed_count);
+    PRINT_FIELD(view_count);
+    PRINT_FIELD(click_count);
+    PRINT_FIELD(first_view_timestamp);
+    PRINT_FIELD(last_view_timestamp);
+    EndMessage();
+    return *this;
+  }
 
   template <typename T>
   void Field(const std::string& name, const T& value) {
@@ -533,6 +544,7 @@ DECLARE_PRINTER(feedwire, ActionPayload)
 DECLARE_PRINTER(feedwire, ClientInfo)
 DECLARE_PRINTER(feedwire, ContentId)
 DECLARE_PRINTER(feedwire, DisplayInfo)
+DECLARE_PRINTER(feedwire, InfoCardTrackingState)
 DECLARE_PRINTER(feedwire, UploadActionsRequest)
 DECLARE_PRINTER(feedwire, UploadActionsResponse)
 DECLARE_PRINTER(feedwire, Version)

@@ -47,6 +47,7 @@ const char kWebFeedContentOrder[] = "webfeed.content_order";
 const char kLastSeenFeedType[] = "feedv2.last_seen_feed_type";
 const char kNoticeStates[] = "feed.notice_states";
 const char kFeedOnDeviceUserActionsCollector[] = "feed.user_actions_collection";
+const char kInfoCardStates[] = "feed.info_card_states";
 
 }  // namespace prefs
 
@@ -92,6 +93,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(feed::prefs::kNoticeStates, 0);
   registry->RegisterListPref(feed::prefs::kFeedOnDeviceUserActionsCollector,
                              PrefRegistry::LOSSY_PREF);
+  registry->RegisterDictionaryPref(feed::prefs::kInfoCardStates, 0);
 
 #if BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(feed::prefs::kLastFetchHadLoggingEnabled,

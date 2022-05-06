@@ -1162,4 +1162,26 @@ TEST_F(MetricsReporterTest, UserSettingsOnStart_FeedDataFromFuture) {
             register_feed_user_settings_field_trial_calls_);
 }
 
+TEST_F(MetricsReporterTest, ReportInfoCard) {
+  reporter_->OnInfoCardTrackViewStarted(kForYouStream, 0);
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.InfoCard.Started", 0,
+                                1);
+
+  reporter_->OnInfoCardViewed(kForYouStream, 0);
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.InfoCard.Viewed", 0,
+                                1);
+
+  reporter_->OnInfoCardClicked(kWebFeedStream, 1);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.InfoCard.Clicked", 1, 1);
+
+  reporter_->OnInfoCardDismissedExplicitly(kForYouStream, 0);
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.InfoCard.Dismissed", 0,
+                                1);
+
+  reporter_->OnInfoCardStateReset(kWebFeedStream, 1);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.InfoCard.Reset", 1, 1);
+}
+
 }  // namespace feed

@@ -200,6 +200,23 @@ class FeedApi {
   // The notice identified by |key| is dismissed.
   virtual void ReportNoticeDismissed(const StreamType& stream_type,
                                      const std::string& key) = 0;
+  // Reports that the info card is being tracked for its full visibility.
+  virtual void ReportInfoCardTrackViewStarted(const StreamType& stream_type,
+                                              int info_card_type) = 0;
+  // Reports that the info card is visible in the viewport within the threshold.
+  virtual void ReportInfoCardViewed(const StreamType& stream_type,
+                                    int info_card_type,
+                                    int minimum_view_interval_seconds) = 0;
+  // Reports that the user taps the info card.
+  virtual void ReportInfoCardClicked(const StreamType& stream_type,
+                                     int info_card_type) = 0;
+  // Reports that the user dismisses the info card explicitly by tapping the
+  // close button.
+  virtual void ReportInfoCardDismissedExplicitly(const StreamType& stream_type,
+                                                 int info_card_type) = 0;
+  // Resets all the states of the info card.
+  virtual void ResetInfoCardStates(const StreamType& stream_type,
+                                   int info_card_type) = 0;
 
   // The following methods are used for the internals page.
 

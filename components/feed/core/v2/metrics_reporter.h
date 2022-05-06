@@ -143,6 +143,15 @@ class MetricsReporter {
                             const std::string& key,
                             NoticeAcknowledgementPath acknowledgement_path);
 
+  // Info card events.
+  void OnInfoCardTrackViewStarted(const StreamType& stream_type,
+                                  int info_card_type);
+  void OnInfoCardViewed(const StreamType& stream_type, int info_card_type);
+  void OnInfoCardClicked(const StreamType& stream_type, int info_card_type);
+  void OnInfoCardDismissedExplicitly(const StreamType& stream_type,
+                                     int info_card_type);
+  void OnInfoCardStateReset(const StreamType& stream_type, int info_card_type);
+
  private:
   // State replicated for reporting per-stream-type metrics.
   struct StreamStats {

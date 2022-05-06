@@ -84,6 +84,8 @@ extern const char kNoticeStates[];
 // The pref name for storing user actions. Used for personalizing feed for
 // unsigned users. The list is sorted by ascenting time stamp.
 extern const char kFeedOnDeviceUserActionsCollector[];
+// The pref name for the keys of the info cards.
+extern const char kInfoCardStates[];
 
 }  // namespace prefs
 

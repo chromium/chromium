@@ -309,5 +309,51 @@ void FeedStream::ReportNoticeDismissed(JNIEnv* env,
       GetStreamType(), base::android::ConvertJavaStringToUTF8(env, key));
 }
 
+void FeedStream::ReportInfoCardTrackViewStarted(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    int info_card_type) {
+  if (!feed_stream_api_)
+    return;
+  feed_stream_api_->ReportInfoCardTrackViewStarted(GetStreamType(),
+                                                   info_card_type);
+}
+
+void FeedStream::ReportInfoCardViewed(JNIEnv* env,
+                                      const JavaParamRef<jobject>& obj,
+                                      int info_card_type,
+                                      int minimum_view_interval_seconds) {
+  if (!feed_stream_api_)
+    return;
+  feed_stream_api_->ReportInfoCardViewed(GetStreamType(), info_card_type,
+                                         minimum_view_interval_seconds);
+}
+
+void FeedStream::ReportInfoCardClicked(JNIEnv* env,
+                                       const JavaParamRef<jobject>& obj,
+                                       int info_card_type) {
+  if (!feed_stream_api_)
+    return;
+  feed_stream_api_->ReportInfoCardClicked(GetStreamType(), info_card_type);
+}
+
+void FeedStream::ReportInfoCardDismissedExplicitly(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    int info_card_type) {
+  if (!feed_stream_api_)
+    return;
+  feed_stream_api_->ReportInfoCardDismissedExplicitly(GetStreamType(),
+                                                      info_card_type);
+}
+
+void FeedStream::ResetInfoCardStates(JNIEnv* env,
+                                     const JavaParamRef<jobject>& obj,
+                                     int info_card_type) {
+  if (!feed_stream_api_)
+    return;
+  feed_stream_api_->ResetInfoCardStates(GetStreamType(), info_card_type);
+}
+
 }  // namespace android
 }  // namespace feed

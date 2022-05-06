@@ -130,6 +130,29 @@ class FeedStream : public ::feed::FeedStreamSurface {
                              const base::android::JavaParamRef<jobject>& obj,
                              const base::android::JavaParamRef<jstring>& key);
 
+  void ReportInfoCardTrackViewStarted(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      int info_card_type);
+
+  void ReportInfoCardViewed(JNIEnv* env,
+                            const base::android::JavaParamRef<jobject>& obj,
+                            int info_card_type,
+                            int minimum_view_interval_seconds);
+
+  void ReportInfoCardClicked(JNIEnv* env,
+                             const base::android::JavaParamRef<jobject>& obj,
+                             int info_card_type);
+
+  void ReportInfoCardDismissedExplicitly(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      int info_card_type);
+
+  void ResetInfoCardStates(JNIEnv* env,
+                           const base::android::JavaParamRef<jobject>& obj,
+                           int info_card_type);
+
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
   raw_ptr<FeedApi> feed_stream_api_;

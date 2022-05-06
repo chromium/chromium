@@ -411,6 +411,39 @@ public class FeedStream implements Stream {
             FeedStreamJni.get().reportNoticeDismissed(mNativeFeedStream, FeedStream.this, key);
         }
 
+        @Override
+        public void reportInfoCardTrackViewStarted(int type) {
+            assert ThreadUtils.runningOnUiThread();
+            FeedStreamJni.get().reportInfoCardTrackViewStarted(
+                    mNativeFeedStream, FeedStream.this, type);
+        }
+
+        @Override
+        public void reportInfoCardViewed(int type, int minimumViewIntervalSeconds) {
+            assert ThreadUtils.runningOnUiThread();
+            FeedStreamJni.get().reportInfoCardViewed(
+                    mNativeFeedStream, FeedStream.this, type, minimumViewIntervalSeconds);
+        }
+
+        @Override
+        public void reportInfoCardClicked(int type) {
+            assert ThreadUtils.runningOnUiThread();
+            FeedStreamJni.get().reportInfoCardClicked(mNativeFeedStream, FeedStream.this, type);
+        }
+
+        @Override
+        public void reportInfoCardDismissedExplicitly(int type) {
+            assert ThreadUtils.runningOnUiThread();
+            FeedStreamJni.get().reportInfoCardDismissedExplicitly(
+                    mNativeFeedStream, FeedStream.this, type);
+        }
+
+        @Override
+        public void resetInfoCardStates(int type) {
+            assert ThreadUtils.runningOnUiThread();
+            FeedStreamJni.get().resetInfoCardStates(mNativeFeedStream, FeedStream.this, type);
+        }
+
         // Since the XSurface client strings are slightly different than the Feed strings, convert
         // the name from the XSurface format to the format that can be handled by the feedback
         // system.  Any new strings that are added on the XSurface side will need a code change
@@ -1234,5 +1267,11 @@ public class FeedStream implements Stream {
         void reportNoticeViewed(long nativeFeedStream, FeedStream caller, String key);
         void reportNoticeOpenAction(long nativeFeedStream, FeedStream caller, String key);
         void reportNoticeDismissed(long nativeFeedStream, FeedStream caller, String key);
+        void reportInfoCardTrackViewStarted(long nativeFeedStream, FeedStream caller, int type);
+        void reportInfoCardViewed(
+                long nativeFeedStream, FeedStream caller, int type, int minimumViewIntervalSeconds);
+        void reportInfoCardClicked(long nativeFeedStream, FeedStream caller, int type);
+        void reportInfoCardDismissedExplicitly(long nativeFeedStream, FeedStream caller, int type);
+        void resetInfoCardStates(long nativeFeedStream, FeedStream caller, int type);
     }
 }

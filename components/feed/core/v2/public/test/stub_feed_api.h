@@ -97,6 +97,17 @@ class StubFeedApi : public FeedApi {
                               const std::string& key) override {}
   void ReportNoticeDismissed(const StreamType& stream_type,
                              const std::string& key) override {}
+  void ReportInfoCardTrackViewStarted(const StreamType& stream_type,
+                                      int info_card_type) override {}
+  void ReportInfoCardViewed(const StreamType& stream_type,
+                            int info_card_type,
+                            int minimum_view_interval_seconds) override {}
+  void ReportInfoCardClicked(const StreamType& stream_type,
+                             int info_card_type) override {}
+  void ReportInfoCardDismissedExplicitly(const StreamType& stream_type,
+                                         int info_card_type) override {}
+  void ResetInfoCardStates(const StreamType& stream_type,
+                           int info_card_type) override {}
   DebugStreamData GetDebugStreamData() override;
   void ForceRefreshForDebugging(const StreamType& stream_type) override {}
   std::string DumpStateForDebugging() override;

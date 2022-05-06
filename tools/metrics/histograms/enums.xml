@@ -38444,6 +38444,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Fetch failure"/>
 </enum>
 
+<enum name="FeedInfoCardType">
+  <int value="1" label="INFO_CARD_MAIN_PRIVACY_NOTICE"/>
+  <int value="2" label="INFO_CARD_YOUTUBE_PRIVACY_NOTICE"/>
+</enum>
+
 <!-- Keep elements in sync with components/feed/core/feed_logging_metrics.cc and
  third_party/feed_library/src/src/main/java/com/google/android/libraries/feed/api/host/logging/InternalFeedError.java
  -->
