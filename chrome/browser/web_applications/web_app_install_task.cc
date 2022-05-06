@@ -603,31 +603,8 @@ void WebAppInstallTask::OnGetWebAppInstallInfo(
                      GetWeakPtr(), std::move(web_app_info)));
 }
 
-void WebAppInstallTask::ApplyParamsToWebAppInstallInfo(
-    const WebAppInstallParams& install_params,
-    WebAppInstallInfo& web_app_info) {
-  if (install_params.user_display_mode.has_value())
-    web_app_info.user_display_mode = *install_params.user_display_mode;
-
-  if (!install_params.override_manifest_id.has_value())
-    web_app_info.manifest_id = install_params.override_manifest_id;
-
-  // If `additional_search_terms` was a manifest property, it would be
-  // sanitized while parsing the manifest. Since it's not, we sanitize it
-  // here.
-  for (const std::string& search_term :
-       install_params.additional_search_terms) {
-    if (!search_term.empty())
-      web_app_info.additional_search_terms.push_back(search_term);
-  }
-
-  if (install_params.launch_query_params)
-    web_app_info.launch_query_params = install_params.launch_query_params;
-
-  if (install_params.install_url.is_valid())
-    web_app_info.install_url = install_params.install_url;
-}
-
+// If the dialog callback is null, then this is considered to be
+// a background installation.
 void WebAppInstallTask::InstallWebAppOnManifestValidated(
     content::WebContents* contents,
     WebAppInstallDialogCallback dialog_callback,
@@ -635,15 +612,23 @@ void WebAppInstallTask::InstallWebAppOnManifestValidated(
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     blink::mojom::ManifestPtr opt_manifest,
     const GURL& manifest_url,
-    WebAppInstallFlow flow) {
+    WebAppInstallFlow flow,
+    absl::optional<WebAppInstallParams> install_params) {
   DCHECK(AreWebAppsUserInstallable(profile_));
   CheckInstallPreconditions();
 
   flow_ = flow;
 
   Observe(contents);
+
   dialog_callback_ = std::move(dialog_callback);
+  if (dialog_callback_.is_null())
+    background_installation_ = true;
   install_callback_ = std::move(install_callback);
+
+  if (install_params.has_value())
+    SetInstallParams(install_params.value());
+
   OnDidPerformInstallableCheck(std::move(web_app_info), std::move(opt_manifest),
                                manifest_url, true, true);
 }

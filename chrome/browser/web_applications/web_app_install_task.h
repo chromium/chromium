@@ -152,7 +152,8 @@ class WebAppInstallTask : content::WebContentsObserver {
       std::unique_ptr<WebAppInstallInfo> web_app_info,
       blink::mojom::ManifestPtr opt_manifest,
       const GURL& manifest_url,
-      WebAppInstallFlow flow);
+      WebAppInstallFlow flow,
+      absl::optional<WebAppInstallParams> install_params);
 
   // Obtains WebAppInstallInfo about web app located at |start_url|, fallbacks
   // to title/favicon if manifest is not present.
@@ -213,11 +214,6 @@ class WebAppInstallTask : content::WebContentsObserver {
                                      bool is_installable);
 
   void OnGetWebAppInstallInfo(std::unique_ptr<WebAppInstallInfo> web_app_info);
-
-  // Makes amendments to |web_app_info| based on the options set in
-  // |install_params|.
-  void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,
-                                      WebAppInstallInfo& web_app_info);
 
   void OnDidPerformInstallableCheck(
       std::unique_ptr<WebAppInstallInfo> web_app_info,

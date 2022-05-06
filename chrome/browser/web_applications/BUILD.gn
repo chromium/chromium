@@ -21,6 +21,8 @@ source_set("web_applications") {
     "commands/clear_browsing_data_command.h",
     "commands/fetch_manifest_and_install_command.cc",
     "commands/fetch_manifest_and_install_command.h",
+    "commands/install_web_app_with_params_command.cc",
+    "commands/install_web_app_with_params_command.h",
     "commands/run_on_os_login_command.cc",
     "commands/run_on_os_login_command.h",
     "commands/web_app_command.cc",
@@ -635,6 +637,7 @@ source_set("web_applications_browser_tests") {
 
   sources = [
     "commands/fetch_manifest_and_install_command_browsertest.cc",
+    "commands/install_web_app_with_params_command_browsertest.cc",
     "externally_managed_app_manager_impl_browsertest.cc",
     "isolated_app_browsertest.cc",
     "manifest_update_manager_browsertest.cc",

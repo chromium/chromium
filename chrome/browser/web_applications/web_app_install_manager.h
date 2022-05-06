@@ -79,13 +79,6 @@ class WebAppInstallManager final : public SyncInstallDelegate {
                      const GURL& install_url,
                      OnceInstallCallback callback);
 
-  // Starts a background web app installation process for a given
-  // |web_contents|.
-  void InstallWebAppWithParams(content::WebContents* web_contents,
-                               const WebAppInstallParams& install_params,
-                               webapps::WebappInstallSource install_surface,
-                               OnceInstallCallback callback);
-
   // Starts a web app installation process using prefilled
   // |install_info| which holds all the data needed for installation.
   // This doesn't fetch a manifest and doesn't perform all required steps for

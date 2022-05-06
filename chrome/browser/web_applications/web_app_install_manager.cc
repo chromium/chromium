@@ -219,25 +219,6 @@ void WebAppInstallManager::InstallWebAppFromInfo(
   tasks_.insert(std::move(task));
 }
 
-void WebAppInstallManager::InstallWebAppWithParams(
-    content::WebContents* web_contents,
-    const WebAppInstallParams& install_params,
-    webapps::WebappInstallSource install_surface,
-    OnceInstallCallback callback) {
-  if (!started_)
-    return;
-
-  auto task = std::make_unique<WebAppInstallTask>(profile_, finalizer_,
-                                                  data_retriever_factory_.Run(),
-                                                  registrar_, install_surface);
-  task->InstallWebAppWithParams(
-      web_contents, install_params,
-      base::BindOnce(&WebAppInstallManager::OnInstallTaskCompleted,
-                     GetWeakPtr(), task.get(), std::move(callback)));
-
-  tasks_.insert(std::move(task));
-}
-
 base::WeakPtr<WebAppInstallManager> WebAppInstallManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

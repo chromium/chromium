@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -30,7 +31,8 @@ WebAppInstallCommand::WebAppInstallCommand(
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     blink::mojom::ManifestPtr opt_manifest,
     const GURL& manifest_url,
-    WebAppInstallFlow flow)
+    WebAppInstallFlow flow,
+    absl::optional<WebAppInstallParams> install_params)
     : WebAppCommand(WebAppCommandLock::CreateForAppLock({app_id})),
       install_task_(profile,
                     install_finalizer,
@@ -44,7 +46,8 @@ WebAppInstallCommand::WebAppInstallCommand(
       opt_manifest_(std::move(opt_manifest)),
       manifest_url_(manifest_url),
       flow_(flow),
-      app_id_(app_id) {}
+      app_id_(app_id),
+      install_params_(install_params) {}
 
 WebAppInstallCommand::~WebAppInstallCommand() = default;
 
@@ -58,7 +61,8 @@ void WebAppInstallCommand::Start() {
       web_contents_.get(), std::move(dialog_callback_),
       base::BindOnce(&WebAppInstallCommand::OnInstallCompleted,
                      weak_factory_.GetWeakPtr()),
-      std::move(web_app_info_), std::move(opt_manifest_), manifest_url_, flow_);
+      std::move(web_app_info_), std::move(opt_manifest_), manifest_url_, flow_,
+      install_params_);
 }
 
 void WebAppInstallCommand::Abort(webapps::InstallResultCode code) {

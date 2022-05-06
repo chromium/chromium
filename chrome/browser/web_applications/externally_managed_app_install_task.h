@@ -37,6 +37,7 @@ class WebAppUrlLoader;
 class WebAppInstallFinalizer;
 class WebAppInstallManager;
 class WebAppUiManager;
+class WebAppDataRetriever;
 
 // Class to install WebApp from a WebContents. A queue of such tasks is owned by
 // ExternallyManagedAppManager. Can only be called from the UI thread.
@@ -71,6 +72,11 @@ class ExternallyManagedAppInstallTask {
                        ResultCallback result_callback);
 
   const ExternalInstallOptions& install_options() { return install_options_; }
+
+  using DataRetrieverFactory =
+      base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()>;
+  void SetDataRetrieverFactoryForTesting(
+      DataRetrieverFactory data_retriever_factory);
 
  private:
   // Install directly from a fully specified WebAppInstallInfo struct. Used
@@ -132,6 +138,7 @@ class ExternallyManagedAppInstallTask {
   ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
 
   const ExternalInstallOptions install_options_;
+  DataRetrieverFactory data_retriever_factory_;
 
   base::WeakPtrFactory<ExternallyManagedAppInstallTask> weak_ptr_factory_{this};
 };

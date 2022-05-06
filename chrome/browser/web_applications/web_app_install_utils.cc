@@ -994,4 +994,28 @@ bool CanWebAppUpdateIdentity(const WebApp* web_app) {
   return web_app->IsPreinstalledApp();
 }
 
+void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,
+                                    WebAppInstallInfo& web_app_info) {
+  if (install_params.user_display_mode.has_value())
+    web_app_info.user_display_mode = install_params.user_display_mode;
+
+  if (!install_params.override_manifest_id.has_value())
+    web_app_info.manifest_id = install_params.override_manifest_id;
+
+  // If `additional_search_terms` was a manifest property, it would be
+  // sanitized while parsing the manifest. Since it's not, we sanitize it
+  // here.
+  for (const std::string& search_term :
+       install_params.additional_search_terms) {
+    if (!search_term.empty())
+      web_app_info.additional_search_terms.push_back(search_term);
+  }
+
+  if (install_params.launch_query_params)
+    web_app_info.launch_query_params = install_params.launch_query_params;
+
+  if (install_params.install_url.is_valid())
+    web_app_info.install_url = install_params.install_url;
+}
+
 }  // namespace web_app
