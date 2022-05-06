@@ -32,10 +32,10 @@ class DevToolsTrustTokenBrowsertest : public DevToolsProtocolTest,
   }
 
   // The returned view is only valid until the next |SendCommand| call.
-  base::Value::ListView GetTrustTokensViaProtocol() {
+  base::Value::ConstListView GetTrustTokensViaProtocol() {
     SendCommand("Storage.getTrustTokens", nullptr);
-    base::Value* tokens = result_->FindPath("tokens");
-    EXPECT_TRUE(tokens);
+    const base::Value* tokens = result()->Find("tokens");
+    CHECK(tokens);
     return tokens->GetListDeprecated();
   }
 
@@ -359,8 +359,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, ClearTrustTokens) {
   params->SetStringPath("issuerOrigin", IssuanceOriginFromHost("a.test"));
   auto* result = SendCommand("Storage.clearTrustTokens", std::move(params));
 
-  EXPECT_THAT(result->FindBoolPath("didDeleteTokens"),
-              ::testing::Optional(true));
+  EXPECT_THAT(result->FindBool("didDeleteTokens"), ::testing::Optional(true));
 
   // 6) Call Storage.getTrustTokens and expect no Trust Tokens to be there.
   //    Note that we still get an entry for our 'issuerOrigin', but the actual

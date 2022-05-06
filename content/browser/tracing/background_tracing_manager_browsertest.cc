@@ -1974,7 +1974,7 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest,
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
   Attach();
 
-  base::Value* start_tracing_result =
+  const base::Value::Dict* start_tracing_result =
       SendCommand("Tracing.start", nullptr, true);
   ASSERT_TRUE(start_tracing_result);
   BackgroundTracingManager::GetInstance()->AbortScenarioForTesting();

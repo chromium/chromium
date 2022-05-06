@@ -496,18 +496,17 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     SendCommand("Page.captureScreenshot", std::move(params));
 
     std::unique_ptr<SkBitmap> result_bitmap;
-    if (expect_error) {
-      EXPECT_THAT(error_, base::test::DictionaryHasValue(
-                              "code", base::Value(static_cast<int>(
-                                          crdtp::DispatchCode::SERVER_ERROR))));
+    if (expect_error && error()) {
+      EXPECT_THAT(error()->FindInt("code"),
+                  testing::Optional(
+                      static_cast<int>(crdtp::DispatchCode::SERVER_ERROR)));
     } else {
-      std::string base64;
-      EXPECT_TRUE(result_->GetString("data", &base64));
+      const std::string* base64 = result()->FindString("data");
       if (encoding == ScreenshotEncoding::PNG) {
         result_bitmap = std::make_unique<SkBitmap>();
-        EXPECT_TRUE(DecodePNG(base64, result_bitmap.get()));
+        EXPECT_TRUE(DecodePNG(*base64, result_bitmap.get()));
       } else if (encoding == ScreenshotEncoding::JPEG) {
-        result_bitmap = DecodeJPEG(base64);
+        result_bitmap = DecodeJPEG(*base64);
       } else {
         // Decode not implemented.
       }
@@ -1066,16 +1065,16 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsProtocolTest,
   command_params = std::make_unique<base::DictionaryValue>();
   command_params->SetStringKey("targetId", frame_target_id);
   command_params->SetBoolKey("flatten", true);
-  base::DictionaryValue* result =
+  const base::Value::Dict* result =
       SendCommand("Target.attachToTarget", std::move(command_params));
-  ASSERT_NE(nullptr, result);
-  std::string session_id;
-  ASSERT_TRUE(result->GetString("sessionId", &session_id));
+  ASSERT_TRUE(result);
+  const std::string* session_id = result->FindString("sessionId");
+  ASSERT_TRUE(session_id);
 
   ClearNotifications();
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    SendSessionCommand("Page.crash", nullptr, session_id, false);
+    SendSessionCommand("Page.crash", nullptr, *session_id, false);
     params = WaitForNotification("Target.targetCrashed", true);
   }
   ASSERT_TRUE(params);
@@ -1195,16 +1194,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, MAYBE_CrossSiteNavigation) {
       embedded_test_server()->GetURL("B.com", "/devtools/navigation.html");
   std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
   params->SetStringKey("url", test_url2.spec());
-  base::DictionaryValue* result =
+  const base::Value::Dict* result =
       SendCommand("Page.navigate", std::move(params));
-  std::string frame_id;
-  EXPECT_TRUE(result->GetString("frameId", &frame_id));
+  const std::string* frame_id = result->FindString("frameId");
+  EXPECT_TRUE(frame_id);
 
   params = WaitForNotification("Page.frameStoppedLoading", true);
   std::string stopped_id;
   EXPECT_TRUE(params->GetString("frameId", &stopped_id));
 
-  EXPECT_EQ(stopped_id, frame_id);
+  EXPECT_EQ(stopped_id, *frame_id);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CrossSiteCrash) {
@@ -1408,7 +1407,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, EvaluateInBlankPage) {
   std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
   params->SetStringKey("expression", "window");
   SendCommand("Runtime.evaluate", std::move(params), true);
-  EXPECT_FALSE(result_->FindKey("exceptionDetails"));
+  EXPECT_FALSE(result()->Find("exceptionDetails"));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
@@ -1421,7 +1420,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
   params->SetStringKey("expression", "window");
   SendCommand("Runtime.evaluate", std::move(params), true);
-  EXPECT_FALSE(result_->FindKey("exceptionDetails"));
+  EXPECT_FALSE(result()->Find("exceptionDetails"));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, JavaScriptDialogNotifications) {
@@ -1583,29 +1582,27 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BrowserCreateAndCloseTarget) {
   std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
   params->SetStringKey("url", "about:blank");
   SendCommand("Target.createTarget", std::move(params), true);
-  std::string target_id;
-  EXPECT_TRUE(result_->GetString("targetId", &target_id));
+  const std::string* target_id = result()->FindString("targetId");
+  ASSERT_TRUE(target_id);
   EXPECT_EQ(2u, shell()->windows().size());
 
   // TODO(eseckler): Since the RenderView is closed asynchronously, we currently
   // don't verify that the command actually closes the shell.
   params = std::make_unique<base::DictionaryValue>();
-  params->SetStringKey("targetId", target_id);
+  params->SetStringKey("targetId", *target_id);
   SendCommand("Target.closeTarget", std::move(params), true);
 
-  absl::optional<bool> success = result_->FindBoolPath("success");
-  EXPECT_TRUE(success);
-  EXPECT_TRUE(*success);
+  EXPECT_THAT(result()->FindBool("success"), testing::Optional(true));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BrowserGetTargets) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
   Attach();
   SendCommand("Target.getTargets", nullptr, true);
-  base::ListValue* target_infos;
-  EXPECT_TRUE(result_->GetList("targetInfos", &target_infos));
-  EXPECT_EQ(1u, target_infos->GetListDeprecated().size());
-  const base::Value& target_info_value = target_infos->GetListDeprecated()[0u];
+  const base::Value::List* target_infos = result()->FindList("targetInfos");
+  ASSERT_TRUE(target_infos);
+  EXPECT_EQ(1u, target_infos->size());
+  const base::Value& target_info_value = target_infos->front();
   EXPECT_TRUE(target_info_value.is_dict());
   const base::DictionaryValue& target_info =
       base::Value::AsDictionaryValue(target_info_value);
@@ -2025,11 +2022,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetAndGetCookies) {
   // First get the cookies for just the loaded URL.
   SendCommand("Network.getCookies", nullptr, true);
 
-  const base::Value* cookies = result_->FindListKey("cookies");
+  const base::Value::List* cookies = result()->FindList("cookies");
   ASSERT_TRUE(cookies);
-  EXPECT_EQ(1u, cookies->GetListDeprecated().size());
+  EXPECT_EQ(1u, cookies->size());
 
-  const base::Value& cookie_value = cookies->GetListDeprecated()[0];
+  const base::Value& cookie_value = cookies->front();
   EXPECT_TRUE(cookie_value.is_dict());
   const base::DictionaryValue& cookie =
       base::Value::AsDictionaryValue(cookie_value);
@@ -2043,13 +2040,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetAndGetCookies) {
   // Then get all the cookies in the cookie jar.
   SendCommand("Network.getAllCookies", nullptr, true);
 
-  cookies = result_->FindListKey("cookies");
+  cookies = result()->FindList("cookies");
   ASSERT_TRUE(cookies);
-  EXPECT_EQ(2u, cookies->GetListDeprecated().size());
+  EXPECT_EQ(2u, cookies->size());
 
   // Note: the cookies will be returned in unspecified order.
   size_t found = 0;
-  for (const base::Value& cookie_value : cookies->GetListDeprecated()) {
+  for (const base::Value& cookie_value : *cookies) {
     EXPECT_TRUE(cookie_value.is_dict());
     const base::DictionaryValue& cookie =
         base::Value::AsDictionaryValue(cookie_value);
@@ -2267,15 +2264,16 @@ class DevToolsProtocolBackForwardCacheTest : public DevToolsProtocolTest {
   // content::WebContentsDelegate:
   bool IsBackForwardCacheSupported() override { return true; }
 
-  std::string Evaluate(std::string script, base::Location location) {
+  std::string Evaluate(const std::string& script,
+                       const base::Location& location) {
     std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
     params->SetStringKey("expression", script);
     SendCommand("Runtime.evaluate", std::move(params), true);
-    base::Value* result_value;
-    EXPECT_TRUE(result_->Get("result.value", &result_value));
-    DCHECK(result_value->is_string())
-        << "Valued to evaluate " << script << " from " << location.ToString();
-    return result_value->GetString();
+    const std::string* result_value =
+        result()->FindStringByDottedPath("result.value");
+    DCHECK(result_value) << "Valued to evaluate " << script << " from "
+                         << location.ToString();
+    return *result_value;
   }
 
  private:
@@ -2771,21 +2769,20 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, UnsafeOperations) {
 
   SendCommand("Page.addCompilationCache",
               std::make_unique<base::Value>(params.Clone()));
-  EXPECT_TRUE(result_);
+  EXPECT_TRUE(result());
   Detach();
   SetAllowUnsafeOperations(false);
   Attach();
   SendCommand("Page.addCompilationCache",
               std::make_unique<base::Value>(params.Clone()));
-  EXPECT_THAT(error_, base::test::DictionaryHasValue(
-                          "code", base::Value(static_cast<int>(
-                                      crdtp::DispatchCode::SERVER_ERROR))));
+  EXPECT_THAT(
+      error()->FindInt("code"),
+      testing::Optional(static_cast<int>(crdtp::DispatchCode::SERVER_ERROR)));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TracingWithPerfettoConfig) {
   std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
   base::trace_event::TraceConfig chrome_config;
-  base::DictionaryValue* command_result;
   perfetto::TraceConfig perfetto_config;
   std::string perfetto_config_encoded;
 
@@ -2803,18 +2800,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TracingWithPerfettoConfig) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
   Attach();
 
-  command_result = SendCommand("Tracing.start", std::move(params), true);
-  ASSERT_NE(command_result, nullptr);
-
-  command_result = SendCommand("Tracing.end", nullptr, true);
-  ASSERT_NE(command_result, nullptr);
+  EXPECT_TRUE(SendCommand("Tracing.start", std::move(params), true));
+  EXPECT_TRUE(SendCommand("Tracing.end", nullptr, true));
 
   WaitForNotification("Tracing.tracingComplete", true);
 }
 
 class SystemTracingDevToolsProtocolTest : public DevToolsProtocolTest {
  protected:
-  base::DictionaryValue* StartSystemTrace() {
+  const base::Value::Dict* StartSystemTrace() {
     perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
         base::trace_event::TraceConfig(),
         /*privacy_filtering_enabled=*/false,
@@ -2839,8 +2833,7 @@ class SystemTracingDevToolsProtocolTest : public DevToolsProtocolTest {
 
 IN_PROC_BROWSER_TEST_F(SystemTracingDevToolsProtocolTest,
                        StartSystemTracingFailsWhenSystemConsumerDisabled) {
-  base::DictionaryValue* command_result = StartSystemTrace();
-  ASSERT_EQ(command_result, nullptr);
+  EXPECT_FALSE(StartSystemTrace());
 }
 
 #if BUILDFLAG(IS_POSIX)
@@ -2900,8 +2893,7 @@ class InvalidSystemTracingDevToolsProtocolTest
 
 IN_PROC_BROWSER_TEST_F(InvalidSystemTracingDevToolsProtocolTest,
                        StartTracingFailsWithInvalidSockets) {
-  base::DictionaryValue* command_result = StartSystemTrace();
-  ASSERT_EQ(command_result, nullptr);
+  EXPECT_FALSE(StartSystemTrace());
 }
 
 class FakeSystemTracingDevToolsProtocolTest
@@ -2948,12 +2940,8 @@ class FakeSystemTracingDevToolsProtocolTest
 #endif
 IN_PROC_BROWSER_TEST_F(FakeSystemTracingDevToolsProtocolTest,
                        MAYBE_TracingWithFakeSystemBackend) {
-  base::DictionaryValue* command_result = StartSystemTrace();
-  ASSERT_NE(command_result, nullptr);
-
-  command_result = SendCommand("Tracing.end", nullptr, true);
-  ASSERT_NE(command_result, nullptr);
-
+  EXPECT_TRUE(StartSystemTrace());
+  EXPECT_TRUE(SendCommand("Tracing.end", nullptr, true));
   WaitForNotification("Tracing.tracingComplete", true);
 }
 
@@ -2975,8 +2963,7 @@ class FakeSystemTracingForbiddenDevToolsProtocolTest
 #endif
 IN_PROC_BROWSER_TEST_F(FakeSystemTracingForbiddenDevToolsProtocolTest,
                        MAYBE_SystemConsumerForbidden) {
-  base::DictionaryValue* command_result = StartSystemTrace();
-  ASSERT_EQ(command_result, nullptr);
+  EXPECT_FALSE(StartSystemTrace());
 }
 #endif  // BUILDFLAG(IS_POSIX)
 

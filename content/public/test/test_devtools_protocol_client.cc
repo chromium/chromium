@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
@@ -28,18 +29,19 @@ const char kParamsParam[] = "params";
 TestDevToolsProtocolClient::TestDevToolsProtocolClient() = default;
 TestDevToolsProtocolClient::~TestDevToolsProtocolClient() = default;
 
-base::DictionaryValue* TestDevToolsProtocolClient::SendSessionCommand(
+const base::Value::Dict* TestDevToolsProtocolClient::SendSessionCommand(
     const std::string& method,
     std::unique_ptr<base::Value> params,
     const std::string& session_id,
     bool wait) {
-  in_dispatch_ = true;
+  base::AutoReset<bool> reset_in_dispatch(&in_dispatch_, true);
   base::DictionaryValue command;
   command.SetInteger(kIdParam, ++last_sent_id_);
   command.SetString(kMethodParam, method);
-  if (params)
+  if (params) {
     command.SetKey(kParamsParam,
                    base::Value::FromUniquePtrValue(std::move(params)));
+  }
   if (!session_id.empty())
     command.SetString(kSessionIdParam, session_id);
 
@@ -49,13 +51,9 @@ base::DictionaryValue* TestDevToolsProtocolClient::SendSessionCommand(
       this, base::as_bytes(base::make_span(json_command)));
   // Some messages are dispatched synchronously.
   // Only run loop if we are not finished yet.
-  if (in_dispatch_ && wait) {
+  if (in_dispatch_ && wait)
     WaitForResponse();
-    in_dispatch_ = false;
-    return result_.get();
-  }
-  in_dispatch_ = false;
-  return result_.get();
+  return result();
 }
 
 void TestDevToolsProtocolClient::WaitForResponse() {
@@ -125,6 +123,14 @@ TestDevToolsProtocolClient::WaitForMatchingNotification(
   return std::move(waiting_for_notification_params_);
 }
 
+const base::Value::Dict* TestDevToolsProtocolClient::result() const {
+  return response_.FindDict("result");
+}
+
+const base::Value::Dict* TestDevToolsProtocolClient::error() const {
+  return response_.FindDict("error");
+}
+
 void TestDevToolsProtocolClient::RunLoopUpdatingQuitClosure() {
   base::RunLoop run_loop;
   run_loop_quit_closure_ = run_loop.QuitClosure();
@@ -136,28 +142,22 @@ void TestDevToolsProtocolClient::DispatchProtocolMessage(
     base::span<const uint8_t> message) {
   base::StringPiece message_str(reinterpret_cast<const char*>(message.data()),
                                 message.size());
-  auto root = base::DictionaryValue::From(
-      base::JSONReader::ReadDeprecated(message_str));
-  absl::optional<int> id = root->FindIntKey("id");
-  if (id) {
+  base::Value parsed = *base::JSONReader::Read(message_str);
+  if (absl::optional<int> id = parsed.GetDict().FindInt("id")) {
+    response_ = std::move(parsed.GetDict());
     result_ids_.push_back(*id);
-    base::DictionaryValue* result;
-    bool have_result = root->GetDictionary("result", &result);
-    result_.reset(have_result ? result->DeepCopy() : nullptr);
-    base::Value* error = root->FindDictKey("error");
-    error_ = error ? error->Clone() : base::Value();
     in_dispatch_ = false;
     if (*id && *id == waiting_for_command_result_id_) {
       waiting_for_command_result_id_ = 0;
       std::move(run_loop_quit_closure_).Run();
     }
   } else {
-    std::string notification;
-    CHECK(root->GetString("method", &notification));
+    std::string& notification = *parsed.GetDict().FindString("method");
     notifications_.push_back(notification);
-    base::DictionaryValue* params;
-    if (root->GetDictionary("params", &params)) {
-      notification_params_.push_back(params->CreateDeepCopy());
+    base::Value* params = parsed.GetDict().Find("params");
+    if (params) {
+      notification_params_.push_back(
+          base::Value::AsDictionaryValue(*params).CreateDeepCopy());
     } else {
       notification_params_.push_back(
           base::WrapUnique(new base::DictionaryValue()));

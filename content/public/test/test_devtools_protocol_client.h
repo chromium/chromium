@@ -25,27 +25,29 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
   ~TestDevToolsProtocolClient() override;
 
  protected:
-  base::DictionaryValue* SendCommand(const std::string& method,
-                                     std::unique_ptr<base::Value> params) {
+  const base::Value::Dict* SendCommand(const std::string& method,
+                                       std::unique_ptr<base::Value> params) {
     return SendCommand(method, std::move(params), true);
   }
 
-  base::DictionaryValue* SendCommand(const std::string& method,
-                                     std::unique_ptr<base::Value> params,
-                                     bool wait) {
+  const base::Value::Dict* SendCommand(const std::string& method,
+                                       std::unique_ptr<base::Value> params,
+                                       bool wait) {
     return SendSessionCommand(method, std::move(params), std::string(), wait);
   }
 
-  base::DictionaryValue* SendSessionCommand(const std::string& method,
-                                            std::unique_ptr<base::Value> params,
-                                            const std::string& session_id) {
+  const base::Value::Dict* SendSessionCommand(
+      const std::string& method,
+      std::unique_ptr<base::Value> params,
+      const std::string& session_id) {
     return SendSessionCommand(method, std::move(params), session_id, true);
   }
 
-  base::DictionaryValue* SendSessionCommand(const std::string& method,
-                                            std::unique_ptr<base::Value> params,
-                                            const std::string& session_id,
-                                            bool wait);
+  const base::Value::Dict* SendSessionCommand(
+      const std::string& method,
+      std::unique_ptr<base::Value> params,
+      const std::string& session_id,
+      bool wait);
 
   void WaitForResponse();
 
@@ -92,8 +94,9 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
     allow_unsafe_operations_ = allow;
   }
 
-  std::unique_ptr<base::DictionaryValue> result_;
-  base::Value error_;
+  const base::Value::Dict* result() const;
+  const base::Value::Dict* error() const;
+
   scoped_refptr<DevToolsAgentHost> agent_host_;
   int last_sent_id_ = 0;
   std::vector<int> result_ids_;
@@ -107,6 +110,7 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
   void AgentHostClosed(DevToolsAgentHost* agent_host) override;
   bool AllowUnsafeOperations() override;
 
+  base::Value::Dict response_;
   std::string waiting_for_notification_;
   NotificationMatcher waiting_for_notification_matcher_;
   std::unique_ptr<base::DictionaryValue> waiting_for_notification_params_;
