@@ -12,7 +12,7 @@
     {
       "all_frames": true,
       "matches": [
-         "https://*/*fenced_frame.html"
+         "http://*/*fenced_frame.html"
       ],
       "js": ["content_script.js"]
     }

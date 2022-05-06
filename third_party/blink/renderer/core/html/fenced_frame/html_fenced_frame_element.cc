@@ -399,7 +399,8 @@ void HTMLFencedFrameElement::Navigate() {
         mojom::blink::ConsoleMessageSource::kRendering,
         mojom::blink::ConsoleMessageLevel::kWarning,
         "A fenced frame whose mode is " + FencedFrameModeToString(mode_) +
-            " must be navigated to an \"https\" URL or \"about:blank\"."));
+            " must be navigated to an \"https\" URL, an \"http\" localhost URL,"
+            " or \"about:blank\"."));
     return;
   }
 
@@ -409,8 +410,9 @@ void HTMLFencedFrameElement::Navigate() {
           mojom::blink::ConsoleMessageSource::kRendering,
           mojom::blink::ConsoleMessageLevel::kWarning,
           "A fenced frame whose mode is " + FencedFrameModeToString(mode_) +
-              " must be navigated to an opaque \"urn:uuid\" URL, an \"https\" "
-              "URL or \"about:blank\"."));
+              " must be navigated to an opaque \"urn:uuid\" URL,"
+              " an \"https\" URL, an \"http\" localhost URL,"
+              " or \"about:blank\"."));
       return;
     }
   }
