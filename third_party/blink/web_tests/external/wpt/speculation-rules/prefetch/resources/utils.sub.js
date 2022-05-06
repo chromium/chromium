@@ -14,9 +14,12 @@ class PrefetchAgent extends RemoteContext {
   }
 
   getExecutorURL(options = {}) {
-    let {hostname, protocol, ...extra} = options;
+    let {hostname, protocol, executor, ...extra} = options;
     let params = new URLSearchParams({uuid: this.context_id, ...extra});
-    let url = new URL(`executor.sub.html?${params}`, SR_PREFETCH_UTILS_URL);
+    if(executor === undefined) {
+      executor = "executor.sub.html";
+    }
+    let url = new URL(`${executor}?${params}`, SR_PREFETCH_UTILS_URL);
     if(hostname !== undefined) {
       url.hostname = hostname;
     }
@@ -55,6 +58,21 @@ class PrefetchAgent extends RemoteContext {
   async getRequestHeaders() {
     return this.execute_script(() => requestHeaders);
   }
+
+  async getResponseCookies() {
+    return this.execute_script(() => {
+      let cookie = {};
+      document.cookie.split(/\s*;\s*/).forEach((kv)=>{
+        let [key, value] = kv.split(/\s*=\s*/);
+        cookie[key] = value;
+      });
+      return cookie;
+    });
+  }
+
+  async getRequestCookies() {
+    return this.execute_script(() => window.requestCookies);
+  }
 }
 
 // Produces n URLs with unique UUIDs which will record when they are prefetched.
@@ -79,9 +97,10 @@ async function isUrlPrefetched(url) {
 }
 
 // Must also include /common/utils.js and /common/dispatcher/dispatcher.js to use this.
-async function spawnWindow(t, extra = {}) {
+async function spawnWindow(t, options = {}) {
+  let {executor, ...extra} = options;
   let agent = new PrefetchAgent(token(), t);
-  let w = window.open(agent.getExecutorURL(), extra);
+  let w = window.open(agent.getExecutorURL({executor}), extra);
   t.add_cleanup(() => w.close());
   return agent;
 }
