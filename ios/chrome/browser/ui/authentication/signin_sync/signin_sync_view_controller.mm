@@ -28,7 +28,6 @@ namespace {
 // Width of the identity control if nothing is contraining it.
 constexpr CGFloat kIdentityControlMaxWidth = 327;
 constexpr CGFloat kIdentityControlMarginDefault = 16;
-constexpr CGFloat kIdentityControlMarginWhenInTop = 24;
 
 // URL for the Settings link.
 const char* const kSettingsSyncURL = "internal://settings-sync";
@@ -104,13 +103,8 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   [self.delegate signinSyncViewController:self
                        addConsentStringID:self.activateSyncButtonID];
 
-  if ([self identityControlInTop]) {
-    [self.topSpecificContentView addSubview:self.identityControl];
-    [self.topSpecificContentView addLayoutGuide:self.identityControlArea];
-  } else {
-    [self.specificContentView addSubview:self.identityControl];
-    [self.specificContentView addLayoutGuide:self.identityControlArea];
-  }
+  [self.specificContentView addSubview:self.identityControl];
+  [self.specificContentView addLayoutGuide:self.identityControlArea];
 
   // Add the Learn More text label if there are enterprise sign-in or sync
   // restrictions.
@@ -138,8 +132,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
       [self.identityControlArea.widthAnchor
           constraintEqualToConstant:kIdentityControlMaxWidth];
   areaWidthConstraint.priority = UILayoutPriorityDefaultHigh;
-  int topMargin = self.identityControlInTop ? kIdentityControlMarginWhenInTop
-                                            : kIdentityControlMarginDefault;
+  int topMargin = self.identityControlInTop ? 0 : kIdentityControlMarginDefault;
   [NSLayoutConstraint activateConstraints:@[
     [self.identityControlArea.centerXAnchor
         constraintEqualToAnchor:self.identityControlArea.owningView
@@ -159,13 +152,9 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 
   // Set constraints that are dependent on the position of the identity
   // controller button and sign-in restrictions.
-
   if ([self identityControlInTop]) {
-    [self.identityControlArea.bottomAnchor
-        constraintEqualToAnchor:self.topSpecificContentView.bottomAnchor]
-        .active = YES;
     [self.identityControlArea.topAnchor
-        constraintEqualToAnchor:self.topSpecificContentView.topAnchor]
+        constraintEqualToAnchor:self.specificContentView.topAnchor]
         .active = YES;
   } else {
     [self.identityControlArea.topAnchor
@@ -460,10 +449,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   // the state of the UI.
   int bottomMargin = kIdentityControlMarginDefault;
   if (!hidden) {
-    if (self.identityControlInTop) {
-      // Use a larger margin when identity control is in top and visible.
-      bottomMargin = kIdentityControlMarginWhenInTop;
-    } else if (self.enterpriseSignInRestrictions == kNoEnterpriseRestriction) {
+    if (self.enterpriseSignInRestrictions == kNoEnterpriseRestriction) {
       // Remove the bottom margin when the identity control is in bottom and
       // visible.
       bottomMargin = 0;

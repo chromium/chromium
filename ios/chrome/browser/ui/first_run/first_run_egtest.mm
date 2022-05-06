@@ -56,16 +56,6 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
 NSString* const kBeginBoldTag = @"BEGIN_BOLD[ \t]*";
 NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 
-// Returns a layout constraint to compare below.
-GREYLayoutConstraint* Below() {
-  return [GREYLayoutConstraint
-      layoutConstraintWithAttribute:kGREYLayoutAttributeTop
-                          relatedBy:kGREYLayoutRelationGreaterThanOrEqual
-               toReferenceAttribute:kGREYLayoutAttributeBottom
-                         multiplier:1.0
-                           constant:0.0];
-}
-
 // Returns a matcher for the welcome screen UMA checkbox button.
 id<GREYMatcher> GetUMACheckboxButton() {
   return grey_accessibilityID(kMetricsConsentCheckboxAccessibilityIdentifier);
@@ -393,41 +383,6 @@ GREYLayoutConstraint* BelowConstraint() {
   [[EarlGrey selectElementWithMatcher:grey_allOf(GetSyncSettings(),
                                                  grey_interactable(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Checks that the identity switcher in the sign-in & sync screen is displayed
-// correctly at the TOP.
-- (void)testIdentitySwitcherAtTop {
-  AppLaunchConfiguration config;
-  config.relaunch_policy = ForceRelaunchByKilling;
-
-  // Show the First Run UI at startup.
-  config.additional_args.push_back("-FirstRunForceEnabled");
-  config.additional_args.push_back("true");
-
-  // Relaunch the app to take the configuration into account.
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  [self verifyWelcomeScreenIsDisplayed];
-
-  // Go to the sign-in & sync screen.
-  [self scrollToElementAndAssertVisibility:GetAcceptButton()];
-  [[EarlGrey selectElementWithMatcher:GetAcceptButton()]
-      performAction:grey_tap()];
-
-  [self verifySignInSyncScreenIsDisplayed];
-
-  // Verify that the subtitle label is below the identity switcher .
-  id<GREYMatcher> subtitleLabel =
-      grey_accessibilityID(kPromoStyleSubtitleAccessibilityIdentifier);
-  [self scrollToElementAndAssertVisibility:subtitleLabel];
-  [[EarlGrey selectElementWithMatcher:subtitleLabel]
-      assertWithMatcher:grey_layout(@[ Below() ],
-                                    grey_accessibilityID(
-                                        kIdentityButtonControlIdentifier))];
 }
 
 // Tests that the forced sign-in screen is shown when the policy is enabled.

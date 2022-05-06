@@ -59,11 +59,6 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 // layout reflects the latest updates.
 @property(nonatomic, assign) BOOL canUpdateViewsOnScroll;
 
-// Redefinition to allow write. The property should only be read when
-// -hasTopSpecificContentView returns YES to not create the view when reading
-// it. The view should only be lazily instanciated when read externally.
-@property(nonatomic, strong, readwrite) UIView* topSpecificContentView;
-
 // Whether the image is currently being calculated; used to prevent infinite
 // recursions caused by |viewDidLayoutSubviews|.
 @property(nonatomic, assign) BOOL calculatingImageSize;
@@ -95,9 +90,6 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   self.scrollContentView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.scrollContentView addSubview:self.imageView];
   [self.scrollContentView addSubview:self.titleLabel];
-  if ([self hasTopSpecificContentView]) {
-    [self.scrollContentView addSubview:self.topSpecificContentView];
-  }
   [self.scrollContentView addSubview:self.subtitleLabel];
   [self.view addLayoutGuide:subtitleMarginLayoutGuide];
   [self.scrollContentView addSubview:self.specificContentView];
@@ -142,25 +134,6 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
       (self.secondaryActionString || self.tertiaryActionString)
           ? 0
           : kActionsBottomMargin;
-
-  NSLayoutConstraint* subtitleLabelTopConstraint = [self.subtitleLabel.topAnchor
-      constraintEqualToAnchor:self.titleLabel.bottomAnchor
-                     constant:kDefaultMargin];
-  if ([self hasTopSpecificContentView]) {
-    // When set, put the |topSpecificContentView| view between the title and
-    // subtitle labels.
-    [NSLayoutConstraint activateConstraints:@[
-      [self.topSpecificContentView.topAnchor
-          constraintEqualToAnchor:self.titleLabel.bottomAnchor],
-      [self.topSpecificContentView.centerXAnchor
-          constraintEqualToAnchor:self.scrollContentView.centerXAnchor],
-      [self.topSpecificContentView.widthAnchor
-          constraintLessThanOrEqualToAnchor:self.scrollContentView.widthAnchor],
-    ]];
-    subtitleLabelTopConstraint = [self.subtitleLabel.topAnchor
-        constraintEqualToAnchor:self.topSpecificContentView.bottomAnchor];
-  }
-  subtitleLabelTopConstraint.active = YES;
 
   NSLayoutYAxisAnchor* specificContentViewBottomAnchor =
       self.scrollContentView.bottomAnchor;
@@ -245,6 +218,9 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
     [self.titleLabel.widthAnchor
         constraintLessThanOrEqualToAnchor:self.scrollContentView.widthAnchor
                                  constant:-2 * kTitleHorizontalMargin],
+    [self.subtitleLabel.topAnchor
+        constraintEqualToAnchor:self.titleLabel.bottomAnchor
+                       constant:kDefaultMargin],
     [self.subtitleLabel.centerXAnchor
         constraintEqualToAnchor:self.scrollContentView.centerXAnchor],
     [self.subtitleLabel.widthAnchor
@@ -475,14 +451,6 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
     _specificContentView.translatesAutoresizingMaskIntoConstraints = NO;
   }
   return _specificContentView;
-}
-
-- (UIView*)topSpecificContentView {
-  if (!_topSpecificContentView) {
-    _topSpecificContentView = [[UIView alloc] init];
-    _topSpecificContentView.translatesAutoresizingMaskIntoConstraints = NO;
-  }
-  return _topSpecificContentView;
 }
 
 - (UIButton*)primaryActionButton {
@@ -841,11 +809,6 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 - (bool)isRegularXRegularSizeClass:(UITraitCollection*)traitCollection {
   return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
          traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular;
-}
-
-// Returns YES if |_topSpecificContentView| is instantiated.
-- (BOOL)hasTopSpecificContentView {
-  return _topSpecificContentView != nil;
 }
 
 // Helper class that returns the an NSAttributedString generated from the
