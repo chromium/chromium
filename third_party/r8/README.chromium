@@ -46,14 +46,14 @@ autoninja -C out/Debug third_party/r8:custom_d8_java
 cp out/Debug/obj/third_party/r8/custom_d8_java.javac.jar third_party/r8/custom_d8.jar
 
 * For r8:
-  * R8 is now autorolled ~once a week.
+  * R8 is built daily and uploaded to CIPD.
   * To lookup the latest version being used currently:
     * Look up the cipd instance id from //DEPS, or run
       `gclient getdep -r src/third_party/r8:chromium/third_party/r8`.
     * Find the version tag at this url
       https://chrome-infra-packages.appspot.com/p/chromium/third_party/r8/+/<instance id>
     * Or, run `cipd describe chromium/third_party/r8 -version <instance id>` and look at the version tag.
-    * The version string appears after the @ symbol in the tag.
+    * The commit hash that R8 was built at appears after the @ symbol in the version tag.
   * New instances are uploaded by the packager bot:
     https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
   * The bot autoruns every 6 hours. Ping a trooper or a clank build core dev to
@@ -62,6 +62,7 @@ cp out/Debug/obj/third_party/r8/custom_d8_java.javac.jar third_party/r8/custom_d
   * The autoroller runs automatically when a new cipd instance is uploaded.
     * Since r8 rolls affect downstream, the roller is only accessible to Googlers.
     * See its status here: https://skia-autoroll.corp.goog/r/r8-chromium
+  * Rolls are not automatically merged in - they require a manual +2.
 
 * If patching fails:
 git clone https://r8.googlesource.com/r8
