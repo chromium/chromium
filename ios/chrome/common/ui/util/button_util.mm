@@ -11,7 +11,7 @@
 #error "This file requires ARC support."
 #endif
 
-const CGFloat kButtonVerticalInsets = 17;
+const CGFloat kButtonVerticalInsets = 14.5;
 const CGFloat kPrimaryButtonCornerRadius = 15;
 
 UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled) {

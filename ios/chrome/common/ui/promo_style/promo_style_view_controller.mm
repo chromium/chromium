@@ -542,6 +542,9 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
     // label will be updated at the viewDidAppear stage if necessary.
     [_primaryActionButton setTitle:self.primaryActionString
                           forState:UIControlStateNormal];
+    UILabel* titleLabel = _primaryActionButton.titleLabel;
+    titleLabel.adjustsFontSizeToFitWidth = YES;
+    titleLabel.minimumScaleFactor = 0.7;
     _primaryActionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
     _primaryActionButton.accessibilityIdentifier =
         kPromoStylePrimaryActionAccessibilityIdentifier;
@@ -624,6 +627,10 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
         [self createButtonWithText:self.secondaryActionString
             accessibilityIdentifier:
                 kPromoStyleSecondaryActionAccessibilityIdentifier];
+    UILabel* titleLabel = _secondaryActionButton.titleLabel;
+    titleLabel.adjustsFontSizeToFitWidth = YES;
+    titleLabel.minimumScaleFactor = 0.7;
+
     [_secondaryActionButton addTarget:self
                                action:@selector(didTapSecondaryActionButton)
                      forControlEvents:UIControlEventTouchUpInside];
