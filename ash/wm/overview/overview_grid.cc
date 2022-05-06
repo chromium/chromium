@@ -37,6 +37,7 @@
 #include "ash/wm/desks/templates/save_desk_template_button.h"
 #include "ash/wm/desks/templates/save_desk_template_button_container.h"
 #include "ash/wm/desks/templates/saved_desk_animations.h"
+#include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
@@ -818,8 +819,8 @@ void OverviewGrid::SetBoundsAndUpdatePositions(
   MaybeUpdateDesksWidgetBounds();
   PositionWindows(animate, ignored_items);
 
-  if (bounds_updated && desks_templates_grid_widget_)
-    desks_templates_grid_widget_->SetBounds(GetGridEffectiveBounds());
+  if (bounds_updated && saved_desk_library_widget_)
+    saved_desk_library_widget_->SetBounds(GetGridEffectiveBounds());
 }
 
 void OverviewGrid::RearrangeDuringDrag(
@@ -1714,16 +1715,14 @@ void OverviewGrid::CommitNameChanges() {
     DeskNameView::CommitChanges(desks_widget_.get());
 
   // The templates grid may not be shown.
-  if (desks_templates_grid_widget_)
-    SavedDeskNameView::CommitChanges(desks_templates_grid_widget_.get());
+  if (saved_desk_library_widget_)
+    SavedDeskNameView::CommitChanges(saved_desk_library_widget_.get());
 }
 
 void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
-  if (!desks_templates_grid_widget_) {
-    desks_templates_grid_widget_ =
-        DesksTemplatesGridView::CreateDesksTemplatesGridWidget(root_window_);
-    desks_templates_grid_view_ = static_cast<DesksTemplatesGridView*>(
-        desks_templates_grid_widget_->GetContentsView());
+  if (!saved_desk_library_widget_) {
+    saved_desk_library_widget_ =
+        SavedDeskLibraryView::CreateSavedDeskLibraryWidget(root_window_);
   }
 
   for (auto& overview_mode_item : window_list_)
@@ -1735,11 +1734,11 @@ void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
   // end. Stop animating so that the callbacks associated get fired, otherwise
   // we may end up trying to show a widget that's already shown.
   // `StopAnimating()` is a no-op if there is no animation in progress.
-  desks_templates_grid_widget_->GetLayer()->GetAnimator()->StopAnimating();
-  desks_templates_grid_widget_->Show();
+  saved_desk_library_widget_->GetLayer()->GetAnimator()->StopAnimating();
+  saved_desk_library_widget_->Show();
 
   // Fade in the widget from its current opacity.
-  PerformFadeInLayer(desks_templates_grid_widget_->GetLayer(),
+  PerformFadeInLayer(saved_desk_library_widget_->GetLayer(),
                      /*animate=*/true);
 
   UpdateSaveDeskButtons();
@@ -1752,10 +1751,10 @@ void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
 }
 
 void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
-  if (!desks_templates_grid_widget_)
+  if (!saved_desk_library_widget_)
     return;
 
-  auto* grid_layer = desks_templates_grid_widget_->GetLayer();
+  auto* grid_layer = saved_desk_library_widget_->GetLayer();
   const bool already_hiding_grid = grid_layer->GetAnimator()->is_animating() &&
                                    grid_layer->GetTargetOpacity() == 0.f;
   if (already_hiding_grid)
@@ -1764,7 +1763,7 @@ void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
   if (exit_overview && overview_session_->enter_exit_overview_type() ==
                            OverviewEnterExitType::kImmediateExit) {
     // Since we're immediately exiting, we don't need to animate anything.
-    // Reshow the overview items and let the `desks_templates_grid_widget_`
+    // Reshow the overview items and let the `saved_desk_library_widget_`
     // handle its own destruction.
     for (auto& overview_mode_item : window_list_)
       overview_mode_item->RevertHideForDesksTemplatesGrid(/*animate=*/false);
@@ -1776,34 +1775,38 @@ void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
     for (auto& overview_mode_item : window_list_)
       overview_mode_item->RevertHideForDesksTemplatesGrid(/*animate=*/true);
 
-    // Disable the `desks_templates_grid_widget_`'s event targeting so it can't
+    // Disable the `saved_desk_library_widget_`'s event targeting so it can't
     // get any events during the animation.
-    desks_templates_grid_widget_->GetNativeWindow()->SetEventTargetingPolicy(
+    saved_desk_library_widget_->GetNativeWindow()->SetEventTargetingPolicy(
         aura::EventTargetingPolicy::kNone);
 
     FadeOutWidgetFromOverview(
-        std::move(desks_templates_grid_widget_),
+        std::move(saved_desk_library_widget_),
         OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_DESKS_TEMPLATES_GRID_FADE_OUT);
     return;
   }
 
-  // Fade out the `desks_templates_grid_widget_` and then when its animation is
+  // Fade out the `saved_desk_library_widget_` and then when its animation is
   // done fade in the supporting widgets and revert the overview item hides.
   PerformFadeOutLayer(
-      desks_templates_grid_widget_->GetLayer(),
+      saved_desk_library_widget_->GetLayer(),
       /*animate=*/true,
       base::BindOnce(&OverviewGrid::OnDesksTemplatesGridFadedOut,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool OverviewGrid::IsShowingDesksTemplatesGrid() const {
-  return desks_templates_grid_widget_ &&
-         desks_templates_grid_widget_->IsVisible();
+  return saved_desk_library_widget_ && saved_desk_library_widget_->IsVisible();
 }
 
 bool OverviewGrid::IsTemplateNameBeingModified() const {
-  return desks_templates_grid_view_ &&
-         desks_templates_grid_view_->IsTemplateNameBeingModified();
+  if (auto* library_view = GetSavedDeskLibraryView()) {
+    for (auto* grid_view : library_view->grid_views()) {
+      if (grid_view->IsTemplateNameBeingModified())
+        return true;
+    }
+  }
+  return false;
 }
 
 void OverviewGrid::UpdateNoWindowsWidget(bool no_items) {
@@ -2098,6 +2101,13 @@ void OverviewGrid::OnWallpaperChanging() {
 
 void OverviewGrid::OnWallpaperChanged() {
   grid_event_handler_ = std::make_unique<OverviewGridEventHandler>(this);
+}
+
+SavedDeskLibraryView* OverviewGrid::GetSavedDeskLibraryView() const {
+  return saved_desk_library_widget_
+             ? static_cast<SavedDeskLibraryView*>(
+                   saved_desk_library_widget_->GetContentsView())
+             : nullptr;
 }
 
 void OverviewGrid::MaybeInitDesksWidget() {
@@ -2477,7 +2487,7 @@ void OverviewGrid::OnDesksTemplatesGridFadedOut() {
   for (auto& overview_mode_item : window_list_)
     overview_mode_item->RevertHideForDesksTemplatesGrid(/*animate=*/true);
 
-  desks_templates_grid_widget_->Hide();
+  saved_desk_library_widget_->Hide();
 
   desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
   desks_bar_view_->OnDesksTemplatesGridHidden();

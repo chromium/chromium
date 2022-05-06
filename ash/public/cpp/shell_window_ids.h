@@ -215,8 +215,8 @@ enum NonContainerWindowId {
   // each display when overview mode is active.
   kShellWindowId_SaveDeskButtonContainer,
 
-  // The window that shows the Desks Templates grid in overview.
-  kShellWindowId_DesksTemplatesGridWindow,
+  // The window that shows the Saved Desk Library in overview.
+  kShellWindowId_SavedDeskLibraryWindow,
 
   // The window that shows the "No recent items" label in overview.
   kShellWindowId_OverviewNoWindowsLabelWindow,

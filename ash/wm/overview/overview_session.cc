@@ -33,6 +33,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
+#include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -788,7 +789,7 @@ void OverviewSession::OnWindowActivating(
   // overview.
   if (gained_active &&
       (gained_active->GetId() == kShellWindowId_DesksBarWindow ||
-       gained_active->GetId() == kShellWindowId_DesksTemplatesGridWindow)) {
+       gained_active->GetId() == kShellWindowId_SavedDeskLibraryWindow)) {
     return;
   }
 
@@ -890,8 +891,9 @@ bool OverviewSession::IsTemplatesUiLosingActivation(aura::Window* lost_active) {
     return false;
 
   for (auto& grid : grid_list_) {
-    if (grid->desks_templates_grid_widget() &&
-        lost_active == grid->desks_templates_grid_widget()->GetNativeWindow()) {
+    auto* desk_library_view = grid->GetSavedDeskLibraryView();
+    if (desk_library_view &&
+        lost_active == desk_library_view->GetWidget()->GetNativeWindow()) {
       return true;
     }
   }
@@ -1023,7 +1025,7 @@ void OverviewSession::ShowDesksTemplatesGrids(bool was_zero_state,
     return;
 
   const bool created_grid_widgets =
-      !grid_list_.front()->desks_templates_grid_widget();
+      !grid_list_.front()->GetSavedDeskLibraryView();
 
   // Send an a11y alert.
   Shell::Get()->accessibility_controller()->TriggerAccessibilityAlert(
@@ -1080,7 +1082,7 @@ void OverviewSession::UpdateAccessibilityFocus() {
   // `OverviewHighlightController::GetTraversableViews`.
   for (auto& grid : grid_list_) {
     if (grid->IsShowingDesksTemplatesGrid()) {
-      a11y_widgets.push_back(grid->desks_templates_grid_widget());
+      a11y_widgets.push_back(grid->saved_desk_library_widget());
     } else {
       for (const auto& item : grid->window_list())
         a11y_widgets.push_back(item->item_widget());

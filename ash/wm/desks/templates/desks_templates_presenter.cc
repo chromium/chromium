@@ -19,6 +19,7 @@
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
+#include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -215,20 +216,21 @@ void DesksTemplatesPresenter::OnGetAllEntries(
 
   for (auto& overview_grid : overview_session_->grid_list()) {
     // Populate `DesksTemplatesGridView` with the desk template entries.
-    if (views::Widget* grid_widget =
-            overview_grid->desks_templates_grid_widget()) {
-      auto* grid_view =
-          static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
-      grid_view->PopulateGridUI(entries,
-                                overview_grid->GetGridEffectiveBounds(),
-                                /*last_saved_template_uuid=*/item_to_focus);
-      SavedDeskItemView* item_view = grid_view->GetItemForUUID(item_to_focus);
+    if (SavedDeskLibraryView* library_view =
+            overview_grid->GetSavedDeskLibraryView()) {
+      library_view->PopulateGridUI(entries,
+                                   overview_grid->GetGridEffectiveBounds(),
+                                   /*last_saved_desk_uuid=*/item_to_focus);
+      SavedDeskItemView* item_view =
+          library_view->GetItemForUUID(item_to_focus);
       if (!item_view)
         continue;
 
       item_view->MaybeRemoveNameNumber();
-      if (grid_widget->GetNativeWindow()->GetRootWindow() == root_window)
+      if (library_view->GetWidget()->GetNativeWindow()->GetRootWindow() ==
+          root_window) {
         item_view->name_view()->RequestFocus();
+      }
     }
   }
 
@@ -335,19 +337,15 @@ void DesksTemplatesPresenter::OnAddOrUpdateEntry(
   DCHECK(overview_grid);
   const bool is_zero_state = overview_grid->desks_bar_view()->IsZeroState();
 
-  views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
-  if (grid_widget) {
+  if (auto* library_view = overview_grid->GetSavedDeskLibraryView()) {
     AddOrUpdateUIEntries({desk_template.get()});
 
     if (!was_update) {
       // Shows the grid if it was hidden. This will not call `GetAllEntries`.
       overview_session_->ShowDesksTemplatesGrids(is_zero_state, base::GUID(),
                                                  root_window);
-      auto* grid_view =
-          static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
-      SavedDeskItemView* item_view =
-          grid_view->GetItemForUUID(desk_template->uuid());
-      if (item_view) {
+      if (SavedDeskItemView* item_view =
+              library_view->GetItemForUUID(desk_template->uuid())) {
         item_view->MaybeRemoveNameNumber();
         item_view->name_view()->RequestFocus();
       }
@@ -398,13 +396,10 @@ void DesksTemplatesPresenter::AddOrUpdateUIEntries(
   UpdateDesksTemplatesUI();
 
   for (auto& overview_grid : overview_session_->grid_list()) {
-    // Update `DesksTemplatesGridView` with the new or added desk template
-    // entries.
-    if (views::Widget* grid_widget =
-            overview_grid->desks_templates_grid_widget()) {
-      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView())
-          ->AddOrUpdateTemplates(new_entries, /*initializing_grid_view=*/false,
-                                 /*last_saved_template_uuid=*/base::GUID());
+    if (auto* library_view = overview_grid->GetSavedDeskLibraryView()) {
+      library_view->AddOrUpdateTemplates(
+          new_entries, /*initializing_grid_view=*/false,
+          /*last_saved_template_uuid=*/base::GUID());
     }
   }
 
@@ -422,11 +417,8 @@ void DesksTemplatesPresenter::RemoveUIEntries(
 
   for (auto& overview_grid : overview_session_->grid_list()) {
     // Remove the entries from `DesksTemplatesGridView`.
-    if (views::Widget* grid_widget =
-            overview_grid->desks_templates_grid_widget()) {
-      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView())
-          ->DeleteTemplates(uuids);
-    }
+    if (auto* library_view = overview_grid->GetSavedDeskLibraryView())
+      library_view->DeleteTemplates(uuids);
   }
 
   if (on_update_ui_closure_for_testing_)

@@ -8,13 +8,7 @@
 #include <memory>
 
 #include "ash/public/cpp/desk_template.h"
-#include "ash/public/cpp/desks_templates_delegate.h"
-#include "ash/public/cpp/shell_window_ids.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
-#include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/style/pill_button.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_animations.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
@@ -27,12 +21,9 @@
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
-#include "ui/aura/window_targeter.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
-#include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
@@ -44,15 +35,12 @@ namespace ash {
 
 namespace {
 
-// Items are laid out in landscape mode when the aspect ratio of the view is
-// above this number.
-constexpr float kAspectRatioLimit = 1.38f;
+// Items are laid out in landscape mode unless the width is smaller than this.
+constexpr int kLandscapeMinWidth = 756;
 constexpr int kLandscapeMaxColumns = 3;
 constexpr int kPortraitMaxColumns = 2;
 
 constexpr int kGridPaddingDp = 25;
-
-constexpr int kFeedbackButtonSpacingDp = 40;
 
 // This is the maximum number of templates we will show in the grid. This
 // constant is used instead of the Desk model `GetMaxEntryCount()` because that
@@ -87,73 +75,13 @@ gfx::Transform GetScaleTransformForView(views::View* view) {
                                   scale_transform);
 }
 
+// Gets the max columns that the grid can show for a given width.
+size_t GetColumnsForWidth(int width) {
+  return width < kLandscapeMinWidth ? kPortraitMaxColumns
+                                    : kLandscapeMaxColumns;
+}
+
 }  // namespace
-
-// -----------------------------------------------------------------------------
-// CustomWindowTargeter:
-
-// A custom targeter that only allows us to handle events which are located on
-// the children of the grid. The grid takes up all the available space in
-// overview, but we still want some events to fall through to the
-// `OverviewGridEventHandler`, if they are not handled by the grid's children.
-class CustomWindowTargeter : public aura::WindowTargeter {
- public:
-  explicit CustomWindowTargeter(DesksTemplatesGridView* owner)
-      : owner_(owner) {}
-  CustomWindowTargeter(const CustomWindowTargeter&) = delete;
-  CustomWindowTargeter& operator=(const CustomWindowTargeter&) = delete;
-  ~CustomWindowTargeter() override = default;
-
-  // aura::WindowTargeter:
-  bool SubtreeShouldBeExploredForEvent(aura::Window* window,
-                                       const ui::LocatedEvent& event) override {
-    // TODO(dandersson|yongshun): For desk templates this is sufficient, but for
-    // save and recall we may have children that are not buttons, offscreen
-    // children or invisible children.
-    for (views::View* child : owner_->children()) {
-      if (child->GetBoundsInScreen().Contains(event.location())) {
-        return aura::WindowTargeter::SubtreeShouldBeExploredForEvent(window,
-                                                                     event);
-      }
-    }
-
-    // None of the grids' children will handle the event, so `window` won't
-    // handle the event and it will fall through to the wallpaper.
-    return false;
-  }
-
- private:
-  DesksTemplatesGridView* const owner_;
-};
-
-// -----------------------------------------------------------------------------
-// DesksTemplatesEventHandler:
-
-// This class is owned by DesksTemplatesGridView for the purpose of handling
-// mouse and gesture events.
-class DesksTemplatesEventHandler : public ui::EventHandler {
- public:
-  explicit DesksTemplatesEventHandler(DesksTemplatesGridView* owner)
-      : owner_(owner) {}
-  DesksTemplatesEventHandler(const DesksTemplatesEventHandler&) = delete;
-  DesksTemplatesEventHandler& operator=(const DesksTemplatesEventHandler&) =
-      delete;
-  ~DesksTemplatesEventHandler() override = default;
-
-  void OnMouseEvent(ui::MouseEvent* event) override {
-    owner_->OnLocatedEvent(event, /*is_touch=*/false);
-  }
-
-  void OnGestureEvent(ui::GestureEvent* event) override {
-    owner_->OnLocatedEvent(event, /*is_touch=*/true);
-  }
-
- private:
-  DesksTemplatesGridView* const owner_;
-};
-
-// -----------------------------------------------------------------------------
-// DesksTemplatesGridView:
 
 DesksTemplatesGridView::DesksTemplatesGridView()
     : bounds_animator_(this, /*use_transforms=*/true) {
@@ -165,46 +93,10 @@ DesksTemplatesGridView::DesksTemplatesGridView()
   bounds_animator_.set_tween_type(gfx::Tween::LINEAR);
 }
 
-DesksTemplatesGridView::~DesksTemplatesGridView() {
-  if (widget_window_) {
-    widget_window_->RemovePreTargetHandler(event_handler_.get());
-    widget_window_->RemoveObserver(this);
-  }
-}
-
-// static
-std::unique_ptr<views::Widget>
-DesksTemplatesGridView::CreateDesksTemplatesGridWidget(aura::Window* root) {
-  DCHECK(root);
-  DCHECK(root->IsRootWindow());
-
-  views::Widget::InitParams params(
-      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.activatable = views::Widget::InitParams::Activatable::kYes;
-  params.accept_events = true;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  // The parent should be a container that covers all the windows but is below
-  // some other system UI features such as system tray and capture mode and also
-  // below the system modal dialogs.
-  // TODO(sammiequon): Investigate if there is a more suitable container for
-  // this widget.
-  params.parent = root->GetChildById(kShellWindowId_ShelfBubbleContainer);
-  params.name = "DesksTemplatesGridWidget";
-
-  auto widget = std::make_unique<views::Widget>(std::move(params));
-  widget->SetContentsView(std::make_unique<DesksTemplatesGridView>());
-
-  // Not opaque since we want to view the contents of the layer behind.
-  widget->GetLayer()->SetFillsBoundsOpaquely(false);
-
-  widget->GetNativeWindow()->SetId(kShellWindowId_DesksTemplatesGridWindow);
-
-  return widget;
-}
+DesksTemplatesGridView::~DesksTemplatesGridView() = default;
 
 void DesksTemplatesGridView::PopulateGridUI(
     const std::vector<const DeskTemplate*>& desk_templates,
-    const gfx::Rect& grid_bounds,
     const base::GUID& last_saved_template_uuid) {
   DCHECK(grid_items_.empty());
 
@@ -219,17 +111,6 @@ void DesksTemplatesGridView::PopulateGridUI(
   AddOrUpdateTemplates(desk_templates,
                        /*initializing_grid_view=*/true,
                        last_saved_template_uuid);
-
-  if (!feedback_button_) {
-    feedback_button_ = AddChildView(std::make_unique<PillButton>(
-        base::BindRepeating(&DesksTemplatesGridView::OnFeedbackButtonPressed,
-                            base::Unretained(this)),
-        l10n_util::GetStringUTF16(
-            IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_FEEDBACK),
-        PillButton::Type::kIcon, &kPersistentDesksBarFeedbackIcon));
-  }
-
-  GetWidget()->SetBounds(grid_bounds);
 }
 
 void DesksTemplatesGridView::SortTemplateGridItems(
@@ -376,23 +257,6 @@ void DesksTemplatesGridView::Layout() {
   const std::vector<gfx::Rect> positions = CalculateGridItemPositions();
   for (size_t i = 0; i < grid_items_.size(); i++)
     grid_items_[i]->SetBoundsRect(positions[i]);
-
-  if (feedback_button_)
-    feedback_button_->SetBoundsRect(CalculateFeedbackButtonPosition());
-}
-
-void DesksTemplatesGridView::AddedToWidget() {
-  // Adding a pre-target handler to ensure that events are not accidentally
-  // captured by the child views. Also, an `EventHandler`
-  // (DesksTemplatesEventHandler) is added as the pre-target handler to the
-  // window as opposed to `Env` to ensure that we only get events that are on
-  // this window.
-  event_handler_ = std::make_unique<DesksTemplatesEventHandler>(this);
-  widget_window_ = GetWidget()->GetNativeWindow();
-  widget_window_->AddObserver(this);
-  widget_window_->AddPreTargetHandler(event_handler_.get());
-  widget_window_->SetEventTargeter(
-      std::make_unique<CustomWindowTargeter>(this));
 }
 
 void DesksTemplatesGridView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
@@ -404,22 +268,21 @@ void DesksTemplatesGridView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
     bounds_animator_.Cancel();
 }
 
-void DesksTemplatesGridView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  if (feedback_button_) {
-    feedback_button_->SetBackgroundColor(
-        AshColorProvider::Get()->GetBaseLayerColor(
-            AshColorProvider::BaseLayerType::kTransparent80));
-  }
+bool DesksTemplatesGridView::IsAnimating() const {
+  return bounds_animator_.IsAnimating();
 }
 
-void DesksTemplatesGridView::OnWindowDestroying(aura::Window* window) {
-  DCHECK_EQ(window, widget_window_);
-  DCHECK(event_handler_);
-  widget_window_->RemovePreTargetHandler(event_handler_.get());
-  widget_window_->RemoveObserver(this);
-  event_handler_.reset();
-  widget_window_ = nullptr;
+gfx::Size DesksTemplatesGridView::GetSizeForWidth(int width) const {
+  if (grid_items_.empty())
+    return gfx::Size();
+
+  const size_t columns = GetColumnsForWidth(width);
+  const size_t rows = (grid_items_.size() + columns - 1) / columns;
+
+  DCHECK_GT(rows, 0u);
+
+  return gfx::Size(width, (rows * SavedDeskItemView::kPreferredSize.height()) +
+                              (rows - 1) * kGridPaddingDp);
 }
 
 SavedDeskItemView* DesksTemplatesGridView::GetItemForUUID(
@@ -434,42 +297,6 @@ SavedDeskItemView* DesksTemplatesGridView::GetItemForUUID(
   return it == grid_items_.end() ? nullptr : *it;
 }
 
-void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,
-                                            bool is_touch) {
-  if (widget_window_ && widget_window_->event_targeting_policy() ==
-                            aura::EventTargetingPolicy::kNone) {
-    // If this is true, then we're in the process of fading out `this` and don't
-    // want to handle any events anymore so do nothing.
-    return;
-  }
-
-  // We also don't want to handle any events while we are animating the template
-  // view positions.
-  if (bounds_animator_.IsAnimating()) {
-    event->StopPropagation();
-    event->SetHandled();
-    return;
-  }
-
-  switch (event->type()) {
-    case ui::ET_MOUSE_MOVED:
-    case ui::ET_MOUSE_ENTERED:
-    case ui::ET_MOUSE_RELEASED:
-    case ui::ET_MOUSE_EXITED:
-    case ui::ET_GESTURE_LONG_PRESS:
-    case ui::ET_GESTURE_LONG_TAP: {
-      const gfx::Point screen_location =
-          event->target() ? event->target()->GetScreenLocation(*event)
-                          : event->root_location();
-      for (SavedDeskItemView* grid_item : grid_items_)
-        grid_item->UpdateHoverButtonsVisibility(screen_location, is_touch);
-      break;
-    }
-    default:
-      break;
-  }
-}
-
 std::vector<gfx::Rect> DesksTemplatesGridView::CalculateGridItemPositions()
     const {
   std::vector<gfx::Rect> positions;
@@ -479,22 +306,14 @@ std::vector<gfx::Rect> DesksTemplatesGridView::CalculateGridItemPositions()
 
   const size_t count = grid_items_.size();
   const gfx::Size grid_item_size = grid_items_[0]->GetPreferredSize();
-  const float aspect_ratio =
-      static_cast<float>(width()) / std::max(height(), 1);
-  const size_t max_column_count = aspect_ratio > kAspectRatioLimit
-                                      ? kLandscapeMaxColumns
-                                      : kPortraitMaxColumns;
+  const size_t max_column_count = GetColumnsForWidth(width());
   const size_t column_count = std::min(count, max_column_count);
-  const size_t row_count =
-      (count / max_column_count) + ((count % max_column_count) == 0 ? 0 : 1);
   const int total_width =
       column_count * (grid_item_size.width() + kGridPaddingDp) - kGridPaddingDp;
-  const int total_height =
-      row_count * (grid_item_size.height() + kGridPaddingDp) - kGridPaddingDp;
 
   const int initial_x = (width() - total_width) / 2;
   int x = initial_x;
-  int y = (height() - total_height) / 2;
+  int y = 0;
 
   for (size_t i = 0; i < count; i++) {
     if (i != 0 && i % column_count == 0) {
@@ -511,22 +330,6 @@ std::vector<gfx::Rect> DesksTemplatesGridView::CalculateGridItemPositions()
   DCHECK_EQ(positions.size(), grid_items_.size());
 
   return positions;
-}
-
-gfx::Rect DesksTemplatesGridView::CalculateFeedbackButtonPosition() const {
-  // Use the current bounds if the grid is empty. When this happens, the grid
-  // will fade out and the feedback button will not be moved.
-  if (grid_items_.empty())
-    return feedback_button_->bounds();
-
-  // The feedback button is centered and `kFeedbackButtonSpacingDp` from the
-  // bottom most grid item.
-  const gfx::Size feedback_size = feedback_button_->GetPreferredSize();
-  return gfx::Rect(
-      gfx::Point(width() / 2 - feedback_size.width() / 2,
-                 bounds_animator_.GetTargetBounds(grid_items_.back()).bottom() +
-                     kFeedbackButtonSpacingDp),
-      feedback_size);
 }
 
 void DesksTemplatesGridView::AnimateGridItems(
@@ -560,25 +363,6 @@ void DesksTemplatesGridView::AnimateGridItems(
 
     bounds_animator_.AnimateViewTo(grid_item, target_bounds);
   }
-
-  if (feedback_button_) {
-    const gfx::Rect feedback_target_bounds(CalculateFeedbackButtonPosition());
-    if (bounds_animator_.GetTargetBounds(feedback_button_) !=
-        feedback_target_bounds) {
-      bounds_animator_.AnimateViewTo(feedback_button_, feedback_target_bounds);
-    }
-  }
-}
-
-void DesksTemplatesGridView::OnFeedbackButtonPressed() {
-  std::string extra_diagnostics;
-  for (SavedDeskItemView* grid_item : grid_items_)
-    extra_diagnostics += (grid_item->desk_template()->ToString() + "\n");
-
-  // Note that this will activate the dialog which will exit overview and delete
-  // `this`.
-  Shell::Get()->desks_templates_delegate()->OpenFeedbackDialog(
-      extra_diagnostics);
 }
 
 BEGIN_METADATA(DesksTemplatesGridView, views::View)

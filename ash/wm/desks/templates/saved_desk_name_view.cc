@@ -28,7 +28,7 @@ constexpr int kNameFontSizeDeltaDp = 4;
 constexpr int kFocusRingGapDp = 2;
 
 #if DCHECK_IS_ON()
-bool IsDesksTemplatesGridWidget(const views::Widget* widget) {
+bool IsSavedDeskLibraryWidget(const views::Widget* widget) {
   if (!widget)
     return false;
 
@@ -38,7 +38,7 @@ bool IsDesksTemplatesGridWidget(const views::Widget* widget) {
 
   auto* session = overview_controller->overview_session();
   for (const auto& grid : session->grid_list()) {
-    if (widget == grid->desks_templates_grid_widget())
+    if (widget == grid->saved_desk_library_widget())
       return true;
   }
 
@@ -65,7 +65,7 @@ void SavedDeskNameView::CommitChanges(views::Widget* widget) {
   // TODO(crbug.com/1277302): Refactor this logic to be shared with
   // `DeskNameView::CommitChanges`.
 #if DCHECK_IS_ON()
-  DCHECK(IsDesksTemplatesGridWidget(widget));
+  DCHECK(IsSavedDeskLibraryWidget(widget));
 #endif  // DCHECK_IS_ON()
 
   auto* focus_manager = widget->GetFocusManager();

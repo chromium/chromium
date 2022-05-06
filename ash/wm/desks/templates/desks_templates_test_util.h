@@ -23,10 +23,12 @@ class Label;
 
 namespace ash {
 
-class DesksTemplatesPresenter;
-class RoundedImageView;
-class PillButton;
 class CloseButton;
+class DesksTemplatesPresenter;
+class OverviewGrid;
+class PillButton;
+class RoundedImageView;
+class SavedDeskLibraryView;
 
 // Wrapper for `DesksTemplatesPresenter` that exposes internal state to test
 // functions.
@@ -43,6 +45,21 @@ class DesksTemplatesPresenterTestApi {
 
  private:
   DesksTemplatesPresenter* const presenter_;
+};
+
+// Wrapper for `SavedDeskLibraryView` that exposes internal state to test
+// functions.
+class SavedDeskLibraryViewTestApi {
+ public:
+  explicit SavedDeskLibraryViewTestApi(SavedDeskLibraryView* library_view);
+  SavedDeskLibraryViewTestApi(SavedDeskLibraryViewTestApi&) = delete;
+  SavedDeskLibraryViewTestApi& operator=(SavedDeskLibraryViewTestApi&) = delete;
+  ~SavedDeskLibraryViewTestApi() = default;
+
+  void WaitForAnimationDone();
+
+ private:
+  SavedDeskLibraryView* library_view_;
 };
 
 // Wrapper for `DesksTemplatesGridView` that exposes internal state to test
@@ -117,6 +134,15 @@ class SavedDeskIconViewTestApi {
  private:
   const SavedDeskIconView* desks_templates_icon_view_;
 };
+
+// Returns all saved desk item views from the desk library on the given
+// `overview_grid`.
+std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
+    const OverviewGrid* overview_grid);
+
+// Returns all saved desk item views from the given `saved_desk_library_view`.
+std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
+    SavedDeskLibraryView* saved_desk_library_view);
 
 // Return the `grid_item_index`th `SavedDeskItemView` from the first
 // `OverviewGrid`'s `DesksTemplatesGridView` in `GetOverviewGridList()`.

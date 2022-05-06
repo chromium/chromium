@@ -35,11 +35,11 @@ class PresentationTimeRecorder;
 namespace ash {
 
 class DesksBarView;
-class DesksTemplatesGridView;
 class OverviewGridEventHandler;
 class OverviewItem;
 class SaveDeskTemplateButton;
 class SaveDeskTemplateButtonContainer;
+class SavedDeskLibraryView;
 
 // Represents a grid of windows in the Overview Mode in a particular root
 // window, and manages a selection widget that can be moved with the arrow keys.
@@ -399,6 +399,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   void OnWallpaperChanging() override;
   void OnWallpaperChanged() override;
 
+  // Returns the saved desk library view, or nullptr.
+  SavedDeskLibraryView* GetSavedDeskLibraryView() const;
+
   // Returns true if the grid has no more windows.
   bool empty() const { return window_list_.empty(); }
 
@@ -440,8 +443,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
     return grid_event_handler_.get();
   }
 
-  views::Widget* desks_templates_grid_widget() const {
-    return desks_templates_grid_widget_.get();
+  views::Widget* saved_desk_library_widget() const {
+    return saved_desk_library_widget_.get();
   }
 
   views::Widget* save_desk_button_container_widget() const {
@@ -621,11 +624,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // one.
   aura::Window* dragged_window_ = nullptr;
 
-  // The widget that contains the view for all the existing templates.
-  std::unique_ptr<views::Widget> desks_templates_grid_widget_;
-
-  // The contents view of the above `desks_templates_grid_widget_` if created.
-  DesksTemplatesGridView* desks_templates_grid_view_ = nullptr;
+  // The widget that contains the view for all saved desks.
+  std::unique_ptr<views::Widget> saved_desk_library_widget_;
 
   // A widget that contains save desk buttons which save desk as template or for
   // later when pressed.

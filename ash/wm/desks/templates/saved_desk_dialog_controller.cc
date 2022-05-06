@@ -13,6 +13,7 @@
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
+#include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "base/bind.h"
@@ -264,17 +265,15 @@ void SavedDeskDialogController::OnWidgetDestroying(views::Widget* widget) {
   DCHECK_EQ(dialog_widget_, widget);
   for (auto& overview_grid :
        Shell::Get()->overview_controller()->overview_session()->grid_list()) {
-    views::Widget* templates_grid_widget =
-        overview_grid->desks_templates_grid_widget();
-    if (templates_grid_widget) {
-      auto* templates_grid_view = static_cast<DesksTemplatesGridView*>(
-          templates_grid_widget->GetContentsView());
-      for (SavedDeskItemView* template_item :
-           templates_grid_view->grid_items()) {
-        // Update the button visibility when a dialog is closed.
-        template_item->UpdateHoverButtonsVisibility(
-            aura::Env::GetInstance()->last_mouse_location(),
-            /*is_touch=*/false);
+    if (auto* library_view = overview_grid->GetSavedDeskLibraryView()) {
+      for (auto* templates_grid_view : library_view->grid_views()) {
+        for (SavedDeskItemView* saved_desk_item :
+             templates_grid_view->grid_items()) {
+          // Update the button visibility when a dialog is closed.
+          saved_desk_item->UpdateHoverButtonsVisibility(
+              aura::Env::GetInstance()->last_mouse_location(),
+              /*is_touch=*/false);
+        }
       }
     }
   }

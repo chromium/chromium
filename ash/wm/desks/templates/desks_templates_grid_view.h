@@ -8,21 +8,18 @@
 #include <vector>
 
 #include "base/guid.h"
-#include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
-class DesksTemplatesEventHandler;
 class DeskTemplate;
-class PillButton;
 class SavedDeskItemView;
 
 // A view that acts as the content view of the desks templates widget. Displays
-// each saved desk as a SavedDeskItemView.
-class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
+// each desk template as a DesksTemplatesItemView.
+class DesksTemplatesGridView : public views::View {
  public:
   METADATA_HEADER(DesksTemplatesGridView);
 
@@ -31,11 +28,6 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
   DesksTemplatesGridView& operator=(const DesksTemplatesGridView&) = delete;
   ~DesksTemplatesGridView() override;
 
-  // Creates and returns the widget that contains the DesksTemplatesGridView in
-  // overview mode. This does not show the widget.
-  static std::unique_ptr<views::Widget> CreateDesksTemplatesGridWidget(
-      aura::Window* root);
-
   const std::vector<SavedDeskItemView*>& grid_items() const {
     return grid_items_;
   }
@@ -43,7 +35,6 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
   // Updates the UI by creating a grid layout and populating the grid with the
   // provided list of desk templates.
   void PopulateGridUI(const std::vector<const DeskTemplate*>& desk_templates,
-                      const gfx::Rect& grid_bounds,
                       const base::GUID& last_saved_template_uuid);
 
   // Updates `grid_items_` to ensure the templates grid is sorted.
@@ -70,20 +61,15 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
 
   // views::View:
   void Layout() override;
-  void AddedToWidget() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  void OnThemeChanged() override;
 
-  // aura::WindowObserver:
-  void OnWindowDestroying(aura::Window* window) override;
+  bool IsAnimating() const;
+
+  // Returns the size needed to lay out the grid in a given `width`.
+  gfx::Size GetSizeForWidth(int width) const;
 
  private:
-  friend class DesksTemplatesEventHandler;
   friend class DesksTemplatesGridViewTestApi;
-
-  // Updates the visibility state of the hover buttons on all the `grid_items_`
-  // as a result of mouse and gesture events.
-  void OnLocatedEvent(ui::LocatedEvent* event, bool is_touch);
 
   // Calculates the bounds for each grid item within the templates grid. The
   // indices of the returned vector directly correlate to those of `grid_items_`
@@ -91,32 +77,14 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
   // `SavedDeskItemView` found at index 1 of `grid_items_`).
   std::vector<gfx::Rect> CalculateGridItemPositions() const;
 
-  // Calculates the bounds to be applied to the feedback button based off of the
-  // grid item positions.
-  gfx::Rect CalculateFeedbackButtonPosition() const;
-
   // Animates the bounds for all the `grid_items_` (using `bounds_animator_`) to
   // their calculated position. `new_grid_items` contains a list of the
   // newly-created desk template items and will be animated differently than
   // the existing views that are being shifted around.
   void AnimateGridItems(const std::vector<SavedDeskItemView*>& new_grid_items);
 
-  // Called when the feedback button is pressed. Shows the feedback dialog with
-  // desks templates information.
-  void OnFeedbackButtonPressed();
-
   // The views representing templates. They're owned by views hierarchy.
   std::vector<SavedDeskItemView*> grid_items_;
-
-  // Owned by views hierarchy. Temporary button to help users give feedback.
-  // TODO(crbug.com/1289880): Remove this button when it is no longer needed.
-  PillButton* feedback_button_ = nullptr;
-
-  // The underlying window of the templates grid widget.
-  aura::Window* widget_window_ = nullptr;
-
-  // Handles mouse/touch events on the desk templates grid widget.
-  std::unique_ptr<DesksTemplatesEventHandler> event_handler_;
 
   // Used to animate individual view positions.
   views::BoundsAnimator bounds_animator_;

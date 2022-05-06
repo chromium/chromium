@@ -73,6 +73,9 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   SavedDeskItemView& operator=(const SavedDeskItemView&) = delete;
   ~SavedDeskItemView() override;
 
+  // The preferred size of the whole SavedDeskItemView.
+  static constexpr gfx::Size kPreferredSize = {220, 120};
+
   DeskTemplate* desk_template() const { return desk_template_.get(); }
   SavedDeskNameView* name_view() const { return name_view_; }
   const base::GUID uuid() const { return desk_template_->uuid(); }
