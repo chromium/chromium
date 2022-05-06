@@ -14,6 +14,7 @@ class GPUBindGroupLayout;
 class GPUComputePipelineDescriptor;
 
 WGPUComputePipelineDescriptor AsDawnType(
+    GPUDevice* device,
     const GPUComputePipelineDescriptor* webgpu_desc,
     std::string* label,
     OwnedProgrammableStageDescriptor* computeStageDescriptor);

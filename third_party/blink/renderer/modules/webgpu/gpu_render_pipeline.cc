@@ -269,6 +269,12 @@ void ConvertToDawnType(v8::Isolate* isolate,
   // Layout
   if (webgpu_desc->hasLayout()) {
     dawn_desc_info->dawn_desc.layout = AsDawnType(webgpu_desc->layout());
+  } else {
+    // TODO(crbug.com/1069302): Remove this branch after the deprecation period.
+    device->AddConsoleWarning(
+        "Leaving the layout of a render pipeline undefined has been "
+        "deprecated, and specifying a pipeline layout will soon be required. "
+        "Set layout to 'auto' if an implicit pipeline layout is desired.");
   }
 
   // Vertex

@@ -25,6 +25,7 @@ class GPUColorDict;
 class GPUProgrammableStage;
 class GPUImageCopyTexture;
 class GPUImageDataLayout;
+class V8UnionGPUAutoLayoutModeOrGPUPipelineLayout;
 
 // These conversions are used multiple times and are declared here. Conversions
 // used only once, for example for object construction, are defined
@@ -36,6 +37,8 @@ WGPUExtent3D AsDawnType(const V8GPUExtent3D* webgpu_extent);
 WGPUOrigin3D AsDawnType(const V8GPUOrigin3D* webgpu_extent);
 WGPUImageCopyTexture AsDawnType(const GPUImageCopyTexture* webgpu_view);
 WGPUTextureFormat AsDawnType(SkColorType color_type);
+WGPUPipelineLayout AsDawnType(
+    V8UnionGPUAutoLayoutModeOrGPUPipelineLayout* webgpu_layout);
 
 const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,
                                       WGPUTextureDataLayout* layout);
