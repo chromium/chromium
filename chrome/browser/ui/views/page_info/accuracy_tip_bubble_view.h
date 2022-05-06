@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_ACCURACY_TIP_BUBBLE_VIEW_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "components/accuracy_tips/accuracy_tip_interaction.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
@@ -54,11 +55,14 @@ class AccuracyTipBubbleView
   AccuracyTipBubbleView& operator=(const AccuracyTipBubbleView&) = delete;
 
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // permissions::PermissionRequestManager::Observer:
   void OnBubbleAdded() override;
+
+ protected:
+  // WebContentsObserver:
+  void WebContentsDestroyed() override;
 
  private:
   void OpenHelpCenter();
@@ -69,10 +73,9 @@ class AccuracyTipBubbleView
 
   base::OnceCallback<void(AccuracyTipInteraction)> close_callback_;
   AccuracyTipInteraction action_taken_ = AccuracyTipInteraction::kNoAction;
-
-  base::ScopedObservation<permissions::PermissionRequestManager,
-                          permissions::PermissionRequestManager::Observer>
-      scoped_observation_{this};
+  // We hold a raw pointer to the WebContents passed in during construction, but
+  // we make sure to set it back to nullptr when the WebContents is destroyed.
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_ACCURACY_TIP_BUBBLE_VIEW_H_

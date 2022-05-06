@@ -99,7 +99,8 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
                              parent_window,
                              PageInfoBubbleViewBase::BUBBLE_ACCURACY_TIP,
                              web_contents),
-      close_callback_(std::move(close_callback)) {
+      close_callback_(std::move(close_callback)),
+      web_contents_(web_contents) {
   DCHECK(status == accuracy_tips::AccuracyTipStatus::kShowAccuracyTip);
   set_close_on_deactivate(false);
 
@@ -166,17 +167,21 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
   permissions::PermissionRequestManager* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   if (permission_request_manager) {
-    scoped_observation_.Observe(permission_request_manager);
+    permission_request_manager->AddObserver(this);
   }
 
   Layout();
   SizeToContents();
 }
 
-AccuracyTipBubbleView::~AccuracyTipBubbleView() = default;
-
-void AccuracyTipBubbleView::OnWidgetClosing(views::Widget* widget) {
-  scoped_observation_.Reset();
+AccuracyTipBubbleView::~AccuracyTipBubbleView() {
+  if (web_contents_) {
+    permissions::PermissionRequestManager* permission_request_manager =
+        permissions::PermissionRequestManager::FromWebContents(web_contents_);
+    if (permission_request_manager) {
+      permission_request_manager->RemoveObserver(this);
+    }
+  }
 }
 
 void AccuracyTipBubbleView::OnWidgetDestroying(views::Widget* widget) {
@@ -229,6 +234,11 @@ void AccuracyTipBubbleView::OnSecondaryButtonClicked(
     AccuracyTipInteraction action) {
   action_taken_ = action;
   GetWidget()->Close();
+}
+
+void AccuracyTipBubbleView::WebContentsDestroyed() {
+  web_contents_ = nullptr;
+  PageInfoBubbleViewBase::WebContentsDestroyed();
 }
 
 void AccuracyTipBubbleView::DidChangeVisibleSecurityState() {
