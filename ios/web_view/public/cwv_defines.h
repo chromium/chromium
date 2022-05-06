@@ -5,6 +5,10 @@
 #ifndef IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_
 #define IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_
 
+// These defines are used to indicate support for a particular API. This can be
+// useful in cases where a client depends on more than one version of this
+// library, depending on the clients own configuration.
+
 // Supports -[CWVWebViewConfiguration nonPersistentConfiguration].
 #define IOS_WEB_VIEW_SUPPORTS_CWV_CONFIGURATION_NON_PERSISTENT_CONFIGURATION 1
 
@@ -54,5 +58,8 @@
 
 // Allows accessing SSL certificate details through the CWVWebView.
 #define IOS_WEB_VIEW_SUPPORTS_CWV_X509_CERTIFICATE 1
+
+// Supports -[CWVNavigationDelegate handleUnsafeURLWithHandler:].
+#define IOS_WEB_VIEW_SUPPORTS_CWV_UNSAFE_URL_HANDLER 1
 
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

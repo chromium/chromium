@@ -15,12 +15,16 @@
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
+#import "components/security_interstitials/core/unsafe_resource.h"
 #include "components/ssl_errors/error_info.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_error.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_error.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 #include "ios/web/common/user_agent.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/security/ssl_status.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -29,6 +33,7 @@
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
 #import "ios/web_view/internal/cwv_ssl_util.h"
 #import "ios/web_view/internal/cwv_web_view_internal.h"
+#import "ios/web_view/internal/safe_browsing/cwv_unsafe_url_handler_internal.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 #import "ios/web_view/internal/web_view_early_page_script_provider.h"
 #import "ios/web_view/internal/web_view_web_main_parts.h"
@@ -143,14 +148,29 @@ void WebViewWebClient::PrepareErrorPage(
   CWVWebView* web_view = [CWVWebView webViewForWebState:web_state];
   id<CWVNavigationDelegate> navigation_delegate = web_view.navigationDelegate;
 
-  // |error| should be checked first for any specific error cases such as
-  // lookalikes and safebrowsing errors.
-  // |info| is only non-empty if this is a SSL related error.
+  // |final_underlying_error| should be checked first for any specific error
+  // cases such as lookalikes and safebrowsing errors. |info| is only non-empty
+  // if this is a SSL related error.
   NSError* final_underlying_error =
       base::ios::GetFinalUnderlyingErrorFromError(error);
-  if ([final_underlying_error.domain isEqual:kLookalikeUrlErrorDomain] &&
-      [navigation_delegate respondsToSelector:@selector
-                           (webView:handleLookalikeURLWithHandler:)]) {
+  if ([final_underlying_error.domain isEqual:kSafeBrowsingErrorDomain] &&
+      [navigation_delegate
+          respondsToSelector:@selector(webView:handleUnsafeURLWithHandler:)]) {
+    DCHECK_EQ(kUnsafeResourceErrorCode, final_underlying_error.code);
+    SafeBrowsingUnsafeResourceContainer* container =
+        SafeBrowsingUnsafeResourceContainer::FromWebState(web_state);
+    const security_interstitials::UnsafeResource* resource =
+        container->GetMainFrameUnsafeResource()
+            ?: container->GetSubFrameUnsafeResource(
+                   web_state->GetNavigationManager()->GetLastCommittedItem());
+    CWVUnsafeURLHandler* handler =
+        [[CWVUnsafeURLHandler alloc] initWithWebState:web_state
+                                       unsafeResource:*resource
+                                         htmlCallback:std::move(callback)];
+    [navigation_delegate webView:web_view handleUnsafeURLWithHandler:handler];
+  } else if ([final_underlying_error.domain isEqual:kLookalikeUrlErrorDomain] &&
+             [navigation_delegate respondsToSelector:@selector
+                                  (webView:handleLookalikeURLWithHandler:)]) {
     DCHECK_EQ(kLookalikeUrlErrorCode, final_underlying_error.code);
     LookalikeUrlContainer* container =
         LookalikeUrlContainer::FromWebState(web_state);

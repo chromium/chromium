@@ -1266,6 +1266,36 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   [self presentViewController:alertController animated:YES completion:nil];
 }
 
+- (void)webView:(CWVWebView*)webView
+    handleUnsafeURLWithHandler:(CWVUnsafeURLHandler*)handler {
+  NSLog(@"%@", NSStringFromSelector(_cmd));
+  NSString* html =
+      [NSString stringWithFormat:@"%@ requested %@ which might be unsafe.",
+                                 handler.mainFrameURL, handler.requestURL];
+  [handler displayInterstitialPageWithHTML:html];
+
+  UIAlertController* alertController =
+      [self actionSheetWithTitle:@"Unsafe URL encountered"
+                         message:@"Choose how to proceed."];
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Proceed"
+                                         style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction* action) {
+                                         [handler proceed];
+                                       }]];
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Go back or close"
+                                         style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction* action) {
+                                         [handler goBack];
+                                       }]];
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                         style:UIAlertActionStyleCancel
+                                       handler:nil]];
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
 - (void)webViewWebContentProcessDidTerminate:(CWVWebView*)webView {
   NSLog(@"%@", NSStringFromSelector(_cmd));
 }
