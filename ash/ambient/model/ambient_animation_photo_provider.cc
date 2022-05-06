@@ -105,36 +105,6 @@ cc::SkottieFrameData BuildSkottieFrameData(const gfx::ImageSkia& image,
   };
 }
 
-class StaticImageAssetImpl : public cc::SkottieFrameDataProvider::ImageAsset {
- public:
-  StaticImageAssetImpl(base::StringPiece asset_id,
-                       const AmbientAnimationStaticResources& static_resources)
-      : image_(static_resources.GetStaticImageAsset(asset_id)) {
-    DCHECK(!IsCustomizableLottieId(asset_id));
-    DCHECK(!image_.isNull())
-        << "Static image asset " << asset_id << " is unknown.";
-    DVLOG(1) << "Loaded static asset " << asset_id;
-  }
-
-  cc::SkottieFrameData GetFrameData(float t, float scale_factor) override {
-    if (!current_frame_data_.image ||
-        current_frame_data_scale_factor_ != scale_factor) {
-      current_frame_data_ = BuildSkottieFrameData(image_, scale_factor);
-      current_frame_data_scale_factor_ = scale_factor;
-    }
-    return current_frame_data_;
-  }
-
- private:
-  // Private destructor since cc::SkottieFrameDataProvider::ImageAsset is a
-  // ref-counted API.
-  ~StaticImageAssetImpl() override = default;
-
-  const gfx::ImageSkia image_;
-  cc::SkottieFrameData current_frame_data_;
-  float current_frame_data_scale_factor_ = 0;
-};
-
 // Provides images for dynamic assets based on the following UX requirements:
 // * Make a best effort to assign portrait images to portrait assets and same
 //   for landscape.
@@ -229,6 +199,44 @@ class DynamicImageProvider {
 };
 
 }  // namespace
+
+class AmbientAnimationPhotoProvider::StaticImageAssetImpl
+    : public cc::SkottieFrameDataProvider::ImageAsset {
+ public:
+  StaticImageAssetImpl(base::StringPiece asset_id,
+                       const AmbientAnimationStaticResources& static_resources)
+      : image_(static_resources.GetStaticImageAsset(asset_id)) {
+    DCHECK(!IsCustomizableLottieId(asset_id));
+    DCHECK(!image_.isNull())
+        << "Static image asset " << asset_id << " is unknown.";
+    DVLOG(1) << "Loaded static asset " << asset_id;
+  }
+
+  cc::SkottieFrameData GetFrameData(float t, float scale_factor) override {
+    if (!enabled_)
+      return cc::SkottieFrameData();
+
+    if (!current_frame_data_.image ||
+        current_frame_data_scale_factor_ != scale_factor) {
+      current_frame_data_ = BuildSkottieFrameData(image_, scale_factor);
+      current_frame_data_scale_factor_ = scale_factor;
+    }
+    return current_frame_data_;
+  }
+
+  bool enabled() const { return enabled_; }
+  void set_enabled(bool enabled) { enabled_ = enabled; }
+
+ private:
+  // Private destructor since cc::SkottieFrameDataProvider::ImageAsset is a
+  // ref-counted API.
+  ~StaticImageAssetImpl() override = default;
+
+  const gfx::ImageSkia image_;
+  cc::SkottieFrameData current_frame_data_;
+  float current_frame_data_scale_factor_ = 0;
+  bool enabled_ = true;
+};
 
 class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
     : public cc::SkottieFrameDataProvider::ImageAsset {
@@ -393,8 +401,10 @@ AmbientAnimationPhotoProvider::LoadImageAsset(
     // For static assets, the |size| isn't needed. It should match the size of
     // the image loaded from animation's |static_resources_| since that is the
     // very image created by UX when the animation was built.
-    return base::MakeRefCounted<StaticImageAssetImpl>(asset_id,
-                                                      *static_resources_);
+    auto static_asset = base::MakeRefCounted<StaticImageAssetImpl>(
+        asset_id, *static_resources_);
+    static_assets_[cc::HashSkottieResourceId(asset_id)] = static_asset;
+    return static_asset;
   }
 }
 
@@ -404,6 +414,18 @@ void AmbientAnimationPhotoProvider::AddObserver(Observer* obs) {
 
 void AmbientAnimationPhotoProvider::RemoveObserver(Observer* obs) {
   observers_.RemoveObserver(obs);
+}
+
+bool AmbientAnimationPhotoProvider::ToggleStaticImageAsset(
+    cc::SkottieResourceIdHash asset_id,
+    bool enabled) {
+  auto iter = static_assets_.find(asset_id);
+  if (iter == static_assets_.end()) {
+    return false;
+  } else {
+    iter->second->set_enabled(enabled);
+    return true;
+  }
 }
 
 // Invoked whenever an asset detects a new animation cycle has started. In

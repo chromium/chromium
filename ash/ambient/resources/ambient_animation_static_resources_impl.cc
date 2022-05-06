@@ -113,9 +113,11 @@ class AmbientAnimationStaticResourcesImpl
     : public AmbientAnimationStaticResources {
  public:
   AmbientAnimationStaticResourcesImpl(
+      AmbientAnimationTheme theme,
       int lottie_json_resource_id,
       base::flat_map<base::StringPiece, int> asset_id_to_resource_id)
-      : animation_(CreateSkottieWrapper(lottie_json_resource_id)),
+      : theme_(theme),
+        animation_(CreateSkottieWrapper(lottie_json_resource_id)),
         asset_id_to_resource_id_(std::move(asset_id_to_resource_id)) {
     DCHECK(animation_);
   }
@@ -143,7 +145,12 @@ class AmbientAnimationStaticResourcesImpl
     return *image;
   }
 
+  AmbientAnimationTheme GetAmbientAnimationTheme() const override {
+    return theme_;
+  }
+
  private:
+  const AmbientAnimationTheme theme_;
   // The skottie animation object built off of the animation json string
   // loaded from the resource pak.
   const scoped_refptr<cc::SkottieWrapper> animation_;
@@ -161,7 +168,7 @@ AmbientAnimationStaticResources::Create(AmbientAnimationTheme theme) {
     return nullptr;
 
   return std::make_unique<AmbientAnimationStaticResourcesImpl>(
-      GetAnimationThemeToLottieResourceIdMap().at(theme),
+      theme, GetAnimationThemeToLottieResourceIdMap().at(theme),
       GetAssetIdToResourceIdMapForTheme(theme));
 }
 

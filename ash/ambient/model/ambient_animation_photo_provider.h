@@ -19,6 +19,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "cc/paint/skottie_frame_data_provider.h"
+#include "cc/paint/skottie_resource_metadata.h"
 
 namespace ash {
 
@@ -67,8 +68,18 @@ class ASH_EXPORT AmbientAnimationPhotoProvider
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
 
+  // Sets whether the static image asset in the animation with the given
+  // |asset_id| is enabled or not. If an image asset is disabled, the rest of
+  // the animation can still render properly; the specified static image asset
+  // will just be missing. By default, all static image assets are enabled
+  // until specified otherwise by the caller.
+  //
+  // Returns true on success; false if |asset_id| is unknown.
+  bool ToggleStaticImageAsset(cc::SkottieResourceIdHash asset_id, bool enabled);
+
  private:
   class DynamicImageAssetImpl;
+  class StaticImageAssetImpl;
 
   struct OrderDynamicAssetsByIdx {
     bool operator()(const scoped_refptr<DynamicImageAssetImpl>& asset_l,
@@ -93,6 +104,9 @@ class ASH_EXPORT AmbientAnimationPhotoProvider
   const AmbientAnimationStaticResources* const static_resources_;
   const AmbientBackendModel* const backend_model_;
 
+  // Map's key is hash of the static image asset's string id.
+  base::flat_map<cc::SkottieResourceIdHash, scoped_refptr<StaticImageAssetImpl>>
+      static_assets_;
   base::flat_map</*position_id*/ std::string, DynamicAssetSet>
       dynamic_assets_per_position_;
   size_t total_num_dynamic_assets_ = 0;

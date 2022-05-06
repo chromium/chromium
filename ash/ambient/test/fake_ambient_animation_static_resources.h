@@ -46,6 +46,7 @@ class ASH_EXPORT FakeAmbientAnimationStaticResources
   // AmbientAnimationStaticResources implementation:
   const scoped_refptr<cc::SkottieWrapper>& GetSkottieWrapper() const override;
   gfx::ImageSkia GetStaticImageAsset(base::StringPiece asset_id) const override;
+  AmbientAnimationTheme GetAmbientAnimationTheme() const override;
 
  private:
   scoped_refptr<cc::SkottieWrapper> animation_;

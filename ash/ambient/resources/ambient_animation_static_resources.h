@@ -58,6 +58,9 @@ class ASH_EXPORT AmbientAnimationStaticResources {
   // Returns an empty ImageSkia instance if the |asset_id| is unknown.
   virtual gfx::ImageSkia GetStaticImageAsset(
       base::StringPiece asset_id) const = 0;
+
+  // Returns the AmbientAnimationTheme that the static resources belong to.
+  virtual AmbientAnimationTheme GetAmbientAnimationTheme() const = 0;
 };
 
 }  // namespace ash

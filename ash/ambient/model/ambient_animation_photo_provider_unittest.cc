@@ -514,6 +514,36 @@ TEST_F(AmbientAnimationPhotoProviderTest, LoadsDifferentImageScaleFactor) {
   EXPECT_THAT(frame_data, Each(HasImageDimensions(20, 20)));
 }
 
+TEST_F(AmbientAnimationPhotoProviderTest, ToggleStaticImageAsset) {
+  static_resources_.SetStaticImageAsset(
+      "static-asset-0",
+      gfx::test::CreateImageSkia(/*width=*/10, /*height=*/10));
+  static_resources_.SetStaticImageAsset(
+      "static-asset-1",
+      gfx::test::CreateImageSkia(/*width=*/11, /*height=*/11));
+
+  scoped_refptr<ImageAsset> static_asset_0 = LoadAsset("static-asset-0");
+  ASSERT_THAT(static_asset_0, NotNull());
+  scoped_refptr<ImageAsset> static_asset_1 = LoadAsset("static-asset-1");
+  ASSERT_THAT(static_asset_1, NotNull());
+
+  EXPECT_TRUE(static_asset_0->GetFrameData(/*t=*/0, kTestScaleFactor).image);
+  EXPECT_TRUE(static_asset_1->GetFrameData(/*t=*/0, kTestScaleFactor).image);
+
+  ASSERT_TRUE(provider_.ToggleStaticImageAsset(
+      cc::HashSkottieResourceId("static-asset-1"), false));
+  EXPECT_TRUE(static_asset_0->GetFrameData(/*t=*/0, kTestScaleFactor).image);
+  EXPECT_FALSE(static_asset_1->GetFrameData(/*t=*/0, kTestScaleFactor).image);
+
+  ASSERT_TRUE(provider_.ToggleStaticImageAsset(
+      cc::HashSkottieResourceId("static-asset-1"), true));
+  EXPECT_TRUE(static_asset_0->GetFrameData(/*t=*/0, kTestScaleFactor).image);
+  EXPECT_TRUE(static_asset_1->GetFrameData(/*t=*/0, kTestScaleFactor).image);
+
+  EXPECT_FALSE(provider_.ToggleStaticImageAsset(
+      cc::HashSkottieResourceId("unknown-static-asset"), true));
+}
+
 class AmbientAnimationPhotoProviderTestMultipleAssetsPerPosition
     : public AmbientAnimationPhotoProviderTest {
  protected:
