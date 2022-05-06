@@ -416,6 +416,18 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ON_STATE" desc="Button label for the Night Light feature." meaning="Night Light feature is on. [CHAR_LIMIT=14]">
         On
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ON_STATE_SUNSET_TO_SUNRISE_SCHEDULED" desc="Button label for the Night Light feature when its schedule type is set to sunset-to-sunrise" meaning="Night Light is automatically scheduled to be on until sunrise. [CHAR_LIMIT=16]">
+        On until sunrise
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_OFF_STATE_SUNSET_TO_SUNRISE_SCHEDULED" desc="Button label for the Night Light feature when its schedule type is set to sunset-to-sunrise." meaning="Night Light is automatically scheduled to be off until sunset. [CHAR_LIMIT=16]">
+        Off until sunset
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ON_STATE_CUSTOM_SCHEDULED" desc="Button label for the Night Light feature when its schedule type is set to custom." meaning="Night Light is on and will automatically be turned off at the user's custom end time.  [CHAR_LIMIT=16]">
+        On until <ph name="time">$1<ex>5:37 PM</ex></ph>
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_OFF_STATE_CUSTOM_SCHEDULED" desc="Button label for the Night Light feature when its schedule type is set to custom." meaning="Night Light is off and will automatically be turned on at the user's custom start time. [CHAR_LIMIT=16]">
+        Off until <ph name="time">$1<ex>15:23</ex></ph>
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST" desc="The label used as the header in the cast popup.">
         Cast screen
       </message>

@@ -156,6 +156,7 @@ class ASH_EXPORT FeaturePodButton : public views::View {
   // For unit tests.
   friend class BluetoothFeaturePodControllerTest;
   friend class NetworkFeaturePodControllerTest;
+  friend class NightLightFeaturePodControllerTest;
 
   void OnEnabledChanged();
 
