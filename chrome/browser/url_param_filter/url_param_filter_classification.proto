@@ -18,9 +18,14 @@ message FilterClassification {
     SOURCE = 1;
     DESTINATION = 2;
   }
+  enum UseCase {
+    USE_CASE_UNKNOWN = 0;
+    CROSS_OTR = 1;
+  }
   optional string site = 1;         // eTLD+1, required
   optional SiteRole site_role = 2;  // required
   repeated FilterParameter parameters = 3;
+  repeated UseCase use_cases = 4;
 }
 
 message FilterClassifications {
