@@ -27,6 +27,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/services/assistant/device_settings_host.h"
 #include "chromeos/services/assistant/libassistant_service_host_impl.h"
@@ -59,6 +60,9 @@ static base::OnceCallback<void()> initialized_internal_callback_for_testing;
 static bool is_first_init = true;
 
 constexpr char kAndroidSettingsAppPackage[] = "com.android.settings";
+
+// The DLC ID of Libassistant.so, used to download and mount the library.
+constexpr char kLibassistantDlcId[] = "assistant-dlc";
 
 std::vector<chromeos::libassistant::mojom::AuthenticationTokenPtr>
 ToAuthenticationTokens(
@@ -242,7 +246,23 @@ void AssistantManagerServiceImpl::Start(const absl::optional<UserInfo>& user,
 
   EnableHotword(enable_hotword);
 
-  InitAssistant(user);
+  // Install libassistant.so from DLC.
+  // TODO(b/225063204): For phase 1, fallback to load libassistant.so from
+  // rootfs if installabtion failed. No error handling needed.
+  auto* client = chromeos::DlcserviceClient::Get();
+  if (!client) {
+    InitAssistant(user, /*dlc_path=*/std::string());
+    return;
+  }
+
+  DVLOG(1) << "Install libassistant.so from DLC";
+  dlcservice::InstallRequest install_request;
+  install_request.set_id(kLibassistantDlcId);
+  client->Install(
+      install_request,
+      base::BindOnce(&AssistantManagerServiceImpl::OnInstallDlcComplete,
+                     weak_factory_.GetWeakPtr(), user),
+      /*ProgressCallback=*/base::DoNothing());
 }
 
 void AssistantManagerServiceImpl::Stop() {
@@ -447,8 +467,21 @@ void AssistantManagerServiceImpl::OnStateChanged(
   }
 }
 
+void AssistantManagerServiceImpl::OnInstallDlcComplete(
+    const absl::optional<UserInfo>& user,
+    const chromeos::DlcserviceClient::InstallResult& result) {
+  DVLOG(1) << "Installed libassistant.so from DLC";
+  std::string dlc_path;
+  if (result.error == dlcservice::kErrorNone) {
+    dlc_path = result.root_path;
+  }
+
+  InitAssistant(user, dlc_path);
+}
+
 void AssistantManagerServiceImpl::InitAssistant(
-    const absl::optional<UserInfo>& user) {
+    const absl::optional<UserInfo>& user,
+    const std::string& dlc_path) {
   DCHECK(!IsServiceStarted());
 
   auto bootup_config = bootup_config_.Clone();
@@ -457,6 +490,7 @@ void AssistantManagerServiceImpl::InitAssistant(
   bootup_config->locale = assistant_state()->locale().value();
   bootup_config->spoken_feedback_enabled = spoken_feedback_enabled_;
   bootup_config->dark_mode_enabled = dark_mode_enabled_;
+  bootup_config->dlc_path = dlc_path;
 
   service_controller().Initialize(std::move(bootup_config),
                                   BindURLLoaderFactory());

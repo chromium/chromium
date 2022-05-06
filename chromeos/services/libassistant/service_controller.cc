@@ -120,6 +120,8 @@ void ServiceController::Initialize(
     return;
   }
 
+  libassistant_factory_.LoadLibassistantLibraryFromDlc(config->dlc_path);
+
   auto assistant_manager = libassistant_factory_.CreateAssistantManager(
       ToLibassistantConfig(*config));
   auto* assistant_manager_internal =

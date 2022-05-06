@@ -28,6 +28,8 @@ class LibassistantFactory {
   virtual assistant_client::AssistantManagerInternal*
   UnwrapAssistantManagerInternal(
       assistant_client::AssistantManager* assistant_manager) = 0;
+
+  virtual void LoadLibassistantLibraryFromDlc(const std::string& root_path) = 0;
 };
 
 }  // namespace libassistant

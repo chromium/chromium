@@ -8,8 +8,11 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/scoped_native_library.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/services/libassistant/libassistant_factory.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
@@ -18,6 +21,13 @@ namespace chromeos {
 namespace libassistant {
 
 namespace {
+
+inline constexpr char kLibassistantPath[] =
+    "opt/google/chrome/libassistant.so";
+
+base::FilePath GetLibassisantPath(const std::string& dlc_path) {
+  return base::FilePath(dlc_path).Append(kLibassistantPath);
+}
 
 class LibassistantFactoryImpl : public LibassistantFactory {
  public:
@@ -28,20 +38,63 @@ class LibassistantFactoryImpl : public LibassistantFactory {
   ~LibassistantFactoryImpl() override = default;
 
   // LibassistantFactory implementation:
-
   std::unique_ptr<assistant_client::AssistantManager> CreateAssistantManager(
       const std::string& lib_assistant_config) override {
-    return base::WrapUnique(assistant_client::AssistantManager::Create(
-        platform_api_, lib_assistant_config));
+    if (!dlc_library_.is_valid()) {
+      return base::WrapUnique(assistant_client::AssistantManager::Create(
+          platform_api_, lib_assistant_config));
+    }
+
+    auto* entrypoint = CreateLibassistantEntrypoint();
+    assistant_client::AssistantManager* assistant_manager =
+        entrypoint->NewAssistantManager(lib_assistant_config, platform_api_);
+    DCHECK(assistant_manager);
+    delete entrypoint;
+    return base::WrapUnique(assistant_manager);
   }
 
   assistant_client::AssistantManagerInternal* UnwrapAssistantManagerInternal(
       assistant_client::AssistantManager* assistant_manager) override {
-    return assistant_client::UnwrapAssistantManagerInternal(assistant_manager);
+    if (!dlc_library_.is_valid()) {
+      return assistant_client::UnwrapAssistantManagerInternal(
+          assistant_manager);
+    }
+
+    auto* entrypoint = CreateLibassistantEntrypoint();
+    auto* assistant_manager_internal =
+        entrypoint->GetAssistantManagerInternal(assistant_manager);
+    DCHECK(assistant_manager_internal);
+    delete entrypoint;
+    return assistant_manager_internal;
+  }
+
+  void LoadLibassistantLibraryFromDlc(const std::string& dlc_path) override {
+    base::FilePath path = GetLibassisantPath(dlc_path);
+    dlc_library_ = base::ScopedNativeLibrary(path);
+    if (!dlc_library_.is_valid()) {
+      LOG(ERROR) << "Failed to load libassistant shared library from: " << path
+                 << ", error: " << dlc_library_.GetError()->ToString();
+    } else {
+      DVLOG(1) << "Loaded libassistant shared library from: " << path;
+    }
   }
 
  private:
+  assistant_client::internal_api::LibassistantEntrypoint*
+  CreateLibassistantEntrypoint() {
+    NewLibassistantEntrypointFn entrypoint =
+        reinterpret_cast<NewLibassistantEntrypointFn>(
+            dlc_library_.GetFunctionPointer(kNewLibassistantEntrypointFnName));
+
+    // Call exported function in libassistant.so.
+    C_API_LibassistantEntrypoint* c_entrypoint = entrypoint(0);
+    CHECK(c_entrypoint);
+    return assistant_client::internal_api::LibassistantEntrypointFromC(
+        c_entrypoint);
+  }
+
   assistant_client::PlatformApi* const platform_api_;
+  base::ScopedNativeLibrary dlc_library_;
 };
 
 std::unique_ptr<LibassistantFactory> FactoryOrDefault(

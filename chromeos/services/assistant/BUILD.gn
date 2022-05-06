@@ -60,6 +60,8 @@ component("lib") {
     "//base",
     "//chromeos/assistant:buildflags",
     "//chromeos/dbus",
+    "//chromeos/dbus/dlcservice:dlcservice",
+    "//chromeos/dbus/dlcservice:dlcservice_proto",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/util",
