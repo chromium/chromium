@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import html_to_wrapper
+import css_to_wrapper
 import os
 import shutil
 import tempfile
@@ -12,9 +12,10 @@ import unittest
 _HERE_DIR = os.path.dirname(__file__)
 
 
-class HtmlToWrapperTest(unittest.TestCase):
+class CssToWrapperTest(unittest.TestCase):
   def setUp(self):
     self._out_folder = None
+    self.maxDiff = None
 
   def tearDown(self):
     if self._out_folder:
@@ -25,24 +26,36 @@ class HtmlToWrapperTest(unittest.TestCase):
     with open(os.path.join(self._out_folder, file_name), 'rb') as f:
       return f.read()
 
-  def _run_test(self, html_file, wrapper_file, wrapper_file_expected):
+  def _run_test(self, css_file, wrapper_file, wrapper_file_expected):
     assert not self._out_folder
     self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
-    html_to_wrapper.main([
+    css_to_wrapper.main([
         '--in_folder',
         os.path.join(_HERE_DIR, 'tests'), '--out_folder', self._out_folder,
-        '--in_files', html_file
+        '--in_files', css_file
     ])
 
     actual_wrapper = self._read_out_file(wrapper_file)
     with open(os.path.join(_HERE_DIR, 'tests', wrapper_file_expected),
               'rb') as f:
       expected_wrapper = f.read()
+
     self.assertMultiLineEqual(str(expected_wrapper), str(actual_wrapper))
 
-  def testHtmlToWrapper(self):
-    self._run_test('html_to_wrapper/foo.html', 'html_to_wrapper/foo.html.ts',
-                   'html_to_wrapper/foo_expected.html.ts')
+  def testCssToWrapperStyle(self):
+    self._run_test('css_to_wrapper/foo_style.css',
+                   'css_to_wrapper/foo_style.css.ts',
+                   'css_to_wrapper/foo_style_expected.css.ts')
+
+  def testCssToWrapperStyleNoIncludes(self):
+    self._run_test('css_to_wrapper/foo_no_includes_style.css',
+                   'css_to_wrapper/foo_no_includes_style.css.ts',
+                   'css_to_wrapper/foo_no_includes_style_expected.css.ts')
+
+  def testCssToWrapperVars(self):
+    self._run_test('css_to_wrapper/foo_vars.css',
+                   'css_to_wrapper/foo_vars.css.ts',
+                   'css_to_wrapper/foo_vars_expected.css.ts')
 
 
 if __name__ == '__main__':
