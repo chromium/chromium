@@ -12,9 +12,9 @@ import {assert} from 'chrome://resources/js/assert.m.js';
  * numeric values should never be reused.
  */
 export enum WallpaperGooglePhotosSource {
-  Photos = 0,
-  Albums = 1,
-  NumSources = 2,
+  PHOTOS = 0,
+  ALBUMS = 1,
+  NUM_SOURCES = 2,
 }
 
 const WallpaperGooglePhotosSourceHistogramName: string =
@@ -26,9 +26,9 @@ const WallpaperGooglePhotosSourceHistogramName: string =
  */
 export function recordWallpaperGooglePhotosSourceUMA(
     source: WallpaperGooglePhotosSource) {
-  assert(source < WallpaperGooglePhotosSource.NumSources);
+  assert(source < WallpaperGooglePhotosSource.NUM_SOURCES);
 
   chrome.metricsPrivate.recordEnumerationValue(
       WallpaperGooglePhotosSourceHistogramName, source,
-      WallpaperGooglePhotosSource.NumSources);
+      WallpaperGooglePhotosSource.NUM_SOURCES);
 }

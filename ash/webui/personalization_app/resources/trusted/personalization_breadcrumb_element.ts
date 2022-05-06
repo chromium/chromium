@@ -174,10 +174,10 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
   private computeBreadcrumbs_(): string[] {
     const breadcrumbs = [];
     switch (this.path) {
-      case Paths.Collections:
+      case Paths.COLLECTIONS:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
         break;
-      case Paths.CollectionImages:
+      case Paths.COLLECTION_IMAGES:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
         if (isNonEmptyArray(this.collections_)) {
           const collection = this.collections_.find(
@@ -187,7 +187,7 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
           }
         }
         break;
-      case Paths.GooglePhotosCollection:
+      case Paths.GOOGLE_PHOTOS_COLLECTION:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
         breadcrumbs.push(this.i18n('googlePhotosLabel'));
         if (isNonEmptyString(this.googlePhotosAlbumId) &&
@@ -200,17 +200,17 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
           }
         }
         break;
-      case Paths.LocalCollection:
+      case Paths.LOCAL_COLLECTION:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
         breadcrumbs.push(this.i18n('myImagesLabel'));
         break;
-      case Paths.User:
+      case Paths.USER:
         breadcrumbs.push(this.i18n('avatarLabel'));
         break;
-      case Paths.Ambient:
+      case Paths.AMBIENT:
         breadcrumbs.push(this.i18n('screensaverLabel'));
         break;
-      case Paths.AmbientAlbums:
+      case Paths.AMBIENT_ALBUMS:
         breadcrumbs.push(this.i18n('screensaverLabel'));
         const topicSourceVal = stringToTopicSource(this.topicSource);
         if (topicSourceVal === TopicSource.kGooglePhotos) {
@@ -227,7 +227,7 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
 
   private computeShowBackButton_(): boolean {
     // Do not show the back button if hub is enabled.
-    return !isPersonalizationHubEnabled() && this.path !== Paths.Collections;
+    return !isPersonalizationHubEnabled() && this.path !== Paths.COLLECTIONS;
   }
 
   private showHomeButton_(): boolean {
@@ -264,7 +264,7 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
   }
 
   private onHomeIconClick_() {
-    PersonalizationRouter.instance().goToRoute(Paths.Root);
+    PersonalizationRouter.instance().goToRoute(Paths.ROOT);
   }
 }
 

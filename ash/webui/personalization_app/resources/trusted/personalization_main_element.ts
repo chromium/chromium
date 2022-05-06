@@ -45,11 +45,11 @@ export class PersonalizationMain extends WithPersonalizationStore {
   }
 
   private onClickUserSubpageLink_() {
-    PersonalizationRouter.instance().goToRoute(Paths.User);
+    PersonalizationRouter.instance().goToRoute(Paths.USER);
   }
 
   private onClickAmbientSubpageLink_() {
-    PersonalizationRouter.instance().goToRoute(Paths.Ambient);
+    PersonalizationRouter.instance().goToRoute(Paths.AMBIENT);
   }
 }
 

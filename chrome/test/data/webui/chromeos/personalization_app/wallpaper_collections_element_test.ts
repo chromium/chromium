@@ -114,8 +114,8 @@ suite('WallpaperCollectionsTest', function() {
                     enabled === GooglePhotosEnablementState.kDisabled ? 0 : 1);
                 assertEquals(
                     proxy.getArgs('goToRoute')[0] ??
-                        Paths.GooglePhotosCollection,
-                    Paths.GooglePhotosCollection);
+                        Paths.GOOGLE_PHOTOS_COLLECTION,
+                    Paths.GOOGLE_PHOTOS_COLLECTION);
               }));
 
   test('sends image counts when a collection loads', async () => {

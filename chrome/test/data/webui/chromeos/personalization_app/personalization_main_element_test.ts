@@ -41,7 +41,7 @@ suite('PersonalizationMainTest', function() {
             'userSubpageLink')!;
     userSubpageLink.click();
     const [path, queryParams] = await goToRoutePromise;
-    assertEquals(Paths.User, path);
+    assertEquals(Paths.USER, path);
     assertDeepEquals({}, queryParams);
   });
 
@@ -64,7 +64,7 @@ suite('PersonalizationMainTest', function() {
             'ambientSubpageLink')!;
     ambientSubpageLink.click();
     const [path, queryParams] = await goToRoutePromise;
-    assertEquals(Paths.Ambient, path);
+    assertEquals(Paths.AMBIENT, path);
     assertDeepEquals({}, queryParams);
   });
 

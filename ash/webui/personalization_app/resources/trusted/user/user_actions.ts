@@ -66,10 +66,10 @@ export type SetUserInfoAction = Action&{
  * Notify that the app has finished loading user info. Will be called with null
  * on error.
  */
-export function setUserInfoAction(user_info: UserInfo): SetUserInfoAction {
+export function setUserInfoAction(userInfo: UserInfo): SetUserInfoAction {
   return {
     name: UserActionName.SET_USER_INFO,
-    user_info,
+    user_info: userInfo,
   };
 }
 

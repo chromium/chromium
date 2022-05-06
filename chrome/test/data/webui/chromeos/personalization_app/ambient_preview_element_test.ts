@@ -94,7 +94,7 @@ suite('AmbientPreviewTest', function() {
           };
         });
         const [path, queryParams] = await goToRoutePromise;
-        assertEquals(Paths.Ambient, path);
+        assertEquals(Paths.AMBIENT, path);
         assertDeepEquals({}, queryParams);
       });
 });

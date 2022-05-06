@@ -31,20 +31,20 @@ export class WallpaperSubpage extends PolymerElement {
   queryParams: Record<string, string>;
 
   private shouldShowCollections_(path: string): boolean {
-    return path === Paths.Collections;
+    return path === Paths.COLLECTIONS;
   }
 
   private shouldShowCollectionImages_(path: string): boolean {
-    return path === Paths.CollectionImages;
+    return path === Paths.COLLECTION_IMAGES;
   }
 
   private shouldShowGooglePhotosCollection_(path: string): boolean {
     return this.isGooglePhotosIntegrationEnabled_() &&
-        path === Paths.GooglePhotosCollection;
+        path === Paths.GOOGLE_PHOTOS_COLLECTION;
   }
 
   private shouldShowLocalCollection_(path: string): boolean {
-    return path === Paths.LocalCollection;
+    return path === Paths.LOCAL_COLLECTION;
   }
 
   /**

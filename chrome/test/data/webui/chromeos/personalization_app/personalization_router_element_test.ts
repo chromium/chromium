@@ -30,7 +30,7 @@ suite('PersonalizationRouterTest', function() {
     loadTimeData.overrideValues({'isPersonalizationHubEnabled': true});
     loadTimeData.overrideValues({'isAmbientModeAllowed': true});
     const routerElement = initElement(PersonalizationRouter);
-    PersonalizationRouter.instance().goToRoute(Paths.Ambient);
+    PersonalizationRouter.instance().goToRoute(Paths.AMBIENT);
     await waitAfterNextRender(routerElement);
 
     const mainElement =
@@ -48,7 +48,7 @@ suite('PersonalizationRouterTest', function() {
     loadTimeData.overrideValues({'isPersonalizationHubEnabled': true});
     loadTimeData.overrideValues({'isAmbientModeAllowed': false});
     const routerElement = initElement(PersonalizationRouter);
-    PersonalizationRouter.instance().goToRoute(Paths.Ambient);
+    PersonalizationRouter.instance().goToRoute(Paths.AMBIENT);
     await waitAfterNextRender(routerElement);
 
     const mainElement =

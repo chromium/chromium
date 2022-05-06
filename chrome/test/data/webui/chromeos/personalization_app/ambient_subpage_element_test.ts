@@ -60,7 +60,7 @@ suite('AmbientSubpageTest', function() {
     personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
         googlePhotosAlbumsPreviews;
     const ambientSubpage =
-        initElement(AmbientSubpage, {path: Paths.Ambient, queryParams: {}});
+        initElement(AmbientSubpage, {path: Paths.AMBIENT, queryParams: {}});
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientSubpage);
     return Promise.resolve(ambientSubpage);
@@ -418,7 +418,7 @@ suite('AmbientSubpageTest', function() {
 
   test('has main settings visible with path ambient', async () => {
     ambientSubpageElement =
-        initElement(AmbientSubpage, {path: Paths.Ambient, queryParams: {}});
+        initElement(AmbientSubpage, {path: Paths.AMBIENT, queryParams: {}});
     await waitAfterNextRender(ambientSubpageElement);
 
     const mainSettings =
@@ -434,7 +434,7 @@ suite('AmbientSubpageTest', function() {
 
   test('has albums subpage visible with path ambient albums', async () => {
     ambientSubpageElement = initElement(AmbientSubpage, {
-      path: Paths.AmbientAlbums,
+      path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kArtGallery}
     });
     personalizationStore.data.ambient.ambientModeEnabled = true;
@@ -468,7 +468,7 @@ suite('AmbientSubpageTest', function() {
 
   test('show placeholders when no albums on albums subpage', async () => {
     ambientSubpageElement = initElement(AmbientSubpage, {
-      path: Paths.AmbientAlbums,
+      path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kGooglePhotos}
     });
     personalizationStore.data.ambient.ambientModeEnabled = true;
@@ -507,7 +507,7 @@ suite('AmbientSubpageTest', function() {
 
   test('has correct albums on Google Photos albums subpage', async () => {
     ambientSubpageElement = initElement(AmbientSubpage, {
-      path: Paths.AmbientAlbums,
+      path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kGooglePhotos}
     });
     personalizationStore.data.ambient.ambientModeEnabled = true;
@@ -531,7 +531,7 @@ suite('AmbientSubpageTest', function() {
 
   test('has correct albums on Art albums subpage', async () => {
     ambientSubpageElement = initElement(AmbientSubpage, {
-      path: Paths.AmbientAlbums,
+      path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kArtGallery}
     });
     personalizationStore.data.ambient.ambientModeEnabled = true;
@@ -560,7 +560,7 @@ suite('AmbientSubpageTest', function() {
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
     ambientSubpageElement = initElement(AmbientSubpage, {
-      path: Paths.AmbientAlbums,
+      path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kArtGallery}
     });
 
@@ -612,7 +612,7 @@ suite('AmbientSubpageTest', function() {
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
     ambientSubpageElement = initElement(AmbientSubpage, {
-      path: Paths.AmbientAlbums,
+      path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kArtGallery}
     });
 

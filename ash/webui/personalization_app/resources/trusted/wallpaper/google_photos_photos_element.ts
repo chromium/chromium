@@ -282,7 +282,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     assert(e.model.photo);
     if (!this.isPhotoPlaceholder_(e.model.photo) && isSelectionEvent(e)) {
       selectWallpaper(e.model.photo, this.wallpaperProvider_, this.getStore());
-      recordWallpaperGooglePhotosSourceUMA(WallpaperGooglePhotosSource.Photos);
+      recordWallpaperGooglePhotosSourceUMA(WallpaperGooglePhotosSource.PHOTOS);
     }
   }
 

@@ -72,7 +72,7 @@ export class WallpaperPreview extends WithPersonalizationStore {
    * Navigate to wallpaper collections page.
    */
   onClickWallpaper_() {
-    PersonalizationRouter.instance().goToRoute(Paths.Collections);
+    PersonalizationRouter.instance().goToRoute(Paths.COLLECTIONS);
   }
 
   /**

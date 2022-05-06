@@ -27,21 +27,21 @@ const PersonalizationAmbientModeOptInHistogramName: string =
 
 function ToMetricsEnum(path: Paths) {
   switch (path) {
-    case Paths.Ambient:
+    case Paths.AMBIENT:
       return MetricsPath.AMBIENT;
-    case Paths.AmbientAlbums:
+    case Paths.AMBIENT_ALBUMS:
       return MetricsPath.AMBIENT_ALBUMS;
-    case Paths.CollectionImages:
+    case Paths.COLLECTION_IMAGES:
       return MetricsPath.WALLPAPER_COLLECTION_IMAGES;
-    case Paths.Collections:
+    case Paths.COLLECTIONS:
       return MetricsPath.WALLPAPER;
-    case Paths.GooglePhotosCollection:
+    case Paths.GOOGLE_PHOTOS_COLLECTION:
       return MetricsPath.WALLPAPER_GOOGLE_PHOTO_COLLECTION;
-    case Paths.LocalCollection:
+    case Paths.LOCAL_COLLECTION:
       return MetricsPath.WALLPAPER_LOCAL_COLLECTION;
-    case Paths.Root:
+    case Paths.ROOT:
       return MetricsPath.ROOT;
-    case Paths.User:
+    case Paths.USER:
       return MetricsPath.USER;
   }
 }

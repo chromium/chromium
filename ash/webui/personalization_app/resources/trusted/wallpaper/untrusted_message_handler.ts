@@ -26,10 +26,11 @@ export function onMessageReceived(data: Events) {
       PersonalizationRouter.instance().selectCollection(selectedCollection);
       break;
     case EventType.SELECT_GOOGLE_PHOTOS_COLLECTION:
-      PersonalizationRouter.instance().goToRoute(Paths.GooglePhotosCollection);
+      PersonalizationRouter.instance().goToRoute(
+          Paths.GOOGLE_PHOTOS_COLLECTION);
       break;
     case EventType.SELECT_LOCAL_COLLECTION:
-      PersonalizationRouter.instance().goToRoute(Paths.LocalCollection);
+      PersonalizationRouter.instance().goToRoute(Paths.LOCAL_COLLECTION);
       break;
     case EventType.SELECT_IMAGE:
       const collectionId = PersonalizationRouter.instance().collectionId;

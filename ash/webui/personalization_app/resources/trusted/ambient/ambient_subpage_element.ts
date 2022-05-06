@@ -137,11 +137,11 @@ export class AmbientSubpage extends WithPersonalizationStore {
   }
 
   private shouldShowMainSettings_(path: Paths): boolean {
-    return path === Paths.Ambient;
+    return path === Paths.AMBIENT;
   }
 
   private shouldShowAlbums_(path: Paths): boolean {
-    return path === Paths.AmbientAlbums;
+    return path === Paths.AMBIENT_ALBUMS;
   }
 
   private loadingAmbientMode_(): boolean {

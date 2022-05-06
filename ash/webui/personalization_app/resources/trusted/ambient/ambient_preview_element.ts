@@ -116,13 +116,13 @@ export class AmbientPreview extends WithPersonalizationStore {
     logAmbientModeOptInUMA();
     await setAmbientModeEnabled(
         /*ambientModeEnabled=*/ true, getAmbientProvider(), this.getStore());
-    PersonalizationRouter.instance().goToRoute(Paths.Ambient);
+    PersonalizationRouter.instance().goToRoute(Paths.AMBIENT);
   }
 
   /** Navigates to the ambient subpage. */
   private onClickPreviewImage_(event: Event) {
     event.stopPropagation();
-    PersonalizationRouter.instance().goToRoute(Paths.Ambient);
+    PersonalizationRouter.instance().goToRoute(Paths.AMBIENT);
   }
 
   /**

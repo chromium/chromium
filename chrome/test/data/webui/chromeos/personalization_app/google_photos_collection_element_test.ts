@@ -344,7 +344,7 @@ suite('GooglePhotosCollectionTest', function() {
 
                 // Select Google Photos collection.
                 googlePhotosCollectionElement.setAttribute(
-                    'path', Paths.GooglePhotosCollection);
+                    'path', Paths.GOOGLE_PHOTOS_COLLECTION);
                 await waitAfterNextRender(googlePhotosCollectionElement);
 
                 // Verify redirect expecations.

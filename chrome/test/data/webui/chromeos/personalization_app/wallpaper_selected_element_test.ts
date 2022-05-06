@@ -223,7 +223,7 @@ suite('WallpaperSelectedTest', function() {
     personalizationStore.data.wallpaper.loading.selected = false;
 
     wallpaperSelectedElement =
-        initElement(WallpaperSelected, {'path': Paths.CollectionImages});
+        initElement(WallpaperSelected, {'path': Paths.COLLECTION_IMAGES});
     await waitAfterNextRender(wallpaperSelectedElement);
 
     const dailyRefresh =
@@ -245,9 +245,10 @@ suite('WallpaperSelectedTest', function() {
         };
         personalizationStore.data.wallpaper.loading.selected = false;
 
-        wallpaperSelectedElement = initElement(
-            WallpaperSelected,
-            {'path': Paths.GooglePhotosCollection, 'googlePhotosAlbumId': ''});
+        wallpaperSelectedElement = initElement(WallpaperSelected, {
+          'path': Paths.GOOGLE_PHOTOS_COLLECTION,
+          'googlePhotosAlbumId': ''
+        });
         await waitAfterNextRender(wallpaperSelectedElement);
 
         const dailyRefresh =
@@ -277,7 +278,7 @@ suite('WallpaperSelectedTest', function() {
 
         wallpaperSelectedElement = initElement(
             WallpaperSelected,
-            {'path': Paths.CollectionImages, 'collectionId': collection_id});
+            {'path': Paths.COLLECTION_IMAGES, 'collectionId': collection_id});
         personalizationStore.notifyObservers();
 
         await waitAfterNextRender(wallpaperSelectedElement);
@@ -305,7 +306,7 @@ suite('WallpaperSelectedTest', function() {
         };
 
         wallpaperSelectedElement = initElement(WallpaperSelected, {
-          'path': Paths.GooglePhotosCollection,
+          'path': Paths.GOOGLE_PHOTOS_COLLECTION,
           'googlePhotosAlbumId': album_id
         });
         personalizationStore.notifyObservers();
@@ -330,7 +331,7 @@ suite('WallpaperSelectedTest', function() {
 
     // Initialize |wallpaperSelectedElement|.
     wallpaperSelectedElement =
-        initElement(WallpaperSelected, {'path': Paths.CollectionImages});
+        initElement(WallpaperSelected, {'path': Paths.COLLECTION_IMAGES});
     await waitAfterNextRender(wallpaperSelectedElement);
 
     // Verify layout options are *not* shown when not on Google Photos path.
@@ -339,7 +340,7 @@ suite('WallpaperSelectedTest', function() {
     assertEquals(shadowRoot?.querySelector(selector), null);
 
     // Set Google Photos path and verify layout options *are* shown.
-    wallpaperSelectedElement.path = Paths.GooglePhotosCollection;
+    wallpaperSelectedElement.path = Paths.GOOGLE_PHOTOS_COLLECTION;
     await waitAfterNextRender(wallpaperSelectedElement);
     assertNotEquals(shadowRoot?.querySelector(selector), null);
 
@@ -362,7 +363,7 @@ suite('WallpaperSelectedTest', function() {
     personalizationStore.data.wallpaper.currentSelected = currentSelected;
 
     wallpaperSelectedElement =
-        initElement(WallpaperSelected, {path: Paths.CollectionImages});
+        initElement(WallpaperSelected, {path: Paths.COLLECTION_IMAGES});
     await waitAfterNextRender(wallpaperSelectedElement);
 
     assertEquals(

@@ -65,7 +65,7 @@ export class UserPreview extends WithPersonalizationStore {
   }
 
   private onClickUserSubpageLink_() {
-    PersonalizationRouter.instance().goToRoute(Paths.User);
+    PersonalizationRouter.instance().goToRoute(Paths.USER);
   }
 
   private onImageUrlChanged_(_: Url|null, old: Url|null): void {

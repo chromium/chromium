@@ -253,14 +253,14 @@ export class WallpaperSelected extends WithPersonalizationStore {
       googlePhotosAlbumId: string): boolean {
     return !!image &&
         ((image.type === WallpaperType.kCustomized &&
-              path === Paths.LocalCollection ||
+              path === Paths.LOCAL_COLLECTION ||
           (image.type === WallpaperType.kOnceGooglePhotos &&
-           path === Paths.GooglePhotosCollection && !googlePhotosAlbumId)));
+           path === Paths.GOOGLE_PHOTOS_COLLECTION && !googlePhotosAlbumId)));
   }
 
   private computeShowCollectionOptions_(path: string): boolean {
-    return path === Paths.CollectionImages ||
-        path === Paths.GooglePhotosCollection;
+    return path === Paths.COLLECTION_IMAGES ||
+        path === Paths.GOOGLE_PHOTOS_COLLECTION;
   }
 
   private computeShowRefreshButton_(
@@ -342,8 +342,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
 
   private isDailyRefreshable_(
       path: string, googlePhotosAlbumId: string|undefined) {
-    return path === Paths.CollectionImages ||
-        (path === Paths.GooglePhotosCollection && !!googlePhotosAlbumId);
+    return path === Paths.COLLECTION_IMAGES ||
+        (path === Paths.GOOGLE_PHOTOS_COLLECTION && !!googlePhotosAlbumId);
   }
 
   /**
