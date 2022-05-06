@@ -27,6 +27,31 @@ def _CheckNoAddSingletonGetter(file):
     return error_messages
 
 
+def _CheckNoLegacyPolymerSyntax(file):
+    """Checks that there are no uses of the legacy Polymer element syntax
+
+    Args:
+        file: A changed file
+
+    Returns:
+        A list of error messages (strings)
+    """
+
+    error_messages = []
+    if file.LocalPath().endswith('js'):
+        for line_num, line in file.ChangedContents():
+            if 'Polymer({' in line:
+                error_messages.append(
+                    "%s:%d:\n%s\n\n"
+                    "Avoid using the legacy Polymer element syntax in "
+                    "ChromeOS Settings app due to incompatibility with "
+                    "TypeScript. Instead use the class-based syntax documented "
+                    "in Polymer 3." %
+                    (file.LocalPath(), line_num, line.strip()))
+
+    return error_messages
+
+
 class TypescriptPreparationChecker(object):
     """Checks that the changes are in line with the upcoming TypeScript
     migrationfor ChromeOS Settings.
@@ -52,6 +77,7 @@ class TypescriptPreparationChecker(object):
         error_messages = []
         for file in input_api.AffectedFiles():
             error_messages += _CheckNoAddSingletonGetter(file)
+            error_messages += _CheckNoLegacyPolymerSyntax(file)
 
         errors = list(map(output_api.PresubmitPromptWarning, error_messages))
         return errors

@@ -52,6 +52,38 @@ class TypescriptPreparationCheckerTest(unittest.TestCase):
             mock_input_api, mock_output_api)
         self.assertEqual(0, len(errors))
 
+    def testLegacyPolymerSyntaxUsed(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/example_element.js', [
+                'Polymer({',
+                "  is: 'example-element',",
+                '});',
+            ]),
+        ]
+        mock_output_api = MockOutputApi()
+
+        errors = TypescriptPreparationChecker.RunChecks(
+            mock_input_api, mock_output_api)
+        self.assertEqual(1, len(errors))
+
+    def testLegacyPolymerSyntaxNotUsed(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/example_element.js', [
+                'class ExampleElement extends PolymerElement {',
+                '  static get is() {',
+                "    return 'example-element';",
+                "  }",
+                '}',
+            ]),
+        ]
+        mock_output_api = MockOutputApi()
+
+        errors = TypescriptPreparationChecker.RunChecks(
+            mock_input_api, mock_output_api)
+        self.assertEqual(0, len(errors))
+
 
 if __name__ == '__main__':
     unittest.main()
