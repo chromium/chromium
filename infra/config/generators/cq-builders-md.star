@@ -174,7 +174,7 @@ def _generate_cq_builders_md(ctx):
                 quoted_name = quoted_name,
                 try_builder_view = _TRY_BUILDER_VIEW_URL,
                 definition_query = _codesearch_query(
-                    "file:/try.star$",
+                    "file:/try/.*\\.star$",
                 ),
                 trybot_query = _codesearch_query("file:trybots.py"),
             ))

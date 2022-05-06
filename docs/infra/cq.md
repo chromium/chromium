@@ -202,4 +202,4 @@ infra-dev@chromium.org, or file a [trooper bug](https://g.co/bugatrooper).
 
 
 [1]: https://chromium.googlesource.com/chromium/tools/depot_tools/+/HEAD/git_footers.py
-[2]: ../../infra/config/generated/commit-queue.cfg
+[2]: ../../infra/config/generated/luci/commit-queue.cfg
