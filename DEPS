@@ -1571,61 +1571,6 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/qemu-linux-x64': {
-      'packages': [
-          {
-              'package': 'fuchsia/third_party/qemu/linux-amd64',
-              'version': 'FFZaD9tecL-z0lq2XP_7UqiAaMgRGwXTyvcmkv7XCQcC'
-          },
-      ],
-      'condition': 'host_os == "linux" and checkout_fuchsia',
-      'dep_type': 'cipd',
-  },
-
-  'src/third_party/qemu-mac-x64': {
-      'packages': [
-          {
-              'package': 'fuchsia/third_party/qemu/mac-amd64',
-              'version': '79L6B9YhuL7uIg_CxwlQcZqLOixVtS2Cctn7dmVg0q4C'
-          },
-      ],
-      'condition': 'host_os == "mac" and checkout_fuchsia',
-      'dep_type': 'cipd',
-  },
-
-  'src/third_party/aemu-linux-arm64': {
-      'packages': [
-          {
-              'package': 'fuchsia/third_party/aemu/linux-arm64',
-              'version': 'r2LsKQPbfi0NYEO8tfocwaJ1MMACXPDLkgCI0IjJq-YC'
-          },
-      ],
-      'condition': 'host_os == "linux" and checkout_fuchsia_for_arm64_host',
-      'dep_type': 'cipd',
-  },
-
-  'src/third_party/aemu-linux-x64': {
-      'packages': [
-          {
-              'package': 'fuchsia/third_party/android/aemu/release/linux-amd64',
-              'version': '9Fo9NK3lZesD6R_WnopxsWGzlFni3ckx0Z9qRGQbcEsC'
-          },
-      ],
-      'condition': 'host_os == "linux" and checkout_fuchsia',
-      'dep_type': 'cipd',
-  },
-
-  'src/third_party/aemu-mac-x64': {
-      'packages': [
-          {
-              'package': 'fuchsia/third_party/android/aemu/release/mac-amd64',
-              'version': 'en5IYbZukTkSmHUnmAKiFkHZrGz1BCQhCecHEggxAqUC'
-          },
-      ],
-      'condition': 'host_os == "mac" and checkout_fuchsia',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/re2/src':
     Var('chromium_git') + '/external/github.com/google/re2.git' + '@' + 'f5c782e5d02b3e7f244274c9b6d9d3d7a9b6e737',
 

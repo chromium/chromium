@@ -53,7 +53,10 @@ def GetHostToolPathFromPlatform(tool):
   return os.path.join(SDK_ROOT, 'tools', GetHostArchFromPlatform(), tool)
 
 
+# Remove when arm64 emulator is also included in Fuchsia SDK.
 def GetEmuRootForPlatform(emulator):
+  if GetHostArchFromPlatform() == 'x64':
+    return GetHostToolPathFromPlatform('{0}_internal'.format(emulator))
   return os.path.join(
       DIR_SOURCE_ROOT, 'third_party', '{0}-{1}-{2}'.format(
           emulator, GetHostOsFromPlatform(), GetHostArchFromPlatform()))

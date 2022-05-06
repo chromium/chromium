@@ -4,8 +4,5 @@
 
 assert(is_fuchsia)
 
-# Compute the AEMU path.
-aemu_root = "//third_party/aemu-${host_os}-${target_cpu}"
-
 # Compute the path to the arch-specific boot image directory.
 boot_image_root = "//third_party/fuchsia-sdk/images/${target_cpu}"

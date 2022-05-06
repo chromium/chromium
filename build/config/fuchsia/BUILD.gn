@@ -54,9 +54,15 @@ group("deployment_resources") {
       "${boot_image_root}/qemu/zircon-a.zbi",
       "//third_party/fuchsia-sdk/sdk/bin/device_launcher.version",
       "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvdl",
-      "//third_party/qemu-${host_os}-${test_host_cpu}/",
-      "${aemu_root}/",
     ]
+    if (test_host_cpu == "x64") {
+      data += [
+        "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/aemu_internal",
+        "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/qemu_internal",
+      ]
+    } else if (test_host_cpu == "arm64") {
+      data += [ "//third_party/qemu-${host_os}-${test_host_cpu}/" ]
+    }
   }
   foreach(fuchsia_additional_boot_image, fuchsia_additional_boot_images) {
     data += [ "${fuchsia_additional_boot_image}/" ]

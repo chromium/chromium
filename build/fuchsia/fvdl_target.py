@@ -110,10 +110,6 @@ class FvdlTarget(emu_target.EmuTarget):
     fvm_image = common.EnsurePathExists(
         boot_data.GetTargetFile('storage-full.blk', self._image_arch,
                                 self._image_type))
-    aemu_path = common.EnsurePathExists(
-        os.path.join(common.GetEmuRootForPlatform(self.EMULATOR_NAME),
-                     'emulator'))
-
     emu_command = [
         self._FVDL_PATH,
         '--sdk',
@@ -139,10 +135,6 @@ class FvdlTarget(emu_target.EmuTarget):
         fvm_image,
         '--image-architecture',
         self._target_cpu,
-
-        # Use an existing emulator checked out by Chromium.
-        '--aemu-path',
-        aemu_path,
 
         # Use this flag and temp file to define ram size.
         '--device-proto',
@@ -177,8 +169,8 @@ class FvdlTarget(emu_target.EmuTarget):
       ]
       if self._hardware_gpu:
         vulkan_icd_file = os.path.join(
-            common.GetEmuRootForPlatform(self.EMULATOR_NAME), 'lib64', 'vulkan',
-            'vk_swiftshader_icd.json')
+            common.GetHostToolPathFromPlatform('aemu_internal'), 'lib64',
+            'vulkan', 'vk_swiftshader_icd.json')
         env_flags.append('VK_ICD_FILENAMES=%s' % vulkan_icd_file)
       for flag in env_flags:
         emu_command.extend(['--envs', flag])
