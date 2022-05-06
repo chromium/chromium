@@ -57,6 +57,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #endif
 
 namespace features {
@@ -775,9 +777,9 @@ struct ChromeFileSystemAccessPermissionContext::OriginState {
 };
 
 constexpr base::TimeDelta ChromeFileSystemAccessPermissionContext::
-    kPersistentPermissionExpirationTimeoutNonPWA;
+    kPersistentPermissionExpirationTimeoutDefault;
 constexpr base::TimeDelta ChromeFileSystemAccessPermissionContext::
-    kPersistentPermissionExpirationTimeoutPWA;
+    kPersistentPermissionExpirationTimeoutExtended;
 constexpr base::TimeDelta
     ChromeFileSystemAccessPermissionContext::kPersistentPermissionGracePeriod;
 
@@ -997,18 +999,19 @@ ChromeFileSystemAccessPermissionContext::GetGrantedObjects(
   std::vector<std::unique_ptr<Object>> objects =
       ObjectPermissionContextBase::GetGrantedObjects(origin);
 
-  bool is_installed_pwa = OriginIsInstalledPWA(origin);
+  bool has_extended_permissions = OriginHasExtendedPermissions(origin);
   // Filter out expired permissions.
   objects.erase(
       base::ranges::remove_if(
           objects,
-          [this, &is_installed_pwa](const std::unique_ptr<Object>& object) {
+          [this,
+           &has_extended_permissions](const std::unique_ptr<Object>& object) {
             auto last_activity_time =
                 base::ValueToTime(
                     object->value.FindKey(kPermissionLastUsedTimeKey))
                     .value_or(base::Time::Min());
-            return this->PersistentPermissionIsExpired(last_activity_time,
-                                                       is_installed_pwa);
+            return this->PersistentPermissionIsExpired(
+                last_activity_time, has_extended_permissions);
           }),
       objects.end());
   return objects;
@@ -1025,26 +1028,27 @@ ChromeFileSystemAccessPermissionContext::GetAllGrantedObjects() {
 
   url::Origin origin;
   GURL origin_as_url;
-  bool is_installed_pwa = false;
+  bool has_extended_permissions = false;
   // Filter out expired permissions.
   // Checking whether an origin has an installed PWA may be expensive.
   // GetAllGrantedObjects() returns objects grouped by origin, so this should
   // only check once per origin.
   objects.erase(base::ranges::remove_if(
                     objects,
-                    [this, &is_installed_pwa, &origin,
+                    [this, &has_extended_permissions, &origin,
                      &origin_as_url](const std::unique_ptr<Object>& object) {
                       if (object->origin != origin_as_url) {
                         origin_as_url = object->origin;
                         origin = url::Origin::Create(object->origin);
-                        is_installed_pwa = OriginIsInstalledPWA(origin);
+                        has_extended_permissions =
+                            OriginHasExtendedPermissions(origin);
                       }
                       auto last_activity_time =
                           base::ValueToTime(
                               object->value.FindKey(kPermissionLastUsedTimeKey))
                               .value_or(base::Time::Min());
                       return this->PersistentPermissionIsExpired(
-                          last_activity_time, is_installed_pwa);
+                          last_activity_time, has_extended_permissions);
                     }),
                 objects.end());
 
@@ -1454,9 +1458,28 @@ bool ChromeFileSystemAccessPermissionContext::AncestorHasActivePermission(
   return false;
 }
 
-bool ChromeFileSystemAccessPermissionContext::OriginIsInstalledPWA(
+// Origins with actively installed PWAs will have permissions persisted for
+// longer than sites without an installed PWA or with a passively installed
+// PWA.
+bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermissions(
     const url::Origin& origin) {
-  return DoesOriginContainAnyInstalledWebApp(profile_, origin.GetURL());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if BUILDFLAG(IS_ANDROID)
+  // The File System Access API is not supported on Android (see
+  // crbug.com/1011535). If this ever changes, we'll need to revist this.
+  return false;
+#else
+  DCHECK(profile());
+  auto* web_app_provider =
+      web_app::WebAppProvider::GetForWebApps(static_cast<Profile*>(profile()));
+  if (!web_app_provider)
+    return false;
+
+  auto app_id =
+      web_app_provider->registrar().FindAppWithUrlInScope(origin.GetURL());
+  return app_id.has_value() &&
+         web_app_provider->registrar().IsActivelyInstalled(app_id.value());
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeFileSystemAccessPermissionContext::
@@ -1470,7 +1493,7 @@ void ChromeFileSystemAccessPermissionContext::UpdatePersistedPermissions() {
       "Storage.FileSystemAccess.PersistedPermissions.SweepTime.All");
   url::Origin origin;
   GURL origin_as_url;
-  bool is_installed_pwa = false;
+  bool has_extended_permissions = false;
   auto objects = GetAllGrantedOrExpiredObjects();
   for (const auto& object : objects) {
     // Checking whether an origin has an installed PWA may be expensive.
@@ -1479,10 +1502,10 @@ void ChromeFileSystemAccessPermissionContext::UpdatePersistedPermissions() {
     if (object->origin != origin_as_url) {
       origin_as_url = object->origin;
       origin = url::Origin::Create(object->origin);
-      is_installed_pwa = OriginIsInstalledPWA(origin);
+      has_extended_permissions = OriginHasExtendedPermissions(origin);
     }
     MaybeRenewOrRevokePersistedPermission(origin, std::move(object->value),
-                                          is_installed_pwa);
+                                          has_extended_permissions);
   }
   base::UmaHistogramCounts1000(
       "Storage.FileSystemAccess.PersistedPermissions.Count", objects.size());
@@ -1493,20 +1516,20 @@ void ChromeFileSystemAccessPermissionContext::
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SCOPED_UMA_HISTOGRAM_TIMER(
       "Storage.FileSystemAccess.PersistedPermissions.SweepTime.Origin");
-  bool is_installed_pwa = OriginIsInstalledPWA(origin);
+  bool has_extended_permissions = OriginHasExtendedPermissions(origin);
   // Call the base class's version of this method, since this class overrides
   // this method to filter out expired grants.
   for (const auto& object :
        ObjectPermissionContextBase::GetGrantedObjects(origin)) {
     MaybeRenewOrRevokePersistedPermission(origin, std::move(object->value),
-                                          is_installed_pwa);
+                                          has_extended_permissions);
   }
 }
 
 void ChromeFileSystemAccessPermissionContext::
     MaybeRenewOrRevokePersistedPermission(const url::Origin& origin,
                                           base::Value value,
-                                          bool is_installed_pwa) {
+                                          bool has_extended_permissions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = origins_.find(origin);
   // Look for active read or write grants.
@@ -1548,7 +1571,7 @@ void ChromeFileSystemAccessPermissionContext::
     // metrics regarding permission timeouts.
     if (PersistentPermissionIsExpired(
             last_activity_time + kPersistentPermissionGracePeriod,
-            is_installed_pwa)) {
+            has_extended_permissions)) {
       RevokeObjectPermission(origin, GetKeyForObject(value));
     }
   }
@@ -1616,27 +1639,28 @@ bool ChromeFileSystemAccessPermissionContext::HasPersistedPermission(
     return false;
   }
 
-  auto is_installed_pwa = OriginIsInstalledPWA(origin);
+  auto has_extended_permissions = OriginHasExtendedPermissions(origin);
   auto last_activity_time =
       base::ValueToTime(grant->FindKey(kPermissionLastUsedTimeKey)).value();
 
   if (options == MetricsOptions::kRecord) {
     base::UmaHistogramCustomTimes(
         base::StrCat({"Storage.FileSystemAccess.PersistedPermissions.Age.",
-                      is_installed_pwa ? "PWA" : "NonPWA"}),
+                      has_extended_permissions ? "PWA" : "NonPWA"}),
         clock_->Now() - last_activity_time, base::Seconds(1), base::Days(24),
         60);
   }
 
-  return !PersistentPermissionIsExpired(last_activity_time, is_installed_pwa);
+  return !PersistentPermissionIsExpired(last_activity_time,
+                                        has_extended_permissions);
 }
 
 bool ChromeFileSystemAccessPermissionContext::PersistentPermissionIsExpired(
     const base::Time& last_used,
-    bool is_installed_pwa) {
-  base::TimeDelta duration = is_installed_pwa
-                                 ? kPersistentPermissionExpirationTimeoutPWA
-                                 : kPersistentPermissionExpirationTimeoutNonPWA;
+    bool has_extended_permissions) {
+  base::TimeDelta duration =
+      has_extended_permissions ? kPersistentPermissionExpirationTimeoutExtended
+                               : kPersistentPermissionExpirationTimeoutDefault;
 
   return (last_used + duration) < clock_->Now();
 }

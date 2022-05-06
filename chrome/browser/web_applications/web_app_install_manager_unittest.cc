@@ -1064,6 +1064,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, DefaultAndUser_UninstallWebApp) {
 
   EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
   EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
+  EXPECT_TRUE(registrar().IsActivelyInstalled(app_id));
 
   WebAppInstallManagerObserverAdapter observer(&install_manager());
 
@@ -1083,6 +1084,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, DefaultAndUser_UninstallWebApp) {
   EXPECT_TRUE(observer_uninstalled_called);
   EXPECT_FALSE(finalizer().CanUserUninstallWebApp(app_id));
   EXPECT_TRUE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
+  EXPECT_FALSE(registrar().IsActivelyInstalled(app_id));
 }
 
 TEST_P(WebAppInstallManagerTest_SyncOnly,
@@ -1101,6 +1103,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
   EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
   EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
+  EXPECT_TRUE(registrar().IsActivelyInstalled(app_id));
 
   WebAppInstallManagerObserverAdapter observer(&install_manager());
 
@@ -1120,6 +1123,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   EXPECT_TRUE(observer_uninstalled_called);
   EXPECT_FALSE(finalizer().CanUserUninstallWebApp(app_id));
   EXPECT_TRUE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
+  EXPECT_FALSE(registrar().IsActivelyInstalled(app_id));
 }
 
 TEST_P(WebAppInstallManagerTest, InstallWebAppFromInfo) {
@@ -1140,11 +1144,15 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppFromInfo) {
           ? webapps::WebappInstallSource::SYSTEM_DEFAULT
           : webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON;
 
+  EXPECT_FALSE(registrar().IsActivelyInstalled(expected_app_id));
+
   InstallResult result = InstallWebAppFromInfo(
       std::move(server_web_app_info),
       /*overwrite_existing_manifest_fields=*/false, install_source);
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(expected_app_id, result.app_id);
+
+  EXPECT_TRUE(registrar().IsActivelyInstalled(expected_app_id));
 
   const WebApp* web_app = registrar().GetAppById(expected_app_id);
   ASSERT_TRUE(web_app);
@@ -1199,6 +1207,22 @@ TEST_P(WebAppInstallManagerTest, TaskQueueWebContentsReadyRace) {
   EXPECT_FALSE(task_c_started);
 }
 
+TEST_P(WebAppInstallManagerTest, DefaultNotActivelyInstalled) {
+  std::unique_ptr<WebApp> default_app = test::CreateWebApp(
+      GURL("https://example.com/path"), WebAppManagement::kDefault);
+  default_app->SetDisplayMode(DisplayMode::kStandalone);
+  default_app->SetUserDisplayMode(UserDisplayMode::kBrowser);
+
+  const AppId app_id = default_app->app_id();
+  const GURL external_app_url("https://example.com/path/default");
+
+  externally_installed_app_prefs().Insert(
+      external_app_url, app_id, ExternalInstallSource::kExternalDefault);
+  InitRegistrarWithApp(std::move(default_app));
+
+  EXPECT_FALSE(registrar().IsActivelyInstalled(app_id));
+}
+
 TEST_P(WebAppInstallManagerTest_SyncOnly,
        InstallWebAppFromManifestWithFallback_OverwriteIsLocallyInstalled) {
   const GURL start_url{"https://example.com/path"};
@@ -1216,6 +1240,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   }
 
   EXPECT_FALSE(registrar().IsLocallyInstalled(app_id));
+  EXPECT_FALSE(registrar().IsActivelyInstalled(app_id));
   EXPECT_EQ(DisplayMode::kBrowser,
             registrar().GetAppEffectiveDisplayMode(app_id));
 
@@ -1228,6 +1253,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
   EXPECT_TRUE(registrar().IsInstalled(app_id));
   EXPECT_TRUE(registrar().IsLocallyInstalled(app_id));
+  EXPECT_TRUE(registrar().IsActivelyInstalled(app_id));
   // InstallWebAppFromManifestWithFallback sets user_display_mode to kBrowser
   // because TestAcceptDialogCallback doesn't set open_as_window to true.
   EXPECT_EQ(DisplayMode::kBrowser,
@@ -1328,6 +1354,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
   EXPECT_EQ(DisplayMode::kStandalone, web_app->display_mode());
   EXPECT_EQ(UserDisplayMode::kBrowser, web_app->user_display_mode());
+  EXPECT_TRUE(registrar().IsActivelyInstalled(app_id));
 
   ASSERT_TRUE(web_app->theme_color().has_value());
   EXPECT_EQ(SK_ColorWHITE, web_app->theme_color().value());
@@ -1376,6 +1403,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallSubApp) {
   EXPECT_TRUE(registrar().IsLocallyInstalled(app_id));
   EXPECT_EQ(DisplayMode::kStandalone,
             registrar().GetAppEffectiveDisplayMode(app_id));
+  EXPECT_TRUE(registrar().IsActivelyInstalled(app_id));
 
   const WebApp* app = registrar().GetAppById(app_id);
   EXPECT_EQ(parent_app_id, app->parent_app_id());

@@ -418,10 +418,12 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
 
   {
     EXPECT_FALSE(registrar().IsLocallyInstalled(app_id));
+    EXPECT_FALSE(registrar().IsActivelyInstalled(app_id));
 
     EXPECT_FALSE(registrar().IsLocallyInstalled("unknown"));
     web_app_ptr->SetIsLocallyInstalled(/*is_locally_installed*/ true);
     EXPECT_TRUE(registrar().IsLocallyInstalled(app_id));
+    EXPECT_TRUE(registrar().IsActivelyInstalled(app_id));
   }
 
   {

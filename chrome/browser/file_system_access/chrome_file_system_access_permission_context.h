@@ -160,9 +160,9 @@ class ChromeFileSystemAccessPermissionContext
   // This long after the handle has last been used, revoke the persisted
   // permission.
   static constexpr base::TimeDelta
-      kPersistentPermissionExpirationTimeoutNonPWA = base::Hours(5);
-  static constexpr base::TimeDelta kPersistentPermissionExpirationTimeoutPWA =
-      base::Days(30);
+      kPersistentPermissionExpirationTimeoutDefault = base::Hours(5);
+  static constexpr base::TimeDelta
+      kPersistentPermissionExpirationTimeoutExtended = base::Days(30);
   // Amount of time a persisted permission will remain persisted after its
   // expiry. Used for metrics.
   static constexpr base::TimeDelta kPersistentPermissionGracePeriod =
@@ -176,8 +176,9 @@ class ChromeFileSystemAccessPermissionContext
     return periodic_sweep_persisted_permissions_timer_;
   }
 
-  // Overridden in tests.
-  virtual bool OriginIsInstalledPWA(const url::Origin& origin);
+  // Returns whether persisted permission grants for the origin are subject to
+  // the extended permission duration policy.
+  bool OriginHasExtendedPermissions(const url::Origin& origin);
 
  private:
   enum class MetricsOptions { kRecord, kDoNotRecord };
@@ -223,7 +224,7 @@ class ChromeFileSystemAccessPermissionContext
   // revoke the persisted permission if it has expired.
   void MaybeRenewOrRevokePersistedPermission(const url::Origin& origin,
                                              base::Value grant,
-                                             bool is_installed_pwa);
+                                             bool has_extended_permissions);
 
   bool AncestorHasActivePermission(const url::Origin& origin,
                                    const base::FilePath& path,
@@ -237,7 +238,7 @@ class ChromeFileSystemAccessPermissionContext
                               GrantType grant_type,
                               MetricsOptions options);
   bool PersistentPermissionIsExpired(const base::Time& last_used,
-                                     bool is_installed_pwa);
+                                     bool has_extended_permissions);
 
   base::WeakPtr<ChromeFileSystemAccessPermissionContext> GetWeakPtr();
 

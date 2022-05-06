@@ -91,6 +91,11 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // apps. On Chrome OS all apps are always locally installed.
   bool IsLocallyInstalled(const AppId& app_id) const;
 
+  // Returns true if the app was actively installed, meaning the app has
+  // involved some form of user or administrator action to either install it or
+  // configure it to behave like an app.
+  bool IsActivelyInstalled(const AppId& app_id) const;
+
   // Returns the permissions policy declared as declared in the manifest for
   // the app with |app_id|. This permissions policy is not yet parsed by the
   // PermissionsPolicyParser, and thus may contain invalid permissions and/or

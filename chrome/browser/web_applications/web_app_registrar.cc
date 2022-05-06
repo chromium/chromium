@@ -463,6 +463,16 @@ bool WebAppRegistrar::IsLocallyInstalled(const AppId& app_id) const {
              : false;
 }
 
+bool WebAppRegistrar::IsActivelyInstalled(const AppId& app_id) const {
+  if (!IsInstalled(app_id) || !IsLocallyInstalled(app_id))
+    return false;
+
+  auto* web_app = GetAppById(app_id);
+  DCHECK(web_app);
+  return !web_app->HasOnlySource(web_app::WebAppManagement::kDefault) ||
+         GetAppEffectiveDisplayMode(app_id) != web_app::DisplayMode::kBrowser;
+}
+
 bool WebAppRegistrar::IsIsolated(const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   return web_app ? web_app->IsStorageIsolated() : false;
