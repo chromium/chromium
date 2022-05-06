@@ -216,6 +216,22 @@ TEST_F(WaylandPositionerTest, PreventsSlidingThatOccludesAnchorRectUnstable) {
             gfx::Rect(1, 1, 4, 4));
 }
 
+// Allowing sliding which will occlude the anchor if there are no other
+// positioning options which do not result in a constrained view available.
+TEST_F(WaylandPositionerTest,
+       AllowsSlidingThatOccludesWhenThereAreNoOtherOptionsUnstable) {
+  EXPECT_EQ(
+      TestCaseBuilder(WaylandPositioner::Version::UNSTABLE)
+          .SetSize(4, 4)
+          .SetGravity(XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT)
+          .SetAnchor(XDG_POSITIONER_ANCHOR_BOTTOM_LEFT)
+          // Disable resizing in both axes which will force sliding.
+          .SetAdjustment(~(ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_RESIZE_X |
+                           ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_RESIZE_Y))
+          .SolveToRect(),
+      gfx::Rect(1, 1, 4, 4));
+}
+
 // Tests for the stable protocol.
 
 TEST_F(WaylandPositionerTest, UnconstrainedCases) {
@@ -345,6 +361,21 @@ TEST_F(WaylandPositionerTest, PreventsSlidingThatOccludesAnchorRect) {
                 .SetGravity(XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT)
                 .SetAnchor(XDG_POSITIONER_ANCHOR_TOP_LEFT)
                 .SetAdjustment(~XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_NONE)
+                .SolveToRect(),
+            gfx::Rect(1, 1, 4, 4));
+}
+
+// Allowing sliding which will occlude the anchor if there are no other
+// positioning options which do not result in a constrained view available.
+TEST_F(WaylandPositionerTest,
+       AllowsSlidingThatOccludesWhenThereAreNoOtherOptions) {
+  EXPECT_EQ(TestCaseBuilder(WaylandPositioner::Version::STABLE)
+                .SetSize(4, 4)
+                .SetGravity(XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT)
+                .SetAnchor(XDG_POSITIONER_ANCHOR_BOTTOM_LEFT)
+                // Disable resizing in both axes which will force sliding.
+                .SetAdjustment(~(XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_RESIZE_X |
+                                 XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_RESIZE_Y))
                 .SolveToRect(),
             gfx::Rect(1, 1, 4, 4));
 }
