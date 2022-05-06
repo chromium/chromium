@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
-#include "chrome/browser/password_manager/android/password_manager_setting.h"
+#include "components/password_manager/core/browser/password_manager_setting.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {

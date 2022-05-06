@@ -166,6 +166,8 @@ static_library("browser") {
     "password_manager_metrics_recorder.h",
     "password_manager_metrics_util.cc",
     "password_manager_metrics_util.h",
+    "password_manager_setting.h",
+    "password_manager_settings_service.h",
     "password_manager_util.cc",
     "password_manager_util.h",
     "password_notes_table.cc",
@@ -470,6 +472,7 @@ if (is_android) {
       "android_backend_error.h",
       "manage_passwords_referrer.h",
       "password_manager_metrics_util.h",
+      "password_manager_setting.h",
     ]
   }
 }

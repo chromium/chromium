@@ -7,8 +7,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordSettingsUpdaterBridge_jni.h"
-#include "chrome/browser/password_manager/android/password_manager_setting.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_bridge.h"
+#include "components/password_manager/core/browser/password_manager_setting.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using password_manager::PasswordManagerSetting;

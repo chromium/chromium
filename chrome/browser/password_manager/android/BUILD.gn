@@ -7,7 +7,6 @@ import("//build/config/android/rules.gni")
 java_cpp_enum("android_backend_java_enums_srcjar") {
   sources = [
     "chromesync_status_code.h",
-    "password_manager_setting.h",
     "password_store_operation_target.h",
   ]
 }
@@ -21,8 +20,8 @@ android_library("android_backend_java_enums") {
 
 source_set("backend_public") {
   sources = [
-    "password_settings_updater_service.cc",
-    "password_settings_updater_service.h",
+    "password_manager_settings_service_android_impl.cc",
+    "password_manager_settings_service_android_impl.h",
   ]
 
   deps = [
@@ -48,7 +47,6 @@ source_set("backend") {
     "password_manager_lifecycle_helper.h",
     "password_manager_lifecycle_helper_impl.cc",
     "password_manager_lifecycle_helper_impl.h",
-    "password_manager_setting.h",
     "password_settings_updater_android_bridge.h",
     "password_settings_updater_android_bridge_impl.cc",
     "password_settings_updater_android_bridge_impl.h",
@@ -187,6 +185,7 @@ junit_binary("password_manager_junit_tests") {
     "//chrome/test/android:chrome_java_test_support",
     "//components/browser_ui/settings/android:java",
     "//components/password_manager/core/browser:password_manager_java_enums",
+    "//components/password_manager/core/common:password_manager_common_java_enums",
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
     "//components/sync/protocol:protocol_java",
@@ -323,7 +322,7 @@ source_set("unit_tests") {
     "mock_password_sync_controller_delegate_bridge.h",
     "password_accessory_controller_impl_unittest.cc",
     "password_generation_controller_impl_unittest.cc",
-    "password_settings_updater_service_unittest.cc",
+    "password_manager_settings_service_android_impl_unittest.cc",
     "password_store_android_backend_unittest.cc",
     "password_sync_controller_delegate_android_unittest.cc",
     "save_password_infobar_delegate_android_unittest.cc",

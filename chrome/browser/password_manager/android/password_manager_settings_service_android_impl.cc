@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/password_settings_updater_service.h"
+#include "chrome/browser/password_manager/android/password_manager_settings_service_android_impl.h"
 
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
-#include "chrome/browser/password_manager/android/password_manager_setting.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_bridge.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_bridge_impl.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
+#include "components/password_manager/core/browser/password_manager_setting.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -62,9 +62,9 @@ bool HasChosenToSyncPreferences(syncer::SyncService* sync_service) {
 
 }  // namespace
 
-PasswordSettingsUpdaterService::PasswordSettingsUpdaterService(
-    PrefService* pref_service,
-    syncer::SyncService* sync_service)
+PasswordManagerSettingsServiceAndroidImpl::
+    PasswordManagerSettingsServiceAndroidImpl(PrefService* pref_service,
+                                              syncer::SyncService* sync_service)
     : pref_service_(pref_service),
       sync_service_(sync_service),
       bridge_(PasswordSettingsUpdaterAndroidBridge::Create()),
@@ -73,17 +73,18 @@ PasswordSettingsUpdaterService::PasswordSettingsUpdaterService(
   DCHECK(pref_service_);
   DCHECK(sync_service_);
   bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
-  lifecycle_helper_->RegisterObserver(
-      base::BindRepeating(&PasswordSettingsUpdaterService::OnChromeForegrounded,
-                          weak_ptr_factory_.GetWeakPtr()));
+  lifecycle_helper_->RegisterObserver(base::BindRepeating(
+      &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
-PasswordSettingsUpdaterService::PasswordSettingsUpdaterService(
-    base::PassKey<class PasswordSettingsUpdaterServiceTest>,
-    PrefService* pref_service,
-    syncer::SyncService* sync_service,
-    std::unique_ptr<PasswordSettingsUpdaterAndroidBridge> bridge,
-    std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper)
+PasswordManagerSettingsServiceAndroidImpl::
+    PasswordManagerSettingsServiceAndroidImpl(
+        base::PassKey<class PasswordManagerSettingsServiceAndroidImplTest>,
+        PrefService* pref_service,
+        syncer::SyncService* sync_service,
+        std::unique_ptr<PasswordSettingsUpdaterAndroidBridge> bridge,
+        std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper)
     : pref_service_(pref_service),
       sync_service_(sync_service),
       bridge_(std::move(bridge)),
@@ -93,23 +94,24 @@ PasswordSettingsUpdaterService::PasswordSettingsUpdaterService(
   DCHECK(bridge_);
   DCHECK(lifecycle_helper_);
   bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
-  lifecycle_helper_->RegisterObserver(
-      base::BindRepeating(&PasswordSettingsUpdaterService::OnChromeForegrounded,
-                          weak_ptr_factory_.GetWeakPtr()));
+  lifecycle_helper_->RegisterObserver(base::BindRepeating(
+      &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
-PasswordSettingsUpdaterService::~PasswordSettingsUpdaterService() {
+PasswordManagerSettingsServiceAndroidImpl::
+    ~PasswordManagerSettingsServiceAndroidImpl() {
   lifecycle_helper_->UnregisterObserver();
 }
 
-void PasswordSettingsUpdaterService::OnChromeForegrounded() {
+void PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded() {
   if (!password_bubble_experiment::HasChosenToSyncPasswords(sync_service_))
     return;
 
   // TODO(crbug.com/1289700): Request the settings from the backend.
 }
 
-void PasswordSettingsUpdaterService::OnSettingValueFetched(
+void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueFetched(
     password_manager::PasswordManagerSetting setting,
     bool value) {
   if (!password_bubble_experiment::HasChosenToSyncPasswords(sync_service_))
@@ -130,7 +132,7 @@ void PasswordSettingsUpdaterService::OnSettingValueFetched(
   }
 }
 
-void PasswordSettingsUpdaterService::OnSettingValueAbsent(
+void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueAbsent(
     password_manager::PasswordManagerSetting setting) {
   if (!password_bubble_experiment::HasChosenToSyncPasswords(sync_service_))
     return;
