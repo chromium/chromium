@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_button_util.h"
@@ -19,6 +20,7 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -63,6 +65,9 @@ SavedTabGroupButton::SavedTabGroupButton(PressedCallback callback,
   } else {
     show_animation_->Show();
   }
+
+  SetSize(gfx::Size(GetPreferredSize().width(),
+                    GetLayoutConstant(BOOKMARK_BAR_BUTTON_HEIGHT)));
 }
 
 SavedTabGroupButton::~SavedTabGroupButton() = default;

@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 
 // Used to access private state of BookmarkBarView for testing.
 class BookmarkBarViewTestHelper {
@@ -20,14 +21,9 @@ class BookmarkBarViewTestHelper {
   ~BookmarkBarViewTestHelper() {}
 
   size_t GetBookmarkButtonCount() { return bbv_->bookmark_buttons_.size(); }
-  size_t GetTabGroupButtonCount() { return bbv_->tab_group_buttons_.size(); }
 
   views::LabelButton* GetBookmarkButton(size_t index) {
     return bbv_->bookmark_buttons_[index];
-  }
-
-  views::LabelButton* GetTabGroupButton(size_t index) {
-    return bbv_->tab_group_buttons_[index];
   }
 
   views::LabelButton* apps_page_shortcut() { return bbv_->apps_page_shortcut_; }
@@ -37,6 +33,8 @@ class BookmarkBarViewTestHelper {
   views::MenuButton* managed_bookmarks_button() {
     return bbv_->managed_bookmarks_button_;
   }
+
+  SavedTabGroupBar* saved_tab_group_bar() { return bbv_->saved_tab_group_bar_; }
 
   int GetDropLocationModelIndexForTesting() {
     return bbv_->GetDropLocationModelIndexForTesting();

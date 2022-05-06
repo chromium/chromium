@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -20,6 +21,15 @@ SavedTabGroup kSavedTabGroup2(tab_groups::TabGroupId::GenerateNew(),
                               std::u16string(u"test_title_2"),
                               tab_groups::TabGroupColorId::kGrey,
                               {});
+SavedTabGroup kSavedTabGroup3(tab_groups::TabGroupId::GenerateNew(),
+                              std::u16string(u"test_title_3"),
+                              tab_groups::TabGroupColorId::kGrey,
+                              {});
+
+SavedTabGroup kSavedTabGroup4(tab_groups::TabGroupId::GenerateNew(),
+                              std::u16string(u"test_title_4"),
+                              tab_groups::TabGroupColorId::kGrey,
+                              {});
 
 std::u16string kNewTitle(u"kNewTitle");
 
@@ -30,12 +40,16 @@ tab_groups::TabGroupColorId kNewColor = tab_groups::TabGroupColorId::kRed;
 class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
  public:
   SavedTabGroupBarUnitTest()
-      : saved_tab_group_model_(std::make_unique<SavedTabGroupModel>()) {}
+      : saved_tab_group_model_(std::make_unique<SavedTabGroupModel>()),
+        button_padding_(GetLayoutConstant(TOOLBAR_ELEMENT_PADDING)),
+        button_height_(GetLayoutConstant(BOOKMARK_BAR_BUTTON_HEIGHT)) {}
 
   SavedTabGroupBar* saved_tab_group_bar() { return saved_tab_group_bar_.get(); }
   SavedTabGroupModel* saved_tab_group_model() {
     return saved_tab_group_model_.get();
   }
+
+  int button_padding() { return button_padding_; }
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -52,9 +66,30 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
+  void Add4Groups() {
+    saved_tab_group_model_->Add(kSavedTabGroup1);
+    saved_tab_group_model_->Add(kSavedTabGroup2);
+    saved_tab_group_model_->Add(kSavedTabGroup3);
+    saved_tab_group_model_->Add(kSavedTabGroup4);
+  }
+
+  int GetWidthOfButtonsAndPadding() {
+    // iterate through bubble getting size plus button padding
+    // calculated button_sizes + extra_padding
+    int size = 0;
+    for (const auto* button : saved_tab_group_bar_->children()) {
+      size += button->GetPreferredSize().width() + button_padding_;
+    }
+
+    return size;
+  }
+
  private:
   std::unique_ptr<SavedTabGroupBar> saved_tab_group_bar_;
   std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
+
+  const int button_padding_;
+  const int button_height_;
 };
 
 TEST_F(SavedTabGroupBarUnitTest, AddsButtonFromModelAdd) {
@@ -114,6 +149,38 @@ TEST_F(SavedTabGroupBarUnitTest, MoveButtonFromModelMove) {
   // position.
   saved_tab_group_model()->Move(kSavedTabGroup1.group_id, 1);
   EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
-  EXPECT_NE(button_1, saved_tab_group_bar()->children()[0]);
   EXPECT_EQ(button_1, saved_tab_group_bar()->children()[1]);
+}
+
+// If the restriction is exactly the expected size all should be visible
+TEST_F(SavedTabGroupBarUnitTest, CalculatePreferredWidthRestrictedByExactSize) {
+  Add4Groups();
+  int exact_width = GetWidthOfButtonsAndPadding();
+
+  EXPECT_EQ(
+      exact_width,
+      saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(exact_width));
+}
+
+// If the restriction is more than the expected size all should be visible
+TEST_F(SavedTabGroupBarUnitTest,
+       CalculatePreferredWidthRestrictedByLargerSize) {
+  Add4Groups();
+  int exact_width = GetWidthOfButtonsAndPadding();
+
+  EXPECT_EQ(exact_width,
+            saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(
+                exact_width + 1));
+}
+
+// If the restriction is 1 less than the size the last button should not be
+// visible, and second to last should be visible.
+TEST_F(SavedTabGroupBarUnitTest,
+       CalculatePreferredWidthRestrictedBySmallerSize) {
+  Add4Groups();
+  int exact_width = GetWidthOfButtonsAndPadding();
+
+  EXPECT_GT(exact_width,
+            saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(
+                exact_width - 1));
 }

@@ -48,6 +48,10 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
                           int new_index) override;
   void SavedTabGroupClosed(int index) override;
 
+  // Calculates what the visible width would be when a restriction on width is
+  // placed on the bar.
+  int CalculatePreferredWidthRestrictedBy(int width_restriction);
+
  private:
   // Adds the button to the child views for a new tab group at a specific index.
   // Also adds a button ptr to the tab_group_buttons_ list.

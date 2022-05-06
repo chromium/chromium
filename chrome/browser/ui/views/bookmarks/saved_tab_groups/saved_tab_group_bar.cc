@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
+#include <algorithm>
 
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/grit/generated_resources.h"
@@ -13,6 +15,16 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/layout/box_layout.h"
+
+namespace {
+SavedTabGroupModel* GetSavedTabGroupModelFromBrowser(Browser* browser) {
+  SavedTabGroupKeyedService* keyed_service =
+      SavedTabGroupServiceFactory::GetForProfile(browser->profile());
+  return keyed_service ? keyed_service->model() : nullptr;
+}
+}  // namespace
 
 SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
                                    SavedTabGroupModel* saved_tab_group_model,
@@ -20,27 +32,34 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
     : saved_tab_group_model_(saved_tab_group_model),
       browser_(browser),
       animations_enabled_(animations_enabled) {
-  saved_tab_group_model_->AddObserver(this);
-  const std::vector<SavedTabGroup>& saved_tab_groups =
-      saved_tab_group_model_->saved_tab_groups();
-  for (size_t index = 0; index < saved_tab_groups.size(); index++) {
-    AddTabGroupButton(saved_tab_groups[index], index);
+  std::unique_ptr<views::LayoutManager> layout_manager =
+      std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+          GetLayoutConstant(TOOLBAR_ELEMENT_PADDING));
+  SetLayoutManager(std::move(layout_manager));
+
+  if (saved_tab_group_model_) {
+    saved_tab_group_model_->AddObserver(this);
+    const std::vector<SavedTabGroup>& saved_tab_groups =
+        saved_tab_group_model_->saved_tab_groups();
+    for (size_t index = 0; index < saved_tab_groups.size(); index++) {
+      AddTabGroupButton(saved_tab_groups[index], index);
+    }
   }
 }
 
 SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
                                    bool animations_enabled = true)
-    : SavedTabGroupBar(
-          browser,
-          SavedTabGroupServiceFactory::GetForProfile(browser->profile())
-              ->model(),
-          animations_enabled) {}
+    : SavedTabGroupBar(browser,
+                       GetSavedTabGroupModelFromBrowser(browser),
+                       animations_enabled) {}
 
 SavedTabGroupBar::~SavedTabGroupBar() {
   // remove all buttons from the heirarchy
   RemoveAllButtons();
 
-  saved_tab_group_model_->RemoveObserver(this);
+  if (saved_tab_group_model_)
+    saved_tab_group_model_->RemoveObserver(this);
 }
 
 void SavedTabGroupBar::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -105,7 +124,7 @@ void SavedTabGroupBar::RemoveAllButtons() {
 void SavedTabGroupBar::OnTabGroupButtonPressed(
     const tab_groups::TabGroupId& group_id,
     const ui::Event& event) {
-  DCHECK(saved_tab_group_model_->Contains(group_id));
+  DCHECK(saved_tab_group_model_ && saved_tab_group_model_->Contains(group_id));
 
   const SavedTabGroup* group = saved_tab_group_model_->Get(group_id);
 
@@ -128,4 +147,18 @@ SavedTabGroupBar::GetPageNavigatorGetter() {
     return saved_tab_group_bar->page_navigator_;
   };
   return base::BindRepeating(getter, weak_ptr_factory_.GetWeakPtr());
+}
+
+int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_x) {
+  const int button_padding = GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
+  int current_x = 0;
+  // iterate through the list of buttons in the child views
+  for (auto* button : children()) {
+    gfx::Size preferred_size = button->GetPreferredSize();
+    int next_x = current_x + preferred_size.width() + button_padding;
+    if (next_x > max_x)
+      return current_x;
+    current_x = next_x;
+  }
+  return current_x;
 }
