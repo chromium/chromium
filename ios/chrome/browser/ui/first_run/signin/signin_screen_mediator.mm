@@ -264,6 +264,8 @@
         metricReportingDisabled
             ? SigninScreenConsumerScreenIntentWelcomeWithoutUMAAndSignin
             : SigninScreenConsumerScreenIntentWelcomeAndSignin;
+    self.consumer.managedEnabled |= self.localPrefService->IsManagedPreference(
+        metrics::prefs::kMetricsReportingEnabled);
   }
   if (signinForcedOrAvailable) {
     self.selectedIdentity = self.accountManagerService->GetDefaultIdentity();
