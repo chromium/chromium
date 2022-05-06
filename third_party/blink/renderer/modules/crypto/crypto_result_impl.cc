@@ -179,7 +179,11 @@ void CryptoResultImpl::CompleteWithJson(const char* utf8_data,
   v8::Isolate* isolate = script_state->GetIsolate();
   ScriptState::Scope scope(script_state);
 
-  // Crashes if longer than v8::String::kMaxLength.
+  if (length > v8::String::kMaxLength) {
+    // TODO(crbug.com/1316976): this should probably raise an exception instead.
+    LOG(FATAL) << "Result string is longer than v8::String::kMaxLength";
+  }
+
   v8::Local<v8::String> json_string =
       v8::String::NewFromUtf8(isolate, utf8_data, v8::NewStringType::kNormal,
                               length)
