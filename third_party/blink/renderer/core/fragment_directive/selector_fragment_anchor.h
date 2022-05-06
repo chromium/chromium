@@ -28,8 +28,6 @@ class CORE_EXPORT SelectorFragmentAnchor : public FragmentAnchor {
 
   bool Dismiss() override;
 
-  static bool ShouldDismissOnScrollOrClick();
-
  protected:
   // This will be invoked by Invoke() when the page is visible until the
   // fragment has been dismissed. See FragmentAnchor::Invoke for details about

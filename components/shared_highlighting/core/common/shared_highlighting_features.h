@@ -18,9 +18,6 @@ extern const base::Feature kPreemptiveLinkToTextGeneration;
 // Sets the timeout length for pre-emptive link generation.
 extern const base::FeatureParam<int> kPreemptiveLinkGenTimeoutLengthMs;
 
-// Enables the new UI features for highlighted text.
-extern const base::Feature kSharedHighlightingV2;
-
 // Enables shared highlighting for AMP viewers pages.
 extern const base::Feature kSharedHighlightingAmp;
 

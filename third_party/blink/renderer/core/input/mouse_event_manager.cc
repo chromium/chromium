@@ -685,9 +685,6 @@ WebInputEventResult MouseEventManager::HandleMousePressEvent(
 
   mouse_down_ = event.Event();
 
-  if (frame_->View() && SelectorFragmentAnchor::ShouldDismissOnScrollOrClick())
-    frame_->View()->DismissFragmentAnchor();
-
   if (frame_->GetDocument()->IsSVGDocument() &&
       frame_->GetDocument()->AccessSVGExtensions().ZoomAndPanEnabled()) {
     if ((event.Event().GetModifiers() & WebInputEvent::Modifiers::kShiftKey) &&

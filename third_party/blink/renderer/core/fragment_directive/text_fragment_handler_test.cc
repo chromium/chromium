@@ -38,9 +38,6 @@ class TextFragmentHandlerTest : public SimTest {
   void SetUp() override {
     SimTest::SetUp();
     WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
-
-    feature_list_.InitWithFeatures({shared_highlighting::kSharedHighlightingV2},
-                                   {});
   }
 
   void BeginEmptyFrame() {

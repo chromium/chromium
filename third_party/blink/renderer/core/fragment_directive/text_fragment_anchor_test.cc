@@ -1092,8 +1092,7 @@ TEST_P(TextFragmentAnchorScrollTest, KeepTextHighlightOnUserScroll) {
   EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
 }
 
-// Test that user scrolling doesn't dismiss the highlight, when the
-// SharedHighlightingV2 flag is enabled.
+// Test that user scrolling doesn't dismiss the highlight.
 TEST_P(TextFragmentAnchorScrollTest, DontDismissTextHighlightOnUserScroll) {
   SimRequest request(
       "https://example.com/"
@@ -1645,8 +1644,7 @@ TEST_F(TextFragmentAnchorTest, DismissTextHighlightWithClick) {
       url.GetString());
 }
 
-// Test not dismissing the text highlight with a click, if the
-// SharedHighlightingV2 flag is enabled.
+// Test not dismissing the text highlight with a click.
 TEST_F(TextFragmentAnchorTest, DontDismissTextHighlightWithClick) {
   SimRequest request(
       "https://example.com/"
@@ -1749,8 +1747,7 @@ TEST_F(TextFragmentAnchorTest, KeepsTextHighlightWithTap) {
       url.GetString());
 }
 
-// Test not dismissing the text highlight with a tap, if the
-// SharedHighlightingV2 flag is enabled.
+// Test not dismissing the text highlight with a tap.
 TEST_F(TextFragmentAnchorTest, DontDismissTextHighlightWithTap) {
   SimRequest request(
       "https://example.com/"

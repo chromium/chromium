@@ -96,9 +96,6 @@ void TextFragmentHandler::GetExistingSelectors(
 
 // TODO(http://crbug/1262141): look into using PageBroadcast Mojo.
 void TextFragmentHandler::RemoveFragments() {
-  DCHECK(
-      base::FeatureList::IsEnabled(shared_highlighting::kSharedHighlightingV2));
-
   if (GetTextFragmentAnchor()) {
     GetFrame()->View()->DismissFragmentAnchor();
   } else if (GetFrame()->IsOutermostMainFrame()) {
@@ -135,8 +132,6 @@ bool TextFragmentHandler::IsOverTextFragment(HitTestResult result) {
 
 void TextFragmentHandler::ExtractTextFragmentsMatches(
     ExtractTextFragmentsMatchesCallback callback) {
-  DCHECK(
-      base::FeatureList::IsEnabled(shared_highlighting::kSharedHighlightingV2));
   Vector<String> text_fragment_matches;
 
   TextFragmentAnchor* anchor = GetTextFragmentAnchor();
@@ -158,8 +153,6 @@ void TextFragmentHandler::ExtractTextFragmentsMatches(
 
 void TextFragmentHandler::ExtractFirstFragmentRect(
     ExtractFirstFragmentRectCallback callback) {
-  DCHECK(
-      base::FeatureList::IsEnabled(shared_highlighting::kSharedHighlightingV2));
   gfx::Rect rect_in_viewport;
 
   TextFragmentAnchor* anchor = GetTextFragmentAnchor();
