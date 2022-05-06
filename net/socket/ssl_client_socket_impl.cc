@@ -206,12 +206,12 @@ RSAKeyUsage CheckRSAKeyUsage(const X509Certificate* cert,
     return RSAKeyUsage::kError;
   }
 
-  if (!tbs.has_extensions) {
+  if (!tbs.extensions_tlv) {
     return RSAKeyUsage::kOKNoExtension;
   }
 
   std::map<der::Input, ParsedExtension> extensions;
-  if (!ParseExtensions(tbs.extensions_tlv, &extensions)) {
+  if (!ParseExtensions(tbs.extensions_tlv.value(), &extensions)) {
     return RSAKeyUsage::kError;
   }
   ParsedExtension key_usage_ext;

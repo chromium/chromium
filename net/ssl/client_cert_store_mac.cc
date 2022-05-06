@@ -168,11 +168,11 @@ bool SupportsSSLClientAuth(CRYPTO_BUFFER* cert) {
     return false;
   }
 
-  if (!tbs.has_extensions)
+  if (!tbs.extensions_tlv)
     return true;
 
   std::map<der::Input, ParsedExtension> extensions;
-  if (!ParseExtensions(tbs.extensions_tlv, &extensions))
+  if (!ParseExtensions(tbs.extensions_tlv.value(), &extensions))
     return false;
 
   // RFC5280 says to take the intersection of the two extensions.

@@ -289,8 +289,7 @@ struct NET_EXPORT ParsedTbsCertificate {
   // EXPLICIT outer tag is stripped.)
   //
   // Parsing guarantees that if extensions is present the version is v3.
-  bool has_extensions = false;
-  der::Input extensions_tlv;
+  absl::optional<der::Input> extensions_tlv;
 };
 
 // ParsedExtension represents a parsed "Extension" from RFC 5280. It contains

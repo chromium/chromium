@@ -490,9 +490,9 @@ bool SignatureVerifierInitWithCertificate(
   }
 
   // The key usage extension, if present, must assert the digitalSignature bit.
-  if (tbs.has_extensions) {
+  if (tbs.extensions_tlv) {
     std::map<der::Input, ParsedExtension> extensions;
-    if (!ParseExtensions(tbs.extensions_tlv, &extensions)) {
+    if (!ParseExtensions(tbs.extensions_tlv.value(), &extensions)) {
       return false;
     }
     ParsedExtension key_usage_ext;

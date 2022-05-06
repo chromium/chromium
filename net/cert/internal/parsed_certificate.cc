@@ -60,7 +60,7 @@ DEFINE_CERT_ERROR_ID(kFailedParsingSubjectKeyIdentifier,
 
 bool ParsedCertificate::GetExtension(const der::Input& extension_oid,
                                      ParsedExtension* parsed_extension) const {
-  if (!tbs_.has_extensions)
+  if (!tbs_.extensions_tlv)
     return false;
 
   auto it = extensions_.find(extension_oid);
@@ -133,10 +133,11 @@ scoped_refptr<ParsedCertificate> ParsedCertificate::Create(
   }
 
   // Parse the standard X.509 extensions.
-  if (result->tbs_.has_extensions) {
+  if (result->tbs_.extensions_tlv) {
     // ParseExtensions() ensures there are no duplicates, and maps the (unique)
     // OID to the extension value.
-    if (!ParseExtensions(result->tbs_.extensions_tlv, &result->extensions_)) {
+    if (!ParseExtensions(result->tbs_.extensions_tlv.value(),
+                         &result->extensions_)) {
       errors->AddError(kFailedParsingExtensions);
       return nullptr;
     }

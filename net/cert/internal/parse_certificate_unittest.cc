@@ -203,8 +203,10 @@ void RunTbsCertificateTestGivenVersion(const std::string& file_name,
               parsed.subject_unique_id->bytes());
   }
 
-  EXPECT_EQ(der::Input(&expected_extensions), parsed.extensions_tlv);
-  EXPECT_EQ(!expected_extensions.empty(), parsed.has_extensions);
+  EXPECT_EQ(!expected_extensions.empty(), parsed.extensions_tlv.has_value());
+  if (parsed.extensions_tlv) {
+    EXPECT_EQ(der::Input(&expected_extensions), parsed.extensions_tlv.value());
+  }
 }
 
 void RunTbsCertificateTest(const std::string& file_name) {

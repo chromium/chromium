@@ -338,11 +338,11 @@ bool X509Certificate::GetSubjectAltName(
                            x509_util::DefaultParseCertificateOptions(), &tbs,
                            nullptr))
     return false;
-  if (!tbs.has_extensions)
+  if (!tbs.extensions_tlv)
     return false;
 
   std::map<der::Input, ParsedExtension> extensions;
-  if (!ParseExtensions(tbs.extensions_tlv, &extensions))
+  if (!ParseExtensions(tbs.extensions_tlv.value(), &extensions))
     return false;
 
   ParsedExtension subject_alt_names_extension;

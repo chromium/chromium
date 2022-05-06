@@ -537,14 +537,14 @@ bool ParseTbsCertificate(const der::Input& tbs_tlv,
   //        extensions      [3]  EXPLICIT Extensions OPTIONAL
   //                             -- If present, version MUST be v3
   if (!tbs_parser.ReadOptionalTag(der::ContextSpecificConstructed(3),
-                                  &out->extensions_tlv, &out->has_extensions)) {
+                                  &out->extensions_tlv)) {
     errors->AddError(kFailedReadingExtensions);
     return false;
   }
-  if (out->has_extensions) {
+  if (out->extensions_tlv) {
     // extensions_tlv must be a single element. Also check that it is a
     // SEQUENCE.
-    if (!IsSequenceTLV(out->extensions_tlv)) {
+    if (!IsSequenceTLV(out->extensions_tlv.value())) {
       errors->AddError(kFailedReadingExtensions);
       return false;
     }

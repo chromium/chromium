@@ -587,7 +587,7 @@ X509CertificateModel::X509CertificateModel(
       !net::ParseName(tbs_.issuer_tlv, &issuer_rdns_)) {
     return;
   }
-  if (tbs_.has_extensions && !ParseExtensions(tbs_.extensions_tlv)) {
+  if (tbs_.extensions_tlv && !ParseExtensions(tbs_.extensions_tlv.value())) {
     return;
   }
   parsed_successfully_ = true;

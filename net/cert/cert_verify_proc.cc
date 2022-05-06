@@ -286,11 +286,11 @@ CertVerifyProc::EKUStatus GetEkuStatus(CRYPTO_BUFFER* cert) {
     return CertVerifyProc::EKUStatus::kInvalid;
   }
 
-  if (!tbs.has_extensions)
+  if (!tbs.extensions_tlv)
     return CertVerifyProc::EKUStatus::kNoEKU;
 
   std::map<der::Input, ParsedExtension> extensions;
-  if (!ParseExtensions(tbs.extensions_tlv, &extensions))
+  if (!ParseExtensions(tbs.extensions_tlv.value(), &extensions))
     return CertVerifyProc::EKUStatus::kInvalid;
 
   auto it = extensions.find(der::Input(kExtKeyUsageOid));
