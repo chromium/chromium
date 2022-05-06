@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -40,7 +41,8 @@ class ManualFillingCoordinator implements ManualFillingComponent {
 
     @Override
     public void initialize(WindowAndroid windowAndroid, BottomSheetController sheetController,
-            SoftKeyboardDelegate keyboardDelegate, ViewStub barStub, ViewStub sheetStub) {
+            SoftKeyboardDelegate keyboardDelegate, BackPressManager backPressManager,
+            ViewStub sheetStub, ViewStub barStub) {
         if (barStub == null || sheetStub == null) return; // The manual filling isn't needed.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
             barStub.setLayoutResource(R.layout.keyboard_accessory_modern);
@@ -49,16 +51,17 @@ class ManualFillingCoordinator implements ManualFillingComponent {
         }
         sheetStub.setLayoutResource(R.layout.keyboard_accessory_sheet);
         initialize(windowAndroid, new KeyboardAccessoryCoordinator(mMediator, barStub),
-                new AccessorySheetCoordinator(sheetStub), sheetController, keyboardDelegate,
-                new ConfirmationDialogHelper(windowAndroid.getContext()));
+                new AccessorySheetCoordinator(sheetStub), sheetController, backPressManager,
+                keyboardDelegate, new ConfirmationDialogHelper(windowAndroid.getContext()));
     }
 
     @VisibleForTesting
     void initialize(WindowAndroid windowAndroid, KeyboardAccessoryCoordinator accessoryBar,
             AccessorySheetCoordinator accessorySheet, BottomSheetController sheetController,
-            SoftKeyboardDelegate keyboardDelegate, ConfirmationDialogHelper confirmationHelper) {
+            BackPressManager backPressManager, SoftKeyboardDelegate keyboardDelegate,
+            ConfirmationDialogHelper confirmationHelper) {
         mMediator.initialize(accessoryBar, accessorySheet, windowAndroid, sheetController,
-                keyboardDelegate, confirmationHelper);
+                backPressManager, keyboardDelegate, confirmationHelper);
     }
 
     @Override
@@ -68,8 +71,18 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public boolean handleBackPress() {
-        return mMediator.handleBackPress();
+    public boolean onBackPressed() {
+        return mMediator.onBackPressed();
+    }
+
+    @Override
+    public void handleBackPress() {
+        mMediator.handleBackPress();
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mMediator.getHandleBackPressChangedSupplier();
     }
 
     @Override

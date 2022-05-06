@@ -254,7 +254,12 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         whenDisplayed(withChild(withId(R.id.keyboard_accessory_sheet)));
 
         assertTrue(TestThreadUtils.runOnUiThreadBlocking(
-                () -> mHelper.getManualFillingCoordinator().handleBackPress()));
+                ()
+                        -> mHelper.getManualFillingCoordinator()
+                                   .getHandleBackPressChangedSupplier()
+                                   .get()));
+        assertTrue(TestThreadUtils.runOnUiThreadBlocking(
+                () -> mHelper.getManualFillingCoordinator().onBackPressed()));
 
         waitToBeHidden(withChild(withId(R.id.keyboard_accessory_sheet)));
     }

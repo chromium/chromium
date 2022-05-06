@@ -1697,8 +1697,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mManualFillingComponentSupplier.get().initialize(getWindowAndroid(),
                 mRootUiCoordinator.getBottomSheetController(),
                 (ChromeKeyboardVisibilityDelegate) getWindowAndroid().getKeyboardDelegate(),
-                findViewById(R.id.keyboard_accessory_stub),
-                findViewById(R.id.keyboard_accessory_sheet_stub));
+                mBackPressManager, findViewById(R.id.keyboard_accessory_sheet_stub),
+                findViewById(R.id.keyboard_accessory_stub));
 
         mTabReparentingControllerSupplier.set(new TabReparentingController(
                 ReparentingDelegateFactory.createReparentingControllerDelegate(
@@ -2329,6 +2329,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         SelectionPopupController controller = getSelectionPopupController();
         if (controller != null && controller.isSelectActionBarShowing()) {
             controller.clearSelection();
+            return;
+        }
+
+        if (!BackPressManager.isEnabled() && getManualFillingComponent().onBackPressed()) {
             return;
         }
 

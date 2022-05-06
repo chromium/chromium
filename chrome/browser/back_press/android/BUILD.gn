@@ -1,0 +1,40 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/back_press/BackPressManager.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+java_library("junit") {
+  testonly = true
+
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+
+  sources = [ "java/src/org/chromium/chrome/browser/back_press/BackPressManagerUnitTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base/test:test_support_java",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/junit:junit",
+  ]
+}

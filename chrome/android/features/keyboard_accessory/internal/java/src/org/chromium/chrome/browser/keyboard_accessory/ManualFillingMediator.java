@@ -32,6 +32,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -64,6 +65,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.WindowAndroid;
@@ -77,8 +79,9 @@ import java.util.HashSet;
  * This part of the manual filling component manages the state of the manual filling flow depending
  * on the currently shown tab.
  */
-class ManualFillingMediator extends EmptyTabObserver
-        implements KeyboardAccessoryCoordinator.VisibilityDelegate, View.OnLayoutChangeListener {
+class ManualFillingMediator
+        extends EmptyTabObserver implements KeyboardAccessoryCoordinator.VisibilityDelegate,
+                                            View.OnLayoutChangeListener, BackPressHandler {
     private static final int MINIMAL_AVAILABLE_VERTICAL_SPACE = 128; // in DP.
     private static final int MINIMAL_AVAILABLE_HORIZONTAL_SPACE = 180; // in DP.
 
@@ -98,6 +101,9 @@ class ManualFillingMediator extends EmptyTabObserver
     private BottomSheetController mBottomSheetController;
     private ManualFillingComponent.SoftKeyboardDelegate mSoftKeyboardDelegate;
     private ConfirmationDialogHelper mConfirmationHelper;
+    private BackPressManager mBackPressManager;
+    private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
+            new ObservableSupplierImpl<>();
 
     private final TabObserver mTabObserver = new EmptyTabObserver() {
         @Override
@@ -135,7 +141,7 @@ class ManualFillingMediator extends EmptyTabObserver
 
     void initialize(KeyboardAccessoryCoordinator keyboardAccessory,
             AccessorySheetCoordinator accessorySheet, WindowAndroid windowAndroid,
-            BottomSheetController sheetController,
+            BottomSheetController sheetController, BackPressManager backPressManager,
             ManualFillingComponent.SoftKeyboardDelegate keyboardDelegate,
             ConfirmationDialogHelper confirmationHelper) {
         mActivity = (ChromeActivity) windowAndroid.getActivity().get();
@@ -154,6 +160,11 @@ class ManualFillingMediator extends EmptyTabObserver
                         R.dimen.keyboard_accessory_suggestion_height));
         setInsetObserverViewSupplier(InsetObserverViewSupplier.from(mWindowAndroid));
         mActivity.findViewById(android.R.id.content).addOnLayoutChangeListener(this);
+        mBackPressManager = backPressManager;
+        mBackPressChangedSupplier.set(shouldHideOnBackPress());
+        if (BackPressManager.isEnabled()) {
+            mBackPressManager.addHandler(this, Type.MANUAL_FILLING);
+        }
         mTabModelObserver = new TabModelSelectorTabModelObserver(mActivity.getTabModelSelector()) {
             @Override
             public void didSelectTab(Tab tab, int type, int lastId) {
@@ -268,17 +279,30 @@ class ManualFillingMediator extends EmptyTabObserver
         mObservedTabs.clear();
         mActivity.getFullscreenManager().removeObserver(mFullscreenObserver);
         mBottomSheetController.removeObserver(mBottomSheetObserver);
+        mBackPressChangedSupplier.set(false);
+        mBackPressManager.removeHandler(this);
+        mBackPressManager = null;
         mWindowAndroid = null;
         mActivity = null;
     }
 
-    boolean handleBackPress() {
-        if (isInitialized()
-                && (is(WAITING_TO_REPLACE) || is(REPLACING_KEYBOARD) || is(FLOATING_SHEET))) {
+    boolean onBackPressed() {
+        if (shouldHideOnBackPress()) {
             pause();
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void handleBackPress() {
+        boolean ret = onBackPressed();
+        assert ret : "This should only be called when mBackPressChangedSupplier yields true";
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressChangedSupplier;
     }
 
     void dismiss() {
@@ -350,6 +374,7 @@ class ManualFillingMediator extends EmptyTabObserver
 
     private void onPropertyChanged(PropertyObservable<PropertyKey> source, PropertyKey property) {
         assert source == mModel;
+        mBackPressChangedSupplier.set(shouldHideOnBackPress());
         if (property == SHOW_WHEN_VISIBLE) {
             return;
         } else if (property == PORTRAIT_ORIENTATION) {
@@ -713,6 +738,11 @@ class ManualFillingMediator extends EmptyTabObserver
 
     private boolean requiresHiddenSheet(int state) {
         return (state & StateProperty.HIDDEN_SHEET) != 0;
+    }
+
+    private boolean shouldHideOnBackPress() {
+        return isInitialized()
+                && (is(WAITING_TO_REPLACE) || is(REPLACING_KEYBOARD) || is(FLOATING_SHEET));
     }
 
     private boolean is(@KeyboardExtensionState int state) {

@@ -2187,8 +2187,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public boolean handleBackPressed() {
         if (!mUIWithNativeInitialized) return false;
 
-        if (getManualFillingComponent().handleBackPress()) return true;
-
         if (exitFullscreenIfShowing()) {
             return true;
         }
