@@ -29,6 +29,7 @@
 
 class Browser;
 class SigninUIError;
+class TurnSyncOnHelperPolicyFetchTracker;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class DiceSignedInProfileCreator;
@@ -49,8 +50,7 @@ class SyncSetupInProgressHandle;
 
 // Handles details of setting the primary account with IdentityManager and
 // turning on sync for an account for which there is already a refresh token.
-class TurnSyncOnHelper : public SyncStartupTracker::Observer,
-                         public policy::PolicyService::ProviderUpdateObserver {
+class TurnSyncOnHelper : public SyncStartupTracker::Observer {
  public:
   // Behavior when the signin is aborted (by an error or cancelled by the user).
   // The mode has no effect on the sync-is-disabled flow where cancelling always
@@ -189,10 +189,8 @@ class TurnSyncOnHelper : public SyncStartupTracker::Observer,
   // Turns sync on with the current profile or a new profile.
   void TurnSyncOnWithProfileMode(ProfileMode profile_mode);
 
-  // Callback invoked once policy registration is complete. If registration
-  // fails, |dm_token| and |client_id| will be empty.
-  void OnRegisteredForPolicy(const std::string& dm_token,
-                             const std::string& client_id);
+  // Callback invoked once policy registration is complete.
+  void OnRegisteredForPolicy(bool is_account_managed);
 
   // Helper function that loads policy with the cached |dm_token_| and
   // |client_id|, then completes the signin process.
@@ -201,10 +199,6 @@ class TurnSyncOnHelper : public SyncStartupTracker::Observer,
   // Callback invoked when a policy fetch request has completed. |success| is
   // true if policy was successfully fetched.
   void OnPolicyFetchComplete(bool success);
-
-  // policy::PolicyService::ProviderUpdateObserver
-  void OnProviderUpdatePropagated(
-      policy::ConfigurationPolicyProvider* provider) override;
 
   // Called to create a new profile, which is then signed in with the
   // in-progress auth credentials currently stored in this object.
@@ -256,15 +250,11 @@ class TurnSyncOnHelper : public SyncStartupTracker::Observer,
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;
 
-  // Policy credentials we keep while determining whether to create
-  // a new profile for an enterprise user or not.
-  std::string dm_token_;
-  std::string client_id_;
-
   // Called when this object is deleted.
   base::ScopedClosureRunner scoped_callback_runner_;
 
   std::unique_ptr<SyncStartupTracker> sync_startup_tracker_;
+  std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker> policy_fetch_tracker_;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<DiceSignedInProfileCreator> dice_signed_in_profile_creator_;
 #endif

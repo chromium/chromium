@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/location.h"
@@ -21,13 +22,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
-#include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
-#include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -38,12 +36,11 @@
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper_delegate_impl.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper_policy_fetch_tracker.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/browser/policy_conversions.h"
-#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -54,7 +51,6 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/unified_consent/unified_consent_service.h"
-#include "content/public/browser/storage_partition.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
@@ -327,12 +323,11 @@ void TurnSyncOnHelper::TurnSyncOnWithProfileMode(ProfileMode profile_mode) {
       // If this is a new signin (no account authenticated yet) try loading
       // policy for this user now, before any signed in services are
       // initialized.
-      policy::UserPolicySigninService* policy_service =
-          policy::UserPolicySigninServiceFactory::GetForProfile(profile_);
-      policy_service->RegisterForPolicyWithAccountId(
-          account_info_.email, account_info_.account_id,
-          base::BindOnce(&TurnSyncOnHelper::OnRegisteredForPolicy,
-                         weak_pointer_factory_.GetWeakPtr()));
+      policy_fetch_tracker_ =
+          TurnSyncOnHelperPolicyFetchTracker::CreateInstance(profile_,
+                                                             account_info_);
+      policy_fetch_tracker_->RegisterForPolicy(base::BindOnce(
+          &TurnSyncOnHelper::OnRegisteredForPolicy, base::Unretained(this)));
       break;
     }
     case ProfileMode::NEW_PROFILE:
@@ -346,22 +341,13 @@ void TurnSyncOnHelper::TurnSyncOnWithProfileMode(ProfileMode profile_mode) {
   }
 }
 
-void TurnSyncOnHelper::OnRegisteredForPolicy(const std::string& dm_token,
-                                             const std::string& client_id) {
-  // If there's no token for the user (policy registration did not succeed) just
-  // finish signing in.
-  if (dm_token.empty()) {
+void TurnSyncOnHelper::OnRegisteredForPolicy(bool is_account_managed) {
+  if (!is_account_managed) {
+    // Just finish signing in.
     DVLOG(1) << "Policy registration failed";
     SigninAndShowSyncConfirmationUI();
     return;
   }
-
-  DVLOG(1) << "Policy registration succeeded: dm_token=" << dm_token;
-
-  DCHECK(dm_token_.empty());
-  DCHECK(client_id_.empty());
-  dm_token_ = dm_token;
-  client_id_ = client_id;
 
   if (!chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
     // Allow user to create a new profile before continuing with sign-in.
@@ -377,46 +363,11 @@ void TurnSyncOnHelper::OnRegisteredForPolicy(const std::string& dm_token,
 }
 
 void TurnSyncOnHelper::LoadPolicyWithCachedCredentials() {
-  DCHECK(!dm_token_.empty());
-  DCHECK(!client_id_.empty());
-  policy::UserPolicySigninService* policy_service =
-      policy::UserPolicySigninServiceFactory::GetForProfile(profile_);
-  policy_service->FetchPolicyForSignedInUser(
-      AccountIdFromAccountInfo(account_info_), dm_token_, client_id_,
-      profile_->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess(),
-      base::BindOnce(&TurnSyncOnHelper::OnPolicyFetchComplete,
-                     weak_pointer_factory_.GetWeakPtr()));
-}
-
-void TurnSyncOnHelper::OnPolicyFetchComplete(bool success) {
-  // For now, we allow signin to complete even if the policy fetch fails. If
-  // we ever want to change this behavior, we could call
-  // PrimaryAccountMutator::ClearPrimaryAccount() here instead.
-  DLOG_IF(ERROR, !success) << "Error fetching policy for user";
-  DVLOG_IF(1, success) << "Policy fetch successful - completing signin";
-  if (VLOG_IS_ON(2)) {
-    // User cloud policies have been fetched from the server. Dump all policy
-    // values into log once these new policies are merged.
-    profile_->GetProfilePolicyConnector()
-        ->policy_service()
-        ->AddProviderUpdateObserver(this);
-  }
-  SigninAndShowSyncConfirmationUI();
-}
-
-void TurnSyncOnHelper::OnProviderUpdatePropagated(
-    policy::ConfigurationPolicyProvider* provider) {
-  if (provider != profile_->GetUserCloudPolicyManager())
-    return;
-  VLOG(2) << "Policies after sign in:";
-  VLOG(2) << policy::DictionaryPolicyConversions(
-                 std::make_unique<policy::ChromePolicyConversionsClient>(
-                     profile_))
-                 .ToJSON();
-  profile_->GetProfilePolicyConnector()
-      ->policy_service()
-      ->RemoveProviderUpdateObserver(this);
+  DCHECK(policy_fetch_tracker_);
+  bool fetch_started = policy_fetch_tracker_->FetchPolicy(
+      base::BindOnce(&TurnSyncOnHelper::SigninAndShowSyncConfirmationUI,
+                     base::Unretained(this)));
+  DCHECK(fetch_started);
 }
 
 void TurnSyncOnHelper::CreateNewSignedInProfile() {
@@ -479,11 +430,13 @@ void TurnSyncOnHelper::OnNewSignedInProfileCreated(Profile* new_profile) {
   SwitchToProfile(new_profile);
   DCHECK_EQ(profile_, new_profile);
 
-  if (!dm_token_.empty()) {
+  if (policy_fetch_tracker_) {
     // Load policy for the just-created profile - once policy has finished
     // loading the signin process will complete.
-    DCHECK(!client_id_.empty());
-    LoadPolicyWithCachedCredentials();
+    // Note: the fetch might not happen if the account is not managed.
+    policy_fetch_tracker_->FetchPolicy(
+        base::BindOnce(&TurnSyncOnHelper::SigninAndShowSyncConfirmationUI,
+                       base::Unretained(this)));
   } else {
     // No policy to load - simply complete the signin process.
     SigninAndShowSyncConfirmationUI();
@@ -662,6 +615,8 @@ void TurnSyncOnHelper::SwitchToProfile(Profile* new_profile) {
           ->Subscribe(base::BindOnce(&TurnSyncOnHelper::AbortAndDelete,
                                      base::Unretained(this)));
   delegate_->SwitchToProfile(new_profile);
+  if (policy_fetch_tracker_)
+    policy_fetch_tracker_->SwitchToProfile(profile_);
 }
 
 void TurnSyncOnHelper::AttachToProfile() {

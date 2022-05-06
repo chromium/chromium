@@ -3476,6 +3476,8 @@ static_library("ui") {
       "webui/signin/turn_sync_on_helper.h",
       "webui/signin/turn_sync_on_helper_delegate_impl.cc",
       "webui/signin/turn_sync_on_helper_delegate_impl.h",
+      "webui/signin/turn_sync_on_helper_policy_fetch_tracker.cc",
+      "webui/signin/turn_sync_on_helper_policy_fetch_tracker.h",
     ]
 
     deps += [
