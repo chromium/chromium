@@ -144,8 +144,8 @@ public class NotificationPermissionUpdater {
         // This method will be called by the TrustedWebActivityClient on a background thread, so
         // hop back over to the UI thread to deal with the result.
         PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> {
+            Log.d(TAG, "Updating notification permission to: %b", enabled);
             mPermissionManager.updatePermission(origin, app.getPackageName(), TYPE, enabled);
-            Log.d(TAG, "Updating origin notification permissions to: %b", enabled);
         });
     }
 
@@ -155,7 +155,8 @@ public class NotificationPermissionUpdater {
         // This method will be called by the TrustedWebActivityClient on a background thread, so
         // hop back over to the UI thread to deal with the result.
         PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> {
-            // TODO(crbug.com/1320272): Plumb through to TrustedWebActivityPermissionManager.
+            Log.d(TAG, "Updating notification permission to: %d", settingValue);
+            mPermissionManager.updatePermission(origin, app.getPackageName(), TYPE, settingValue);
             InstalledWebappBridge.runPermissionCallback(callback, settingValue);
         });
     }

@@ -15,6 +15,7 @@ import androidx.browser.trusted.Token;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -57,11 +58,17 @@ public class TrustedWebActivityPermissionStore {
     private static final String KEY_ALL_ORIGINS = "origins";
 
     private static final String KEY_NOTIFICATION_PERMISSION_PREFIX = "notification_permission.";
+    private static final String KEY_NOTIFICATION_PERMISSION_SETTING_PREFIX =
+            "notification_permission_setting.";
     private static final String KEY_GEOLOCATION_PERMISSION_PREFIX = "geolocation_permission.";
+    private static final String KEY_GEOLOCATION_PERMISSION_SETTING_PREFIX =
+            "geolocation_permission_setting.";
     private static final String KEY_PACKAGE_NAME_PREFIX = "package_name.";
     private static final String KEY_APP_NAME_PREFIX = "app_name.";
     private static final String KEY_PRE_TWA_NOTIFICATION_PERMISSION_PREFIX
             = "pre_twa_notification_permission.";
+    private static final String KEY_PRE_TWA_NOTIFICATION_PERMISSION_SETTING_PREFIX =
+            "pre_twa_notification_permission_setting.";
     private static final String KEY_ALL_DELEGATE_APPS = "all_delegate_apps.";
 
     private final SharedPreferences mPreferences;
@@ -89,10 +96,30 @@ public class TrustedWebActivityPermissionStore {
      * Whether permission of {@link ContentSettingsType} for that origin should be enabled due to a
      * TWA. {@code null} if given origin is not linked to a TWA.
      */
+    @Nullable
     public Boolean arePermissionEnabled(@ContentSettingsType int type, Origin origin) {
         String key = createPermissionKey(type, origin);
         if (!mPreferences.contains(key)) return null;
         return mPreferences.getBoolean(key, false);
+    }
+
+    /**
+     * Retrieves the permission setting of {@link ContentSettingsType} for the origin due to a TWA.
+     * Returns {@code null} if the given origin is not linked to a TWA.
+     */
+    @Nullable
+    public @ContentSettingValues Integer getPermission(
+            @ContentSettingsType int type, Origin origin) {
+        String key = createPermissionSettingKey(type, origin);
+        if (!mPreferences.contains(key)) {
+            // TODO(crbug.com/1323183): Clean up this fallback.
+            Boolean enabled = arePermissionEnabled(type, origin);
+            if (enabled == null) {
+                return null;
+            }
+            return enabled ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
+        }
+        return mPreferences.getInt(key, ContentSettingValues.ASK);
     }
 
     @Nullable
@@ -131,7 +158,8 @@ public class TrustedWebActivityPermissionStore {
         // In case the pre-emptive disk read in initStorage hasn't occurred by the time we actually
         // need the value.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            // The set returned by getStringSet cannot be modified.
+            // The set returned by getStringSet must not be modified. The consistency of the stored
+            // data is not guaranteed if you do, nor is your ability to modify the instance at all.
             return new HashSet<>(mPreferences.getStringSet(KEY_ALL_ORIGINS, new HashSet<>()));
         }
     }
@@ -145,6 +173,7 @@ public class TrustedWebActivityPermissionStore {
      * Sets the permission state for the origin.
      * Returns whether {@code true} if state was changed, {@code false} if the provided state was
      * the same as the state beforehand.
+     * TODO(crbug.com/1320272): Delete this method when the new flow is complete.
      */
     boolean setStateForOrigin(Origin origin, String packageName, String appName,
             @ContentSettingsType int type, boolean enabled) {
@@ -172,6 +201,38 @@ public class TrustedWebActivityPermissionStore {
         return modified;
     }
 
+    /**
+     * Sets the permission state for the origin.
+     * Returns whether {@code true} if state was changed, {@code false} if the provided state was
+     * the same as the state beforehand.
+     */
+    boolean setStateForOrigin(Origin origin, String packageName, String appName,
+            @ContentSettingsType int type, @ContentSettingValues int settingValue) {
+        boolean modified = !getStoredOrigins().contains(origin.toString());
+
+        if (!modified) {
+            // Don't bother with these extra checks if we have a brand new origin.
+            boolean settingChanged = settingValue
+                    != mPreferences.getInt(
+                            createPermissionSettingKey(type, origin), ContentSettingValues.ASK);
+            boolean packageChanged =
+                    !packageName.equals(mPreferences.getString(createPackageNameKey(origin), null));
+            boolean appNameChanged =
+                    !appName.equals(mPreferences.getString(createAppNameKey(origin), null));
+            modified = settingChanged || packageChanged || appNameChanged;
+        }
+
+        addOrigin(origin);
+
+        mPreferences.edit()
+                .putInt(createPermissionSettingKey(type, origin), settingValue)
+                .putString(createPackageNameKey(origin), packageName)
+                .putString(createAppNameKey(origin), appName)
+                .apply();
+
+        return modified;
+    }
+
     /** Removes the origin from the store. */
     void removeOrigin(Origin origin) {
         Set<String> origins = getStoredOrigins();
@@ -180,7 +241,9 @@ public class TrustedWebActivityPermissionStore {
         mPreferences.edit()
                 .putStringSet(KEY_ALL_ORIGINS, origins)
                 .remove(createPermissionKey(ContentSettingsType.NOTIFICATIONS, origin))
+                .remove(createPermissionSettingKey(ContentSettingsType.NOTIFICATIONS, origin))
                 .remove(createPermissionKey(ContentSettingsType.GEOLOCATION, origin))
+                .remove(createPermissionSettingKey(ContentSettingsType.GEOLOCATION, origin))
                 .remove(createAppNameKey(origin))
                 .remove(createPackageNameKey(origin))
                 .remove(createAllDelegateAppsKey(origin))
@@ -189,13 +252,27 @@ public class TrustedWebActivityPermissionStore {
 
     /** Reset permission {@type} from the store. */
     void resetPermission(Origin origin, @ContentSettingsType int type) {
-        mPreferences.edit().remove(createPermissionKey(type, origin)).apply();
+        mPreferences.edit()
+                .remove(createPermissionKey(type, origin))
+                .remove(createPermissionSettingKey(type, origin))
+                .apply();
     }
 
-    /** Stores the notification state the origin had before the TWA was installed. */
+    /**
+     * Stores the notification state the origin had before the TWA was installed.
+     * TODO(crbug.com/1320272): Delete this method when the new flow is complete.
+     */
     void setPreTwaNotificationState(Origin origin, boolean enabled) {
         mPreferences.edit()
                 .putBoolean(createNotificationPreTwaPermissionKey(origin), enabled)
+                .apply();
+    }
+
+    /** Stores the notification permission setting the origin had before the TWA was installed. */
+    void setPreTwaNotificationPermissionSetting(
+            Origin origin, @ContentSettingValues int settingValue) {
+        mPreferences.edit()
+                .putInt(createPreTwaNotificationPermissionSettingKey(origin), settingValue)
                 .apply();
     }
 
@@ -215,6 +292,30 @@ public class TrustedWebActivityPermissionStore {
         return enabled;
     }
 
+    /**
+     * Retrieves the notification permission setting the origin had before the TWA was installed.
+     * {@code null} if no setting is stored. If a setting was stored, calling this method removes
+     * it.
+     */
+    @Nullable
+    @ContentSettingValues
+    Integer getAndRemovePreTwaNotificationPermission(Origin origin) {
+        String key = createPreTwaNotificationPermissionSettingKey(origin);
+        if (!mPreferences.contains(key)) {
+            // TODO(crbug.com/1323183): Clean up this fallback.
+            Boolean enabled = getPreTwaNotificationState(origin);
+            if (enabled == null) {
+                return null;
+            }
+            return enabled ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
+        }
+
+        @ContentSettingValues
+        int settingValue = mPreferences.getInt(key, ContentSettingValues.ASK);
+        mPreferences.edit().remove(key).apply();
+        return settingValue;
+    }
+
     /** Clears the store, for testing. */
     @VisibleForTesting
     public void clearForTesting() {
@@ -230,7 +331,7 @@ public class TrustedWebActivityPermissionStore {
                 .apply();
     }
 
-    private String getKeyPermissionPrefix(@ContentSettingsType int type) {
+    private static String getKeyPermissionPrefix(@ContentSettingsType int type) {
         switch (type) {
             case ContentSettingsType.NOTIFICATIONS:
                 return KEY_NOTIFICATION_PERMISSION_PREFIX;
@@ -241,23 +342,42 @@ public class TrustedWebActivityPermissionStore {
         }
     }
 
-    private String createPermissionKey(@ContentSettingsType int type, Origin origin) {
+    private static String getPermissionSettingKeyPrefix(@ContentSettingsType int type) {
+        switch (type) {
+            case ContentSettingsType.NOTIFICATIONS:
+                return KEY_NOTIFICATION_PERMISSION_SETTING_PREFIX;
+            case ContentSettingsType.GEOLOCATION:
+                return KEY_GEOLOCATION_PERMISSION_SETTING_PREFIX;
+            default:
+                throw new IllegalStateException("Unsupported permission type.");
+        }
+    }
+
+    private static String createPermissionKey(@ContentSettingsType int type, Origin origin) {
         return getKeyPermissionPrefix(type) + origin.toString();
     }
 
-    private String createNotificationPreTwaPermissionKey(Origin origin) {
+    private static String createPermissionSettingKey(@ContentSettingsType int type, Origin origin) {
+        return getPermissionSettingKeyPrefix(type) + origin.toString();
+    }
+
+    private static String createNotificationPreTwaPermissionKey(Origin origin) {
         return KEY_PRE_TWA_NOTIFICATION_PERMISSION_PREFIX + origin.toString();
     }
 
-    private String createPackageNameKey(Origin origin) {
+    private static String createPreTwaNotificationPermissionSettingKey(Origin origin) {
+        return KEY_PRE_TWA_NOTIFICATION_PERMISSION_SETTING_PREFIX + origin.toString();
+    }
+
+    private static String createPackageNameKey(Origin origin) {
         return KEY_PACKAGE_NAME_PREFIX + origin.toString();
     }
 
-    private String createAppNameKey(Origin origin) {
+    private static String createAppNameKey(Origin origin) {
         return KEY_APP_NAME_PREFIX + origin.toString();
     }
 
-    private String createAllDelegateAppsKey(Origin origin) {
+    private static String createAllDelegateAppsKey(Origin origin) {
         return KEY_ALL_DELEGATE_APPS + origin.toString();
     }
 

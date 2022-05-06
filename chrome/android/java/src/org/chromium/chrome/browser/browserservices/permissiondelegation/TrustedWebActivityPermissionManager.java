@@ -28,6 +28,8 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -123,13 +125,16 @@ public class TrustedWebActivityPermissionManager {
     }
 
     @UiThread
+    // TODO(crbug.com/1320272): Delete this method when the new flow is complete.
     public void updatePermission(
             Origin origin, String packageName, @ContentSettingsType int type, boolean enabled) {
         String appName = getAppNameForPackage(packageName);
         if (appName == null) return;
 
-        Boolean lastPermission = mStore.arePermissionEnabled(type, origin);
-        mUmaRecorder.recordPermissionChangedUma(type, lastPermission, enabled);
+        if (type == ContentSettingsType.GEOLOCATION) {
+            Boolean lastPermission = mStore.arePermissionEnabled(type, origin);
+            mUmaRecorder.recordLocationPermissionChanged(lastPermission, enabled);
+        }
 
         // It's important that we set the state before we destroy the notification channel. If we
         // did it the other way around there'd be a small moment in time where the website's
@@ -137,6 +142,41 @@ public class TrustedWebActivityPermissionManager {
         // straight from the channel's permission to the app's permission.
         boolean stateChanged =
                 mStore.setStateForOrigin(origin, packageName, appName, type, enabled);
+
+        if (type == ContentSettingsType.NOTIFICATIONS) {
+            NotificationChannelPreserver.deleteChannelIfNeeded(mPermissionPreserver, origin);
+        }
+
+        if (stateChanged) {
+            InstalledWebappBridge.notifyPermissionsChange(type);
+        }
+    }
+
+    @UiThread
+    public void updatePermission(Origin origin, String packageName, @ContentSettingsType int type,
+            @ContentSettingValues int settingValue) {
+        String appName = getAppNameForPackage(packageName);
+        if (appName == null) return;
+
+        if (type == ContentSettingsType.GEOLOCATION) {
+            boolean enabled = settingValue == ContentSettingValues.ALLOW;
+            @ContentSettingValues
+            Integer lastPermissionSetting = mStore.getPermission(type, origin);
+            Boolean lastPermissionBoolean;
+            if (lastPermissionSetting == null) {
+                lastPermissionBoolean = null;
+            } else {
+                lastPermissionBoolean = lastPermissionSetting == ContentSettingValues.ALLOW;
+            }
+            mUmaRecorder.recordLocationPermissionChanged(lastPermissionBoolean, enabled);
+        }
+
+        // It's important that we set the state before we destroy the notification channel. If we
+        // did it the other way around there'd be a small moment in time where the website's
+        // notification permission could flicker from SET -> UNSET -> SET. This way we transition
+        // straight from the channel's permission to the app's permission.
+        boolean stateChanged =
+                mStore.setStateForOrigin(origin, packageName, appName, type, settingValue);
 
         if (type == ContentSettingsType.NOTIFICATIONS) {
             NotificationChannelPreserver.deleteChannelIfNeeded(mPermissionPreserver, origin);
@@ -215,6 +255,18 @@ public class TrustedWebActivityPermissionManager {
     int getPermission(@ContentSettingsType int type, Origin origin) {
         switch (type) {
             case ContentSettingsType.NOTIFICATIONS: {
+                if (CachedFeatureFlags.isEnabled(
+                            ChromeFeatureList
+                                    .TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION)) {
+                    @ContentSettingValues
+                    Integer settingValue = mStore.getPermission(type, origin);
+                    if (settingValue == null) {
+                        Log.w(TAG, "%s is known but has no permission set.", origin);
+                        break;
+                    }
+                    return settingValue;
+                }
+
                 Boolean enabled = mStore.arePermissionEnabled(type, origin);
                 if (enabled == null) {
                     Log.w(TAG, "%s is known but has no permission set.", origin);

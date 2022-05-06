@@ -13,7 +13,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browserservices.constants.LocationUpdateError;
 import org.chromium.chrome.browser.browserservices.constants.QualityEnforcementViolationType;
-import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.WebContents;
 
@@ -199,27 +198,24 @@ public class TrustedWebActivityUmaRecorder {
         }
     }
 
-    public void recordPermissionChangedUma(
-            @ContentSettingsType int type, Boolean last, boolean enabled) {
-        if (type == ContentSettingsType.GEOLOCATION) {
-            @Nullable
-            @PermissionChanged
-            Integer change = null;
-            if (last == null) {
-                if (enabled) {
-                    change = PermissionChanged.NULL_TO_TRUE;
-                } else {
-                    change = PermissionChanged.NULL_TO_FALSE;
-                }
+    public void recordLocationPermissionChanged(Boolean last, boolean enabled) {
+        @Nullable
+        @PermissionChanged
+        Integer change = null;
+        if (last == null) {
+            if (enabled) {
+                change = PermissionChanged.NULL_TO_TRUE;
             } else {
-                if (last && !enabled) change = PermissionChanged.TRUE_TO_FALSE;
-                if (!last && enabled) change = PermissionChanged.FALSE_TO_TRUE;
+                change = PermissionChanged.NULL_TO_FALSE;
             }
-            if (change != null) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        "TrustedWebActivity.LocationPermissionChanged", change,
-                        PermissionChanged.NUM_ENTRIES);
-            }
+        } else {
+            if (last && !enabled) change = PermissionChanged.TRUE_TO_FALSE;
+            if (!last && enabled) change = PermissionChanged.FALSE_TO_TRUE;
+        }
+        if (change != null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "TrustedWebActivity.LocationPermissionChanged", change,
+                    PermissionChanged.NUM_ENTRIES);
         }
     }
 
