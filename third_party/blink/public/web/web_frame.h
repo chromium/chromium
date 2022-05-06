@@ -134,6 +134,13 @@ class BLINK_EXPORT WebFrame {
   // Returns the next frame in "frame traversal order".
   WebFrame* TraverseNext() const;
 
+  // Returns true if this frame is the top-level main frame (associated with
+  // the root Document in a WebContents). See content::Page for detailed
+  // documentation.
+  // This is false for main frames created for fenced-frames.
+  // TODO(khushalsagar) : Should also be the case for portals.
+  bool IsOutermostMainFrame() const;
+
   // Scripting ----------------------------------------------------------
 
   // Returns the global proxy object.

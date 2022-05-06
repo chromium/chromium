@@ -100,6 +100,12 @@ WebFrame* WebFrame::TraverseNext() const {
   return nullptr;
 }
 
+bool WebFrame::IsOutermostMainFrame() const {
+  Frame* core_frame = ToCoreFrame(*this);
+  CHECK(core_frame);
+  return core_frame->IsOutermostMainFrame();
+}
+
 WebFrame* WebFrame::FromFrameOwnerElement(const WebNode& web_node) {
   Node* node = web_node;
 
