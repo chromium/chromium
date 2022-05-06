@@ -8,7 +8,12 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+
+namespace ukm {
+class UkmRecorderImpl;
+}
 
 namespace segmentation_platform {
 class UkmDataManager;
@@ -31,11 +36,20 @@ class UkmDatabaseClient {
   // pointer till ProfileManagerDestroying() is called.
   segmentation_platform::UkmDataManager* GetUkmDataManager();
 
+  // UKM observer will use the test recorder to observe metrics.
+  void set_ukm_recorder_for_testing(ukm::UkmRecorderImpl* ukm_recorder) {
+    DCHECK(!ukm_observer_);
+    ukm_recorder_for_testing_ = ukm_recorder;
+  }
+
+  UkmObserver* ukm_observer_for_testing() { return ukm_observer_.get(); }
+
  private:
   friend base::NoDestructor<UkmDatabaseClient>;
   UkmDatabaseClient();
   ~UkmDatabaseClient();
 
+  raw_ptr<ukm::UkmRecorderImpl> ukm_recorder_for_testing_;
   std::unique_ptr<UkmObserver> ukm_observer_;
   std::unique_ptr<segmentation_platform::UkmDataManager> ukm_data_manager_;
 };

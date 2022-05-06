@@ -221,8 +221,22 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   return configs;
 }
 
-std::unique_ptr<ModelProvider> GetSegmentationDefaultModelProvider(
+DefaultModelsRegister::DefaultModelsRegister() = default;
+DefaultModelsRegister::~DefaultModelsRegister() = default;
+
+DefaultModelsRegister& DefaultModelsRegister::GetInstance() {
+  static base::NoDestructor<DefaultModelsRegister> instance;
+  return *instance;
+}
+
+std::unique_ptr<ModelProvider> DefaultModelsRegister::GetModelProvider(
     optimization_guide::proto::OptimizationTarget target) {
+  auto it = providers_.find(target);
+  if (it != providers_.end()) {
+    DCHECK(it->second);
+    return std::move(it->second);
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   if (target ==
       optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES) {
@@ -239,6 +253,12 @@ std::unique_ptr<ModelProvider> GetSegmentationDefaultModelProvider(
     return GetLowEngagementDefaultModel();
   }
   return nullptr;
+}
+
+void DefaultModelsRegister::SetModelForTesting(
+    optimization_guide::proto::OptimizationTarget target,
+    std::unique_ptr<ModelProvider> provider) {
+  providers_[target] = std::move(provider);
 }
 
 FieldTrialRegisterImpl::FieldTrialRegisterImpl() = default;

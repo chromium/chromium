@@ -26,3 +26,22 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/chrome/browser/segmentation_platform/SegmentationPlatformServiceFactory.java" ]
   }
 }
+
+static_library("test_utils") {
+  testonly = true
+  sources = [
+    "ukm_data_manager_test_utils.cc",
+    "ukm_data_manager_test_utils.h",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//components/segmentation_platform/internal",
+    "//components/segmentation_platform/internal:test_support",
+    "//components/segmentation_platform/internal/proto",
+    "//components/segmentation_platform/public",
+    "//components/ukm:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//testing/gmock",
+  ]
+}

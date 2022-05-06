@@ -26,11 +26,7 @@ UkmDatabaseClient& UkmDatabaseClient::GetInstance() {
   return *instance;
 }
 
-UkmDatabaseClient::UkmDatabaseClient()
-    : ukm_observer_(std::make_unique<UkmObserver>(
-          g_browser_process->GetMetricsServicesManager()->GetUkmService(),
-          g_browser_process->GetMetricsServicesManager()
-              ->IsUkmAllowedForAllProfiles())) {
+UkmDatabaseClient::UkmDatabaseClient() {
   if (base::FeatureList::IsEnabled(
           segmentation_platform::features::kSegmentationPlatformUkmEngine)) {
     ukm_data_manager_ = std::make_unique<UkmDataManagerImpl>();
@@ -47,6 +43,16 @@ segmentation_platform::UkmDataManager* UkmDatabaseClient::GetUkmDataManager() {
 }
 
 void UkmDatabaseClient::PreProfileInit() {
+  if (ukm_recorder_for_testing_) {
+    ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_for_testing_,
+                                                  /*is_ukm_allowed=*/true);
+  } else {
+    ukm_observer_ = std::make_unique<UkmObserver>(
+        g_browser_process->GetMetricsServicesManager()->GetUkmService(),
+        g_browser_process->GetMetricsServicesManager()
+            ->IsUkmAllowedForAllProfiles());
+  }
+
   // Path service is setup at early startup.
   base::FilePath local_data_dir;
   bool result = base::PathService::Get(chrome::DIR_USER_DATA, &local_data_dir);
@@ -62,7 +68,11 @@ void UkmDatabaseClient::PostMessageLoopRun() {
   // to stop the observer here. The profiles can still be active and
   // UkmDataManager needs to be available. This does not tear down the
   // UkmDataManager, but only stops observing UKM.
-  ukm_observer_->StopObserving();
+  if (ukm_observer_) {
+    // Some of the content browser implementations do not invoke
+    // PreProfileInit().
+    ukm_observer_->StopObserving();
+  }
 }
 
 }  // namespace segmentation_platform

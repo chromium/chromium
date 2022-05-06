@@ -53,6 +53,9 @@ class UkmObserver : public ukm::UkmRecorderObserver {
     ukm_data_manager_ = ukm_data_manager;
   }
 
+  bool is_started_for_testing() const { return !!config_; }
+  bool is_paused_for_testing() const { return paused_; }
+
  private:
   // UkmDataManagerImpl destroys this observer before the UKM service is
   // destroyed.
