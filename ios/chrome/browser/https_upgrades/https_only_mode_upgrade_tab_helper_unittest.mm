@@ -10,6 +10,9 @@
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prerender/fake_prerender_service.h"
+#import "ios/chrome/browser/prerender/prerender_service.h"
+#import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #include "ios/components/security_interstitials/https_only_mode/https_only_mode_allowlist.h"
 #include "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
@@ -22,11 +25,20 @@
 #error "This file requires ARC support."
 #endif
 
+std::unique_ptr<KeyedService> BuildFakePrerenderService(
+    web::BrowserState* context) {
+  return std::make_unique<FakePrerenderService>();
+}
+
 class HttpsOnlyModeUpgradeTabHelperTest : public PlatformTest {
  protected:
   HttpsOnlyModeUpgradeTabHelperTest() {
     TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(PrerenderServiceFactory::GetInstance(),
+                              base::BindRepeating(&BuildFakePrerenderService));
+
     browser_state_ = builder.Build();
+    web_state_.SetBrowserState(browser_state_.get());
 
     HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
         &web_state_, browser_state_->GetPrefs());

@@ -14,6 +14,7 @@
 #include "url/gurl.h"
 
 class PrefService;
+class PrerenderService;
 
 // This tab helper handles HTTP main frame navigation upgrades to HTTPS.
 // When it encounters an eligible HTTP navigation, it cancels the navigation,
@@ -59,8 +60,9 @@ class HttpsOnlyModeUpgradeTabHelper
   bool IsTimerRunningForTesting() const;
 
  private:
-  explicit HttpsOnlyModeUpgradeTabHelper(web::WebState* web_state,
-                                         PrefService* prefs);
+  HttpsOnlyModeUpgradeTabHelper(web::WebState* web_state,
+                                PrefService* prefs,
+                                PrerenderService* prerender_service);
   friend class web::WebStateUserData<HttpsOnlyModeUpgradeTabHelper>;
 
   // Returns true if url is a fake HTTPS URL used in tests. Tests use a fake
@@ -121,6 +123,7 @@ class HttpsOnlyModeUpgradeTabHelper
   base::OneShotTimer timer_;
 
   PrefService* prefs_;
+  PrerenderService* prerender_service_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

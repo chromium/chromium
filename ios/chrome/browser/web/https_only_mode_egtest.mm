@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "components/strings/grit/components_strings.h"
@@ -36,6 +37,9 @@
 #error "This file requires ARC support."
 #endif
 
+using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
+
 namespace {
 
 const long kVeryLongTimeout = 100 * 3600 * 1000;
@@ -43,12 +47,19 @@ const long kVeryLongTimeout = 100 * 3600 * 1000;
 // net::EmbeddedTestServer handler that responds with the request's query as the
 // title and body.
 std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
+    int* counter,
     const net::test_server::HttpRequest& request) {
-  std::unique_ptr<net::test_server::BasicHttpResponse> response(
-      new net::test_server::BasicHttpResponse);
-  response->set_content_type("text/html");
-  response->set_content("HTTP_RESPONSE");
-  return std::move(response);
+  if (request.relative_url == "/") {
+    std::unique_ptr<net::test_server::BasicHttpResponse> response(
+        new net::test_server::BasicHttpResponse);
+    response->set_content_type("text/html");
+    response->set_content("HTTP_RESPONSE");
+    if (counter)
+      (*counter)++;
+    return std::move(response);
+  }
+  // Ignore everything else such as favicon URLs.
+  return nullptr;
 }
 
 std::unique_ptr<net::test_server::HttpResponse> FakeHTTPSResponse(
@@ -94,6 +105,11 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 // that just serves bad HTTPS responses. slowHTTPSServer is a faux-HTTPS server
 // that serves hung responses.
 @interface HttpsOnlyModeUpgradeTestCase : ChromeTestCase {
+  // Counts the number of HTTP responses returned by the test server. Doesn't
+  // count the faux-HTTPS or bad-HTTPS responses. Used to check if prerender
+  // navigations are successfully cancelled (the server shouldn't return a
+  // response for them).
+  int _HTTPResponseCounter;
   std::unique_ptr<net::test_server::EmbeddedTestServer> _goodHTTPSServer;
   std::unique_ptr<net::test_server::EmbeddedTestServer> _badHTTPSServer;
   std::unique_ptr<net::test_server::EmbeddedTestServer> _slowHTTPSServer;
@@ -145,7 +161,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
     _badHTTPSServer = std::make_unique<net::EmbeddedTestServer>(
         net::test_server::EmbeddedTestServer::TYPE_HTTPS);
     _badHTTPSServer->RegisterRequestHandler(
-        base::BindRepeating(&StandardResponse));
+        base::BindRepeating(&StandardResponse, nullptr));
   }
   return _badHTTPSServer.get();
 }
@@ -165,8 +181,10 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   [ChromeEarlGrey clearBrowsingHistory];
 
   // Start the HTTP server.
-  self.testServer->RegisterRequestHandler(
-      base::BindRepeating(base::BindRepeating(&StandardResponse)));
+  _HTTPResponseCounter = 0;
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      base::BindRepeating(&StandardResponse, &_HTTPResponseCounter)));
+
   GREYAssertTrue(self.testServer->Start(), @"Test HTTP server failed to start");
   GREYAssertTrue(self.goodHTTPSServer->Start(),
                  @"Test good faux-HTTPS server failed to start.");
@@ -382,6 +400,86 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey waitForWebStateContainingText:"Revision"];
   [self assertFailedUpgrade:1];
+}
+
+// Tests that prerendered navigations that should be upgraded are cancelled.
+// This test is adapted from testTapPrerenderSuggestions() in
+// prerender_egtest.mm.
+- (void)testUpgrade_BadHTTPS_PrerenderCanceled {
+  // TODO(crbug.com/793306): Re-enable the test on iPad once the alternate
+  // letters problem is fixed.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(
+        @"Disabled for iPad due to alternate letters educational screen.");
+  }
+
+  // TODO(crbug.com/1315304): Reenable.
+  if ([ChromeEarlGrey isNewOmniboxPopupEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled for new popup");
+  }
+
+  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
+  [HttpsOnlyModeAppInterface
+      setHTTPSPortForTesting:self.badHTTPSServer->port()];
+  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
+
+  [ChromeEarlGrey clearBrowsingHistory];
+
+  // Type the full URL. This will show an interstitial. This adds the URL to
+  // history.
+  GURL testURL = self.testServer->GetURL("/");
+  NSString* pageString = base::SysUTF8ToNSString(testURL.GetContent());
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_typeText([pageString stringByAppendingString:@"\n"])];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:"You are seeing this warning because this "
+                                    "site does not support HTTPS"];
+  [self assertFailedUpgrade:1];
+  GREYAssertEqual(1, _HTTPResponseCounter,
+                  @"The page should have been loaded once");
+
+  // Click through the interstitial.
+  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
+             @"Timer is still running");
+  GREYAssertEqual(2, _HTTPResponseCounter,
+                  @"The page should have been loaded twice");
+
+  // Close all tabs and reopen. This clears the allowlist because it's currently
+  // per-tab.
+  [[self class] closeAllTabs];
+  [ChromeEarlGrey openNewTab];
+
+  // Type the begining of the address to have the autocomplete suggestion.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  // Type a single character. This causes two prerender attempts.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_typeText([pageString substringToIndex:1])];
+
+  // Wait until prerender request reaches the server.
+  bool prerendered = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return self->_HTTPResponseCounter > 2;
+  });
+  GREYAssertTrue(prerendered, @"Prerender did not happen");
+
+  // Check the histograms. All prerender attempts must be cancelled. Relying on
+  // the histogram here isn't great, but there doesn't seem to be a good
+  // way of testing that prerenders have been cancelled.
+  GREYAssertNil(
+      [MetricsAppInterface expectCount:0
+                             forBucket:/*PRERENDER_FINAL_STATUS_USED=*/0
+                          forHistogram:@"Prerender.FinalStatus"],
+      @"Prerender was used");
+  // TODO(crbug.com/1302509): Check that the CANCEL bucket has non-zero
+  // elements. Not currently supported by MetricsAppInterface.
 }
 
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves bad SSL.

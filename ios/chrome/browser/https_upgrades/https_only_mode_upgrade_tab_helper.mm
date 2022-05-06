@@ -10,7 +10,10 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prerender/prerender_service.h"
+#import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_allowlist.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_blocking_page.h"
 #include "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
@@ -118,18 +121,23 @@ void HttpsOnlyModeUpgradeTabHelper::CreateForWebState(web::WebState* web_state,
   DCHECK(web_state);
   DCHECK(prefs);
   if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new HttpsOnlyModeUpgradeTabHelper(web_state, prefs)));
+    PrerenderService* prerender_service =
+        PrerenderServiceFactory::GetForBrowserState(
+            ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
+    web_state->SetUserData(UserDataKey(),
+                           base::WrapUnique(new HttpsOnlyModeUpgradeTabHelper(
+                               web_state, prefs, prerender_service)));
   }
 }
 
 HttpsOnlyModeUpgradeTabHelper::HttpsOnlyModeUpgradeTabHelper(
     web::WebState* web_state,
-    PrefService* prefs)
+    PrefService* prefs,
+    PrerenderService* prerender_service)
     : web::WebStatePolicyDecider(web_state),
       was_upgraded_(false),
-      prefs_(prefs) {
+      prefs_(prefs),
+      prerender_service_(prerender_service) {
   web_state->AddObserver(this);
 }
 
@@ -314,9 +322,17 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
   // Upgrade to HTTPS if the navigation wasn't upgraded before.
   if (!item_pending->IsUpgradedToHttps()) {
     if (!prefs_ || !prefs_->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
-      // Feature is disabled, don't upgrade.
+      // If the feature is disabled, don't upgrade.
       std::move(callback).Run(
           web::WebStatePolicyDecider::PolicyDecision::Allow());
+      return;
+    }
+    // If the tab is being prerendered, cancel the HTTP response.
+    if (prerender_service_ &&
+        prerender_service_->IsWebStatePrerendered(web_state())) {
+      prerender_service_->CancelPrerender();
+      std::move(callback).Run(
+          web::WebStatePolicyDecider::PolicyDecision::Cancel());
       return;
     }
     DCHECK(!stopped_loading_to_upgrade_);
