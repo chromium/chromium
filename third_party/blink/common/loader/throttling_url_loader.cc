@@ -1035,7 +1035,7 @@ void ThrottlingURLLoader::InterceptResponse(
     mojo::ScopedDataPipeConsumerHandle* body) {
   response_intercepted_ = true;
 
-  *body = std::move(body_);
+  body->swap(body_);
   if (original_loader) {
     url_loader_->ResumeReadingBodyFromNet();
     *original_loader = url_loader_.Unbind();
