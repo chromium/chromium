@@ -1138,6 +1138,45 @@ TEST_F(FrameSinkVideoCapturerTest, RefreshDemandsAreProperlyHandled) {
   StopCapture();
 }
 
+// Tests that the capturer honors requested refresh frames (see
+// crbug.com/1320798)
+TEST_F(FrameSinkVideoCapturerTest, HonorsRequestRefreshFrame) {
+  frame_sink_.SetCopyOutputColor(YUVColor{0x80, 0x80, 0x80});
+  ON_CALL(frame_sink_manager_, FindCapturableFrameSink(kVideoCaptureTarget))
+      .WillByDefault(Return(&frame_sink_));
+
+  capturer_->ChangeTarget(kVideoCaptureTarget, /*crop_version=*/0);
+
+  // Start off and consume the immediate refresh and copy result.
+  MockConsumer consumer;
+  StartCapture(&consumer);
+  frame_sink_.SendCopyOutputResult(0);
+  ASSERT_EQ(1, consumer.num_frames_received());
+  consumer.SendDoneNotification(0);
+
+  // Advance time to avoid being frame rate limited by the oracle.
+  // Demand a refresh frame. We should be past the minimum time to add one, so
+  // it should be done immediately.
+  AdvanceClockToNextVsync();
+  capturer_->RefreshNow();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(2, consumer.num_frames_received());
+
+  // Advance time to avoid being frame rate limited by the oracle.
+  // Request a refresh frame. The request should be serviced immediately.
+  AdvanceClockToNextVsync();
+  capturer_->RequestRefreshFrame();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(3, consumer.num_frames_received());
+
+  // Advance time to avoid being frame rate limited by the oracle.
+  // Request again and expect service.
+  AdvanceClockToNextVsync();
+  capturer_->RequestRefreshFrame();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(4, consumer.num_frames_received());
+}
+
 // Tests that full capture happens on capture resolution change due to oracle,
 // but only once and resurrected frames are used after that.
 TEST_F(FrameSinkVideoCapturerTest,
