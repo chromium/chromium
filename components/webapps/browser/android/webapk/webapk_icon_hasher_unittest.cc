@@ -237,7 +237,7 @@ TEST_F(WebApkIconHasherTest, SVGImage) {
                       std::vector<gfx::Size>{gfx::Size(10, 10)}));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ("16586085245996049349", runner.icon().hash);
+  EXPECT_EQ("12895188166704127516", runner.icon().hash);
   EXPECT_FALSE(runner.icon().unsafe_data.empty());
 }
 
