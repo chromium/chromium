@@ -3102,17 +3102,17 @@ Try tapping the mic to ask me anything.
         need permission to update
       </message>
       <!-- Critical error page -->
-      <message name="IDS_SHIMLESS_RMA_CRITICAL_ERROR_TITLE" translateable="false" desc="The title for the critical error page. Critical errors cause the RMA process to attempt to exit to login or reboot the device at users discretion. It will try to cancel RMA, but if that fails the next boot may also trigger an RMA critical error.">
+      <message name="IDS_SHIMLESS_RMA_CRITICAL_ERROR_TITLE" desc="The title for the critical error page. Critical errors cause the RMA process to attempt to exit to login or reboot the device at users discretion. It will try to cancel RMA, but if that fails the next boot may also trigger an RMA critical error.">
         <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> repair error
       </message>
-      <message name="IDS_SHIMLESS_RMA_CRITICAL_ERROR_MESSAGE" translateable="false" desc="The message for the critical error when Shimless RMA app is launched when not in RMA. This should never happen.">
+      <message name="IDS_SHIMLESS_RMA_CRITICAL_ERROR_MESSAGE" desc="The message for the critical error when Shimless RMA app is launched when not in RMA. This should never happen.">
         We're running into errors. Try rebooting or recover the firmware using a USB thumbdrive.
       </message>
-      <message name="IDS_SHIMLESS_RMA_CRITICAL_EXIT_BUTTON" translateable="false" desc="Label for the exit button on the error page.">
-        Exit repair
+      <message name="IDS_SHIMLESS_RMA_CRITICAL_EXIT_BUTTON" desc="Label for the exit button on the error page.">
+        Exit <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> repair
       </message>
-      <message name="IDS_SHIMLESS_RMA_CRITICAL_REBOOT_BUTTON" translateable="false" desc="Label for the button that attempts to cancel RMA and reboot the device.">
-        Reboot
+      <message name="IDS_SHIMLESS_RMA_CRITICAL_REBOOT_BUTTON" desc="Label for the button that attempts to cancel RMA and reboot the device.">
+        Restart
       </message>
       <!-- Wipe device page -->
       <message name="IDS_SHIMLESS_RMA_WIPE_DEVICE_TITLE" desc="Title for the page where the user chooses whether to erase the data or keep/preserve the data on the device.">

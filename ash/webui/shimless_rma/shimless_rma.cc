@@ -304,7 +304,6 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_PERMISSION},
       // Critical error
       {"criticalErrorMessageText", IDS_SHIMLESS_RMA_CRITICAL_ERROR_MESSAGE},
-      {"criticalErrorExitText", IDS_SHIMLESS_RMA_CRITICAL_EXIT_BUTTON},
       {"criticalErrorRebootText", IDS_SHIMLESS_RMA_CRITICAL_REBOOT_BUTTON},
       // Wipe device page
       {"wipeDeviceTitleText", IDS_SHIMLESS_RMA_WIPE_DEVICE_TITLE},
@@ -327,6 +326,9 @@ void AddDevicePlaceholderStrings(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "welcomeTitleText",
       ui::SubstituteChromeOSDeviceType(IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE));
+  html_source->AddString(
+      "criticalErrorExitText",
+      ui::SubstituteChromeOSDeviceType(IDS_SHIMLESS_RMA_CRITICAL_EXIT_BUTTON));
   html_source->AddString(
       "criticalErrorTitleText",
       ui::SubstituteChromeOSDeviceType(IDS_SHIMLESS_RMA_CRITICAL_ERROR_TITLE));
