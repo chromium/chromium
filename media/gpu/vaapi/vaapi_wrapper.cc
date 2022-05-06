@@ -347,6 +347,14 @@ bool IsLowPowerIntelProcessor() {
   return is_low_power_intel;
 }
 
+bool IsModeDecoding(VaapiWrapper::CodecMode mode) {
+  return mode == VaapiWrapper::CodecMode::kDecode
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+         || VaapiWrapper::CodecMode::kDecodeProtected
+#endif
+      ;
+}
+
 bool IsModeEncoding(VaapiWrapper::CodecMode mode) {
   return mode == VaapiWrapper::CodecMode::kEncodeConstantBitrate ||
          mode == VaapiWrapper::CodecMode::kEncodeConstantQuantizationParameter;
@@ -3279,8 +3287,11 @@ bool VaapiWrapper::Execute_Locked(VASurfaceID va_surface_id,
   va_res = vaEndPicture(va_display_, va_context_id_);
   VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAEndPicture, false);
 
-  UMA_HISTOGRAM_TIMES("Media.PlatformVideoDecoding.Decode",
-                      base::TimeTicks::Now() - decode_start_time);
+  if (IsModeDecoding(mode_) && va_profile_ != VAProfileNone &&
+      va_profile_ != VAProfileJPEGBaseline) {
+    UMA_HISTOGRAM_TIMES("Media.PlatformVideoDecoding.Decode",
+                        base::TimeTicks::Now() - decode_start_time);
+  }
 
   return true;
 }
