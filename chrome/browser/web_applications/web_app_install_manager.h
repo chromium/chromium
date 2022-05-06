@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -38,6 +39,7 @@ namespace web_app {
 
 class WebAppInstallFinalizer;
 class OsIntegrationManager;
+class WebAppCommandManager;
 class WebAppDataRetriever;
 class WebAppInstallTask;
 class WebAppRegistrar;
@@ -152,6 +154,11 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   void SetUrlLoaderForTesting(std::unique_ptr<WebAppUrlLoader> url_loader);
   bool has_web_contents_for_testing() const { return web_contents_ != nullptr; }
   std::set<AppId> GetEnqueuedInstallAppIdsForTesting();
+
+  // TODO(crbug.com/1322974): migrate loggign to WebAppCommandManager after all
+  // tasks are migrated to the command system.
+  void TakeCommandErrorLog(base::PassKey<WebAppCommandManager>,
+                           base::Value log);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebAppInstallManagerTest,

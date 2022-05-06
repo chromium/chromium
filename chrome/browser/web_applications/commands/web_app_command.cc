@@ -147,6 +147,10 @@ WebAppCommand::WebAppCommand(WebAppCommandLock command_lock)
 }
 WebAppCommand::~WebAppCommand() = default;
 
+content::WebContents* WebAppCommand::GetInstallingWebContents() {
+  return nullptr;
+}
+
 void WebAppCommand::SignalCompletionAndSelfDestruct(
     CommandResult result,
     base::OnceClosure completion_callback) {

@@ -182,6 +182,25 @@ base::Value WebAppCommandManager::ToDebugValue() {
   return base::Value(std::move(state));
 }
 
+void WebAppCommandManager::SetSubsystems(
+    WebAppInstallManager* install_manager) {
+  install_manager_ = install_manager;
+}
+
+void WebAppCommandManager::LogToInstallManager(base::Value log) {
+  install_manager_->TakeCommandErrorLog(PassKey(), std::move(log));
+}
+
+bool WebAppCommandManager::IsInstallingForWebContents(
+    const content::WebContents* web_contents) const {
+  for (const auto& [id, command_state] : commands_) {
+    if (command_state.command->GetInstallingWebContents() == web_contents) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void WebAppCommandManager::OnCommandComplete(
     WebAppCommand* running_command,
     CommandResult result,

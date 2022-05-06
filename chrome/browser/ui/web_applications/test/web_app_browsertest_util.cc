@@ -30,10 +30,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -135,18 +137,21 @@ AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
   auto* provider = WebAppProvider::GetForTest(browser->profile());
   DCHECK(provider);
   test::WaitUntilReady(provider);
-  provider->install_manager().InstallWebAppFromManifestWithFallback(
-      browser->tab_strip_model()->GetActiveWebContents(),
-      WebAppInstallFlow::kInstallSite,
-      webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      base::BindOnce(&AutoAcceptDialogCallback),
-      base::BindLambdaForTesting(
-          [&run_loop, &app_id](const AppId& installed_app_id,
-                               webapps::InstallResultCode code) {
-            DCHECK_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-            app_id = installed_app_id;
-            run_loop.Quit();
-          }));
+  provider->command_manager().ScheduleCommand(
+      std::make_unique<FetchManifestAndInstallCommand>(
+          &provider->install_finalizer(), &provider->registrar(),
+          webapps::WebappInstallSource::MENU_BROWSER_TAB,
+          browser->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+          /*bypass_service_worker_check=*/false,
+          base::BindOnce(&AutoAcceptDialogCallback),
+          base::BindLambdaForTesting(
+              [&run_loop, &app_id](const AppId& installed_app_id,
+                                   webapps::InstallResultCode code) {
+                DCHECK_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
+                app_id = installed_app_id;
+                run_loop.Quit();
+              }),
+          /*use_fallback=*/true, WebAppInstallFlow::kInstallSite));
 
   run_loop.Run();
   return app_id;
@@ -164,18 +169,21 @@ AppId InstallWebAppFromManifest(Browser* browser, const GURL& app_url) {
   auto* provider = WebAppProvider::GetForTest(browser->profile());
   DCHECK(provider);
   test::WaitUntilReady(provider);
-  provider->install_manager().InstallWebAppFromManifestWithFallback(
-      browser->tab_strip_model()->GetActiveWebContents(),
-      WebAppInstallFlow::kInstallSite,
-      webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      base::BindOnce(&AutoAcceptDialogCallback),
-      base::BindLambdaForTesting(
-          [&run_loop, &app_id](const AppId& installed_app_id,
-                               webapps::InstallResultCode code) {
-            DCHECK_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-            app_id = installed_app_id;
-            run_loop.Quit();
-          }));
+  provider->command_manager().ScheduleCommand(
+      std::make_unique<FetchManifestAndInstallCommand>(
+          &provider->install_finalizer(), &provider->registrar(),
+          webapps::WebappInstallSource::MENU_BROWSER_TAB,
+          browser->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+          /*bypass_service_worker_check=*/false,
+          base::BindOnce(&AutoAcceptDialogCallback),
+          base::BindLambdaForTesting(
+              [&run_loop, &app_id](const AppId& installed_app_id,
+                                   webapps::InstallResultCode code) {
+                DCHECK_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
+                app_id = installed_app_id;
+                run_loop.Quit();
+              }),
+          /*use_fallback=*/true, WebAppInstallFlow::kInstallSite));
 
   run_loop.Run();
   return app_id;

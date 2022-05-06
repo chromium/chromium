@@ -11,8 +11,10 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -29,6 +31,8 @@ class WebContents;
 
 namespace web_app {
 
+class WebAppInstallManager;
+
 // The command manager is used to schedule commands or callbacks to write & read
 // from the WebAppProvider system. To use, simply call `ScheduleCommand` to
 // schedule the given command or a CallbackCommand with given callback.
@@ -39,6 +43,8 @@ namespace web_app {
 // until `SignalCompletionAndSelfDestruct()` was called by the last command.
 class WebAppCommandManager {
  public:
+  using PassKey = base::PassKey<WebAppCommandManager>;
+
   explicit WebAppCommandManager(Profile* profile);
   ~WebAppCommandManager();
 
@@ -58,6 +64,16 @@ class WebAppCommandManager {
   // Outputs a debug value of the state of the commands system, including
   // running and queued commands.
   base::Value ToDebugValue();
+
+  void SetSubsystems(WebAppInstallManager* install_manager);
+  void LogToInstallManager(base::Value);
+
+  // Returns whether an installation is already scheduled with the same web
+  // contents.
+  bool IsInstallingForWebContents(
+      const content::WebContents* web_contents) const;
+
+  std::size_t GetCommandCountForTesting() { return commands_.size(); }
 
  protected:
   friend class WebAppCommand;
@@ -94,6 +110,8 @@ class WebAppCommandManager {
 
   content::DisjointRangeLockManager lock_manager_{
       static_cast<int>(WebAppCommandLock::LockLevel::kMaxValue) + 1};
+
+  raw_ptr<WebAppInstallManager> install_manager_;
 
   base::WeakPtrFactory<WebAppCommandManager> weak_ptr_factory_{this};
 };

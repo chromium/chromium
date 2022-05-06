@@ -49,6 +49,8 @@ class WebAppInstallCommand : public WebAppCommand {
   void OnBeforeForcedUninstallFromSync() override;
   void OnShutdown() override;
 
+  content::WebContents* GetInstallingWebContents() override;
+
   base::Value ToDebugValue() const override;
 
  private:

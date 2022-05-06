@@ -91,6 +91,11 @@ void FetchManifestAndInstallCommand::OnShutdown() {
   Abort(webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
 }
 
+content::WebContents*
+FetchManifestAndInstallCommand::GetInstallingWebContents() {
+  return web_contents_.get();
+}
+
 base::Value FetchManifestAndInstallCommand::ToDebugValue() const {
   auto debug_value = debug_log_.Clone();
   debug_value.Set("command_name", "FetchManifestAndInstallCommand");
@@ -165,8 +170,13 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
   auto start_url = install_info_->start_url;
 
   if (opt_manifest) {
-    UpdateWebAppInfoFromManifest(*opt_manifest, manifest_url,
-                                 install_info_.get());
+    if (opt_manifest->start_url.is_valid())
+      install_info_->start_url = opt_manifest->start_url;
+
+    if (opt_manifest->id.has_value()) {
+      install_info_->manifest_id = absl::optional<std::string>(
+          base::UTF16ToUTF8(opt_manifest->id.value()));
+    }
     LogInstallInfo();
   }
 

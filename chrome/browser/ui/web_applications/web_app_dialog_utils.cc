@@ -112,8 +112,10 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
   auto* provider = WebAppProvider::GetForWebContents(web_contents);
   DCHECK(provider);
 
-  if (provider->install_manager().IsInstallingForWebContents(web_contents))
+  if (provider->install_manager().IsInstallingForWebContents(web_contents) ||
+      provider->command_manager().IsInstallingForWebContents(web_contents)) {
     return;
+  }
 
   webapps::WebappInstallSource install_source =
       webapps::InstallableMetrics::GetInstallSource(
@@ -123,11 +125,15 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
 
   WebAppInstalledCallback callback = base::DoNothing();
 
-  provider->install_manager().InstallWebAppFromManifestWithFallback(
-      web_contents, flow, install_source,
-      base::BindOnce(OnWebAppInstallShowInstallDialog, flow, install_source,
-                     chrome::PwaInProductHelpState::kNotShown),
-      base::BindOnce(OnWebAppInstalled, std::move(callback)));
+  provider->command_manager().ScheduleCommand(
+      std::make_unique<FetchManifestAndInstallCommand>(
+          &provider->install_finalizer(), &provider->registrar(),
+          install_source, web_contents->GetWeakPtr(),
+          /*bypass_service_worker_check=*/false,
+          base::BindOnce(OnWebAppInstallShowInstallDialog, flow, install_source,
+                         chrome::PwaInProductHelpState::kNotShown),
+          base::BindOnce(OnWebAppInstalled, std::move(callback)),
+          /*use_fallback=*/true, flow));
 }
 
 bool CreateWebAppFromManifest(content::WebContents* web_contents,

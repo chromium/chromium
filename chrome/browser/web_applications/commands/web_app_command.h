@@ -132,6 +132,11 @@ class WebAppCommand {
   // Returns if the command has been started yet.
   bool IsStarted() const { return command_manager_ != nullptr; }
 
+  // Returns the pre-existing web contents the installation was
+  // initiated with. Only implements this when the command is used for
+  // installation and uses a pre-existing web contents.
+  virtual content::WebContents* GetInstallingWebContents();
+
   // Returns a debug value to log the state of the command. Used in
   // chrome://web-app-internals.
   virtual base::Value ToDebugValue() const = 0;
@@ -194,7 +199,7 @@ class WebAppCommand {
   WebAppCommandManager* command_manager_ = nullptr;
   // Because this is owned by the command manager, it will always outlive this
   // object. Thus a raw pointer is save.
-  base::raw_ptr<content::WebContents> shared_web_contents_;
+  raw_ptr<content::WebContents> shared_web_contents_;
 
   base::WeakPtrFactory<WebAppCommand> weak_factory_{this};
 };

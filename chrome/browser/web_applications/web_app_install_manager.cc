@@ -479,6 +479,13 @@ void WebAppInstallManager::TakeTaskErrorLog(WebAppInstallTask* task) {
   }
 }
 
+void WebAppInstallManager::TakeCommandErrorLog(
+    base::PassKey<WebAppCommandManager>,
+    base::Value log) {
+  if (error_log_)
+    LogErrorObject(std::move(log));
+}
+
 void WebAppInstallManager::DeleteTask(WebAppInstallTask* task) {
   TakeTaskErrorLog(task);
   // If this happens after/during the call to Shutdown(), then ignore deletion

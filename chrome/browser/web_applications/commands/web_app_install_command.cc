@@ -7,8 +7,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 
 namespace web_app {
@@ -61,17 +65,24 @@ void WebAppInstallCommand::Abort(webapps::InstallResultCode code) {
   if (!install_callback_)
     return;
   webapps::InstallableMetrics::TrackInstallResult(false);
-  std::move(install_callback_).Run(app_id_, code);
-  SignalCompletionAndSelfDestruct(CommandResult::kFailure, base::DoNothing());
+  SignalCompletionAndSelfDestruct(
+      CommandResult::kFailure,
+      base::BindOnce(std::move(install_callback_), app_id_, code));
 }
 
 void WebAppInstallCommand::OnInstallCompleted(const AppId& app_id,
                                               webapps::InstallResultCode code) {
-  std::move(install_callback_).Run(app_id, code);
-  SignalCompletionAndSelfDestruct(webapps::IsSuccess(code)
-                                      ? CommandResult::kSuccess
-                                      : CommandResult::kFailure,
-                                  base::DoNothing());
+  if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
+    base::Value task_error_dict = install_task_.TakeErrorDict();
+    if (!task_error_dict.DictEmpty())
+      command_manager()->LogToInstallManager(std::move(task_error_dict));
+  }
+
+  webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
+  SignalCompletionAndSelfDestruct(
+      webapps::IsSuccess(code) ? CommandResult::kSuccess
+                               : CommandResult::kFailure,
+      base::BindOnce(std::move(install_callback_), app_id, code));
 }
 
 void WebAppInstallCommand::OnBeforeForcedUninstallFromSync() {
@@ -83,6 +94,10 @@ void WebAppInstallCommand::OnBeforeForcedUninstallFromSync() {
 void WebAppInstallCommand::OnShutdown() {
   Abort(webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
   return;
+}
+
+content::WebContents* WebAppInstallCommand::GetInstallingWebContents() {
+  return web_contents_.get();
 }
 
 base::Value WebAppInstallCommand::ToDebugValue() const {

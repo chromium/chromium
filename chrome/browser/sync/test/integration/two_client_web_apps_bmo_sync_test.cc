@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -111,18 +113,20 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
 
     AppId app_id;
     base::RunLoop run_loop;
-    WebAppProvider::GetForTest(profile)
-        ->install_manager()
-        .InstallWebAppFromManifestWithFallback(
-            browser->tab_strip_model()->GetActiveWebContents(),
-            WebAppInstallFlow::kInstallSite, source,
+    auto* provider = WebAppProvider::GetForTest(profile);
+    provider->command_manager().ScheduleCommand(
+        std::make_unique<FetchManifestAndInstallCommand>(
+            &provider->install_finalizer(), &provider->registrar(), source,
+            browser->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+            /*bypass_service_worker_check=*/false,
             base::BindOnce(test::TestAcceptDialogCallback),
             base::BindLambdaForTesting([&](const AppId& new_app_id,
                                            webapps::InstallResultCode code) {
               EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
               app_id = new_app_id;
               run_loop.Quit();
-            }));
+            }),
+            /*use_fallback=*/true, WebAppInstallFlow::kInstallSite));
     run_loop.Run();
     return app_id;
   }
@@ -496,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, AppSortingFixCollisions) {
       GetProfile(0), webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       GetUserInitiatedAppURL2());
   ASSERT_NE(app_id1, app_id2);
-  
+
   // Wait for both of the webapps to be installed on profile 1.
   ASSERT_TRUE(AwaitQuiescence());
   apps_helper::AwaitWebAppQuiescence({GetProfile(0), GetProfile(1)});
