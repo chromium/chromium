@@ -252,10 +252,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderDefaultPrerender2BrowserTest,
 #endif
 }
 
-class PrerenderOmniboxSearchSuggestionBrowserTestBase
+class PrerenderOmniboxSearchSuggestionBrowserTest
     : public OmniboxPrerenderBrowserTest {
  public:
-  PrerenderOmniboxSearchSuggestionBrowserTestBase() {
+  PrerenderOmniboxSearchSuggestionBrowserTest() {
     feature_list_.InitWithFeatures(
         {features::kSupportSearchSuggestionForPrerender2}, {});
   }
@@ -274,24 +274,12 @@ class PrerenderOmniboxSearchSuggestionBrowserTestBase
     search_engine_server_.ServeFilesFromDirectory(
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA));
     ASSERT_TRUE(search_engine_server_.Start());
+    SetUrlTemplate();
+  }
 
-    TemplateURLService* model = TemplateURLServiceFactory::GetForProfile(
-        chrome_test_utils::GetProfile(this));
-    ASSERT_TRUE(model);
-    search_test_utils::WaitForTemplateURLServiceToLoad(model);
-    ASSERT_TRUE(model->loaded());
-    TemplateURLData data;
-    data.SetShortName(kSearchDomain16);
-    data.SetKeyword(data.short_name());
-    data.SetURL(
-        search_engine_server_
-            .GetURL(
-                kSearchDomain,
-                "/title1.html?q={searchTerms}&{google:prefetchSource}type=test")
-            .spec());
-    TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
-    ASSERT_TRUE(template_url);
-    model->SetUserSelectedDefaultSearchProvider(template_url);
+  void SetNewUrlTemplate(const std::string& prerender_page_target) {
+    prerender_page_target_ = prerender_page_target;
+    SetUrlTemplate();
   }
 
  protected:
@@ -306,7 +294,7 @@ class PrerenderOmniboxSearchSuggestionBrowserTestBase
 
   GURL GetSearchSuggestionUrl(const std::string& search_terms,
                               bool is_prerender) {
-    std::string url_template = "/title1.html?q=$1$2&type=test";
+    std::string url_template = prerender_page_target_ + "?q=$1$2&type=test";
     return search_engine_server_.GetURL(
         kSearchDomain,
         base::ReplaceStringPlaceholders(
@@ -377,17 +365,38 @@ class PrerenderOmniboxSearchSuggestionBrowserTestBase
     return match;
   }
 
+  void SetUrlTemplate() {
+    TemplateURLService* model = TemplateURLServiceFactory::GetForProfile(
+        chrome_test_utils::GetProfile(this));
+    ASSERT_TRUE(model);
+    search_test_utils::WaitForTemplateURLServiceToLoad(model);
+    ASSERT_TRUE(model->loaded());
+    TemplateURLData data;
+    data.SetShortName(kSearchDomain16);
+    data.SetKeyword(data.short_name());
+    data.SetURL(
+        search_engine_server_
+            .GetURL(kSearchDomain,
+                    prerender_page_target_ +
+                        "?q={searchTerms}&{google:prefetchSource}type=test")
+            .spec());
+    TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
+    ASSERT_TRUE(template_url);
+    model->SetUserSelectedDefaultSearchProvider(template_url);
+  }
+
   constexpr static char kSearchDomain[] = "a.test";
   constexpr static char16_t kSearchDomain16[] = u"a.test";
-  base::test::ScopedFeatureList feature_list_;
   PrerenderManager* prerender_manager_;
   net::test_server::EmbeddedTestServer search_engine_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
+  std::string prerender_page_target_ = "/title1.html";
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class PrerenderOmniboxSearchSuggestionReloadBrowserTest
     : public testing::WithParamInterface<bool>,
-      public PrerenderOmniboxSearchSuggestionBrowserTestBase {
+      public PrerenderOmniboxSearchSuggestionBrowserTest {
  public:
   PrerenderOmniboxSearchSuggestionReloadBrowserTest() {
     // Disable BFCache, to test the HTTP Cache path.
@@ -448,7 +457,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderOmniboxSearchSuggestionReloadBrowserTest,
 }
 
 class PrerenderOmniboxSearchSuggestionExpiryBrowserTest
-    : public PrerenderOmniboxSearchSuggestionBrowserTestBase {
+    : public PrerenderOmniboxSearchSuggestionBrowserTest {
  public:
   PrerenderOmniboxSearchSuggestionExpiryBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
@@ -574,6 +583,55 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionExpiryBrowserTest,
   // Two predictions, two samples.
   histogram_tester.ExpectTotalCount(
       internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine, 2);
+}
+
+// Verifies that prerendering functions in document are properly exposed when
+// triggered by search suggestion.
+IN_PROC_BROWSER_TEST_F(
+    PrerenderOmniboxSearchSuggestionBrowserTest,
+    PrerenderFunctionsProperlyExportedWhenInitiatedByOmnibox) {
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  InitializePrerenderManager();
+  EXPECT_EQ(true,
+            EvalJs(GetActiveWebContents(), "document.prerendering === false"));
+  EXPECT_EQ(
+      0,
+      EvalJs(GetActiveWebContents(),
+             "performance.getEntriesByType('navigation')[0].activationStart"));
+  EXPECT_EQ(true, EvalJs(GetActiveWebContents(),
+                         "'onprerenderingchange' in document"));
+
+  SetNewUrlTemplate("/prerender/onprerendering_check.html");
+  GURL kPrerenderingUrl =
+      GetSearchSuggestionUrl("prerender222", /*is_prerender=*/true);
+  PrerenderQuery("prerender222", kPrerenderingUrl);
+
+  int host_id = prerender_helper().GetHostForUrl(kPrerenderingUrl);
+  content::RenderFrameHost* prerender_frame_host =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  prerender_helper().WaitForPrerenderLoadCompletion(host_id);
+  EXPECT_EQ(true,
+            EvalJs(prerender_frame_host, "document.prerendering === true"));
+  EXPECT_EQ(
+      0,
+      EvalJs(prerender_frame_host,
+             "performance.getEntriesByType('navigation')[0].activationStart"));
+  EXPECT_EQ(true,
+            EvalJs(prerender_frame_host, "'onprerenderingchange' in document"));
+
+  NavigateToPrerenderedResult(kPrerenderingUrl);
+
+  EXPECT_EQ(true,
+            EvalJs(prerender_frame_host, "document.prerendering === false"));
+  EXPECT_LT(
+      0.0,
+      EvalJs(prerender_frame_host,
+             "performance.getEntriesByType('navigation')[0].activationStart")
+          .ExtractDouble());
+  EXPECT_EQ(true, EvalJs(prerender_frame_host,
+                         "onprerenderingchange_observed_promise"));
 }
 
 }  // namespace
