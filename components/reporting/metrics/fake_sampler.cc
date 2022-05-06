@@ -18,12 +18,6 @@ FakeSampler::FakeSampler() = default;
 
 FakeSampler::~FakeSampler() = default;
 
-void FakeSampler::Collect(MetricCallback cb) {
-  ASSERT_TRUE(metric_data_.has_value());
-  num_calls_++;
-  std::move(cb).Run(metric_data_.value());
-}
-
 void FakeSampler::MaybeCollect(OptionalMetricCallback cb) {
   num_calls_++;
   std::move(cb).Run(metric_data_);

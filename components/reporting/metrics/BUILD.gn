@@ -15,7 +15,6 @@ static_library("metrics_data_collection") {
     "metric_reporting_controller.cc",
     "metric_reporting_controller.h",
     "reporting_settings.h",
-    "sampler.cc",
     "sampler.h",
   ]
   deps = [

@@ -30,10 +30,7 @@ using MetricRepeatingCallback = base::RepeatingCallback<void(MetricData)>;
 class Sampler {
  public:
   virtual ~Sampler() = default;
-  // TODO(b/209638899): Remove after all samplers are migrated to
-  // |MaybeCollect|.
-  virtual void Collect(MetricCallback callback);
-  virtual void MaybeCollect(OptionalMetricCallback callback);
+  virtual void MaybeCollect(OptionalMetricCallback callback) = 0;
 };
 
 // A `MetricEventObserver` object should observe events and report them using

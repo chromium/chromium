@@ -21,8 +21,6 @@ class FakeSampler : public Sampler {
 
   ~FakeSampler() override;
 
-  void Collect(MetricCallback cb) override;
-
   void MaybeCollect(OptionalMetricCallback cb) override;
 
   void SetMetricData(absl::optional<MetricData> metric_data);
