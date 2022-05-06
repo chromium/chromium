@@ -222,9 +222,14 @@ class CC_EXPORT LayerTreeImpl {
   // Adapts an iterator of std::unique_ptr<LayerImpl> to an iterator of
   // LayerImpl*.
   template <typename Iterator>
-  class IteratorAdapter
-      : public std::iterator<std::forward_iterator_tag, LayerImpl*> {
+  class IteratorAdapter {
    public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = LayerImpl*;
+    using difference_type = std::ptrdiff_t;
+    using pointer = LayerImpl**;
+    using reference = LayerImpl*&;
+
     explicit IteratorAdapter(Iterator it) : it_(it) {}
     bool operator==(IteratorAdapter o) const { return it_ == o.it_; }
     bool operator!=(IteratorAdapter o) const { return !(*this == o); }

@@ -33,7 +33,7 @@ class CC_EXPORT TileSizeCalculator {
     gfx::Size default_tile_size;
     gfx::Size layer_content_bounds;
 
-    bool operator==(const AffectingParams& other);
+    bool operator==(const AffectingParams& other) const;
   };
 
   PictureLayerImpl* layer_impl() const { return layer_impl_; }

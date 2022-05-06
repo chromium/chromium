@@ -10,10 +10,6 @@
 namespace cc {
 
 struct CC_EXPORT BrowserControlsParams {
-  BrowserControlsParams() = default;
-  BrowserControlsParams(const BrowserControlsParams& other) = default;
-  ~BrowserControlsParams() = default;
-
   // The height of the top controls (always 0 on platforms where URL-bar hiding
   // isn't supported).
   float top_controls_height = 0.f;

@@ -94,8 +94,8 @@ class RTree {
  private:
   // These values were empirically determined to produce reasonable performance
   // in most cases.
-  enum { kMinChildren = 6 };
-  enum { kMaxChildren = 11 };
+  static constexpr int kMinChildren = 6;
+  static constexpr int kMaxChildren = 11;
 
   template <typename U>
   struct Node;

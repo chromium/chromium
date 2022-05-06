@@ -121,7 +121,7 @@ gfx::Size CalculateGpuRawDrawTileSize(const gfx::Size& base_tile_size,
 
 // AffectingParams.
 bool TileSizeCalculator::AffectingParams::operator==(
-    const AffectingParams& other) {
+    const AffectingParams& other) const {
   return max_texture_size == other.max_texture_size &&
          use_gpu_rasterization == other.use_gpu_rasterization &&
          device_scale_factor == other.device_scale_factor &&
