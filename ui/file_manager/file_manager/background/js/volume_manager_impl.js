@@ -153,6 +153,7 @@ export class VolumeManagerImpl extends EventTarget {
         return;
       }
       finished = true;
+      console.warn('Volumes initialization finished');
       this.finishInitialization_();
     };
 

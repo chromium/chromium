@@ -371,6 +371,7 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
    */
   async onLaunched_(launchData) {
     metrics.startInterval('Load.BackgroundLaunch');
+    console.warn('onLaunched: ' + (launchData ? launchData.source : ''));
     if (!launchData || !launchData.items || launchData.items.length == 0) {
       this.launch_(undefined);
       return;

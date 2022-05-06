@@ -915,7 +915,7 @@ export class FileManager extends EventTarget {
    * @return {!Promise<void>}
    */
   async initializeUI(dialogDom) {
-    console.warn('Files app starting up');
+    console.warn(`Files app starting up: ${this.dialogType}`);
     this.dialogDom_ = dialogDom;
     this.document_ = this.dialogDom_.ownerDocument;
 
