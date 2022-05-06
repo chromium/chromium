@@ -101,7 +101,8 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
   if (profile_manager && IsSignoutEvent(event)) {
     UpdateProfileAttributesWhenSignout(profile_, profile_manager);
     ShutdownUserCloudPolicyManager();
-  } else if (IsTurnOffSyncEvent(event)) {
+  } else if (IsTurnOffSyncEvent(event) &&
+             !CanApplyPolicies(/*check_for_refresh_token=*/true)) {
     ShutdownUserCloudPolicyManager();
   }
 
