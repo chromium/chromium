@@ -125,10 +125,6 @@ void CrosWindow::minimize() {
   cros_window_management->Minimize(window_->id);
 }
 
-bool CrosWindow::raise() {
-  return false;
-}
-
 void CrosWindow::focus() {
   auto* cros_window_management =
       window_management_->GetCrosWindowManagementOrNull();

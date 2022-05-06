@@ -39,7 +39,6 @@ interface CrosWindow {
   void maximize();
   // Sets window state to minimized.
   void minimize();
-  boolean raise();
   // Allocates focus to the CrosWindow identified by id and brings to front.
   void focus();
   // Closes the window.
