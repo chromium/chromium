@@ -126,9 +126,19 @@ public class AccountManagerTestRule implements TestRule {
      * @return The CoreAccountInfo for the account added.
      */
     public CoreAccountInfo addAccount(String accountName) {
+        return addAccount(accountName, new AccountCapabilities(new HashMap<>()));
+    }
+
+    /**
+     * Adds an account of the given accountName and capabilities to the fake AccountManagerFacade.
+     * @return The CoreAccountInfo for the account added.
+     */
+    public CoreAccountInfo addAccount(
+            String accountName, @NonNull AccountCapabilities capabilities) {
         assert mFakeAccountInfoService != null;
-        final String baseEmail = accountName.split("@", 2)[0];
-        return addAccount(accountName, baseEmail + ".full", baseEmail + ".given", createAvatar());
+        final String baseName = accountName.split("@", 2)[0];
+        return addAccount(
+                accountName, baseName + ".full", baseName + ".given", createAvatar(), capabilities);
     }
 
     /**

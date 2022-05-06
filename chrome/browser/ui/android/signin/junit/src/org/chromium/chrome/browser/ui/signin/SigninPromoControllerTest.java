@@ -4,17 +4,11 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import android.accounts.Account;
 import android.text.format.DateUtils;
-
-import com.google.common.base.Optional;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,13 +29,13 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 /**
- * Tests for {@link SigninPromoController}..
+ * Tests for {@link SigninPromoController}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.DisableFeatures({ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS})
@@ -71,6 +65,8 @@ public class SigninPromoControllerTest {
 
     private final SharedPreferencesManager mSharedPreferencesManager =
             SharedPreferencesManager.getInstance();
+    private final AccountCapabilitiesBuilder mAccountCapabilitiesBuilder =
+            new AccountCapabilitiesBuilder();
 
     @Before
     public void setUp() {
@@ -95,12 +91,10 @@ public class SigninPromoControllerTest {
 
     @Test
     public void shouldHideSyncPromoForNTPWhenDefaultAccountCannotOfferSyncPromos() {
-        final CoreAccountInfo accountInfo =
-                mAccountManagerTestRule.addAccount("test.account.default@gmail.com");
-        mAccountManagerTestRule.addAccount("test.account.secondary@gmail.com");
-        doReturn(Optional.of(false))
-                .when(mFakeAccountManagerFacade)
-                .canOfferExtendedSyncPromos(CoreAccountInfo.getAndroidAccountFrom(accountInfo));
+        mAccountManagerTestRule.addAccount("test1@gmail.com",
+                mAccountCapabilitiesBuilder.setCanOfferExtendedSyncPromos(false).build());
+        mAccountManagerTestRule.addAccount("test2@gmail.com",
+                mAccountCapabilitiesBuilder.setCanOfferExtendedSyncPromos(true).build());
 
         Assert.assertFalse(
                 SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
@@ -117,16 +111,10 @@ public class SigninPromoControllerTest {
 
     @Test
     public void shouldShowSyncPromoForNTPWhenSecondaryAccountCannotOfferSyncPromos() {
-        mAccountManagerTestRule.addAccount("test.account.default@gmail.com");
-        final CoreAccountInfo secondAccountInfo =
-                mAccountManagerTestRule.addAccount("test.account.secondary@gmail.com");
-        final Account secondAccount = CoreAccountInfo.getAndroidAccountFrom(secondAccountInfo);
-        doAnswer(invocation -> {
-            final Account account0 = invocation.getArgument(0);
-            return Optional.of(!account0.equals(secondAccount));
-        })
-                .when(mFakeAccountManagerFacade)
-                .canOfferExtendedSyncPromos(any());
+        mAccountManagerTestRule.addAccount("test1@gmail.com",
+                mAccountCapabilitiesBuilder.setCanOfferExtendedSyncPromos(true).build());
+        mAccountManagerTestRule.addAccount("test2@gmail.com",
+                mAccountCapabilitiesBuilder.setCanOfferExtendedSyncPromos(false).build());
 
         Assert.assertTrue(
                 SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));

@@ -113,7 +113,11 @@ public interface AccountManagerFacade {
     /**
      * Gets the boolean for whether the account can offer extended sync promos.
      * If the result is not yet fetched, the optional will be empty.
+     *
+     * This method will be removed soon. Use {@link
+     * AccountCapabilities#canOfferExtendedSyncPromos()} instead.
      */
+    @Deprecated
     Optional<Boolean> canOfferExtendedSyncPromos(Account account);
 
     /**

@@ -36,17 +36,15 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.AccountCapabilitiesConstants;
-import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
-import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -87,6 +85,8 @@ public class SigninPromoUtilLaunchSigninPromoTest {
 
     private final Context mContext = RuntimeEnvironment.systemContext;
     private final SigninPreferencesManager mPrefManager = SigninPreferencesManager.getInstance();
+    private final AccountCapabilitiesBuilder mAccountCapabilitiesBuilder =
+            new AccountCapabilitiesBuilder();
 
     @Before
     public void setUp() {
@@ -180,8 +180,8 @@ public class SigninPromoUtilLaunchSigninPromoTest {
 
     @Test
     public void whenNoAccountListStoredShouldReturnTrue() {
-        final CoreAccountInfo accountInfo = addAccountWithCanOfferExtendedSyncPromosCapability(
-                "test", /*canOfferExtendedSyncPromos=*/true);
+        final CoreAccountInfo accountInfo = mAccountManagerTestRule.addAccount("test@gmail.com",
+                mAccountCapabilitiesBuilder.setCanOfferExtendedSyncPromos(true).build());
         mPrefManager.setSigninPromoLastShownVersion(40);
         // Old implementation hasn't been storing account list
         Assert.assertTrue(SigninPromoUtil.launchSigninPromoIfNeeded(
@@ -204,8 +204,8 @@ public class SigninPromoUtilLaunchSigninPromoTest {
 
     @Test
     public void whenHasNewAccountShouldReturnTrue() {
-        addAccountWithCanOfferExtendedSyncPromosCapability(
-                "test1", /*canOfferExtendedSyncPromos=*/true);
+        mAccountManagerTestRule.addAccount("test1@gmail.com",
+                mAccountCapabilitiesBuilder.setCanOfferExtendedSyncPromos(true).build());
         mAccountManagerTestRule.addAccount("test2@gmail.com");
         mPrefManager.setSigninPromoLastShownVersion(40);
         mPrefManager.setSigninPromoLastAccountNames(
@@ -248,8 +248,8 @@ public class SigninPromoUtilLaunchSigninPromoTest {
 
     @Test
     public void promoHiddenWhenDefaultAccountCanNotOfferExtendedSyncPromos() {
-        addAccountWithCanOfferExtendedSyncPromosCapability(
-                "test1", /*canOfferExtendedSyncPromos=*/false);
+        mAccountManagerTestRule.addAccount("test1@gmail.com",
+                mAccountCapabilitiesBuilder.setCanOfferExtendedSyncPromos(false).build());
         mAccountManagerTestRule.addAccount("test2@gmail.com");
         mPrefManager.setSigninPromoLastShownVersion(38);
 
@@ -261,25 +261,14 @@ public class SigninPromoUtilLaunchSigninPromoTest {
 
     @Test
     public void promoVisibleWhenTheSecondaryAccountCanNotOfferExtendedSyncPromos() {
-        addAccountWithCanOfferExtendedSyncPromosCapability(
-                "test1", /*canOfferExtendedSyncPromos=*/true);
-        addAccountWithCanOfferExtendedSyncPromosCapability(
-                "test2", /*canOfferExtendedSyncPromos=*/false);
+        mAccountManagerTestRule.addAccount("test1@gmail.com",
+                mAccountCapabilitiesBuilder.setCanOfferExtendedSyncPromos(true).build());
+        mAccountManagerTestRule.addAccount("test2@gmail.com",
+                mAccountCapabilitiesBuilder.setCanOfferExtendedSyncPromos(false).build());
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertTrue(SigninPromoUtil.launchSigninPromoIfNeeded(
                 mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
 
         verify(mLauncherMock).launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
-    }
-
-    private CoreAccountInfo addAccountWithCanOfferExtendedSyncPromosCapability(
-            String baseName, boolean canOfferExtendedSyncPromos) {
-        final HashMap<String, Boolean> capabilities = new HashMap<>();
-        capabilities.put(
-                AccountCapabilitiesConstants.CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME,
-                canOfferExtendedSyncPromos);
-        return mAccountManagerTestRule.addAccount(baseName + "@gmail.com", baseName + ".fullName",
-                baseName + ".giveName",
-                /*avatar=*/null, new AccountCapabilities(capabilities));
     }
 }

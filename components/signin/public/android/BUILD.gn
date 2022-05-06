@@ -108,6 +108,7 @@ android_library("signin_java_test_support") {
     "//third_party/mockito:mockito_java",
   ]
   sources = [
+    "java/src/org/chromium/components/signin/test/util/AccountCapabilitiesBuilder.java",
     "java/src/org/chromium/components/signin/test/util/AccountCapabilitiesFetcherTestUtil.java",
     "java/src/org/chromium/components/signin/test/util/AccountHolder.java",
     "java/src/org/chromium/components/signin/test/util/AccountManagerFacadeUtil.java",

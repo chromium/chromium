@@ -18,6 +18,7 @@ import androidx.annotation.StringDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -34,7 +35,10 @@ import org.chromium.components.browser_ui.widget.impression.OneShotImpressionLis
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.Tribool;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -210,10 +214,16 @@ public class SigninPromoController {
             return false;
         }
         final @Nullable Account visibleAccount = getVisibleAccount();
-        final AccountManagerFacade accountManagerFacade =
-                AccountManagerFacadeProvider.getInstance();
-        return visibleAccount == null
-                || accountManagerFacade.canOfferExtendedSyncPromos(visibleAccount).or(false);
+        if (visibleAccount == null) {
+            return true;
+        }
+        final Promise<AccountInfo> visibleAccountPromise =
+                AccountInfoServiceProvider.get().getAccountInfoByEmail(visibleAccount.name);
+        return visibleAccountPromise.isFulfilled()
+                && visibleAccountPromise.getResult()
+                           .getAccountCapabilities()
+                           .canOfferExtendedSyncPromos()
+                == Tribool.TRUE;
     }
 
     private static boolean canShowSettingsPromo() {
