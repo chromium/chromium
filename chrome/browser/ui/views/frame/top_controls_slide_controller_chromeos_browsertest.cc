@@ -916,7 +916,13 @@ class BrowserViewLayoutWaiter : public views::ViewObserver {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, DisplayRotation) {
+// TODO(1323318): Flaky under dbg and sanitizers.
+#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+#define MAYBE_DisplayRotation DISABLED_DisplayRotation
+#else
+#define MAYBE_DisplayRotation DisplayRotation
+#endif
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, MAYBE_DisplayRotation) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
