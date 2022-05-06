@@ -151,7 +151,7 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
   base::ListValue* coverage_entries = nullptr;
   CHECK(result->GetList("result", &coverage_entries));
 
-  auto entries = std::make_unique<base::ListValue>();
+  base::Value::List entries;
   for (size_t i = 0; i != coverage_entries->GetListDeprecated().size(); ++i) {
     base::Value& entry = coverage_entries->GetListDeprecated()[i];
     CHECK(entry.is_dict());
@@ -163,7 +163,7 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
       continue;
 
     CHECK(entry.SetStringKey("hash", it->second));
-    entries->Append(std::make_unique<base::Value>(entry.Clone()));
+    entries.Append(entry.Clone());
   }
 
   std::string url = host->GetURL().spec();
@@ -177,7 +177,7 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
   std::string coverage = base::StrCat({test, ".", md5, uuid_, ".cov.json"});
   base::FilePath path = store.AppendASCII("tests").AppendASCII(coverage);
 
-  CHECK(result->SetList("result", std::move(entries)));
+  CHECK(result->GetDict().Set("result", std::move(entries)));
   CHECK(base::JSONWriter::Write(*result, &coverage));
   base::WriteFile(path, coverage.data(), coverage.size());
 
