@@ -68,7 +68,7 @@ public class VrDaydreamApi {
         int type = GvrApi.ViewerType.CARDBOARD;
         // If this is the first time any app reads the daydream config file, daydream may create its
         // config directory... crbug.com/686104
-        try (StrictModeContext smc = StrictModeContext.allowDiskWrites()) {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             type = daydreamApi.getCurrentViewerType();
         } catch (RuntimeException ex) {
             // TODO(mthiesse, b/110092501): Remove this exception handling once Daydream handles

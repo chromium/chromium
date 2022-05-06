@@ -40,5 +40,6 @@ public @interface XrActivityRestriction {
     /**
      * @return A list of activity restrictions.
      */
-    public @SupportedActivity int[] value();
+    @SupportedActivity
+    public int[] value();
 }

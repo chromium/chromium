@@ -19,6 +19,9 @@ PRESUBMIT_VERSION = '2.0.0'
 USE_PYTHON3 = True
 
 _EXCLUDED_PATHS = (
+    # Generated file
+    (r'chrome[\\/]android[\\/]webapk[\\/]shell_apk[\\/]src[\\/]org[\\/]chromium'
+     r'[\\/]webapk[\\/]lib[\\/]runtime_library[\\/]IWebApkApi.java'),
     # File needs to write to stdout to emulate a tool it's replacing.
     r"chrome[\\/]updater[\\/]mac[\\/]keystone[\\/]ksadmin.mm",
     # Generated file.
