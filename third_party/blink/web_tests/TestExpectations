@@ -6927,3 +6927,6 @@ crbug.com/1322072 [ Mac10.15 ] external/wpt/fetch/content-type/script.window.htm
 crbug.com/1309533 [ Win ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/idlharness.html [ Failure ]
 
 crbug.com/1320290 http/tests/devtools/storage-panel-dom-storage-update.js [ Skip ]
+
+crbug.com/1322405 external/wpt/fetch/metadata/generated/window-history.https.sub.html [ Timeout Pass ]
+crbug.com/1322405 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/window-history.https.sub.html [ Timeout Pass ]
