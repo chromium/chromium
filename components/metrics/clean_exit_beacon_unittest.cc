@@ -822,4 +822,67 @@ TEST_P(BeaconFileAndPlatformBeaconConsistencyTest, BeaconConsistency) {
 }
 #endif  // BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(CleanExitBeaconTest, EnabledGroupEmitsStageDurationMetric) {
+  // Force the client into the Extended Variations Safe Mode experiment's
+  // enabled group.
+  SetUpExtendedSafeModeExperiment(variations::kEnabledGroup);
+
+  // Create and initialize the CleanExitBeacon.
+  TestCleanExitBeacon clean_exit_beacon(&prefs_);
+
+  // Simulate Chrome starting to watch for browser crashes for enabled-group
+  // clients.
+  clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/false,
+                                     /*is_extended_safe_mode=*/true);
+  // Verify that the metric has not yet been emitted.
+  histogram_tester_.ExpectTotalCount(
+      "UMA.CleanExitBeacon.ExtendedMonitoringStageDuration", 0);
+
+  // Simulate Chrome continuing to watch for crashes once the app enters the
+  // foreground.
+  clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/false,
+                                     /*is_extended_safe_mode=*/false);
+  // Verify that the metric was emitted.
+  histogram_tester_.ExpectTotalCount(
+      "UMA.CleanExitBeacon.ExtendedMonitoringStageDuration", 1);
+
+  // Make the same call. Note that these two identical, consecutive calls to
+  // WriteBeaconValue() shouldn't actually happen, but this is done for the
+  // purpose of the test.
+  clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/false,
+                                     /*is_extended_safe_mode=*/false);
+  // Verify that the metric was not emitted again.
+  histogram_tester_.ExpectTotalCount(
+      "UMA.CleanExitBeacon.ExtendedMonitoringStageDuration", 1);
+}
+
+TEST_F(CleanExitBeaconTest, ControlGroupDoesNotEmitStageDurationMetric) {
+  // Force the client into the Extended Variations Safe Mode experiment's
+  // control group.
+  SetUpExtendedSafeModeExperiment(variations::kControlGroup);
+
+  // Create and initialize the CleanExitBeacon.
+  TestCleanExitBeacon clean_exit_beacon(&prefs_);
+
+  // Simulate Chrome starting to watch for browser crashes for control-group
+  // clients once the app enters the foreground.
+  clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/false,
+                                     /*is_extended_safe_mode=*/false);
+  // Verify that the metric was not emitted.
+  histogram_tester_.ExpectTotalCount(
+      "UMA.CleanExitBeacon.ExtendedMonitoringStageDuration", 0);
+
+  // Make the same call. Note that these two identical, consecutive calls to
+  // WriteBeaconValue() shouldn't actually happen, but this is done for the
+  // purpose of the test.
+  clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/false,
+                                     /*is_extended_safe_mode=*/false);
+  // Verify that the metric was not emitted.
+  histogram_tester_.ExpectTotalCount(
+      "UMA.CleanExitBeacon.ExtendedMonitoringStageDuration", 0);
+}
+
+#endif  //  BUILDFLAG(IS_ANDROID)
+
 }  // namespace metrics

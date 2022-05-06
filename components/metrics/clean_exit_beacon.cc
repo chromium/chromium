@@ -366,6 +366,11 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
   if (is_extended_safe_mode) {
     DCHECK_EQ(group_name, kEnabledGroup);
     DCHECK(!exited_cleanly);
+
+#if BUILDFLAG(IS_ANDROID)
+    extended_monitoring_stage_start_time_ = base::TimeTicks::Now();
+#endif
+
     SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
         "Variations.ExtendedSafeMode.WritePrefsTime");
     // The beacon value is written to disk synchronously twice during
@@ -390,6 +395,21 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
   } else {
     local_state_->SetBoolean(prefs::kStabilityExitedCleanly, exited_cleanly);
     local_state_->CommitPendingWrite();  // Schedule a write.
+#if BUILDFLAG(IS_ANDROID)
+    if (!extended_monitoring_stage_start_time_.is_null()) {
+      // The time exists, so this is the transition from the extended browser
+      // crash monitoring stage to the status quo stage. Only Extended
+      // Variations Safe Mode enabled-group clients have the extended monitoring
+      // stage.
+      // TODO(crbug/1321989): Clean up this metric and
+      // |extended_monitoring_stage_start_time_| once Android Chrome
+      // stakeholders have enough data on the duration.
+      base::UmaHistogramLongTimes(
+          "UMA.CleanExitBeacon.ExtendedMonitoringStageDuration",
+          base::TimeTicks::Now() - extended_monitoring_stage_start_time_);
+      extended_monitoring_stage_start_time_ = base::TimeTicks();  // Null time.
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
     if (group_name == kEnabledGroup) {
       // Clients in this group write to the Variations Safe Mode file whenever
       // |kStabilityExitedCleanly| is updated. The file is kept in sync with the
