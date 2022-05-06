@@ -164,8 +164,6 @@ class CORE_EXPORT NavigationApi final
  private:
   friend class NavigateReaction;
   friend class NavigationApiNavigation;
-  void CloneFromPrevious(NavigationApi&);
-  HistoryItem* CloneNonCurrentItem(HistoryItem*);
   NavigationHistoryEntry* GetEntryForRestore(
       const mojom::blink::NavigationApiHistoryEntryPtr&);
   void PopulateKeySet();
@@ -192,6 +190,8 @@ class CORE_EXPORT NavigationApi final
                                                       ExceptionState&);
 
   bool HasEntriesAndEventsDisabled() const;
+
+  NavigationHistoryEntry* MakeEntryFromItem(HistoryItem&);
 
   HeapVector<Member<NavigationHistoryEntry>> entries_;
   HashMap<String, int> keys_to_indices_;

@@ -13,8 +13,9 @@
 
 namespace blink {
 
-class HistoryItem;
+class LocalDOMWindow;
 class ScriptValue;
+class SerializedScriptValue;
 
 class CORE_EXPORT NavigationHistoryEntry final
     : public EventTargetWithInlineData,
@@ -22,8 +23,15 @@ class CORE_EXPORT NavigationHistoryEntry final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  NavigationHistoryEntry(ExecutionContext*, HistoryItem*);
+  NavigationHistoryEntry(LocalDOMWindow*,
+                         const String& key,
+                         const String& id,
+                         const KURL& url,
+                         int64_t document_sequence_number,
+                         scoped_refptr<SerializedScriptValue>);
   ~NavigationHistoryEntry() final = default;
+
+  NavigationHistoryEntry* Clone(LocalDOMWindow*);
 
   String key() const;
   String id() const;
@@ -32,11 +40,10 @@ class CORE_EXPORT NavigationHistoryEntry final
   bool sameDocument() const;
 
   ScriptValue getState() const;
+  SerializedScriptValue* GetSerializedState() { return state_.get(); }
+  void SetAndSaveState(SerializedScriptValue* state);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(dispose, kDispose)
-
-  HistoryItem* GetItem() { return item_; }
-  void SetItem(HistoryItem* item) { item_ = item; }
 
   // EventTargetWithInlineData overrides:
   const AtomicString& InterfaceName() const final;
@@ -47,7 +54,11 @@ class CORE_EXPORT NavigationHistoryEntry final
   void Trace(Visitor*) const final;
 
  private:
-  Member<HistoryItem> item_;
+  String key_;
+  String id_;
+  KURL url_;
+  int64_t document_sequence_number_;
+  scoped_refptr<SerializedScriptValue> state_;
 };
 
 }  // namespace blink
