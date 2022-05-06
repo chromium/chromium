@@ -55,10 +55,9 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // persisted sets, since we may still need to clear data from a previous
   // invocation of Chromium which had First-Party Sets enabled.
   //
-  // TODO(https://crbug.com/1309188): Init() should be called in the
-  // BrowserMainLoop::PreMainMessageLoopRun(). But just in case it's
-  // accidentally called from other places, make sure it's no-op for the
-  // following calls.
+  // If First-Party Sets is enabled, `on_sets_ready` must not be null.
+  //
+  // Must be called exactly once.
   void Init(const base::FilePath& user_data_dir,
             const std::string& flag_value,
             SetsReadyOnceCallback on_sets_ready);
@@ -101,30 +100,33 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
                             bool embedder_will_provide_public_sets);
 
   // This method reads the persisted First-Party Sets from the file under
-  // `user_data_dir`.
+  // `user_data_dir`. Must be called exactly once.
   void SetPersistedSets(const base::FilePath& user_data_dir);
 
-  // Stores the read persisted sets in `raw_persisted_sets_`.
+  // Stores the read persisted sets in `raw_persisted_sets_`. Must be called
+  // exactly once.
   void OnReadPersistedSetsFile(const std::string& raw_persisted_sets);
 
-  // Sets the current First-Party Sets data.
+  // Sets the current First-Party Sets data. Must be called exactly once.
   void SetCompleteSets(FlattenedSets sets);
 
-  // Checks the required inputs have been received, and if so:
+  // Does the following:
   // 1) computes the diff between the `sets_` and the parsed
   // `raw_persisted_sets_`;
   // 2) clears the site data of the set of sites based on the diff;
-  // 3) calls `on_sets_ready_` if conditions are met;
-  // 4) writes the current First-Party Sets to the file in
+  // 3) writes the current First-Party Sets to the file in
   // `persisted_sets_path_`.
   //
   // TODO(shuuran@chromium.org): Implement the code to clear site state.
-  void ClearSiteDataOnChangedSetsIfReady();
+  void ClearSiteDataOnChangedSets() const;
 
   // Returns true if:
   // * First-Party Sets are enabled;
   // * `sets_` is ready to be used.
   bool IsEnabledAndReady() const;
+
+  // Whether Init has been called already or not.
+  bool initialized_ = false;
 
   // Represents the mapping of site -> site, where keys are members of sets, and
   // values are owners of the sets. Owners are explicitly represented as members

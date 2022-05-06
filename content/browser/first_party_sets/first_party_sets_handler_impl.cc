@@ -117,10 +117,16 @@ void FirstPartySetsHandlerImpl::Init(const base::FilePath& user_data_dir,
                                      const std::string& flag_value,
                                      SetsReadyOnceCallback on_sets_ready) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!initialized_);
+  DCHECK(persisted_sets_path_.empty());
+  DCHECK(on_sets_ready_.is_null());
+
+  initialized_ = true;
   on_sets_ready_ = std::move(on_sets_ready);
   SetPersistedSets(user_data_dir);
 
   if (IsEnabled()) {
+    DCHECK(!on_sets_ready_.is_null());
     sets_loader_->SetManuallySpecifiedSet(flag_value);
     if (!embedder_will_provide_public_sets_) {
       sets_loader_->SetComponentSets(base::File());
@@ -144,6 +150,7 @@ void FirstPartySetsHandlerImpl::SetPublicFirstPartySets(base::File sets_file) {
 
 void FirstPartySetsHandlerImpl::ResetForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  initialized_ = false;
   enabled_ = GetContentClient()->browser()->IsFirstPartySetsEnabled();
   embedder_will_provide_public_sets_ =
       GetContentClient()->browser()->WillProvidePublicFirstPartySets();
@@ -166,6 +173,8 @@ void FirstPartySetsHandlerImpl::ResetForTesting() {
 void FirstPartySetsHandlerImpl::SetPersistedSets(
     const base::FilePath& user_data_dir) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!raw_persisted_sets_.has_value());
+  DCHECK(persisted_sets_path_.empty());
   if (user_data_dir.empty()) {
     VLOG(1) << "Empty path. Failed loading serialized First-Party Sets file.";
     // We have to continue, in case the embedder has enabled FPS but has not
@@ -189,18 +198,36 @@ void FirstPartySetsHandlerImpl::SetPersistedSets(
 void FirstPartySetsHandlerImpl::OnReadPersistedSetsFile(
     const std::string& raw_persisted_sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!raw_persisted_sets_.has_value());
   raw_persisted_sets_ = raw_persisted_sets;
   UmaHistogramTimes(
       "Cookie.FirstPartySets.InitializationDuration.ReadPersistedSets2",
       construction_timer_.Elapsed());
-  ClearSiteDataOnChangedSetsIfReady();
+
+  if (sets_.has_value()) {
+    ClearSiteDataOnChangedSets();
+
+    if (IsEnabled()) {
+      DCHECK(!on_sets_ready_.is_null());
+      std::move(on_sets_ready_).Run(sets_.value());
+    }
+  }
 }
 
 void FirstPartySetsHandlerImpl::SetCompleteSets(
     base::flat_map<net::SchemefulSite, net::SchemefulSite> sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!sets_.has_value());
   sets_ = std::move(sets);
-  ClearSiteDataOnChangedSetsIfReady();
+
+  if (raw_persisted_sets_.has_value()) {
+    ClearSiteDataOnChangedSets();
+
+    if (IsEnabled()) {
+      DCHECK(!on_sets_ready_.is_null());
+      std::move(on_sets_ready_).Run(sets_.value());
+    }
+  }
 }
 
 // static
@@ -233,10 +260,10 @@ base::flat_set<net::SchemefulSite> FirstPartySetsHandlerImpl::ComputeSetsDiff(
   return result;
 }
 
-void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsIfReady() {
+void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSets() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!raw_persisted_sets_.has_value() || !sets_.has_value())
-    return;
+  DCHECK(sets_.has_value());
+  DCHECK(raw_persisted_sets_.has_value());
 
   base::flat_set<net::SchemefulSite> diff =
       ComputeSetsDiff(FirstPartySetParser::DeserializeFirstPartySets(
@@ -244,9 +271,6 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsIfReady() {
                       sets_.value());
 
   // TODO(shuuran@chromium.org): Implement site state clearing.
-
-  if (!on_sets_ready_.is_null() && IsEnabledAndReady())
-    std::move(on_sets_ready_).Run(sets_.value());
 
   if (!persisted_sets_path_.empty()) {
     base::ThreadPool::PostTask(

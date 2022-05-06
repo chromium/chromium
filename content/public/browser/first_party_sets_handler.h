@@ -75,6 +75,8 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   // are answered until initialization is complete. Must not be called if
   // `ContentBrowserClient::WillProvidePublicFirstPartySets` returns false or
   // `ContentBrowserClient::IsFrstpartySetsEnabled` returns false.
+  //
+  // Must be called at most once.
   virtual void SetPublicFirstPartySets(base::File sets_file) = 0;
 
   // Resets the state on the instance for testing.
