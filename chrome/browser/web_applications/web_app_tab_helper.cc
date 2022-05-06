@@ -53,10 +53,6 @@ const base::UnguessableToken& WebAppTabHelper::GetAudioFocusGroupIdForTesting()
   return audio_focus_group_id_;
 }
 
-bool WebAppTabHelper::HasLoadedNonAboutBlankPage() const {
-  return has_loaded_non_about_blank_page_;
-}
-
 WebAppLaunchQueue& WebAppTabHelper::EnsureLaunchQueue() {
   if (!launch_queue_) {
     launch_queue_ = std::make_unique<WebAppLaunchQueue>(web_contents(),
@@ -93,21 +89,32 @@ void WebAppTabHelper::ReadyToCommitNavigation(
   }
 }
 
-void WebAppTabHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted())
-    return;
+void WebAppTabHelper::PrimaryPageChanged(content::Page& page) {
+  // This method is invoked whenever primary page of a WebContents
+  // (WebContents::GetPrimaryPage()) changes to `page`. This happens in one of
+  // the following cases:
+  // 1) when the current RenderFrameHost in the primary main frame changes after
+  //    a navigation.
+  // 2) when the current RenderFrameHost in the primary main frame is
+  //    reinitialized after a crash.
+  // 3) when a cross-document navigation commits in the current RenderFrameHost
+  //    of the primary main frame.
+  //
+  // The new primary page might either be a brand new one (if the committed
+  // navigation created a new document in the primary main frame) or an existing
+  // one (back-forward cache restore or prerendering activation).
+  //
+  // This notification is not dispatched for changes of pages in the non-primary
+  // frame trees (prerendering, fenced frames) and when the primary page is
+  // destroyed (e.g., when closing a tab).
+  //
+  // See the declaration of WebContentsObserver::PrimaryPageChanged for more
+  // information.
+  provider_->manifest_update_manager().MaybeUpdate(
+      page.GetMainDocument().GetLastCommittedURL(), GetAppId(), web_contents());
 
-  if (!navigation_handle->GetURL().IsAboutBlank())
-    has_loaded_non_about_blank_page_ = true;
-
-  is_error_page_ = navigation_handle->IsErrorPage();
-
-  provider_->manifest_update_manager().MaybeUpdate(navigation_handle->GetURL(),
-                                                   GetAppId(), web_contents());
-
-  ReinstallPlaceholderAppIfNecessary(navigation_handle->GetURL());
+  ReinstallPlaceholderAppIfNecessary(
+      page.GetMainDocument().GetLastCommittedURL());
 }
 
 void WebAppTabHelper::DidCloneToNewWebContents(
