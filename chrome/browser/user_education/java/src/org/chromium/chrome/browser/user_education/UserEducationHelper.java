@@ -59,6 +59,8 @@ public class UserEducationHelper {
      * should.
      */
     public void requestShowIPH(IPHCommand iphCommand) {
+        if (iphCommand == null) return;
+
         try (TraceEvent te = TraceEvent.scoped("UserEducationHelper::requestShowIPH")) {
             // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
             // incognito profile) instead of always using regular profile. Currently always original

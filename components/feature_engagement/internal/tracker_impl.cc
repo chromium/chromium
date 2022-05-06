@@ -177,19 +177,11 @@ void TrackerImpl::NotifyEvent(const std::string& event) {
 }
 
 bool TrackerImpl::ShouldTriggerHelpUI(const base::Feature& feature) {
-  if (!base::FeatureList::IsEnabled(feature_engagement::kEnableIPH)) {
-    return false;
-  }
-
   return ShouldTriggerHelpUIWithSnooze(feature).ShouldShowIph();
 }
 
 TrackerImpl::TriggerDetails TrackerImpl::ShouldTriggerHelpUIWithSnooze(
     const base::Feature& feature) {
-  if (!base::FeatureList::IsEnabled(feature_engagement::kEnableIPH)) {
-    return TriggerDetails(false, false);
-  }
-
   FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
       feature, feature_config, *event_model_, *availability_model_,

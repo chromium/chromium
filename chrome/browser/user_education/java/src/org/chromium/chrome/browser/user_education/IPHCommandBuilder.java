@@ -208,6 +208,10 @@ public class IPHCommandBuilder {
      * @return an (@see IPHCommand) containing the accumulated state of this builder.
      */
     public IPHCommand build() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_IPH)) {
+            return null;
+        }
+
         try (TraceEvent te = TraceEvent.scoped("IPHCommandBuilder::build")) {
             if (mOnDismissCallback == null) {
                 mOnDismissCallback = NO_OP_RUNNABLE;
@@ -220,22 +224,19 @@ public class IPHCommandBuilder {
                 mOnBlockedCallback = NO_OP_RUNNABLE;
             }
 
-            boolean disableIPH = !ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_IPH);
-
             if (mContentString == null) {
                 assert mResources != null;
-                mContentString = disableIPH ? "" : mResources.getString(mStringId);
+                mContentString = mResources.getString(mStringId);
             }
 
             if (mAccessibilityText == null) {
                 assert mResources != null;
-                mAccessibilityText = disableIPH ? "" : mResources.getString(mAccessibilityStringId);
+                mAccessibilityText = mResources.getString(mAccessibilityStringId);
             }
 
             if (mInsetRect == null && mAnchorRect == null) {
-                int yInsetPx = disableIPH ? 14
-                                          : mResources.getDimensionPixelOffset(
-                                                  R.dimen.iph_text_bubble_menu_anchor_y_inset);
+                int yInsetPx = mResources.getDimensionPixelOffset(
+                        R.dimen.iph_text_bubble_menu_anchor_y_inset);
                 mInsetRect = new Rect(0, 0, 0, yInsetPx);
             }
 

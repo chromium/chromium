@@ -994,6 +994,10 @@ const char kEnableGpuServiceLoggingName[] = "Enable gpu service logging";
 const char kEnableGpuServiceLoggingDescription[] =
     "Enable printing the actual GL driver calls.";
 
+const char kEnableIphName[] = "Enable IPH";
+const char kEnableIphDescription[] =
+    "Enables the ability to show IPH. When disabled, IPHs are disabled system wide.";
+
 const char kEnableRgbKeyboardName[] = "Enable RGB Keyboard Support";
 const char kEnableRgbKeyboardDescription[] =
     "Enable RGB Keyboard support on supported devices.";

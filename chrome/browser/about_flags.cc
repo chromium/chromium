@@ -6510,6 +6510,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLocationBarModelOptimizationsName,
      flag_descriptions::kLocationBarModelOptimizationsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kLocationBarModelOptimizations)},
+
+    {"enable-iph", flag_descriptions::kEnableIphName,
+     flag_descriptions::kEnableIphDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(feature_engagement::kEnableIPH)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
