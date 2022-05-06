@@ -71,7 +71,12 @@ class CBCMInvalidationsInitializer::MachineLevelDeviceAccountInitializerHelper
     std::move(callback_).Run(true);
   }
 
-  void OnDeviceAccountTokenError(EnrollmentStatus status) override {
+  void OnDeviceAccountTokenFetchError(
+      absl::optional<DeviceManagementStatus> /*dm_status*/) override {
+    std::move(callback_).Run(false);
+  }
+
+  void OnDeviceAccountTokenStoreError() override {
     std::move(callback_).Run(false);
   }
 

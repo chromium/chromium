@@ -634,10 +634,21 @@ void EnrollmentHandler::OnDeviceAccountTokenFetched(bool empty_token) {
   StartJoinAdDomain();
 }
 
-void EnrollmentHandler::OnDeviceAccountTokenError(EnrollmentStatus status) {
-  CHECK(enrollment_step_ == STEP_ROBOT_AUTH_FETCH ||
-        enrollment_step_ == STEP_STORE_ROBOT_AUTH);
-  ReportResult(status);
+void EnrollmentHandler::OnDeviceAccountTokenFetchError(
+    absl::optional<DeviceManagementStatus> dm_status) {
+  CHECK_EQ(enrollment_step_, STEP_ROBOT_AUTH_FETCH);
+  if (dm_status.has_value()) {
+    ReportResult(EnrollmentStatus::ForRobotAuthFetchError(dm_status.value()));
+  } else {
+    ReportResult(EnrollmentStatus::ForStatus(
+        EnrollmentStatus::ROBOT_REFRESH_FETCH_FAILED));
+  }
+}
+
+void EnrollmentHandler::OnDeviceAccountTokenStoreError() {
+  CHECK_EQ(enrollment_step_, STEP_STORE_ROBOT_AUTH);
+  ReportResult(EnrollmentStatus::ForStatus(
+      EnrollmentStatus::ROBOT_REFRESH_STORE_FAILED));
 }
 
 void EnrollmentHandler::OnDeviceAccountClientError(

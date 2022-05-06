@@ -116,7 +116,9 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   // DeviceAccountInitializer::Delegate:
   void OnDeviceAccountTokenFetched(bool empty_token) override;
   void OnDeviceAccountTokenStored() override;
-  void OnDeviceAccountTokenError(EnrollmentStatus status) override;
+  void OnDeviceAccountTokenFetchError(
+      absl::optional<DeviceManagementStatus> dm_status) override;
+  void OnDeviceAccountTokenStoreError() override;
   void OnDeviceAccountClientError(DeviceManagementStatus status) override;
   enterprise_management::DeviceServiceApiAccessRequest::DeviceType
   GetRobotAuthCodeDeviceType() override;

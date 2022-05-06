@@ -19,15 +19,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
-#include "chrome/browser/policy/enrollment_status.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-
-#include "components/policy/core/common/cloud/dm_auth.h"
 
 namespace em = enterprise_management;
 
@@ -59,8 +56,7 @@ void DeviceAccountInitializer::OnRobotAuthCodesFetched(
     const std::string& auth_code) {
   if (status != DM_STATUS_SUCCESS) {
     handling_request_ = false;
-    delegate_->OnDeviceAccountTokenError(
-        EnrollmentStatus::ForRobotAuthFetchError(status));
+    delegate_->OnDeviceAccountTokenFetchError(status);
     return;
   }
   if (auth_code.empty()) {
@@ -112,8 +108,7 @@ void DeviceAccountInitializer::OnOAuthError() {
   // response is bad (empty access token returned).
   LOG(ERROR) << "OAuth protocol error while fetching API refresh token.";
   handling_request_ = false;
-  delegate_->OnDeviceAccountTokenError(EnrollmentStatus::ForStatus(
-      EnrollmentStatus::ROBOT_REFRESH_FETCH_FAILED));
+  delegate_->OnDeviceAccountTokenFetchError(/*dm_status=*/absl::nullopt);
 }
 
 // GaiaOAuthClient::Delegate network error when fetching refresh token.
@@ -121,8 +116,7 @@ void DeviceAccountInitializer::OnNetworkError(int response_code) {
   LOG(ERROR) << "Network error while fetching API refresh token: "
              << response_code;
   handling_request_ = false;
-  delegate_->OnDeviceAccountTokenError(EnrollmentStatus::ForStatus(
-      EnrollmentStatus::ROBOT_REFRESH_FETCH_FAILED));
+  delegate_->OnDeviceAccountTokenFetchError(/*dm_status=*/absl::nullopt);
 }
 
 void DeviceAccountInitializer::StoreToken() {
@@ -137,8 +131,7 @@ void DeviceAccountInitializer::HandleStoreRobotAuthTokenResult(bool result) {
   handling_request_ = false;
   if (!result) {
     LOG(ERROR) << "Failed to store API refresh token.";
-    delegate_->OnDeviceAccountTokenError(EnrollmentStatus::ForStatus(
-        EnrollmentStatus::ROBOT_REFRESH_STORE_FAILED));
+    delegate_->OnDeviceAccountTokenStoreError();
     return;
   }
   delegate_->OnDeviceAccountTokenStored();
