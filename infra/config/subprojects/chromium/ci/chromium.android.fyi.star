@@ -150,23 +150,20 @@ ci.builder(
     triggered_by = [],
 )
 
-ci.thin_tester(
-    name = "android-10-x86-fyi-rel-tests",
-    console_view_entry = consoles.console_view_entry(
-        category = "tester|10",
-        short_name = "10",
-    ),
-    triggered_by = ["android-x86-fyi-rel"],
-)
-
-# TODO(crbug.com/1137474, crbug.com/1250464): Remove this builder once there are no associated
-# disabled tests.
+# TODO(crbug.com/1137474): This and android-12-x64-fyi-rel
+# are being kept around so that build links in the related
+# bugs are accessible
+# Remove these once the bugs are closed
 ci.builder(
     name = "android-11-x86-fyi-rel",
     console_view_entry = consoles.console_view_entry(
         category = "emulator|x86|rel",
         short_name = "11",
     ),
+    # Set to an empty list to avoid chromium-gitiles-trigger triggering new
+    # builds. Also we don't set any `schedule` since this builder is for
+    # reference only and should not run any new builds.
+    triggered_by = [],
 )
 
 ci.builder(
@@ -179,6 +176,10 @@ ci.builder(
     # So they need longer timeouts
     # Matching the execution time out of the android-12-x64-rel
     execution_timeout = 4 * time.hour,
+    # Set to an empty list to avoid chromium-gitiles-trigger triggering new
+    # builds. Also we don't set any `schedule` since this builder is for
+    # reference only and should not run any new builds.
+    triggered_by = [],
 )
 
 ci.builder(
@@ -188,14 +189,6 @@ ci.builder(
         short_name = "and",
     ),
     notifies = ["annotator-rel"],
-)
-
-ci.builder(
-    name = "android-x86-fyi-rel",
-    console_view_entry = consoles.console_view_entry(
-        category = "builder|x86",
-        short_name = "x86",
-    ),
 )
 
 # TODO(crbug.com/1299910): Move to non-FYI once the tester works fine.

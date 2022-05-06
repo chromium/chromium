@@ -374,12 +374,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     reclient_jobs = rbe_jobs.DEFAULT,
-    # tree_closing will be set to true and sherrif_rotations
-    # will be enabled once we have confirmed that these tests
-    # are passing successfully
-    # crbug.com/1250464
-    tree_closing = False,
-    sheriff_rotations = args.ignore_default(None),
+    tree_closing = True,
 )
 
 ci.thin_tester(
@@ -408,9 +403,6 @@ ci.thin_tester(
         build_gs_bucket = "chromium-android-archive",
     ),
     triggered_by = ["ci/android-x86-rel"],
-    # To remove once we've confirmed this works correctly
-    # crbug.com/1250464
-    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.builder(

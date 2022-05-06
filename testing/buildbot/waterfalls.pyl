@@ -1155,34 +1155,6 @@
           'all',
         ],
       },
-      'android-10-x86-fyi-rel-tests': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          '10-x86-emulator',
-          'emulator-4-cores',
-          'linux-xenial-or-bionic',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'webview_trichrome_cts_tests_gtest',
-        },
-        'use_swarming': True,
-      },
-      'android-11-x86-fyi-rel': {
-        'mixins': [
-          '11-x86-emulator',
-          'emulator-4-cores',
-          'has_native_resultdb_integration',
-          'linux-xenial-or-bionic',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'webview_trichrome_cts_tests_gtest',
-        },
-        'use_swarming': True,
-      },
       'android-12-x64-dbg-tests': {
         'mixins': [
           '12-x64-emulator',
@@ -1194,19 +1166,6 @@
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'android_12_dbg_emulator_gtests',
-        }
-      },
-      'android-12-x64-fyi-rel': {
-        'mixins': [
-          '12-x64-emulator',
-          'emulator-8-cores',
-          'has_native_resultdb_integration',
-          'linux-xenial-or-bionic',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'webview_trichrome_64_cts_tests_gtest',
         }
       },
       'android-annotator-rel': {
