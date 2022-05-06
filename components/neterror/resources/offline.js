@@ -4063,8 +4063,9 @@ Horizon.prototype = {
    */
   addNewObstacle(currentSpeed) {
     const obstacleCount =
-        Runner.isAltGameModeEnabled() && !this.altGameModeActive ||
-            this.altGameModeActive ?
+        Obstacle.types[Obstacle.types.length - 1].type != 'COLLECTABLE' ||
+            (Runner.isAltGameModeEnabled() && !this.altGameModeActive ||
+             this.altGameModeActive) ?
         Obstacle.types.length - 1 :
         Obstacle.types.length - 2;
     const obstacleTypeIndex =
