@@ -168,6 +168,9 @@ void ProjectorUiController::OnCanvasInitialized(bool success) {
                                         ->projector_annotation_tray();
   DCHECK(projector_annotation_tray);
   projector_annotation_tray->SetEnabled(success);
+  if (!success) {
+    projector_annotation_tray->OnCanvasInitializationFailed();
+  }
 }
 
 void ProjectorUiController::OnProjectorSessionActiveStateChanged(bool active) {

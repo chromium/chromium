@@ -1756,6 +1756,10 @@ This file contains the strings for ash.
         Marker is off.
       </message>
 
+      <message name="IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_UNAVAILABLE" desc="Tooltip text for the annotator tray when it is disabled because the marker is not available. Screencast is the name of the app.">
+        Marker unavailable. Reopen Screencast.
+      </message>
+
       <!-- Overview Mode -->
       <message name="IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME" desc="The accessible name for the Overview button in the system tray.">
         Toggle window overview

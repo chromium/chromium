@@ -239,6 +239,18 @@ void ProjectorAnnotationTray::HideAnnotationTray() {
   ResetTray();
 }
 
+void ProjectorAnnotationTray::OnCanvasInitializationFailed() {
+  // Set icon color to kIconColorPrimary with 30% opacity.
+  SkColor disabled_icon_color =
+      SkColorSetA(AshColorProvider::Get()->GetContentLayerColor(
+                      AshColorProvider::ContentLayerType::kIconColorPrimary),
+                  0x4D);
+  image_view_->SetImage(gfx::CreateVectorIcon(kPaletteTrayIconProjectorIcon,
+                                              disabled_icon_color));
+  image_view_->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_UNAVAILABLE));
+}
+
 void ProjectorAnnotationTray::ToggleAnnotator() {
   if (GetCurrentTool() == kToolNone) {
     EnableAnnotatorTool();

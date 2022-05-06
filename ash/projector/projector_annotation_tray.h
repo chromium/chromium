@@ -43,6 +43,7 @@ class ProjectorAnnotationTray : public TrayBackgroundView {
   void OnThemeChanged() override;
 
   void HideAnnotationTray();
+  void OnCanvasInitializationFailed();
 
  private:
   void ToggleAnnotator();
