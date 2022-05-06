@@ -89,6 +89,9 @@ export class FeedbackFlowElement extends PolymerElement {
       case FeedbackFlowState.SEARCH:
         this.currentState_ = FeedbackFlowState.SHARE_DATA;
         this.description_ = event.detail.description;
+        // TODO(xiangdongkong): Fetch a real screenshot.
+        this.shadowRoot.querySelector('share-data-page').screenshotUrl =
+            './app_icon_192.png';
         break;
       case FeedbackFlowState.SHARE_DATA:
         /** @type {!Report} */

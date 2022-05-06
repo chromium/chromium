@@ -27,6 +27,7 @@ export class ShareDataPageElement extends PolymerElement {
   static get properties() {
     return {
       feedbackContext: {type: FeedbackContext, readOnly: false, notify: true},
+      screenshotUrl: {type: String, readOnly: false, notify: true},
     };
   }
 
@@ -37,6 +38,11 @@ export class ShareDataPageElement extends PolymerElement {
      * @type {!FeedbackContext}
      */
     this.feedbackContext;
+
+    /**
+     * @type {string}
+     */
+    this.screenshotUrl;
   }
 
   /**
@@ -45,6 +51,14 @@ export class ShareDataPageElement extends PolymerElement {
    */
   hasEmail_() {
     return (this.feedbackContext !== null && !!this.feedbackContext.email);
+  }
+
+  /**
+   * @return {boolean}
+   * @protected
+   */
+  hasScreenshot_() {
+    return !!this.screenshotUrl;
   }
 
   /**

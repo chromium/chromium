@@ -35,6 +35,21 @@
     width: 50%;
   }
 
+  #screenshotImage {
+    display: block;
+    height: auto;
+    margin: 0 0 0 auto;
+    transition: all 250ms ease;
+    width: 68px;
+  }
+
+  #screenshotImage:hover {
+    margin: 170px 0 0 150px;
+    max-width: 600px;
+    transform: scale(8);
+    z-index: 1;
+  }
+
   #addFile {
     align-items: center;
     height: 48px;
@@ -65,9 +80,11 @@
         <!-- Attach a screenshot -->
         <div id="screenshotContainer" class="card-frame">
           <input id="screenshotCheckbox" type="checkbox"
-              aria-labelledby="screenshotCheckLabel">
+              aria-labelledby="screenshotCheckLabel"
+              disabled="[[!hasScreenshot_(screenshotUrl)]]">
           <label id="screenshotCheckLabel">Screenshot</label>
-          <img id="screenshotImage" aria-label="$i18n{screenshotA11y}">
+          <img id="screenshotImage" aria-label="$i18n{screenshotA11y}"
+              src="[[screenshotUrl]]">
         </div>
         <!-- Attach a file -->
         <!-- TODO(xiangdongkong): Create a polymer element.-->

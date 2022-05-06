@@ -215,4 +215,31 @@ export function shareDataPageTestSuite() {
 
     assertFalse(!!request.feedbackContext.email);
   });
+
+  // Test that the screenshot checkbox is disabled when no screenshot.
+  test('screenshotNotAvailable', async () => {
+    await initializePage();
+    page.screenshotUrl = '';
+
+    const screenshotCheckbox = getElement('#screenshotCheckbox');
+    assertTrue(screenshotCheckbox.disabled);
+
+    const screenshotImage = getElement('#screenshotImage');
+    assertFalse(!!screenshotImage.src);
+  });
+
+  // Test that the screenshot checkbox is enabled when there is a screenshot.
+  test('screenshotAvailable', async () => {
+    await initializePage();
+
+    const imgUrl = 'chrome://os-feedback/image.png';
+    page.screenshotUrl = imgUrl;
+
+    const screenshotCheckbox = getElement('#screenshotCheckbox');
+    assertFalse(screenshotCheckbox.disabled);
+
+    const screenshotImage = getElement('#screenshotImage');
+    assertTrue(!!screenshotImage.src);
+    assertEquals(imgUrl, screenshotImage.src);
+  });
 }
