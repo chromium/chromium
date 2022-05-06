@@ -93,10 +93,11 @@ void PaintOpReader::ReadSimple(T* val) {
   static constexpr size_t size =
       base::bits::AlignUp(sizeof(T), PaintOpWriter::Alignment());
 
-  if (remaining_bytes_ < size) {
+  if (remaining_bytes_ < size)
     SetInvalid(DeserializationError::kInsufficientRemainingBytes_ReadSimple);
+
+  if (!valid_)
     return;
-  }
 
   // Most of the time this is used for primitives, but this function is also
   // used for SkRect/SkIRect/SkMatrix whose implicit operator= can't use a
