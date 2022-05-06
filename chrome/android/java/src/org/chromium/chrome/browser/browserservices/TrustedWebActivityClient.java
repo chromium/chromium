@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.browserservices.metrics.TrustedWebActi
 import static org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappGeolocationBridge.EXTRA_NEW_LOCATION_ERROR_CALLBACK;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +19,9 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Messenger;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
@@ -29,6 +33,7 @@ import androidx.browser.trusted.TrustedWebActivityService;
 import androidx.browser.trusted.TrustedWebActivityServiceConnectionPool;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers.Connection;
@@ -36,10 +41,12 @@ import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrapp
 import org.chromium.chrome.browser.browserservices.constants.LocationUpdateError;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder.DelegatedNotificationSmallIconFallback;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionStatus;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionManager;
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -66,6 +73,16 @@ public class TrustedWebActivityClient {
     private static final String STOP_LOCATION_COMMAND_NAME = "stopLocation";
     private static final String LOCATION_ARG_ENABLE_HIGH_ACCURACY = "enableHighAccuracy";
 
+    private static final String COMMAND_CHECK_NOTIFICATION_PERMISSION =
+            "checkNotificationPermission";
+    private static final String COMMAND_GET_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT =
+            "getNotificationPermissionRequestPendingIntent";
+    private static final String ARG_NOTIFICATION_CHANNEL_NAME = "notificationChannelName";
+    private static final String KEY_PERMISSION_STATUS = "permissionStatus";
+    private static final String KEY_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT =
+            "notificationPermissionRequestPendingIntent";
+    private static final String EXTRA_MESSENGER = "messenger";
+
     private final ConnectionPool mConnectionPool;
     private final TrustedWebActivityPermissionManager mDelegatesManager;
     private final TrustedWebActivityUmaRecorder mRecorder;
@@ -73,6 +90,7 @@ public class TrustedWebActivityClient {
     /**
      * Interface for callbacks to {@link #checkNotificationPermission} and {@link
      * #checkLocationPermission}.
+     * TODO(crbug.com/1320272): Delete this interface once the new flow has shipped.
      */
     public interface PermissionCheckCallback {
         /**
@@ -84,6 +102,21 @@ public class TrustedWebActivityClient {
         /**
          * Called when {@link #checkNotificationPermission} or {@link #checkLocationPermission}
          * can't find a TWA to connect to.
+         */
+        default void onNoTwaFound() {}
+    }
+
+    /**
+     * Interface for callbacks to get a permission setting from a TWA app.
+     */
+    public interface PermissionCallback {
+        /**
+         * Called on a background thread when the app answered with a permission setting.
+         */
+        void onPermission(ComponentName app, @ContentSettingValues int settingValue);
+
+        /**
+         * Called when no app was found to connect to.
          */
         default void onNoTwaFound() {}
     }
@@ -137,6 +170,7 @@ public class TrustedWebActivityClient {
      * @return {@code false} if no such TWA exists (in which case the callback will not be called).
      *         Ensure that the app has been added to the {@link TrustedWebActivityPermissionManager}
      *         before calling this.
+     * TODO(crbug.com/1320272): Delete this method once the new flow has shipped.
      */
     public void checkNotificationPermission(Origin origin, PermissionCheckCallback callback) {
         Resources res = ContextUtils.getApplicationContext().getResources();
@@ -156,6 +190,106 @@ public class TrustedWebActivityClient {
                         callback.onNoTwaFound();
                     }
                 });
+    }
+
+    /**
+     * Gets the notification permission setting of the TWA for the given origin.
+     * @param permissionCallback To be called on a background thread with the permission setting.
+     */
+    public void checkNotificationPermissionSetting(
+            Origin origin, PermissionCallback permissionCallback) {
+        String channelName = ContextUtils.getApplicationContext().getResources().getString(
+                R.string.notification_category_group_general);
+
+        connectAndExecute(origin.uri(), new ExecutionCallback() {
+            @Override
+            public void onConnected(Origin origin, Connection service) throws RemoteException {
+                Bundle commandArgs = new Bundle();
+                commandArgs.putString(ARG_NOTIFICATION_CHANNEL_NAME, channelName);
+                Bundle commandResult = service.sendExtraCommand(
+                        COMMAND_CHECK_NOTIFICATION_PERMISSION, commandArgs, /*callback=*/null);
+                // The command might fail if the app is too old to support it. To handle that case,
+                // fall back to the old flow.
+                if (commandResult == null || !commandResult.getBoolean(EXTRA_COMMAND_SUCCESS)) {
+                    boolean enabled = service.areNotificationsEnabled(channelName);
+                    @ContentSettingValues
+                    int settingValue =
+                            enabled ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
+                    permissionCallback.onPermission(service.getComponentName(), settingValue);
+                    return;
+                }
+
+                @ContentSettingValues
+                int settingValue = ContentSettingValues.BLOCK;
+                @PermissionStatus
+                int permissionStatus =
+                        commandResult.getInt(KEY_PERMISSION_STATUS, PermissionStatus.BLOCK);
+                if (permissionStatus == PermissionStatus.ALLOW) {
+                    settingValue = ContentSettingValues.ALLOW;
+                } else if (permissionStatus == PermissionStatus.ASK) {
+                    settingValue = ContentSettingValues.ASK;
+                }
+                permissionCallback.onPermission(service.getComponentName(), settingValue);
+            }
+
+            @Override
+            public void onNoTwaFound() {
+                permissionCallback.onNoTwaFound();
+            }
+        });
+    }
+
+    /**
+     * Requests notification permission for the TWA for the given origin using a dialog.
+     * @param permissionCallback To be called on a background thread with the permission setting.
+     */
+    public void requestNotificationPermission(
+            Origin origin, PermissionCallback permissionCallback) {
+        connectAndExecute(origin.uri(), new ExecutionCallback() {
+            @Override
+            public void onConnected(Origin origin, Connection service) throws RemoteException {
+                Bundle commandResult = service.sendExtraCommand(
+                        COMMAND_GET_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT, Bundle.EMPTY,
+                        /*callback=*/null);
+                PendingIntent pendingIntent = commandResult.getParcelable(
+                        KEY_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT);
+                // TODO(crbug.com/1320272) UMA logging for these results. Is defaulting to BLOCK a
+                // good enough way to handle outdated TWAs?
+                if (commandResult == null || !commandResult.getBoolean(EXTRA_COMMAND_SUCCESS)
+                        || pendingIntent == null) {
+                    permissionCallback.onPermission(
+                            service.getComponentName(), ContentSettingValues.BLOCK);
+                    return;
+                }
+
+                Handler handler = new Handler(Looper.getMainLooper(), message -> {
+                    @ContentSettingValues
+                    int settingValue = ContentSettingValues.BLOCK;
+                    @PermissionStatus
+                    int permissionStatus =
+                            message.getData().getInt(KEY_PERMISSION_STATUS, PermissionStatus.BLOCK);
+                    if (permissionStatus == PermissionStatus.ALLOW) {
+                        settingValue = ContentSettingValues.ALLOW;
+                    } else if (permissionStatus == PermissionStatus.ASK) {
+                        settingValue = ContentSettingValues.ASK;
+                    }
+                    permissionCallback.onPermission(service.getComponentName(), settingValue);
+                    return true;
+                });
+                Intent extraIntent = new Intent();
+                extraIntent.putExtra(EXTRA_MESSENGER, new Messenger(handler));
+                try {
+                    pendingIntent.send(ContextUtils.getApplicationContext(), 0, extraIntent);
+                } catch (PendingIntent.CanceledException e) {
+                    Log.e(TAG, "The PendingIntent was canceled.", e);
+                }
+            }
+
+            @Override
+            public void onNoTwaFound() {
+                permissionCallback.onNoTwaFound();
+            }
+        });
     }
 
     /**

@@ -11,6 +11,9 @@ import androidx.annotation.WorkerThread;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -56,8 +59,16 @@ public class NotificationPermissionUpdater {
         // The function passed to this method call may not be executed in the case of the app not
         // having a TrustedWebActivityService. That's fine because we only want to update the
         // permission if a TrustedWebActivityService exists.
-        mTrustedWebActivityClient.checkNotificationPermission(origin,
-                (app, enabled) -> updatePermission(origin, app, enabled));
+        if (CachedFeatureFlags.isEnabled(
+                    ChromeFeatureList.TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION)) {
+            mTrustedWebActivityClient.checkNotificationPermissionSetting(
+                    origin, (app, settingValue) -> {
+                        updatePermission(origin, /*callback=*/0, app, settingValue);
+                    });
+        } else {
+            mTrustedWebActivityClient.checkNotificationPermission(
+                    origin, (app, enabled) -> updatePermission(origin, app, enabled));
+        }
     }
 
     /**
@@ -68,27 +79,84 @@ public class NotificationPermissionUpdater {
     public void onClientAppUninstalled(Origin origin) {
         // See if there is any other app installed that could handle the notifications (and update
         // to that apps notification permission if it exists).
-        mTrustedWebActivityClient.checkNotificationPermission(origin,
-                new TrustedWebActivityClient.PermissionCheckCallback() {
+        if (CachedFeatureFlags.isEnabled(
+                    ChromeFeatureList.TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION)) {
+            mTrustedWebActivityClient.checkNotificationPermissionSetting(
+                    origin, new TrustedWebActivityClient.PermissionCallback() {
+                        @Override
+                        public void onPermission(
+                                ComponentName app, @ContentSettingValues int settingValue) {
+                            updatePermission(origin, /*callback=*/0, app, settingValue);
+                        }
+
+                        @Override
+                        public void onNoTwaFound() {
+                            mPermissionManager.unregister(origin);
+                        }
+                    });
+        } else {
+            mTrustedWebActivityClient.checkNotificationPermission(
+                    origin, new TrustedWebActivityClient.PermissionCheckCallback() {
+                        @Override
+                        public void onPermissionCheck(ComponentName answeringApp, boolean enabled) {
+                            updatePermission(origin, answeringApp, enabled);
+                        }
+
+                        @Override
+                        public void onNoTwaFound() {
+                            mPermissionManager.unregister(origin);
+                        }
+                    });
+        }
+    }
+
+    /**
+     * Called when a client app is requesting notification permission. If a
+     * TrustedWebActivityService is found for the given origin, this requests the client app's
+     * Android notification permission.
+     */
+    void requestPermission(Origin origin, long callback) {
+        mTrustedWebActivityClient.requestNotificationPermission(
+                origin, new TrustedWebActivityClient.PermissionCallback() {
+                    private boolean mCalled;
                     @Override
-                    public void onPermissionCheck(ComponentName answeringApp, boolean enabled) {
-                        updatePermission(origin, answeringApp, enabled);
+                    public void onPermission(
+                            ComponentName app, @ContentSettingValues int settingValue) {
+                        if (mCalled) return;
+                        mCalled = true;
+                        updatePermission(origin, callback, app, settingValue);
                     }
 
                     @Override
                     public void onNoTwaFound() {
-                        mPermissionManager.unregister(origin);
+                        if (mCalled) return;
+                        mCalled = true;
+                        mPermissionManager.resetStoredPermission(origin, TYPE);
+                        InstalledWebappBridge.runPermissionCallback(
+                                callback, ContentSettingValues.BLOCK);
                     }
                 });
     }
 
     @WorkerThread
+    // TODO(crbug.com/1320272): Delete this method once the new flow has shipped.
     private void updatePermission(Origin origin, ComponentName app, boolean enabled) {
         // This method will be called by the TrustedWebActivityClient on a background thread, so
         // hop back over to the UI thread to deal with the result.
         PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> {
             mPermissionManager.updatePermission(origin, app.getPackageName(), TYPE, enabled);
             Log.d(TAG, "Updating origin notification permissions to: %b", enabled);
+        });
+    }
+
+    @WorkerThread
+    private void updatePermission(Origin origin, long callback, ComponentName app,
+            @ContentSettingValues int settingValue) {
+        // This method will be called by the TrustedWebActivityClient on a background thread, so
+        // hop back over to the UI thread to deal with the result.
+        PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> {
+            // TODO(crbug.com/1320272): Plumb through to TrustedWebActivityPermissionManager.
+            InstalledWebappBridge.runPermissionCallback(callback, settingValue);
         });
     }
 }

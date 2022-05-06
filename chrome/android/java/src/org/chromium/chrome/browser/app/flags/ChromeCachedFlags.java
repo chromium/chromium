@@ -116,6 +116,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS);
                 add(ChromeFeatureList.THEME_REFACTOR_ANDROID);
                 add(ChromeFeatureList.TOOLBAR_USE_HARDWARE_BITMAP_DRAW);
+                add(ChromeFeatureList.TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION);
                 add(ChromeFeatureList.USE_CHIME_ANDROID_SDK);
                 add(ChromeFeatureList.WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT);
             }

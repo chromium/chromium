@@ -23,7 +23,9 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
 #include "chrome/browser/android/shortcut_helper.h"
+#include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/installable/installed_webapp_bridge.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -166,7 +168,8 @@ void NotificationPermissionContext::DecidePermission(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
+  if (base::android::BuildInfo::GetInstance()->is_at_least_t() &&
+      chrome::android::IsJavaDrivenFeatureEnabled(
           chrome::android::
               kTrustedWebActivityNotificationPermissionDelegation) &&
       ShortcutHelper::DoesOriginContainAnyInstalledTrustedWebActivity(

@@ -105,6 +105,8 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.TAB_GROUPS_FOR_TABLETS, false)
                     .put(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS, false)
                     .put(ChromeFeatureList.BACK_GESTURE_REFACTOR, false)
+                    .put(ChromeFeatureList.TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION,
+                            false)
                     .build();
 
     /**

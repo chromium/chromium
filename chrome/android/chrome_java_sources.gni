@@ -231,6 +231,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/LocationPermissionUpdater.java",
   "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/NotificationChannelPreserver.java",
   "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/NotificationPermissionUpdater.java",
+  "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/PermissionStatus.java",
   "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/PermissionUpdater.java",
   "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/TrustedWebActivityPermissionManager.java",
   "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/TrustedWebActivityPermissionStore.java",

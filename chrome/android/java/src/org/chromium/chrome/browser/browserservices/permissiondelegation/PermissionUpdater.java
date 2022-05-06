@@ -84,6 +84,6 @@ public class PermissionUpdater {
     }
 
     void requestNotificationPermission(Origin origin, long callback) {
-        // TODO(crbug.com/1320272) Implement.
+        mNotificationPermissionUpdater.requestPermission(origin, callback);
     }
 }
