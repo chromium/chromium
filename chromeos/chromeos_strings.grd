@@ -2786,17 +2786,17 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_PAGE_TITLE" desc="Title for the RSU challenge page.">
         Perform RMA Server Unlock
       </message>
-      <message name="IDS_SHIMLESS_RMA_RSU_CODE_INSTRUCTIONS" translateable="false" desc="Instructions for the RSU challenge page.">
-        Use the QR code or <ph name="LINK_BEGIN">&lt;a id="rsuCodeDialogLink"&gt;</ph>this link<ph name="LINK_END">&lt;/a&gt;</ph> to retrieve an 8 character unlock code to perform RMA Server Unlock
+      <message name="IDS_SHIMLESS_RMA_RSU_CODE_INSTRUCTIONS" desc="Instructions for the RSU challenge page.">
+        Use this QR code to get the 8 character unlock code. You can also manually type <ph name="LINK_BEGIN">&lt;a id="rsuCodeDialogLink"&gt;</ph>this URL<ph name="LINK_END">&lt;/a&gt;</ph>.
       </message>
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_LABEL" desc="Label for the RSU code input box.">
-        Enter the 8-character unlock code
+        Enter the 8-characters
       </message>
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_ERROR_LABEL" desc="Label shown for an incorrect RSU code.">
         Incorrect code
       </message>
-      <message name="IDS_SHIMLESS_RMA_RSU_CHALLENGE_DIALOG_TITLE" translateable="false" desc="Title for the dialog that shows the RSU challenge code link.">
-        Go to this link for your RSU unlock code
+      <message name="IDS_SHIMLESS_RMA_RSU_CHALLENGE_DIALOG_TITLE" desc="Title for the dialog that shows the RSU challenge code link.">
+        Manually type this URL to get the RSU code
       </message>
       <message name="IDS_SHIMLESS_RMA_RSU_CHALLENGE_DIALOG_DONE_BUTTON" desc="Label for the button that closes the dialog.">
         Done
