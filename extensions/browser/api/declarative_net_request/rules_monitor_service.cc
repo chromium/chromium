@@ -580,8 +580,7 @@ void RulesMonitorService::OnExtensionUninstalled(
       FileBackedRulesetSource::CreateDynamic(browser_context, extension->id());
   DCHECK_EQ(source.json_path().DirName(), source.indexed_path().DirName());
   GetExtensionFileTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(),
-                                source.json_path().DirName()));
+      FROM_HERE, base::GetDeleteFileCallback(source.json_path().DirName()));
 }
 
 void RulesMonitorService::UpdateDynamicRulesInternal(

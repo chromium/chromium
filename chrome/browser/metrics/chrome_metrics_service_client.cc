@@ -259,7 +259,7 @@ void RegisterOrRemovePreviousRunMetricsFile(
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(base::GetDeleteFileCallback(), metrics_file));
+        base::GetDeleteFileCallback(metrics_file));
   }
 }
 
@@ -311,8 +311,8 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
           FROM_HERE,
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-          base::BindOnce(base::GetDeletePathRecursivelyCallback(),
-                         std::move(browser_metrics_upload_dir)));
+          base::GetDeletePathRecursivelyCallback(
+              std::move(browser_metrics_upload_dir)));
     }
   }
 
@@ -346,8 +346,8 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
           FROM_HERE,
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-          base::BindOnce(base::GetDeletePathRecursivelyCallback(),
-                         std::move(notification_helper_metrics_upload_dir)));
+          base::GetDeletePathRecursivelyCallback(
+              std::move(notification_helper_metrics_upload_dir)));
     }
   }
 #endif

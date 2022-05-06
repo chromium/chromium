@@ -153,7 +153,7 @@ void UpdateDataProvider::RunInstallCallback(
   if (!browser_context_) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-        base::BindOnce(base::GetDeletePathRecursivelyCallback(), unpacked_dir));
+        base::GetDeletePathRecursivelyCallback(unpacked_dir));
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(update_client_callback),

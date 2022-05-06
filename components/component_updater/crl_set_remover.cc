@@ -13,9 +13,8 @@ namespace component_updater {
 void DeleteLegacyCRLSet(const base::FilePath& user_data_dir) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce(base::GetDeleteFileCallback(),
-                     user_data_dir.Append(
-                         FILE_PATH_LITERAL("Certificate Revocation Lists"))));
+      base::GetDeleteFileCallback(user_data_dir.Append(
+          FILE_PATH_LITERAL("Certificate Revocation Lists"))));
 }
 
 }  // namespace component_updater

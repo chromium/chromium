@@ -261,7 +261,7 @@ PredictionModelDownloadManager::VerifyDownload(const base::FilePath& file_path,
       if (delete_file_on_error) {
         base::ThreadPool::PostTask(
             FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-            base::BindOnce(base::GetDeleteFileCallback(), file_path));
+            base::GetDeleteFileCallback(file_path));
       }
       return absl::nullopt;
     }
@@ -280,7 +280,7 @@ PredictionModelDownloadManager::VerifyDownload(const base::FilePath& file_path,
       if (delete_file_on_error) {
         base::ThreadPool::PostTask(
             FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-            base::BindOnce(base::GetDeleteFileCallback(), file_path));
+            base::GetDeleteFileCallback(file_path));
       }
       return absl::nullopt;
     }
@@ -295,7 +295,7 @@ PredictionModelDownloadManager::VerifyDownload(const base::FilePath& file_path,
     if (delete_file_on_error) {
       base::ThreadPool::PostTask(
           FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-          base::BindOnce(base::GetDeleteFileCallback(), file_path));
+          base::GetDeleteFileCallback(file_path));
     }
     return absl::nullopt;
   }
@@ -337,8 +337,7 @@ void PredictionModelDownloadManager::OnDownloadUnzipped(
 
   // Clean up original download file when this function finishes.
   background_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::GetDeleteFileCallback(), original_file_path));
+      FROM_HERE, base::GetDeleteFileCallback(original_file_path));
 
   if (!success) {
     if (optimization_target) {
@@ -364,8 +363,7 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
     const base::FilePath& unzipped_dir_path) {
   // Clean up temp dir when this function finishes.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(base::GetDeletePathRecursivelyCallback(),
-                                unzipped_dir_path));
+      FROM_HERE, base::GetDeletePathRecursivelyCallback(unzipped_dir_path));
 
   // Unpack and verify model info file.
   base::FilePath model_info_path = unzipped_dir_path.Append(kModelInfoFileName);

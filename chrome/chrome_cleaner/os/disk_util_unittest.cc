@@ -837,7 +837,7 @@ TEST(DiskUtilTests, ZoneIdentifierWhenProcessIsRunning) {
 
   ASSERT_TRUE(base::CopyFile(source_exe_path, target_exe_path));
   base::ScopedClosureRunner delete_temp_file(
-      base::BindOnce(base::GetDeleteFileCallback(), target_exe_path));
+      base::GetDeleteFileCallback(target_exe_path));
 
   // Launch the test_process and wait it's completion. The process must set its
   // zone identifier.

@@ -342,8 +342,8 @@ void DeleteFileWithRetry(int attempt, const FilePath& file_path) {
 
 }  // namespace
 
-OnceCallback<void(const FilePath&)> GetDeleteFileCallback() {
-  return BindOnce(&DeleteFileWithRetry, 0);
+OnceClosure GetDeleteFileCallback(const FilePath& path) {
+  return BindOnce(&DeleteFileWithRetry, 0, path);
 }
 
 FilePath MakeAbsoluteFilePath(const FilePath& input) {

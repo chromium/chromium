@@ -157,8 +157,8 @@ SecurityKeyAuthHandlerPosix::~SecurityKeyAuthHandlerPosix() {
   if (file_task_runner_) {
     // Attempt to clean up the socket before being destroyed.
     file_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(),
-                                  g_security_key_socket_name.Get()));
+        FROM_HERE,
+        base::GetDeleteFileCallback(g_security_key_socket_name.Get()));
   }
 }
 
@@ -171,9 +171,7 @@ void SecurityKeyAuthHandlerPosix::CreateSecurityKeyConnection() {
   // that task has completed, the main thread will be called back and we will
   // resume setting up our security key auth socket there.
   file_task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(base::GetDeleteFileCallback(),
-                     g_security_key_socket_name.Get()),
+      FROM_HERE, base::GetDeleteFileCallback(g_security_key_socket_name.Get()),
       base::BindOnce(&SecurityKeyAuthHandlerPosix::CreateSocket,
                      weak_factory_.GetWeakPtr()));
 }

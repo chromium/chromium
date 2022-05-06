@@ -1018,8 +1018,7 @@ void OptimizationGuideStore::OnLoadModelsToBeUpdated(
         // directory or file. But in the case of a directory, it is recursively
         // deleted.
         store_task_runner_->PostTask(
-            FROM_HERE, base::BindOnce(base::GetDeletePathRecursivelyCallback(),
-                                      path_to_delete));
+            FROM_HERE, base::GetDeletePathRecursivelyCallback(path_to_delete));
       }
     }
   }

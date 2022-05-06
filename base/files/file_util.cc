@@ -35,13 +35,13 @@
 namespace base {
 
 #if !BUILDFLAG(IS_WIN)
-OnceCallback<void(const FilePath&)> GetDeleteFileCallback() {
-  return BindOnce(IgnoreResult(&DeleteFile));
+OnceClosure GetDeleteFileCallback(const FilePath& path) {
+  return BindOnce(IgnoreResult(&DeleteFile), path);
 }
 #endif  // !BUILDFLAG(IS_WIN)
 
-OnceCallback<void(const FilePath&)> GetDeletePathRecursivelyCallback() {
-  return BindOnce(IgnoreResult(&DeletePathRecursively));
+OnceClosure GetDeletePathRecursivelyCallback(const FilePath& path) {
+  return BindOnce(IgnoreResult(&DeletePathRecursively), path);
 }
 
 int64_t ComputeDirectorySize(const FilePath& root_path) {

@@ -53,7 +53,7 @@ void WriteDebugLogToFileCompleted(const base::FilePath& file_path,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!succeeded) {
     bool posted = g_sequenced_task_runner.Get()->PostTaskAndReply(
-        FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), file_path),
+        FROM_HERE, base::GetDeleteFileCallback(file_path),
         base::BindOnce(std::move(callback), absl::nullopt));
     DCHECK(posted);
     return;

@@ -315,8 +315,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParams(
         FROM_HERE,
         {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(base::GetDeletePathRecursivelyCallback(),
-                       media_cache_path));
+        base::GetDeletePathRecursivelyCallback(media_cache_path));
   }
 }
 

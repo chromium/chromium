@@ -259,8 +259,7 @@ VisitedLinkWriter::~VisitedLinkWriter() {
     // state. On the next start table will be rebuilt.
     base::FilePath filename;
     GetDatabaseFileName(&filename);
-    PostIOTask(FROM_HERE,
-               base::BindOnce(base::GetDeleteFileCallback(), filename));
+    PostIOTask(FROM_HERE, base::GetDeleteFileCallback(filename));
   }
 }
 

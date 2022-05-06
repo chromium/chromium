@@ -349,8 +349,7 @@ FileDeleter::~FileDeleter() {
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(base::GetDeletePathRecursivelyCallback(),
-                     std::move(temp_dir_)));
+      base::GetDeletePathRecursivelyCallback(std::move(temp_dir_)));
 }
 
 void IndexedDBInternalsHandler::OnDownloadStarted(

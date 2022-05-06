@@ -97,7 +97,7 @@ void RemoveLocalBackgroundImageCopy(Profile* profile) {
       chrome::kChromeUIUntrustedNewTabPageBackgroundFilename);
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce(base::GetDeleteFileCallback(), path));
+      base::GetDeleteFileCallback(path));
 }
 
 }  // namespace

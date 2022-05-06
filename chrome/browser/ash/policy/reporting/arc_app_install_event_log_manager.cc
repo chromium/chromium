@@ -65,8 +65,7 @@ void ArcAppInstallEventLogManager::Clear(
     Profile* profile) {
   ArcAppInstallEventLogger::Clear(profile);
   log_task_runner_wrapper->GetTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::GetDeleteFileCallback(), GetLogFilePath(*profile)));
+      FROM_HERE, base::GetDeleteFileCallback(GetLogFilePath(*profile)));
 }
 
 void ArcAppInstallEventLogManager::Add(

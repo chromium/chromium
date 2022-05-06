@@ -151,7 +151,7 @@ void NetLogExporter::StartWithScratchDirOrCleanup(
         {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
         // The delete is non-recursive since the only time this is invoked is
         // when the directory is expected to be empty.
-        base::BindOnce(base::GetDeleteFileCallback(), scratch_dir_path));
+        base::GetDeleteFileCallback(scratch_dir_path));
   }
 }
 

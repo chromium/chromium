@@ -66,16 +66,13 @@ const char kOldOptimizationGuideHintStore[] = "previews_hint_cache_store";
 void DeleteOldStorePaths(const base::FilePath& profile_path) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(
-          base::GetDeletePathRecursivelyCallback(),
+      base::GetDeletePathRecursivelyCallback(
           profile_path.AddExtensionASCII(kOldOptimizationGuideHintStore)));
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(
-          base::GetDeletePathRecursivelyCallback(),
-          profile_path.AddExtension(
-              optimization_guide::
-                  kOptimizationGuidePredictionModelAndFeaturesStore)));
+      base::GetDeletePathRecursivelyCallback(profile_path.AddExtension(
+          optimization_guide::
+              kOptimizationGuidePredictionModelAndFeaturesStore)));
 }
 
 // Returns the profile to use for when setting up the keyed service when the

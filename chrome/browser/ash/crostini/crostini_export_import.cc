@@ -400,7 +400,7 @@ void CrostiniExportImport::OnExportComplete(
         // file is functionally the same as a successful cancel.
         base::ThreadPool::PostTask(
             FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-            base::BindOnce(base::GetDeleteFileCallback(), it->second->path()));
+            base::GetDeleteFileCallback(it->second->path()));
         RemoveTracker(it)->SetStatusCancelled();
         break;
       }
@@ -432,7 +432,7 @@ void CrostiniExportImport::OnExportComplete(
         // file needs to be cleaned up.
         base::ThreadPool::PostTask(
             FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-            base::BindOnce(base::GetDeleteFileCallback(), it->second->path()));
+            base::GetDeleteFileCallback(it->second->path()));
         RemoveTracker(it)->SetStatusCancelled();
         break;
       }
@@ -443,7 +443,7 @@ void CrostiniExportImport::OnExportComplete(
     LOG(ERROR) << "Error exporting " << int(result);
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(base::GetDeleteFileCallback(), it->second->path()));
+        base::GetDeleteFileCallback(it->second->path()));
     switch (result) {
       case CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED_VM_STOPPED:
         enum_hist_result = ExportContainerResult::kFailedVmStopped;

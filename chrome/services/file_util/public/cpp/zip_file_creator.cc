@@ -167,9 +167,8 @@ void ZipFileCreator::ReportResult(const Result result) {
 
   // In case of error, remove the partially created ZIP file.
   if (result != kSuccess)
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(base::GetDeleteFileCallback(), dest_file_));
+    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                               base::GetDeleteFileCallback(dest_file_));
 
   if (progress_callback_)
     std::move(progress_callback_).Run();

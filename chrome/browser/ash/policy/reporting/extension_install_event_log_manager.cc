@@ -64,8 +64,7 @@ void ExtensionInstallEventLogManager::Clear(
     LogTaskRunnerWrapper* log_task_runner_wrapper,
     Profile* profile) {
   log_task_runner_wrapper->GetTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::GetDeleteFileCallback(), GetLogFilePath(*profile)));
+      FROM_HERE, base::GetDeleteFileCallback(GetLogFilePath(*profile)));
 }
 
 void ExtensionInstallEventLogManager::Add(

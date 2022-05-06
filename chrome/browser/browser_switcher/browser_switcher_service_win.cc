@@ -282,7 +282,7 @@ void BrowserSwitcherServiceWin::DeletePrefsFile() {
     return;
   path = path.AppendASCII("cache.dat");
   sequenced_task_runner_->PostTaskAndReply(
-      FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), std::move(path)),
+      FROM_HERE, base::GetDeleteFileCallback(std::move(path)),
       base::BindOnce(&BrowserSwitcherServiceWin::CacheFileUpdated,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -307,7 +307,7 @@ void BrowserSwitcherServiceWin::DeleteSitelistCacheFile() {
     return;
   path = path.AppendASCII("sitelistcache.dat");
   sequenced_task_runner_->PostTaskAndReply(
-      FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), std::move(path)),
+      FROM_HERE, base::GetDeleteFileCallback(std::move(path)),
       base::BindOnce(&BrowserSwitcherServiceWin::SitelistCacheFileUpdated,
                      weak_ptr_factory_.GetWeakPtr()));
 }

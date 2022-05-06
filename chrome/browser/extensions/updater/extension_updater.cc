@@ -712,7 +712,7 @@ void ExtensionUpdater::CleanUpCrxFileIfNeeded(const base::FilePath& crx_path,
                                               bool file_ownership_passed) {
   if (file_ownership_passed &&
       !GetExtensionFileTaskRunner()->PostTask(
-          FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), crx_path))) {
+          FROM_HERE, base::GetDeleteFileCallback(crx_path))) {
     NOTREACHED();
   }
 }

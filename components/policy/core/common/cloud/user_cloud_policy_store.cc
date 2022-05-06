@@ -122,10 +122,10 @@ void DesktopCloudPolicyStore::LoadImmediately() {
 void DesktopCloudPolicyStore::Clear() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  background_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), policy_path_));
-  background_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), key_path_));
+  background_task_runner()->PostTask(FROM_HERE,
+                                     base::GetDeleteFileCallback(policy_path_));
+  background_task_runner()->PostTask(FROM_HERE,
+                                     base::GetDeleteFileCallback(key_path_));
   ResetPolicy();
   policy_map_.Clear();
   policy_signature_public_key_.clear();

@@ -515,7 +515,7 @@ void StatusIconLinuxDbus::CleanupIconFile() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!icon_file_.empty()) {
     icon_task_runner_->PostTask(
-        FROM_HERE, (base::BindOnce(base::GetDeletePathRecursivelyCallback(),
-                                   icon_file_.DirName())));
+        FROM_HERE,
+        (base::GetDeletePathRecursivelyCallback(icon_file_.DirName())));
   }
 }

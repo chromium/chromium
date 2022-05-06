@@ -106,8 +106,8 @@ DownloadFeedbackImpl::~DownloadFeedbackImpl() {
     uploader_.reset();
   }
 
-  file_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), file_path_));
+  file_task_runner_->PostTask(FROM_HERE,
+                              base::GetDeleteFileCallback(file_path_));
 }
 
 void DownloadFeedbackImpl::Start(base::OnceClosure finish_callback) {

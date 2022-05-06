@@ -166,8 +166,8 @@ void URLFetcherFileWriter::CloseAndDeleteFile() {
 
   file_stream_.reset();
   DisownFile();
-  file_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), file_path_));
+  file_task_runner_->PostTask(FROM_HERE,
+                              base::GetDeleteFileCallback(file_path_));
 }
 
 void URLFetcherFileWriter::DidCreateTempFile(base::FilePath* temp_file_path,

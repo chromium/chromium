@@ -79,8 +79,7 @@ base::File GetMemfdOrTempFile(base::ScopedClosureRunner& cleanup,
                 << output_path.value();
 
   // Need to actually delete the temp file once we're done.
-  cleanup.ReplaceClosure(
-      base::BindOnce(base::GetDeleteFileCallback(), std::move(output_path)));
+  cleanup.ReplaceClosure(base::GetDeleteFileCallback(std::move(output_path)));
   return base::FILEToFile(output_file.release());
 }
 

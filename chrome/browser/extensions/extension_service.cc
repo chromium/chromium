@@ -598,8 +598,7 @@ bool ExtensionService::UpdateExtension(const CRXFileInfo& file,
     // that would do it for us.
     if (file_ownership_passed &&
         !GetExtensionFileTaskRunner()->PostTask(
-            FROM_HERE,
-            base::BindOnce(base::GetDeleteFileCallback(), file.path))) {
+            FROM_HERE, base::GetDeleteFileCallback(file.path))) {
       NOTREACHED();
     }
 
@@ -1643,8 +1642,7 @@ void ExtensionService::OnExtensionInstalled(
       // load it.
       if (!GetExtensionFileTaskRunner()->PostTask(
               FROM_HERE,
-              base::BindOnce(base::GetDeletePathRecursivelyCallback(),
-                             extension->path()))) {
+              base::GetDeletePathRecursivelyCallback(extension->path()))) {
         NOTREACHED();
       }
       return;

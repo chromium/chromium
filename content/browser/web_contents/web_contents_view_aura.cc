@@ -493,11 +493,10 @@ void WebContentsViewAura::AsyncDropTempFileDeleter::DeleteAllFilesAsync()
 
 void WebContentsViewAura::AsyncDropTempFileDeleter::DeleteFileAsync(
     const base::FilePath& path) const {
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(base::GetDeleteFileCallback(), std::move(path)));
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                              base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+                             base::GetDeleteFileCallback(std::move(path)));
 }
 #endif
 

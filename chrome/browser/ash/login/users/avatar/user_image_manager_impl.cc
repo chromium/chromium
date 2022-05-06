@@ -890,8 +890,7 @@ void UserImageManagerImpl::DeleteUserImageAndLocalStateEntry(
       image_properties->FindStringKey(kImagePathNodeName);
   if (image_path && !image_path->empty()) {
     background_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(),
-                                  base::FilePath(*image_path)));
+        FROM_HERE, base::GetDeleteFileCallback(base::FilePath(*image_path)));
   }
   update->RemoveKey(account_id_.GetUserEmail());
 }

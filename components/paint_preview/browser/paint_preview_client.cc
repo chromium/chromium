@@ -196,15 +196,13 @@ PaintPreviewClient::InProgressDocumentCaptureState::
     for (const auto& subframe_guid : awaiting_subframes) {
       base::ThreadPool::PostTask(
           FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-          base::BindOnce(base::GetDeleteFileCallback(),
-                         FilePathForFrame(subframe_guid)));
+          base::GetDeleteFileCallback(FilePathForFrame(subframe_guid)));
     }
 
     for (const auto& subframe_guid : finished_subframes) {
       base::ThreadPool::PostTask(
           FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-          base::BindOnce(base::GetDeleteFileCallback(),
-                         FilePathForFrame(subframe_guid)));
+          base::GetDeleteFileCallback(FilePathForFrame(subframe_guid)));
     }
   }
 }
