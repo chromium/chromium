@@ -28,7 +28,7 @@ namespace {
 // Width of the identity control if nothing is contraining it.
 constexpr CGFloat kIdentityControlMaxWidth = 327.;
 // Margin above the identity button.
-constexpr CGFloat kIdentityTopMargin = 16.;
+constexpr CGFloat kTopMarginForBottomView = 16.;
 // Margin between elements in the bottom view.
 constexpr CGFloat kBottomViewInnerVerticalMargin = 8.;
 
@@ -169,8 +169,7 @@ NSAttributedString* FooterAttributedStringWithMessageIDAndURL(
     widthConstraint.priority = UILayoutPriorityDefaultHigh;
     [NSLayoutConstraint activateConstraints:@[
       [self.identityControl.topAnchor
-          constraintEqualToAnchor:self.specificContentView.topAnchor
-                         constant:kIdentityTopMargin],
+          constraintEqualToAnchor:self.specificContentView.topAnchor],
       [self.identityControl.centerXAnchor
           constraintEqualToAnchor:self.specificContentView.centerXAnchor],
       [self.identityControl.widthAnchor
@@ -190,7 +189,7 @@ NSAttributedString* FooterAttributedStringWithMessageIDAndURL(
   [NSLayoutConstraint activateConstraints:@[
     [self.bottomView.topAnchor
         constraintGreaterThanOrEqualToAnchor:topAnchorForBottomView
-                                    constant:kIdentityTopMargin],
+                                    constant:kTopMarginForBottomView],
     [self.bottomView.bottomAnchor
         constraintEqualToAnchor:self.specificContentView.bottomAnchor],
     [self.bottomView.centerXAnchor
