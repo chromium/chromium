@@ -5688,21 +5688,6 @@
             ]
         }
     ],
-    "PasswordAddCredentialManuallyInIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20211214",
-                    "enable_features": [
-                        "SupportForAddPasswordsInSettings"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordChangeAndroid": [
         {
             "platforms": [
