@@ -6,8 +6,8 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -42,19 +42,47 @@ base::span<const MatchPatternRef> GetMatchPatterns(
   }
 #else
   switch (pattern_source) {
-    case PatternSource::kDefault:
-      return it->second[0];
-    case PatternSource::kExperimental:
-    case PatternSource::kNextGen:
     case PatternSource::kLegacy:
-      break;
+      return it->second[0];
   }
 #endif
-  CHECK(false);
+  NOTREACHED();
   return {};
 }
 
 }  // namespace
+
+PatternSource GetActivePatternSource() {
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+  return PatternSource::kLegacy;
+#else
+  if (!base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider))
+    return PatternSource::kLegacy;
+  const std::string& source =
+      features::kAutofillParsingPatternActiveSource.Get();
+  DCHECK(source == "default" || source == "experimental" ||
+         source == "nextgen" || source == "legacy");
+  return source == "default"        ? PatternSource::kDefault
+         : source == "experimental" ? PatternSource::kExperimental
+         : source == "nextgen"      ? PatternSource::kNextGen
+         : source == "legacy"       ? PatternSource::kLegacy
+                                    : PatternSource::kDefault;
+#endif
+}
+
+DenseSet<PatternSource> GetNonActivePatternSources() {
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+  return {};
+#else
+  if (!base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider))
+    return {};
+  DenseSet<PatternSource> sources{
+      PatternSource::kLegacy, PatternSource::kDefault,
+      PatternSource::kExperimental, PatternSource::kNextGen};
+  sources.erase(GetActivePatternSource());
+  return sources;
+#endif
+}
 
 base::span<const MatchPatternRef> GetMatchPatterns(
     base::StringPiece name,

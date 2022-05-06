@@ -30,7 +30,7 @@ void TestFormStructure::SetFieldTypes(
       heuristic_types, std::back_inserter(all_heuristic_types),
       [](ServerFieldType type)
           -> std::vector<std::pair<PatternSource, ServerFieldType>> {
-        return {{PatternSource::kDefault, type}};
+        return {{GetActivePatternSource(), type}};
       });
 
   SetFieldTypes(all_heuristic_types, server_types);
@@ -42,7 +42,8 @@ void TestFormStructure::SetFieldTypes(
     const std::vector<ServerFieldType>& server_types) {
   ASSERT_EQ(field_count(), heuristic_types.size());
   ASSERT_EQ(field_count(), server_types.size());
-  ASSERT_THAT(heuristic_types, Each(Contains(Pair(PatternSource::kDefault, _))))
+  ASSERT_THAT(heuristic_types,
+              Each(Contains(Pair(GetActivePatternSource(), _))))
       << "There must be a default heuristic prediction for every field.";
 
   for (size_t i = 0; i < field_count(); ++i) {

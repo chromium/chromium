@@ -102,11 +102,28 @@ void PrintTo(MatchPatternRef p, std::ostream* os) {
       << test_api(p).index() << ")";
 }
 
-class RegexPatternsTest : public testing::Test {};
+// The parameter is the PatternSource to pass to GetMatchPatterns().
+class RegexPatternsTest : public testing::TestWithParam<PatternSource> {
+ public:
+  PatternSource pattern_source() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(RegexPatternsTest,
+                         RegexPatternsTest,
+                         ::testing::Values(
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+                             PatternSource::kLegacy
+#else
+                             PatternSource::kLegacy,
+                             PatternSource::kDefault,
+                             PatternSource::kExperimental,
+                             PatternSource::kNextGen
+#endif
+                             ));
 
 // Tests that for a given pattern name, the pseudo-language-code "" contains the
 // patterns of all real languages.
-TEST_F(RegexPatternsTest, PseudoLanguageIsUnionOfLanguages) {
+TEST_P(RegexPatternsTest, PseudoLanguageIsUnionOfLanguages) {
   const std::string kSomeName = "ADDRESS_LINE_1";
   const base::flat_set<std::string> kLanguagesOfPattern = [&] {
     std::vector<std::string> vec;
@@ -122,41 +139,39 @@ TEST_F(RegexPatternsTest, PseudoLanguageIsUnionOfLanguages) {
   // The expected patterns are the patterns of all languages for `kSomeName`.
   std::vector<MatchPatternRef> expected;
   for (const std::string& lang : kLanguagesOfPattern) {
-    const auto& patterns = GetMatchPatterns(kSomeName, LanguageCode(lang),
-                                            PatternSource::kDefault);
+    const auto& patterns =
+        GetMatchPatterns(kSomeName, LanguageCode(lang), pattern_source());
     expected.insert(expected.end(), patterns.begin(), patterns.end());
   }
   base::EraseIf(expected,
                 [](auto p) { return test_api(p).is_supplementary(); });
 
-  EXPECT_THAT(
-      GetMatchPatterns(kSomeName, absl::nullopt, PatternSource::kDefault),
-      UnorderedElementsAreArray(expected));
-  EXPECT_THAT(
-      GetMatchPatterns(kSomeName, absl::nullopt, PatternSource::kDefault),
-      Each(Not(IsSupplementary)));
+  EXPECT_THAT(GetMatchPatterns(kSomeName, absl::nullopt, pattern_source()),
+              UnorderedElementsAreArray(expected));
+  EXPECT_THAT(GetMatchPatterns(kSomeName, absl::nullopt, pattern_source()),
+              Each(Not(IsSupplementary)));
 }
 
 // Tests that for a given pattern name, if the language doesn't isn't known we
 // use the union of all patterns.
-TEST_F(RegexPatternsTest, FallbackToPseudoLanguageIfLanguageDoesNotExist) {
+TEST_P(RegexPatternsTest, FallbackToPseudoLanguageIfLanguageDoesNotExist) {
   const std::string kSomeName = "ADDRESS_LINE_1";
   const LanguageCode kNonexistingLanguage("foo");
-  EXPECT_THAT(GetMatchPatterns(kSomeName, kNonexistingLanguage,
-                               PatternSource::kDefault),
-              ElementsAreArray(GetMatchPatterns(kSomeName, absl::nullopt,
-                                                PatternSource::kDefault)));
+  EXPECT_THAT(
+      GetMatchPatterns(kSomeName, kNonexistingLanguage, pattern_source()),
+      ElementsAreArray(
+          GetMatchPatterns(kSomeName, absl::nullopt, pattern_source())));
 }
 
 // Tests that for a given pattern name, the non-English languages are
 // supplemented with the English patterns.
-TEST_F(RegexPatternsTest,
+TEST_P(RegexPatternsTest,
        EnglishPatternsAreAddedToOtherLanguagesAsSupplementaryPatterns) {
   const std::string kSomeName = "ADDRESS_LINE_1";
   auto de_patterns =
-      GetMatchPatterns(kSomeName, LanguageCode("de"), PatternSource::kDefault);
+      GetMatchPatterns(kSomeName, LanguageCode("de"), pattern_source());
   auto en_patterns =
-      GetMatchPatterns(kSomeName, LanguageCode("en"), PatternSource::kDefault);
+      GetMatchPatterns(kSomeName, LanguageCode("en"), pattern_source());
   ASSERT_FALSE(de_patterns.empty());
   ASSERT_FALSE(en_patterns.empty());
 
@@ -179,7 +194,7 @@ TEST_F(RegexPatternsTest,
 struct PatternTestCase {
   // The set of patterns. In non-branded builds, only the default set is
   // supported.
-  PatternSource pattern_source = PatternSource::kDefault;
+  PatternSource pattern_source = PatternSource::kLegacy;
   // Reference to the pattern name in the resources/regex_patterns.json file.
   const char* pattern_name;
   // Language selector for the pattern, refers to the detected language of a
@@ -191,17 +206,9 @@ struct PatternTestCase {
 };
 
 class RegexPatternsTestWithSamples
-    : public RegexPatternsTest,
-      public testing::WithParamInterface<PatternTestCase> {};
+    : public testing::TestWithParam<PatternTestCase> {};
 
 TEST_P(RegexPatternsTestWithSamples, TestPositiveAndNegativeCases) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  base::FieldTrialParams feature_parameters{
-      {features::kAutofillParsingWithLanguageSpecificPatternsParam.name,
-       "true"}};
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kAutofillParsingPatternProvider, feature_parameters);
-
   PatternTestCase test_case = GetParam();
 
   for (const std::string& sample : test_case.positive_samples) {
@@ -231,7 +238,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
         PatternTestCase{
-            .pattern_source = PatternSource::kDefault,
+            .pattern_source = PatternSource::kLegacy,
             .pattern_name = "PATTERN_SOURCE_DUMMY",
             .language = "en",
             .positive_samples = {"legacy"},
@@ -262,7 +269,7 @@ INSTANTIATE_TEST_SUITE_P(
             .negative_samples = {"default", "experimental", "nextgen"}},
 #endif
         PatternTestCase{
-            .pattern_source = PatternSource::kDefault,
+            .pattern_source = PatternSource::kLegacy,
             .pattern_name = "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
             .language = "en",
             .positive_samples =
@@ -287,7 +294,7 @@ INSTANTIATE_TEST_SUITE_P(
                  "Expiration Date MM - YYYY", "Expiration Date MM-YYYY",
                  "expiration date yyyy", "Exp Date     (MM / YYYY)"}},
         PatternTestCase{
-            .pattern_source = PatternSource::kDefault,
+            .pattern_source = PatternSource::kLegacy,
             .pattern_name = "CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR",
             .language = "en",
             .positive_samples =
@@ -312,7 +319,7 @@ INSTANTIATE_TEST_SUITE_P(
                  "Expiration Date MM / YY", "Expiration Date MM/YY",
                  "Expiration Date MM - YY", "Expiration Date MM-YY",
                  "expiration date yy", "Exp Date     (MM / YY)"}},
-        PatternTestCase{.pattern_source = PatternSource::kDefault,
+        PatternTestCase{.pattern_source = PatternSource::kLegacy,
                         .pattern_name = "ZIP_CODE",
                         .language = "en",
                         .positive_samples = {"Zip code", "postal code"},
@@ -321,7 +328,7 @@ INSTANTIATE_TEST_SUITE_P(
                              "postleitzahl",
                              // Not referring to a ZIP code:
                              "Supported file formats: .docx, .rar, .zip."}},
-        PatternTestCase{.pattern_source = PatternSource::kDefault,
+        PatternTestCase{.pattern_source = PatternSource::kLegacy,
                         .pattern_name = "ZIP_CODE",
                         .language = "de",
                         .positive_samples =

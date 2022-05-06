@@ -3,10 +3,39 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
+#include "components/autofill/core/browser/form_parsing/buildflags.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
-FormFieldTestBase::FormFieldTestBase() = default;
+std::vector<PatternProviderFeatureState> PatternProviderFeatureState::All() {
+  return {
+    {.enable = false, .active_source = nullptr},
+        {.enable = true, .active_source = "legacy"},
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+        {.enable = true, .active_source = "default"},
+        {.enable = true, .active_source = "experimental"},
+        {.enable = true, .active_source = "nextgen"},
+#endif
+  };
+}
+
+FormFieldTestBase::FormFieldTestBase(
+    PatternProviderFeatureState pattern_provider_feature_state) {
+  std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
+  std::vector<base::Feature> disabled;
+  if (pattern_provider_feature_state.enable) {
+    enabled.emplace_back(
+        features::kAutofillParsingPatternProvider,
+        base::FieldTrialParams{
+            {features::kAutofillParsingPatternActiveSource.name,
+             pattern_provider_feature_state.active_source}});
+  } else {
+    disabled.push_back(features::kAutofillParsingPatternProvider);
+  }
+  scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+}
+
 FormFieldTestBase::~FormFieldTestBase() = default;
 
 void FormFieldTestBase::AddFormFieldData(std::string control_type,
@@ -114,6 +143,4 @@ FieldRendererId FormFieldTestBase::MakeFieldRendererId() {
   return FieldRendererId(++id_counter_);
 }
 
-FormFieldTest::FormFieldTest() = default;
-FormFieldTest::~FormFieldTest() = default;
 }  // namespace autofill

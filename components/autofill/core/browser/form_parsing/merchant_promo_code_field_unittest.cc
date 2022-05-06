@@ -12,9 +12,11 @@ using base::ASCIIToUTF16;
 
 namespace autofill {
 
-class MerchantPromoCodeFieldTest : public FormFieldTest {
+class MerchantPromoCodeFieldTest
+    : public FormFieldTestBase,
+      public testing::TestWithParam<PatternProviderFeatureState> {
  public:
-  MerchantPromoCodeFieldTest() = default;
+  MerchantPromoCodeFieldTest() : FormFieldTestBase(GetParam()) {}
   MerchantPromoCodeFieldTest(const MerchantPromoCodeFieldTest&) = delete;
   MerchantPromoCodeFieldTest& operator=(const MerchantPromoCodeFieldTest&) =
       delete;
@@ -25,19 +27,24 @@ class MerchantPromoCodeFieldTest : public FormFieldTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   std::unique_ptr<FormField> Parse(
       AutofillScanner* scanner,
       const LanguageCode& page_language = LanguageCode("en")) override {
     return MerchantPromoCodeField::Parse(scanner, page_language,
-                                         PatternSource::kDefault,
+                                         GetActivePatternSource(),
                                          /*log_manager=*/nullptr);
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    MerchantPromoCodeFieldTest,
+    MerchantPromoCodeFieldTest,
+    ::testing::ValuesIn(PatternProviderFeatureState::All()));
+
 // Match promo(tion|tional)?[-_. ]*code
-TEST_F(MerchantPromoCodeFieldTest, ParsePromoCode) {
+TEST_P(MerchantPromoCodeFieldTest, ParsePromoCode) {
   AddTextFormFieldData("Enter promo code here", "promoCodeField",
                        MERCHANT_PROMO_CODE);
 
@@ -45,7 +52,7 @@ TEST_F(MerchantPromoCodeFieldTest, ParsePromoCode) {
 }
 
 // Match promo(tion|tional)?[-_. ]*code
-TEST_F(MerchantPromoCodeFieldTest, ParsePromotionalCode) {
+TEST_P(MerchantPromoCodeFieldTest, ParsePromotionalCode) {
   AddTextFormFieldData("Use the promotional code here", "promoCodeField",
                        MERCHANT_PROMO_CODE);
 
@@ -53,7 +60,7 @@ TEST_F(MerchantPromoCodeFieldTest, ParsePromotionalCode) {
 }
 
 // Match promo(tion|tional)?[-_. ]*code
-TEST_F(MerchantPromoCodeFieldTest, ParsePromoCodeWithPrefixAndSuffix) {
+TEST_P(MerchantPromoCodeFieldTest, ParsePromoCodeWithPrefixAndSuffix) {
   AddTextFormFieldData("mypromocodefield", "promoCodeField",
                        MERCHANT_PROMO_CODE);
 
@@ -61,7 +68,7 @@ TEST_F(MerchantPromoCodeFieldTest, ParsePromoCodeWithPrefixAndSuffix) {
 }
 
 // Match coupon[-_. ]*code
-TEST_F(MerchantPromoCodeFieldTest, ParseCouponCode) {
+TEST_P(MerchantPromoCodeFieldTest, ParseCouponCode) {
   AddTextFormFieldData("Enter new coupon__code", "couponCodeField",
                        MERCHANT_PROMO_CODE);
 
@@ -69,7 +76,7 @@ TEST_F(MerchantPromoCodeFieldTest, ParseCouponCode) {
 }
 
 // Match gift[-_. ]*code
-TEST_F(MerchantPromoCodeFieldTest, ParseGiftCode) {
+TEST_P(MerchantPromoCodeFieldTest, ParseGiftCode) {
   AddTextFormFieldData("Check out with gift.codes", "giftCodeField",
                        MERCHANT_PROMO_CODE);
 
@@ -77,14 +84,14 @@ TEST_F(MerchantPromoCodeFieldTest, ParseGiftCode) {
 }
 
 // Match discount[-_. ]*code
-TEST_F(MerchantPromoCodeFieldTest, ParseDiscountCode) {
+TEST_P(MerchantPromoCodeFieldTest, ParseDiscountCode) {
   AddTextFormFieldData("Check out with discount-code", "discountCodeField",
                        MERCHANT_PROMO_CODE);
 
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(MerchantPromoCodeFieldTest, ParseNonPromoCode) {
+TEST_P(MerchantPromoCodeFieldTest, ParseNonPromoCode) {
   // Regex relies on "promo/coupon/gift" + "code" together.
   AddTextFormFieldData("Field for gift card or promo details", "otherField",
                        UNKNOWN_TYPE);
@@ -92,7 +99,7 @@ TEST_F(MerchantPromoCodeFieldTest, ParseNonPromoCode) {
   ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
-TEST_F(MerchantPromoCodeFieldTest, ParsePromoCodeFlagOff) {
+TEST_P(MerchantPromoCodeFieldTest, ParsePromoCodeFlagOff) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kAutofillParseMerchantPromoCodeFields);

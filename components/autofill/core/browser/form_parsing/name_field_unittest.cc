@@ -16,9 +16,11 @@
 
 namespace autofill {
 
-class NameFieldTest : public FormFieldTest {
+class NameFieldTest
+    : public FormFieldTestBase,
+      public testing::TestWithParam<PatternProviderFeatureState> {
  public:
-  NameFieldTest() = default;
+  NameFieldTest() : FormFieldTestBase(GetParam()) {}
   NameFieldTest(const NameFieldTest&) = delete;
   NameFieldTest& operator=(const NameFieldTest&) = delete;
 
@@ -26,12 +28,17 @@ class NameFieldTest : public FormFieldTest {
   std::unique_ptr<FormField> Parse(
       AutofillScanner* scanner,
       const LanguageCode& page_language = LanguageCode("us")) override {
-    return NameField::Parse(scanner, page_language, PatternSource::kDefault,
+    return NameField::Parse(scanner, page_language, GetActivePatternSource(),
                             /*log_manager=*/nullptr);
   }
 };
 
-TEST_F(NameFieldTest, FirstMiddleLast) {
+INSTANTIATE_TEST_SUITE_P(
+    NameFieldTest,
+    NameFieldTest,
+    ::testing::ValuesIn(PatternProviderFeatureState::All()));
+
+TEST_P(NameFieldTest, FirstMiddleLast) {
   AddTextFormFieldData("First Name", "First", NAME_FIRST);
   AddTextFormFieldData("Name Middle", "Middle", NAME_MIDDLE);
   AddTextFormFieldData("Last Name", "Last", NAME_LAST);
@@ -39,7 +46,7 @@ TEST_F(NameFieldTest, FirstMiddleLast) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(NameFieldTest, FirstMiddleLast2) {
+TEST_P(NameFieldTest, FirstMiddleLast2) {
   AddTextFormFieldData("firstName", "", NAME_FIRST);
   AddTextFormFieldData("middleName", "", NAME_MIDDLE);
   AddTextFormFieldData("lastName", "", NAME_LAST);
@@ -48,7 +55,7 @@ TEST_F(NameFieldTest, FirstMiddleLast2) {
 }
 
 // Test that a field for a honorific title is parsed correctly.
-TEST_F(NameFieldTest, HonorificPrefixFirstLast) {
+TEST_P(NameFieldTest, HonorificPrefixFirstLast) {
   // With support for two last names, the parsing should find the first name
   // field and the two last name fields.
   // TODO(crbug.com/1098943): Remove once launched.
@@ -63,14 +70,14 @@ TEST_F(NameFieldTest, HonorificPrefixFirstLast) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(NameFieldTest, FirstLast) {
+TEST_P(NameFieldTest, FirstLast) {
   AddTextFormFieldData("first_name", "", NAME_FIRST);
   AddTextFormFieldData("last_name", "", NAME_LAST);
 
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(NameFieldTest, NameSurname) {
+TEST_P(NameFieldTest, NameSurname) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillEnableNameSurenameParsing);
@@ -81,7 +88,7 @@ TEST_F(NameFieldTest, NameSurname) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(NameFieldTest, NameSurnameWithMiddleName) {
+TEST_P(NameFieldTest, NameSurnameWithMiddleName) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillEnableNameSurenameParsing);
@@ -93,7 +100,7 @@ TEST_F(NameFieldTest, NameSurnameWithMiddleName) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(NameFieldTest, NameSurname_DE) {
+TEST_P(NameFieldTest, NameSurname_DE) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillEnableNameSurenameParsing);
@@ -104,14 +111,14 @@ TEST_F(NameFieldTest, NameSurname_DE) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(NameFieldTest, FirstLast2) {
+TEST_P(NameFieldTest, FirstLast2) {
   AddTextFormFieldData("first_name", "Name", NAME_FIRST);
   AddTextFormFieldData("last_name", "Name", NAME_LAST);
 
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(NameFieldTest, FirstLastMiddleWithSpaces) {
+TEST_P(NameFieldTest, FirstLastMiddleWithSpaces) {
   AddTextFormFieldData("fist_name", "First  Name", NAME_FIRST);
   AddTextFormFieldData("middle_name", "Middle  Name", NAME_MIDDLE);
   AddTextFormFieldData("last_name", "Last  Name", NAME_LAST);
@@ -119,14 +126,14 @@ TEST_F(NameFieldTest, FirstLastMiddleWithSpaces) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(NameFieldTest, FirstLastEmpty) {
+TEST_P(NameFieldTest, FirstLastEmpty) {
   AddTextFormFieldData("first_name", "Name", NAME_FIRST);
   AddTextFormFieldData("last_name", "", NAME_LAST);
 
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(NameFieldTest, FirstMiddleLastEmpty) {
+TEST_P(NameFieldTest, FirstMiddleLastEmpty) {
   AddTextFormFieldData("first_name", "Name", NAME_FIRST);
   AddTextFormFieldData("middle_name", "", NAME_MIDDLE_INITIAL);
   AddTextFormFieldData("last_name", "", NAME_LAST);
@@ -134,7 +141,7 @@ TEST_F(NameFieldTest, FirstMiddleLastEmpty) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(NameFieldTest, MiddleInitial) {
+TEST_P(NameFieldTest, MiddleInitial) {
   AddTextFormFieldData("first_name", "Name", NAME_FIRST);
   AddTextFormFieldData("middle_name", "MI", NAME_MIDDLE_INITIAL);
   AddTextFormFieldData("last_name", "", NAME_LAST);
@@ -142,7 +149,7 @@ TEST_F(NameFieldTest, MiddleInitial) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(NameFieldTest, MiddleInitialNoLastName) {
+TEST_P(NameFieldTest, MiddleInitialNoLastName) {
   AddTextFormFieldData("first_name", "First Name", UNKNOWN_TYPE);
   AddTextFormFieldData("middle_name", "MI", UNKNOWN_TYPE);
 
@@ -151,7 +158,7 @@ TEST_F(NameFieldTest, MiddleInitialNoLastName) {
 
 // Tests that a website with a first and second surname field is parsed
 // correctly.
-TEST_F(NameFieldTest, HonorificPrefixAndFirstNameAndHispanicLastNames) {
+TEST_P(NameFieldTest, HonorificPrefixAndFirstNameAndHispanicLastNames) {
   // With support for two last names, the parsing should find the first name
   // field and the two last name fields.
   // TODO(crbug.com/1098943): Remove once launched.
@@ -170,7 +177,7 @@ TEST_F(NameFieldTest, HonorificPrefixAndFirstNameAndHispanicLastNames) {
 
 // Tests that a website with a first and second surname field is parsed
 // correctly.
-TEST_F(NameFieldTest, FirstNameAndOptionalMiddleNameAndHispanicLastNames) {
+TEST_P(NameFieldTest, FirstNameAndOptionalMiddleNameAndHispanicLastNames) {
   // With support for two last names, the parsing should find the first name
   // field and the two last name fields.
   base::test::ScopedFeatureList scoped_feature_list;
@@ -188,7 +195,7 @@ TEST_F(NameFieldTest, FirstNameAndOptionalMiddleNameAndHispanicLastNames) {
 
 // This case is from the dell.com checkout page.  The middle initial "mi" string
 // came at the end following other descriptive text.  http://crbug.com/45123.
-TEST_F(NameFieldTest, MiddleInitialAtEnd) {
+TEST_P(NameFieldTest, MiddleInitialAtEnd) {
   AddTextFormFieldData("XXXnameXXXfirst", "", NAME_FIRST);
   AddTextFormFieldData("XXXnameXXXmi", "", NAME_MIDDLE_INITIAL);
   AddTextFormFieldData("XXXnameXXXlast", "", NAME_LAST);
@@ -197,7 +204,7 @@ TEST_F(NameFieldTest, MiddleInitialAtEnd) {
 }
 
 // Test the coverage of all found strings for first and second last names.
-TEST_F(NameFieldTest, HispanicLastNameRegexConverage) {
+TEST_P(NameFieldTest, HispanicLastNameRegexConverage) {
   std::vector<std::u16string> first_last_name_strings = {
       u"Primer apellido", u"apellidoPaterno", u"apellido_paterno",
       u"first_surname",   u"first surname",   u"apellido1"};
@@ -230,7 +237,7 @@ TEST_F(NameFieldTest, HispanicLastNameRegexConverage) {
 }
 
 // Tests that address name is not misclassified as name or honorific prefix.
-TEST_F(NameFieldTest, NotAddressName) {
+TEST_P(NameFieldTest, NotAddressName) {
   AddTextFormFieldData("name", "Identificação do Endereço", UNKNOWN_TYPE);
   AddTextFormFieldData("title", "Adres Adı", UNKNOWN_TYPE);
 
@@ -238,7 +245,7 @@ TEST_F(NameFieldTest, NotAddressName) {
 }
 
 // Tests that contact name is classified as full name.
-TEST_F(NameFieldTest, ContactNameFull) {
+TEST_P(NameFieldTest, ContactNameFull) {
   AddTextFormFieldData("contact", "Контактное лицо", NAME_FULL);
 
   ClassifyAndVerify(ParseResult::PARSED);

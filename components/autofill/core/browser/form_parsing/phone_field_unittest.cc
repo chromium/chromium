@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,9 +34,24 @@ const char* const kFieldTypes[] = {
 
 }  // namespace
 
-class PhoneFieldTest : public testing::Test {
+class PhoneFieldTest
+    : public testing::TestWithParam<PatternProviderFeatureState> {
  public:
-  PhoneFieldTest() = default;
+  PhoneFieldTest() {
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
+    std::vector<base::Feature> disabled;
+    if (GetParam().enable) {
+      enabled.emplace_back(
+          features::kAutofillParsingPatternProvider,
+          base::FieldTrialParams{
+              {features::kAutofillParsingPatternActiveSource.name,
+               GetParam().active_source}});
+    } else {
+      disabled.push_back(features::kAutofillParsingPatternProvider);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+  }
+
   PhoneFieldTest(const PhoneFieldTest&) = delete;
   PhoneFieldTest& operator=(const PhoneFieldTest&) = delete;
 
@@ -45,7 +61,7 @@ class PhoneFieldTest : public testing::Test {
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
     std::unique_ptr<FormField> field =
-        PhoneField::Parse(scanner, LanguageCode(""), PatternSource::kDefault,
+        PhoneField::Parse(scanner, LanguageCode(""), GetActivePatternSource(),
                           /*log_manager=*/nullptr);
     return std::unique_ptr<PhoneField>(
         static_cast<PhoneField*>(field.release()));
@@ -85,6 +101,7 @@ class PhoneFieldTest : public testing::Test {
   std::vector<std::unique_ptr<AutofillField>> list_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<PhoneField> field_;
   uint64_t id_counter_ = 0;
   FieldCandidatesMap field_candidates_map_;
@@ -147,22 +164,27 @@ void PhoneFieldTest::Clear() {
   field_candidates_map_.clear();
 }
 
-TEST_F(PhoneFieldTest, Empty) {
+INSTANTIATE_TEST_SUITE_P(
+    PhoneFieldTest,
+    PhoneFieldTest,
+    ::testing::ValuesIn(PatternProviderFeatureState::All()));
+
+TEST_P(PhoneFieldTest, Empty) {
   RunParsingTest({}, /*expect_success=*/false);
 }
 
-TEST_F(PhoneFieldTest, NonParse) {
+TEST_P(PhoneFieldTest, NonParse) {
   list_.push_back(std::make_unique<AutofillField>());
   RunParsingTest({}, /*expect_success=*/false);
 }
 
-TEST_F(PhoneFieldTest, ParseOneLinePhone) {
+TEST_P(PhoneFieldTest, ParseOneLinePhone) {
   for (const char* field_type : kFieldTypes) {
     RunParsingTest({{field_type, u"Phone", u"phone", PHONE_HOME_WHOLE_NUMBER}});
   }
 }
 
-TEST_F(PhoneFieldTest, ParseTwoLinePhone) {
+TEST_P(PhoneFieldTest, ParseTwoLinePhone) {
   for (const char* field_type : kFieldTypes) {
     RunParsingTest(
         {{field_type, u"Area Code", u"area code", PHONE_HOME_CITY_CODE},
@@ -175,7 +197,7 @@ TEST_F(PhoneFieldTest, ParseTwoLinePhone) {
 // <country code> - <area code> - <phone>. The only distinguishing feature is
 // size: <prefix> is no bigger than 3 characters, and <suffix> is no bigger
 // than 4.
-TEST_F(PhoneFieldTest, ThreePartPhoneNumber) {
+TEST_P(PhoneFieldTest, ThreePartPhoneNumber) {
   for (const char* field_type : kFieldTypes) {
     RunParsingTest(
         {{field_type, u"Phone:", u"dayphone1", PHONE_HOME_CITY_CODE},
@@ -188,7 +210,7 @@ TEST_F(PhoneFieldTest, ThreePartPhoneNumber) {
 // This scenario of explicitly labeled "prefix" and "suffix" phone numbers
 // encountered in http://crbug.com/40694 with page
 // https://www.wrapables.com/jsp/Signup.jsp.
-TEST_F(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix) {
+TEST_P(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix) {
   for (const char* field_type : kFieldTypes) {
     RunParsingTest({{field_type, u"Phone:", u"area", PHONE_HOME_CITY_CODE},
                     {field_type, u"", u"prefix", PHONE_HOME_NUMBER},
@@ -197,7 +219,7 @@ TEST_F(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix) {
   }
 }
 
-TEST_F(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix2) {
+TEST_P(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix2) {
   for (const char* field_type : kFieldTypes) {
     RunParsingTest(
         {{field_type, u"(", u"phone1", PHONE_HOME_CITY_CODE, /*max_length=*/3},
@@ -208,7 +230,7 @@ TEST_F(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix2) {
 }
 
 // Phone in format <country code> - <city and number>
-TEST_F(PhoneFieldTest, CountryAndCityAndPhoneNumber) {
+TEST_P(PhoneFieldTest, CountryAndCityAndPhoneNumber) {
   for (const char* field_type : kFieldTypes) {
     RunParsingTest({{field_type, u"Phone Number", u"CountryCode",
                      PHONE_HOME_COUNTRY_CODE, /*max_length=*/3},
@@ -217,7 +239,7 @@ TEST_F(PhoneFieldTest, CountryAndCityAndPhoneNumber) {
   }
 }
 
-TEST_F(PhoneFieldTest, TrunkPrefixTypes) {
+TEST_P(PhoneFieldTest, TrunkPrefixTypes) {
   base::test::ScopedFeatureList trunk_types_enabled;
   trunk_types_enabled.InitAndEnableFeature(
       features::kAutofillEnableSupportForPhoneNumberTrunkTypes);
@@ -247,7 +269,7 @@ TEST_F(PhoneFieldTest, TrunkPrefixTypes) {
 
 // Tests if the country code, city code and phone number fields are correctly
 // classified by the heuristic when the phone code is a select element.
-TEST_F(PhoneFieldTest, CountryCodeIsSelectElement) {
+TEST_P(PhoneFieldTest, CountryCodeIsSelectElement) {
   RunParsingTest(
       {{"select-one", u"Phone Country Code", u"ccode", PHONE_HOME_COUNTRY_CODE},
        {"text", u"Phone City Code", u"areacode", PHONE_HOME_CITY_CODE,
@@ -258,7 +280,7 @@ TEST_F(PhoneFieldTest, CountryCodeIsSelectElement) {
 // Tests if the country code, city code and phone number fields are correctly
 // classified by the heuristic when the phone code field is a select element
 // consisting of valid options.
-TEST_F(PhoneFieldTest, CountryCodeWithOptions) {
+TEST_P(PhoneFieldTest, CountryCodeWithOptions) {
   base::test::ScopedFeatureList enabled;
   enabled.InitAndEnableFeature(
       features::kAutofillEnableAugmentedPhoneCountryCode);
@@ -277,7 +299,7 @@ TEST_F(PhoneFieldTest, CountryCodeWithOptions) {
 
 // Tests if the country code field is correctly classified by the heuristic when
 // the phone code is a select element and consists of valid options.
-TEST_F(PhoneFieldTest, IsPhoneCountryCodeField) {
+TEST_P(PhoneFieldTest, IsPhoneCountryCodeField) {
   base::test::ScopedFeatureList enabled;
   enabled.InitAndEnableFeature(
       features::kAutofillEnableAugmentedPhoneCountryCode);
@@ -347,7 +369,7 @@ TEST_F(PhoneFieldTest, IsPhoneCountryCodeField) {
 }
 
 // Tests that the month field is not classified as |PHONE_HOME_COUNTRY_CODE|.
-TEST_F(PhoneFieldTest, IsMonthField) {
+TEST_P(PhoneFieldTest, IsMonthField) {
   base::test::ScopedFeatureList enabled;
   enabled.InitAndEnableFeature(
       features::kAutofillEnableAugmentedPhoneCountryCode);
@@ -372,7 +394,7 @@ TEST_F(PhoneFieldTest, IsMonthField) {
 }
 
 // Tests that the day field is not classified as |PHONE_HOME_COUNTRY_CODE|.
-TEST_F(PhoneFieldTest, IsDayField) {
+TEST_P(PhoneFieldTest, IsDayField) {
   base::test::ScopedFeatureList enabled;
   enabled.InitAndEnableFeature(
       features::kAutofillEnableAugmentedPhoneCountryCode);
@@ -427,7 +449,7 @@ TEST_F(PhoneFieldTest, IsDayField) {
 }
 
 // Tests that the field is not classified as |PHONE_HOME_COUNTRY_CODE|.
-TEST_F(PhoneFieldTest, IsYearField) {
+TEST_P(PhoneFieldTest, IsYearField) {
   base::test::ScopedFeatureList enabled;
   enabled.InitAndEnableFeature(
       features::kAutofillEnableAugmentedPhoneCountryCode);
@@ -468,7 +490,7 @@ TEST_F(PhoneFieldTest, IsYearField) {
 }
 
 // Tests that the timezone field is not classified as |PHONE_HOME_COUNTRY_CODE|.
-TEST_F(PhoneFieldTest, IsTimeZoneField) {
+TEST_P(PhoneFieldTest, IsTimeZoneField) {
   base::test::ScopedFeatureList enabled;
   enabled.InitAndEnableFeature(
       features::kAutofillEnableAugmentedPhoneCountryCode);

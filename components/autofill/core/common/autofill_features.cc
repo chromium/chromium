@@ -124,6 +124,11 @@ const base::Feature kAutofillDisableFilling{"AutofillDisableFilling",
 const base::Feature kAutofillDisableAddressImport{
     "AutofillDisableAddressImport", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Kill switch for computing heuristics other than the active ones
+// (GetActivePatternSource()).
+const base::Feature kAutofillDisableShadowHeuristics{
+    "AutofillDisableShadowHeuristics", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls if the heuristic field parsing utilizes shared labels.
 // TODO(crbug.com/1165780): Remove once shared labels are launched.
 const base::Feature kAutofillEnableSupportForParsingWithSharedLabels{
@@ -348,26 +353,24 @@ extern const base::Feature kAutofillPreventOverridingPrefilledValues{
     "AutofillPreventOverridingPrefilledValues",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Uses the pattern provider to retrieve parsing patterns for the heuristic
-// field type detection.
+// If enabled, use the parsing patterns from a JSON file for heuristics, rather
+// than the hardcoded ones from autofill_regex_constants.cc.
+// The specific pattern set is controlled by the
+// `kAutofillParsingPatternActiveSource` parameter.
+//
+// This feature is intended to work with kAutofillPageLanguageDetection.
+//
+// Enabling this feature is also a prerequisite for emitting shadow metrics.
 // TODO(crbug/1121990): Remove once launched.
 const base::Feature kAutofillParsingPatternProvider{
     "AutofillParsingPatternProvider", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls if language-specific patterns are used for the heuristic field type
-// detection.
-// For this to work, the feature kAutofillPageLanguageDetection must be enabled.
-// Otherwise the pattern provider will revert back to language unspecific
-// patterns.
-const base::FeatureParam<bool>
-    kAutofillParsingWithLanguageSpecificPatternsParam{
-        &kAutofillParsingPatternProvider, "use_language_specific_patterns",
-        true};
-
-// Controls if patterns retrieved with the component updater are used.
-const base::FeatureParam<bool> kAutofillParsingWithRemotePatternsParam{
-    &kAutofillParsingPatternProvider,
-    "use_patterns_retrieved_with_the_component_udpater", false};
+// The specific pattern set is controlled by the `kAutofillParsingPatternActive`
+// parameter. One of "legacy", "default", "experimental", "nextgen". All other
+// values are equivalent to "default".
+// TODO(crbug/1248339): Remove once experiment is finished.
+const base::FeatureParam<std::string> kAutofillParsingPatternActiveSource{
+    &kAutofillParsingPatternProvider, "prediction_source", "default"};
 
 // Enables detection of language from Translate.
 // TODO(crbug/1150895): Cleanup when launched.

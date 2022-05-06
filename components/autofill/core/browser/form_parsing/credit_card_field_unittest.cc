@@ -80,7 +80,9 @@ std::vector<SelectOption> WithNoise(std::vector<SelectOption> options) {
 
 class CreditCardFieldTestBase : public FormFieldTestBase {
  public:
-  CreditCardFieldTestBase() = default;
+  explicit CreditCardFieldTestBase(
+      PatternProviderFeatureState pattern_provider_feature_state)
+      : FormFieldTestBase(pattern_provider_feature_state) {}
   CreditCardFieldTestBase(const CreditCardFieldTestBase&) = delete;
   CreditCardFieldTestBase& operator=(const CreditCardFieldTestBase&) = delete;
 
@@ -89,7 +91,7 @@ class CreditCardFieldTestBase : public FormFieldTestBase {
       AutofillScanner* scanner,
       const LanguageCode& page_language = LanguageCode("us")) override {
     return CreditCardField::Parse(scanner, page_language,
-                                  PatternSource::kDefault, nullptr);
+                                  GetActivePatternSource(), nullptr);
   }
 
   // Runs multiple parsing attempts until the end of the form is reached.
@@ -108,40 +110,48 @@ class CreditCardFieldTestBase : public FormFieldTestBase {
     }
     TestClassificationExpectations();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class CreditCardFieldTest : public CreditCardFieldTestBase,
-                            public testing::Test {
+class CreditCardFieldTest
+    : public CreditCardFieldTestBase,
+      public ::testing::TestWithParam<PatternProviderFeatureState> {
  public:
-  CreditCardFieldTest() = default;
+  CreditCardFieldTest() : CreditCardFieldTestBase(GetParam()) {}
   CreditCardFieldTest(const CreditCardFieldTest&) = delete;
   CreditCardFieldTest& operator=(const CreditCardFieldTest&) = delete;
 };
 
-TEST_F(CreditCardFieldTest, Empty) {
+INSTANTIATE_TEST_SUITE_P(CreditCardFieldTest,
+                         CreditCardFieldTest,
+                         testing::ValuesIn(PatternProviderFeatureState::All()));
+
+TEST_P(CreditCardFieldTest, Empty) {
   ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
-TEST_F(CreditCardFieldTest, NonParse) {
+TEST_P(CreditCardFieldTest, NonParse) {
   AddTextFormFieldData("", "", UNKNOWN_TYPE);
 
   ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
-TEST_F(CreditCardFieldTest, ParseCreditCardNoNumber) {
+TEST_P(CreditCardFieldTest, ParseCreditCardNoNumber) {
   AddTextFormFieldData("ccmonth", "Exp Month", UNKNOWN_TYPE);
   AddTextFormFieldData("ccyear", "Exp Year", UNKNOWN_TYPE);
 
   ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
-TEST_F(CreditCardFieldTest, ParseCreditCardNoDate) {
+TEST_P(CreditCardFieldTest, ParseCreditCardNoDate) {
   AddTextFormFieldData("card_number", "Card Number", UNKNOWN_TYPE);
 
   ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
-TEST_F(CreditCardFieldTest, ParseMiniumCreditCard) {
+TEST_P(CreditCardFieldTest, ParseMiniumCreditCard) {
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
   AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_4_DIGIT_YEAR);
@@ -154,23 +164,33 @@ struct CreditCardFieldYearTestCase {
   ServerFieldType expected_type;
 };
 
-std::vector<SelectOption> MakeOptionVector(
-    const CreditCardFieldYearTestCase& test_case) {
-  std::vector<SelectOption> options;
-  if (test_case.expected_type == CREDIT_CARD_EXP_2_DIGIT_YEAR) {
-    options = Get2DigitYears();
-  } else {
-    options = Get4DigitYears();
-  }
-  if (test_case.with_noise) {
-    options = WithNoise(options);
-  }
-  return options;
-}
-
 class CreditCardFieldYearTest
     : public CreditCardFieldTestBase,
-      public testing::TestWithParam<CreditCardFieldYearTestCase> {};
+      public testing::TestWithParam<std::tuple<PatternProviderFeatureState,
+                                               CreditCardFieldYearTestCase>> {
+ public:
+  CreditCardFieldYearTest()
+      : CreditCardFieldTestBase(std::get<0>(GetParam())) {}
+
+  bool with_noise() const { return std::get<1>(GetParam()).with_noise; }
+
+  ServerFieldType expected_type() const {
+    return std::get<1>(GetParam()).expected_type;
+  }
+
+  std::vector<SelectOption> MakeOptionVector() const {
+    std::vector<SelectOption> options;
+    if (expected_type() == CREDIT_CARD_EXP_2_DIGIT_YEAR) {
+      options = Get2DigitYears();
+    } else {
+      options = Get4DigitYears();
+    }
+    if (with_noise()) {
+      options = WithNoise(options);
+    }
+    return options;
+  }
+};
 
 TEST_P(CreditCardFieldYearTest, ParseMinimumCreditCardWithExpiryDateOptions) {
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
@@ -178,22 +198,24 @@ TEST_P(CreditCardFieldYearTest, ParseMinimumCreditCardWithExpiryDateOptions) {
                             CREDIT_CARD_EXP_MONTH);
   AddSelectOneFormFieldDataWithLength(
       "Random Label", "Random Label",
-      GetParam().expected_type == CREDIT_CARD_EXP_2_DIGIT_YEAR ? 2 : 4,
-      MakeOptionVector(GetParam()), GetParam().expected_type);
+      expected_type() == CREDIT_CARD_EXP_2_DIGIT_YEAR ? 2 : 4,
+      MakeOptionVector(), expected_type());
 
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    ,
+    CreditCardFieldTest,
     CreditCardFieldYearTest,
-    testing::Values(
-        CreditCardFieldYearTestCase{false, CREDIT_CARD_EXP_2_DIGIT_YEAR},
-        CreditCardFieldYearTestCase{false, CREDIT_CARD_EXP_4_DIGIT_YEAR},
-        CreditCardFieldYearTestCase{true, CREDIT_CARD_EXP_2_DIGIT_YEAR},
-        CreditCardFieldYearTestCase{true, CREDIT_CARD_EXP_4_DIGIT_YEAR}));
+    testing::Combine(
+        testing::ValuesIn(PatternProviderFeatureState::All()),
+        testing::Values(
+            CreditCardFieldYearTestCase{false, CREDIT_CARD_EXP_2_DIGIT_YEAR},
+            CreditCardFieldYearTestCase{false, CREDIT_CARD_EXP_4_DIGIT_YEAR},
+            CreditCardFieldYearTestCase{true, CREDIT_CARD_EXP_2_DIGIT_YEAR},
+            CreditCardFieldYearTestCase{true, CREDIT_CARD_EXP_4_DIGIT_YEAR})));
 
-TEST_F(CreditCardFieldTest, ParseFullCreditCard) {
+TEST_P(CreditCardFieldTest, ParseFullCreditCard) {
   AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
@@ -206,7 +228,7 @@ TEST_F(CreditCardFieldTest, ParseFullCreditCard) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(CreditCardFieldTest, ParseExpMonthYear) {
+TEST_P(CreditCardFieldTest, ParseExpMonthYear) {
   AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("ExpDate", "ExpDate Month / Year",
@@ -217,7 +239,7 @@ TEST_F(CreditCardFieldTest, ParseExpMonthYear) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(CreditCardFieldTest, ParseExpMonthYear2) {
+TEST_P(CreditCardFieldTest, ParseExpMonthYear2) {
   AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("ExpDate", "Expiration date Month / Year",
@@ -228,7 +250,7 @@ TEST_F(CreditCardFieldTest, ParseExpMonthYear2) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(CreditCardFieldTest, ParseGiftCard) {
+TEST_P(CreditCardFieldTest, ParseGiftCard) {
   AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("gift.certificate", "Gift certificate", UNKNOWN_TYPE);
@@ -237,33 +259,39 @@ TEST_F(CreditCardFieldTest, ParseGiftCard) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-typedef struct {
+struct ParseExpFieldTestCase {
   const std::string cc_fields_form_control_type;
   const std::string label;
   const int max_length;
   const ServerFieldType expected_prediction;
-} ParseExpFieldTestCase;
+};
 
-class ParseExpFieldTest : public CreditCardFieldTestBase,
-                          public testing::TestWithParam<ParseExpFieldTestCase> {
+class ParseExpFieldTest
+    : public CreditCardFieldTestBase,
+      public testing::TestWithParam<
+          std::tuple<PatternProviderFeatureState, ParseExpFieldTestCase>> {
+ public:
+  ParseExpFieldTest() : CreditCardFieldTestBase(std::get<0>(GetParam())) {}
+
+  const ParseExpFieldTestCase& test_case() const {
+    return std::get<1>(GetParam());
+  }
 };
 
 TEST_P(ParseExpFieldTest, ParseExpField) {
-  auto test_case = GetParam();
-
   AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
-  AddFormFieldData(test_case.cc_fields_form_control_type, "card_number",
+  AddFormFieldData(test_case().cc_fields_form_control_type, "card_number",
                    "Card Number", CREDIT_CARD_NUMBER);
-  AddFormFieldDataWithLength(test_case.cc_fields_form_control_type, "cc_exp",
-                             test_case.label, test_case.max_length,
-                             test_case.expected_prediction);
+  AddFormFieldDataWithLength(test_case().cc_fields_form_control_type, "cc_exp",
+                             test_case().label, test_case().max_length,
+                             test_case().expected_prediction);
 
-  // Assists in identifing which case has failed.
-  SCOPED_TRACE(test_case.expected_prediction);
-  SCOPED_TRACE(test_case.max_length);
-  SCOPED_TRACE(test_case.label);
+  // Assists in identifying which case has failed.
+  SCOPED_TRACE(test_case().expected_prediction);
+  SCOPED_TRACE(test_case().max_length);
+  SCOPED_TRACE(test_case().label);
 
-  if (test_case.expected_prediction == UNKNOWN_TYPE) {
+  if (test_case().expected_prediction == UNKNOWN_TYPE) {
     // Expect failure and continue to next test case.
     // The expiry date is a required field for credit card forms, and thus the
     // parse sets |field_| to nullptr.
@@ -275,153 +303,155 @@ TEST_P(ParseExpFieldTest, ParseExpField) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    ,
+    CreditCardFieldTest,
     ParseExpFieldTest,
-    testing::Values(
-        // CC fields input_type="text"
-        // General label, no maxlength.
-        ParseExpFieldTestCase{"text", "Expiration Date", 0,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-        // General label, maxlength 4.
-        ParseExpFieldTestCase{"text", "Expiration Date", 4,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
-        // General label, maxlength 5.
-        ParseExpFieldTestCase{"text", "Expiration Date", 5,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
-        // General label, maxlength 6.
-        ParseExpFieldTestCase{"text", "Expiration Date", 6,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-        // General label, maxlength 7.
-        ParseExpFieldTestCase{"text", "Expiration Date", 7,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-        // General label, large maxlength.
-        ParseExpFieldTestCase{"text", "Expiration Date", 12,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+    testing::Combine(
+        testing::ValuesIn(PatternProviderFeatureState::All()),
+        testing::Values(
+            // CC fields input_type="text"
+            // General label, no maxlength.
+            ParseExpFieldTestCase{"text", "Expiration Date", 0,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+            // General label, maxlength 4.
+            ParseExpFieldTestCase{"text", "Expiration Date", 4,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+            // General label, maxlength 5.
+            ParseExpFieldTestCase{"text", "Expiration Date", 5,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+            // General label, maxlength 6.
+            ParseExpFieldTestCase{"text", "Expiration Date", 6,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+            // General label, maxlength 7.
+            ParseExpFieldTestCase{"text", "Expiration Date", 7,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+            // General label, large maxlength.
+            ParseExpFieldTestCase{"text", "Expiration Date", 12,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
 
-        // Unsupported maxlength, general label.
-        ParseExpFieldTestCase{"text", "Expiration Date", 3, UNKNOWN_TYPE},
-        // Unsupported maxlength, two digit year label.
-        ParseExpFieldTestCase{"text", "Expiration Date (MM/YY)", 3,
-                              UNKNOWN_TYPE},
-        // Unsupported maxlength, four digit year label.
-        ParseExpFieldTestCase{"text", "Expiration Date (MM/YYYY)", 3,
-                              UNKNOWN_TYPE},
+            // Unsupported maxlength, general label.
+            ParseExpFieldTestCase{"text", "Expiration Date", 3, UNKNOWN_TYPE},
+            // Unsupported maxlength, two digit year label.
+            ParseExpFieldTestCase{"text", "Expiration Date (MM/YY)", 3,
+                                  UNKNOWN_TYPE},
+            // Unsupported maxlength, four digit year label.
+            ParseExpFieldTestCase{"text", "Expiration Date (MM/YYYY)", 3,
+                                  UNKNOWN_TYPE},
 
-        // Two digit year, simple label.
-        ParseExpFieldTestCase{"text", "MM / YY", 0,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
-        // Two digit year, with slash (MM/YY).
-        ParseExpFieldTestCase{"text", "Expiration Date (MM/YY)", 0,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
-        // Two digit year, no slash (MMYY).
-        ParseExpFieldTestCase{"text", "Expiration Date (MMYY)", 4,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
-        // Two digit year, with slash and maxlength (MM/YY).
-        ParseExpFieldTestCase{"text", "Expiration Date (MM/YY)", 5,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
-        // Two digit year, with slash and large maxlength (MM/YY).
-        ParseExpFieldTestCase{"text", "Expiration Date (MM/YY)", 12,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+            // Two digit year, simple label.
+            ParseExpFieldTestCase{"text", "MM / YY", 0,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+            // Two digit year, with slash (MM/YY).
+            ParseExpFieldTestCase{"text", "Expiration Date (MM/YY)", 0,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+            // Two digit year, no slash (MMYY).
+            ParseExpFieldTestCase{"text", "Expiration Date (MMYY)", 4,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+            // Two digit year, with slash and maxlength (MM/YY).
+            ParseExpFieldTestCase{"text", "Expiration Date (MM/YY)", 5,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+            // Two digit year, with slash and large maxlength (MM/YY).
+            ParseExpFieldTestCase{"text", "Expiration Date (MM/YY)", 12,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
 
-        // Four digit year, simple label.
-        ParseExpFieldTestCase{"text", "MM / YYYY", 0,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-        // Four digit year, with slash (MM/YYYY).
-        ParseExpFieldTestCase{"text", "Expiration Date (MM/YYYY)", 0,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-        // Four digit year, no slash (MMYYYY).
-        ParseExpFieldTestCase{"text", "Expiration Date (MMYYYY)", 6,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-        // Four digit year, with slash and maxlength (MM/YYYY).
-        ParseExpFieldTestCase{"text", "Expiration Date (MM/YYYY)", 7,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-        // Four digit year, with slash and large maxlength (MM/YYYY).
-        ParseExpFieldTestCase{"text", "Expiration Date (MM/YYYY)", 12,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+            // Four digit year, simple label.
+            ParseExpFieldTestCase{"text", "MM / YYYY", 0,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+            // Four digit year, with slash (MM/YYYY).
+            ParseExpFieldTestCase{"text", "Expiration Date (MM/YYYY)", 0,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+            // Four digit year, no slash (MMYYYY).
+            ParseExpFieldTestCase{"text", "Expiration Date (MMYYYY)", 6,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+            // Four digit year, with slash and maxlength (MM/YYYY).
+            ParseExpFieldTestCase{"text", "Expiration Date (MM/YYYY)", 7,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+            // Four digit year, with slash and large maxlength (MM/YYYY).
+            ParseExpFieldTestCase{"text", "Expiration Date (MM/YYYY)", 12,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
 
-        // Four digit year label with restrictive maxlength (4).
-        ParseExpFieldTestCase{"text", "Expiration Date (MM/YYYY)", 4,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
-        // Four digit year label with restrictive maxlength (5).
-        ParseExpFieldTestCase{"text", "Expiration Date (MM/YYYY)", 5,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+            // Four digit year label with restrictive maxlength (4).
+            ParseExpFieldTestCase{"text", "Expiration Date (MM/YYYY)", 4,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+            // Four digit year label with restrictive maxlength (5).
+            ParseExpFieldTestCase{"text", "Expiration Date (MM/YYYY)", 5,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
 
-        // CC fields input_type="number"
-        // General label, no maxlength.
-        ParseExpFieldTestCase{"number", "Expiration Date", 0,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-        // General label, maxlength 4.
-        ParseExpFieldTestCase{"number", "Expiration Date", 4,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
-        // General label, maxlength 5.
-        ParseExpFieldTestCase{"number", "Expiration Date", 5,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
-        // General label, maxlength 6.
-        ParseExpFieldTestCase{"number", "Expiration Date", 6,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-        // General label, maxlength 7.
-        ParseExpFieldTestCase{"number", "Expiration Date", 7,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-        // General label, large maxlength.
-        ParseExpFieldTestCase{"number", "Expiration Date", 12,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+            // CC fields input_type="number"
+            // General label, no maxlength.
+            ParseExpFieldTestCase{"number", "Expiration Date", 0,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+            // General label, maxlength 4.
+            ParseExpFieldTestCase{"number", "Expiration Date", 4,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+            // General label, maxlength 5.
+            ParseExpFieldTestCase{"number", "Expiration Date", 5,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+            // General label, maxlength 6.
+            ParseExpFieldTestCase{"number", "Expiration Date", 6,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+            // General label, maxlength 7.
+            ParseExpFieldTestCase{"number", "Expiration Date", 7,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+            // General label, large maxlength.
+            ParseExpFieldTestCase{"number", "Expiration Date", 12,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
 
-        // Unsupported maxlength, general label.
-        ParseExpFieldTestCase{"number", "Expiration Date", 3, UNKNOWN_TYPE},
-        // Unsupported maxlength, two digit year label.
-        ParseExpFieldTestCase{"number", "Expiration Date (MM/YY)", 3,
-                              UNKNOWN_TYPE},
-        // Unsupported maxlength, four digit year label.
-        ParseExpFieldTestCase{"number", "Expiration Date (MM/YYYY)", 3,
-                              UNKNOWN_TYPE},
+            // Unsupported maxlength, general label.
+            ParseExpFieldTestCase{"number", "Expiration Date", 3, UNKNOWN_TYPE},
+            // Unsupported maxlength, two digit year label.
+            ParseExpFieldTestCase{"number", "Expiration Date (MM/YY)", 3,
+                                  UNKNOWN_TYPE},
+            // Unsupported maxlength, four digit year label.
+            ParseExpFieldTestCase{"number", "Expiration Date (MM/YYYY)", 3,
+                                  UNKNOWN_TYPE},
 
-        // Two digit year, simple label.
-        ParseExpFieldTestCase{"number", "MM / YY", 0,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
-        // Two digit year, with slash (MM/YY).
-        ParseExpFieldTestCase{"number", "Expiration Date (MM/YY)", 0,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
-        // Two digit year, no slash (MMYY).
-        ParseExpFieldTestCase{"number", "Expiration Date (MMYY)", 4,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
-        // Two digit year, with slash and maxlength (MM/YY).
-        ParseExpFieldTestCase{"number", "Expiration Date (MM/YY)", 5,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
-        // Two digit year, with slash and large maxlength (MM/YY).
-        ParseExpFieldTestCase{"number", "Expiration Date (MM/YY)", 12,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+            // Two digit year, simple label.
+            ParseExpFieldTestCase{"number", "MM / YY", 0,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+            // Two digit year, with slash (MM/YY).
+            ParseExpFieldTestCase{"number", "Expiration Date (MM/YY)", 0,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+            // Two digit year, no slash (MMYY).
+            ParseExpFieldTestCase{"number", "Expiration Date (MMYY)", 4,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+            // Two digit year, with slash and maxlength (MM/YY).
+            ParseExpFieldTestCase{"number", "Expiration Date (MM/YY)", 5,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+            // Two digit year, with slash and large maxlength (MM/YY).
+            ParseExpFieldTestCase{"number", "Expiration Date (MM/YY)", 12,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
 
-        // Four digit year, simple label.
-        ParseExpFieldTestCase{"number", "MM / YYYY", 0,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-        // Four digit year, with slash (MM/YYYY).
-        ParseExpFieldTestCase{"number", "Expiration Date (MM/YYYY)", 0,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-        // Four digit year, no slash (MMYYYY).
-        ParseExpFieldTestCase{"number", "Expiration Date (MMYYYY)", 6,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-        // Four digit year, with slash and maxlength (MM/YYYY).
-        ParseExpFieldTestCase{"number", "Expiration Date (MM/YYYY)", 7,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-        // Four digit year, with slash and large maxlength (MM/YYYY).
-        ParseExpFieldTestCase{"number", "Expiration Date (MM/YYYY)", 12,
-                              CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+            // Four digit year, simple label.
+            ParseExpFieldTestCase{"number", "MM / YYYY", 0,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+            // Four digit year, with slash (MM/YYYY).
+            ParseExpFieldTestCase{"number", "Expiration Date (MM/YYYY)", 0,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+            // Four digit year, no slash (MMYYYY).
+            ParseExpFieldTestCase{"number", "Expiration Date (MMYYYY)", 6,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+            // Four digit year, with slash and maxlength (MM/YYYY).
+            ParseExpFieldTestCase{"number", "Expiration Date (MM/YYYY)", 7,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+            // Four digit year, with slash and large maxlength (MM/YYYY).
+            ParseExpFieldTestCase{"number", "Expiration Date (MM/YYYY)", 12,
+                                  CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
 
-        // Four digit year label with restrictive maxlength (4).
-        ParseExpFieldTestCase{"number", "Expiration Date (MM/YYYY)", 4,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
-        // Four digit year label with restrictive maxlength (5).
-        ParseExpFieldTestCase{"number", "Expiration Date (MM/YYYY)", 5,
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}));
+            // Four digit year label with restrictive maxlength (4).
+            ParseExpFieldTestCase{"number", "Expiration Date (MM/YYYY)", 4,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+            // Four digit year label with restrictive maxlength (5).
+            ParseExpFieldTestCase{"number", "Expiration Date (MM/YYYY)", 5,
+                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR})));
 
-TEST_F(CreditCardFieldTest, ParseCreditCardHolderNameWithCCFullName) {
+TEST_P(CreditCardFieldTest, ParseCreditCardHolderNameWithCCFullName) {
   AddTextFormFieldData("ccfullname", "Name", CREDIT_CARD_NAME_FULL);
 
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
 // Verifies that <input type="month"> controls are able to be parsed correctly.
-TEST_F(CreditCardFieldTest, ParseMonthControl) {
+TEST_P(CreditCardFieldTest, ParseMonthControl) {
   AddTextFormFieldData("ccnumber", "Card number:", CREDIT_CARD_NUMBER);
   AddFormFieldData("month", "ccexp",
                    "Expiration date:", CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
@@ -431,7 +461,7 @@ TEST_F(CreditCardFieldTest, ParseMonthControl) {
 
 // Verify that heuristics <input name="ccyear" maxlength="2"/> considers
 // *maxlength* attribute while parsing 2 Digit expiration year.
-TEST_F(CreditCardFieldTest, ParseCreditCardExpYear_2DigitMaxLength) {
+TEST_P(CreditCardFieldTest, ParseCreditCardExpYear_2DigitMaxLength) {
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("ccmonth", "Expiration Date", CREDIT_CARD_EXP_MONTH);
   AddFormFieldDataWithLength("text", "ccyear", "Expiration Date", 2,
@@ -440,7 +470,7 @@ TEST_F(CreditCardFieldTest, ParseCreditCardExpYear_2DigitMaxLength) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(CreditCardFieldTest, ParseCreditCardNumberWithSplit) {
+TEST_P(CreditCardFieldTest, ParseCreditCardNumberWithSplit) {
   FormFieldData field;
   field.form_control_type = "text";
   AddFormFieldDataWithLength("text", "card_number_q1", "Card Number", 4,
@@ -468,7 +498,7 @@ TEST_F(CreditCardFieldTest, ParseCreditCardNumberWithSplit) {
   EXPECT_EQ(list_[3]->credit_card_number_offset(), 12U);
 }
 
-TEST_F(CreditCardFieldTest, ParseMultipleCreditCardNumbers) {
+TEST_P(CreditCardFieldTest, ParseMultipleCreditCardNumbers) {
   AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("confirm_card_number", "Confirm Card Number",
@@ -479,7 +509,7 @@ TEST_F(CreditCardFieldTest, ParseMultipleCreditCardNumbers) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(CreditCardFieldTest, ParseFirstAndLastNames) {
+TEST_P(CreditCardFieldTest, ParseFirstAndLastNames) {
   AddTextFormFieldData("cc-fname", "First Name on Card",
                        CREDIT_CARD_NAME_FIRST);
   AddTextFormFieldData("cc-lname", "Last Name", CREDIT_CARD_NAME_LAST);
@@ -490,7 +520,7 @@ TEST_F(CreditCardFieldTest, ParseFirstAndLastNames) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(CreditCardFieldTest, ParseConsecutiveCvc) {
+TEST_P(CreditCardFieldTest, ParseConsecutiveCvc) {
   AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
@@ -503,7 +533,7 @@ TEST_F(CreditCardFieldTest, ParseConsecutiveCvc) {
   ClassifyAndVerifyWithMultipleParses();
 }
 
-TEST_F(CreditCardFieldTest, ParseNonConsecutiveCvc) {
+TEST_P(CreditCardFieldTest, ParseNonConsecutiveCvc) {
   AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
@@ -515,14 +545,14 @@ TEST_F(CreditCardFieldTest, ParseNonConsecutiveCvc) {
   ClassifyAndVerifyWithMultipleParses();
 }
 
-TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameNotCard) {
+TEST_P(CreditCardFieldTest, ParseCreditCardContextualNameNotCard) {
   AddTextFormFieldData("accNum", "Account ID", UNKNOWN_TYPE);
   AddTextFormFieldData("name", "Account Name", UNKNOWN_TYPE);
   AddTextFormFieldData("toAcctNum", "Move to Account ID", UNKNOWN_TYPE);
   ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
-TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameNotCardAcctMatch) {
+TEST_P(CreditCardFieldTest, ParseCreditCardContextualNameNotCardAcctMatch) {
   // TODO(crbug.com/1167977): This should be not parseable, but waiting before
   // changing kNameOnCardRe to use word boundaries.
   AddTextFormFieldData("acctNum", "Account ID", CREDIT_CARD_NUMBER);
@@ -531,7 +561,7 @@ TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameNotCardAcctMatch) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameWithExpiration) {
+TEST_P(CreditCardFieldTest, ParseCreditCardContextualNameWithExpiration) {
   AddTextFormFieldData("acctNum", "Account ID", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("name", "Account Name", CREDIT_CARD_NAME_FULL);
   AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
@@ -539,7 +569,7 @@ TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameWithExpiration) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameWithVerification) {
+TEST_P(CreditCardFieldTest, ParseCreditCardContextualNameWithVerification) {
   AddTextFormFieldData("acctNum", "Account ID", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("name", "Account Name", CREDIT_CARD_NAME_FULL);
   AddTextFormFieldData("cvv", "Verification", CREDIT_CARD_VERIFICATION_CODE);

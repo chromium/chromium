@@ -29,8 +29,8 @@ class TestFormStructure : public FormStructure {
 
   // Set the heuristic and server types for each field. The `heuristic_types`
   // and `server_types` vectors must be aligned with the indices of the fields
-  // in the form. For each field in `heuristic_types` there must be exactly
-  // `PatternSource::kDefault` prediction and any number of alternative
+  // in the form. For each field in `heuristic_types` there must be exactly one
+  // `GetActivePatternSource()` prediction and any number of alternative
   // predictions.
   void SetFieldTypes(
       const std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>&

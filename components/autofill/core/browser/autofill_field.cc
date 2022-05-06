@@ -41,6 +41,10 @@ std::unique_ptr<AutofillField> AutofillField::CreateForPasswordManagerUpload(
   return field;
 }
 
+ServerFieldType AutofillField::heuristic_type() const {
+  return heuristic_type(GetActivePatternSource());
+}
+
 ServerFieldType AutofillField::heuristic_type(PatternSource s) const {
   ServerFieldType type = local_type_predictions_[static_cast<size_t>(s)];
   // `NO_SERVER_DATA` would mean that there is no heuristic type. Client code
@@ -69,7 +73,7 @@ void AutofillField::set_heuristic_type(PatternSource s, ServerFieldType type) {
     type = UNKNOWN_TYPE;
   }
   local_type_predictions_[static_cast<size_t>(s)] = type;
-  if (s == PatternSource::kDefault)
+  if (s == GetActivePatternSource())
     overall_type_ = AutofillType(NO_SERVER_DATA);
 }
 

@@ -689,11 +689,12 @@ void FormStructure::DetermineHeuristicTypes(
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DetermineHeuristicTypes");
 
   ParseFieldTypesFromAutocompleteAttributes();
-  ParseFieldTypesWithPatterns(PatternSource::kDefault, log_manager);
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
-  ParseFieldTypesWithPatterns(PatternSource::kExperimental, log_manager);
-  ParseFieldTypesWithPatterns(PatternSource::kNextGen, log_manager);
-#endif
+  ParseFieldTypesWithPatterns(GetActivePatternSource(), log_manager);
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillDisableShadowHeuristics)) {
+    for (PatternSource shadow_source : GetNonActivePatternSources())
+      ParseFieldTypesWithPatterns(shadow_source, log_manager);
+  }
 
   UpdateAutofillCount();
   IdentifySections(has_author_specified_sections_);

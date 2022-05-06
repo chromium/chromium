@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/address_field.h"
@@ -28,12 +29,24 @@ enum class ParseResult {
   kMaxValue = NOT_PARSED
 };
 
+// Represents the intended state of features::kAutofillParsingPatternProvider.
+struct PatternProviderFeatureState {
+  // A list of all available configurations, depending on the build config.
+  static std::vector<PatternProviderFeatureState> All();
+
+  // Whether features::kAutofillParsingPatternProvider should be enabled.
+  bool enable = false;
+  // The desired value of features::kAutofillParsingPatternActiveSource.
+  const char* active_source = nullptr;
+};
+
 class FormFieldTestBase {
  public:
+  explicit FormFieldTestBase(
+      PatternProviderFeatureState pattern_provider_feature_state);
   FormFieldTestBase(const FormFieldTestBase&) = delete;
-  FormFieldTestBase();
-  ~FormFieldTestBase();
   FormFieldTestBase& operator=(const FormFieldTestBase&) = delete;
+  ~FormFieldTestBase();
 
  protected:
   // Add a field with |control_type|, the |name|, the |label| the expected
@@ -92,15 +105,8 @@ class FormFieldTestBase {
   std::map<FieldGlobalId, ServerFieldType> expected_classifications_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   uint64_t id_counter_ = 0;
-};
-
-class FormFieldTest : public FormFieldTestBase, public testing::Test {
- public:
-  FormFieldTest(const FormFieldTest&) = delete;
-  FormFieldTest();
-  ~FormFieldTest() override;
-  FormFieldTest& operator=(const FormFieldTest&) = delete;
 };
 
 }  // namespace autofill

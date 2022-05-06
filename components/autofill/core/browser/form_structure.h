@@ -376,7 +376,7 @@ class FormStructure {
   void set_overall_field_type_for_testing(size_t field_index,
                                           ServerFieldType type) {
     if (field_index < fields_.size() && type > 0 && type < MAX_VALID_FIELD_TYPE)
-      fields_[field_index]->set_heuristic_type(PatternSource::kDefault, type);
+      fields_[field_index]->set_heuristic_type(GetActivePatternSource(), type);
   }
   // Set the server field type for |fields_[field_index]| to |type| for testing
   // purposes.

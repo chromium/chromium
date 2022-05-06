@@ -60,6 +60,8 @@ COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillDisableFilling;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillDisableAddressImport;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillDisableShadowHeuristics;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableAccountWalletStorage;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableAugmentedPhoneCountryCode;
@@ -126,14 +128,12 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int>
     kAutofillMaxiumWidthPercentageToMoveSuggestionPopupToCenter;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillPageLanguageDetection;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillParsingPatternProvider;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::FeatureParam<bool>
-    kAutofillParsingWithLanguageSpecificPatternsParam;
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::FeatureParam<bool> kAutofillParsingWithRemotePatternsParam;
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillPageLanguageDetection;
+extern const base::FeatureParam<std::string>
+    kAutofillParsingPatternActiveSource;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillPreventOverridingPrefilledValues;
 COMPONENT_EXPORT(AUTOFILL)

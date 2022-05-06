@@ -7,12 +7,11 @@
 
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
-#include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
+#include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/common/language_code.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 
 namespace autofill {
 
@@ -68,9 +67,16 @@ class MatchPatternRef {
   UnderlyingType value_;
 };
 
-// The pattern  source identifies the JSON file providing the set of parsing
-// patterns.
+// The different sets of patterns that are available.
+// Each enum constant corresponds to a JSON file.
 enum class PatternSource {
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+  // Patterns whose stability is above suspicion.
+  kLegacy,
+  kMaxValue = kLegacy
+#else
+  // Patterns whose stability is above suspicion.
+  kLegacy,
   // The patterns applied for most users.
   kDefault,
   // Patterns that are being verified experimentally.
@@ -78,10 +84,14 @@ enum class PatternSource {
   // One step before `kExperimental`. These patterns are used only for
   // non-user-visible metrics.
   kNextGen,
-  // Patterns whose stability is above suspicion.
-  kLegacy,
-  kMaxValue = kLegacy
+  kMaxValue = kNextGen
+#endif
 };
+
+// The active pattern and the available patterns depend on the build config and
+// the Finch config.
+PatternSource GetActivePatternSource();
+DenseSet<PatternSource> GetNonActivePatternSources();
 
 // Looks up the patterns for the given name and language.
 // The name is typically a field type.

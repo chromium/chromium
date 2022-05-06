@@ -110,7 +110,7 @@ void TestBrowserAutofillManager::AddSeenForm(
       heuristic_types, std::back_inserter(all_heuristic_types),
       [](ServerFieldType type)
           -> std::vector<std::pair<PatternSource, ServerFieldType>> {
-        return {{PatternSource::kDefault, type}};
+        return {{GetActivePatternSource(), type}};
       });
 
   AddSeenForm(form, all_heuristic_types, server_types);

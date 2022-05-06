@@ -8,6 +8,7 @@
 #include <array>
 
 #include "base/logging.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
