@@ -39,6 +39,25 @@ export const AppManagementStoreClientImpl = {
   },
 };
 
+/** @interface */
+export class AppManagementStoreClientInterface {
+  /**
+   * @param {string} localProperty
+   * @param {function(!AppManagementPageState)} valueGetter
+   */
+  watch(localProperty, valueGetter) {}
+
+  /**
+   * @return {AppManagementPageState}
+   */
+  getState() {}
+
+  /**
+   * @return {Store<AppManagementPageState>}
+   */
+  getStore() {}
+}
+
 /**
  * @polymerBehavior
  * @implements {StoreObserver}
