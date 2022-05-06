@@ -103,6 +103,9 @@ try_.orchestrator_builder(
     main_list_view = "try",
     use_clang_coverage = True,
     tryjob = try_.job(),
+    experiments = {
+        "remove_src_checkout_experiment": 10,
+    },
 )
 
 try_.compilator_builder(
