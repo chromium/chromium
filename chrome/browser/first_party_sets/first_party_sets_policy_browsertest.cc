@@ -4,6 +4,7 @@
 
 #include <cstdint>
 
+#include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -57,11 +58,11 @@ const std::vector<std::string> kAllCookies = {kSamePartyLaxCookieName,
 const std::vector<std::string> kSameSiteNoneCookies = {
     kSamePartyNoneCookieName};
 
-class FirstPartySetsPolicyBrowsertest
+class EnabledPolicyBrowsertest
     : public PolicyTest,
       public ::testing::WithParamInterface<std::tuple<bool, PrefState>> {
  public:
-  FirstPartySetsPolicyBrowsertest()
+  EnabledPolicyBrowsertest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     if (IsFeatureEnabled()) {
       scoped_feature_list_.InitAndEnableFeature(features::kFirstPartySets);
@@ -81,19 +82,19 @@ class FirstPartySetsPolicyBrowsertest
 
   void SetUpInProcessBrowserTestFixture() override {
     PolicyTest::SetUpInProcessBrowserTestFixture();
-    if (GetPrefState() == PrefState::kDefault) {
-      return;
-    }
-    PolicyMap policies;
+    SetUpPolicyMapWithOverridesPolicy();
     // POLICY_LEVEL_MANDATORY - since administrators will control FPS policy
     // POLICY_SCOPE_MACHINE - since this policy lives on local state, not per
     // profile
     // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise
     // policy
-    policies.Set(policy::key::kFirstPartySetsEnabled, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_MACHINE, POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                 base::Value(IsPrefEnabled()), nullptr);
-    provider_.UpdateChromePolicy(policies);
+    if (GetPrefState() != PrefState::kDefault) {
+      policies_.Set(policy::key::kFirstPartySetsEnabled, POLICY_LEVEL_MANDATORY,
+                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                    base::Value(IsPrefEnabled()), nullptr);
+    }
+
+    provider_.UpdateChromePolicy(policies_);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -141,7 +142,10 @@ class FirstPartySetsPolicyBrowsertest
     return content::EvalJs(frame, "document.body.textContent").ExtractString();
   }
 
+  virtual void SetUpPolicyMapWithOverridesPolicy() {}
+
   net::EmbeddedTestServer* https_server() { return &https_server_; }
+  PolicyMap& policy_map() { return policies_; }
 
   std::vector<std::string> ExpectedCrossSiteCookiesInSamePartyContext() {
     // Returns the expected cookies that are accessible in a cross-site,
@@ -175,9 +179,10 @@ class FirstPartySetsPolicyBrowsertest
 
   net::test_server::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  PolicyMap policies_;
 };
 
-IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
+IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                        SetNoEmbeddedFrameWithFpsMemberTopLevel) {
   // No embedded frame, FPS member.
   ASSERT_TRUE(NavigateToURL(
@@ -187,8 +192,7 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
               UnorderedPointwise(net::CanonicalCookieNameIs(), kAllCookies));
 }
 
-IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
-                       SetSameSiteFpsMemberEmbed) {
+IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest, SetSameSiteFpsMemberEmbed) {
   // Same-site FPS-member iframe (A embedded in A).
   EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
                   web_contents(), https_server(), "a.test(%s)",
@@ -196,7 +200,7 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
               UnorderedPointwise(net::CanonicalCookieNameIs(), kAllCookies));
 }
 
-IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
+IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                        SetCrossSiteSamePartyEmbedWithFpsOwnerTopLevel) {
   // Cross-site, same-party iframe (B embedded in A).
   EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
@@ -206,7 +210,7 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
                                  ExpectedCrossSiteCookiesInSamePartyContext()));
 }
 
-IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
+IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                        SetCrossSiteSamePartyEmbedWithFpsOwnerLeaf) {
   // Cross-site, same-party iframe (A embedded in B).
   EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
@@ -217,7 +221,7 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_P(
-    FirstPartySetsPolicyBrowsertest,
+    EnabledPolicyBrowsertest,
     SetCrossSiteSamePartyWithTwoNestedSamePartyContextFrames) {
   // Cross-site, same-party nested iframe (A embedded in B embedded in A).
   EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
@@ -228,7 +232,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(
-    FirstPartySetsPolicyBrowsertest,
+    EnabledPolicyBrowsertest,
     SetCrossSiteSamePartyWithThreeNestedSamePartyContextFrames) {
   // Cross-site, same-party nested iframe (A embedded in B embedded in C
   // embedded in A).
@@ -239,7 +243,7 @@ IN_PROC_BROWSER_TEST_P(
                                  ExpectedCrossSiteCookiesInSamePartyContext()));
 }
 
-IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
+IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                        SetCrossSiteCrossPartyEmbedWithFpsTopLevel) {
   // Cross-site, cross-party iframe (D embedded in A).
   EXPECT_THAT(
@@ -249,7 +253,7 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
       UnorderedPointwise(net::CanonicalCookieNameIs(), kSameSiteNoneCookies));
 }
 
-IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
+IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                        SetCrossSiteCrossPartyEmbedWithFpsLeaf) {
   // Cross-site, cross-party iframe (A embedded in D).
   EXPECT_THAT(
@@ -261,7 +265,7 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_P(
-    FirstPartySetsPolicyBrowsertest,
+    EnabledPolicyBrowsertest,
     SetCrossSiteCrossPartyWithTwoNestedCrossPartyContextFrames) {
   // Cross-site, cross-party nested iframe (A embedded in B embedded in D).
   EXPECT_THAT(
@@ -272,7 +276,7 @@ IN_PROC_BROWSER_TEST_P(
                          ExpectedCrossSiteCookiesInCrossPartyContext()));
 }
 
-IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
+IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                        SetNoEmbeddedFrameWithNonFpsMemberTopLevel) {
   // No embedded frame, non-FPS member.
   ASSERT_TRUE(NavigateToURL(
@@ -282,7 +286,7 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
               UnorderedPointwise(net::CanonicalCookieNameIs(), kAllCookies));
 }
 
-IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
+IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                        SendNoEmbeddedFrameWithFpsMemberTopLevel) {
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   // No embedded frame, FPS member.
@@ -293,7 +297,7 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
       net::CookieStringIs(UnorderedPointwise(net::NameIs(), kAllCookies)));
 }
 
-IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
+IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                        SendSameSiteWithFpsMemberEmbed) {
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   // Same-site FPS-member iframe (A embedded in A).
@@ -304,7 +308,7 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
       net::CookieStringIs(UnorderedPointwise(net::NameIs(), kAllCookies)));
 }
 
-IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
+IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                        SendCrossSiteSamePartyWithEmbedFpsOwnerTopLevel) {
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostB));
   // Cross-site, same-party iframe (B embedded in A).
@@ -316,7 +320,7 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
           net::NameIs(), ExpectedCrossSiteCookiesInSamePartyContext())));
 }
 
-IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
+IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                        SendCrossSiteSamePartyWithEmbedFpsOwnerLeaf) {
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   // Cross-site, same-party iframe (A embedded in B).
@@ -329,7 +333,7 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_P(
-    FirstPartySetsPolicyBrowsertest,
+    EnabledPolicyBrowsertest,
     SendCrossSiteSamePartyWithTwoNestedSamePartyContextFrames) {
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   // Cross-site, same-party nested iframe (A embedded in B embedded in A).
@@ -342,7 +346,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(
-    FirstPartySetsPolicyBrowsertest,
+    EnabledPolicyBrowsertest,
     SendCrossSiteSamePartyWithThreeNestedSamePartyContextFrames) {
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   // Cross-site, same-party nested iframe (A embedded in B embedded in C
@@ -355,7 +359,7 @@ IN_PROC_BROWSER_TEST_P(
           net::NameIs(), ExpectedCrossSiteCookiesInSamePartyContext())));
 }
 
-IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
+IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                        SendCrossSiteCrossPartyEmbedWithFpsTopLevel) {
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostD));
   // Cross-site, cross-party iframe (D embedded in A).
@@ -366,7 +370,7 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
                   UnorderedPointwise(net::NameIs(), kSameSiteNoneCookies)));
 }
 
-IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
+IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                        SendCrossSiteCrossPartyEmbedWithFpsLeaf) {
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   // Cross-site, cross-party iframe (A embedded in D).
@@ -379,7 +383,7 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_P(
-    FirstPartySetsPolicyBrowsertest,
+    EnabledPolicyBrowsertest,
     SendCrossSiteCrossPartyWithTwoNestedCrossPartyContextFrames) {
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   // Cross-site, cross-party nested iframe (A embedded in B embedded in D).
@@ -391,7 +395,7 @@ IN_PROC_BROWSER_TEST_P(
           net::NameIs(), ExpectedCrossSiteCookiesInCrossPartyContext())));
 }
 
-IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
+IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                        SendNoEmbeddedFrameWithNonFpsMemberTopLevel) {
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostD));
   // No embedded frame, non-FPS member.
@@ -402,12 +406,261 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
       net::CookieStringIs(UnorderedPointwise(net::NameIs(), kAllCookies)));
 }
 
+IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
+                       DefaultOverridesPolicy_SetCookiesFromSamePartyContext) {
+  // The initial First-Party Sets were:
+  // {owner: A, members: [B, C]}
+  //
+  // After the Overrides policy is applied, the expected First-Party Sets are:
+  // {owner: A, members: [B, C]} (unchanged)
+  //
+  // `A` should still be able to set its cookies from a cross-site, same-party
+  // nested iframe (A embedded in B embedded in C embedded in A).
+  EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+                  web_contents(), https_server(), "a.test(c.test(b.test(%s)))",
+                  SetSamePartyCookiesUrl(kHostA)),
+              UnorderedPointwise(net::CanonicalCookieNameIs(),
+                                 ExpectedCrossSiteCookiesInSamePartyContext()));
+}
+
 INSTANTIATE_TEST_SUITE_P(
-    /* no label */,
-    FirstPartySetsPolicyBrowsertest,
+    FirstPartySets,
+    EnabledPolicyBrowsertest,
     ::testing::Combine(::testing::Bool(),
                        ::testing::Values(PrefState::kDefault,
                                          PrefState::kDisabled,
                                          PrefState::kEnabled)));
+
+class OverridesPolicyEmptyBrowsertest : public EnabledPolicyBrowsertest {
+ public:
+  void SetUpPolicyMapWithOverridesPolicy() override {
+    // POLICY_LEVEL_MANDATORY - since administrators will control FPS policy
+    // POLICY_SCOPE_MACHINE - since this policy lives on local state, not per
+    // profile
+    // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise
+    // policy
+    policy_map().Set(policy::key::kFirstPartySetsOverrides,
+                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                     POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                     base::JSONReader::Read(R"( {} )"), nullptr);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(OverridesPolicyEmptyBrowsertest,
+                       SetCookiesFromSamePartyContext) {
+  // The initial First-Party Sets were:
+  // {owner: A, members: [B, C]}
+  //
+  // After the Overrides policy is applied, the expected First-Party Sets are:
+  // {owner: A, members: [B, C]} (unchanged)
+  //
+  // `A` should still be able to set its cookies from a cross-site, same-party
+  // nested iframe (A embedded in B embedded in C embedded in A).
+  EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+                  web_contents(), https_server(), "a.test(c.test(b.test(%s)))",
+                  SetSamePartyCookiesUrl(kHostA)),
+              UnorderedPointwise(net::CanonicalCookieNameIs(),
+                                 ExpectedCrossSiteCookiesInSamePartyContext()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    FirstPartySets,
+    OverridesPolicyEmptyBrowsertest,
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Values(PrefState::kDefault,
+                                         PrefState::kDisabled,
+                                         PrefState::kEnabled)));
+
+class OverridesPolicyReplacementBrowsertest : public EnabledPolicyBrowsertest {
+ public:
+  void SetUpPolicyMapWithOverridesPolicy() override {
+    // POLICY_LEVEL_MANDATORY - since administrators will control FPS policy
+    // POLICY_SCOPE_MACHINE - since this policy lives on local state, not per
+    // profile
+    // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise
+    // policy
+    policy_map().Set(policy::key::kFirstPartySetsOverrides,
+                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                     POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                     base::JSONReader::Read(R"(
+                              {
+                                "replacements": [
+                                  {
+                                    "owner": "https://d.test",
+                                    "members": ["https://b.test",
+                                    "https://a.test"]
+                                  }
+                                ],
+                                "additions": []
+                              }
+                            )"),
+                     nullptr);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(OverridesPolicyReplacementBrowsertest,
+                       SetCookiesFromSamePartyContext) {
+  // The initial First-Party Sets were:
+  // {owner: A, members: [B, C]}
+  //
+  // After the Overrides policy is applied, the expected First-Party Sets are:
+  // {owner: D, members: [A, B]}
+
+  {  // `D` should now be able to set its cookies from a cross-site, same-party
+    // nested iframe (D embedded in B embedded in A embedded in D).
+    EXPECT_THAT(
+        content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+            web_contents(), https_server(), "d.test(a.test(b.test(%s)))",
+            SetSamePartyCookiesUrl(kHostD)),
+        UnorderedPointwise(net::CanonicalCookieNameIs(),
+                           ExpectedCrossSiteCookiesInSamePartyContext()));
+  }
+  {  // `A` should no longer be able to set its cookies from the cross-site
+     // nested iframe (A embedded in B embedded in C) since it's no longer in
+     // the same First-Party Set as those sites.
+    EXPECT_THAT(
+        content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+            web_contents(), https_server(), "c.test(b.test(%s))",
+            SetSamePartyCookiesUrl(kHostA)),
+        UnorderedPointwise(net::CanonicalCookieNameIs(),
+                           ExpectedCrossSiteCookiesInCrossPartyContext()));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    FirstPartySets,
+    OverridesPolicyReplacementBrowsertest,
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Values(PrefState::kDefault,
+                                         PrefState::kDisabled,
+                                         PrefState::kEnabled)));
+
+class OverridesPolicyAdditionBrowsertest : public EnabledPolicyBrowsertest {
+ public:
+  void SetUpPolicyMapWithOverridesPolicy() override {
+    // POLICY_LEVEL_MANDATORY - since administrators will control FPS policy
+    // POLICY_SCOPE_MACHINE - since this policy lives on local state, not per
+    // profile
+    // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise
+    // policy
+    policy_map().Set(policy::key::kFirstPartySetsOverrides,
+                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                     POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                     base::JSONReader::Read(R"(
+                              {
+                                "replacements": [],
+                                "additions": [
+                                  {
+                                    "owner": "https://a.test",
+                                    "members": ["https://d.test"]
+                                  }
+                                ]
+                              }
+                            )"),
+                     nullptr);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(OverridesPolicyAdditionBrowsertest,
+                       SetCookiesFromSamePartyContext) {
+  // The initial First-Party Sets were:
+  // {owner: A, members: [B, C]}
+  //
+  // After the Overrides policy is applied, the expected First-Party Sets are:
+  // {owner: A, members: [B, C, D]}}
+  //
+  // `D` should now be able to set its cookies from a cross-site, same-party
+  // nested iframe (D embedded in B embedded in A embedded in C).
+  EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+                  web_contents(), https_server(), "c.test(a.test(b.test(%s)))",
+                  SetSamePartyCookiesUrl(kHostD)),
+              UnorderedPointwise(net::CanonicalCookieNameIs(),
+                                 ExpectedCrossSiteCookiesInSamePartyContext()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    FirstPartySets,
+    OverridesPolicyAdditionBrowsertest,
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Values(PrefState::kDefault,
+                                         PrefState::kDisabled,
+                                         PrefState::kEnabled)));
+
+class OverridesPolicyReplacementAndAdditionBrowsertest
+    : public EnabledPolicyBrowsertest {
+ public:
+  void SetUpPolicyMapWithOverridesPolicy() override {
+    // POLICY_LEVEL_MANDATORY - since administrators will control FPS policy
+    // POLICY_SCOPE_MACHINE - since this policy lives on local state, not per
+    // profile
+    // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise
+    // policy
+    policy_map().Set(policy::key::kFirstPartySetsOverrides,
+                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                     POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                     base::JSONReader::Read(R"(
+                              {
+                                "replacements": [
+                                  {
+                                    "owner": "https://a.test",
+                                    "members": ["https://d.test"]
+                                  }
+                                ],
+                                "additions": [
+                                  {
+                                    "owner": "https://b.test",
+                                    "members": ["https://c.test"]
+                                  }
+                                ]
+                              }
+                            )"),
+                     nullptr);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(OverridesPolicyReplacementAndAdditionBrowsertest,
+                       SetCookiesFromSamePartyContext) {
+  // The initial First-Party Sets were:
+  // {owner: A, members: [B, C]}
+  //
+  // After the Overrides policy is applied, the expected First-Party Sets are:
+  // {owner: A, members: [D]} and {owner: B, members: [C]}.
+
+  {  // `A` and `B` are no longer in the same First-Party Set so `A` should no
+     // longer be able to set its cookies from a nested iframe in B.
+    EXPECT_THAT(
+        content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+            web_contents(), https_server(), "b.test(%s)",
+            SetSamePartyCookiesUrl(kHostA)),
+        UnorderedPointwise(net::CanonicalCookieNameIs(),
+                           ExpectedCrossSiteCookiesInCrossPartyContext()));
+  }
+
+  {  // Both `A` and `B` should be able to set their cookies from a cross-site,
+    // same-party nested iframe (A embedded in D) and (B embedded in C),
+    // respectively.
+    EXPECT_THAT(
+        content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+            web_contents(), https_server(), "d.test(%s)",
+            SetSamePartyCookiesUrl(kHostA)),
+        UnorderedPointwise(net::CanonicalCookieNameIs(),
+                           ExpectedCrossSiteCookiesInSamePartyContext()));
+    EXPECT_THAT(
+        content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+            web_contents(), https_server(), "c.test(%s)",
+            SetSamePartyCookiesUrl(kHostB)),
+        UnorderedPointwise(net::CanonicalCookieNameIs(),
+                           ExpectedCrossSiteCookiesInSamePartyContext()));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    FirstPartySets,
+    OverridesPolicyReplacementAndAdditionBrowsertest,
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Values(PrefState::kDefault,
+                                         PrefState::kDisabled,
+                                         PrefState::kEnabled)));
+
 }  // namespace
 }  // namespace policy
