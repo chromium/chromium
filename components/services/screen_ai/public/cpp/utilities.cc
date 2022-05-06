@@ -36,7 +36,6 @@ base::FilePath GetLatestLibraryFilePath() {
   base::FilePath components_dir;
   base::PathService::Get(component_updater::DIR_COMPONENT_USER,
                          &components_dir);
-
   if (components_dir.empty())
     return base::FilePath();
 

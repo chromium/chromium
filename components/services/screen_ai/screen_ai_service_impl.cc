@@ -5,18 +5,11 @@
 #include "components/services/screen_ai/screen_ai_service_impl.h"
 
 #include "base/process/process.h"
-#include "components/services/screen_ai/proto/chrome_screen_ai.pb.h"
+#include "components/services/screen_ai/proto/proto_convertor.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
-#include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace {
-
-// The minimum confidence level that a Screen AI annotation should have to be
-// accepted.
-// TODO(https://crbug.com/1278249): Add experiment or heuristics to better
-// adjust this threshold.
-const float kScreenAIMinConfidenceThreshold = 0.1;
 
 enum class InitializationResult {
   kOk = 0,
@@ -92,7 +85,7 @@ void ScreenAIService::Annotate(const SkBitmap& image,
   // TODO(https://crbug.com/1278249): Consider adding a signature that
   // verifies the data integrity and source.
   if (annotate_function_(image, annotation_text)) {
-    updates = DecodeAnnotatorProto(annotation_text);
+    updates = ScreenAIVisualAnnotationToAXTreeUpdate(annotation_text);
   } else {
     VLOG(1) << "Screen AI library could not process snapshot.";
   }
@@ -100,53 +93,19 @@ void ScreenAIService::Annotate(const SkBitmap& image,
   std::move(callback).Run(updates);
 }
 
-ui::AXTreeUpdate ScreenAIService::DecodeAnnotatorProto(
-    const std::string& serialized_proto) {
-  ui::AXTreeUpdate updates;
-
-  // TODO(https://crbug.com/1278249): Consider adding version checking.
-  chrome_screen_ai::VisualAnnotation results;
-  if (!results.ParseFromString(serialized_proto)) {
-    VLOG(1) << "Could not parse Screen AI library output.";
-    return updates;
-  }
-
-  // TODO(https://crbug.com/1278249): Create an AXTreeSource and create the
-  // update using AXTreeSerializer.
-
-  for (const auto& uic : results.ui_component()) {
-    // Score is only used to prune very low confidence detections and we don't
-    // use it downstream.
-    if (uic.predicted_type().score() < kScreenAIMinConfidenceThreshold)
-      continue;
-
-    ui::AXNodeData node;
-
-    chrome_screen_ai::UIComponent::Type original_type =
-        uic.predicted_type().type();
-    node.relative_bounds.bounds.set_x(uic.bounding_box().x());
-    node.relative_bounds.bounds.set_y(uic.bounding_box().y());
-    node.relative_bounds.bounds.set_width(uic.bounding_box().width());
-    node.relative_bounds.bounds.set_height(uic.bounding_box().height());
-
-    // TODO(https://crbug.com/1278249): Add tests to ensure these two types
-    // match. Add a PRESUBMIT test that compares the proto and enum.
-    node.role = static_cast<ax::mojom::Role>(original_type);
-
-    updates.nodes.push_back(node);
-  }
-
-  // TODO(https://crbug.com/1278249): Add UMA metrics to record the number of
-  // annotations, item types, confidence levels, etc.
-
-  return updates;
-}
-
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
                                          ContentExtractionCallback callback) {
-  // TODO(https://crbug.com/1278249): Call |extract_main_content_function_|,
-  // pass |snapshot| to it, receive results, and send them to |callback|.
-  std::move(callback).Run(std::vector<int32_t>());
+  std::string serialized_snapshot = Screen2xSnapshotToViewHierarchy(snapshot);
+  std::vector<int32_t> content_node_ids;
+
+  if (!extract_main_content_function_(serialized_snapshot, content_node_ids)) {
+    VLOG(1) << "Screen2x did not return main content.";
+  } else {
+    VLOG(2) << "Screen2x returned " << content_node_ids.size() << " node ids:";
+    for (int32_t i : content_node_ids)
+      VLOG(2) << i;
+  }
+  std::move(callback).Run(content_node_ids);
 }
 
 }  // namespace screen_ai

@@ -51,10 +51,6 @@ class ScreenAIService : public mojom::ScreenAIService,
       mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
           main_content_extractor) override;
 
-  // Converts the serialized proto from Screen AI library's annotation function
-  // to a vector of screen_ai::mojom::Node.
-  ui::AXTreeUpdate DecodeAnnotatorProto(const std::string& serialized_proto);
-
   typedef bool (*ScreenAIInitFunction)();
   ScreenAIInitFunction screen_ai_init_function_;
 

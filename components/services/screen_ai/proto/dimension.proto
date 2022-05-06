@@ -1,0 +1,29 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This proto is copied from the following proto, do not change.
+// google3/knowledge/cerebra/sense/im2query/screenai/proto/dimensions.proto
+syntax = "proto2";
+
+package screenai;
+
+option optimize_for = LITE_RUNTIME;
+
+// Normalized coordinates [0.0, 1.0] specifying a region of the screen.
+// The coordinate [0.0, 0.0] corresponds to the top left pixel on the screen.
+message BoundingBox {
+  optional float top = 1;
+  optional float left = 2;
+  optional float bottom = 3;
+  optional float right = 4;
+}
+
+// Bounding box specifying a region of the screen in pixel coordinates.
+// The coordinate [0, 0] corresponds to the top left pixel on the screen.
+message BoundingBoxPixels {
+  optional int32 top = 1;
+  optional int32 left = 2;
+  optional int32 bottom = 3;
+  optional int32 right = 4;
+}

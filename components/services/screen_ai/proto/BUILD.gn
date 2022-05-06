@@ -1,0 +1,27 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  sources = [
+    "chrome_screen_ai.proto",
+    "dimension.proto",
+    "view_hierarchy.proto",
+  ]
+}
+
+source_set("proto_convertors") {
+  sources = [
+    "proto_convertor.cc",
+    "proto_convertor.h",
+  ]
+
+  deps = [
+    ":proto",
+    "//base",
+    "//components/services/screen_ai/public/mojom",
+    "//ui/accessibility:ax_base",
+  ]
+}

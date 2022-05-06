@@ -4,10 +4,6 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
-proto_library("screen_ai_proto") {
-  sources = [ "proto/chrome_screen_ai.proto" ]
-}
-
 source_set("screen_ai") {
   sources = [
     "screen_ai_service_impl.cc",
@@ -15,14 +11,12 @@ source_set("screen_ai") {
   ]
 
   deps = [
-    ":screen_ai_proto",
     "//base",
+    "//components/services/screen_ai/proto:proto_convertors",
     "//components/services/screen_ai/public/cpp:utilities",
-  ]
-
-  public_deps = [
     "//components/services/screen_ai/public/mojom",
     "//mojo/public/cpp/bindings",
+    "//ui/accessibility:ax_base",
   ]
 }
 

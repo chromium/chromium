@@ -2564,6 +2564,7 @@ static_library("browser") {
       "//components/services/screen_ai",
       "//components/services/screen_ai/public/cpp:screen_ai_service_router_factory",
       "//components/services/screen_ai/public/cpp:utilities",
+      "//components/services/screen_ai/public/mojom",
     ]
   }
 
