@@ -79,7 +79,9 @@ class WebKioskAppData : public KioskAppDataBase {
   const GURL install_url_;  // installation url.
   GURL launch_url_;         // app launch url.
 
-  GURL icon_url_;  // Url of the icon in case nothing is cached.
+  // Url for loading the app icon in case the app has not been installed earlier
+  // and a user opened the App menu in the login screen.
+  GURL icon_url_;
   // Used to download icon from |icon_url_|.
   std::unique_ptr<IconFetcher> icon_fetcher_;
 

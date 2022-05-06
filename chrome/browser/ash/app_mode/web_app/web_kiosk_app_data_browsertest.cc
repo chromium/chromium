@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <codecvt>
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 
 #include "base/path_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -35,6 +37,8 @@ const char kIconPath[] = "chrome/test/data/load_image/image.png";
 const char kIconBadPath[] = "chrome/test/data/load_image/image.html";
 const char kIconUrl[] = "/load_image/image.png";
 const char kIconUrl2[] = "/load_image/fail_image.png";
+const char kIconExampleUrl1[] = "https://example.com/icon1.png";
+const char kIconExampleUrl2[] = "https://example.com/icon2.png";
 const char kLastIconUrlKey[] = "last_icon_url";
 const char kLaunchUrl[] = "https://example.com/launch";
 const char kStartUrl[] = "https://example.com/start";
@@ -43,6 +47,16 @@ base::FilePath GetFullPathToImage(bool valid) {
   base::FilePath test_data_dir;
   CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
   return test_data_dir.Append(valid ? kIconPath : kIconBadPath);
+}
+
+void PopulateIcon(WebAppInstallInfo* web_app_info,
+                  const std::string& icon_url_str) {
+  IconsMap icons_map;
+  const GURL icon_url(icon_url_str);
+  std::vector<SkBitmap> bmp = {web_app::CreateSquareIcon(32, SK_ColorWHITE)};
+  icons_map.emplace(icon_url, bmp);
+
+  web_app::PopulateProductIcons(web_app_info, &icons_map);
 }
 
 }  // namespace
@@ -102,7 +116,7 @@ class WebKioskAppDataTest : public InProcessBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, NoIconCached) {
   WebKioskAppData app_data(this, kAppId, EmptyAccountId(), GURL(kAppUrl),
                            std::string(), /*icon_url*/ GURL());
-  app_data.LoadFromCache();
+  EXPECT_FALSE(app_data.LoadFromCache());
   // The app will stay in the INIT state if there is nothing to be loaded from
   // cache.
   EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kInit);
@@ -114,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, LoadCachedIcon) {
   SetCached(/*installed = */ false);
   WebKioskAppData app_data(this, kAppId, EmptyAccountId(), GURL(kAppUrl),
                            std::string(), /*icon_url*/ GURL());
-  app_data.LoadFromCache();
+  EXPECT_TRUE(app_data.LoadFromCache());
   app_data.LoadIcon();
   WaitForAppDataChange(2);
 
@@ -164,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, DownloadedIconPersists) {
 
   WebKioskAppData app_data(this, kAppId, EmptyAccountId(), GURL(kAppUrl),
                            kAppTitle2, /*icon_url=*/icon_url);
-  app_data.LoadFromCache();
+  EXPECT_TRUE(app_data.LoadFromCache());
   // Icon is stored in cache.
   EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kLoading);
 
@@ -204,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, RedownloadIconWhenDifferentUrl) {
                            kAppTitle2,
                            /*icon_url*/ test_server.GetURL(kIconUrl2));
 
-  app_data.LoadFromCache();
+  EXPECT_FALSE(app_data.LoadFromCache());
   // No icon was loaded from cache because urls are different.
   EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kInit);
 
@@ -244,6 +258,34 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, LaunchableUrl) {
   WaitForAppDataChange(1);
   EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kInstalled);
   EXPECT_EQ(app_data.GetLaunchableUrl(), GURL(kStartUrl));
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest,
+                       PRE_CanLoadFromCacheAfterUpdatingFromWebAppInfo) {
+  // We do not use |icon_url| for loading icon in this test, it is set to
+  // correctly test |LoadFromCache| function.
+  WebKioskAppData app_data(this, kAppId, EmptyAccountId(), GURL(kAppUrl), "",
+                           /*icon_url=*/GURL(kIconExampleUrl1));
+
+  EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kInit);
+  EXPECT_EQ(app_data.GetLaunchableUrl(), GURL(kAppUrl));
+  EXPECT_TRUE(app_data.icon().isNull());
+
+  WebAppInstallInfo app_info;
+  app_info.start_url = GURL(kStartUrl);
+  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+  app_info.title = convert.from_bytes(kAppTitle);
+  PopulateIcon(&app_info, kIconExampleUrl1);
+
+  app_data.UpdateFromWebAppInfo(app_info);
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest,
+                       CanLoadFromCacheAfterUpdatingFromWebAppInfo) {
+  WebKioskAppData app_data(this, kAppId, EmptyAccountId(), GURL(kAppUrl), "",
+                           /*icon_url=*/GURL(kIconExampleUrl2));
+
+  EXPECT_TRUE(app_data.LoadFromCache());
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, InvalidIcon) {

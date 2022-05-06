@@ -169,15 +169,15 @@ bool WebKioskAppData::LoadFromCache() {
   if (!LoadFromDictionary(*dict, /* lazy_icon_load= */ true))
     return false;
 
-  // If the icon was previously downloaded using a different url, do not use
-  // that icon.
-  if (GetLastIconUrl(*dict) != icon_url_)
-    return false;
-
   if (LoadLaunchUrlFromDictionary(*dict)) {
     SetStatus(Status::kInstalled);
     return true;
   }
+
+  // If the icon was previously downloaded using a different url and the app has
+  // not been installed earlier, do not use that icon.
+  if (GetLastIconUrl(*dict) != icon_url_)
+    return false;
 
   // Wait while icon is loaded.
   if (status_ == Status::kInit)
