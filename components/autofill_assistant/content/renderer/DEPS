@@ -10,6 +10,7 @@ include_rules = [
   "+third_party/blink/public/common",
   "+third_party/blink/public/platform",
   "+third_party/blink/public/web",
+  "+third_party/protobuf/src/google/protobuf/repeated_field.h",
   "+third_party/tflite",
   "+third_party/tflite_support",
 ]

@@ -15,6 +15,7 @@ static_library("browser") {
   deps = [
     "//base",
     "//components/autofill_assistant/content/common:mojo_interfaces",
+    "//components/autofill_assistant/content/common/proto:proto",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
