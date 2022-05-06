@@ -162,5 +162,7 @@ ci.gpu.windows_builder(
         short_name = "x86",
     ),
     executable = ci.DEFAULT_EXECUTABLE,
-    goma_backend = goma.backend.RBE_PROD,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )

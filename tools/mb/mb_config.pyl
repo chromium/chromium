@@ -680,7 +680,7 @@
       'win-swangle-tot-swiftshader-x64': 'angle_deqp_release_trybot_reclient',
       'win-swangle-tot-swiftshader-x86': 'angle_deqp_release_bot_dcheck_always_on_x86',
       'win-swangle-x64': 'angle_deqp_release_trybot_reclient',
-      'win-swangle-x86': 'angle_deqp_release_bot_dcheck_always_on_x86',
+      'win-swangle-x86': 'angle_deqp_release_bot_dcheck_always_on_x86_reclient',
     },
 
     'chromium.updater': {
