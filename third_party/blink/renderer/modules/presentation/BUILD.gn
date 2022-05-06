@@ -35,4 +35,11 @@ blink_modules_sources("presentation") {
     "presentation_request.cc",
     "presentation_request.h",
   ]
+  if (is_android) {
+    sources += [
+      "presentation_metrics.cc",
+      "presentation_metrics.h",
+    ]
+    deps = [ "//services/metrics/public/cpp:ukm_builders" ]
+  }
 }

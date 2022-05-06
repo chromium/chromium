@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_REMOTEPLAYBACK_REMOTE_PLAYBACK_METRICS_H_
 
 namespace blink {
+class ExecutionContext;
 
 // Do not remove or renumber enums as this is used for metrics. When making
 // changes, also update the enum list in tools/metrics/histograms/enums.xml to
@@ -20,6 +21,10 @@ class RemotePlaybackMetrics {
  public:
   static void RecordRemotePlaybackLocation(
       RemotePlaybackInitiationLocation location);
+
+  static void RecordRemotePlaybackStartSessionResult(
+      ExecutionContext* execution_context,
+      bool success);
 };
 
 }  // namespace blink

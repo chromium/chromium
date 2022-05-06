@@ -566,10 +566,16 @@ void RemotePlayback::OnConnectionSuccess(
   presentation_connection_receiver_.Bind(
       std::move(result->connection_receiver),
       GetExecutionContext()->GetTaskRunner(TaskType::kMediaElementEvent));
+  RemotePlaybackMetrics::RecordRemotePlaybackStartSessionResult(
+      GetExecutionContext(), true);
 }
 
 void RemotePlayback::OnConnectionError(
     const mojom::blink::PresentationError& error) {
+  // This is called when:
+  // (1) A request to start a presentation failed.
+  // (2) A PresentationRequest is cancelled. i.e. the user closed the device
+  // selection or the route controller dialog.
   presentation_id_ = "";
   presentation_url_ = KURL();
   if (error.error_type ==
@@ -579,6 +585,8 @@ void RemotePlayback::OnConnectionError(
   }
 
   StateChanged(mojom::blink::PresentationConnectionState::CLOSED);
+  RemotePlaybackMetrics::RecordRemotePlaybackStartSessionResult(
+      GetExecutionContext(), false);
 }
 
 void RemotePlayback::HandlePresentationResponse(

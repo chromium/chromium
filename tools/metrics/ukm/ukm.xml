@@ -16529,6 +16529,42 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Presentation.StartResult">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records when users start a Presentation and receive a response from the
+    receiver. Android only. The following failures are not recorded because they
+    don't represent an actual error: (1)
+    PresentationErrorType::PRESENTATION_REQUEST_CANCELLED This error is created
+    when users close the dialog without starting a Presentation. (2)
+    PresentationErrorType::NO_PRESENTATION_FOUND This error might happen when a
+    website implemnting CastSDK try to join a route every time the page loads.
+  </summary>
+  <metric name="PresentationRequest" enum="Boolean">
+    <summary>
+      Records whether the users' request to start a Presentation with a
+      &quot;cast:&quot; presentation URL succeed.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics/>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RemotePlayback" enum="Boolean">
+    <summary>
+      Records whether the users' request to start a Presentation through
+      RemotePlayback succeed.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics/>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Previews" singular="True">
   <obsolete>
     Obsoleted 01/2022.
