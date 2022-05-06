@@ -92,11 +92,8 @@
       </template>
       <template is="dom-if" if="[[showCollectionOptions_]]">
         <div id="collectionOptions">
-          <cr-button id="dailyRefresh" data-collection-id$="[[collectionId]]"
-              data-google-photos-album-id$="[[googlePhotosAlbumId]]"
+          <cr-button id="dailyRefresh"
               aria-label="$i18n{ariaLabelChangeDaily}"
-              data-daily-refresh-id$="[[dailyRefreshState_.id]]"
-              data-daily-refresh-type$="[[dailyRefreshState_.type]]"
               aria-pressed$="[[ariaPressed_]]"
               on-click="onClickDailyRefreshToggle_"
               hidden$="[[!showDailyRefreshButton_]]"">

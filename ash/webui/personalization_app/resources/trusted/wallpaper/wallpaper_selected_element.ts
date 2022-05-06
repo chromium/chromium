@@ -321,27 +321,17 @@ export class WallpaperSelected extends WithPersonalizationStore {
     return 'false';
   }
 
-  private onClickDailyRefreshToggle_(event: Event) {
-    const eventTarget = event.currentTarget as HTMLElement;
-    const {
-      collectionId,
-      googlePhotosAlbumId,
-      dailyRefreshId,
-      dailyRefreshType
-    } = eventTarget.dataset;
-    const dailyRefreshState = dailyRefreshId && dailyRefreshType ?
-        {id: dailyRefreshId, type: dailyRefreshType} as DailyRefreshState :
-        null;
+  private onClickDailyRefreshToggle_() {
     const isDailyRefreshId = this.isDailyRefreshId_(
-        collectionId || googlePhotosAlbumId, dailyRefreshState);
-    if (googlePhotosAlbumId) {
-      assert(!collectionId);
+        this.collectionId || this.googlePhotosAlbumId, this.dailyRefreshState_);
+    if (this.googlePhotosAlbumId) {
+      assert(!this.collectionId);
       selectGooglePhotosAlbum(
-          isDailyRefreshId ? '' : googlePhotosAlbumId!, this.wallpaperProvider_,
-          this.getStore());
+          isDailyRefreshId ? '' : this.googlePhotosAlbumId,
+          this.wallpaperProvider_, this.getStore());
     } else {
       setDailyRefreshCollectionId(
-          isDailyRefreshId ? '' : collectionId!, this.wallpaperProvider_,
+          isDailyRefreshId ? '' : this.collectionId!, this.wallpaperProvider_,
           this.getStore());
       // Only refresh the wallpaper if daily refresh is toggled on.
       if (!isDailyRefreshId) {
