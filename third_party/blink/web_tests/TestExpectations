@@ -6859,9 +6859,6 @@ crbug.com/1316341 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/scri
 crbug.com/1317007 [ Mac ] external/wpt/mimesniff/mime-types/charset-parameter.window.html [ Failure Pass ]
 
 # Sheriff 2022-04-18
-crbug.com/1317029 [ Mac10.13 ] external/wpt/fetch/content-type/script.window.html [ Failure Pass ]
-
-# Sheriff 2022-04-18
 # TODO(crbug.com/1316144): Re-enable this test
 crbug.com/1316144 external/wpt/css/cssom-view/scrollIntoView-fixed.html [ Crash Pass ]
 
@@ -6921,7 +6918,6 @@ crbug.com/1321243 accessibility/aom-reparenting-crash.html [ Skip ]
 
 # Sheriff 2022-05-02
 crbug.com/1321293 fast/forms/calendar-picker/week-picker-choose-default-value-after-set-value.html [ Failure Pass ]
-crbug.com/1322072 [ Mac10.15 ] external/wpt/fetch/content-type/script.window.html [ Failure Pass ]
 
 # Sheriff 2022-05-04
 crbug.com/1309533 [ Win ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/idlharness.html [ Failure ]
@@ -6930,3 +6926,6 @@ crbug.com/1320290 http/tests/devtools/storage-panel-dom-storage-update.js [ Skip
 
 crbug.com/1322405 external/wpt/fetch/metadata/generated/window-history.https.sub.html [ Timeout Pass ]
 crbug.com/1322405 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/window-history.https.sub.html [ Timeout Pass ]
+
+# Sheriff 2022-05-06
+crbug.com/1322072 external/wpt/fetch/content-type/script.window.html [ Failure Pass ]
