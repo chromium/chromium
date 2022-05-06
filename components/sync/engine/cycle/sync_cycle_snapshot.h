@@ -39,7 +39,6 @@ class SyncCycleSnapshot {
                     int num_hierarchy_conflicts,
                     int num_server_conflicts,
                     bool notifications_enabled,
-                    size_t num_entries,
                     base::Time sync_start_time,
                     base::Time poll_finish_time,
                     const std::vector<int>& num_entries_by_type,
@@ -62,7 +61,6 @@ class SyncCycleSnapshot {
   int num_hierarchy_conflicts() const;
   int num_server_conflicts() const;
   bool notifications_enabled() const;
-  size_t num_entries() const;
   base::Time sync_start_time() const;
   base::Time poll_finish_time() const;
   const std::vector<int>& num_entries_by_type() const;
@@ -84,7 +82,6 @@ class SyncCycleSnapshot {
   int num_hierarchy_conflicts_;
   int num_server_conflicts_;
   bool notifications_enabled_;
-  size_t num_entries_;
   base::Time sync_start_time_;
   base::Time poll_finish_time_;
 

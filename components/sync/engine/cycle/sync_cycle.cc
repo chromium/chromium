@@ -40,7 +40,6 @@ SyncCycleSnapshot SyncCycle::TakeSnapshotWithOrigin(
   }
 
   // TODO(crbug.com/923287): Most of the counters below are outdated. Remove.
-  int num_entries = 0;
   std::vector<int> num_entries_by_type(GetNumModelTypes(), 0);
   std::vector<int> num_to_delete_entries_by_type(GetNumModelTypes(), 0);
 
@@ -50,8 +49,7 @@ SyncCycleSnapshot SyncCycle::TakeSnapshotWithOrigin(
       delegate_->IsAnyThrottleOrBackoff(),
       status_controller_->num_hierarchy_conflicts(),
       status_controller_->num_server_conflicts(),
-      context_->notifications_enabled(), num_entries,
-      status_controller_->sync_start_time(),
+      context_->notifications_enabled(), status_controller_->sync_start_time(),
       status_controller_->poll_finish_time(), num_entries_by_type,
       num_to_delete_entries_by_type, get_updates_origin,
       context_->poll_interval(),

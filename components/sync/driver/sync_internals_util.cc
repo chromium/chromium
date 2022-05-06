@@ -409,7 +409,6 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
       section_that_cycle->AddIntStat("Updates Downloaded");
   Stat<int>* committed_count =
       section_that_cycle->AddIntStat("Committed Count");
-  Stat<int>* entries = section_that_cycle->AddIntStat("Entries");
 
   // Populate all the fields we declared above.
   client_version->Set(GetVersionString(channel));
@@ -568,7 +567,6 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
     updates_downloaded->Set(
         snapshot.model_neutral_state().num_updates_downloaded_total);
     committed_count->Set(snapshot.model_neutral_state().num_successful_commits);
-    entries->Set(static_cast<int>(snapshot.num_entries()));
   }
 
   // This list of sections belongs in the 'details' field of the returned

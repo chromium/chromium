@@ -32,7 +32,6 @@ SyncCycleSnapshot::SyncCycleSnapshot()
       num_hierarchy_conflicts_(0),
       num_server_conflicts_(0),
       notifications_enabled_(false),
-      num_entries_(0),
       num_entries_by_type_(GetNumModelTypes(), 0),
       num_to_delete_entries_by_type_(GetNumModelTypes(), 0),
       has_remaining_local_changes_(false),
@@ -47,7 +46,6 @@ SyncCycleSnapshot::SyncCycleSnapshot(
     int num_hierarchy_conflicts,
     int num_server_conflicts,
     bool notifications_enabled,
-    size_t num_entries,
     base::Time sync_start_time,
     base::Time poll_finish_time,
     const std::vector<int>& num_entries_by_type,
@@ -63,7 +61,6 @@ SyncCycleSnapshot::SyncCycleSnapshot(
       num_hierarchy_conflicts_(num_hierarchy_conflicts),
       num_server_conflicts_(num_server_conflicts),
       notifications_enabled_(notifications_enabled),
-      num_entries_(num_entries),
       sync_start_time_(sync_start_time),
       poll_finish_time_(poll_finish_time),
       num_entries_by_type_(num_entries_by_type),
@@ -98,7 +95,6 @@ std::unique_ptr<base::DictionaryValue> SyncCycleSnapshot::ToValue() const {
   // We don't care too much if we lose precision here, also.
   value->SetIntKey("numHierarchyConflicts", num_hierarchy_conflicts_);
   value->SetIntKey("numServerConflicts", num_server_conflicts_);
-  value->SetIntKey("numEntries", num_entries_);
   value->SetStringKey("getUpdatesOrigin",
                       ProtoEnumToString(get_updates_origin_));
   value->SetBoolKey("notificationsEnabled", notifications_enabled_);
@@ -147,10 +143,6 @@ int SyncCycleSnapshot::num_server_conflicts() const {
 
 bool SyncCycleSnapshot::notifications_enabled() const {
   return notifications_enabled_;
-}
-
-size_t SyncCycleSnapshot::num_entries() const {
-  return num_entries_;
 }
 
 base::Time SyncCycleSnapshot::sync_start_time() const {

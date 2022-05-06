@@ -24,7 +24,7 @@ SyncCycleSnapshot MakeDefaultCycleSnapshot() {
       ProgressMarkerMap(), /*is_silenced-*/ false,
       /*num_hierarchy_conflicts=*/2,
       /*num_server_conflicts=*/7, /*notifications_enabled=*/false,
-      /*num_entries=*/0, /*sync_start_time=*/base::Time::Now(),
+      /*sync_start_time=*/base::Time::Now(),
       /*poll_finish_time=*/base::Time::Now(),
       /*num_entries_by_type=*/std::vector<int>(GetNumModelTypes(), 0),
       /*num_to_delete_entries_by_type=*/
