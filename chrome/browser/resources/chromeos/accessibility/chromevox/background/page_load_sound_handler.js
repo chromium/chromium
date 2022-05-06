@@ -18,7 +18,7 @@ const StateType = chrome.automation.StateType;
 /** @implements {ChromeVoxStateObserver} */
 export class PageLoadSoundHandler extends BaseAutomationHandler {
   constructor() {
-    super(undefined);
+    super(null);
 
     /** @private {boolean} */
     this.didRequestLoadSound_ = false;

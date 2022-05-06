@@ -21,7 +21,7 @@ const StateType = chrome.automation.StateType;
  */
 export class RangeAutomationHandler extends BaseAutomationHandler {
   constructor() {
-    super(undefined);
+    super(null);
 
     /** @private {AutomationNode} */
     this.lastAttributeTarget_;
