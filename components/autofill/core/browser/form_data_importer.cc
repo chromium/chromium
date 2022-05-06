@@ -120,9 +120,8 @@ bool IsMinimumAddress(const AutofillProfile& profile,
 
   // Check the |ADDRESS_HOME_LINE1| requirement.
   bool is_line1_missing = false;
-  if (country.requires_line1() &&
-      profile.GetRawInfo(ADDRESS_HOME_LINE1).empty() &&
-      profile.GetRawInfo(ADDRESS_HOME_STREET_NAME).empty()) {
+  if (country.requires_line1() && !profile.HasRawInfo(ADDRESS_HOME_LINE1) &&
+      !profile.HasRawInfo(ADDRESS_HOME_STREET_NAME)) {
     if (import_log_buffer) {
       *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
                          << "Missing required ADDRESS_HOME_LINE1." << CTag{};
@@ -132,8 +131,7 @@ bool IsMinimumAddress(const AutofillProfile& profile,
 
   // Check the |ADDRESS_HOME_CITY| requirement.
   bool is_city_missing = false;
-  if (country.requires_city() &&
-      profile.GetRawInfo(ADDRESS_HOME_CITY).empty()) {
+  if (country.requires_city() && !profile.HasRawInfo(ADDRESS_HOME_CITY)) {
     if (import_log_buffer) {
       *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
                          << "Missing required ADDRESS_HOME_CITY." << CTag{};
@@ -143,8 +141,7 @@ bool IsMinimumAddress(const AutofillProfile& profile,
 
   // Check the |ADDRESS_HOME_STATE| requirement.
   bool is_state_missing = false;
-  if (country.requires_state() &&
-      profile.GetRawInfo(ADDRESS_HOME_STATE).empty()) {
+  if (country.requires_state() && !profile.HasRawInfo(ADDRESS_HOME_STATE)) {
     if (import_log_buffer) {
       *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
                          << "Missing required ADDRESS_HOME_STATE." << CTag{};
@@ -154,7 +151,7 @@ bool IsMinimumAddress(const AutofillProfile& profile,
 
   // Check the |ADDRESS_HOME_ZIP| requirement.
   bool is_zip_missing = false;
-  if (country.requires_zip() && profile.GetRawInfo(ADDRESS_HOME_ZIP).empty()) {
+  if (country.requires_zip() && !profile.HasRawInfo(ADDRESS_HOME_ZIP)) {
     if (import_log_buffer) {
       *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
                          << "Missing required ADDRESS_HOME_ZIP." << CTag{};
@@ -164,8 +161,8 @@ bool IsMinimumAddress(const AutofillProfile& profile,
 
   bool is_zip_or_state_requirement_violated = false;
   if (country.requires_zip_or_state() &&
-      profile.GetRawInfo(ADDRESS_HOME_ZIP).empty() &&
-      profile.GetRawInfo(ADDRESS_HOME_STATE).empty()) {
+      !profile.HasRawInfo(ADDRESS_HOME_ZIP) &&
+      !profile.HasRawInfo(ADDRESS_HOME_STATE)) {
     if (import_log_buffer) {
       *import_log_buffer
           << LogMessage::kImportAddressProfileFromFormFailed
@@ -177,8 +174,8 @@ bool IsMinimumAddress(const AutofillProfile& profile,
 
   bool is_line1_or_house_number_violated = false;
   if (country.requires_line1_or_house_number() &&
-      profile.GetRawInfo(ADDRESS_HOME_LINE1).empty() &&
-      profile.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER).empty()) {
+      !profile.HasRawInfo(ADDRESS_HOME_LINE1) &&
+      !profile.HasRawInfo(ADDRESS_HOME_HOUSE_NUMBER)) {
     if (import_log_buffer) {
       *import_log_buffer
           << LogMessage::kImportAddressProfileFromFormFailed
@@ -404,7 +401,7 @@ bool FormDataImporter::ComplementCountry(
   // TODO(crbug.com/1297032): Cleanup `kAutofillComplementCountryCodeOnImport`
   // check when launched.
   bool should_complement_country =
-      profile.GetRawInfo(ADDRESS_HOME_COUNTRY).empty() &&
+      !profile.HasRawInfo(ADDRESS_HOME_COUNTRY) &&
       base::FeatureList::IsEnabled(
           features::kAutofillAddressProfileSavePrompt) &&
       base::FeatureList::IsEnabled(
@@ -706,7 +703,7 @@ bool FormDataImporter::ImportAddressProfileForSection(
 
     // Reject profiles with invalid country information.
     if (server_field_type == ADDRESS_HOME_COUNTRY &&
-        candidate_profile.GetRawInfo(ADDRESS_HOME_COUNTRY).empty()) {
+        !candidate_profile.HasRawInfo(ADDRESS_HOME_COUNTRY)) {
       // The country code was not successfully determined from the value in
       // the country field. This can be caused by a localization that does not
       // match the |app_locale|. Try setting the value again using the
@@ -723,7 +720,7 @@ bool FormDataImporter::ImportAddressProfileForSection(
             field_type, value, page_language, VerificationStatus::kObserved);
       }
       // Check if the country code was still not determined correctly.
-      if (candidate_profile.GetRawInfo(ADDRESS_HOME_COUNTRY).empty()) {
+      if (!candidate_profile.HasRawInfo(ADDRESS_HOME_COUNTRY)) {
         if (import_log_buffer) {
           *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
                              << "Missing country." << CTag{};
