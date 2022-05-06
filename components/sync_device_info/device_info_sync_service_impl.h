@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
 #include "components/sync/invalidations/interested_data_types_handler.h"

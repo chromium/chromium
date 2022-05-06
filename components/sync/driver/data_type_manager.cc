@@ -4,6 +4,8 @@
 
 #include "components/sync/driver/data_type_manager.h"
 
+#include "base/notreached.h"
+
 namespace syncer {
 
 DataTypeManager::ConfigureResult::ConfigureResult() : status(UNKNOWN) {}

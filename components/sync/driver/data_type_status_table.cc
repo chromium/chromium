@@ -5,6 +5,7 @@
 #include "components/sync/driver/data_type_status_table.h"
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "components/sync/driver/data_type_manager.h"
 
 namespace syncer {

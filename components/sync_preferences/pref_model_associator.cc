@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
