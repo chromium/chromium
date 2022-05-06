@@ -5,6 +5,7 @@
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -13,12 +14,14 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
+#include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
@@ -96,19 +99,6 @@ std::string LoadBinaryProtoFromDisk(const base::FilePath& pb_path) {
   return result;
 }
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-void UpdateChromeRootStoreOnUI(const std::string& chrome_root_store_bytes) {
-  cert_verifier::mojom::CertVerifierServiceFactory*
-      cert_verifier_service_factory = content::GetCertVerifierServiceFactory();
-
-  cert_verifier::mojom::ChromeRootStorePtr root_store_ptr =
-      cert_verifier::mojom::ChromeRootStore::New(
-          base::as_bytes(base::make_span(chrome_root_store_bytes)));
-  cert_verifier_service_factory->UpdateChromeRootStore(
-      std::move(root_store_ptr));
-}
-#endif
-
 }  // namespace
 
 namespace component_updater {
@@ -132,9 +122,38 @@ void PKIMetadataComponentInstallerService::ConfigureChromeRootStore() {
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&LoadBinaryProtoFromDisk,
                      install_dir_.Append(kCRSProtoFileName)),
-      base::BindOnce(&UpdateChromeRootStoreOnUI));
+      base::BindOnce(
+          &PKIMetadataComponentInstallerService::UpdateChromeRootStoreOnUI,
+          weak_factory_.GetWeakPtr()));
 #endif
 }
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+void PKIMetadataComponentInstallerService::UpdateChromeRootStoreOnUI(
+    const std::string& chrome_root_store_bytes) {
+  cert_verifier::mojom::ChromeRootStorePtr root_store_ptr =
+      cert_verifier::mojom::ChromeRootStore::New(
+          base::as_bytes(base::make_span(chrome_root_store_bytes)));
+  content::GetCertVerifierServiceFactory()->UpdateChromeRootStore(
+      std::move(root_store_ptr));
+  NotifyChromeRootStoreConfigured();
+}
+
+void PKIMetadataComponentInstallerService::NotifyChromeRootStoreConfigured() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (Observer& observer : observers_) {
+    observer.OnChromeRootStoreConfigured();
+  }
+}
+
+bool PKIMetadataComponentInstallerService::WriteCRSDataForTesting(
+    const base::FilePath& path,
+    const std::string& contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  install_dir_ = path;
+  return base::WriteFile(path.Append(kCRSProtoFileName), contents);
+}
+#endif
 
 void PKIMetadataComponentInstallerService::ReconfigureAfterNetworkRestart() {
   // Runs on UI thread.
@@ -172,12 +191,12 @@ void PKIMetadataComponentInstallerService::OnComponentReady(
   ConfigureChromeRootStore();
 }
 
-void PKIMetadataComponentInstallerService::WriteComponentForTesting(
+bool PKIMetadataComponentInstallerService::WriteCTDataForTesting(
     const base::FilePath& path,
-    std::string contents) {
+    const std::string& contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(base::WriteFile(path.Append(kCTConfigProtoFileName), contents));
   install_dir_ = path;
+  return base::WriteFile(path.Append(kCTConfigProtoFileName), contents);
 }
 
 void PKIMetadataComponentInstallerService::AddObserver(Observer* observer) {
