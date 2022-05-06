@@ -31,7 +31,9 @@ void ActiveHostNetworkStateUpdater::OnActiveHostChanged(
     case ActiveHost::ActiveHostStatus::DISCONNECTED: {
       DCHECK(!change_info.old_active_host_id.empty());
       DCHECK(!change_info.old_tether_network_guid.empty());
-      DCHECK(!change_info.old_wifi_network_guid.empty());
+      DCHECK(change_info.old_status == ActiveHost::ActiveHostStatus::CONNECTING
+                 ? change_info.old_wifi_network_guid.empty()
+                 : !change_info.old_wifi_network_guid.empty());
 
       PA_LOG(INFO) << "Active host: Disconnected from active host with ID "
                    << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
@@ -39,7 +41,10 @@ void ActiveHostNetworkStateUpdater::OnActiveHostChanged(
                    << ". Old tether network GUID: "
                    << change_info.old_tether_network_guid
                    << ", old Wi-Fi network GUID: "
-                   << change_info.old_wifi_network_guid;
+                   << (change_info.old_status ==
+                               ActiveHost::ActiveHostStatus::CONNECTING
+                           ? "<never set>"
+                           : change_info.old_wifi_network_guid);
 
       network_state_handler_->SetTetherNetworkStateDisconnected(
           change_info.old_tether_network_guid);
