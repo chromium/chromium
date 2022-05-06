@@ -54,8 +54,7 @@ class AutofillAssistantAgent : public content::RenderFrameObserver,
 
   void GetAnnotateDomModel(
       base::TimeDelta model_timeout,
-      base::OnceCallback<
-          void(mojom::ModelStatus, base::File, const std::string&)> callback);
+      base::OnceCallback<void(mojom::ModelStatus, base::File)> callback);
 
   mojom::AutofillAssistantDriver& GetDriver();
 
@@ -66,8 +65,7 @@ class AutofillAssistantAgent : public content::RenderFrameObserver,
                       bool ignore_objective,
                       GetSemanticNodesCallback callback,
                       mojom::ModelStatus model_status,
-                      base::File model,
-                      const std::string& overrides_policy);
+                      base::File model);
 
   mojo::AssociatedRemote<mojom::AutofillAssistantDriver> driver_;
 

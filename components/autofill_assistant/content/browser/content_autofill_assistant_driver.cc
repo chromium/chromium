@@ -7,7 +7,6 @@
 #include "base/files/file.h"
 #include "base/guid.h"
 #include "base/location.h"
-#include "components/autofill_assistant/content/common/proto/semantic_feature_overrides.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
@@ -78,15 +77,13 @@ void ContentAutofillAssistantDriver::GetAnnotateDomModel(
     GetAnnotateDomModelCallback callback) {
   if (!annotate_dom_model_service_) {
     NOTREACHED() << "No model service";
-    std::move(callback).Run(mojom::ModelStatus::kUnexpectedError, base::File(),
-                            GetOverridesPolicy());
+    std::move(callback).Run(mojom::ModelStatus::kUnexpectedError, base::File());
     return;
   }
 
   absl::optional<base::File> file = annotate_dom_model_service_->GetModelFile();
   if (file) {
-    std::move(callback).Run(mojom::ModelStatus::kSuccess, *std::move(file),
-                            GetOverridesPolicy());
+    std::move(callback).Run(mojom::ModelStatus::kSuccess, *std::move(file));
     return;
   }
 
@@ -132,8 +129,7 @@ void ContentAutofillAssistantDriver::RunCallback(
   }
 
   DCHECK(it->second->callback_);
-  std::move(it->second->callback_)
-      .Run(model_status, std::move(model_file), GetOverridesPolicy());
+  std::move(it->second->callback_).Run(model_status, std::move(model_file));
   pending_calls_.erase(it);
 }
 
@@ -141,17 +137,6 @@ void ContentAutofillAssistantDriver::SetAnnotateDomModelService(
     AnnotateDomModelService* annotate_dom_model_service) {
   DCHECK(annotate_dom_model_service);
   annotate_dom_model_service_ = annotate_dom_model_service;
-}
-
-std::string ContentAutofillAssistantDriver::GetOverridesPolicy() const {
-  // TODO(b/228987849): Finish the plumbing by fetching the overrides data from
-  // the service.
-  std::string policy;
-  SemanticSelectorPolicy policy_proto;
-  if (!policy_proto.SerializeToString(&policy)) {
-    return std::string();
-  }
-  return policy;
 }
 
 }  // namespace autofill_assistant
