@@ -15817,7 +15817,7 @@
       {
         "policies": {},
         "prefs": {
-          "policy.screen_time_enabled": {
+          "policy.screen_time": {
             "default_value": true
           }
         }
@@ -15825,15 +15825,15 @@
       {
         "policies": { "ScreenTimeEnabled": true },
         "prefs": {
-          "policy.screen_time_enabled": {
-            "default_value": true
+          "policy.screen_time": {
+            "value": true
           }
         }
       },
       {
         "policies": { "ScreenTimeEnabled": false },
         "prefs": {
-          "policy.screen_time_enabled": {
+          "policy.screen_time": {
             "value": false
           }
         }
