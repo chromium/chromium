@@ -56,6 +56,10 @@
 #include "net/proxy_resolution/proxy_config.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace {
 
 using ::ash::system::TimezoneSettings;

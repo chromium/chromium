@@ -30,6 +30,10 @@
 #include "chrome/browser/ash/arc/tracing/arc_system_model.h"
 #include "chrome/browser/ash/arc/tracing/arc_value_event_trimmer.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace arc {
 
 namespace {

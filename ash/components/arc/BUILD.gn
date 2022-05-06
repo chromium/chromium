@@ -163,6 +163,9 @@ static_library("arc") {
     "//ui/events/ozone",
     "//ui/wm/public",
   ]
+
+  # Enable VLOG(1).
+  defines = [ "ENABLED_VLOG_LEVEL=1" ]
 }
 
 static_library("prefs") {

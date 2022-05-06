@@ -12,6 +12,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/aura/window.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace arc {
 
 namespace {

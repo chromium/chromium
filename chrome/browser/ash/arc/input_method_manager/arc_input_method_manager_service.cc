@@ -37,6 +37,10 @@
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/ime/input_method_observer.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace arc {
 
 namespace {

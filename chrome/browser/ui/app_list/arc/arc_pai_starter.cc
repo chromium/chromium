@@ -21,6 +21,10 @@
 #include "components/prefs/pref_service.h"
 #include "ui/events/event_constants.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace arc {
 
 namespace {

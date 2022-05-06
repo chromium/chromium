@@ -25,6 +25,10 @@
 #include "chromeos/system/statistics_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace arc {
 
 namespace {

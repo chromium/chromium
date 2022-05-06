@@ -22,6 +22,10 @@
 #include "components/arc/intent_helper/custom_tab.h"
 #include "content/public/browser/browser_thread.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace arc {
 
 namespace {

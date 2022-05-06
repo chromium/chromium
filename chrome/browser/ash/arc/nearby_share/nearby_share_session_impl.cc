@@ -38,6 +38,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace arc {
 
 namespace {

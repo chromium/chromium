@@ -54,6 +54,10 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 using device::BluetoothAdapter;
 using device::BluetoothAdapterFactory;
 using device::BluetoothAdvertisement;

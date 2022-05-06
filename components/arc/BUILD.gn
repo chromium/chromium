@@ -20,6 +20,9 @@ static_library("arc") {
     "intent_helper/open_url_delegate.h",
   ]
 
+  # Enable VLOG(1).
+  defines = [ "ENABLED_VLOG_LEVEL=1" ]
+
   deps = [
     "//ash/components/arc",
     "//ash/public/cpp",

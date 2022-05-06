@@ -24,6 +24,7 @@ namespace arc {
     EXPECT_CALL(log_, Log(logging::LOG_ERROR, _, _, _, matcher)) \
         .WillOnce(testing::Return(true)); /* suppress logging */ \
   }
+
 class ArcSystemUIBridgeTest : public testing::Test {
  protected:
   ArcSystemUIBridgeTest()
@@ -33,6 +34,10 @@ class ArcSystemUIBridgeTest : public testing::Test {
         &system_ui_instance_);
     WaitForInstanceReady(
         ArcServiceManager::Get()->arc_bridge_service()->system_ui());
+
+    // ARC has VLOG(1) enabled. Ignore and suppress these logs.
+    EXPECT_CALL(log_, Log(-1, _, _, _, _))
+        .WillRepeatedly(testing::Return(true));
   }
 
   ~ArcSystemUIBridgeTest() override {

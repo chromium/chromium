@@ -15,6 +15,10 @@
 #include "content/public/common/url_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace arc {
 
 namespace {

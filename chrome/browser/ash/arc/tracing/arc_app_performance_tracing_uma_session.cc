@@ -8,6 +8,10 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace arc {
 
 namespace {

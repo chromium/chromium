@@ -77,6 +77,10 @@
 #include "crypto/sha2.h"
 #include "ui/display/types/display_constants.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace arc {
 
 namespace {

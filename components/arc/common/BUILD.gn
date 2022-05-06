@@ -18,6 +18,9 @@ static_library("common") {
     "intent_helper/link_handler_model.h",
   ]
 
+  # Enable VLOG(1).
+  defines = [ "ENABLED_VLOG_LEVEL=1" ]
+
   deps = [
     ":arc_intent_helper_constants",
     "//base",

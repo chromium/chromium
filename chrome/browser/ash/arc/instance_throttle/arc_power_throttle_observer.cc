@@ -5,6 +5,10 @@
 #include "chrome/browser/ash/arc/instance_throttle/arc_power_throttle_observer.h"
 #include "base/time/time.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace arc {
 
 namespace {

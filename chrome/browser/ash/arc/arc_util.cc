@@ -60,6 +60,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace arc {
 
 namespace {

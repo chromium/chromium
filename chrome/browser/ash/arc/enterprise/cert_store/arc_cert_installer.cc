@@ -22,6 +22,10 @@
 #include "crypto/rsa_private_key.h"
 #include "net/cert/x509_util_nss.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace arc {
 
 CertDescription::CertDescription(crypto::RSAPrivateKey* placeholder_key,
