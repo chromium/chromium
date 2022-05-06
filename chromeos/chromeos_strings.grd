@@ -2741,13 +2741,13 @@ Try tapping the mic to ask me anything.
         Cancel
       </message>
       <!-- Select components page -->
-      <message name="IDS_SHIMLESS_RMA_SELECT_COMPONENTS_PAGE_TITLE" translateable="false" desc="The title for the select replaced components page.">
+      <message name="IDS_SHIMLESS_RMA_SELECT_COMPONENTS_PAGE_TITLE" desc="The title for the select replaced components page.">
         Select which components were replaced
       </message>
-      <message name="IDS_SHIMLESS_RMA_UNDETECTED_COMPONENT_LABEL" translateable="false" desc="The text label shown as a tooltip for components which are not detected on the device.">
+      <message name="IDS_SHIMLESS_RMA_UNDETECTED_COMPONENT_LABEL" desc="The text label shown as a tooltip for components which are not detected on the device.">
         This component couldn't be detected.
       </message>
-      <message name="IDS_SHIMLESS_RMA_REWORK_FLOW_LINK" translateable="false" desc="The text with a link that will redirect the user to the reworking flow. The reworking flow is only used when the user wants to repurpose the mainboard for another device.">
+      <message name="IDS_SHIMLESS_RMA_REWORK_FLOW_LINK" desc="The text with a link that will redirect the user to the reworking flow. The reworking flow is only used when the user wants to repurpose the mainboard for another device.">
         If you are reworking a mainboard to use in another device, go to the <ph name="LINK_BEGIN">&lt;a id="reworkFlowLink"&gt;</ph>rework flow<ph name="LINK_END">&lt;/a&gt;</ph>.
       </message>
       <!-- Choose destination page -->
