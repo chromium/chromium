@@ -59,45 +59,42 @@ void LayoutNGFieldset::AddChild(LayoutObject* new_child,
     return;
   }
   LayoutBlock* fieldset_content = FindAnonymousFieldsetContentBox();
-  if (!fieldset_content) {
-    // We wrap everything inside an anonymous child, which will take care of the
-    // fieldset contents. This parent will only be responsible for the fieldset
-    // border and the rendered legend, if there is one. Everything else will be
-    // done by the anonymous child. This includes display type, multicol,
-    // scrollbars, and even padding. Note that the rendered legend (if any) will
-    // also be a child of the anonymous object, although it'd be more natural to
-    // have it as the first child of this object. The reason is that our layout
-    // object tree builder cannot handle such discrepancies between DOM tree and
-    // layout tree. Inserting anonymous wrappers is one thing (that is
-    // supported). Removing it from its actual DOM siblings and putting it
-    // elsewhere, on the other hand, does not work well.
-
-    // TODO(crbug.com/875235): Consider other display types not mentioned in the
-    // spec (ex. EDisplay::kLayoutCustom).
-    EDisplay display = EDisplay::kFlowRoot;
-    switch (StyleRef().Display()) {
-      case EDisplay::kFlex:
-      case EDisplay::kInlineFlex:
-        display = EDisplay::kFlex;
-        break;
-      case EDisplay::kGrid:
-      case EDisplay::kInlineGrid:
-        display = EDisplay::kGrid;
-        break;
-      default:
-        break;
-    }
-
-    fieldset_content =
-        LayoutBlock::CreateAnonymousWithParentAndDisplay(this, display);
-    LayoutBox::AddChild(fieldset_content);
-  }
+  DCHECK(fieldset_content);
   fieldset_content->AddChild(new_child, before_child);
 }
 
-// TODO(mstensho): Should probably remove the anonymous child if it becomes
-// childless. While an empty anonymous child should have no effect, it doesn't
-// seem right to leave it around.
+void LayoutNGFieldset::InsertedIntoTree() {
+  LayoutNGBlockFlow::InsertedIntoTree();
+
+  if (FindAnonymousFieldsetContentBox())
+    return;
+
+  // We wrap everything inside an anonymous child, which will take care of the
+  // fieldset contents. This parent will only be responsible for the fieldset
+  // border and the rendered legend, if there is one. Everything else will be
+  // done by the anonymous child. This includes display type, multicol,
+  // scrollbars, and even padding.
+
+  // TODO(crbug.com/875235): Consider other display types not mentioned in the
+  // spec (ex. EDisplay::kLayoutCustom).
+  EDisplay display = EDisplay::kFlowRoot;
+  switch (StyleRef().Display()) {
+    case EDisplay::kFlex:
+    case EDisplay::kInlineFlex:
+      display = EDisplay::kFlex;
+      break;
+    case EDisplay::kGrid:
+    case EDisplay::kInlineGrid:
+      display = EDisplay::kGrid;
+      break;
+    default:
+      break;
+  }
+
+  LayoutBlock* fieldset_content =
+      LayoutBlock::CreateAnonymousWithParentAndDisplay(this, display);
+  LayoutBox::AddChild(fieldset_content);
+}
 
 void LayoutNGFieldset::UpdateAnonymousChildStyle(
     const LayoutObject*,

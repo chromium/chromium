@@ -4140,6 +4140,10 @@ void LayoutObject::DestroyAndCleanupAnonymousWrappers(
     // are removed or not is irrelevant.
     if (destroy_root_parent->IsLayoutFlowThread())
       break;
+    // The anonymous fieldset contents wrapper should be kept.
+    if (destroy_root_parent->Parent() &&
+        destroy_root_parent->Parent()->IsLayoutNGFieldset())
+      break;
 
     // We need to keep the anonymous parent, if it won't become empty by the
     // removal of this LayoutObject.

@@ -75,6 +75,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, Empty) {
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x26
     offset:0,0 size:126x26
+      offset:3,3 size:120x20
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
@@ -633,6 +634,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FragmentationNoPadding) {
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:120x10
+    offset:10,10 size:100x0
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
@@ -805,7 +807,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentationAutoHeight) {
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
-  offset:unplaced size:176x520
+  offset:unplaced size:176x500
     offset:13,0 size:50x500
 )DUMP";
   EXPECT_EQ(expectation, dump);
@@ -817,6 +819,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentationAutoHeight) {
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:176x23
+    offset:3,0 size:170x20
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
@@ -854,7 +857,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentation) {
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
-  offset:unplaced size:176x520
+  offset:unplaced size:176x500
     offset:13,0 size:50x500
 )DUMP";
   EXPECT_EQ(expectation, dump);
@@ -866,6 +869,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentation) {
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:176x23
+    offset:3,0 size:170x20
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
@@ -1384,6 +1388,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakInsideAvoid) {
   offset:unplaced size:1000x60
     offset:0,0 size:100x60
       offset:0,0 size:10x60
+      offset:0,60 size:100x0
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
@@ -1490,6 +1495,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakBeforeAvoid) {
   offset:unplaced size:1000x45
     offset:0,0 size:120x45
       offset:20,0 size:10x25
+      offset:10,35 size:100x0
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
@@ -1689,6 +1695,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallLegendLargeBorderFragmentation) {
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:220x10
+    offset:60,0 size:100x10
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
@@ -1745,6 +1752,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation) {
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:220x10
+    offset:60,0 size:100x10
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
@@ -1855,6 +1863,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderWithBreak) {
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:220x10
+    offset:60,0 size:100x10
 )DUMP";
   EXPECT_EQ(expectation, dump);
 

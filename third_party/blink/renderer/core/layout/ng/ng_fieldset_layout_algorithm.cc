@@ -225,20 +225,14 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutChildren() {
 
   // Proceed with normal fieldset children (excluding the rendered legend). They
   // all live inside an anonymous child box of the fieldset container.
-  auto fieldset_content = Node().GetFieldsetContent();
-  if (fieldset_content && (content_break_token || !has_seen_all_children)) {
+  if (content_break_token || !has_seen_all_children) {
+    NGBlockNode fieldset_content = Node().GetFieldsetContent();
+    DCHECK(fieldset_content);
     NGBreakStatus break_status =
         LayoutFieldsetContent(fieldset_content, content_break_token,
                               adjusted_padding_box_size, !!legend);
     if (break_status == NGBreakStatus::kNeedsEarlierBreak)
       return break_status;
-  }
-
-  if (!fieldset_content) {
-    container_builder_.SetHasSeenAllChildren();
-    // There was no anonymous child to provide the padding, so we have to add it
-    // ourselves.
-    intrinsic_block_size_ += Padding().BlockSum();
   }
 
   return NGBreakStatus::kContinue;
@@ -483,22 +477,21 @@ MinMaxSizesResult NGFieldsetLayoutAlgorithm::ComputeMinMaxSizes(
 
   // Size containment does not consider the content for sizing.
   if (!has_inline_size_containment) {
-    if (NGBlockNode content = Node().GetFieldsetContent()) {
-      NGMinMaxConstraintSpaceBuilder builder(ConstraintSpace(), Style(),
-                                             content,
-                                             /* is_new_fc */ true);
-      builder.SetAvailableBlockSize(kIndefiniteSize);
-      const auto space = builder.ToConstraintSpace();
+    NGBlockNode content = Node().GetFieldsetContent();
+    DCHECK(content);
+    NGMinMaxConstraintSpaceBuilder builder(ConstraintSpace(), Style(), content,
+                                           /* is_new_fc */ true);
+    builder.SetAvailableBlockSize(kIndefiniteSize);
+    const auto space = builder.ToConstraintSpace();
 
-      MinMaxSizesResult content_result =
-          ComputeMinAndMaxContentContribution(Style(), content, space);
-      content_result.sizes +=
-          ComputeMarginsFor(space, content.Style(), ConstraintSpace())
-              .InlineSum();
-      result.sizes.Encompass(content_result.sizes);
-      result.depends_on_block_constraints |=
-          content_result.depends_on_block_constraints;
-    }
+    MinMaxSizesResult content_result =
+        ComputeMinAndMaxContentContribution(Style(), content, space);
+    content_result.sizes +=
+        ComputeMarginsFor(space, content.Style(), ConstraintSpace())
+            .InlineSum();
+    result.sizes.Encompass(content_result.sizes);
+    result.depends_on_block_constraints |=
+        content_result.depends_on_block_constraints;
   }
 
   result.sizes += ComputeBorders(ConstraintSpace(), Node()).InlineSum();
