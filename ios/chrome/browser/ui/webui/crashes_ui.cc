@@ -147,17 +147,17 @@ void CrashesDOMHandler::OnUploadListAvailable() {
 void CrashesDOMHandler::UpdateUI() {
   bool crash_reporting_enabled =
       IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
-  base::ListValue crash_list;
+  base::Value::List crash_list;
   if (crash_reporting_enabled)
     crash_reporter::UploadListToValue(upload_list_.get(), &crash_list);
 
   base::Value result(base::Value::Type::DICTIONARY);
-  result.SetBoolPath("enabled", crash_reporting_enabled);
-  result.SetBoolPath("dynamicBackend", false);
-  result.SetBoolPath("manualUploads", crash_reporter::IsCrashpadRunning());
-  result.SetPath("crashes", std::move(crash_list));
-  result.SetStringPath("version", version_info::GetVersionNumber());
-  result.SetStringPath("os", base::SysInfo::OperatingSystemName() + " " +
+  result.GetDict().Set("enabled", crash_reporting_enabled);
+  result.GetDict().Set("dynamicBackend", false);
+  result.GetDict().Set("manualUploads", crash_reporter::IsCrashpadRunning());
+  result.GetDict().Set("crashes", std::move(crash_list));
+  result.GetDict().Set("version", version_info::GetVersionNumber());
+  result.GetDict().Set("os", base::SysInfo::OperatingSystemName() + " " +
                                  base::SysInfo::OperatingSystemVersion());
 
   base::Value event_name(crash_reporter::kCrashesUIUpdateCrashList);

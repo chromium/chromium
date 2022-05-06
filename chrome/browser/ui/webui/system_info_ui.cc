@@ -132,15 +132,16 @@ void SystemInfoHandler::OnSystemInfo(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!sys_info)
     return;
-  base::ListValue data;
+  base::Value::List data;
   for (SystemLogsResponse::const_iterator it = sys_info->begin();
        it != sys_info->end(); ++it) {
-    auto val = std::make_unique<base::DictionaryValue>();
-    val->SetStringKey("statName", it->first);
-    val->SetStringKey("statValue", it->second);
+    base::Value::Dict val;
+    val.Set("statName", it->first);
+    val.Set("statValue", it->second);
     data.Append(std::move(val));
   }
-  ResolveJavascriptCallback(base::Value(callback_id_), data);
+  ResolveJavascriptCallback(base::Value(callback_id_),
+                            base::Value(std::move(data)));
   callback_id_.clear();
 }
 

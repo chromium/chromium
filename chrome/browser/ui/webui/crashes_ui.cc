@@ -218,20 +218,21 @@ void CrashesDOMHandler::UpdateUI() {
   // Crashpad so that users can manually upload those reports.
   bool upload_list = using_crashpad || crash_reporting_enabled;
 
-  base::ListValue crash_list;
+  base::Value::List crash_list;
   if (upload_list)
     crash_reporter::UploadListToValue(upload_list_.get(), &crash_list);
 
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetBoolPath("enabled", crash_reporting_enabled);
-  result.SetBoolPath("dynamicBackend", system_crash_reporter);
-  result.SetBoolPath("manualUploads", support_manual_uploads);
-  result.SetPath("crashes", std::move(crash_list));
-  result.SetStringPath("version", version_info::GetVersionNumber());
-  result.SetStringPath("os", base::SysInfo::OperatingSystemName() + " " +
-                                 base::SysInfo::OperatingSystemVersion());
-  result.SetBoolPath("isGoogleAccount", is_internal);
-  FireWebUIListener(crash_reporter::kCrashesUIUpdateCrashList, result);
+  base::Value::Dict result;
+  result.Set("enabled", crash_reporting_enabled);
+  result.Set("dynamicBackend", system_crash_reporter);
+  result.Set("manualUploads", support_manual_uploads);
+  result.Set("crashes", std::move(crash_list));
+  result.Set("version", version_info::GetVersionNumber());
+  result.Set("os", base::SysInfo::OperatingSystemName() + " " +
+                       base::SysInfo::OperatingSystemVersion());
+  result.Set("isGoogleAccount", is_internal);
+  FireWebUIListener(crash_reporter::kCrashesUIUpdateCrashList,
+                    base::Value(std::move(result)));
 }
 
 void CrashesDOMHandler::HandleRequestSingleCrashUpload(

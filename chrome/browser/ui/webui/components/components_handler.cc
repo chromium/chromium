@@ -194,24 +194,22 @@ void ComponentsHandler::OnDemandUpdate(const std::string& component_id) {
 }
 
 std::unique_ptr<base::ListValue> ComponentsHandler::LoadComponents() {
-  std::vector<std::string> component_ids;
-  component_ids = component_updater_->GetComponentIDs();
+  const std::vector<std::string> component_ids =
+      component_updater_->GetComponentIDs();
 
   // Construct DictionaryValues to return to UI.
   auto component_list = std::make_unique<base::ListValue>();
-  for (size_t j = 0; j < component_ids.size(); ++j) {
+  for (const auto& component_id : component_ids) {
     update_client::CrxUpdateItem item;
-    if (component_updater_->GetComponentDetails(component_ids[j], &item)) {
-      auto component_entry = std::make_unique<base::DictionaryValue>();
-      component_entry->GetDict().Set("id", component_ids[j]);
-      component_entry->GetDict().Set("status",
-                                     ServiceStatusToString(item.state));
+    if (component_updater_->GetComponentDetails(component_id, &item)) {
+      base::Value::Dict component_entry;
+      component_entry.Set("id", component_id);
+      component_entry.Set("status", ServiceStatusToString(item.state));
       if (item.component) {
-        component_entry->GetDict().Set("name", item.component->name);
-        component_entry->GetDict().Set("version",
-                                       item.component->version.GetString());
+        component_entry.Set("name", item.component->name);
+        component_entry.Set("version", item.component->version.GetString());
       }
-      component_list->Append(std::move(component_entry));
+      component_list->GetList().Append(std::move(component_entry));
     }
   }
 

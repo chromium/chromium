@@ -1162,25 +1162,23 @@ void CertificatesHandler::RejectCallbackWithImportError(
     error = l10n_util::GetStringUTF8(
         IDS_SETTINGS_CERTIFICATE_MANAGER_IMPORT_SOME_NOT_IMPORTED);
 
-  std::unique_ptr<base::ListValue> cert_error_list =
-      std::make_unique<base::ListValue>();
-  for (size_t i = 0; i < not_imported.size(); ++i) {
-    const net::NSSCertDatabase::ImportCertFailure& failure = not_imported[i];
-    std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-    dict->GetDict().Set(kCertificatesHandlerNameField,
-                        x509_certificate_model::GetSubjectDisplayName(
-                            failure.certificate.get()));
-    dict->GetDict().Set(kCertificatesHandlerErrorField,
-                        NetErrorToString(failure.net_error));
-    cert_error_list->Append(std::move(dict));
+  base::Value::List cert_error_list;
+  for (const auto& failure : not_imported) {
+    base::Value::Dict dict;
+    dict.Set(kCertificatesHandlerNameField,
+             x509_certificate_model::GetSubjectDisplayName(
+                 failure.certificate.get()));
+    dict.Set(kCertificatesHandlerErrorField,
+             NetErrorToString(failure.net_error));
+    cert_error_list.Append(std::move(dict));
   }
 
-  std::unique_ptr<base::DictionaryValue> error_info(new base::DictionaryValue);
-  error_info->GetDict().Set(kCertificatesHandlerErrorTitle, title);
-  error_info->GetDict().Set(kCertificatesHandlerErrorDescription, error);
-  error_info->Set(kCertificatesHandlerCertificateErrors,
-                  std::move(cert_error_list));
-  RejectCallback(*error_info);
+  base::Value::Dict error_info;
+  error_info.Set(kCertificatesHandlerErrorTitle, title);
+  error_info.Set(kCertificatesHandlerErrorDescription, error);
+  error_info.Set(kCertificatesHandlerCertificateErrors,
+                 base::Value(std::move(cert_error_list)));
+  RejectCallback(base::Value(std::move(error_info)));
 }
 
 gfx::NativeWindow CertificatesHandler::GetParentWindow() {

@@ -163,10 +163,10 @@ void NaClDomHandler::OnJavascriptDisallowed() {
 void AddPair(base::ListValue* list,
              const std::u16string& key,
              const std::u16string& value) {
-  std::unique_ptr<base::DictionaryValue> results(new base::DictionaryValue());
-  results->SetStringKey("key", key);
-  results->SetStringKey("value", value);
-  list->Append(std::move(results));
+  base::Value::Dict results;
+  results.Set("key", key);
+  results.Set("value", value);
+  list->GetList().Append(std::move(results));
 }
 
 // Generate an empty data-pair which acts as a line break.

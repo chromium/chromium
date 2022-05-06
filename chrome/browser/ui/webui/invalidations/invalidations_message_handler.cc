@@ -105,19 +105,20 @@ void InvalidationsMessageHandler::OnStateChange(
 void InvalidationsMessageHandler::OnUpdatedTopics(
     const std::string& handler_name,
     const invalidation::TopicCountMap& topics) {
-  base::ListValue list_of_objects;
+  base::Value::List list_of_objects;
   for (const auto& topic_item : topics) {
-    std::unique_ptr<base::DictionaryValue> dic(new base::DictionaryValue());
-    dic->SetStringKey("name", topic_item.first);
+    base::Value::Dict dict;
+    dict.Set("name", topic_item.first);
     // TODO(crbug.com/1056181): source has been deprecated and after Topic->
     // ObjectID refactoring completely makes no sense. It needs to be cleaned
     // up together with other ObjectID references in js counterpart. Pass 0
     // temporary to avoid changes in js counterpart.
-    dic->SetIntKey("source", 0);
-    dic->SetIntKey("totalCount", topic_item.second);
-    list_of_objects.Append(std::move(dic));
+    dict.Set("source", 0);
+    dict.Set("totalCount", topic_item.second);
+    list_of_objects.Append(std::move(dict));
   }
-  FireWebUIListener("update-ids", base::Value(handler_name), list_of_objects);
+  FireWebUIListener("update-ids", base::Value(handler_name),
+                    base::Value(std::move(list_of_objects)));
 }
 void InvalidationsMessageHandler::OnDebugMessage(
     const base::DictionaryValue& details) {}
