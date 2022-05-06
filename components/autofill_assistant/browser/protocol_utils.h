@@ -81,8 +81,10 @@ class ProtocolUtils {
       bool request_email,
       bool request_phone,
       bool request_shipping,
+      const std::vector<std::string>& preexisting_address_ids,
       bool request_payment_methods,
       const std::vector<std::string>& supported_card_networks,
+      const std::vector<std::string>& preexisting_payment_instrument_ids,
       const std::string& client_token);
 
   // Create an action from the |action|.

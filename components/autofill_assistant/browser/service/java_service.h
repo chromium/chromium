@@ -60,6 +60,7 @@ class JavaService : public Service {
   // Get user data.
   void GetUserData(const CollectUserDataOptions& options,
                    uint64_t run_id,
+                   const UserData* user_data,
                    ServiceRequestSender::ResponseCallback callback) override;
 
  private:

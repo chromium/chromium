@@ -2252,7 +2252,7 @@ TEST_F(ScriptExecutorTest, ClearPersistentUiOnError) {
 
 TEST_F(ScriptExecutorTest, RequestUserData) {
   EXPECT_CALL(mock_service_, GetUserData)
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
+      .WillOnce(RunOnceCallback<3>(net::HTTP_OK, std::string(),
                                    ServiceRequestSender::ResponseInfo{}));
 
   base::MockCallback<

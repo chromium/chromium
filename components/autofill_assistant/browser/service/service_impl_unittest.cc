@@ -40,8 +40,12 @@ std::string ExpectedGetUserDataRequestBody(uint64_t run_id,
   return ProtocolUtils::CreateGetUserDataRequest(
       run_id, /* request_name= */ false, /* request_email= */ false,
       /* request_phone= */ false,
-      /* request_shipping= */ false, request_payment_methods,
-      /* supported_card_networks= */ {}, client_token);
+      /* request_shipping= */ false,
+      /* preexisting_address_ids= */ std::vector<std::string>(),
+      request_payment_methods,
+      /* supported_card_networks= */ std::vector<std::string>(),
+      /* preexisting_payment_instrument_ids= */ std::vector<std::string>(),
+      client_token);
 }
 
 class ServiceImplTest : public testing::Test {
@@ -226,7 +230,8 @@ TEST_F(ServiceImplTest, GetUserDataWithPayments) {
   EXPECT_CALL(mock_response_callback_,
               Run(net::HTTP_OK, std::string("response"), _));
 
-  service_->GetUserData(options, run_id, mock_response_callback_.Get());
+  service_->GetUserData(options, run_id, /* user_data= */ nullptr,
+                        mock_response_callback_.Get());
 }
 
 TEST_F(ServiceImplTest, GetUserDataWithoutPayments) {
@@ -237,7 +242,7 @@ TEST_F(ServiceImplTest, GetUserDataWithoutPayments) {
   EXPECT_CALL(*mock_request_sender_,
               OnSendRequest(GURL(kUserDataServerUrl),
                             ExpectedGetUserDataRequestBody(
-                                run_id, /* client_token= */ "",
+                                run_id, /* client_token= */ std::string(),
                                 options.request_payment_method),
                             _, RpcType::GET_USER_DATA))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response"),
@@ -245,7 +250,8 @@ TEST_F(ServiceImplTest, GetUserDataWithoutPayments) {
   EXPECT_CALL(mock_response_callback_,
               Run(net::HTTP_OK, std::string("response"), _));
 
-  service_->GetUserData(options, run_id, mock_response_callback_.Get());
+  service_->GetUserData(options, run_id, /* user_data= */ nullptr,
+                        mock_response_callback_.Get());
 }
 
 }  // namespace

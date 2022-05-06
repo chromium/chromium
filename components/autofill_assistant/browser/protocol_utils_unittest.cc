@@ -604,28 +604,39 @@ TEST_F(ProtocolUtilsTest, CreateGetUserDataRequest) {
   GetUserDataRequestProto request;
   EXPECT_TRUE(request.ParseFromString(ProtocolUtils::CreateGetUserDataRequest(
       /* run_id= */ 1, /* request_name= */ true, /* request_email= */ true,
-      /* request_phone= */ true, /* request_shipping= */ true,
+      /* request_phone= */ true, /* request_shipping= */ false,
+      /* preexisting_address_ids= */ std::vector<std::string>(),
       /* request_payment_methods= */ false,
       /* supported_card_networks= */ std::vector<std::string>(),
+      /* preexisting_payment_instrument_ids= */ std::vector<std::string>(),
       /* client_token= */ std::string())));
   EXPECT_EQ(request.run_id(), 1u);
   EXPECT_TRUE(request.request_name());
   EXPECT_TRUE(request.request_email());
   EXPECT_TRUE(request.request_phone());
-  EXPECT_TRUE(request.request_addresses());
+  EXPECT_FALSE(request.has_request_shipping_addresses());
   EXPECT_FALSE(request.has_request_payment_methods());
 
   EXPECT_TRUE(request.ParseFromString(ProtocolUtils::CreateGetUserDataRequest(
       /* run_id= */ 1, /* request_name= */ true, /* request_email= */ true,
       /* request_phone= */ true, /* request_shipping= */ true,
+      /* preexisting_address_ids= */
+      std::vector<std::string>({"address-1", "address-2"}),
       /* request_payment_methods= */ true,
       /* supported_card_networks= */
       std::vector<std::string>({"VISA", "MASTERCARD"}),
+      /* preexisting_payment_instrument_ids= */
+      std::vector<std::string>({"instrument-1", "instrument-2"}),
       /* client_token= */ "token")));
+  EXPECT_TRUE(request.has_request_shipping_addresses());
+  EXPECT_THAT(request.request_shipping_addresses().preexisting_ids(),
+              ElementsAre("address-1", "address-2"));
   EXPECT_TRUE(request.has_request_payment_methods());
   EXPECT_EQ(request.request_payment_methods().client_token(), "token");
   EXPECT_THAT(request.request_payment_methods().supported_card_networks(),
               ElementsAre("VISA", "MASTERCARD"));
+  EXPECT_THAT(request.request_payment_methods().preexisting_ids(),
+              ElementsAre("instrument-1", "instrument-2"));
 }
 
 TEST_F(ProtocolUtilsTest, ComputeNetworkStats) {

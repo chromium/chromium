@@ -1432,8 +1432,9 @@ void CollectUserDataAction::UpdateUserDataFromProto(
     if (proto_data.has_selected_contact_identifier()) {
       const auto& it = base::ranges::find_if(
           user_data->available_contacts_, [&](const auto& contact) {
-            return proto_data.selected_contact_identifier() ==
-                   contact->identifier.value_or(std::string());
+            return contact->identifier &&
+                   proto_data.selected_contact_identifier() ==
+                       contact->identifier;
           });
       if (it == user_data->available_contacts_.end()) {
         NOTREACHED();

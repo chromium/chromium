@@ -241,6 +241,12 @@ message GetUserDataRequestProto {
     optional bytes client_token = 1;
     // The list of supported card networks.
     repeated string supported_card_networks = 2;
+    // The list of known payment instruments from a previous call.
+    repeated string preexisting_ids = 3;
+  }
+  message AddressRequest {
+    // The list of known addresses from a previous call.
+    repeated string preexisting_ids = 1;
   }
 
   // For logging, to know which run this request has originated from.
@@ -249,10 +255,10 @@ message GetUserDataRequestProto {
   optional bool request_name = 2;
   optional bool request_email = 3;
   optional bool request_phone = 4;
-  optional bool request_addresses = 5;
+  optional AddressRequest request_shipping_addresses = 8;
   optional PaymentMethodRequest request_payment_methods = 7;
 
-  reserved 6;
+  reserved 5, 6;
 }
 
 // Response with user data.

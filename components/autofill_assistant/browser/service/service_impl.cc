@@ -144,7 +144,24 @@ void ServiceImpl::GetNextActions(
 
 void ServiceImpl::GetUserData(const CollectUserDataOptions& options,
                               uint64_t run_id,
+                              const UserData* user_data,
                               ServiceRequestSender::ResponseCallback callback) {
+  std::vector<std::string> preexisting_address_ids;
+  std::vector<std::string> preexisting_payment_instrument_ids;
+  if (user_data) {
+    for (const auto& address : user_data->available_addresses_) {
+      if (address->identifier.has_value()) {
+        preexisting_address_ids.emplace_back(*address->identifier);
+      }
+    }
+    for (const auto& instrument : user_data->available_payment_instruments_) {
+      if (instrument->identifier.has_value()) {
+        preexisting_payment_instrument_ids.emplace_back(
+            *instrument->identifier);
+      }
+    }
+  }
+
   if (options.request_payment_method) {
     // We do not cache the payments client token. It could go stale (in practice
     // it currently doesn't). Getting the token is little overhead.
@@ -152,17 +169,18 @@ void ServiceImpl::GetUserData(const CollectUserDataOptions& options,
         &ServiceImpl::SendUserDataRequest, weak_ptr_factory_.GetWeakPtr(),
         run_id, options.request_payer_name, options.request_payer_email,
         options.request_payer_phone || options.request_phone_number_separately,
-        options.request_shipping, options.request_payment_method,
-        options.supported_basic_card_networks, std::move(callback)));
+        options.request_shipping, preexisting_address_ids,
+        options.request_payment_method, options.supported_basic_card_networks,
+        preexisting_payment_instrument_ids, std::move(callback)));
     return;
   }
 
   SendUserDataRequest(
       run_id, options.request_payer_name, options.request_payer_email,
       options.request_payer_phone || options.request_phone_number_separately,
-      options.request_shipping, options.request_payment_method,
-      options.supported_basic_card_networks, std::move(callback),
-      std::string());
+      options.request_shipping, preexisting_address_ids,
+      options.request_payment_method, options.supported_basic_card_networks,
+      preexisting_payment_instrument_ids, std::move(callback), std::string());
 }
 
 void ServiceImpl::SendUserDataRequest(
@@ -171,15 +189,19 @@ void ServiceImpl::SendUserDataRequest(
     bool request_email,
     bool request_phone,
     bool request_shipping,
+    const std::vector<std::string>& preexisting_address_ids,
     bool request_payment_methods,
     const std::vector<std::string>& supported_card_networks,
+    const std::vector<std::string>& preexisting_payment_instrument_ids,
     ServiceRequestSender::ResponseCallback callback,
     const std::string& client_token) {
   request_sender_->SendRequest(
       user_data_url_,
       ProtocolUtils::CreateGetUserDataRequest(
           run_id, request_name, request_email, request_phone, request_shipping,
-          request_payment_methods, supported_card_networks, client_token),
+          preexisting_address_ids, request_payment_methods,
+          supported_card_networks, preexisting_payment_instrument_ids,
+          client_token),
       ServiceRequestSender::AuthMode::OAUTH_STRICT, std::move(callback),
       RpcType::GET_USER_DATA);
 }

@@ -958,15 +958,23 @@ std::string ProtocolUtils::CreateGetUserDataRequest(
     bool request_email,
     bool request_phone,
     bool request_shipping,
+    const std::vector<std::string>& preexisting_address_ids,
     bool request_payment_methods,
     const std::vector<std::string>& supported_card_networks,
+    const std::vector<std::string>& preexisting_payment_instrument_ids,
     const std::string& client_token) {
   GetUserDataRequestProto request_proto;
   request_proto.set_run_id(run_id);
   request_proto.set_request_name(request_name);
   request_proto.set_request_email(request_email);
   request_proto.set_request_phone(request_phone);
-  request_proto.set_request_addresses(request_shipping);
+
+  if (request_shipping) {
+    auto* address_request = request_proto.mutable_request_shipping_addresses();
+    for (const std::string& id : preexisting_address_ids) {
+      address_request->add_preexisting_ids(id);
+    }
+  }
 
   if (request_payment_methods) {
     auto* payment_methods_request =
@@ -975,6 +983,9 @@ std::string ProtocolUtils::CreateGetUserDataRequest(
     for (const std::string& supported_card_network : supported_card_networks) {
       payment_methods_request->add_supported_card_networks(
           supported_card_network);
+    }
+    for (const std::string& id : preexisting_payment_instrument_ids) {
+      payment_methods_request->add_preexisting_ids(id);
     }
   }
 

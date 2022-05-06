@@ -1085,7 +1085,7 @@ void ScriptExecutor::RequestUserData(
 
   delegate_->EnterState(AutofillAssistantState::RUNNING);
   service->GetUserData(
-      options, run_id_,
+      options, run_id_, user_data_,
       base::BindOnce(&ScriptExecutor::OnRequestUserData,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

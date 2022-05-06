@@ -18,6 +18,7 @@
 #include "components/autofill_assistant/browser/service/server_url_fetcher.h"
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -87,6 +88,7 @@ class ServiceImpl : public Service {
 
   void GetUserData(const CollectUserDataOptions& options,
                    uint64_t run_id,
+                   const UserData* user_data,
                    ServiceRequestSender::ResponseCallback callback) override;
 
  private:
@@ -96,8 +98,10 @@ class ServiceImpl : public Service {
       bool request_email,
       bool request_phone,
       bool request_shipping,
+      const std::vector<std::string>& preexisting_address_ids,
       bool request_payment_methods,
       const std::vector<std::string>& supported_card_networks,
+      const std::vector<std::string>& preexisting_payment_instrument_ids,
       ServiceRequestSender::ResponseCallback callback,
       const std::string& client_token);
 

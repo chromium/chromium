@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/autofill_assistant/browser/service/service.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -51,6 +52,7 @@ class MockService : public Service {
               GetUserData,
               (const CollectUserDataOptions& options,
                uint64_t run_id,
+               const UserData* user_data,
                ServiceRequestSender::ResponseCallback callback),
               (override));
 };
