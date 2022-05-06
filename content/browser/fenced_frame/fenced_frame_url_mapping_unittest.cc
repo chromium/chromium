@@ -166,29 +166,19 @@ TEST(FencedFrameURLMappingTest, PendingMappedUUID) {
   EXPECT_EQ(mapped_url, observer2.mapped_url());
   EXPECT_EQ(absl::nullopt, observer2.pending_ad_components_map());
 
-  absl::optional<FencedFrameURLMapping::SharedStorageBudgetMetadata>
-      metadata1_first_retrieval =
-          fenced_frame_url_mapping.ReleaseSharedStorageBudgetMetadata(
-              urn_uuid1);
+  FencedFrameURLMapping::SharedStorageBudgetMetadata* metadata1 =
+      fenced_frame_url_mapping.GetSharedStorageBudgetMetadata(urn_uuid1);
 
-  EXPECT_TRUE(metadata1_first_retrieval);
-  EXPECT_EQ(metadata1_first_retrieval->origin, shared_storage_origin);
-  EXPECT_DOUBLE_EQ(metadata1_first_retrieval->budget_to_charge, 2.0);
+  EXPECT_TRUE(metadata1);
+  EXPECT_EQ(metadata1->origin, shared_storage_origin);
+  EXPECT_DOUBLE_EQ(metadata1->budget_to_charge, 2.0);
 
-  EXPECT_FALSE(
-      fenced_frame_url_mapping.ReleaseSharedStorageBudgetMetadata(urn_uuid1));
+  FencedFrameURLMapping::SharedStorageBudgetMetadata* metadata2 =
+      fenced_frame_url_mapping.GetSharedStorageBudgetMetadata(urn_uuid2);
 
-  absl::optional<FencedFrameURLMapping::SharedStorageBudgetMetadata>
-      metadata2_first_retrieval =
-          fenced_frame_url_mapping.ReleaseSharedStorageBudgetMetadata(
-              urn_uuid2);
-
-  EXPECT_TRUE(metadata2_first_retrieval);
-  EXPECT_EQ(metadata2_first_retrieval->origin, shared_storage_origin);
-  EXPECT_DOUBLE_EQ(metadata2_first_retrieval->budget_to_charge, 3.0);
-
-  EXPECT_FALSE(
-      fenced_frame_url_mapping.ReleaseSharedStorageBudgetMetadata(urn_uuid2));
+  EXPECT_TRUE(metadata2);
+  EXPECT_EQ(metadata2->origin, shared_storage_origin);
+  EXPECT_DOUBLE_EQ(metadata2->budget_to_charge, 3.0);
 }
 
 TEST(FencedFrameURLMappingTest, RemoveObserverOnPendingMappedUUID) {

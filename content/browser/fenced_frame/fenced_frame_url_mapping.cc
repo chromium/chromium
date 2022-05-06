@@ -221,18 +221,15 @@ void FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
   pending_urn_uuid_to_url_map_.erase(it);
 }
 
-absl::optional<FencedFrameURLMapping::SharedStorageBudgetMetadata>
-FencedFrameURLMapping::ReleaseSharedStorageBudgetMetadata(
-    const GURL& urn_uuid) {
+FencedFrameURLMapping::SharedStorageBudgetMetadata*
+FencedFrameURLMapping::GetSharedStorageBudgetMetadata(const GURL& urn_uuid) {
   auto it = urn_uuid_to_url_map_.find(urn_uuid);
   DCHECK(it != urn_uuid_to_url_map_.end());
 
-  absl::optional<SharedStorageBudgetMetadata> metadata =
-      it->second.shared_storage_budget_metadata;
+  if (!it->second.shared_storage_budget_metadata)
+    return nullptr;
 
-  it->second.shared_storage_budget_metadata.reset();
-
-  return metadata;
+  return &it->second.shared_storage_budget_metadata.value();
 }
 
 bool FencedFrameURLMapping::HasObserverForTesting(

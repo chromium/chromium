@@ -2039,6 +2039,15 @@ class CONTENT_EXPORT NavigationRequest
   absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
       pending_ad_components_map_;
 
+  // If this navigation is a load in a fenced frame of a URN URL that resulted
+  // from a shared storage url selection operation, this contains the metadata
+  // for shared storage budget charging. A non-null pointer will stay valid
+  // during the `FencedFrameURLMapping`'s (thus the page's) lifetime, and a page
+  // will outlive any NavigationRequest occurring in fenced frames in the page,
+  // thus it's safe for this NavigationRequest to store this pointer.
+  raw_ptr<FencedFrameURLMapping::SharedStorageBudgetMetadata>
+      shared_storage_budget_metadata_ = nullptr;
+
   // Prerender2:
   // The type to trigger prerendering. The value is valid only when Prerender2
   // is enabled.
