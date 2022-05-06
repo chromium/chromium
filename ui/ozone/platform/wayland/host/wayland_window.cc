@@ -566,9 +566,9 @@ void WaylandWindow::OnDragSessionClose(DragOperation operation) {
 }
 
 void WaylandWindow::SetBoundsDip(const gfx::Rect& bounds_dip) {
-  // This method is used to update the content size, and this method is calling
-  // WindowWindow's SetBounds to avoid calling into
-  // WaylandToplevelWindow::SetBounds which sends a request to a compostior.
+  // This method is used to update the content size by calling WindowWindow's
+  // SetBounds, instead of WaylandToplevelWindow's override, which sends a
+  // request to the compositor.
   WaylandWindow::SetBounds(gfx::ScaleToRoundedRect(bounds_dip, window_scale()));
 }
 
