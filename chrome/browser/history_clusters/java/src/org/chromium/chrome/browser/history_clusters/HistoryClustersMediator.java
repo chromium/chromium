@@ -13,6 +13,7 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
@@ -139,7 +140,8 @@ class HistoryClustersMediator extends EmptyBottomSheetObserver implements Search
         }
     }
 
-    private void openHistoryClustersInFullPage(String query) {
+    @VisibleForTesting
+    void openHistoryClustersInFullPage(String query) {
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         if (isTablet) {
             Tab currentTab = mTabSupplier.get();
