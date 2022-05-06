@@ -235,9 +235,6 @@ std::string MediaViewDocumentIdToLabel(std::string root_document_id) {
   } else if (root_document_id == arc::kVideosRootDocumentId) {
     return l10n_util::GetStringUTF8(
         IDS_FILE_BROWSER_MEDIA_VIEW_VIDEOS_ROOT_LABEL);
-  } else if (root_document_id == arc::kDocumentsRootDocumentId) {
-    return l10n_util::GetStringUTF8(
-        IDS_FILE_BROWSER_MEDIA_VIEW_DOCUMENTS_ROOT_LABEL);
   }
   NOTREACHED();
   return "";
@@ -1271,7 +1268,6 @@ void VolumeManager::OnArcPlayStoreEnabledChanged(bool enabled) {
   if (enabled == arc_volumes_mounted_)
     return;
 
-  // Need to mount all roots declared in in arc_media_view_util.cc.
   if (enabled) {
     DoMountEvent(chromeos::MOUNT_ERROR_NONE,
                  Volume::CreateForMediaView(arc::kImagesRootDocumentId));
@@ -1279,8 +1275,6 @@ void VolumeManager::OnArcPlayStoreEnabledChanged(bool enabled) {
                  Volume::CreateForMediaView(arc::kVideosRootDocumentId));
     DoMountEvent(chromeos::MOUNT_ERROR_NONE,
                  Volume::CreateForMediaView(arc::kAudioRootDocumentId));
-    DoMountEvent(chromeos::MOUNT_ERROR_NONE,
-                 Volume::CreateForMediaView(arc::kDocumentsRootDocumentId));
     DoMountEvent(
         chromeos::MOUNT_ERROR_NONE,
         Volume::CreateForAndroidFiles(base::FilePath(util::kAndroidFilesPath)));
@@ -1291,8 +1285,6 @@ void VolumeManager::OnArcPlayStoreEnabledChanged(bool enabled) {
                    *Volume::CreateForMediaView(arc::kVideosRootDocumentId));
     DoUnmountEvent(chromeos::MOUNT_ERROR_NONE,
                    *Volume::CreateForMediaView(arc::kAudioRootDocumentId));
-    DoUnmountEvent(chromeos::MOUNT_ERROR_NONE,
-                   *Volume::CreateForMediaView(arc::kDocumentsRootDocumentId));
     DoUnmountEvent(chromeos::MOUNT_ERROR_NONE,
                    *Volume::CreateForAndroidFiles(
                        base::FilePath(util::kAndroidFilesPath)));

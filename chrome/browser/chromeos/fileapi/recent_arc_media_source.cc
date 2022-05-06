@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
-#include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
 #include "chrome/browser/chromeos/fileapi/recent_file.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
@@ -41,17 +40,18 @@ const char kAndroidDownloadDirPrefix[] = "/storage/emulated/0/Download/";
 const char kAndroidMyFilesDirPrefix[] =
     "/storage/0000000000000000000000000000CAFEF00D2019/";
 
-// Android's MediaDocumentsProvider.queryRecentDocuments() doesn't support
-// audio files, http://b/175155820
+const char kMediaDocumentsProviderAuthority[] =
+    "com.android.providers.media.documents";
+constexpr char kMediaDocumentsProviderImagesRoot[] = "images_root";
+constexpr char kMediaDocumentsProviderVideosRoot[] = "videos_root";
 const char* kMediaDocumentsProviderRootIds[] = {
-    arc::kImagesRootDocumentId,
-    arc::kVideosRootDocumentId,
-    arc::kDocumentsRootDocumentId,
+    kMediaDocumentsProviderImagesRoot,
+    kMediaDocumentsProviderVideosRoot,
 };
 
 base::FilePath GetRelativeMountPath(const std::string& root_id) {
   base::FilePath mount_path =
-      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
+      arc::GetDocumentsProviderMountPath(kMediaDocumentsProviderAuthority,
                                          // In MediaDocumentsProvider, |root_id|
                                          // and |root_document_id| are the same.
                                          root_id);
@@ -174,7 +174,7 @@ void RecentArcMediaSource::MediaRoot::GetRecentFiles(Params params) {
     return;
   }
 
-  runner->GetRecentDocuments(arc::kMediaDocumentsProviderAuthority, root_id_,
+  runner->GetRecentDocuments(kMediaDocumentsProviderAuthority, root_id_,
                              base::BindOnce(&MediaRoot::OnGetRecentDocuments,
                                             weak_ptr_factory_.GetWeakPtr()));
 }
@@ -227,8 +227,7 @@ void RecentArcMediaSource::MediaRoot::ScanDirectory(
   }
 
   // In MediaDocumentsProvider, |root_id| and |root_document_id| are the same.
-  auto* root =
-      root_map->Lookup(arc::kMediaDocumentsProviderAuthority, root_id_);
+  auto* root = root_map->Lookup(kMediaDocumentsProviderAuthority, root_id_);
   if (!root) {
     // Media roots should always exist.
     LOG(ERROR) << "ArcDocumentsProviderRoot is missing";
@@ -314,11 +313,9 @@ bool RecentArcMediaSource::MediaRoot::MatchesFileType(
     case FileType::kAll:
       return true;
     case FileType::kImage:
-      return root_id_ == arc::kImagesRootDocumentId;
+      return root_id_ == kMediaDocumentsProviderImagesRoot;
     case FileType::kVideo:
-      return root_id_ == arc::kVideosRootDocumentId;
-    case FileType::kDocument:
-      return root_id_ == arc::kDocumentsRootDocumentId;
+      return root_id_ == kMediaDocumentsProviderVideosRoot;
     default:
       return false;
   }
