@@ -129,10 +129,10 @@ PrerenderManager::~PrerenderManager() = default;
 class PrerenderManager::SearchPrerenderTask {
  public:
   SearchPrerenderTask(
-      TemplateURLRef::SearchTermsArgs& search_term_args,
+      const std::u16string& search_terms,
       std::unique_ptr<content::PrerenderHandle> search_prerender_handle)
       : search_prerender_handle_(std::move(search_prerender_handle)),
-        prerendered_search_terms_args_(search_term_args) {
+        prerendered_search_terms_(search_terms) {
     expiry_timer_.Start(FROM_HERE, GetSearchPrerenderExpiryDuration(),
                         base::BindOnce(&SearchPrerenderTask::OnTimerTriggered,
                                        base::Unretained(this)));
@@ -144,8 +144,8 @@ class PrerenderManager::SearchPrerenderTask {
   SearchPrerenderTask(const SearchPrerenderTask&) = delete;
   SearchPrerenderTask& operator=(const SearchPrerenderTask&) = delete;
 
-  const TemplateURLRef::SearchTermsArgs& prerendered_search_terms_args() const {
-    return prerendered_search_terms_args_;
+  const std::u16string& prerendered_search_terms() const {
+    return prerendered_search_terms_;
   }
 
   void MaybeAppendUrlEntry(content::WebContents& web_contents) const {
@@ -245,12 +245,8 @@ class PrerenderManager::SearchPrerenderTask {
   // Stops the ongoing prerender when the prerendered result is out-of-date.
   base::OneShotTimer expiry_timer_;
 
-  // Stores the arguments of the search term that `search_prerender_handle_`
-  // is prerendering.
-  // TODO(https://crbug.com/1291147): This is a workaround to stop the
-  // location bar from displaying the prefetch flag. This should be removed
-  // after we confirm the prerendered documents update the url by theirselves.
-  const TemplateURLRef::SearchTermsArgs prerendered_search_terms_args_;
+  // Stores the search term that `search_prerender_handle_` is prerendering.
+  const std::u16string prerendered_search_terms_;
 };
 
 void PrerenderManager::DidStartNavigation(
@@ -336,8 +332,7 @@ void PrerenderManager::StartPrerenderSearchSuggestion(
   if (search_prerender_task_) {
     // TODO(https://crbug.com/1278634): re-prerender the search result if the
     // prerendered content has been removed.
-    if (search_prerender_task_->prerendered_search_terms_args().search_terms ==
-        search_terms) {
+    if (search_prerender_task_->prerendered_search_terms() == search_terms) {
       return;
     }
 
@@ -389,7 +384,7 @@ void PrerenderManager::StartPrerenderSearchSuggestion(
 
   if (prerender_handle) {
     search_prerender_task_ = std::make_unique<SearchPrerenderTask>(
-        search_terms_args, std::move(prerender_handle));
+        search_terms, std::move(prerender_handle));
   }
 }
 
@@ -400,8 +395,7 @@ bool PrerenderManager::HasSearchResultPagePrerendered() const {
 const std::u16string PrerenderManager::GetPrerenderSearchTermForTesting()
     const {
   return search_prerender_task_
-             ? search_prerender_task_->prerendered_search_terms_args()
-                   .search_terms
+             ? search_prerender_task_->prerendered_search_terms()
              : std::u16string();
 }
 
@@ -433,8 +427,8 @@ void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
     // AutocompleteControllerAndroid::OnSuggestionSelected() or
     // ChromeOmniboxClient::OnURLOpenedFromOmnibox().
     bool is_search_destination_match = IsSearchDestinationMatch(
-        search_prerender_task_->prerendered_search_terms_args().search_terms,
-        *web_contents(), opened_url);
+        search_prerender_task_->prerendered_search_terms(), *web_contents(),
+        opened_url);
     base::UmaHistogramEnumeration(
         internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
         is_search_destination_match ? PrerenderPredictionStatus::kHitFinished
