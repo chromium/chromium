@@ -298,12 +298,9 @@ class ASH_EXPORT CaptureModeSession
                                        bool is_touch) const;
 
   // Handles updating the select region UI.
-  void OnLocatedEventPressed(const gfx::Point& location_in_root,
-                             bool is_touch,
-                             bool is_event_on_capture_bar_or_menu);
+  void OnLocatedEventPressed(const gfx::Point& location_in_root, bool is_touch);
   void OnLocatedEventDragged(const gfx::Point& location_in_root);
-  void OnLocatedEventReleased(bool is_event_on_capture_bar_or_menu,
-                              bool region_intersects_capture_bar);
+  void OnLocatedEventReleased(const gfx::Point& location_in_root);
 
   // Updates the capture region and the capture region widgets depending on the
   // value of |is_resizing|. |by_user| is true if the capture region is changed
@@ -368,19 +365,19 @@ class ASH_EXPORT CaptureModeSession
   // kImage or using custom video capture icon when |type| is kVideo.
   bool IsUsingCustomCursor(CaptureModeType type) const;
 
-  // Updates the capture bar widget with a given opacity. There is a different
-  // animation duration and tween type for mouse/touch release.
-  void UpdateCaptureBarWidgetOpacity(float opacity, bool on_release);
-
   // Ensure the user region in |controller_| is within the bounds of the root
   // window. This is called when creating |this| or when the display bounds have
   // changed.
   void ClampCaptureRegionToRootWindowSize();
 
   // Ends a region selection. Cleans up internal state and updates the cursor,
-  // capture bar opacity and magnifier glass.
-  void EndSelection(bool is_event_on_capture_bar_or_menu,
-                    bool region_intersects_capture_bar);
+  // capture UIs' opacity and magnifier glass. The `cursor_screen_location`
+  // could not be provided in some use cases, for example the capture region is
+  // updated because of the display metrics are changed. When
+  // `cursor_screen_location` is not provived, we will try to get the screen
+  // location of the mouse.
+  void EndSelection(
+      absl::optional<gfx::Point> cursor_screen_location = absl::nullopt);
 
   // Schedules a paint on the region and enough inset around it so that the
   // shadow, affordance circles, etc. are all repainted.
@@ -406,6 +403,10 @@ class ASH_EXPORT CaptureModeSession
   // Called at the beginning or end of the drag of capture region to update the
   // camera preview's bounds and visibility.
   void MaybeUpdateCameraPreviewBounds();
+
+  // Returns true if the given `event` is targeted on the capture bar or the
+  // setting menu if it exists.
+  bool IsEventTargetedOnCaptureBarOrMenu(const ui::LocatedEvent& event) const;
 
   CaptureModeController* const controller_;
 

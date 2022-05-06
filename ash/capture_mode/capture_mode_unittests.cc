@@ -4074,58 +4074,79 @@ TEST_F(CaptureModeTest, SettingsMenuVisibilityClicking) {
   EXPECT_FALSE(GetCaptureModeSettingsWidget());
 }
 
-// Tests the settings menu functionality when in region mode.
-TEST_F(CaptureModeTest, SettingsMenuVisibilityDrawingRegion) {
+// Tests capture bar and settings menu visibility / opacity when capture region
+// is being or after drawn.
+TEST_F(CaptureModeTest, CaptureBarAndSettingsMenuVisibilityDrawingRegion) {
   UpdateDisplay("800x700");
 
   auto* event_generator = GetEventGenerator();
   auto* controller = StartImageRegionCapture();
+  auto* capture_bar_widget = GetCaptureModeBarWidget();
+  ui::Layer* capture_bar_layer = capture_bar_widget->GetLayer();
   EXPECT_TRUE(controller->IsActive());
 
-  // Test the settings menu is hidden when the user clicks to start selecting a
-  // region.
+  // Test the settings menu and capture bar are hidden when the user clicks to
+  // start selecting a region.
   ClickOnView(GetSettingsButton(), event_generator);
   EXPECT_TRUE(GetCaptureModeSettingsWidget());
   const gfx::Rect target_region(gfx::BoundingRect(
       gfx::Point(0, 0),
-      GetCaptureModeBarView()->GetBoundsInScreen().top_right() +
+      capture_bar_widget->GetWindowBoundsInScreen().top_right() +
           gfx::Vector2d(0, -50)));
   event_generator->MoveMouseTo(target_region.origin());
   event_generator->PressLeftButton();
   EXPECT_FALSE(GetCaptureModeSettingsWidget());
   event_generator->MoveMouseTo(target_region.bottom_right());
+  EXPECT_EQ(0.f, capture_bar_layer->GetTargetOpacity());
   event_generator->ReleaseLeftButton();
   EXPECT_FALSE(GetCaptureModeSettingsWidget());
 
   // Test that the settings menu is hidden when we drag a region. This drags a
-  // region that overlapps the capture bar for later steps of testing.
+  // region that overlaps the capture bar for later steps of testing. Also tests
+  // that capture bar is invisible while region is being dragged even it
+  // overlaps with capture bar.
   ClickOnView(GetSettingsButton(), event_generator);
   event_generator->MoveMouseTo(target_region.origin() + gfx::Vector2d(50, 50));
   event_generator->PressLeftButton();
   EXPECT_FALSE(GetCaptureModeSettingsWidget());
   event_generator->MoveMouseTo(target_region.bottom_center());
+  EXPECT_EQ(0.f, capture_bar_layer->GetTargetOpacity());
   event_generator->ReleaseLeftButton();
 
   // With an overlapping region (as dragged to above), the capture bar opacity
-  // is changed based on hover. If the settings menu is open/visible, we close
-  // it when we hide the capture bar. Capture bar starts off opaque.
-  ui::Layer* capture_bar_layer = GetCaptureModeBarWidget()->GetLayer();
+  // is changed based on hover. If the settings menu is open/visible, the
+  // capture bar will always be visible no matter if the mouse is hovered on it
+  // or not.
   event_generator->MoveMouseTo(target_region.origin());
   EXPECT_EQ(0.1f, capture_bar_layer->GetTargetOpacity());
+  // Move mouse on top of the capture bar, verify that capture bar becomes
+  // visible.
+  event_generator->MoveMouseTo(
+      capture_bar_widget->GetWindowBoundsInScreen().CenterPoint());
+  EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
   ClickOnView(GetSettingsButton(), event_generator);
   EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
+
   // Move mouse onto the settings menu, confirm the capture bar is still
   // visible.
   event_generator->MoveMouseTo(
       GetCaptureModeSettingsView()->GetBoundsInScreen().CenterPoint());
   EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
-  // Move the mouse off both the capture bar and the settings menu, and confirm
-  // that both bars are no longer visible.
-  event_generator->MoveMouseTo(
-      GetCaptureModeSettingsView()->GetBoundsInScreen().top_center() +
-      gfx::Vector2d(0, -50));
+
+  // Move mouse to the outside of the capture bar and settings, verify that
+  // settings menu are still open and both capture bar and settings have full
+  // opaque.
+  event_generator->MoveMouseTo(target_region.origin());
+  auto* settings_menu = GetCaptureModeSettingsView();
+  EXPECT_TRUE(settings_menu);
+  EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
+  EXPECT_EQ(1.f, settings_menu->layer()->GetTargetOpacity());
+
+  // Close settings menu, and move mouse to the outside of the capture bar,
+  // verify capture bar has the overlapped opacity 0.1f.
+  ClickOnView(GetSettingsButton(), event_generator);
+  event_generator->MoveMouseTo(target_region.origin());
   EXPECT_EQ(0.1f, capture_bar_layer->GetTargetOpacity());
-  EXPECT_FALSE(GetCaptureModeSettingsWidget());
 }
 
 TEST_F(CaptureModeTest, CaptureFolderSetting) {
