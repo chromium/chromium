@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/guid.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/statistics_recorder.h"
@@ -227,12 +228,14 @@ class SingleClientBookmarksSyncTestWithEnabledThrottling : public SyncTest {
   void SetupBookmarksSync() {
     // Only enable bookmarks so that sync is not nudged by another data type
     // (with a shorter delay).
+    ASSERT_TRUE(GetClient(0)->SetupSync(
+        base::BindOnce([](syncer::SyncUserSettings* user_settings) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    GetSyncService(0)->GetUserSettings()->SetSelectedOsTypes(false, {});
+          user_settings->SetSelectedOsTypes(false, {});
 #endif
-    ASSERT_TRUE(GetClient(0)->SetupSyncNoWaitForCompletion(
-        {syncer::UserSelectableType::kBookmarks}));
-    ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+          user_settings->SetSelectedTypes(
+              false, {syncer::UserSelectableType::kBookmarks});
+        })));
   }
 
  private:

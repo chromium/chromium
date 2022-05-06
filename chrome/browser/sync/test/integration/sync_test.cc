@@ -868,18 +868,15 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
     }
 
     if (encryption_passphrase_provided) {
-      CHECK(client->SetupSyncWithEncryptionPassphraseNoWaitForCompletion(
-          GetRegisteredSelectableTypes(client_index),
+      ASSERT_TRUE(client->SetupSyncWithEncryptionPassphraseNoWaitForCompletion(
           encryption_passphrase_it->second))
           << "SetupSync() failed.";
     } else if (decryption_passphrase_provided) {
-      CHECK(client->SetupSyncWithDecryptionPassphraseNoWaitForCompletion(
-          GetRegisteredSelectableTypes(client_index),
+      ASSERT_TRUE(client->SetupSyncWithDecryptionPassphraseNoWaitForCompletion(
           decryption_passphrase_it->second))
           << "SetupSync() failed.";
     } else {
-      CHECK(client->SetupSyncNoWaitForCompletion(
-          GetRegisteredSelectableTypes(client_index)))
+      ASSERT_TRUE(client->SetupSyncNoWaitForCompletion())
           << "SetupSync() failed.";
     }
 

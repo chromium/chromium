@@ -95,13 +95,10 @@ class EnableDisableSingleClientTest : public SyncTest {
  protected:
   void SetupTest(bool all_types_enabled) {
     ASSERT_TRUE(SetupClients());
-    if (all_types_enabled) {
-      ASSERT_TRUE(GetClient(0)->SetupSync());
-    } else {
-      ASSERT_TRUE(
-          GetClient(0)->SetupSyncNoWaitForCompletion(UserSelectableTypeSet()));
-      ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
-    }
+    ASSERT_TRUE(GetClient(0)->SetupSync(base::BindLambdaForTesting(
+        [all_types_enabled](syncer::SyncUserSettings* user_settings) {
+          user_settings->SetSelectedTypes(all_types_enabled, {});
+        })));
 
     registered_data_types_ = GetSyncService(0)->GetRegisteredDataTypesForTest();
     multi_grouped_types_ = MultiGroupTypes(registered_data_types_);

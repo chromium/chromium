@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -21,6 +22,7 @@ class Profile;
 
 namespace syncer {
 class SyncSetupInProgressHandle;
+class SyncUserSettings;
 }  // namespace syncer
 
 class SyncSigninDelegate;
@@ -39,6 +41,9 @@ class SyncServiceImplHarness {
     // Uses UI signin flow and connects to GAIA servers for authentication.
     UI_SIGNIN
   };
+
+  using SetUserSettingsCallback =
+      base::OnceCallback<void(syncer::SyncUserSettings*)>;
 
   static std::unique_ptr<SyncServiceImplHarness> Create(
       Profile* profile,
@@ -70,26 +75,32 @@ class SyncServiceImplHarness {
   // Enables and configures sync for all available datatypes. Returns true only
   // after sync has been fully initialized and authenticated, and we are ready
   // to process changes.
-  bool SetupSync();
+  // |user_settings_callback| will be called once the engine is initialized, but
+  // before actually starting sync, to give the caller a chance to modify sync
+  // settings (mostly the selected data types).
+  bool SetupSync(SetUserSettingsCallback user_settings_callback =
+                     SetUserSettingsCallback());
 
-  // Enables and configures sync only for the given |selected_types|.
+  // Enables and configures sync.
   // Does not wait for sync to be ready to process changes -- callers need to
   // ensure this by calling AwaitSyncSetupCompletion() or
   // AwaitSyncTransportActive().
+  // |user_settings_callback| will be called once the engine is initialized, but
+  // before actually starting sync, to give the caller a chance to modify sync
+  // settings (mostly the selected data types).
   // Returns true on success.
   bool SetupSyncNoWaitForCompletion(
-      syncer::UserSelectableTypeSet selected_types);
+      SetUserSettingsCallback user_settings_callback =
+          SetUserSettingsCallback());
 
   // Same as SetupSyncNoWaitForCompletion(), but also sets the given encryption
   // passphrase during setup.
   bool SetupSyncWithEncryptionPassphraseNoWaitForCompletion(
-      syncer::UserSelectableTypeSet selected_types,
       const std::string& passphrase);
 
   // Same as SetupSyncNoWaitForCompletion(), but also sets the given decryption
   // passphrase during setup.
   bool SetupSyncWithDecryptionPassphraseNoWaitForCompletion(
-      syncer::UserSelectableTypeSet selected_types,
       const std::string& passphrase);
 
   // Signals that sync setup is complete, and that PSS may begin syncing.
@@ -188,9 +199,13 @@ class SyncServiceImplHarness {
   // |encryption_mode|.
   // If |encryption_mode| is kDecryption or kEncryption, |encryption_passphrase|
   // has to have a value which will be used to properly setup sync.
-  bool SetupSyncImpl(syncer::UserSelectableTypeSet selected_types,
-                     EncryptionSetupMode encryption_mode,
-                     const absl::optional<std::string>& encryption_passphrase);
+  // |user_settings_callback| will be called once the engine is initialized, but
+  // before actually starting sync, to give the caller a chance to modify sync
+  // settings (mostly the selected data types).
+  bool SetupSyncImpl(EncryptionSetupMode encryption_mode,
+                     const absl::optional<std::string>& encryption_passphrase,
+                     SetUserSettingsCallback user_settings_callback =
+                         SetUserSettingsCallback());
 
   // Gets detailed status from |service_| in pretty-printable form.
   std::string GetServiceStatus();

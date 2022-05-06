@@ -236,8 +236,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // When client 1 hits a passphrase required state, we can infer that
   // client 0's passphrase has been committed. to the server.
-  ASSERT_TRUE(GetClient(1)->SetupSyncNoWaitForCompletion(
-      GetRegisteredSelectableTypes(1)));
+  ASSERT_TRUE(GetClient(1)->SetupSyncNoWaitForCompletion());
   ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(1)).Wait());
 
   // Get client 1 out of the passphrase required state.

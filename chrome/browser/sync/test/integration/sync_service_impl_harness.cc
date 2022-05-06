@@ -261,10 +261,10 @@ void SyncServiceImplHarness::ExitSyncPausedStateForPrimaryAccount() {
   AwaitSyncSetupCompletion();
 }
 
-bool SyncServiceImplHarness::SetupSync() {
+bool SyncServiceImplHarness::SetupSync(
+    SetUserSettingsCallback user_settings_callback) {
   bool result =
-      SetupSyncNoWaitForCompletion(
-          service()->GetUserSettings()->GetRegisteredSelectableTypes()) &&
+      SetupSyncNoWaitForCompletion(std::move(user_settings_callback)) &&
       AwaitSyncSetupCompletion();
   if (!result) {
     LOG(ERROR) << profile_debug_name_ << ": SetupSync failed. Syncer status:\n"
@@ -276,31 +276,28 @@ bool SyncServiceImplHarness::SetupSync() {
 }
 
 bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
-    syncer::UserSelectableTypeSet selected_types) {
-  return SetupSyncImpl(selected_types, EncryptionSetupMode::kNoEncryption,
-                       /*encryption_passphrase=*/absl::nullopt);
+    SetUserSettingsCallback user_settings_callback) {
+  return SetupSyncImpl(EncryptionSetupMode::kNoEncryption,
+                       /*encryption_passphrase=*/absl::nullopt,
+                       std::move(user_settings_callback));
 }
 
 bool SyncServiceImplHarness::
     SetupSyncWithEncryptionPassphraseNoWaitForCompletion(
-        syncer::UserSelectableTypeSet selected_types,
         const std::string& passphrase) {
-  return SetupSyncImpl(selected_types, EncryptionSetupMode::kEncryption,
-                       passphrase);
+  return SetupSyncImpl(EncryptionSetupMode::kEncryption, passphrase);
 }
 
 bool SyncServiceImplHarness::
     SetupSyncWithDecryptionPassphraseNoWaitForCompletion(
-        syncer::UserSelectableTypeSet selected_types,
         const std::string& passphrase) {
-  return SetupSyncImpl(selected_types, EncryptionSetupMode::kDecryption,
-                       passphrase);
+  return SetupSyncImpl(EncryptionSetupMode::kDecryption, passphrase);
 }
 
 bool SyncServiceImplHarness::SetupSyncImpl(
-    syncer::UserSelectableTypeSet selected_types,
     EncryptionSetupMode encryption_mode,
-    const absl::optional<std::string>& passphrase) {
+    const absl::optional<std::string>& passphrase,
+    SetUserSettingsCallback user_settings_callback) {
   DCHECK(encryption_mode == EncryptionSetupMode::kNoEncryption ||
          passphrase.has_value());
 
@@ -323,13 +320,12 @@ bool SyncServiceImplHarness::SetupSyncImpl(
   if (!AwaitEngineInitialization()) {
     return false;
   }
-  // Choose the datatypes to be synced. If all registered datatypes are to be
-  // synced, set sync_everything to true; otherwise, set it to false.
-  bool sync_everything =
-      (selected_types ==
-       service()->GetUserSettings()->GetRegisteredSelectableTypes());
-  service()->GetUserSettings()->SetSelectedTypes(sync_everything,
-                                                 selected_types);
+
+  // Now give the caller a chance to configure settings (in particular, the
+  // selected data types) before actually starting to sync.
+  if (user_settings_callback) {
+    std::move(user_settings_callback).Run(service()->GetUserSettings());
+  }
 
   if (encryption_mode == EncryptionSetupMode::kEncryption) {
     service()->GetUserSettings()->SetEncryptionPassphrase(passphrase.value());
@@ -481,8 +477,10 @@ bool SyncServiceImplHarness::EnableSyncForType(
       std::string(syncer::GetUserSelectableTypeName(type)) + ")");
 
   if (!IsSyncEnabledByUser()) {
-    bool result =
-        SetupSyncNoWaitForCompletion({type}) && AwaitSyncSetupCompletion();
+    bool result = SetupSync(base::BindLambdaForTesting(
+        [type](syncer::SyncUserSettings* user_settings) {
+          user_settings->SetSelectedTypes(false, {type});
+        }));
     // If SetupSync() succeeded, then Sync must now be enabled.
     DCHECK(!result || IsSyncEnabledByUser());
     return result;
