@@ -334,7 +334,7 @@ void ChromeClientImpl::InjectGestureScrollEvent(
 void ChromeClientImpl::SetOverscrollBehavior(
     LocalFrame& main_frame,
     const cc::OverscrollBehavior& overscroll_behavior) {
-  DCHECK(main_frame.IsMainFrame());
+  DCHECK(main_frame.IsOutermostMainFrame());
   main_frame.GetWidgetForLocalRoot()->SetOverscrollBehavior(
       overscroll_behavior);
 }
