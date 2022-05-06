@@ -4082,7 +4082,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4953808748584563296">Avatar portocaliu prestabilit</translation>
 <translation id="4955710816792587366">Alege codul PIN</translation>
 <translation id="4959262764292427323">Parolele sunt salvate în Contul tău Google, astfel încât să le poți folosi pe orice dispozitiv</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> le poate da atacatorilor posibilitatea să îți fure informațiile cu caracter personal.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Proiectează ecranul</translation>
 <translation id="4961361269522589229">idei de rețete</translation>
@@ -5908,7 +5907,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6798578729981748444">Pentru a finaliza importul, închide toate ferestrele Firefox.</translation>
 <translation id="6798780071646309401">tasta Caps Lock este activată</translation>
 <translation id="6798954102094737107">Plugin: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Fișierul le poate da atacatorilor posibilitatea să îți fure informațiile cu caracter personal</translation>
 <translation id="6801129617625983991">Setări generale</translation>
 <translation id="6801435275744557998">Calibrează ecranul tactil</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6380,7 +6378,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7269736181983384521">utilizarea datelor pentru Trimiterea în apropiere</translation>
 <translation id="7272674038937250585">Nu a fost oferită o descriere</translation>
 <translation id="7273110280511444812">conectat ultima dată pe <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Vei folosi un upgrade Kiosk &amp; Signage în urma căruia dispozitivul va putea să ruleze doar în modul chioșc sau pentru semne. Dacă vrei ca utilizatorii să se conecteze la dispozitiv, revino și înregistrează-te folosind upgrade-ul Chrome Enterprise.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> până la încărcare completă</translation>
 <translation id="727952162645687754">Eroare la descărcare</translation>
 <translation id="7280041992884344566">A apărut o eroare în timp ce Chrome căuta software dăunător</translation>
@@ -6783,7 +6780,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7670434942695515800">Pentru performanțe optime, fă upgrade la cea mai recentă versiune. Backupul fișierelor este recomandat în cazul în care upgrade-ul nu se finalizează. Odată ce începe upgrade-ul, Linux se va opri. Salvează fișierele deschise înainte de a continua. <ph name="LINK_START" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Folosește bara de titlu și chenarele definite în sistem</translation>
 <translation id="767127784612208024">Atinge pentru a confirma resetarea</translation>
-<translation id="767147716926917172">Trimite automat date de diagnosticare și de utilizare la Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, în <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Dezactivează toate porturile care se redirecționează în Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> aplicații</translation>

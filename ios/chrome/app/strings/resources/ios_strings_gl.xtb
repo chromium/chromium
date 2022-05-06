@@ -38,7 +38,6 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="1219674500290482172">Non se puido conectar a Internet.</translation>
 <translation id="122699739164161391">Pechar todas as pestanas</translation>
 <translation id="1229222343402087523">Busca "${searchPhrase}" en Chrome</translation>
-<translation id="1231733316453485619">Queres activar a sincronización?</translation>
 <translation id="1242044645101871359">Inicia sesión de novo</translation>
 <translation id="1254117744268754948">Seleccionar cartafol</translation>
 <translation id="1265739287306757398">Máis información</translation>
@@ -971,5 +970,4 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="988141524645182168">Outros dispositivos</translation>
 <translation id="989988560359834682">Editar enderezo</translation>
 <translation id="994757059139821576">Suxestións de artigos</translation>
-<translation id="997742718232442409">Este sitio web está tentando descargar un ficheiro de calendario.</translation>
 </translationbundle>

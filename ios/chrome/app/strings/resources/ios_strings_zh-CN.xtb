@@ -38,7 +38,6 @@
 <translation id="1219674500290482172">无法连接到互联网。</translation>
 <translation id="122699739164161391">关闭所有标签页</translation>
 <translation id="1229222343402087523">在 Chrome 中搜索 ${searchPhrase}</translation>
-<translation id="1231733316453485619">开启同步功能？</translation>
 <translation id="1242044645101871359">重新登录</translation>
 <translation id="1254117744268754948">选择文件夹</translation>
 <translation id="1265739287306757398">了解如何操作</translation>
@@ -971,5 +970,4 @@
 <translation id="988141524645182168">其他设备</translation>
 <translation id="989988560359834682">修改地址</translation>
 <translation id="994757059139821576">文章推荐</translation>
-<translation id="997742718232442409">此网站正要尝试下载一个日历文件。</translation>
 </translationbundle>

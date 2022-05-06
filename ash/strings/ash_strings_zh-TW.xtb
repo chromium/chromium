@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C 裝置 (前方連接埠)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> 已變更為 <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz)。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
 <translation id="1013923882670373915">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限，請在裝置上輸入以下 PIN 碼：<ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">已選取部分螢幕畫面</translation>
 <translation id="1024364763893396229">儲存 <ph name="NAME" /></translation>
 <translation id="1032891413405719768">觸控筆電量偏低</translation>
 <translation id="1036073649888683237">如要管理通知，請前往「設定」應用程式</translation>
@@ -328,7 +327,6 @@
 <translation id="3009178788565917040">輸出</translation>
 <translation id="3009958530611748826">選取要儲存掃描檔的資料夾</translation>
 <translation id="301282384882049174">由系統管理員分享</translation>
-<translation id="3017687597151988916">選取區域為視窗</translation>
 <translation id="3033545621352269033">開啟</translation>
 <translation id="3033912566804961911">與「<ph name="DESK_NAME" />」合併</translation>
 <translation id="3036649622769666520">開啟檔案</translation>
@@ -1046,7 +1044,6 @@
 <translation id="746232733191930409">螢幕畫面錄製模式</translation>
 <translation id="7466449121337984263">請輕觸感應器</translation>
 <translation id="7477793887173910789">控管你的音樂、影片等項目</translation>
-<translation id="7483025031359818980">選取區域為全螢幕</translation>
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
 <translation id="7508690557411636492">過去一個月開啟過</translation>
 <translation id="7509246181739783082">驗證身分</translation>

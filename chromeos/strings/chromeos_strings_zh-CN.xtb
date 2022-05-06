@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">启用浅色主题</translation>
 <translation id="2323506179655536734">已跳过</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">开启蓝牙以发现附近的设备</translation>
 <translation id="2346474577291266260">极佳 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463">检测到<ph name="LINK_BEGIN" />不支持的组件<ph name="LINK_END" />。如果您要选择确认已安装这些组件，请立即确认。</translation>
@@ -722,7 +723,6 @@
 <translation id="8498220429738806196">流量计数器</translation>
 <translation id="8503813439785031346">用户名</translation>
 <translation id="8503836310948963452">只需再等几分钟…</translation>
-<translation id="8521021929829989041">用作个人设备</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">您的运营商可能会要求您启用此选项以连接到其网络。如需了解详情，请联系您的运营商。</translation>
 <translation id="8576249514688522074">未初始化</translation>

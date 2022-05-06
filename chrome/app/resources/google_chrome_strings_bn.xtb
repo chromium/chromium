@@ -13,7 +13,6 @@
 <translation id="1154147086299354128">&amp;Chrome এ খুলুন</translation>
 <translation id="1178374936842835197">এই পৃষ্ঠাতে কোনও একটি সেটিং দেখা না গেলে, আপনার <ph name="LINK_BEGIN" />
         ChromeOS Flex সেটিংস<ph name="LINK_END" /> বিকল্পটি দেখুন</translation>
-<translation id="1182414570724401860">Chrome-এর সাজেশন, আপনি ফাইলটি ডাউনলোড করবেন না এবং এটি খুলবেন না</translation>
 <translation id="1278833599417554002">&amp;Chrome আপডেট করতে আবার লঞ্চ করুন</translation>
 <translation id="1302523850133262269">Chrome যখন সাম্প্রতিক সিস্টেম আপডেটগুলিকে ইনস্টল করে তখন দয়া করে অপেক্ষা করুন৷</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" />-এ এই ডিভাইস ব্যবহার করার আগে আপনাকে নিম্নলিখিত পরিষেবার শর্তাবলী পড়ে নিতে হবে এবং তাতে সম্মতি দিতে হবে। এইসব শর্ত Google ChromeOS Flex-এর শর্তাবলীকে সম্প্রসারণ, পরিবর্তন বা সীমাবদ্ধ করে না।</translation>
@@ -288,6 +287,7 @@
 বিভিন্ন ওয়েবসাইট ও অ্যাপকে আপনার আগে দেওয়া অনুমতি এই অ্যাকাউন্টের ক্ষেত্রেও প্রযোজ্য হবে। <ph name="SETTINGS_LINK_BEGIN" />সেটিংস<ph name="SETTINGS_LINK_END" /> থেকে আপনার Google অ্যাকাউন্ট ম্যানেজ করতে পারবেন।</translation>
 <translation id="7398801000654795464">আপনি <ph name="USER_EMAIL_ADDRESS" /> হিসাবে Chrome-এ প্রবেশ করেছেন৷ আবার সাইন-ইন করতে একই অ্যাকাউন্ট ব্যবহার করুন৷</translation>
 <translation id="7410958280246779049">Chrome এই ফাইলটিকে ব্লক করেছে কারণ এটি বিপজ্জনক</translation>
+<translation id="7426611252293106642">Google Chrome সঠিকভাবে কাজ নাও করতে পারে কারণ এটি এখন আর এই Linux ডিস্ট্রিবিউশনে আর সমর্থিত নয়</translation>
 <translation id="7481213027396403996">Chrome-এ সবচেয়ে বেশি সুরক্ষা পান</translation>
 <translation id="7486227612705979895">অ্যাড্রেস বারে সাজেশন দেওয়ার জন্য Chrome আপনার ড্রাইভ অ্যাক্সেস করবে</translation>
 <translation id="7535429826459677826">Google Chrome ডেভেলপার</translation>

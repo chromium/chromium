@@ -38,7 +38,6 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="1219674500290482172">Është e pamundur lidhja me internetin.</translation>
 <translation id="122699739164161391">Mbyll të gjitha skedat</translation>
 <translation id="1229222343402087523">Kërko ${searchPhrase} në Chrome</translation>
-<translation id="1231733316453485619">Të aktivizohet sinkronizimi?</translation>
 <translation id="1242044645101871359">Identifikohu përsëri</translation>
 <translation id="1254117744268754948">Zgjidh dosjen</translation>
 <translation id="1265739287306757398">Mëso se si</translation>
@@ -971,5 +970,4 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="988141524645182168">Pajisjet e tjera</translation>
 <translation id="989988560359834682">Redakto adresën</translation>
 <translation id="994757059139821576">Sugjerimet e artikujve</translation>
-<translation id="997742718232442409">Ky sajt uebi po përpiqet të shkarkojë një skedar kalendari.</translation>
 </translationbundle>

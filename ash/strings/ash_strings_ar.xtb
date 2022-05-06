@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">‏جهاز USB-C (المنفذ الأمامي)</translation>
 <translation id="1013598600051641573">تم تغيير درجة دقة <ph name="DISPLAY_NAME" /> إلى <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> هرتز). يُرجى النقر على "تأكيد" لحفظ التغييرات. وستتم استعادة الإعدادات السابقة خلال <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">يريد جهاز بلوتوث "<ph name="DEVICE_NAME" />" الحصول على إذن للإقران. يُرجى إدخال رقم التعريف الشخصي هذا في هذا الجهاز: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">تم اختيار لقطة شاشة جزئية.</translation>
 <translation id="1024364763893396229">حفظ بيانات جهاز <ph name="NAME" /></translation>
 <translation id="1032891413405719768">بطارية قلم الشاشة منخفضة</translation>
 <translation id="1036073649888683237">لإدارة الإشعارات، يُرجى الانتقال إلى "الإعدادات".</translation>
@@ -332,7 +331,6 @@
 <translation id="3009178788565917040">الإخراج</translation>
 <translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
 <translation id="301282384882049174">نموذج تمت مشاركته من قِبل المشرف</translation>
-<translation id="3017687597151988916">تم ضبط منطقة الاختيار على نافذة.</translation>
 <translation id="3033545621352269033">مُفعَّلة</translation>
 <translation id="3033912566804961911">دمج مع <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">فتح الملفات</translation>
@@ -1051,7 +1049,6 @@
 <translation id="746232733191930409">وضع تسجيل الشاشة</translation>
 <translation id="7466449121337984263">يُرجى لمس جهاز الاستشعار.</translation>
 <translation id="7477793887173910789">التحكم في الموسيقى والفيديوهات وغير ذلك</translation>
-<translation id="7483025031359818980">تم ضبط منطقة الاختيار على ملء الشاشة.</translation>
 <translation id="7497767806359279797">اختيار اللغة ولوحة المفاتيح</translation>
 <translation id="7508690557411636492">تم فتحه الشهر الماضي.</translation>
 <translation id="7509246181739783082">إثبات هويتك</translation>

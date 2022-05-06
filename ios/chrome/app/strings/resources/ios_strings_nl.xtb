@@ -38,7 +38,6 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="1219674500290482172">Kan geen verbinding maken met internet.</translation>
 <translation id="122699739164161391">Alle tabbladen sluiten</translation>
 <translation id="1229222343402087523">Zoek naar ${searchPhrase} in Chrome</translation>
-<translation id="1231733316453485619">Synchronisatie aanzetten?</translation>
 <translation id="1242044645101871359">Opnieuw inloggen</translation>
 <translation id="1254117744268754948">Map kiezen</translation>
 <translation id="1265739287306757398">Meer informatie</translation>
@@ -227,6 +226,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2898963176829412617">Nieuwe map…</translation>
 <translation id="2916171785467530738">Zoekopdrachten en URL's automatisch aanvullen</translation>
 <translation id="291754862089661335">Positioneer de QR-/streepjescode binnen dit kader</translation>
+<translation id="2920866371965792875">Volg deze site hier als je updates wilt zien.</translation>
 <translation id="2921219216347069551">Kan pagina niet delen</translation>
 <translation id="2923448633003185837">Plakken en zoeken</translation>
 <translation id="292639812446257861">Markeren als ongelezen</translation>
@@ -971,5 +971,4 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="988141524645182168">Andere apparaten</translation>
 <translation id="989988560359834682">Adres bewerken</translation>
 <translation id="994757059139821576">Artikelsuggesties</translation>
-<translation id="997742718232442409">Deze website probeert een agendabestand te downloaden.</translation>
 </translationbundle>

@@ -895,6 +895,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3399952811970034796">Endereço de Entrega</translation>
 <translation id="3402261774528610252">A conexão para carregar este site usou o TLS 1.0 ou o TLS 1.1, que estão obsoletos e serão desativados em breve. Depois da desativação, os usuários não poderão carregar este site. É necessário ativar o TLS 1.2 ou mais recente no servidor.</translation>
 <translation id="3405664148539009465">Personalizar fontes</translation>
+<translation id="3407789382767355356">login de terceiros</translation>
 <translation id="3409896703495473338">Gerenciar configurações de segurança</translation>
 <translation id="3414952576877147120">Tamanho:</translation>
 <translation id="3417660076059365994">Os arquivos transferidos por upload ou anexados são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados confidenciais ou malware.</translation>

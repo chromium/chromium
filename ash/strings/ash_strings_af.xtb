@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB C-toestel (poort aan voorkant)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> het verander na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik Bevestig om veranderinge te hou. Die vorige instellings sal oor <ph name="TIMEOUT_SECONDS" /> teruggestel word.</translation>
 <translation id="1013923882670373915">Bluetooth-toestel "<ph name="DEVICE_NAME" />" vra toestemming om saam te bind. Voer asseblief hierdie PIN-kode op daardie toestel in: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Gedeeltelike skermkiekie gekies</translation>
 <translation id="1024364763893396229">Stoor jou <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Stilus se battery is amper pap</translation>
 <translation id="1036073649888683237">Gaan na Instellings om kennisgewings te bestuur</translation>
@@ -331,7 +330,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3009178788565917040">Uitvoer</translation>
 <translation id="3009958530611748826">Kies 'n vouer om in te stoor</translation>
 <translation id="301282384882049174">Gedeel deur jou administrateur</translation>
-<translation id="3017687597151988916">Seleksiearea is gestel op venster</translation>
 <translation id="3033545621352269033">Aan</translation>
 <translation id="3033912566804961911">Kombineer met <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Maak lêers oop</translation>
@@ -1051,7 +1049,6 @@ Nuwe installasie</translation>
 <translation id="746232733191930409">Skermopnamemodus</translation>
 <translation id="7466449121337984263">Raak asseblief die sensor</translation>
 <translation id="7477793887173910789">Beheer jou musiek, video's en meer</translation>
-<translation id="7483025031359818980">Seleksiearea is gestel op volskerm</translation>
 <translation id="7497767806359279797">Kies taal en sleutelbord</translation>
 <translation id="7508690557411636492">In die afgelope maand oopgemaak</translation>
 <translation id="7509246181739783082">Verifieer jou identiteit</translation>

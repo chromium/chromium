@@ -38,7 +38,6 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="1219674500290482172">No es pot connectar a Internet.</translation>
 <translation id="122699739164161391">Tanca totes les pestanyes</translation>
 <translation id="1229222343402087523">Cerca ${searchPhrase} a Chrome</translation>
-<translation id="1231733316453485619">Vols activar la sincronització?</translation>
 <translation id="1242044645101871359">Torna a iniciar la sessió</translation>
 <translation id="1254117744268754948">Tria la carpeta</translation>
 <translation id="1265739287306757398">Informació</translation>
@@ -971,5 +970,4 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="988141524645182168">Altres dispositius</translation>
 <translation id="989988560359834682">Edita l'adreça</translation>
 <translation id="994757059139821576">Suggeriments d'articles</translation>
-<translation id="997742718232442409">Aquest lloc web està provant de baixar un fitxer de calendari.</translation>
 </translationbundle>

@@ -38,7 +38,6 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="1219674500290482172">Nem lehet kapcsolódni az internethez.</translation>
 <translation id="122699739164161391">Összes lap bezárása</translation>
 <translation id="1229222343402087523">Keresés a következőre a Chrome-ban: ${searchPhrase}</translation>
-<translation id="1231733316453485619">Bekapcsolja a szinkronizálást?</translation>
 <translation id="1242044645101871359">Bejelentkezés újra</translation>
 <translation id="1254117744268754948">Mappa kiválasztása</translation>
 <translation id="1265739287306757398">További információ</translation>
@@ -227,6 +226,7 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2898963176829412617">Új mappa...</translation>
 <translation id="2916171785467530738">Keresések és URL-címek automatikus kiegészítése</translation>
 <translation id="291754862089661335">Igazítsa a QR-kódot vagy vonalkódot ehhez a kerethez</translation>
+<translation id="2920866371965792875">Ha szeretné látni ennek a webhelynek a friss híreit, itt követheti.</translation>
 <translation id="2921219216347069551">Az oldal megosztása sikertelen</translation>
 <translation id="2923448633003185837">Beillesztés és ugrás</translation>
 <translation id="292639812446257861">Megjelölés olvasatlanként</translation>
@@ -971,5 +971,4 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="988141524645182168">Egyéb eszközök</translation>
 <translation id="989988560359834682">Cím szerkesztése</translation>
 <translation id="994757059139821576">Javasolt cikkek</translation>
-<translation id="997742718232442409">Ez a webhely megpróbál letölteni egy naptárfájlt.</translation>
 </translationbundle>

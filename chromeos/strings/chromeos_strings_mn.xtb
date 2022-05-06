@@ -91,6 +91,7 @@
 <translation id="1801418420130173017">Бараан загварыг идэвхгүй болгох</translation>
 <translation id="1807246157184219062">Гэрэлтүүлэг</translation>
 <translation id="1827738518074806965">Уран зургийн галерей</translation>
+<translation id="1840835860961531162">Бичихээс хамгаалахыг унтраах</translation>
 <translation id="1851218745569890714">Видео хурал</translation>
 <translation id="1852934301711881861">ChromeOS Flex-г суулгах</translation>
 <translation id="1856388568474281774">Доош сум</translation>
@@ -141,6 +142,7 @@
 <translation id="2320295602967756579">Цайвар загварыг идэвхжүүлэх</translation>
 <translation id="2323506179655536734">АЛГАССАН</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Үйлдвэрийн тохиргоонд нь буцааж оруулах</translation>
 <translation id="2338501278241028356">Ойролцоох төхөөрөмж хайхын тулд Bluetooth-г асаана уу</translation>
 <translation id="2346474577291266260">Маш сайн (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Шаардлага хангаагүй бүрэлдэхүүн хэсгүүд<ph name="LINK_END" /> илэрлээ. Хэрэв та үүнийг суулгасан болохыг баталгаажуулахаар сонгосон бол одоо хийнэ үү.</translation>
@@ -273,6 +275,7 @@
 <translation id="3941014780699102620">Хостыг шийдвэрлэж чадсангүй</translation>
 <translation id="3942420633017001071">Оношилгоо</translation>
 <translation id="3954678691475912818">Төхөөрөмжийн төрөл тодорхойгүй байна.</translation>
+<translation id="3958703339436883942">Дахин эхлүүлэхээр бэлтгэж байна...</translation>
 <translation id="3966286471246132217">Илүү нарийвчилсан илэрц авах бол туршилт дуусах хүртэл бүх аппыг хаана уу.</translation>
 <translation id="3967822245660637423">Татаж авч дууслаа</translation>
 <translation id="3969602104473960991">ChromeOS-н нууц үгийг шинэчилсэн</translation>
@@ -421,6 +424,7 @@
 <translation id="5275828089655680674">Хэвшлийг дахин ажиллуулах</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029"><ph name="MILESTONE_VERSION" />-р хувилбар</translation>
+<translation id="5298334025463010990">Дараагийн дэлгэц рүү үргэлжлүүлэхийн тулд бичихээс хамгаалахыг идэвхгүй болгоно уу. Төхөөрөмжийн үйлдвэрлэгчийн тусламжийн хуудас руу очиж, зааварчилгааг авна уу.</translation>
 <translation id="5300814202279832142">Цонхыг дэлгэц рүү зөөх</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">Холбо</translation>
@@ -472,6 +476,7 @@
 <translation id="583281660410589416">Үл мэдэгдэх</translation>
 <translation id="5843706793424741864">Фаренгейт</translation>
 <translation id="5849570051105887917">Нүүр хуудас бэлтгэх код</translation>
+<translation id="5856532218727053281">Бичих хамгаалалтын төлөвийг баталгаажуулсны дараа систем дахин эхэлнэ</translation>
 <translation id="5859603669299126575">Уран зургийн галерейн цомог</translation>
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
 <translation id="5860491529813859533">Асаах</translation>
@@ -730,7 +735,6 @@
 <translation id="8498220429738806196">Ачаалал тоологч</translation>
 <translation id="8503813439785031346">Хэрэглэгчийн нэр</translation>
 <translation id="8503836310948963452">Цөөн хэдэн минут хүлээнэ үү...</translation>
-<translation id="8521021929829989041">Хувийн төхөөрөмж болгон ашиглах</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Та оператор компанийнхаа сүлжээнд холбогдохын тулд тэд танаас энэ сонголтыг шаардаж болзошгүй. Дэлгэрэнгүй мэдээлэл авах бол оператор компанитайгаа холбогдоно уу.</translation>
 <translation id="8576249514688522074">Бэлтгэгдээгүй</translation>

@@ -38,7 +38,6 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="1219674500290482172">Internetyhteyttä ei voi muodostaa.</translation>
 <translation id="122699739164161391">Sulje kaikki välilehdet</translation>
 <translation id="1229222343402087523">Hae ${searchPhrase} Chromesta</translation>
-<translation id="1231733316453485619">Otetaanko synkronointi käyttöön?</translation>
 <translation id="1242044645101871359">Kirjaudu uudelleen</translation>
 <translation id="1254117744268754948">Valitse kansio</translation>
 <translation id="1265739287306757398">Lisätietoja</translation>
@@ -971,5 +970,4 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="988141524645182168">Muut laitteet</translation>
 <translation id="989988560359834682">Osoitteen muokkaus</translation>
 <translation id="994757059139821576">Ehdotetut artikkelit</translation>
-<translation id="997742718232442409">Sivusto yrittää ladata kalenteritiedostoa.</translation>
 </translationbundle>

@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Ota vaalea teema käyttöön</translation>
 <translation id="2323506179655536734">OHITETTU</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Löydä lähellä olevat laitteet ottamalla ensin Bluetooth käyttöön.</translation>
 <translation id="2346474577291266260">Erinomainen (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Sopimattomia komponentteja<ph name="LINK_END" /> havaittu. Jos päätät vahvistaa, että tällaisia on asennettu, tee se nyt.</translation>
@@ -722,7 +723,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8498220429738806196">Liikennelaskurit</translation>
 <translation id="8503813439785031346">Käyttäjätunnus</translation>
 <translation id="8503836310948963452">Vielä pari minuuttia…</translation>
-<translation id="8521021929829989041">Käytä henkilökohtaisena laitteena</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operaattorisi saattaa vaatia tätä asetusta operaattorin verkkoon yhdistämistä varten. Lisätietoja saat operaattoriltasi.</translation>
 <translation id="8576249514688522074">Ei ole alustettu</translation>

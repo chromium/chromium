@@ -4081,7 +4081,6 @@
 <translation id="4953808748584563296">Стандартны аранжавы аватар</translation>
 <translation id="4955710816792587366">Набярыце PIN-код</translation>
 <translation id="4959262764292427323">Паролі захоўваюцца ў вашым Уліковым запісе Google, і вы зможаце карыстацца імі з любой прылады</translation>
-<translation id="496027654926814138">З дапамогай файла "<ph name="FILE_NAME" />" зламыснікі могуць украсці вашу асабістую інфармацыю.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Трансляцыя экрана</translation>
 <translation id="4961361269522589229">прыклады рэцэптаў</translation>
@@ -5911,7 +5910,6 @@
 <translation id="6798578729981748444">Каб завяршыць імпартаванне, закрыйце ўсе вокны Firefox.</translation>
 <translation id="6798780071646309401">Caps Lock уключаны</translation>
 <translation id="6798954102094737107">Убудова "<ph name="PLUGIN_NAME" />"</translation>
-<translation id="6800746963123086495">З дапамогай гэтага файла зламыснікі могуць украсці вашу асабістую інфармацыю</translation>
 <translation id="6801129617625983991">Агульныя налады</translation>
 <translation id="6801435275744557998">Каліброўка сэнсарнага экрана</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6383,7 +6381,6 @@
 <translation id="7269736181983384521">Абагульванне паблізу: выкарыстанне трафіка</translation>
 <translation id="7272674038937250585">Няма апісання</translation>
 <translation id="7273110280511444812">апошняе падключэнне: <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Вы збіраецеся выкарыстаць ліцэнзію Kiosk &amp; Signage Upgrade, у выніку чаго прылада будзе працаваць толькі ў рэжыме кіёска або лічбавай знешняй рэкламы. Каб карыстальнікі маглі ўваходзіць ва ўліковы запіс на прыладзе, вярніцеся назад і зарэгіструйце яе з выкарыстаннем ліцэнзіі Chrome Enterprise Upgrade.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> да поўнай зарадкі</translation>
 <translation id="727952162645687754">Памылка спампоўкі</translation>
 <translation id="7280041992884344566">Падчас пошуку браўзерам Chrome шкоднага праграмнага забеспячэння адбылася памылка</translation>
@@ -6786,7 +6783,6 @@
 <translation id="7670434942695515800">Для лепшай прадукцыйнасці сістэмы абнавіце яе да апошняй версіі. Мы рэкамендуем стварыць рэзервовыя копіі файлаў на выпадак збою пры абнаўленні. Як толькі пачнецца абнаўленне, Linux завершыць працу. Захавайце адкрытыя файлы, перш чым працягнуць. <ph name="LINK_START" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Выкарыстоўваць сістэмныя загаловак і межы акна</translation>
 <translation id="767127784612208024">Пацвердзіце скід дотыкам да ключа</translation>
-<translation id="767147716926917172">Даныя пра выкарыстанне і дыягностыку аўтаматычна адпраўляюцца ў Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, старонка "<ph name="PAGE_TITLE" />".</translation>
 <translation id="7674416868315480713">Выключыць усе парты, якія пераадрасоўваюцца ў сістэме Linux</translation>
 <translation id="7674537509496907005">Праграм: <ph name="APP_COUNT" /></translation>

@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">밝은 테마 사용 설정</translation>
 <translation id="2323506179655536734">건너뜀</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" />dpi</translation>
+<translation id="2336381494582898602">파워워시</translation>
 <translation id="2338501278241028356">블루투스를 사용 설정하여 근처 기기 탐색</translation>
 <translation id="2346474577291266260">우수(<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />정규화되지 않은 구성요소<ph name="LINK_END" />가 감지되었습니다. 이 구성요소가 설치되었음을 확인하려면 지금 확인하세요.</translation>
@@ -722,7 +723,6 @@
 <translation id="8498220429738806196">트래픽 카운터</translation>
 <translation id="8503813439785031346">사용자이름</translation>
 <translation id="8503836310948963452">몇 분 정도밖에 남지 않았습니다...</translation>
-<translation id="8521021929829989041">개인 기기로 사용</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">이동통신사에서 네트워크에 연결하기 위해 이 옵션을 요구할 수 있습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
 <translation id="8576249514688522074">초기화되지 않음</translation>

@@ -38,7 +38,6 @@
 <translation id="1219674500290482172">ઇન્ટરનેટથી કનેક્ટ કરવામાં અક્ષમ.</translation>
 <translation id="122699739164161391">બધાં ટૅબ બંધ કરો</translation>
 <translation id="1229222343402087523">Chromeમાં ${searchPhrase} શોધો</translation>
-<translation id="1231733316453485619">સિંક કરવાનું ચાલુ કરીએ?</translation>
 <translation id="1242044645101871359">ફરીથી સાઇન ઇન કરો</translation>
 <translation id="1254117744268754948">ફોલ્ડર પસંદ કરો</translation>
 <translation id="1265739287306757398">જાણો કેવી રીતે</translation>
@@ -452,6 +451,7 @@
 <translation id="4840495572919996524">તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય બાબતો હવેથી Google એકાઉન્ટ પર સિંક થશે નહીં.</translation>
 <translation id="4844899002472726590">તમે જેમાં રુચિ ધરાવતા હો, એવા વિષયો જુઓ અને તેમાં ફેરફાર કરો</translation>
 <translation id="4854345657858711387">એક પાસકોડ સેટ કરો</translation>
+<translation id="4858786880085262208">જ્યારે શક્ય હોય ત્યારે, HTTPS પર અપગ્રેડ કરો. સુરક્ષિત સાઇટ અસુરક્ષિત કન્ટેન્ટ શામેલ કરી શકે છે.</translation>
 <translation id="4860895144060829044">કૉલ કરો</translation>
 <translation id="4872323082491632254">પાસવર્ડ ચેક કરો</translation>
 <translation id="4881695831933465202">ખોલો</translation>
@@ -801,6 +801,7 @@
 <translation id="7781069478569868053">નવું ટૅબ પેજ</translation>
 <translation id="7781829728241885113">ગઈ કાલે</translation>
 <translation id="778855399387580014">નવા Chrome ટૅબમાં શોધ શરૂ કરો.</translation>
+<translation id="7790892308048519147">સુરક્ષિત કનેક્શનનો ઉપયોગ કરવાનો પ્રયાસ કરો</translation>
 <translation id="7791543448312431591">ઉમેરો</translation>
 <translation id="7807060072011926525">Google દ્વારા પ્રદાન કરાયેલું</translation>
 <translation id="7839985698273989086">ઑફલાઇન પેજ</translation>
@@ -972,5 +973,4 @@
 <translation id="988141524645182168">અન્ય ઉપકરણો</translation>
 <translation id="989988560359834682">ઍડ્રેસમાં ફેરફાર કરો</translation>
 <translation id="994757059139821576">લેખ માટે સૂચનો</translation>
-<translation id="997742718232442409">આ વેબસાઇટ કૅલેન્ડર ફાઇલ ડાઉનલોડ કરવાનો પ્રયાસ કરી રહી છે.</translation>
 </translationbundle>

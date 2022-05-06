@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C-apparaat (poort aan voorkant)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> gewijzigd in <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik op Bevestigen om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
 <translation id="1013923882670373915">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen. Voer de volgende pincode in op dat apparaat: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Gedeeltelijk screenshot geselecteerd</translation>
 <translation id="1024364763893396229">Je <ph name="NAME" /> opslaan</translation>
 <translation id="1032891413405719768">Batterij van stylus bijna leeg</translation>
 <translation id="1036073649888683237">Ga naar Instellingen om meldingen te beheren</translation>
@@ -328,7 +327,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3009178788565917040">Uitgang</translation>
 <translation id="3009958530611748826">Selecteer een map voor opslaan</translation>
 <translation id="301282384882049174">Gedeeld door je beheerder</translation>
-<translation id="3017687597151988916">Selectiegebied ingesteld op venster</translation>
 <translation id="3033545621352269033">Aan</translation>
 <translation id="3033912566804961911">Combineren met <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Bestanden openen</translation>
@@ -1047,7 +1045,6 @@ Nieuwe installatie</translation>
 <translation id="746232733191930409">Schermopnamemodus</translation>
 <translation id="7466449121337984263">Raak de sensor aan</translation>
 <translation id="7477793887173910789">Je muziek, video's en meer bedienen</translation>
-<translation id="7483025031359818980">Selectiegebied ingesteld op volledig scherm</translation>
 <translation id="7497767806359279797">Taal en toetsenbord kiezen</translation>
 <translation id="7508690557411636492">Geopend in de afgelopen maand</translation>
 <translation id="7509246181739783082">Je identiteit verifiëren</translation>

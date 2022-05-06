@@ -38,7 +38,6 @@
 <translation id="1219674500290482172">ไม่สามารถเชื่อมต่อกับอินเทอร์เน็ต</translation>
 <translation id="122699739164161391">ปิดแท็บทั้งหมด</translation>
 <translation id="1229222343402087523">ค้นหา ${searchPhrase} ใน Chrome</translation>
-<translation id="1231733316453485619">เปิดการซิงค์ไหม</translation>
 <translation id="1242044645101871359">ลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="1254117744268754948">เลือกโฟลเดอร์</translation>
 <translation id="1265739287306757398">เรียนรู้วิธี</translation>
@@ -971,5 +970,4 @@
 <translation id="988141524645182168">อุปกรณ์อื่นๆ</translation>
 <translation id="989988560359834682">แก้ไขที่อยู่</translation>
 <translation id="994757059139821576">บทความแนะนำ</translation>
-<translation id="997742718232442409">เว็บไซต์นี้พยายามดาวน์โหลดไฟล์ปฏิทิน</translation>
 </translationbundle>

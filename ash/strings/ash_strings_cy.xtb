@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Dyfais USB-C (porth blaen)</translation>
 <translation id="1013598600051641573">Mae <ph name="DISPLAY_NAME" /> wedi newid i <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Cliciwch Cadarnhau i gadw'r newidiadau. Bydd y gosodiadau blaenorol yn cael eu hadfer mewn <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Hoffai'r ddyfais Bluetooth "<ph name="DEVICE_NAME" />" gael caniatâd i baru. Rhowch y cod PIN hwn ar y ddyfais honno: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Dewiswyd sgrinlun rhannol</translation>
 <translation id="1024364763893396229">Cadw eich <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Mae batri'r pwyntil yn isel</translation>
 <translation id="1036073649888683237">I reoli hysbysiadau, ewch i'r Gosodiadau</translation>
@@ -331,7 +330,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3009178788565917040">Allbwn</translation>
 <translation id="3009958530611748826">Dewiswch ffolder i gadw iddi</translation>
 <translation id="301282384882049174">Rhannwyd gan eich gweinyddwr</translation>
-<translation id="3017687597151988916">Mae'r ardal dewis wedi'i gosod i ffenestr</translation>
 <translation id="3033545621352269033">Ymlaen</translation>
 <translation id="3033912566804961911">Cyfuno gyda <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Agor Ffeiliau</translation>
@@ -1050,7 +1048,6 @@ Gosodiad newydd</translation>
 <translation id="746232733191930409">Modd recordio'r sgrîn</translation>
 <translation id="7466449121337984263">Cyffyrddwch â'r synhwyrydd</translation>
 <translation id="7477793887173910789">Rheoli eich cerddoriaeth, eich fideos, a rhagor</translation>
-<translation id="7483025031359818980">Ardal dewis wedi'i gosod i sgrîn lawn</translation>
 <translation id="7497767806359279797">Dewis iaith a bysellfwrdd</translation>
 <translation id="7508690557411636492">Agorwyd yn y mis diwethaf</translation>
 <translation id="7509246181739783082">Cadarnhewch eich hunaniaeth</translation>

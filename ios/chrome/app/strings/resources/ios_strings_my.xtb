@@ -38,7 +38,6 @@
 <translation id="1219674500290482172">အင်တာနက်သို့ ချိတ်ဆက်၍ မရနိုင်ပါ</translation>
 <translation id="122699739164161391">တဘ်အားလုံး ပိတ်ရန်</translation>
 <translation id="1229222343402087523">Chrome တွင် ${searchPhrase} ရှာရန်</translation>
-<translation id="1231733316453485619">စင့်ခ်လုပ်ခြင်းကို ဖွင့်မလား။</translation>
 <translation id="1242044645101871359">ထပ်၍လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="1254117744268754948">ဖိုလ်ဒါကို ရွေးရန်</translation>
 <translation id="1265739287306757398">လုပ်ပုံကို လေ့လာပါ</translation>
@@ -227,6 +226,7 @@
 <translation id="2898963176829412617">ဖိုင်တွဲ အသစ်...</translation>
 <translation id="2916171785467530738">ရှာဖွေမှုများနှင့် URL များကို အလိုအလျောက်ဖြည့်ခြင်း</translation>
 <translation id="291754862089661335">QR ကုဒ် သိုမဟုတ် ဘားကုဒ်ကို ဤဘောင်အတွင်းဝင်အောင် ထားပါ</translation>
+<translation id="2920866371965792875">ဤဝဘ်ဆိုက်မှ အပ်ဒိတ်များကြည့်ရန် ဤနေရာမှ လိုက်ကြည့်ပါ။</translation>
 <translation id="2921219216347069551">စာမျက်နှာကို မမျှဝေနိုင်ပါ</translation>
 <translation id="2923448633003185837">ကူးထည့်ပြီး ဖွင့်ရန်</translation>
 <translation id="292639812446257861">မဖတ်ရသေးကြောင်း အမှတ်အသားလုပ်ရန်</translation>
@@ -970,5 +970,4 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="988141524645182168">အခြား ကိရိယာများ</translation>
 <translation id="989988560359834682">လိပ်စာ တည်းဖြတ်ရန်</translation>
 <translation id="994757059139821576">သတင်းဆောင်းပါး အကြံပြုချက်များ</translation>
-<translation id="997742718232442409">ဤဝဘ်ဆိုက်က ပြက္ခဒိန်ဖိုင်ကို ဒေါင်းလုဒ်လုပ်ရန် ကြိုးစားနေသည်။</translation>
 </translationbundle>

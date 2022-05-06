@@ -1096,6 +1096,7 @@
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ถูกบล็อก</translation>
 <translation id="3978338123949022456">โหมดค้นหา พิมพ์คำถามและกด Enter เพื่อค้นหาด้วย <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">นก</translation>
+<translation id="3985750352229496475">จัดการที่อยู่...</translation>
 <translation id="3986705137476756801">ปิดคำบรรยายสดไปก่อน</translation>
 <translation id="3987940399970879459">ไม่ถึง 1 MB</translation>
 <translation id="3990250421422698716">การชดเชยพื้นผิวที่ไม่สม่ำเสมอ</translation>
@@ -1218,6 +1219,7 @@
 <translation id="4305666528087210886">เข้าถึงไฟล์ไม่ได้</translation>
 <translation id="4306529830550717874">บันทึกที่อยู่ไหม</translation>
 <translation id="4306812610847412719">คลิปบอร์ด</translation>
+<translation id="4310070645992025887">ค้นหาเส้นทางการท่องเว็บ</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">บล็อก (ค่าเริ่มต้น)</translation>
 <translation id="4314815835985389558">จัดการการซิงค์</translation>
@@ -2102,6 +2104,7 @@
 <translation id="6839929833149231406">พื้นที่</translation>
 <translation id="6846340164947227603">ใช้หมายเลขบัตรเสมือน...</translation>
 <translation id="6852204201400771460">โหลดแอปซ้ำไหม</translation>
+<translation id="6857776781123259569">จัดการรหัสผ่าน...</translation>
 <translation id="686485648936420384">แหล่งข้อมูลสำหรับผู้บริโภค</translation>
 <translation id="6865412394715372076">ยืนยันบัตรนี้ไม่ได้ในขณะนี้</translation>
 <translation id="6869334554832814367">สินเชื่อส่วนบุคคล</translation>
@@ -2428,6 +2431,7 @@
 <translation id="7669271284792375604">ผู้โจมตีเว็บไซต์นี้อาจพยายามหลอกล่อให้คุณติดตั้งโปรแกรมที่เป็นอันตรายต่อประสบการณ์การท่องเว็บของคุณ (ตัวอย่างเช่น โดยการเปลี่ยนแปลงหน้าแรกหรือแสดงโฆษณาเพิ่มเติมในเว็บไซต์ที่คุณเข้าชม)</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{การดำเนินการกับข้อมูลที่แจ้งว่าเป็นความลับ (มีการดำเนินการ 1 ครั้งตั้งแต่เข้าสู่ระบบ) <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" />}other{การดำเนินการกับข้อมูลที่แจ้งว่าเป็นความลับ (มีการดำเนินการ # ครั้งตั้งแต่เข้าสู่ระบบ) <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">กล่องจดหมาย 6</translation>
+<translation id="7675325315208090829">จัดการวิธีการชำระเงิน...</translation>
 <translation id="7676643023259824263">ค้นหาข้อความในคลิปบอร์ด <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">ดูและจัดการประวัติการท่องเว็บในการตั้งค่า Chrome</translation>
 <translation id="7679947978757153706">เบสบอล</translation>

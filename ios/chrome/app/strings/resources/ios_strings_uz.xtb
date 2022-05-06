@@ -38,7 +38,6 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="1219674500290482172">Internetga ulanib bo‘lmadi.</translation>
 <translation id="122699739164161391">Barcha varaqlarni yopish</translation>
 <translation id="1229222343402087523">${searchPhrase} – Chrome orqali qidirish</translation>
-<translation id="1231733316453485619">Sinxronizatsiya yoqilsinmi?</translation>
 <translation id="1242044645101871359">Qaytadan kiring</translation>
 <translation id="1254117744268754948">Jildni tanlash</translation>
 <translation id="1265739287306757398">Batafsil axborot</translation>
@@ -974,5 +973,4 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="988141524645182168">Boshqa qurilmalar</translation>
 <translation id="989988560359834682">Manzilni o‘zgartirish</translation>
 <translation id="994757059139821576">Maqola takliflari</translation>
-<translation id="997742718232442409">Bu sayt taqvim faylini yuklab olishga urinmoqda.</translation>
 </translationbundle>

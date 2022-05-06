@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Omogući svijetlu temu</translation>
 <translation id="2323506179655536734">PRESKOČENO</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da otkrijete uređaje u blizini</translation>
 <translation id="2346474577291266260">Odlično (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463">Otkrivene su <ph name="LINK_BEGIN" />nekvalificirane komponente<ph name="LINK_END" />. Ako želite potvrditi da je ovo instalirano, uradite to sada.</translation>
@@ -375,7 +376,7 @@
 <translation id="4890353053343094602">Odmah odaberite novu lozinku</translation>
 <translation id="4891842000192098784">Opterećenje</translation>
 <translation id="4897058166682006107">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije lijeve slušalice.</translation>
-<translation id="4915052247106771211">Time će se uređaj vratiti na tvorničke postavke (Powerwash).</translation>
+<translation id="4915052247106771211">Ovim će se uređaj vratiti na fabričke postavke (Powerwash).</translation>
 <translation id="4917385247580444890">Jako</translation>
 <translation id="4917889632206600977">Zaustavljeno – nestalo je papira</translation>
 <translation id="4921665434385737356">Napunjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
@@ -430,7 +431,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="5358174242040570474">Nešto nije uredu. Pokušajte ponovo odabrati pozadinsku sliku ili ponovo otvoriti aplikaciju.</translation>
 <translation id="5372659122375744710">WiFi mreža nije sigurna</translation>
 <translation id="5376354385557966694">Automatski svijetli način rada</translation>
-<translation id="537872351913703572">Uređaj će se vratiti drugom korisniku ili organizaciji</translation>
+<translation id="537872351913703572">Uređaj će preći na različitog korisnika ili organizaciju</translation>
 <translation id="5400907029458559844">Uređaj se povezuje.</translation>
 <translation id="5401938042319910061">Pokreni sve rutine</translation>
 <translation id="5423849171846380976">Aktivirano</translation>
@@ -724,7 +725,6 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8498220429738806196">Brojači saobraćaja</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="8503836310948963452">Još samo nekoliko minuta...</translation>
-<translation id="8521021929829989041">Koristi kao lični uređaj</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Mobilni operater može zahtijevati ovu opciju radi povezivanja s njegovom mrežom. Za detalje se obratite mobilnom operateru.</translation>
 <translation id="8576249514688522074">Pokretanje je prekinuto</translation>
@@ -735,7 +735,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8671972493856476349">Ažurirajte na <ph name="VERSION_NUMBER" /> i ponovo pokrenite</translation>
 <translation id="8675354002693747642">Unaprijed dijeljeni ključ</translation>
 <translation id="8677859815076891398">Nema albuma. Kreirajte album u <ph name="LINK_BEGIN" />Google Fotografijama<ph name="LINK_END" />.</translation>
-<translation id="8680431479333800907">Uređaj će se vratiti izvornom korisniku</translation>
+<translation id="8680431479333800907">Uređaj će preći na istog korisnika</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Upravljajte ovom funkcijom putem strelice ulijevo ili udesno.</translation>
 <translation id="8712637175834984815">Razumijem</translation>
 <translation id="871560550817059752">Nije uspjelo – nema tinte</translation>

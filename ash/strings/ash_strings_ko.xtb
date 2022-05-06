@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C 기기(전면 포트)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> 화면이 <ph name="RESOLUTION" />(<ph name="REFRESH_RATE" />Hz) 해상도로 변경되었습니다. 변경사항을 적용하려면 확인을 클릭하세요. <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
 <translation id="1013923882670373915">블루투스 기기 '<ph name="DEVICE_NAME" />'에서 페어링 허가를 요청합니다. 기기에서 다음 PIN 코드를 입력하세요. <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">부분 스크린샷 선택됨</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> 저장</translation>
 <translation id="1032891413405719768">스타일러스 배터리 부족</translation>
 <translation id="1036073649888683237">알림을 관리하려면 설정으로 이동하세요.</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">출력</translation>
 <translation id="3009958530611748826">저장 폴더 선택</translation>
 <translation id="301282384882049174">관리자가 공유함</translation>
-<translation id="3017687597151988916">선택 영역이 창으로 설정됨</translation>
 <translation id="3033545621352269033">사용</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> 합치기</translation>
 <translation id="3036649622769666520">파일 열기</translation>
@@ -1050,7 +1048,6 @@
 <translation id="746232733191930409">화면 녹화 모드</translation>
 <translation id="7466449121337984263">센서를 터치하세요.</translation>
 <translation id="7477793887173910789">음악, 동영상 등의 항목 제어하기</translation>
-<translation id="7483025031359818980">선택 영역이 전체 화면으로 설정됨</translation>
 <translation id="7497767806359279797">언어 및 키보드 선택</translation>
 <translation id="7508690557411636492">지난달에 열림</translation>
 <translation id="7509246181739783082">본인 확인</translation>

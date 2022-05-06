@@ -38,7 +38,6 @@
 <translation id="1219674500290482172">ከበይነመረቡ ጋር መገናኘት አልተቻለም</translation>
 <translation id="122699739164161391">ሁሉንም ትሮች ዝጋ</translation>
 <translation id="1229222343402087523">${searchPhrase}ን በChrome ውስጥ ይፈልጉ</translation>
-<translation id="1231733316453485619">አስምር ይብራ?</translation>
 <translation id="1242044645101871359">እንደገና ይግቡ</translation>
 <translation id="1254117744268754948">አቃፊ ይምረጡ</translation>
 <translation id="1265739287306757398">እንዴት እንደሆነ ይወቁ</translation>
@@ -227,6 +226,7 @@
 <translation id="2898963176829412617">አዲስ አቃፊ…</translation>
 <translation id="2916171785467530738">ፍለጋዎችን እና ዩአርኤልዎችን በራስ-አጠናቅቅ</translation>
 <translation id="291754862089661335">የQR ኮድ ወይም የአሞሌ ኮድ በዚህ ክፈፍ ውስጥ ያምጡት</translation>
+<translation id="2920866371965792875">ከዚህ ጣቢያ ዝማኔዎችን ለማየት፣ እዚህ ይከተሉት።</translation>
 <translation id="2921219216347069551">ገጽ ማጋራት አልተቻለም</translation>
 <translation id="2923448633003185837">ለጥፍ እና ሂድ</translation>
 <translation id="292639812446257861">እንዳልተነበበ ምልክት አድርግ</translation>
@@ -971,5 +971,4 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="988141524645182168">ሌሎች መሣሪያዎች</translation>
 <translation id="989988560359834682">አድራሻ ያርትዑ</translation>
 <translation id="994757059139821576">የጽሑፍ አስተያየት ጥቆማዎች</translation>
-<translation id="997742718232442409">ይህ ድር ጣቢያ አንድ የቀን መቁጠሪያ ፋይል ለማውረድ እየሞከረ ነው።</translation>
 </translationbundle>

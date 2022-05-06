@@ -4095,7 +4095,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4953808748584563296">Sjálfgefin appelsínugul notandamynd</translation>
 <translation id="4955710816792587366">Veldu þér PIN-númer</translation>
 <translation id="4959262764292427323">Aðgangsorð eru vistuð á Google reikningnum þínum til að þú getir notað þau í hvaða tæki sem er</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> gæti gert tölvuþrjótum kleift að stela persónuupplýsingunum þínum.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Senda út skjá</translation>
 <translation id="4961361269522589229">uppskriftahugmyndir</translation>
@@ -5921,7 +5920,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í  <ph name="GOOGLE_PASSWORD_MANA
 <translation id="6798578729981748444">Lokaðu öllum Firefox-gluggum til að ljúka við innflutning.</translation>
 <translation id="6798780071646309401">hástafalás á</translation>
 <translation id="6798954102094737107">Viðbót: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Þessi skrá gæti gert tölvuþrjótum kleift að stela persónuupplýsingunum þínum</translation>
 <translation id="6801129617625983991">Almennar stillingar</translation>
 <translation id="6801435275744557998">Kvarða snertiskjá</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6393,7 +6391,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í  <ph name="GOOGLE_PASSWORD_MANA
 <translation id="7269736181983384521">Gagnanotkun Nærdeilingar</translation>
 <translation id="7272674038937250585">Engin lýsing til staðar</translation>
 <translation id="7273110280511444812">síðast tengt <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Þú munt nota uppfærslu fyrir sjálfsala og merkingar sem gerir tækinu eingöngu kleift að keyra í sjálfsala- eða merkingastillingu. Ef þú vilt að notendur geti skráð sig inn í tækið skaltu fara til baka og skrá þig með Chrome Enterprise uppfærslu.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> í fulla hleðslu</translation>
 <translation id="727952162645687754">Niðurhalsvilla</translation>
 <translation id="7280041992884344566">Villa kom upp þegar Chrome leitaði að skaðlegum hugbúnaði</translation>
@@ -6796,7 +6793,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í  <ph name="GOOGLE_PASSWORD_MANA
 <translation id="7670434942695515800">Uppfærðu í nýjustu útgáfuna til að ná sem mestum afköstum. Mælt er með því að taka afrit af skrám ef ske kynni að ekki takist að ljúka við uppfærsluna. Slökkt verður á Linux um leið og uppfærslan hefst. Vistaðu opnar skrár áður en haldið er áfram. <ph name="LINK_START" />Nánar<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Nota titilrönd og ramma kerfis</translation>
 <translation id="767127784612208024">Snertu til að staðfesta endurstillingu</translation>
-<translation id="767147716926917172">Sendir greiningar- og notkunargögn sjálfkrafa til Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, á <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Gera framsendingu allra gátta óvirka í Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> forrit</translation>

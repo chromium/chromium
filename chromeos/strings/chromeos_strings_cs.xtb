@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Aktivovat světlý motiv</translation>
 <translation id="2323506179655536734">PŘESKOČENO</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Chcete-li objevit okolní zařízení, zapněte Bluetooth</translation>
 <translation id="2346474577291266260">Vynikající (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463">Byly zjištěny <ph name="LINK_BEGIN" />nekvalifikované komponenty<ph name="LINK_END" />. Pokud chcete potvrdit jejich instalaci, udělejte to teď.</translation>
@@ -375,6 +376,7 @@
 <translation id="4890353053343094602">Ihned si zvolte nové</translation>
 <translation id="4891842000192098784">Zátěž</translation>
 <translation id="4897058166682006107">Stav baterie levého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4915052247106771211">Zařízení se resetuje do továrního nastavení (Powerwash).</translation>
 <translation id="4917385247580444890">Silný</translation>
 <translation id="4917889632206600977">Zastaveno – došel papír</translation>
 <translation id="4921665434385737356">Nabito na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
@@ -429,6 +431,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5358174242040570474">Došlo k chybě. Zkuste tapetu vybrat znovu nebo znovu otevřít aplikaci.</translation>
 <translation id="5372659122375744710">Síť Wi-Fi není zabezpečena</translation>
 <translation id="5376354385557966694">Automatický světlý režim</translation>
+<translation id="537872351913703572">Zařízení přejde pod jiného uživatele nebo organizaci</translation>
 <translation id="5400907029458559844">Zařízení se připojuje.</translation>
 <translation id="5401938042319910061">Spustit všechny rutiny</translation>
 <translation id="5423849171846380976">Aktivováno</translation>
@@ -722,7 +725,6 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8498220429738806196">Počítadla návštěvnosti</translation>
 <translation id="8503813439785031346">Uživatelské jméno</translation>
 <translation id="8503836310948963452">Ještě pár minut…</translation>
-<translation id="8521021929829989041">Použít jako osobní zařízení</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Někteří operátoři k připojení k síti vyžadují tuto možnost. Na podrobnosti se zeptejte mobilního operátora.</translation>
 <translation id="8576249514688522074">Neinicializováno</translation>
@@ -733,6 +735,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8671972493856476349">Aktualizovat na verzi <ph name="VERSION_NUMBER" /> a restartovat</translation>
 <translation id="8675354002693747642">Předsdílený klíč</translation>
 <translation id="8677859815076891398">Žádná alba. Vytvořte album ve <ph name="LINK_BEGIN" />Fotkách Google<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Zařízení zůstane stejnému uživateli</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tuto funkci můžete spravovat šipkami doleva nebo doprava.</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="871560550817059752">Tisk selhal – došel inkoust</translation>

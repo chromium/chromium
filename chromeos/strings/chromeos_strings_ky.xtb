@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Жарык теманы иштетүү</translation>
 <translation id="2323506179655536734">ӨТКӨРҮЛҮП ЖИБЕРИЛДИ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Жууп салуу</translation>
 <translation id="2338501278241028356">Жакын жердеги түзмөктөрдү табуу үчүн Bluetooth'ду күйгүзүңүз</translation>
 <translation id="2346474577291266260">Эң жакшы (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Такталбаган курамдык бөлүктөр<ph name="LINK_END" /> аныкталды. Эгер анын орнотулганын ырастагыңыз келсе, азыр ырастаңыз.</translation>
@@ -730,7 +731,6 @@
 <translation id="8498220429738806196">Трафикти эсептегичтер</translation>
 <translation id="8503813439785031346">Колдонуучунун ысымы</translation>
 <translation id="8503836310948963452">Дагы бир нече мүнөт калды...</translation>
-<translation id="8521021929829989041">Жеке түзмөктү колдонуу</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Тармакка туташуу үчүн байланыш оператору бул параметрди талап кылышы мүмкүн. Кеңири маалымат үчүн байланыш операторуңузга кайрылыңыз</translation>
 <translation id="8576249514688522074">Аныкталбаган</translation>

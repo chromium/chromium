@@ -38,7 +38,6 @@
 <translation id="1219674500290482172">इन्टर्नेटमा जडान गर्न असमर्थ भयो।</translation>
 <translation id="122699739164161391">सबै ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="1229222343402087523">Chrome मा ${searchPhrase} खोज्नुहोस्</translation>
-<translation id="1231733316453485619">सिंक गर्ने सुविधा सक्रिय गर्ने हो?</translation>
 <translation id="1242044645101871359">फेरि साइन इन गर्नुहोस्</translation>
 <translation id="1254117744268754948">फोल्डर रोज्नुहोस्</translation>
 <translation id="1265739287306757398">कसरी गर्ने भनी सिक्नुहोस्</translation>
@@ -452,6 +451,7 @@
 <translation id="4840495572919996524">अब उप्रान्त तपाईंको Google खातामा तपाईंका पुस्तक चिन्ह, इतिहाससम्बन्धी डेटा, पासवर्ड र अन्य सेटिङहरू सिंक हुने छैनन्।</translation>
 <translation id="4844899002472726590">आफूलाई रुचि भएका विषयहरू हेर्नुहोस् र बदल्नुहोस्</translation>
 <translation id="4854345657858711387">कुनै पासकोड सेट गर्नुहोस्‌</translation>
+<translation id="4858786880085262208">सम्भव हुँदा अपग्रेड गरी HTTPS बनाइयोस्। सुरक्षित साइटहरूले असुरक्षित खालका सामग्री इम्बेड गर्न सक्छन्।</translation>
 <translation id="4860895144060829044">कल गर्नुहोस्</translation>
 <translation id="4872323082491632254">पासवर्डहरू जाँच्नुहोस्</translation>
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
@@ -801,6 +801,7 @@
 <translation id="7781069478569868053">नयाँ ट्याब पृष्ठ</translation>
 <translation id="7781829728241885113">हिजो</translation>
 <translation id="778855399387580014">Chrome को नयाँ ट्याबमा खोज सुरु गर्नुहोस्।</translation>
+<translation id="7790892308048519147">सुरक्षित कनेक्सन प्रयोग गर्ने प्रयास गरियोस्</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="7807060072011926525">Google ले प्रदान गरेको</translation>
 <translation id="7839985698273989086">अफलाइन पृष्ठ</translation>
@@ -972,5 +973,4 @@
 <translation id="988141524645182168">अन्य डिभाइसहरू</translation>
 <translation id="989988560359834682">इमेल ठेगाना</translation>
 <translation id="994757059139821576">लेखका सुझावहरू</translation>
-<translation id="997742718232442409">यो वेबसाइटले पात्रोको कुनै फाइल डाउनलोड गर्न खोज्दै छ।</translation>
 </translationbundle>

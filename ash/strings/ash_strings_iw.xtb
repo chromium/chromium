@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">‏מכשיר עם יציאת USB-C (יציאה קדמית)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> השתנה ל-<ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> הרץ). לשמירת השינויים, יש ללחוץ על 'אישור'. ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לבצע התאמה. יש להזין את קוד האימות הבא במכשיר: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">נבחר צילום מסך חלקי</translation>
 <translation id="1024364763893396229">שמירה של <ph name="NAME" /></translation>
 <translation id="1032891413405719768">סוללת הסטיילוס חלשה</translation>
 <translation id="1036073649888683237">כדי לנהל את ההתראות, צריך לעבור אל 'הגדרות'</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">פלט</translation>
 <translation id="3009958530611748826">בחירת תיקייה לשמירה</translation>
 <translation id="301282384882049174">משותף על ידי האדמין</translation>
-<translation id="3017687597151988916">אזור הבחירה מוגדר כחלון</translation>
 <translation id="3033545621352269033">מופעל</translation>
 <translation id="3033912566804961911">שילוב עם <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">פתיחת קבצים</translation>
@@ -1050,7 +1048,6 @@
 <translation id="746232733191930409">מצב הקלטת מסך</translation>
 <translation id="7466449121337984263">יש לגעת בחיישן</translation>
 <translation id="7477793887173910789">שליטה במוזיקה, בסרטונים ועוד</translation>
-<translation id="7483025031359818980">אזור הבחירה הוגדר כמסך מלא</translation>
 <translation id="7497767806359279797">בחירת שפה ומקלדת</translation>
 <translation id="7508690557411636492">נפתח בחודש האחרון</translation>
 <translation id="7509246181739783082">אימות זהות</translation>

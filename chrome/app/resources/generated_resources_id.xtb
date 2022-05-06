@@ -4095,7 +4095,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4953808748584563296">Avatar oranye default</translation>
 <translation id="4955710816792587366">Pilih PIN Anda</translation>
 <translation id="4959262764292427323">Sandi disimpan di Akun Google agar Anda dapat menggunakannya di perangkat mana pun</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> dapat memungkinkan penyerang mencuri informasi pribadi Anda.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Transmisikan layar</translation>
 <translation id="4961361269522589229">ide resep</translation>
@@ -5919,7 +5918,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6798578729981748444">Untuk menyelesaikan impor, tutup semua jendela Firefox.</translation>
 <translation id="6798780071646309401">caps lock aktif</translation>
 <translation id="6798954102094737107">Plugin: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">File ini dapat memungkinkan penyerang mencuri informasi pribadi Anda</translation>
 <translation id="6801129617625983991">Setelan umum</translation>
 <translation id="6801435275744557998">Sesuaikan layar sentuh</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6391,7 +6389,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7269736181983384521">Penggunaan data Berbagi Langsung</translation>
 <translation id="7272674038937250585">Tidak tersedia deskripsi</translation>
 <translation id="7273110280511444812">terakhir dilampirkan pada <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Anda akan menggunakan Upgrade Kios &amp; Reklame yang hanya mengizinkan perangkat berjalan dalam mode kios dan reklame. Jika Anda ingin pengguna login ke perangkat, kembali dan daftar menggunakan Chrome Enterprise Upgrade.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> hingga baterai penuh</translation>
 <translation id="727952162645687754">Error download</translation>
 <translation id="7280041992884344566">Terjadi error saat Chrome menelusuri software berbahaya</translation>
@@ -6794,7 +6791,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7670434942695515800">Untuk performa terbaik, upgrade ke versi terbaru. Sebaiknya cadangkan file jika upgrade tidak dapat diselesaikan. Setelah upgrade dimulai, Linux akan dimatikan. Simpan file yang terbuka sebelum melanjutkan. <ph name="LINK_START" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Gunakan bilah judul dan batas sistem</translation>
 <translation id="767127784612208024">Sentuh untuk mengonfirmasi peresetan</translation>
-<translation id="767147716926917172">Otomatis mengirimkan data diagnostik dan penggunaan ke Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, di <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Nonaktifkan semua port yang diteruskan di Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> aplikasi</translation>

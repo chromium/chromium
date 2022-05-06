@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">C-tyypin USB-laite (etuportti)</translation>
 <translation id="1013598600051641573">Näytön <ph name="DISPLAY_NAME" /> resoluutioksi vaihdettiin <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Pidä muutokset valitsemalla Vahvista. Aiempi asetus palautetaan <ph name="TIMEOUT_SECONDS" /> päästä.</translation>
 <translation id="1013923882670373915">Bluetooth-laite <ph name="DEVICE_NAME" /> pyytää lupaa laiteparin muodostamiseen. Anna tämä PIN-koodi kyseisellä laitteella: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Osittainen kuvakaappaus valittu</translation>
 <translation id="1024364763893396229">Tallenna <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Näyttökynän akku on vähissä</translation>
 <translation id="1036073649888683237">Jos haluat muuttaa ilmoitusasetuksia, avaa Asetukset</translation>
@@ -330,7 +329,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3009178788565917040">Äänentoisto</translation>
 <translation id="3009958530611748826">Valitse tallennuskansio</translation>
 <translation id="301282384882049174">Järjestelmänvalvojan jakama</translation>
-<translation id="3017687597151988916">Lähteeksi on valittu ikkuna</translation>
 <translation id="3033545621352269033">Päällä</translation>
 <translation id="3033912566804961911">Yhdistä <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Avaa tiedostot</translation>
@@ -1049,7 +1047,6 @@ Uusi asennus</translation>
 <translation id="746232733191930409">Näytön tallentajatila</translation>
 <translation id="7466449121337984263">Kosketa tunnistinta</translation>
 <translation id="7477793887173910789">Ohjaa musiikkia, videoita ja muuta</translation>
-<translation id="7483025031359818980">Lähteeksi on valittu koko näyttö</translation>
 <translation id="7497767806359279797">Valitse kieli ja näppäimistö</translation>
 <translation id="7508690557411636492">Avattu kuluneen kuukauden aikana</translation>
 <translation id="7509246181739783082">Vahvista henkilöllisyys</translation>

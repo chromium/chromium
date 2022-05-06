@@ -38,7 +38,6 @@
 <translation id="1219674500290482172">Не може да се установи връзка с интернет.</translation>
 <translation id="122699739164161391">Затваряне на всички раздели</translation>
 <translation id="1229222343402087523">Търсене на ${searchPhrase} в Chrome</translation>
-<translation id="1231733316453485619">Да се включи ли синхронизирането?</translation>
 <translation id="1242044645101871359">Влезте отново</translation>
 <translation id="1254117744268754948">Избор на папка</translation>
 <translation id="1265739287306757398">Научете как</translation>
@@ -971,5 +970,4 @@
 <translation id="988141524645182168">Други устройства</translation>
 <translation id="989988560359834682">Редактиране на адреса</translation>
 <translation id="994757059139821576">Предложения за статии</translation>
-<translation id="997742718232442409">Този уебсайт се опитва да изтегли файл за календар.</translation>
 </translationbundle>

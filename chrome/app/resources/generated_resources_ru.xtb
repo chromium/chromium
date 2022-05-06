@@ -4082,7 +4082,6 @@
 <translation id="4953808748584563296">Аватар по умолчанию (оранжевый)</translation>
 <translation id="4955710816792587366">Установите PIN-код</translation>
 <translation id="4959262764292427323">Пароли сохраняются в аккаунте Google и будут доступны на любом устройстве.</translation>
-<translation id="496027654926814138">С помощью файла "<ph name="FILE_NAME" />" злоумышленники могут похитить ваши личные данные.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="4961318399572185831">Трансляция экрана</translation>
 <translation id="4961361269522589229">рецепты</translation>
@@ -5912,7 +5911,6 @@
 <translation id="6798578729981748444">Чтобы завершить импорт, закройте все окна Firefox.</translation>
 <translation id="6798780071646309401">клавиша Caps Lock нажата</translation>
 <translation id="6798954102094737107">Плагин: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">С помощью этого файла злоумышленники могут похитить ваши личные данные.</translation>
 <translation id="6801129617625983991">Общие настройки</translation>
 <translation id="6801435275744557998">Откалибровать сенсорный экран</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6384,7 +6382,6 @@
 <translation id="7269736181983384521">Обмен с окружением: передача данных</translation>
 <translation id="7272674038937250585">Описания нет</translation>
 <translation id="7273110280511444812">последнее подключение: <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Вы будете использовать лицензию Kiosk &amp; Signage, для которой устройство разрешено запускать только в режиме киоска или цифровой вывески. Если вы хотите разрешить вход в аккаунт на устройстве, то воспользуйтесь лицензией Chrome Enterprise.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% (<ph name="TIME" /> до полной зарядки)</translation>
 <translation id="727952162645687754">Не удалось скачать</translation>
 <translation id="7280041992884344566">При проверке компьютера на наличие вредоносного ПО произошла ошибка.</translation>
@@ -6787,7 +6784,6 @@
 <translation id="7670434942695515800">Чтобы использовать все возможности системы, обновите ее до последней версии. Рекомендуем создать резервные копии файлов, чтобы в случае ошибки не потерять данные. Когда начнется обновление, Linux выключится. Прежде чем продолжить, сохраните открытые файлы. <ph name="LINK_START" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Использовать системные рамки и строку заголовка</translation>
 <translation id="767127784612208024">Нажмите, чтобы подтвердить сброс</translation>
-<translation id="767147716926917172">Автоматически отправлять данные об использовании и диагностике в Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> на странице <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Отключить все порты, перенаправленные в Linux</translation>
 <translation id="7674537509496907005">Приложений: <ph name="APP_COUNT" /></translation>

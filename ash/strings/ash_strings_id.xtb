@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Perangkat USB-C (port depan)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> diubah ke <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik konfirmasi untuk menyimpan perubahan. Setelan sebelumnya akan dipulihkan dalam <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Perangkat Bluetooth "<ph name="DEVICE_NAME" />" meminta izin untuk bersanding. Masukan kode PIN ini pada perangkat tersebut: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Screenshot sebagian dipilih</translation>
 <translation id="1024364763893396229">Simpan <ph name="NAME" /> Anda</translation>
 <translation id="1032891413405719768">Baterai stilus lemah</translation>
 <translation id="1036073649888683237">Untuk mengelola notifikasi, buka Setelan</translation>
@@ -331,7 +330,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3009178788565917040">Keluaran</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan</translation>
 <translation id="301282384882049174">Dibagikan oleh administrator Anda</translation>
-<translation id="3017687597151988916">Area pemilihan disetel ke jendela</translation>
 <translation id="3033545621352269033">Aktif</translation>
 <translation id="3033912566804961911">Gabungkan dengan <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Buka File</translation>
@@ -1050,7 +1048,6 @@ Baru diinstal</translation>
 <translation id="746232733191930409">Mode perekaman layar</translation>
 <translation id="7466449121337984263">Sentuh sensor</translation>
 <translation id="7477793887173910789">Kontrol musik, video, dan banyak lagi</translation>
-<translation id="7483025031359818980">Area pemilihan disetel ke layar penuh</translation>
 <translation id="7497767806359279797">Pilih bahasa dan keyboard</translation>
 <translation id="7508690557411636492">Dibuka dalam sebulan terakhir</translation>
 <translation id="7509246181739783082">Verifikasi identitas Anda</translation>

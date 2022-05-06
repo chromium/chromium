@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C デバイス（前面のポート）</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> を <ph name="RESOLUTION" />（<ph name="REFRESH_RATE" /> Hz）に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
 <translation id="1013923882670373915">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。このデバイスに次の PIN コードを入力してください: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">画面の一部のスクリーンショットを選択しました</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> を保存</translation>
 <translation id="1032891413405719768">タッチペンのバッテリー残量が少なくなっています</translation>
 <translation id="1036073649888683237">通知の管理は設定アプリで行うことができす</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">出力</translation>
 <translation id="3009958530611748826">保存先のフォルダを選択</translation>
 <translation id="301282384882049174">管理者によって共有</translation>
-<translation id="3017687597151988916">選択領域をウィンドウに設定しました</translation>
 <translation id="3033545621352269033">オン</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> に移動</translation>
 <translation id="3036649622769666520">ファイルを開く</translation>
@@ -851,6 +849,7 @@
 <translation id="6166852626429024716">デバイス、アプリ、設定、ウェブを検索...</translation>
 <translation id="6179832488876878285">重要なファイルをここに固定できます。この機能を使用するには、ファイルアプリを開いてください。</translation>
 <translation id="619279033188484792"><ph name="DEVICE_TYPE" /> でスマートフォンの最近の写真、メディア、通知を表示します</translation>
+<translation id="619335566042889110">今すぐ完全に充電</translation>
 <translation id="6220928844947387476">画面と自分を同時に録画できるようになりました</translation>
 <translation id="622484624075952240">下矢印キー</translation>
 <translation id="6231419273573514727">周辺機器のパフォーマンスが制限されている可能性があります</translation>
@@ -1050,7 +1049,6 @@
 <translation id="746232733191930409">画面の録画モード</translation>
 <translation id="7466449121337984263">センサーをタッチしてください</translation>
 <translation id="7477793887173910789">音楽、動画、その他のメディアを操作します</translation>
-<translation id="7483025031359818980">選択領域を全画面に設定しました</translation>
 <translation id="7497767806359279797">言語とキーボードを選択</translation>
 <translation id="7508690557411636492">過去 1 か月以内に開いたファイル</translation>
 <translation id="7509246181739783082">本人確認</translation>
@@ -1187,6 +1185,7 @@
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> に対してロックを解除するには、Enter キーを押します</translation>
 <translation id="8261506727792406068">削除</translation>
 <translation id="8270450402312105425">{0,plural, =1{1 時間以内にデバイスを以前のバージョンに戻してください}other{# 時間以内にデバイスを以前のバージョンに戻してください}}</translation>
+<translation id="8271580342040932214">バッテリー寿命を延ばすため、電源接続時は残量が一時的に 80% になります。バッテリーは、<ph name="FULLY_CHARGE_TIME" /> までに完全に充電されます。</translation>
 <translation id="8284362522226889623">前のデスクに切り替えるには 4 本の指で左にスワイプします</translation>
 <translation id="828708037801473432">オフ</translation>
 <translation id="8297006494302853456">弱い</translation>
@@ -1270,6 +1269,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">入力方法の設定</translation>
 <translation id="8818320199597151042">プロファイルを削除しています。数分お待ちください。</translation>
+<translation id="8819728065740986820">アダプティブ充電がオンになっています</translation>
 <translation id="8825863694328519386">左側からスワイプすると前の画面に戻ります</translation>
 <translation id="8834539327799336565">現在接続中のデバイス</translation>
 <translation id="8841375032071747811">戻るボタン</translation>
@@ -1316,6 +1316,7 @@
 <translation id="9080132581049224423">ホームに移動するには上にスワイプしてください</translation>
 <translation id="9080206825613744995">マイクは使用中です。</translation>
 <translation id="9084606467167974638">メニューの位置を切り替え</translation>
+<translation id="9085962983642906571">バッテリー寿命を延ばすため、電源接続時は残量が 80% に保たれます。</translation>
 <translation id="9089416786594320554">入力方法</translation>
 <translation id="9091626656156419976">ディスプレイ「<ph name="DISPLAY_NAME" />」が取り外されました</translation>
 <translation id="9098969848082897657">スマートフォンを消音する</translation>

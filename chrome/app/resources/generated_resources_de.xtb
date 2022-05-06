@@ -4076,7 +4076,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4953808748584563296">Orangefarbener Standardavatar</translation>
 <translation id="4955710816792587366">PIN wählen</translation>
 <translation id="4959262764292427323">Passwörter werden in deinem Google-Konto gespeichert, sodass du sie auf jedem Gerät verwenden kannst</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> könnte es Angreifern ermöglichen, deine personenbezogenen Daten zu stehlen.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Bildschirm streamen</translation>
 <translation id="4961361269522589229">Rezeptideen</translation>
@@ -5897,7 +5896,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6798578729981748444">Schließe alle Firefox-Fenster, um den Import abzuschließen.</translation>
 <translation id="6798780071646309401">Feststelltaste an</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Diese Datei könnte es Angreifern ermöglichen, deine personenbezogenen Daten zu stehlen</translation>
 <translation id="6801129617625983991">Allgemeine Einstellungen</translation>
 <translation id="6801435275744557998">Touchscreen kalibrieren</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6369,7 +6367,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7269736181983384521">Nearby Share-Datennutzung</translation>
 <translation id="7272674038937250585">Keine Beschreibung vorhanden</translation>
 <translation id="7273110280511444812">Zuletzt angeschlossen am <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Mit diesem Upgrade für Kioske und digitale Beschilderung kann das Gerät nur im Modus für Kioske oder digitale Beschilderung genutzt werden. Wenn du möchtest, dass die Nutzer sich beim Gerät anmelden, gehe zurück und registriere dich für das Chrome Enterprise Upgrade.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % – restliche Ladezeit: <ph name="TIME" /></translation>
 <translation id="727952162645687754">Fehler beim Herunterladen</translation>
 <translation id="7280041992884344566">Bei der Chrome-Suche nach schädlicher Software ist ein Fehler aufgetreten</translation>
@@ -6772,7 +6769,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7670434942695515800">Führe für optimale Leistung ein Upgrade auf die aktuelle Version durch. Wir empfehlen, deine Dateien vor dem Upgrade zu sichern, für den Fall, dass es nicht abgeschlossen werden kann. Sobald das Upgrade gestartet wird, wird Linux heruntergefahren. Speichere geöffnete Dateien, bevor du fortfährst. <ph name="LINK_START" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Titelleiste und Ränder des Systems verwenden</translation>
 <translation id="767127784612208024">Tippen, um Zurücksetzen zu bestätigen</translation>
-<translation id="767147716926917172">Diagnose- und Nutzungsdaten werden automatisch an Google gesendet</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> auf <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Portweiterleitung in Linux für alle Ports deaktivieren</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> Apps</translation>

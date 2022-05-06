@@ -38,7 +38,6 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="1219674500290482172">Kon nie aan die internet koppel nie.</translation>
 <translation id="122699739164161391">Maak alle oortjies toe</translation>
 <translation id="1229222343402087523">Soek ${searchPhrase} in Chrome</translation>
-<translation id="1231733316453485619">Skakel sinkronisering aan?</translation>
 <translation id="1242044645101871359">Meld weer aan</translation>
 <translation id="1254117744268754948">Kies vouer</translation>
 <translation id="1265739287306757398">Vind uit hoe</translation>
@@ -972,5 +971,4 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="988141524645182168">Ander toestelle</translation>
 <translation id="989988560359834682">Wysig adres</translation>
 <translation id="994757059139821576">Artikelvoorstelle</translation>
-<translation id="997742718232442409">Hierdie webwerf probeer tans om ’n kalenderlêer af te laai.</translation>
 </translationbundle>

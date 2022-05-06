@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Világos téma bekapcsolása</translation>
 <translation id="2323506179655536734">KIHAGYVA</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Kapcsolja be a Bluetooth-t a közeli eszközök felfedezéséhez</translation>
 <translation id="2346474577291266260">Kiváló (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463">A rendszer <ph name="LINK_BEGIN" />nem jóváhagyott összetevőket<ph name="LINK_END" /> észlelt. Ha meg szeretné erősíteni az összetevők telepítését, most tegye meg.</translation>
@@ -375,6 +376,7 @@
 <translation id="4890353053343094602">Azonnal válasszon új jelszót</translation>
 <translation id="4891842000192098784">Stressz</translation>
 <translation id="4897058166682006107">Bal fülhallgató akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4915052247106771211">Ezzel visszaállítja az eszköz gyári beállításait (Powerwash).</translation>
 <translation id="4917385247580444890">Erős</translation>
 <translation id="4917889632206600977">Leállt – Kifogyott a papír</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> töltöttség <ph name="NUM_SECONDS" /> másodperc alatt.</translation>
@@ -429,6 +431,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5358174242040570474">Hiba történt. Próbálkozzon ismét a háttérkép kiválasztásával, vagy nyissa meg újból az alkalmazást.</translation>
 <translation id="5372659122375744710">A Wi-Fi-hálózat nem biztonságos</translation>
 <translation id="5376354385557966694">Automatikus világos mód</translation>
+<translation id="537872351913703572">Az eszköznek másik felhasználó vagy szervezet lesz a tulajdonosa</translation>
 <translation id="5400907029458559844">Az eszköz csatlakozása folyamatban van.</translation>
 <translation id="5401938042319910061">Összes rutin futtatása</translation>
 <translation id="5423849171846380976">Aktiválva</translation>
@@ -722,7 +725,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8498220429738806196">Forgalomszámlálók</translation>
 <translation id="8503813439785031346">Felhasználónév</translation>
 <translation id="8503836310948963452">Már csak néhány perc…</translation>
-<translation id="8521021929829989041">Személyes eszközként való használat</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Szolgáltatója előírhatja ennek a beállításnak a használatát a hálózathoz való csatlakozás érdekében. További információért forduljon a szolgáltatójához.</translation>
 <translation id="8576249514688522074">Nincs inicializálva</translation>
@@ -733,6 +735,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8671972493856476349">Frissítés a következő verzióra, és újraindítás: <ph name="VERSION_NUMBER" /></translation>
 <translation id="8675354002693747642">Előre megosztott kulcs</translation>
 <translation id="8677859815076891398">Nincs album. Hozzon létre albumot a <ph name="LINK_BEGIN" />Google Fotókban<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Az eszköznek ugyanaz marad a felhasználója</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> A funkció kezeléséhez használja a balra és jobbra nyilakat.</translation>
 <translation id="8712637175834984815">Sikerült</translation>
 <translation id="871560550817059752">Sikertelen – Kifogyott a tinta</translation>

@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">လင်းသည့် အပြင်အဆင် ဖွင့်ရန်</translation>
 <translation id="2323506179655536734">ကျော်လိုက်သည်</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">ပါဝါဆေးကြောခြင်း</translation>
 <translation id="2338501278241028356">အနီးတဝိုက်ရှိ စက်ပစ္စည်းများကို ရှာဖွေရန် ဘလူးတုသ်ကို ဖွင့်ပါ</translation>
 <translation id="2346474577291266260">အလွန်ကောင်း (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />သတ်မှတ်ချက်မပြည့်မီသော ဆက်စပ်ပစ္စည်းများ<ph name="LINK_END" /> တွေ့ရှိထားသည်။ ၎င်းကိုထည့်သွင်းပြီးဖြစ်ကြောင်း အတည်ပြုရန် ရွေးလိုပါက ယခုရွေးပါ။</translation>
@@ -375,6 +376,7 @@
 <translation id="4890353053343094602">ချက်ချင်း အသစ်တစ်ခု ‌ရွေးပါ</translation>
 <translation id="4891842000192098784">ဖိအား</translation>
 <translation id="4897058166682006107">ဘယ်နားကြပ်တွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
+<translation id="4915052247106771211">၎င်းက စက်ကို စက်ရုံထုတ် ဆက်တင်များ သို့ ပြင်ဆင်သတ်မှတ်ပါမည် (Powerwash)။</translation>
 <translation id="4917385247580444890">အားကောင်းသည်</translation>
 <translation id="4917889632206600977">ရပ်သွားသည် - စာရွက်ကုန်နေသည်</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> စက္ကန့်အတွင်း <ph name="RATE" /> အားသွင်းထားသည်။</translation>
@@ -428,6 +430,7 @@
 <translation id="5358174242040570474">တစ်ခုခုမှားသွားသည်။ နောက်ခံကို ထပ်မံရွေးချယ်ကြည့်ပါ သို့မဟုတ် အက်ပ်ကို ပြန်ဖွင့်ပါ။</translation>
 <translation id="5372659122375744710">WiFi ကွန်ရက်က မလုံခြုံပါ</translation>
 <translation id="5376354385557966694">အလိုအလျောက် အလင်းမုဒ်</translation>
+<translation id="537872351913703572">အခြားအသုံးပြုသူ (သို့) အဖွဲ့အစည်းထံသို့ စက် ရောက်ရှိသွားမည်</translation>
 <translation id="5400907029458559844">ကိရိယာ ချိတ်ဆက်နေသည်။</translation>
 <translation id="5401938042319910061">'ပုံမှန်အစီအစဉ်" အားလုံး အသုံးပြုရန်</translation>
 <translation id="5423849171846380976">အသက်သွင်းပြီး</translation>
@@ -721,7 +724,6 @@
 <translation id="8498220429738806196">ကွန်ရက်ဒေတာ ရေတွက်စနစ်များ</translation>
 <translation id="8503813439785031346">အသုံးပြုသူအမည်</translation>
 <translation id="8503836310948963452">နောက်ထပ် မိနစ်အနည်းငယ်သာ လိုသည်…</translation>
-<translation id="8521021929829989041">ကိုယ်ပိုင်စက် အသုံးပြုရန်</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီသည် ၎င်း၏ကွန်ရက်သို့ ချိတ်ဆက်ရန် ဤရွေးချယ်စရာကို သတ်မှတ်ထားနိုင်သည်။ အသေးစိတ်အတွက် သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>
 <translation id="8576249514688522074">စတင်မထားပါ</translation>
@@ -732,6 +734,7 @@
 <translation id="8671972493856476349"><ph name="VERSION_NUMBER" /> သို့ အပ်ဒိတ်လုပ်ပြီး ပြန်စရန်</translation>
 <translation id="8675354002693747642">ကြိုတင်မျှဝေထားသည့် ကီး</translation>
 <translation id="8677859815076891398">အယ်လ်ဘမ် မရှိပါ။ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> တွင် အယ်လ်ဘမ်တစ်ခု ပြုလုပ်ပါ။</translation>
+<translation id="8680431479333800907">လက်ရှိအသုံးပြုသူသို့ စက်ရောက်ရှိသွားမည်</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ဤဝန်ဆောင်မှုကို စီမံရန် ဘယ် သို့မဟုတ် ညာညွှန်မြားခလုတ်များ အသုံးပြုပါ။</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="871560550817059752">မအောင်မြင်ပါ - မင်ကုန်နေသည်</translation>

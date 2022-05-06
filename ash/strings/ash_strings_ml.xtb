@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C ഉപകരണം (മുൻവശത്തെ പോർട്ട്)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" />, <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) എന്ന റെസല്യൂഷനിലേക്ക് മാറ്റി. മാറ്റങ്ങൾ നിലനിർത്താൻ 'സ്ഥിരീകരിക്കുക' ക്ലിക്ക് ചെയ്യുക. മുമ്പത്തെ ക്രമീകരണം <ph name="TIMEOUT_SECONDS" /> പുനഃസ്ഥാപിക്കും.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" എന്ന Bluetooth ഉപകരണം ജോടിയാക്കുന്നതിനുള്ള അനുമതി ആവശ്യപ്പെടുന്നു. ആ ഉപകരണത്തിൽ ഈ പിൻ കോഡ് നൽകുക: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">ഭാഗിക സ്ക്രീൻഷോട്ട് തിരഞ്ഞെടുത്തു</translation>
 <translation id="1024364763893396229">നിങ്ങളുടെ <ph name="NAME" /> സംരക്ഷിക്കുക</translation>
 <translation id="1032891413405719768">സ്‌റ്റൈലസ് ബാറ്ററി കുറവാണ്</translation>
 <translation id="1036073649888683237">അറിയിപ്പുകൾ മാനേജ് ചെയ്യാൻ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">ഔട്ട്പുട്ട്</translation>
 <translation id="3009958530611748826">സംരക്ഷിക്കാൻ ഒരു ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="301282384882049174">നിങ്ങളുടെ അഡ്‌മിൻ പങ്കിട്ടത്</translation>
-<translation id="3017687597151988916">തിരഞ്ഞെടുക്കൽ ഏരിയ വിൻഡോയായി സജ്ജീകരിച്ചു</translation>
 <translation id="3033545621352269033">ഓണാണ്</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> എന്ന ഡെസ്ക്കുമായി സംയോജിപ്പിക്കുക</translation>
 <translation id="3036649622769666520">ഫയലുകള്‍‌ തുറക്കുക</translation>
@@ -1050,7 +1048,6 @@
 <translation id="746232733191930409">സ്ക്രീൻ റെക്കോർഡിംഗ് മോഡ്</translation>
 <translation id="7466449121337984263">സെൻസറിൽ സ്‌പർശിക്കുക</translation>
 <translation id="7477793887173910789">നിങ്ങളുടെ സംഗീതവും വീഡിയോകളും മറ്റും നിയന്ത്രിക്കുക</translation>
-<translation id="7483025031359818980">തിരഞ്ഞെടുക്കൽ ഏരിയ പൂർണ്ണ സ്ക്രീനായി സജ്ജീകരിച്ചു</translation>
 <translation id="7497767806359279797">ഭാഷയും കീബോഡും തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7508690557411636492">കഴിഞ്ഞ മാസം തുറന്നത്</translation>
 <translation id="7509246181739783082">ഐഡന്റിറ്റി പരിശോധിച്ചുറപ്പിക്കുക</translation>

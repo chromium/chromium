@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C төхөөрөмж (урд талын порт)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" />-г <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц) болгож өөрчилсөн. Өөрчлөлтийг хадгалахын тулд баталгаажуулахыг товшино уу. Өмнөх тохиргоог <ph name="TIMEOUT_SECONDS" />-н дараа сэргээнэ.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth төхөөрөмж өөр төхөөрөмжтэй хослох зөвшөөрөл хүсэж байна. Энэ ПИН кодыг нөгөө төхөөрөмж дээр оруулна уу. ПИН код: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Хэсэгчилсэн дэлгэцийн агшныг сонгосон</translation>
 <translation id="1024364763893396229">Өөрийн <ph name="NAME" />-г хадгалах уу?</translation>
 <translation id="1032891413405719768">Мэдрэгч үзэгний батерей бага байна</translation>
 <translation id="1036073649888683237">Мэдэгдлүүдийг удирдахын тулд Тохиргоо руу очно уу</translation>
@@ -137,6 +136,7 @@
 <translation id="1719094688023114093">Шууд тайлбар асаалттай байна.</translation>
 <translation id="1720011244392820496">Wi-Fi синкийг асаана уу</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" нь Bluetooth төхөөрөмжүүдэд харагдана.</translation>
+<translation id="174102739345480129">Тэмдэглэгч унтраалттай байна.</translation>
 <translation id="1743570585616704562">Танихгүй байна</translation>
 <translation id="1746730358044914197">Оролтын аргыг таны админ тохируулсан.</translation>
 <translation id="1747827819627189109">Дэлгэцэн дээрх гарыг идэвхжүүлсэн байна</translation>
@@ -331,7 +331,6 @@
 <translation id="3009178788565917040">Гаралт</translation>
 <translation id="3009958530611748826">Хадгалах фолдероо сонгоно уу</translation>
 <translation id="301282384882049174">Таны администратор хуваалцсан</translation>
-<translation id="3017687597151988916">Сонголтын хэсгийг цонх болгож тохируулсан</translation>
 <translation id="3033545621352269033">Асаалттай</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" />-тай нэгтгэнэ үү</translation>
 <translation id="3036649622769666520">Файл нээх</translation>
@@ -567,6 +566,7 @@
 <translation id="4379531060876907730">Эдгээр нь таны мэдрэгч үзэгний хэрэгслүүд юм</translation>
 <translation id="4389184120735010762">Та суурилуулсан томруулагчийн товчлуурын шууд холбоосыг дарсан байна. Үүнийг асаах уу?</translation>
 <translation id="439598569299422042">Түр зогсоосон, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Дэлгэцийн видео бичлэгийг хадгалах боломжгүй</translation>
 <translation id="4405151984121254935">Холбогдсон нэмэлтийн төрлийг дэмждэггүй</translation>
 <translation id="4406883609789734330">Шууд тайлбар</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> унтраалттай байна.</translation>
@@ -673,6 +673,7 @@
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Дараагийн өгүүлбэр</translation>
+<translation id="5016558321564993266">Тэмдэглэгчийг асаана уу/унтраана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Хугацаа дууслаа</translation>
 <translation id="5033299697334913360">Бүтэн дэлгэцийн зургийг авахын тулд дурын газар товшино уу</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> шинэ утсанд холбогдсон байна</translation>
@@ -702,6 +703,7 @@
 <translation id="5222676887888702881">Гарах</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>
 <translation id="523505283826916779">Нэвтрэх боломжит байдлын тохиргоо</translation>
+<translation id="5245201184978705914">Сийрүүлгийг үүсгэх боломжгүй</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> нэртэй төхөөрөмжид холбогдсон, <ph name="BATTERY_PERCENTAGE" />% батарей</translation>
 <translation id="5260676007519551770">Дэлгэц 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> танаас анхаарал тавихыг хүсэж байна.</translation>
@@ -736,6 +738,7 @@
 <translation id="5433020815079095860">Аудио оролт</translation>
 <translation id="544691375626129091">Бүх боломжтой хэрэглэгчдийг энэ хуралдаанд оруулсан байна.</translation>
 <translation id="54609108002486618">Удирдсан</translation>
+<translation id="5460938382730614333">Тэмдэглэгч асаалттай байна.</translation>
 <translation id="5465662442746197494">Танд тусламж хэрэгтэй байна уу?</translation>
 <translation id="547979256943495781">Баруун талын shelf</translation>
 <translation id="5491186829646618080">Жижиг программын шинэчлэлтүүд боломжтой байна</translation>
@@ -777,6 +780,7 @@
 <translation id="5745612484876805746">Шөнийн гэрэл нь нар жаргахад автоматаар асдаг</translation>
 <translation id="5750765938512549687">Bluetooth унтраалттай байна</translation>
 <translation id="5760866832697883462">Өөрийн <ph name="NAME" />-г холбоно уу</translation>
+<translation id="5762420912707163638">Тэмдэглэгчийг асаана уу/унтраана уу. <ph name="STATE_TEXT" /> Дэлгэц дээр зурахын тулд мэдрэгч самбар, мэдрэмтгий дэлгэц эсвэл мэдрэгч үзгийг ашиглана уу.</translation>
 <translation id="576341972084747908">Аюултай <ph name="FILENAME" />-г татах</translation>
 <translation id="5763928712329149804">Shelf Party унтраалттай байна.</translation>
 <translation id="576453121877257266">Шөнийн гэрэл асаалттай байна.</translation>
@@ -1051,7 +1055,6 @@
 <translation id="746232733191930409">Дэлгэцийн үйлдэл бичих горим</translation>
 <translation id="7466449121337984263">Мэдрэгчид хүрнэ үү</translation>
 <translation id="7477793887173910789">Хөгжим, видео болон бусад зүйлээ хянах</translation>
-<translation id="7483025031359818980">Сонголтын хэсгийг бүтэн дэлгэц болгож тохируулсан</translation>
 <translation id="7497767806359279797">Хэл болон гарыг сонгох</translation>
 <translation id="7508690557411636492">Өнгөрсөн сард зассан</translation>
 <translation id="7509246181739783082">Өөрийгөө баталгаажуулах</translation>

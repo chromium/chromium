@@ -4098,7 +4098,6 @@
 <translation id="4953808748584563296">Стандарден портокалов аватар</translation>
 <translation id="4955710816792587366">Изберете PIN</translation>
 <translation id="4959262764292427323">Лозинките се зачувуваат во вашата сметка на Google за да може да ги користите на кој било уред</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> може да дозволи напаѓачи да ги украдат вашите лични податоци.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Емитувај го екранот</translation>
 <translation id="4961361269522589229">идеи за рецепти</translation>
@@ -5924,7 +5923,6 @@
 <translation id="6798578729981748444">За да го завршите увезувањето, затворете ги сите прозорци на Firefox.</translation>
 <translation id="6798780071646309401">Caps Lock е вклучено</translation>
 <translation id="6798954102094737107">Приклучок: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Датотекава можеби ќе им дозволи на напаѓачи да ги украдат вашите лични податоци</translation>
 <translation id="6801129617625983991">Општи поставки</translation>
 <translation id="6801435275744557998">Калибрирајте го екранот на допир</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6396,7 +6394,6 @@
 <translation id="7269736181983384521">Користење интернет на „Споделување во близина“</translation>
 <translation id="7272674038937250585">Не е даден опис</translation>
 <translation id="7273110280511444812">последно прикачување на <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Ќе користите „Надградба за киоск и уред за сигнализација“, којашто дозволува уредот да работи само во режим на киоск или уред за сигнализација. Ако сакате корисниците да се најавуваат на уредот, вратете се назад и регистрирајте се со „Надградбата за Chrome Enterprise“.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> до полна</translation>
 <translation id="727952162645687754">Грешка при преземање</translation>
 <translation id="7280041992884344566">Грешка додека Chrome пребаруваше штетен софтвер</translation>
@@ -6799,7 +6796,6 @@
 <translation id="7670434942695515800">За најдобра изведба, надградете на најновата верзија. Се препорачува да направите бекап на датотеките во случај надградбата да не може да се заврши. Штом започне надградбата, Linux ќе се исклучи. Зачувајте ги отворените датотеки пред да продолжите. <ph name="LINK_START" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Користи системска лента за наслови и граници</translation>
 <translation id="767127784612208024">Допрете за да го потврдите ресетирањето</translation>
-<translation id="767147716926917172">Автоматски испраќа дијагностички податоци и податоци за користењето до Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, на <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Деактивирај ги сите порти што се проследени во Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> апликации</translation>

@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C పరికరం (ముందువైపు పోర్ట్)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz)కు మార్చబడింది. మార్పులను అలాగే ఉంచడానికి 'నిర్ధారించు'ను క్లిక్ చేయండి. మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />లో రీస్టోర్ చేయబడతాయి.</translation>
 <translation id="1013923882670373915">బ్లూటూత్ పరికరం "<ph name="DEVICE_NAME" />" జత కావడానికి అనుమతి కోరుతోంది. దయచేసి ఆ పరికరంలో ఈ PIN కోడ్‌ను నమోదు చేయండి: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">పాక్షిక స్క్రీన్‌షాట్ ఎంచుకోబడింది</translation>
 <translation id="1024364763893396229">మీ <ph name="NAME" />‌ను సేవ్ చేయండి</translation>
 <translation id="1032891413405719768">స్టైలస్ బ్యాటరీ తక్కువగా ఉంది</translation>
 <translation id="1036073649888683237">నోటిఫికేషన్‌లను మేనేజ్ చేయడానికి, సెట్టింగ్‌లకు వెళ్లండి</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">అవుట్‌పుట్</translation>
 <translation id="3009958530611748826">దీనిలో సేవ్ చేయడానికి ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="301282384882049174">మీ అడ్మినిస్ట్రేటర్ ద్వారా షేర్ చేయబడింది</translation>
-<translation id="3017687597151988916">ఎంపిక చేసుకోవాల్సిన చోటు విండోకు సెట్ చేయబడింది</translation>
 <translation id="3033545621352269033">ఆన్</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" />‌తో కలపండి</translation>
 <translation id="3036649622769666520">ఫైళ్ళను తెరువు</translation>
@@ -1051,7 +1049,6 @@
 <translation id="746232733191930409">స్క్రీన్ రికార్డింగ్ మోడ్</translation>
 <translation id="7466449121337984263">దయచేసి సెన్సార్‌ను తాకండి</translation>
 <translation id="7477793887173910789">మీ సంగీతం, వీడియోలు అలాగే ఇంకా మరిన్నింటిని నియంత్రించండి</translation>
-<translation id="7483025031359818980">ఎంపిక చేసుకోవాల్సిన చోటు ఫుల్ స్క్రీన్‌కు సెట్ చేయబడింది</translation>
 <translation id="7497767806359279797">భాషను మరియు కీబోర్డ్‌ను ఎంచుకోండి</translation>
 <translation id="7508690557411636492">గత నెలలో తెరిచారు</translation>
 <translation id="7509246181739783082">మీ గుర్తింపును వెరిఫై చేయండి</translation>

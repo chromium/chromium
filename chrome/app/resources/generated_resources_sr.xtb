@@ -4084,7 +4084,6 @@
 <translation id="4953808748584563296">Подразумевани наранџасти аватар</translation>
 <translation id="4955710816792587366">Одаберите PIN</translation>
 <translation id="4959262764292427323">Лозинке се чувају на Google налогу да бисте могли да их користите на било ком уређају</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> може да дозволи нападачима да вам украду личне податке.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Пребацивање екрана</translation>
 <translation id="4961361269522589229">идеје за рецепте</translation>
@@ -5915,7 +5914,6 @@
 <translation id="6798578729981748444">Да бисте довршили увоз, затворите све Firefox прозоре.</translation>
 <translation id="6798780071646309401">caps lock је укључен</translation>
 <translation id="6798954102094737107">Додатна компонента: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Овај фајл може да дозволи нападачима да вам украду личне податке</translation>
 <translation id="6801129617625983991">Општа подешавања</translation>
 <translation id="6801435275744557998">Калибрација додирног екрана</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6387,7 +6385,6 @@
 <translation id="7269736181983384521">Потрошња података Дељења у близини</translation>
 <translation id="7272674038937250585">Није наведен ниједан опис</translation>
 <translation id="7273110280511444812">последњи пут је прикључено <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Користићете надоградњу киоска или уређаја за пријављивање која дозвољава уређају да ради само у режиму киоска или пријављивања. Ако желите да се корисници пријављују на уређај, вратите се и региструјте помоћу надоградње на Chrome за предузећа.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> до краја пуњења</translation>
 <translation id="727952162645687754">Грешка при преузимању</translation>
 <translation id="7280041992884344566">Дошло је до грешке док је Chrome тражио штетан софтвер</translation>
@@ -6790,7 +6787,6 @@
 <translation id="7670434942695515800">Надоградите на најновију верзију за најбоље перформансе. Препоручује се да направите резервне копије у случају да надоградња не може да се доврши. Када надоградња почне, Linux ће се искључити. Сачувајте отворене фајлове пре него што наставите. <ph name="LINK_START" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Користи системску траку наслова и ивице</translation>
 <translation id="767127784612208024">Додирните да бисте потврдили ресетовање</translation>
-<translation id="767147716926917172">Аутоматски шаље Google-у дијагностику и податке о коришћењу</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, на страници <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Деактивирај све портове који се прослеђују у Linux-у</translation>
 <translation id="7674537509496907005">Апликација: <ph name="APP_COUNT" /></translation>

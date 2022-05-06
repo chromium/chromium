@@ -625,6 +625,7 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>
 <translation id="1678137412645922426">Beheert het gebruik van <ph name="AES_KL_NAME" /> voor versleuteling van gebruikersopslag (als dit wordt ondersteund)</translation>
+<translation id="1681688654564283886">Schermtijd uitzetten voor websites</translation>
 <translation id="1682063842123336408">Dvrije opslagruimte (in GB) die is vereist om <ph name="PLUGIN_VM_NAME" /> te installeren.
 
       Als dit beleid niet is ingesteld, mislukt de installatie van <ph name="PLUGIN_VM_NAME" /> als de beschikbare vrije opslagruimte op het apparaat minder is dan 20 GB (standaardwaarde).
@@ -1081,6 +1082,10 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="2149957154942061013">Alleen intern</translation>
 <translation id="2151831603578119302">Snelkoppelingen voor toegankelijkheidsfuncties aanzetten</translation>
 <translation id="2156132677421487971">Stel beleid voor <ph name="PRODUCT_NAME" /> in, een functie waarmee gebruikers de content van tabbladen, sites of hun bureaublad vanuit de browser naar externe schermen en geluidssystemen kunnen sturen.</translation>
+<translation id="2156179920247248678">Met dit beleid kan <ph name="PRODUCT_NAME" /> deelnemen aan de <ph name="MAC_OS_NAME" />-functie Schermtijd.
+
+      Als je het beleid toepast of niet instelt, worden bezochte oorsprongen gemeld aan het OS en laten oorsprongen die zijn geblokkeerd in de instellingen voor Schermtijd, een blokkeringsscherm zien.
+      Als je het beleid niet toepast, worden bezochte oorsprongen niet gemeld aan het OS en zijn oorsprongen die zijn geblokkeerd in de instellingen voor Schermtijd gewoon toegankelijk.</translation>
 <translation id="2156755242840687300">Aangezette externe afdrukservers</translation>
 <translation id="2157842368188031417">Het beleid is alleen van toepassing op beheerde gastsessies. Het moet worden aangezet voor de gedeelde werkstationmodus van Imprivata om tijdens een sessie tussen gebruikers te kunnen wisselen.
       Als je het beleid instelt op True, worden bepaalde beleidsregels afgedwongen overschreven voor functies die gevoelige gebruikersgegevens bewaren en die niet worden verwerkt door het opschoonmechanisme dat wordt gebruikt om in de gedeelde werkstationmodus van Imprivata tijdens een sessie tussen gebruikers te wisselen.
@@ -3195,6 +3200,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       Dit beleid heeft voorrang op zowel DisabledPlugins als DisabledPluginsExceptions.
 
       Als dit beleid niet is ingesteld, kan de gebruiker alle op het systeem geïnstalleerde plug-ins uitzetten.</translation>
+<translation id="4549405078915181477">Schermtijd aanzetten voor websites</translation>
 <translation id="4554651132977135445">Loopback-verwerkingsmodus voor gebruikersbeleid</translation>
 <translation id="4555850956567117258">Externe bevestiging van gebruiker aanzetten</translation>
 <translation id="4557134566541205630">URL van standaard zoekprovider voor nieuwe tabbladpagina</translation>

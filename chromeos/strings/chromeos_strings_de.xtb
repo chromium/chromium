@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Helles Design aktivieren</translation>
 <translation id="2323506179655536734">ÜBERSPRUNGEN</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Aktiviere Bluetooth, damit Geräte in der Nähe gefunden werden</translation>
 <translation id="2346474577291266260">Sehr gut (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463">Es wurden <ph name="LINK_BEGIN" />nicht qualifizierte Komponenten<ph name="LINK_END" /> erkannt. Wenn du deren Installation bestätigen möchtest, tu das bitte jetzt.</translation>
@@ -722,7 +723,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8498220429738806196">Traffic-Zähler</translation>
 <translation id="8503813439785031346">Nutzername</translation>
 <translation id="8503836310948963452">Nur noch ein paar Minuten…</translation>
-<translation id="8521021929829989041">Als privates Gerät verwenden</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Dein Mobilfunkanbieter verlangt möglicherweise diese Option, damit du dich mit seinem Netzwerk verbinden kannst. Weitere Informationen erhältst du bei deinem Mobilfunkanbieter.</translation>
 <translation id="8576249514688522074">Noch nicht initialisiert</translation>

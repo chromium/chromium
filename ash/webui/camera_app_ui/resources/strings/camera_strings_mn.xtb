@@ -118,6 +118,7 @@
 Хэрэв таны санал хүсэлт зургийн эсвэл видеоны чанартай холбоотой бол жишээ зураг эсвэл видеог хавсаргаад ямар алдаа байгааг тодорхойлно уу. (Жишээлбэл, зураг хэт бараан эсвэл субъект фокусгүй байна.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мега пиксел</translation>
 <translation id="6527303717912515753">Хуваалцах</translation>
+<translation id="6617916774429601017">Бүх нягтралыг харуулах</translation>
 <translation id="6631515515009660915">Тусгал үүсгэхийг унтраах</translation>
 <translation id="6652737148136672975">Булангийн байрлалыг суман түлхүүрээр хөдөлгөнө үү</translation>
 <translation id="667999046851023355">Бичиг баримт</translation>

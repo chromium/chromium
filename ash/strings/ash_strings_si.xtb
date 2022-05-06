@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C උපාංගය (ඉදිරිපස තොට)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ලෙස වෙනස් කළා. වෙනස්කම් තබා ගැනීමට තහවුරු කිරීම ක්ලික් කරන්න. පෙර සැකසුම් <ph name="TIMEOUT_SECONDS" /> තුළ ප්‍රතිසාධන කෙරේ.</translation>
 <translation id="1013923882670373915">යුගලගත වීමට  "<ph name="DEVICE_NAME" />" අවසර ඉල්ලා සිටිනු ඇත. උපකරණයේ මෙම PIN කේතය ඇතුළු කරන්න: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">අර්ධ තිර රුව තෝරන ලදි</translation>
 <translation id="1024364763893396229">ඔබගේ <ph name="NAME" /> සුරකින්න</translation>
 <translation id="1032891413405719768">පන්හිඳ බැටරිය අඩුයි</translation>
 <translation id="1036073649888683237">දැනුම්දීම් කළමනාකරණය කිරීමට, සැකසීම් වෙත යන්න</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">ප්‍රතිදානය</translation>
 <translation id="3009958530611748826">සුරැකීමට ෆෝල්ඩරයක් තෝරන්න</translation>
 <translation id="301282384882049174">ඔබගේ පරිපාලක විසින් බෙදා ගන්නා ලදි</translation>
-<translation id="3017687597151988916">තේරීම් ප්‍රදේශය කවුළුවට සකසන ලදි</translation>
 <translation id="3033545621352269033">සක්‍රියයි</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> සමග ඒකාබද්ධ කරන්න</translation>
 <translation id="3036649622769666520">ගොනුව විවෘත කරන්න</translation>
@@ -1050,7 +1048,6 @@
 <translation id="746232733191930409">තිර පටිගත කිරීම් ප්‍රකාරය</translation>
 <translation id="7466449121337984263">සංවේදකය ස්පර්ශ කරන්න</translation>
 <translation id="7477793887173910789">ඔබේ සංගීත, වීඩියෝ, සහ තවත් ඒවා පාලන කරන්න</translation>
-<translation id="7483025031359818980">තේරීම් ප්‍රදේශය පූර්ණ තිරයට සකසා ඇත</translation>
 <translation id="7497767806359279797">භාෂාව සහ යතුරු පුවරුව තෝරන්න</translation>
 <translation id="7508690557411636492">පසුගිය මාසයේ විවෘත කරන ලදි</translation>
 <translation id="7509246181739783082">ඔබගේ අනන්‍යතාව සත්‍යාපනය කරන්න</translation>

@@ -38,7 +38,6 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1219674500290482172">Não é possível estabelecer ligação à Internet.</translation>
 <translation id="122699739164161391">Fechar todos os separadores</translation>
 <translation id="1229222343402087523">Pesquise ${searchPhrase} no Chrome</translation>
-<translation id="1231733316453485619">Ativar a sincronização?</translation>
 <translation id="1242044645101871359">Inicie sessão novamente</translation>
 <translation id="1254117744268754948">Escolher Pasta</translation>
 <translation id="1265739287306757398">Saiba como</translation>
@@ -971,5 +970,4 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="988141524645182168">Outros Dispositivos</translation>
 <translation id="989988560359834682">Editar endereço</translation>
 <translation id="994757059139821576">Sugestões de artigos</translation>
-<translation id="997742718232442409">Este Website está a tentar transferir um ficheiro de calendário.</translation>
 </translationbundle>

@@ -960,6 +960,7 @@
 <translation id="1892341345406963517">สวัสดี <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">ภาษาอื่นๆ</translation>
 <translation id="1895658205118569222">ปิด</translation>
+<translation id="1897120393475391208">ใช้รหัสผ่านที่รัดกุม</translation>
 <translation id="1900305421498694955">แอปจาก Google Play อาจต้องมีสิทธิ์เข้าถึงระบบไฟล์โดยสมบูรณ์เพื่ออ่านและเขียนไฟล์ในอุปกรณ์เก็บข้อมูลภายนอก ไฟล์และโฟลเดอร์ที่สร้างขึ้นในอุปกรณ์จะแสดงแก่ทุกคนที่ใช้ไดรฟ์ภายนอก <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">เลือก&amp;ทั้งหมด</translation>
 <translation id="1901396183631570154">Chrome บันทึกรหัสผ่านเหล่านี้ในบัญชี Google ไม่ได้ แต่คุณยังบันทึกไว้ในอุปกรณ์นี้ได้อยู่</translation>
@@ -4079,7 +4080,6 @@
 <translation id="4953808748584563296">รูปโปรไฟล์เริ่มต้นสีส้ม</translation>
 <translation id="4955710816792587366">เลือก PIN ของคุณ</translation>
 <translation id="4959262764292427323">เราจะบันทึกรหัสผ่านไว้ในบัญชี Google เพื่อให้คุณใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> อาจปล่อยให้ผู้โจมตีขโมยข้อมูลส่วนบุคคลของคุณได้</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">แคสต์หน้าจอ</translation>
 <translation id="4961361269522589229">ไอเดียสูตรอาหาร</translation>
@@ -5900,7 +5900,6 @@
 <translation id="6798578729981748444">ปิดหน้าต่างทั้งหมดของ Firefox เพื่อทำการนำเข้าให้เสร็จเรียบร้อย</translation>
 <translation id="6798780071646309401">เปิด Caps Lock</translation>
 <translation id="6798954102094737107">ปลั๊กอิน: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">ไฟล์นี้อาจปล่อยให้ผู้โจมตีขโมยข้อมูลส่วนบุคคลของคุณ</translation>
 <translation id="6801129617625983991">การตั้งค่าทั่วไป</translation>
 <translation id="6801435275744557998">ปรับเทียบหน้าจอสัมผัส</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6372,7 +6371,6 @@
 <translation id="7269736181983384521">การใช้อินเทอร์เน็ตของการแชร์ใกล้เคียง</translation>
 <translation id="7272674038937250585">ไม่มีคำอธิบาย</translation>
 <translation id="7273110280511444812">แนบล่าสุดเมื่อวันที่ <ph name="DATE" /></translation>
-<translation id="7273970016743909808">คุณจะใช้ Kiosk &amp; Signage Upgrade ซึ่งอนุญาตให้อุปกรณ์ทำงานในโหมดคีออสก์หรือป้ายเท่านั้น หากต้องการให้ผู้ใช้ลงชื่อเข้าใช้อุปกรณ์ โปรดย้อนกลับแล้วลงทะเบียนโดยใช้ Chrome Enterprise Upgrade</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - อีก <ph name="TIME" /> จะชาร์จเต็ม</translation>
 <translation id="727952162645687754">ข้อผิดพลาดในการดาวน์โหลด</translation>
 <translation id="7280041992884344566">เกิดข้อผิดพลาดขณะที่ Chrome กำลังค้นหาซอฟต์แวร์ที่เป็นอันตราย</translation>
@@ -6540,6 +6538,7 @@
 <translation id="7444970023873202833">ดูความทรงจำเพิ่มเติมใน Google Photos</translation>
 <translation id="7444983668544353857">ปิดการใช้งาน<ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">ติดตั้งแอปโดยอัตโนมัติ</translation>
+<translation id="7449381494541372002">กำลังเริ่มต้น...</translation>
 <translation id="7449752890690775568">นำรหัสผ่านออกใช่ไหม</translation>
 <translation id="7450761244949417357">เปิดอยู่ใน <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7452166281927983300">คำเตือนที่ปิดไป (<ph name="MUTED_PASSWORDS" />)</translation>
@@ -6775,7 +6774,6 @@
 <translation id="7670434942695515800">อัปเกรดเป็นเวอร์ชันล่าสุดเพื่อประสิทธิภาพการทำงานที่ดีที่สุด ขอแนะนำให้สำรองไฟล์ไว้เผื่อในกรณีที่อัปเกรดไม่สำเร็จ เมื่อการอัปเกรดเริ่มต้น Linux จะหยุดทำงาน บันทึกไฟล์ที่เปิดไว้ก่อนที่จะดำเนินการต่อ <ph name="LINK_START" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">ใช้แถบชื่อและเส้นขอบของระบบ</translation>
 <translation id="767127784612208024">แตะเพื่อยืนยันการรีเซ็ต</translation>
-<translation id="767147716926917172">ส่งข้อมูลการวินิจฉัยและการใช้งานให้ Google โดยอัตโนมัติ</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> ใน <ph name="PAGE_TITLE" /></translation>
 <translation id="7674416868315480713">ปิดใช้งานทุกพอร์ตที่กำลังส่งต่อใน Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> แอป</translation>

@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">ઝાંખી થીમ ચાલુ કરો</translation>
 <translation id="2323506179655536734">છોડ્યું</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">નજીકનાં ડિવાઇસ શોધવા માટે Bluetooth ચાલુ કરો</translation>
 <translation id="2346474577291266260">ઉત્તમ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />અયોગ્ય ઘટકો<ph name="LINK_END" />ની જાણકારી મળી. આ ઇન્સ્ટૉલ કરવામાં આવ્યા છે તે જો તમે કન્ફર્મ કરવાનું પસંદ કરતા હો, તો કૃપા કરીને હમણાં જ કન્ફર્મ કરો.</translation>
@@ -155,6 +156,7 @@
 <translation id="2446553403094072641">ફ્લોટિંગ પૉઇન્ટની સચોટતા</translation>
 <translation id="2448312741937722512">પ્રકાર</translation>
 <translation id="2461822463642141190">વર્તમાન</translation>
+<translation id="2480034874476596812">મેન્યુઅલ રીતે બંધ કરો</translation>
 <translation id="2491955442992294626">જ્યારે તમે અન્ય વિન્ડોનો ઉપયોગ કરી રહ્યાં હો, ત્યારે કીનું પરીક્ષણ કરવામાં આવતું નથી</translation>
 <translation id="2493126929778606526">ઑટોમૅટિક રીતે પસંદ કરવામાં આવેલા તમારા શ્રેષ્ઠ ફોટા</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -250,6 +252,7 @@
 <translation id="3606583719724308068">HTTPS વેબસાઇટ માટે વિલંબતાનો સમય ઘણો વધુ છે</translation>
 <translation id="3621202678540785336">ઇનપુટ</translation>
 <translation id="3632579075709132555">પ્રાઇવસી સ્ક્રીન ટૉગલ કરો</translation>
+<translation id="3678765385266369662">તમે Write Protect કેવી રીતે બંધ કરવા માંગો છો તે પસંદ કરો</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> પરીક્ષણ</translation>
 <translation id="370665806235115550">લોડ કરી રહ્યું છે...</translation>
 <translation id="3708186454126126312">પહેલાં કનેક્ટ કરેલા</translation>
@@ -304,6 +307,7 @@
 <translation id="4244962993387259361">મેમરીનું પરીક્ષણ કરવા માટે તમારી પાસે ઓછામાં ઓછી 500 MB સ્પેસ હોવી જરૂરી છે. સ્પેસ ખાલી કરવા માટે, સેટિંગ &gt; સ્ટોરેજ મેનેજમેન્ટ પર જાઓ.</translation>
 <translation id="4250229828105606438">સ્ક્રીનશૉટ</translation>
 <translation id="4258281355379922695">HTTPની વિલંબતા</translation>
+<translation id="4258561075226177474">ડિવાઇસ સમાન વપરાશકર્તા પાસે જઈ રહ્યું છે. વપરાશકર્તાનો ડેટા કાઢી નાખીએ?</translation>
 <translation id="4271957103967917607">પૂર્ણ સ્ક્રીન જુઓ</translation>
 <translation id="4275799948641988986">રિપેર કરાયા પછી, આ ડિવાઇસનો ઉપયોગ કોણ કરશે?</translation>
 <translation id="4289540628985791613">ઓવરવ્યૂ</translation>
@@ -352,6 +356,7 @@
 <translation id="473775607612524610">અપડેટ કરો</translation>
 <translation id="4744944742468440486">તમારી પસંદગી સંબંધિત માહિતી</translation>
 <translation id="4773299976671772492">રોક્યું</translation>
+<translation id="4774530504324923332">તમને RSU-ચાલુ કરેલી સિક્યુરિટી કી, QR કોડ સ્કૅનર અને ઇન્ટરનેટ કનેક્શન ધરાવતા બીજા ડિવાઇસની જરૂર પડશે</translation>
 <translation id="4782311465517282004">તમે જ્યારે રાઇટ ક્લિક કરો અથવા ટેક્સ્ટને ટચ કરીને થોડીવાર દબાવી રાખો ત્યારે વ્યાખ્યાઓ, અનુવાદો અથવા એકમના રૂપાંતરણો મેળવો</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ફોટો</translation>
 <translation id="4793710386569335688">વધુ સહાય માટે, <ph name="BEGIN_LINK" />સહાયતા કેન્દ્ર<ph name="END_LINK" /> પર જાઓ.</translation>
@@ -430,6 +435,7 @@
 <translation id="5372659122375744710">આ વાઇ-ફાઇ નેટવર્ક સુરક્ષિત નથી</translation>
 <translation id="5376354385557966694">ઑટોમૅટિક લાઇટ મોડ</translation>
 <translation id="537872351913703572">ડિવાઇસ કોઈ અન્ય વપરાશકર્તા અથવા સંસ્થાને આપવામાં આવશે</translation>
+<translation id="5395600419410242651">તમામ ડેટા કાઢી નાખો</translation>
 <translation id="5400907029458559844">ડિવાઇસ કનેક્ટ થઈ રહ્યું છે.</translation>
 <translation id="5401938042319910061">તમામ રૂટિન ચલાવો</translation>
 <translation id="5423849171846380976">સક્રિય કર્યું</translation>
@@ -640,6 +646,7 @@
 <translation id="7570674786725311828">USB ટચસ્ક્રીન</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> બાકી</translation>
 <translation id="7620771111601174153">સહાયતા કેન્દ્રમાં વધુ જાણો</translation>
+<translation id="7626501172915339021">RMA સર્વર અનલૉક કરો (RSU)</translation>
 <translation id="763165478673169849">છેલ્લે રીસેટ કર્યાનો સમય</translation>
 <translation id="7648838807254605802">HTTPSની ઉચ્ચ વિલંબતા</translation>
 <translation id="7656388927906093505">ડિવાઇસ એક માઉસ છે.</translation>
@@ -723,7 +730,6 @@
 <translation id="8498220429738806196">ટ્રાફિક કાઉન્ટર</translation>
 <translation id="8503813439785031346">વપરાશકર્તાનામ</translation>
 <translation id="8503836310948963452">બસ થોડો વધુ સમય...</translation>
-<translation id="8521021929829989041">વ્યક્તિગત ડિવાઇસ તરીકે ઉપયોગ કરો</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">તમારા મોબાઇલ ઑપરેટરને તેમના નેટવર્ક સાથે કનેક્ટ કરવા માટે, આ વિકલ્પની જરૂર પડી શકે છે. વિગતો માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="8576249514688522074">શરૂ કરી નથી</translation>
@@ -784,6 +790,8 @@
 <translation id="9087578468327036362">આ ક્વેરીની જાણ કરો</translation>
 <translation id="9088306295921699330">વર્તમાન વપરાશ</translation>
 <translation id="9095775724867566971">PluginVM</translation>
+<translation id="90977145661420967">તમારે ડિવાઇસને અલગ કરવાની જરૂર પડશે</translation>
+<translation id="9098156406873149060">વપરાશકર્તાનો ડેટા રાખો</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> માટે ટિકિટ રિફ્રેશ કરો</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ</translation>
 <translation id="9111102763498581341">અનલોક કરો</translation>

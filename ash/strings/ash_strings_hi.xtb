@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C डिवाइस (सामने वाला पोर्ट)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> को <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> हर्ट्ज़) में बदला गया. बदलाव बनाए रखने के लिए, 'जारी रखें' पर क्लिक करें. सेटिंग को <ph name="TIMEOUT_SECONDS" /> में पहले जैसा किया जाएगा.</translation>
 <translation id="1013923882670373915">ब्लूटूथ डिवाइस "<ph name="DEVICE_NAME" />" युग्मित करने की अनुमति चाहता है. कृपया उस डिवाइस पर यह पिन कोड डालें: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">पार्शियल स्क्रीनशॉट चुना गया</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> को सेव करें</translation>
 <translation id="1032891413405719768">स्टाइलस की बैटरी कम हो गई है</translation>
 <translation id="1036073649888683237">सूचनाएं मैनेज करने के लिए, सेटिंग में जाएं</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">आउटपुट</translation>
 <translation id="3009958530611748826">सेव करने के लिए कोई फ़ोल्डर चुनें</translation>
 <translation id="301282384882049174">आपके एडमिन ने शेयर किया है</translation>
-<translation id="3017687597151988916">विंडो को सोर्स के तौर पर सेट किया गया</translation>
 <translation id="3033545621352269033">चालू है</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> के साथ जोड़ें</translation>
 <translation id="3036649622769666520">फ़ाइलें खोलें</translation>
@@ -1050,7 +1048,6 @@
 <translation id="746232733191930409">स्क्रीन रिकॉर्डिंग मोड</translation>
 <translation id="7466449121337984263">कृपया सेंसर को छुएं</translation>
 <translation id="7477793887173910789">अपने संगीत और वीडियो के साथ दूसरी चीज़ें नियंत्रित करें</translation>
-<translation id="7483025031359818980">फ़ुल स्क्रीन को सोर्स के तौर पर सेट किया गया</translation>
 <translation id="7497767806359279797">भाषा और कीवर्ड चुनें</translation>
 <translation id="7508690557411636492">इसे पिछले महीने खोला गया था</translation>
 <translation id="7509246181739783082">अपनी पहचान की पुष्टि करें</translation>

@@ -38,7 +38,6 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="1219674500290482172">Không thể kết nối Internet.</translation>
 <translation id="122699739164161391">Đóng tất cả các thẻ</translation>
 <translation id="1229222343402087523">Tìm kiếm ${searchPhrase} trên Chrome</translation>
-<translation id="1231733316453485619">Bật tính năng đồng bộ hóa?</translation>
 <translation id="1242044645101871359">Đăng nhập lại</translation>
 <translation id="1254117744268754948">Chọn thư mục</translation>
 <translation id="1265739287306757398">Tìm hiểu cách thức</translation>
@@ -972,5 +971,4 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="988141524645182168">Thiết bị khác</translation>
 <translation id="989988560359834682">Chỉnh sửa địa chỉ</translation>
 <translation id="994757059139821576">Đề xuất bài viết</translation>
-<translation id="997742718232442409">Trang web này đang cố gắng tải tệp lịch xuống.</translation>
 </translationbundle>

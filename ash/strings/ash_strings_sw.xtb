@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Kifaa cha USB-C (mlango wa mbele)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> imebadilika kuwa <ph name="RESOLUTION" /> (Hz <ph name="REFRESH_RATE" />). Bofya 'thibitisha' ili uhifadhi mabadiliko. Mipangilio ya awali itarejeshwa baada ya <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Kifaa cha Bluetooth cha "<ph name="DEVICE_NAME" />" kinaomba idhini ya kuoanisha. Tafadhali weka nambari hii ya PIN kwenye kifaa hicho: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Umechagua picha ya sehemu ya skrini</translation>
 <translation id="1024364763893396229">Hifadhi <ph name="NAME" /> yako</translation>
 <translation id="1032891413405719768">Chaji ya betri ya Stylus imepungua</translation>
 <translation id="1036073649888683237">Ili udhibiti arifa, nenda kwenye Mipangilio</translation>
@@ -331,7 +330,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3009178788565917040">Towe</translation>
 <translation id="3009958530611748826">Chagua folda utakapohifadhi</translation>
 <translation id="301282384882049174">Inashirikiwa na msimamizi wako</translation>
-<translation id="3017687597151988916">Umeweka sehemu ya kuchagua iwe dirisha</translation>
 <translation id="3033545621352269033">Imewashwa</translation>
 <translation id="3033912566804961911">Unganisha na <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Fungua Mafaili</translation>
@@ -851,6 +849,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="6166852626429024716">Tafuta kwenye programu, mipangilio, wavuti, kifaa chako...</translation>
 <translation id="6179832488876878285">Unaweza kubandika faili zako muhimu hapa. Fungua programu ya Faili ili uanze.</translation>
 <translation id="619279033188484792">Tazama picha, maudhui na arifa za hivi karibuni za simu yako kwenye <ph name="DEVICE_TYPE" /> yako</translation>
+<translation id="619335566042889110">Chaji betri kikamilifu sasa</translation>
 <translation id="6220928844947387476">Sasa unaweza kujirekodi wewe mwenyewe na skrini yako kwa wakati mmoja</translation>
 <translation id="622484624075952240">Chini</translation>
 <translation id="6231419273573514727">Huenda vifaa unavyounganisha kwenye kompyuta yako visifanye kazi kikamilifu</translation>
@@ -1049,7 +1048,6 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="746232733191930409">Hali ya kurekodi skrini</translation>
 <translation id="7466449121337984263">Tafadhali gusa kitambuzi</translation>
 <translation id="7477793887173910789">Dhibiti muziki, video na vipengee vyako vingine</translation>
-<translation id="7483025031359818980">Sehemu iliyochaguliwa imewekwa kuwa skrini nzima</translation>
 <translation id="7497767806359279797">Chagua lugha na kibodi</translation>
 <translation id="7508690557411636492">Ilifunguliwa mwezi uliopita</translation>
 <translation id="7509246181739783082">Thibitisha utambulisho wako</translation>
@@ -1187,6 +1185,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="826107067893790409">Bonyeza Enter ili ufungue ukitumia <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Futa</translation>
 <translation id="8270450402312105425">{0,plural, =1{Badilisha utumie toleo la awali kwenye kifaa ndani ya saa moja}other{Badilisha utumie toleo la awali kwenye kifaa ndani ya saa #}}</translation>
+<translation id="8271580342040932214">Betri yako imejaa kwa asilimia 80 kwa muda inapokuwa imechomekwa kwenye umeme ili kuongeza muda wa matumizi ya betri. Betri yako itajaa chaji kikamilifu kufikia saa <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Telezesha vidole vinne kushoto ili uende kwenye eneokazi lililotangulia</translation>
 <translation id="828708037801473432">Imezimwa</translation>
 <translation id="8297006494302853456">Dhaifu</translation>
@@ -1270,6 +1269,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Mipangilio ya Mbinu za Kuingiza Data</translation>
 <translation id="8818320199597151042">Inaondoa wasifu. Subiri dakika kadhaa.</translation>
+<translation id="8819728065740986820">Hali ya kuchaji inayojirekebisha imewashwa</translation>
 <translation id="8825863694328519386">Telezesha kidole kutoka kushoto ili urudi nyuma</translation>
 <translation id="8834539327799336565">Vilivyounganishwa kwa sasa</translation>
 <translation id="8841375032071747811">Kitufe cha Nyuma</translation>
@@ -1316,6 +1316,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9080132581049224423">Telezesha kidole juu ili urudi kwenye skrini ya kwanza</translation>
 <translation id="9080206825613744995">Maikrofoni inatumika</translation>
 <translation id="9084606467167974638">Badilisha nafasi ya menyu</translation>
+<translation id="9085962983642906571">Betri yako itasalia katika asilimia 80 inapokuwa imechomekwa kwenye umeme ili kuongeza muda wa matumizi ya betri.</translation>
 <translation id="9089416786594320554">Mbinu za Kuweka</translation>
 <translation id="9091626656156419976">Imeondoa onyesho la <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Kuzima mlio wa simu</translation>

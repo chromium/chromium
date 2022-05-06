@@ -4080,7 +4080,6 @@
 <translation id="4953808748584563296">الصورة الرمزية التلقائية البرتقالية</translation>
 <translation id="4955710816792587366">اختيار رقم التعريف الشخصي</translation>
 <translation id="4959262764292427323">‏يتم حفظ كلمات المرور في حسابك على Google حتى تتمكَّن من استخدامها على أي جهاز.</translation>
-<translation id="496027654926814138">قد يتسبب <ph name="FILE_NAME" /> في سرقة المهاجِمين لمعلوماتك الشخصية.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">إرسال الشاشة</translation>
 <translation id="4961361269522589229">وصفات طعام</translation>
@@ -5912,7 +5911,6 @@
 <translation id="6798578729981748444">‏لإنهاء الاستيراد، أغلق جميع نوافذ Firefox.</translation>
 <translation id="6798780071646309401">‏مفتاح caps lock قيد التفعيل</translation>
 <translation id="6798954102094737107">المكوّن الإضافي: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">قد يتسبّب هذا الملف في السماح للمهاجمين بسرقة معلوماتك الشخصية.</translation>
 <translation id="6801129617625983991">إعدادات عامة</translation>
 <translation id="6801435275744557998">معايرة الشاشة التي تعمل باللمس</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6385,7 +6383,6 @@
 <translation id="7269736181983384521">استخدام البيانات في ميزة "المشاركة عن قرب"</translation>
 <translation id="7272674038937250585">لم يتم تقديم أي وصف</translation>
 <translation id="7273110280511444812">تم آخر توصيل في <ph name="DATE" /></translation>
-<translation id="7273970016743909808">‏بعد التسجيل، ستستخدم "ترقية الكشك واللوحات الرقمية" التي لا تسمح سوى بتشغيل الجهاز في وضع الكشك أو اللوحات الرقمية. إذا أردت أن يتمكّن المستخدمون من تسجيل الدخول إلى الجهاز، يُرجى الرجوع والتسجيل باستخدام ترقية Chrome Enterprise.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> حتى الاكتمال</translation>
 <translation id="727952162645687754">خطأ في التنزيل</translation>
 <translation id="7280041992884344566">‏حدث خطأ أثناء بحث Chrome عن البرامج الضارة.</translation>
@@ -6788,7 +6785,6 @@
 <translation id="7670434942695515800">‏للحصول على أفضل أداء، يُرجى الترقية لأحدث إصدار. ننصحك بالاحتفاظ بنسخة احتياطية من الملفات في حال تعذُر اكتمال عملية الترقية. سيتوقف نظام التشغيل Linux عند بدء ترقيته. عليك حفظ الملفات المفتوحة قبل المتابعة. <ph name="LINK_START" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">استخدام شريط عناوين النظام والحدود</translation>
 <translation id="767127784612208024">اللمس لتأكيد إعادة الضبط</translation>
-<translation id="767147716926917172">‏يمكنك إرسال بيانات التشخيص والاستخدام تلقائيًا إلى Google.</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />، في <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">‏إيقاف جميع المنافذ التي يتم إعادة توجيهها في نظام التشغيل Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> تطبيق</translation>

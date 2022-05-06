@@ -91,6 +91,7 @@
 <translation id="1801418420130173017">ปิดใช้ธีมมืด</translation>
 <translation id="1807246157184219062">สว่าง</translation>
 <translation id="1827738518074806965">แกลเลอรีศิลปะ</translation>
+<translation id="1840835860961531162">ปิด Write Protect</translation>
 <translation id="1851218745569890714">การประชุมทางวิดีโอ</translation>
 <translation id="1852934301711881861">ติดตั้ง Chrome OS Flex</translation>
 <translation id="1856388568474281774">ลูกศรลง</translation>
@@ -141,6 +142,7 @@
 <translation id="2320295602967756579">เปิดใช้ธีมสว่าง</translation>
 <translation id="2323506179655536734">ข้าม</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">เปิดบลูทูธเพื่อค้นหาอุปกรณ์ใกล้เคียง</translation>
 <translation id="2346474577291266260">ดีมาก (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463">ตรวจพบ<ph name="LINK_BEGIN" />คอมโพเนนต์ที่ไม่ตรงตามข้อกำหนด<ph name="LINK_END" /> หากคุณเลือกที่จะยืนยันว่าได้ติดตั้งคอมโพเนนต์เหล่านี้ โปรดดำเนินการดังกล่าวตอนนี้เลย</translation>
@@ -271,6 +273,7 @@
 <translation id="3941014780699102620">แก้ไขโฮสต์ไม่สำเร็จ</translation>
 <translation id="3942420633017001071">การวินิจฉัย</translation>
 <translation id="3954678691475912818">อุปกรณ์เป็นประเภทที่ไม่รู้จัก</translation>
+<translation id="3958703339436883942">กำลังเตรียมรีสตาร์ท...</translation>
 <translation id="3966286471246132217">ปิดแอปทั้งหมดจนกว่าการทดสอบจะเสร็จสมบูรณ์เพื่อให้ได้ผลลัพธ์ที่ถูกต้องยิ่งขึ้น</translation>
 <translation id="3967822245660637423">ดาวน์โหลดเสร็จสมบูรณ์</translation>
 <translation id="3969602104473960991">อัปเดตรหัสผ่าน Chrome OS แล้ว</translation>
@@ -416,6 +419,7 @@
 <translation id="5275828089655680674">เรียกใช้กิจวัตรอีกครั้ง</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">เวอร์ชัน <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">ปิดใช้ Write Protect เพื่อดำเนินการต่อในหน้าจอถัดไป ดูวิธีการได้ที่หน้าการสนับสนุนของผู้ผลิตอุปกรณ์</translation>
 <translation id="5300814202279832142">ย้ายหน้าต่างไปที่เดสก์</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">เชื่อมต่อ</translation>
@@ -465,6 +469,7 @@
 <translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5843706793424741864">ฟาเรนไฮต์</translation>
 <translation id="5849570051105887917">รหัสผู้ให้บริการหน้าแรก</translation>
+<translation id="5856532218727053281">ระบบจะรีสตาร์ทหลังยืนยันสถานะของ Write Protection แล้ว</translation>
 <translation id="5859603669299126575">อัลบั้มแกลเลอรีศิลปะ</translation>
 <translation id="5860033963881614850">ปิด</translation>
 <translation id="5860491529813859533">เปิด</translation>
@@ -722,7 +727,6 @@
 <translation id="8498220429738806196">ตัวนับการรับส่งข้อมูล</translation>
 <translation id="8503813439785031346">ชื่อผู้ใช้</translation>
 <translation id="8503836310948963452">อีกเพียงไม่กี่นาทีเท่านั้น...</translation>
-<translation id="8521021929829989041">ใช้อุปกรณ์ส่วนตัว</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ผู้ให้บริการอาจกำหนดให้ใช้ตัวเลือกนี้เพื่อให้เชื่อมต่อเครือข่ายของตนได้ โปรดติดต่อสอบถามรายละเอียดจากผู้ให้บริการ</translation>
 <translation id="8576249514688522074">ยังไม่ได้เริ่มต้น</translation>

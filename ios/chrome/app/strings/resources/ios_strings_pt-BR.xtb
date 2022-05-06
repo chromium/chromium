@@ -38,7 +38,6 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para
 <translation id="1219674500290482172">Não foi possível se conectar à Internet.</translation>
 <translation id="122699739164161391">Fechar todas as guias</translation>
 <translation id="1229222343402087523">Pesquisar "${searchPhrase}" no Chrome</translation>
-<translation id="1231733316453485619">Ativar sincronização?</translation>
 <translation id="1242044645101871359">Fazer login novamente</translation>
 <translation id="1254117744268754948">Escolher pasta</translation>
 <translation id="1265739287306757398">Saiba como</translation>
@@ -452,6 +451,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="4840495572919996524">Seus favoritos, histórico, senhas e outras configurações não serão mais sincronizados com sua Conta do Google.</translation>
 <translation id="4844899002472726590">Ver e editar temas relevantes para você</translation>
 <translation id="4854345657858711387">Defina uma senha</translation>
+<translation id="4858786880085262208">Fazer upgrade para HTTPS, quando possível. Sites seguros podem incorporar conteúdo não seguro.</translation>
 <translation id="4860895144060829044">Ligar</translation>
 <translation id="4872323082491632254">Verificar senhas</translation>
 <translation id="4881695831933465202">Abrir</translation>
@@ -801,6 +801,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7781069478569868053">Página "Nova guia"</translation>
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="778855399387580014">Inicie uma pesquisa em uma nova guia do Chrome.</translation>
+<translation id="7790892308048519147">Tente usar conexões seguras</translation>
 <translation id="7791543448312431591">Adicionar</translation>
 <translation id="7807060072011926525">Fornecido pelo Google</translation>
 <translation id="7839985698273989086">Página offline</translation>
@@ -972,5 +973,4 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="988141524645182168">Outros dispositivos</translation>
 <translation id="989988560359834682">Editar endereço</translation>
 <translation id="994757059139821576">Artigos sugeridos</translation>
-<translation id="997742718232442409">O site está tentando fazer o download de um arquivo do calendário.</translation>
 </translationbundle>

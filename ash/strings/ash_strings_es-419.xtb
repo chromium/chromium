@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Dispositivo USB-C (puerto delantero)</translation>
 <translation id="1013598600051641573">Se cambió la resolución de <ph name="DISPLAY_NAME" /> a <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Para mantener este cambio, haz clic en Confirmar. En <ph name="TIMEOUT_SECONDS" />, se restablecerá la configuración anterior.</translation>
 <translation id="1013923882670373915">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para sincronizarse. Ingresa el siguiente código de PIN en el dispositivo: <ph name="PINCODE" />.</translation>
-<translation id="1024261588257374085">Se seleccionó la captura de pantalla parcial</translation>
 <translation id="1024364763893396229">Guarda tu <ph name="NAME" /></translation>
 <translation id="1032891413405719768">El nivel de la batería de la pluma stylus está bajo</translation>
 <translation id="1036073649888683237">Para administrar las notificaciones, ve a Configuración.</translation>
@@ -331,7 +330,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3009178788565917040">Salida</translation>
 <translation id="3009958530611748826">Seleccionar una carpeta de destino</translation>
 <translation id="301282384882049174">Compartida por tu administrador</translation>
-<translation id="3017687597151988916">Se estableció la ventana como área de selección</translation>
 <translation id="3033545621352269033">Sí</translation>
 <translation id="3033912566804961911">Combinar con <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Abrir archivos</translation>
@@ -852,6 +850,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6166852626429024716">Buscar en el dispositivo, en su configuración y apps, y en la Web…</translation>
 <translation id="6179832488876878285">Puedes fijar tus archivos importantes aquí. Para comenzar, abre la app de Archivos.</translation>
 <translation id="619279033188484792">Ve las fotos, el contenido multimedia y las notificaciones recientes del teléfono en tu <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Cargar por completo ahora</translation>
 <translation id="6220928844947387476">Ahora puedes grabarte a ti y a tu pantalla al mismo tiempo</translation>
 <translation id="622484624075952240">Abajo</translation>
 <translation id="6231419273573514727">Es posible que se limite el rendimiento de los dispositivos periféricos</translation>
@@ -1050,7 +1049,6 @@ Nueva instalación</translation>
 <translation id="746232733191930409">Modo de grabación de pantalla</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>
 <translation id="7477793887173910789">Controla tu música, videos y mucho más</translation>
-<translation id="7483025031359818980">Se estableció la pantalla completa como área de selección</translation>
 <translation id="7497767806359279797">Elegir idioma y teclado</translation>
 <translation id="7508690557411636492">Se abrió el mes pasado</translation>
 <translation id="7509246181739783082">Verifica tu identidad</translation>
@@ -1187,6 +1185,7 @@ Nueva instalación</translation>
 <translation id="826107067893790409">Presiona Intro para permitir el acceso de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="8270450402312105425">{0,plural, =1{Cambia el dispositivo a la versión anterior en el transcurso de una hora}other{Cambia el dispositivo a la versión anterior en el transcurso de # horas}}</translation>
+<translation id="8271580342040932214">El nivel de la batería está al 80% cuando el dispositivo está enchufado a fin de extender la duración de batería. La carga se completará a las <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Para cambiar al escritorio anterior, desliza cuatro dedos hacia la izquierda.</translation>
 <translation id="828708037801473432">No</translation>
 <translation id="8297006494302853456">Débil</translation>
@@ -1270,6 +1269,7 @@ Nueva instalación</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Configuración de los métodos de entrada</translation>
 <translation id="8818320199597151042">Se está quitando el perfil. Espera unos minutos.</translation>
+<translation id="8819728065740986820">La carga adaptable está activada</translation>
 <translation id="8825863694328519386">Para volver, desliza el dedo desde la izquierda</translation>
 <translation id="8834539327799336565">Conectados actualmente</translation>
 <translation id="8841375032071747811">Botón Atrás</translation>
@@ -1316,6 +1316,7 @@ Nueva instalación</translation>
 <translation id="9080132581049224423">Desliza hacia arriba para ir a la pantalla principal</translation>
 <translation id="9080206825613744995">El micrófono está en uso.</translation>
 <translation id="9084606467167974638">Cambiar la posición del menú</translation>
+<translation id="9085962983642906571">El nivel de la batería se mantiene al 80% cuando el dispositivo está enchufado para extender la duración de batería.</translation>
 <translation id="9089416786594320554">Métodos de entrada</translation>
 <translation id="9091626656156419976">Se quitó la pantalla <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silenciar teléfono</translation>

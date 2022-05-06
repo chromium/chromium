@@ -968,6 +968,7 @@
 <translation id="1892341345406963517">Сайн байна уу <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Бусад хэлнүүд</translation>
 <translation id="1895658205118569222">Унтраах</translation>
+<translation id="1897120393475391208">Сайн нууц үг ашиглана уу</translation>
 <translation id="1900305421498694955">Google Play-н аппууд нь гадаад хадгалалтын төхөөрөмж дээр файл уншиж, бичихийн тулд файлын системийн бүрэн хандалтыг шаардаж болзошгүй. Энэ төхөөрөмж дээр үүсгэсэн файл болон фолдерыг гадаад драйв ашигладаг хүн бүр харах боломжтой. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Бүгдийг сонго &amp;</translation>
 <translation id="1901396183631570154">Chrome эдгээр нууц үгийг таны Google Бүртгэлд хадгалж чадсангүй. Та тэдгээрийг энэ төхөөрөмжид хадгалах боломжтой хэвээр байна.</translation>
@@ -4096,7 +4097,6 @@
 <translation id="4953808748584563296">Өгөгдмөл улбар шар аватар</translation>
 <translation id="4955710816792587366">ПИН-ээ сонгох</translation>
 <translation id="4959262764292427323">Нууц үгнүүдийr таны Google Бүртгэлд хадгалсан тул тэдгээрийг та дурын төхөөрөмжид ашиглаж болно</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> нь халдагчдад таны хувийн мэдээллийг хулгайлах боломжийг олгож болзошгүй.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Дэлгэцийг каст хийх</translation>
 <translation id="4961361269522589229">жорын санаанууд</translation>
@@ -5923,7 +5923,6 @@
 <translation id="6798578729981748444">Импортыг дуусгахын тулд Firefox-н бүх цонхыг хаана уу.</translation>
 <translation id="6798780071646309401">томоор бичих горим асаалттай</translation>
 <translation id="6798954102094737107">Нэмэлт өргөтгөл: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Энэ файл нь халдагчдад таны хувийн мэдээллийг хулгайлах боломжийг олгож магадгүй</translation>
 <translation id="6801129617625983991">Ерөнхий тохиргоо</translation>
 <translation id="6801435275744557998">Мэдрэмтгий дэлгэцийг тохируулах</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> ( <ph name="OID" /> )</translation>
@@ -6395,7 +6394,6 @@
 <translation id="7269736181983384521">Ойролцоо хуваалцах онцлогийн дата ашиглалт</translation>
 <translation id="7272674038937250585">Тайлбар алга</translation>
 <translation id="7273110280511444812"><ph name="DATE" /> дээр хамгийн сүүлд хавсаргасан</translation>
-<translation id="7273970016743909808">Та зөвхөн төхөөрөмжийг киоск эсвэл пайзны горимд ажиллуулахыг зөвшөөрдөг Киоск болон Пайзны сайжруулалтыг ашиглана. Хэрэв та хэрэглэгчдийг төхөөрөмжид нэвтрэхийг хүсэж байвал буцаж очоод, Chrome Enterpirse-н сайжруулалтыг ашиглан бүртгүүлнэ үү.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> дүүрэх хүртэл</translation>
 <translation id="727952162645687754">Татаж авч байх үед гарах алдаа</translation>
 <translation id="7280041992884344566">Chrome хортой программ хангамжийг хайх явцад алдаа гарлаа</translation>
@@ -6563,6 +6561,7 @@
 <translation id="7444970023873202833">Google Зурагт бусад дурсамжаараа аялаарай</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" />-ийг идэвхгүй болго</translation>
 <translation id="7448430327655618736">Автоматаар суулгасан апп</translation>
+<translation id="7449381494541372002">эхлүүлж байна…</translation>
 <translation id="7449752890690775568">Нууц үгийг хасах уу?</translation>
 <translation id="7450761244949417357">Одоо <ph name="ALTERNATIVE_BROWSER_NAME" />-д нээж байна</translation>
 <translation id="7452166281927983300">Үл хэрэгссэн сануулгууд (<ph name="MUTED_PASSWORDS" />)</translation>
@@ -6798,7 +6797,6 @@
 <translation id="7670434942695515800">Шилдэг гүйцэтгэл авах бол хамгийн сүүлийн үеийн хувилбар луу сайжруулна уу. Сайжруулалтыг дуусгах боломжгүй тохиолдолд файлуудаа хуулбарлахыг санал болгож байна. Сайжруулалт эхэлсний дараа Linux-г унтраана. Үргэлжлүүлэхээсээ өмнө нээлттэй файлуудыг хадгална уу. <ph name="LINK_START" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Системийн гарчгийн мөр болон хүрээг ашигла</translation>
 <translation id="767127784612208024">Шинэчлэлтийг баталгаажуулахын тулд хүрнэ үү</translation>
-<translation id="767147716926917172">Оношилгоо болон ашиглалтын өгөгдлийг Google-д автоматаар илгээдэг</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" />-н <ph name="HUNG_IFRAME_URL" />.</translation>
 <translation id="7674416868315480713">Linux-д шилжүүлж буй бүх портыг идэвхгүй болгох</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> апп</translation>

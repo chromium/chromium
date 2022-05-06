@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">হালকা থিম চালু করুন</translation>
 <translation id="2323506179655536734">এড়ানো হয়েছে</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">পাওয়ারওয়াশ</translation>
 <translation id="2338501278241028356">আশেপাশের ডিভাইস খুঁজে পেতে ব্লুটুথ চালু করুন</translation>
 <translation id="2346474577291266260">গড় (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />উপযুক্ত নয় এমন কম্পোনেন্ট<ph name="LINK_END" /> পাওয়া গেছে। এটি ইনস্টল করা হয়েছে তা কনফার্ম করতে চাইলে, এখনই করুন।</translation>
@@ -155,6 +156,7 @@
 <translation id="2446553403094072641">ফ্লোটিং পয়েন্ট অ্যাকুরেসি</translation>
 <translation id="2448312741937722512">প্রকার</translation>
 <translation id="2461822463642141190">বর্তমান</translation>
+<translation id="2480034874476596812">ম্যানুয়ালি বন্ধ করা</translation>
 <translation id="2491955442992294626">অন্য উইন্ডো ব্যবহার করার সময় কী পরীক্ষা করা হয়না</translation>
 <translation id="2493126929778606526">আপনার সেরা ফটোগুলি অটোমেটিক বেছে নেওয়া হয়</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -250,6 +252,7 @@
 <translation id="3606583719724308068">HTTPS ওয়েবসাইটে হাই লেটেন্সি</translation>
 <translation id="3621202678540785336">ইনপুট</translation>
 <translation id="3632579075709132555">প্রাইভেসি স্ক্রিন টগল করার বোতাম</translation>
+<translation id="3678765385266369662">কীভাবে আপনি Write Protect বন্ধ করতে চান তা বেছে নিন</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> টেস্ট</translation>
 <translation id="370665806235115550">লোড হচ্ছে...</translation>
 <translation id="3708186454126126312">আগে কানেক্ট করা ছিল</translation>
@@ -304,6 +307,7 @@
 <translation id="4244962993387259361">মেমরি টেস্ট করাতে আপনার ডিভাইসে অন্তত ৫০০ এমবি খালি জায়গা থাকতে হবে। জায়গা খালি করতে 'সেটিংস' &gt; 'স্টোরেজ ম্যানেজ করা' বিকল্পে যান।</translation>
 <translation id="4250229828105606438">স্ক্রিনশট</translation>
 <translation id="4258281355379922695">HTTP লেটেন্সি</translation>
+<translation id="4258561075226177474">ডিভাইস একই ব্যবহারকারীর কাছে থাকবে। ব্যবহারকারীর ডেটা মুছবেন?</translation>
 <translation id="4271957103967917607">ফুল স্ক্রিন দেখুন</translation>
 <translation id="4275799948641988986">রিপেয়ার করার পর ডিভাইসটি কে ব্যবহার করবেন?</translation>
 <translation id="4289540628985791613">ওভারভিউ</translation>
@@ -352,6 +356,7 @@
 <translation id="473775607612524610">আপডেট করুন</translation>
 <translation id="4744944742468440486">আপনার বেছে নেওয়া কন্টেন্টের ব্যাপারে তথ্য</translation>
 <translation id="4773299976671772492">থামানো হয়েছে</translation>
+<translation id="4774530504324923332">আপনার একটি RSU-চালু করা নিরাপত্তা কী, একটি QR কোড স্ক্যানার এবং ইন্টারনেট কানেকশন সহ একটি দ্বিতীয় ডিভাইসের প্রয়োজন হবে</translation>
 <translation id="4782311465517282004">আপনি ডানদিকের বোতামে ক্লিক করলে বা টেক্সট প্রেস করে ধরে থাকলে, সংজ্ঞা, অনুবাদ বা ইউনিট কনভার্সন পাবেন</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" />টি ফটো</translation>
 <translation id="4793710386569335688">আরও সাহায্যের জন্য, <ph name="BEGIN_LINK" />সহায়তা কেন্দ্রে<ph name="END_LINK" /> যান।</translation>
@@ -375,6 +380,7 @@
 <translation id="4890353053343094602">অবিলম্বে একটি নতুন পাসওয়ার্ড বেছে নিন</translation>
 <translation id="4891842000192098784">স্ট্রেস</translation>
 <translation id="4897058166682006107">ডিভাইসের বাঁদিকের বাডে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
+<translation id="4915052247106771211">এটি ডিভাইসটিকে ফ্যাক্টরি সেটিংসে (পাওয়ারওয়াশ) রিসেট করবে।</translation>
 <translation id="4917385247580444890">জোরালো</translation>
 <translation id="4917889632206600977">বন্ধ হয়ে গেছে - কাগজ শেষ হয়ে গেছে</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> সেকেন্ডে <ph name="RATE" /> চার্জ হয়েছে।</translation>
@@ -428,6 +434,8 @@
 <translation id="5358174242040570474">কোনও সমস্যা হয়েছে। কোনও ওয়ালপেপার বেছে নিয়ে চেষ্টা করুন বা অ্যাপ আবার খুলুন।</translation>
 <translation id="5372659122375744710">ওয়াই-ফাই নেটওয়ার্ক সুরক্ষিত নয়</translation>
 <translation id="5376354385557966694">অটোমেটিক 'লাইট মোড'</translation>
+<translation id="537872351913703572">ডিভাইসটি অন্য ব্যবহারকারী বা প্রতিষ্ঠানের কাছে থাকবে</translation>
+<translation id="5395600419410242651">সব ডেটা মুছুন</translation>
 <translation id="5400907029458559844">ডিভাইস কানেক্ট করা হচ্ছে।</translation>
 <translation id="5401938042319910061">সমস্ত রুটিন চালান</translation>
 <translation id="5423849171846380976">সক্রিয় হয়েছে</translation>
@@ -638,6 +646,7 @@
 <translation id="7570674786725311828">ইউএসবি টাচস্ক্রিন</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> বাকি আছে</translation>
 <translation id="7620771111601174153">সহায়তা কেন্দ্র বিভাগে গিয়ে আরও জানুন</translation>
+<translation id="7626501172915339021">RMA সার্ভার আনলক পারফর্ম করুন (RSU)</translation>
 <translation id="763165478673169849">শেষবার রিসেট করার সময়</translation>
 <translation id="7648838807254605802">বেশি HTTPS লেটেন্সি</translation>
 <translation id="7656388927906093505">ডিভাইস একটি মাউজ।</translation>
@@ -721,7 +730,6 @@
 <translation id="8498220429738806196">ট্রাফিক কাউন্টার্স</translation>
 <translation id="8503813439785031346">ইউজারনেম</translation>
 <translation id="8503836310948963452">আর মাত্র কয়েক মিনিট...</translation>
-<translation id="8521021929829989041">ব্যক্তিগত ডিভাইস হিসেবে ব্যবহার করুন</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">নেটওয়ার্কে কানেক্ট করার জন্য আপনার পরিষেবা প্রদানকারীর এই বিকল্পের প্রয়োজন হতে পারে। বিশদ বিবরণের জন্য আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="8576249514688522074">যা শুরু করা হয়নি</translation>
@@ -732,6 +740,7 @@
 <translation id="8671972493856476349"><ph name="VERSION_NUMBER" />-এ আপডেট করে রিস্টার্ট করুন</translation>
 <translation id="8675354002693747642">আগে-থাকতে শেয়ার করা কী</translation>
 <translation id="8677859815076891398">কোনও অ্যালবাম নেই। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-এ একটি অ্যালবাম তৈরি করুন।</translation>
+<translation id="8680431479333800907">ডিভাইস একই ব্যবহারকারীর কাছে থাকবে</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> এই ফিচার ম্যানেজ করতে, 'বাঁদিক' বা 'ডানদিকের তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="871560550817059752">প্রিন্ট করা যায়নি - প্রিন্টারে কালি নেই</translation>
@@ -781,6 +790,8 @@
 <translation id="9087578468327036362">এই কোয়েরি সম্পর্কে রিপোর্ট করুন</translation>
 <translation id="9088306295921699330">বর্তমান ব্যবহার</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">আপনাকে ডিভাইসটি আলাদা করতে হবে</translation>
+<translation id="9098156406873149060">ব্যবহারকারীর ডেটা রাখুন</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-এর টিকিট রিফ্রেশ করুন</translation>
 <translation id="9106415115617144481">স্ক্যান করা পৃষ্ঠা <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">আনলক</translation>

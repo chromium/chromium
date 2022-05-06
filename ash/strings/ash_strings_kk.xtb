@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C құрылғысы (алдыңғы ұяшық)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> дисплейі <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц) ажыратымдылығына өзгерді. Өзгерістерді сақтау үшін "Растау" түймесін басыңыз. Алдыңғы параметрлер <ph name="TIMEOUT_SECONDS" /> кейін қалпына келтіріледі.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth құрылғысы жұптауды сұрайды. Аталмыш құрылғыда осы PIN кодын енгізіңіз. <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Экран скриншотының бір бөлігі таңдалды.</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> құрылғысын сақтаңыз</translation>
 <translation id="1032891413405719768">Стилус батареясының заряды аз қалды</translation>
 <translation id="1036073649888683237">Хабарландыруларды басқару үшін "Параметрлер" бөліміне өтіңіз.</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">Шығыс</translation>
 <translation id="3009958530611748826">Сканерленген мазмұн сақталатын қалтаны таңдаңыз</translation>
 <translation id="301282384882049174">Үлгілерді әкімші бөліседі.</translation>
-<translation id="3017687597151988916">Таңдау аймағы терезеге орнатылды.</translation>
 <translation id="3033545621352269033">Қосулы</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> жұмыс үстелімен біріктіру</translation>
 <translation id="3036649622769666520">Файлдарды ашу</translation>
@@ -851,6 +849,7 @@
 <translation id="6166852626429024716">Құрылғыдан, қолданбалардан, параметрлерден және интернеттен іздеу...</translation>
 <translation id="6179832488876878285">Бұл жерде маңызды файлдарыңызды бекіте аласыз. Бастау үшін Files қолданбасын ашыңыз.</translation>
 <translation id="619279033188484792">Телефондағы соңғы фотосуреттерді, медианы және хабарландыруларды <ph name="DEVICE_TYPE" /> құрылғысында көріңіз.</translation>
+<translation id="619335566042889110">Енді толық зарядтаңыз.</translation>
 <translation id="6220928844947387476">Енді бір уақытта экранды жазып, өзіңізді де бейнеге түсіре аласыз.</translation>
 <translation id="622484624075952240">Төмен</translation>
 <translation id="6231419273573514727">Перифериялық құрылғының өнімділігі шектеулі болуы мүмкін</translation>
@@ -1049,7 +1048,6 @@
 <translation id="746232733191930409">Экран жазу режимі</translation>
 <translation id="7466449121337984263">Саусақ ізін оқу сканерін түртіңіз.</translation>
 <translation id="7477793887173910789">Музыканы, бейнелерді және т.б. басқарыңыз.</translation>
-<translation id="7483025031359818980">Таңдау аймағы толық экранға орнатылды.</translation>
 <translation id="7497767806359279797">Тілді және пернетақтаны таңдау</translation>
 <translation id="7508690557411636492">Өткен айда ашылды.</translation>
 <translation id="7509246181739783082">Жеке басыңызды растаңыз</translation>
@@ -1186,6 +1184,7 @@
 <translation id="826107067893790409">Enter пернесін басып, <ph name="USER_EMAIL_ADDRESS" /> үшін құрылғының құлпын ашыңыз.</translation>
 <translation id="8261506727792406068">Жою</translation>
 <translation id="8270450402312105425">{0,plural, =1{Құрылғыны бір сағатта алдыңғы нұсқаға қайтару қажет}other{Құрылғыны # сағатта алдыңғы нұсқаға қайтару қажет}}</translation>
+<translation id="8271580342040932214">Батарея қуат көзіне жалғанған кезде, оның жұмысының ұзақтығы артуы үшін заряд уақытша 80% болады. <ph name="FULLY_CHARGE_TIME" /> қарай толық зарядталады.</translation>
 <translation id="8284362522226889623">Алдыңғы жұмыс үстеліне ауысу үшін төрт саусақпен солға қарай сырғытыңыз.</translation>
 <translation id="828708037801473432">Өшірулі</translation>
 <translation id="8297006494302853456">Әлсіз</translation>
@@ -1269,6 +1268,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Енгізу әдістерінің параметрлері</translation>
 <translation id="8818320199597151042">Профиль өшірілуде. Бірнеше минут күтіңіз.</translation>
+<translation id="8819728065740986820">Бейімдеп зарядтау функциясы қосулы</translation>
 <translation id="8825863694328519386">Артқа оралу үшін солдан оңға қарай сырғытыңыз.</translation>
 <translation id="8834539327799336565">Қазір жалғанғандар</translation>
 <translation id="8841375032071747811">"Артқа" түймесі</translation>
@@ -1315,6 +1315,7 @@
 <translation id="9080132581049224423">Негізгі экранға өту үшін жоғары қарай сипаңыз.</translation>
 <translation id="9080206825613744995">Микрофон пайдаланылуда.</translation>
 <translation id="9084606467167974638">Мәзірдің орнын ауыстыру</translation>
+<translation id="9085962983642906571">Батарея қуат көзіне жалғанған кезде, оның жұмысының ұзақтығы артуы үшін заряд 80% болып тұрады.</translation>
 <translation id="9089416786594320554">Енгізу әдістері</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> экраны өшірілді</translation>
 <translation id="9098969848082897657">Телефон дыбысын өшіру</translation>

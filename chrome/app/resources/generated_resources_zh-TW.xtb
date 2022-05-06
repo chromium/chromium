@@ -4076,7 +4076,6 @@
 <translation id="4953808748584563296">預設的橘色顯示圖片</translation>
 <translation id="4955710816792587366">選擇 PIN 碼</translation>
 <translation id="4959262764292427323">系統會將密碼儲存在你的 Google 帳戶中，方便你在任何裝置上使用密碼</translation>
-<translation id="496027654926814138">攻擊者可能透過「<ph name="FILE_NAME" />」竊取你的個人資訊。</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">投放螢幕</translation>
 <translation id="4961361269522589229">食譜建議</translation>
@@ -5896,7 +5895,6 @@
 <translation id="6798578729981748444">如要結束匯入作業，請關閉所有 Firefox 視窗。</translation>
 <translation id="6798780071646309401">大寫鎖定模式已開啟</translation>
 <translation id="6798954102094737107">外掛程式：<ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">攻擊者可能會透過這個檔案竊取你的個人資訊</translation>
 <translation id="6801129617625983991">一般設定</translation>
 <translation id="6801435275744557998">校正觸控螢幕</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6368,7 +6366,6 @@
 <translation id="7269736181983384521">鄰近分享功能數據用量</translation>
 <translation id="7272674038937250585">沒有任何說明</translation>
 <translation id="7273110280511444812">最後附加日期為 <ph name="DATE" /></translation>
-<translation id="7273970016743909808">你將使用「資訊站或看板升級」授權，這項授權只允許裝置在資訊站或看板模式下運作。如果希望使用者登入裝置，請返回上一個畫面，然後使用「Chrome Enterprise 升級版」進行註冊。</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" />後充飽</translation>
 <translation id="727952162645687754">下載錯誤</translation>
 <translation id="7280041992884344566">Chrome 搜尋有害的軟體時發生錯誤</translation>
@@ -6771,7 +6768,6 @@
 <translation id="7670434942695515800">如要取得最佳效能，請升級至最新版本。建議你先備份檔案，以免系統無法完成升級。升級作業一旦開始，Linux 將會關閉。請先儲存開啟的檔案再執行後續操作。<ph name="LINK_START" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">使用系統標題列及邊界</translation>
 <translation id="767127784612208024">輕觸即可確認重設</translation>
-<translation id="767147716926917172">自動將診斷資料和使用資料傳送給 Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> (在「<ph name="PAGE_TITLE" />」中)。</translation>
 <translation id="7674416868315480713">停用所有在 Linux 中轉接的連接埠</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> 個應用程式</translation>

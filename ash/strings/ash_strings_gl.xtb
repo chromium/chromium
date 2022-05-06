@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Dispositivo USB‑C (porto frontal)</translation>
 <translation id="1013598600051641573">A resolución do dispositivo <ph name="DISPLAY_NAME" /> cambiouse a <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Para gardar os cambios, fai clic en Confirmar. A configuración anterior restaurarase en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" quere recibir permiso para sincronizarse. Introduce este código PIN nese dispositivo: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Seleccionouse unha captura de pantalla parcial</translation>
 <translation id="1024364763893396229">Garda o dispositivo (<ph name="NAME" />)</translation>
 <translation id="1032891413405719768">O lapis óptico ten pouca batería</translation>
 <translation id="1036073649888683237">Para xestionar as notificacións vai a Configuración</translation>
@@ -331,7 +330,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3009178788565917040">Saída</translation>
 <translation id="3009958530611748826">Seleccionar un cartafol para gardar os ficheiros</translation>
 <translation id="301282384882049174">Compartido polo teu administrador</translation>
-<translation id="3017687597151988916">Definiuse a ventá como área de selección</translation>
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3033912566804961911">Combinar con <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Abrir ficheiros</translation>
@@ -852,6 +850,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6166852626429024716">Realiza buscas no teu dispositivo, nas aplicacións, nas opcións de configuración, na Web…</translation>
 <translation id="6179832488876878285">Podes fixar aquí os ficheiros importantes. Para comezar a utilizar esta función, abre a aplicación Ficheiros.</translation>
 <translation id="619279033188484792">Accede ás notificacións, ao contido multimedia e ás fotos recentes do teu teléfono desde o dispositivo <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Cargar por completo agora</translation>
 <translation id="6220928844947387476">Xa podes gravarte ao mesmo tempo que gravas a túa pantalla</translation>
 <translation id="622484624075952240">Frecha abaixo</translation>
 <translation id="6231419273573514727">É posible que os periféricos teñan un rendemento limitado</translation>
@@ -1050,7 +1049,6 @@ Nova instalación</translation>
 <translation id="746232733191930409">Modo de gravación da pantalla</translation>
 <translation id="7466449121337984263">Toca o sensor</translation>
 <translation id="7477793887173910789">Controlar a túa música, os vídeos e moito máis</translation>
-<translation id="7483025031359818980">Definiuse a pantalla completa como área de selección</translation>
 <translation id="7497767806359279797">Escoller idioma e teclado</translation>
 <translation id="7508690557411636492">Abriuse durante o último mes</translation>
 <translation id="7509246181739783082">Verifica a túa identidade</translation>
@@ -1187,6 +1185,7 @@ Nova instalación</translation>
 <translation id="826107067893790409">Preme Intro se queres desbloquear o dispositivo para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8270450402312105425">{0,plural, =1{Cambia o dispositivo a unha versión anterior no prazo de 1 hora}other{Cambia o dispositivo a unha versión anterior no prazo de # horas}}</translation>
+<translation id="8271580342040932214">Para prolongar a súa duración, a batería está temporalmente ao 80 % mentres o dispositivo estea conectado á corrente. Hora á que se completará a carga: <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Para cambiar ao escritorio anterior, pasa catro dedos cara á esquerda</translation>
 <translation id="828708037801473432">Desactivada</translation>
 <translation id="8297006494302853456">Feble</translation>
@@ -1270,6 +1269,7 @@ Nova instalación</translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="881757059229893486">Configuración dos métodos de introdución de texto</translation>
 <translation id="8818320199597151042">Quitando perfil. Agarda uns minutos.</translation>
+<translation id="8819728065740986820">A función Carga intelixente está activada</translation>
 <translation id="8825863694328519386">Pasa o dedo desde a esquerda para volver</translation>
 <translation id="8834539327799336565">Dispositivos conectados actualmente</translation>
 <translation id="8841375032071747811">Botón Atrás</translation>
@@ -1316,6 +1316,7 @@ Nova instalación</translation>
 <translation id="9080132581049224423">Pasa o dedo cara arriba para ir á pantalla de inicio</translation>
 <translation id="9080206825613744995">O micrófono está en uso.</translation>
 <translation id="9084606467167974638">Alternar a posición do menú</translation>
+<translation id="9085962983642906571">Para prolongar a súa duración, a batería mantense no 80 % mentres o dispositivo estea conectado á corrente.</translation>
 <translation id="9089416786594320554">Métodos de entrada</translation>
 <translation id="9091626656156419976">Quitouse a pantalla <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silenciar teléfono</translation>

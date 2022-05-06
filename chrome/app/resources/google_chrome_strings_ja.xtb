@@ -13,7 +13,6 @@
 <translation id="1154147086299354128">Chrome で開く(&amp;O)</translation>
 <translation id="1178374936842835197">このページに設定が表示されない場合は、<ph name="LINK_BEGIN" />
         ChromeOS Flex の設定<ph name="LINK_END" />を確認してください</translation>
-<translation id="1182414570724401860">このファイルのダウンロードや表示は推奨されません</translation>
 <translation id="1278833599417554002">再起動して Chrome を更新(&amp;C)</translation>
 <translation id="1302523850133262269">Chrome は最新のシステム アップデートをインストールしています。しばらくお待ちください。</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> では、このデバイスを使用する前に下記の利用規約を確認しこれに同意していただく必要があります。これらの規約は Google ChromeOS Flex 利用規約を拡張、変更、制限するものではありません。</translation>
@@ -282,6 +281,7 @@
 これまでにウェブサイトやアプリに許可した権限がこのアカウントに適用される可能性があります。Google アカウントは [<ph name="SETTINGS_LINK_BEGIN" />設定<ph name="SETTINGS_LINK_END" />] で管理できます。</translation>
 <translation id="7398801000654795464">Chrome に <ph name="USER_EMAIL_ADDRESS" /> としてログインしていました。再度ログインするには同じアカウントを使用してください。</translation>
 <translation id="7410958280246779049">危険なファイルのため Chrome でブロックされました</translation>
+<translation id="7426611252293106642">この Linux ディストリビューションはサポートされなくなったため、Google Chrome は正常に機能しない可能性があります</translation>
 <translation id="7481213027396403996">Chrome の最高水準のセキュリティで保護</translation>
 <translation id="7486227612705979895">Chrome からお客様のドライブにアクセスして、アドレスバーに候補を表示します</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

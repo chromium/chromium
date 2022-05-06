@@ -4081,7 +4081,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4953808748584563296">Avatar arancione predefinito</translation>
 <translation id="4955710816792587366">Scegli il PIN</translation>
 <translation id="4959262764292427323">Le password vengono salvate nel tuo Account Google affinché tu possa usarle su qualsiasi dispositivo</translation>
-<translation id="496027654926814138">Il file <ph name="FILE_NAME" /> potrebbe consentire agli utenti malintenzionati di rubare le tue informazioni personali.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Trasmetti schermo</translation>
 <translation id="4961361269522589229">idee per ricette</translation>
@@ -5902,7 +5901,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6798578729981748444">Per terminare l'importazione, chiudi tutte le finestre di Firefox.</translation>
 <translation id="6798780071646309401">bloc maiusc attivo</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Questo file potrebbe consentire a utenti malintenzionati di rubare le tue informazioni personali</translation>
 <translation id="6801129617625983991">Impostazioni generali</translation>
 <translation id="6801435275744557998">Calibra touchscreen</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6374,7 +6372,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7269736181983384521">Utilizzo dei dati Condivisione nelle vicinanze</translation>
 <translation id="7272674038937250585">Nessuna descrizione fornita</translation>
 <translation id="7273110280511444812">Ultimo collegamento in data <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Utilizzerai un upgrade Kiosk e segnaletica che consente l'esecuzione del dispositivo solo in modalità kiosk o segnaletica. Se vuoi che gli utenti accedano al dispositivo, torna indietro ed esegui la registrazione utilizzando Chrome Enterprise Upgrade.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> alla ricarica completa</translation>
 <translation id="727952162645687754">Errore di download</translation>
 <translation id="7280041992884344566">Si è verificato un errore in Chrome durante la ricerca di software dannoso</translation>
@@ -6777,7 +6774,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7670434942695515800">Per avere prestazioni ottimali, esegui l'upgrade all'ultima versione. Consigliamo di eseguire il backup dei file in caso di interruzione dell'upgrade. L'avvio dell'upgrade comporterà l'arresto di Linux. Salva i file aperti prima di continuare. <ph name="LINK_START" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Usa barra del titolo di sistema e bordi</translation>
 <translation id="767127784612208024">Tocca per confermare la reimpostazione</translation>
-<translation id="767147716926917172">Invia automaticamente a Google dati diagnostici e sull'utilizzo</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, in <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Disattiva tutte le porte con forwarding attivo in Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> app</translation>

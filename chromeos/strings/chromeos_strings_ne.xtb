@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">उज्यालो थिम अन गर्नुहोस्</translation>
 <translation id="2323506179655536734">स्किप गरिएको छ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">पावरवास</translation>
 <translation id="2338501278241028356">नजिकैका डिभाइसहरू पत्ता लगाउन ब्लुटुथ अन गर्नुहोस्</translation>
 <translation id="2346474577291266260">उत्कृष्ट (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />अयोग्य कम्पोनेन्टहरू<ph name="LINK_END" /> भेटिए। तपाईं यो कम्पोनेन्ट इन्स्टल गरिएको छ भन्ने कुरा पुष्टि गर्ने विकल्प रोज्न चाहनुहुन्छ भने कृपया अहिले नै उक्त विकल्प रोज्नुहोस्।</translation>
@@ -155,6 +156,7 @@
 <translation id="2446553403094072641">फ्लोटिङ पोइन्टको सटीकता</translation>
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2461822463642141190">हालको</translation>
+<translation id="2480034874476596812">म्यानुअल रूपमा अफ गरियोस्</translation>
 <translation id="2491955442992294626">तपाईंले अर्को विन्डो प्रयोग गरिरहेका बेला कीहरू परीक्षण गरिँदैन</translation>
 <translation id="2493126929778606526">स्वतः चयन गरिएका तपाईंका उत्कृष्ट फोटोहरू</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -250,6 +252,7 @@
 <translation id="3606583719724308068">HTTPS वेबसाइटहरू लोड हुन धेरै समय लागिरहेको छ</translation>
 <translation id="3621202678540785336">आगत</translation>
 <translation id="3632579075709132555">प्राइभेसी स्क्रिन टगल</translation>
+<translation id="3678765385266369662">तपाईं जुन विकल्प प्रयोग गरी Write Protect अफ गरियोस् भन्ने चाहनुहुन्छ सोही विकल्प चयन गर्नुहोस्</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> परीक्षण</translation>
 <translation id="370665806235115550">लोड गर्दै...</translation>
 <translation id="3708186454126126312">यसअघि कनेक्ट गरिएका डिभाइस</translation>
@@ -304,6 +307,7 @@
 <translation id="4244962993387259361">मेमोरीको जाँच गर्न तपाईंको डिभाइसको भण्डारणमा कम्तीमा ५०० एम.बि. खाली ठाउँ हुनु पर्छ। ठाउँ खाली गर्न सेटिङ &gt; भण्डारण व्यवस्थापनमा जानुहोस्।</translation>
 <translation id="4250229828105606438">स्क्रिसट</translation>
 <translation id="4258281355379922695">HTTP विलम्बता</translation>
+<translation id="4258561075226177474">सोही प्रयोगकर्तालाई डिभाइसको स्वामित्व दिइँदै छ। प्रयोगकर्ताको डेटा मेटाउने हो?</translation>
 <translation id="4271957103967917607">फुल स्क्रिनमा हेर्नुहोस्</translation>
 <translation id="4275799948641988986">मर्मत गरेपछि यो डिभाइस कसले प्रयोग गर्ने छ?</translation>
 <translation id="4289540628985791613">समीक्षा</translation>
@@ -352,6 +356,7 @@
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
 <translation id="4744944742468440486">तपाईंले चयन गर्नुभएको पाठसम्बन्धी जानकारी</translation>
 <translation id="4773299976671772492">रोकियो</translation>
+<translation id="4774530504324923332">तपाईंसँग RSU सक्षम पारिएको सुरक्षा साँचो, QR कोड स्क्यानर र इन्टरनेट कनेक्ट भएको दोस्रो डिभाइस हुनु पर्ने छ</translation>
 <translation id="4782311465517282004">तपाईंले कुनै टेक्स्टमा दायाँ क्लिक गर्दा वा टच एन्ड होल्ड गर्दा परिभाषा, अनुवाद वा एकाइ रूपान्तरण जस्ता जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> फोटो</translation>
 <translation id="4793710386569335688">थप मद्दत चाहिएमा <ph name="BEGIN_LINK" />मद्दत केन्द्र<ph name="END_LINK" /> मा जानुहोस्।</translation>
@@ -430,6 +435,7 @@
 <translation id="5372659122375744710">WiFi नेटवर्क सुरक्षित छैन</translation>
 <translation id="5376354385557966694">स्वचालित उज्यालो मोड</translation>
 <translation id="537872351913703572">अर्कै प्रयोगकर्ता वा संस्थालाई डिभाइसको स्वामित्व दिइने छ</translation>
+<translation id="5395600419410242651">सबै डेटा मेटाइयोस्</translation>
 <translation id="5400907029458559844">डिभाइस कनेक्ट गरिँदै छ।</translation>
 <translation id="5401938042319910061">सबै रुटिनहरू चलाउनुहोस्</translation>
 <translation id="5423849171846380976">सक्रिय भयो</translation>
@@ -640,6 +646,7 @@
 <translation id="7570674786725311828">USB टचस्क्रिन</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> बाँकी</translation>
 <translation id="7620771111601174153">मद्दत केन्द्रमा गई थप जान्नुहोस्</translation>
+<translation id="7626501172915339021">RMA सर्भर अनलक (RSU) क्यालिब्रेट गरियोस्</translation>
 <translation id="763165478673169849">पछिल्लो पटक रिसेट गरिएको मिति र समय</translation>
 <translation id="7648838807254605802">HTTPS को विलम्बता धेरै छ</translation>
 <translation id="7656388927906093505">यो डिभाइस माउस हो।</translation>
@@ -723,7 +730,6 @@
 <translation id="8498220429738806196">ट्राफिक काउन्टर</translation>
 <translation id="8503813439785031346">एक-पटके टेक्स्ट म्यासेज</translation>
 <translation id="8503836310948963452">थप केही मिनेट मात्र पर्खनुहोस्…</translation>
-<translation id="8521021929829989041">व्यक्तिगत डिभाइसका रूपमा चलाउनुहोस्</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">तपाईंको मोबाइल सेवा प्रदायकले सो सेवा प्रदायकको नेटवर्कमा कनेक्ट गर्न सकोस् भन्नाका लागि तपाईंले यो विकल्प अन गर्नु पर्ने हुन सक्छ। यससम्बन्धी थप जानकारी प्राप्त गर्न आफ्नो मोबाइल सेवा प्रदायकलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="8576249514688522074">सुरु गरिएको छैन</translation>
@@ -784,6 +790,8 @@
 <translation id="9087578468327036362">यो क्वेरीका बारेमा रिपोर्ट गर्नुहोस्</translation>
 <translation id="9088306295921699330">हालको प्रयोग</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">तपाईंले डिभाइस क्यालिब्रेट गर्नु पर्ने हुन्छ</translation>
+<translation id="9098156406873149060">प्रयोगकर्ताको डेटा सेभ गरियोस्</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> को टिकट पुन: ताजा गर्नुहोस्</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्क्यान गरिँदै छ</translation>
 <translation id="9111102763498581341">अनलक गर्नुहोस्</translation>

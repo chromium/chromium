@@ -4098,7 +4098,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4953808748584563296">Rhithffurf oren diofyn</translation>
 <translation id="4955710816792587366">Dewiswch eich PIN</translation>
 <translation id="4959262764292427323">Mae cyfrineiriau'n cael eu cadw i'ch Cyfrif Google fel y gallwch eu defnyddio ar unrhyw ddyfais</translation>
-<translation id="496027654926814138">Gallai <ph name="FILE_NAME" /> adael i ymosodwyr ddwyn eich gwybodaeth bersonol.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Castio'r sgrîn</translation>
 <translation id="4961361269522589229">syniadau rysáit</translation>
@@ -5930,7 +5929,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6798578729981748444">I orffen mewnforio, caewch holl ffenestri Firefox.</translation>
 <translation id="6798780071646309401">mae Caps Lock ymlaen</translation>
 <translation id="6798954102094737107">Ategyn: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Mae'n bosib y bydd y ffeil hon yn gadael i ymosodwyr ddwyn eich gwybodaeth bersonol</translation>
 <translation id="6801129617625983991">Gosodiadau cyffredinol</translation>
 <translation id="6801435275744557998">Calibradu'r sgrîn gyffwrdd</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6402,7 +6400,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7269736181983384521">Defnydd data Rhannu Gerllaw</translation>
 <translation id="7272674038937250585">Heb ddarparu disgrifiad</translation>
 <translation id="7273110280511444812">atodwyd ddiwethaf ar <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Byddwch yn defnyddio Uwchraddiad Ciosg ac Arwyddion sydd ond yn caniatáu i'r ddyfais redeg yn y modd ciosg neu arwyddion. Os hoffech i ddefnyddwyr fewngofnodi i'r ddyfais, ewch yn ôl a chofrestrwch gan ddefnyddio Uwchraddiad Chrome Enterprise.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> nes ei fod yn llawn</translation>
 <translation id="727952162645687754">Gwall lawrlwytho</translation>
 <translation id="7280041992884344566">Bu gwall tra roedd Chrome yn chwilio am feddalwedd niweidiol</translation>
@@ -6805,7 +6802,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7670434942695515800">I gael y perfformiad gorau, uwchraddiwch i'r fersiwn ddiweddaraf. Argymhellir gwneud copi wrth gefn o'ch ffeiliau rhag ofn nad oes modd cwblhau'r diweddariad. Ar ôl i'r uwchraddiad ddechrau, bydd Linux yn diffodd. Cadwch ffeiliau sydd ar agor cyn parhau. <ph name="LINK_START" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Defnyddio bar teitl ac ymylon y system</translation>
 <translation id="767127784612208024">Cyffyrddwch i gadarnhau ailosod</translation>
-<translation id="767147716926917172">Yn anfon data defnydd a diagnosteg yn awtomatig at Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, yn <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Dadweithredu pob porth sy'n cael ei anfon ymlaen yn Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> ap</translation>

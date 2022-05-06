@@ -38,7 +38,6 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="1219674500290482172">Tidak dapat terhubung ke internet.</translation>
 <translation id="122699739164161391">Tutup Semua Tab</translation>
 <translation id="1229222343402087523">Telusuri ${searchPhrase} di Chrome</translation>
-<translation id="1231733316453485619">Aktifkan sinkronisasi?</translation>
 <translation id="1242044645101871359">Login Lagi</translation>
 <translation id="1254117744268754948">Pilih Folder</translation>
 <translation id="1265739287306757398">Pelajari Caranya</translation>
@@ -971,5 +970,4 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="988141524645182168">Perangkat Lainnya</translation>
 <translation id="989988560359834682">Edit Alamat</translation>
 <translation id="994757059139821576">Saran Artikel</translation>
-<translation id="997742718232442409">Situs ini mencoba mendownload file kalender.</translation>
 </translationbundle>

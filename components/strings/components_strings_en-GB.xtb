@@ -1100,6 +1100,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> is blocked</translation>
 <translation id="3978338123949022456">Search mode, type a query and press Enter to search with <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Birds</translation>
+<translation id="3985750352229496475">Manage addresses…</translation>
 <translation id="3986705137476756801">Turn off Live Caption for now</translation>
 <translation id="3987940399970879459">Less than 1 MB</translation>
 <translation id="3990250421422698716">Jog offset</translation>
@@ -1227,6 +1228,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4305666528087210886">Your file couldn’t be accessed</translation>
 <translation id="4306529830550717874">Save address?</translation>
 <translation id="4306812610847412719">clipboard</translation>
+<translation id="4310070645992025887">Search your journeys</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Block (default)</translation>
 <translation id="4314815835985389558">Manage sync</translation>
@@ -2111,6 +2113,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6839929833149231406">Area</translation>
 <translation id="6846340164947227603">Use a virtual card number…</translation>
 <translation id="6852204201400771460">Reload app?</translation>
+<translation id="6857776781123259569">Manage passwords…</translation>
 <translation id="686485648936420384">Consumer resources</translation>
 <translation id="6865412394715372076">This card can't be verified at the moment</translation>
 <translation id="6869334554832814367">Personal loans</translation>
@@ -2437,6 +2440,7 @@ Additional details:
 <translation id="7669271284792375604">Attackers on this site might try to trick you into installing programs that harm your browsing experience (for example, by changing your homepage or showing extra ads on sites that you visit).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Actions taken with data flagged as confidential (1 action since login). <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" />}other{Actions taken with data flagged as confidential (# actions since login). <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Mailbox 6</translation>
+<translation id="7675325315208090829">Manage payment methods…</translation>
 <translation id="7676643023259824263">Search for clipboard text, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">View and manage your browsing history in Chrome settings</translation>
 <translation id="7679947978757153706">Baseball</translation>

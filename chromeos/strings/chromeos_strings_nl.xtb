@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Licht thema aanzetten</translation>
 <translation id="2323506179655536734">OVERGESLAGEN</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Zet Bluetooth aan om apparaten in de buurt te vinden</translation>
 <translation id="2346474577291266260">Uitstekend (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Niet-gekwalificeerde componenten<ph name="LINK_END" /> gevonden. Als je wilt bevestigen dat dit is geïnstalleerd, doe je dat nu.</translation>
@@ -375,6 +376,7 @@
 <translation id="4890353053343094602">Kies onmiddellijk een nieuw wachtwoord</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in het linkeroordopje.</translation>
+<translation id="4915052247106771211">Hierdoor wordt het apparaat teruggezet naar de fabrieksinstellingen (Powerwash).</translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4917889632206600977">Gestopt: geen papier meer</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> opgeladen in <ph name="NUM_SECONDS" /> seconden.</translation>
@@ -429,6 +431,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5358174242040570474">Er is iets misgegaan. Probeer nog een keer een achtergrond te kiezen of open de app opnieuw.</translation>
 <translation id="5372659122375744710">Wifi-netwerk is niet beveiligd</translation>
 <translation id="5376354385557966694">Automatisch lichte modus</translation>
+<translation id="537872351913703572">Het apparaat gaat naar een andere gebruiker of organisatie</translation>
 <translation id="5400907029458559844">Apparaat maakt verbinding.</translation>
 <translation id="5401938042319910061">Alle routines uitvoeren</translation>
 <translation id="5423849171846380976">Geactiveerd</translation>
@@ -722,7 +725,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8498220429738806196">Verkeerstellers</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="8503836310948963452">Nog een paar minuten...</translation>
-<translation id="8521021929829989041">Gebruiken als persoonlijk apparaat</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Je provider kan deze optie vereisen om verbinding te maken met hun netwerk. Neem contact op met je provider voor meer informatie.</translation>
 <translation id="8576249514688522074">Niet geïnitialiseerd</translation>
@@ -733,6 +735,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8671972493856476349">Updaten naar <ph name="VERSION_NUMBER" /> en opnieuw opstarten</translation>
 <translation id="8675354002693747642">Eerder gedeelde sleutel</translation>
 <translation id="8677859815076891398">Geen albums. Maak een album in <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Het apparaat gaat naar dezelfde eigenaar</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gebruik de pijl naar rechts of pijl naar links om deze functie te beheren.</translation>
 <translation id="8712637175834984815">Begrepen</translation>
 <translation id="871560550817059752">Mislukt - Geen inkt meer</translation>

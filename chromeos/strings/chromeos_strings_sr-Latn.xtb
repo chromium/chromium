@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Omogućite svetlu temu</translation>
 <translation id="2323506179655536734">PRESKOČENO</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da biste otkrili uređaje u blizini</translation>
 <translation id="2346474577291266260">Odličan (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463">Otkrivene su <ph name="LINK_BEGIN" />nekvalifikovane komponente<ph name="LINK_END" />. Ako želite da potvrdite da su montirane, uradite to odmah.</translation>
@@ -730,7 +731,6 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8498220429738806196">Brojači saobraćaja</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="8503836310948963452">Još samo par minuta…</translation>
-<translation id="8521021929829989041">Koristi kao lični uređaj</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Mobilni operater može da zatraži ovu opciju radi povezivanja na mrežu. Obratite se mobilnom operateru za detalje.</translation>
 <translation id="8576249514688522074">Nije pokrenuto</translation>

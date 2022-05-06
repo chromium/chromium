@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C-enhet (porten foran)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> endret til <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klikk på bekreft for å beholde endringene. De forrige innstillingene blir gjenopprettet om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til. Skriv inn denne PIN-koden på den aktuelle enheten: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Delvis skjermdump er valgt</translation>
 <translation id="1024364763893396229">Lagre <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Pekepennen har lite batteri</translation>
 <translation id="1036073649888683237">For å administrere varsler, gå til Innstillinger</translation>
@@ -331,7 +330,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3009178788565917040">Utdata</translation>
 <translation id="3009958530611748826">Velg mappen du vil lagre i</translation>
 <translation id="301282384882049174">Delt av administratoren din</translation>
-<translation id="3017687597151988916">Vinduet er valgt som kilde</translation>
 <translation id="3033545621352269033">På</translation>
 <translation id="3033912566804961911">Kombiner med <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Åpne filer</translation>
@@ -1050,7 +1048,6 @@ Nylig installert</translation>
 <translation id="746232733191930409">Skjermopptaksmodus</translation>
 <translation id="7466449121337984263">Trykk på sensoren</translation>
 <translation id="7477793887173910789">Styr musikk, video og mer</translation>
-<translation id="7483025031359818980">Hele skjermen er valgt som kilde</translation>
 <translation id="7497767806359279797">Velg språk og tastatur</translation>
 <translation id="7508690557411636492">Åpnet den siste måneden</translation>
 <translation id="7509246181739783082">Bekreft identiteten din</translation>

@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C cihazı (ön port)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> <ph name="RESOLUTION" /> ilə dəyişdirilib (<ph name="REFRESH_RATE" /> Hz). Dəyişiklikləri saxlamaq üçün "təsdiq edin" seçiminə toxunun. Əvvəlki ayarlar <ph name="TIMEOUT_SECONDS" /> ərzində bərpa ediləcək.</translation>
 <translation id="1013923882670373915">Bluetooth cihazı "<ph name="DEVICE_NAME" />" cütlənmək üçün icazə istəyir. Həmin cihaza PIN kodu daxil edin: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Qismən skrinşot seçilib</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> cihazınızı yadda saxlayın</translation>
 <translation id="1032891413405719768">Qramafon iynəsinin batareyası azdır</translation>
 <translation id="1036073649888683237">Bildirişləri idarə etmək üçün Ayarlara keçin</translation>
@@ -331,7 +330,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3009178788565917040">Çıxış</translation>
 <translation id="3009958530611748826">Yadda saxlamaq üçün qovluq seçin</translation>
 <translation id="301282384882049174">Administratorunuz tərəfindən paylaşılıb</translation>
-<translation id="3017687597151988916">Seçim sahəsi pəncərə olaraq ayarlanıb</translation>
 <translation id="3033545621352269033">Aktiv</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> ilə birləşdirin</translation>
 <translation id="3036649622769666520">Faylları Açın</translation>
@@ -1050,7 +1048,6 @@ Yeni quraşdırma</translation>
 <translation id="746232733191930409">Ekran yazılması rejimi</translation>
 <translation id="7466449121337984263">Sensora toxunun</translation>
 <translation id="7477793887173910789">Musiqi, video və daha çoxuna nəzarət edin</translation>
-<translation id="7483025031359818980">Seçim sahəsi tam ekran olaraq ayarlanıb</translation>
 <translation id="7497767806359279797">Dil və klaviatura seçin</translation>
 <translation id="7508690557411636492">Keçən ay açılıb</translation>
 <translation id="7509246181739783082">Kimliyinizi doğrulayın</translation>

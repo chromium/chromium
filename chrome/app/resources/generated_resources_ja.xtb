@@ -131,6 +131,7 @@
 <translation id="1124772482545689468">ユーザー</translation>
 <translation id="1125550662859510761">表示上のサイズ: <ph name="WIDTH" />x<ph name="HEIGHT" />（ネイティブ）</translation>
 <translation id="1126809382673880764">危険なウェブサイト、ダウンロード、拡張機能から保護されていません。セーフ ブラウジングによる保護は、Gmail や Google 検索など他の Google サービスで利用可能な場合は、引き続き有効です。</translation>
+<translation id="1128090040635299943">Linux を設定しています。設定には数分かかります。</translation>
 <translation id="1128591060186966949">検索エンジンの編集</translation>
 <translation id="1129420403709586868">スマートフォンの写真とメディアを表示します</translation>
 <translation id="1129850422003387628">アプリの管理</translation>
@@ -332,6 +333,7 @@
 <translation id="1327794256477341646">位置情報を必要とする機能は動作しなくなります</translation>
 <translation id="1329191040029425999">デバイスが最新の状態になっていることを確認してから、もう一度お試しください</translation>
 <translation id="1330145147221172764">画面キーボードを有効にする</translation>
+<translation id="1331625853030156663"><ph name="APP_NAME" /> を開くには、[スリープから復帰するときにロック画面を表示する] を有効にしてください</translation>
 <translation id="1331977651797684645">これは私です。</translation>
 <translation id="1333489022424033687">容量不足のため、<ph name="ORIGIN" /> の一部の機能が動作しない可能性があります。デバイスに保存された他のサイトのデータを削除してください</translation>
 <translation id="1333965224356556482">サイトに位置情報へのアクセスを許可しない</translation>
@@ -1947,6 +1949,7 @@
 <translation id="2832124733806557606">お子様はデバイスのログインやロック解除に PIN を使用できます。</translation>
 <translation id="2835177225987815960">現在のスキャン設定（割り当てたスイッチや自動スキャンの速度設定など）はリセットされます。</translation>
 <translation id="2835547721736623118">音声認識サービス</translation>
+<translation id="2836232638504556905">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに名前、メールアドレス、プロフィール画像が共有されます。このサイトの<ph name="BEGIN_LINK" />プライバシー ポリシー<ph name="END_LINK" />をご確認ください。</translation>
 <translation id="2836269494620652131">クラッシュ</translation>
 <translation id="2836635946302913370">このユーザー名でのログインは、管理者によって無効にされています。</translation>
 <translation id="283669119850230892">ネットワーク <ph name="NETWORK_ID" /> を使用するには、まずインターネット接続を完了してください（下記参照）。</translation>
@@ -2228,6 +2231,7 @@
 <translation id="3105796011181310544">Google に戻しますか？</translation>
 <translation id="310671807099593501">サイトで Bluetooth が使用されています</translation>
 <translation id="3108931485517391283">受信できません</translation>
+<translation id="3109206895301430738">保存したタブグループ</translation>
 <translation id="3109724472072898302">折りたたみ表示中</translation>
 <translation id="311214366526552035">ダウンロードを続行</translation>
 <translation id="3112292765614504292">アプリのサイズ: <ph name="APP_SIZE" /></translation>
@@ -3322,6 +3326,7 @@
 <translation id="420283545744377356">スクリーン セーバーをオフにする</translation>
 <translation id="4203065553461038553">ファイルの名前または場所を示すパスが長すぎます</translation>
 <translation id="4204851595694839599">Chrome でのゲームプレイはいかがでしたか？</translation>
+<translation id="4205157409548006256">Linux の設定中にエラーが発生しました。</translation>
 <translation id="4206144641569145248">エイリアン</translation>
 <translation id="4206323443866416204">ご意見の報告</translation>
 <translation id="4207522141889799150"><ph name="SITE" /> の権限を編集する</translation>
@@ -4064,7 +4069,6 @@
 <translation id="4953808748584563296">デフォルトのオレンジのアバター</translation>
 <translation id="4955710816792587366">PIN の選択</translation>
 <translation id="4959262764292427323">パスワードは Google アカウントに保存されるため、どのデバイスからでも使用できます</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> を開くと攻撃者に個人情報を盗まれる可能性があります。</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">画面をキャスト</translation>
 <translation id="4961361269522589229">レシピ</translation>
@@ -5777,6 +5781,7 @@
 <translation id="6686665106869989887">タブを右に移動しました</translation>
 <translation id="6686817083349815241">パスワードを保存</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> を非表示にする</translation>
+<translation id="6688391094668641513"><ph name="ORIGIN" /> の読み取りと変更をリクエストしています:</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> さんにパソコンの前に来てもらってください。お子様の音声モデルを作成するには、この画面上のフレーズをいくつか声に出して読んでもらいます。
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" /> さんが声を出して読む際にサポートが必要な場合は、あなたが読んだ後に繰り返してもらうようにします。その際、マイクから離れて小声で読むようにすると、アシスタントがあなたではなくお子様の声を認識できるようになります。</translation>
@@ -5880,7 +5885,6 @@
 <translation id="6798578729981748444">インポートを完了するには、すべての Firefox ウィンドウを閉じてください。</translation>
 <translation id="6798780071646309401">CapsLock オン</translation>
 <translation id="6798954102094737107">プラグイン: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">このファイルを開くと攻撃者に個人情報を盗まれる可能性があります</translation>
 <translation id="6801129617625983991">全般設定</translation>
 <translation id="6801435275744557998">タッチスクリーンのキャリブレーション</translation>
 <translation id="6802031077390104172"><ph name="USAGE" />（<ph name="OID" />）</translation>
@@ -6288,6 +6292,7 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{ページを離れる}other{ページを離れる}}</translation>
 <translation id="7207457272187520234">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この設定は所有者によって管理されています。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。</translation>
 <translation id="7207631048330366454">アプリを検索</translation>
+<translation id="720808544705441386">アプリを開けません</translation>
 <translation id="7210499381659830293">拡張プリンタ</translation>
 <translation id="7211783048245131419">割り当てられたスイッチはありません</translation>
 <translation id="7212097698621322584">PIN を変更するには、現在の PIN を入力してください。PIN がわからない場合は、セキュリティ キーをリセットしたうえで新しい PIN を作成する必要があります。</translation>
@@ -6350,7 +6355,6 @@
 <translation id="7269736181983384521">ニアバイシェアのデータ使用</translation>
 <translation id="7272674038937250585">説明が提供されていません</translation>
 <translation id="7273110280511444812">前回接続した日: <ph name="DATE" /></translation>
-<translation id="7273970016743909808">キオスクおよびサイネージ アップグレードを使用します。これにより、デバイスはキオスクまたはサイネージ モードでのみ実行できるようになります。ユーザーがデバイスにログインできるようにするには、前の画面に戻り、Chrome Enterprise Upgrade を使用して登録してください。</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - あと <ph name="TIME" />で充電完了</translation>
 <translation id="727952162645687754">ダウンロード エラー</translation>
 <translation id="7280041992884344566">Chrome での有害なソフトウェアの検索中にエラーが発生しました</translation>
@@ -6753,7 +6757,6 @@
 <translation id="7670434942695515800">最適なパフォーマンスで使用するには、最新バージョンにアップグレードしてください。アップグレードを完了できない場合に備えて、ファイルをバックアップしておくことをおすすめします。アップグレードが始まると、Linux はシャットダウンされます。続行する前に開いているファイルを保存してください。<ph name="LINK_START" />詳細<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">システム タイトル バーと枠線の使用</translation>
 <translation id="767127784612208024">リセットを確定するにはタップしてください</translation>
-<translation id="767147716926917172">診断と使用状況のデータを Google に自動送信します</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" /> 内の <ph name="HUNG_IFRAME_URL" /> が停止しています。</translation>
 <translation id="7674416868315480713">Linux で転送中のポートをすべて無効にする</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> 個のアプリ</translation>
@@ -7442,6 +7445,7 @@
 <translation id="8324784016256120271">サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できます（広告のカスタマイズなどが行えます）</translation>
 <translation id="8325413836429495820">クリップボードの読み取りを許可しないサイト</translation>
 <translation id="8326478304147373412">PKCS #7、証明書チェーン</translation>
+<translation id="8327386430364625757">数字フォント</translation>
 <translation id="8327676037044516220">権限とコンテンツの設定</translation>
 <translation id="8330617762701840933">代替ブラウザにリダイレクトされるウェブサイトのリストです。</translation>
 <translation id="8330689128072902965">近くにいる連絡先が共有できます。クリックすると変更できます。</translation>

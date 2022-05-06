@@ -38,7 +38,6 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="1219674500290482172">Échec de connexion à Internet.</translation>
 <translation id="122699739164161391">Fermer tous les onglets</translation>
 <translation id="1229222343402087523">Rechercher ${searchPhrase} dans Chrome</translation>
-<translation id="1231733316453485619">Activer la synchronisation?</translation>
 <translation id="1242044645101871359">Reconnectez-vous</translation>
 <translation id="1254117744268754948">Sélectionner un dossier</translation>
 <translation id="1265739287306757398">Découvrir comment</translation>
@@ -971,5 +970,4 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="988141524645182168">Autr appar</translation>
 <translation id="989988560359834682">Modifier l'adresse</translation>
 <translation id="994757059139821576">Articles suggérés</translation>
-<translation id="997742718232442409">Ce site Web tente de télécharger un fichier d'agenda.</translation>
 </translationbundle>

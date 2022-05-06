@@ -4067,7 +4067,6 @@
 <translation id="4953808748584563296">默认的橙色头像</translation>
 <translation id="4955710816792587366">选择 PIN 码</translation>
 <translation id="4959262764292427323">系统会将密码保存在您的 Google 帐号中，以便您在任意设备上使用密码</translation>
-<translation id="496027654926814138">攻击者可能会利用 <ph name="FILE_NAME" /> 窃取您的个人信息。</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">投射屏幕</translation>
 <translation id="4961361269522589229">食谱建议</translation>
@@ -5888,7 +5887,6 @@
 <translation id="6798578729981748444">要想顺利完成导入，请关闭所有 Firefox 窗口。</translation>
 <translation id="6798780071646309401">已开启大写锁定模式</translation>
 <translation id="6798954102094737107">插件：<ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">攻击者可能会利用此文件窃取您的个人信息</translation>
 <translation id="6801129617625983991">常规设置</translation>
 <translation id="6801435275744557998">校准触摸屏</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6360,7 +6358,6 @@
 <translation id="7269736181983384521">“附近分享”功能的流量使用设置</translation>
 <translation id="7272674038937250585">未提供说明</translation>
 <translation id="7273110280511444812">上次连接日期：<ph name="DATE" /></translation>
-<translation id="7273970016743909808">您将使用“自助服务终端和数字标牌升级”，这种升级仅允许相应设备在自助服务终端或数字标牌模式下运行。如果希望用户登录相应设备，请返回，然后使用 Chrome 企业版升级进行注册。</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - 还需 <ph name="TIME" />充满</translation>
 <translation id="727952162645687754">下载错误</translation>
 <translation id="7280041992884344566">Chrome 在搜索有害软件时出现错误</translation>
@@ -6763,7 +6760,6 @@
 <translation id="7670434942695515800">为了获得最佳性能，请升级到最新版本。建议您备份文件，以防无法完成升级。一旦开始升级，Linux 即会关闭。请先保存已打开的文件，然后再继续。<ph name="LINK_START" />了解详情<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">使用系统标题栏和边框</translation>
 <translation id="767127784612208024">轻触以确认重置</translation>
-<translation id="767147716926917172">自动向 Google 发送诊断数据和使用情况数据</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />（在 <ph name="PAGE_TITLE" /> 中）。</translation>
 <translation id="7674416868315480713">停用 Linux 中所有正被转发的端口</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> 个应用</translation>

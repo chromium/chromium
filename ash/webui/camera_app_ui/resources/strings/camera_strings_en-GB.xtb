@@ -118,6 +118,7 @@
 If your feedback is about image or video quality, please attach a sample photo or video and describe what's wrong. (For example, photo is too dark or subject isn’t in focus.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> mega pixel</translation>
 <translation id="6527303717912515753">Share</translation>
+<translation id="6617916774429601017">Show all resolutions</translation>
 <translation id="6631515515009660915">Mirror off</translation>
 <translation id="6652737148136672975">Move corner position with arrow keys</translation>
 <translation id="667999046851023355">Document</translation>

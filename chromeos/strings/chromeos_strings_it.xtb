@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Abilita il tema chiaro</translation>
 <translation id="2323506179655536734">SALTATO</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Attiva il Bluetooth per trovare dispositivi nelle vicinanze</translation>
 <translation id="2346474577291266260">Eccellente (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463">Sono stati rilevati <ph name="LINK_BEGIN" />componenti non idonei<ph name="LINK_END" />. Se decidi di confermare che sono stati installati, fallo ora.</translation>
@@ -724,7 +725,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8498220429738806196">Contatori di traffico</translation>
 <translation id="8503813439785031346">Nome utente</translation>
 <translation id="8503836310948963452">Solo qualche altro minuto…</translation>
-<translation id="8521021929829989041">Usa come dispositivo personale</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Il tuo operatore potrebbe richiedere questa opzione per consentire di collegarsi alla sua rete. Contatta l'operatore per avere informazioni dettagliate.</translation>
 <translation id="8576249514688522074">Non inizializzato</translation>

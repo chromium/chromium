@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Įgalinti šviesiąją temą</translation>
 <translation id="2323506179655536734">PRALEISTA</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> tšk./col.</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Įjunkite „Bluetooth“, kad aptiktumėte įrenginius netoliese</translation>
 <translation id="2346474577291266260">Puikus (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463">Aptikta <ph name="LINK_BEGIN" />netinkamų komponentų<ph name="LINK_END" />. Jei pasirinksite patvirtinti, kad jie buvo įdiegti, padarykite tai dabar.</translation>
@@ -724,7 +725,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8498220429738806196">Srauto skaitikliai</translation>
 <translation id="8503813439785031346">Vartotojo vardas</translation>
 <translation id="8503836310948963452">Dar kelios minutės...</translation>
-<translation id="8521021929829989041">Naudoti kaip asmeninį įrenginį</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operatoriui gali būti reikalinga ši parinktis, kad būtų galima prisijungti prie tinklo. Jei reikia išsamios informacijos, susisiekite su operatoriumi.</translation>
 <translation id="8576249514688522074">Neinicijuota</translation>

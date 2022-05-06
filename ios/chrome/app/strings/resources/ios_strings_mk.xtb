@@ -38,7 +38,6 @@
 <translation id="1219674500290482172">Не може да се поврзе на интернет.</translation>
 <translation id="122699739164161391">Затвори ги сите картички</translation>
 <translation id="1229222343402087523">Пребарајте ${searchPhrase} во Chrome</translation>
-<translation id="1231733316453485619">Да се вклучи синхронизација?</translation>
 <translation id="1242044645101871359">Најавете се повторно</translation>
 <translation id="1254117744268754948">Одбери Папка</translation>
 <translation id="1265739287306757398">Дознајте како</translation>
@@ -972,5 +971,4 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="988141524645182168">Други уреди</translation>
 <translation id="989988560359834682">Измени адреса</translation>
 <translation id="994757059139821576">Предлози за статии</translation>
-<translation id="997742718232442409">Веб-страницава се обидува да преземе датотека за календарот.</translation>
 </translationbundle>

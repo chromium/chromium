@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Virkja ljóst þema</translation>
 <translation id="2323506179655536734">SLEPPT</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Djúphreinsun</translation>
 <translation id="2338501278241028356">Kveiktu á Bluetooth til að uppgötva nálæg tæki</translation>
 <translation id="2346474577291266260">Frábær (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Ósamhæfir íhlutir<ph name="LINK_END" /> greindust. Ef þú velur að staðfesta uppsetningu á þeim skaltu gera það núna.</translation>
@@ -722,7 +723,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8498220429738806196">Talning umferðar</translation>
 <translation id="8503813439785031346">Notandanafn</translation>
 <translation id="8503836310948963452">Aðeins nokkrar mínútur í viðbót…</translation>
-<translation id="8521021929829989041">Nota sem persónulegt tæki</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Símafyrirtæki kunna að biðja þig um slíkt til að tengjast neti þeirra. Hafðu samband við símafyrirtækið til að fá frekari upplýsingar.</translation>
 <translation id="8576249514688522074">Ekki frumstillt</translation>

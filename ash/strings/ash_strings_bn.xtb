@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C ডিভাইস (সামনের পোর্ট)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" />-এর রেজোলিউশন পরিবর্তন করে <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> হার্জ) করা হয়েছে। পরিবর্তিত সেটিংস রেখে দিতে 'কনফার্ম করুন' বিকল্পে ক্লিক করুন। <ph name="TIMEOUT_SECONDS" />-এর মধ্যে পুরনো সেটিংসে ফিরিয়ে নিয়ে যাওয়া হবে।</translation>
 <translation id="1013923882670373915">ব্লুটুথ ডিভাইস "<ph name="DEVICE_NAME" />" যুক্ত করার অনুমতি চাইছে। ডিভাইসটিতে এই পিন কোড দিন: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">আংশিক স্ক্রিনশট বেছে নেওয়া হয়েছে</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> সেভ করুন</translation>
 <translation id="1032891413405719768">স্টাইলাসের চার্জ কমে গেছে</translation>
 <translation id="1036073649888683237">সেটিংসে গিয়ে বিজ্ঞপ্তি ম্যানেজ করুন</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">আউটপুট</translation>
 <translation id="3009958530611748826">কোন ফোল্ডারে সেভ করতে চান তা বেছে নিন</translation>
 <translation id="301282384882049174">আপনার অ্যাডমিনিস্ট্রেটর শেয়ার করেছেন</translation>
-<translation id="3017687597151988916">উইন্ডোকে সোর্স হিসেবে সেট করা হয়েছে</translation>
 <translation id="3033545621352269033">চালু করা আছে</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" />-এর সাথে যুক্ত করুন</translation>
 <translation id="3036649622769666520">ফাইল খুলুন</translation>
@@ -1050,7 +1048,6 @@
 <translation id="746232733191930409">স্ক্রিন রেকর্ড করার মোড</translation>
 <translation id="7466449121337984263">সেন্সরটি স্পর্শ করুন</translation>
 <translation id="7477793887173910789">আপনার মিউজিক, ভিডিও ও আরও অনেক কিছু নিয়ন্ত্রণ করুন</translation>
-<translation id="7483025031359818980">ফুল স্ক্রিনকে সোর্স হিসেবে সেট করা হয়েছে</translation>
 <translation id="7497767806359279797">ভাষা এবং কীবোর্ড বেছে নিন</translation>
 <translation id="7508690557411636492">গত মাসে খোলা হয়েছে</translation>
 <translation id="7509246181739783082">আপনার পরিচয় যাচাই করুন</translation>

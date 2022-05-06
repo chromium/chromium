@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C ਡੀਵਾਈਸ (ਅੱਗੇ ਦਾ ਪੋਰਟ)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> ਨੂੰ <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) 'ਤੇ ਬਦਲਿਆ ਗਿਆ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਬਣਾਈ ਰੱਖਣ ਲਈ 'ਤਸਦੀਕ ਕਰੋ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1013923882670373915">Bluetooth ਡੀਵਾਈਸ "<ph name="DEVICE_NAME" />" ਜੋੜਾਬੱਧ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੁੰਦਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਉਸ ਡੀਵਾਈਸ 'ਤੇ ਇਹ ਪਿੰਨ ਦਾਖਲ ਕਰੋ: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">ਅੰਸ਼ਕ ਸਕ੍ਰੀਨਸ਼ਾਟ ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="1024364763893396229">ਆਪਣਾ <ph name="NAME" /> ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="1032891413405719768">ਸਟਾਈਲਸ ਦੀ ਬੈਟਰੀ ਘੱਟ ਹੈ</translation>
 <translation id="1036073649888683237">ਸੂਚਨਾਵਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">ਆਉਟਪੁਟ</translation>
 <translation id="3009958530611748826">ਇੱਥੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਕੋਈ ਫੋਲਡਰ ਚੁਣੋ</translation>
 <translation id="301282384882049174">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="3017687597151988916">ਚੋਣ ਖੇਤਰ ਵਿੰਡੋ ਲਈ ਸੈੱਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3033545621352269033">ਚਾਲੂ</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> ਨਾਲ ਜੋੜੋ</translation>
 <translation id="3036649622769666520">ਫਾਈਲਾਂ ਖੋਲ੍ਹੋ</translation>
@@ -1051,7 +1049,6 @@
 <translation id="746232733191930409">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਮੋਡ</translation>
 <translation id="7466449121337984263">ਕਿਰਪਾ ਕਰਕੇ ਸੈਂਸਰ ਨੂੰ ਸਪਰਸ਼ ਕਰੋ</translation>
 <translation id="7477793887173910789">ਆਪਣਾ ਸੰਗੀਤ, ਵੀਡੀਓ ਕੰਟਰੋਲ ਕਰੋ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ</translation>
-<translation id="7483025031359818980">ਚੋਣ ਖੇਤਰ ਨੂੰ ਪੂਰੀ ਸਕ੍ਰੀਨ 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7497767806359279797">ਭਾਸ਼ਾ ਅਤੇ ਕੀ-ਬੋਰਡ ਚੁਣੋ</translation>
 <translation id="7508690557411636492">ਪਿਛਲੇ ਮਹੀਨੇ ਖੋਲ੍ਹੀ ਗਈ</translation>
 <translation id="7509246181739783082">ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>

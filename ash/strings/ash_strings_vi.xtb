@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Thiết bị USB-C (cổng phía trước)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> đã đổi thành <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Hãy nhấp vào xác nhận để lưu các thay đổi. Các tùy chọn cài đặt trước sẽ được khôi phục sau <ph name="TIMEOUT_SECONDS" /> nữa.</translation>
 <translation id="1013923882670373915">Thiết bị Bluetooth "<ph name="DEVICE_NAME" />" muốn được phép ghép nối. Vui lòng nhập mã PIN này trên thiết bị đó: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Đã chọn chụp một phần màn hình</translation>
 <translation id="1024364763893396229">Lưu <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Pin của bút cảm ứng ở mức thấp</translation>
 <translation id="1036073649888683237">Để quản lý thông báo, hãy chuyển đến phần Cài đặt</translation>
@@ -331,7 +330,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3009178788565917040">Thiết bị ra</translation>
 <translation id="3009958530611748826">Chọn một thư mục để lưu</translation>
 <translation id="301282384882049174">Do quản trị viên của bạn chia sẻ</translation>
-<translation id="3017687597151988916">Đã đặt vùng chọn thành cửa sổ</translation>
 <translation id="3033545621352269033">Đang bật</translation>
 <translation id="3033912566804961911">Kết hợp với <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Mở Tệp</translation>
@@ -1050,7 +1048,6 @@ Mới cài đặt</translation>
 <translation id="746232733191930409">Chế độ ghi màn hình</translation>
 <translation id="7466449121337984263">Vui lòng chạm vào cảm biến</translation>
 <translation id="7477793887173910789">Điều khiển nhạc, video và nhiều nội dung khác</translation>
-<translation id="7483025031359818980">Đã đặt vùng chọn thành toàn màn hình</translation>
 <translation id="7497767806359279797">Chọn ngôn ngữ và bàn phím</translation>
 <translation id="7508690557411636492">Mở tháng trước</translation>
 <translation id="7509246181739783082">Xác minh danh tính của bạn</translation>

@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">İşıqlı temanı aktiv edin</translation>
 <translation id="2323506179655536734">ÖTÜRÜLÜB</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Sıfırlama</translation>
 <translation id="2338501278241028356">Yaxınlıqdakı cihazları tapmaq üçün Bluetooth'u aktiv edin</translation>
 <translation id="2346474577291266260">Əla (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Uyğunsuz komponentlər<ph name="LINK_END" /> aşkarlanıb. Bunun quraşdırıldığını təsdiqləməyi seçsəniz, indi bunu edin.</translation>
@@ -723,7 +724,6 @@
 <translation id="8498220429738806196">Nəqliyyat Sayğacları</translation>
 <translation id="8503813439785031346">İstifadəçi adı</translation>
 <translation id="8503836310948963452">Bir neçə dəqiqə daha...</translation>
-<translation id="8521021929829989041">Şəxsi cihaz kimi istifadə edin</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operatorunuz şəbəkəsinə qoşulmaq üçün bu seçimi tələb edə bilər. Ətraflı məlumat üçün operatorunuzla əlaqə saxlayın.</translation>
 <translation id="8576249514688522074">Başladılmayıb</translation>

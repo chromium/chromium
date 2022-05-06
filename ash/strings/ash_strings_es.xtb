@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Dispositivo USB-C (puerto frontal)</translation>
 <translation id="1013598600051641573">La resolución de <ph name="DISPLAY_NAME" /> se ha cambiado a <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Haz clic en Confirmar para mantener los cambios. La configuración anterior se restaurará en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para emparejarse. Introduce el código PIN <ph name="PINCODE" /> en el dispositivo</translation>
-<translation id="1024261588257374085">Captura de pantalla parcial seleccionada</translation>
 <translation id="1024364763893396229">Guarda <ph name="NAME" /></translation>
 <translation id="1032891413405719768">El lápiz óptico tiene poca batería</translation>
 <translation id="1036073649888683237">Para gestionar las notificaciones, ve a Configuración</translation>
@@ -331,7 +330,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3009178788565917040">Salida</translation>
 <translation id="3009958530611748826">Selecciona la carpeta donde quieras guardar</translation>
 <translation id="301282384882049174">Compartida por tu administrador</translation>
-<translation id="3017687597151988916">Área de selección establecida en ventana</translation>
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3033912566804961911">Combinar con <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Abrir archivos</translation>
@@ -852,6 +850,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6166852626429024716">Busca en el dispositivo, en las aplicaciones, en los ajustes, en la Web…</translation>
 <translation id="6179832488876878285">Puedes fijar tus archivos importantes aquí. Abre la aplicación Archivos para empezar.</translation>
 <translation id="619279033188484792">Consulta fotos, contenido multimedia y notificaciones recientes de tu teléfono en tu <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Cargar al 100 % ahora</translation>
 <translation id="6220928844947387476">Ahora puedes grabarte a ti mismo y tu pantalla al mismo tiempo</translation>
 <translation id="622484624075952240">Flecha hacia abajo</translation>
 <translation id="6231419273573514727">Es posible que el rendimiento de los periféricos esté limitado</translation>
@@ -1050,7 +1049,6 @@ Nueva instalación</translation>
 <translation id="746232733191930409">Modo de grabación de pantalla</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>
 <translation id="7477793887173910789">Controla tu música, tus vídeos y más</translation>
-<translation id="7483025031359818980">Área de selección establecida en pantalla completa</translation>
 <translation id="7497767806359279797">Seleccionar idioma y teclado</translation>
 <translation id="7508690557411636492">Abierto hace menos de un mes</translation>
 <translation id="7509246181739783082">Verifica tu identidad</translation>
@@ -1187,6 +1185,7 @@ Nueva instalación</translation>
 <translation id="826107067893790409">Pulsa Intro para desbloquearla para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8270450402312105425">{0,plural, =1{Cambia el dispositivo a la versión anterior en un plazo de 1 hora}other{Cambia el dispositivo a la versión anterior en un plazo de # horas}}</translation>
+<translation id="8271580342040932214">La batería se mantendrá temporalmente al 80 % mientras esté enchufada para ampliar su duración. La batería se cargará al 100 % a las <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Desliza cuatro dedos hacia la izquierda por la pantalla para cambiar al escritorio anterior</translation>
 <translation id="828708037801473432">Desactivada</translation>
 <translation id="8297006494302853456">Débil</translation>
@@ -1270,6 +1269,7 @@ Nueva instalación</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Configuración de métodos de introducción de texto</translation>
 <translation id="8818320199597151042">Quitando perfil. Espera unos minutos.</translation>
+<translation id="8819728065740986820">La función Carga inteligente está activada</translation>
 <translation id="8825863694328519386">Desliza el dedo desde la izquierda para volver</translation>
 <translation id="8834539327799336565">Conectados ahora</translation>
 <translation id="8841375032071747811">Botón Atrás</translation>
@@ -1316,6 +1316,7 @@ Nueva instalación</translation>
 <translation id="9080132581049224423">Desliza el dedo hacia arriba para ir a la página principal</translation>
 <translation id="9080206825613744995">El micrófono se está utilizando.</translation>
 <translation id="9084606467167974638">Alternar la posición del menú</translation>
+<translation id="9085962983642906571">La batería se mantendrá al 80 % mientras esté enchufada para ampliar su duración.</translation>
 <translation id="9089416786594320554">Métodos de entrada</translation>
 <translation id="9091626656156419976">Se ha quitado la pantalla <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silenciar teléfono</translation>

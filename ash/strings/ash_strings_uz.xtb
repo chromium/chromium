@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C qurilma (old port)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> tasviri <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) tiniqligiga oʻtkazildi. Tasdiqlash uchun bosing. Eski sozlamalar <ph name="TIMEOUT_SECONDS" /> dan keyin tiklanadi.</translation>
 <translation id="1013923882670373915">“<ph name="DEVICE_NAME" />” qurilmasi Bluetooth orqali bog‘lanishga ruxsat so‘ramoqda. Bu qurilmada quyidagi PIN-kodni kiriting: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Ekran qismi tanlandi</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> nomli qurilmangizni saqlang</translation>
 <translation id="1032891413405719768">Stilus batareyasi quvvati kam</translation>
 <translation id="1036073649888683237">Bildirishnomalarni boshqarish uchun Sozlamalarni oching</translation>
@@ -331,7 +330,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3009178788565917040">Chiqarish</translation>
 <translation id="3009958530611748826">Saqlash uchun jild tanlang</translation>
 <translation id="301282384882049174">Administrator tomonidan ulashilgan</translation>
-<translation id="3017687597151988916">Tanlash hududi sifatida oynani belgilash</translation>
 <translation id="3033545621352269033">Yoniq</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> bilan birlashtirish</translation>
 <translation id="3036649622769666520">Ochiq fayllar</translation>
@@ -1050,7 +1048,6 @@ yangi oʻrnatilgan</translation>
 <translation id="746232733191930409">Ekranni yozib olish rejimi</translation>
 <translation id="7466449121337984263">Sensorga tegining</translation>
 <translation id="7477793887173910789">Multimedia boshqaruvi</translation>
-<translation id="7483025031359818980">Tanlash hududi sifatida butun ekran belgilandi</translation>
 <translation id="7497767806359279797">Til va klaviaturani tanlang</translation>
 <translation id="7508690557411636492">Oxirgi oyda ochilgan</translation>
 <translation id="7509246181739783082">Shaxsni tasdiqlash</translation>

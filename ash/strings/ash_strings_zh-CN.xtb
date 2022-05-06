@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C 设备（前方端口）</translation>
 <translation id="1013598600051641573">“<ph name="DISPLAY_NAME" />”的分辨率已改为 <ph name="RESOLUTION" />（<ph name="REFRESH_RATE" /> 赫兹）。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
 <translation id="1013923882670373915">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。请在该设备上输入以下PIN码：<ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">已选择截取局部屏幕</translation>
 <translation id="1024364763893396229">保存您的“<ph name="NAME" />”</translation>
 <translation id="1032891413405719768">触控笔电池电量较低</translation>
 <translation id="1036073649888683237">如需管理通知，请转到“设置”</translation>
@@ -328,7 +327,6 @@
 <translation id="3009178788565917040">输出</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
 <translation id="301282384882049174">由您的管理员分享</translation>
-<translation id="3017687597151988916">所选区域设为窗口</translation>
 <translation id="3033545621352269033">已开启</translation>
 <translation id="3033912566804961911">与“<ph name="DESK_NAME" />”合并</translation>
 <translation id="3036649622769666520">打开文件</translation>
@@ -1047,7 +1045,6 @@
 <translation id="746232733191930409">录屏模式</translation>
 <translation id="7466449121337984263">请轻触传感器</translation>
 <translation id="7477793887173910789">控制您的音乐、视频等媒体内容</translation>
-<translation id="7483025031359818980">所选区域设为全屏</translation>
 <translation id="7497767806359279797">选择语言和键盘布局</translation>
 <translation id="7508690557411636492">过去一个月内打开过</translation>
 <translation id="7509246181739783082">验证您的身份</translation>

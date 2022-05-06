@@ -1103,6 +1103,7 @@
 <translation id="3973234410852337861"><ph name="HOST_NAME" />-г блоклосон байна</translation>
 <translation id="3978338123949022456">Хайлтын горим, асуулга бичээд <ph name="KEYWORD_SUFFIX" />-р хайхын тулд Enter дээр дарна уу</translation>
 <translation id="398470910934384994">Шувуу</translation>
+<translation id="3985750352229496475">Хаягуудыг удирдах...</translation>
 <translation id="3986705137476756801">Одоохондоо Шууд тайлбарыг унтраах</translation>
 <translation id="3987940399970879459">1 МБ-аас бага</translation>
 <translation id="3990250421422698716">Шилжүүлэн байрлуулах оффсет</translation>
@@ -1230,6 +1231,7 @@
 <translation id="4305666528087210886">Таны файлд хандаж чадсангүй</translation>
 <translation id="4306529830550717874">Хаягийг хадгалах уу?</translation>
 <translation id="4306812610847412719">түр санах ой</translation>
+<translation id="4310070645992025887">Аяллаа хайх</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блоклох (өгөгдмөл)</translation>
 <translation id="4314815835985389558">Синк хийхийг удирдах</translation>
@@ -2113,6 +2115,7 @@
 <translation id="6839929833149231406">Хэсэг</translation>
 <translation id="6846340164947227603">Виртуал картын дугаар ашиглах...</translation>
 <translation id="6852204201400771460">Аппыг дахин ачаалaх уу?</translation>
+<translation id="6857776781123259569">Нууц үгнүүдийг удирдах...</translation>
 <translation id="686485648936420384">Хэрэглэгчийн нөөц</translation>
 <translation id="6865412394715372076">Энэ картыг одоогоор баталгаажуулах боломжгүй байна</translation>
 <translation id="6869334554832814367">Хувийн зээл</translation>
@@ -2439,6 +2442,7 @@
 <translation id="7669271284792375604">Энэ сайтад байгаа халдагчид таны хайлтын горимд гэмтэл учруулж болох программ суулгахыг (жишээ нь: нүүр хуудсаа солих, эсвэл зочилдог сайтдаа нэмэлт зар харуулах) санал болгож болзошгүй.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Нууцлалтай гэж дарцагласан өгөгдөл дээр хийсэн үйлдэл (нэвтэрснээс хойш 1 үйлдэл). <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" />}other{Нууцлалтай гэж дарцагласан өгөгдөл дээр хийсэн үйлдлүүд (нэвтэрснээс хойш # үйлдэл). <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Шуудангийн хайрцаг 6</translation>
+<translation id="7675325315208090829">Төлбөрийн хэрэгслүүдийг удирдах...</translation>
 <translation id="7676643023259824263">Түр санах ойн текст болох <ph name="TEXT" />-г хайх</translation>
 <translation id="7679367271685653708">Chrome-н тохиргоонд хөтчийн түүхээ үзэх болон удирдана уу</translation>
 <translation id="7679947978757153706">Бэйсбол</translation>

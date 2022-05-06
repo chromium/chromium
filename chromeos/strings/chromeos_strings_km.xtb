@@ -113,6 +113,7 @@
 <translation id="2085089206770112532">គ្រាប់ចុចព្រួញចុះក្រោមសម្រាប់បន្ថយពន្លឺផ្ទាំងអេក្រង់</translation>
 <translation id="2104796393919810494">បានបញ្ចប់ការជួសជុល</translation>
 <translation id="2105810540595158374">ឧបករណ៍គឺជាឧបករណ៍បញ្ជាហ្គេម។</translation>
+<translation id="2115956742084455574">កូដ​មិន​ត្រឹមត្រូវ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, កំណែ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">អាចប្រើបាន <ph name="AVAILABLE_MEMORY" /> GB នៃ <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2138109643290557664">រសាត់កាត់ពីលើ</translation>
@@ -140,8 +141,10 @@
 <translation id="2320295602967756579">បើក​រចនាប័ទ្ម​ភ្លឺ</translation>
 <translation id="2323506179655536734">បានរំលង</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">បើកប៊្លូធូស​ដើម្បី​ស្វែងរក​ឧបករណ៍​ដែល​នៅជិត</translation>
 <translation id="2346474577291266260">ល្អប្រសើរ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2360257214555822463">បានរកឃើញ​<ph name="LINK_BEGIN" />សមាសភាគ​ដែលគ្មាន​ការទទួលស្គាល់<ph name="LINK_END" />។ ប្រសិនបើ​អ្នក​ជ្រើសរើស​ដើម្បីបញ្ជាក់​ថា​វា​ត្រូវបាន​ដំឡើង សូម​ធ្វើបែបនេះ​ឥឡូវនេះ។</translation>
 <translation id="2363636958541445404">បើកមុខងារនេះ ដើម្បីជ្រើសរើសជម្រើសធាតុរក្សាអេក្រង់</translation>
 <translation id="2364498172489649528">ជាប់</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -153,6 +156,7 @@
 <translation id="2446553403094072641">ភាពត្រឹមត្រូវនៃ​ពិន្ទុអណ្ដែត</translation>
 <translation id="2448312741937722512">ប្រភេទ</translation>
 <translation id="2461822463642141190">បច្ចុប្បន្ន</translation>
+<translation id="2480034874476596812">បិទដោយផ្ទាល់​ដៃ</translation>
 <translation id="2491955442992294626">គ្រាប់ចុចមិនត្រូវបានធ្វើតេស្ត នៅពេលអ្នកកំពុងប្រើវិនដូផ្សេងទៀតទេ</translation>
 <translation id="2493126929778606526">រូបថតល្អបំផុត​របស់អ្នក ដែលបាន​ជ្រើសរើស​ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -191,6 +195,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3069085583900247081">ការធ្វើតេស្ត​​មិនបានសម្រេចទេ</translation>
+<translation id="3076243757415932261">កំពុងបញ្ជាក់​សុពលភាព​សមាសភាគ...</translation>
 <translation id="3083667275341675831">ការវិភាគអំពីការតភ្ជាប់</translation>
 <translation id="3084958266922136097">បិទធាតុរក្សាអេក្រង់</translation>
 <translation id="3091839911843451378">មិនបានសម្រេច - ​​​ម៉ាស៊ីន​បោះពុម្ពបានឈប់</translation>
@@ -219,6 +224,7 @@
 <translation id="3368922792935385530">បានភ្ជាប់</translation>
 <translation id="3369013195428705271">តើអ្នក​ពិតជាចង់​សម្អាត​ប្រវត្តិបោះពុម្ព​ទាំងអស់​មែនឬ? ការងារ​បោះពុម្ព​របស់អ្នកដែល​កំពុងដំណើរការ​នឹងមិនត្រូវបាន​សម្អាតទេ។</translation>
 <translation id="3404249063913988450">បើកធាតុរក្សាអេក្រង់</translation>
+<translation id="3404770484521709967">សមាសភាគ​ត្រូវបាន​ដំឡើង​ត្រឹមត្រូវ។</translation>
 <translation id="3413935475507503304">ដើម្បីបន្តការដំឡើងកំណែ សូមចុច "បន្ទាប់"។</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">សុវត្ថិភាព</translation>
@@ -246,6 +252,7 @@
 <translation id="3606583719724308068">ការពន្យារខ្ពស់ចំពោះគេហទំព័រ HTTPS</translation>
 <translation id="3621202678540785336">ធាតុបញ្ចូល</translation>
 <translation id="3632579075709132555">ប៊ូតុងបិទ/បើក​របាំងឯកជនភាព</translation>
+<translation id="3678765385266369662">ជ្រើសរើសរបៀបដែលអ្នកចង់បិទ​ការការពារ​ការសរសេរ</translation>
 <translation id="3689839747745352263">តេស្ត <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">កំពុងដំណើរការ...</translation>
 <translation id="3708186454126126312">បាន​ភ្ជាប់​ពីមុន​</translation>
@@ -300,6 +307,7 @@
 <translation id="4244962993387259361">អ្នកត្រូវការ​ទំហំផ្ទុកទំនេរ​យ៉ាងហោចណាស់ 500 MB ដើម្បី​ធ្វើតេស្ត​អង្គចងចាំ​។ ដើម្បីបង្កើន​ទំហំផ្ទុក សូមចូល​ទៅកាន់​ការកំណត់ &gt; ការគ្រប់គ្រង​ទំហំផ្ទុក។</translation>
 <translation id="4250229828105606438">ថតអេក្រង់</translation>
 <translation id="4258281355379922695">ការពន្យារ HTTP</translation>
+<translation id="4258561075226177474">ឧបករណ៍នឹងត្រូវ​បាន​ប្រើ​ដោយ​អ្នកប្រើប្រាស់ដដែល។ លុបទិន្នន័យរបស់អ្នកប្រើប្រាស់ឬ?</translation>
 <translation id="4271957103967917607">មើល​ពេញអេក្រង់</translation>
 <translation id="4275799948641988986">បន្ទាប់ពីជួសជុលហើយ តើនរណានឹងប្រើឧបករណ៍នេះ?</translation>
 <translation id="4289540628985791613">ទិដ្ឋភាពទូទៅ</translation>
@@ -348,6 +356,7 @@
 <translation id="473775607612524610">ធ្វើបច្ចុប្បន្នភាព</translation>
 <translation id="4744944742468440486">ព័ត៌មានពាក់ព័ន្ធនឹងការជ្រើសរើសរបស់អ្នក</translation>
 <translation id="4773299976671772492">បានឈប់</translation>
+<translation id="4774530504324923332">អ្នកនឹងត្រូវការសោសុវត្ថិភាពដែលបានបើក RSU, កម្មវិធីស្កេនកូដ QR និងឧបករណ៍ទីពីរដែលមានការតភ្ជាប់អ៊ីនធឺណិត</translation>
 <translation id="4782311465517282004">ទទួលបាននិយមន័យ ការបកប្រែ ឬការបំប្លែងខ្នាត នៅពេលអ្នកចុចកណ្ដុរខាងស្ដាំ ឬចុចអត្ថបទឱ្យជាប់</translation>
 <translation id="4791000909649665275">រូបថត <ph name="NUMBER" /> សន្លឹក</translation>
 <translation id="4793710386569335688">សម្រាប់ជំនួយបន្ថែម សូមចូលទៅកាន់<ph name="BEGIN_LINK" />មជ្ឈមណ្ឌលជំនួយ<ph name="END_LINK" />។</translation>
@@ -424,6 +433,7 @@
 <translation id="5358174242040570474">មានអ្វីមួយខុសប្រក្រតី។ សូមសាកល្បង​ជ្រើសរើស​ផ្ទាំងរូបភាពម្ដងទៀត ឬបើក​កម្មវិធីឡើងវិញ។</translation>
 <translation id="5372659122375744710">បណ្ដាញ WiFi មិនមានសុវត្ថិភាពទេ</translation>
 <translation id="5376354385557966694">មុខងារភ្លឺ​ស្វ័យប្រវត្តិ</translation>
+<translation id="5395600419410242651">លុប​ទិន្នន័យ​ទាំង​អស់</translation>
 <translation id="5400907029458559844">ឧបករណ៍កំពុងភ្ជាប់។</translation>
 <translation id="5401938042319910061">ដំណើរការរាល់ការធ្វើតេស្តតាមការកំណត់</translation>
 <translation id="5423849171846380976">បានធ្វើសកម្មភាព</translation>
@@ -565,6 +575,7 @@
 <translation id="6768237774506518020">អត្រាមិនដំណើរការ​នៃកម្រិតច្បាស់ DNS ខ្ពស់</translation>
 <translation id="680983167891198932">សោ</translation>
 <translation id="6816797338148849397">ព័ត៌មានពាក់ព័ន្ធនឹងការផ្ដល់ជូនការជ្រើសរើសរបស់អ្នក។ ប្រើគ្រាប់ចុចព្រួញឡើងលើ ដើម្បីចូលប្រើ។</translation>
+<translation id="6840315122969944400">ជួសជុល <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">អត្រា​ឈប់សាកថ្ម</translation>
 <translation id="6889786074662672253">ខណៈពេលកំពុងចាប់ផ្ដើមឡើងវិញ សូមកុំដកឧបករណ៍ខាងក្រៅនេះ ឬបិទកុំព្យូទ័ររបស់អ្នក។ អ្នកអាចបង្រួមវិនដូនេះបាន។ ការចាប់ផ្ដើមឡើងវិញនេះអាចចំណាយពេលពីរបីនាទី ហើយឧបករណ៍ខាងក្រៅរបស់អ្នកអាចមិនដំណើរការនៅអំឡុងពេលនេះទេ។</translation>
 <translation id="6905724422583748843">ត្រឡប់​ទៅ <ph name="PAGE_NAME" /></translation>
@@ -633,6 +644,7 @@
 <translation id="7570674786725311828">អេក្រង់ថាច់ USB</translation>
 <translation id="7595982850646262331">នៅសល់ <ph name="TIME_VALUE" /> ទៀត</translation>
 <translation id="7620771111601174153">ស្វែងយល់បន្ថែម​នៅក្នុងមជ្ឈមណ្ឌលជំនួយ</translation>
+<translation id="7626501172915339021">ធ្វើការដោះសោម៉ាស៊ីនមេ RMA (RSU)</translation>
 <translation id="763165478673169849">ពេលវេលាកំណត់ឡើងវិញចុងក្រោយ</translation>
 <translation id="7648838807254605802">ការពន្យារ HTTPS ខ្ពស់</translation>
 <translation id="7656388927906093505">ឧបករណ៍គឺជាកណ្ដុរ។</translation>
@@ -673,6 +685,7 @@
 <translation id="8045012663542226664">ប៊ូតុងបិទ/បើកសំឡេងមីក្រូហ្វូន</translation>
 <translation id="8075838845814659848">ការសាកថ្ម​ដែលនៅសល់</translation>
 <translation id="8082366717211101304">មិនអាចដោះស្រាយ DNS ពីកម្មវិធី Android បានទេ</translation>
+<translation id="8083281199617904460">ដំណើរការ​ជួសជុល​នេះ​ត្រូវបាន​បង្កើតឡើង​សម្រាប់​អ្នកបច្ចេកទេស​ជួសជុល​ដែលបានទទួលការបណ្ដុះបណ្ដាល។ ចាប់ផ្ដើម​បន្ទាប់ពី​ការជំនួស​សមាសភាគ​ដែល​ដំណើរការ​ខុសប្រក្រតី​ប៉ុណ្ណោះ។</translation>
 <translation id="808894953321890993">ប្ដូរ​ពាក្យ​សម្ងាត់</translation>
 <translation id="8104083085214006426">អ្នកកំពុងប្រើបណ្ដាញចំហ និងគ្មានសុវត្ថិភាព</translation>
 <translation id="811820734797650957">(Android) អាចធ្វើតេស្ដ​ភីងលើច្រកបាន</translation>
@@ -715,7 +728,6 @@
 <translation id="8498220429738806196">មុខងាររាប់ចំនួនចរាចរណ៍</translation>
 <translation id="8503813439785031346">ឈ្មោះអ្នកប្រើ</translation>
 <translation id="8503836310948963452">នៅសល់តែពីរបីនាទីទៀតប៉ុណ្ណោះ...</translation>
-<translation id="8521021929829989041">ប្រើជា​ឧបករណ៍​ផ្ទាល់ខ្លួន</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ក្រុមហ៊ុនសេវាទូរសព្ទ​របស់អ្នកអាច​តម្រូវឱ្យមានជម្រើសនេះ ដើម្បីភ្ជាប់ជាមួយ​បណ្ដាញរបស់ក្រុមហ៊ុននោះ។ សូមទាក់ទងក្រុមហ៊ុន​សេវាទូរសព្ទរបស់អ្នក ដើម្បីទទួលបាន​ព័ត៌មានលម្អិត។</translation>
 <translation id="8576249514688522074">មិនបាន​ចាប់​ផ្ដើម</translation>
@@ -775,6 +787,8 @@
 <translation id="9087578468327036362">រាយការណ៍​អំពី​សំណួរ​នេះ</translation>
 <translation id="9088306295921699330">ការប្រើប្រាស់​បច្ចុប្បន្ន</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">អ្នកនឹងត្រូវដោះបំបែក​ឧបករណ៍</translation>
+<translation id="9098156406873149060">រក្សាទិន្នន័យរបស់អ្នកប្រើប្រាស់</translation>
 <translation id="910415269708673980">ផ្ទុកសំបុត្រ​ឡើងវិញសម្រាប់ <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">កំពុង​ស្កេន​ទំព័រ <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ដោះសោរ</translation>

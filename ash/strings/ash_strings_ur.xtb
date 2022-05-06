@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">‏USB-C آلہ (سانے کا پورٹ)</translation>
 <translation id="1013598600051641573">‏<ph name="DISPLAY_NAME" /> کو <ph name="RESOLUTION" /> (Hz<ph name="REFRESH_RATE" />) پر تبدیل کر دیا گیا ہے۔ تبدیلیاں باقی رکھنے کے لیے تصدیق کریں پر کلک کریں۔ گزشتہ ترتیبات کو <ph name="TIMEOUT_SECONDS" /> میں بحال کر دیا جائے گا۔</translation>
 <translation id="1013923882670373915">‏بلوٹوتھ آلہ "<ph name="DEVICE_NAME" />" جوڑا بنانے کی اجازت چاہتا ہے۔ براہ کرم اس PIN کوڈ کو اس آلہ پر درج کریں: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">جزوی اسکرین شاٹ کا انتخاب کیا گیا</translation>
 <translation id="1024364763893396229">اپنا <ph name="NAME" /> محفوظ کریں</translation>
 <translation id="1032891413405719768">اسٹائلس کی بیٹری کم ہے</translation>
 <translation id="1036073649888683237">اطلاعات کا نظم کرنے کیلئے ترتیبات پر جائیں</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">آؤٹ پٹ</translation>
 <translation id="3009958530611748826">محفوظ کرنے کے لئے فولڈر منتخب کریں</translation>
 <translation id="301282384882049174">آپ کے منتظم کے ذریعے اشتراک کردہ</translation>
-<translation id="3017687597151988916">ونڈو کو بطور سورس سیٹ کیا گیا</translation>
 <translation id="3033545621352269033">آن</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> کے ساتھ یکجا کریں</translation>
 <translation id="3036649622769666520">فائلیں کھولیں</translation>
@@ -1049,7 +1047,6 @@
 <translation id="746232733191930409">اسکرین ریکارڈنگ کی وضع</translation>
 <translation id="7466449121337984263">براہ کرم سینسر کو ٹچ کریں</translation>
 <translation id="7477793887173910789">اپنی موسیقی، ویڈیوز اور بھی بہت کچھ کنٹرول کریں</translation>
-<translation id="7483025031359818980">فُل اسکرین کو بطور سورس سیٹ کیا گیا</translation>
 <translation id="7497767806359279797">زبان اور کی بورڈ منتخب کریں</translation>
 <translation id="7508690557411636492">پچھلے مہینے میں کھولا گیا</translation>
 <translation id="7509246181739783082">اپنی شناخت کی توثیق کریں</translation>

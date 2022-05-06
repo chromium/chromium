@@ -38,7 +38,6 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="1219674500290482172">Internetverbindung kann nicht hergestellt werden.</translation>
 <translation id="122699739164161391">Alle Tabs schließen</translation>
 <translation id="1229222343402087523">In Chrome nach ${searchPhrase} suchen</translation>
-<translation id="1231733316453485619">Synchronisierung aktivieren?</translation>
 <translation id="1242044645101871359">Noch einmal anmelden</translation>
 <translation id="1254117744268754948">Ordner wählen</translation>
 <translation id="1265739287306757398">Weitere Informationen</translation>
@@ -971,5 +970,4 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="988141524645182168">Andere Geräte</translation>
 <translation id="989988560359834682">Adresse bearbeiten</translation>
 <translation id="994757059139821576">Vorgeschlagene Artikel</translation>
-<translation id="997742718232442409">Diese Website versucht, eine Kalender-Datei herunterzuladen.</translation>
 </translationbundle>

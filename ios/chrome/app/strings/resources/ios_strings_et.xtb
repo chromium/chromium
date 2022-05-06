@@ -38,7 +38,6 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="1219674500290482172">Internetiga ei saa ühendust.</translation>
 <translation id="122699739164161391">Sule kõik vahelehed</translation>
 <translation id="1229222343402087523">Otsi Chrome'is päringut ${searchPhrase}</translation>
-<translation id="1231733316453485619">Kas lülitada sünkroonimine sisse?</translation>
 <translation id="1242044645101871359">Logige uuesti sisse</translation>
 <translation id="1254117744268754948">Kausta valimine</translation>
 <translation id="1265739287306757398">Lisateave</translation>
@@ -227,6 +226,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2898963176829412617">Uus kaust ...</translation>
 <translation id="2916171785467530738">Otsingute ja URL-ide automaatne täitmine</translation>
 <translation id="291754862089661335">Paigutage QR-kood või ribakood sellesse kaadrisse</translation>
+<translation id="2920866371965792875">Saidi värskenduste vaatamiseks jälgige seda siin.</translation>
 <translation id="2921219216347069551">Lehte ei saa jagada</translation>
 <translation id="2923448633003185837">Kleebi ja mine</translation>
 <translation id="292639812446257861">Märgi mitteloetuks</translation>
@@ -971,5 +971,4 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="988141524645182168">Muud seadmed</translation>
 <translation id="989988560359834682">Aadressi muutmine</translation>
 <translation id="994757059139821576">Artiklite soovitused</translation>
-<translation id="997742718232442409">See veebisait üritab alla laadida kalendrifaili.</translation>
 </translationbundle>

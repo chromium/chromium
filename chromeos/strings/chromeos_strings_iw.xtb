@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">הפעלת העיצוב הבהיר</translation>
 <translation id="2323506179655536734">לא בוצעה בדיקה</translation>
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> ‏DPI</translation>
+<translation id="2336381494582898602">שחזור הגדרות יצרן</translation>
 <translation id="2338501278241028356">‏יש להפעיל את Bluetooth כדי לאתר מכשירים קרובים</translation>
 <translation id="2346474577291266260">מצוין (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463">זוהו <ph name="LINK_BEGIN" />רכיבים לא מתאימים<ph name="LINK_END" />. אם ברצונך לאשר את ההתקנה שלהם, עליך לעשות זאת עכשיו.</translation>
@@ -724,7 +725,6 @@
 <translation id="8498220429738806196">מוני תנועה</translation>
 <translation id="8503813439785031346">שם משתמש</translation>
 <translation id="8503836310948963452">רק עוד מספר דקות…</translation>
-<translation id="8521021929829989041">שימוש כמכשיר אישי</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ייתכן שהספק שלך ידרוש את האפשרות הזו כדי להתחבר לרשת שלו. למידע נוסף, ניתן לפנות לספק.</translation>
 <translation id="8576249514688522074">לא מאותחלת</translation>

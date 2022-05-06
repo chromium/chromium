@@ -4096,7 +4096,6 @@
 <translation id="4953808748584563296">డిఫాల్ట్ నారింజ రంగు అవతార్</translation>
 <translation id="4955710816792587366">మీ పిన్ ఎంచుకోండి</translation>
 <translation id="4959262764292427323">మీ Google ఖాతాలో పాస్‌వర్డ్‌లు సేవ్ చేయబడతాయి కాబట్టి మీరు వాటిని ఏ పరికరంలోనైనా ఉపయోగించవచ్చు</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> మీ వ్యక్తిగత సమాచారాన్ని దొంగింలించేందుకు దాడులకు పాల్పడే వారిని అనుమతించవచ్చు.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">స్క్రీన్ ప్రసారం చేయండి</translation>
 <translation id="4961361269522589229">వంటకం ఐడియాలు</translation>
@@ -5920,7 +5919,6 @@
 <translation id="6798578729981748444">దిగుమతిని పూర్తి చేయాలంటే, అన్ని Firefox విండోలను మూసివేయండి.</translation>
 <translation id="6798780071646309401">caps lock ఆన్‌లో ఉంది</translation>
 <translation id="6798954102094737107">ప్లగ్ఇన్‌: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">ఈ ఫైల్ మీ వ్యక్తిగత సమాచారాన్ని దొంగిలించేందుకు దాడులకు పాల్పడే వారిని అనుమతించవచ్చు</translation>
 <translation id="6801129617625983991">సాధారణ సెట్టింగ్‌లు</translation>
 <translation id="6801435275744557998">టచ్‌స్క్రీన్‌ను క్రమాంకనం చేయి</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6392,7 +6390,6 @@
 <translation id="7269736181983384521">సమీప షేరింగ్ డేటా వినియోగం</translation>
 <translation id="7272674038937250585">వివరణ ఏదీ అందించబడలేదు</translation>
 <translation id="7273110280511444812"><ph name="DATE" />న చివరిగా జోడించబడింది</translation>
-<translation id="7273970016743909808">మీరు కియోస్క్ &amp; సంకేత చిహ్నాల అప్‌గ్రేడ్‌ను ఉపయోగిస్తారు, ఇది పరికరాన్ని కియోస్క్ లేదా సంకేత చిహ్నాల మోడ్‌లో మాత్రమే రన్ అయ్యేలా చేస్తుంది. యూజర్‌లు పరికరంలోకి సైన్ ఇన్ చేసే వీలును మీరు కల్పించాలనుకుంటే, దయచేసి వెనుకకు వెళ్లి, Chrome Enterpirse అప్‌గ్రేడ్‌ను ఉపయోగించి ఎన్‌రోల్ అవ్వండి.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" />లో పూర్తి ఛార్జ్ అవుతుంది</translation>
 <translation id="727952162645687754">డౌన్‌లోడ్ చేయడంలో ఎర్ర‌ర్‌</translation>
 <translation id="7280041992884344566">Chrome హానికరమైన సాఫ్ట్‌వేర్ కోసం వెతుకుతున్నప్పుడు ఎర్రర్ ఏర్పడింది</translation>
@@ -6795,7 +6792,6 @@
 <translation id="7670434942695515800">అత్యుత్తమ పనితీరు కోసం, తాజా వెర్షన్‌కు అప్‌గ్రేడ్ అవ్వండి. అప్‌గ్రేడ్ పూర్తి కాని సందర్భంలో, మీ ఫైల్స్‌ను బ్యాకప్ చేయడం అనేది సిఫార్సు చేయబడుతుంది. అప్‌గ్రేడ్ ప్రారంభమైయ్యాక, Linux షట్ డౌన్ అవుతుంది. కొనసాగించడానికి ముందు, తెరిచి ఉన్న ఫైల్స్‌ను సేవ్ చేయండి. <ph name="LINK_START" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">సిస్టమ్ శీర్షిక బార్ మరియు హద్దులను ఉపయోగించు</translation>
 <translation id="767127784612208024">రీసెట్‌ను నిర్ధారించడానికి తాకండి</translation>
-<translation id="767147716926917172">సమస్య విశ్లేషణ, డేటా వినియోగాన్ని ఆటోమేటిక్‌గా Googleకు పంపుతుంది</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" />లో.</translation>
 <translation id="7674416868315480713">Linuxలో ఫార్వర్డ్ చేయబడిన అన్ని పోర్ట్‌లను డీయాక్టివేట్ చేయండి</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> యాప్‌లు</translation>

@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C መሣሪያ (የፊት ወደብ)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> ወደ <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> ኸ) ተቀይሯል። ለውጦችን ለማቆየት አረጋግጥን ጠቅ ያድርጉ። ቀዳሚ ቅንብሮቹ በ<ph name="TIMEOUT_SECONDS" /> ውስጥ ወደነበሩበት ይመለሳሉ።</translation>
 <translation id="1013923882670373915">የብሉቱዝ መሣሪያ «<ph name="DEVICE_NAME" />» ለመጣመር ፍቃድ ይፈልጋል። እባክዎ ይህን የፒን ኮድ በዚህ መሣሪያ ላይ ያስገቡ፦ <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">ከፊል ቅጽበታዊ ገጽ እይታ ተመርጧል</translation>
 <translation id="1024364763893396229">የእርስዎን <ph name="NAME" /> ያስቀምጡ</translation>
 <translation id="1032891413405719768">የStylus ባትሪ ዝቅተኛ ነው</translation>
 <translation id="1036073649888683237">ማሳወቂያዎችን ለማቀናበር ወደ ቅንብሮች ይሂዱ</translation>
@@ -328,7 +327,6 @@
 <translation id="3009178788565917040">ውጽዓት</translation>
 <translation id="3009958530611748826">የሚያስቀምጡበትን አቃፊ ይምረጡ</translation>
 <translation id="301282384882049174">በእርስዎ አስተዳዳሪ የተጋራ</translation>
-<translation id="3017687597151988916">የምርጫ ቦታ ወደ መስኮት ተቀናብሯል</translation>
 <translation id="3033545621352269033">አብራ</translation>
 <translation id="3033912566804961911">ከ<ph name="DESK_NAME" /> ጋር ማጣመር</translation>
 <translation id="3036649622769666520">ፋይሎች ክፈት</translation>
@@ -1047,7 +1045,6 @@
 <translation id="746232733191930409">የማያ ገጽ ቀረጻ ሁነታ</translation>
 <translation id="7466449121337984263">እባክዎ ዳሳሹን ይንኩ</translation>
 <translation id="7477793887173910789">የእርስዎን ሙዚቃ፣ ቪዲዮዎች እና ተጨማሪ ነገሮች ይቆጣጠሩ</translation>
-<translation id="7483025031359818980">የምርጫ አካባቢ ወደ ሙሉ ማያ ገጽ ተቀናብሯል</translation>
 <translation id="7497767806359279797">ቋንቋ እና ቁልፍ ሰሌዳን ይምረጡ</translation>
 <translation id="7508690557411636492">ባለፈው ወር ተከፍቷል</translation>
 <translation id="7509246181739783082">ማንነትዎን ያረጋግጡ</translation>

@@ -38,7 +38,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1219674500290482172">Unable to connect to the Internet.</translation>
 <translation id="122699739164161391">Close All Tabs</translation>
 <translation id="1229222343402087523">Search ${searchPhrase} in Chrome</translation>
-<translation id="1231733316453485619">Turn on sync?</translation>
 <translation id="1242044645101871359">Sign in again</translation>
 <translation id="1254117744268754948">Choose folder</translation>
 <translation id="1265739287306757398">Learn How</translation>
@@ -972,5 +971,4 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="988141524645182168">Other devices</translation>
 <translation id="989988560359834682">Edit Address</translation>
 <translation id="994757059139821576">Article Suggestions</translation>
-<translation id="997742718232442409">This website is trying to download a calendar file.</translation>
 </translationbundle>

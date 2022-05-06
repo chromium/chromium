@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C-tæki (tengi að framan)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> var breytt í <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Veldu „Staðfesta“ til að halda breytingunum. Fyrri stillingar verða endurheimtar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth-tækið „<ph name="DEVICE_NAME" />“ óskar eftir heimild til pörunar. Sláðu þetta PIN-númer inn í því tæki: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Skjámynd af hluta skjás valin</translation>
 <translation id="1024364763893396229">Vistaðu <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Lítil hleðsla á pennarafhlöðu</translation>
 <translation id="1036073649888683237">Opnaðu stillingar til að stjórna tilkynningum</translation>
@@ -331,7 +330,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3009178788565917040">Úttak</translation>
 <translation id="3009958530611748826">Veldu möppu til að vista í</translation>
 <translation id="301282384882049174">Deilt af stjórnanda</translation>
-<translation id="3017687597151988916">Valsvæði stillt á glugga</translation>
 <translation id="3033545621352269033">Kveikt</translation>
 <translation id="3033912566804961911">Sameina með <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Opna skrár</translation>
@@ -1050,7 +1048,6 @@ Ný uppsetning</translation>
 <translation id="746232733191930409">Skjáupptökustilling</translation>
 <translation id="7466449121337984263">Snertu fingrafaralesarann</translation>
 <translation id="7477793887173910789">Stjórnaðu tónlistinni, myndskeiðunum og fleiru</translation>
-<translation id="7483025031359818980">Valsvæði stillt á allan skjáinn</translation>
 <translation id="7497767806359279797">Velja tungumál og lyklaborð</translation>
 <translation id="7508690557411636492">Opnað í liðnum mánuði</translation>
 <translation id="7509246181739783082">Staðfestu hver þú ert</translation>

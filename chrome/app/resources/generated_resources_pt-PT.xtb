@@ -131,6 +131,7 @@
 <translation id="1124772482545689468">Utilizador</translation>
 <translation id="1125550662859510761">Parece ter <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativo)</translation>
 <translation id="1126809382673880764">Não protege contra transferências, extensões ou Websites perigosos. Continuará a obter a proteção da Navegação segura, quando disponível, noutros Serviços Google, como o Gmail e a Pesquisa.</translation>
+<translation id="1128090040635299943">O Linux está atualmente a ser configurado. A configuração vai demorar alguns minutos.</translation>
 <translation id="1128591060186966949">Editar motor de pesquisa</translation>
 <translation id="1129420403709586868">Veja as fotos e os conteúdos multimédia do telemóvel</translation>
 <translation id="1129850422003387628">Gerir apps</translation>
@@ -332,6 +333,7 @@
 <translation id="1327794256477341646">As funcionalidades que precisam da sua localização não funcionam</translation>
 <translation id="1329191040029425999">Certifique-se de que o seu dispositivo está atualizado e tente novamente</translation>
 <translation id="1330145147221172764">Ativar o teclado no ecrã</translation>
+<translation id="1331625853030156663">Para abrir a app <ph name="APP_NAME" />, ative a opção "Mostrar o ecrã de bloqueio quando for ativado após a suspensão"</translation>
 <translation id="1331977651797684645">Fui eu.</translation>
 <translation id="1333489022424033687">Algumas funcionalidades em <ph name="ORIGIN" /> poderão não funcionar até limpar os dados que outros sites armazenaram no seu dispositivo.</translation>
 <translation id="1333965224356556482">Não permitir que os sites vejam a sua localização</translation>
@@ -958,6 +960,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1892341345406963517">Olá, <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Outros idiomas</translation>
 <translation id="1895658205118569222">Encerrar</translation>
+<translation id="1897120393475391208">Usar palavra-passe forte</translation>
 <translation id="1900305421498694955">As aplicações do Google Play podem necessitar de acesso completo ao sistema de ficheiros para ler e gravar ficheiros em dispositivos de armazenamento externos. Os ficheiros e as pastas criados no dispositivo são visíveis para qualquer pessoa que utilize a unidade externa. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Seleccion&amp;ar tudo</translation>
 <translation id="1901396183631570154">O Chrome não conseguiu guardar estas palavras-passe na sua Conta Google. Ainda pode guardá-las neste dispositivo.</translation>
@@ -3332,6 +3335,7 @@ Pretende pará-lo?</translation>
 <translation id="420283545744377356">Desativar a proteção de ecrã</translation>
 <translation id="4203065553461038553">O nome ou a localização do ficheiro é demasiado longo</translation>
 <translation id="4204851595694839599">Como foi a sua experiência de jogabilidade?</translation>
+<translation id="4205157409548006256">Ocorreu um erro ao configurar o Linux.</translation>
 <translation id="4206144641569145248">Extraterrestre</translation>
 <translation id="4206323443866416204">Relatório de comentários</translation>
 <translation id="4207522141889799150">Editar autorizações dos sites para <ph name="SITE" /></translation>
@@ -4077,7 +4081,6 @@ Pretende pará-lo?</translation>
 <translation id="4953808748584563296">Avatar cor de laranja predefinido</translation>
 <translation id="4955710816792587366">Escolher o PIN</translation>
 <translation id="4959262764292427323">As palavras-passe são guardadas na sua Conta Google para que as possa utilizar em qualquer dispositivo.</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> pode permitir que atacantes roubem as suas informações pessoais.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Transmitir ecrã</translation>
 <translation id="4961361269522589229">ideias de receitas</translation>
@@ -5797,6 +5800,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6686665106869989887">Separador movido para a direita</translation>
 <translation id="6686817083349815241">Guardar a sua palavra-passe</translation>
 <translation id="6687079240787935001">Ocultar <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">A pedir para ler e alterar <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Peça a <ph name="SUPERVISED_USER_NAME" /> para se dirigir ao computador A criança vai ler algumas expressões neste ecrã para criar o respetivo modelo de voz.
     <ph name="BR" />
     Se <ph name="SUPERVISED_USER_NAME" /> precisar de ajuda na leitura, peça-lhe que repita consigo. Afaste-se do microfone para que o Assistente aprenda a voz da criança em vez da sua.</translation>
@@ -5901,7 +5905,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6798578729981748444">Para concluir a importação, feche todas as janelas do Firefox.</translation>
 <translation id="6798780071646309401">caps lock ativado</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Este ficheiro pode permitir que atacantes roubem as suas informações pessoais</translation>
 <translation id="6801129617625983991">Definições gerais</translation>
 <translation id="6801435275744557998">Calibrar ecrã tátil</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6309,6 +6312,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Sair da página}other{Sair das páginas}}</translation>
 <translation id="7207457272187520234">Envie dados de utilização e diagnóstico. Agora, este dispositivo está a enviar automaticamente dados de diagnóstico, de utilização de apps e do dispositivo para a Google. Deste modo, ajudará a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as apps e os parceiros Google, como os programadores Android. Esta definição é aplicada pelo proprietário. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google.</translation>
 <translation id="7207631048330366454">Pesquisar aplicações</translation>
+<translation id="720808544705441386">Não é possível abrir a app</translation>
 <translation id="7210499381659830293">Impressoras por extensão</translation>
 <translation id="7211783048245131419">Ainda não foi atribuído qualquer comutador</translation>
 <translation id="7212097698621322584">Introduza o seu PIN atual para o alterar. Se não souber qual é o PIN, tem de repor a chave de segurança e, em seguida, criar um novo PIN.</translation>
@@ -6372,7 +6376,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7269736181983384521">Utilização de dados da funcionalidade Partilhar na proximidade</translation>
 <translation id="7272674038937250585">Nenhuma descrição fornecida</translation>
 <translation id="7273110280511444812">última ligação em <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Irá usar uma atualização do modo quiosque e sinalização, que só permite que o dispositivo seja executado no modo quiosque ou sinalização. Se quiser que os utilizadores iniciem sessão no dispositivo, retroceda e inscreva-se através da Atualização do Chrome Enterprise.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> até ficar completa</translation>
 <translation id="727952162645687754">Erro de transferência</translation>
 <translation id="7280041992884344566">Ocorreu um erro enquanto o Chrome procurava software prejudicial.</translation>
@@ -6540,6 +6543,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7444970023873202833">Explore mais das suas memórias no Google Fotos</translation>
 <translation id="7444983668544353857">Desactivar <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Instalar aplicações automaticamente</translation>
+<translation id="7449381494541372002">a iniciar…</translation>
 <translation id="7449752890690775568">Remover a palavra-passe?</translation>
 <translation id="7450761244949417357">A abrir no <ph name="ALTERNATIVE_BROWSER_NAME" /> agora</translation>
 <translation id="7452166281927983300">Avisos ignorados (<ph name="MUTED_PASSWORDS" />)</translation>
@@ -6775,7 +6779,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7670434942695515800">Para obter o melhor desempenho, atualize para a versão mais recente. É recomendável fazer uma cópia de segurança dos ficheiros caso não seja possível concluir a atualização. Assim que a atualização começar, o Linux será encerrado. Guarde os ficheiros abertos antes de continuar. <ph name="LINK_START" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Utilizar os limites e a barra de título do sistema</translation>
 <translation id="767127784612208024">Toque para confirmar a reposição</translation>
-<translation id="767147716926917172">Envia automaticamente dados de diagnóstico e de utilização para a Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, em <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Desativar todas as portas a serem encaminhadas no Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> apps</translation>
@@ -7466,6 +7469,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8324784016256120271">Os sites podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="8325413836429495820">Sem autorização para ver a sua área de transferência</translation>
 <translation id="8326478304147373412">PKCS #7, cadeia de certificados</translation>
+<translation id="8327386430364625757">Tipo de letra matemático</translation>
 <translation id="8327676037044516220">Definições de conteúdo e autorizações</translation>
 <translation id="8330617762701840933">A lista de Websites que redirecionam para um navegador alternativo.</translation>
 <translation id="8330689128072902965">Os contactos próximos podem partilhar consigo. Clique para mudar.</translation>

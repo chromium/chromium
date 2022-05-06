@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C түзмөгү (маңдайкы оюкча)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> дааналыгы төмөнкүгө өзгөртүлдү: <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Герц). Өзгөртүүлөрдү сактоо үчүн "Ырастоо" баскычын басыңыз. Мурунку жөндөөлөр <ph name="TIMEOUT_SECONDS" /> кийин калыбына келтирилет.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth түзмөгү жупташуу үчүн уруксат сурап жатат. Ал түзмөккө бул PIN кодду киргизиңиз: <ph name="PINCODE" />.</translation>
-<translation id="1024261588257374085">Сүрөткө тартып алуу үчүн терезенин бир бөлүгү тандалды</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> түзмөгүңүздү сактаңыз</translation>
 <translation id="1032891413405719768">Стилус батареясынын кубаты аз</translation>
 <translation id="1036073649888683237">Билдирүүлөрдү башкаруу үчүн жөндөөлөргө өтүңүз</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">Чыгаруу</translation>
 <translation id="3009958530611748826">Скандалган нерселерди сактоо үчүн папка тандаңыз</translation>
 <translation id="301282384882049174">Администраторуңуз бөлүштү</translation>
-<translation id="3017687597151988916">Терезе тандалды</translation>
 <translation id="3033545621352269033">Күйүк</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> менен бириктирүү</translation>
 <translation id="3036649622769666520">Файлдарды ачуу</translation>
@@ -1050,7 +1048,6 @@
 <translation id="746232733191930409">Экрандан видео жаздырып алуу режими</translation>
 <translation id="7466449121337984263">Сенсорго тийиңиз, сураныч</translation>
 <translation id="7477793887173910789">Музыканы, видеолорду жана башкаларды көзөмөлдөңүз</translation>
-<translation id="7483025031359818980">Толук экран тандалды</translation>
 <translation id="7497767806359279797">Тилди жана баскычтопту тандоо</translation>
 <translation id="7508690557411636492">Өткөн айда ачылган</translation>
 <translation id="7509246181739783082">Өздүгүңүздү ырастаңыз</translation>

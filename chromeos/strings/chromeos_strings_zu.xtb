@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Nika amandla itimu ekhanyayo</translation>
 <translation id="2323506179655536734">KWEQIWE</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">I-Powerwash</translation>
 <translation id="2338501278241028356">Vula i-Bluetooth ukuze uthole amadivayisi aseduze</translation>
 <translation id="2346474577291266260">Kuhle kakhulu (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463">Kutholakele <ph name="LINK_BEGIN" />izingxenye ezingafaneleki<ph name="LINK_END" />. Uma ukhetha ukuqinisekisa ukuthi lokhu kufakiwe, sicela wenze kanjalo manje.</translation>
@@ -375,6 +376,7 @@
 <translation id="4890353053343094602">Khetha elisha elilodwa ngokushesha</translation>
 <translation id="4891842000192098784">Ukucindezeleka</translation>
 <translation id="4897058166682006107">Idivayisi isele ngo-<ph name="BATTERY_PERCENTAGE" />% we-bud yebhethri.</translation>
+<translation id="4915052247106771211">Lokhu kuzosetha kabusha idivayisi kumasethingi asekuqaleni (i-Powerwash).</translation>
 <translation id="4917385247580444890">kunamandla</translation>
 <translation id="4917889632206600977">Imile - Iphepha liphelile</translation>
 <translation id="4921665434385737356">Ikhokhiswe <ph name="RATE" /> ngamasekhondi angu-<ph name="NUM_SECONDS" />.</translation>
@@ -429,6 +431,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="5358174242040570474">Kunento engahambanga kahle. Zama ukuphinda ukhethe isithombe sangemuva noma uvule i-app kabusha.</translation>
 <translation id="5372659122375744710">Inethiwekhi ye-WiFi ayivikelekile</translation>
 <translation id="5376354385557966694">Imodi elula ngokuzenzekelayo</translation>
+<translation id="537872351913703572">Idivayisi izoya kumsebenzisi noma inhlangano ehlukile</translation>
 <translation id="5400907029458559844">Idivayisi iyaxhuma.</translation>
 <translation id="5401938042319910061">Qalisa Yonke Imijikelezo</translation>
 <translation id="5423849171846380976">Yenziwe yasebenza</translation>
@@ -722,7 +725,6 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="8498220429738806196">Ukubalwa Kwethrafikhi</translation>
 <translation id="8503813439785031346">Igama lomsebenzisi</translation>
 <translation id="8503836310948963452">Amaninithi ambalwa nje asele…</translation>
-<translation id="8521021929829989041">Sebenzisa njengedivayisi yomuntu siqu</translation>
 <translation id="8528615187455571738">I-Crosvm</translation>
 <translation id="8575298406870537639">Inkampani yenethiwekhi yakho idinga le nketho ukuze ixhume kunethiwekhi yayo. Xhumana nenkampani yakho yenethiwekhi mayelana nemininingwane.</translation>
 <translation id="8576249514688522074">Akuqaliswanga</translation>
@@ -733,6 +735,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="8671972493856476349">Buyekezela ku-<ph name="VERSION_NUMBER" /> futhi uqale kabusha</translation>
 <translation id="8675354002693747642">Ukhiye owabiwe ngaphambilini</translation>
 <translation id="8677859815076891398">Awekho ama-albhamu. Dala i-albhamu <ph name="LINK_BEGIN" />Ezithombeni ze-Google<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Idivayisi izoya kumsebenzisi ofanayo</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Sebenzisa umcibisholo Wangakwesokunxele noma Wangakwesokudla ukuphatha lesi sici.</translation>
 <translation id="8712637175834984815">Ngiyitholile</translation>
 <translation id="871560550817059752">Yehlulekile - Uyinki uphelile</translation>

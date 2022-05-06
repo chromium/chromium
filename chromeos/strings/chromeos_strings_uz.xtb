@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Kunduzgi mavzuni yoqish</translation>
 <translation id="2323506179655536734">TASHLAB KETILDI</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Yaqin-atrofdagi qurilmalarni aniqlash uchun Bluetooth adapterini yoqing</translation>
 <translation id="2346474577291266260">Aʼlo (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Mos boʻlmagan komponentlar<ph name="LINK_END" /> aniqlandi. Bu oʻrnatilganini tasdiqlashni tanlasangiz, buni hoziroq amalga oshiring.</translation>
@@ -730,7 +731,6 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8498220429738806196">Traffik hisoblagichlari</translation>
 <translation id="8503813439785031346">Foydalanuvchi nomi</translation>
 <translation id="8503836310948963452">Yana bir necha daqiqa kuting…</translation>
-<translation id="8521021929829989041">Shaxsiy qurilma sifatida foydalanish</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Aloqa operatoringiz oʻz tarmogʻiga ulanishi uchun bu parametrni talab qilishi mumkin. Tafsilotlar uchun aloqa operatoringizga murojaat qiling.</translation>
 <translation id="8576249514688522074">Faolsizlantirildi</translation>

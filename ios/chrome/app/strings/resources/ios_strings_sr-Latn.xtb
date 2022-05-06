@@ -38,7 +38,6 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="1219674500290482172">Povezivanje sa internetom nije moguće.</translation>
 <translation id="122699739164161391">Zatvori sve kartice</translation>
 <translation id="1229222343402087523">Pretražite frazu ${searchPhrase} u Chrome-u</translation>
-<translation id="1231733316453485619">Želite li da uključite sinhronizaciju?</translation>
 <translation id="1242044645101871359">Prijavite se ponovo</translation>
 <translation id="1254117744268754948">Izbor direktorijuma</translation>
 <translation id="1265739287306757398">Saznajte kako</translation>
@@ -974,5 +973,4 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="988141524645182168">Drugi uređaji</translation>
 <translation id="989988560359834682">Izmena adrese</translation>
 <translation id="994757059139821576">Predlozi članaka</translation>
-<translation id="997742718232442409">Ovaj veb-sajt pokušava da preuzme fajl kalendara.</translation>
 </translationbundle>

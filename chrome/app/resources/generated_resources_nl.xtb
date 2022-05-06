@@ -1954,6 +1954,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2832124733806557606">Je kind kan een pincode gebruiken om in te loggen op het apparaat of om het te ontgrendelen.</translation>
 <translation id="2835177225987815960">Je huidige instellingen voor scannen worden gereset, waaronder toegewezen schakelaars en voorkeuren voor de snelheid van automatisch scannen.</translation>
 <translation id="2835547721736623118">Spraakherkenningsservice</translation>
+<translation id="2836232638504556905"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres, adres en profielfoto met deze site om door te gaan. Bekijk het <ph name="BEGIN_LINK" />privacybeleid<ph name="END_LINK" /> van deze site.</translation>
 <translation id="2836269494620652131">Crash</translation>
 <translation id="2836635946302913370">Je beheerder heeft ingesteld dat je niet kunt inloggen met deze gebruikersnaam.</translation>
 <translation id="283669119850230892">Als je het netwerk <ph name="NETWORK_ID" /> wilt gebruiken, moet je eerst hieronder verbinding maken met internet.</translation>
@@ -2235,6 +2236,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3105796011181310544">Teruggaan naar Google?</translation>
 <translation id="310671807099593501">Site gebruikt Bluetooth</translation>
 <translation id="3108931485517391283">Kan niet ontvangen</translation>
+<translation id="3109206895301430738">Opgeslagen tabbladgroepen</translation>
 <translation id="3109724472072898302">Samengevouwen</translation>
 <translation id="311214366526552035">Toch downloaden</translation>
 <translation id="3112292765614504292">App-grootte: <ph name="APP_SIZE" /></translation>
@@ -4076,7 +4078,6 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4953808748584563296">Standaard oranje avatar</translation>
 <translation id="4955710816792587366">Je pincode kiezen</translation>
 <translation id="4959262764292427323">Wachtwoorden worden in je Google-account opgeslagen, zodat je deze op elk apparaat kunt gebruiken</translation>
-<translation id="496027654926814138">Aanvallers kunnen <ph name="FILE_NAME" /> gebruiken om je persoonlijke informatie te stelen.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Scherm casten</translation>
 <translation id="4961361269522589229">receptideeën</translation>
@@ -5896,7 +5897,6 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6798578729981748444">Sluit alle Firefox-vensters om het importeren te voltooien.</translation>
 <translation id="6798780071646309401">Caps Lock aan</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Aanvallers kunnen dit bestand gebruiken om je persoonlijke informatie te stelen</translation>
 <translation id="6801129617625983991">Algemene instellingen</translation>
 <translation id="6801435275744557998">Touchscreen kalibreren</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6368,7 +6368,6 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7269736181983384521">Datagebruik van Dichtbij delen</translation>
 <translation id="7272674038937250585">Geen beschrijving opgegeven</translation>
 <translation id="7273110280511444812">laatst aangesloten op <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Je gebruikt een upgrade voor kiosks en digitale borden waardoor het apparaat alleen de kioskmodus of modus voor digitale borden kan gebruiken. Als je wilt dat gebruikers kunnen inloggen op het apparaat, ga je terug en schrijf je het in via Chrome Enterprise-upgrade.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> tot volledig opgeladen</translation>
 <translation id="727952162645687754">Downloadfout</translation>
 <translation id="7280041992884344566">Er is een fout opgetreden terwijl Chrome naar schadelijke software zocht</translation>
@@ -6771,7 +6770,6 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7670434942695515800">Voer een upgrade naar de nieuwste versie uit voor de beste prestaties. Het wordt aanbevolen om een back-up van je bestanden te maken voor het geval de upgrade niet kan worden afgerond. Als de upgrade begint, wordt Linux uitgezet. Sla geopende bestanden op voordat je doorgaat. <ph name="LINK_START" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Titelbalk en kaders van systeem gebruiken</translation>
 <translation id="767127784612208024">Tik hierop om het resetten te bevestigen</translation>
-<translation id="767147716926917172">Hiermee worden automatisch diagnostische en gebruiksgegevens naar Google gestuurd</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, in <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Alle doorgeschakelde poorten deactiveren in Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> apps</translation>

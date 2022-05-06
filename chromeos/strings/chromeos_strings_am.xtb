@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">ነጣ ያለ ገጽታን አንቃ</translation>
 <translation id="2323506179655536734">ተዘሏል</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">በአቅራቢያ ያሉ መሣሪያዎችን ለማግኘት ብሉቱዝን ያብሩ</translation>
 <translation id="2346474577291266260">እጅግ በጣም ጥሩ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />ብቁ ያልሆኑ ክፍለ-አካላት<ph name="LINK_END" /> ተገኝተዋል። ይህ መጫኑን ለማረጋገጥ ከመረጡ እባክዎ አሁን ያድርጉት።</translation>
@@ -375,6 +376,7 @@
 <translation id="4890353053343094602">ወዲያውኑ አዲስ ይምረጡ</translation>
 <translation id="4891842000192098784">ጭንቀት</translation>
 <translation id="4897058166682006107">መሣሪያ <ph name="BATTERY_PERCENTAGE" />% የግራ ጆሮ ማዳመጫ ባትሪ አለው።</translation>
+<translation id="4915052247106771211">ይህ መሣሪያውን ወደ የፋብሪካ ቅንብሮች (Powerwash) ዳግም ያስጀምረዋል።</translation>
 <translation id="4917385247580444890">ጠንካራ</translation>
 <translation id="4917889632206600977">ቆሟል - ወረቀት አልቋል</translation>
 <translation id="4921665434385737356">በ<ph name="NUM_SECONDS" /> ሰከንዶች ውስጥ <ph name="RATE" /> ሞልቷል።</translation>
@@ -429,6 +431,7 @@
 <translation id="5358174242040570474">የሆነ ችግር ተፈጥሯል። ልጣፍ እንደገና ለመምረጥ ይሞክሩ ወይም መተግበሪያውን ዳግም ይክፈቱ።</translation>
 <translation id="5372659122375744710">የWiFi አውታረ መረብ ደህንነት የተጠበቀ አይደለም</translation>
 <translation id="5376354385557966694">ራስሰር የብርሃን ሁነታ</translation>
+<translation id="537872351913703572">መሣሪያው ወደ ሌላ ተጠቃሚ ወይም ድርጅት ይሄዳል</translation>
 <translation id="5400907029458559844">መሣሪያው እየተገናኘ ነው።</translation>
 <translation id="5401938042319910061">ሁሉንም የዕለት ተዕለት ተግባራት አሂድ</translation>
 <translation id="5423849171846380976">ገብሯል</translation>
@@ -722,7 +725,6 @@
 <translation id="8498220429738806196">የትራፊክ ቆጣሪዎች</translation>
 <translation id="8503813439785031346">የተጣቃሚ ስም</translation>
 <translation id="8503836310948963452">ጥቂት ተጨማሪ ደቂቃዎች ብቻ...</translation>
-<translation id="8521021929829989041">እንደ የግል መሣሪያ ይጠቀሙ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">አገልግሎት አቅራቢዎ ከአውታረ መረቡ ጋር ለመገናኘት ይህን አማራጭ ሊፈልግ ይችላል። ለዝርዝሮች አገልግሎት አቅራቢዎን ያነጋግሩ።</translation>
 <translation id="8576249514688522074">ያልተጀመረ</translation>
@@ -733,6 +735,7 @@
 <translation id="8671972493856476349">ወደ <ph name="VERSION_NUMBER" /> ያዘምኑ እና እንደገና ያስጀምሩ</translation>
 <translation id="8675354002693747642">ቅድሚያ የተጋራ ቁልፍ</translation>
 <translation id="8677859815076891398">ምንም አልበሞች የሉም። በ<ph name="LINK_BEGIN" />Google ፎቶዎች<ph name="LINK_END" /> ውስጥ አልበም ይፈጠሩ።</translation>
+<translation id="8680431479333800907">መሣሪያው ወደ ተመሳሳይ ተጠቃሚ ይሄዳል</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ይህንን ባህሪ ለማስተዳደር የግራ ወይም የቀኝ ቀስት ቁልፎችን ይጠቀሙ።</translation>
 <translation id="8712637175834984815">ገባኝ</translation>
 <translation id="871560550817059752">አልተሳካም - ቀለም አልቋል</translation>

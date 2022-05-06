@@ -4082,7 +4082,6 @@
 <translation id="4953808748584563296">ڈیفالٹ نارنجی اوتار</translation>
 <translation id="4955710816792587366">‏اپنا PIN منتخب کریں</translation>
 <translation id="4959262764292427323">‏آپ کے Google اکاؤنٹ میں پاس ورڈز محفوظ ہیں اس لیے آپ انہیں کسی بھی آلہ پر استعمال کر سکتے ہیں</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> حملہ آوروں کو آپ کی ذاتی معلومات چوری کرنے کی اجازت دے سکتی ہے۔</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">اسکرین کاسٹ کریں</translation>
 <translation id="4961361269522589229">پکوان کی ترکیب کے آئیڈیاز</translation>
@@ -5905,7 +5904,6 @@
 <translation id="6798578729981748444">‏درآمد ختم کرنے کے لئے، تمام Firefox ونڈوز کو بند کریں۔</translation>
 <translation id="6798780071646309401">‏caps lock آن ہے</translation>
 <translation id="6798954102094737107">پلگ ان: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">یہ فائل حملہ آوروں کو آپ کی ذاتی معلومات چوری کرنے کی اجازت دے سکتی ہے</translation>
 <translation id="6801129617625983991">عام ترتیبات</translation>
 <translation id="6801435275744557998">ٹچ اسکرین کو کیلیبریٹ کریں</translation>
 <translation id="6802031077390104172">‎<ph name="USAGE" /> (<ph name="OID" />)‎</translation>
@@ -6377,7 +6375,6 @@
 <translation id="7269736181983384521">قریبی آلات کے ساتھ اشتراک کے ڈیٹا کا استعمال</translation>
 <translation id="7272674038937250585">کوئی تفصیل فراہم نہيں کی گئی</translation>
 <translation id="7273110280511444812">آخری بار منسلک کرنے کی تاریخ <ph name="DATE" /></translation>
-<translation id="7273970016743909808">‏آپ کیوسک اور سائنیج اپ گریڈ استعمال کریں گے جو صرف آلہ کو کیوسک یا سائنیج موڈ میں چلنے دیتا ہے۔ اگر آپ چاہتے ہیں کہ صارفین آلہ میں سائن ان کریں تو براہ کرم واپس جائیں اور Chrome Enterpirse اپ گریڈ کا استعمال کر کے اندراج کریں۔</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> مکمل ہو جانے تک</translation>
 <translation id="727952162645687754">ڈاؤن لوڈ میں خرابی</translation>
 <translation id="7280041992884344566">‏Chrome کی طرف سے نقصان دہ سافٹ ویئر تلاش کرتے وقت ایک خرابی پیش آ گئی</translation>
@@ -6780,7 +6777,6 @@
 <translation id="7670434942695515800">‏بہترین کارکردگی کے لیے تازہ ترین ورژن میں اپ گریڈ کریں۔ اپ گریڈ مکمل نہ ہو پانے کی صورت میں اپنی فائلز کی بیک اپ لینے کی تجویز کی جاتی ہے۔ اپ گریڈ شروع ہونے کے بعد، Linux شٹ ڈاؤن ہو جائے گا۔ آگے بڑھنے سے قبل کھلی ہوئی فائلز کو محفوظ کریں۔ <ph name="LINK_START" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">سسٹم کا ٹائٹل بار اور بارڈرز استعمال کریں</translation>
 <translation id="767127784612208024">دوبارہ ترتیب دینے کی تصدیق کرنے کے لیے ٹچ کریں</translation>
-<translation id="767147716926917172">‏Google کو خودکار طور پر ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجتا ہے</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />، <ph name="PAGE_TITLE" /> میں۔</translation>
 <translation id="7674416868315480713">‏Linux میں فارورڈ کی جا رہی سبھی پورٹس کو غیر فعال کریں</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> ایپس</translation>

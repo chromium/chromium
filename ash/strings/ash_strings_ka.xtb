@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C მოწყობილობა (წინა პორტი)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" />-ის გარჩევადობა შეიცვალა <ph name="RESOLUTION" />-ით (<ph name="REFRESH_RATE" /> ჰც). დააწკაპუნეთ ცვლილებების შენარჩუნების დასადასტურებლად. წინა პარამეტრების აღდგენამდე დარჩენილია <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth მოწყობილობა „<ph name="DEVICE_NAME" />“ ითხოვს ნებართვას დაწყვილებისთვის. გთხოვთ შეიყვანეთ ეს PIN კოდი, იმ მოწყობილობაზე: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">არჩეულია ეკრანის ნაწილობრივი ანაბეჭდი</translation>
 <translation id="1024364763893396229">შეინახეთ თქვენი <ph name="NAME" /></translation>
 <translation id="1032891413405719768">სტილუსის ბატარეა იცლება</translation>
 <translation id="1036073649888683237">შეტყობინებების სამართავად გადადით პარამეტრებზე</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">გამოტანა</translation>
 <translation id="3009958530611748826">აირჩიეთ საქაღალდე, რომელშიც უნდა შეინახოს</translation>
 <translation id="301282384882049174">გაზიარებულია ადმინისტრატორის მიერ</translation>
-<translation id="3017687597151988916">არჩევის არე დაყენებულია ფანჯარაზე</translation>
 <translation id="3033545621352269033">ჩართვა</translation>
 <translation id="3033912566804961911">„<ph name="DESK_NAME" />“-ით გაგრძელება</translation>
 <translation id="3036649622769666520">გახსენით ფაილები</translation>
@@ -1050,7 +1048,6 @@
 <translation id="746232733191930409">ეკრანის ჩაწერის რეჟიმი</translation>
 <translation id="7466449121337984263">შეეხეთ სენსორს</translation>
 <translation id="7477793887173910789">მართეთ თქვენი მუსიკა, ვიდეოები და სხვა</translation>
-<translation id="7483025031359818980">არჩევის არე დაყენებულია სრულ ეკრანზე</translation>
 <translation id="7497767806359279797">აირჩიეთ ენა და კლავიატურა</translation>
 <translation id="7508690557411636492">თვის განმავლობაში გახსნილი</translation>
 <translation id="7509246181739783082">დაადასტურეთ ვინაობა</translation>

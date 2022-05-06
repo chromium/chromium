@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Использовать светлую тему</translation>
 <translation id="2323506179655536734">ПРОПУЩЕНО</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Включите Bluetooth, чтобы найти устройства</translation>
 <translation id="2346474577291266260">Отличный (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463">Найдены <ph name="LINK_BEGIN" />не соответствующие требованиям компоненты<ph name="LINK_END" />. Если вам известно, что они установлены, подтвердите это сейчас.</translation>
@@ -724,7 +725,6 @@
 <translation id="8498220429738806196">Счетчики трафика</translation>
 <translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="8503836310948963452">Осталось несколько минут…</translation>
-<translation id="8521021929829989041">Использовать как личное устройство</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Возможно, вам потребуется установить этот параметр, чтобы подключиться к сети. За подробными сведениями обращайтесь к своему оператору связи.</translation>
 <translation id="8576249514688522074">Без инициализации</translation>

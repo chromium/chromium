@@ -38,7 +38,6 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1219674500290482172">Impossible de se connecter à Internet.</translation>
 <translation id="122699739164161391">Fermer tous les onglets</translation>
 <translation id="1229222343402087523">Rechercher ${searchPhrase} dans Chrome</translation>
-<translation id="1231733316453485619">Activer la synchronisation ?</translation>
 <translation id="1242044645101871359">Se reconnecter</translation>
 <translation id="1254117744268754948">Sélectionner un dossier</translation>
 <translation id="1265739287306757398">En savoir plus</translation>
@@ -972,5 +971,4 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="988141524645182168">Autres appareils</translation>
 <translation id="989988560359834682">Modifier l'adresse</translation>
 <translation id="994757059139821576">Suggestions d'articles</translation>
-<translation id="997742718232442409">Ce site Web essaie de télécharger un fichier d'agenda.</translation>
 </translationbundle>

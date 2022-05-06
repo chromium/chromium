@@ -38,7 +38,6 @@
 <translation id="1219674500290482172">Δεν είναι δυνατή η σύνδεση στο διαδίκτυο.</translation>
 <translation id="122699739164161391">Κλείσιμο όλων των καρτελών</translation>
 <translation id="1229222343402087523">Αναζήτηση για ${searchPhrase} στο Chrome</translation>
-<translation id="1231733316453485619">Ενεργοποίηση συγχρονισμού;</translation>
 <translation id="1242044645101871359">Συνδεθείτε ξανά</translation>
 <translation id="1254117744268754948">Επιλογή φακέλου</translation>
 <translation id="1265739287306757398">Μάθετε με ποιον τρόπο</translation>
@@ -972,5 +971,4 @@
 <translation id="988141524645182168">Άλλες συσκευές</translation>
 <translation id="989988560359834682">Επεξεργασία διεύθυνσης</translation>
 <translation id="994757059139821576">Προτάσεις για άρθρα</translation>
-<translation id="997742718232442409">Αυτός ο ιστότοπος προσπαθεί να κατεβάσει ένα αρχείο ημερολογίου.</translation>
 </translationbundle>

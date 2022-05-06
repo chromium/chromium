@@ -1101,6 +1101,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
 <translation id="3978338123949022456">Modo de pesquisa, introduza uma consulta e prima Enter para pesquisar com <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Pássaros</translation>
+<translation id="3985750352229496475">Faça a gestão dos endereços…</translation>
 <translation id="3986705137476756801">Desativar as Legendas instantâneas por agora</translation>
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Separar conjuntos</translation>
@@ -1228,6 +1229,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4305666528087210886">Não foi possível aceder ao seu ficheiro</translation>
 <translation id="4306529830550717874">Pretende guardar o endereço?</translation>
 <translation id="4306812610847412719">área de transferência</translation>
+<translation id="4310070645992025887">Pesquise os seus percursos</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquear (predefinição)</translation>
 <translation id="4314815835985389558">Gerir sincronização</translation>
@@ -2112,6 +2114,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6839929833149231406">Área</translation>
 <translation id="6846340164947227603">Utilizar um número de cartão virtual…</translation>
 <translation id="6852204201400771460">Pretende atualizar a aplicação?</translation>
+<translation id="6857776781123259569">Faça a gestão das palavras-passe…</translation>
 <translation id="686485648936420384">Recursos para o consumidor</translation>
 <translation id="6865412394715372076">Não é possível validar este cartão neste momento.</translation>
 <translation id="6869334554832814367">Empréstimos pessoais</translation>
@@ -2437,6 +2440,7 @@ Detalhes adicionais:
 <translation id="7669271284792375604">Os utilizadores mal intencionados neste site podem tentar enganá-lo para instalar programas que são prejudiciais para a sua experiência de navegação (por exemplo, ao alterar a sua página inicial ou ao mostrar anúncios adicionais em sites que visita).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Ações tomadas com dados sinalizados como confidenciais (1 ação desde o início de sessão). <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />}other{Ações tomadas com dados sinalizados como confidenciais (# ações desde o início de sessão). <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Caixa de correio 6</translation>
+<translation id="7675325315208090829">Faça a gestão dos métodos de pagamento…</translation>
 <translation id="7676643023259824263">Pesquisar texto da área de transferência, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Veja e faça a gestão do histórico de navegação nas definições do Chrome</translation>
 <translation id="7679947978757153706">Basebol</translation>

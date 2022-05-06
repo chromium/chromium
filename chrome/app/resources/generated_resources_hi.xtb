@@ -4093,7 +4093,6 @@
 <translation id="4953808748584563296">डिफ़ॉल्ट नारंगी अवतार</translation>
 <translation id="4955710816792587366">अनलॉक करने के लिए अपना पिन चुनें</translation>
 <translation id="4959262764292427323">पासवर्ड आपके Google खाते में सेव किए जाते हैं ताकि आप किसी भी डिवाइस पर उनका इस्तेमाल कर सकें</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> फ़ाइल से हमलावर आपकी निजी जानकारी चुरा सकते हैं.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">स्‍क्रीन कास्‍ट करें</translation>
 <translation id="4961361269522589229">रेसिपी के आइडिया</translation>
@@ -5918,7 +5917,6 @@
 <translation id="6798578729981748444">आयात करना पूरा करने के लिए, सभी Firefox विंडो बंद करें.</translation>
 <translation id="6798780071646309401">caps lock चालू है</translation>
 <translation id="6798954102094737107">प्‍लग इन: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">इस फ़ाइल से हमलावर आपकी निजी जानकारी चुरा सकते हैं</translation>
 <translation id="6801129617625983991">सामान्य सेटिंग</translation>
 <translation id="6801435275744557998">टचस्क्रीन कैलिब्रेट करें</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6389,7 +6387,6 @@
 <translation id="7269736181983384521">आस-पास शेयर करने की सुविधा और डेटा खर्च</translation>
 <translation id="7272674038937250585">कोई विवरण नहीं दिया गया है</translation>
 <translation id="7273110280511444812">पिछली बार <ph name="DATE" /> को अनुलग्न किया गया</translation>
-<translation id="7273970016743909808">कीऑस्क और साइनेज अपग्रेड का इस्तेमाल करने से, डिवाइस सिर्फ़ किऑस्क और साइनेज मोड पर काम कर सकता है. अगर आपको उपयोगकर्ता को डिवाइस में साइन इन करने के लिए कहना है, तो वापस जाएं और Chrome Enterprise Upgrade की मदद से नाम दर्ज करें.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - पूरा होने में <ph name="TIME" /> बचा</translation>
 <translation id="727952162645687754">डाउनलोड गड़बड़ी</translation>
 <translation id="7280041992884344566">जिस समय Chrome नुकसान पहुंचाने वाला सॉफ़्टवेयर खोज रहा था, तब कोई गड़बड़ी हुई</translation>
@@ -6792,7 +6789,6 @@
 <translation id="7670434942695515800">सबसे अच्छी परफ़ॉर्मेंस के लिए, सबसे नए वर्शन में अपग्रेड करें. अपग्रेड पूरा न होने की स्थिति में, फ़ाइलों का बैक अप लेने का सुझाव दिया जाता है. अपग्रेड की प्रोसेस शुरू होते ही, Linux शट डाउन हो जाएगा. जारी रखने से पहले, खुली हुई फ़ाइलों को सेव कर लें. <ph name="LINK_START" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">सिस्टम शीर्षक बार और बॉर्डर का उपयोग करें</translation>
 <translation id="767127784612208024">रीसेट की पुष्टि करने के लिए छुएं</translation>
-<translation id="767147716926917172">गड़बड़ी की जानकारी और इस्तेमाल से जुड़ा डेटा Google को अपने-आप भेजा जाता है</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> में.</translation>
 <translation id="7674416868315480713">Linux में फ़ॉरवर्ड किए जा रहे सभी पोर्ट बंद करें</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> ऐप्लिकेशन</translation>

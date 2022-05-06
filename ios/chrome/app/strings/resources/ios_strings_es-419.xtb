@@ -38,7 +38,6 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1219674500290482172">No se puede establecer conexión con Internet.</translation>
 <translation id="122699739164161391">Cerrar todas las pestañas</translation>
 <translation id="1229222343402087523">Buscar ${searchPhrase} en Chrome</translation>
-<translation id="1231733316453485619">¿Quieres activar la sincronización?</translation>
 <translation id="1242044645101871359">Volver a acceder</translation>
 <translation id="1254117744268754948">Seleccionar carpeta</translation>
 <translation id="1265739287306757398">Más información</translation>
@@ -971,5 +970,4 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="988141524645182168">Otros dispositivos</translation>
 <translation id="989988560359834682">Modificar dirección</translation>
 <translation id="994757059139821576">Sugerencias de artículos</translation>
-<translation id="997742718232442409">Este sitio web intenta descargar un archivo del calendario.</translation>
 </translationbundle>

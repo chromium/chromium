@@ -131,6 +131,7 @@
 <translation id="1124772482545689468">Utilisateur</translation>
 <translation id="1125550662859510761">Semblable à <ph name="WIDTH" /> x <ph name="HEIGHT" /> (résolution native)</translation>
 <translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions ni les sites Web dangereux. Vous profitez toujours de la protection de navigation sécurisée, lorsqu'elle est offerte, dans d'autres services Google, comme Gmail et la recherche.</translation>
+<translation id="1128090040635299943">Linux est en cours de configuration. Cette opération prendra quelques minutes.</translation>
 <translation id="1128591060186966949">Modifier le moteur de recherche</translation>
 <translation id="1129420403709586868">Affichez les photos et les fichiers multimédias de votre téléphone</translation>
 <translation id="1129850422003387628">Gérer les applications</translation>
@@ -333,6 +334,7 @@
 <translation id="1327794256477341646">Les fonctionnalités qui nécessitent l'accès à votre position ne seront pas accessibles</translation>
 <translation id="1329191040029425999">Veuillez vous assurer que votre appareil est à jour et réessayez</translation>
 <translation id="1330145147221172764">Activer le clavier à l'écran</translation>
+<translation id="1331625853030156663">Pour ouvrir <ph name="APP_NAME" />, activez « Afficher l'écran de verrouillage à l'activation »</translation>
 <translation id="1331977651797684645">C'était moi.</translation>
 <translation id="1333489022424033687">Certaines fonctionnalités de <ph name="ORIGIN" /> risquent de ne pas fonctionner si vous n'effacez pas les données que d'autres sites ont stockées sur votre appareil</translation>
 <translation id="1333965224356556482">Ne pas autoriser les sites à accéder à votre position</translation>
@@ -3333,6 +3335,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="420283545744377356">Désactiver l'écran de veille</translation>
 <translation id="4203065553461038553">Le nom du fichier ou du chemin d'accès est trop long</translation>
 <translation id="4204851595694839599">Comment s'est passée votre expérience de jeu?</translation>
+<translation id="4205157409548006256">Une erreur s'est produite lors de la configuration de Linux.</translation>
 <translation id="4206144641569145248">Extraterrestre</translation>
 <translation id="4206323443866416204">Rapport de commentaire</translation>
 <translation id="4207522141889799150">Modifier les autorisations du site pour <ph name="SITE" /></translation>
@@ -4078,7 +4081,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4953808748584563296">Avatar orange par défaut</translation>
 <translation id="4955710816792587366">Choisir votre NIP</translation>
 <translation id="4959262764292427323">Les mots de passe sont enregistrés dans votre compte Google afin que vous puissiez les utiliser sur n'importe quel appareil</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> pourrait laisser des pirates voler vos renseignements personnels.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Diffuser un écran</translation>
 <translation id="4961361269522589229">idées de recettes</translation>
@@ -5799,6 +5801,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6686665106869989887">Onglet déplacé vers la droite</translation>
 <translation id="6686817083349815241">Enregistrer votre mot de passe</translation>
 <translation id="6687079240787935001">Masquer <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Demande à lire et à modifier <ph name="ORIGIN" /> :</translation>
 <translation id="6689714331348768690">Demandez à <ph name="SUPERVISED_USER_NAME" /> de venir à l'ordinateur. Votre enfant lira quelques phrases sur cet écran pour créer son modèle vocal.
     <ph name="BR" />
     Si <ph name="SUPERVISED_USER_NAME" /> a besoin d'aide pour lire, demandez à votre enfant de répéter après vous. Chuchotez loin du micro pour que l'Assistant apprenne la voix de votre enfant et non la vôtre.</translation>
@@ -5903,7 +5906,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6798578729981748444">Pour terminer l'importation, fermez toutes les fenêtres Firefox.</translation>
 <translation id="6798780071646309401">verrouillage des majuscules activé</translation>
 <translation id="6798954102094737107">Plugiciel : <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Ce fichier pourrait permettre à des pirates de voler vos renseignements personnels</translation>
 <translation id="6801129617625983991">Paramètres généraux</translation>
 <translation id="6801435275744557998">Calibrer l'écran tactile</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6311,6 +6313,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Quitter la page}one{Quitter la page}other{Quitter les pages}}</translation>
 <translation id="7207457272187520234">Envoyer les données d'utilisation et de diagnostic. Actuellement, cet appareil envoie automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. Cela nous permettra d'assurer la stabilité du système et des applications, et d'apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les développeurs Android. Ce paramètre est appliqué par le propriétaire du compte. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé, ces données peuvent être enregistrées dans votre compte Google.</translation>
 <translation id="7207631048330366454">Rechercher dans les applications</translation>
+<translation id="720808544705441386">Impossible d'ouvrir l'application</translation>
 <translation id="7210499381659830293">Imprimantes d'extension</translation>
 <translation id="7211783048245131419">Aucun commutateur n'a été attribué</translation>
 <translation id="7212097698621322584">Entrez votre NIP actuel pour le modifier. Si vous ne connaissez pas votre NIP, vous devrez réinitialiser la clé de sécurité, puis créer un nouveau NIP.</translation>
@@ -6374,7 +6377,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7269736181983384521">Utilisation de données pour le partage à proximité</translation>
 <translation id="7272674038937250585">Aucune description fournie</translation>
 <translation id="7273110280511444812">date de la dernière connexion : <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Vous utiliserez une mise à niveau pour Kiosk et affichage qui permet à l'appareil de fonctionner uniquement en mode kiosk et signage. Si vous souhaitez que les utilisateurs se connectent à l'appareil, veuillez revenir en arrière et vous inscrire en utilisant la mise à niveau de Chrome Enterprise.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % - <ph name="TIME" /> avant le chargement complet</translation>
 <translation id="727952162645687754">Erreur de téléchargement</translation>
 <translation id="7280041992884344566">Une erreur s'est produite lors de la recherche par Google Chrome de logiciels nuisibles</translation>
@@ -6777,7 +6779,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7670434942695515800">Pour une performance optimale, effectuez une mise à niveau vers la dernière version. La sauvegarde de vos fichiers est recommandée au cas où la mise à niveau ne pourrait pas être terminée. Une fois la mise à niveau commencée, Linux s'éteindra. Enregistrez les fichiers ouverts avant de continuer. <ph name="LINK_START" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Utiliser la barre de titre et les bordures de fenêtre du système</translation>
 <translation id="767127784612208024">Touchez pour confirmer la réinitialisation</translation>
-<translation id="767147716926917172">Envoie automatiquement les données de diagnostic et d'utilisation à Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, dans <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Désactiver toutes les redirections de ports dans Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> applications</translation>
@@ -7467,6 +7468,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8324784016256120271">Les sites peuvent utiliser des témoins afin de voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces)</translation>
 <translation id="8325413836429495820">Non autorisés à consulter le contenu de votre presse-papiers</translation>
 <translation id="8326478304147373412">PKCS n° 7, chaîne de certificats</translation>
+<translation id="8327386430364625757">Police mathématique</translation>
 <translation id="8327676037044516220">Autorisations et paramètres de contenu</translation>
 <translation id="8330617762701840933">La liste des sites Web qui s'ouvrent dans un navigateur secondaire.</translation>
 <translation id="8330689128072902965">Les contacts à proximité peuvent partager du contenu avec vous. Cliquez pour modifier.</translation>

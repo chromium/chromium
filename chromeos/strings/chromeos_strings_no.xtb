@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Slå på lyst tema</translation>
 <translation id="2323506179655536734">HOPPET OVER</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Slå på Bluetooth for å finne enheter i nærheten</translation>
 <translation id="2346474577291266260">Utmerket (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463">Fant <ph name="LINK_BEGIN" />ikke-kvalifiserte komponenter<ph name="LINK_END" />. Hvis du velger å bekrefte at disse er installert, må du gjøre det nå.</translation>
@@ -724,7 +725,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8498220429738806196">Trafikktellere</translation>
 <translation id="8503813439785031346">Brukernavn</translation>
 <translation id="8503836310948963452">Bare noen få minutter igjen …</translation>
-<translation id="8521021929829989041">Bruk som personlig enhet</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Det kan hende operatøren din krever dette alternativet for at du skal kunne koble til nettverket deres Kontakt operatøren for mer informasjon.</translation>
 <translation id="8576249514688522074">Ikke initialisert</translation>

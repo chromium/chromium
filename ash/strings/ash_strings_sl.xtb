@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Naprava USB-C (sprednja vrata)</translation>
 <translation id="1013598600051641573">Ločljivost zaslona <ph name="DISPLAY_NAME" /> je spremenjena na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Kliknite »Potrdi«, če želite ohraniti spremembe. Prejšnja nastavitev bo obnovljena čez <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Naprava Bluetooth »<ph name="DEVICE_NAME" />« želi dovoljenje za seznanjanje. V napravi vnesite ta PIN: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Izbran je delni posnetek zaslona</translation>
 <translation id="1024364763893396229">Shranite napravo <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Baterija pisala je skoraj izpraznjena</translation>
 <translation id="1036073649888683237">Če želite upravljati obvestila, odprite nastavitve</translation>
@@ -331,7 +330,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3009178788565917040">Izhod</translation>
 <translation id="3009958530611748826">Izberite mapo za shranjevanje</translation>
 <translation id="301282384882049174">Deli skrbnik</translation>
-<translation id="3017687597151988916">Območje izbire je nastavljeno na okno</translation>
 <translation id="3033545621352269033">Vklopljeno</translation>
 <translation id="3033912566804961911">Združi z namizjem <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Odpri datoteke</translation>
@@ -1050,7 +1048,6 @@ Nova namestitev</translation>
 <translation id="746232733191930409">Način snemanja zaslona</translation>
 <translation id="7466449121337984263">Dotaknite se tipala</translation>
 <translation id="7477793887173910789">Upravljanje glasbe, videoposnetkov in drugega</translation>
-<translation id="7483025031359818980">Območje izbire je nastavljeno na celotni zaslon</translation>
 <translation id="7497767806359279797">Izbira jezika in tipkovnice</translation>
 <translation id="7508690557411636492">Odprto v preteklem mesecu</translation>
 <translation id="7509246181739783082">Preverjanje identitete</translation>

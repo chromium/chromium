@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Dispositivo USB-C (porta frontal)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> alterado para <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Clique em confirmar para manter as alterações. As definições anteriores serão restauradas dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar. Introduza este código PIN nesse dispositivo: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Captura de ecrã parcial selecionada</translation>
 <translation id="1024364763893396229">Guarde o dispositivo <ph name="NAME" /></translation>
 <translation id="1032891413405719768">A pilha da caneta stylus está fraca</translation>
 <translation id="1036073649888683237">Para gerir as notificações, aceda a Definições</translation>
@@ -137,6 +136,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1719094688023114093">As Legendas instantâneas estão ativadas.</translation>
 <translation id="1720011244392820496">Desative o Sync Wi-Fi</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" visível para dispositivos Bluetooth.</translation>
+<translation id="174102739345480129">O marcador está desativado.</translation>
 <translation id="1743570585616704562">Não reconhecida</translation>
 <translation id="1746730358044914197">Os métodos de introdução são configurados pelo gestor.</translation>
 <translation id="1747827819627189109">Teclado no ecrã ativado</translation>
@@ -331,7 +331,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3009178788565917040">Saída</translation>
 <translation id="3009958530611748826">Selecione uma pasta onde guardar</translation>
 <translation id="301282384882049174">Partilhado pelo seu administrador</translation>
-<translation id="3017687597151988916">Área de seleção definida para a janela</translation>
 <translation id="3033545621352269033">Ativada</translation>
 <translation id="3033912566804961911">Combinar com <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Abrir ficheiros</translation>
@@ -566,6 +565,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4379531060876907730">Estas são as suas ferramentas da caneta stylus</translation>
 <translation id="4389184120735010762">Premiu o atalho de teclado da lupa ancorada. Pretende ativá-la?</translation>
 <translation id="439598569299422042">Em pausa, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Não é possível guardar a gravação de ecrã</translation>
 <translation id="4405151984121254935">Este tipo de periférico ligado não é suportado</translation>
 <translation id="4406883609789734330">Legendas instantâneas</translation>
 <translation id="4412944820643904175">A funcionalidade <ph name="FEATURE_NAME" /> está desativada.</translation>
@@ -672,6 +672,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Frase seguinte</translation>
+<translation id="5016558321564993266">Ative/desative o marcador. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">O tempo terminou</translation>
 <translation id="5033299697334913360">Clique em qualquer local para capturar o ecrã inteiro.</translation>
 <translation id="5035236842988137213">O dispositivo <ph name="DEVICE_NAME" /> estabeleceu ligação a um novo telemóvel.</translation>
@@ -701,6 +702,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5222676887888702881">Terminar sessão</translation>
 <translation id="5234764350956374838">Ignorar</translation>
 <translation id="523505283826916779">Definições de acessibilidade</translation>
+<translation id="5245201184978705914">Não é possível gerar a transcrição</translation>
 <translation id="5253783950165989294">Ligado a um dispositivo denominado <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="5260676007519551770">Secretária 4</translation>
 <translation id="5283099933536931082">A app <ph name="APP_ITEM_TITLE" /> solicita a sua atenção.</translation>
@@ -735,6 +737,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5433020815079095860">Entrada de áudio</translation>
 <translation id="544691375626129091">Já foram adicionados a esta sessão todos os utilizadores disponíveis.</translation>
 <translation id="54609108002486618">Geridos</translation>
+<translation id="5460938382730614333">O marcador está ativado.</translation>
 <translation id="5465662442746197494">Precisa de ajuda?</translation>
 <translation id="547979256943495781">Prateleira à direita</translation>
 <translation id="5491186829646618080">Atualizações de firmware disponíveis</translation>
@@ -776,6 +779,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5745612484876805746">A Luz noturna ativa-se automaticamente ao pôr do sol</translation>
 <translation id="5750765938512549687">Bluetooth desativado</translation>
 <translation id="5760866832697883462">Ligue o dispositivo <ph name="NAME" /></translation>
+<translation id="5762420912707163638">Ative/desative o marcador. <ph name="STATE_TEXT" /> Use o trackpad, o ecrã tátil ou a caneta stylus para desenhar no ecrã.</translation>
 <translation id="576341972084747908">Transferir ficheiro <ph name="FILENAME" /> perigoso</translation>
 <translation id="5763928712329149804">O Shelf Party está desativado.</translation>
 <translation id="576453121877257266">A Luz noturna está ativada.</translation>
@@ -851,6 +855,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6166852626429024716">Pesquise no dispositivo, nas apps, nas definições, na Web…</translation>
 <translation id="6179832488876878285">Pode fixar os seus ficheiros importantes aqui. Abra a app Files para começar.</translation>
 <translation id="619279033188484792">Veja as fotos, os conteúdos multimédia e as notificações recentes do telemóvel no dispositivo <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Carregar totalmente agora</translation>
 <translation id="6220928844947387476">Agora, pode gravar-se a si e ao ecrã em simultâneo</translation>
 <translation id="622484624075952240">Para baixo</translation>
 <translation id="6231419273573514727">O desempenho do periférico pode estar limitado</translation>
@@ -1049,7 +1054,6 @@ Nova instalação</translation>
 <translation id="746232733191930409">Modo de gravação de ecrã</translation>
 <translation id="7466449121337984263">Toque no sensor.</translation>
 <translation id="7477793887173910789">Controle a sua música, vídeos e muito mais.</translation>
-<translation id="7483025031359818980">Área de seleção definida para ecrã inteiro</translation>
 <translation id="7497767806359279797">Escolher idioma e teclado</translation>
 <translation id="7508690557411636492">Aberto no mês passado</translation>
 <translation id="7509246181739783082">Valide a sua identidade</translation>
@@ -1186,6 +1190,7 @@ Nova instalação</translation>
 <translation id="826107067893790409">Prima Enter para desbloquear para <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8270450402312105425">{0,plural, =1{Alteração do dispositivo para uma versão anterior dentro de uma hora}other{Alteração do dispositivo para uma versão anterior dentro de # horas}}</translation>
+<translation id="8271580342040932214">A bateria está temporariamente a 80% quando ligada à corrente para prolongar a autonomia da bateria. A bateria vai ficar totalmente carregada à(s) <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Deslize rapidamente para a esquerda com quatro dedos para mudar para o espaço de trabalho anterior.</translation>
 <translation id="828708037801473432">Desativada</translation>
 <translation id="8297006494302853456">Fraca</translation>
@@ -1269,6 +1274,7 @@ Nova instalação</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Definições dos métodos de introdução</translation>
 <translation id="8818320199597151042">A remover o perfil. Aguarde alguns minutos.</translation>
+<translation id="8819728065740986820">O carregamento adaptável está ativado</translation>
 <translation id="8825863694328519386">Deslize rapidamente a partir da esquerda para retroceder.</translation>
 <translation id="8834539327799336565">Atualmente ligados</translation>
 <translation id="8841375032071747811">Botão Anterior</translation>
@@ -1315,6 +1321,7 @@ Nova instalação</translation>
 <translation id="9080132581049224423">Deslize rapidamente para cima para aceder à página inicial</translation>
 <translation id="9080206825613744995">O microfone está a ser utilizado.</translation>
 <translation id="9084606467167974638">Alternar a posição do menu</translation>
+<translation id="9085962983642906571">A bateria é mantida a 80% quando ligada à corrente para prolongar a autonomia da bateria.</translation>
 <translation id="9089416786594320554">Métodos de introd.</translation>
 <translation id="9091626656156419976">Ecrã <ph name="DISPLAY_NAME" /> removido</translation>
 <translation id="9098969848082897657">Silenciar telemóvel</translation>

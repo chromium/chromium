@@ -38,7 +38,6 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1219674500290482172">Impossibile connettersi a Internet.</translation>
 <translation id="122699739164161391">Chiudi tutte le schede</translation>
 <translation id="1229222343402087523">Cerca ${searchPhrase} in Chrome</translation>
-<translation id="1231733316453485619">Attivare la sincronizzazione?</translation>
 <translation id="1242044645101871359">Accedi di nuovo</translation>
 <translation id="1254117744268754948">Scegli cartella</translation>
 <translation id="1265739287306757398">Scopri come</translation>
@@ -972,5 +971,4 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="988141524645182168">Altri dispositivi</translation>
 <translation id="989988560359834682">Modifica indirizzo</translation>
 <translation id="994757059139821576">Suggerimenti di articoli</translation>
-<translation id="997742718232442409">Il sito web sta provando a scaricare un file del calendario.</translation>
 </translationbundle>

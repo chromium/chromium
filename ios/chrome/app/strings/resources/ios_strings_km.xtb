@@ -38,7 +38,6 @@
 <translation id="1219674500290482172">មិនអាចភ្ជាប់ទៅអ៊ីនធឺណិតទេ។</translation>
 <translation id="122699739164161391">បិទផ្ទាំងទាំងអស់</translation>
 <translation id="1229222343402087523">ស្វែងរក ${searchPhrase} នៅក្នុង Chrome</translation>
-<translation id="1231733316453485619">បើក​សមកាលកម្ម?</translation>
 <translation id="1242044645101871359">ចូលគណនីម្តងទៀត</translation>
 <translation id="1254117744268754948">ជ្រើសរើសថតឯកសារ</translation>
 <translation id="1265739287306757398">ស្វែងយល់​អំពី​របៀប</translation>
@@ -451,6 +450,7 @@
 <translation id="4840495572919996524">ចំណាំ​ ប្រវត្តិ ​ពាក្យសម្ងាត់ និងអ្វីៗ​ជាច្រើន​ទៀត​របស់អ្នកនឹងមិន​ធ្វើ​សម​កាល​កម្មទៅក្នុងគណនី​ Google របស់អ្នកទៀតទេ។</translation>
 <translation id="4844899002472726590">មើល និងកែប្រធានបទ​ដែលអ្នកចាប់អារម្មណ៍</translation>
 <translation id="4854345657858711387">កំណត់​លេខ​កូដ​សម្ងាត់</translation>
+<translation id="4858786880085262208">នៅពេលដែលអាច សូមប្ដូរ​ទៅ HTTPS។ គេហទំព័រដែលមានសុវត្ថិភាពប្រហែលជាបង្កប់ខ្លឹមសារដែលគ្មានសុវត្ថិភាព។</translation>
 <translation id="4860895144060829044">ហៅ</translation>
 <translation id="4872323082491632254">ពិនិត្យពាក្យសម្ងាត់</translation>
 <translation id="4881695831933465202">បើក</translation>
@@ -800,6 +800,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7781069478569868053">ទំព័រផ្ទាំងថ្មី</translation>
 <translation id="7781829728241885113">ម្សិលមិញ</translation>
 <translation id="778855399387580014">ចាប់ផ្ដើមការស្វែងរកនៅក្នុងផ្ទាំង Chrome ថ្មី។</translation>
+<translation id="7790892308048519147">ព្យាយាមប្រើការតភ្ជាប់ដែលមានសុវត្ថិភាព</translation>
 <translation id="7791543448312431591">បន្ថែម</translation>
 <translation id="7807060072011926525">បានផ្ដល់ដោយ Google</translation>
 <translation id="7839985698273989086">ទំព័រ​គ្មានអ៊ីនធឺណិត</translation>
@@ -971,5 +972,4 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="988141524645182168">ឧបករណ៍ផ្សេងទៀត</translation>
 <translation id="989988560359834682">កែអាសយដ្ឋាន</translation>
 <translation id="994757059139821576">ការណែនាំ​អត្ថបទ</translation>
-<translation id="997742718232442409">គេហទំព័រនេះ​កំពុងព្យាយាម​ទាញយក​ឯកសារ​ប្រតិទិន។</translation>
 </translationbundle>

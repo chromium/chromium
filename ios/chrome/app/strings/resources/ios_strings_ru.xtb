@@ -38,7 +38,6 @@
 <translation id="1219674500290482172">Не удалось подключиться к Интернету.</translation>
 <translation id="122699739164161391">Закрыть все вкладки</translation>
 <translation id="1229222343402087523">Искать "${searchPhrase}" в Chrome</translation>
-<translation id="1231733316453485619">Включить синхронизацию?</translation>
 <translation id="1242044645101871359">Повторите вход</translation>
 <translation id="1254117744268754948">Выбор папки</translation>
 <translation id="1265739287306757398">Подробнее</translation>
@@ -972,5 +971,4 @@
 <translation id="988141524645182168">Другие устройства</translation>
 <translation id="989988560359834682">Изменение адреса</translation>
 <translation id="994757059139821576">Рекомендуемые статьи</translation>
-<translation id="997742718232442409">Этот сайт пытается скачать файл календаря.</translation>
 </translationbundle>

@@ -38,7 +38,6 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="1219674500290482172">Nu se poate realiza conexiunea la internet.</translation>
 <translation id="122699739164161391">Închide toate filele</translation>
 <translation id="1229222343402087523">Caută ${searchPhrase} în Chrome</translation>
-<translation id="1231733316453485619">Activezi sincronizarea?</translation>
 <translation id="1242044645101871359">Reconectează-te</translation>
 <translation id="1254117744268754948">Alegeți dosarul</translation>
 <translation id="1265739287306757398">Află cum</translation>
@@ -972,5 +971,4 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="988141524645182168">Alte dispozitive</translation>
 <translation id="989988560359834682">Editați adresa</translation>
 <translation id="994757059139821576">Sugestii de articole</translation>
-<translation id="997742718232442409">Site-ul încearcă să descarce un fișier pentru calendar.</translation>
 </translationbundle>

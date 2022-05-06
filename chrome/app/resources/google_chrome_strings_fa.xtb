@@ -13,7 +13,6 @@
 <translation id="1154147086299354128">‏&amp;باز کردن در Chrome</translation>
 <translation id="1178374936842835197">‏اگر تنظیمی در این صفحه نشان داده نمی‌شود، در <ph name="LINK_BEGIN" />
         تنظیمات ChromeOS Flex<ph name="LINK_END" /> به‌دنبالش بگردید</translation>
-<translation id="1182414570724401860">‏Chrome توصیه می‌کند این فایل را بارگیری یا باز نکنید</translation>
 <translation id="1278833599417554002">‏راه‌اندازی مجدد برای به‌روزرسانی Chrome</translation>
 <translation id="1302523850133262269">‏لطفاً صبر کنید تا Chrome جدیدترین به‌روزرسانی‌های سیستم را نصب کند.</translation>
 <translation id="1335640173511558774">‏<ph name="MANAGER" /> لازم می‌داند که پیش‌از استفاده از این دستگاه، «شرایط خدمات» زیر را بخوانید و آن‌ها را بپذیرید. این شرایط باعث بسط داده شدن، تغییر یافتن،‌ یا محدود شدن «شرایط Google ChromeOS Flex» نمی‌شود.</translation>
@@ -284,6 +283,7 @@
 اجازه‌هایی که قبلاً به وب‌سایت‌ها و برنامه‌ها داده‌اید ممکن است در این حساب اعمال شود. می‌توانید «حساب‌های Google» خود را در بخش <ph name="SETTINGS_LINK_BEGIN" />تنظیمات<ph name="SETTINGS_LINK_END" /> مدیریت کنید.</translation>
 <translation id="7398801000654795464">‏شما بعنوان <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم Chrome شدید. لطفاً برای ورود به سیستم مجدد از همان حساب استفاده کنید.</translation>
 <translation id="7410958280246779049">‏Chrome این فایل را مسدود کرد زیرا خطرناک است</translation>
+<translation id="7426611252293106642">‏Google Chrome ممکن است درست کار نکند زیرا این توزیع Linux دیگر از آن پشتیبانی نمی‌کند.</translation>
 <translation id="7481213027396403996">‏دریافت قوی‌ترین امنیت Chrome</translation>
 <translation id="7486227612705979895">‏Chrome برای ارائه پیشنهاد در نوار نشانی، به Drive شما دسترسی خواهد داشت</translation>
 <translation id="7535429826459677826">‏Google Chrome نسخه Dev</translation>

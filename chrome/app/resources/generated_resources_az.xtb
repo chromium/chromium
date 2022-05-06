@@ -4077,7 +4077,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4953808748584563296">Defolt narıncı avatar</translation>
 <translation id="4955710816792587366">PIN seçin</translation>
 <translation id="4959262764292427323">Parollar Google Hesabınızda yadda saxlanılıb, beləliklə, onları istənilən cihazda istifadə edə bilərsiniz</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> hücumçulara şəxsi məlumatlarınızı oğurlamaq imkanı vermiş ola bilər.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Cast ekran</translation>
 <translation id="4961361269522589229">resept ideyaları</translation>
@@ -5899,7 +5898,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6798578729981748444">İmportu tamamlamaq üçün bütün Firefox pəncərələrini bağlayın</translation>
 <translation id="6798780071646309401">böyük hərflər aktivdir</translation>
 <translation id="6798954102094737107">Plagin: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Bu fayl hücumçulara şəxsi məlumatlarınızı oğurlamaq imkanı vermiş ola bilər.</translation>
 <translation id="6801129617625983991">Ümumi ayarlar</translation>
 <translation id="6801435275744557998">Sensor ekranı kalibrləyin</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6371,7 +6369,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7269736181983384521">Yaxınlıqda Paylaşım data istifadəsi</translation>
 <translation id="7272674038937250585">Heç bir təsvir verilməyib</translation>
 <translation id="7273110280511444812">son əlavə <ph name="DATE" /> tarixində olub.</translation>
-<translation id="7273970016743909808">Cihazın yalnız köşk və ya işarə rejimində işləməsinə imkan verən Köşk və İşarə Güncəlləməsindən istifadə edəcəksiniz. İstifadəçilərin cihaza daxil olmasını istəyirsinizsə, geri qayıdın və Chrome Enterpirse Upgrade ilə qeydiyyatdan keçin.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - tam dolması üçün qalan vaxt <ph name="TIME" /></translation>
 <translation id="727952162645687754">Xətanı endirin</translation>
 <translation id="7280041992884344566">Chrome zərərli proqramları axtararkən xəta baş verdi</translation>
@@ -6774,7 +6771,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7670434942695515800">Ən yaxşı performans üçün ən son versiyaya təkmilləşdirin. Təkmilləşdirmə tamamlanmadığı hallara qarşı faylların yedəklənməsi tövsiyə olunur. Təkmilləşdirmə başlayan kimi Linux söndürüləcək. Davam etməzdən əvvəl açıq faylları yadda saxlayın. <ph name="LINK_START" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Sistem başlıq paneli və hədlər istifadə edin</translation>
 <translation id="767127784612208024">Sıfırlamanı təsdiq etmək üçün toxunun</translation>
-<translation id="767147716926917172">Diaqnostika və istifadə datasını avtomatik Google'a göndərir</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> ünvanında.</translation>
 <translation id="7674416868315480713">Linux'da yönləndirilən bütün portları deaktiv edin</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> tətbiq</translation>

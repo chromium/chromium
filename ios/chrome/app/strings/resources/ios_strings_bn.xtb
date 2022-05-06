@@ -38,7 +38,6 @@
 <translation id="1219674500290482172">ইন্টারনেটের সাথে সংযোগ করতে অক্ষম৷</translation>
 <translation id="122699739164161391">সব ট্যাব বন্ধ করুন</translation>
 <translation id="1229222343402087523">Chrome-এ ${searchPhrase} সার্চ করুন</translation>
-<translation id="1231733316453485619">সিঙ্ক চালু করবেন?</translation>
 <translation id="1242044645101871359">আবার সাইন-ইন করুন</translation>
 <translation id="1254117744268754948">ফোল্ডার বেছে নিন</translation>
 <translation id="1265739287306757398">কীভাবে করবেন জানুন</translation>
@@ -227,6 +226,7 @@
 <translation id="2898963176829412617">নতুন ফোল্ডার...</translation>
 <translation id="2916171785467530738">সার্চ এবং ইউআরএলগুলি নিজে থেকে সম্পূর্ণ হতে দিন</translation>
 <translation id="291754862089661335">এই ফ্রেমের মধ্যে QR কোড বা বারকোড স্থাপন করুন</translation>
+<translation id="2920866371965792875">এই সাইট থেকে আপডেট দেখতে, এখানে এটি ফলো করুন।</translation>
 <translation id="2921219216347069551">পৃষ্ঠা শেয়ার করা যায়নি</translation>
 <translation id="2923448633003185837">পেস্ট করে শুরু করুন</translation>
 <translation id="292639812446257861">অপঠিত হিসেবে চিহ্নিত করুন</translation>
@@ -451,6 +451,7 @@
 <translation id="4840495572919996524">আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং আরও অনেক কিছু আপনার Google অ্যাকাউন্টের সাথে আর সিঙ্ক করা হবে না।</translation>
 <translation id="4844899002472726590">আপনার পছন্দের বিষয়গুলি দেখুন ও এডিট করুন</translation>
 <translation id="4854345657858711387">একটি পাসকোড সেট করুন</translation>
+<translation id="4858786880085262208">সম্ভব হলে HTTPS-এ আপগ্রেড করুন। নিরাপদ সাইট এমন কন্টেন্ট এম্বেড করতে পারে যা নিরাপদ নয়।</translation>
 <translation id="4860895144060829044">কল করুন</translation>
 <translation id="4872323082491632254">পাসওয়ার্ড চেক করা</translation>
 <translation id="4881695831933465202">খুলুন</translation>
@@ -801,6 +802,7 @@
 <translation id="7781069478569868053">নতুন ট্যাব পৃষ্ঠা</translation>
 <translation id="7781829728241885113">গতকাল</translation>
 <translation id="778855399387580014">নতুন Chrome ট্যাবে সার্চ করা শুরু করুন।</translation>
+<translation id="7790892308048519147">নিরাপদ কানেকশন ব্যবহার করার চেষ্টা করুন</translation>
 <translation id="7791543448312431591">জুড়ুন</translation>
 <translation id="7807060072011926525">Google-এর প্রদান করা ফিড</translation>
 <translation id="7839985698273989086">অফলাইন পৃষ্ঠা</translation>
@@ -972,5 +974,4 @@
 <translation id="988141524645182168">অন্যান্য ডিভাইস</translation>
 <translation id="989988560359834682">ঠিকানা সম্পাদনা করুন</translation>
 <translation id="994757059139821576">নিবন্ধ সম্পর্কিত প্রস্তাবনা</translation>
-<translation id="997742718232442409">এই ওয়েবসাইটটি একটি ক্যালেন্ডার ফাইল ডাউনলোড করার চেষ্টা করছে।</translation>
 </translationbundle>

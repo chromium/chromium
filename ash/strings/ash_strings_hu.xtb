@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">C típusú USB-vel kompatibilis eszköz (elülső port)</translation>
 <translation id="1013598600051641573">A(z) <ph name="DISPLAY_NAME" /> felbontása a következőre módosult: <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). A módosítás megtartásához kattintson a Megerősítés gombra. A beállítás <ph name="TIMEOUT_SECONDS" /> múlva visszaáll a korábbi értékre.</translation>
 <translation id="1013923882670373915">A(z) „<ph name="DEVICE_NAME" />” Bluetooth-eszköz engedélyt kér a párosításra. Kérjük, adja meg ezt a PIN kódot azon az eszközön: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Részleges képernyőkép kiválasztva</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> eszközének mentése</translation>
 <translation id="1032891413405719768">Az érintőceruza töltöttségi szintje alacsony</translation>
 <translation id="1036073649888683237">Az értesítések kezeléséhez nyissa meg a Beállítások menüt</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">Kimenet</translation>
 <translation id="3009958530611748826">Válassza ki a mentés helyét</translation>
 <translation id="301282384882049174">Adminisztrátor által megosztva</translation>
-<translation id="3017687597151988916">A kijelölési terület ablakra állítva</translation>
 <translation id="3033545621352269033">Be</translation>
 <translation id="3033912566804961911">Összevonás a következővel: <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Fájlok megnyitása</translation>
@@ -1051,7 +1049,6 @@ Frissen telepítve</translation>
 <translation id="746232733191930409">Képernyőfelvétel mód</translation>
 <translation id="7466449121337984263">Érintse meg az érzékelőt</translation>
 <translation id="7477793887173910789">Zeneszámok, videók és további tartalmak vezérlése</translation>
-<translation id="7483025031359818980">Kijelölési terület teljes képernyős nézetre állítva</translation>
 <translation id="7497767806359279797">Nyelv és billentyűzet kiválasztása</translation>
 <translation id="7508690557411636492">A múlt hónapban nyitotta meg</translation>
 <translation id="7509246181739783082">Személyazonosság igazolása</translation>

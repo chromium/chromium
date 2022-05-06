@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Dispositivo USB-C (porta frontal)</translation>
 <translation id="1013598600051641573">A resolução de <ph name="DISPLAY_NAME" /> mudou para <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Clique em "Confirmar" para manter as modificações. As configurações anteriores serão restauradas em <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" deseja permissão para realizar o pareamento. Digite este código PIN no dispositivo: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Captura de tela parcial selecionada</translation>
 <translation id="1024364763893396229">Salve seu dispositivo <ph name="NAME" /></translation>
 <translation id="1032891413405719768">A bateria da stylus está fraca</translation>
 <translation id="1036073649888683237">Para gerenciar as notificações, acesse as Configurações</translation>
@@ -331,7 +330,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3009178788565917040">Saída</translation>
 <translation id="3009958530611748826">Selecione em que pasta quer salvar</translation>
 <translation id="301282384882049174">Compartilhado pelo administrador</translation>
-<translation id="3017687597151988916">Área de seleção definida como janela</translation>
 <translation id="3033545621352269033">Ativada</translation>
 <translation id="3033912566804961911">Combinar com <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Abrir arquivos</translation>
@@ -1050,7 +1048,6 @@ Nova instalação</translation>
 <translation id="746232733191930409">Modo de gravação de tela</translation>
 <translation id="7466449121337984263">Toque no sensor</translation>
 <translation id="7477793887173910789">Controle suas músicas, seus vídeos e muito mais</translation>
-<translation id="7483025031359818980">Área de seleção definida como tela cheia</translation>
 <translation id="7497767806359279797">Escolher idioma e teclado</translation>
 <translation id="7508690557411636492">Aberto no último mês</translation>
 <translation id="7509246181739783082">Verificar sua identidade</translation>

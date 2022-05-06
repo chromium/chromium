@@ -972,6 +972,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1892341345406963517">Hi <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Other languages</translation>
 <translation id="1895658205118569222">Shutdown</translation>
+<translation id="1897120393475391208">Use strong password</translation>
 <translation id="1900305421498694955">Apps from Google Play may require full file system access to read and write files on external storage devices. Files and folders created on the device are visible to anyone who uses the external drive. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Select &amp;all</translation>
 <translation id="1901396183631570154">Chrome couldn't save these passwords in your Google Account. You can still save them on this device.</translation>
@@ -4097,7 +4098,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4953808748584563296">Default orange avatar</translation>
 <translation id="4955710816792587366">Choose your PIN</translation>
 <translation id="4959262764292427323">Passwords are saved in your Google Account so that you can use them on any device</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> could let attackers steal your personal information.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Cast screen</translation>
 <translation id="4961361269522589229">recipe ideas</translation>
@@ -5921,7 +5921,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6798578729981748444">To finish importing, close all Firefox windows.</translation>
 <translation id="6798780071646309401">caps lock on</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">This file may let attackers steal your personal information</translation>
 <translation id="6801129617625983991">General settings</translation>
 <translation id="6801435275744557998">Calibrate touchscreen</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6393,7 +6392,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7269736181983384521">Nearby Share data usage</translation>
 <translation id="7272674038937250585">No description provided</translation>
 <translation id="7273110280511444812">last attached on <ph name="DATE" /></translation>
-<translation id="7273970016743909808">You will use a kiosk and signage upgrade which only allows the device to run in kiosk or signage mode. If you would like users to sign in to the device, please go back and enrol using Chrome Enterprise upgrade.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> until full</translation>
 <translation id="727952162645687754">Download error</translation>
 <translation id="7280041992884344566">An error occurred while Chrome was searching for harmful software</translation>
@@ -6561,6 +6559,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7444970023873202833">Explore more of your memories in Google Photos</translation>
 <translation id="7444983668544353857">Disable <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Automatically install apps</translation>
+<translation id="7449381494541372002">starting up…</translation>
 <translation id="7449752890690775568">Remove password?</translation>
 <translation id="7450761244949417357">Opening in <ph name="ALTERNATIVE_BROWSER_NAME" /> now</translation>
 <translation id="7452166281927983300">Dismissed warnings (<ph name="MUTED_PASSWORDS" />)</translation>
@@ -6796,7 +6795,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7670434942695515800">For the best performance, upgrade to the latest version. Backing up your files is recommended in case the upgrade can’t be completed. Once the upgrade begins, Linux will shut down. Save open files before continuing. <ph name="LINK_START" />Learn more<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Use system title bar and borders</translation>
 <translation id="767127784612208024">Touch to confirm reset</translation>
-<translation id="767147716926917172">Automatically sends diagnostic and usage data to Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, in <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Deactivate all ports being forwarded in Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> apps</translation>

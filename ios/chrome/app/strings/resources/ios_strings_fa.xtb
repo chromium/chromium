@@ -38,7 +38,6 @@
 <translation id="1219674500290482172">اتصال به اینترنت امکان‌پذیر نیست.</translation>
 <translation id="122699739164161391">بستن همه برگه‌ها</translation>
 <translation id="1229222343402087523">‏جستجوی ${searchPhrase} در Chrome</translation>
-<translation id="1231733316453485619">همگام‌سازی روشن شود؟</translation>
 <translation id="1242044645101871359">دوباره به سیستم وارد شوید</translation>
 <translation id="1254117744268754948">انتخاب پوشه</translation>
 <translation id="1265739287306757398">با نحوه انجام کار آشنا شوید</translation>
@@ -227,6 +226,7 @@
 <translation id="2898963176829412617">پوشه جدید…</translation>
 <translation id="2916171785467530738">تکمیل خودکار جستجوها و نشانی‌های وب</translation>
 <translation id="291754862089661335">رمزینه پاسخ‌سریع یا بارکد را در این قاب قرار دهید</translation>
+<translation id="2920866371965792875">برای دیدن به‌روزرسانی‌های این سایت، آن را در اینجا دنبال کنید.</translation>
 <translation id="2921219216347069551">امکان اشتراک‌گذاری صفحه وجود ندارد</translation>
 <translation id="2923448633003185837">جای‌گذاری و رفتن</translation>
 <translation id="292639812446257861">علامت‌گذاری به‌‌عنوان خوانده‌نشده</translation>
@@ -971,5 +971,4 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="988141524645182168">دستگاه‌های دیگر</translation>
 <translation id="989988560359834682">ویرایش آدرس</translation>
 <translation id="994757059139821576">مقالات پیشنهادی</translation>
-<translation id="997742718232442409">وب‌سایت سعی دارد فایل تقویم بارگیری کنید.</translation>
 </translationbundle>

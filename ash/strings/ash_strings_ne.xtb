@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C यन्त्र (अगाडि पोर्ट)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> को रिजोल्युसन परिवर्तन गरी <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> हर्ज) बनाइयो। यो परिवर्तन सुरक्षित गर्न पुष्टि गर्नुहोस् नामक बटनमा क्लिक गर्नुहोस्। अबको <ph name="TIMEOUT_SECONDS" /> मा यी सेटिङ परिवर्तन गरी पहिलेको जस्तै बनाइने छ।</translation>
 <translation id="1013923882670373915">ब्लुटुथ यन्त्र "<ph name="DEVICE_NAME" />" जोडा मिलाउने अनुमति चाहन्छ। कृपया त्यस यन्त्रमा यो पिन कोड प्रविष्टि गर्नुहोस्: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">स्रोतका रूपमा स्क्रिनको केही भाग चयन गरियो</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> सेभ गर्नुहोस्</translation>
 <translation id="1032891413405719768">स्टाइलसको ब्याट्री कम छ</translation>
 <translation id="1036073649888683237">सूचनाहरू व्यवस्थापन गर्न सेटिङमा जानुहोस्</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">निर्गत</translation>
 <translation id="3009958530611748826">सुरक्षित गर्न कुनै फोल्डर चयन गर्नुहोस्</translation>
 <translation id="301282384882049174">तपाईंका एड्मिनले सेयर गरेका टेम्पलेट</translation>
-<translation id="3017687597151988916">स्रोतका रूपमा विन्डो चयन गरिएको छ</translation>
 <translation id="3033545621352269033">अन</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> मा संयोजन गर्नुहोस्</translation>
 <translation id="3036649622769666520">खुल्ला फाइलहरू</translation>
@@ -1050,7 +1048,6 @@
 <translation id="746232733191930409">स्क्रिन रेकर्डिङ मोड</translation>
 <translation id="7466449121337984263">कृपया फिंगरप्रिन्ट सेन्सरमा छुनुहोस्</translation>
 <translation id="7477793887173910789">आफ्नो सङ्गीत, भिडियो र थप कुराहरू नियन्त्रण गर्नुहोस्</translation>
-<translation id="7483025031359818980">स्रोतका रुपमा 'फुल स्क्रिन' चयन गरिएको छ</translation>
 <translation id="7497767806359279797">भाषा तथा किबोर्ड छनौट गर्नुहोस्</translation>
 <translation id="7508690557411636492">गत महिना खोलिएको</translation>
 <translation id="7509246181739783082">आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>

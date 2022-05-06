@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">อุปกรณ์ USB-C (พอร์ตด้านหน้า)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> เปลี่ยนเป็น <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) แล้ว คลิก "ยืนยัน" เพื่อเก็บการเปลี่ยนแปลงไว้ ระบบจะคืนการตั้งค่าก่อนหน้าใน <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="1013923882670373915">อุปกรณ์บลูทูธ "<ph name="DEVICE_NAME" />" ต้องการสิทธิ์ในการจับคู่ โปรดป้อนรหัส PIN นี้บนอุปกรณ์นั้น: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">เลือกภาพหน้าจอบางส่วนแล้ว</translation>
 <translation id="1024364763893396229">บันทึก <ph name="NAME" /> ของคุณ</translation>
 <translation id="1032891413405719768">แบตเตอรี่สไตลัสเหลือน้อย</translation>
 <translation id="1036073649888683237">หากต้องการจัดการการแจ้งเตือน ให้ไปที่การตั้งค่า</translation>
@@ -134,6 +133,7 @@
 <translation id="1719094688023114093">คำบรรยายสดเปิดอยู่</translation>
 <translation id="1720011244392820496">เปิดการซิงค์ Wi-Fi</translation>
 <translation id="1736898441010944794">อุปกรณ์บลูทูธจะมองเห็น "<ph name="NAME" />" ได้</translation>
+<translation id="174102739345480129">ปิดตัวทำเครื่องหมายอยู่</translation>
 <translation id="1743570585616704562">ไม่รู้จัก</translation>
 <translation id="1746730358044914197">ผู้ดูแลระบบเป็นคนกำหนดค่าวิธีการป้อนข้อมูล</translation>
 <translation id="1747827819627189109">เปิดใช้แป้นพิมพ์บนหน้าจออยู่</translation>
@@ -328,7 +328,6 @@
 <translation id="3009178788565917040">เอาต์พุต</translation>
 <translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
 <translation id="301282384882049174">แชร์โดยผู้ดูแลระบบ</translation>
-<translation id="3017687597151988916">กำหนดพื้นที่สำหรับการเลือกเป็นหน้าต่าง</translation>
 <translation id="3033545621352269033">เปิด</translation>
 <translation id="3033912566804961911">รวมกับ <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">เปิดไฟล์</translation>
@@ -563,6 +562,7 @@
 <translation id="4379531060876907730">นี่คือเครื่องมือสไตลัส</translation>
 <translation id="4389184120735010762">คุณกดแป้นพิมพ์ลัดสำหรับแว่นขยายหน้าจอบางส่วน จะเปิดแว่นขยายไหม</translation>
 <translation id="439598569299422042">หยุดชั่วคราว <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">บันทึก Screencast ไม่ได้</translation>
 <translation id="4405151984121254935">ไม่รองรับอุปกรณ์ต่อพ่วงที่เชื่อมต่ออยู่</translation>
 <translation id="4406883609789734330">คำบรรยายสด</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ปิดอยู่</translation>
@@ -669,6 +669,7 @@
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">ประโยคถัดไป</translation>
+<translation id="5016558321564993266">เปิด/ปิดตัวทำเครื่องหมาย <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">หมดเวลา</translation>
 <translation id="5033299697334913360">คลิกที่ใดก็ได้เพื่อจับภาพแบบเต็มหน้าจอ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> เชื่อมต่อโทรศัพท์เครื่องใหม่แล้ว</translation>
@@ -698,6 +699,7 @@
 <translation id="5222676887888702881">ออกจากระบบ</translation>
 <translation id="5234764350956374838">ปิด</translation>
 <translation id="523505283826916779">การตั้งค่าสำหรับการเข้าถึง</translation>
+<translation id="5245201184978705914">สร้างข้อความถอดเสียงไม่ได้</translation>
 <translation id="5253783950165989294">เชื่อมต่ออยู่กับอุปกรณ์ชื่อ <ph name="DEVICE_NAME" />, แบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">เดสก์ที่ 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ส่งคำขอให้คุณดำเนินการ</translation>
@@ -732,6 +734,7 @@
 <translation id="5433020815079095860">อินพุตเสียง</translation>
 <translation id="544691375626129091">เพิ่มผู้ใช้ที่มีทั้งหมดลงในเซสชันนี้แล้ว</translation>
 <translation id="54609108002486618">มีการจัดการ</translation>
+<translation id="5460938382730614333">เปิดตัวทำเครื่องหมายอยู่</translation>
 <translation id="5465662442746197494">หากต้องการความช่วยเหลือ</translation>
 <translation id="547979256943495781">ชั้นวางอยู่ทางขวา</translation>
 <translation id="5491186829646618080">มีการอัปเดตเฟิร์มแวร์พร้อมใช้งาน</translation>
@@ -773,6 +776,7 @@
 <translation id="5745612484876805746">แสงตอนกลางคืนจะเปิดโดยอัตโนมัติเมื่อพระอาทิตย์ตก</translation>
 <translation id="5750765938512549687">ปิดบลูทูธแล้ว</translation>
 <translation id="5760866832697883462">เชื่อมต่อ <ph name="NAME" /> ของคุณ</translation>
+<translation id="5762420912707163638">เปิด/ปิดตัวทำเครื่องหมาย <ph name="STATE_TEXT" /> ใช้แทร็กแพด หน้าจอสัมผัส หรือสไตลัสเพื่อวาดบนหน้าจอ</translation>
 <translation id="576341972084747908">ดาวน์โหลด <ph name="FILENAME" /> ที่เป็นอันตราย</translation>
 <translation id="5763928712329149804">Shelf Party ปิดอยู่</translation>
 <translation id="576453121877257266">แสงตอนกลางคืนเปิดอยู่</translation>
@@ -1047,7 +1051,6 @@
 <translation id="746232733191930409">โหมดบันทึกหน้าจอ</translation>
 <translation id="7466449121337984263">โปรดแตะเซ็นเซอร์</translation>
 <translation id="7477793887173910789">ควบคุมเพลง วิดีโอ และอื่นๆ</translation>
-<translation id="7483025031359818980">กำหนดพื้นที่สำหรับการเลือกเป็นเต็มหน้าจอ</translation>
 <translation id="7497767806359279797">เลือกภาษาและแป้นพิมพ์</translation>
 <translation id="7508690557411636492">เปิดในเดือนที่ผ่านมา</translation>
 <translation id="7509246181739783082">ยืนยันตัวตนของคุณ</translation>

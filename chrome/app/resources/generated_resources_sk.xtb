@@ -4083,7 +4083,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4953808748584563296">Predvolený oranžový avatar</translation>
 <translation id="4955710816792587366">Vyberte si PIN</translation>
 <translation id="4959262764292427323">Heslá sa ukladajú do účtu Google, takže ich môžete používať v ľubovoľnom zariadení</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> môže útočníkom umožniť ukradnúť vaše osobné údaje.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Prenášanie obrazovky</translation>
 <translation id="4961361269522589229">nápady na recepty</translation>
@@ -5911,7 +5910,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6798578729981748444">Importovanie dokončíte zavretím všetkých okien prehliadača Firefox.</translation>
 <translation id="6798780071646309401">Funkcia Caps Lock je zapnutá</translation>
 <translation id="6798954102094737107">Doplnok: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Tento súbor môže útočníkom umožniť ukradnúť vaše osobné údaje</translation>
 <translation id="6801129617625983991">Všeobecné nastavenia</translation>
 <translation id="6801435275744557998">Kalibrovať dotykovú obrazovku</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6383,7 +6381,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7269736181983384521">Spotreba dát pri Zdieľaní nablízku</translation>
 <translation id="7272674038937250585">Popis nie je k dispozícii</translation>
 <translation id="7273110280511444812">naposledy pripojené dňa <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Budete používať invovanú verziu verejného terminálu a značenia, takže zariadenie bude môcť byť spustené iba v režime verejného terminálu alebo značenia. Ak chcete, aby sa používatelia mohli prihlasovať do zriadenia, vráťte sa späť a zaregistrujte ho pomocou služby Chrome Enterprise Upgrade.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % – <ph name="TIME" /> do úplného nabitia</translation>
 <translation id="727952162645687754">Chyba sťahovania</translation>
 <translation id="7280041992884344566">Pri hľadaní škodlivého softvéru sa v Chrome vyskytla chyba</translation>
@@ -6786,7 +6783,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7670434942695515800">Najlepší výkon získate, keď inovujete na najnovšiu verziu. Zálohovanie súborov sa odporúča v prípade, že inováciu nie je možné dokončiť. Keď sa začne, Linux sa vypne. Než budete pokračovať, uložte otvorené súbory. <ph name="LINK_START" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Použiť záhlavie a orámovanie okna systému</translation>
 <translation id="767127784612208024">Resetovanie potvrďte stlačením</translation>
-<translation id="767147716926917172">Automaticky odosielať Googlu diagnostiky a údaje o používaní</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> na stránke <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Deaktivovať všetky porty presmerované v systéme Linux</translation>
 <translation id="7674537509496907005">Aplikácie: <ph name="APP_COUNT" /></translation>

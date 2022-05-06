@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">تفعيل المظهر الفاتح</translation>
 <translation id="2323506179655536734">تم تخطّي الاختبار.</translation>
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> نقطة لكل بوصة (DPI)</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">تفعيل البلوتوث لاكتشاف الأجهزة القريبة</translation>
 <translation id="2346474577291266260">إشارة ممتازة (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463">تم رصد <ph name="LINK_BEGIN" />مكونات غير معتمَدة<ph name="LINK_END" />. إذا أردت التأكد من تثبيت المكوّنات، يُرجى إجراء ذلك الآن.</translation>
@@ -722,7 +723,6 @@
 <translation id="8498220429738806196">عدّادات حركة بيانات الشبكة</translation>
 <translation id="8503813439785031346">اسم المستخدم</translation>
 <translation id="8503836310948963452">يُرجى الانتظار بضع دقائق فقط…</translation>
-<translation id="8521021929829989041">الاستخدام كجهاز شخصي</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">قد يتطلّب مشغّل شبكة الجوّال تفعيل هذا الخيار للاتصال بالشبكة التابعة له. يُرجى التواصل مع مشغّل شبكة الجوّال للاطّلاع على التفاصيل.</translation>
 <translation id="8576249514688522074">غير مهيأة</translation>

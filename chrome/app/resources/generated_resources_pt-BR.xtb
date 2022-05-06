@@ -1015,6 +1015,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1942600407708803723">Desligar quando a capa for fechada</translation>
 <translation id="1944528062465413897">Código de pareamento Bluetooth:</translation>
 <translation id="1944921356641260203">Atualização encontrada</translation>
+<translation id="1947136734041527201">Permite fazer login em sites usando a conta que você tem com um serviço de identidade</translation>
 <translation id="1949584741547056205">Respostas rápidas</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1954597385941141174">Os sites podem pedir permissão para se conectar a dispositivos USB</translation>
@@ -2415,6 +2416,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="32939749466444286">O contêiner Linux não foi iniciado. Tente novamente.</translation>
 <translation id="3294437725009624529">Visitante</translation>
 <translation id="3294686910656423119">Estatísticas de uso e relatórios de erros</translation>
+<translation id="3297105622164376095">Pode mostrar solicitações de login de terceiros</translation>
 <translation id="3297536526040732495">Vincula temporariamente esses dados à sua Conta do Google quando ela está conectada para proteger você nos apps do Google</translation>
 <translation id="329838636886466101">Reparo</translation>
 <translation id="3298789223962368867">URL inválido digitado.</translation>
@@ -3672,6 +3674,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="452750746583162491">Revisar dados sincronizados</translation>
 <translation id="4527929807707405172">Ativar a rolagem reversa. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Sugestão de tradução</translation>
+<translation id="4529455689802245339">A Legenda instantânea do Chrome pode não funcionar</translation>
 <translation id="4530494379350999373">Origem</translation>
 <translation id="4531924570968473143">Quem você quer adicionar a este <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532625150642446981">"<ph name="USB_DEVICE_NAME" />" está em uso. Reatribuir o dispositivo enquanto ele está sendo usado pode causar erros. Você quer mesmo continuar?</translation>
@@ -3870,6 +3873,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="471880041731876836">Você não tem permissão para visitar este site</translation>
 <translation id="4722735765955348426">Senha para <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856">O <ph name="APP_NAME" /> está compartilhando sua tela.</translation>
+<translation id="4722989931633062466">Não pode mostrar solicitações de login de terceiros</translation>
 <translation id="4723140812774948886">Trocar com o próximo</translation>
 <translation id="4724450788351008910">Afiliação alterada</translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -4099,7 +4103,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4953808748584563296">Avatar laranja padrão</translation>
 <translation id="4955710816792587366">Escolher o PIN</translation>
 <translation id="4959262764292427323">As senhas são salvas na sua Conta do Google para que você possa usá-las em qualquer dispositivo</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> pode permitir que invasores roubem suas informações pessoais.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />: <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Transmitir tela</translation>
 <translation id="4961361269522589229">ideias de receitas</translation>
@@ -4842,6 +4845,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5711010025974903573">Registros do serviço</translation>
 <translation id="5711983031544731014">Não foi possível realizar o desbloqueio. Insira sua senha.</translation>
 <translation id="5712153969432126546">Às vezes, os sites podem publicar PDFs, como documentos, contratos, e formulários</translation>
+<translation id="571222594670061844">Sites podem mostrar solicitações de login de serviços de identidade</translation>
 <translation id="5713158217420111469">Conectado a <ph name="DEVICE" /></translation>
 <translation id="5715711091495208045">Agente do plug-in: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Mecanismos de pesquisa padrão</translation>
@@ -5000,6 +5004,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5876851302954717356">Nova guia à direita</translation>
 <translation id="5877064549588274448">Canal alterado. Reinicie o dispositivo para aplicar as alterações.</translation>
 <translation id="5877584842898320529">A impressora selecionada não está disponível ou não foi instalada corretamente. <ph name="BR" /> Verifique a impressora ou selecione outra.</translation>
+<translation id="5878945009165002849">Bloquear solicitações de login de serviços de identidade</translation>
 <translation id="5882919346125742463">Redes conhecidas</translation>
 <translation id="5883356647197510494">Bloqueados automaticamente: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Esta guia está conectada a um dispositivo USB.</translation>
@@ -5637,6 +5642,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6513247462497316522">Caso você não esteja conectado a outra rede, o Google Chrome utilizará dados móveis.</translation>
 <translation id="6514010653036109809">Dispositivo disponível:</translation>
 <translation id="6514565641373682518">Esta página desativou o cursor do mouse.</translation>
+<translation id="6517709704288360414">Seu dispositivo pode deixar de funcionar corretamente e você pode enfrentar problemas de segurança e desempenho. Desativar atualizações também pode afetar seu direito de recorrer a ações judiciais se tiver algum problema.</translation>
 <translation id="6518014396551869914">&amp;Copiar imagem</translation>
 <translation id="6518133107902771759">Confirmar</translation>
 <translation id="651942933739530207">Quer que o <ph name="APP_NAME" /> compartilhe sua tela e a saída de áudio?</translation>
@@ -5926,7 +5932,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6798578729981748444">Para terminar a importação, feche todas as janelas do Firefox.</translation>
 <translation id="6798780071646309401">tecla caps lock ativada</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Esse arquivo pode permitir que invasores roubem suas informações pessoais</translation>
 <translation id="6801129617625983991">Configurações gerais</translation>
 <translation id="6801435275744557998">Calibrar touchscreen</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6398,7 +6403,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7269736181983384521">Uso de dados do Compartilhar por proximidade</translation>
 <translation id="7272674038937250585">Nenhuma descrição fornecida</translation>
 <translation id="7273110280511444812">Conectado pela última vez em <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Você vai usar um Upgrade de Quiosque e Sinalização, que permite que o dispositivo funcione apenas em um desses dois modos. Se você quer que os usuários façam login no dispositivo, volte e o registre usando o Upgrade do Chrome Enterprise.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> até completar a carga</translation>
 <translation id="727952162645687754">Erro no download</translation>
 <translation id="7280041992884344566">Ocorreu um erro enquanto o Chrome estava procurando softwares nocivos</translation>
@@ -6801,7 +6805,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7670434942695515800">Para ter o melhor desempenho, faça upgrade para a versão mais recente. O backup dos arquivos é recomendado quando não é possível concluir o upgrade. O Linux será desligado quando o upgrade começar. Salve os arquivos abertos antes de continuar. <ph name="LINK_START" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Usar barra de título e bordas do sistema</translation>
 <translation id="767127784612208024">Toque para confirmar a redefinição</translation>
-<translation id="767147716926917172">Envia automaticamente dados de uso e diagnóstico ao Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, neste site: <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Desativar todas as portas que estão sendo encaminhadas no Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> apps</translation>

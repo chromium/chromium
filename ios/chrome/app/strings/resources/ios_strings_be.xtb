@@ -38,7 +38,6 @@
 <translation id="1219674500290482172">Не ўдалося падключыцца да інтэрнэту.</translation>
 <translation id="122699739164161391">Закрыць усе ўкладкі</translation>
 <translation id="1229222343402087523">Шукаць у Chrome: ${searchPhrase}</translation>
-<translation id="1231733316453485619">Уключыць сінхранізацыю?</translation>
 <translation id="1242044645101871359">Увайдзіце яшчэ раз</translation>
 <translation id="1254117744268754948">Выбраць папку</translation>
 <translation id="1265739287306757398">Даведацца больш</translation>
@@ -971,5 +970,4 @@
 <translation id="988141524645182168">Іншыя прылады</translation>
 <translation id="989988560359834682">Рэдагаваць адрас</translation>
 <translation id="994757059139821576">Прапановы артыкулаў</translation>
-<translation id="997742718232442409">Гэты вэб-сайт спрабуе спампаваць файл календара.</translation>
 </translationbundle>

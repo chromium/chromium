@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Уређај са USB прикључком типа C (предњи порт)</translation>
 <translation id="1013598600051641573">Резолуција приказа <ph name="DISPLAY_NAME" /> је промењена у <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Кликните на Потврди да бисте задржали промене. Претходна подешавања ће бити враћена за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth уређај „<ph name="DEVICE_NAME" />“ жели дозволу за упаривање. Унесите овај PIN кôд на том уређају: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Делимичан снимак екрана је изабран</translation>
 <translation id="1024364763893396229">Сачувајте уређај <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Батерија писаљке је скоро празна</translation>
 <translation id="1036073649888683237">Да бисте управљали обавештењима, идите у подешавања</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">Излаз</translation>
 <translation id="3009958530611748826">Изаберите фолдер за чување</translation>
 <translation id="301282384882049174">Дели администратор</translation>
-<translation id="3017687597151988916">Област за избор је подешена на прозор</translation>
 <translation id="3033545621352269033">Укључено</translation>
 <translation id="3033912566804961911">Комбинујте са: <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Отварање датотека</translation>
@@ -1050,7 +1048,6 @@
 <translation id="746232733191930409">Режим снимања екрана</translation>
 <translation id="7466449121337984263">Додирните сензор</translation>
 <translation id="7477793887173910789">Контролишите музику, видео снимке и друго</translation>
-<translation id="7483025031359818980">Област за избор је подешена на цео екран</translation>
 <translation id="7497767806359279797">Одаберите језик и тастатуру</translation>
 <translation id="7508690557411636492">Отварано протеклог месеца</translation>
 <translation id="7509246181739783082">Верификујте идентитет</translation>

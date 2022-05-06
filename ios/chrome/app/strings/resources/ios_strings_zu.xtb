@@ -38,7 +38,6 @@ Injini yakho yokusesha iyi-<ph name="DSE_NAME" />. Bona imiyalelo yabo yokusula 
 <translation id="1219674500290482172">Ayikwazi ukuxhuma ku-inthanethi</translation>
 <translation id="122699739164161391">Vala wonke amathebhu</translation>
 <translation id="1229222343402087523">Sesha i-${searchPhrase} ku-Chrome</translation>
-<translation id="1231733316453485619">vula ukuvumelanisa?</translation>
 <translation id="1242044645101871359">Phinda Ungene Ngemvume</translation>
 <translation id="1254117744268754948">Khetha ifolda</translation>
 <translation id="1265739287306757398">Funda ukuthi kanjani</translation>
@@ -227,6 +226,7 @@ Amasayithi awakwazi ukusebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula
 <translation id="2898963176829412617">Ifolda entsha…</translation>
 <translation id="2916171785467530738">Qedela ngokuzenzakalela usesho nama-URL</translation>
 <translation id="291754862089661335">Misa ikhodi ye-QR noma amabhakhodi kulo zimele</translation>
+<translation id="2920866371965792875">Ukuze ubone izibuyekezo ezivela kuleli sayithi, lilandele lapha.</translation>
 <translation id="2921219216347069551">Ayikwazi ukwabelana ngekhasi</translation>
 <translation id="2923448633003185837">Namathisela uphinde uhambe</translation>
 <translation id="292639812446257861">Maka njengokungafundiwe</translation>
@@ -971,5 +971,4 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="988141524645182168">Amanye amadivayisi</translation>
 <translation id="989988560359834682">Hlela ikheli</translation>
 <translation id="994757059139821576">Iziphakamiso ze-athikili</translation>
-<translation id="997742718232442409">Le webhusayithi izama ukudawuniloda ifayela lekhalenda.</translation>
 </translationbundle>

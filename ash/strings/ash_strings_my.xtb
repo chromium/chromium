@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C ကိရိယာ (အရှေ့ပိုင်း ပို့တ်)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> ကို <ph name="RESOLUTION" /> သို့ ပြောင်းလိုက်သည် (<ph name="REFRESH_RATE" /> Hz)။ အပြောင်းအလဲများသိမ်းရန် 'အတည်ပြုရန်' ကို နှိပ်ပါ။ ယခင်ဆက်တင်များကို <ph name="TIMEOUT_SECONDS" /> အကြာတွင် ပြန်ထားရှိပါမည်။</translation>
 <translation id="1013923882670373915">ဘလူးတုသ် ကိရိယာ"<ph name="DEVICE_NAME" />"က ချိတ်တွဲရန် ခွင့်ပြုချက် ရယူလိုသည်။ ကျေးဇူးပြုပြီး ထိုကိရိယာ ထဲသို့ ဒီPIN ကုဒ်ကို ထည့်ပေးပါ: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">တစ်စိတ်တစ်ပိုင်း ဖန်သားပြင်ဓာတ်ပုံကို ရွေးထားသည်</translation>
 <translation id="1024364763893396229">သင့် <ph name="NAME" /> ကို သိမ်းရန်</translation>
 <translation id="1032891413405719768">စတိုင်လပ်စ် ဓာတ်ခဲ အားနည်းနေသည်</translation>
 <translation id="1036073649888683237">အကြောင်းကြားချက်များ စီမံရန် ‘ဆက်တင်များ’ သို့သွားပါ</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">အထွက်</translation>
 <translation id="3009958530611748826">သိမ်းရန် ဖိုင်တွဲကို ရွေးပါ</translation>
 <translation id="301282384882049174">သင်၏စီမံခန့်ခွဲသူက မျှဝေထားသည်</translation>
-<translation id="3017687597151988916">ရွေးချယ်ရန်နေရာအဖြစ် ဝင်းဒိုးကို သတ်မှတ်လိုက်သည်</translation>
 <translation id="3033545621352269033">ဖွင့်ရန်</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> ဖြင့် ပေါင်းစည်းနိုင်သည်</translation>
 <translation id="3036649622769666520">ဖိုင်များ ဖွင့်ရန်</translation>
@@ -1050,7 +1048,6 @@
 <translation id="746232733191930409">ဖန်သားပြင်ရိုက်ကူးခြင်းမုဒ်</translation>
 <translation id="7466449121337984263">အာရုံခံကိရိယာကို ထိပါ</translation>
 <translation id="7477793887173910789">သင့်သီချင်း၊ ဗီဒီယိုနှင့် အခြားအရာများ ထိန်းချုပ်ရန်</translation>
-<translation id="7483025031359818980">ရွေးချယ်ရန်နေရာအဖြစ် ဖန်သားပြင်အပြည့်ကို သတ်မှတ်လိုက်သည်</translation>
 <translation id="7497767806359279797">ဘာသာစကားနှင့် ကီးဘုတ်ကို ရွေးရန်</translation>
 <translation id="7508690557411636492">ယခင်လက ဖွင့်ထားသည်</translation>
 <translation id="7509246181739783082">သင်၏အထောက်အထားကို အတည်ပြုပါ</translation>

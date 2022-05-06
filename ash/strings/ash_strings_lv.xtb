@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C ierīce (priekšējā pieslēgvieta)</translation>
 <translation id="1013598600051641573">Displeja “<ph name="DISPLAY_NAME" />” izšķirtspēja tika mainīta uz <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Lai saglabātu izmaiņas, noklikšķiniet uz “Apstiprināt”. Iepriekšējie iestatījumi tiks atjaunoti pēc šāda laika: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth ierīce “<ph name="DEVICE_NAME" />” vēlas saņemt atļauju, lai izveidotu savienojumu pārī. Lūdzu, ierīcē ievadiet šo PIN: <ph name="PINCODE" />.</translation>
-<translation id="1024261588257374085">Atlasīta daļēja ekrānuzņēmuma izveide</translation>
 <translation id="1024364763893396229">Ierīces (<ph name="NAME" />) saglabāšana</translation>
 <translation id="1032891413405719768">Skārienekrāna pildspalvas akumulatora līmenis ir zems</translation>
 <translation id="1036073649888683237">Lai pārvaldītu paziņojumus, pārejiet uz lietotni Iestatījumi.</translation>
@@ -331,7 +330,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3009178788565917040">Izvade</translation>
 <translation id="3009958530611748826">Atlasiet mapi, kurā saglabāt failus</translation>
 <translation id="301282384882049174">Kopīgoja jūsu administrators</translation>
-<translation id="3017687597151988916">Kā atlases apgabals ir iestatīts logs</translation>
 <translation id="3033545621352269033">Ieslēgts</translation>
 <translation id="3033912566804961911">Apvienot ar darbvietu <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Atvērt failus</translation>
@@ -851,6 +849,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6166852626429024716">Varat meklēt ierīcē, lietotnēs, iestatījumos, tīmeklī…</translation>
 <translation id="6179832488876878285">Šeit varat piespraust svarīgos failus. Lai sāktu, atveriet lietotni Faili.</translation>
 <translation id="619279033188484792">Skatiet tālruņa jaunākos fotoattēlus, multivides saturu un paziņojumus savā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
+<translation id="619335566042889110">Pilnībā uzlādēt</translation>
 <translation id="6220928844947387476">Tagad varat ierakstīt gan savu video, gan savu ekrānu vienlaikus.</translation>
 <translation id="622484624075952240">Lejup</translation>
 <translation id="6231419273573514727">Perifēro ierīču veiktspēja var būt ierobežota</translation>
@@ -1049,7 +1048,6 @@ Jauna instalācija</translation>
 <translation id="746232733191930409">Ekrāna ierakstīšanas režīms</translation>
 <translation id="7466449121337984263">Lūdzu, pieskarieties sensoram.</translation>
 <translation id="7477793887173910789">Pārvaldiet savu mūziku, videoklipus un citu saturu</translation>
-<translation id="7483025031359818980">Kā atlases apgabals ir iestatīts viss ekrāns</translation>
 <translation id="7497767806359279797">Izvēlēties valodu un tastatūru</translation>
 <translation id="7508690557411636492">Atvērts pagājušajā mēnesī</translation>
 <translation id="7509246181739783082">Identitātes apstiprināšana</translation>
@@ -1186,6 +1184,7 @@ Jauna instalācija</translation>
 <translation id="826107067893790409">Lai atbloķētu ar kontu <ph name="USER_EMAIL_ADDRESS" />, nospiediet taustiņu Enter</translation>
 <translation id="8261506727792406068">Dzēst</translation>
 <translation id="8270450402312105425">{0,plural, =1{Atjaunojiet ierīcē iepriekšējo versiju pēc vienas stundas}zero{Atjaunojiet ierīcē iepriekšējo versiju pēc # stundām}one{Atjaunojiet ierīcē iepriekšējo versiju pēc # stundas}other{Atjaunojiet ierīcē iepriekšējo versiju pēc # stundām}}</translation>
+<translation id="8271580342040932214">Lai paildzinātu akumulatora darbību, pagaidām tas tiks uzlādēts līdz 80%, kamēr ir pievienots strāvas avotam. Akumulators tiks pilnībā uzlādēts līdz plkst. <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Lai pārslēgtos uz iepriekšējo darbvietu, ar četriem pirkstiem velciet pa kreisi</translation>
 <translation id="828708037801473432">Izslēgts</translation>
 <translation id="8297006494302853456">Vājš</translation>
@@ -1269,6 +1268,7 @@ Jauna instalācija</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Ievades metožu iestatījumi</translation>
 <translation id="8818320199597151042">Notiek profila noņemšana. Uzgaidiet dažas minūtes.</translation>
+<translation id="8819728065740986820">Adaptīvā uzlāde ir ieslēgta</translation>
 <translation id="8825863694328519386">Lai atgrieztos, velciet no kreisās malas.</translation>
 <translation id="8834539327799336565">Ierīces, ar kurām pašlaik izveidots savienojums</translation>
 <translation id="8841375032071747811">Poga Atpakaļ</translation>
@@ -1315,6 +1315,7 @@ Jauna instalācija</translation>
 <translation id="9080132581049224423">Velciet augšup, lai pārietu uz sākuma ekrānu.</translation>
 <translation id="9080206825613744995">Tiek izmantots mikrofons.</translation>
 <translation id="9084606467167974638">Pārslēgt izvēlnes pozīciju</translation>
+<translation id="9085962983642906571">Lai paildzinātu akumulatora darbību, tas tiks uzlādēts līdz 80%, kamēr ir pievienots strāvas avotam.</translation>
 <translation id="9089416786594320554">Ievades metodes</translation>
 <translation id="9091626656156419976">Displejs <ph name="DISPLAY_NAME" /> tika noņemts.</translation>
 <translation id="9098969848082897657">Izslēgt tālruņa skaņu</translation>

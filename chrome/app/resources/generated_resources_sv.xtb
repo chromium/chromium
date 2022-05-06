@@ -133,6 +133,7 @@
 <translation id="1124772482545689468">Användare</translation>
 <translation id="1125550662859510761">Ser ut som <ph name="WIDTH" /> × <ph name="HEIGHT" /> (fast)</translation>
 <translation id="1126809382673880764">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Där funktionen är tillgänglig får du fortfarande skydd med Säker webbsökning i andra tjänster från Google, till exempel Gmail och Sök.</translation>
+<translation id="1128090040635299943">Linux konfigureras för närvarande. Konfigureringen tar några minuter.</translation>
 <translation id="1128591060186966949">Redigera sökmotor</translation>
 <translation id="1129420403709586868">Visa de senaste fotona och mediefilerna från telefonen</translation>
 <translation id="1129850422003387628">Hantera appar</translation>
@@ -334,6 +335,7 @@
 <translation id="1327794256477341646">Funktioner där din plats behövs slutar fungera</translation>
 <translation id="1329191040029425999">Kontrollera att enheten är uppdaterad och försök igen</translation>
 <translation id="1330145147221172764">Aktivera skärmtangentbordet</translation>
+<translation id="1331625853030156663">Om du vill öppna <ph name="APP_NAME" /> aktiverar du Visa låsskärm efter viloläge</translation>
 <translation id="1331977651797684645">Det var jag.</translation>
 <translation id="1333489022424033687">Vissa funktioner på <ph name="ORIGIN" /> kanske inte fungerar förrän du rensar data som andra webbplatser har lagrat på enheten</translation>
 <translation id="1333965224356556482">Tillåt inte att webbplatser ser din plats</translation>
@@ -3346,6 +3348,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="420283545744377356">Inaktivera skärmsläckare</translation>
 <translation id="4203065553461038553">Filens namn och/eller sökväg är för långa</translation>
 <translation id="4204851595694839599">Hur tyckte du att det gick att spela?</translation>
+<translation id="4205157409548006256">Ett fel uppstod när Linux skulle konfigureras.</translation>
 <translation id="4206144641569145248">Utomjording</translation>
 <translation id="4206323443866416204">Feedbackrapport</translation>
 <translation id="4207522141889799150">Redigera behörigheter för webbplatsen <ph name="SITE" /></translation>
@@ -4092,7 +4095,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4953808748584563296">Orange standardavatar</translation>
 <translation id="4955710816792587366">Välj en pinkod</translation>
 <translation id="4959262764292427323">Lösenorden sparas i Google-kontot så att du kan använda dem på vilken enhet som helst</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> kan göra att angripare stjäl dina personliga uppgifter.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Casta skärmen</translation>
 <translation id="4961361269522589229">receptförslag</translation>
@@ -5811,6 +5813,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6686665106869989887">Fliken flyttades åt höger</translation>
 <translation id="6686817083349815241">Spara lösenordet</translation>
 <translation id="6687079240787935001">Dölj <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Begär att få läsa och ändra <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Be <ph name="SUPERVISED_USER_NAME" /> att komma till datorn. Röstmodellen skapas genom att barnet läser upp några fraser på skärmen.
     <ph name="BR" />
     Om <ph name="SUPERVISED_USER_NAME" /> behöver hjälp med att läsa låter du honom elle henne upprepa det du säger. Vänd dig bort från mikrofonen och viska så att assistenten lär sig barnets röst i stället för din.</translation>
@@ -5915,7 +5918,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6798578729981748444">Stäng alla fönster i Firefox så att importen kan slutföras.</translation>
 <translation id="6798780071646309401">caps lock på</translation>
 <translation id="6798954102094737107">Pluginprogram: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Den här filen kan göra att angripare stjäl dina personliga uppgifter</translation>
 <translation id="6801129617625983991">Allmänna inställningar</translation>
 <translation id="6801435275744557998">Kalibrera pekskärmen</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6323,6 +6325,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Lämna sidan}other{Lämna sidorna}}</translation>
 <translation id="7207457272187520234">Skicka diagnostik- och användningsdata. Den här enheten skickar för närvarande diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera. Viss samlad data används även till att förbättra appar från Google och Googles partner, till exempel Android-utvecklare. Ägaren har gjort denna inställning obligatorisk. Om ytterligare webb- och appaktivitet har aktiverats kan denna data sparas i Google-kontot.</translation>
 <translation id="7207631048330366454">Sök efter appar</translation>
+<translation id="720808544705441386">Det gick inte att öppna appen</translation>
 <translation id="7210499381659830293">Tilläggsskrivare</translation>
 <translation id="7211783048245131419">Ingen brytare har tilldelats ännu</translation>
 <translation id="7212097698621322584">Ange den nuvarande pinkoden om du vill ändra den. Om du inte kan pinkoden måste du återställa säkerhetsnyckeln och sedan ställa in en ny pinkod.</translation>
@@ -6386,7 +6389,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7269736181983384521">Dataanvändning för Närdelning</translation>
 <translation id="7272674038937250585">Ingen beskrivning har angetts</translation>
 <translation id="7273110280511444812">senast ansluten den <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Du kommer att använda en Kiosk &amp; Signage Upgrade-licens. Den tillåter att enheten körs i kiosk- eller skyltningsläge. Om du vill att användare ska kunna logga in på enheten går du tillbaka och registrerar dig för Chrome Enterprise Upgrade</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % – <ph name="TIME" /> tills batteriet är fulladdat</translation>
 <translation id="727952162645687754">Nedladdningsfel</translation>
 <translation id="7280041992884344566">Ett fel uppstod vid sökningen efter skadlig programvara med Chrome</translation>
@@ -6789,7 +6791,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7670434942695515800">Uppgradera till den senaste versionen så att det fungerar så bra som möjligt. Vi rekommenderar att du säkerhetskopierar filer ifall det inte skulle gå att slutföra uppgraderingen. Linux avslutas när uppgraderingen börjar. Spara alla öppna filer innan du fortsätter. <ph name="LINK_START" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Använd systemets inställningar för namnlist och ramar</translation>
 <translation id="767127784612208024">Tryck för att bekräfta återställningen</translation>
-<translation id="767147716926917172">Diagnostik- och användningsdata skickas automatiskt till Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> på <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Inaktivera all portvidarebefordran i Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> appar</translation>
@@ -7480,6 +7481,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8324784016256120271">Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookies och till exempel anpassa annonser</translation>
 <translation id="8325413836429495820">Får inte se urklippet</translation>
 <translation id="8326478304147373412">PKCS #7, certifikatkedja</translation>
+<translation id="8327386430364625757">Matematiskt teckensnitt</translation>
 <translation id="8327676037044516220">Behörigheter och innehållsinställningar</translation>
 <translation id="8330617762701840933">Listan med webbplatser som omdirigerar till alternativa webbläsare.</translation>
 <translation id="8330689128072902965">Kontakter i närheten kan dela med dig. Klicka för att ändra.</translation>

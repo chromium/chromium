@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Urządzenie USB-C (przedni port)</translation>
 <translation id="1013598600051641573">Rozdzielczość ekranu <ph name="DISPLAY_NAME" /> została zmieniona na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Kliknij „Potwierdź”, by zachować zmiany. Poprzednie ustawienia zostaną przywrócone za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Wpisz na nim ten kod PIN: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Wybrano zrzut części ekranu</translation>
 <translation id="1024364763893396229">Zapisz urządzenie <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Niski poziom baterii rysika</translation>
 <translation id="1036073649888683237">Aby zarządzać powiadomieniami, otwórz Ustawienia</translation>
@@ -331,7 +330,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3009178788565917040">Urządzenie wyjściowe</translation>
 <translation id="3009958530611748826">Wybierz folder zapisu</translation>
 <translation id="301282384882049174">Udostępnia administrator</translation>
-<translation id="3017687597151988916">Jako obszar ustawiono okno</translation>
 <translation id="3033545621352269033">Włączono</translation>
 <translation id="3033912566804961911">Połącz z: <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Otwórz pliki</translation>
@@ -851,6 +849,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6166852626429024716">Przeszukaj urządzenie, aplikacje, ustawienia, internet…</translation>
 <translation id="6179832488876878285">Tutaj możesz przypiąć ważne pliki. Aby rozpocząć, otwórz aplikację Pliki.</translation>
 <translation id="619279033188484792">Wyświetlaj najnowsze zdjęcia, pliki multimedialne i powiadomienia z telefonu na urządzeniu <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Naładuj do pełna teraz</translation>
 <translation id="6220928844947387476">Teraz możesz jednocześnie nagrywać siebie i swój ekran</translation>
 <translation id="622484624075952240">W dół</translation>
 <translation id="6231419273573514727">Wydajność urządzeń peryferyjnych może być ograniczona</translation>
@@ -1048,7 +1047,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="746232733191930409">Tryb nagrywania ekranu</translation>
 <translation id="7466449121337984263">Dotknij czytnika</translation>
 <translation id="7477793887173910789">Steruj filmami, muzyką i innymi multimediami</translation>
-<translation id="7483025031359818980">Jako obszar ustawiono cały ekran</translation>
 <translation id="7497767806359279797">Wybierz język i klawiaturę</translation>
 <translation id="7508690557411636492">Otwierane w zeszłym miesiącu</translation>
 <translation id="7509246181739783082">Weryfikacja tożsamości</translation>
@@ -1185,6 +1183,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="826107067893790409">Naciśnij Enter, by odblokować dla: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="8270450402312105425">{0,plural, =1{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu 1 godziny}few{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godzin}many{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godzin}other{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godziny}}</translation>
+<translation id="8271580342040932214">Urządzenie jest podłączone, a bateria tymczasowo jest naładowana do 80%, aby wydłużyć jej żywotność. Bateria zostanie naładowana do pełna o <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Aby przełączyć się na poprzednie biurko, przesuń 4 palcami w lewo</translation>
 <translation id="828708037801473432">Wyłączono</translation>
 <translation id="8297006494302853456">Słaby</translation>
@@ -1268,6 +1267,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Ustawienia metod wprowadzania</translation>
 <translation id="8818320199597151042">Usuwam profil. Odczekaj kilka minut.</translation>
+<translation id="8819728065740986820">Włączono ładowanie adaptacyjne</translation>
 <translation id="8825863694328519386">Aby wrócić, przesuń palcem od lewej strony</translation>
 <translation id="8834539327799336565">Obecnie połączone</translation>
 <translation id="8841375032071747811">Przycisk Wstecz</translation>
@@ -1314,6 +1314,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="9080132581049224423">Aby przejść na stronę główną, przesuń w górę</translation>
 <translation id="9080206825613744995">Mikrofon jest używany.</translation>
 <translation id="9084606467167974638">Zmień położenie menu</translation>
+<translation id="9085962983642906571">Urządzenie jest podłączone, a bateria jest naładowana do 80%, aby wydłużyć jej żywotność.</translation>
 <translation id="9089416786594320554">Wprowadzanie tekstu</translation>
 <translation id="9091626656156419976">Wyświetlacz <ph name="DISPLAY_NAME" /> został usunięty</translation>
 <translation id="9098969848082897657">Wycisz telefon</translation>

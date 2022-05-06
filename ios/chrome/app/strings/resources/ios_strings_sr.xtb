@@ -38,7 +38,6 @@
 <translation id="1219674500290482172">Повезивање са интернетом није могуће.</translation>
 <translation id="122699739164161391">Затвори све картице</translation>
 <translation id="1229222343402087523">Претражите фразу ${searchPhrase} у Chrome-у</translation>
-<translation id="1231733316453485619">Желите ли да укључите синхронизацију?</translation>
 <translation id="1242044645101871359">Пријавите се поново</translation>
 <translation id="1254117744268754948">Избор директоријума</translation>
 <translation id="1265739287306757398">Сазнајте како</translation>
@@ -974,5 +973,4 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="988141524645182168">Други уређаји</translation>
 <translation id="989988560359834682">Измена адресе</translation>
 <translation id="994757059139821576">Предлози чланака</translation>
-<translation id="997742718232442409">Овај веб-сајт покушава да преузме фајл календара.</translation>
 </translationbundle>

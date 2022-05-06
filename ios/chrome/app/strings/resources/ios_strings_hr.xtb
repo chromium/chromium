@@ -38,7 +38,6 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="1219674500290482172">Povezivanje s internetom nije moguće.</translation>
 <translation id="122699739164161391">Zatvori sve kartice</translation>
 <translation id="1229222343402087523">Pretraži ${searchPhrase} u Chromeu</translation>
-<translation id="1231733316453485619">Želite li uključiti sinkronizaciju?</translation>
 <translation id="1242044645101871359">Prijavite se ponovo</translation>
 <translation id="1254117744268754948">Odabir mape</translation>
 <translation id="1265739287306757398">Saznajte kako</translation>
@@ -972,5 +971,4 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="988141524645182168">Ostali uređaji</translation>
 <translation id="989988560359834682">Uređivanje adrese</translation>
 <translation id="994757059139821576">Predloženi članci</translation>
-<translation id="997742718232442409">Web-lokacija pokušava preuzeti datoteku kalendara.</translation>
 </translationbundle>

@@ -4101,7 +4101,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4953808748584563296">Демейки ток сары аватар</translation>
 <translation id="4955710816792587366">PIN кодуңузду тандаңыз</translation>
 <translation id="4959262764292427323">Бардык түзмөктөрүңүздө колдонуу үчүн сырсөздөр Google аккаунтуңузда сакталат</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> чабуулчуларга жеке маалыматыңызды уурдаганда уруксат бериши мүмкүн.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Экранды тышкы экранга чыгаруу</translation>
 <translation id="4961361269522589229">Рецепттерди</translation>
@@ -5928,7 +5927,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6798578729981748444">Импорттоону бүтүрүү үчүн бардык Firefox терезелерин жабыңыз.</translation>
 <translation id="6798780071646309401">Caps Lock күйүк</translation>
 <translation id="6798954102094737107">Плагин: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Бул файл чабуулчуларга жеке маалыматыңызды уурдаганда уруксат бериши мүмкүн</translation>
 <translation id="6801129617625983991">Жалпы жөндөөлөр</translation>
 <translation id="6801435275744557998">Сенсордук экранды калибрлөө</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6400,7 +6398,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7269736181983384521">Nearby Share функциясында дайын-даректердин өткөрүлүшү</translation>
 <translation id="7272674038937250585">Эч кандай сүрөттөө берилген эмес</translation>
 <translation id="7273110280511444812">акыркы жолу <ph name="DATE" /> тиркелген</translation>
-<translation id="7273970016743909808">Түзмөккө киоск же белгилөөчү түзмөк режиминде гана иштөөгө уруксат берүү үчүн Киоск же белгилөөчү түзмөк жаңыртуусу колдонулат. Колдонуучуларды түзмөккө киргизүү үчүн артка кайтып, Chrome Enterprise Upgrade'ге катталыңыз.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – толгуча <ph name="TIME" /> калды</translation>
 <translation id="727952162645687754">Жүктөп алуу катасы</translation>
 <translation id="7280041992884344566">Chrome зыянкеч программаны издеп жатканда ката кетти</translation>
@@ -6803,7 +6800,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7670434942695515800">Майнаптуулугун арттыруу үчүн акыркы версиясын жүктөп алыңыз. Бул жаңыртуу аягына чыкпай калса, файлдардын камдык көчүрмөсүн сактоо сунушталат. Жаңыртылып баштаганда Linux өчүрүлөт. Улантуудан мурда ачылып турган файлдарды сактаңыз. <ph name="LINK_START" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Системанын аталышынын тилкесин жана чектерди колдонуу</translation>
 <translation id="767127784612208024">Баштапкы абалга келтирүүнү ырастоо үчүн, басып коюңуз</translation>
-<translation id="767147716926917172">Мүчүлүштүктөрдү аныктоо жана колдонуу статистикасын Google'га автоматтык түрдө жөнөтөт</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> баракчасында.</translation>
 <translation id="7674416868315480713">Linux'тан оюкчаларды багыттоону токтотуу</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> колдонмо</translation>

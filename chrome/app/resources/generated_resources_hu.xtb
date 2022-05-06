@@ -1968,6 +1968,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2832124733806557606">A PIN-kóddal bejelentkezhet, és feloldhatja az eszközt a gyermeke.</translation>
 <translation id="2835177225987815960">Az aktuális keresési beállítások visszaállításra kerülnek, beleértve a hozzárendelt kapcsolókat és az automatikus keresés sebességbeállításait is.</translation>
 <translation id="2835547721736623118">Beszédfelismerési szolgáltatás</translation>
+<translation id="2836232638504556905">A folytatáshoz a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> megosztja az Ön nevét, e-mail-címét és profilképét ezzel a webhellyel. Olvassa el a webhely <ph name="BEGIN_LINK" />adatvédelmi irányelveit<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Összeomlás</translation>
 <translation id="2836635946302913370">A rendszergazdája letiltotta a bejelentkezést ezzel a felhasználónévvel.</translation>
 <translation id="283669119850230892">A hálózat (<ph name="NETWORK_ID" />) használatához először fejezze be csatlakozást az internethez alább.</translation>
@@ -2249,6 +2250,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3105796011181310544">Visszaállítja a Google-t?</translation>
 <translation id="310671807099593501">A webhely Bluetooth-t használ</translation>
 <translation id="3108931485517391283">Sikertelen fogadás</translation>
+<translation id="3109206895301430738">Elmentett lapcsoportok</translation>
 <translation id="3109724472072898302">Összecsukott</translation>
 <translation id="311214366526552035">Letöltés mindenképpen</translation>
 <translation id="3112292765614504292">Alkalmazás mérete: <ph name="APP_SIZE" /></translation>
@@ -4092,7 +4094,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4953808748584563296">Alapértelmezett narancssárga avatar</translation>
 <translation id="4955710816792587366">PIN-kód kiválasztása</translation>
 <translation id="4959262764292427323">A jelszavakat Google-fiókjába mentjük, hogy bármelyik eszközén használhassa őket</translation>
-<translation id="496027654926814138">A(z) <ph name="FILE_NAME" /> fájl segítségével a támadók ellophatják az Ön személyes adatait.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Képernyő átküldése</translation>
 <translation id="4961361269522589229">receptötletek</translation>
@@ -5918,7 +5919,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6798578729981748444">Az importálás befejezéséhez zárja be az összes Firefox-ablakot.</translation>
 <translation id="6798780071646309401">caps lock bekapcsolva</translation>
 <translation id="6798954102094737107">Beépülő modul: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">A fájl segítségével a támadók ellophatják az Ön személyes adatait</translation>
 <translation id="6801129617625983991">Általános beállítások</translation>
 <translation id="6801435275744557998">Érintőképernyő kalibrálása</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6390,7 +6390,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7269736181983384521">Közeli megosztás adathasználat</translation>
 <translation id="7272674038937250585">Nincs leírás</translation>
 <translation id="7273110280511444812">legutóbb csatlakoztatva ekkor: <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Kioszk vagy tájékoztatóeszköz frissítését fogja használni, amely csak kioszk- vagy tájékoztatómód futtatását teszi lehetővé az eszköz számára. Ha azt szeretné, hogy a felhasználók be tudjanak jelentkezni az eszközre, lépjen vissza, és regisztráljon a Chrome Enterprise frissítés használatával.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> a teljes feltöltésig</translation>
 <translation id="727952162645687754">Letöltési hiba</translation>
 <translation id="7280041992884344566">Hiba történt, miközben a Chrome kártékony szoftvereket keresett</translation>
@@ -6793,7 +6792,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7670434942695515800">A legjobb teljesítmény érdekében frissítsen a legújabb verzióra. Ajánlott a fájlokról biztonsági másolatot készítenie arra az esetre, ha nem lehet befejezni a frissítést. Amint elindul a frissítés, a Linux leáll. Folytatás előtt mentse el a megnyitott fájlokat. <ph name="LINK_START" />További információ<ph name="LINK_END" />.</translation>
 <translation id="7671130400130574146">Az ablak fejlécének és keretének megjelenítése</translation>
 <translation id="767127784612208024">Érintse meg a visszaállítás megerősítéséhez</translation>
-<translation id="767147716926917172">Diagnosztikai és használati adatok automatikus elküldése a Google-nak</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, itt: <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">A Linux alatt átirányított portok mindegyikének deaktiválása</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> alkalmazás</translation>

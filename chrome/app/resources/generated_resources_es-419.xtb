@@ -131,6 +131,7 @@
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1125550662859510761">Resolución: <ph name="WIDTH" /> × <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1126809382673880764">No te protege contra descargas, extensiones ni sitios web peligrosos. Seguirás teniendo la protección (donde esté disponible) de la Navegación segura en otros servicios de Google, como Gmail y la Búsqueda.</translation>
+<translation id="1128090040635299943">Se está configurando Linux. Este proceso tomará unos minutos.</translation>
 <translation id="1128591060186966949">Editar el motor de búsqueda</translation>
 <translation id="1129420403709586868">Ve las fotos y el contenido multimedia del teléfono</translation>
 <translation id="1129850422003387628">Administrar apps</translation>
@@ -332,6 +333,7 @@
 <translation id="1327794256477341646">No se habilitarán las funciones que necesitan tu ubicación.</translation>
 <translation id="1329191040029425999">Asegúrate de que el dispositivo esté actualizado y vuelve a intentarlo</translation>
 <translation id="1330145147221172764">Habilitar el teclado en pantalla</translation>
+<translation id="1331625853030156663">Para abrir <ph name="APP_NAME" />, habilita "Mostrar la pantalla bloqueada al salir del modo de suspensión"</translation>
 <translation id="1331977651797684645">Era yo.</translation>
 <translation id="1333489022424033687">Es posible que algunas características de <ph name="ORIGIN" /> no funcionen hasta que borres los datos que almacenaron otros sitios en el dispositivo</translation>
 <translation id="1333965224356556482">No permitir que los sitios visualicen tu ubicación</translation>
@@ -3328,6 +3330,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="420283545744377356">Desactivar el protector de pantalla</translation>
 <translation id="4203065553461038553">El nombre o la ubicación del archivo es demasiado largo.</translation>
 <translation id="4204851595694839599">¿Cómo estuvo tu experiencia de juego?</translation>
+<translation id="4205157409548006256">Se produjo un error al configurar Linux.</translation>
 <translation id="4206144641569145248">Alienígena</translation>
 <translation id="4206323443866416204">Informe de comentarios</translation>
 <translation id="4207522141889799150">Modificar los permisos de sitio de <ph name="SITE" /></translation>
@@ -4073,7 +4076,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4953808748584563296">Avatar naranja predeterminado</translation>
 <translation id="4955710816792587366">Elige un PIN</translation>
 <translation id="4959262764292427323">Las contraseñas se guardan en tu cuenta de Google para que puedas usarlas en cualquier dispositivo</translation>
-<translation id="496027654926814138">Es posible que <ph name="FILE_NAME" /> permita que atacantes roben tu información personal.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Transmitir pantalla</translation>
 <translation id="4961361269522589229">ideas de recetas</translation>
@@ -5792,6 +5794,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6686665106869989887">Se movió la pestaña hacia la derecha</translation>
 <translation id="6686817083349815241">Guardar la contraseña</translation>
 <translation id="6687079240787935001">Ocultar <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Se solicita acceso para leer y modificar <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Pídele a <ph name="SUPERVISED_USER_NAME" /> que se acerque a la computadora. Tu hijo deberá leer algunas frases de esta pantalla para crear su modelo de voz.
     <ph name="BR" />
     Si <ph name="SUPERVISED_USER_NAME" /> necesita ayuda para leer, dile a tu hijo que repita después de ti. Susúrrale lejos del micrófono para que Asistente aprenda la voz de tu hijo en lugar de la tuya.</translation>
@@ -5896,7 +5899,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6798578729981748444">Para finalizar la importación, cierra todas las ventanas de Firefox.</translation>
 <translation id="6798780071646309401">bloqueo de mayúscula activado</translation>
 <translation id="6798954102094737107">Complemento: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Es posible que este archivo permita que atacantes roben tu información personal.</translation>
 <translation id="6801129617625983991">Configuración general</translation>
 <translation id="6801435275744557998">Calibrar la pantalla táctil</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6304,6 +6306,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Salir de la página}other{Salir de las páginas}}</translation>
 <translation id="7207457272187520234">Envía datos de uso y diagnóstico. De forma automática, este dispositivo está enviando a Google datos de diagnóstico y sobre el uso del dispositivo y las apps. Esta información ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. El propietario controla esta configuración. Si habilitaste la Actividad de web y de aplicaciones adicional, es posible que se almacenen estos datos en tu Cuenta de Google.</translation>
 <translation id="7207631048330366454">Buscar apps</translation>
+<translation id="720808544705441386">No se puede abrir la app</translation>
 <translation id="7210499381659830293">Impresoras de extensiones</translation>
 <translation id="7211783048245131419">Aún no se asignaron interruptores</translation>
 <translation id="7212097698621322584">Ingresa tu PIN actual para cambiarlo. Si no sabes cuál es, deberás restablecer la llave de seguridad y, luego, crear uno nuevo.</translation>
@@ -6367,7 +6370,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7269736181983384521">Uso de datos de Compartir con Nearby</translation>
 <translation id="7272674038937250585">No se proporcionó ninguna descripción</translation>
 <translation id="7273110280511444812">conectado por última vez el <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Utilizarás una Actualización de kiosco y señalización que permite que el dispositivo funcione únicamente en modo kiosco o de señalización. Si quieres que los usuarios accedan al dispositivo, regresa e inscríbete con la actualización de Chrome Enterprise.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> hasta completar la carga</translation>
 <translation id="727952162645687754">Error de descarga</translation>
 <translation id="7280041992884344566">Se produjo un error cuando Chrome buscaba software dañino</translation>
@@ -6770,7 +6772,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7670434942695515800">Para obtener el mejor rendimiento, actualiza Linux y usa la versión más reciente. Te recomendamos realizar una copia de seguridad de tus archivos en caso de que la actualización no pueda completarse. Cuando empiece la actualización, se apagará Linux. Guarda los archivos que estén abiertos antes de continuar. <ph name="LINK_START" />Más información<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Usar la barra de título y los bordes del sistema</translation>
 <translation id="767127784612208024">Toca para confirmar que quieres restablecer la llave</translation>
-<translation id="767147716926917172">Envía automáticamente datos de uso y diagnóstico a Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, en <ph name="PAGE_TITLE" /></translation>
 <translation id="7674416868315480713">Desactivar todos los puertos que se reenvían en Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> apps</translation>
@@ -7461,6 +7462,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8324784016256120271">Los sitios pueden usar cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios.</translation>
 <translation id="8325413836429495820">No puede ver el contenido del portapapeles</translation>
 <translation id="8326478304147373412">PKCS N. º 7, cadena de certificados</translation>
+<translation id="8327386430364625757">Fuente matemática</translation>
 <translation id="8327676037044516220">Configuración de contenido y permisos</translation>
 <translation id="8330617762701840933">La lista de sitios web que se van a redireccionar a un navegador alternativo.</translation>
 <translation id="8330689128072902965">Los contactos cercanos pueden enviarte contenido. Haz clic para cambiarlo.</translation>

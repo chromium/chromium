@@ -38,7 +38,6 @@
 <translation id="1219674500290482172">يتعذر الاتصال بالإنترنت.</translation>
 <translation id="122699739164161391">إغلاق جميع علامات التبويب</translation>
 <translation id="1229222343402087523">‏البحث عن ${searchPhrase} في متصفِّح Chrome</translation>
-<translation id="1231733316453485619">هل تريد تفعيل المزامنة؟</translation>
 <translation id="1242044645101871359">تسجيل الدخول مرة أخرى</translation>
 <translation id="1254117744268754948">اختيار مجلد</translation>
 <translation id="1265739287306757398">تعرَّف على الطريقة</translation>
@@ -972,5 +971,4 @@
 <translation id="988141524645182168">أجهزة أخرى</translation>
 <translation id="989988560359834682">تعديل العنوان</translation>
 <translation id="994757059139821576">اقتراحات المقالات</translation>
-<translation id="997742718232442409">هذا الموقع الإلكتروني يحاول تنزيل ملف تقويم.</translation>
 </translationbundle>

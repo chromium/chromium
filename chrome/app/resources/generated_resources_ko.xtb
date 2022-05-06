@@ -4094,7 +4094,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4953808748584563296">기본 주황색 아바타</translation>
 <translation id="4955710816792587366">PIN 선택</translation>
 <translation id="4959262764292427323">어느 기기에서나 사용할 수 있도록 비밀번호가 Google 계정에 저장됩니다.</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> 파일로 인해 공격자가 개인 정보를 도용할 가능성이 있습니다.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">화면 전송</translation>
 <translation id="4961361269522589229">레시피 아이디어</translation>
@@ -5918,7 +5917,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6798578729981748444">가져오기를 완료하려면 Firefox 창을 모두 닫으세요.</translation>
 <translation id="6798780071646309401">Caps Lock 사용</translation>
 <translation id="6798954102094737107">플러그인: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">이 파일을 통해 공격자가 내 개인 정보를 도용할 가능성이 있습니다</translation>
 <translation id="6801129617625983991">일반 설정</translation>
 <translation id="6801435275744557998">터치스크린 보정</translation>
 <translation id="6802031077390104172"><ph name="USAGE" />(<ph name="OID" />)</translation>
@@ -6390,7 +6388,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7269736181983384521">Nearby Share 데이터 사용량</translation>
 <translation id="7272674038937250585">제공된 설명이 없음</translation>
 <translation id="7273110280511444812">최근 첨부 날짜: <ph name="DATE" /></translation>
-<translation id="7273970016743909808">기기가 키오스크 또는 사이니지 모드로만 실행되도록 하는 키오스크 및 사이니지 업그레이드를 사용합니다. 사용자가 기기에 로그인할 수 있게 하려면 뒤로 돌아가서 Chrome Enterprise 업그레이드를 사용해 등록하세요.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - 충전 완료까지 <ph name="TIME" /> 남음</translation>
 <translation id="727952162645687754">다운로드 오류</translation>
 <translation id="7280041992884344566">Chrome에서 유해한 소프트웨어를 검색하는 중에 오류가 발생했습니다.</translation>
@@ -6793,7 +6790,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7670434942695515800">최상의 성능을 위해 최신 버전으로 업그레이드하세요. 업그레이드를 완료할 수 없는 경우에 대비해 파일을 백업해 두는 것이 좋습니다. 업그레이드가 시작되면 Linux가 종료됩니다. 열려 있는 파일을 저장한 후 계속 진행하세요. <ph name="LINK_START" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">시스템 제목 표시줄 및 테두리 사용</translation>
 <translation id="767127784612208024">터치하여 초기화 여부 확인</translation>
-<translation id="767147716926917172">진단 및 사용 데이터를 Google에 자동으로 전송</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" />에 포함된 <ph name="HUNG_IFRAME_URL" /></translation>
 <translation id="7674416868315480713">Linux에서 전달되는 모든 포트 비활성화</translation>
 <translation id="7674537509496907005">앱 <ph name="APP_COUNT" />개</translation>

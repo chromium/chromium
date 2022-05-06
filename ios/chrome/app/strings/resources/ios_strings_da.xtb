@@ -38,7 +38,6 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1219674500290482172">Der kunne ikke oprettes forbindelse til internettet.</translation>
 <translation id="122699739164161391">Luk alle faner</translation>
 <translation id="1229222343402087523">Søg efter ${searchPhrase} i Chrome</translation>
-<translation id="1231733316453485619">Vil du aktivere synkronisering?</translation>
 <translation id="1242044645101871359">Log ind igen</translation>
 <translation id="1254117744268754948">Vælg mappe</translation>
 <translation id="1265739287306757398">Se, hvordan du gør</translation>
@@ -971,5 +970,4 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="988141524645182168">Andre enheder</translation>
 <translation id="989988560359834682">Rediger adresse</translation>
 <translation id="994757059139821576">Artikelforslag</translation>
-<translation id="997742718232442409">Dette website forsøger at downloade en kalenderfil.</translation>
 </translationbundle>

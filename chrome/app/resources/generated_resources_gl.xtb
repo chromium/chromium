@@ -131,6 +131,7 @@
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1125550662859510761">A resolución parece de <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1126809382673880764">Non te protexe contra sitios web, descargas e extensións perigosos. Continuarás dispoñendo da protección da función Navegación segura, sempre que estea dispoñible, noutros servizos de Google (como Gmail e a Busca).</translation>
+<translation id="1128090040635299943">Estase configurando Linux. Este proceso tardará uns minutos.</translation>
 <translation id="1128591060186966949">Editar motor de busca</translation>
 <translation id="1129420403709586868">Accede ao contido multimedia e ás fotos do teu teléfono</translation>
 <translation id="1129850422003387628">Xestionar aplicacións</translation>
@@ -332,6 +333,7 @@
 <translation id="1327794256477341646">As funcións que requiran a túa localización non estarán dispoñibles</translation>
 <translation id="1329191040029425999">Asegúrate de que o dispositivo estea actualizado e téntao de novo</translation>
 <translation id="1330145147221172764">Activar teclado en pantalla</translation>
+<translation id="1331625853030156663">Para abrir <ph name="APP_NAME" />, activa Mostrar pantalla de bloqueo ao reactivarse despois da suspensión</translation>
 <translation id="1331977651797684645">Era eu.</translation>
 <translation id="1333489022424033687">Algunhas funcións de <ph name="ORIGIN" /> poderían non funcionar ata que borres os datos que almacenasen no teu dispositivo outros sitios</translation>
 <translation id="1333965224356556482">Non permitir que os sitios vexan a túa localización</translation>
@@ -3329,6 +3331,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="420283545744377356">Desactivar o protector de pantalla</translation>
 <translation id="4203065553461038553">O nome ou a localización do ficheiro son demasiado longos</translation>
 <translation id="4204851595694839599">Que che pareceu a experiencia de xogo?</translation>
+<translation id="4205157409548006256">Produciuse un erro ao configurar Linux.</translation>
 <translation id="4206144641569145248">Extraterrestre</translation>
 <translation id="4206323443866416204">Informe de comentarios</translation>
 <translation id="4207522141889799150">Modificar permisos do sitio para <ph name="SITE" /></translation>
@@ -4074,7 +4077,6 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="4953808748584563296">Avatar laranxa predeterminado</translation>
 <translation id="4955710816792587366">Escolle o PIN</translation>
 <translation id="4959262764292427323">Os contrasinais gárdanse na túa Conta de Google para que poidas usalos en calquera dispositivo</translation>
-<translation id="496027654926814138">Co ficheiro <ph name="FILE_NAME" />, os atacantes poderían roubarche información persoal.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />, <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Enviar pantalla</translation>
 <translation id="4961361269522589229">ideas de receitas</translation>
@@ -5790,6 +5792,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6686665106869989887">A pestana moveuse á dereita</translation>
 <translation id="6686817083349815241">Gardar o teu contrasinal</translation>
 <translation id="6687079240787935001">Ocultar <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Solicitando ler e modificar <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Pídelle a <ph name="SUPERVISED_USER_NAME" /> que veña ao ordenador. O teu fillo ou filla vai ler unhas frases na pantalla para crear o seu modelo de voz.
     <ph name="BR" />
 Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o que ti digas. Bisba as frases lonxe do micrófono para que o Asistente aprenda a voz do teu fillo ou filla en vez da túa.</translation>
@@ -5894,7 +5897,6 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6798578729981748444">Para finalizar a importación, pecha todas as ventás de Firefox.</translation>
 <translation id="6798780071646309401">activouse o bloqueo de maiúsculas</translation>
 <translation id="6798954102094737107">Plugin: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Con este ficheiro, é posible que os atacantes rouben a túa información persoal</translation>
 <translation id="6801129617625983991">Configuración xeral</translation>
 <translation id="6801435275744557998">Calibrar pantalla táctil</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6302,6 +6304,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Páxina de saída}other{Páxinas de saída}}</translation>
 <translation id="7207457272187520234">Enviar datos de uso e diagnóstico. Este dispositivo envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google. Esta información permitirá aumentar a estabilidade do sistema e das aplicacións, e realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Esta opción de configuración contrólaa o propietario. Se está activada a opción Actividade web e das aplicacións adicional, estes datos pódense gardar na túa Conta de Google.</translation>
 <translation id="7207631048330366454">Buscar aplicacións</translation>
+<translation id="720808544705441386">Non se puido abrir a aplicación</translation>
 <translation id="7210499381659830293">Impresoras da extensión</translation>
 <translation id="7211783048245131419">Aínda non se asignou ningún interruptor</translation>
 <translation id="7212097698621322584">Introduce o teu PIN actual para cambialo. Se non sabes cal é, deberás restablecer a chave de seguranza e, despois, crear un novo.</translation>
@@ -6365,7 +6368,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7269736181983384521">Uso de datos de Compartir por Nearby</translation>
 <translation id="7272674038937250585">Non se incluíu ningunha descrición</translation>
 <translation id="7273110280511444812">anexouse por última vez o <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Utilizarás unha actualización de quiosco e de sinalización que só lle permite ao dispositivo executarse no modo de quiosco ou de sinalización. Se queres que os usuarios inicien sesión no dispositivo, volve atrás e inscríbete coa actualización de Chrome para empresas.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> %. <ph name="TIME" /> para completar a carga</translation>
 <translation id="727952162645687754">Erro de descarga</translation>
 <translation id="7280041992884344566">Produciuse un erro mentres Chrome buscaba software daniño</translation>
@@ -6768,7 +6770,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7670434942695515800">Actualiza á versión máis recente para conseguir un rendemento óptimo. É recomendable facer unha copia de seguranza dos ficheiros por se acaso non se pode completar a actualización. Linux pecharase en canto se inicie a actualización. Garda os ficheiros que teñas abertos antes de continuar. <ph name="LINK_START" />Máis información<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Utilizar a barra de título e os bordos do sistema</translation>
 <translation id="767127784612208024">Toca a chave para confirmar o seu restablecemento</translation>
-<translation id="767147716926917172">Envía automaticamente datos de uso e diagnóstico a Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, en <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Desactivar todos os portos que se estean encamiñando en Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> aplicacións</translation>
@@ -7457,6 +7458,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8324784016256120271">Os sitios poden utilizar cookies para ver a túa actividade de navegación en distintos sitios (por exemplo, para personalizar os anuncios)</translation>
 <translation id="8325413836429495820">Sitios que non poden consultar o portapapeis</translation>
 <translation id="8326478304147373412">PKCS n.º 7, cadea de certificados</translation>
+<translation id="8327386430364625757">Tipo de letra matemático</translation>
 <translation id="8327676037044516220">Permisos e configuración de contido</translation>
 <translation id="8330617762701840933">Lista de sitios web que redirixen o usuario a un navegador secundario.</translation>
 <translation id="8330689128072902965">Os contactos que estean cerca poden compartir contido contigo. Para cambialo, fai clic.</translation>

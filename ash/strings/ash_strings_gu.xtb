@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C ઉપકરણ (આગળનું પોર્ટ)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> બદલાઈને <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) થયું. ફેરફારો રાખવા માટે કન્ફર્મ કરો પર ક્લિક કરો. અગાઉના સેટિંગ <ph name="TIMEOUT_SECONDS" />માં રિસ્ટોર કરવામાં આવશે.</translation>
 <translation id="1013923882670373915">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે. કૃપા કરીને તે ડિવાઇસ પર આ PIN કોડ દાખલ કરો: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">આંશિક સ્ક્રીનશૉટ પસંદ કર્યો</translation>
 <translation id="1024364763893396229">તમારું <ph name="NAME" /> સાચવો</translation>
 <translation id="1032891413405719768">સ્ટાઇલસની બૅટરી ઓછી છે</translation>
 <translation id="1036073649888683237">નોટિફિકેશન મેનેજ કરવા માટે, સેટિંગ પર જાઓ</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">આઉટપુટ</translation>
 <translation id="3009958530611748826">સ્કૅન જેમાં સાચવવાના છે તે ફોલ્ડર પસંદ કરો</translation>
 <translation id="301282384882049174">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા શેર થયેલું</translation>
-<translation id="3017687597151988916">સૉર્સ તરીકે વિન્ડો સેટ કરવામાં આવી</translation>
 <translation id="3033545621352269033">ચાલુ</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> સાથે જોડો</translation>
 <translation id="3036649622769666520">Files ખોલો</translation>
@@ -1050,7 +1048,6 @@
 <translation id="746232733191930409">સ્ક્રીન રેકોર્ડિંગ મોડ</translation>
 <translation id="7466449121337984263">કૃપા કરીને સેન્સરને સ્પર્શ કરો</translation>
 <translation id="7477793887173910789">તમારું મ્યુઝિક, વીડિયો અને બીજું ઘણું નિયંત્રિત કરો</translation>
-<translation id="7483025031359818980">સૉર્સ તરીકે પૂર્ણ સ્ક્રીન સેટ કરવામાં આવી</translation>
 <translation id="7497767806359279797">ભાષા અને કીબોર્ડ પસંદ કરો</translation>
 <translation id="7508690557411636492">ગયા મહિનામાં ખોલેલી</translation>
 <translation id="7509246181739783082">તમારી ઓળખ ચકાસો</translation>

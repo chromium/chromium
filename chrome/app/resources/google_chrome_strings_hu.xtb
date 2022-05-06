@@ -13,7 +13,6 @@
 <translation id="1154147086299354128">&amp;Megnyitás Chrome-ban</translation>
 <translation id="1178374936842835197">Ha valamelyik beállítás nem látható ezen az oldalon, keresse a <ph name="LINK_BEGIN" />
         ChromeOS Flex beállításai<ph name="LINK_END" /> között</translation>
-<translation id="1182414570724401860">A Chrome azt javasolja, hogy ne töltse le, és ne nyissa meg ezt a fájlt.</translation>
 <translation id="1278833599417554002">Indítsa újra a Chrome frissítéshez</translation>
 <translation id="1302523850133262269">Kérjük, várjon, amíg a Chrome telepíti a legutóbbi rendszerfrissítéseket.</translation>
 <translation id="1335640173511558774">A(z) <ph name="MANAGER" /> megköveteli, hogy olvassa el, majd fogadja el a következő Általános Szerződési Feltételeket, mielőtt használná ezt az eszközt. Ezek a feltételek nem bővítik, módosítják vagy korlátozzák a Google ChromeOS Flex Általános Szerződési Feltételeit.</translation>
@@ -284,6 +283,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra is érvényesek lehetnek. Google-fiókjait a <ph name="SETTINGS_LINK_BEGIN" />Beállításokban<ph name="SETTINGS_LINK_END" /> kezelheti.</translation>
 <translation id="7398801000654795464"><ph name="USER_EMAIL_ADDRESS" /> néven volt bejelentkezve a Chrome-ba. Kérjük, ugyanazzal a fiókkal jelentkezzen be újra.</translation>
 <translation id="7410958280246779049">A Chrome letiltotta ezt a fájlt, mert veszélyes</translation>
+<translation id="7426611252293106642">Előfordulhat, hogy a Chrome nem fog megfelelően működni, mert a továbbiakban már nem támogatja ezt a Linux-verziót.</translation>
 <translation id="7481213027396403996">Állítsa be a Chrome legerősebb védelmét</translation>
 <translation id="7486227612705979895">A Chrome hozzáfér Drive-jához, hogy javaslatokat nyújthasson a címsávon.</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

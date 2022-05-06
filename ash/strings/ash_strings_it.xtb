@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Dispositivo USB-C (porta anteriore)</translation>
 <translation id="1013598600051641573">La risoluzione di <ph name="DISPLAY_NAME" /> è stata impostata su <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Il dispositivo Bluetooth "<ph name="DEVICE_NAME" />" chiede l'autorizzazione per essere accoppiato. Inserisci questo codice PIN sul dispositivo: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Screenshot parziale selezionato</translation>
 <translation id="1024364763893396229">Salva <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Batteria dello stilo in esaurimento</translation>
 <translation id="1036073649888683237">Per gestire le notifiche, vai alle Impostazioni</translation>
@@ -328,7 +327,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3009178788565917040">Uscita</translation>
 <translation id="3009958530611748826">Seleziona una cartella in cui salvare i file</translation>
 <translation id="301282384882049174">Condiviso dall'amministratore</translation>
-<translation id="3017687597151988916">Area di selezione impostata su Finestra</translation>
 <translation id="3033545621352269033">On</translation>
 <translation id="3033912566804961911">Combina con <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Apri file</translation>
@@ -381,7 +379,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3339826665088060472">Cattura schermo, strumenti per acquisire screenshot e registrazione dello schermo</translation>
 <translation id="3340978935015468852">impostazioni</translation>
 <translation id="3341303451326249809">Screenshot acquisito</translation>
-<translation id="334252345105450327">Acquisisci uno screenshot</translation>
+<translation id="334252345105450327">Fai uno screenshot</translation>
 <translation id="3351879221545518001">Al momento stai trasmettendo lo schermo.</translation>
 <translation id="3364721542077212959">Strumenti per stilo</translation>
 <translation id="3365977133351922112">Il telefono è troppo lontano. Avvicinalo.</translation>
@@ -1048,7 +1046,6 @@ Nuova installazione</translation>
 <translation id="746232733191930409">Modalità Registrazione dello schermo</translation>
 <translation id="7466449121337984263">Tocca il sensore</translation>
 <translation id="7477793887173910789">Gestisci la tua musica, i tuoi video e altro ancora</translation>
-<translation id="7483025031359818980">Area di selezione impostata su Schermo intero</translation>
 <translation id="7497767806359279797">Scegli la lingua e la tastiera</translation>
 <translation id="7508690557411636492">Aperto il mese scorso</translation>
 <translation id="7509246181739783082">Verifica la tua identità</translation>

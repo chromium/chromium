@@ -38,7 +38,6 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1219674500290482172">Det går inte att ansluta till internet.</translation>
 <translation id="122699739164161391">Stäng alla flikar</translation>
 <translation id="1229222343402087523">Sök efter ${searchPhrase} i Chrome</translation>
-<translation id="1231733316453485619">Vill du aktivera synkronisering?</translation>
 <translation id="1242044645101871359">Logga in igen</translation>
 <translation id="1254117744268754948">Välj mapp</translation>
 <translation id="1265739287306757398">Läs mer</translation>
@@ -971,5 +970,4 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="988141524645182168">Övriga enheter</translation>
 <translation id="989988560359834682">Redigera adress</translation>
 <translation id="994757059139821576">Artikelförslag</translation>
-<translation id="997742718232442409">Den här webbplatsen försöker ladda ned en kalenderfil.</translation>
 </translationbundle>

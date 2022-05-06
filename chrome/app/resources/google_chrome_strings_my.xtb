@@ -15,7 +15,6 @@
 <translation id="1154147086299354128">&amp;Chrome တွင် ဖွင့်ရန်</translation>
 <translation id="1178374936842835197">ဤစာမျက်နှာတွင် ဆက်တင်ကိုမပြပါက <ph name="LINK_BEGIN" />
         ChromeOS Flex ဆင်တင်များ<ph name="LINK_END" /> တွင် ကြည့်နိုင်သည်</translation>
-<translation id="1182414570724401860">ဤဖိုင်ကို ဒေါင်းလုဒ်မလုပ်ရန် (သို့) မဖွင့်ရန် Chrome က အကြံပြုပါသည်</translation>
 <translation id="1278833599417554002">&amp;Chrome အပ်ဒိတ်လုပ်ရန် ပြန်ဖွင့်ပါ</translation>
 <translation id="1302523850133262269">​​ကျေးဇူးပြုပြီး Chrome က စနစ်၏ နောက်ဆုံး မွမ်းမံမှုများကို တပ်ဆင်ပေးနေတာကို စောင့်ပါ။</translation>
 <translation id="1335640173511558774">ဤစက်ကိုမသုံးမီ အောက်ပါ ‘ဝန်ဆောင်မှုစည်းမျဉ်းများ’ ကို ဖတ်ရှုပြီး လက်ခံရန် <ph name="MANAGER" /> က သတ်မှတ်ထားသည်။ ဤစည်းမျဉ်းများက ‘Google ChromeOS Flex စည်းမျဉ်းများ’ ကို ထပ်ထည့်ခြင်း၊ မွမ်းမံခြင်း သို့မဟုတ် ကန့်သတ်ခြင်း မရှိပါ။</translation>
@@ -292,6 +291,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 ဝဘ်ဆိုက်နှင့် အက်ပ်များကို ပေးထားသော ခွင့်ပြုချက်များက ဤအကောင့်တွင် အကျုံးဝင်နိုင်သည်။ <ph name="SETTINGS_LINK_BEGIN" />ဆက်တင်များ<ph name="SETTINGS_LINK_END" /> တွင် သင်၏ Google Account များကို စီမံနိုင်သည်။</translation>
 <translation id="7398801000654795464">Chrome သို့ <ph name="USER_EMAIL_ADDRESS" /> အဖြစ်သင် ဝင်ရောက်ခဲ့သည်။ ကျေးဇူးပြု၍ တူညီသည့်အကောင့်ကို အသုံးပြုကာ ထပ်မံဝင်ရောက်ပါ။</translation>
 <translation id="7410958280246779049">ဤဖိုင်သည်အန္တရာယ်ရှိသဖြင့် Chrome က ပိတ်ထားသည်</translation>
+<translation id="7426611252293106642">Linux ဖြန့်ချိမှုတွင် Google Chrome ကို မပံ့ပိုးတော့သောကြောင့် မှန်ကန်စွာ အလုပ်လုပ်နိုင်မည်မဟုတ်ပါ</translation>
 <translation id="7481213027396403996">Chrome ၏ အခိုင်မာဆုံးလုံခြုံရေးကို ရယူခြင်း</translation>
 <translation id="7486227612705979895">လိပ်စာဘားတွင် အကြံပြုချက်များ ပေးနိုင်ရန် Chrome သည် သင်၏ Drive ကို အသုံးပြုသွားပါမည်။</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

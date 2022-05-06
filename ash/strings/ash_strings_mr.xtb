@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C डिव्‍हाइस (पुढील बाजूचे पोर्ट)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> बदलून <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) केले गेले. बदल राखण्यासाठी निश्चित करा वर क्लिक करा. मागील सेटिंग्ज <ph name="TIMEOUT_SECONDS" /> मध्ये रिस्टोअर केली जातील.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth डिव्हाइस जोडण्यासाठी परवानगी घेऊ इच्छिते. कृपया त्या डिव्हाइसवर हा पिन एंटर करा: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">आंशिक स्क्रीनशॉट निवडला आहे</translation>
 <translation id="1024364763893396229">तुमचे <ph name="NAME" /> सेव्ह करा</translation>
 <translation id="1032891413405719768">स्टायलस बॅटरी कमी आहे</translation>
 <translation id="1036073649888683237">सूचना व्यवस्थापित करण्यासाठी, सेटिंग्ज वर जा</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">आउटपुट</translation>
 <translation id="3009958530611748826">ज्यामध्ये सेव्ह करायचे आहे ते फोल्डर निवडा</translation>
 <translation id="301282384882049174">तुमच्या अ‍ॅडमिनिस्ट्रेटरने शेअर केलेले</translation>
-<translation id="3017687597151988916">निवड क्षेत्र विंडोवर सेट केले आहे</translation>
 <translation id="3033545621352269033">सुरू</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> सह एकत्र करा</translation>
 <translation id="3036649622769666520">फाइल उघडा</translation>
@@ -1050,7 +1048,6 @@
 <translation id="746232733191930409">स्क्रीन रेकॉर्डिंग मोड</translation>
 <translation id="7466449121337984263">कृपया सेन्सरला स्पर्श करा</translation>
 <translation id="7477793887173910789">व्हिडिओ पहा आणि बरेच काही नियंत्रित करा</translation>
-<translation id="7483025031359818980">निवड क्षेत्र फुल स्क्रीनवर सेट आहे</translation>
 <translation id="7497767806359279797">भाषा आणि कीबोर्ड निवडा</translation>
 <translation id="7508690557411636492">मागील महिन्यात उघडलेली</translation>
 <translation id="7509246181739783082">तुमच्या ओळखीची पडताळणी करा</translation>

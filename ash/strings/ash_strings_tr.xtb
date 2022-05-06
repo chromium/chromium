@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C cihaz (ön bağlantı noktası)</translation>
 <translation id="1013598600051641573">Çözünürlük <ph name="DISPLAY_NAME" /> için <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) olarak değiştirildi. Değişiklikleri korumak için Onayla'yı tıklayın. Önceki ayarlar <ph name="TIMEOUT_SECONDS" /> saniye içinde geri yüklenecek.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" adlı Bluetooth cihaz eşleme izni istiyor. Lütfen söz konusu cihazda şu PIN kodunu girin: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Kısmi ekran görüntüsü seçildi</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> cihazınızı kaydedin</translation>
 <translation id="1032891413405719768">Ekran kaleminin pili düşük</translation>
 <translation id="1036073649888683237">Bildirimleri yönetmek için Ayarlar'a gidin</translation>
@@ -331,7 +330,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3009178788565917040">Çıkış</translation>
 <translation id="3009958530611748826">Kaydedilecek bir klasör seçin</translation>
 <translation id="301282384882049174">Yöneticiniz tarafından paylaşıldı</translation>
-<translation id="3017687597151988916">Seçim alanı pencere olarak ayarlandı</translation>
 <translation id="3033545621352269033">Açık</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> ile birleştir</translation>
 <translation id="3036649622769666520">Dosya Aç</translation>
@@ -1050,7 +1048,6 @@ Yeni yüklenmiş</translation>
 <translation id="746232733191930409">Ekran kaydetme modu</translation>
 <translation id="7466449121337984263">Lütfen sensöre dokunun</translation>
 <translation id="7477793887173910789">Müzik, video ve diğer içeriklerinizi kontrol edin</translation>
-<translation id="7483025031359818980">Seçim alanı tam ekran olarak ayarlandı</translation>
 <translation id="7497767806359279797">Dil ve klavye seçin</translation>
 <translation id="7508690557411636492">Geçen ay açıldı</translation>
 <translation id="7509246181739783082">Kimliğinizi doğrulayın</translation>

@@ -38,7 +38,6 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="1219674500290482172">Nije moguće povezati se s internetom.</translation>
 <translation id="122699739164161391">Zatvori sve kartice</translation>
 <translation id="1229222343402087523">Pretražite ${searchPhrase} u Chromeu</translation>
-<translation id="1231733316453485619">Uključiti sinhronizaciju?</translation>
 <translation id="1242044645101871359">Prijavite se ponovo</translation>
 <translation id="1254117744268754948">Odaberite folder</translation>
 <translation id="1265739287306757398">Saznajte kako</translation>
@@ -227,7 +226,7 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="2898963176829412617">Novi folder…</translation>
 <translation id="2916171785467530738">Samodovršavanje pretraživanja i URL-ova</translation>
 <translation id="291754862089661335">Postavite QR kôd ili barkod u ovaj okvir</translation>
-<translation id="2920866371965792875">Da biste vidjeli novosti s te web-lokacije, pratite je ovdje.</translation>
+<translation id="2920866371965792875">Da vidite ažuriranja s ove web lokacije, pratite je ovdje.</translation>
 <translation id="2921219216347069551">Nije moguće dijeliti stranicu</translation>
 <translation id="2923448633003185837">Zalijepi i kreni</translation>
 <translation id="292639812446257861">Označi kao nepročitano</translation>
@@ -972,5 +971,4 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="988141524645182168">Drugi uređaji</translation>
 <translation id="989988560359834682">Uređivanje adrese</translation>
 <translation id="994757059139821576">Predloženi članci</translation>
-<translation id="997742718232442409">Ova web lokacija pokušava preuzeti fajl kalendara.</translation>
 </translationbundle>

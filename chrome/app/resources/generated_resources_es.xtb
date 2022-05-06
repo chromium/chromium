@@ -131,6 +131,7 @@
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1125550662859510761">Resolución de <ph name="WIDTH" />x<ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1126809382673880764">No te protege frente a descargas, extensiones ni sitios web peligrosos. Seguirás disfrutando de protección con la función Navegación segura, si está disponible, en otros servicios de Google, como Gmail y la Búsqueda.</translation>
+<translation id="1128090040635299943">Linux se está configurando en este momento. El proceso puede tardar unos minutos.</translation>
 <translation id="1128591060186966949">Editar motor de búsqueda</translation>
 <translation id="1129420403709586868">Consulta las fotos y el contenido multimedia de tu teléfono</translation>
 <translation id="1129850422003387628">Gestionar aplicaciones</translation>
@@ -332,6 +333,7 @@
 <translation id="1327794256477341646">Las funciones que necesiten la ubicación no se podrán utilizar</translation>
 <translation id="1329191040029425999">Asegúrate de que tu dispositivo esté actualizado e inténtalo de nuevo</translation>
 <translation id="1330145147221172764">Habilitar teclado en pantalla</translation>
+<translation id="1331625853030156663">Para abrir <ph name="APP_NAME" />, habilita la opción "Mostrar la pantalla de bloqueo al activar el dispositivo"</translation>
 <translation id="1331977651797684645">Es mi perfil</translation>
 <translation id="1333489022424033687">Es posible que algunas funciones de <ph name="ORIGIN" /> no estén disponibles si no borras los datos que otros sitios han almacenado en tu dispositivo</translation>
 <translation id="1333965224356556482">No permitir que los sitios vean tu ubicación</translation>
@@ -3330,6 +3332,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="420283545744377356">Desactivar salvapantallas</translation>
 <translation id="4203065553461038553">Nombre de archivo o ubicación demasiado largos</translation>
 <translation id="4204851595694839599">¿Cómo ha sido la experiencia de juego?</translation>
+<translation id="4205157409548006256">No se ha podido configurar Linux.</translation>
 <translation id="4206144641569145248">Extraterrestre</translation>
 <translation id="4206323443866416204">Informe de comentarios</translation>
 <translation id="4207522141889799150">Editar permisos del sitio <ph name="SITE" /></translation>
@@ -4075,7 +4078,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4953808748584563296">Avatar naranja predeterminado</translation>
 <translation id="4955710816792587366">Elige un PIN</translation>
 <translation id="4959262764292427323">Las contraseñas se guardan en tu cuenta de Google para que puedas utilizarlas en cualquier dispositivo</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> podría permitir a los atacantes robar tu información personal.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Enviar pantalla</translation>
 <translation id="4961361269522589229">ideas de recetas</translation>
@@ -5794,6 +5796,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="6686665106869989887">Pestaña movida a la derecha</translation>
 <translation id="6686817083349815241">Guardar tu contraseña</translation>
 <translation id="6687079240787935001">Ocultar <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Solicitando leer y cambiar <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Dile a <ph name="SUPERVISED_USER_NAME" /> que se acerque al ordenador. Para crear su modelo de voz, deberá leer algunas frases que aparecerán en la pantalla.
     <ph name="BR" />
     Si <ph name="SUPERVISED_USER_NAME" /> necesita ayuda para leer, pídele que repita las frases después de ti. Léelas en voz baja y lejos del micrófono para que el Asistente aprenda su voz, no la tuya.</translation>
@@ -5898,7 +5901,6 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="6798578729981748444">Para terminar la importación, cierra todas las ventanas de Firefox.</translation>
 <translation id="6798780071646309401">bloqueo de mayúsculas activado</translation>
 <translation id="6798954102094737107">Complemento: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Este archivo podría permitir a los atacantes robar tu información personal.</translation>
 <translation id="6801129617625983991">Configuración general</translation>
 <translation id="6801435275744557998">Calibrar la pantalla táctil</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6306,6 +6308,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Salir de la página}other{Salir de las páginas}}</translation>
 <translation id="7207457272187520234">Envía datos de uso y diagnóstico. Este dispositivo envía automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos servirán para aumentar la estabilidad de las aplicaciones y del sistema y realizar otras mejoras. Parte de los datos agregados también ayudarán a las aplicaciones y a los partners de Google, como los desarrolladores de Android. El propietario ha aplicado este ajuste. Si la opción Actividad en la Web y en Aplicaciones Adicional está activada, es posible que estos datos se guarden en tu cuenta de Google.</translation>
 <translation id="7207631048330366454">Buscar aplicaciones</translation>
+<translation id="720808544705441386">No se puede abrir la aplicación</translation>
 <translation id="7210499381659830293">Impresoras de extensiones</translation>
 <translation id="7211783048245131419">Aún no se ha asignado ningún interruptor</translation>
 <translation id="7212097698621322584">Introduce tu PIN actual para cambiarlo. Si no sabes cuál es tu PIN, tendrás que restablecer la llave de seguridad y crear un nuevo PIN.</translation>
@@ -6369,7 +6372,6 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7269736181983384521">Uso de datos de Compartir con Nearby</translation>
 <translation id="7272674038937250585">No se ha especificado ninguna descripción</translation>
 <translation id="7273110280511444812">fecha de última conexión: <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Usarás una Licencia de Kiosco y Señalización, que solo permite que el dispositivo funcione en modo kiosco o de señalización. Si quieres que los usuarios inicien sesión en el dispositivo, vuelve y regístrate usando la Licencia de Chrome Enterprise.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> hasta completar la carga</translation>
 <translation id="727952162645687754">Error de descarga</translation>
 <translation id="7280041992884344566">Chrome no ha podido buscar software dañino</translation>
@@ -6772,7 +6774,6 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7670434942695515800">Para obtener el mejor rendimiento, actualiza a la versión más reciente. Es recomendable crear una copia de seguridad de los archivos por si no se puede completar la actualización. Una vez comience la actualización, Linux se apagará. Guarda los archivos abiertos antes de continuar. <ph name="LINK_START" />Más información<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Utilizar bordes y barra de título</translation>
 <translation id="767127784612208024">Tocar para confirmar el borrado</translation>
-<translation id="767147716926917172">Envía datos de uso y diagnóstico automáticamente a Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> en <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Desactivar todos los puertos redireccionados en Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> aplicaciones</translation>
@@ -7463,6 +7464,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8324784016256120271">Los sitios pueden usar cookies para ver tu actividad de navegación en otros sitios, por ejemplo, para personalizar anuncios</translation>
 <translation id="8325413836429495820">No puede ver tu portapapeles</translation>
 <translation id="8326478304147373412">PKCS #7, cadena de certificados</translation>
+<translation id="8327386430364625757">Fuente matemática</translation>
 <translation id="8327676037044516220">Permisos y configuración de contenido</translation>
 <translation id="8330617762701840933">La lista de sitios web que redirigen al navegador alternativo.</translation>
 <translation id="8330689128072902965">Los contactos cerca de ti pueden compartir contenido contigo. Haz clic para cambiar este ajuste.</translation>

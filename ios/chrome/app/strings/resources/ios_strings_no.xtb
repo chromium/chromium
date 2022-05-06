@@ -38,7 +38,6 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="1219674500290482172">Kan ikke koble til Internett.</translation>
 <translation id="122699739164161391">Lukk alle faner</translation>
 <translation id="1229222343402087523">Søk etter ${searchPhrase} i Chrome</translation>
-<translation id="1231733316453485619">Vil du slå på synkronisering?</translation>
 <translation id="1242044645101871359">Logg på igjen</translation>
 <translation id="1254117744268754948">Valg av mappe</translation>
 <translation id="1265739287306757398">Finn ut hvordan</translation>
@@ -972,5 +971,4 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="988141524645182168">Andre enheter</translation>
 <translation id="989988560359834682">Rediger adresse</translation>
 <translation id="994757059139821576">Artikkelforslag</translation>
-<translation id="997742718232442409">Dette nettstedet prøver å laste ned en kalenderfil.</translation>
 </translationbundle>

@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C устройство (предният порт)</translation>
 <translation id="1013598600051641573">Разделителната способност на <ph name="DISPLAY_NAME" /> бе променена на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Хц). Кликнете върху бутона за потвърждаване, за да запазите промените. Предишните настройки ще бъдат възстановени след <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Устройството с Bluetooth „<ph name="DEVICE_NAME" />“ иска разрешение за сдвояване. Моля, въведете на него следния ПИН код: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Избрана е частична екранна снимка</translation>
 <translation id="1024364763893396229">Запазете устройството си <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Батериите на писалката са изтощени</translation>
 <translation id="1036073649888683237">За да управлявате известията, отворете настройките</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">Изход</translation>
 <translation id="3009958530611748826">Изберете папка, в която да запазите</translation>
 <translation id="301282384882049174">Споделено от администратора ви</translation>
-<translation id="3017687597151988916">Прозорецът е зададен като избрана област</translation>
 <translation id="3033545621352269033">Включено</translation>
 <translation id="3033912566804961911">Комбиниране с(ъс) <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Отваряне на файлове</translation>
@@ -1050,7 +1048,6 @@
 <translation id="746232733191930409">Режим за записване на екрана</translation>
 <translation id="7466449121337984263">Моля, докоснете сензора</translation>
 <translation id="7477793887173910789">Управление на музиката, видеоклиповете и др.</translation>
-<translation id="7483025031359818980">Целият екран е зададен като избрана област</translation>
 <translation id="7497767806359279797">Избор на език и клавиатура</translation>
 <translation id="7508690557411636492">Отваряно през миналия месец</translation>
 <translation id="7509246181739783082">Потвърждаване на самоличността ви</translation>

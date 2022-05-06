@@ -4091,7 +4091,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4953808748584563296">Oranssi oletusavatar</translation>
 <translation id="4955710816792587366">Valitse PIN-koodi</translation>
 <translation id="4959262764292427323">Salasanat tallennetaan Google-tilillesi, jotta voit käyttää niitä kaikilla laitteilla</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> voi päästää hyökkääjät varastamaan henkilökohtaisia tietojasi.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Suoratoista näyttö</translation>
 <translation id="4961361269522589229">resepti-ideoita</translation>
@@ -5915,7 +5914,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6798578729981748444">Jos haluat suorittaa tuonnin loppuun, sulje kaikki Firefox-ikkunat.</translation>
 <translation id="6798780071646309401">caps lock päällä</translation>
 <translation id="6798954102094737107">Laajennus: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Tämä tiedosto voi päästää hyökkääjät varastamaan henkilökohtaisia tietojasi</translation>
 <translation id="6801129617625983991">Yleisasetukset</translation>
 <translation id="6801435275744557998">Kalibroi kosketusnäyttö</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6387,7 +6385,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7269736181983384521">Lähijakaminen datankäyttö</translation>
 <translation id="7272674038937250585">Ei kuvausta</translation>
 <translation id="7273110280511444812">yhdistetty viimeksi <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Käytät Kiosk &amp; Signage Upgrade ‑lisenssiä, joka sallii laitteen käyttämisen vain kioski- tai opastetilassa. Jos haluat käyttäjien kirjautuvan laitteelle, palaa takaisin ja rekisteröidy Chrome Enterprise Upgraden avulla.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % – täyteen lataukseen <ph name="TIME" /></translation>
 <translation id="727952162645687754">Latausvirhe</translation>
 <translation id="7280041992884344566">Chromen etsiessä haittaohjelmia tapahtui virhe.</translation>
@@ -6790,7 +6787,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7670434942695515800">Parhaan suorituskyvyn saat päivittämällä uusimpaan versioon. Tiedostojen varmuuskopiointia suositellaan siltä varalta, että päivitystä ei voida suorittaa loppuun. Kun päivitys alkaa, Linux sammuu. Tallenna avoinna olevat tiedostot ennen kuin jatkat. <ph name="LINK_START" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Käytä järjestelmän otsikkoriviä ja reunoja</translation>
 <translation id="767127784612208024">Vahvista nollaus koskettamalla</translation>
-<translation id="767147716926917172">Lähetä automaattisesti diagnostiikka- ja käyttödataa Googlelle</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> (<ph name="PAGE_TITLE" />)</translation>
 <translation id="7674416868315480713">Poista käytöstä kaikki Linuxin edelleenlähetetyt portit</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> sovellusta</translation>

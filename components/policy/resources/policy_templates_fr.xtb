@@ -3725,6 +3725,16 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
 <translation id="5179853299156742425">URL depuis laquelle le modèle de bureau peut être téléchargé.</translation>
 <translation id="5182055907976889880">Configurer Google Drive dans <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5182483318861266793">Placer l'étagère sur le côté droit de l'écran</translation>
+<translation id="5184298474980725716">Cette règle contrôle la visibilité des parcours sur la page de l'historique Chrome.
+
+      Si elle est activée, les parcours sont visibles sur chrome://history/journeys.
+
+      Si elle est désactivée, les parcours ne sont pas visibles sur chrome://history/journeys.
+
+      Si la règle n'est pas configurée, les parcours sont visibles par défaut sur chrome://history/journeys. Les utilisateurs peuvent modifier ce paramètre.
+
+      Notez que si la règle <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> est désactivée, mais que la règle <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> est activée ou n'est pas configurée, les parcours sont visibles sur chrome://history/journeys, mais peuvent être absents de l'omnibox, et moins pertinents pour l'utilisateur.
+      </translation>
 <translation id="51859390023061147">Désactiver la fonctionnalité de restauration complète.</translation>
 <translation id="5189360528842591274">N'autoriser la connexion qu'aux services Bluetooth de la liste</translation>
 <translation id="5190426551516379357">Permet d'appliquer un mode restreint minimal sur YouTube et d'empêcher les utilisateurs de choisir un mode moins restreint. Principe de cette règle :

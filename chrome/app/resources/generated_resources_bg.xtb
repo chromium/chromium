@@ -4092,7 +4092,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4953808748584563296">Стандартен оранжев аватар</translation>
 <translation id="4955710816792587366">Изберете ПИН код</translation>
 <translation id="4959262764292427323">Паролите се запазват в профила ви в Google, за да можете да ги използвате на всяко устройство</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> може да даде възможност на хакери да откраднат личната ви информация.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Предаване на екрана</translation>
 <translation id="4961361269522589229">идеи за рецепти</translation>
@@ -5917,7 +5916,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6798578729981748444">За да завършите импортирането, затворете всички прозорци на Firefox.</translation>
 <translation id="6798780071646309401">caps lock е включен</translation>
 <translation id="6798954102094737107">Приставка: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Този файл може да даде възможност на хакери да откраднат личната ви информация</translation>
 <translation id="6801129617625983991">Общи настройки</translation>
 <translation id="6801435275744557998">Калибриране на сензорния екран</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6389,7 +6387,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7269736181983384521">Пренос на данни за „Споделяне наблизо“</translation>
 <translation id="7272674038937250585">Няма описание</translation>
 <translation id="7273110280511444812">последно свързване на <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Ще използвате лиценз Kiosk &amp; Signage Upgrade, който позволява на устройството да работи само в павилионен режим или режим за дигитални знаци и надписи. Ако искате потребителите да влизат в профили на устройството, върнете се назад и го регистрирайте, като използвате Chrome Enterprise Upgrade.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> до зареждането</translation>
 <translation id="727952162645687754">Грешка при изтеглянето</translation>
 <translation id="7280041992884344566">Възникна грешка, докато Chrome търсеше опасен софтуер</translation>
@@ -6792,7 +6789,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7670434942695515800">За максимална ефективност надстройте до най-новата версия. Препоръчваме да създадете резервно копие на файловете си, в случай че надстройването не завърши успешно. След като стартирате надстройването, Linux ще се изключи. Запазете отворените файлове, преди да продължите. <ph name="LINK_START" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Използване на системната заглавна лента и контурите</translation>
 <translation id="767127784612208024">Докоснете, за да потвърдите нулирането</translation>
-<translation id="767147716926917172">Автоматично изпраща до Google данни за диагностиката и употребата</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, в страницата „<ph name="PAGE_TITLE" />“.</translation>
 <translation id="7674416868315480713">Деактивиране на всички портове, пренасочвани към Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> приложения</translation>

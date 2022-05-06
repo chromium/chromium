@@ -13,7 +13,6 @@
 <translation id="1154147086299354128">&amp;Відкрити в Chrome</translation>
 <translation id="1178374936842835197">Якщо налаштування не з’явиться на цій сторінці, пошукайте його в <ph name="LINK_BEGIN" />
         налаштуваннях ОС Chrome Flex<ph name="LINK_END" /></translation>
-<translation id="1182414570724401860">Chrome радить не завантажувати й не відкривати цей файл</translation>
 <translation id="1278833599417554002">Перезапустити, щоб оновити &amp;Chrome</translation>
 <translation id="1302523850133262269">Зачекайте, доки Chrome установить найновіші оновлення системи.</translation>
 <translation id="1335640173511558774">Перш ніж використовувати цей пристрій, потрібно прочитати й прийняти наведені нижче Умови використання домену <ph name="MANAGER" />. Вони не розширюють, не змінюють і не обмежують Умови використання ОС Google Chrome Flex.</translation>
@@ -284,6 +283,7 @@
 Дозволи, надані веб-сайтам і додаткам, можуть діяти для цього облікового запису. Ви можете керувати своїми обліковими записами Google у <ph name="SETTINGS_LINK_BEGIN" />Налаштуваннях<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">Ви ввійшли в Chrome як <ph name="USER_EMAIL_ADDRESS" />. Скористайтеся тим самим обліковим записом, щоб увійти знову.</translation>
 <translation id="7410958280246779049">Веб-переглядач Chrome заблокував цей файл, оскільки він небезпечний</translation>
+<translation id="7426611252293106642">Google Chrome може працювати неналежним чином, оскільки більше не підтримується в цьому дистрибутиві Linux</translation>
 <translation id="7481213027396403996">Отримайте найвищий рівень безпеки в Chrome</translation>
 <translation id="7486227612705979895">Chrome матиме доступ до Диска, щоб робити пропозиції в адресному рядку</translation>
 <translation id="7535429826459677826">Версія Google Chrome для розробників</translation>

@@ -131,6 +131,7 @@
 <translation id="1124772482545689468">Użytkownik</translation>
 <translation id="1125550662859510761">Wygląda na <ph name="WIDTH" /> × <ph name="HEIGHT" /> (natywna)</translation>
 <translation id="1126809382673880764">Nie chroni przed niebezpiecznymi stronami, pobieranymi plikami ani rozszerzeniami. Funkcja Bezpieczne przeglądanie nadal będzie chronić Cię w innych usługach Google, w których jest dostępna (takich jak Gmail i wyszukiwarka).</translation>
+<translation id="1128090040635299943">Trwa konfiguracja Linuksa. Zajmie to kilka minut.</translation>
 <translation id="1128591060186966949">Edytuj wyszukiwarkę</translation>
 <translation id="1129420403709586868">Wyświetlaj zdjęcia i pliki multimedialne z telefonu</translation>
 <translation id="1129850422003387628">Zarządzaj aplikacjami</translation>
@@ -334,6 +335,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1327794256477341646">Nie będą działać funkcje, które potrzebują lokalizacji</translation>
 <translation id="1329191040029425999">Sprawdź, czy urządzenie jest aktualne, i spróbuj ponownie</translation>
 <translation id="1330145147221172764">Włącz klawiaturę ekranową</translation>
+<translation id="1331625853030156663">Aby otworzyć aplikację <ph name="APP_NAME" />, włącz opcję „Pokaż ekran blokady po wybudzeniu”</translation>
 <translation id="1331977651797684645">To ja.</translation>
 <translation id="1333489022424033687">Dopóki nie usuniesz danych zapisanych na Twoim urządzeniu przez inne strony, niektóre funkcje na stronie <ph name="ORIGIN" /> mogą nie działać</translation>
 <translation id="1333965224356556482">Nie zezwalaj witrynom na wyświetlanie lokalizacji</translation>
@@ -1939,6 +1941,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2832124733806557606">Twoje dziecko może logować się lub odblokowywać urządzenie za pomocą kodu PIN.</translation>
 <translation id="2835177225987815960">Obecna konfiguracja skanowania zostanie zresetowana (w tym wszystkie przypisane przełączniki i ustawienia szybkości działania automatycznego skanowania).</translation>
 <translation id="2835547721736623118">Usługa rozpoznawania mowy</translation>
+<translation id="2836232638504556905"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni teraz witrynie Twoje imię i nazwisko, adres e-mail i zdjęcie profilowe. Zapoznaj się z <ph name="BEGIN_LINK" />polityką prywatności<ph name="END_LINK" /> tej witryny.</translation>
 <translation id="2836269494620652131">Awaria</translation>
 <translation id="2836635946302913370">Możliwość logowania przy użyciu tej nazwy użytkownika została wyłączona przez administratora.</translation>
 <translation id="283669119850230892">Aby korzystać z sieci <ph name="NETWORK_ID" />, zakończ poniższe połączenie z internetem.</translation>
@@ -2220,6 +2223,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3105796011181310544">Zmienić z powrotem na Google?</translation>
 <translation id="310671807099593501">Strona używa Bluetootha</translation>
 <translation id="3108931485517391283">Nie udało się odebrać</translation>
+<translation id="3109206895301430738">Zapisane grupy kart</translation>
 <translation id="3109724472072898302">Zwinięty</translation>
 <translation id="311214366526552035">Pobierz mimo to</translation>
 <translation id="3112292765614504292">Rozmiar aplikacji: <ph name="APP_SIZE" /></translation>
@@ -3317,6 +3321,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="420283545744377356">Wyłącz wygaszacz ekranu</translation>
 <translation id="4203065553461038553">Nazwa lub lokalizacja pliku jest za długa</translation>
 <translation id="4204851595694839599">Jak oceniasz jakość rozgrywki?</translation>
+<translation id="4205157409548006256">Podczas konfigurowania Linuksa wystąpił błąd.</translation>
 <translation id="4206144641569145248">Kosmita</translation>
 <translation id="4206323443866416204">Przesyłanie opinii</translation>
 <translation id="4207522141889799150">Edytuj uprawnienia witryny <ph name="SITE" /></translation>
@@ -4062,7 +4067,6 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4953808748584563296">Domyślny pomarańczowy awatar</translation>
 <translation id="4955710816792587366">Ustaw kod PIN</translation>
 <translation id="4959262764292427323">Hasła są zapisywane na Twoim koncie Google, dzięki czemu możesz ich używać na dowolnym urządzeniu</translation>
-<translation id="496027654926814138">Plik <ph name="FILE_NAME" /> może umożliwiać osobom przeprowadzającym atak kradzież Twoich danych osobowych.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Przesyłanie ekranu</translation>
 <translation id="4961361269522589229">przykładowe przepisy</translation>
@@ -5784,6 +5788,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6686665106869989887">Karta została przesunięta w prawo</translation>
 <translation id="6686817083349815241">Zapisz hasło</translation>
 <translation id="6687079240787935001">Ukryj: <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">Prośby o uprawnienia do odczytywania i modyfikowania strony <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Niech <ph name="SUPERVISED_USER_NAME" /> podejdzie teraz do komputera. Poproś dziecko o przeczytanie kilku wyrażeń z ekranu. Jest to konieczne, aby można było utworzyć model jego głosu.
     <ph name="BR" />
     Jeśli <ph name="SUPERVISED_USER_NAME" /> potrzebuje pomocy w czytaniu, niech powtarza za Tobą. Mów szeptem z dala od mikrofonu, aby Asystent nauczył się głosu dziecka, a nie Twojego.</translation>
@@ -5888,7 +5893,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6798578729981748444">Aby zakończyć importowanie, zamknij wszystkie okna Firefoksa.</translation>
 <translation id="6798780071646309401">caps lock włączony</translation>
 <translation id="6798954102094737107">Wtyczka: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">Ten plik może umożliwiać osobom przeprowadzającym atak kradzież Twoich danych osobowych</translation>
 <translation id="6801129617625983991">Ustawienia ogólne</translation>
 <translation id="6801435275744557998">Skalibruj ekran dotykowy</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6296,6 +6300,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Zamknij stronę}few{Zamknij strony}many{Zamknij strony}other{Zamknij strony}}</translation>
 <translation id="7207457272187520234">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To ustawienie jest wymuszone przez właściciela. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google.</translation>
 <translation id="7207631048330366454">Szukaj aplikacji</translation>
+<translation id="720808544705441386">Nie można otworzyć aplikacji</translation>
 <translation id="7210499381659830293">Drukarki dostępne za pomocą rozszerzeń</translation>
 <translation id="7211783048245131419">Jeszcze nie przypisano żadnego przełącznika</translation>
 <translation id="7212097698621322584">Wpisz obecny kod PIN, by go zmienić. Jeśli go nie znasz, musisz zresetować klucz bezpieczeństwa, a potem utworzyć nowy kod PIN.</translation>
@@ -6359,7 +6364,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7269736181983384521">Udostępnianie w pobliżu użycie danych</translation>
 <translation id="7272674038937250585">Brak opisu</translation>
 <translation id="7273110280511444812">ostatnio podłączone w dniu <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Zamierzasz skorzystać z licencji Kiosk &amp; Signage, która umożliwia działanie urządzenia tylko w trybie kiosku lub tablicy informacyjnej. Jeśli chcesz, aby użytkownicy logowali się na urządzeniu, wróć do poprzedniego ekranu i wybierz rejestrację z licencją na Chrome Enterprise.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – pełne naładowanie za <ph name="TIME" /></translation>
 <translation id="727952162645687754">Błąd pobierania</translation>
 <translation id="7280041992884344566">Podczas wyszukiwania szkodliwego oprogramowania przez Chrome wystąpił błąd</translation>
@@ -6762,7 +6766,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7670434942695515800">Zalecamy zaktualizowanie do najnowszej wersji – pozwoli to uzyskać najlepszą wydajność. Warto utworzyć kopię zapasową plików, aby nie utracić danych, jeśli nie uda się przeprowadzić uaktualnienia. Po rozpoczęciu uaktualnienia Linux zostanie wyłączony. Zanim przejdziesz dalej, zapisz otwarte pliki. <ph name="LINK_START" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Użyj systemowego paska tytułu i ramek</translation>
 <translation id="767127784612208024">Dotknij, by potwierdzić resetowanie</translation>
-<translation id="767147716926917172">Powoduje automatyczne wysyłanie do Google danych diagnostycznych i danych o korzystaniu</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> na stronie <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">W Linuksie dezaktywuj wszystkie przekierowywane porty</translation>
 <translation id="7674537509496907005">Aplikacje: <ph name="APP_COUNT" /></translation>
@@ -7453,6 +7456,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8324784016256120271">Strony mogą używać plików cookie do śledzenia Twojej aktywność związanej z przeglądaniem różnych stron, na przykład w celu personalizowania reklam</translation>
 <translation id="8325413836429495820">Nie zezwolono na wyświetlanie schowka</translation>
 <translation id="8326478304147373412">PKCS #7, łańcuch certyfikatów</translation>
+<translation id="8327386430364625757">Czcionka matematyczna</translation>
 <translation id="8327676037044516220">Uprawnienia i ustawienia treści</translation>
 <translation id="8330617762701840933">Lista witryn przekierowywanych do alternatywnej przeglądarki.</translation>
 <translation id="8330689128072902965">Kontakty w pobliżu mogą Ci udostępniać dane. Kliknij, aby to zmienić.</translation>

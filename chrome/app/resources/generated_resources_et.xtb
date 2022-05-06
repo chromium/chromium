@@ -1961,6 +1961,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="2832124733806557606">Teie laps saab sisselogimiseks või seadme avamiseks kasutada PIN-koodi.</translation>
 <translation id="2835177225987815960">Teie praegune skannimise seadistus lähtestatakse (sh kõik määratud lülitid ja automaatse skannimise kiiruse eelistused).</translation>
 <translation id="2835547721736623118">Kõnetuvastuse teenus</translation>
+<translation id="2836232638504556905">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie nime, e-posti aadressi ja profiilipilti. Vaadake selle saidi <ph name="BEGIN_LINK" />privaatsuseeskirju<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Krahh</translation>
 <translation id="2836635946302913370">Teie administraator on keelanud selle kasutajanimega sisselogimise.</translation>
 <translation id="283669119850230892">Võrgu <ph name="NETWORK_ID" /> kasutamiseks looge esmalt ühendus Internetiga.</translation>
@@ -2242,6 +2243,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3105796011181310544">Kas muuta tagasi Google'ile?</translation>
 <translation id="310671807099593501">Sait kasutab Bluetoothi</translation>
 <translation id="3108931485517391283">Ei saa vastu võtta</translation>
+<translation id="3109206895301430738">Salvestatud vahelehegrupid</translation>
 <translation id="3109724472072898302">Ahendatud</translation>
 <translation id="311214366526552035">Laadi ikkagi alla</translation>
 <translation id="3112292765614504292">Rakenduse maht: <ph name="APP_SIZE" /></translation>
@@ -4085,7 +4087,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4953808748584563296">Oranž vaikeavatar</translation>
 <translation id="4955710816792587366">Valige PIN-kood</translation>
 <translation id="4959262764292427323">Paroolid salvestatakse teie Google'i kontole, et saaksite neid kasutada mis tahes seadmes</translation>
-<translation id="496027654926814138">Fail <ph name="FILE_NAME" /> võib ründajatel teie isikuandmete varastamist võimaldada.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Ekraani ülekandmine</translation>
 <translation id="4961361269522589229">retseptiideed</translation>
@@ -5909,7 +5910,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6798578729981748444">Importimise lõpetamiseks sulgege kõik Firefoxi aknad.</translation>
 <translation id="6798780071646309401">suurtähelukk on sisse lülitatud</translation>
 <translation id="6798954102094737107">Pistikprogramm: <ph name="PLUGIN_NAME" /></translation>
-<translation id="6800746963123086495">See fail võib ründajatel teie isikuandmete varastamist võimaldada</translation>
 <translation id="6801129617625983991">Üldseaded</translation>
 <translation id="6801435275744557998">Puuteekraani kalibreerimine</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -6381,7 +6381,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7269736181983384521">Läheduses jagamine – andmekasutus</translation>
 <translation id="7272674038937250585">Kirjeldust ei ole sisestatud</translation>
 <translation id="7273110280511444812">viimati ühendatud kuupäeval <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Kasutate kioski- ja teabeseadmete versiooniuuendust, mis lubab seadet käitada ainult kioski- või teabeseadme režiimis. Kui soovite, et kasutajad logiksid seadmesse sisse, minge tagasi ja registreeruge Chrome Enterpirse'i versiooniuuenduse kaudu.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> täitumiseni</translation>
 <translation id="727952162645687754">Viga allalaadimisel</translation>
 <translation id="7280041992884344566">Chrome'is ohtliku tarkvara otsimisel ilmnes viga</translation>
@@ -6784,7 +6783,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7670434942695515800">Parima toimivuse saavutamiseks uuendage uusimale versioonile. Failide varundamine on soovitatav, et vältida nende kaotsiminekut juhul, kui versiooniuuendust ei saa lõpule viia. Versiooniuuenduse alates lülitub Linux välja. Enne jätkamist salvestage avatud failid. <ph name="LINK_START" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Kasutage süsteemi pealkirjariba ja ääriseid</translation>
 <translation id="767127784612208024">Puudutage lähtestamise kinnitamiseks</translation>
-<translation id="767147716926917172">Saada Google'ile automaatselt kasutusstatistikat</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> lehel <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Inaktiveeri kõik pordid, mis Linuxis on edasi suunatud</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> rakendust</translation>

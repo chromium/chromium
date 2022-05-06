@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C device (front port)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> changed to <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Please enter this PIN code on that device: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Partial screenshot selected</translation>
 <translation id="1024364763893396229">Save your <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Stylus battery is low</translation>
 <translation id="1036073649888683237">To manage notifications, go to Settings</translation>
@@ -137,6 +136,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1719094688023114093">Live Caption is on.</translation>
 <translation id="1720011244392820496">Turn on Wi-Fi Sync</translation>
 <translation id="1736898441010944794">'<ph name="NAME" />' visible to Bluetooth devices.</translation>
+<translation id="174102739345480129">Marker is off.</translation>
 <translation id="1743570585616704562">Not recognised</translation>
 <translation id="1746730358044914197">Input methods are configured by your administrator.</translation>
 <translation id="1747827819627189109">On-screen keyboard enabled</translation>
@@ -331,7 +331,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="3009178788565917040">Output</translation>
 <translation id="3009958530611748826">Select a folder to save to</translation>
 <translation id="301282384882049174">Shared by your administrator</translation>
-<translation id="3017687597151988916">Selection area set to window</translation>
 <translation id="3033545621352269033">On</translation>
 <translation id="3033912566804961911">Combine with <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Open Files</translation>
@@ -566,6 +565,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4379531060876907730">These are your stylus tools</translation>
 <translation id="4389184120735010762">You pressed the keyboard shortcut for the docked magnifier. Do you want to turn it on?</translation>
 <translation id="439598569299422042">Paused, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Can't save screencast</translation>
 <translation id="4405151984121254935">The connected peripheral type is not supported</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is off.</translation>
@@ -672,6 +672,7 @@ Here are some things that you can try to get started.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Next sentence</translation>
+<translation id="5016558321564993266">Toggle marker. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Time is up</translation>
 <translation id="5033299697334913360">Click anywhere to capture full screen</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> connected to a new phone</translation>
@@ -701,6 +702,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5234764350956374838">Dismiss</translation>
 <translation id="523505283826916779">Accessibility settings</translation>
+<translation id="5245201184978705914">Can't generate transcript</translation>
 <translation id="5253783950165989294">Connected to a device named <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% battery</translation>
 <translation id="5260676007519551770">Desk 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> requests your attention.</translation>
@@ -735,6 +737,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5433020815079095860">Audio input</translation>
 <translation id="544691375626129091">All available users have already been added to this session.</translation>
 <translation id="54609108002486618">Managed</translation>
+<translation id="5460938382730614333">Marker is on.</translation>
 <translation id="5465662442746197494">Need help?</translation>
 <translation id="547979256943495781">Shelf on right</translation>
 <translation id="5491186829646618080">Firmware updates available</translation>
@@ -776,6 +779,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5745612484876805746">Night Light turns on automatically at sunset</translation>
 <translation id="5750765938512549687">Bluetooth is off</translation>
 <translation id="5760866832697883462">Connect your <ph name="NAME" /></translation>
+<translation id="5762420912707163638">Toggle marker. <ph name="STATE_TEXT" /> Use the trackpad, touchscreen or stylus to draw onscreen.</translation>
 <translation id="576341972084747908">Download dangerous <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Shelf Party is off.</translation>
 <translation id="576453121877257266">Night Light is on.</translation>
@@ -1050,7 +1054,6 @@ New install</translation>
 <translation id="746232733191930409">Screen recording mode</translation>
 <translation id="7466449121337984263">Please touch the sensor</translation>
 <translation id="7477793887173910789">Control your music, videos and more</translation>
-<translation id="7483025031359818980">Selection area set to full screen</translation>
 <translation id="7497767806359279797">Choose language and keyboard</translation>
 <translation id="7508690557411636492">Opened in the past month</translation>
 <translation id="7509246181739783082">Verify your identity</translation>

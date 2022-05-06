@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Устройство USB-C (порт спереди)</translation>
 <translation id="1013598600051641573">Для экрана "<ph name="DISPLAY_NAME" />" установлено разрешение <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth. Введите на нем PIN-код: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Выбран режим "Снимок части экрана"</translation>
 <translation id="1024364763893396229">Сохраните <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Батарея стилуса почти разряжена</translation>
 <translation id="1036073649888683237">Чтобы управлять уведомлениями, откройте настройки</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">Выход</translation>
 <translation id="3009958530611748826">Выберите папку для сохранения</translation>
 <translation id="301282384882049174">Доступ предоставлен администратором.</translation>
-<translation id="3017687597151988916">Для снимка выбрано все окно</translation>
 <translation id="3033545621352269033">Включено</translation>
 <translation id="3033912566804961911">Объединить с рабочим столом <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Открытие файлов</translation>
@@ -1050,7 +1048,6 @@
 <translation id="746232733191930409">Режим записи видео с экрана</translation>
 <translation id="7466449121337984263">Приложите палец к сканеру.</translation>
 <translation id="7477793887173910789">Управляйте воспроизведением музыки, видео и других медиафайлов</translation>
-<translation id="7483025031359818980">Выбран весь экран</translation>
 <translation id="7497767806359279797">Выберите язык и клавиатуру</translation>
 <translation id="7508690557411636492">Открыто в прошлом месяце</translation>
 <translation id="7509246181739783082">Подтвердите личность</translation>

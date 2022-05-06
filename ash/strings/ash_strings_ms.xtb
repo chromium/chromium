@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">Peranti USB-C (port depan)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> diubah kepada <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik sahkan untuk menyimpan perubahan. Tetapan terdahulu akan dipulihkan dalam masa <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Peranti Bluetooth "<ph name="DEVICE_NAME" />" ingin kebenaran untuk berpasangan. Sila masukkan kod PIN ini pada peranti tersebut: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Tangkapan skrin separa dipilih</translation>
 <translation id="1024364763893396229">Simpan <ph name="NAME" /> anda</translation>
 <translation id="1032891413405719768">Bateri stilus lemah</translation>
 <translation id="1036073649888683237">Untuk mengurus pemberitahuan, pergi ke Tetapan</translation>
@@ -331,7 +330,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3009178788565917040">Output</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan imbasan</translation>
 <translation id="301282384882049174">Dikongsi oleh pentadbir anda</translation>
-<translation id="3017687597151988916">Kawasan pilihan ditetapkan kepada tetingkap</translation>
 <translation id="3033545621352269033">Dihidupkan</translation>
 <translation id="3033912566804961911">Gabung dengan <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Buka Fail</translation>
@@ -852,6 +850,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6166852626429024716">Cari dalam peranti anda, apl, tetapan, web...</translation>
 <translation id="6179832488876878285">Anda boleh menyematkan fail penting anda di sini. Buka apl Files untuk bermula.</translation>
 <translation id="619279033188484792">Lihat foto, media dan pemberitahuan baru-baru ini telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
+<translation id="619335566042889110">Caskan penuh sekarang</translation>
 <translation id="6220928844947387476">Kini anda boleh merakam diri anda dan skrin anda secara serentak</translation>
 <translation id="622484624075952240">Bawah</translation>
 <translation id="6231419273573514727">Prestasi peranti persisian mungkin terhad</translation>
@@ -1050,7 +1049,6 @@ Pemasangan baharu</translation>
 <translation id="746232733191930409">Mod rakaman skrin</translation>
 <translation id="7466449121337984263">Sila sentuh penderia</translation>
 <translation id="7477793887173910789">Kawal muzik, video anda dan banyak lagi</translation>
-<translation id="7483025031359818980">Kawasan pilihan ditetapkan kepada skrin penuh</translation>
 <translation id="7497767806359279797">Pilih bahasa dan papan kekunci</translation>
 <translation id="7508690557411636492">Dibuka pada bulan lalu</translation>
 <translation id="7509246181739783082">Sahkan identiti anda</translation>
@@ -1187,6 +1185,7 @@ Pemasangan baharu</translation>
 <translation id="826107067893790409">Tekan Enter bagi membuka kunci untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Padam</translation>
 <translation id="8270450402312105425">{0,plural, =1{Tukar peranti kepada versi sebelumnya dalam masa sejam}other{Tukar peranti kepada versi sebelumnya dalam masa # jam}}</translation>
+<translation id="8271580342040932214">Bateri anda adalah pada tahap 80% untuk sementara waktu semasa palam dipasangkan untuk melanjutkan hayat bateri. Bateri anda akan dicas sepenuhnya selewat-lewatnya <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Leret ke kiri dengan empat jari untuk beralih kepada meja sebelumnya</translation>
 <translation id="828708037801473432">Dimatikan</translation>
 <translation id="8297006494302853456">Lemah</translation>
@@ -1270,6 +1269,7 @@ Pemasangan baharu</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Tetapan Kaedah Masukan</translation>
 <translation id="8818320199597151042">Mengalih keluar profil. Tunggu beberapa minit.</translation>
+<translation id="8819728065740986820">Pengecasan boleh suai dihidupkan</translation>
 <translation id="8825863694328519386">Leret dari kiri untuk kembali</translation>
 <translation id="8834539327799336565">Tersambung pada masa ini</translation>
 <translation id="8841375032071747811">Butang kembali</translation>
@@ -1316,6 +1316,7 @@ Pemasangan baharu</translation>
 <translation id="9080132581049224423">Leret ke atas untuk mencapai laman utama</translation>
 <translation id="9080206825613744995">Mikrofon sedang digunakan.</translation>
 <translation id="9084606467167974638">Togol kedudukan menu</translation>
+<translation id="9085962983642906571">Bateri anda dipastikan pada tahap 80% semasa palam dipasangkan untuk melanjutkan hayat bateri.</translation>
 <translation id="9089416786594320554">Kaedah input</translation>
 <translation id="9091626656156419976">Paparan <ph name="DISPLAY_NAME" /> dialih keluar</translation>
 <translation id="9098969848082897657">Senyapkan telefon</translation>

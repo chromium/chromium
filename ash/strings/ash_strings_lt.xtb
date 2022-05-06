@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">USB-C įrenginys (prievadas priekyje)</translation>
 <translation id="1013598600051641573">„<ph name="DISPLAY_NAME" />“ pakeistas į <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Spustelėkite patvirtinimo mygtuką, kad išsaugotumėte pakeitimus. Ankstesni nustatymai bus atkurti po <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">„Bluetooth“ įrenginys „<ph name="DEVICE_NAME" />“ prašo leidimo susieti. Šiame įrenginyje įveskite šį PIN kodą: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Pasirinkta dalinė ekrano kopija</translation>
 <translation id="1024364763893396229">Išsaugokite „<ph name="NAME" />“</translation>
 <translation id="1032891413405719768">Rašiklio akumuliatorius senka</translation>
 <translation id="1036073649888683237">Norėdami tvarkyti pranešimus, eikite į nustatymus</translation>
@@ -331,7 +330,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3009178788565917040">Išvestis</translation>
 <translation id="3009958530611748826">Pasirinkite aplanką, kuriame pageidaujate išsaugoti</translation>
 <translation id="301282384882049174">Bendrina administratorius</translation>
-<translation id="3017687597151988916">Pasirinkta lango sritis</translation>
 <translation id="3033545621352269033">Įjungta</translation>
 <translation id="3033912566804961911">Sujungti su „<ph name="DESK_NAME" />“</translation>
 <translation id="3036649622769666520">Atidaryti failus</translation>
@@ -1050,7 +1048,6 @@ Naujas įdiegimas</translation>
 <translation id="746232733191930409">Ekrano vaizdo įrašymo režimas</translation>
 <translation id="7466449121337984263">Palieskite jutiklį</translation>
 <translation id="7477793887173910789">Valdykite savo muziką, vaizdo įrašus ir žaidimus</translation>
-<translation id="7483025031359818980">Pasirinkta viso ekrano sritis</translation>
 <translation id="7497767806359279797">Pasirinkti kalbą ir klaviatūros išdėstymą</translation>
 <translation id="7508690557411636492">Atidaryta per pastarąjį mėnesį</translation>
 <translation id="7509246181739783082">Tapatybės patvirtinimas</translation>

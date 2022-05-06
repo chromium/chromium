@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">ອຸ​ປະ​ກອນ USB-C (ຜອດດ້ານໜ້າ)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> ໄດ້ປ່ຽນເປັນ <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ແລ້ວ. ຄລິກຢືນຢັນເພື່ອຮັກສາການປ່ຽນແປງໄວ້. ລະບົບຈະກູ້ຄືນການຕັ້ງຄ່າກ່ອນໜ້າໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">ອຸປະກອນ Bluetooth "<ph name="DEVICE_NAME" />" ຢາກຂໍອະນຸຍາດຈັບຄູ່. ກະລຸນາປ້ອນລະຫັດ PIN ນີ້ເຂົ້າໄປໃນອຸປະກອນນັ້ນ: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">ເລືອກຮູບໜ້າຈໍບາງສ່ວນແລ້ວ</translation>
 <translation id="1024364763893396229">ບັນທຶກ <ph name="NAME" /> ຂອງທ່ານ</translation>
 <translation id="1032891413405719768">ແບັດເຕີຣີປາຍປາກກາເຫຼືອໜ້ອຍ</translation>
 <translation id="1036073649888683237">ກະລຸນາເຂົ້າໄປການຕັ້ງຄ່າເພື່ອຈັດການການແຈ້ງເຕືອນ</translation>
@@ -331,7 +330,6 @@
 <translation id="3009178788565917040">ຜົນອອກມາ</translation>
 <translation id="3009958530611748826">ເລືອກໂຟນເດີທີ່ຈະບັນທຶກໄວ້ໃນ</translation>
 <translation id="301282384882049174">ແບ່ງປັນໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
-<translation id="3017687597151988916">ຕັ້ງພື້ນທີ່ການເລືອກເປັນໜ້ຈໍແລ້ວ</translation>
 <translation id="3033545621352269033">ເປີດ</translation>
 <translation id="3033912566804961911">ຮວມກັບ <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">ເປີດໄຟລ໌</translation>
@@ -1050,7 +1048,6 @@
 <translation id="746232733191930409">ໂໝດການບັນທຶກໜ້າຈໍ</translation>
 <translation id="7466449121337984263">ກະລຸນາແຕະເຊັນເຊີ</translation>
 <translation id="7477793887173910789">ຄວບຄຸມເພງ, ວິດີໂອຂອງທ່ານ ແລະ ອື່ນໆອີກ</translation>
-<translation id="7483025031359818980">ຕັ້ງຄ່າພື້ນທີ່ການເລືອກເປັນເຕັມຈໍແລ້ວ</translation>
 <translation id="7497767806359279797">ເລືອກພາສາ ແລະ ແປ້ນພິມ</translation>
 <translation id="7508690557411636492">ເປີດເດືອນແລ້ວ</translation>
 <translation id="7509246181739783082">ຢັ້ງຢືນຕົວຕົນຂອງທ່ານ</translation>

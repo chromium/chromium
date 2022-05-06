@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Активиране на светлата тема</translation>
 <translation id="2323506179655536734">ПРОПУСНАТО</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Включете Bluetooth, за да бъдат открити устройствата в близост</translation>
 <translation id="2346474577291266260">Отлична (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463">Открити са <ph name="LINK_BEGIN" />неотговарящи на изискванията компоненти<ph name="LINK_END" />. Ако искате да потвърдите, че са инсталирани, направете го сега.</translation>
@@ -722,7 +723,6 @@
 <translation id="8498220429738806196">Броячи за трафика</translation>
 <translation id="8503813439785031346">Потребителско име</translation>
 <translation id="8503836310948963452">Само още няколко минути…</translation>
-<translation id="8521021929829989041">Използване като лично устройство</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Тази опция може да е необходима за свързване с мрежата на оператора ви. За подробности се обърнете към него.</translation>
 <translation id="8576249514688522074">Неинициализирана</translation>

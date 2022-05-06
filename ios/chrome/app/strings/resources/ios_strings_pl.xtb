@@ -38,7 +38,6 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="1219674500290482172">Nie można połączyć się z internetem.</translation>
 <translation id="122699739164161391">Zamknij wszystkie karty</translation>
 <translation id="1229222343402087523">Wyszukaj ${searchPhrase} w Chrome</translation>
-<translation id="1231733316453485619">Włączyć synchronizację?</translation>
 <translation id="1242044645101871359">Zaloguj się ponownie</translation>
 <translation id="1254117744268754948">Wybierz folder</translation>
 <translation id="1265739287306757398">Instrukcje</translation>
@@ -227,6 +226,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2898963176829412617">Nowy folder…</translation>
 <translation id="2916171785467530738">Autouzupełniaj wyszukiwania i adresy URL</translation>
 <translation id="291754862089661335">Umieść kod QR lub kod kreskowy w tej ramce</translation>
+<translation id="2920866371965792875">Aby zobaczyć aktualizacje z tej witryny, kliknij tutaj.</translation>
 <translation id="2921219216347069551">Nie można udostępnić</translation>
 <translation id="2923448633003185837">Wklej i otwórz</translation>
 <translation id="292639812446257861">Oznacz jako nieprzeczytane</translation>
@@ -969,5 +969,4 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="988141524645182168">Inne urządzenia</translation>
 <translation id="989988560359834682">Edytuj adres</translation>
 <translation id="994757059139821576">Proponowanie artykułów</translation>
-<translation id="997742718232442409">Strona próbuje pobrać plik kalendarza.</translation>
 </translationbundle>

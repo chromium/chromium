@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Heleda teema lubamine</translation>
 <translation id="2323506179655536734">VAHELE JÄETUD</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Lülitage Bluetooth sisse, et läheduses olevaid seadmeid avastada</translation>
 <translation id="2346474577291266260">Suurepärane (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463">Tuvastati <ph name="LINK_BEGIN" />sobimatud komponendid<ph name="LINK_END" />. Kui soovite kinnitada, et see on paigaldatud, tehke seda praegu.</translation>
@@ -375,6 +376,7 @@
 <translation id="4890353053343094602">Valige kohe uus</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Seadme vasaku kõrvaklapi aku laetus on <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4915052247106771211">See lähtestab seadme tehaseseadetele (Powerwash).</translation>
 <translation id="4917385247580444890">Tugev</translation>
 <translation id="4917889632206600977">Peatatud – paber on otsas</translation>
 <translation id="4921665434385737356">Laeti <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundi jooksul.</translation>
@@ -429,6 +431,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5358174242040570474">Midagi läks valesti. Proovige taustapilt uuesti valida või avage rakendus uuesti.</translation>
 <translation id="5372659122375744710">WiFi-võrk pole turvaline</translation>
 <translation id="5376354385557966694">Automaatne hele režiim</translation>
+<translation id="537872351913703572">Seade antakse teisele kasutajale või organisatsioonile</translation>
 <translation id="5400907029458559844">Seadet ühendatakse.</translation>
 <translation id="5401938042319910061">Käita kõiki rutiine</translation>
 <translation id="5423849171846380976">Aktiveeritud</translation>
@@ -722,7 +725,6 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8498220429738806196">Liiklusloendurid</translation>
 <translation id="8503813439785031346">Kasutajanimi</translation>
 <translation id="8503836310948963452">Veel mõni minut …</translation>
-<translation id="8521021929829989041">Kasuta isikliku seadmena</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Teie operaator võib võrguga ühendamiseks seda valikut nõuda. Lisateavet küsige operaatorilt.</translation>
 <translation id="8576249514688522074">Lähtestamata</translation>
@@ -733,6 +735,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8671972493856476349">Värskenda versioonile <ph name="VERSION_NUMBER" /> ja taaskäivita</translation>
 <translation id="8675354002693747642">Eeljagatud võti</translation>
 <translation id="8677859815076891398">Albumeid pole. Looge album teenuses <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Seade antakse samale kasutajale</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Kasutage selle funktsiooni haldamiseks vasak- või paremnooleklahvi.</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="871560550817059752">Ebaõnnestus – tint on otsas</translation>

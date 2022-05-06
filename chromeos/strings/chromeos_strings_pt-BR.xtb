@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Ativar o tema claro</translation>
 <translation id="2323506179655536734">IGNORADO</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Ativar o Bluetooth para descobrir dispositivos nas proximidades</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Componentes não qualificados<ph name="LINK_END" /> detectados. Se quiser confirmar a instalação, faça isso agora.</translation>
@@ -155,6 +156,7 @@
 <translation id="2446553403094072641">Precisão de pontos flutuantes</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2461822463642141190">Atual</translation>
+<translation id="2480034874476596812">Desativar manualmente</translation>
 <translation id="2491955442992294626">As chaves não são testadas enquanto você usa outra janela</translation>
 <translation id="2493126929778606526">Suas melhores fotos, selecionadas automaticamente</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -250,6 +252,7 @@
 <translation id="3606583719724308068">Alta latência em sites HTTPS</translation>
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Alternar Tela de privacidade</translation>
+<translation id="3678765385266369662">Selecione como você quer desativar a proteção contra gravação</translation>
 <translation id="3689839747745352263">Teste de <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Carregando...</translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
@@ -304,6 +307,7 @@
 <translation id="4244962993387259361">É necessário ter pelo menos 500 MB livres para executar um teste de memória. Para liberar espaço, acesse Configurações &gt; Gerenciador de armazenamento.</translation>
 <translation id="4250229828105606438">Captura de tela</translation>
 <translation id="4258281355379922695">Latência do HTTP</translation>
+<translation id="4258561075226177474">O dispositivo vai continuar com o mesmo usuário. Remover dados do usuário?</translation>
 <translation id="4271957103967917607">Ver em tela cheia</translation>
 <translation id="4275799948641988986">Após o reparo, quem vai usar o dispositivo?</translation>
 <translation id="4289540628985791613">Visão geral</translation>
@@ -352,6 +356,7 @@
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4744944742468440486">Informações relacionadas à sua seleção</translation>
 <translation id="4773299976671772492">Interrompida</translation>
+<translation id="4774530504324923332">Você vai precisar de uma chave de segurança habilitada para RSU, um leitor de código QR e um segundo dispositivo com uma conexão de Internet</translation>
 <translation id="4782311465517282004">Veja definições, traduções ou conversões de unidades ao clicar com o botão direito do mouse no texto ou tocar nele e mantê-lo pressionado</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Para receber mais ajuda, acesse a <ph name="BEGIN_LINK" />Central de Ajuda<ph name="END_LINK" />.</translation>
@@ -431,6 +436,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="5372659122375744710">A rede Wi-Fi não é segura</translation>
 <translation id="5376354385557966694">Modo claro automático</translation>
 <translation id="537872351913703572">O dispositivo vai mudar para um usuário ou uma organização diferente</translation>
+<translation id="5395600419410242651">Limpar todos os dados</translation>
 <translation id="5400907029458559844">O dispositivo está conectando.</translation>
 <translation id="5401938042319910061">Executar todas as rotinas</translation>
 <translation id="5423849171846380976">Ativado</translation>
@@ -641,6 +647,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7570674786725311828">Tela touchscreen USB</translation>
 <translation id="7595982850646262331">Tempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Saiba mais na Central de Ajuda</translation>
+<translation id="7626501172915339021">Usar o desbloqueio por servidor RMA (RSU)</translation>
 <translation id="763165478673169849">Horário da última redefinição</translation>
 <translation id="7648838807254605802">Latência de HTTPS alta</translation>
 <translation id="7656388927906093505">Este dispositivo é um mouse.</translation>
@@ -724,7 +731,6 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8498220429738806196">Contadores de tráfego</translation>
 <translation id="8503813439785031346">Nome de usuário</translation>
 <translation id="8503836310948963452">Só mais alguns minutos…</translation>
-<translation id="8521021929829989041">Usar como dispositivo pessoal</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Pode ser necessário ativar esta opção para se conectar à rede da sua operadora. Entre em contato com a operadora para mais informações.</translation>
 <translation id="8576249514688522074">Não inicializado</translation>
@@ -785,6 +791,8 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="9087578468327036362">Denuncie essa consulta</translation>
 <translation id="9088306295921699330">Uso atual</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">Você vai precisar desmontar o dispositivo</translation>
+<translation id="9098156406873149060">Manter os dados do usuário</translation>
 <translation id="910415269708673980">Atualizar tíquete para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Digitalizando página <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>

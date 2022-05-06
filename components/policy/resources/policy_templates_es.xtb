@@ -3756,6 +3756,16 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="5179853299156742425">La URL desde la que se puede descargar la plantilla de escritorio.</translation>
 <translation id="5182055907976889880">Configura Google Drive en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5182483318861266793">Colocar la estantería en la parte derecha de la pantalla</translation>
+<translation id="5184298474980725716">Esta política controla la visibilidad de los recorridos en la página del historial de Chrome.
+
+      Si se habilita esta política, los recorridos serán visibles en chrome://history/journeys.
+
+      Si se inhabilita esta política, los recorridos no serán visibles en chrome://history/journeys.
+
+      Si no se establece esta política, los recorridos serán visibles en chrome://history/journeys de forma predeterminada y los usuarios podrán cambiar la visibilidad de los recorridos.
+
+      Ten en cuenta que si la política <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> se inhabilita y <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> se habilita o no se establece, los recorridos seguirán estando disponibles en chrome://history/journeys, pero es posible que no aparezcan en el omnibox y que sean menos relevantes para el usuario.
+      </translation>
 <translation id="51859390023061147">Inhabilitar la función de restauración completa</translation>
 <translation id="5189360528842591274">Permitir conectarse solo a los servicios Bluetooth de la lista</translation>
 <translation id="5190426551516379357">Si la política se define, se aplica un modo restringido mínimo en YouTube y se evita que los usuarios seleccionen un modo menos restringido. Cuando se asignan estos valores:

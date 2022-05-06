@@ -38,7 +38,6 @@
 <translation id="1219674500290482172">인터넷에 연결할 수 없습니다.</translation>
 <translation id="122699739164161391">탭 모두 닫기</translation>
 <translation id="1229222343402087523">Chrome에서 ${searchPhrase} 검색</translation>
-<translation id="1231733316453485619">동기화를 사용하시겠습니까?</translation>
 <translation id="1242044645101871359">다시 로그인</translation>
 <translation id="1254117744268754948">폴더 선택</translation>
 <translation id="1265739287306757398">자세히 알아보기</translation>
@@ -971,5 +970,4 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="988141524645182168">기타 기기</translation>
 <translation id="989988560359834682">주소 수정</translation>
 <translation id="994757059139821576">기사 추천</translation>
-<translation id="997742718232442409">웹사이트에서 캘린더 파일을 다운로드하려고 합니다.</translation>
 </translationbundle>

@@ -4,7 +4,6 @@
 <translation id="1012876632442809908">C-tüüpi USB-seade (eesmine port)</translation>
 <translation id="1013598600051641573">Seadme <ph name="DISPLAY_NAME" /> eraldusvõimeks määrati <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Muudatuste säilitamiseks klõpsake nupul Kinnita. Eelmised seaded taastatakse <ph name="TIMEOUT_SECONDS" /> pärast.</translation>
 <translation id="1013923882670373915">Bluetoothi seade „<ph name="DEVICE_NAME" />” küsib luba sidumiseks. Sisestage seadmes järgmine PIN-kood: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Valitud on osaline ekraanipilt</translation>
 <translation id="1024364763893396229">Salvestage oma <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Elektronpliiatsi aku hakkab tühjaks saama</translation>
 <translation id="1036073649888683237">Märguannete haldamiseks avage jaotis Seaded</translation>
@@ -331,7 +330,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3009178788565917040">Väljund</translation>
 <translation id="3009958530611748826">Valige kaust, kuhu salvestada</translation>
 <translation id="301282384882049174">Jagas teie administraator</translation>
-<translation id="3017687597151988916">Valikualaks on määratud aken</translation>
 <translation id="3033545621352269033">Sees</translation>
 <translation id="3033912566804961911">Ühita töölauaga <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Failide avamine</translation>
@@ -1051,7 +1049,6 @@ Uus installimine</translation>
 <translation id="746232733191930409">Ekraanisalvestuse režiim</translation>
 <translation id="7466449121337984263">Puudutage andurit</translation>
 <translation id="7477793887173910789">Hallake oma muusikat, videoid ja muud</translation>
-<translation id="7483025031359818980">Valikualaks on määratud täisekraan</translation>
 <translation id="7497767806359279797">Valige keel ja klaviatuur</translation>
 <translation id="7508690557411636492">Avatud viimase kuu jooksul</translation>
 <translation id="7509246181739783082">Kinnitage oma isik</translation>

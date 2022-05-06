@@ -141,6 +141,7 @@
 <translation id="2320295602967756579">Aktifkan tema terang</translation>
 <translation id="2323506179655536734">DILEWATI</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Aktifkan Bluetooth untuk menemukan perangkat di sekitar</translation>
 <translation id="2346474577291266260">Sangat baik (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Komponen yang tidak memenuhi syarat<ph name="LINK_END" /> terdeteksi. Jika Anda memilih untuk mengonfirmasi bahwa komponen tersebut telah diinstal, lakukan sekarang.</translation>
@@ -722,7 +723,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8498220429738806196">Penghitung Traffic</translation>
 <translation id="8503813439785031346">Nama Pengguna</translation>
 <translation id="8503836310948963452">Tinggal beberapa menit lagi...</translation>
-<translation id="8521021929829989041">Gunakan sebagai perangkat pribadi</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operator Anda mungkin memerlukan opsi ini untuk terhubung ke jaringan. Hubungi operator untuk mengetahui detailnya.</translation>
 <translation id="8576249514688522074">Tidak diinisialisasi</translation>
