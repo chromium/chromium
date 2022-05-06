@@ -439,6 +439,10 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   content_view_->GetViewAccessibility().OverrideName(GetClassName());
   content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
 
+  // Set up layer for animations.
+  content_view_->SetPaintToLayer();
+  content_view_->layer()->SetFillsBoundsOpaquely(false);
+
   SetMonthViews();
 
   scoped_calendar_model_observer_.Observe(
@@ -561,9 +565,6 @@ void CalendarView::ResetToTodayWithAnimation() {
   if (!should_months_animate_)
     return;
   SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/false);
-
-  content_view_->SetPaintToLayer();
-  content_view_->layer()->SetFillsBoundsOpaquely(false);
 
   auto content_reporter = calendar_metrics::CreateAnimationReporter(
       content_view_, kContentViewResetToTodayAnimationHistogram);
