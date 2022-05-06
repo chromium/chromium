@@ -7,7 +7,7 @@
 #         linux ubuntu
 #         mac bigsur catalina lion highsierra mac-10.12 mojave monterey
 #             mountainlion sierra
-#         win win7 win8 win10 ]
+#         win win8 win10 ]
 # Devices
 # tags: [ android-nexus-5 android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv
@@ -81,19 +81,16 @@ crbug.com/867136 [ mac ] VideoPathTraceTest_* [ Skip ]
 crbug.com/867136 [ linux ] VideoPathTraceTest_* [ Skip ]
 crbug.com/867136 [ android ] VideoPathTraceTest_* [ Skip ]
 crbug.com/867136 [ chromeos ] VideoPathTraceTest_* [ Skip ]
-crbug.com/867136 [ win7 ] VideoPathTraceTest_* [ Skip ]
 crbug.com/867136 [ fuchsia ] VideoPathTraceTest_* [ Skip ]
 crbug.com/867136 [ mac ] OverlayModeTraceTest_* [ Skip ]
 crbug.com/867136 [ linux ] OverlayModeTraceTest_* [ Skip ]
 crbug.com/867136 [ android ] OverlayModeTraceTest_* [ Skip ]
 crbug.com/867136 [ chromeos ] OverlayModeTraceTest_* [ Skip ]
-crbug.com/867136 [ win7 ] OverlayModeTraceTest_* [ Skip ]
 crbug.com/867136 [ fuchsia ] OverlayModeTraceTest_* [ Skip ]
 crbug.com/1009860 [ mac ] SwapChainTraceTest_* [ Skip ]
 crbug.com/1009860 [ linux ] SwapChainTraceTest_* [ Skip ]
 crbug.com/1009860 [ android ] SwapChainTraceTest_* [ Skip ]
 crbug.com/1009860 [ chromeos ] SwapChainTraceTest_* [ Skip ]
-crbug.com/1009860 [ win7 ] SwapChainTraceTest_* [ Skip ]
 crbug.com/1009860 [ fuchsia ] SwapChainTraceTest_* [ Skip ]
 
 # Playing videos not supported in Fuchsia emulators.
@@ -136,7 +133,6 @@ crbug.com/976495 [ linux skia-renderer-disabled ] TraceTest_WebGPU* [ Skip ]
 crbug.com/976497 [ android ] TraceTest_WebGPU* [ Skip ]
 crbug.com/852089 [ chromeos ] TraceTest_WebGPU* [ Skip ]
 crbug.com/852089 [ fuchsia ] TraceTest_WebGPU* [ Skip ]
-crbug.com/852089 [ win7 ] TraceTest_WebGPU* [ Skip ]
 
 # Tests that crash on gpu-fyi-win10-nvidia-rel-32
 crbug.com/1300670 [ win nvidia-0x2184 ] TraceTest_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]

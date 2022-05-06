@@ -342,21 +342,6 @@ gpu_win_builder(
 )
 
 gpu_win_builder(
-    name = "gpu-fyi-try-win7-amd-rel-32",
-    pool = "luci.chromium.gpu.win7.amd.try",
-)
-
-gpu_win_builder(
-    name = "gpu-fyi-try-win7-nvidia-rel-32",
-    pool = "luci.chromium.gpu.win7.nvidia.try",
-)
-
-gpu_win_builder(
-    name = "gpu-fyi-try-win7-nvidia-rel-64",
-    pool = "luci.chromium.gpu.win7.nvidia.try",
-)
-
-gpu_win_builder(
     name = "gpu-try-win10-nvidia-rel",
     pool = "luci.chromium.gpu.win10.nvidia.try",
 )

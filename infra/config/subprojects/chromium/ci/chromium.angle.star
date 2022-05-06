@@ -222,15 +222,6 @@ ci.gpu.windows_builder(
     ),
 )
 
-ci.thin_tester(
-    name = "win7-angle-chromium-x86-amd",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|Win7-AMD|Chromium",
-        short_name = "x86",
-    ),
-    triggered_by = ["win-angle-chromium-x86-builder"],
-)
-
 ci.gpu.windows_builder(
     name = "win-angle-x64-builder",
     console_view_entry = consoles.console_view_entry(
@@ -240,15 +231,6 @@ ci.gpu.windows_builder(
     goma_backend = None,
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
     reclient_instance = rbe_instance.DEFAULT,
-)
-
-ci.thin_tester(
-    name = "win7-angle-x64-nvidia",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|Win7-NVIDIA|ANGLE",
-        short_name = "x64",
-    ),
-    triggered_by = ["win-angle-x64-builder"],
 )
 
 ci.thin_tester(

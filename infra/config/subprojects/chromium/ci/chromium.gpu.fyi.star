@@ -658,33 +658,6 @@ ci.thin_tester(
     triggered_by = ["GPU FYI Win Builder"],
 )
 
-ci.thin_tester(
-    name = "Win7 FYI Release (AMD)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|7|x86|AMD",
-        short_name = "rel",
-    ),
-    triggered_by = ["GPU FYI Win Builder"],
-)
-
-ci.thin_tester(
-    name = "Win7 FYI Release (NVIDIA)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|7|x86|Nvidia",
-        short_name = "rel",
-    ),
-    triggered_by = ["GPU FYI Win Builder"],
-)
-
-ci.thin_tester(
-    name = "Win7 FYI x64 Release (NVIDIA)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|7|x64|Nvidia",
-        short_name = "rel",
-    ),
-    triggered_by = ["GPU FYI Win x64 Builder"],
-)
-
 gpu_fyi_windows_builder(
     name = "GPU FYI Win Builder",
     console_view_entry = consoles.console_view_entry(

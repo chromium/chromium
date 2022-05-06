@@ -7,7 +7,7 @@
 #         linux ubuntu
 #         mac bigsur catalina lion highsierra mac-10.12 mojave monterey
 #             mountainlion sierra
-#         win win7 win8 win10 ]
+#         win win8 win10 ]
 # Devices
 # tags: [ android-nexus-5 android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv
@@ -257,13 +257,6 @@ crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuff
 # Windows only.
 crbug.com/angleproject/1465 [ win angle-d3d11 ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
 
-# Win / NVIDIA Quadro P400 / D3D11 flaky failures
-crbug.com/1054795 [ angle-d3d11 win7 nvidia-0x1cb3 ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_triangles.html [ Failure ]
-crbug.com/1054795 [ angle-d3d11 win7 nvidia-0x1cb3 ] deqp/functional/gles3/transformfeedback/basic_types_separate_triangles.html [ Failure ]
-crbug.com/1054795 [ angle-d3d11 win7 nvidia-0x1cb3 ] deqp/functional/gles3/transformfeedback/random_interleaved_triangles.html [ Failure ]
-crbug.com/1054795 [ angle-d3d11 win7 nvidia-0x1cb3 ] deqp/functional/gles3/transformfeedback/random_separate_triangles.html [ Failure ]
-crbug.com/1054795 [ angle-d3d11 win7 nvidia-0x1cb3 ] deqp/functional/gles3/transformfeedback/interpolation_flat.html [ Failure ]
-
 # Win / NVIDIA GeForce GTX 1660 / D3D11 flaky failures
 crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] conformance2/textures/misc/tex-3d-mipmap-levels-intel-bug.html [ Failure ]
 crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
@@ -275,29 +268,11 @@ crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] deqp/functional/gles3/shader
 # (72, 72, 72) when reading back pixels, rather than the expected values.
 # Going to try to skip the individual failing tests, rather than adding a
 # wildcard flaky suppression for all of the tests.
-crbug.com/844483 [ angle-d3d11 win7 amd-0x6613 ] conformance2/renderbuffers/multisampled-renderbuffer-initialization.html [ RetryOnFailure ]
 crbug.com/483282 [ angle-d3d11 win amd ] conformance2/rendering/blitframebuffer-stencil-only.html [ Failure ]
 crbug.com/828984 [ angle-d3d11 win amd ] conformance/renderbuffers/depth-renderbuffer-initialization.html [ RetryOnFailure ]
 crbug.com/828984 [ angle-d3d11 win amd ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb9_e5-rgb-half_float.html [ RetryOnFailure ]
 crbug.com/828984 [ angle-d3d11 win amd ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb9_e5-rgb-float.html [ RetryOnFailure ]
 crbug.com/844483 [ angle-d3d11 win amd ] conformance2/textures/canvas_sub_rectangle/tex-2d-srgb8_alpha8-rgba-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1297265 [ win7 passthrough amd-0x6613 angle-d3d11 ] conformance2/renderbuffers/multisampled-stencil-renderbuffer-initialization.html [ RetryOnFailure ]
-crbug.com/1298096 [ win7 passthrough amd-0x6613 angle-d3d11 ] conformance2/textures/canvas_sub_rectangle/tex-3d-r16f-red-half_float.html [ RetryOnFailure ]
-
-
-# Recent AMD drivers seem to have a regression with 3D textures.
-# (Some of these tests seem to occasionally pass unexpectedly.)
-crbug.com/angleproject/2424 [ angle-d3d11 win7 amd-0x6613 ] conformance2/textures/canvas_sub_rectangle/tex-3d-* [ RetryOnFailure ]
-crbug.com/angleproject/2424 [ angle-d3d11 win7 amd-0x6613 ] conformance2/textures/image/tex-3d-* [ RetryOnFailure ]
-crbug.com/angleproject/2424 [ angle-d3d11 win7 amd-0x6613 ] conformance2/textures/image_data/tex-3d-* [ RetryOnFailure ]
-crbug.com/angleproject/2424 [ angle-d3d11 win7 amd-0x6613 ] conformance2/textures/misc/tex-unpack-params.html [ RetryOnFailure ]
-crbug.com/angleproject/2424 [ angle-d3d11 win7 amd-0x6613 ] conformance2/textures/video/tex-3d-* [ RetryOnFailure ]
-crbug.com/angleproject/2424 [ angle-d3d11 win7 amd-0x6613 ] deqp/functional/gles3/shadertexturefunction/* [ Failure ]
-crbug.com/angleproject/2424 [ angle-d3d11 win7 amd-0x6613 ] deqp/functional/gles3/texturefiltering/3d_* [ Failure ]
-crbug.com/angleproject/2424 [ angle-d3d11 win7 amd-0x6613 ] deqp/functional/gles3/texturespecification/basic_teximage3d_3d_* [ Failure ]
-crbug.com/angleproject/2424 [ angle-d3d11 win7 amd-0x6613 ] deqp/functional/gles3/texturespecification/basic_texsubimage3d_* [ Failure ]
-crbug.com/angleproject/2424 [ angle-d3d11 win7 amd-0x6613 ] deqp/functional/gles3/texturespecification/teximage3d_pbo_3d* [ Failure ]
-crbug.com/angleproject/2424 [ angle-d3d11 win7 amd-0x6613 ] deqp/functional/gles3/texturespecification/teximage3d_unpack_params.html [ Failure ]
 
 # AMD texture handling has become flaky.
 crbug.com/1110951 [ angle-d3d11 win amd ] conformance/textures/misc/texture-sub-image-cube-maps.html [ RetryOnFailure ]
@@ -318,13 +293,6 @@ crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/framebuff
 crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gles3/fbodepthbuffer.html [ RetryOnFailure ]
 crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gles3/fborender/resize_03.html [ RetryOnFailure ]
 crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gles3/fborender/recreate_color_* [ RetryOnFailure ]
-
-# Flaky on AMD Win7
-crbug.com/1282819 [ win7 amd-0x6613 angle-d3d11 passthrough ] conformance/canvas/canvas-test.html [ Failure ]
-
-crbug.com/1215624 [ win7 angle-d3d11 passthrough amd-0x6613 ] conformance2/textures/video/* [ RetryOnFailure ]
-
-crbug.com/1254375 [ win7 angle-d3d11 amd passthrough ] conformance2/textures/misc/copy-texture-image-webgl-specific.html [ RetryOnFailure ]
 
 ######################
 # Mac Metal failures #

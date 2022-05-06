@@ -3446,14 +3446,6 @@
       },
     },
   },
-  'webgl_conformance_gl_passthrough_tests': {
-    'remove_from': [
-      # crbug.com/555545 and crbug.com/649824:
-      # Disable webgl_conformance_gl_tests on some Win/AMD cards.
-      # Always fails on older cards, flaky on newer cards.
-      'Win7 FYI Release (AMD)',
-    ],
-  },
   'webgl_conformance_metal_passthrough_tests': {
     'remove_from': [
       # crbug.com/1270755
@@ -3749,12 +3741,6 @@
   'webview_ui_test_app_test_apk': {
     'remove_from': [
       'android-11-x86-rel', # crbug.com/1165280
-    ],
-  },
-  'xr_browser_tests': {
-    'remove_from': [
-      # Fails on the bot, http://crbug.com/868143
-      'Win7 FYI Release (AMD)',
     ],
   },
 }

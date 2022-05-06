@@ -64,9 +64,6 @@ ci/Win10 FYI x64 Release XR Perf (NVIDIA)
 ci/Win10 FYI x86 Release (NVIDIA)
 ci/Win10 x64 Debug (NVIDIA)
 ci/Win10 x64 Release (NVIDIA)
-ci/Win7 FYI Release (AMD)
-ci/Win7 FYI Release (NVIDIA)
-ci/Win7 FYI x64 Release (NVIDIA)
 ci/gpu-fyi-chromeos-jacuzzi-exp
 ci/gpu-fyi-chromeos-octopus-exp
 ci/gpu-fyi-chromeos-zork-exp

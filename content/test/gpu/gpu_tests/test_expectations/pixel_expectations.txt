@@ -7,7 +7,7 @@
 #         linux ubuntu
 #         mac bigsur catalina lion highsierra mac-10.12 mojave monterey
 #             mountainlion sierra
-#         win win7 win8 win10 ]
+#         win win8 win10 ]
 # Devices
 # tags: [ android-nexus-5 android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv
@@ -162,9 +162,6 @@ crbug.com/1047573 [ mac nvidia ] Pixel_WebGLHighToLowPower [ Skip ]
 crbug.com/1048892 [ mac nvidia ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Skip ]
 crbug.com/1048892 [ mac nvidia ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker [ Skip ]
 
-# DirectComposition tests are not expected to work properly on Windows 7.
-crbug.com/1086758 [ win7 ] Pixel_DirectComposition* [ Skip ]
-
 # Cannot use file in Chromium checkout for fake video capture device on Android,
 # ChromeOS, or Fuchsia.
 crbug.com/1129879 [ android ] Pixel_Video_Media_Stream_Incompatible_Stride [ Skip ]
@@ -177,7 +174,6 @@ crbug.com/976495 [ linux skia-renderer-disabled ] Pixel_WebGPU* [ Skip ]
 crbug.com/976497 [ android ] Pixel_WebGPU* [ Skip ]
 crbug.com/852089 [ chromeos ] Pixel_WebGPU* [ Skip ]
 crbug.com/852089 [ fuchsia ] Pixel_WebGPU* [ Skip ]
-crbug.com/852089 [ win7 ] Pixel_WebGPU* [ Skip ]
 
 # WebGPU's copyExternalImage is broken on mac10.12
 crbug.com/1311710 [ mac-10.12 ] Pixel_WebGPUCopyExternalImage* [ Failure ]

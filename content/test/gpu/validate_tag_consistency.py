@@ -20,7 +20,7 @@ TAG_HEADER = """\
 #         linux ubuntu
 #         mac bigsur catalina lion highsierra mac-10.12 mojave monterey
 #             mountainlion sierra
-#         win win7 win8 win10 ]
+#         win win8 win10 ]
 # Devices
 # tags: [ android-nexus-5 android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv

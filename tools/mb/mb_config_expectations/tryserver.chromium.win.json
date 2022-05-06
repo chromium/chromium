@@ -108,44 +108,6 @@
       "use_goma": true
     }
   },
-  "gpu-fyi-try-win7-amd-rel-32": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "enable_nacl": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "gpu-fyi-try-win7-nvidia-rel-32": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "enable_nacl": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "gpu-fyi-try-win7-nvidia-rel-64": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "enable_nacl": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "win-annotator-rel": {
     "gn_args": {
       "dcheck_always_on": true,

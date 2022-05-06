@@ -1445,7 +1445,11 @@
         },
       },
       'win-angle-chromium-x64-builder': {},
-      'win-angle-chromium-x86-builder': {},
+      'win-angle-chromium-x86-builder': {
+        'additional_compile_targets': [
+          'telemetry_gpu_integration_test',
+        ],
+      },
       'win-angle-x64-builder': {},
       'win10-angle-chromium-x64-intel': {
         'os_type': 'win',
@@ -1483,25 +1487,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_angle_win_nvidia_gtests',
-        },
-      },
-      'win7-angle-chromium-x86-amd': {
-        'os_type': 'win',
-        'browser_config': 'release',
-        'mixins': [
-          'win7_amd_r7_240',
-        ],
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_win_angle_amd_telemetry_tests',
-        },
-      },
-      'win7-angle-x64-nvidia': {
-        'os_type': 'win',
-        'mixins': [
-          'win7_nvidia_quadro_p400',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_win7_nvidia_gtests',
         },
       },
     },
@@ -4955,50 +4940,6 @@
           'isolated_scripts': 'gpu_fyi_win_optional_and_representative_perf_isolated_scripts',
           'gpu_telemetry_tests': 'gpu_fyi_win_release_telemetry_tests',
         },
-      },
-      'Win7 FYI Release (AMD)': {
-        'os_type': 'win',
-        'browser_config': 'release',
-        'mixins': [
-          'limited_capacity_bot',
-          'win7_amd_r7_240',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_win7_amd_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_win7_nvidia_amd_release_telemetry_tests',
-        },
-      },
-      'Win7 FYI Release (NVIDIA)': {
-        'os_type': 'win',
-        'browser_config': 'release',
-        'mixins': [
-          'limited_capacity_bot',
-          'win7_nvidia_quadro_p400',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_win7_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_win7_nvidia_amd_release_telemetry_tests',
-        },
-      },
-      'Win7 FYI x64 Release (NVIDIA)': {
-        'os_type': 'win',
-        'browser_config': 'release_x64',
-        'mixins': [
-          'limited_capacity_bot',
-          'win7_nvidia_quadro_p400',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_win7_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_win7_nvidia_amd_release_telemetry_tests',
-        },
-        'use_multi_dimension_trigger_script': True,
-        'alternate_swarming_dimensions': [
-          {
-            'gpu': '10de:1cb3-23.21.14.1195',
-            'os': 'Windows-2008ServerR2-SP1',
-            'pool': 'chromium.tests.gpu',
-          },
-        ],
       },
       'gpu-fyi-chromeos-jacuzzi-exp': {
         'additional_compile_targets': [

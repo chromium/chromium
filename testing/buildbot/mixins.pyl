@@ -1288,24 +1288,6 @@
       },
     },
   },
-  'win7_amd_r7_240': {
-    'swarming': {
-      'dimensions': {
-        'gpu': '1002:6613',
-        'os': 'Windows-2008ServerR2-SP1',
-        'pool': 'chromium.tests.gpu',
-      },
-    },
-  },
-  'win7_nvidia_quadro_p400': {
-    'swarming': {
-      'dimensions': {
-        'gpu': '10de:1cb3-24.21.14.1195',
-        'os': 'Windows-2008ServerR2-SP1',
-        'pool': 'chromium.tests.gpu',
-      },
-    },
-  },
   'x86-32': {
     'swarming': {
       'dimensions': {
