@@ -52,6 +52,10 @@ std::string ReadStringFromFile(const base::FilePath& file, bool trim = false) {
   return str;
 }
 
+base::Value ParseJsonFromFile(const base::FilePath& file) {
+  return base::test::ParseJson(ReadStringFromFile(file));
+}
+
 // See
 // //content/test/data/attribution_reporting/aggregatable_report_goldens/README.md.
 class AttributionAggregatableReportGoldenTest : public testing::Test {
@@ -84,10 +88,20 @@ class AttributionAggregatableReportGoldenTest : public testing::Test {
 
  protected:
   void AssembleAndVerifyReport(AttributionReport report,
-                               base::StringPiece report_file) {
-    base::Value expected_report = base::test::ParseJson(
-        ReadStringFromFile(input_dir_.AppendASCII(report_file)));
+                               base::StringPiece report_file,
+                               base::StringPiece cleartext_payloads_file) {
+    base::Value expected_report =
+        ParseJsonFromFile(input_dir_.AppendASCII(report_file));
     ASSERT_TRUE(expected_report.is_dict());
+
+    base::Value expected_cleartext_payloads =
+        ParseJsonFromFile(input_dir_.AppendASCII(cleartext_payloads_file));
+    ASSERT_TRUE(expected_cleartext_payloads.is_list());
+    ASSERT_EQ(expected_cleartext_payloads.GetList().size(), 1u);
+
+    const std::string* base64_encoded_expected_cleartext_payload =
+        expected_cleartext_payloads.GetList().front().GetIfString();
+    ASSERT_TRUE(base64_encoded_expected_cleartext_payload);
 
     absl::optional<AggregatableReportRequest> request =
         CreateAggregatableReportRequest(report);
@@ -107,8 +121,9 @@ class AttributionAggregatableReportGoldenTest : public testing::Test {
                       &report.data());
               ASSERT_TRUE(data);
               data->assembled_report = std::move(*assembled_report);
-              EXPECT_TRUE(VerifyReport(report.ReportBody(),
-                                       std::move(expected_report.GetDict())))
+              EXPECT_TRUE(VerifyReport(
+                  report.ReportBody(), std::move(expected_report.GetDict()),
+                  *base64_encoded_expected_cleartext_payload))
                   << "There was an error, actual output for " << report_file
                   << " is:\n"
                   << SerializeAttributionJson(report.ReportBody(),
@@ -126,8 +141,10 @@ class AttributionAggregatableReportGoldenTest : public testing::Test {
                  ->GetAggregationService());
   }
 
-  testing::AssertionResult VerifyReport(base::Value::Dict actual_report,
-                                        base::Value::Dict expected_report) {
+  testing::AssertionResult VerifyReport(
+      base::Value::Dict actual_report,
+      base::Value::Dict expected_report,
+      const std::string& base64_encoded_expected_cleartext_payload) {
     absl::optional<base::Value> actual_payloads =
         actual_report.Extract(kKeyAggregationServicePayloads);
     if (!actual_payloads) {
@@ -170,12 +187,14 @@ class AttributionAggregatableReportGoldenTest : public testing::Test {
 
     return VerifyAggregationServicePayloads(
         std::move(actual_payloads->GetList()),
-        std::move(expected_payloads->GetList()), *shared_info);
+        std::move(expected_payloads->GetList()),
+        base64_encoded_expected_cleartext_payload, *shared_info);
   }
 
   testing::AssertionResult VerifyAggregationServicePayloads(
       base::Value::List actual_payloads,
       base::Value::List expected_payloads,
+      const std::string& base64_encoded_expected_cleartext_payload,
       const std::string& shared_info) {
     if (actual_payloads.size() != 1u) {
       return testing::AssertionFailure()
@@ -245,6 +264,16 @@ class AttributionAggregatableReportGoldenTest : public testing::Test {
              << "The actual and expected decrypted payloads do not match";
     }
 
+    if (std::string base64_encoded_decrypted_payload =
+            base::Base64Encode(actual_decrypted_payload);
+        base64_encoded_decrypted_payload !=
+        base64_encoded_expected_cleartext_payload) {
+      return testing::AssertionFailure()
+             << "The expected cleartext payload does not match actual "
+                "decrypted payload, actual output is "
+             << base64_encoded_decrypted_payload;
+    }
+
     return testing::AssertionSuccess();
   }
 
@@ -271,6 +300,7 @@ TEST_F(AttributionAggregatableReportGoldenTest, VerifyGoldenReport) {
   struct {
     AttributionReport report;
     base::StringPiece report_file;
+    base::StringPiece cleartext_payloads_file;
   } kTestCases[] = {
       {.report =
            ReportBuilder(
@@ -284,14 +314,13 @@ TEST_F(AttributionAggregatableReportGoldenTest, VerifyGoldenReport) {
                    {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
                .SetReportTime(base::Time::FromJavaTime(1234486400000))
                .BuildAggregatableAttribution(),
-       .report_file = "report_1.json"},
+       .report_file = "report_1.json",
+       .cleartext_payloads_file = "report_1_cleartext_payloads.json"},
   };
 
-  // TODO(crbug.com/1320712): Considering adding cleartext payloads for each
-  // gold file and verify.
-
   for (auto& test_case : kTestCases) {
-    AssembleAndVerifyReport(std::move(test_case.report), test_case.report_file);
+    AssembleAndVerifyReport(std::move(test_case.report), test_case.report_file,
+                            test_case.cleartext_payloads_file);
   }
 }
 
