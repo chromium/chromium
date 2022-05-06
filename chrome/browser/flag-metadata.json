@@ -5991,17 +5991,17 @@
   {
     "name": "username-first-flow",
     "owners": [ "kazinova@google.com", "kolos" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "username-first-flow-fallback-crowdsourcing",
     "owners": [ "kazinova@google.com", "kolos" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 105
   },
   {
     "name": "username-first-flow-filling",
     "owners": [ "kazinova@google.com", "kolos" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "uxstudy1",
