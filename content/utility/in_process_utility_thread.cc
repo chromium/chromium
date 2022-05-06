@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/child/child_process.h"
