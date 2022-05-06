@@ -71,9 +71,14 @@ class MatchPatternRef {
 // The pattern  source identifies the JSON file providing the set of parsing
 // patterns.
 enum class PatternSource {
+  // The patterns applied for most users.
   kDefault,
+  // Patterns that are being verified experimentally.
   kExperimental,
+  // One step before `kExperimental`. These patterns are used only for
+  // non-user-visible metrics.
   kNextGen,
+  // Patterns whose stability is above suspicion.
   kLegacy,
   kMaxValue = kLegacy
 };
