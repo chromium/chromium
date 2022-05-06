@@ -205,7 +205,8 @@
   [self.delegate willFinishPresenting];
 }
 
-- (void)showSyncSettings {
+- (void)didTapURLInDisclaimer:(NSURL*)URL {
+  // Currently there is only one link to show sync settings in the disclaimer.
   [self startSyncOrAdvancedSettings:YES];
 }
 

@@ -18,9 +18,6 @@
 // Called when the user taps to see the account picker.
 - (void)showAccountPickerFromPoint:(CGPoint)point;
 
-// Called when the user taps on "Manage" related to metric reporting.
-- (void)showUMADialog;
-
 @end
 
 // View controller of sign-in screen.

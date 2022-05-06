@@ -15,7 +15,9 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_google_chrome_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "net/base/mac/url_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,7 +29,9 @@ namespace {
 constexpr CGFloat kIdentityControlMaxWidth = 327;
 constexpr CGFloat kIdentityControlMarginDefault = 16;
 constexpr CGFloat kIdentityControlMarginWhenInTop = 24;
-constexpr CGFloat kMarginBetweenContents = 12;
+
+// URL for the Settings link.
+const char* const kSettingsSyncURL = "internal://settings-sync";
 
 // URL for the learn more text.
 // Need to set a value so the delegate gets called.
@@ -38,7 +42,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 
 }  // namespace
 
-@interface SigninSyncViewController () <UITextViewDelegate>
+@interface SigninSyncViewController ()
 
 // Button controlling the display of the selected identity.
 @property(nonatomic, strong) IdentityButtonControl* identityControl;
@@ -60,9 +64,6 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 // Bottom constraint of the identity control area.
 @property(nonatomic, strong)
     NSLayoutConstraint* identityControlAreaBottomConstraint;
-
-// Button to show sync advanced settings.
-@property(nonatomic, strong) UIButton* advanceSyncSettingsButton;
 
 // YES when the sign-in or sign out action is done.
 @property(nonatomic, assign) BOOL signinSignoutActionDone;
@@ -110,12 +111,6 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
     [self.specificContentView addSubview:self.identityControl];
     [self.specificContentView addLayoutGuide:self.identityControlArea];
   }
-
-  UILabel* syncInfoLabel = [self syncInfoLabel];
-
-  // Add content specific to sync.
-  [self.specificContentView addSubview:syncInfoLabel];
-  [self.specificContentView addSubview:self.advanceSyncSettingsButton];
 
   // Add the Learn More text label if there are enterprise sign-in or sync
   // restrictions.
@@ -172,22 +167,9 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
     [self.identityControlArea.topAnchor
         constraintEqualToAnchor:self.topSpecificContentView.topAnchor]
         .active = YES;
-    if (self.enterpriseSignInRestrictions == kNoEnterpriseRestriction) {
-      [self.advanceSyncSettingsButton.bottomAnchor
-          constraintLessThanOrEqualToAnchor:self.advanceSyncSettingsButton
-                                                .superview.bottomAnchor]
-          .active = YES;
-    } else {
-      [self.advanceSyncSettingsButton.bottomAnchor
-          constraintLessThanOrEqualToAnchor:self.learnMoreTextView.topAnchor]
-          .active = YES;
-    }
   } else {
     [self.identityControlArea.topAnchor
         constraintGreaterThanOrEqualToAnchor:self.specificContentView.topAnchor]
-        .active = YES;
-    [self.advanceSyncSettingsButton.bottomAnchor
-        constraintLessThanOrEqualToAnchor:self.identityControlArea.topAnchor]
         .active = YES;
     if (self.enterpriseSignInRestrictions == kNoEnterpriseRestriction) {
       [self.identityControlArea.bottomAnchor
@@ -204,24 +186,21 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
     }
   }
 
-  [self updateIdentityControlButtonVerticalLayout];
+  [self.delegate signinSyncViewController:self
+                       addConsentStringID:[self disclaimerTextID]];
+  if (self.identityControl.hidden) {
+    // Since no one is logged in, the word "settings" should not be linkable;
+    // retrieve raw text from the string with tags.
+    self.disclaimerText =
+        ParseStringWithLinks(l10n_util::GetNSString([self disclaimerTextID]))
+            .string;
+    self.disclaimerURLs = [NSArray array];
+  } else {
+    self.disclaimerText = l10n_util::GetNSString([self disclaimerTextID]);
+    self.disclaimerURLs = @[ net::NSURLWithGURL(GURL(kSettingsSyncURL)) ];
+  }
 
-  // Set constraints specific to the content related to sync.
-  [NSLayoutConstraint activateConstraints:@[
-    [syncInfoLabel.topAnchor
-        constraintEqualToAnchor:self.specificContentView.topAnchor],
-    [syncInfoLabel.centerXAnchor
-        constraintEqualToAnchor:self.specificContentView.centerXAnchor],
-    [syncInfoLabel.widthAnchor
-        constraintLessThanOrEqualToAnchor:self.specificContentView.widthAnchor],
-    [self.advanceSyncSettingsButton.topAnchor
-        constraintEqualToAnchor:syncInfoLabel.bottomAnchor
-                       constant:kMarginBetweenContents],
-    [self.advanceSyncSettingsButton.centerXAnchor
-        constraintEqualToAnchor:self.specificContentView.centerXAnchor],
-    [self.advanceSyncSettingsButton.widthAnchor
-        constraintLessThanOrEqualToAnchor:self.specificContentView.widthAnchor],
-  ]];
+  [self updateIdentityControlButtonVerticalLayout];
 
   // Call super after setting up the strings and others, as required per super
   // class.
@@ -322,50 +301,6 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   return _learnMoreTextView;
 }
 
-// Creates and returns the label that gives detailed information about sync.
-- (UILabel*)syncInfoLabel {
-  UILabel* label = [[UILabel alloc] init];
-  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  label.numberOfLines = 0;
-  label.textAlignment = NSTextAlignmentCenter;
-  label.translatesAutoresizingMaskIntoConstraints = NO;
-  label.adjustsFontForContentSizeCategory = YES;
-  int textID = IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT;
-  [self.delegate signinSyncViewController:self addConsentStringID:textID];
-  label.text = l10n_util::GetNSString(textID);
-  label.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  return label;
-}
-
-// Creates and returns the button to show advanced settings.
-- (UIButton*)advanceSyncSettingsButton {
-  if (!_advanceSyncSettingsButton) {
-    _advanceSyncSettingsButton = [[UIButton alloc] init];
-    _advanceSyncSettingsButton.translatesAutoresizingMaskIntoConstraints = NO;
-    _advanceSyncSettingsButton.titleLabel.numberOfLines = 0;
-    _advanceSyncSettingsButton.titleLabel.adjustsFontForContentSizeCategory =
-        YES;
-    [_advanceSyncSettingsButton.titleLabel
-        setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]];
-    int stringID = IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS;
-    [self.delegate signinSyncViewController:self addConsentStringID:stringID];
-    [_advanceSyncSettingsButton setTitle:l10n_util::GetNSString(stringID)
-                                forState:UIControlStateNormal];
-    [_advanceSyncSettingsButton setTitleColor:[UIColor colorNamed:kBlueColor]
-                                     forState:UIControlStateNormal];
-    [_advanceSyncSettingsButton setTitle:l10n_util::GetNSString(stringID)
-                                forState:UIControlStateDisabled];
-    [_advanceSyncSettingsButton
-        setTitleColor:[UIColor colorNamed:kTextSecondaryColor]
-             forState:UIControlStateDisabled];
-    [_advanceSyncSettingsButton addTarget:self
-                                   action:@selector(showAdvanceSyncSettings)
-                         forControlEvents:UIControlEventTouchUpInside];
-  }
-  return _advanceSyncSettingsButton;
-}
-
 // Returns the ID of the string of the button that is used to activate sync.
 - (int)activateSyncButtonID {
   switch (self.stringsSet) {
@@ -440,11 +375,16 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   if (identityAvailable) {
     self.primaryActionString =
         l10n_util::GetNSString(self.activateSyncButtonID);
-    self.advanceSyncSettingsButton.enabled = YES;
+    self.disclaimerText = l10n_util::GetNSString([self disclaimerTextID]);
+    self.disclaimerURLs = @[ net::NSURLWithGURL(GURL(kSettingsSyncURL)) ];
   } else {
     self.primaryActionString =
         l10n_util::GetNSString(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT);
-    self.advanceSyncSettingsButton.enabled = NO;
+    // Since no one is logged in, the word "settings" should not be linkable.
+    self.disclaimerText =
+        ParseStringWithLinks(l10n_util::GetNSString([self disclaimerTextID]))
+            .string;
+    self.disclaimerURLs = [NSArray array];
   }
 }
 
@@ -455,11 +395,6 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   if ([existingString length])
     [existingString appendString:padding];
   [existingString appendString:restrictionString];
-}
-
-// Called when the sync advanced settings button is tapped.
-- (void)showAdvanceSyncSettings {
-  [self.delegate signinSyncViewControllerDidTapOnSettings:self];
 }
 
 // Returns the title string ID.
@@ -490,6 +425,11 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
     case SigninSyncScreenUIStringSet::kNew:
       return IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION;
   }
+}
+
+// Returns the disclaimer text string ID.
+- (int)disclaimerTextID {
+  return IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT_WITH_LINK_TO_SETTINGS;
 }
 
 // Returns YES if the identity control button has to be in top.
@@ -547,6 +487,15 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction {
+  if (textView != self.learnMoreTextView) {
+    // The text view being tapped is not the learnMoreTextView. Defer to the
+    // handler in the superclass.
+    [super textView:textView
+        shouldInteractWithURL:URL
+                      inRange:characterRange
+                  interaction:interaction];
+    return NO;
+  }
   DCHECK(textView == self.learnMoreTextView);
 
   NSMutableString* detailsMessage = [[NSMutableString alloc] init];
@@ -589,13 +538,6 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 
   // The handler is already handling the tap.
   return NO;
-}
-
-- (void)textViewDidChangeSelection:(UITextView*)textView {
-  // Always force the |selectedTextRange| to |nil| to prevent users from
-  // selecting text. Setting the |selectable| property to |NO| doesn't help
-  // since it makes links inside the text view untappable.
-  textView.selectedTextRange = nil;
 }
 
 @end

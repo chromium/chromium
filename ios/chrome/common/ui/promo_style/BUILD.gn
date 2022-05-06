@@ -18,6 +18,7 @@ source_set("promo_style") {
     "//base:i18n",
     "//ios/chrome/app/strings",
     "//ios/chrome/common:constants",
+    "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/resources:help_icon",

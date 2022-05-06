@@ -17,10 +17,6 @@
             (SigninSyncViewController*)signinSyncViewController
       showAccountPickerFromPoint:(CGPoint)point;
 
-// Called when the user taps to see sync settings.
-- (void)signinSyncViewControllerDidTapOnSettings:
-    (SigninSyncViewController*)signinSyncViewController;
-
 // Adds consent string ID.
 - (void)signinSyncViewController:
             (SigninSyncViewController*)signinSyncViewController

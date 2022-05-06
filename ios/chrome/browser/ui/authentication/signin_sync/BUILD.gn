@@ -70,7 +70,9 @@ source_set("signin_sync_ui") {
     "//ios/chrome/common/ui/elements:popover_label_view_controller",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/util",
+    "//net",
     "//ui/base",
+    "//url",
   ]
 }
 

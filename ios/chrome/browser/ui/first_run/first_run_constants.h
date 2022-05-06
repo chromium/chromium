@@ -26,6 +26,12 @@ extern NSString* const kFirstRunSyncScreenAccessibilityIdentifier;
 // run.
 extern NSString* const kFirstRunDefaultBrowserScreenAccessibilityIdentifier;
 
+// URL for the terms of service text.
+extern NSString* const kTermsOfServiceURL;
+
+// URL for the metric reporting text.
+extern NSString* const kMetricReportingURL;
+
 }  // first_run
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_CONSTANTS_H_

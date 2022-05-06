@@ -21,5 +21,7 @@ NSString* const kPromoStyleTertiaryActionAccessibilityIdentifier =
     @"kPromoStyleTertiaryActionAccessibilityIdentifier";
 NSString* const kPromoStyleLearnMoreActionAccessibilityIdentifier =
     @"kPromoStyleLearnMoreActionAccessibilityIdentifier";
+NSString* const kPromoStyleDisclaimerViewAccessibilityIdentifier =
+    @"kPromoStyleDisclaimerViewAccessibilityIdentifier";
 NSString* const kPromoStyleScrollViewAccessibilityIdentifier =
     @"kPromoStyleScrollViewAccessibilityIdentifier";

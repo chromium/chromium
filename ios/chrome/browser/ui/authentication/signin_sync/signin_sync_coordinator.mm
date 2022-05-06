@@ -272,22 +272,6 @@
       self.mediator.selectedIdentity;
 }
 
-- (void)signinSyncViewControllerDidTapOnSettings:
-    (SigninSyncViewController*)signinSyncViewController {
-  DCHECK(self.mediator.selectedIdentity);
-
-  AuthenticationFlow* authenticationFlow =
-      [[AuthenticationFlow alloc] initWithBrowser:self.browser
-                                         identity:self.mediator.selectedIdentity
-                                 postSignInAction:POST_SIGNIN_ACTION_NONE
-                         presentingViewController:self.viewController];
-  authenticationFlow.dispatcher = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowsingDataCommands);
-
-  [self.mediator
-      prepareAdvancedSettingsWithAuthenticationFlow:authenticationFlow];
-}
-
 - (void)signinSyncViewController:
             (SigninSyncViewController*)signinSyncViewController
               addConsentStringID:(const int)stringID {
@@ -306,6 +290,22 @@
   // Cancel sync and sign out the user if needed.
   [self.mediator cancelSyncAndRestoreSigninState:self.signinStateOnStart
                            signinIdentityOnStart:self.signinIdentityOnStart];
+}
+
+- (void)didTapURLInDisclaimer:(NSURL*)URL {
+  // Currently there is only one link to show sync settings in the disclaimer.
+  DCHECK(self.mediator.selectedIdentity);
+
+  AuthenticationFlow* authenticationFlow =
+      [[AuthenticationFlow alloc] initWithBrowser:self.browser
+                                         identity:self.mediator.selectedIdentity
+                                 postSignInAction:POST_SIGNIN_ACTION_NONE
+                         presentingViewController:self.viewController];
+  authenticationFlow.dispatcher = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowsingDataCommands);
+
+  [self.mediator
+      prepareAdvancedSettingsWithAuthenticationFlow:authenticationFlow];
 }
 
 #pragma mark - IdentityChooserCoordinatorDelegate

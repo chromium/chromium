@@ -996,14 +996,8 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION" desc="In Title Case: Button on the very first screen of Chrome for users to sign in when there is no Google Account on the device. [iOS only]">
         Sign In…
       </message>
-      <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT" desc="Content string on the sync screen presented to the user on First Run [iOS only]">
-        Google may use your history to personalize Search and other Google services
-      </message>
       <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT_WITH_LINK_TO_SETTINGS" desc="Content string on the sync screen presented to the user on First Run [iOS only]">
         You can always choose what to sync in <ph name="BEGIN_LINK">BEGIN_LINK</ph>settings<ph name="END_LINK">END_LINK</ph>. Google may use your history to personalize Search and other Google services.
-      </message>
-      <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS" desc="Label of the button which open advance sync settings screen [iOS only]">
-        Choose What to Sync
       </message>
       <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION" desc="The primary action string on the sync screen presented to the user on First Run [iOS only]">
         Turn on Sync

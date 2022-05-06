@@ -80,9 +80,10 @@ id<GREYMatcher> GetAcceptButton() {
 
 // Returns a matcher for the button to open the Sync settings.
 id<GREYMatcher> GetSyncSettings() {
-  return grey_allOf(grey_text(l10n_util::GetNSString(
-                        IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS)),
-                    grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> disclaimer =
+      grey_accessibilityID(kPromoStyleDisclaimerViewAccessibilityIdentifier);
+  return grey_allOf(grey_accessibilityLabel(@"settings"),
+                    grey_ancestor(disclaimer), nil);
 }
 
 // Returns a matcher for the button to add account.
@@ -350,6 +351,11 @@ GREYLayoutConstraint* BelowConstraint() {
 
   // Validate the Secondary button text.
   [self scrollToElementAndAssertVisibility:GetNoThanksButton()];
+
+  // Validate that the sync button is not interactible.
+  [[EarlGrey selectElementWithMatcher:grey_allOf(GetSyncSettings(),
+                                                 grey_interactable(), nil)]
+      assertWithMatcher:grey_nil()];
 }
 
 // Checks that the sign-in & sync screen is displayed correctly with an account
@@ -382,6 +388,11 @@ GREYLayoutConstraint* BelowConstraint() {
 
   // Validate the Secondary button text.
   [self scrollToElementAndAssertVisibility:GetNoThanksButton()];
+
+  // Validate that the sync button is interactible.
+  [[EarlGrey selectElementWithMatcher:grey_allOf(GetSyncSettings(),
+                                                 grey_interactable(), nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Checks that the identity switcher in the sign-in & sync screen is displayed
@@ -748,7 +759,6 @@ GREYLayoutConstraint* BelowConstraint() {
       performAction:grey_tap()];
 
   [self verifySignInSyncScreenIsDisplayed];
-  [self scrollToElementAndAssertVisibility:GetSyncSettings()];
   [[EarlGrey selectElementWithMatcher:GetSyncSettings()]
       performAction:grey_tap()];
 
@@ -807,7 +817,6 @@ GREYLayoutConstraint* BelowConstraint() {
       performAction:grey_tap()];
 
   [self verifySignInSyncScreenIsDisplayed];
-  [self scrollToElementAndAssertVisibility:GetSyncSettings()];
   [[EarlGrey selectElementWithMatcher:GetSyncSettings()]
       performAction:grey_tap()];
 
@@ -852,7 +861,6 @@ GREYLayoutConstraint* BelowConstraint() {
       performAction:grey_tap()];
 
   [self verifySignInSyncScreenIsDisplayed];
-  [self scrollToElementAndAssertVisibility:GetSyncSettings()];
   [[EarlGrey selectElementWithMatcher:GetSyncSettings()]
       performAction:grey_tap()];
 
@@ -915,7 +923,6 @@ GREYLayoutConstraint* BelowConstraint() {
       performAction:grey_tap()];
 
   [self verifySignInSyncScreenIsDisplayed];
-  [self scrollToElementAndAssertVisibility:GetSyncSettings()];
   [[EarlGrey selectElementWithMatcher:GetSyncSettings()]
       performAction:grey_tap()];
 
@@ -989,7 +996,6 @@ GREYLayoutConstraint* BelowConstraint() {
       performAction:grey_tap()];
 
   [self verifySignInSyncScreenIsDisplayed];
-  [self scrollToElementAndAssertVisibility:GetSyncSettings()];
   [[EarlGrey selectElementWithMatcher:GetSyncSettings()]
       performAction:grey_tap()];
 

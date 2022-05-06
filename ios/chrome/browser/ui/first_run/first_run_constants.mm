@@ -25,4 +25,10 @@ NSString* const kFirstRunSyncScreenAccessibilityIdentifier =
 NSString* const kFirstRunDefaultBrowserScreenAccessibilityIdentifier =
     @"firstRunDefaultBrowserScreenAccessibilityIdentifier";
 
+// URL for the terms of service text.
+NSString* const kTermsOfServiceURL = @"internal://terms-of-service";
+
+// URL for the metric reporting text.
+NSString* const kMetricReportingURL = @"internal://metric-reporting";
+
 }  // first_run

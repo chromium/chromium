@@ -25,6 +25,9 @@ extern NSString* const kPromoStyleTertiaryActionAccessibilityIdentifier;
 // A11y Identifier for the learn more button.
 extern NSString* const kPromoStyleLearnMoreActionAccessibilityIdentifier;
 
+// A11y Identifier for the disclaimer.
+extern NSString* const kPromoStyleDisclaimerViewAccessibilityIdentifier;
+
 // A11y Identifier for the scroll view that contains all the labels and buttons.
 extern NSString* const kPromoStyleScrollViewAccessibilityIdentifier;
 

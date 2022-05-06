@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/tos_commands.h"
+#import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
@@ -197,6 +199,17 @@
   [self.delegate willFinishPresenting];
 }
 
+// Shows the UMA dialog so the user can manage metric reporting.
+- (void)showUMADialog {
+  DCHECK(!self.UMACoordinator);
+  self.UMACoordinator = [[UMACoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+               UMAReportingValue:self.mediator.UMAReportingUserChoice];
+  self.UMACoordinator.delegate = self;
+  [self.UMACoordinator start];
+}
+
 #pragma mark - IdentityChooserCoordinatorDelegate
 
 - (void)identityChooserCoordinatorDidClose:
@@ -246,6 +259,19 @@
   }];
 }
 
+- (void)didTapURLInDisclaimer:(NSURL*)URL {
+  if ([URL.absoluteString isEqualToString:first_run::kTermsOfServiceURL]) {
+    [self showTOSPage];
+  } else if ([URL.absoluteString
+                 isEqualToString:first_run::kMetricReportingURL]) {
+    self.mediator.UMALinkWasTapped = YES;
+    [self showUMADialog];
+  } else {
+    NOTREACHED() << std::string("Unknown URL ")
+                 << base::SysNSStringToUTF8(URL.absoluteString);
+  }
+}
+
 #pragma mark - SigninScreenViewControllerDelegate
 
 - (void)showAccountPickerFromPoint:(CGPoint)point {
@@ -257,17 +283,6 @@
   [self.identityChooserCoordinator start];
   self.identityChooserCoordinator.selectedIdentity =
       self.mediator.selectedIdentity;
-}
-
-- (void)showUMADialog {
-  DCHECK(!self.UMACoordinator);
-  self.mediator.UMALinkWasTapped = YES;
-  self.UMACoordinator = [[UMACoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-               UMAReportingValue:self.mediator.UMAReportingUserChoice];
-  self.UMACoordinator.delegate = self;
-  [self.UMACoordinator start];
 }
 
 #pragma mark - TOSCommands
