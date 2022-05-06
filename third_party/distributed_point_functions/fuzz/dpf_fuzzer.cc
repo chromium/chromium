@@ -110,11 +110,12 @@ void EvaluateAndCheckLevel(
     if ((is_first_evaluation ||
          prefixes[prefix_index] == previous_alpha_prefix) &&
         prefix_expansion_index == (current_alpha_prefix % outputs_per_prefix)) {
-      // We need to static_cast here since otherwise separator+ returns an
+      // We need to static_cast here since otherwise operator+ returns an
       // unsigned int without doing a modular reduction, which causes the test
       // to fail on types with sizeof(T) < sizeof(unsigned).
-      DPF_FUZZER_ASSERT(static_cast<T>((*result_0)[i] + (*result_1)[i]) ==
-                        beta[hierarchy_level]);
+      DPF_FUZZER_ASSERT(
+          absl::uint128{static_cast<T>((*result_0)[i] + (*result_1)[i])} ==
+          beta[hierarchy_level]);
     } else {
       DPF_FUZZER_ASSERT(static_cast<T>((*result_0)[i] + (*result_1)[i]) == 0U);
     }
