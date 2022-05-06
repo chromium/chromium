@@ -1570,7 +1570,16 @@ void aom_lpf_horizontal_14_quad_c(uint8_t* s,
                                   const uint8_t* blimit0,
                                   const uint8_t* limit0,
                                   const uint8_t* thresh0);
-#define aom_lpf_horizontal_14_quad aom_lpf_horizontal_14_quad_c
+void aom_lpf_horizontal_14_quad_neon(uint8_t* s,
+                                     int pitch,
+                                     const uint8_t* blimit0,
+                                     const uint8_t* limit0,
+                                     const uint8_t* thresh0);
+RTCD_EXTERN void (*aom_lpf_horizontal_14_quad)(uint8_t* s,
+                                               int pitch,
+                                               const uint8_t* blimit0,
+                                               const uint8_t* limit0,
+                                               const uint8_t* thresh0);
 
 void aom_lpf_horizontal_4_c(uint8_t* s,
                             int pitch,
@@ -1618,7 +1627,16 @@ void aom_lpf_horizontal_4_quad_c(uint8_t* s,
                                  const uint8_t* blimit0,
                                  const uint8_t* limit0,
                                  const uint8_t* thresh0);
-#define aom_lpf_horizontal_4_quad aom_lpf_horizontal_4_quad_c
+void aom_lpf_horizontal_4_quad_neon(uint8_t* s,
+                                    int pitch,
+                                    const uint8_t* blimit0,
+                                    const uint8_t* limit0,
+                                    const uint8_t* thresh0);
+RTCD_EXTERN void (*aom_lpf_horizontal_4_quad)(uint8_t* s,
+                                              int pitch,
+                                              const uint8_t* blimit0,
+                                              const uint8_t* limit0,
+                                              const uint8_t* thresh0);
 
 void aom_lpf_horizontal_6_c(uint8_t* s,
                             int pitch,
@@ -1666,7 +1684,16 @@ void aom_lpf_horizontal_6_quad_c(uint8_t* s,
                                  const uint8_t* blimit0,
                                  const uint8_t* limit0,
                                  const uint8_t* thresh0);
-#define aom_lpf_horizontal_6_quad aom_lpf_horizontal_6_quad_c
+void aom_lpf_horizontal_6_quad_neon(uint8_t* s,
+                                    int pitch,
+                                    const uint8_t* blimit0,
+                                    const uint8_t* limit0,
+                                    const uint8_t* thresh0);
+RTCD_EXTERN void (*aom_lpf_horizontal_6_quad)(uint8_t* s,
+                                              int pitch,
+                                              const uint8_t* blimit0,
+                                              const uint8_t* limit0,
+                                              const uint8_t* thresh0);
 
 void aom_lpf_horizontal_8_c(uint8_t* s,
                             int pitch,
@@ -1714,7 +1741,16 @@ void aom_lpf_horizontal_8_quad_c(uint8_t* s,
                                  const uint8_t* blimit0,
                                  const uint8_t* limit0,
                                  const uint8_t* thresh0);
-#define aom_lpf_horizontal_8_quad aom_lpf_horizontal_8_quad_c
+void aom_lpf_horizontal_8_quad_neon(uint8_t* s,
+                                    int pitch,
+                                    const uint8_t* blimit0,
+                                    const uint8_t* limit0,
+                                    const uint8_t* thresh0);
+RTCD_EXTERN void (*aom_lpf_horizontal_8_quad)(uint8_t* s,
+                                              int pitch,
+                                              const uint8_t* blimit0,
+                                              const uint8_t* limit0,
+                                              const uint8_t* thresh0);
 
 void aom_lpf_vertical_14_c(uint8_t* s,
                            int pitch,
@@ -1762,7 +1798,16 @@ void aom_lpf_vertical_14_quad_c(uint8_t* s,
                                 const uint8_t* blimit0,
                                 const uint8_t* limit0,
                                 const uint8_t* thresh0);
-#define aom_lpf_vertical_14_quad aom_lpf_vertical_14_quad_c
+void aom_lpf_vertical_14_quad_neon(uint8_t* s,
+                                   int pitch,
+                                   const uint8_t* blimit0,
+                                   const uint8_t* limit0,
+                                   const uint8_t* thresh0);
+RTCD_EXTERN void (*aom_lpf_vertical_14_quad)(uint8_t* s,
+                                             int pitch,
+                                             const uint8_t* blimit0,
+                                             const uint8_t* limit0,
+                                             const uint8_t* thresh0);
 
 void aom_lpf_vertical_4_c(uint8_t* s,
                           int pitch,
@@ -1810,7 +1855,16 @@ void aom_lpf_vertical_4_quad_c(uint8_t* s,
                                const uint8_t* blimit0,
                                const uint8_t* limit0,
                                const uint8_t* thresh0);
-#define aom_lpf_vertical_4_quad aom_lpf_vertical_4_quad_c
+void aom_lpf_vertical_4_quad_neon(uint8_t* s,
+                                  int pitch,
+                                  const uint8_t* blimit0,
+                                  const uint8_t* limit0,
+                                  const uint8_t* thresh0);
+RTCD_EXTERN void (*aom_lpf_vertical_4_quad)(uint8_t* s,
+                                            int pitch,
+                                            const uint8_t* blimit0,
+                                            const uint8_t* limit0,
+                                            const uint8_t* thresh0);
 
 void aom_lpf_vertical_6_c(uint8_t* s,
                           int pitch,
@@ -1858,7 +1912,16 @@ void aom_lpf_vertical_6_quad_c(uint8_t* s,
                                const uint8_t* blimit0,
                                const uint8_t* limit0,
                                const uint8_t* thresh0);
-#define aom_lpf_vertical_6_quad aom_lpf_vertical_6_quad_c
+void aom_lpf_vertical_6_quad_neon(uint8_t* s,
+                                  int pitch,
+                                  const uint8_t* blimit0,
+                                  const uint8_t* limit0,
+                                  const uint8_t* thresh0);
+RTCD_EXTERN void (*aom_lpf_vertical_6_quad)(uint8_t* s,
+                                            int pitch,
+                                            const uint8_t* blimit0,
+                                            const uint8_t* limit0,
+                                            const uint8_t* thresh0);
 
 void aom_lpf_vertical_8_c(uint8_t* s,
                           int pitch,
@@ -1906,7 +1969,16 @@ void aom_lpf_vertical_8_quad_c(uint8_t* s,
                                const uint8_t* blimit0,
                                const uint8_t* limit0,
                                const uint8_t* thresh0);
-#define aom_lpf_vertical_8_quad aom_lpf_vertical_8_quad_c
+void aom_lpf_vertical_8_quad_neon(uint8_t* s,
+                                  int pitch,
+                                  const uint8_t* blimit0,
+                                  const uint8_t* limit0,
+                                  const uint8_t* thresh0);
+RTCD_EXTERN void (*aom_lpf_vertical_8_quad)(uint8_t* s,
+                                            int pitch,
+                                            const uint8_t* blimit0,
+                                            const uint8_t* limit0,
+                                            const uint8_t* thresh0);
 
 unsigned int aom_masked_sad128x128_c(const uint8_t* src,
                                      int src_stride,
@@ -5635,48 +5707,72 @@ static void setup_rtcd_internal(void) {
   aom_lpf_horizontal_14_dual = aom_lpf_horizontal_14_dual_c;
   if (flags & HAS_NEON)
     aom_lpf_horizontal_14_dual = aom_lpf_horizontal_14_dual_neon;
+  aom_lpf_horizontal_14_quad = aom_lpf_horizontal_14_quad_c;
+  if (flags & HAS_NEON)
+    aom_lpf_horizontal_14_quad = aom_lpf_horizontal_14_quad_neon;
   aom_lpf_horizontal_4 = aom_lpf_horizontal_4_c;
   if (flags & HAS_NEON)
     aom_lpf_horizontal_4 = aom_lpf_horizontal_4_neon;
   aom_lpf_horizontal_4_dual = aom_lpf_horizontal_4_dual_c;
   if (flags & HAS_NEON)
     aom_lpf_horizontal_4_dual = aom_lpf_horizontal_4_dual_neon;
+  aom_lpf_horizontal_4_quad = aom_lpf_horizontal_4_quad_c;
+  if (flags & HAS_NEON)
+    aom_lpf_horizontal_4_quad = aom_lpf_horizontal_4_quad_neon;
   aom_lpf_horizontal_6 = aom_lpf_horizontal_6_c;
   if (flags & HAS_NEON)
     aom_lpf_horizontal_6 = aom_lpf_horizontal_6_neon;
   aom_lpf_horizontal_6_dual = aom_lpf_horizontal_6_dual_c;
   if (flags & HAS_NEON)
     aom_lpf_horizontal_6_dual = aom_lpf_horizontal_6_dual_neon;
+  aom_lpf_horizontal_6_quad = aom_lpf_horizontal_6_quad_c;
+  if (flags & HAS_NEON)
+    aom_lpf_horizontal_6_quad = aom_lpf_horizontal_6_quad_neon;
   aom_lpf_horizontal_8 = aom_lpf_horizontal_8_c;
   if (flags & HAS_NEON)
     aom_lpf_horizontal_8 = aom_lpf_horizontal_8_neon;
   aom_lpf_horizontal_8_dual = aom_lpf_horizontal_8_dual_c;
   if (flags & HAS_NEON)
     aom_lpf_horizontal_8_dual = aom_lpf_horizontal_8_dual_neon;
+  aom_lpf_horizontal_8_quad = aom_lpf_horizontal_8_quad_c;
+  if (flags & HAS_NEON)
+    aom_lpf_horizontal_8_quad = aom_lpf_horizontal_8_quad_neon;
   aom_lpf_vertical_14 = aom_lpf_vertical_14_c;
   if (flags & HAS_NEON)
     aom_lpf_vertical_14 = aom_lpf_vertical_14_neon;
   aom_lpf_vertical_14_dual = aom_lpf_vertical_14_dual_c;
   if (flags & HAS_NEON)
     aom_lpf_vertical_14_dual = aom_lpf_vertical_14_dual_neon;
+  aom_lpf_vertical_14_quad = aom_lpf_vertical_14_quad_c;
+  if (flags & HAS_NEON)
+    aom_lpf_vertical_14_quad = aom_lpf_vertical_14_quad_neon;
   aom_lpf_vertical_4 = aom_lpf_vertical_4_c;
   if (flags & HAS_NEON)
     aom_lpf_vertical_4 = aom_lpf_vertical_4_neon;
   aom_lpf_vertical_4_dual = aom_lpf_vertical_4_dual_c;
   if (flags & HAS_NEON)
     aom_lpf_vertical_4_dual = aom_lpf_vertical_4_dual_neon;
+  aom_lpf_vertical_4_quad = aom_lpf_vertical_4_quad_c;
+  if (flags & HAS_NEON)
+    aom_lpf_vertical_4_quad = aom_lpf_vertical_4_quad_neon;
   aom_lpf_vertical_6 = aom_lpf_vertical_6_c;
   if (flags & HAS_NEON)
     aom_lpf_vertical_6 = aom_lpf_vertical_6_neon;
   aom_lpf_vertical_6_dual = aom_lpf_vertical_6_dual_c;
   if (flags & HAS_NEON)
     aom_lpf_vertical_6_dual = aom_lpf_vertical_6_dual_neon;
+  aom_lpf_vertical_6_quad = aom_lpf_vertical_6_quad_c;
+  if (flags & HAS_NEON)
+    aom_lpf_vertical_6_quad = aom_lpf_vertical_6_quad_neon;
   aom_lpf_vertical_8 = aom_lpf_vertical_8_c;
   if (flags & HAS_NEON)
     aom_lpf_vertical_8 = aom_lpf_vertical_8_neon;
   aom_lpf_vertical_8_dual = aom_lpf_vertical_8_dual_c;
   if (flags & HAS_NEON)
     aom_lpf_vertical_8_dual = aom_lpf_vertical_8_dual_neon;
+  aom_lpf_vertical_8_quad = aom_lpf_vertical_8_quad_c;
+  if (flags & HAS_NEON)
+    aom_lpf_vertical_8_quad = aom_lpf_vertical_8_quad_neon;
   aom_mse16x16 = aom_mse16x16_c;
   if (flags & HAS_NEON)
     aom_mse16x16 = aom_mse16x16_neon;
