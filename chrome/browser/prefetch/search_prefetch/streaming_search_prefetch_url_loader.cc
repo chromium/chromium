@@ -173,8 +173,6 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
     status_->completion_time = base::TimeTicks::Now();
   }
 
-  forwarding_client_->OnReceiveResponse(std::move(resource_response_),
-                                        mojo::ScopedDataPipeConsumerHandle());
   RunEventQueue();
 }
 
@@ -255,8 +253,7 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
   if (estimated_length_ > 0)
     body_content_.reserve(estimated_length_);
 
-  if (body)
-    OnStartLoadingResponseBody(std::move(body));
+  OnStartLoadingResponseBody(std::move(body));
 }
 
 void StreamingSearchPrefetchURLLoader::OnReceiveRedirect(
@@ -304,12 +301,7 @@ void StreamingSearchPrefetchURLLoader::OnTransferSizeUpdated(
 
 void StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle body) {
-  if (forwarding_client_) {
-    DCHECK(!streaming_prefetch_request_);
-    forwarding_client_->OnStartLoadingResponseBody(std::move(body));
-    return;
-  }
-
+  DCHECK(!forwarding_client_);
   serving_from_data_ = true;
 
   pipe_drainer_ =
@@ -368,7 +360,8 @@ void StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBodyFromData() {
       base::BindRepeating(&StreamingSearchPrefetchURLLoader::OnHandleReady,
                           weak_factory_.GetWeakPtr()));
 
-  forwarding_client_->OnStartLoadingResponseBody(std::move(consumer_handle));
+  forwarding_client_->OnReceiveResponse(std::move(resource_response_),
+                                        std::move(consumer_handle));
 
   PushData();
 }
