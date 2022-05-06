@@ -1,0 +1,17 @@
+{
+  use: [
+    {
+      directory: "root-ssl-certificates",
+      rights: [ "r*" ],
+      path: "/config/ssl",
+    },
+    {
+      protocol: [
+        "fuchsia.device.NameProvider",  // Required by FDIO.
+        "fuchsia.net.interfaces.State",
+        "fuchsia.net.name.Lookup",
+        "fuchsia.posix.socket.Provider",
+      ],
+    },
+  ],
+}

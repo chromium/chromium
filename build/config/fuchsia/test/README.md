@@ -18,6 +18,9 @@ Chromium tests that must interact with true system services.
 For tests that test fonts by providing `fuchsia.fonts.Provider`. The injected
 `fonts.cmx` requires `fuchsia.tracing.provider.Registry`.
 
+#### fonts.shard.test-cml
+For tests that access system fonts.
+
 #### jit_capabilities.test-cmx
 Required by tests that execute JavaScript. Should only be required in a small
 number of tests.
@@ -46,6 +49,10 @@ Any test-specific exceptions are documented for each file.
 
 #### audio_capabilities.test-cmx
 Corresponds to the `AUDIO` flag. Required for enabling audio input and output.
+
+#### network.shard.test-cml
+For tests that need access to network services, including those that access a
+local HTTP server.
 
 #### network_capabilities.test-cmx
 Corresponds to the `NETWORK` flag. Required for enabling network access. Note
