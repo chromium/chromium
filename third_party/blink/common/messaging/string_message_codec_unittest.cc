@@ -86,14 +86,21 @@ TEST(StringMessageCodecTest, SelfTest_ASCII) {
   EXPECT_EQ(message, decoded);
 }
 
-TEST(StringMessageCodecTest, SelfTest_NonASCII) {
+TEST(StringMessageCodecTest, SelfTest_Latin1) {
+  std::u16string message = u"hello \u00E7";
+  std::u16string decoded;
+  EXPECT_TRUE(DecodeStringMessage(EncodeStringMessage(message), &decoded));
+  EXPECT_EQ(message, decoded);
+}
+
+TEST(StringMessageCodecTest, SelfTest_TwoByte) {
   std::u16string message = u"hello \u263A";
   std::u16string decoded;
   EXPECT_TRUE(DecodeStringMessage(EncodeStringMessage(message), &decoded));
   EXPECT_EQ(message, decoded);
 }
 
-TEST(StringMessageCodecTest, SelfTest_NonASCIILongEnoughToForcePadding) {
+TEST(StringMessageCodecTest, SelfTest_TwoByteLongEnoughToForcePadding) {
   std::u16string message(200, 0x263A);
   std::u16string decoded;
   EXPECT_TRUE(DecodeStringMessage(EncodeStringMessage(message), &decoded));
@@ -105,12 +112,17 @@ TEST(StringMessageCodecTest, SelfToV8Test_ASCII) {
   EXPECT_EQ(message, DecodeWithV8(EncodeStringMessage(message)));
 }
 
-TEST(StringMessageCodecTest, SelfToV8Test_NonASCII) {
+TEST(StringMessageCodecTest, SelfToV8Test_Latin1) {
+  std::u16string message = u"hello \u00E7";
+  EXPECT_EQ(message, DecodeWithV8(EncodeStringMessage(message)));
+}
+
+TEST(StringMessageCodecTest, SelfToV8Test_TwoByte) {
   std::u16string message = u"hello \u263A";
   EXPECT_EQ(message, DecodeWithV8(EncodeStringMessage(message)));
 }
 
-TEST(StringMessageCodecTest, SelfToV8Test_NonASCIILongEnoughToForcePadding) {
+TEST(StringMessageCodecTest, SelfToV8Test_TwoByteLongEnoughToForcePadding) {
   std::u16string message(200, 0x263A);
   EXPECT_EQ(message, DecodeWithV8(EncodeStringMessage(message)));
 }
@@ -122,14 +134,21 @@ TEST(StringMessageCodecTest, V8ToSelfTest_ASCII) {
   EXPECT_EQ(message, decoded);
 }
 
-TEST(StringMessageCodecTest, V8ToSelfTest_NonASCII) {
+TEST(StringMessageCodecTest, V8ToSelfTest_Latin1) {
+  std::u16string message = u"hello \u00E7";
+  std::u16string decoded;
+  EXPECT_TRUE(DecodeStringMessage(EncodeWithV8(message), &decoded));
+  EXPECT_EQ(message, decoded);
+}
+
+TEST(StringMessageCodecTest, V8ToSelfTest_TwoByte) {
   std::u16string message = u"hello \u263A";
   std::u16string decoded;
   EXPECT_TRUE(DecodeStringMessage(EncodeWithV8(message), &decoded));
   EXPECT_EQ(message, decoded);
 }
 
-TEST(StringMessageCodecTest, V8ToSelfTest_NonASCIILongEnoughToForcePadding) {
+TEST(StringMessageCodecTest, V8ToSelfTest_TwoByteLongEnoughToForcePadding) {
   std::u16string message(200, 0x263A);
   std::u16string decoded;
   EXPECT_TRUE(DecodeStringMessage(EncodeWithV8(message), &decoded));

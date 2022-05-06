@@ -124,10 +124,12 @@ bool DecodeStringMessage(base::span<const uint8_t> encoded_data,
 
   switch (tag) {
     case kOneByteStringTag: {
+      // Use of unsigned char rather than char here matters, so that Latin-1
+      // characters are zero-extended rather than sign-extended
       uint32_t num_bytes;
       if (!ReadUint32(iter, &num_bytes))
         return false;
-      auto span = iter.Span<char>(num_bytes / sizeof(char));
+      auto span = iter.Span<unsigned char>(num_bytes / sizeof(unsigned char));
       result->assign(span.begin(), span.end());
       return span.size_bytes() == num_bytes;
     }
