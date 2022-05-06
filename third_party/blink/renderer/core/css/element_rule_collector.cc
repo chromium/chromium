@@ -304,9 +304,9 @@ static bool RulesApplicableInCurrentTreeScope(
          element->ContainingTreeScope() == scoping_node->ContainingTreeScope();
 }
 
-template <typename RuleDataListType, bool perf_trace_enabled>
+template <bool perf_trace_enabled>
 void ElementRuleCollector::CollectMatchingRulesForListInternal(
-    const RuleDataListType* rules,
+    const HeapVector<Member<const RuleData>>* rules,
     const MatchRequest& match_request,
     const RuleSet* rule_set,
     const CSSStyleSheet* style_sheet,
@@ -443,9 +443,8 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
   INCREMENT_STYLE_STATS_COUNTER(style_engine, rules_matched, matched);
 }
 
-template <typename RuleDataListType>
 void ElementRuleCollector::CollectMatchingRulesForList(
-    const RuleDataListType* rules,
+    const HeapVector<Member<const RuleData>>* rules,
     const MatchRequest& match_request,
     const RuleSet* rule_set,
     const CSSStyleSheet* style_sheet,
@@ -456,13 +455,13 @@ void ElementRuleCollector::CollectMatchingRulesForList(
   // parameter to eliminate branching in CollectMatchingRulesForListInternal
   // when tracing is not enabled.
   if (!*g_selector_stats_tracing_enabled) {
-    CollectMatchingRulesForListInternal<RuleDataListType, false>(
-        rules, match_request, rule_set, style_sheet, style_sheet_index, checker,
-        part_request);
+    CollectMatchingRulesForListInternal<false>(rules, match_request, rule_set,
+                                               style_sheet, style_sheet_index,
+                                               checker, part_request);
   } else {
-    CollectMatchingRulesForListInternal<RuleDataListType, true>(
-        rules, match_request, rule_set, style_sheet, style_sheet_index, checker,
-        part_request);
+    CollectMatchingRulesForListInternal<true>(rules, match_request, rule_set,
+                                              style_sheet, style_sheet_index,
+                                              checker, part_request);
   }
 }
 

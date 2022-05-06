@@ -143,9 +143,7 @@ class CORE_EXPORT ElementRuleCollector {
                                  bool is_cacheable = true,
                                  bool is_inline_style = false);
   void FinishAddingUARules() { result_.FinishAddingUARules(); }
-  void FinishAddingUserRules() {
-    result_.FinishAddingUserRules();
-  }
+  void FinishAddingUserRules() { result_.FinishAddingUserRules(); }
   void FinishAddingPresentationalHints() {
     result_.FinishAddingPresentationalHints();
   }
@@ -199,17 +197,17 @@ class CORE_EXPORT ElementRuleCollector {
     bool for_shadow_pseudo = false;
   };
 
-  template <typename RuleDataListType, bool perf_trace_enabled>
-  void CollectMatchingRulesForListInternal(const RuleDataListType*,
-                                           const MatchRequest&,
-                                           const RuleSet*,
-                                           const CSSStyleSheet*,
-                                           int,
-                                           const SelectorChecker&,
-                                           PartRequest* = nullptr);
+  template <bool perf_trace_enabled>
+  void CollectMatchingRulesForListInternal(
+      const HeapVector<Member<const RuleData>>*,
+      const MatchRequest&,
+      const RuleSet*,
+      const CSSStyleSheet*,
+      int,
+      const SelectorChecker&,
+      PartRequest* = nullptr);
 
-  template <typename RuleDataListType>
-  void CollectMatchingRulesForList(const RuleDataListType*,
+  void CollectMatchingRulesForList(const HeapVector<Member<const RuleData>>*,
                                    const MatchRequest&,
                                    const RuleSet*,
                                    const CSSStyleSheet*,
