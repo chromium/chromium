@@ -3876,51 +3876,49 @@ TEST_F(DiskCacheBackendTest, TotalBuffersSize2) {
   EXPECT_FALSE(cache_impl_->IsAllocAllowed(0, kOneMB));
 }
 
-// TODO(crbug.com/1317648): Revive this test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FileSharing DISABLED_FileSharing
-#else
-#define MAYBE_FileSharing FileSharing
-#endif
 // Tests that sharing of external files works and we are able to delete the
 // files when we need to.
-TEST_F(DiskCacheBackendTest, MAYBE_FileSharing) {
+TEST_F(DiskCacheBackendTest, FileSharing) {
   InitCache();
 
   disk_cache::Addr address(0x80000001);
   ASSERT_TRUE(cache_impl_->CreateExternalFile(&address));
   base::FilePath name = cache_impl_->GetFileName(address);
 
-  scoped_refptr<disk_cache::File> file(new disk_cache::File(false));
-  file->Init(name);
+  {
+    scoped_refptr<disk_cache::File> file(new disk_cache::File(false));
+    file->Init(name);
 
 #if BUILDFLAG(IS_WIN)
-  DWORD sharing = FILE_SHARE_READ | FILE_SHARE_WRITE;
-  DWORD access = GENERIC_READ | GENERIC_WRITE;
-  base::win::ScopedHandle file2(CreateFile(name.value().c_str(), access,
-                                           sharing, nullptr, OPEN_EXISTING, 0,
-                                           nullptr));
-  EXPECT_FALSE(file2.IsValid());
+    DWORD sharing = FILE_SHARE_READ | FILE_SHARE_WRITE;
+    DWORD access = GENERIC_READ | GENERIC_WRITE;
+    base::win::ScopedHandle file2(CreateFile(name.value().c_str(), access,
+                                             sharing, nullptr, OPEN_EXISTING, 0,
+                                             nullptr));
+    EXPECT_FALSE(file2.IsValid());
 
-  sharing |= FILE_SHARE_DELETE;
-  file2.Set(CreateFile(name.value().c_str(), access, sharing, nullptr,
-                       OPEN_EXISTING, 0, nullptr));
-  EXPECT_TRUE(file2.IsValid());
+    sharing |= FILE_SHARE_DELETE;
+    file2.Set(CreateFile(name.value().c_str(), access, sharing, nullptr,
+                         OPEN_EXISTING, 0, nullptr));
+    EXPECT_TRUE(file2.IsValid());
 #endif
 
-  EXPECT_TRUE(base::DeleteFile(name));
+    EXPECT_TRUE(base::DeleteFile(name));
 
-  // We should be able to use the file.
-  const int kSize = 200;
-  char buffer1[kSize];
-  char buffer2[kSize];
-  memset(buffer1, 't', kSize);
-  memset(buffer2, 0, kSize);
-  EXPECT_TRUE(file->Write(buffer1, kSize, 0));
-  EXPECT_TRUE(file->Read(buffer2, kSize, 0));
-  EXPECT_EQ(0, memcmp(buffer1, buffer2, kSize));
+    // We should be able to use the file.
+    const int kSize = 200;
+    char buffer1[kSize];
+    char buffer2[kSize];
+    memset(buffer1, 't', kSize);
+    memset(buffer2, 0, kSize);
+    EXPECT_TRUE(file->Write(buffer1, kSize, 0));
+    EXPECT_TRUE(file->Read(buffer2, kSize, 0));
+    EXPECT_EQ(0, memcmp(buffer1, buffer2, kSize));
+  }
 
-  EXPECT_TRUE(base::DeleteFile(name));
+  base::File file(name, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  EXPECT_FALSE(file.IsValid());
+  EXPECT_EQ(file.error_details(), base::File::FILE_ERROR_NOT_FOUND);
 }
 
 TEST_F(DiskCacheBackendTest, UpdateRankForExternalCacheHit) {
