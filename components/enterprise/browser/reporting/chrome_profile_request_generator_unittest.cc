@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "components/enterprise/browser/reporting/fake_browser_report_generator_delegate.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -25,83 +26,6 @@ const base::FilePath::CharType kProfilePath[] =
     FILE_PATH_LITERAL("profile-path");
 constexpr char kProfileName[] = "profile-name";
 constexpr char kBrowserExePath[] = "browser-path";
-
-class FakeBrowserReportGeneratorDelegate
-    : public BrowserReportGenerator::Delegate {
- public:
-  ~FakeBrowserReportGeneratorDelegate() override = default;
-
-  std::string GetExecutablePath() override { return kBrowserExePath; }
-  version_info::Channel GetChannel() override {
-    return version_info::Channel::STABLE;
-  }
-  std::vector<BrowserReportGenerator::ReportedProfileData> GetReportedProfiles()
-      override {
-    return std::vector<BrowserReportGenerator::ReportedProfileData>();
-  }
-  bool IsExtendedStableChannel() override { return true; }
-  void GenerateBuildStateInfo(
-      enterprise_management::BrowserReport* report) override {
-    return;
-  }
-  void GeneratePluginsIfNeeded(
-      BrowserReportGenerator::ReportCallback callback,
-      std::unique_ptr<enterprise_management::BrowserReport> report) override {
-    std::move(callback).Run(std::move(report));
-  }
-};
-
-class FakeProfileReportGeneratorDelegate
-    : public ProfileReportGenerator::Delegate {
- public:
-  ~FakeProfileReportGeneratorDelegate() override = default;
-
-  bool Init(const base::FilePath& path) override { return true; }
-  void GetSigninUserInfo(
-      enterprise_management::ChromeUserProfileInfo* report) override {}
-  void GetExtensionInfo(
-      enterprise_management::ChromeUserProfileInfo* report) override {}
-  void GetExtensionRequest(
-      enterprise_management::ChromeUserProfileInfo* report) override {}
-
-  std::unique_ptr<policy::PolicyConversionsClient> MakePolicyConversionsClient()
-      override {
-    return nullptr;
-  }
-  policy::MachineLevelUserCloudPolicyManager* GetCloudPolicyManager() override {
-    return nullptr;
-  }
-};
-
-class FakeReportingDelegateFactory : public ReportingDelegateFactory {
- public:
-  ~FakeReportingDelegateFactory() override = default;
-
-  std::unique_ptr<BrowserReportGenerator::Delegate>
-  GetBrowserReportGeneratorDelegate() override {
-    return std::make_unique<FakeBrowserReportGeneratorDelegate>();
-  }
-
-  std::unique_ptr<ProfileReportGenerator::Delegate>
-  GetProfileReportGeneratorDelegate() override {
-    return std::make_unique<FakeProfileReportGeneratorDelegate>();
-  }
-
-  std::unique_ptr<ReportGenerator::Delegate> GetReportGeneratorDelegate()
-      override {
-    return nullptr;
-  }
-
-  std::unique_ptr<ReportScheduler::Delegate> GetReportSchedulerDelegate()
-      override {
-    return nullptr;
-  }
-
-  std::unique_ptr<RealTimeReportGenerator::Delegate>
-  GetRealTimeReportGeneratorDelegate() override {
-    return nullptr;
-  }
-};
 
 }  // namespace
 
@@ -141,7 +65,7 @@ class ChromeProfileRequestGeneratorTest : public ::testing::Test {
   }
 
  private:
-  FakeReportingDelegateFactory delegate_factory_;
+  test::FakeReportingDelegateFactory delegate_factory_{kBrowserExePath};
   ChromeProfileRequestGenerator generator_;
 };
 

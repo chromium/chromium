@@ -96,6 +96,23 @@ static_library("test_support") {
   }
 }
 
+static_library("reporting_test_support") {
+  testonly = true
+
+  sources = [
+    "browser/reporting/fake_browser_report_generator_delegate.cc",
+    "browser/reporting/fake_browser_report_generator_delegate.h",
+  ]
+
+  deps = [
+    ":enterprise",
+    "//base",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto",
+    "//components/version_info",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -106,6 +123,7 @@ source_set("unit_tests") {
 
   deps = [
     ":enterprise",
+    ":reporting_test_support",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/enterprise/browser/signals:unit_tests",
