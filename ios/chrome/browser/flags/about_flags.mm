@@ -1036,6 +1036,21 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
                                    policy::key::kEnableExperimentalPolicies)];
   }
 
+  NSString* metrics_reporting_key = @"MetricsReportingEnabled";
+  switch ([defaults integerForKey:metrics_reporting_key]) {
+    case 1:
+      // Metrics reporting forced.
+      [testing_policies setValue:@(YES) forKey:metrics_reporting_key];
+      break;
+    case 2:
+      // Metrics reporting disabled.
+      [testing_policies setValue:@(NO) forKey:metrics_reporting_key];
+      break;
+    default:
+      // Metrics reporting not managed.
+      break;
+  }
+
   // Warning: Add new flags to TestingPoliciesHash() below.
 
   return testing_policies;
@@ -1046,12 +1061,12 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
 NSString* TestingPoliciesHash() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   return [NSString
-      stringWithFormat:@"%d|%d|%d|%d|%@|%d|%d|%d|%d|%d|%d|%d",
+      stringWithFormat:@"%d|%d|%d|%d|%@|%d|%d|%d|%d|%d|%d|%d|%d|%@|%d",
                        [defaults boolForKey:@"DisallowChromeDataInBackups"],
                        [defaults boolForKey:@"EnableSyncDisabledPolicy"],
                        [defaults boolForKey:@"EnableSamplePolicies"],
-                       (int)[defaults
-                           integerForKey:@"IncognitoModeAvailability"],
+                       static_cast<int>([defaults
+                           integerForKey:@"IncognitoModeAvailability"]),
                        [defaults stringForKey:@"RestrictAccountsToPatterns"],
                        [defaults boolForKey:@"SyncTypesListBookmarks"],
                        [defaults boolForKey:@"SyncTypesListReadingList"],
@@ -1059,7 +1074,12 @@ NSString* TestingPoliciesHash() {
                        [defaults boolForKey:@"SyncTypesListPasswords"],
                        [defaults boolForKey:@"SyncTypesListAutofill"],
                        [defaults boolForKey:@"SyncTypesListTypedUrls"],
-                       [defaults boolForKey:@"SyncTypesListTabs"]];
+                       [defaults boolForKey:@"SyncTypesListTabs"],
+                       static_cast<int>(
+                           [defaults integerForKey:@"BrowserSignin"]),
+                       [defaults stringForKey:@"NTPLocation"],
+                       static_cast<int>([defaults
+                           integerForKey:@"MetricsReportingEnabled"])];
 }
 }  // namespace
 
