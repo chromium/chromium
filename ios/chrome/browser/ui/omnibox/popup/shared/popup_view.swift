@@ -93,7 +93,9 @@ struct PopupView: View {
     func body(content: Content) -> some View {
       content
         // For some reason, without this, user interaction is not forwarded to the list.
-        .onTapGesture(perform: {})
+        // Setting the count to more than one ensures a buggy SwiftUI will not
+        // ignore actual tap gestures in subviews.
+        .onTapGesture(count: 2) {}
         // Long press gestures are dismissed and `onPressingChanged` called with
         // `pressing` equal to `false` when the user performs a drag gesture
         // over the content, hence why this works. `DragGesture` cannot be used
