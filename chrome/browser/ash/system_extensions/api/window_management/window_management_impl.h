@@ -30,16 +30,20 @@ class WindowManagementImpl : public blink::mojom::CrosWindowManagement {
                        int32_t x,
                        int32_t y,
                        int32_t width,
-                       int32_t height) override;
+                       int32_t height,
+                       SetWindowBoundsCallback callback) override;
 
   void SetFullscreen(const base::UnguessableToken& id,
-                     bool fullscreen) override;
+                     bool fullscreen,
+                     SetFullscreenCallback callback) override;
 
-  void Maximize(const base::UnguessableToken& id) override;
+  void Maximize(const base::UnguessableToken& id,
+                MaximizeCallback callback) override;
 
-  void Minimize(const base::UnguessableToken& id) override;
+  void Minimize(const base::UnguessableToken& id,
+                MinimizeCallback callback) override;
 
-  void Focus(const base::UnguessableToken& id) override;
+  void Focus(const base::UnguessableToken& id, FocusCallback callback) override;
 
   void Close(const base::UnguessableToken& id) override;
 

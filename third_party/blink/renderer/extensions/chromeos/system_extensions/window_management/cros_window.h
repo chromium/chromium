@@ -13,6 +13,7 @@ namespace blink {
 class DOMPoint;
 class DOMRect;
 class CrosWindowManagement;
+class ScriptPromise;
 
 class CrosWindow : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -33,12 +34,16 @@ class CrosWindow : public ScriptWrappable {
   DOMPoint* origin();
   DOMRect* bounds();
 
-  bool setOrigin(double x, double y);
-  bool setBounds(double x, double y, double width, double height);
-  void setFullscreen(bool fullscreen);
-  void maximize();
-  void minimize();
-  void focus();
+  ScriptPromise setOrigin(ScriptState* script_state, double x, double y);
+  ScriptPromise setBounds(ScriptState* script_state,
+                          double x,
+                          double y,
+                          double width,
+                          double height);
+  ScriptPromise setFullscreen(ScriptState* script_state, bool fullscreen);
+  ScriptPromise maximize(ScriptState* script_state);
+  ScriptPromise minimize(ScriptState* script_state);
+  ScriptPromise focus(ScriptState* script_state);
   void close();
 
  private:

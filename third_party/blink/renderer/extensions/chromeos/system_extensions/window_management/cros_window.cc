@@ -4,10 +4,14 @@
 
 #include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window.h"
 
+#include "base/callback_forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/geometry/dom_point.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window_management.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -18,6 +22,31 @@ static constexpr char kWindowStateFullscreen[] = "fullscreen";
 static constexpr char kWindowStateMaximized[] = "maximized";
 static constexpr char kWindowStateMinimized[] = "minimized";
 static constexpr char kWindowStateNormal[] = "normal";
+
+namespace {
+
+void OnResponse(ScriptPromiseResolver* resolver,
+                mojom::blink::CrosWindowManagementStatus status) {
+  switch (status) {
+    case mojom::blink::CrosWindowManagementStatus::kSuccess:
+      resolver->Resolve();
+      break;
+    case mojom::blink::CrosWindowManagementStatus::kWindowNoWindowState:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError,
+          "Operation couldn't be performed on window."));
+      break;
+    case mojom::blink::CrosWindowManagementStatus::kWindowNotFound:
+    case mojom::blink::CrosWindowManagementStatus::kWindowNoWidget:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotFoundError, "Window not found."));
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+}
+}  // namespace
 
 CrosWindow::CrosWindow(CrosWindowManagement* manager,
                        mojom::blink::CrosWindowInfoPtr window)
@@ -75,63 +104,86 @@ DOMRect* CrosWindow::bounds() {
                          window_->bounds.width(), window_->bounds.height());
 }
 
-bool CrosWindow::setOrigin(double x, double y) {
+ScriptPromise CrosWindow::setOrigin(ScriptState* script_state,
+                                    double x,
+                                    double y) {
   auto* cros_window_management =
       window_management_->GetCrosWindowManagementOrNull();
   if (!cros_window_management) {
-    return false;
+    return ScriptPromise();
   }
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   cros_window_management->SetWindowBounds(
-      window_->id, x, y, window_->bounds.width(), window_->bounds.height());
-  return true;
+      window_->id, x, y, window_->bounds.width(), window_->bounds.height(),
+      WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+  return resolver->Promise();
 }
 
-bool CrosWindow::setBounds(double x, double y, double width, double height) {
+ScriptPromise CrosWindow::setBounds(ScriptState* script_state,
+                                    double x,
+                                    double y,
+                                    double width,
+                                    double height) {
   auto* cros_window_management =
       window_management_->GetCrosWindowManagementOrNull();
   if (!cros_window_management) {
-    return false;
+    return ScriptPromise();
   }
-  cros_window_management->SetWindowBounds(window_->id, x, y, width, height);
-  return true;
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  cros_window_management->SetWindowBounds(
+      window_->id, x, y, width, height,
+      WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+  return resolver->Promise();
 }
 
-// TODO(crbug.com/1253318): Refactor to trace errors through return value or
-// otherwise.
-void CrosWindow::setFullscreen(bool fullscreen) {
+ScriptPromise CrosWindow::setFullscreen(ScriptState* script_state,
+                                        bool fullscreen) {
   auto* cros_window_management =
       window_management_->GetCrosWindowManagementOrNull();
   if (!cros_window_management) {
-    return;
+    return ScriptPromise();
   }
-  cros_window_management->SetFullscreen(window_->id, fullscreen);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  cros_window_management->SetFullscreen(
+      window_->id, fullscreen,
+      WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+  return resolver->Promise();
 }
 
-void CrosWindow::maximize() {
+ScriptPromise CrosWindow::maximize(ScriptState* script_state) {
   auto* cros_window_management =
       window_management_->GetCrosWindowManagementOrNull();
   if (!cros_window_management) {
-    return;
+    return ScriptPromise();
   }
-  cros_window_management->Maximize(window_->id);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  cros_window_management->Maximize(
+      window_->id, WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+  return resolver->Promise();
 }
 
-void CrosWindow::minimize() {
+ScriptPromise CrosWindow::minimize(ScriptState* script_state) {
   auto* cros_window_management =
       window_management_->GetCrosWindowManagementOrNull();
   if (!cros_window_management) {
-    return;
+    return ScriptPromise();
   }
-  cros_window_management->Minimize(window_->id);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  cros_window_management->Minimize(
+      window_->id, WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+  return resolver->Promise();
 }
 
-void CrosWindow::focus() {
+ScriptPromise CrosWindow::focus(ScriptState* script_state) {
   auto* cros_window_management =
       window_management_->GetCrosWindowManagementOrNull();
   if (!cros_window_management) {
-    return;
+    return ScriptPromise();
   }
-  cros_window_management->Focus(window_->id);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  cros_window_management->Focus(
+      window_->id, WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+  return resolver->Promise();
 }
 
 void CrosWindow::close() {

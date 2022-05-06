@@ -25,6 +25,18 @@ enum VisibilityState {
   kShown,   // Window is placed on a screen.
 };
 
+// CrosWindowManagement methods return status in callback corresponding to
+// state of method call.
+enum CrosWindowManagementStatus {
+  kSuccess,             // Function call executed successfully.
+  kWindowNotFound,      // No window was found with the specified id.
+  kWindowNoWindowState, // Failed to acquire window state for
+                        // maximizing/minimizing. Either no window exists with
+                        // the specified id, or window is not a top level
+                        // window.
+  kWindowNoWidget,      // No widget could be found on window with specified id.
+};
+
 // Represents a Chrome OS window which can be manipulated by a Window Management
 // System Extension.
 struct CrosWindowInfo {
@@ -50,19 +62,19 @@ interface CrosWindowManagement {
 
   // Sets the bounds of a CrosWindow where |hash| is used as the window
   // identifier.
-  SetWindowBounds(mojo_base.mojom.UnguessableToken id, int32 x, int32 y, int32 width, int32 height);
+  SetWindowBounds(mojo_base.mojom.UnguessableToken id, int32 x, int32 y, int32 width, int32 height) => (CrosWindowManagementStatus value);
 
   // Enable/disable fullscreen for window identified by id if one exists, else do nothing.
-  SetFullscreen(mojo_base.mojom.UnguessableToken id, bool fullscreen);
+  SetFullscreen(mojo_base.mojom.UnguessableToken id, bool fullscreen) => (CrosWindowManagementStatus value);
 
   // Maximizes the window identified by id if one exists, else do nothing.
-  Maximize(mojo_base.mojom.UnguessableToken id);
+  Maximize(mojo_base.mojom.UnguessableToken id) => (CrosWindowManagementStatus value);
 
   // Minimizes the window identified by id if one exists, else do nothing.
-  Minimize(mojo_base.mojom.UnguessableToken id);
+  Minimize(mojo_base.mojom.UnguessableToken id) => (CrosWindowManagementStatus value);
 
   // Allocates focus to the CrosWindow identified by id and brings to front.
-  Focus(mojo_base.mojom.UnguessableToken id);
+  Focus(mojo_base.mojom.UnguessableToken id) => (CrosWindowManagementStatus value);
 
   // Closes the window identified by id if it exists, else do nothing.
   Close(mojo_base.mojom.UnguessableToken id);

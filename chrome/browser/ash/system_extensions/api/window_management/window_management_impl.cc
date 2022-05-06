@@ -76,56 +76,85 @@ void WindowManagementImpl::SetWindowBounds(const base::UnguessableToken& id,
                                            int32_t x,
                                            int32_t y,
                                            int32_t width,
-                                           int32_t height) {
+                                           int32_t height,
+                                           SetWindowBoundsCallback callback) {
   aura::Window* target = GetWindow(id);
   // TODO(crbug.com/1253318): Ensure this works with multiple screens.
-  if (target) {
-    target->SetBounds(gfx::Rect(x, y, width, height));
+  if (!target) {
+    std::move(callback).Run(
+        blink::mojom::CrosWindowManagementStatus::kWindowNotFound);
+    return;
   }
+
+  target->SetBounds(gfx::Rect(x, y, width, height));
+  std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
 }
 
 void WindowManagementImpl::SetFullscreen(const base::UnguessableToken& id,
-                                         bool fullscreen) {
+                                         bool fullscreen,
+                                         SetFullscreenCallback callback) {
   views::Widget* widget = GetWidget(id);
-  if (widget) {
-    widget->SetFullscreen(fullscreen);
+  if (!widget) {
+    std::move(callback).Run(
+        blink::mojom::CrosWindowManagementStatus::kWindowNoWidget);
+    return;
   }
+  widget->SetFullscreen(fullscreen);
+  std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
 }
 
-void WindowManagementImpl::Maximize(const base::UnguessableToken& id) {
+void WindowManagementImpl::Maximize(const base::UnguessableToken& id,
+                                    MaximizeCallback callback) {
   aura::Window* target = GetWindow(id);
-  // TODO(b/223320570): Add error handling for stale ids.
   if (!target) {
+    std::move(callback).Run(
+        blink::mojom::CrosWindowManagementStatus::kWindowNotFound);
     return;
   }
 
   // Returns null when id points to non top level window or is null itself.
   WindowState* state = WindowState::Get(target);
-  if (state) {
-    state->Maximize();
+  if (!state) {
+    std::move(callback).Run(
+        blink::mojom::CrosWindowManagementStatus::kWindowNoWindowState);
+    return;
   }
+
+  state->Maximize();
+  std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
 }
 
-void WindowManagementImpl::Minimize(const base::UnguessableToken& id) {
+void WindowManagementImpl::Minimize(const base::UnguessableToken& id,
+                                    MinimizeCallback callback) {
   aura::Window* target = GetWindow(id);
-  // TODO(b/223320570): Add error handling for stale ids.
   if (!target) {
+    std::move(callback).Run(
+        blink::mojom::CrosWindowManagementStatus::kWindowNotFound);
     return;
   }
 
   // Returns null when id points to non top level window or is null itself.
   WindowState* state = WindowState::Get(target);
-  if (state) {
-    state->Minimize();
+  if (!state) {
+    std::move(callback).Run(
+        blink::mojom::CrosWindowManagementStatus::kWindowNoWindowState);
+    return;
   }
+
+  state->Minimize();
+  std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
 }
 
-void WindowManagementImpl::Focus(const base::UnguessableToken& id) {
+void WindowManagementImpl::Focus(const base::UnguessableToken& id,
+                                 FocusCallback callback) {
   aura::Window* target = GetWindow(id);
-  // TODO(b/223320570): Add error handling for stale ids.
-  if (target) {
-    target->Focus();
+  if (!target) {
+    std::move(callback).Run(
+        blink::mojom::CrosWindowManagementStatus::kWindowNotFound);
+    return;
   }
+  target->Focus();
+  std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
 }
 
 void WindowManagementImpl::Close(const base::UnguessableToken& id) {

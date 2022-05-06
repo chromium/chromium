@@ -32,15 +32,36 @@ interface CrosWindow {
   readonly attribute DOMPoint origin;
   readonly attribute DOMRect bounds;
 
-  boolean setOrigin(double x, double y);
-  boolean setBounds(double x, double y, double width, double height);
-  void setFullscreen(boolean fullscreen);
-  // Sets window state to maximized.
-  void maximize();
-  // Sets window state to minimized.
-  void minimize();
+  // Moves the window such that the window's top left corner is at coordinates
+  // (x, y) relative to the top left corner of the current screen. Measured in
+  // CSS pixels of the window. The top left corner of the screen corresponds to
+  // (0, 0). This might change once we support multiple screens and we use the
+  // multi-screen origin:
+  // https://w3c.github.io/window-placement/#multi-screen-origin
+  [CallWith=ScriptState] Promise<void> setOrigin(double x, double y);
+
+  // Moves the window such that the window's top left corner is at coordinates
+  // (x, y) relative to the top left corner of the current screen and sets the
+  // window's dimensions to  width  and  height . Measured in CSS pixels of the
+  // window. The top left corner of the screen corresponds to (0, 0). This might
+  // change once we support multiple screens and we use the multi-screen origin:
+  // https://w3c.github.io/window-placement/#multi-screen-origin
+  [CallWith=ScriptState] Promise<void> setBounds(double x, double y, double width, double height);
+
+  // Sets or unsets window to fullscreen.
+  [CallWith=ScriptState] Promise<void> setFullscreen(boolean fullscreen);
+
+  // Sets window state to maximized. Promise resolves when window starts
+  // maximizing. Promise rejects with an error if the window can't be maximized.
+  [CallWith=ScriptState] Promise<void> maximize();
+
+  // Sets window state to minimized. Promise resolves when window starts
+  // minimizing. Promise rejects with an error if the window can't be minimized.
+  [CallWith=ScriptState] Promise<void> minimize();
+
   // Allocates focus to the CrosWindow identified by id and brings to front.
-  void focus();
+  [CallWith=ScriptState] Promise<void> focus();
+
   // Closes the window.
   void close();
 };
