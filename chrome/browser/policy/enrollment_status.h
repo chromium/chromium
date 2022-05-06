@@ -69,7 +69,6 @@ class EnrollmentStatus {
   static EnrollmentStatus ForFetchError(DeviceManagementStatus client_status);
   static EnrollmentStatus ForRobotAuthFetchError(
       DeviceManagementStatus client_status);
-  static EnrollmentStatus ForRobotRefreshFetchError(int http_status);
   static EnrollmentStatus ForValidationError(
       CloudPolicyValidatorBase::Status validation_status);
   static EnrollmentStatus ForStoreError(
@@ -82,7 +81,6 @@ class EnrollmentStatus {
 
   Status status() const { return status_; }
   DeviceManagementStatus client_status() const { return client_status_; }
-  int http_status() const { return http_status_; }
   CloudPolicyStore::Status store_status() const { return store_status_; }
   CloudPolicyValidatorBase::Status validation_status() const {
     return validation_status_;
@@ -97,14 +95,12 @@ class EnrollmentStatus {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   EnrollmentStatus(Status status,
                    DeviceManagementStatus client_status,
-                   int http_status,
                    CloudPolicyStore::Status store_status,
                    CloudPolicyValidatorBase::Status validation_status,
                    ash::InstallAttributes::LockResult lock_status);
 #else
   EnrollmentStatus(Status status,
                    DeviceManagementStatus client_status,
-                   int http_status,
                    CloudPolicyStore::Status store_status,
                    CloudPolicyValidatorBase::Status validation_status);
 #endif
@@ -114,13 +110,11 @@ class EnrollmentStatus {
   static EnrollmentStatus CreateEnrollmentStatusWithoutLockError(
       Status status,
       DeviceManagementStatus client_status,
-      int http_status,
       CloudPolicyStore::Status store_status,
       CloudPolicyValidatorBase::Status validation_status);
 
   Status status_;
   DeviceManagementStatus client_status_;
-  int http_status_;
   CloudPolicyStore::Status store_status_;
   CloudPolicyValidatorBase::Status validation_status_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)

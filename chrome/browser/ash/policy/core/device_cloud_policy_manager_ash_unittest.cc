@@ -936,7 +936,6 @@ TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest,
   expect_robot_auth_fetch_failure_ = true;
   RunTest();
   ExpectFailedEnrollment(EnrollmentStatus::ROBOT_REFRESH_FETCH_FAILED);
-  EXPECT_EQ(net::HTTP_BAD_REQUEST, status_.http_status());
 }
 
 TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest,

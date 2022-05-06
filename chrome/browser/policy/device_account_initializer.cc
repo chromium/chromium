@@ -112,8 +112,8 @@ void DeviceAccountInitializer::OnOAuthError() {
   // response is bad (empty access token returned).
   LOG(ERROR) << "OAuth protocol error while fetching API refresh token.";
   handling_request_ = false;
-  delegate_->OnDeviceAccountTokenError(
-      EnrollmentStatus::ForRobotRefreshFetchError(net::HTTP_BAD_REQUEST));
+  delegate_->OnDeviceAccountTokenError(EnrollmentStatus::ForStatus(
+      EnrollmentStatus::ROBOT_REFRESH_FETCH_FAILED));
 }
 
 // GaiaOAuthClient::Delegate network error when fetching refresh token.
@@ -121,8 +121,8 @@ void DeviceAccountInitializer::OnNetworkError(int response_code) {
   LOG(ERROR) << "Network error while fetching API refresh token: "
              << response_code;
   handling_request_ = false;
-  delegate_->OnDeviceAccountTokenError(
-      EnrollmentStatus::ForRobotRefreshFetchError(response_code));
+  delegate_->OnDeviceAccountTokenError(EnrollmentStatus::ForStatus(
+      EnrollmentStatus::ROBOT_REFRESH_FETCH_FAILED));
 }
 
 void DeviceAccountInitializer::StoreToken() {
