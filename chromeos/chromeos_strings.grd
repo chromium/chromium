@@ -2989,16 +2989,16 @@ Try tapping the mic to ask me anything.
         Preparing for restart...
       </message>
       <!-- Restock mainboard page -->
-      <message name="IDS_SHIMLESS_RMA_RESTOCK_PAGE_TITLE" translateable="false" desc="The title for the page notifying user device is in a good state for restocking the mainboard.">
-        <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> repair
+      <message name="IDS_SHIMLESS_RMA_RESTOCK_PAGE_TITLE" desc="The title for the page notifying user device is in a good state for restocking the mainboard.">
+        Continue repair?
       </message>
-      <message name="IDS_SHIMLESS_RMA_RESTOCK_INSTRUCTIONS" translateable="false" desc="Instructions for what to do in the restock state. As the device will return to this state when rebooted after restocking the user can shutdown or continue RMA">
-        Continue where you left off, or shut down to restock the board.
+      <message name="IDS_SHIMLESS_RMA_RESTOCK_INSTRUCTIONS" desc="Instructions for what to do in the restock state. As the device will return to this state when rebooted after restocking the user can shutdown or continue RMA">
+        You can continue with the full repair or powerwash (factory reset) the device to restock the mainboard.
       </message>
-      <message name="IDS_SHIMLESS_RMA_RESTOCK_SHUTDOWN_BUTTON" translateable="false" desc="Label for the button that triggers device shutdown on the restock page.">
-        Shutdown
+      <message name="IDS_SHIMLESS_RMA_RESTOCK_SHUTDOWN_BUTTON" desc="Label for the button that triggers device shutdown on the restock page.">
+        Powerwash &amp; Shut down
       </message>
-      <message name="IDS_SHIMLESS_RMA_RESTOCK_CONTINUE_BUTTON" translateable="false" desc="Label for the continue button on the restock page.">
+      <message name="IDS_SHIMLESS_RMA_RESTOCK_CONTINUE_BUTTON" desc="Label for the continue button on the restock page.">
         Continue
       </message>
       <!-- Manually enable wp page -->
