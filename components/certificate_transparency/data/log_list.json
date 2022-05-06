@@ -1,6 +1,6 @@
 {
-  "version": "7.51",
-  "log_list_timestamp": "2022-04-29T12:56:40Z",
+  "version": "9.4",
+  "log_list_timestamp": "2022-05-06T12:55:11Z",
   "operators": [
     {
       "name": "Google",
@@ -73,30 +73,18 @@
           }
         },
         {
-          "description": "Google 'Aviator' log",
-          "log_id": "aPaY+B9kgr46jO65KB1M/HFRXWeT1ETRCmesu09P+8Q=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE1/TMabLkDpCjiupacAlP7xNi0I1JYP8bQFAHDG1xhtolSY1l4QgNRzRrvSe8liE+NPWHdjGxfx3JhTsN9x8/6Q==",
-          "url": "https://ct.googleapis.com/aviator/",
-          "mmd": 86400,
-          "state": {
-            "readonly": {
-              "timestamp": "2016-11-30T13:24:18Z",
-              "final_tree_head": {
-                "sha256_root_hash": "LcGcZRsm+LGYmrlyC5LXhV1T6OD8iH5dNlb0sEJl9bA=",
-                "tree_size": 46466472
-              }
-            }
-          }
-        },
-        {
           "description": "Google 'Icarus' log",
           "log_id": "KTxRllTIOWW6qlD8WAfUt2+/WHopctykwwz05UVH9Hg=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAETtK8v7MICve56qTHHDhhBOuV4IlUaESxZryCfk9QbG9co/CqPvTsgPDbCpp6oFtyAHwlDhnvr7JijXRD9Cb2FA==",
           "url": "https://ct.googleapis.com/icarus/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2017-03-06T19:35:01Z"
+            "readonly": {
+              "timestamp": "2022-05-03T18:52:50Z",
+              "final_tree_head": {
+                "sha256_root_hash": "D1H4wAJmq0MRCeLfeOtrsZ9Am015anO5MkeasNhnQWI=",
+                "tree_size": 762430819
+              }
             }
           }
         },
@@ -107,8 +95,12 @@
           "url": "https://ct.googleapis.com/pilot/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2014-09-02T20:41:44Z"
+            "readonly": {
+              "timestamp": "2022-05-03T18:52:50Z",
+              "final_tree_head": {
+                "sha256_root_hash": "57gZIfRLpXho89LUBCQeZUDIHx8gA9PL1M4hc71W90E=",
+                "tree_size": 1077336645
+              }
             }
           }
         },
@@ -119,8 +111,12 @@
           "url": "https://ct.googleapis.com/rocketeer/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2015-08-04T19:00:05Z"
+            "readonly": {
+              "timestamp": "2022-05-03T18:52:50Z",
+              "final_tree_head": {
+                "sha256_root_hash": "Fj49ZSzvzvjNlEOCVhdkwpTlP7hyp82SFsmfWPScpv0=",
+                "tree_size": 1117582774
+              }
             }
           }
         },
@@ -131,8 +127,12 @@
           "url": "https://ct.googleapis.com/skydiver/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2017-03-06T19:35:01Z"
+            "readonly": {
+              "timestamp": "2022-05-03T18:52:50Z",
+              "final_tree_head": {
+                "sha256_root_hash": "m8mPaxXwy+EdNwnfdsSWCKdhEk1bm/5Mp84ilMB5xvc=",
+                "tree_size": 312892829
+              }
             }
           }
         }
@@ -278,42 +278,6 @@
           }
         },
         {
-          "description": "Symantec log",
-          "log_id": "3esdK3oNT6Ygi4GtgWhwfi6OnQHVXIiNPRHEzbbsvsw=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEluqsHEYMG1XcDfy1lCdGV0JwOmkY4r87xNuroPS2bMBTP01CEDPwWJePa75y9CrsHEKqAy8afig1dpkIPSEUhg==",
-          "url": "https://ct.ws.symantec.com/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2019-02-16T00:00:00Z"
-            }
-          }
-        },
-        {
-          "description": "Symantec 'Vega' log",
-          "log_id": "vHjh38X2PGhGSTNNoQ+hXwl5aSAJwIG08/aRfz7ZuKU=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6pWeAv/u8TNtS4e8zf0ZF2L/lNPQWQc/Ai0ckP7IRzA78d0NuBEMXR2G3avTK0Zm+25ltzv9WWis36b4ztIYTQ==",
-          "url": "https://vega.ws.symantec.com/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2019-02-16T00:00:00Z"
-            }
-          }
-        },
-        {
-          "description": "Symantec 'Sirius' log",
-          "log_id": "FZcEiNe5l6Bb61JRKt7o0ui0oxZSZBIan6v71fha2T8=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEowJkhCK7JewN47zCyYl93UXQ7uYVhY/Z5xcbE4Dq7bKFN61qxdglnfr0tPNuFiglN+qjN2Syxwv9UeXBBfQOtQ==",
-          "url": "https://sirius.ws.symantec.com/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2019-02-16T00:00:00Z"
-            }
-          }
-        },
-        {
           "description": "DigiCert Yeti2022-2 Log",
           "log_id": "BZwB0yDgB4QTlYBJjRF8kDJmr69yULWvO0akPhGEDUo=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHWlePwrycXfNnV3DNEkA7mB34XJ2dKh8XH0J8jIdBX4u/lsx1Tr9czRuSRROUFiWWsTH9L4FZKT31+WxbTMMww==",
@@ -327,126 +291,6 @@
           "temporal_interval": {
             "start_inclusive": "2022-01-01T00:00:00Z",
             "end_exclusive": "2023-01-01T00:00:00Z"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Certly",
-      "email": [
-        "ian@certly.io"
-      ],
-      "logs": [
-        {
-          "description": "Certly.IO log",
-          "log_id": "zbUXm3/BwEb+6jETaj+PAC5hgvr4iW/syLL1tatgSQA=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAECyPLhWKYYUgEc+tUXfPQB4wtGS2MNvXrjwFCCnyYJifBtd2Sk7Cu+Js9DNhMTh35FftHaHu6ZrclnNBKwmbbSA==",
-          "url": "https://log.certly.io/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2016-04-15T00:00:00Z"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Izenpe",
-      "email": [
-        "atecnica@izenpe.net"
-      ],
-      "logs": [
-        {
-          "description": "Izenpe log",
-          "log_id": "dGG0oJz7PUHXUVlXWy52SaRFqNJ3CbDMVkpkgrfrQaM=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEJ2Q5DC3cUBj4IQCiDu0s6j51up+TZAkAEcQRF6tczw90rLWXkJMAW7jr9yc92bIKgV8vDXU4lDeZHvYHduDuvg==",
-          "url": "https://ct.izenpe.com/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2016-05-30T00:00:00Z"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "WoSign",
-      "email": [
-        "ctlog@wosign.com"
-      ],
-      "logs": [
-        {
-          "description": "WoSign log",
-          "log_id": "QbLcLonmPOSvG6e7Kb9oxt7m+fHMBH4w3/rjs7olkmM=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzBGIey1my66PTTBmJxklIpMhRrQvAdPG+SvVyLpzmwai8IoCnNBrRhgwhbrpJIsO0VtwKAx+8TpFf1rzgkJgMQ==",
-          "url": "https://ctlog.wosign.com/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2018-02-12T23:59:59Z"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Venafi",
-      "email": [
-        "ctlog-admin@venafi.com"
-      ],
-      "logs": [
-        {
-          "description": "Venafi log",
-          "log_id": "rDua7X+pZ0dXFZ5tfVdWcvnZgQCUHpve/+yhMTt1eC0=",
-          "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAolpIHxdSlTXLo1s6H1OCdpSj/4DyHDc8wLG9wVmLqy1lk9fz4ATVmm+/1iN2Nk8jmctUKK2MFUtlWXZBSpym97M7frGlSaQXUWyA3CqQUEuIJOmlEjKTBEiQAvpfDjCHjlV2Be4qTM6jamkJbiWtgnYPhJL6ONaGTiSPm7Byy57iaz/hbckldSOIoRhYBiMzeNoA0DiRZ9KmfSeXZ1rB8y8X5urSW+iBzf2SaOfzBvDpcoTuAaWx2DPazoOl28fP1hZ+kHUYvxbcMjttjauCFx+JII0dmuZNIwjfeG/GBb9frpSX219k1O4Wi6OEbHEr8at/XQ0y7gTikOxBn/s5wQIDAQAB",
-          "url": "https://ctlog.api.venafi.com/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2017-02-28T18:42:26Z"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "CNNIC",
-      "email": [
-        "ctlog-admin@cnnic.cn"
-      ],
-      "logs": [
-        {
-          "description": "CNNIC CT log",
-          "log_id": "pXesnO11SN2PAltnokEInfhuD0duwgPC7L7bGF8oJjg=",
-          "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv7UIYZopMgTTJWPp2IXhhuAf1l6a9zM7gBvntj5fLaFm9pVKhKYhVnno94XuXeN8EsDgiSIJIj66FpUGvai5samyetZhLocRuXhAiXXbDNyQ4KR51tVebtEq2zT0mT9liTtGwiksFQccyUsaVPhsHq9gJ2IKZdWauVA2Fm5x9h8B9xKn/L/2IaMpkIYtd967TNTP/dLPgixN1PLCLaypvurDGSVDsuWabA3FHKWL9z8wr7kBkbdpEhLlg2H+NAC+9nGKx+tQkuhZ/hWR65aX+CNUPy2OB9/u2rNPyDydb988LENXoUcMkQT0dU3aiYGkFAY0uZjD2vH97TM20xYtNQIDAQAB",
-          "url": "https://ctserver.cnnic.cn/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2018-09-18T00:00:00Z"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "StartCom",
-      "email": [
-        "ct@startssl.com"
-      ],
-      "logs": [
-        {
-          "description": "StartCom log",
-          "log_id": "NLtq1sPfnAPuqKSZ/3iRSGydXlysktAfe/0bzhnbSO8=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAESPNZ8/YFGNPbsu1Gfs/IEbVXsajWTOaft0oaFIZDqUiwy1o/PErK38SCFFWa+PeOQFXc9NKv6nV0+05/YIYuUQ==",
-          "url": "https://ct.startssl.com/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2018-02-12T23:59:59Z"
-            }
           }
         }
       ]
