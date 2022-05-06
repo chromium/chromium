@@ -157,11 +157,6 @@ void PageLoadMetricsTestWaiter::AddLoadingBehaviorExpectation(
   expected_.loading_behavior_flags_ |= behavior_flags;
 }
 
-void PageLoadMetricsTestWaiter::AddLargestContentfulPaintExpectation(
-    int num_clp) {
-  expected_num_clp_ = num_clp;
-}
-
 bool PageLoadMetricsTestWaiter::DidObserveInPage(TimingField field) const {
   return observed_.page_fields_.IsSet(field);
 }
@@ -327,7 +322,6 @@ PageLoadMetricsTestWaiter::GetMatchedBits(
     matched_bits.Set(TimingField::kFirstMeaningfulPaint);
   if (timing.paint_timing->largest_contentful_paint->largest_image_paint ||
       timing.paint_timing->largest_contentful_paint->largest_text_paint) {
-    current_num_clp_++;
     matched_bits.Set(TimingField::kLargestContentfulPaint);
   }
   if (timing.paint_timing->first_input_or_scroll_notified_timestamp)
@@ -460,11 +454,6 @@ bool PageLoadMetricsTestWaiter::MemoryUpdateExpectationsSatisfied() const {
                   observed_.memory_update_frame_ids_);
 }
 
-bool PageLoadMetricsTestWaiter::LargestContentfulPaintExpectationsSatisfied()
-    const {
-  return current_num_clp_ >= expected_num_clp_;
-}
-
 bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
   return expected_.page_fields_.AreAllSetIn(observed_.page_fields_) &&
          expected_.subframe_fields_.AreAllSetIn(observed_.subframe_fields_) &&
@@ -476,8 +465,7 @@ bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
          LoadingBehaviorExpectationsSatisfied() &&
          CpuTimeExpectationsSatisfied() &&
          MainFrameIntersectionExpectationsSatisfied() &&
-         MemoryUpdateExpectationsSatisfied() &&
-         LargestContentfulPaintExpectationsSatisfied();
+         MemoryUpdateExpectationsSatisfied();
 }
 
 void PageLoadMetricsTestWaiter::ResetExpectations() {

@@ -98,9 +98,6 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   // set of expected behaviors.
   void AddLoadingBehaviorExpectation(int behavior_flags);
 
-  // Add the number of largest contentful paint expectation.
-  void AddLargestContentfulPaintExpectation(int num_clp);
-
   // Whether the given TimingField was observed in the page.
   bool DidObserveInPage(TimingField field) const;
 
@@ -240,7 +237,6 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   bool SubframeDataExpectationsSatisfied() const;
   bool MainFrameIntersectionExpectationsSatisfied() const;
   bool MemoryUpdateExpectationsSatisfied() const;
-  bool LargestContentfulPaintExpectationsSatisfied() const;
 
   void AddObserver(page_load_metrics::PageLoadTracker* tracker);
 
@@ -286,9 +282,6 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   bool did_add_observer_ = false;
 
   double last_main_frame_layout_shift_score_ = 0;
-
-  int current_num_clp_ = 0;
-  int expected_num_clp_ = 0;
 
   base::WeakPtrFactory<PageLoadMetricsTestWaiter> weak_factory_{this};
 
