@@ -8,24 +8,35 @@ USE_PYTHON3 = True
 import sys
 
 def _CheckSemanticCssColors(input_api, output_api):
-  original_sys_path = sys.path
-  join = input_api.os_path.join
-  src_root = input_api.change.RepositoryRoot()
-  try:
-    # Change the system path to SemanticCssChecker's directory to be
-    # able to import it.
-    sys.path.append(join(src_root, 'ui', 'chromeos', 'styles'))
-    from semantic_css_checker import SemanticCssChecker
-  finally:
-    sys.path = original_sys_path
+    original_sys_path = sys.path
+    join = input_api.os_path.join
+    src_root = input_api.change.RepositoryRoot()
+    try:
+        # Change the system path to SemanticCssChecker's directory to be
+        # able to import it.
+        sys.path.append(join(src_root, 'ui', 'chromeos', 'styles'))
+        from semantic_css_checker import SemanticCssChecker
+        return SemanticCssChecker.RunChecks(input_api, output_api)
+    finally:
+        sys.path = original_sys_path
 
-  return SemanticCssChecker.RunChecks(input_api, output_api)
+
+def _CheckTypescriptPreparation(input_api, output_api):
+    original_sys_path = sys.path
+    try:
+        cwd = input_api.PresubmitLocalPath()
+        sys.path.append(cwd)
+        from typescript_preparation_checker import TypescriptPreparationChecker
+        return TypescriptPreparationChecker.RunChecks(input_api, output_api)
+    finally:
+        sys.path = original_sys_path
 
 
 def _CommonChecks(input_api, output_api):
     """Checks common to both upload and commit."""
     results = []
     results.extend(_CheckSemanticCssColors(input_api, output_api))
+    results.extend(_CheckTypescriptPreparation(input_api, output_api))
     return results
 
 
