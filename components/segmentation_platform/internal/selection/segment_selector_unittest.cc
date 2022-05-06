@@ -16,6 +16,7 @@
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/field_trial_register.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,6 +30,13 @@ class SegmentInfo;
 }  // namespace proto
 
 namespace {
+
+class MockFieldTrialRegister : public FieldTrialRegister {
+ public:
+  MOCK_METHOD2(RegisterFieldTrial,
+               void(base::StringPiece trial_name,
+                    base::StringPiece group_name));
+};
 
 Config CreateTestConfig() {
   Config config;
@@ -76,7 +84,7 @@ class SegmentSelectorTest : public testing::Test {
     prefs_ = prefs_moved.get();
     segment_selector_ = std::make_unique<SegmentSelectorImpl>(
         segment_database_.get(), &signal_storage_config_,
-        std::move(prefs_moved), &config_, &clock_,
+        std::move(prefs_moved), &config_, &field_trial_register_, &clock_,
         PlatformOptions::CreateDefault(), default_manager_.get());
     segment_selector_->OnPlatformInitialized(nullptr);
   }
@@ -120,6 +128,7 @@ class SegmentSelectorTest : public testing::Test {
   TestModelProviderFactory::Data model_providers_;
   TestModelProviderFactory provider_factory_;
   Config config_;
+  MockFieldTrialRegister field_trial_register_;
   base::SimpleTestClock clock_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   MockSignalStorageConfig signal_storage_config_;
@@ -311,8 +320,8 @@ TEST_F(SegmentSelectorTest,
   // Construct a segment selector. It should read result from last session.
   segment_selector_ = std::make_unique<SegmentSelectorImpl>(
       segment_database_.get(), &signal_storage_config_, std::move(prefs_moved),
-      &config_, &clock_, PlatformOptions::CreateDefault(),
-      default_manager_.get());
+      &config_, &field_trial_register_, &clock_,
+      PlatformOptions::CreateDefault(), default_manager_.get());
   segment_selector_->OnPlatformInitialized(nullptr);
 
   SegmentSelectionResult result;

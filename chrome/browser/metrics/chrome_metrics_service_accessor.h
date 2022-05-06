@@ -81,6 +81,10 @@ namespace settings {
 class MetricsReportingHandler;
 }
 
+namespace segmentation_platform {
+class FieldTrialRegisterImpl;
+}
+
 namespace feed {
 class FeedServiceBridge;
 class FeedServiceDelegateImpl;
@@ -144,6 +148,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class safe_browsing::IncidentReportingService;
   friend class safe_browsing::internal::ReporterRunner;
   friend class safe_browsing::SafeBrowsingService;
+  friend class segmentation_platform::FieldTrialRegisterImpl;
   friend class ChromeMetricsServiceClient;
   friend class ChromePasswordManagerClient;
   friend void welcome::JoinOnboardingGroup(Profile* profile);

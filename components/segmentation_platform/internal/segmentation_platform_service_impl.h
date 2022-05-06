@@ -42,6 +42,7 @@ class PrefService;
 namespace segmentation_platform {
 
 struct Config;
+class FieldTrialRegister;
 class ModelProviderFactory;
 class SegmentSelectorImpl;
 class SegmentScoreProvider;
@@ -65,6 +66,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
     std::unique_ptr<ModelProviderFactory> model_provider;
     UkmDataManager* ukm_data_manager = nullptr;
     std::vector<std::unique_ptr<Config>> configs;
+    std::unique_ptr<FieldTrialRegister> field_trial_register;
 
     scoped_refptr<base::SequencedTaskRunner> task_runner;
     base::Clock* clock = nullptr;
@@ -124,6 +126,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   std::vector<std::unique_ptr<Config>> configs_;
   base::flat_set<optimization_guide::proto::OptimizationTarget>
       all_segment_ids_;
+  std::unique_ptr<FieldTrialRegister> field_trial_register_;
 
   std::unique_ptr<StorageService> storage_service_;
   bool storage_initialized_ = false;

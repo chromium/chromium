@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/field_trial_register.h"
 
 namespace segmentation_platform {
 struct Config;
@@ -20,6 +21,20 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig();
 // Returns a default model provider for the `target`.
 std::unique_ptr<ModelProvider> GetSegmentationDefaultModelProvider(
     optimization_guide::proto::OptimizationTarget target);
+
+// Implementation of FieldTrialRegister that uses synthetic field trials to
+// record segmentation groups.
+class FieldTrialRegisterImpl : public FieldTrialRegister {
+ public:
+  FieldTrialRegisterImpl();
+  ~FieldTrialRegisterImpl() override;
+  FieldTrialRegisterImpl(const FieldTrialRegisterImpl&) = delete;
+  FieldTrialRegisterImpl& operator=(const FieldTrialRegisterImpl&) = delete;
+
+  // FieldTrialRegister:
+  void RegisterFieldTrial(base::StringPiece trial_name,
+                          base::StringPiece group_name) override;
+};
 
 }  // namespace segmentation_platform
 

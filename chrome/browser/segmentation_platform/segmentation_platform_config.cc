@@ -10,6 +10,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/segmentation_platform/default_model/low_user_engagement_model.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/public/config.h"
@@ -238,6 +239,28 @@ std::unique_ptr<ModelProvider> GetSegmentationDefaultModelProvider(
     return GetLowEngagementDefaultModel();
   }
   return nullptr;
+}
+
+FieldTrialRegisterImpl::FieldTrialRegisterImpl() = default;
+FieldTrialRegisterImpl::~FieldTrialRegisterImpl() = default;
+
+void FieldTrialRegisterImpl::RegisterFieldTrial(base::StringPiece trial_name,
+                                                base::StringPiece group_name) {
+  // The register method is called early in startup once the platform is
+  // initialized. So, in most cases the client will register the field trial
+  // before uploading the first UMA log of the current session. We do not want
+  // to annotate logs from the previous session. (These comes in two types:
+  // histograms persisted from the previous session or stability information
+  // about the previous session.) Groups are not stable across sessions; we
+  // don't know if the current segmentation applies to the previous session.
+  // Incidentally, the platform records metrics to track the movement between
+  // groups.
+  // TODO(ssid): Move to a MetricsProvider approach to fill the groups so we are
+  // able to track how often we miss the first session log due to delays in
+  // platform initialization.
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      trial_name, group_name,
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
 }  // namespace segmentation_platform

@@ -37,8 +37,7 @@ std::string OptimizationTargetToHistogramVariant(
         OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT:
       return "ChromeLowUserEngagement";
     default:
-      NOTREACHED();
-      return "Unknown";
+      return "Other";
   }
 }
 
@@ -265,6 +264,16 @@ const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
 }
 
 }  // namespace
+
+std::string OptimizationTargetToSegmentGroupName(
+    OptimizationTarget segment_id) {
+  return OptimizationTargetToHistogramVariant(segment_id);
+}
+
+std::string SegmentationKeyToTrialName(const std::string& segmentation_key) {
+  return base::StrCat(
+      {"Segmentation_", SegmentationKeyToUmaName(segmentation_key)});
+}
 
 void RecordModelScore(OptimizationTarget segment_id, float score) {
   // Special case adaptive toolbar models since it already has histograms being

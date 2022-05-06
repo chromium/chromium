@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -22,6 +23,7 @@
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/field_trial_register.h"
 #include "components/segmentation_platform/public/model_provider.h"
 
 namespace segmentation_platform {
@@ -65,6 +67,7 @@ SegmentSelectorImpl::SegmentSelectorImpl(
     SignalStorageConfig* signal_storage_config,
     PrefService* pref_service,
     const Config* config,
+    FieldTrialRegister* field_trial_register,
     base::Clock* clock,
     const PlatformOptions& platform_options,
     DefaultModelManager* default_model_manager)
@@ -73,6 +76,7 @@ SegmentSelectorImpl::SegmentSelectorImpl(
           signal_storage_config,
           std::make_unique<SegmentationResultPrefs>(pref_service),
           config,
+          field_trial_register,
           clock,
           platform_options,
           default_model_manager) {}
@@ -82,6 +86,7 @@ SegmentSelectorImpl::SegmentSelectorImpl(
     SignalStorageConfig* signal_storage_config,
     std::unique_ptr<SegmentationResultPrefs> prefs,
     const Config* config,
+    FieldTrialRegister* field_trial_register,
     base::Clock* clock,
     const PlatformOptions& platform_options,
     DefaultModelManager* default_model_manager)
@@ -90,21 +95,34 @@ SegmentSelectorImpl::SegmentSelectorImpl(
       signal_storage_config_(signal_storage_config),
       default_model_manager_(default_model_manager),
       config_(config),
+      field_trial_register_(field_trial_register),
       clock_(clock),
       platform_options_(platform_options) {
   // Read selected segment from prefs.
   const auto& selected_segment =
       result_prefs_->ReadSegmentationResultFromPref(config_->segmentation_key);
+  std::string trial_name =
+      stats::SegmentationKeyToTrialName(config_->segmentation_key);
+  std::string group_name;
   if (selected_segment.has_value()) {
     selected_segment_last_session_.segment = selected_segment->segment_id;
     selected_segment_last_session_.is_ready = true;
     stats::RecordSegmentSelectionFailure(
         config_->segmentation_key,
         stats::SegmentationSelectionFailureReason::kSelectionAvailableInPrefs);
+
+    group_name = stats::OptimizationTargetToSegmentGroupName(
+        *selected_segment_last_session_.segment);
   } else {
     stats::RecordSegmentSelectionFailure(
         config_->segmentation_key, stats::SegmentationSelectionFailureReason::
                                        kInvalidSelectionResultInPrefs);
+    group_name = "Unselected";
+  }
+
+  // Can be nullptr in tests.
+  if (field_trial_register_) {
+    field_trial_register_->RegisterFieldTrial(trial_name, group_name);
   }
 }
 
@@ -115,7 +133,7 @@ void SegmentSelectorImpl::OnPlatformInitialized(
   segment_result_provider_ = SegmentResultProvider::Create(
       segment_database_, signal_storage_config_, default_model_manager_,
       execution_service, clock_, platform_options_.force_refresh_results);
-  if (CanComputeSegmentSelection()) {
+  if (IsPreviousSelectionInvalid()) {
     GetRankForNextSegment(std::make_unique<SegmentRanks>());
   }
 }
@@ -139,13 +157,13 @@ void SegmentSelectorImpl::OnModelExecutionCompleted(
   if (!base::Contains(config_->segment_ids, segment_id))
     return;
 
-  if (!CanComputeSegmentSelection())
+  if (!IsPreviousSelectionInvalid())
     return;
 
   GetRankForNextSegment(std::make_unique<SegmentRanks>());
 }
 
-bool SegmentSelectorImpl::CanComputeSegmentSelection() {
+bool SegmentSelectorImpl::IsPreviousSelectionInvalid() {
   // Don't compute results if segment selection TTL hasn't expired.
   const auto& previous_selection =
       result_prefs_->ReadSegmentationResultFromPref(config_->segmentation_key);

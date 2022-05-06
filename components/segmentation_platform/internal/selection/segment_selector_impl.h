@@ -23,8 +23,9 @@ class Clock;
 namespace segmentation_platform {
 
 struct Config;
-class ExecutionService;
 class DefaultModelManager;
+class ExecutionService;
+class FieldTrialRegister;
 class SegmentationResultPrefs;
 class SignalStorageConfig;
 
@@ -34,6 +35,7 @@ class SegmentSelectorImpl : public SegmentSelector {
                       SignalStorageConfig* signal_storage_config,
                       PrefService* pref_service,
                       const Config* config,
+                      FieldTrialRegister* field_trial_register,
                       base::Clock* clock,
                       const PlatformOptions& platform_options,
                       DefaultModelManager* default_model_manager);
@@ -42,6 +44,7 @@ class SegmentSelectorImpl : public SegmentSelector {
                       SignalStorageConfig* signal_storage_config,
                       std::unique_ptr<SegmentationResultPrefs> prefs,
                       const Config* config,
+                      FieldTrialRegister* field_trial_register,
                       base::Clock* clock,
                       const PlatformOptions& platform_options,
                       DefaultModelManager* default_model_manager);
@@ -67,10 +70,9 @@ class SegmentSelectorImpl : public SegmentSelector {
 
   using SegmentRanks = base::flat_map<OptimizationTarget, int>;
 
-  // Determines whether segment selection can be run based on whether all
-  // segments have met signal collection requirement, have valid results, and
-  // segment selection TTL has expired.
-  bool CanComputeSegmentSelection();
+  // Determines whether segment selection can be run based on whether the
+  // segment selection TTL has expired, or selection is unavailable.
+  bool IsPreviousSelectionInvalid();
 
   // Gets ranks for each segment from SegmentResultProvider, and then computes
   // segment selection.
@@ -103,6 +105,8 @@ class SegmentSelectorImpl : public SegmentSelector {
 
   // The config for providing configuration params.
   const raw_ptr<const Config> config_;
+
+  const raw_ptr<FieldTrialRegister> field_trial_register_;
 
   // The time provider.
   const raw_ptr<base::Clock> clock_;

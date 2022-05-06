@@ -27,6 +27,7 @@
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/field_trial_register.h"
 #include "components/segmentation_platform/public/model_provider.h"
 
 using optimization_guide::proto::OptimizationTarget;
@@ -58,6 +59,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       platform_options_(PlatformOptions::CreateDefault()),
       configs_(std::move(init_params->configs)),
       all_segment_ids_(GetAllSegmentIds(configs_)),
+      field_trial_register_(std::move(init_params->field_trial_register)),
       profile_prefs_(init_params->profile_prefs),
       creation_time_(clock_->Now()) {
   base::UmaHistogramMediumTimes(
@@ -96,8 +98,9 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
         std::make_unique<SegmentSelectorImpl>(
             storage_service_->segment_info_database(),
             storage_service_->signal_storage_config(),
-            init_params->profile_prefs, config.get(), init_params->clock,
-            platform_options_, storage_service_->default_model_manager());
+            init_params->profile_prefs, config.get(),
+            field_trial_register_.get(), init_params->clock, platform_options_,
+            storage_service_->default_model_manager());
   }
 
   proxy_ = std::make_unique<ServiceProxyImpl>(

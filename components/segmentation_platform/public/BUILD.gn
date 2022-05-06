@@ -13,6 +13,7 @@ source_set("public") {
     "config.h",
     "features.cc",
     "features.h",
+    "field_trial_register.h",
     "local_state_helper.h",
     "model_provider.cc",
     "model_provider.h",

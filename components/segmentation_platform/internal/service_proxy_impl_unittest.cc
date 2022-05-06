@@ -70,6 +70,7 @@ class FakeSegmentSelectorImpl : public SegmentSelectorImpl {
                             pref_service,
                             config,
                             nullptr,
+                            nullptr,
                             PlatformOptions::CreateDefault(),
                             nullptr) {}
   ~FakeSegmentSelectorImpl() override = default;

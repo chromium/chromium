@@ -89,6 +89,7 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   params->profile_prefs = profile->GetPrefs();
   params->local_state = g_browser_process->local_state();
   params->configs = GetSegmentationPlatformConfig();
+  params->field_trial_register = std::make_unique<FieldTrialRegisterImpl>();
 
   auto* service = new SegmentationPlatformServiceImpl(std::move(params));
 

@@ -6,9 +6,9 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/strings/string_piece.h"
 
-namespace segmentation_platform {
-namespace features {
+namespace segmentation_platform::features {
 
 // Core feature flag for segmentation platform.
 extern const base::Feature kSegmentationPlatformFeature;
@@ -26,7 +26,6 @@ extern const base::Feature kSegmentationPlatformUkmEngine;
 // Feature flag for enabling low engagement segmentation key.
 extern const base::Feature kSegmentationPlatformLowEngagementFeature;
 
-}  // namespace features
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_
