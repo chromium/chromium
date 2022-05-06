@@ -254,7 +254,7 @@ void UnfollowSite(content::WebContents* web_contents);
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 // Triggers the Screen AI to be run once on the |browser|.
-void RunScreenAi(Browser* browser);
+void RunScreenAI(Browser* browser);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace chrome

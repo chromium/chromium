@@ -927,7 +927,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     case IDC_RUN_SCREEN_AI:
-      RunScreenAi(browser_);
+      RunScreenAI(browser_);
       break;
 #endif
 
