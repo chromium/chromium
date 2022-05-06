@@ -53,6 +53,7 @@ import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.version_info.VersionInfo;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -815,10 +816,14 @@ public class StartSurfaceLayout extends Layout {
     @Override
     public boolean canHostBeFocusable() {
         if (TabUiFeatureUtilities.isLaunchPolishEnabled()
-                && ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
+                && ChromeAccessibilityUtil.get().isAccessibilityEnabled()
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             // We don't allow this layout to gain focus when accessibility is enabled so that the
             // CompositorViewHolder doesn't steal focus when entering tab switcher.
             // (crbug.com/1125185).
+            // We ignore this logic on tablets, since it would cause focus to briefly shift to the
+            // omnibox while entering the tab switcher. This was most notable on the NTP, where the
+            // virtual keyboard would quickly appear then disappear. (https://crbug.com/1320035).
             return false;
         }
         return super.canHostBeFocusable();
