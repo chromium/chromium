@@ -63,7 +63,7 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         super.onAttach(context);
         getPageDelegate().getPolicyLoadListener().onAvailable(
                 hasPolicies -> notifyCoordinatorWhenNativePolicyAndChildStatusAreLoaded());
-        getPageDelegate().getChildAccountStatusListener().onAvailable(
+        getPageDelegate().getChildAccountStatusSupplier().onAvailable(
                 ignored -> notifyCoordinatorWhenNativePolicyAndChildStatusAreLoaded());
         if (getPageDelegate().isLaunchedFromCct()) {
             mSkipTosDialogPolicyListener = new SkipTosDialogPolicyListener(
@@ -232,7 +232,7 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         if (getPageDelegate() == null) return;
 
         if (mSigninFirstRunCoordinator != null && mNativeInitialized
-                && getPageDelegate().getChildAccountStatusListener().get() != null
+                && getPageDelegate().getChildAccountStatusSupplier().get() != null
                 && getPageDelegate().getPolicyLoadListener().get() != null) {
             mSigninFirstRunCoordinator.onNativePolicyAndChildStatusLoaded(
                     getPageDelegate().getPolicyLoadListener().get());

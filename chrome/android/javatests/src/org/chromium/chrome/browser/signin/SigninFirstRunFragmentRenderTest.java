@@ -150,7 +150,7 @@ public class SigninFirstRunFragmentRenderTest {
             mFragment.onNativeInitialized();
             OneshotSupplierImpl<Boolean> childAccountStatusListener = new OneshotSupplierImpl<>();
             childAccountStatusListener.set(false);
-            when(mFirstRunPageDelegateMock.getChildAccountStatusListener())
+            when(mFirstRunPageDelegateMock.getChildAccountStatusSupplier())
                     .thenReturn(childAccountStatusListener);
         });
         mFragment.setPageDelegate(mFirstRunPageDelegateMock);

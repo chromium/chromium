@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.when;
 
 import android.accounts.Account;
@@ -360,7 +361,7 @@ public class FirstRunIntegrationTest {
     }
 
     private void unblockOnFlowIsKnown() {
-        Mockito.verify(mAccountManagerFacade).getAccounts();
+        Mockito.verify(mAccountManagerFacade, atLeastOnce()).getAccounts();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mAccountsPromise.fulfill(Collections.emptyList()));
     }

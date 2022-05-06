@@ -84,9 +84,11 @@ public class LightweightFirstRunActivity
 
     @Override
     public void triggerLayoutInflation() {
+        super.triggerLayoutInflation();
+
         setFinishOnTouchOutside(true);
 
-        mFirstRunFlowSequencer = new FirstRunFlowSequencer(this) {
+        mFirstRunFlowSequencer = new FirstRunFlowSequencer(this, getChildAccountStatusSupplier()) {
             @Override
             public void onFlowIsKnown(Bundle freProperties) {
                 if (freProperties == null) {

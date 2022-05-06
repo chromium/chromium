@@ -95,8 +95,22 @@ public class FirstRunFlowSequencerTest {
         public Bundle returnedBundle;
         public boolean calledOnFlowIsKnown;
 
+        private final ChildAccountStatusSupplier mChildAccountStatusSupplier;
+
         public TestFirstRunFlowSequencer(Activity activity) {
-            super(activity);
+            this(activity, new ChildAccountStatusSupplier());
+        }
+
+        private TestFirstRunFlowSequencer(
+                Activity activity, ChildAccountStatusSupplier childAccountStatusSupplier) {
+            super(activity, childAccountStatusSupplier);
+            mChildAccountStatusSupplier = childAccountStatusSupplier;
+        }
+
+        @Override
+        public void start() {
+            super.start();
+            mChildAccountStatusSupplier.startFetchingChildAccountStatus();
         }
 
         @Override

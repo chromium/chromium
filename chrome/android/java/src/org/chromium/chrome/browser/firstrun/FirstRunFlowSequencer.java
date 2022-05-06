@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.provider.Settings;
 
 import androidx.annotation.VisibleForTesting;
@@ -20,6 +19,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
@@ -110,9 +109,6 @@ public abstract class FirstRunFlowSequencer  {
     }
 
     private final Activity mActivity;
-    private boolean mIsChild;
-    private List<Account> mGoogleAccounts;
-
     /**
      * The delegate to be used by the Sequencer. By default, it's an instance of
      * {@link FirstRunFlowSequencerDelegate}, unless it's overridden by {@code sDelegateForTesting}.
@@ -122,6 +118,10 @@ public abstract class FirstRunFlowSequencer  {
     /** If not null, overrides {@code mDelegate} for this object during tests. */
     private static FirstRunFlowSequencerDelegate sDelegateForTesting;
 
+    private boolean mIsFlowKnown;
+    private Boolean mIsChild;
+    private List<Account> mGoogleAccounts;
+
     /**
      * Callback that is called once the flow is determined.
      * If the properties is null, the First Run experience needs to finish and
@@ -130,29 +130,29 @@ public abstract class FirstRunFlowSequencer  {
      */
     public abstract void onFlowIsKnown(Bundle freProperties);
 
-    public FirstRunFlowSequencer(Activity activity) {
+    public FirstRunFlowSequencer(
+            Activity activity, OneshotSupplier<Boolean> childAccountStatusSupplier) {
         mActivity = activity;
+
         mDelegate = sDelegateForTesting != null ? sDelegateForTesting
                                                 : new FirstRunFlowSequencerDelegate();
+
+        childAccountStatusSupplier.onAvailable(this::setChildAccountStatus);
     }
 
     /**
      * Starts determining parameters for the First Run.
      * Once finished, calls onFlowIsKnown().
+     *
+     * TODO(https://crbug.com/1320487): Add Supplier to AccountManagerFacadeProvider and remove this
+     *                                  method.
      */
     void start() {
-        long childAccountStatusStart = SystemClock.elapsedRealtime();
         AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
-            AccountUtils.checkChildAccountStatus(
-                    AccountManagerFacadeProvider.getInstance(), accounts, (isChild, account) -> {
-                        RecordHistogram.recordCount1MHistogram(
-                                "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE",
-                                Math.min(accounts.size(), 2));
-                        RecordHistogram.recordTimesHistogram("MobileFre.ChildAccountStatusDuration",
-                                SystemClock.elapsedRealtime() - childAccountStatusStart);
-                        initializeSharedState(isChild, accounts);
-                        processFreEnvironmentPreNative();
-                    });
+            RecordHistogram.recordCount1MHistogram(
+                    "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE",
+                    Math.min(accounts.size(), 2));
+            setAccountList(accounts);
         });
     }
 
@@ -165,12 +165,25 @@ public abstract class FirstRunFlowSequencer  {
         return mDelegate.shouldShowSyncConsentPage(mActivity, mGoogleAccounts, mIsChild);
     }
 
-    private void initializeSharedState(boolean isChild, List<Account> accounts) {
+    private void setChildAccountStatus(boolean isChild) {
+        assert mIsChild == null;
         mIsChild = isChild;
-        mGoogleAccounts = accounts;
+        maybeProcessFreEnvironmentPreNative();
     }
 
-    private void processFreEnvironmentPreNative() {
+    private void setAccountList(List<Account> accounts) {
+        assert mGoogleAccounts == null && accounts != null;
+        mGoogleAccounts = accounts;
+        maybeProcessFreEnvironmentPreNative();
+    }
+
+    private void maybeProcessFreEnvironmentPreNative() {
+        // Wait till both child account status and the list of accounts are available.
+        if (mIsChild == null || mGoogleAccounts == null) return;
+
+        if (mIsFlowKnown) return;
+        mIsFlowKnown = true;
+
         Bundle freProperties = new Bundle();
         freProperties.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, mIsChild);
 

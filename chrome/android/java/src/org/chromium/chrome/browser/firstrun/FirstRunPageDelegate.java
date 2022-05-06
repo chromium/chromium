@@ -88,5 +88,5 @@ public interface FirstRunPageDelegate {
     /**
      * Returns the supplier that supplies child account status.
      */
-    OneshotSupplier<Boolean> getChildAccountStatusListener();
+    OneshotSupplier<Boolean> getChildAccountStatusSupplier();
 }

@@ -23,7 +23,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.BooleanSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -100,8 +99,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     private boolean mPostNativeAndPolicyPagesCreated;
     // Use hasValue() to simplify access. Will be null before initialized.
     private final OneshotSupplierImpl<Boolean> mNativeSideIsInitializedSupplier =
-            new OneshotSupplierImpl<>();
-    private final OneshotSupplierImpl<Boolean> mChildAccountStatusSupplier =
             new OneshotSupplierImpl<>();
 
     private FirstRunFlowSequencer mFirstRunFlowSequencer;
@@ -250,6 +247,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         // needs to register the synthetic trial group. See https://crbug.com/1295692 for details.
         FREMobileIdentityConsistencyFieldTrial.createFirstRunTrial();
 
+        super.triggerLayoutInflation();
+
         initializeStateFromLaunchData();
         RecordHistogram.recordTimesHistogram("MobileFre.FromLaunch.TriggerLayoutInflation",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
@@ -266,13 +265,11 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                     findViewById(android.R.id.content), () -> mPages.size() > 0);
         }
 
-        mFirstRunFlowSequencer = new FirstRunFlowSequencer(this) {
+        mFirstRunFlowSequencer = new FirstRunFlowSequencer(this, getChildAccountStatusSupplier()) {
             @Override
             public void onFlowIsKnown(Bundle freProperties) {
                 assert freProperties != null;
                 mFreProperties = freProperties;
-                mChildAccountStatusSupplier.set(
-                        mFreProperties.getBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT));
 
                 onInternalStateChanged();
 
@@ -599,11 +596,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public void recordNativeAndPoliciesLoadedHistogram() {
         RecordHistogram.recordTimesHistogram("MobileFre.FromLaunch.NativeAndPoliciesLoaded",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
-    }
-
-    @Override
-    public OneshotSupplier<Boolean> getChildAccountStatusListener() {
-        return mChildAccountStatusSupplier;
     }
 
     @Override

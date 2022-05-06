@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 
+import androidx.annotation.CallSuper;
+
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -50,6 +52,7 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
     private final FirstRunAppRestrictionInfo mFirstRunAppRestrictionInfo;
     private final OneshotSupplierImpl<PolicyService> mPolicyServiceSupplier;
     private final PolicyLoadListener mPolicyLoadListener;
+    private final ChildAccountStatusSupplier mChildAccountStatusSupplier;
 
     private final long mStartTime;
     private long mNativeInitializedTime;
@@ -59,6 +62,7 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
         mPolicyServiceSupplier = new OneshotSupplierImpl<>();
         mPolicyLoadListener =
                 new PolicyLoadListener(mFirstRunAppRestrictionInfo, mPolicyServiceSupplier);
+        mChildAccountStatusSupplier = new ChildAccountStatusSupplier();
         mStartTime = SystemClock.elapsedRealtime();
         mPolicyLoadListener.onAvailable(this::onPolicyLoadListenerAvailable);
     }
@@ -74,8 +78,15 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
         return true;
     }
 
-    // Activity:
+    @Override
+    @CallSuper
+    public void triggerLayoutInflation() {
+        // ChildAccountStatusSupplier can't be created in the constructor, as AccountManagerFacade
+        // instance is not set yet there.
+        mChildAccountStatusSupplier.startFetchingChildAccountStatus();
+    }
 
+    // Activity:
     @Override
     public void onPause() {
         super.onPause();
@@ -176,6 +187,13 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
      */
     public OneshotSupplier<Boolean> getPolicyLoadListener() {
         return mPolicyLoadListener;
+    }
+
+    /**
+     * Returns the supplier that supplies child account status.
+     */
+    public OneshotSupplier<Boolean> getChildAccountStatusSupplier() {
+        return mChildAccountStatusSupplier;
     }
 
     /**

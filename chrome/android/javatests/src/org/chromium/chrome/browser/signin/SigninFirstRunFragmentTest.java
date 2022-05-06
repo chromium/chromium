@@ -175,7 +175,7 @@ public class SigninFirstRunFragmentTest {
         when(mPolicyLoadListenerMock.get()).thenReturn(false);
         when(mFirstRunPageDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListenerMock);
         when(mChildAccountStatusListenerMock.get()).thenReturn(false);
-        when(mFirstRunPageDelegateMock.getChildAccountStatusListener())
+        when(mFirstRunPageDelegateMock.getChildAccountStatusSupplier())
                 .thenReturn(mChildAccountStatusListenerMock);
         when(mFirstRunPageDelegateMock.isLaunchedFromCct()).thenReturn(false);
         mChromeActivityTestRule.startMainActivityOnBlankPage();
