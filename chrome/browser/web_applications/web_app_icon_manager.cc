@@ -69,7 +69,6 @@ void LogErrorsCallCallback(base::WeakPtr<WebAppIconManager> manager,
                            TypedResult<T> result) {
   if (!manager)
     return;
-
   std::vector<std::string>* error_log = manager->error_log();
   if (error_log)
     result.DepositErrorLog(*error_log);

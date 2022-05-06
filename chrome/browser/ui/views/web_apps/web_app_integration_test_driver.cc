@@ -1239,10 +1239,9 @@ void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
   AppId app_id = GetAppIdBySiteMode(site);
   ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
-  ;
 
   WebAppTestUninstallObserver observer(profile());
-  observer.BeginListening();
+  observer.BeginListening({app_id});
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
 
@@ -1982,6 +1981,8 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
     }
   }
 #endif
+  if (delegate_->IsSyncTest())
+    delegate_->AwaitWebAppQuiescence();
   FlushShortcutTasks();
   MaybeWaitForManifestUpdates();
   after_state_change_action_state_ = ConstructStateSnapshot();
@@ -2375,10 +2376,11 @@ bool WebAppIntegrationTestDriver::IsShortcutAndIconCreated(
       "chrome-" + id + "-" + profile->GetBaseName().value() + ".desktop";
   base::FilePath desktop_shortcut_path =
       shortcut_override_->desktop.GetPath().Append(shortcut_filename);
-  if (base::PathExists(desktop_shortcut_path))
+  if (base::PathExists(desktop_shortcut_path)) {
     is_shortcut_and_icon_correct = IconManagerCheckIconTopLeftColor(
         provider()->icon_manager(), id, {kLauncherIconSize, kInstallIconSize},
         expected_icon_pixel_color);
+  }
 #elif BUILDFLAG(IS_CHROMEOS)
   is_shortcut_and_icon_correct = IconManagerCheckIconTopLeftColor(
       provider()->icon_manager(), id, {kLauncherIconSize, kInstallIconSize},

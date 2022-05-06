@@ -40,11 +40,8 @@ class SyncInstallDelegate {
   // After the app data is fully deleted & os hooks uninstalled:
   // * Notifies observers of WebAppUninstalled.
   // * `callback` is called.
-  // The registrar is expected to be synchronously updated after this function
-  // call to remove the given `web_apps`.
-  virtual void UninstallWithoutRegistryUpdateFromSync(
-      const std::vector<AppId>& web_apps,
-      RepeatingUninstallCallback callback) = 0;
+  virtual void UninstallFromSync(const std::vector<AppId>& web_apps,
+                                 RepeatingUninstallCallback callback) = 0;
 
   // Uninstall the given web app ids that were found on startup as partially
   // uninstalled. `apps_to_uninstall` are in the registrar with

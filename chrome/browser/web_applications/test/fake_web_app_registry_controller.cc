@@ -96,9 +96,8 @@ void FakeWebAppRegistryController::SetInstallWebAppsAfterSyncDelegate(
   install_web_apps_after_sync_delegate_ = std::move(delegate);
 }
 
-void FakeWebAppRegistryController::
-    SetUninstallWithoutRegistryUpdateFromSyncDelegate(
-        UninstallWithoutRegistryUpdateFromSyncDelegate delegate) {
+void FakeWebAppRegistryController::SetUninstallFromSyncDelegate(
+    UninstallFromSyncDelegate delegate) {
   uninstall_from_sync_before_registry_update_delegate_ = std::move(delegate);
 }
 
@@ -119,7 +118,7 @@ void FakeWebAppRegistryController::InstallWebAppsAfterSync(
   }
 }
 
-void FakeWebAppRegistryController::UninstallWithoutRegistryUpdateFromSync(
+void FakeWebAppRegistryController::UninstallFromSync(
     const std::vector<AppId>& web_apps,
     RepeatingUninstallCallback callback) {
   if (uninstall_from_sync_before_registry_update_delegate_) {

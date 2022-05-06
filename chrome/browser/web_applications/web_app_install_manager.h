@@ -37,12 +37,12 @@ enum class InstallResultCode;
 
 namespace web_app {
 
-class WebAppInstallFinalizer;
-class OsIntegrationManager;
 class WebAppCommandManager;
 class WebAppDataRetriever;
+class WebAppInstallFinalizer;
 class WebAppInstallTask;
 class WebAppRegistrar;
+class OsIntegrationManager;
 
 // TODO(loyso): Unify the API and merge similar InstallWebAppZZZZ functions.
 class WebAppInstallManager final : public SyncInstallDelegate {
@@ -117,9 +117,8 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   // For the new USS-based system only. SyncInstallDelegate:
   void InstallWebAppsAfterSync(std::vector<WebApp*> web_apps,
                                RepeatingInstallCallback callback) override;
-  void UninstallWithoutRegistryUpdateFromSync(
-      const std::vector<AppId>& web_apps,
-      RepeatingUninstallCallback callback) override;
+  void UninstallFromSync(const std::vector<AppId>& web_apps,
+                         RepeatingUninstallCallback callback) override;
   void RetryIncompleteUninstalls(
       const std::vector<AppId>& apps_to_uninstall) override;
 

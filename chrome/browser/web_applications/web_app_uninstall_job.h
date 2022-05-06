@@ -52,26 +52,13 @@ class WebAppUninstallJob {
                      PrefService* profile_prefs);
   ~WebAppUninstallJob();
 
-  enum class ModifyAppRegistry {
-    // Modify the app to set `is_uninstalling()` to true, and delete the app
-    // from the registry after uninstallation is complete. Used by non-sync
-    // uninstall.
-    kYes,
-    // Do not modify the app in the registry or delete the app from the
-    // registry.
-    kNo
-  };
   // The given `app_id` must correspond to an app in the `registrar`.
+  // This modifies the app to set `is_uninstalling()` to true, and delete the
+  // app from the registry after uninstallation is complete.
   void Start(const AppId& app_id,
              const url::Origin& app_origin,
              webapps::WebappUninstallSource source,
-             ModifyAppRegistry delete_option,
              UninstallCallback callback);
-
-  // If a sync uninstall is triggered while a regular uninstall is occurring,
-  // change the deletion option to `ModifyAppRegistry::kNo`, as the registry
-  // will be modified by sync instead.
-  void StopAppRegistryModification();
 
  private:
   void OnSubAppUninstalled(webapps::UninstallResultCode code);
@@ -97,7 +84,6 @@ class WebAppUninstallJob {
 
   AppId app_id_;
   webapps::WebappUninstallSource source_;
-  ModifyAppRegistry delete_option_;
   UninstallCallback callback_;
   size_t num_pending_sub_app_uninstalls_;
 

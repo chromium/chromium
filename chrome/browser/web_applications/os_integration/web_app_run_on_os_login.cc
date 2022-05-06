@@ -58,7 +58,7 @@ void ScheduleUnregisterRunOnOsLogin(WebAppSyncBridge* sync_bridge,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(sync_bridge);
 
-  {
+  if (sync_bridge->registrar().IsInstalled(app_id)) {
     ScopedRegistryUpdate update(sync_bridge);
     update->UpdateApp(app_id)->SetRunOnOsLoginOsIntegrationState(
         RunOnOsLoginMode::kNotRun);

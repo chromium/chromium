@@ -153,13 +153,13 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
     disable_checks_for_testing_ = disable_checks_for_testing;
   }
 
+  WebAppDatabase* GetDatabaseForTesting() const { return database_.get(); }
+
  private:
   void CheckRegistryUpdateData(const RegistryUpdateData& update_data) const;
 
-  // Update the in-memory model. Returns unregistered apps which may be
-  // disposed.
-  std::vector<std::unique_ptr<WebApp>> UpdateRegistrar(
-      std::unique_ptr<RegistryUpdateData> update_data);
+  // Update the in-memory model.
+  void UpdateRegistrar(std::unique_ptr<RegistryUpdateData> update_data);
 
   // Useful for identifying apps that have not yet been fully uninstalled.
   std::set<AppId> apps_in_sync_uninstall_;
@@ -180,8 +180,8 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void MergeLocalAppsToSync(const syncer::EntityChangeList& entity_data,
                             syncer::MetadataChangeList* metadata_change_list);
 
-  void ApplySyncDataChange(const syncer::EntityChange& change,
-                           RegistryUpdateData* update_local_data);
+  void PrepareLocalUpdateFromSyncChange(const syncer::EntityChange& change,
+                                        RegistryUpdateData* update_local_data);
 
   // Update registrar and Install/Uninstall missing/excessive local apps.
   void ApplySyncChangesToRegistrar(

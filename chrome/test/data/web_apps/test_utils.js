@@ -26,10 +26,12 @@ function startWorker(worker, options) {
 // "display_override": ["window-controls-overlay"].
 function setWindowControlsOverlayGeometryChange(siteTitle) {
   document.title = siteTitle;
-  navigator.windowControlsOverlay.ongeometrychange = (e) => {
-    document.title =
-      navigator.windowControlsOverlay.visible
-        ? siteTitle + ": WCO Enabled"
-        : siteTitle;
+  if (navigator.windowControlsOverlay) {
+    navigator.windowControlsOverlay.ongeometrychange = (e) => {
+      document.title =
+        navigator.windowControlsOverlay.visible
+          ? siteTitle + ": WCO Enabled"
+          : siteTitle;
+    }
   }
 }

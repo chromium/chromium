@@ -286,14 +286,13 @@ void WebAppInstallFinalizer::UninstallWebApp(
   UninstallWebAppInternal(app_id, webapp_uninstall_source, std::move(callback));
 }
 
-void WebAppInstallFinalizer::UninstallWithoutRegistryUpdateFromSync(
+void WebAppInstallFinalizer::UninstallFromSync(
     const std::vector<AppId>& web_apps,
     RepeatingUninstallCallback callback) {
   DCHECK(started_);
 
   for (auto& app_id : web_apps) {
     if (base::Contains(pending_uninstalls_, app_id)) {
-      pending_uninstalls_[app_id]->StopAppRegistryModification();
       continue;
     }
     auto uninstall_task = std::make_unique<WebAppUninstallJob>(
@@ -303,10 +302,9 @@ void WebAppInstallFinalizer::UninstallWithoutRegistryUpdateFromSync(
         app_id,
         url::Origin::Create(registrar_->GetAppById(app_id)->start_url()),
         webapps::WebappUninstallSource::kSync,
-        WebAppUninstallJob::ModifyAppRegistry::kNo,
         base::BindOnce(&WebAppInstallFinalizer::OnUninstallComplete,
                        weak_ptr_factory_.GetWeakPtr(), app_id,
-                       webapps::WebappUninstallSource::kStartupCleanup,
+                       webapps::WebappUninstallSource::kSync,
                        base::BindOnce(callback, app_id)));
     pending_uninstalls_[app_id] = std::move(uninstall_task);
   }
@@ -324,7 +322,6 @@ void WebAppInstallFinalizer::RetryIncompleteUninstalls(
         app_id,
         url::Origin::Create(registrar_->GetAppById(app_id)->start_url()),
         webapps::WebappUninstallSource::kStartupCleanup,
-        WebAppUninstallJob::ModifyAppRegistry::kYes,
         base::BindOnce(&WebAppInstallFinalizer::OnUninstallComplete,
                        weak_ptr_factory_.GetWeakPtr(), app_id,
                        webapps::WebappUninstallSource::kStartupCleanup,
@@ -437,7 +434,7 @@ void WebAppInstallFinalizer::UninstallWebAppInternal(
       install_manager_, this, translation_manager_, profile_->GetPrefs());
   uninstall_task->Start(
       app_id, url::Origin::Create(registrar_->GetAppById(app_id)->start_url()),
-      uninstall_source, WebAppUninstallJob::ModifyAppRegistry::kYes,
+      uninstall_source,
       base::BindOnce(&WebAppInstallFinalizer::OnUninstallComplete,
                      weak_ptr_factory_.GetWeakPtr(), app_id, uninstall_source,
                      std::move(callback)));

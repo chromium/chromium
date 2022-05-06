@@ -353,7 +353,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   local_data->set_name(web_app.untranslated_name());
 
-  DCHECK(web_app.sources_.any());
+  DCHECK(web_app.sources_.any() || web_app.is_uninstalling());
   local_data->mutable_sources()->set_system(
       web_app.sources_[WebAppManagement::kSystem]);
   local_data->mutable_sources()->set_policy(
@@ -729,8 +729,9 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   if (local_data.sources().has_sub_app()) {
     sources[WebAppManagement::kSubApp] = local_data.sources().sub_app();
   }
-  if (!sources.any()) {
-    DLOG(ERROR) << "WebApp proto parse error: no any source in sources field";
+  if (!sources.any() && !local_data.is_uninstalling()) {
+    DLOG(ERROR) << "WebApp proto parse error: no any source in sources field, "
+                   "and is_uninstalling isn't true.";
     return nullptr;
   }
   web_app->sources_ = sources;

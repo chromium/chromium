@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia.h"
@@ -300,14 +301,15 @@ SkColor IconManagerReadAppIconPixel(const WebAppIconManager& icon_manager,
                                     SquareSizePx size_px,
                                     int x,
                                     int y) {
-  SkColor result;
+  SkColor result = SK_ColorTRANSPARENT;
   base::RunLoop run_loop;
   icon_manager.ReadIcons(
       app_id, IconPurpose::ANY, {size_px},
       base::BindLambdaForTesting(
           [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
-            run_loop.Quit();
+            DCHECK(base::Contains(icon_bitmaps, size_px));
             result = icon_bitmaps.at(size_px).getColor(x, y);
+            run_loop.Quit();
           }));
   run_loop.Run();
   return result;

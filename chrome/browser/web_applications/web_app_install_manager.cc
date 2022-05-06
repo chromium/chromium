@@ -332,13 +332,13 @@ void WebAppInstallManager::InstallWebAppsAfterSync(
   }
 }
 
-void WebAppInstallManager::UninstallWithoutRegistryUpdateFromSync(
+void WebAppInstallManager::UninstallFromSync(
     const std::vector<AppId>& web_apps,
     RepeatingUninstallCallback callback) {
   if (!started_)
     return;
 
-  finalizer_->UninstallWithoutRegistryUpdateFromSync(
+  finalizer_->UninstallFromSync(
       std::move(web_apps),
       base::BindRepeating(
           [](RepeatingUninstallCallback callback, const web_app::AppId& app_id,

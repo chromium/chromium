@@ -63,11 +63,12 @@ WebAppCommandManager::~WebAppCommandManager() {
 
 void WebAppCommandManager::ScheduleCommand(
     std::unique_ptr<WebAppCommand> command) {
+  DCHECK(command);
   if (is_in_shutdown_) {
     AddValueToLog(CreateLogValue(*command, CommandResult::kShutdown));
     return;
   }
-
+  DCHECK(!base::Contains(commands_, command->id()));
   auto command_id = command->id();
   auto command_state_it =
       commands_.try_emplace(command_id, std::move(command)).first;

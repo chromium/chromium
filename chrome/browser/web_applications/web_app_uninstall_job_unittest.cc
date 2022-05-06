@@ -104,7 +104,6 @@ TEST_F(WebAppUninstallJobTest, SimpleUninstall) {
 
   base::RunLoop loop;
   task.Start(id, url::Origin(), webapps::WebappUninstallSource::kAppMenu,
-             WebAppUninstallJob::ModifyAppRegistry::kYes,
              base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
                EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
                loop.Quit();
@@ -141,7 +140,6 @@ TEST_F(WebAppUninstallJobTest, FailedDataDelete) {
 
   base::RunLoop loop;
   task.Start(id, url::Origin(), webapps::WebappUninstallSource::kAppMenu,
-             WebAppUninstallJob::ModifyAppRegistry::kYes,
              base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
                EXPECT_EQ(webapps::UninstallResultCode::kError, code);
                loop.Quit();
@@ -179,7 +177,6 @@ TEST_F(WebAppUninstallJobTest, FailedOsHooks) {
 
   base::RunLoop loop;
   task.Start(id, url::Origin(), webapps::WebappUninstallSource::kAppMenu,
-             WebAppUninstallJob::ModifyAppRegistry::kYes,
              base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
                EXPECT_EQ(webapps::UninstallResultCode::kError, code);
                loop.Quit();

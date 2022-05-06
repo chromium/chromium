@@ -44,13 +44,11 @@ WebAppUninstallJob::~WebAppUninstallJob() = default;
 void WebAppUninstallJob::Start(const AppId& app_id,
                                const url::Origin& app_origin,
                                webapps::WebappUninstallSource source,
-                               ModifyAppRegistry delete_option,
                                UninstallCallback callback) {
   DCHECK(install_manager_);
 
   app_id_ = app_id;
   source_ = source;
-  delete_option_ = delete_option;
   callback_ = std::move(callback);
   DCHECK(state_ == State::kNotStarted);
   state_ = State::kPendingDataDeletion;
@@ -59,7 +57,7 @@ void WebAppUninstallJob::Start(const AppId& app_id,
   // `is_uninstalling()` is not checked. It is a class invariant that there can
   // never be more than one uninstall task operating on the same web app at the
   // same time.
-  if (delete_option_ == ModifyAppRegistry::kYes) {
+  {
     ScopedRegistryUpdate update(sync_bridge_);
     WebApp* app = update->UpdateApp(app_id);
     DCHECK(app);
@@ -92,10 +90,6 @@ void WebAppUninstallJob::Start(const AppId& app_id,
   translation_manager_->DeleteTranslations(
       app_id, base::BindOnce(&WebAppUninstallJob::OnTranslationDataDeleted,
                              weak_ptr_factory_.GetWeakPtr()));
-}
-
-void WebAppUninstallJob::StopAppRegistryModification() {
-  delete_option_ = ModifyAppRegistry::kNo;
 }
 
 void WebAppUninstallJob::OnSubAppUninstalled(
@@ -146,16 +140,10 @@ void WebAppUninstallJob::MaybeFinishUninstall() {
   base::UmaHistogramBoolean("WebApp.Uninstall.Result", !errors_);
 
   webapps::InstallableMetrics::TrackUninstallEvent(source_);
-
-  switch (delete_option_) {
-    case ModifyAppRegistry::kYes: {
-      DCHECK_NE(registrar_->GetAppById(app_id_), nullptr);
-      ScopedRegistryUpdate update(sync_bridge_);
-      update->DeleteApp(app_id_);
-    } break;
-    case ModifyAppRegistry::kNo:
-      DCHECK_EQ(registrar_->GetAppById(app_id_), nullptr);
-      break;
+  {
+    DCHECK_NE(registrar_->GetAppById(app_id_), nullptr);
+    ScopedRegistryUpdate update(sync_bridge_);
+    update->DeleteApp(app_id_);
   }
   install_manager_->NotifyWebAppUninstalled(app_id_);
   std::move(callback_).Run(errors_ ? webapps::UninstallResultCode::kError

@@ -76,7 +76,7 @@ void FakeInstallFinalizer::UninstallExternalWebAppByUrl(
                      }));
 }
 
-void FakeInstallFinalizer::UninstallWithoutRegistryUpdateFromSync(
+void FakeInstallFinalizer::UninstallFromSync(
     const std::vector<AppId>& web_apps,
     RepeatingUninstallCallback callback) {
   NOTREACHED();

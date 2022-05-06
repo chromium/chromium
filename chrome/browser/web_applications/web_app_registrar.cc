@@ -412,7 +412,8 @@ const WebApp* WebAppRegistrar::GetAppByStartUrl(const GURL& start_url) const {
   return nullptr;
 }
 
-std::vector<AppId> WebAppRegistrar::GetAppsFromSyncAndPendingInstallation() {
+std::vector<AppId> WebAppRegistrar::GetAppsFromSyncAndPendingInstallation()
+    const {
   AppSet apps_in_sync_install = AppSet(
       this,
       [](const WebApp& web_app) {
@@ -961,14 +962,20 @@ WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsMutable() {
 }
 
 bool IsRegistryEqual(const Registry& registry, const Registry& registry2) {
-  if (registry.size() != registry2.size())
+  if (registry.size() != registry2.size()) {
+    LOG(ERROR) << registry.size() << " != " << registry2.size();
     return false;
+  }
 
   for (auto& kv : registry) {
     const WebApp* web_app = kv.second.get();
     const WebApp* web_app2 = registry2.at(web_app->app_id()).get();
-    if (*web_app != *web_app2)
+    if (*web_app != *web_app2) {
+      LOG(ERROR) << "Web apps are not equal:\n"
+                 << *web_app << "\n"
+                 << *web_app2;
       return false;
+    }
   }
 
   return true;

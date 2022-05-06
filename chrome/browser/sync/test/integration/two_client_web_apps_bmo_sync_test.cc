@@ -592,6 +592,65 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, MAYBE_UninstallSynced) {
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 }
 
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, UninstallDoesNotReinstall) {
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  AppId app_id;
+  // Install & uninstall on profile 0, and validate profile 1 sees it.
+  {
+    WebAppTestInstallObserver app_listener(GetProfile(1));
+    app_listener.BeginListening();
+    InstallAppAsUserInitiated(GetProfile(0));
+    app_id = app_listener.Wait();
+    EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
+  }
+
+  // Uninstall the webapp on profile 0.
+  {
+    WebAppTestUninstallObserver app_listener(GetProfile(0));
+    app_listener.BeginListening();
+    UninstallWebApp(GetProfile(0), app_id);
+    app_listener.Wait();
+  }
+  // Propagate the change to profile 1.
+  AwaitQuiescence();
+  // Propagate any possible re-installs back to profile 0.
+  AwaitQuiescence();
+
+  // No apps pending install.
+  EXPECT_TRUE(GetRegistrar(GetProfile(0))
+                  .GetAppsFromSyncAndPendingInstallation()
+                  .empty());
+  EXPECT_TRUE(GetRegistrar(GetProfile(1))
+                  .GetAppsFromSyncAndPendingInstallation()
+                  .empty());
+  // No apps.
+  // https://crbug.com/1323003: Update this once AppSet & size is resolved.
+  auto calculate_size = [](WebAppRegistrar::AppSet set) {
+    int size = 0;
+    for (auto it = set.begin(); it != set.end(); ++it) {
+      ++size;
+    }
+    return size;
+  };
+  EXPECT_EQ(calculate_size(GetRegistrar(GetProfile(0)).GetAppsIncludingStubs()),
+            0);
+  EXPECT_EQ(calculate_size(GetRegistrar(GetProfile(1)).GetAppsIncludingStubs()),
+            0);
+
+  // No pending installs tasks.
+  EXPECT_TRUE(WebAppProvider::GetForTest(GetProfile(1))
+                  ->install_manager()
+                  .GetEnqueuedInstallAppIdsForTesting()
+                  .empty());
+  EXPECT_TRUE(WebAppProvider::GetForTest(GetProfile(0))
+                  ->install_manager()
+                  .GetEnqueuedInstallAppIdsForTesting()
+                  .empty());
+}
+
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NoShortcutsCreatedOnSync) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());

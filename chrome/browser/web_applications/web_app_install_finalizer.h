@@ -136,9 +136,8 @@ class WebAppInstallFinalizer {
   // * `callback` is called.
   // The registrar is expected to be synchronously updated after this function
   // call to remove the given `web_apps`.
-  virtual void UninstallWithoutRegistryUpdateFromSync(
-      const std::vector<AppId>& web_apps,
-      RepeatingUninstallCallback callback);
+  virtual void UninstallFromSync(const std::vector<AppId>& web_apps,
+                                 RepeatingUninstallCallback callback);
 
   virtual bool CanUserUninstallWebApp(const AppId& app_id) const;
 
