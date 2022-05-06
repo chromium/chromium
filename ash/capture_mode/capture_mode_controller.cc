@@ -1362,6 +1362,11 @@ void CaptureModeController::RecordAndResetConsecutiveScreenshots() {
 }
 
 void CaptureModeController::OnVideoRecordCountDownFinished() {
+  // Ensure `on_countdown_finished_callback_for_test_` is run after this
+  // function.
+  base::ScopedClosureRunner scoped_closure(
+      std::move(on_countdown_finished_callback_for_test_));
+
   // If this event is dispatched after the capture session was cancelled or
   // destroyed, this should be a no-op.
   if (!IsActive())

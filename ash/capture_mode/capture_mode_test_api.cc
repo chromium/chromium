@@ -101,6 +101,11 @@ void CaptureModeTestApi::SetOnCaptureFileDeletedCallback(
   controller_->on_file_deleted_callback_for_test_ = std::move(callback);
 }
 
+void CaptureModeTestApi::SetOnVideoRecordCountdownFinishedCallback(
+    base::OnceClosure callback) {
+  controller_->on_countdown_finished_callback_for_test_ = std::move(callback);
+}
+
 void CaptureModeTestApi::SetAudioRecordingEnabled(bool enabled) {
   DCHECK(!controller_->is_recording_in_progress());
   controller_->enable_audio_recording_ = enabled;

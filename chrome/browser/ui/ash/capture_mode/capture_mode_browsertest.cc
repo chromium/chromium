@@ -120,18 +120,12 @@ void MarkActiveTabAsDlpWarnedForScreenCapture(Browser* browser) {
                                                  kScreenCaptureWarned);
 }
 
-// TODO(1289370): Replace spinning on test_api.IsInCountDownAnimation() with non
-//  active waiting for video capture countdown end.
-//
-// Waits for video countdown end.
+// Waits for video record countdown to be finished.
 void WaitForCountDownToFinish() {
-  ash::CaptureModeTestApi test_api;
-  while (test_api.IsInCountDownAnimation()) {
-    base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
-    run_loop.Run();
-  }
+  base::RunLoop run_loop;
+  ash::CaptureModeTestApi().SetOnVideoRecordCountdownFinishedCallback(
+      run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 // Stops the video recording and waits for the DLP warning dialog to be added.

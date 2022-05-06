@@ -524,6 +524,8 @@ class ASH_EXPORT CaptureModeController
 
   OnFileDeletedCallback on_file_deleted_callback_for_test_;
 
+  base::OnceClosure on_countdown_finished_callback_for_test_;
+
   // Timers used to schedule recording of the number of screenshots taken.
   base::RepeatingTimer num_screenshots_taken_in_last_day_scheduler_;
   base::RepeatingTimer num_screenshots_taken_in_last_week_scheduler_;

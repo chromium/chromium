@@ -91,6 +91,10 @@ class ASH_EXPORT CaptureModeTestApi {
                               bool delete_successful)>;
   void SetOnCaptureFileDeletedCallback(OnFileDeletedCallback callback);
 
+  // Sets a callback that will be triggered once the video record countdown is
+  // finished.
+  void SetOnVideoRecordCountdownFinishedCallback(base::OnceClosure callback);
+
   // Sets whether or not audio will be recorded when capturing a video. Should
   // only be called before recording starts, otherwise it has no effect.
   void SetAudioRecordingEnabled(bool enabled);
