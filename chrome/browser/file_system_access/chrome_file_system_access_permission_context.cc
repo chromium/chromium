@@ -583,11 +583,13 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
   }
 
   bool HasPersistedPermission(MetricsOptions options) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return context_->HasPersistedPermission(origin_, path_, handle_type_, type_,
                                             options);
   }
 
   bool AncestorHasPersistedPermission() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     for (base::FilePath parent = path_.DirName(); parent != parent.DirName();
          parent = parent.DirName()) {
       if (context_->HasPersistedPermission(origin_, parent,
@@ -647,6 +649,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       const std::map<base::FilePath, PermissionGrantImpl*>& grants,
       std::vector<base::FilePath>* directory_grants,
       std::vector<base::FilePath>* file_grants) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     for (const auto& entry : grants) {
       if (entry.second->GetStatus() != PermissionStatus::GRANTED)
         continue;
@@ -660,6 +663,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
 
  protected:
   ~PermissionGrantImpl() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (context_)
       context_->PermissionGrantDestroyed(this);
   }
@@ -668,6 +672,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
   void OnPermissionRequestResult(
       base::OnceCallback<void(PermissionRequestOutcome)> callback,
       PermissionAction result) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     switch (result) {
       case PermissionAction::GRANTED:
         SetStatus(PermissionStatus::GRANTED,
@@ -699,6 +704,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
   void RunCallbackAndRecordPermissionRequestOutcome(
       base::OnceCallback<void(PermissionRequestOutcome)> callback,
       PermissionRequestOutcome outcome) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (type_ == GrantType::kWrite) {
       base::UmaHistogramEnumeration(
           "Storage.FileSystemAccess.WritePermissionRequestOutcome", outcome);
@@ -728,8 +734,12 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     std::move(callback).Run(outcome);
   }
 
-  base::StringPiece GetKey() const { return PathAsPermissionKey(path_); }
+  base::StringPiece GetKey() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return PathAsPermissionKey(path_);
+  }
   base::Value AsValue() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     base::Value value(base::Value::Type::DICTIONARY);
     value.SetKey(kPermissionPathKey, base::FilePathToValue(path_));
     value.SetBoolKey(kPermissionIsDirectoryKey,
@@ -996,6 +1006,7 @@ ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
 std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
 ChromeFileSystemAccessPermissionContext::GetGrantedObjects(
     const url::Origin& origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::unique_ptr<Object>> objects =
       ObjectPermissionContextBase::GetGrantedObjects(origin);
 
@@ -1023,6 +1034,7 @@ ChromeFileSystemAccessPermissionContext::GetGrantedObjects(
 // possible for System Web Apps.
 std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
 ChromeFileSystemAccessPermissionContext::GetAllGrantedObjects() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::unique_ptr<Object>> objects =
       GetAllGrantedOrExpiredObjects();
 
@@ -1057,6 +1069,7 @@ ChromeFileSystemAccessPermissionContext::GetAllGrantedObjects() {
 
 std::string ChromeFileSystemAccessPermissionContext::GetKeyForObject(
     const base::Value& object) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto optional_path =
       base::ValueToFilePath(object.FindKey(kPermissionPathKey));
   DCHECK(optional_path);
@@ -1065,6 +1078,7 @@ std::string ChromeFileSystemAccessPermissionContext::GetKeyForObject(
 
 bool ChromeFileSystemAccessPermissionContext::IsValidObject(
     const base::Value& object) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // At least one of the readable/writable keys needs to be set.
   if (!object.is_dict() || (object.DictSize() != 4 && object.DictSize() != 5) ||
       !object.FindKey(kPermissionPathKey) ||
@@ -1079,6 +1093,7 @@ bool ChromeFileSystemAccessPermissionContext::IsValidObject(
 
 std::u16string ChromeFileSystemAccessPermissionContext::GetObjectDisplayName(
     const base::Value& object) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto optional_path =
       base::ValueToFilePath(object.FindKey(kPermissionPathKey));
   DCHECK(optional_path);
@@ -1088,6 +1103,7 @@ std::u16string ChromeFileSystemAccessPermissionContext::GetObjectDisplayName(
 ContentSetting
 ChromeFileSystemAccessPermissionContext::GetWriteGuardContentSetting(
     const url::Origin& origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return content_settings()->GetContentSetting(
       origin.GetURL(), origin.GetURL(),
       ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
@@ -1096,6 +1112,7 @@ ChromeFileSystemAccessPermissionContext::GetWriteGuardContentSetting(
 ContentSetting
 ChromeFileSystemAccessPermissionContext::GetReadGuardContentSetting(
     const url::Origin& origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return content_settings()->GetContentSetting(
       origin.GetURL(), origin.GetURL(),
       ContentSettingsType::FILE_SYSTEM_READ_GUARD);
@@ -1103,12 +1120,14 @@ ChromeFileSystemAccessPermissionContext::GetReadGuardContentSetting(
 
 bool ChromeFileSystemAccessPermissionContext::CanObtainReadPermission(
     const url::Origin& origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetReadGuardContentSetting(origin) == CONTENT_SETTING_ASK ||
          GetReadGuardContentSetting(origin) == CONTENT_SETTING_ALLOW;
 }
 
 bool ChromeFileSystemAccessPermissionContext::CanObtainWritePermission(
     const url::Origin& origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetWriteGuardContentSetting(origin) == CONTENT_SETTING_ASK ||
          GetWriteGuardContentSetting(origin) == CONTENT_SETTING_ALLOW;
 }
@@ -1189,6 +1208,7 @@ void ChromeFileSystemAccessPermissionContext::
 
 void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
     base::Value& value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!value.is_dict()) {
     value = base::Value(base::Value::Type::DICTIONARY);
     return;
@@ -1226,6 +1246,7 @@ void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
     const std::string& id,
     const base::FilePath& path,
     const PathType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Value value = content_settings()->GetWebsiteSetting(
       origin.GetURL(), origin.GetURL(),
       ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
@@ -1252,6 +1273,7 @@ ChromeFileSystemAccessPermissionContext::PathInfo
 ChromeFileSystemAccessPermissionContext::GetLastPickedDirectory(
     const url::Origin& origin,
     const std::string& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Value value = content_settings()->GetWebsiteSetting(
       origin.GetURL(), origin.GetURL(),
       ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
@@ -1278,6 +1300,7 @@ ChromeFileSystemAccessPermissionContext::GetLastPickedDirectory(
 base::FilePath
 ChromeFileSystemAccessPermissionContext::GetWellKnownDirectoryPath(
     blink::mojom::WellKnownDirectory directory) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int key = base::PATH_START;
   switch (directory) {
     case blink::mojom::WellKnownDirectory::kDefault:
@@ -1328,6 +1351,7 @@ ChromeFileSystemAccessPermissionContext::GetPermissionGrants(
 void ChromeFileSystemAccessPermissionContext::RevokeGrants(
     const url::Origin& origin,
     PersistedPermissionOptions persisted_status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto origin_it = origins_.find(origin);
   if (origin_it == origins_.end())
     return;
@@ -1342,6 +1366,7 @@ void ChromeFileSystemAccessPermissionContext::RevokeGrants(
 
 bool ChromeFileSystemAccessPermissionContext::OriginHasReadAccess(
     const url::Origin& origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = origins_.find(origin);
   if (it == origins_.end())
     return false;
@@ -1356,6 +1381,7 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasReadAccess(
 
 bool ChromeFileSystemAccessPermissionContext::OriginHasWriteAccess(
     const url::Origin& origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = origins_.find(origin);
   if (it == origins_.end())
     return false;
@@ -1370,6 +1396,7 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasWriteAccess(
 
 void ChromeFileSystemAccessPermissionContext::NavigatedAwayFromOrigin(
     const url::Origin& origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = origins_.find(origin);
   // If we have no permissions for the origin, there is nothing to do.
   if (it == origins_.end())
@@ -1388,6 +1415,7 @@ void ChromeFileSystemAccessPermissionContext::NavigatedAwayFromOrigin(
 
 void ChromeFileSystemAccessPermissionContext::TriggerTimersForTesting() {
   for (const auto& it : origins_) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (it.second.cleanup_timer) {
       auto task = it.second.cleanup_timer->user_task();
       it.second.cleanup_timer->Stop();
@@ -1398,6 +1426,7 @@ void ChromeFileSystemAccessPermissionContext::TriggerTimersForTesting() {
 
 void ChromeFileSystemAccessPermissionContext::MaybeCleanupActivePermissions(
     const url::Origin& origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = origins_.find(origin);
   // If we have no permissions for the origin, there is nothing to do.
   if (it == origins_.end())
@@ -1437,6 +1466,7 @@ bool ChromeFileSystemAccessPermissionContext::AncestorHasActivePermission(
     const url::Origin& origin,
     const base::FilePath& path,
     GrantType grant_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = origins_.find(origin);
   if (it == origins_.end())
     return false;
@@ -1484,6 +1514,7 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermissions(
 
 void ChromeFileSystemAccessPermissionContext::
     UpdatePersistedPermissionsForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UpdatePersistedPermissions();
 }
 
@@ -1581,6 +1612,7 @@ absl::optional<base::Value>
 ChromeFileSystemAccessPermissionContext::GetPersistedPermission(
     const url::Origin& origin,
     const base::FilePath& path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions)) {
     return absl::nullopt;
@@ -1606,6 +1638,7 @@ ChromeFileSystemAccessPermissionContext::GetPersistedPermission(
 
 std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
 ChromeFileSystemAccessPermissionContext::GetAllGrantedOrExpiredObjects() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ObjectPermissionContextBase::GetAllGrantedObjects();
 }
 
@@ -1614,6 +1647,7 @@ bool ChromeFileSystemAccessPermissionContext::HasPersistedPermissionForTesting(
     const base::FilePath& path,
     HandleType handle_type,
     GrantType grant_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return HasPersistedPermission(origin, path, handle_type, grant_type,
                                 MetricsOptions::kDoNotRecord);
 }
@@ -1624,6 +1658,7 @@ bool ChromeFileSystemAccessPermissionContext::HasPersistedPermission(
     HandleType handle_type,
     GrantType grant_type,
     MetricsOptions options) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto& grant = GetPersistedPermission(origin, path);
 
   if (!grant.has_value())
@@ -1658,6 +1693,7 @@ bool ChromeFileSystemAccessPermissionContext::HasPersistedPermission(
 bool ChromeFileSystemAccessPermissionContext::PersistentPermissionIsExpired(
     const base::Time& last_used,
     bool has_extended_permissions) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::TimeDelta duration =
       has_extended_permissions ? kPersistentPermissionExpirationTimeoutExtended
                                : kPersistentPermissionExpirationTimeoutDefault;
