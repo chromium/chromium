@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -147,13 +148,21 @@ bool ParseAttributionAggregatableSource(
   if (!json)
     return false;
 
-  const auto* array = JSONArray::Cast(json.get());
-  if (!array ||
-      array->size() > kMaxAttributionAggregatableKeysPerSourceOrTrigger) {
-    return false;
-  }
+  const int kExclusiveMaxHistogramValue = 101;
 
+  static_assert(
+      kMaxAttributionAggregatableKeysPerSourceOrTrigger <
+          kExclusiveMaxHistogramValue,
+      "Bump the version for histogram Conversions.AggregatableKeysPerSource");
+
+  const auto* array = JSONArray::Cast(json.get());
   const wtf_size_t num_keys = array->size();
+
+  if (!array || num_keys > kMaxAttributionAggregatableKeysPerSourceOrTrigger)
+    return false;
+
+  base::UmaHistogramCounts100("Conversions.AggregatableKeysPerSource",
+                              num_keys);
 
   source.keys.ReserveCapacityForSize(num_keys);
 
@@ -356,13 +365,24 @@ bool ParseAttributionAggregatableTriggerData(
   if (!json)
     return false;
 
+  const int kExclusiveMaxHistogramValue = 101;
+
+  static_assert(kMaxAttributionAggregatableTriggerDataPerTrigger <
+                    kExclusiveMaxHistogramValue,
+                "Bump the version for histogram "
+                "Conversions.AggregatableTriggerDataLength");
+
   const auto* array = JSONArray::Cast(json.get());
+  const wtf_size_t num_trigger_data = array->size();
+
   if (!array ||
       array->size() > kMaxAttributionAggregatableTriggerDataPerTrigger) {
     return false;
   }
 
-  const wtf_size_t num_trigger_data = array->size();
+  base::UmaHistogramCounts100("Conversions.AggregatableTriggerDataLength",
+                              num_trigger_data);
+
   trigger_data.ReserveInitialCapacity(num_trigger_data);
 
   for (wtf_size_t i = 0; i < num_trigger_data; ++i) {

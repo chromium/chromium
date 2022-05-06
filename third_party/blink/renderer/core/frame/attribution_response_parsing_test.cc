@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink::attribution_response_parsing {
@@ -1260,6 +1261,71 @@ TEST(AttributionResponseParsingTest, FiltersSizeHistogram) {
     mojom::blink::AttributionFilterData filter_data;
     ParseFilters(make_filter_data(test_case.size), filter_data);
     histograms.ExpectUniqueSample("Conversions.FiltersPerFilterData",
+                                  test_case.size, test_case.expected);
+  }
+}
+
+TEST(AttributionResponseParsingTest, SourceAggregatableKeysHistogram) {
+  const auto make_aggregatable_source_with_keys = [](wtf_size_t n) {
+    JSONArray array;
+    for (wtf_size_t i = 0; i < n; ++i) {
+      auto object = std::make_unique<JSONObject>();
+      object->SetString("id", String::Number(i));
+      object->SetString("key_piece", "0x1");
+      array.PushObject(std::move(object));
+    }
+    return array.ToJSONString();
+  };
+
+  const struct {
+    wtf_size_t size;
+    bool expected;
+  } kTestCases[] = {
+      {0, true},
+      {kMaxAttributionAggregatableKeysPerSourceOrTrigger, true},
+      {kMaxAttributionAggregatableKeysPerSourceOrTrigger + 1, false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+    mojom::blink::AttributionAggregatableSource aggregatable_source;
+    ParseAttributionAggregatableSource(
+        make_aggregatable_source_with_keys(test_case.size),
+        aggregatable_source);
+    histograms.ExpectUniqueSample("Conversions.AggregatableKeysPerSource",
+                                  test_case.size, test_case.expected);
+  }
+}
+
+TEST(AttributionResponseParsingTest, AggregatableTriggerDataHistogram) {
+  const auto make_aggregatable_trigger_with_trigger_data = [](wtf_size_t n) {
+    JSONArray array;
+    for (wtf_size_t i = 0; i < n; ++i) {
+      auto object = std::make_unique<JSONObject>();
+      object->SetString("key_piece", "0x1");
+      object->SetArray("source_keys", std::make_unique<JSONArray>());
+      array.PushObject(std::move(object));
+    }
+    return array.ToJSONString();
+  };
+
+  const struct {
+    wtf_size_t size;
+    bool expected;
+  } kTestCases[] = {
+      {0, true},
+      {kMaxAttributionAggregatableTriggerDataPerTrigger, true},
+      {kMaxAttributionAggregatableTriggerDataPerTrigger + 1, false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+    WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>
+        trigger_data;
+    ParseAttributionAggregatableTriggerData(
+        make_aggregatable_trigger_with_trigger_data(test_case.size),
+        trigger_data);
+    histograms.ExpectUniqueSample("Conversions.AggregatableTriggerDataLength",
                                   test_case.size, test_case.expected);
   }
 }

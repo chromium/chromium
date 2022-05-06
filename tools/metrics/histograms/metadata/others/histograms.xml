@@ -3169,6 +3169,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.AggregatableKeysPerSource" units="keys"
+    expires_after="2022-10-12">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the number of keys provided in the
+    Attribution-Reporting-Register-Aggregatable-Source header when present.
+    Recorded once for each aggregatable source when parsed from the
+    attributionsrc response.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.AggregatableReport.AssembleReportStatus"
     enum="ConversionAssembleAggregatableReportStatus"
     expires_after="2022-09-08">
@@ -3234,6 +3247,19 @@ chromium-metrics-reviews@google.com.
     Records the time between a trigger and its assembly. This is emitted
     whenever an aggregatable report is to be assembled by the aggregation
     service.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AggregatableTriggerDataLength"
+    units="trigger_data" expires_after="2022-10-12">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the length of the list contained in the
+    Attribution-Reporting-Register-Aggregatable-Trigger-Data header when
+    present. Recorded once for each aggregatable trigger when parsed from the
+    attributionsrc response.
   </summary>
 </histogram>
 
