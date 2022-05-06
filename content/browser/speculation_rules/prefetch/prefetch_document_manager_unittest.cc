@@ -64,7 +64,9 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
     RenderViewHostTestHarness::TearDown();
   }
 
-  RenderFrameHostImpl* GetMainFrame() { return web_contents_->GetMainFrame(); }
+  RenderFrameHostImpl& GetMainFrame() {
+    return web_contents_->GetPrimaryPage().GetMainDocument();
+  }
 
   GURL GetSameOriginUrl(const std::string& path) {
     return GURL("https://example.com" + path);
@@ -133,7 +135,7 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
 
   // Process the candidates with the |PrefetchDocumentManager| for the current
   // document.
-  PrefetchDocumentManager::GetOrCreateForCurrentDocument(GetMainFrame())
+  PrefetchDocumentManager::GetOrCreateForCurrentDocument(&GetMainFrame())
       ->ProcessCandidates(candidates);
 
   // Check that the candidates that should be prefetched were sent to
