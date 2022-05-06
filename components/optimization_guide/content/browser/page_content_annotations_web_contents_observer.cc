@@ -51,6 +51,9 @@ absl::optional<SearchMetadata> ExtractSearchMetadata(
   if (!is_valid_search_url) {
     if (switches::ShouldLogPageContentAnnotationsInput()) {
       LOG(ERROR) << "Url " << url << " is not a valid search URL";
+      LOG(ERROR) << "Matching TemplateURL instances for host: "
+                 << template_url_service->GetTemplateURLCountForHostForLogging(
+                        url.host());
     }
     return absl::nullopt;
   }

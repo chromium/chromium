@@ -455,6 +455,12 @@ const TemplateURL* TemplateURLService::GetTemplateURLForHost(
              : nullptr;
 }
 
+size_t TemplateURLService::GetTemplateURLCountForHostForLogging(
+    const std::string& host) const {
+  DCHECK(loaded_);
+  return provider_map_->GetURLsForHost(host)->size();
+}
+
 TemplateURL* TemplateURLService::Add(
     std::unique_ptr<TemplateURL> template_url) {
   DCHECK(template_url);
