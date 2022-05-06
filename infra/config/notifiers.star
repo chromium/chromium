@@ -59,7 +59,6 @@ luci.notifier(
     name = "chromium-androidx-packager",
     on_new_status = ["FAILURE"],
     notify_emails = [
-        "clank-build-core+androidxfailures@google.com",
         "clank-library-failures+androidx@google.com",
     ],
 )
@@ -69,7 +68,6 @@ luci.notifier(
     on_new_status = ["FAILURE"],
     notify_emails = [
         "chromium-3pp-packager+failures@google.com",
-        "clank-build-core+3ppfailures@google.com",
     ],
 )
 
