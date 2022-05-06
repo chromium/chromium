@@ -4,7 +4,6 @@
 
 #include "net/cert/internal/verify_certificate_chain.h"
 
-#include "base/containers/adapters.h"
 #include "net/cert/internal/parsed_certificate.h"
 #include "net/cert/internal/simple_path_builder_delegate.h"
 #include "net/cert/internal/trust_store.h"
@@ -36,11 +35,10 @@ class VerifyCertificateChainPkitsTestDelegate {
     // with the trust anchor.
     std::vector<scoped_refptr<ParsedCertificate>> input_chain;
     CertErrors parsing_errors;
-    for (const auto& cert_der : base::Reversed(cert_ders)) {
+    for (auto i = cert_ders.rbegin(); i != cert_ders.rend(); ++i) {
       ASSERT_TRUE(ParsedCertificate::CreateAndAddToVector(
           bssl::UniquePtr<CRYPTO_BUFFER>(CRYPTO_BUFFER_new(
-              reinterpret_cast<const uint8_t*>(cert_der.data()),
-              cert_der.size(), nullptr)),
+              reinterpret_cast<const uint8_t*>(i->data()), i->size(), nullptr)),
           {}, &input_chain, &parsing_errors))
           << parsing_errors.ToDebugString();
     }
