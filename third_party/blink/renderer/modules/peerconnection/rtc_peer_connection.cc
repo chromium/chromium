@@ -311,7 +311,9 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
   // value in JavaScript.
   // TODO(https://crbug.com/1302249): Don't support Plan B on Fuchsia either,
   // delete Plan B from all of Chromium.
-#if BUILDFLAG(IS_FUCHSIA)
+  // TODO(https://crbug.com/1323237): Also don't support it on CrOS. This is
+  // only temporary.
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS)
   if (configuration->hasSdpSemantics() &&
       configuration->sdpSemantics() == "plan-b") {
     web_configuration.sdp_semantics = webrtc::SdpSemantics::kPlanB;
