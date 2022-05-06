@@ -24,7 +24,6 @@
     ],
     "files": [
       "android_webview/java/strings/android_webview_strings.grd",
-      "android_webview/ui/aw_strings.grd",
       "ash/ash_strings.grd",
       "ash/shortcut_viewer/shortcut_viewer_strings.grd",
       "ash/webui/camera_app_ui/resources/strings/camera_strings.grd",

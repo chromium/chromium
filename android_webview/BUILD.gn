@@ -886,13 +886,11 @@ repack("repack_pack") {
     "$root_gen_dir/content/content_resources.pak",
     "$root_gen_dir/net/net_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
-    "$target_gen_dir/aw_resources.pak",
     "$target_gen_dir/components_resources.pak",
     "$target_gen_dir/mojo_bindings_resources.pak",
     "$target_gen_dir/webui_generated_resources.pak",
   ]
   deps = [
-    ":generate_aw_resources",
     ":generate_components_resources",
     ":generate_mojo_resources",
     ":generate_webui_resources",
@@ -1034,22 +1032,6 @@ android_resources("resources") {
     "java/res/drawable-xxxhdpi/ic_play_circle_outline_black_48dp.png",
   ]
   deps = [ ":strings_grd" ]
-}
-
-grit("generate_aw_resources") {
-  source = "ui/aw_resources.grd"
-  outputs = [
-    "grit/aw_resources.h",
-    "aw_resources.pak",
-  ]
-}
-
-grit("generate_aw_strings") {
-  source = "ui/aw_strings.grd"
-  outputs = [ "grit/aw_strings.h" ]
-  foreach(_locale, all_chrome_locales) {
-    outputs += [ "aw_strings_${_locale}.pak" ]
-  }
 }
 
 grit("generate_webui_resources") {

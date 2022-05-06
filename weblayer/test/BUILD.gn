@@ -233,7 +233,6 @@ test("weblayer_browsertests") {
       ":weblayer_browsertests_java",
       ":weblayer_browsertests_jni",
       ":weblayer_test_assets",
-      "//android_webview:generate_aw_strings_grit",
       "//android_webview:locale_pak_assets",
       "//android_webview:pak_file_assets",
       "//components/android_autofill/browser:test_support",

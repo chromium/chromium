@@ -778,16 +778,9 @@
 
   # START "everything else" section.
   # Everything but chrome/, chromeos/, components/, content/, and ios/
-  "android_webview/ui/aw_resources.grd": {
+  "ash/app_list/resources/app_list_resources.grd": {
     # Big alignment at start of section.
     "META": {"join": 2, "align": 100},
-    "includes": [3900],
-  },
-  "android_webview/ui/aw_strings.grd": {
-    "messages": [3920],
-  },
-
-  "ash/app_list/resources/app_list_resources.grd": {
     "structures": [3940],
   },
   "ash/ash_strings.grd": {

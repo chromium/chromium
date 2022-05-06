@@ -2216,10 +2216,6 @@ if (current_toolchain == default_toolchain) {
 
       additional_extra_paks = []
       if (_is_monochrome) {
-        additional_extra_paks +=
-            [ "$root_gen_dir/android_webview/aw_resources.pak" ]
-        deps += [ "//android_webview:generate_aw_resources" ]
-
         if (webview_includes_weblayer) {
           additional_extra_paks +=
               [ "$root_gen_dir/weblayer/weblayer_resources.pak" ]

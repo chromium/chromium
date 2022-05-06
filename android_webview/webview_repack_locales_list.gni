@@ -4,7 +4,6 @@
 
 # For how to add pattern, see additional_source_patterns argument of
 # _repack_one_locale in chrome/chrome_repack_locales.gni.
-webview_repack_locales_source_patterns =
-    [ "${root_gen_dir}/android_webview/aw_strings_" ]
+webview_repack_locales_source_patterns = []
 
-webview_repack_locales_deps = [ "//android_webview:generate_aw_strings" ]
+webview_repack_locales_deps = []
