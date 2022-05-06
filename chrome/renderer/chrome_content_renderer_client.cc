@@ -178,11 +178,6 @@
 #include "chrome/renderer/render_frame_font_family_accessor.h"
 #endif
 
-#if BUILDFLAG(ENABLE_FEED_V2)
-#include "components/feed/content/renderer/rss_link_reader.h"
-#include "components/feed/feed_feature_list.h"
-#endif
-
 #if BUILDFLAG(ENABLE_NACL)
 #include "components/nacl/common/nacl_constants.h"
 #include "components/nacl/renderer/nacl_helper.h"
@@ -705,12 +700,6 @@ void ChromeContentRendererClient::RenderFrameCreated(
 #if BUILDFLAG(HAS_SPELLCHECK_PANEL)
   new SpellCheckPanel(render_frame, registry, this);
 #endif  // BUILDFLAG(HAS_SPELLCHECK_PANEL)
-#endif
-#if BUILDFLAG(ENABLE_FEED_V2)
-  if (render_frame->IsMainFrame() &&
-      base::FeatureList::IsEnabled(feed::kWebFeed)) {
-    new feed::RssLinkReader(render_frame, registry);
-  }
 #endif
 
 #if BUILDFLAG(IS_WIN)

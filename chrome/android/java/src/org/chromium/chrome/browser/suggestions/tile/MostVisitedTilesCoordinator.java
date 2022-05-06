@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
-import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -108,11 +107,9 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
      *
      * @param suggestionsUiDelegate The UI delegate of suggestion surface.
      * @param tileGroupDelegate The delegate of tile group.
-     * @param touchEnabledDelegate The {@link TouchEnabledDelegate} for handling whether touch
-     *                             events are allowed.
      */
     public void initWithNative(SuggestionsUiDelegate suggestionsUiDelegate,
-            TileGroup.Delegate tileGroupDelegate, TouchEnabledDelegate touchEnabledDelegate) {
+            TileGroup.Delegate tileGroupDelegate) {
         mActivityLifecycleDispatcher.register(this);
         Profile profile = Profile.getLastUsedRegularProfile();
         if (mRenderer == null) {
@@ -123,7 +120,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
         }
 
         mContextMenuManager = new ContextMenuManager(suggestionsUiDelegate.getNavigationDelegate(),
-                touchEnabledDelegate, mActivity::closeContextMenu, CONTEXT_MENU_USER_ACTION_PREFIX);
+                mActivity::closeContextMenu, CONTEXT_MENU_USER_ACTION_PREFIX);
         mWindowAndroid.addContextMenuCloseListener(mContextMenuManager);
         mOfflinePageBridge =
                 SuggestionsDependencyFactory.getInstance().getOfflinePageBridge(profile);

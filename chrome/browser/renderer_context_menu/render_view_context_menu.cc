@@ -45,8 +45,6 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
-#include "chrome/browser/feed/web_feed_tab_helper.h"
-#include "chrome/browser/feed/web_feed_ui_util.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -3180,20 +3178,6 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
 
 // Returns true if the item was appended (along with a SEPARATOR).
 bool RenderViewContextMenu::AppendFollowUnfollowItem() {
-  TabWebFeedFollowState follow_state =
-      feed::WebFeedTabHelper::GetFollowState(source_web_contents_);
-  if (follow_state == TabWebFeedFollowState::kNotFollowed) {
-    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-    menu_model_.AddItem(IDC_FOLLOW,
-                        l10n_util::GetStringUTF16(IDS_TAB_CXMENU_FOLLOW_SITE));
-    return true;
-  }
-  if (follow_state == TabWebFeedFollowState::kFollowed) {
-    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-    menu_model_.AddItem(
-        IDC_UNFOLLOW, l10n_util::GetStringUTF16(IDS_TAB_CXMENU_UNFOLLOW_SITE));
-    return true;
-  }
   return false;
 }
 

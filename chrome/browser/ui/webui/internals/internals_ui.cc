@@ -108,13 +108,7 @@ void InternalsUI::AddLensInternals(content::WebUI* web_ui) {
 }
 
 void InternalsUI::AddQueryTilesInternals(content::WebUI* web_ui) {
-  source_->AddResourcePath("query_tiles_internals.js",
-                           IDR_QUERY_TILES_INTERNALS_JS);
-  source_->AddResourcePath("query_tiles_internals_browser_proxy.js",
-                           IDR_QUERY_TILES_INTERNALS_BROWSER_PROXY_JS);
-  source_->AddResourcePath("query-tiles", IDR_QUERY_TILES_INTERNALS_HTML);
-  web_ui->AddMessageHandler(
-      std::make_unique<QueryTilesInternalsUIMessageHandler>(profile_));
+
 }
 #else   // BUILDFLAG(IS_ANDROID)
 void InternalsUI::BindInterface(

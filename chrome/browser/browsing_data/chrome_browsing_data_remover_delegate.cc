@@ -145,7 +145,6 @@
 #include "chrome/browser/android/explore_sites/explore_sites_service_factory.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "chrome/browser/android/webapps/webapp_registry.h"
-#include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
@@ -956,15 +955,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
             profile_));
 
 #if BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(ENABLE_FEED_V2)
-    // Don't bridge through if the service isn't present, which means we're
-    // probably running in a native unit test.
-    feed::FeedService* service =
-        feed::FeedServiceFactory::GetForBrowserContext(profile_);
-    if (service) {
-      service->ClearCachedData();
-    }
-#endif  // BUILDFLAG(ENABLE_FEED_V2)
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

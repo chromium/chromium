@@ -25,7 +25,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/background_tab_manager.h"
-#include "chrome/browser/feed/feed_service_factory.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #else
@@ -43,13 +42,7 @@ using chrome::android::BackgroundTabManager;
 
 #if BUILDFLAG(IS_ANDROID)
 bool IsNavigationFromFeed(content::WebContents& web_contents, const GURL& url) {
-  feed::FeedService* feed_service =
-      feed::FeedServiceFactory::GetForBrowserContext(
-          web_contents.GetBrowserContext());
-  if (!feed_service)
-    return false;
-
-  return feed_service->GetStream()->WasUrlRecentlyNavigatedFromFeed(url);
+  return false;
 }
 
 #endif

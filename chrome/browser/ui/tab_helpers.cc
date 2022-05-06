@@ -31,7 +31,6 @@
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/feed/web_feed_tab_helper.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/file_system_access/file_system_access_tab_helper.h"
 #include "chrome/browser/history/history_tab_helper.h"
@@ -615,11 +614,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (IsSideSearchEnabled(profile))
     SideSearchTabContentsHelper::CreateForWebContents(web_contents);
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
-
-#if BUILDFLAG(ENABLE_FEED_V2)
-  if (base::FeatureList::IsEnabled(feed::kWebUiFeed))
-    feed::WebFeedTabHelper::CreateForWebContents(web_contents);
-#endif  // BUILDFLAG(ENABLE_FEED_V2)
 
   // --- Section 4: The warning ---
 

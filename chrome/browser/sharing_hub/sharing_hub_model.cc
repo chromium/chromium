@@ -12,7 +12,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/feed/web_feed_tab_helper.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
@@ -95,15 +94,9 @@ void SharingHubModel::GetFirstPartyActionList(
         list->push_back(action);
       }
     } else if (action.command_id == IDC_FOLLOW) {
-      TabWebFeedFollowState follow_state =
-          feed::WebFeedTabHelper::GetFollowState(web_contents);
-      if (follow_state == TabWebFeedFollowState::kNotFollowed)
-        list->push_back(action);
+
     } else if (action.command_id == IDC_UNFOLLOW) {
-      TabWebFeedFollowState follow_state =
-          feed::WebFeedTabHelper::GetFollowState(web_contents);
-      if (follow_state == TabWebFeedFollowState::kFollowed)
-        list->push_back(action);
+
     } else if (action.command_id == IDC_SAVE_PAGE) {
       if (chrome::CanSavePage(
               chrome::FindBrowserWithWebContents(web_contents))) {

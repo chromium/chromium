@@ -45,7 +45,6 @@ public class HomeButtonCoordinator {
 
     private final Context mContext;
     private final View mHomeButton;
-    private final BooleanSupplier mIsFeedEnabled;
     private final UserEducationHelper mUserEducationHelper;
     private final BooleanSupplier mIsIncognitoSupplier;
     private final CurrentTabObserver mPageLoadObserver;
@@ -61,7 +60,6 @@ public class HomeButtonCoordinator {
      * @param intentMetadataOneshotSupplier Potentially delayed information about launching intent.
      * @param promoShownOneshotSupplier Potentially delayed information about if a promo was shown.
      * @param isHomepageNonNtpSupplier Supplier for whether the current homepage is not NTP.
-     * @param isFeedEnabled Supplier for whether feed is enabled.
      * @param tabSupplier Supplier of the activity tab.
      */
     public HomeButtonCoordinator(@NonNull Context context, @Nullable View homeButton,
@@ -69,8 +67,7 @@ public class HomeButtonCoordinator {
             @NonNull BooleanSupplier isIncognitoSupplier,
             @NonNull OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
             @NonNull OneshotSupplier<Boolean> promoShownOneshotSupplier,
-            @NonNull Supplier<Boolean> isHomepageNonNtpSupplier,
-            @NonNull BooleanSupplier isFeedEnabled, @NonNull ObservableSupplier<Tab> tabSupplier) {
+            @NonNull Supplier<Boolean> isHomepageNonNtpSupplier, @NonNull ObservableSupplier<Tab> tabSupplier) {
         mContext = context;
         mHomeButton = homeButton;
         mUserEducationHelper = userEducationHelper;
@@ -78,7 +75,6 @@ public class HomeButtonCoordinator {
         mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
         mPromoShownOneshotSupplier = promoShownOneshotSupplier;
         mIsHomepageNonNtpSupplier = isHomepageNonNtpSupplier;
-        mIsFeedEnabled = isFeedEnabled;
         mPageLoadObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
@@ -122,11 +118,9 @@ public class HomeButtonCoordinator {
                     INTENT_WITH_EFFECT_PARAM_NAME, intentMetadata.getIsIntentWithEffect())) {
             return;
         }
-
-        boolean hasFeed = mIsFeedEnabled.getAsBoolean();
-        int textId = hasFeed ? R.string.iph_ntp_with_feed_text : R.string.iph_ntp_without_feed_text;
-        int accessibilityTextId = hasFeed ? R.string.iph_ntp_with_feed_accessibility_text
-                                          : R.string.iph_ntp_without_feed_accessibility_text;
+        
+        int textId = R.string.iph_ntp_without_feed_text;
+        int accessibilityTextId = R.string.iph_ntp_without_feed_accessibility_text;
 
         mUserEducationHelper.requestShowIPH(new IPHCommandBuilder(mContext.getResources(),
                 FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE, textId, accessibilityTextId)

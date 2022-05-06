@@ -881,14 +881,6 @@ static_library("ui") {
       "webui/webapks/webapks_ui.cc",
       "webui/webapks/webapks_ui.h",
     ]
-    if (enable_feed_v2) {
-      sources += [
-        "webui/feed_internals/feed_internals_ui.cc",
-        "webui/feed_internals/feed_internals_ui.h",
-        "webui/feed_internals/feedv2_internals_page_handler.cc",
-        "webui/feed_internals/feedv2_internals_page_handler.h",
-      ]
-    }
 
     deps += [
       "//chrome/android:jni_headers",
@@ -900,7 +892,6 @@ static_library("ui") {
       "//chrome/browser/resources/webapks:resources",
       "//chrome/browser/ui/android/autofill/internal:jni_headers",
       "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings",
-      "//chrome/browser/ui/webui/feed_internals:mojo_bindings",
       "//components/browser_ui/accessibility/android",
       "//components/browser_ui/client_certificate/android",
       "//components/browser_ui/share/android",

@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareT
 import org.chromium.chrome.browser.cryptids.ProbabilisticCryptidRenderer;
 import org.chromium.chrome.browser.explore_sites.ExperimentalExploreSitesSection;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
-import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensMetrics;
@@ -51,12 +50,10 @@ import org.chromium.chrome.browser.query_tiles.QueryTileSection;
 import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
-import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -105,7 +102,6 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
     private NewTabPageManager mManager;
     private Activity mActivity;
     private LogoDelegateImpl mLogoDelegate;
-    private UiConfig mUiConfig;
     private CallbackController mCallbackController = new CallbackController();
 
     /**
@@ -141,8 +137,6 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
      * should be applied. See {@link Rect#inset(int, int)}.
      */
     private int mSearchBoxBoundsVerticalInset;
-
-    private FeedSurfaceScrollDelegate mScrollDelegate;
 
     private NewTabPageUma mNewTabPageUma;
 
@@ -180,10 +174,6 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
      * @param tileGroupDelegate Delegate for {@link TileGroup}.
      * @param searchProviderHasLogo Whether the search provider has a logo.
      * @param searchProviderIsGoogle Whether the search provider is Google.
-     * @param scrollDelegate The delegate used to obtain information about scroll state.
-     * @param touchEnabledDelegate The {@link TouchEnabledDelegate} for handling whether touch
-     *         events are allowed.
-     * @param uiConfig UiConfig that provides display information about this view.
      * @param lifecycleDispatcher Activity lifecycle dispatcher.
      * @param uma {@link NewTabPageUma} object recording user metrics.
      * @param isIncognito Whether the new tab page is in incognito mode.
@@ -191,15 +181,13 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
      */
     public void initialize(NewTabPageManager manager, Activity activity,
             TileGroup.Delegate tileGroupDelegate, boolean searchProviderHasLogo,
-            boolean searchProviderIsGoogle, FeedSurfaceScrollDelegate scrollDelegate,
-            TouchEnabledDelegate touchEnabledDelegate, UiConfig uiConfig,
+            boolean searchProviderIsGoogle,
             ActivityLifecycleDispatcher lifecycleDispatcher, NewTabPageUma uma, boolean isIncognito,
             WindowAndroid windowAndroid) {
         TraceEvent.begin(TAG + ".initialize()");
-        mScrollDelegate = scrollDelegate;
+
         mManager = manager;
         mActivity = activity;
-        mUiConfig = uiConfig;
         mNewTabPageUma = uma;
         mIsIncognito = isIncognito;
         mWindowAndroid = windowAndroid;
@@ -219,7 +207,7 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
         }
 
         initializeMostVisitedTilesCoordinator(profile, lifecycleDispatcher, tileGroupDelegate,
-                touchEnabledDelegate, isScrollableMVTEnabled(), searchProviderIsGoogle);
+                isScrollableMVTEnabled(), searchProviderIsGoogle);
         initializeSearchBoxBackground();
         initializeSearchBoxTextView();
         initializeVoiceSearchButton();
@@ -240,13 +228,6 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
         mInitialized = true;
 
         TraceEvent.end(TAG + ".initialize()");
-    }
-
-    /**
-     * @return The {@link FeedSurfaceScrollDelegate} for this class.
-     */
-    FeedSurfaceScrollDelegate getScrollDelegate() {
-        return mScrollDelegate;
     }
 
     /**
@@ -317,16 +298,13 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
                     onUrlFocusAnimationChanged();
                     updateSearchBoxOnScroll();
 
-                    // The positioning of elements may have been changed (since the elements expand
-                    // to fill the available vertical space), so adjust the scroll.
-                    mScrollDelegate.snapScroll();
                 });
         TraceEvent.end(TAG + ".initializeLayoutChangeListener()");
     }
 
     private void initializeMostVisitedTilesCoordinator(Profile profile,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            TileGroup.Delegate tileGroupDelegate, TouchEnabledDelegate touchEnabledDelegate,
+            TileGroup.Delegate tileGroupDelegate,
             boolean isScrollableMVTEnabled, boolean searchProviderIsGoogle) {
         assert mMvTilesContainerLayout != null;
 
@@ -343,7 +321,7 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
                 });
 
         mMostVisitedTilesCoordinator.initWithNative(
-                mManager, tileGroupDelegate, touchEnabledDelegate);
+                mManager, tileGroupDelegate);
 
         int variation = ExploreSitesBridge.getVariation();
         if (ExploreSitesBridge.isExperimental(variation)) {
@@ -377,8 +355,6 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
      * @return the transition percentage
      */
     float getToolbarTransitionPercentage() {
-        // During startup the view may not be fully initialized.
-        if (!mScrollDelegate.isScrollViewInitialized()) return 0f;
 
         if (isSearchBoxOffscreen()) {
             // getVerticalScrollOffset is valid only for the scroll view if the first item is
@@ -397,7 +373,7 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
         // visible "border" of the search box is.
         searchBoxTop += getSearchBoxView().getPaddingTop();
 
-        final int scrollY = mScrollDelegate.getVerticalScrollOffset();
+        final int scrollY = 0;
         // Use int pixel size instead of float dimension to avoid precision error on the percentage.
         final float transitionLength =
                 getResources().getDimensionPixelSize(R.dimen.ntp_search_box_transition_length);
@@ -543,17 +519,8 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
         marginLayoutParams.topMargin = marginTop;
         marginLayoutParams.bottomMargin = marginBottom;
 
-        if (isScrollableMVTEnabled()) {
-            // Let mMvTilesContainerLayout attached to the edge of the screen.
-            setClipToPadding(false);
-            int lateralPaddingsForNTP = mActivity.getResources().getDimensionPixelSize(
-                    R.dimen.ntp_header_lateral_paddings_v2);
-            marginLayoutParams.leftMargin = -lateralPaddingsForNTP;
-            marginLayoutParams.rightMargin = -lateralPaddingsForNTP;
-        } else {
-            ViewGroup.LayoutParams layoutParams = mMvTilesContainerLayout.getLayoutParams();
-            layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-        }
+        ViewGroup.LayoutParams layoutParams = mMvTilesContainerLayout.getLayoutParams();
+        layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
     }
 
     /**
@@ -598,7 +565,7 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
 
         // Translate so that the search box is at the top, but only upwards.
         float percent = mSearchProviderHasLogo ? mUrlFocusChangePercent : 0;
-        int basePosition = mScrollDelegate.getVerticalScrollOffset() + getPaddingTop();
+        int basePosition = getPaddingTop();
         int target = Math.max(basePosition,
                 getSearchBoxView().getBottom() - getSearchBoxView().getPaddingBottom()
                         - mSearchBoxBoundsVerticalInset);
@@ -695,8 +662,7 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
      * @return Whether the search box view is scrolled off the screen.
      */
     private boolean isSearchBoxOffscreen() {
-        return !mScrollDelegate.isChildVisibleAtPosition(0)
-                || mScrollDelegate.getVerticalScrollOffset() > getSearchBoxView().getTop();
+        return false;
     }
 
     /**
@@ -733,14 +699,6 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
-
-        // On first run, the NewTabPageLayout is initialized behind the First Run Experience,
-        // meaning the UiConfig will pickup the screen layout then. However onConfigurationChanged
-        // is not called on orientation changes until the FRE is completed. This means that if a
-        // user starts the FRE in one orientation, changes an orientation and then leaves the FRE
-        // the UiConfig will have the wrong orientation. https://crbug.com/683886.
-        mUiConfig.updateDisplayStyle();
-
         if (visibility == VISIBLE) {
             updateActionButtonVisibility();
             maybeShowVideoTutorialTryNowIPH();

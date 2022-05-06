@@ -280,7 +280,7 @@ public class ExploreSitesPage extends BasicNativePage {
     protected ContextMenuManager createContextMenuManager(NativePageNavigationDelegate navDelegate,
             Runnable closeContextMenuCallback, String contextMenuUserActionPrefix) {
         return new ContextMenuManager(navDelegate,
-                (enabled) -> {}, closeContextMenuCallback, contextMenuUserActionPrefix);
+                closeContextMenuCallback, contextMenuUserActionPrefix);
     }
 
     private void translateToModel(@Nullable List<ExploreSitesCategory> categoryList) {

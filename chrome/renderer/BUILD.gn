@@ -276,10 +276,6 @@ static_library("renderer") {
         [ "//components/safe_browsing/content/renderer/phishing_classifier" ]
   }
 
-  if (enable_feed_v2) {
-    deps += [ "//components/feed/content/renderer:feed_renderer" ]
-  }
-
   if (enable_extensions) {
     sources += [
       "extensions/accessibility_private_hooks_delegate.cc",

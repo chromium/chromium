@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.app.tabmodel.ChromeNextTabPolicySupplier;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabbedModeTabModelOrchestrator;
-import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
@@ -85,7 +84,6 @@ import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
-import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -179,7 +177,6 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
-import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.features.start_surface.StartSurface;
@@ -194,7 +191,6 @@ import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageDispatcherProvider;
-import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -812,7 +808,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 RecordUserAction.record("MobileNewTabOpened");
                 ReturnToChromeUtil.onNewTabOpened();
             };
-            OnClickListener bookmarkClickHandler = v -> addOrEditBookmark(getActivityTab());
 
             Supplier<Boolean> showStartSurfaceSupplier = () -> {
                 // If incognito is selected, tapping the home button stays on the current incognito
@@ -827,7 +822,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             };
 
             getToolbarManager().initializeWithNative(mLayoutManager, tabSwitcherClickHandler,
-                    newTabClickHandler, bookmarkClickHandler, null, showStartSurfaceSupplier);
+                    newTabClickHandler, null, null, showStartSurfaceSupplier);
 
             if (!isInstantStartEnabled()) {
                 // TODO(https://crbug.com/1306904): Fix this assert which is tripping on unrelated
@@ -859,16 +854,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 IncognitoNotificationManager.dismissIncognitoNotification();
                 DownloadNotificationService.getInstance().cancelOffTheRecordDownloads();
             }
-        }
-    }
-
-    private void maybeGetFeedAppLifecycleAndMaybeCreatePageViewObserver() {
-        try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity."
-                     + "maybeGetFeedAppLifecycleAndMaybeCreatePageViewObserver")) {
-            FeedSurfaceTracker.getInstance().startup();
-
-            UsageStatsService.createPageViewObserverIfEnabled(
-                    this, getActivityTabProvider(), getTabContentManagerSupplier());
         }
     }
 
@@ -935,9 +920,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     mCallbackController.makeCancelable(
                             this::onAccessibilityTabSwitcherModeChanged));
 
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
-                    mCallbackController.makeCancelable(
-                            this::maybeGetFeedAppLifecycleAndMaybeCreatePageViewObserver));
             PostTask.postTask(UiThreadTaskTraits.DEFAULT,
                     mCallbackController.makeCancelable(this::initJourneyManager));
             PostTask.postTask(UiThreadTaskTraits.DEFAULT,
@@ -1048,8 +1030,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         resetSavedInstanceState();
         StartSurfaceConfiguration.addFeedVisibilityObserver();
-        BookmarkUtils.maybeExpireLastBookmarkLocationForReadLater(
-                mInactivityTracker.getTimeSinceLastBackgroundedMs());
     }
 
     @Override
@@ -1870,11 +1850,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getWindow().getDecorView(), this, mLayoutStateProviderSupplier,
                 ReturnToChromeUtil.isStartSurfaceEnabled(this) ? mStartSurfaceSupplier : null,
                 mBookmarkBridgeSupplier,
-                ()
-                        -> getTabCreator(/*incognito=*/false)
-                                   .launchUrl(NewTabPageUtils.encodeNtpUrl(
-                                                      NewTabPageLaunchOrigin.WEB_FEED),
-                                           TabLaunchType.FROM_CHROME_UI),
                 getModalDialogManager(), getSnackbarManager());
     }
 
@@ -2051,24 +2026,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 tracker.notifyEvent(EventConstants.APP_MENU_NEW_INCOGNITO_TAB_CLICKED);
             }
         } else if (id == R.id.all_bookmarks_menu_id) {
-            // Note that 'currentTab' could be null in overview mode when start surface is
-            // enabled.
-            getCompositorViewHolderSupplier().get().hideKeyboard(() -> {
-                BookmarkUtils.showBookmarkManager(
-                        ChromeTabbedActivity.this, getCurrentTabModel().isIncognito());
-            });
-            if (currentTabIsNtp) {
-                NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_BOOKMARKS_MANAGER);
-            }
-
-            @BrowserProfileType
-            int type = getCurrentTabModel().isIncognito() ? BrowserProfileType.INCOGNITO
-                                                          : BrowserProfileType.REGULAR;
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Bookmarks.OpenBookmarkManager.PerProfileType", type,
-                    BrowserProfileType.MAX_VALUE + 1);
-
-            RecordUserAction.record("MobileMenuAllBookmarks");
         } else if (id == R.id.recent_tabs_menu_id) {
             LoadUrlParams params =
                     new LoadUrlParams(UrlConstants.RECENT_TABS_URL, PageTransition.AUTO_BOOKMARK);

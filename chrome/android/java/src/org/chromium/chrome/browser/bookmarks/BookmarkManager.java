@@ -41,11 +41,7 @@ import org.chromium.url.GURL;
 
 import java.util.Stack;
 
-/**
- * The new bookmark manager that is planned to replace the existing bookmark manager. It holds all
- * views and shared logics between tablet and phone. For tablet/phone specific logics, see
- * {@link BookmarkActivity} (phone) and {@link BookmarkPage} (tablet).
- */
+
 public class BookmarkManager
         implements BookmarkDelegate, SearchDelegate, PartnerBookmarksReader.FaviconUpdateObserver {
     private static final int FAVICON_MAX_CACHE_SIZE_BYTES =

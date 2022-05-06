@@ -18,7 +18,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.ui.base.WindowAndroid.OnCloseContextMenuListener;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
@@ -56,7 +55,6 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
     }
 
     private final NativePageNavigationDelegate mNavigationDelegate;
-    private final TouchEnabledDelegate mTouchEnabledDelegate;
     private final Runnable mCloseContextMenuCallback;
     private final String mUserActionPrefix;
     private View mAnchorView;
@@ -129,16 +127,13 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
     /**
      * @param navigationDelegate The {@link NativePageNavigationDelegate} for handling navigation
      *                           events.
-     * @param touchEnabledDelegate The {@link TouchEnabledDelegate} for handling whether touch
-     *                             events are allowed.
      * @param closeContextMenuCallback The callback for closing the context menu.
      * @param userActionPrefix Prefix used to record user actions.
      */
     public ContextMenuManager(NativePageNavigationDelegate navigationDelegate,
-            TouchEnabledDelegate touchEnabledDelegate, Runnable closeContextMenuCallback,
+            Runnable closeContextMenuCallback,
             String userActionPrefix) {
         mNavigationDelegate = navigationDelegate;
-        mTouchEnabledDelegate = touchEnabledDelegate;
         mCloseContextMenuCallback = closeContextMenuCallback;
         mUserActionPrefix = userActionPrefix;
     }
@@ -193,11 +188,6 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         // No item added. We won't show the menu, so we can skip the rest.
         if (!hasItems) return;
 
-        // Touch events must be disabled on the outer view while the context menu is open. This is
-        // to prevent the user long pressing to get the context menu then on the same press
-        // scrolling or swiping to dismiss an item (eg. https://crbug.com/638854,
-        // https://crbug.com/638555, https://crbug.com/636296).
-        mTouchEnabledDelegate.setTouchEnabled(false);
         mAnchorView = associatedView;
         mAnchorView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
@@ -219,7 +209,6 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
     public void onContextMenuClosed() {
         if (mAnchorView == null) return;
         mAnchorView = null;
-        mTouchEnabledDelegate.setTouchEnabled(true);
     }
 
     /**

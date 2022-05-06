@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCo
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.HeightObserver;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureType;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -60,8 +59,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceIphController;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
-import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
@@ -130,7 +127,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private OfflineIndicatorControllerV2 mOfflineIndicatorController;
     private OfflineIndicatorInProductHelpController mOfflineIndicatorInProductHelpController;
     private ReadLaterIPHController mReadLaterIPHController;
-    private WebFeedFollowIntroController mWebFeedFollowIntroController;
     private UrlFocusChangeListener mUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
     private AddToHomescreenIPHController mAddToHomescreenIPHController;
@@ -330,10 +326,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mToolbarButtonInProductHelpController != null) {
             mToolbarButtonInProductHelpController.destroy();
-        }
-
-        if (mWebFeedFollowIntroController != null) {
-            mWebFeedFollowIntroController.destroy();
         }
 
         if (mRootUiTabObserver != null) mRootUiTabObserver.destroy();
@@ -650,18 +642,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mCrowIphController = new CrowIphController(mActivity,
                 mAppMenuCoordinator.getAppMenuHandler(), new CrowButtonDelegateImpl(),
                 mActivityTabProvider, mToolbarManager.getMenuButtonView());
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
-            mWebFeedFollowIntroController = new WebFeedFollowIntroController(mActivity,
-                    mAppMenuCoordinator.getAppMenuHandler(), mActivityTabProvider,
-                    mToolbarManager.getMenuButtonView(), () -> {
-                        mTabCreatorManagerSupplier.get()
-                                .getTabCreator(/*incognito=*/false)
-                                .launchUrl(NewTabPageUtils.encodeNtpUrl(
-                                                   NewTabPageLaunchOrigin.WEB_FEED),
-                                        TabLaunchType.FROM_CHROME_UI);
-                    }, mModalDialogManagerSupplier.get(), mSnackbarManagerSupplier.get());
-        }
     }
 
     private void updateTopControlsHeight(boolean animate) {

@@ -572,12 +572,6 @@ by a child template that "extends" this file.
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
             android:exported="false">
         </activity>
-        <activity android:name="org.chromium.chrome.browser.site_settings.ManageSpaceActivity"
-            android:theme="@style/Theme.Chromium.Settings.ManageSpace"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-            android:label="@string/storage_management_activity_label"
-            android:exported="false">
-        </activity>
         <activity android:name="org.chromium.chrome.browser.bookmarks.BookmarkActivity"
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"
             android:exported="false"
@@ -617,14 +611,6 @@ by a child template that "extends" this file.
 
         <!-- Activities for history. -->
         <activity android:name="org.chromium.chrome.browser.history.HistoryActivity"
-            android:theme="@style/Theme.Chromium.Activity.Fullscreen"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
-            android:exported="false"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
-        </activity>
-
-        <!-- Activities for app launcher. -->
-        <activity android:name="org.chromium.chrome.browser.webapps.launchpad.LaunchpadActivity"
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             android:exported="false"

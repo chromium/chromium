@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge.SiteChannel;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
-import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,12 +76,6 @@ public class SiteChannelsManager {
     }
 
     private @Nullable SiteChannel getSiteChannelForOrigin(String origin) {
-        String normalizedOrigin = WebsiteAddress.create(origin).getOrigin();
-        for (SiteChannel channel : getSiteChannels()) {
-            if (channel.getOrigin().equals(normalizedOrigin)) {
-                return channel;
-            }
-        }
         return null;
     }
 
@@ -150,8 +143,7 @@ public class SiteChannelsManager {
      */
     @VisibleForTesting
     public static String createChannelId(String origin, long creationTime) {
-        return CHANNEL_ID_PREFIX_SITES + WebsiteAddress.create(origin).getOrigin()
-                + CHANNEL_ID_SEPARATOR + creationTime;
+        return null;
     }
 
     /**
