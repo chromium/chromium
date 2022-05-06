@@ -357,6 +357,11 @@ extern const char kNTPViewHierarchyRepairDescription[];
 extern const char kOmniboxUIMaxAutocompleteMatchesName[];
 extern const char kOmniboxUIMaxAutocompleteMatchesDescription[];
 
+// Title and description for the flag to change the max number of ZPS
+// matches in the omnibox popup.
+extern const char kOmniboxMaxZPSMatchesName[];
+extern const char kOmniboxMaxZPSMatchesDescription[];
+
 // Title and description for the flag to enable Omnibox On Device Head
 // suggestions (incognito).
 extern const char kOmniboxOnDeviceHeadSuggestionsIncognitoName[];

@@ -4448,6 +4448,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "omnibox-max-zps-matches",
+    "owners": [ "stkhapugin", "christianxu", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone" : 113
+  },
+  {
     "name": "omnibox-most-visited-tiles",
     "owners": [ "fgorski", "ender", "stkhapugin", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 110
