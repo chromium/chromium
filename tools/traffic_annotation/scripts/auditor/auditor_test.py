@@ -613,6 +613,26 @@ class AuditorTest(unittest.TestCase):
     new_xml = exporter._generate_serialized_xml()
     self.assertEqual(old_xml, new_xml)
 
+  def test_grouping_xml(self):
+    """Tests is grouping.xml has proper content."""
+    # grouping.xml should parse without errors.
+    exporter = Exporter(get_current_platform())
+    exporter.load_grouping_xml(Exporter.GROUPING_XML_PATH)
+
+    # The content of grouping.xml shouldn't change when writing it.
+    old_xml = Exporter.GROUPING_XML_PATH.read_text(encoding="utf-8")
+    new_xml = exporter._generate_serialized_grouping_xml()
+    self.assertEqual(old_xml, new_xml)
+
+  def test_grouping_required_fields_errors(self) -> None:
+    """Tests is grouping.xml has no content."""
+    # grouping.xml should parse with errors.
+    grouping_erro_xml_path = \
+      TEST_DATA_DIR / "test_required_field_error_grouping.xml"
+    exporter = Exporter(get_current_platform())
+    self.assertRaises(ValueError,
+                      lambda: exporter.load_grouping_xml(grouping_erro_xml_path))
+
   def test_annotations_xml_differences(self):
     """Tests if annotations.xml changes are correctly reported."""
     exporter = Exporter(get_current_platform())
@@ -642,6 +662,8 @@ class AuditorTest(unittest.TestCase):
   def test_annotation_grouping(self):
     """Tests if an annotation is in test_grouping.xml or not."""
     grouping_xml_path = TEST_DATA_DIR / "test_grouping.xml"
+    errors = self.auditor.run_all_checks([], True, grouping_xml_path)
+    self.assertTrue(errors)
     grouping_xml_ids = self.auditor._get_grouping_xml_ids(grouping_xml_path)
     self.assertCountEqual([
         "foobar_policy_fetcher", "foobar_info_fetcher",
@@ -692,7 +714,7 @@ class AuditorTest(unittest.TestCase):
         [self.sample_annotations["incomplete_error_annotation"]])
 
     self.assertTrue(self.auditor.extracted_annotations)
-    errors = self.auditor.run_all_checks([], True)
+    errors = self.auditor.run_all_checks([], True, Exporter.GROUPING_XML_PATH)
     self.assertTrue(errors)
     result = errors[0]
     self.assertEqual(ErrorType.INCOMPLETE_ANNOTATION, result.type)
