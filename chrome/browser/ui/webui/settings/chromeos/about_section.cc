@@ -384,21 +384,27 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                              user_manager->GetOwnerAccountId().GetUserEmail());
     }
 
-    // Enterprise/Non-owners cannot toggle by default.
-    bool cau_toggle = false;
-    if (!is_enterprise_managed && is_current_owner) {
-      auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
+    // Hide toggle by default.
+    bool show_cau_toggle = false;
+    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
+    if (identity_manager && !is_enterprise_managed) {
       const std::string& gaia_id =
-          user_manager->GetOwnerAccountId().GetGaiaId();
+          user_manager->GetActiveUser()->GetAccountId().GetGaiaId();
       const AccountInfo account_info =
           identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
-      cau_toggle = (account_info.capabilities.can_toggle_auto_updates() ==
-                    signin::Tribool::kTrue);
-      VLOG(1) << "Account can toggle auto updates: " << cau_toggle;
+      // If the user falls under New Deal..
+      if (account_info.capabilities.can_toggle_auto_updates() ==
+          signin::Tribool::kTrue) {
+        // Show toggle based on user's capabilities.
+        show_cau_toggle = true;
+      }
     }
-    html_source->AddBoolean(
-        "isConsumerAutoUpdateTogglingAllowed",
-        chromeos::features::IsConsumerAutoUpdateToggleAllowed() && cau_toggle);
+
+    show_cau_toggle = show_cau_toggle &&
+                      chromeos::features::IsConsumerAutoUpdateToggleAllowed();
+    html_source->AddBoolean("isConsumerAutoUpdateTogglingAllowed",
+                            show_cau_toggle && is_current_owner);
+    html_source->AddBoolean("showConsumerAutoUpdateToggle", show_cau_toggle);
   }
 
   html_source->AddString(

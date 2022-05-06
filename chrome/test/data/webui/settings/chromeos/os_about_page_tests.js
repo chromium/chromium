@@ -583,6 +583,8 @@ suite('AboutPageTest', function() {
   test('Managed user auto update toggle in build info page', async () => {
     loadTimeData.overrideValues({
       isManaged: true,
+      // Set this to true to catch UI bugs.
+      showConsumerAutoUpdateToggle: true,
     });
 
     async function checkManagedAutoUpdateToggle(isToggleEnabled) {
@@ -613,12 +615,14 @@ suite('AboutPageTest', function() {
       isManaged: false,
     });
 
-    async function checkConsumerAutoUpdateToggle(isEnabled, isTogglingAllowed) {
+    async function checkConsumerAutoUpdateToggle(
+        isEnabled, isTogglingAllowed, showToggle) {
       // Create the page.
       await initNewPage();
       // Set overrides + response values.
       loadTimeData.overrideValues({
         isConsumerAutoUpdateTogglingAllowed: isTogglingAllowed,
+        showConsumerAutoUpdateToggle: showToggle,
       });
       aboutBrowserProxy.resetConsumerAutoUpdate(isEnabled);
       const prefs = {
@@ -641,18 +645,22 @@ suite('AboutPageTest', function() {
 
       // Managed auto update toggle should not exist.
       assertFalse(!!buildInfoPage.$$('#managedAutoUpdateToggle'));
-      const cau_toggle = buildInfoPage.$$('#consumerAutoUpdateToggle');
-      assertTrue(!!cau_toggle);
-      assertEquals(isTogglingAllowed, !cau_toggle.disabled);
-      assertEquals(isEnabled, cau_toggle.checked);
+      const cauToggle = buildInfoPage.$$('#consumerAutoUpdateToggle');
+      if (showToggle) {
+        assertTrue(!!cauToggle);
+        assertEquals(isTogglingAllowed, !cauToggle.disabled);
+        assertEquals(isEnabled, cauToggle.checked);
+      } else {
+        assertFalse(!!cauToggle);
+      }
 
       // Check dialog popup when toggling off.
-      if (isEnabled) {
+      if (showToggle && isEnabled) {
         let dialog = buildInfoPage.shadowRoot.querySelector(
             'settings-consumer-auto-update-toggle-dialog');
         assertFalse(!!dialog);
 
-        cau_toggle.click();
+        cauToggle.click();
         flush();
 
         dialog = buildInfoPage.shadowRoot.querySelector(
@@ -666,10 +674,14 @@ suite('AboutPageTest', function() {
       }
     }
 
-    await checkConsumerAutoUpdateToggle(true, true);
-    await checkConsumerAutoUpdateToggle(true, false);
-    await checkConsumerAutoUpdateToggle(false, true);
-    await checkConsumerAutoUpdateToggle(false, false);
+    for (let i = 0; i < (1 << 3); i++) {
+      // showToggle should always be true when isTogglingAllowed is true, but
+      // test to catch unintended behaviors from happening.
+      await checkConsumerAutoUpdateToggle(
+          /*isEnabled=*/ (i & 1) > 0,
+          /*isTogglingAllowed=*/ (i & 2) > 0,
+          /*showToggle=*/ (i & 4) > 0);
+    }
   });
 
   test('GetHelp', function() {

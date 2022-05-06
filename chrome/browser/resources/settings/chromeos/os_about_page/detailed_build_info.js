@@ -155,6 +155,19 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
         },
         readOnly: true,
       },
+
+      /**
+       * Whether or not to show the consumer auto update toggle.
+       * @private
+       */
+      showConsumerAutoUpdateToggle_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showConsumerAutoUpdateToggle') &&
+              !loadTimeData.getBoolean('isManaged');
+        },
+        readOnly: true,
+      },
     };
   }
 
