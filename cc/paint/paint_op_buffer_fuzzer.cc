@@ -11,6 +11,7 @@
 #include "base/test/test_discardable_memory_allocator.h"
 #include "cc/paint/paint_cache.h"
 #include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/paint_op_writer.h"
 #include "cc/test/transfer_cache_test_helper.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/common/buffer.h"
@@ -128,6 +129,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   uint32_t bytes_for_fonts = data[0];
   if (bytes_for_fonts > size)
     bytes_for_fonts = size / 2;
+  // PaintOpBuffer only accepts 4 bytes aligned buffer.
+  bytes_for_fonts =
+      base::bits::AlignDown(bytes_for_fonts, cc::PaintOpWriter::Alignment());
 
   FontSupport font_support;
   scoped_refptr<gpu::ServiceFontManager> font_manager(

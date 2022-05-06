@@ -3428,6 +3428,12 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
     return;
   }
 
+  if (paint_buffer_memory != base::bits::AlignUp(paint_buffer_memory, 16u)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
+                       "Buffer is not aligned with 16 bytes.");
+    return;
+  }
+
   cc::PlaybackParams playback_params(nullptr, SkM44());
   TransferCacheDeserializeHelperImpl impl(raster_decoder_id_, transfer_cache());
   cc::PaintOp::DeserializeOptions options(
