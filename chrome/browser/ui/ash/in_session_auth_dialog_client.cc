@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "ash/public/cpp/in_session_auth_dialog_controller.h"
+#include "ash/public/cpp/webauthn_dialog_controller.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
@@ -41,14 +41,14 @@ InSessionAuthDialogClient* g_auth_dialog_client_instance = nullptr;
 }  // namespace
 
 InSessionAuthDialogClient::InSessionAuthDialogClient() {
-  ash::InSessionAuthDialogController::Get()->SetClient(this);
+  ash::WebAuthNDialogController::Get()->SetClient(this);
 
   DCHECK(!g_auth_dialog_client_instance);
   g_auth_dialog_client_instance = this;
 }
 
 InSessionAuthDialogClient::~InSessionAuthDialogClient() {
-  ash::InSessionAuthDialogController::Get()->SetClient(nullptr);
+  ash::WebAuthNDialogController::Get()->SetClient(nullptr);
   DCHECK_EQ(this, g_auth_dialog_client_instance);
   g_auth_dialog_client_instance = nullptr;
 }

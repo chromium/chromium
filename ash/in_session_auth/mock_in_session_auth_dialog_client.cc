@@ -4,17 +4,17 @@
 
 #include "ash/in_session_auth/mock_in_session_auth_dialog_client.h"
 
-#include "ash/in_session_auth/in_session_auth_dialog_controller_impl.h"
+#include "ash/in_session_auth/webauthn_dialog_controller_impl.h"
 #include "ash/shell.h"
 
 namespace ash {
 
 MockInSessionAuthDialogClient::MockInSessionAuthDialogClient() {
-  Shell::Get()->in_session_auth_dialog_controller()->SetClient(this);
+  Shell::Get()->webauthn_dialog_controller()->SetClient(this);
 }
 
 MockInSessionAuthDialogClient::~MockInSessionAuthDialogClient() {
-  Shell::Get()->in_session_auth_dialog_controller()->SetClient(nullptr);
+  Shell::Get()->webauthn_dialog_controller()->SetClient(nullptr);
 }
 
 }  // namespace ash

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_IN_SESSION_AUTH_DIALOG_CONTROLLER_H_
-#define ASH_PUBLIC_CPP_IN_SESSION_AUTH_DIALOG_CONTROLLER_H_
+#ifndef ASH_PUBLIC_CPP_WEBAUTHN_DIALOG_CONTROLLER_H_
+#define ASH_PUBLIC_CPP_WEBAUTHN_DIALOG_CONTROLLER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
@@ -15,8 +15,8 @@ class Window;
 
 namespace ash {
 
-// InSessionAuthDialogController manages the in-session auth dialog.
-class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
+// WebAuthNDialogController manages the webauthn auth dialog.
+class ASH_PUBLIC_EXPORT WebAuthNDialogController {
  public:
   // Callback for authentication checks. |success| is nullopt if an
   // authentication check did not run, otherwise it is true/false if auth
@@ -27,7 +27,7 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
   using FinishCallback = base::OnceCallback<void(bool success)>;
 
   // Return the singleton instance.
-  static InSessionAuthDialogController* Get();
+  static WebAuthNDialogController* Get();
 
   // Sets the client that will handle authentication.
   virtual void SetClient(InSessionAuthDialogClient* client) = 0;
@@ -63,10 +63,10 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
       FinishCallback on_availability_checked) const = 0;
 
  protected:
-  InSessionAuthDialogController();
-  virtual ~InSessionAuthDialogController();
+  WebAuthNDialogController();
+  virtual ~WebAuthNDialogController();
 };
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_IN_SESSION_AUTH_DIALOG_CONTROLLER_H_
+#endif  // ASH_PUBLIC_CPP_WEBAUTHN_DIALOG_CONTROLLER_H_

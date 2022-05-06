@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/in_session_auth/in_session_auth_dialog_controller_impl.h"
+#include "ash/in_session_auth/webauthn_dialog_controller_impl.h"
 
 #include "ash/in_session_auth/mock_in_session_auth_dialog_client.h"
 #include "ash/shell.h"
@@ -15,11 +15,11 @@ using ::testing::_;
 namespace ash {
 namespace {
 
-using InSessionAuthDialogControllerImplTest = AshTestBase;
+using WebAuthNDialogControllerImplTest = AshTestBase;
 
-TEST_F(InSessionAuthDialogControllerImplTest, PinAuthSuccess) {
-  InSessionAuthDialogController* controller =
-      Shell::Get()->in_session_auth_dialog_controller();
+TEST_F(WebAuthNDialogControllerImplTest, PinAuthSuccess) {
+  WebAuthNDialogController* controller =
+      Shell::Get()->webauthn_dialog_controller();
   auto client = std::make_unique<MockInSessionAuthDialogClient>();
 
   std::string pin = "123456";
@@ -45,9 +45,9 @@ TEST_F(InSessionAuthDialogControllerImplTest, PinAuthSuccess) {
   EXPECT_TRUE(*view_callback_result);
 }
 
-TEST_F(InSessionAuthDialogControllerImplTest, PinAuthFail) {
-  InSessionAuthDialogController* controller =
-      Shell::Get()->in_session_auth_dialog_controller();
+TEST_F(WebAuthNDialogControllerImplTest, PinAuthFail) {
+  WebAuthNDialogController* controller =
+      Shell::Get()->webauthn_dialog_controller();
   auto client = std::make_unique<MockInSessionAuthDialogClient>();
 
   std::string pin = "123456";
@@ -73,9 +73,9 @@ TEST_F(InSessionAuthDialogControllerImplTest, PinAuthFail) {
   EXPECT_FALSE(*view_callback_result);
 }
 
-TEST_F(InSessionAuthDialogControllerImplTest, PasswordAuthSuccess) {
-  InSessionAuthDialogController* controller =
-      Shell::Get()->in_session_auth_dialog_controller();
+TEST_F(WebAuthNDialogControllerImplTest, PasswordAuthSuccess) {
+  WebAuthNDialogController* controller =
+      Shell::Get()->webauthn_dialog_controller();
   auto client = std::make_unique<MockInSessionAuthDialogClient>();
 
   std::string password = "abcdef";
@@ -101,9 +101,9 @@ TEST_F(InSessionAuthDialogControllerImplTest, PasswordAuthSuccess) {
   EXPECT_TRUE(*view_callback_result);
 }
 
-TEST_F(InSessionAuthDialogControllerImplTest, PasswordAuthFail) {
-  InSessionAuthDialogController* controller =
-      Shell::Get()->in_session_auth_dialog_controller();
+TEST_F(WebAuthNDialogControllerImplTest, PasswordAuthFail) {
+  WebAuthNDialogController* controller =
+      Shell::Get()->webauthn_dialog_controller();
   auto client = std::make_unique<MockInSessionAuthDialogClient>();
 
   std::string password = "abcdef";

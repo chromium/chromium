@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "ash/public/cpp/in_session_auth_dialog_controller.h"
+#include "ash/public/cpp/webauthn_dialog_controller.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -93,8 +93,8 @@ void UserAuthenticationServiceProvider::ShowAuthDialog(
     return;
   }
 
-  auto* auth_dialog_controller = InSessionAuthDialogController::Get();
-  auth_dialog_controller->ShowAuthenticationDialog(
+  auto* webauthn_dialog_controller = WebAuthNDialogController::Get();
+  webauthn_dialog_controller->ShowAuthenticationDialog(
       source_window, origin_name,
       base::BindOnce(&UserAuthenticationServiceProvider::OnAuthFlowComplete,
                      weak_ptr_factory_.GetWeakPtr(), method_call,
@@ -117,7 +117,7 @@ void UserAuthenticationServiceProvider::OnAuthFlowComplete(
 void UserAuthenticationServiceProvider::Cancel(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  InSessionAuthDialogController::Get()->Cancel();
+  WebAuthNDialogController::Get()->Cancel();
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);
   std::move(response_sender).Run(std::move(response));
@@ -126,8 +126,8 @@ void UserAuthenticationServiceProvider::Cancel(
 void UserAuthenticationServiceProvider::IsAuthenticatorAvailable(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  auto* auth_dialog_controller = InSessionAuthDialogController::Get();
-  auth_dialog_controller->CheckAvailability(base::BindOnce(
+  auto* webauthn_dialog_controller = WebAuthNDialogController::Get();
+  webauthn_dialog_controller->CheckAvailability(base::BindOnce(
       &UserAuthenticationServiceProvider::OnAvailabilityChecked,
       weak_ptr_factory_.GetWeakPtr(), method_call, std::move(response_sender)));
 }

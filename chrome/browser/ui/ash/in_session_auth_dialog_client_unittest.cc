@@ -6,7 +6,7 @@
 
 #include "ash/components/login/auth/fake_extended_authenticator.h"
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
-#include "ash/public/cpp/in_session_auth_dialog_controller.h"
+#include "ash/public/cpp/webauthn_dialog_controller.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,8 +31,7 @@ const AccountId kAccountId = AccountId::FromUserEmail("testemail@example.com");
 
 // InSessionAuthDialogClient's constructor expects to find an instance of
 // ash::InSessionAuthDialogController, so provide a fake that does nothing.
-class FakeInSessionAuthDialogController
-    : public ash::InSessionAuthDialogController {
+class FakeInSessionAuthDialogController : public ash::WebAuthNDialogController {
  public:
   FakeInSessionAuthDialogController() = default;
   ~FakeInSessionAuthDialogController() override = default;

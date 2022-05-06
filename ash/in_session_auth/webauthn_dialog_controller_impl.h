@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_IN_SESSION_AUTH_IN_SESSION_AUTH_DIALOG_CONTROLLER_IMPL_H_
-#define ASH_IN_SESSION_AUTH_IN_SESSION_AUTH_DIALOG_CONTROLLER_IMPL_H_
+#ifndef ASH_IN_SESSION_AUTH_WEBAUTHN_DIALOG_CONTROLLER_IMPL_H_
+#define ASH_IN_SESSION_AUTH_WEBAUTHN_DIALOG_CONTROLLER_IMPL_H_
 
 #include <memory>
 
 #include "ash/in_session_auth/in_session_auth_dialog.h"
-#include "ash/public/cpp/in_session_auth_dialog_controller.h"
+#include "ash/public/cpp/webauthn_dialog_controller.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/window_tracker.h"
@@ -24,17 +24,16 @@ namespace ash {
 class InSessionAuthDialogClient;
 class WebAuthnRequestRegistrarImpl;
 
-// InSessionAuthDialogControllerImpl persists as long as UI is running.
-class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController {
+// WebAuthNDialogControllerImpl persists as long as UI is running.
+class WebAuthNDialogControllerImpl : public WebAuthNDialogController {
  public:
-  InSessionAuthDialogControllerImpl();
-  InSessionAuthDialogControllerImpl(const InSessionAuthDialogControllerImpl&) =
+  WebAuthNDialogControllerImpl();
+  WebAuthNDialogControllerImpl(const WebAuthNDialogControllerImpl&) = delete;
+  WebAuthNDialogControllerImpl& operator=(const WebAuthNDialogControllerImpl&) =
       delete;
-  InSessionAuthDialogControllerImpl& operator=(
-      const InSessionAuthDialogControllerImpl&) = delete;
-  ~InSessionAuthDialogControllerImpl() override;
+  ~WebAuthNDialogControllerImpl() override;
 
-  // InSessionAuthDialogController overrides
+  // WebAuthNDialogController overrides
   void SetClient(InSessionAuthDialogClient* client) override;
   void ShowAuthenticationDialog(aura::Window* source_window,
                                 const std::string& origin_name,
@@ -85,9 +84,9 @@ class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController {
 
   std::unique_ptr<WebAuthnRequestRegistrarImpl> webauthn_request_registrar_;
 
-  base::WeakPtrFactory<InSessionAuthDialogControllerImpl> weak_factory_{this};
+  base::WeakPtrFactory<WebAuthNDialogControllerImpl> weak_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // ASH_IN_SESSION_AUTH_IN_SESSION_AUTH_DIALOG_CONTROLLER_IMPL_H_
+#endif  // ASH_IN_SESSION_AUTH_WEBAUTHN_DIALOG_CONTROLLER_IMPL_H_

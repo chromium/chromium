@@ -69,7 +69,7 @@
 #include "ash/host/ash_window_tree_host_init_params.h"
 #include "ash/hud_display/hud_display.h"
 #include "ash/ime/ime_controller_impl.h"
-#include "ash/in_session_auth/in_session_auth_dialog_controller_impl.h"
+#include "ash/in_session_auth/webauthn_dialog_controller_impl.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui_factory.h"
 #include "ash/login/login_screen_controller.h"
@@ -564,8 +564,8 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
       focus_cycler_(std::make_unique<FocusCycler>()),
       ime_controller_(std::make_unique<ImeControllerImpl>()),
       immersive_context_(std::make_unique<ImmersiveContextAsh>()),
-      in_session_auth_dialog_controller_(
-          std::make_unique<InSessionAuthDialogControllerImpl>()),
+      webauthn_dialog_controller_(
+          std::make_unique<WebAuthNDialogControllerImpl>()),
       keyboard_brightness_control_delegate_(
           std::make_unique<KeyboardBrightnessController>()),
       locale_update_controller_(std::make_unique<LocaleUpdateControllerImpl>()),

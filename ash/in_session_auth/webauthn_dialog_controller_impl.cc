@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/in_session_auth/in_session_auth_dialog_controller_impl.h"
+#include "ash/in_session_auth/webauthn_dialog_controller_impl.h"
 
 #include "ash/in_session_auth/auth_dialog_contents_view.h"
 #include "ash/in_session_auth/webauthn_request_registrar_impl.h"
@@ -18,19 +18,18 @@
 
 namespace ash {
 
-InSessionAuthDialogControllerImpl::InSessionAuthDialogControllerImpl()
+WebAuthNDialogControllerImpl::WebAuthNDialogControllerImpl()
     : webauthn_request_registrar_(
           std::make_unique<WebAuthnRequestRegistrarImpl>()) {}
 
-InSessionAuthDialogControllerImpl::~InSessionAuthDialogControllerImpl() =
-    default;
+WebAuthNDialogControllerImpl::~WebAuthNDialogControllerImpl() = default;
 
-void InSessionAuthDialogControllerImpl::SetClient(
+void WebAuthNDialogControllerImpl::SetClient(
     InSessionAuthDialogClient* client) {
   client_ = client;
 }
 
-void InSessionAuthDialogControllerImpl::ShowAuthenticationDialog(
+void WebAuthNDialogControllerImpl::ShowAuthenticationDialog(
     aura::Window* source_window,
     const std::string& origin_name,
     FinishCallback finish_callback) {
@@ -50,7 +49,7 @@ void InSessionAuthDialogControllerImpl::ShowAuthenticationDialog(
     client_->StartFingerprintAuthSession(
         account_id,
         base::BindOnce(
-            &InSessionAuthDialogControllerImpl::OnStartFingerprintAuthSession,
+            &WebAuthNDialogControllerImpl::OnStartFingerprintAuthSession,
             weak_factory_.GetWeakPtr(), account_id, auth_methods, source_window,
             origin_name));
     // OnStartFingerprintAuthSession checks PIN availability.
@@ -59,12 +58,12 @@ void InSessionAuthDialogControllerImpl::ShowAuthenticationDialog(
 
   client_->CheckPinAuthAvailability(
       account_id,
-      base::BindOnce(&InSessionAuthDialogControllerImpl::OnPinCanAuthenticate,
+      base::BindOnce(&WebAuthNDialogControllerImpl::OnPinCanAuthenticate,
                      weak_factory_.GetWeakPtr(), auth_methods, source_window,
                      origin_name));
 }
 
-void InSessionAuthDialogControllerImpl::OnStartFingerprintAuthSession(
+void WebAuthNDialogControllerImpl::OnStartFingerprintAuthSession(
     AccountId account_id,
     uint32_t auth_methods,
     aura::Window* source_window,
@@ -75,12 +74,12 @@ void InSessionAuthDialogControllerImpl::OnStartFingerprintAuthSession(
 
   client_->CheckPinAuthAvailability(
       account_id,
-      base::BindOnce(&InSessionAuthDialogControllerImpl::OnPinCanAuthenticate,
+      base::BindOnce(&WebAuthNDialogControllerImpl::OnPinCanAuthenticate,
                      weak_factory_.GetWeakPtr(), auth_methods, source_window,
                      origin_name));
 }
 
-void InSessionAuthDialogControllerImpl::OnPinCanAuthenticate(
+void WebAuthNDialogControllerImpl::OnPinCanAuthenticate(
     uint32_t auth_methods,
     aura::Window* source_window,
     const std::string& origin_name,
@@ -121,7 +120,7 @@ void InSessionAuthDialogControllerImpl::OnPinCanAuthenticate(
       auth_methods, source_window, origin_name, auth_metadata, avatar);
 }
 
-void InSessionAuthDialogControllerImpl::DestroyAuthenticationDialog() {
+void WebAuthNDialogControllerImpl::DestroyAuthenticationDialog() {
   DCHECK(client_);
   if (!dialog_)
     return;
@@ -133,7 +132,7 @@ void InSessionAuthDialogControllerImpl::DestroyAuthenticationDialog() {
   source_window_tracker_.RemoveAll();
 }
 
-void InSessionAuthDialogControllerImpl::AuthenticateUserWithPasswordOrPin(
+void WebAuthNDialogControllerImpl::AuthenticateUserWithPasswordOrPin(
     const std::string& password,
     bool authenticated_by_pin,
     OnAuthenticateCallback callback) {
@@ -148,20 +147,20 @@ void InSessionAuthDialogControllerImpl::AuthenticateUserWithPasswordOrPin(
 
   client_->AuthenticateUserWithPasswordOrPin(
       password, authenticated_by_pin,
-      base::BindOnce(&InSessionAuthDialogControllerImpl::OnAuthenticateComplete,
+      base::BindOnce(&WebAuthNDialogControllerImpl::OnAuthenticateComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void InSessionAuthDialogControllerImpl::AuthenticateUserWithFingerprint(
+void WebAuthNDialogControllerImpl::AuthenticateUserWithFingerprint(
     base::OnceCallback<void(bool, FingerprintState)> views_callback) {
   DCHECK(client_);
 
-  client_->AuthenticateUserWithFingerprint(base::BindOnce(
-      &InSessionAuthDialogControllerImpl::OnFingerprintAuthComplete,
-      weak_factory_.GetWeakPtr(), std::move(views_callback)));
+  client_->AuthenticateUserWithFingerprint(
+      base::BindOnce(&WebAuthNDialogControllerImpl::OnFingerprintAuthComplete,
+                     weak_factory_.GetWeakPtr(), std::move(views_callback)));
 }
 
-void InSessionAuthDialogControllerImpl::OnAuthenticateComplete(
+void WebAuthNDialogControllerImpl::OnAuthenticateComplete(
     OnAuthenticateCallback callback,
     bool success) {
   std::move(callback).Run(success);
@@ -169,7 +168,7 @@ void InSessionAuthDialogControllerImpl::OnAuthenticateComplete(
     OnAuthSuccess();
 }
 
-void InSessionAuthDialogControllerImpl::OnFingerprintAuthComplete(
+void WebAuthNDialogControllerImpl::OnFingerprintAuthComplete(
     base::OnceCallback<void(bool, FingerprintState)> views_callback,
     bool success,
     FingerprintState fingerprint_state) {
@@ -181,24 +180,24 @@ void InSessionAuthDialogControllerImpl::OnFingerprintAuthComplete(
     OnAuthSuccess();
 }
 
-void InSessionAuthDialogControllerImpl::OnAuthSuccess() {
+void WebAuthNDialogControllerImpl::OnAuthSuccess() {
   DestroyAuthenticationDialog();
   if (finish_callback_)
     std::move(finish_callback_).Run(true);
 }
 
-void InSessionAuthDialogControllerImpl::Cancel() {
+void WebAuthNDialogControllerImpl::Cancel() {
   DestroyAuthenticationDialog();
   if (finish_callback_)
     std::move(finish_callback_).Run(false);
 }
 
-void InSessionAuthDialogControllerImpl::OpenInSessionAuthHelpPage() {
+void WebAuthNDialogControllerImpl::OpenInSessionAuthHelpPage() {
   DCHECK(client_);
   client_->OpenInSessionAuthHelpPage();
 }
 
-void InSessionAuthDialogControllerImpl::CheckAvailability(
+void WebAuthNDialogControllerImpl::CheckAvailability(
     FinishCallback on_availability_checked) const {
   // Assumes the requests are for the active user (no teleported window).
   AccountId account_id =
