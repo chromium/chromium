@@ -58,6 +58,7 @@ source_set("cells") {
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/identifier",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/material_components",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common:string_util",
@@ -86,6 +87,7 @@ source_set("constants") {
 
   deps = [
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/third_party/material_components_ios",
     "//ui/base:base",
   ]

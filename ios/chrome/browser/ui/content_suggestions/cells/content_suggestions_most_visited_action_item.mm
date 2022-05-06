@@ -7,6 +7,7 @@
 #include "base/check.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -69,7 +70,10 @@
   // The accessibilityUserInputLabel should just be the title, with nothing
   // extra from the accessibilityLabel.
   cell.accessibilityUserInputLabels = @[ self.title ];
-  cell.iconView.image = ImageForCollectionShortcutType(_collectionShortcutType);
+  cell.iconView.image =
+      UseSymbols() ? SymbolForCollectionShortcutType(_collectionShortcutType)
+                   : ImageForCollectionShortcutType(_collectionShortcutType);
+  cell.iconView.contentMode = UIViewContentModeCenter;
   if (self.count != 0) {
     cell.countLabel.text = [@(self.count) stringValue];
     cell.countContainer.hidden = NO;

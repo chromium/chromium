@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialTypography.h>
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -58,9 +59,13 @@ const CGFloat kIconSize = 56;
     // extra from the accessibilityLabel.
     self.accessibilityUserInputLabels = @[ config.title ];
     _iconView.image =
-        ImageForCollectionShortcutType(config.collectionShortcutType);
-      _countContainer.hidden = !config.count;
-      _countLabel.text = [@(config.count) stringValue];
+        UseSymbols()
+            ? SymbolForCollectionShortcutType(config.collectionShortcutType)
+            : ImageForCollectionShortcutType(config.collectionShortcutType);
+    _iconView.contentMode = UIViewContentModeCenter;
+
+    _countContainer.hidden = !config.count;
+    _countLabel.text = [@(config.count) stringValue];
     _config = config;
   }
   return self;
