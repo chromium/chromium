@@ -20,6 +20,7 @@ struct skcms_Matrix3x3;
 struct skcms_TransferFunction;
 class SkColorSpace;
 class SkM44;
+struct SkColorSpacePrimaries;
 enum SkYUVColorSpace : int;
 
 // These forward declarations are used to give IPC code friend access to private
@@ -344,6 +345,9 @@ class COLOR_SPACE_EXPORT ColorSpace {
     return ToSkYUVColorSpace(kDefaultBitDepth, out);
   }
 
+  // Return the RGB and whitepoint coordinates of the ColorSpace's
+  // chromaticity. Assumes D65 whitepoint in the case of a custom PrimaryID.
+  SkColorSpacePrimaries GetColorSpacePrimaries() const;
   void GetPrimaryMatrix(skcms_Matrix3x3* to_XYZD50) const;
   SkM44 GetPrimaryMatrix() const;
 
@@ -400,6 +404,9 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // The default bit depth assumed by ToSkYUVColorSpace().
   static constexpr int kDefaultBitDepth = 8;
 
+  static SkColorSpacePrimaries GetColorSpacePrimaries(
+      PrimaryID,
+      const skcms_Matrix3x3* custom_primary_matrix);
   static void GetPrimaryMatrix(PrimaryID, skcms_Matrix3x3* to_XYZD50);
   static bool GetTransferFunction(TransferID, skcms_TransferFunction* fn);
   static size_t TransferParamCount(TransferID);

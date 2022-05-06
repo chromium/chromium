@@ -31,6 +31,7 @@ namespace wayland {
 namespace {
 
 #define PARAM_TO_FLOAT(x) (x / 10000.f)
+#define FLOAT_TO_PARAM(x) (x * 10000)
 
 constexpr auto kDefaultColorSpace = gfx::ColorSpace::CreateSRGB();
 
@@ -39,15 +40,33 @@ constexpr auto kDefaultColorSpace = gfx::ColorSpace::CreateSRGB();
 class ColorManagerColorSpace {
  public:
   explicit ColorManagerColorSpace(gfx::ColorSpace color_space)
-      : color_space(color_space) {}
+      : color_space(color_space),
+        eotf(ui::wayland::ToColorManagerEOTF(color_space.GetTransferID())),
+        primaries(color_space.GetColorSpacePrimaries()) {}
+
+  ColorManagerColorSpace(gfx::ColorSpace color_space,
+                         zcr_color_manager_v1_eotf_names eotf,
+                         SkColorSpacePrimaries primaries)
+      : color_space(color_space), eotf(eotf), primaries(primaries) {}
+
   virtual ~ColorManagerColorSpace() = default;
 
   const gfx::ColorSpace color_space;
+  const zcr_color_manager_v1_eotf_names eotf;
+  const SkColorSpacePrimaries primaries;
 
   virtual void SendColorSpaceInfo(wl_resource* color_space_resource) {
-    wl_resource_post_error(color_space_resource,
-                           ZCR_COLOR_SPACE_V1_ERROR_NO_INFORMATION,
-                           "No information available for color space");
+    zcr_color_space_v1_send_params(
+        color_space_resource, eotf,
+        static_cast<int>(FLOAT_TO_PARAM(primaries.fRX)),
+        static_cast<int>(FLOAT_TO_PARAM(primaries.fRY)),
+        static_cast<int>(FLOAT_TO_PARAM(primaries.fGX)),
+        static_cast<int>(FLOAT_TO_PARAM(primaries.fGY)),
+        static_cast<int>(FLOAT_TO_PARAM(primaries.fBX)),
+        static_cast<int>(FLOAT_TO_PARAM(primaries.fBY)),
+        static_cast<int>(FLOAT_TO_PARAM(primaries.fWX)),
+        static_cast<int>(FLOAT_TO_PARAM(primaries.fWY)));
+    zcr_color_space_v1_send_done(color_space_resource);
   }
 };
 
@@ -58,19 +77,42 @@ class NameBasedColorSpace final : public ColorManagerColorSpace {
       zcr_color_manager_v1_chromaticity_names chromaticity,
       zcr_color_manager_v1_eotf_names eotf,
       zcr_color_manager_v1_whitepoint_names whitepoint)
-      : ColorManagerColorSpace(color_space),
-        chromaticity(chromaticity),
-        eotf(eotf),
+      : ColorManagerColorSpace(color_space,
+                               eotf,
+                               color_space.GetColorSpacePrimaries()),
+        chromaticity(ui::wayland::ToColorManagerChromaticity(
+            color_space.GetPrimaryID())),
         whitepoint(whitepoint) {}
 
   const zcr_color_manager_v1_chromaticity_names chromaticity;
-  const zcr_color_manager_v1_eotf_names eotf;
   const zcr_color_manager_v1_whitepoint_names whitepoint;
 
   void SendColorSpaceInfo(wl_resource* color_space_resource) override {
     zcr_color_space_v1_send_names(color_space_resource, eotf, chromaticity,
                                   whitepoint);
+    ColorManagerColorSpace::SendColorSpaceInfo(color_space_resource);
   }
+};
+
+class ParamsBasedColorSpace final : public ColorManagerColorSpace {
+ public:
+  explicit ParamsBasedColorSpace(gfx::ColorSpace color_space,
+                                 zcr_color_manager_v1_eotf_names eotf,
+                                 uint32_t primary_r_x,
+                                 uint32_t primary_r_y,
+                                 uint32_t primary_g_x,
+                                 uint32_t primary_g_y,
+                                 uint32_t primary_b_x,
+                                 uint32_t primary_b_y,
+                                 uint32_t whitepoint_x,
+                                 uint32_t whitepoint_y)
+      : ColorManagerColorSpace(
+            color_space,
+            eotf,
+            {PARAM_TO_FLOAT(primary_r_x), PARAM_TO_FLOAT(primary_r_y),
+             PARAM_TO_FLOAT(primary_g_x), PARAM_TO_FLOAT(primary_g_y),
+             PARAM_TO_FLOAT(primary_b_x), PARAM_TO_FLOAT(primary_b_y),
+             PARAM_TO_FLOAT(whitepoint_x), PARAM_TO_FLOAT(whitepoint_y)}) {}
 };
 
 // Wrap a surface pointer and handle relevant events.

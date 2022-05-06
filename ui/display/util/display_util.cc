@@ -295,10 +295,10 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
     gfx::ColorSpace hdr_color_space;
     if (primary_id == gfx::ColorSpace::PrimaryID::CUSTOM) {
       hdr_color_space = gfx::ColorSpace::CreatePiecewiseHDR(
-          primary_id, kSDRJoint, kHDRLevel, &primary_matrix);
+          primary_id, display::kSDRJoint, display::kHDRLevel, &primary_matrix);
     } else {
-      hdr_color_space =
-          gfx::ColorSpace::CreatePiecewiseHDR(primary_id, kSDRJoint, kHDRLevel);
+      hdr_color_space = gfx::ColorSpace::CreatePiecewiseHDR(
+          primary_id, display::kSDRJoint, display::kHDRLevel);
     }
 
     display_color_spaces.SetOutputColorSpaceAndBufferFormat(

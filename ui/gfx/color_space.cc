@@ -814,14 +814,33 @@ bool ColorSpace::Contains(const ColorSpace& other) const {
 }
 
 // static
-void ColorSpace::GetPrimaryMatrix(PrimaryID primary_id,
-                                  skcms_Matrix3x3* to_XYZD50) {
+SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries(
+    PrimaryID primary_id,
+    const skcms_Matrix3x3* custom_primary_matrix = nullptr) {
   SkColorSpacePrimaries primaries = {0};
+
+  if (custom_primary_matrix && primary_id == PrimaryID::CUSTOM) {
+    auto* matrix = custom_primary_matrix->vals;
+    const float sum_R = matrix[0][0] + matrix[1][0] + matrix[2][0];
+    const float sum_G = matrix[0][1] + matrix[1][1] + matrix[2][1];
+    const float sum_B = matrix[0][2] + matrix[1][2] + matrix[2][2];
+    primaries.fRX = matrix[0][0] / sum_R;
+    primaries.fRY = matrix[1][0] / sum_R;
+    primaries.fGX = matrix[0][1] / sum_G;
+    primaries.fGY = matrix[1][1] / sum_G;
+    primaries.fBX = matrix[0][2] / sum_B;
+    primaries.fBY = matrix[1][2] / sum_B;
+    // TODO(b/229646816): Currently only returns D65 whitepoint. If possible,
+    //  try to return an original whitepoint in the future.
+    primaries.fWX = 0.3127f;
+    primaries.fWY = 0.3290f;
+    return primaries;
+  }
+
   switch (primary_id) {
     case ColorSpace::PrimaryID::CUSTOM:
     case ColorSpace::PrimaryID::INVALID:
-      *to_XYZD50 = SkNamedGamut::kXYZ;  // Identity
-      return;
+      break;
 
     case ColorSpace::PrimaryID::BT709:
       // BT709 is our default case. Put it after the switch just
@@ -970,6 +989,24 @@ void ColorSpace::GetPrimaryMatrix(PrimaryID primary_id,
       primaries.fWX = 0.3127f;
       primaries.fWY = 0.3290f;
       break;
+  }
+  return primaries;
+}
+
+SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries() const {
+  skcms_Matrix3x3 matrix;
+  memcpy(&matrix, custom_primary_matrix_, 9 * sizeof(float));
+  return GetColorSpacePrimaries(primaries_, &matrix);
+}
+
+// static
+void ColorSpace::GetPrimaryMatrix(PrimaryID primary_id,
+                                  skcms_Matrix3x3* to_XYZD50) {
+  SkColorSpacePrimaries primaries = GetColorSpacePrimaries(primary_id);
+
+  if (primary_id == PrimaryID::CUSTOM || primary_id == PrimaryID::INVALID) {
+    *to_XYZD50 = SkNamedGamut::kXYZ;  // Identity
+    return;
   }
   primaries.toXYZD50(to_XYZD50);
 }

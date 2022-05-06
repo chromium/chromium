@@ -36,7 +36,6 @@ constexpr int32_t kInvalidYearOfManufacture = -1;
 // confusion, set this as the minimum maximum relative luminance for HDR
 // capable displays.
 constexpr float kMinHDRCapableMaxLuminanceRelative = 1.0625;
-
 // Set SDR content to 75% of display brightness so SDR colors look good
 // and there is no perceived brightness change during SDR-HDR.
 constexpr float kSDRJoint = 0.75;
