@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
+#include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/system/fake_statistics_provider.h"
@@ -279,6 +280,11 @@ class DeviceActivityClientTest : public testing::Test {
     // Initialize pointer to our fake |PsmTestData| object.
     psm_test_data_ = GetPsmTestData();
 
+    // Default network to being synchronized and available.
+    SystemClockClient::InitializeFake();
+    GetSystemClockTestInterface()->SetServiceIsAvailable(true);
+    GetSystemClockTestInterface()->SetNetworkSynchronized(true);
+
     network_state_test_helper_ = std::make_unique<NetworkStateTestHelper>(
         /*use_default_devices_and_services=*/false);
     CreateWifiNetworkConfig();
@@ -312,7 +318,17 @@ class DeviceActivityClientTest : public testing::Test {
         kFakeFresnelApiKey, std::move(use_cases));
   }
 
-  void TearDown() override {}
+  void TearDown() override {
+    device_activity_client_.reset();
+
+    // The system clock must be shutdown after the |device_activity_client_| is
+    // destroyed.
+    SystemClockClient::Shutdown();
+  }
+
+  SystemClockClient::TestInterface* GetSystemClockTestInterface() {
+    return SystemClockClient::Get()->GetTestInterface();
+  }
 
   void SimulateLocalStateOnPowerwash() {
     // Simulate powerwashing device by removing the local state prefs.
@@ -354,6 +370,10 @@ class DeviceActivityClientTest : public testing::Test {
             device_activity_client_->GetReportTimer());
     if (mock_timer->IsRunning())
       mock_timer->Fire();
+
+    // Ensure all pending tasks after the timer fires are executed
+    // synchronously.
+    task_environment_.RunUntilIdle();
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -371,6 +391,161 @@ class DeviceActivityClientTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   chromeos::system::FakeStatisticsProvider statistics_provider_;
 };
+
+TEST_F(DeviceActivityClientTest,
+       StayIdleIfSystemClockServiceUnavailableOnNetworkConnection) {
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+
+  GetSystemClockTestInterface()->SetServiceIsAvailable(false);
+  GetSystemClockTestInterface()->NotifyObserversSystemClockUpdated();
+
+  // Network has come online.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActivity.MethodCalled",
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientOnNetworkOnline,
+      1);
+
+  // |OnSystemClockSyncResult| is not called because the service for syncing the
+  // clock is unavailble.
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActivity.MethodCalled",
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientOnSystemClockSyncResult,
+      0);
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActivity.MethodCalled",
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientReportUseCases,
+      0);
+
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+}
+
+TEST_F(DeviceActivityClientTest,
+       StayIdleIfSystemClockIsNotNetworkSynchronized) {
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+
+  GetSystemClockTestInterface()->SetNetworkSynchronized(false);
+  GetSystemClockTestInterface()->NotifyObserversSystemClockUpdated();
+
+  // Network has come online.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActivity.MethodCalled",
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientOnNetworkOnline,
+      1);
+
+  // |OnSystemClockSyncResult| callback is not executed if the network is not
+  // synchronized.
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActivity.MethodCalled",
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientOnSystemClockSyncResult,
+      0);
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActivity.MethodCalled",
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientReportUseCases,
+      0);
+
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+}
+
+TEST_F(DeviceActivityClientTest,
+       CheckMembershipOnTimerRetryIfSystemClockIsNotInitiallySynced) {
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+
+  GetSystemClockTestInterface()->SetNetworkSynchronized(false);
+  GetSystemClockTestInterface()->NotifyObserversSystemClockUpdated();
+
+  // Network has come online.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActivity.MethodCalled",
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientOnNetworkOnline,
+      1);
+
+  // |OnSystemClockSyncResult| callback is not executed if the network is not
+  // synchronized.
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActivity.MethodCalled",
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientOnSystemClockSyncResult,
+      0);
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActivity.MethodCalled",
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientReportUseCases,
+      0);
+
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+
+  // Timer executes client and blocks to wait for the system clock
+  // synchronization result.
+  FireTimer();
+
+  // Synchronously complete pending tasks before validating histogram counts
+  // below.
+  GetSystemClockTestInterface()->SetNetworkSynchronized(true);
+  GetSystemClockTestInterface()->NotifyObserversSystemClockUpdated();
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActivity.MethodCalled",
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientOnSystemClockSyncResult,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActivity.MethodCalled",
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientReportUseCases,
+      1);
+
+  // Begins check membership flow.
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kCheckingMembershipOprf);
+}
+
+TEST_F(DeviceActivityClientTest,
+       CheckMembershipIfSystemClockServiceAvailableOnNetworkConnection) {
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+
+  // Network has come online.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActivity.MethodCalled",
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientOnNetworkOnline,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActivity.MethodCalled",
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientOnSystemClockSyncResult,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActivity.MethodCalled",
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientReportUseCases,
+      1);
+
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kCheckingMembershipOprf);
+}
 
 TEST_F(DeviceActivityClientTest, DefaultStatesAreInitializedProperly) {
   EXPECT_EQ(device_activity_client_->GetState(),

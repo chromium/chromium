@@ -27,6 +27,9 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace ash {
+
+class SystemClockSyncObservation;
+
 namespace device_activity {
 
 // Forward declaration from device_active_use_case.h
@@ -111,7 +114,9 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
     kDeviceActivityClientTransitionToCheckIn = 19,
     kDeviceActivityClientOnCheckInDone = 20,
     kDeviceActivityClientTransitionToIdle = 21,
-    kMaxValue = kDeviceActivityClientTransitionToIdle,
+    kDeviceActivityClientOnSystemClockSyncResult = 22,
+    kDeviceActivityClientReportingTriggeredByTimer = 23,
+    kMaxValue = kDeviceActivityClientReportingTriggeredByTimer,
   };
 
   // Records UMA histogram for number of times various methods are called in
@@ -144,8 +149,17 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   std::vector<DeviceActiveUseCase*> GetUseCases() const;
 
  private:
+  // |report_timer_| triggers method to retry reporting device actives if
+  // necessary.
+  void ReportingTriggeredByTimer();
+
   // Handles device network connecting successfully.
   void OnNetworkOnline();
+
+  // Called when the system clock has been synchronized or a timeout has been
+  // reached while waiting for the system clock sync.
+  // Report use cases if the system clock sync was successful.
+  void OnSystemClockSyncResult(bool system_clock_synchronized);
 
   // Handle device network disconnecting successfully.
   void OnNetworkOffline();
@@ -263,6 +277,9 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   // |ReportUseCases| initializes this field using the |use_cases_|.
   // |TransitionToIdle| pops from this field to report each pending use case.
   std::queue<DeviceActiveUseCase*> pending_use_cases_;
+
+  // Used to wait until the system clock to be synchronized.
+  std::unique_ptr<SystemClockSyncObservation> system_clock_sync_observation_;
 
   // Automatically cancels callbacks when the referent of weakptr gets
   // destroyed.

@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/system_clock/system_clock_sync_observation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -29,6 +30,12 @@ constexpr base::TimeDelta kTimeToRepeat = base::Hours(1);
 
 // General upper bound of expected Fresnel response size in bytes.
 constexpr size_t kMaxFresnelResponseSizeBytes = 5 << 20;  // 5MB;
+
+// Maximum time to wait for time sync before not reporting device as active
+// in current attempt.
+// This corresponds to at least seven TCP retransmissions attempts to
+// the remote server used to update the system clock.
+constexpr base::TimeDelta kSystemClockSyncWaitTimeout = base::Seconds(45);
 
 // Timeout for each Fresnel request.
 constexpr base::TimeDelta kHealthCheckRequestTimeout = base::Seconds(10);
@@ -223,7 +230,7 @@ DeviceActivityClient::DeviceActivityClient(
   DCHECK(!use_cases_.empty());
 
   report_timer_->Start(FROM_HERE, kTimeToRepeat, this,
-                       &DeviceActivityClient::ReportUseCases);
+                       &DeviceActivityClient::ReportingTriggeredByTimer);
 
   network_state_handler_->AddObserver(this, FROM_HERE);
   DefaultNetworkChanged(network_state_handler_->DefaultNetwork());
@@ -268,14 +275,51 @@ std::vector<DeviceActiveUseCase*> DeviceActivityClient::GetUseCases() const {
   return use_cases_ptr;
 }
 
+void DeviceActivityClient::ReportingTriggeredByTimer() {
+  RecordDeviceActivityMethodCalled(
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientReportingTriggeredByTimer);
+
+  // Terminate if the state of the client while reporting device actives is not
+  // what is expected. This may occur if the client is in the middle of
+  // reporting actives or is disconnected from the network.
+  if (!network_connected_ || state_ != State::kIdle ||
+      !pending_use_cases_.empty()) {
+    TransitionToIdle(nullptr);
+    return;
+  }
+
+  OnNetworkOnline();
+}
+
 void DeviceActivityClient::OnNetworkOnline() {
   RecordDeviceActivityMethodCalled(DeviceActivityClient::DeviceActivityMethod::
                                        kDeviceActivityClientOnNetworkOnline);
 
-  ReportUseCases();
+  // Asynchronously wait for the system clock to synchronize on network
+  // connection.
+  system_clock_sync_observation_ =
+      SystemClockSyncObservation::WaitForSystemClockSync(
+          SystemClockClient::Get(), kSystemClockSyncWaitTimeout,
+          base::BindOnce(&DeviceActivityClient::OnSystemClockSyncResult,
+                         weak_factory_.GetWeakPtr()));
+}
+
+void DeviceActivityClient::OnSystemClockSyncResult(
+    bool system_clock_synchronized) {
+  RecordDeviceActivityMethodCalled(
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientOnSystemClockSyncResult);
+
+  if (system_clock_synchronized)
+    ReportUseCases();
+  else
+    TransitionToIdle(nullptr);
 }
 
 void DeviceActivityClient::OnNetworkOffline() {
+  RecordDeviceActivityMethodCalled(DeviceActivityClient::DeviceActivityMethod::
+                                       kDeviceActivityClientOnNetworkOffline);
   CancelUseCases();
 }
 
