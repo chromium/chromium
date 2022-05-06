@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <type_traits>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -44,9 +45,9 @@ class PendingAssociatedRemote {
   template <typename T,
             std::enable_if_t<std::is_same<
                 PendingAssociatedRemote<Interface>,
-                std::result_of_t<decltype (&PendingAssociatedRemoteConverter<
-                                           T>::template To<Interface>)(T&&)>>::
-                                 value>* = nullptr>
+                std::invoke_result_t<decltype(&PendingAssociatedRemoteConverter<
+                                              T>::template To<Interface>),
+                                     T&&>>::value>* = nullptr>
   PendingAssociatedRemote(T&& other)
       : PendingAssociatedRemote(
             PendingAssociatedRemoteConverter<T>::template To<Interface>(

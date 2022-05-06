@@ -79,8 +79,8 @@ class RemoteSetImpl {
 
     reference operator*() const { return it_->second; }
     pointer operator->() const { return &it_->second; }
-    bool operator==(const self_type& rhs) { return it_ == rhs.it_; }
-    bool operator!=(const self_type& rhs) { return it_ != rhs.it_; }
+    bool operator==(const self_type& rhs) const { return it_ == rhs.it_; }
+    bool operator!=(const self_type& rhs) const { return it_ != rhs.it_; }
 
    private:
     typename Storage::const_iterator it_;

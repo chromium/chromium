@@ -68,12 +68,12 @@ class PendingRemote {
 #if !BUILDFLAG(IS_NACL)
   // Move conversion operator for custom remote types. Only participates in
   // overload resolution if a typesafe conversion is supported.
-  template <
-      typename T,
-      std::enable_if_t<std::is_same<
-          PendingRemote<Interface>,
-          std::result_of_t<decltype (&PendingRemoteConverter<T>::template To<
-                                     Interface>)(T&&)>>::value>* = nullptr>
+  template <typename T,
+            std::enable_if_t<std::is_same<
+                PendingRemote<Interface>,
+                std::invoke_result_t<decltype(&PendingRemoteConverter<
+                                              T>::template To<Interface>),
+                                     T&&>>::value>* = nullptr>
   PendingRemote(T&& other)
       : PendingRemote(PendingRemoteConverter<T>::template To<Interface>(
             std::move(other))) {}

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <type_traits>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -40,12 +41,13 @@ class PendingAssociatedReceiver {
 #if !BUILDFLAG(IS_NACL)
   // Move conversion operator for custom receiver types. Only participates in
   // overload resolution if a typesafe conversion is supported.
-  template <typename T,
-            std::enable_if_t<std::is_same<
-                PendingAssociatedReceiver<Interface>,
-                std::result_of_t<decltype (&PendingAssociatedReceiverConverter<
-                                           T>::template To<Interface>)(T&&)>>::
-                                 value>* = nullptr>
+  template <
+      typename T,
+      std::enable_if_t<std::is_same<
+          PendingAssociatedReceiver<Interface>,
+          std::invoke_result_t<decltype(&PendingAssociatedReceiverConverter<
+                                        T>::template To<Interface>),
+                               T&&>>::value>* = nullptr>
   PendingAssociatedReceiver(T&& other)
       : PendingAssociatedReceiver(
             PendingAssociatedReceiverConverter<T>::template To<Interface>(

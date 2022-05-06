@@ -66,12 +66,12 @@ class PendingReceiver {
 #if !BUILDFLAG(IS_NACL)
   // Move conversion operator for custom receiver types. Only participates in
   // overload resolution if a typesafe conversion is supported.
-  template <
-      typename T,
-      std::enable_if_t<std::is_same<
-          PendingReceiver<Interface>,
-          std::result_of_t<decltype (&PendingReceiverConverter<T>::template To<
-                                     Interface>)(T&&)>>::value>* = nullptr>
+  template <typename T,
+            std::enable_if_t<std::is_same<
+                PendingReceiver<Interface>,
+                std::invoke_result_t<decltype(&PendingReceiverConverter<
+                                              T>::template To<Interface>),
+                                     T&&>>::value>* = nullptr>
   PendingReceiver(T&& other)
       : PendingReceiver(PendingReceiverConverter<T>::template To<Interface>(
             std::forward<T>(other))) {}
