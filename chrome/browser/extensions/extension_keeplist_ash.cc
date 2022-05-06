@@ -36,7 +36,6 @@ bool ExtensionRunsInAsh(const std::string& extension_id) {
         extension_misc::kQuickOfficeInternalExtensionId,
         extension_misc::kQuickOfficeExtensionId,
         extension_misc::kGuestModeTestExtensionId,
-        extension_misc::kCryptotokenExtensionId,
         extension_misc::kKeyboardExtensionId,
         extension_misc::kHelpAppExtensionId, extension_misc::kGCSEExtensionId,
         extension_misc::kGnubbyV3ExtensionId,
