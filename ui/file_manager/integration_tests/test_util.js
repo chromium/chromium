@@ -437,11 +437,6 @@ export class TestEntryInfo {
     Object.freeze(this);
   }
 
-  /**
-   * Obtains the expected row contents for each file.
-   * @param {Array<TestEntryInfo>} entries
-   * @return {Array<!Array<string>>}
-   */
   static getExpectedRows(entries) {
     return entries.map(function(entry) {
       return entry.getExpectedRow();
@@ -450,26 +445,9 @@ export class TestEntryInfo {
 
   /**
    * Obtains a expected row contents of the file in the file list.
-   * @return {!Array<string>}
    */
   getExpectedRow() {
     return [this.nameText, this.sizeText, this.typeText, this.lastModifiedTime];
-  }
-
-  /**
-   * Clone the existing TestEntryInfo object to a new TestEntryInfo object but
-   * with modified lastModifiedTime field. This is especially useful for
-   * constructing TestEntryInfo for Recents view.
-   *
-   * @param {string} newDate the new modified date time
-   * @return {TestEntryInfo}
-   */
-  cloneWithModifiedDate(newDate) {
-    const updatedOptions =
-        /** @type {TestEntryInfoOptions} */ (Object.assign({}, this, {
-          lastModifiedTime: newDate,
-        }));
-    return new TestEntryInfo(updatedOptions);
   }
 }
 
@@ -479,7 +457,7 @@ export class TestEntryInfo {
  * 'expectedNameText', 'expectedSizeText' and 'expectedTypeText' to reflect that
  * they are the expected values for those columns in the file manager.
  *
- * @type {!Object<string, TestEntryInfo>}
+ * @type {Object<TestEntryInfo>}
  * @const
  */
 export const ENTRIES = {
@@ -672,28 +650,6 @@ export const ENTRIES = {
     nameText: 'Beautiful Song.ogg',
     sizeText: '14 KB',
     typeText: 'OGG audio'
-  }),
-
-  movFile: new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'video.mov',
-    targetPath: 'mac.mov',
-    lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
-    nameText: 'mac.mov',
-    sizeText: '875 bytes',
-    typeText: 'QuickTime video'
-  }),
-
-  docxFile: new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'text.docx',
-    targetPath: 'word.docx',
-    mimeType: 'application/vnd.openxmlformats-officedocument' +
-        '.wordprocessingml.document',
-    lastModifiedTime: 'Jul 4, 2038, 10:35 AM',
-    nameText: 'word.docx',
-    sizeText: '9 KB',
-    typeText: 'Word document'
   }),
 
   photos: new TestEntryInfo({
@@ -1430,7 +1386,6 @@ export const ENTRIES = {
     },
   }),
 
-  // Android test files.
   documentsText: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'text.txt',
@@ -1440,39 +1395,6 @@ export const ENTRIES = {
     nameText: 'android.txt',
     sizeText: '51 bytes',
     typeText: 'Plain text',
-  }),
-
-  moviesVideo: new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'world.webm',
-    targetPath: 'Movies/android.webm',
-    mimeType: 'video/webm',
-    lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
-    nameText: 'android.webm',
-    sizeText: '17 KB',
-    typeText: 'WebM video'
-  }),
-
-  musicAudio: new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'music.ogg',
-    targetPath: 'Music/android.ogg',
-    mimeType: 'audio/ogg',
-    lastModifiedTime: 'Sep 4, 1998, 12:00 AM',
-    nameText: 'android.ogg',
-    sizeText: '14 KB',
-    typeText: 'OGG audio'
-  }),
-
-  picturesImage: new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'image3.jpg',
-    targetPath: 'Pictures/android.jpg',
-    mimeType: 'image/jpeg',
-    lastModifiedTime: 'Jan 18, 2012, 1:02 AM',
-    nameText: 'android.jpg',
-    sizeText: '3 KB',
-    typeText: 'JPEG image'
   }),
 
   neverSync: new TestEntryInfo({
@@ -1612,26 +1534,4 @@ export async function getUserActionCount(name) {
     'userActionName': name,
   });
   return /** @type {number} */ (JSON.parse(result));
-}
-
-/**
- * Returns a date time string within last month. This can be used as the
- * lastModifiedTime field of TestEntryInfo object, which is useful to construct
- * a recent file.
- * @return {string}
- */
-export function getDateWithinLastMonth() {
-  const nowDate = new Date();
-  // At least 3 days ago to prevent file list from showing "Today/Yesterday".
-  const randomDayDiff = 3 + Math.floor(Math.random() * 23);
-  nowDate.setDate(nowDate.getDate() - randomDayDiff);
-  // Format: "May 2, 2021, 11:25 AM"
-  return nowDate.toLocaleString('default', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour12: true,
-    hour: 'numeric',
-    minute: 'numeric',
-  });
 }

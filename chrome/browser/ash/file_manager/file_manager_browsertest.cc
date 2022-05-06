@@ -1583,15 +1583,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentsDownloadsAndDrive")
             .EnableFiltersInRecents()
             .FilesSwa(),
-        TestCase("recentsDownloadsAndDriveAndPlayFiles").EnableArc(),
-        TestCase("recentsDownloadsAndDriveAndPlayFiles").EnableArc().FilesSwa(),
-        TestCase("recentsDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecents(),
-        TestCase("recentsDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecents()
-            .FilesSwa(),
         TestCase("recentsDownloadsAndDriveWithOverlap"),
         TestCase("recentsDownloadsAndDriveWithOverlap").FilesSwa(),
         TestCase("recentsDownloadsAndDriveWithOverlap")
@@ -1605,13 +1596,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentsNested").FilesSwa(),
         TestCase("recentsNested").EnableFiltersInRecents(),
         TestCase("recentsNested").EnableFiltersInRecents().FilesSwa(),
-        TestCase("recentsPlayFiles").EnableArc(),
-        TestCase("recentsPlayFiles").EnableArc().FilesSwa(),
-        TestCase("recentsPlayFiles").EnableArc().EnableFiltersInRecents(),
-        TestCase("recentsPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecents()
-            .FilesSwa(),
         TestCase("recentAudioDownloads"),
         TestCase("recentAudioDownloads").FilesSwa(),
         TestCase("recentAudioDownloads").EnableFiltersInRecents(),
@@ -1622,17 +1606,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentAudioDownloadsAndDrive")
             .EnableFiltersInRecents()
             .FilesSwa(),
-        TestCase("recentAudioDownloadsAndDriveAndPlayFiles").EnableArc(),
-        TestCase("recentAudioDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
-            .FilesSwa(),
-        TestCase("recentAudioDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecents(),
-        TestCase("recentAudioDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecents()
-            .FilesSwa(),
         TestCase("recentDocumentsDownloads")
             .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2(),
@@ -1644,15 +1617,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2(),
         TestCase("recentDocumentsDownloadsAndDrive")
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2()
-            .FilesSwa(),
-        TestCase("recentDocumentsDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2(),
-        TestCase("recentDocumentsDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
             .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2()
             .FilesSwa(),
@@ -1666,17 +1630,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentImagesDownloadsAndDrive")
             .EnableFiltersInRecents()
             .FilesSwa(),
-        TestCase("recentImagesDownloadsAndDriveAndPlayFiles").EnableArc(),
-        TestCase("recentImagesDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
-            .FilesSwa(),
-        TestCase("recentImagesDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecents(),
-        TestCase("recentImagesDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecents()
-            .FilesSwa(),
         TestCase("recentVideosDownloads"),
         TestCase("recentVideosDownloads").FilesSwa(),
         TestCase("recentVideosDownloads").EnableFiltersInRecents(),
@@ -1685,17 +1638,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentVideosDownloadsAndDrive").FilesSwa(),
         TestCase("recentVideosDownloadsAndDrive").EnableFiltersInRecents(),
         TestCase("recentVideosDownloadsAndDrive")
-            .EnableFiltersInRecents()
-            .FilesSwa(),
-        TestCase("recentVideosDownloadsAndDriveAndPlayFiles").EnableArc(),
-        TestCase("recentVideosDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
-            .FilesSwa(),
-        TestCase("recentVideosDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecents(),
-        TestCase("recentVideosDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
             .EnableFiltersInRecents()
             .FilesSwa()));
 
