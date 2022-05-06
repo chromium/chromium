@@ -228,8 +228,28 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV3Invalid) {
               ]
             }
         ])",
-       "Invalid value for 'web_accessible_resources[0]'. Invalid "
-       "match pattern."},
+       "Invalid value for 'web_accessible_resources[0]'. Invalid match pattern"
+       "."},
+      {"Only one wildcard is allowed.",
+       R"([
+         {
+           "resources": ["test"],
+           "matches": ["<all_urls>"],
+           "extension_ids": ["*", "*"]
+         }
+       ])",
+       "Invalid value for 'web_accessible_resources[0]'. If a wildcard entry "
+       "is present, it must be the only entry."},
+      {"A wildcard with an extension id is invalid.",
+       R"([
+         {
+           "resources": ["test"],
+           "matches": ["<all_urls>"],
+           "extension_ids": ["abcdefghijlkmnopabcdefghijklmnop", "*"]
+         }
+       ])",
+       "Invalid value for 'web_accessible_resources[0]'. If a wildcard entry "
+       "is present, it must be the only entry."},
   };
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));
@@ -317,28 +337,43 @@ TEST_F(WebAccessibleResourcesManifestTest,
       extension2.get(), "inaccessible", initiator_origin));
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
       extension1.get(), "test", initiator_origin));
+
+  // Test web accessible resource access by specifying an extension wildcard.
+  scoped_refptr<const Extension> wildcard_extension =
+      LoadAndExpectSuccess(get_manifest_data("*"));
+  EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      wildcard_extension.get(), "test", initiator_origin));
+  auto web_origin = url::Origin::Create(GURL("http://example.com"));
+  EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      wildcard_extension.get(), "test", web_origin));
+  EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      wildcard_extension.get(), "inaccessible", initiator_origin));
 }
 
-// Tests wildcards
+// Tests wildcards of matches.
 TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesWildcard) {
   struct {
     const char* title;
     const char* web_accessible_resources;
   } test_cases[] = {
-      {"Succeed if text based wildcard is used.",
-       R"([
-            {
-              "resources": ["test"],
-              "matches": ["<all_urls>"]
-            }
-       ])"},
-      {"Succeed if asterisk based wildcard is used.",
-       R"([
-            {
-              "resources": ["test"],
-              "matches": ["*://*/*"]
-            }
-       ])"},
+      // clang-format off
+    {"Succeed if text based wildcard is used.",
+      R"([
+        {
+          "resources": ["test"],
+          "matches": ["<all_urls>"]
+        }
+      ])"
+    },
+    {"Succeed if asterisk based wildcard is used.",
+      R"([
+        {
+          "resources": ["test"],
+          "matches": ["*://*/*"]
+        }
+      ])"
+    }
+      // clang-format on
   };
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));

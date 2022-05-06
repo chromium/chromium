@@ -16,7 +16,8 @@
     // initiating origin.
     DOMString[]? matches;
 
-    // List of extension IDs the "resources" are accessible to.
+    // List of extension IDs the "resources" are accessible to. A wildcard can
+    // be used, denoted by "*".
     DOMString[]? extension_ids;
 
     // If true, the web accessible resources will only be accessible through a
