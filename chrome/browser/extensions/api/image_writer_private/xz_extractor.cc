@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/browser/extensions/api/image_writer_private/single_file_tar_reader.h"
 #include "chrome/browser/file_util_service.h"
 #include "mojo/public/cpp/system/data_pipe.h"

@@ -10,7 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 
 namespace extensions {
 namespace image_writer {

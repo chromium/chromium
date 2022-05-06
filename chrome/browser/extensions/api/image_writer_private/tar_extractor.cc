@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 
 namespace extensions {
 namespace image_writer {

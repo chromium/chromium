@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_ERROR_MESSAGES_H_
-#define CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_ERROR_MESSAGES_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_ERROR_CONSTANTS_H_
+#define CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_ERROR_CONSTANTS_H_
 
 namespace extensions {
 namespace image_writer {
@@ -55,8 +55,8 @@ extern const char kVerificationFailed[];
 // Image burner catchall
 extern const char kChromeOSImageBurnerError[];
 
-} // namespace error
-} // namespace image_writer
-} // namespace extensions
+}  // namespace error
+}  // namespace image_writer
+}  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_ERROR_MESSAGES_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_ERROR_CONSTANTS_H_

@@ -6,7 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/common/extensions/api/image_writer_private.h"
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
 #include "chromeos/lacros/lacros_service.h"

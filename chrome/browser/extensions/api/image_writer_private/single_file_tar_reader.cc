@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/check.h"
-#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 
 namespace extensions {
 namespace image_writer {

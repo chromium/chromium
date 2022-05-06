@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 
 namespace extensions {
 namespace image_writer {
@@ -54,6 +54,6 @@ const char kVerificationFailed[] = "VERIFICATION_FAILED";
 // Image burner catchall
 const char kChromeOSImageBurnerError[] = "CHROMEOS_IMAGE_BURNER_ERROR";
 
-} // namespace error
-} // namespace image_writer
-} // namespace extensions
+}  // namespace error
+}  // namespace image_writer
+}  // namespace extensions
