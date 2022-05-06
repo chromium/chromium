@@ -2,6 +2,30 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# This target always builds with -O3. Hot path functions that are sensitive
+# to the difference between optimization profiles should be placed here.
+#
+# Some functions are extremely sensitive to the optimizer profile setting on
+# architectures like ARM32. For example, in ARM32 using -Oz instead of -O2
+# results in different choices for inlining, loop vectorization, and register
+# spilling that can yield 10%-15% regressions in blink_perf benchmarks.
+#
+# If adding more translations units, the convention is, for a given foo.cc
+# file, create a foo-hot.cc file which can hold any functions that require
+# -O2 optimization. If there is common inlined implementations, put this in
+# foo-inl.h and include that in both foo.cc and foo-hot.cc.
+
+blink_core_hot_sources_layout = [
+  "layout_block_flow_hot.cc",
+  "layout_box_hot.cc",
+  "layout_object_hot.cc",
+  "layout_object_inl.h",
+  "ng/layout_ng_block_flow.cc",
+  "ng/layout_ng_block_flow.h",
+  "text_autosizer.cc",
+  "text_autosizer.h",
+]
+
 blink_core_sources_layout = [
   "api/hit_test_action.h",
   "api/line_layout_api_shim.h",
@@ -420,8 +444,6 @@ blink_core_sources_layout = [
   "ng/layout_box_utils.cc",
   "ng/layout_box_utils.h",
   "ng/layout_ng_block.h",
-  "ng/layout_ng_block_flow.cc",
-  "ng/layout_ng_block_flow.h",
   "ng/layout_ng_block_flow_mixin.cc",
   "ng/layout_ng_block_flow_mixin.h",
   "ng/layout_ng_button.cc",
@@ -741,8 +763,6 @@ blink_core_sources_layout = [
   "table_layout_algorithm_auto.h",
   "table_layout_algorithm_fixed.cc",
   "table_layout_algorithm_fixed.h",
-  "text_autosizer.cc",
-  "text_autosizer.h",
   "text_decoration_offset.cc",
   "text_decoration_offset.h",
   "text_decoration_offset_base.cc",

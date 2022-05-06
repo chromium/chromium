@@ -4,30 +4,24 @@
 
 import("//build/config/compiler/compiler.gni")
 
-# This target always builds with -O2. Hot path functions that are sensitive
-# to the difference between optimiation profiles should be placed here.
-#
-# Some functions are extremely sensitive to the optimizer profile setting on
-# architectures like ARM32. For example, in ARM32 using -Oz instead of -O2
-# results in different choices for inlining, loop vectorization, and register
-# spilling that can yield 10%-15% regressions in blink_perf benchmarks.
-#
-# In element.cc, the regressions are caused by just a small set of hot path
-# functions.
-#
-# Unfortunately selective annotation of optimizations (eg ALWAYS_INLINE, or
-# #prgama clang loop) have been unsuccessful at bridging the performance gap
-# and applying -O2 wholesale to all of element.o creates a very large binary
-# size increase (83k) without additional performance gains over just building
-# a small set of hotpath functions with -O2.
-#
-# If adding more translations units, the convention is, for a given foo.cc
-# file, create a foo-hot.cc file which can hold any functions that require
-# -O2 optimiziation. If there is common inlined implementations, put this in
-# foo-inl.h and include that in both foo.cc and foo-hot.cc.
 blink_core_hot_sources_dom = [
-  "element-hot.cc",
-  "element-inl.h",
+  "container_node.cc",
+  "container_node.h",
+  "document.cc",
+  "document.h",
+  "element.cc",
+  "element.h",
+  "element_data_cache.cc",
+  "element_data_cache.h",
+  "events/event_dispatcher.cc",
+  "events/event_dispatcher.h",
+  "events/event_path.cc",
+  "events/event_path.h",
+  "qualified_name.cc",
+  "qualified_name.h",
+  "node_computed_style.h",
+  "tree_scope.cc",
+  "tree_scope.h",
 ]
 
 blink_core_sources_dom = [
@@ -59,8 +53,6 @@ blink_core_sources_dom = [
   "collection_index_cache.h",
   "comment.cc",
   "comment.h",
-  "container_node.cc",
-  "container_node.h",
   "context_features.cc",
   "context_features.h",
   "context_features_client_impl.cc",
@@ -70,8 +62,6 @@ blink_core_sources_dom = [
   "dataset_dom_string_map.h",
   "decoded_data_document_parser.cc",
   "decoded_data_document_parser.h",
-  "document.cc",
-  "document.h",
   "document_and_element_event_handlers.h",
   "document_data.h",
   "document_encoding_data.cc",
@@ -108,12 +98,8 @@ blink_core_sources_dom = [
   "dom_time_stamp.h",
   "dom_token_list.cc",
   "dom_token_list.h",
-  "element.cc",
-  "element.h",
   "element_data.cc",
   "element_data.h",
-  "element_data_cache.cc",
-  "element_data_cache.h",
   "element_rare_data.cc",
   "element_rare_data.h",
   "element_traversal.h",
@@ -129,13 +115,9 @@ blink_core_sources_dom = [
   "events/event_dispatch_forbidden_scope.cc",
   "events/event_dispatch_forbidden_scope.h",
   "events/event_dispatch_result.h",
-  "events/event_dispatcher.cc",
-  "events/event_dispatcher.h",
   "events/event_listener.h",
   "events/event_listener_map.cc",
   "events/event_listener_map.h",
-  "events/event_path.cc",
-  "events/event_path.h",
   "events/event_queue.cc",
   "events/event_queue.h",
   "events/event_target.cc",
@@ -209,7 +191,6 @@ blink_core_sources_dom = [
   "node.h",
   "node_child_removal_tracker.cc",
   "node_child_removal_tracker.h",
-  "node_computed_style.h",
   "node_iterator.cc",
   "node_iterator.h",
   "node_iterator_base.cc",
@@ -237,8 +218,6 @@ blink_core_sources_dom = [
   "pseudo_element.cc",
   "pseudo_element.h",
   "pseudo_element_data.h",
-  "qualified_name.cc",
-  "qualified_name.h",
   "range.cc",
   "range.h",
   "range_boundary_point.h",
@@ -283,8 +262,6 @@ blink_core_sources_dom = [
   "tree_ordered_list.h",
   "tree_ordered_map.cc",
   "tree_ordered_map.h",
-  "tree_scope.cc",
-  "tree_scope.h",
   "tree_scope_adopter.cc",
   "tree_scope_adopter.h",
   "tree_walker.cc",
