@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
@@ -141,10 +142,10 @@ class ASH_EXPORT DeskMiniView : public views::View,
 
   // Sets either the `desk_action_view_` or the `close_desk_button_` visibility
   // to false depending on whether the `kDesksCloseAll` feature is active, and
-  // then removes the desk. If `close_windows` is true, the function tells the
-  // `DesksController` to remove `desk_`'s windows as well, and wait for the
-  // user to confirm.
-  void OnRemovingDesk(bool close_windows);
+  // then removes the desk. If `close_type` is `kCloseAllWindows*`, this
+  // function tells the `DesksController` to remove `desk_`'s windows as well,
+  // and wait for the user to confirm.
+  void OnRemovingDesk(DeskCloseType close_type);
 
   // Callback for when `context_menu_` is closed. Makes `desk_action_view_`
   // visible.

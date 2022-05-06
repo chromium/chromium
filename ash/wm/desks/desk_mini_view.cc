@@ -386,7 +386,8 @@ void DeskMiniView::MaybeCloseHighlightedView(bool primary_action) {
   // The primary action (Ctrl + W) is to remove the desk and not close the
   // windows (combine the desk with one on the right or left). The secondary
   // action (Ctrl + Shift + W) is to close the desk and all its applications.
-  OnRemovingDesk(/*close_windows=*/!primary_action);
+  OnRemovingDesk(primary_action ? DeskCloseType::kCombineDesks
+                                : DeskCloseType::kCloseAllWindowsAndWait);
 }
 
 void DeskMiniView::MaybeSwapHighlightedView(bool right) {
@@ -569,7 +570,7 @@ void DeskMiniView::OnViewBlurred(views::View* observed_view) {
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 }
 
-void DeskMiniView::OnRemovingDesk(bool close_windows) {
+void DeskMiniView::OnRemovingDesk(DeskCloseType close_type) {
   if (!desk_)
     return;
 
@@ -590,8 +591,7 @@ void DeskMiniView::OnRemovingDesk(bool close_windows) {
   desk_preview_->OnRemovingDesk();
 
   controller->RemoveDesk(desk_, DesksCreationRemovalSource::kButton,
-                         close_windows ? DeskCloseType::kCloseAllWindowsAndWait
-                                       : DeskCloseType::kCombineDesks);
+                         close_type);
 }
 
 void DeskMiniView::OnContextMenuClosed() {
