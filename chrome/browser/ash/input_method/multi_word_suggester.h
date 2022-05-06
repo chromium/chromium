@@ -144,8 +144,8 @@ class MultiWordSuggester : public Suggester {
   // Announce the given message to the user.
   void Announce(const std::u16string& message);
 
-  // The currently focused input (zero if none are focused)
-  int focused_context_id_ = 0;
+  // The currently focused input (nullopt if none are focused)
+  absl::optional<int> focused_context_id_;
 
   // Not owned by this class
   SuggestionHandlerInterface* suggestion_handler_;

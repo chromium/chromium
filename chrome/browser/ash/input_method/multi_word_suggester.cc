@@ -127,12 +127,16 @@ MultiWordSuggester::MultiWordSuggester(
 MultiWordSuggester::~MultiWordSuggester() = default;
 
 void MultiWordSuggester::OnFocus(int context_id) {
+  // Some parts of the code reserve negative/zero context_id for unfocused
+  // context. As a result we should make sure it is not being erroneously set to
+  // a negative number, and cause unexpected behaviour.
+  DCHECK(context_id);
   focused_context_id_ = context_id;
   state_.ResetSuggestion();
 }
 
 void MultiWordSuggester::OnBlur() {
-  focused_context_id_ = 0;
+  focused_context_id_ = absl::nullopt;
   state_.ResetSuggestion();
 }
 
@@ -217,10 +221,15 @@ bool MultiWordSuggester::TrySuggestWithSurroundingText(
 }
 
 bool MultiWordSuggester::AcceptSuggestion(size_t index) {
+  if (!focused_context_id_.has_value()) {
+    LOG(ERROR) << "suggest: Failed to accept suggestion. No context id.";
+    return false;
+  }
+
   std::string error;
-  suggestion_handler_->AcceptSuggestion(focused_context_id_, &error);
+  suggestion_handler_->AcceptSuggestion(*focused_context_id_, &error);
   if (!error.empty()) {
-    LOG(ERROR) << "suggest: failed to accept suggestion - " << error;
+    LOG(ERROR) << "suggest: Failed to accept suggestion - " << error;
     return false;
   }
 
@@ -238,8 +247,12 @@ bool MultiWordSuggester::AcceptSuggestion(size_t index) {
 }
 
 void MultiWordSuggester::DismissSuggestion() {
+  if (!focused_context_id_.has_value()) {
+    LOG(ERROR) << "suggest: Failed to dismiss suggestion. No context id.";
+    return;
+  }
   std::string error;
-  suggestion_handler_->DismissSuggestion(focused_context_id_, &error);
+  suggestion_handler_->DismissSuggestion(*focused_context_id_, &error);
   if (!error.empty()) {
     LOG(ERROR) << "suggest: Failed to dismiss suggestion - " << error;
     return;
@@ -274,6 +287,10 @@ void MultiWordSuggester::DisplaySuggestionIfAvailable() {
 
 void MultiWordSuggester::DisplaySuggestion(
     const SuggestionState::Suggestion& suggestion) {
+  if (!focused_context_id_.has_value()) {
+    LOG(ERROR) << "suggest: Failed to show suggestion. No context id.";
+    return;
+  }
   ui::ime::SuggestionDetails details;
   details.text = suggestion.text;
   details.show_accept_annotation = false;
@@ -285,7 +302,7 @@ void MultiWordSuggester::DisplaySuggestion(
       kSuggestionSelectedMessage, base::UTF16ToUTF8(details.text).c_str()));
 
   std::string error;
-  suggestion_handler_->SetSuggestion(focused_context_id_, details, &error);
+  suggestion_handler_->SetSuggestion(*focused_context_id_, details, &error);
   if (!error.empty()) {
     LOG(ERROR) << "suggest: Failed to show suggestion in assistive framework"
                << " - " << error;
@@ -293,9 +310,13 @@ void MultiWordSuggester::DisplaySuggestion(
 }
 
 void MultiWordSuggester::SetSuggestionHighlight(bool highlighted) {
+  if (!focused_context_id_.has_value()) {
+    LOG(ERROR) << "suggest: Failed to set button highlighted. No context id.";
+    return;
+  }
   std::string error;
   suggestion_handler_->SetButtonHighlighted(
-      focused_context_id_, suggestion_button_, highlighted, &error);
+      *focused_context_id_, suggestion_button_, highlighted, &error);
   if (!error.empty()) {
     LOG(ERROR) << "Failed to set button highlighted. " << error;
   }

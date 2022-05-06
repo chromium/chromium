@@ -111,6 +111,22 @@ TEST_F(MultiWordSuggesterTest, DisplaysRelevantExternalSuggestions) {
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"hello there!");
 }
 
+TEST_F(MultiWordSuggesterTest,
+       AfterBlurDoesNotDisplayRelevantExternalSuggestions) {
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hello there!"}};
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnBlur();
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  EXPECT_FALSE(suggestion_handler_.GetShowingSuggestion());
+  EXPECT_NE(suggestion_handler_.GetContextId(), kFocusedContextId);
+}
+
 TEST_F(MultiWordSuggesterTest, AcceptsSuggestionOnTabPress) {
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kPrediction,
@@ -127,6 +143,22 @@ TEST_F(MultiWordSuggesterTest, AcceptsSuggestionOnTabPress) {
   EXPECT_FALSE(suggestion_handler_.GetDismissedSuggestion());
   EXPECT_TRUE(suggestion_handler_.GetAcceptedSuggestion());
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"");
+}
+
+TEST_F(MultiWordSuggesterTest, DoesNotAcceptSuggestionAfterBlur) {
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hi there!"},
+  };
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnBlur();
+  SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
+
+  EXPECT_FALSE(suggestion_handler_.GetAcceptedSuggestion());
 }
 
 TEST_F(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnNonTabKeypress) {
@@ -197,6 +229,22 @@ TEST_F(MultiWordSuggesterTest, AcceptsSuggestionOnDownPlusEnterPress) {
   EXPECT_FALSE(suggestion_handler_.GetDismissedSuggestion());
   EXPECT_TRUE(suggestion_handler_.GetAcceptedSuggestion());
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"");
+}
+
+TEST_F(MultiWordSuggesterTest, DoesNotHighlightAfterBlur) {
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hi there!"},
+  };
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnBlur();
+  SendKeyEvent(suggester_.get(), ui::DomCode::ARROW_DOWN);
+
+  EXPECT_FALSE(suggestion_handler_.GetHighlightedSuggestion());
 }
 
 TEST_F(MultiWordSuggesterTest, HighlightsSuggestionOnDownArrow) {
