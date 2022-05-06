@@ -62,6 +62,23 @@ namespace {
 // Time delay before the install button is enabled after initial display.
 int g_install_delay_in_ms = 500;
 
+// The name of the histogram that records decision made by user on the cloud
+// extension request dialog.
+constexpr char kCloudExtensionRequestMetricsName[] =
+    "Enterprise.CloudExtensionRequestDialogAction";
+
+// These values are logged to UMA. Entries should not be renumbered and numeric
+// values should never be reused. Please keep in sync with "BooleanSent" in
+// src/tools/metrics/histograms/enums.xml.
+enum class CloudExtensionRequestMetricEvent {
+  // A request was not sent because the prompt dialog is aborted.
+  kNotSent = 0,
+  // A request was sent because the send button on the prompt dialog is
+  // selected.
+  kSent = 1,
+  kMaxValue = kSent
+};
+
 // A custom view to contain the ratings information (stars, ratings count, etc).
 // With screen readers, this will handle conveying the information properly
 // (i.e., "Rated 4.2 stars by 379 reviews" rather than "image image...379").
@@ -500,6 +517,7 @@ void ExtensionInstallDialogView::OnDialogCanceled() {
   extension_registry_observation_.Reset();
 
   UpdateInstallResultHistogram(false);
+  UpdateEnterpriseCloudExtensionRequestDialogActionHistogram(false);
   prompt_->OnDialogCanceled();
   std::move(done_callback_)
       .Run(ExtensionInstallPrompt::DoneCallbackPayload(
@@ -521,6 +539,7 @@ void ExtensionInstallDialogView::OnDialogAccepted() {
   DCHECK(expect_justification == !!justification_view_);
 
   UpdateInstallResultHistogram(true);
+  UpdateEnterpriseCloudExtensionRequestDialogActionHistogram(true);
   prompt_->OnDialogAccepted();
   // If the prompt had a checkbox element and it was checked we send that along
   // as the result, otherwise we just send a normal accepted result.
@@ -737,6 +756,20 @@ void ExtensionInstallDialogView::UpdateInstallResultHistogram(bool accepted)
     } else {
       UmaHistogramMediumTimes("Extensions.InstallPrompt.TimeToCancel",
                               install_result_timer_->Elapsed());
+    }
+  }
+}
+
+void ExtensionInstallDialogView::
+    UpdateEnterpriseCloudExtensionRequestDialogActionHistogram(
+        bool accepted) const {
+  if (prompt_->type() == ExtensionInstallPrompt::EXTENSION_REQUEST_PROMPT) {
+    if (accepted) {
+      base::UmaHistogramEnumeration(kCloudExtensionRequestMetricsName,
+                                    CloudExtensionRequestMetricEvent::kSent);
+    } else {
+      base::UmaHistogramEnumeration(kCloudExtensionRequestMetricsName,
+                                    CloudExtensionRequestMetricEvent::kNotSent);
     }
   }
 }

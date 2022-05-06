@@ -96,6 +96,11 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   // Updates the histogram that holds installation accepted/aborted data.
   void UpdateInstallResultHistogram(bool accepted) const;
 
+  // Updates the histogram that holds cloud extension request accepted/aborted
+  // decision made by user on the specific prompt dialog.
+  void UpdateEnterpriseCloudExtensionRequestDialogActionHistogram(
+      bool accepted) const;
+
   raw_ptr<Profile> profile_;
   std::unique_ptr<ExtensionInstallPromptShowParams> show_params_;
   ExtensionInstallPrompt::DoneCallback done_callback_;
