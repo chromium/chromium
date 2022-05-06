@@ -59,8 +59,9 @@ class OpusAudioEncoderTest : public testing::Test {
                                 double frequency_hz,
                                 double pos,
                                 int channel) {
-    double angle = pos * 2 * base::kPiDouble * frequency_hz / rate +
-                   kChannelPhaseShift * channel;
+    double angle =
+        pos * 2 * base::kPiDouble * frequency_hz / static_cast<double>(rate) +
+        kChannelPhaseShift * channel;
     return static_cast<int>(std::sin(angle) * kMaxSampleValue + 0.5);
   }
 
