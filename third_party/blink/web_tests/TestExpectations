@@ -6929,3 +6929,4 @@ crbug.com/1322405 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/gener
 
 # Sheriff 2022-05-06
 crbug.com/1322072 external/wpt/fetch/content-type/script.window.html [ Failure Pass ]
+crbug.com/1286883 [ Mac ] fast/canvas/OffscreenCanvas-Bitmaprenderer-toBlob.html [ Failure Pass ]
