@@ -3375,6 +3375,71 @@
             ]
         }
     ],
+    "ExtensionTelemetryStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledServiceWTesRhc",
+                    "params": {
+                        "UploadIntervalSeconds": "3600"
+                    },
+                    "enable_features": [
+                        "SafeBrowsingExtensionTelemetry",
+                        "SafeBrowsingExtensionTelemetryReportContactedHosts",
+                        "SafeBrowsingExtensionTelemetryTabsExecuteScriptSignal"
+                    ]
+                },
+                {
+                    "name": "EnabledService",
+                    "params": {
+                        "UploadIntervalSeconds": "3600"
+                    },
+                    "enable_features": [
+                        "SafeBrowsingExtensionTelemetry"
+                    ]
+                },
+                {
+                    "name": "EnabledServiceWTes",
+                    "params": {
+                        "UploadIntervalSeconds": "3600"
+                    },
+                    "enable_features": [
+                        "SafeBrowsingExtensionTelemetry",
+                        "SafeBrowsingExtensionTelemetryTabsExecuteScriptSignal"
+                    ]
+                },
+                {
+                    "name": "EnabledServiceWRhc",
+                    "params": {
+                        "UploadIntervalSeconds": "3600"
+                    },
+                    "enable_features": [
+                        "SafeBrowsingExtensionTelemetry",
+                        "SafeBrowsingExtensionTelemetryReportContactedHosts"
+                    ]
+                },
+                {
+                    "name": "EnabledServiceWTesRhcPer",
+                    "params": {
+                        "UploadIntervalSeconds": "3600"
+                    },
+                    "enable_features": [
+                        "SafeBrowsingExtensionTelemetry",
+                        "SafeBrowsingExtensionTelemetryPersistence",
+                        "SafeBrowsingExtensionTelemetryReportContactedHosts",
+                        "SafeBrowsingExtensionTelemetryTabsExecuteScriptSignal"
+                    ]
+                }
+            ]
+        }
+    ],
     "FastPairPowerConsumption": [
         {
             "platforms": [
