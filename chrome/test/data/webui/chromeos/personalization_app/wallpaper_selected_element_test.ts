@@ -236,6 +236,31 @@ suite('WallpaperSelectedTest', function() {
   });
 
   test(
+      'shows daily refresh option on the google photos album view',
+      async () => {
+        personalizationStore.data.wallpaper.currentSelected = {
+          url: {url: 'data:image/png;base64,abc='},
+          attribution: [],
+          assetId: BigInt(100),
+        };
+        personalizationStore.data.wallpaper.loading.selected = false;
+
+        wallpaperSelectedElement = initElement(
+            WallpaperSelected,
+            {'path': Paths.GooglePhotosCollection, 'googlePhotosAlbumId': ''});
+        await waitAfterNextRender(wallpaperSelectedElement);
+
+        const dailyRefresh =
+            wallpaperSelectedElement.shadowRoot!.getElementById('dailyRefresh');
+        assertTrue(!!dailyRefresh);
+
+        const refreshWallpaper =
+            wallpaperSelectedElement.shadowRoot!.getElementById(
+                'refreshWallpaper');
+        assertTrue(refreshWallpaper!.hidden);
+      });
+
+  test(
       'shows refresh button only on collection with daily refresh enabled',
       async () => {
         personalizationStore.data.wallpaper.currentSelected = {
@@ -253,6 +278,36 @@ suite('WallpaperSelectedTest', function() {
         wallpaperSelectedElement = initElement(
             WallpaperSelected,
             {'path': Paths.CollectionImages, 'collectionId': collection_id});
+        personalizationStore.notifyObservers();
+
+        await waitAfterNextRender(wallpaperSelectedElement);
+
+        const newRefreshWallpaper =
+            wallpaperSelectedElement.shadowRoot!.getElementById(
+                'refreshWallpaper');
+        assertFalse(newRefreshWallpaper!.hidden);
+      });
+
+  test(
+      'shows refresh button only on google photos album with daily refresh enabled',
+      async () => {
+        personalizationStore.data.wallpaper.currentSelected = {
+          url: {url: 'data:image/png;base64,abc='},
+          attribution: [],
+          assetId: BigInt(100),
+        };
+        personalizationStore.data.wallpaper.loading.selected = false;
+
+        const album_id = 'test_album_id';
+        personalizationStore.data.wallpaper.dailyRefresh = {
+          id: album_id,
+          type: DailyRefreshType.GOOGLE_PHOTOS,
+        };
+
+        wallpaperSelectedElement = initElement(WallpaperSelected, {
+          'path': Paths.GooglePhotosCollection,
+          'googlePhotosAlbumId': album_id
+        });
         personalizationStore.notifyObservers();
 
         await waitAfterNextRender(wallpaperSelectedElement);
