@@ -60,6 +60,9 @@ class ContentScriptTracker {
   static void ReadyToCommitNavigation(
       base::PassKey<ExtensionWebContentsObserver> pass_key,
       content::NavigationHandle* navigation);
+  static void DidFinishNavigation(
+      base::PassKey<ExtensionWebContentsObserver> pass_key,
+      content::NavigationHandle* navigation);
   static void RenderFrameCreated(
       base::PassKey<ExtensionWebContentsObserver> pass_key,
       content::RenderFrameHost* frame);

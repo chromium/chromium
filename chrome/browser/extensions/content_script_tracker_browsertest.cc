@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -759,6 +760,152 @@ IN_PROC_BROWSER_TEST_F(
       *main_frame->GetProcess(), extension->id()));
   EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
       *child_frame->GetProcess(), extension->id()));
+}
+
+// This is a regression test for https://crbug.com/1312125 - it simulates a race
+// where an extension is loaded during or before a navigation, resulting in
+// ContentScriptTracker::WillUpdateContentScriptsInRenderer getting called
+// between ReadyToCommit and DidCommit of a navigation from a page where content
+// scripts are not injected, to a page where content scripts are injected.
+IN_PROC_BROWSER_TEST_F(
+    ContentScriptTrackerBrowserTest,
+    ContentScriptDeclarationInExtensionManifest_ScriptLoadRacesWithDidCommit) {
+  // Navigate to a test page that is *not* covered by `content_scripts.matches`
+  // manifest entry used in this test (see `kManifestTemplate` below).
+  GURL ignored_url =
+      embedded_test_server()->GetURL("foo.test.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ignored_url));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // The test uses a long-running `unload` handler to postpone DidCommit in a
+  // same-process, cross-origin navigation that happens in the next test steps:
+  // - "cross-origin" aspect is needed because we need to navigate from a page
+  //   not covered by content scripts, into a page covered by content scripts +
+  //   because ContentScriptTracker ignores the path part of URL patterns (e.g.
+  //   calling `MatchesSecurityOrigin()`).
+  // - "same-process" aspect is needed because we need a same-process navigation
+  //   in order to postpone DidCommit IPC (by having an long-running unload
+  //   handler).  In a typical desktop setting same-site navigations should be
+  //   same-process.
+  const char kUnloadHandlerInstallationScript[] = R"(
+      window.addEventListener('unload', function(event) {
+          // BAD CODE - please don't copy&paste.  See below for an explanation
+          // why there doesn't seem to a better approach *here* (i.e. see the
+          // comment in a section titled "Orchestrate the race condition").
+          const sleep_duration = 3000;  // milliseconds
+          const start = new Date().getTime();
+          do {
+            var now = new Date().getTime();
+          } while (now < (start + sleep_duration));
+      });
+  )";
+  ASSERT_TRUE(content::ExecJs(web_contents, kUnloadHandlerInstallationScript));
+
+  // Prepare a test directory, but don't install an extension just yet.
+  TestExtensionDir dir;
+  const char kManifestTemplate[] = R"(
+      {
+        "name": "ContentScriptTrackerBrowserTest - Declarative",
+        "version": "1.0",
+        "manifest_version": 2,
+        "permissions": [ "tabs", "<all_urls>" ],
+        "content_scripts": [{
+          "all_frames": true,
+          "match_about_blank": true,
+          "matches": ["*://bar.test.com/*"],
+          "js": ["content_script.js"]
+        }]
+      } )";
+  dir.WriteManifest(kManifestTemplate);
+  dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
+          document.body.innerText = 'content script has run';
+          chrome.test.sendMessage('Hello from content script!');
+      )");
+  base::FilePath unpacked_path = dir.UnpackedPath();
+
+  // *Initiate* navigation to a test page that *is* covered by
+  // `content_scripts.matches` manifest entry above and use `navigation_manager`
+  // to wait until ReadyToCommit happens,
+  GURL injected_url =
+      embedded_test_server()->GetURL("bar.test.com", "/title1.html");
+  content::TestNavigationManager navigation_manager(web_contents, injected_url);
+  bool did_commit_has_happened = false;
+  content::CommitMessageDelayer commit_delayer(
+      web_contents, injected_url,
+      base::BindLambdaForTesting([&](content::RenderFrameHost* frame) {
+        // Race step UI.3b (see below).
+        did_commit_has_happened = true;
+      }));
+  ExtensionTestMessageListener listener("Hello from content script!", false);
+  ASSERT_TRUE(
+      content::BeginNavigateToURLFromRenderer(web_contents, injected_url));
+
+  // Orchestrate the race condition:
+  // *) Race step UI.1: UI thread:
+  //      *) UI.1.1: NavigationThrottle pauses the navigation just *before*
+  //         ReadyToCommit notifications (when test calls
+  //         TestNavigationManager::WaitForResponse).
+  //      *) UI.1.2: UI thread: Navigation resumes (when test calls
+  //         TestNavigationManager::ResumeNavigation) and
+  //         ContentScriptTracker::ReadyToCommitNavigation gets called.
+  //      *) UI.1.3: UI thread: Loading of the Chrome Extension starts (when
+  //         test calls LoadExtension).
+  // *) Parallel steps:
+  //     *) Race step FILE.2: FILE thread: Extension and its content scripts
+  //        continue loading (triggered by step UI.1.3 above; see for example
+  //        LoadScriptsOnFileTaskRunner in e/b/extension_user_script_loader.cc).
+  //        This is a simplification - loading of content scripts is just *one*
+  //        of multiple potential thread hops involved in loading an extension.
+  //     *) Race step RENDERER.2: Commit IPC is received and handled:
+  //          *) RENDERER.2.1, `unload` handler runs
+  //          *) RENDERER.2.???, Renderer is notified about newly loaded
+  //             extension and its content scripts
+  //          *) RENDERER.2.8, `DidCommit` is sent back to the Browser
+  //          *) RENDERER.2.9, Content script gets injected (hopefully,
+  //             depending on whether step "RENDERER.2.???" happened before)
+  // *) Racey steps where ordering matters for the repro, but where the test
+  //    doesn't guarantee the ordering between UI.3a and UI.3b:
+  //     *) Race step UI.3a: Task posted by FILE.2 gets run on UI thread.
+  //        ContentScriptTracker::WillUpdateContentScriptsInRenderer get called.
+  //     *) Race step UI.3b: Task posted by IO.2 gets run on UI thread.
+  //        DidCommit happens.
+  // *) Non-racey step UI.4: UI thread: IPC from the content script is
+  //    processed.  The test simulates this by explicitly calling and checking
+  //    ContentScriptTracker::DidProcessRunContentScriptFromExtension which in
+  //    presence of https://crbug.com/1312125 could have incorrectly returned
+  //    false.
+  //
+  // Triggering https://crbug.com/1312125 requires that UI.3a happens before
+  // UI.3b - when this happens then ContentScriptTracker's
+  // WillUpdateContentScriptsInRenderer won't see the newly committed URL and
+  // won't realize that content script may be injected into the newly committed
+  // document (the fix is to add ContentScriptTracker::DidFinishNavigation).
+  // Additionally, the repro requires that RENDERER.2.??? happens before the
+  // Renderer commits the page.
+  //
+  // The test doesn't guarantee the ordering of UI.3a and UI.3b, but the desired
+  // ordering does happen in practice when running this test (the time from UI.1
+  // to UI.3a is around 30 milliseconds which is much shorter than 3000
+  // milliseconds used by the `unload` handler).  This is already sufficient and
+  // helpful for verifying the fix for the product code.  This is not ideal, but
+  // making the test more robust seems quite difficult - see the discussion in
+  // https://chromium-review.googlesource.com/c/chromium/src/+/3587823/8#message-b4f0abdcc2a6cedf681d33dbe1ddbccc381ad932
+  ASSERT_TRUE(navigation_manager.WaitForResponse());          // Step UI.1.1
+  navigation_manager.ResumeNavigation();                      // Step UI.1.2
+  const Extension* extension = LoadExtension(unpacked_path);  // Step UI.1.3
+  ASSERT_TRUE(extension);
+  commit_delayer.Wait();                           // Step UI.3b - part1
+  navigation_manager.WaitForNavigationFinished();  // Step UI.3b - part2
+  ASSERT_TRUE(listener.WaitUntilSatisfied());      // Step UI.4
+
+  // Verify that content script has been injected.
+  EXPECT_EQ("content script has run",
+            content::EvalJs(web_contents, "document.body.innerText"));
+
+  // MAIN VERIFICATION: Verify that ContentScriptTracker detected the injection.
+  EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+      *web_contents->GetMainFrame()->GetProcess(), extension->id()));
 }
 
 // Tests tracking of content scripts injected/declared via
