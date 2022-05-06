@@ -909,6 +909,55 @@ TEST_F(CorsURLLoaderTest,
   EXPECT_EQ(net::OK, client().completion_status().error_code);
 }
 
+TEST_F(CorsURLLoaderTest, CrossOriginPreflightReceiveRedirect) {
+  const GURL origin("https://example.com");
+  const GURL url("https://other.example.com/foo.png");
+  const GURL new_url("https://other2.example.com/bar.png");
+
+  ResourceRequest original_request;
+  original_request.mode = mojom::RequestMode::kCors;
+  original_request.credentials_mode = mojom::CredentialsMode::kOmit;
+  original_request.method = "GET";
+  original_request.headers.SetHeader("Content-type", "application/json");
+  original_request.url = url;
+  original_request.request_initiator = url::Origin::Create(origin);
+  CreateLoaderAndStart(original_request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  // preflight request
+  EXPECT_EQ(1, num_created_loaders());
+  EXPECT_EQ(GetRequest().url, url);
+  EXPECT_EQ(GetRequest().method, "OPTIONS");
+
+  NotifyLoaderClientOnReceiveRedirect(
+      CreateRedirectInfo(301, "OPTIONS", new_url),
+      {{"Access-Control-Allow-Origin", "https://example.com"},
+       {"Access-Control-Allow-Headers", "Content-type"}});
+
+  RunUntilComplete();
+  EXPECT_FALSE(client().has_received_redirect());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_EQ(net::ERR_FAILED, client().completion_status().error_code);
+
+  std::vector<net::NetLogEntry> entries = GetEntries();
+  std::vector<net::NetLogEventType> types = GetTypesOfNetLogEntries(entries);
+  EXPECT_THAT(types,
+              Contains(net::NetLogEventType::CORS_PREFLIGHT_RESULT).Times(0));
+  ASSERT_THAT(types,
+              Contains(net::NetLogEventType::CORS_PREFLIGHT_ERROR).Times(1));
+
+  const net::NetLogEntry* entry =
+      FindEntryByType(entries, net::NetLogEventType::CORS_PREFLIGHT_ERROR);
+  const base::Value::Dict* params = entry->params.GetIfDict();
+  ASSERT_TRUE(params);
+  EXPECT_THAT(params->FindString("error"), Pointee(Eq("ERR_FAILED")));
+  EXPECT_THAT(params->FindInt("cors-error"),
+              Optional(Eq(static_cast<int>(
+                  mojom::CorsError::kPreflightDisallowedRedirect))));
+  EXPECT_THAT(params->FindString("failed-parameter"), IsNull());
+}
+
 TEST_F(CorsURLLoaderTest, RedirectInfoShouldBeUsed) {
   const GURL origin("https://example.com");
   const GURL url("https://example.com/foo.png");
