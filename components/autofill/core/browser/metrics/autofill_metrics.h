@@ -359,20 +359,6 @@ class AutofillMetrics {
     NUM_CREDIT_CARD_UPLOAD_FEEDBACK_METRICS,
   };
 
-  // Metrics to measure user interaction with the Manage Cards view
-  // shown when user clicks on the save card icon after accepting
-  // to save a card.
-  enum ManageCardsPromptMetric {
-    // The manage cards promo was shown.
-    MANAGE_CARDS_SHOWN,
-    // The user clicked on [Done].
-    MANAGE_CARDS_DONE,
-    // The user clicked on [Manage cards].
-    MANAGE_CARDS_MANAGE_CARDS,
-
-    NUM_MANAGE_CARDS_PROMPT_METRICS
-  };
-
   // Metrics to measure user interaction with the virtual card manual fallback
   // bubble after it has appeared upon unmasking and filling a virtual card.
   enum class VirtualCardManualFallbackBubbleResultMetric {
@@ -1418,8 +1404,6 @@ class AutofillMetrics {
   static void LogCreditCardUploadLegalMessageLinkClicked();
   static void LogCreditCardUploadFeedbackMetric(
       CreditCardUploadFeedbackMetric metric);
-  static void LogManageCardsPromptMetric(ManageCardsPromptMetric metric,
-                                         bool is_uploading);
   static void LogScanCreditCardPromptMetric(ScanCreditCardPromptMetric metric);
   static void LogLocalCardMigrationDecisionMetric(
       LocalCardMigrationDecisionMetric metric);

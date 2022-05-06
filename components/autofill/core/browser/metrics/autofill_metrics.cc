@@ -1100,17 +1100,6 @@ void AutofillMetrics::LogCreditCardUploadFeedbackMetric(
 }
 
 // static
-void AutofillMetrics::LogManageCardsPromptMetric(ManageCardsPromptMetric metric,
-                                                 bool is_upload_save) {
-  DCHECK_LT(metric, NUM_MANAGE_CARDS_PROMPT_METRICS);
-  std::string destination = is_upload_save ? ".Upload" : ".Local";
-  std::string metric_with_destination =
-      "Autofill.ManageCardsPrompt" + destination;
-  base::UmaHistogramEnumeration(metric_with_destination, metric,
-                                NUM_MANAGE_CARDS_PROMPT_METRICS);
-}
-
-// static
 void AutofillMetrics::LogScanCreditCardPromptMetric(
     ScanCreditCardPromptMetric metric) {
   DCHECK_LT(metric, NUM_SCAN_CREDIT_CARD_PROMPT_METRICS);

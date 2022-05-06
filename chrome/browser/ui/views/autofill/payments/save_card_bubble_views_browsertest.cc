@@ -46,6 +46,7 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/metrics/payments/manage_cards_prompt_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
@@ -909,8 +910,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestSettings,
   // Metrics should have been recorded correctly.
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ManageCardsPrompt.Local"),
-      ElementsAre(Bucket(AutofillMetrics::MANAGE_CARDS_SHOWN, 1),
-                  Bucket(AutofillMetrics::MANAGE_CARDS_MANAGE_CARDS, 1)));
+      ElementsAre(Bucket(ManageCardsPromptMetric::kManageCardsShown, 1),
+                  Bucket(ManageCardsPromptMetric::kManageCardsManageCards, 1)));
 }
 
 // Tests the local save bubble. Ensures that the bubble behaves correctly if
@@ -2353,8 +2354,9 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
   // Bubble should be showing.
   EXPECT_TRUE(
       FindViewInBubbleById(DialogViewId::MANAGE_CARDS_VIEW)->GetVisible());
-  histogram_tester.ExpectUniqueSample("Autofill.ManageCardsPrompt.Local",
-                                      AutofillMetrics::MANAGE_CARDS_SHOWN, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ManageCardsPrompt.Local",
+      ManageCardsPromptMetric::kManageCardsShown, 1);
 }
 
 // Tests the manage cards bubble. Ensures that clicking the [Done]
@@ -2386,8 +2388,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
   EXPECT_EQ(nullptr, GetSaveCardBubbleViews());
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ManageCardsPrompt.Local"),
-      ElementsAre(Bucket(AutofillMetrics::MANAGE_CARDS_SHOWN, 1),
-                  Bucket(AutofillMetrics::MANAGE_CARDS_DONE, 1)));
+      ElementsAre(Bucket(ManageCardsPromptMetric::kManageCardsShown, 1),
+                  Bucket(ManageCardsPromptMetric::kManageCardsDone, 1)));
 }
 
 }  // namespace autofill

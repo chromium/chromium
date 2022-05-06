@@ -31,6 +31,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/manage_cards_prompt_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -300,8 +301,8 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
           .Run(AutofillClient::SaveCardOfferUserDecision::kAccepted);
       break;
     case BubbleType::MANAGE_CARDS:
-      AutofillMetrics::LogManageCardsPromptMetric(
-          AutofillMetrics::MANAGE_CARDS_DONE, is_upload_save_);
+      LogManageCardsPromptMetric(ManageCardsPromptMetric::kManageCardsDone,
+                                 is_upload_save_);
       return;
     case BubbleType::UPLOAD_IN_PROGRESS:
     case BubbleType::FAILURE:
@@ -328,8 +329,8 @@ void SaveCardBubbleControllerImpl::OnLegalMessageLinkClicked(const GURL& url) {
 void SaveCardBubbleControllerImpl::OnManageCardsClicked() {
   DCHECK(current_bubble_type_ == BubbleType::MANAGE_CARDS);
 
-  AutofillMetrics::LogManageCardsPromptMetric(
-      AutofillMetrics::MANAGE_CARDS_MANAGE_CARDS, is_upload_save_);
+  LogManageCardsPromptMetric(ManageCardsPromptMetric::kManageCardsManageCards,
+                             is_upload_save_);
 
   ShowPaymentsSettingsPage();
 }
@@ -500,8 +501,8 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
           GetSecurityLevel(), GetSyncState());
       break;
     case BubbleType::MANAGE_CARDS:
-      AutofillMetrics::LogManageCardsPromptMetric(
-          AutofillMetrics::MANAGE_CARDS_SHOWN, is_upload_save_);
+      LogManageCardsPromptMetric(ManageCardsPromptMetric::kManageCardsShown,
+                                 is_upload_save_);
       break;
     case BubbleType::FAILURE:
       AutofillMetrics::LogCreditCardUploadFeedbackMetric(

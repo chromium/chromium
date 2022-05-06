@@ -243,6 +243,8 @@ static_library("browser") {
     "metrics/form_events/form_events.h",
     "metrics/form_interactions_counter.cc",
     "metrics/form_interactions_counter.h",
+    "metrics/payments/manage_cards_prompt_metrics.cc",
+    "metrics/payments/manage_cards_prompt_metrics.h",
     "metrics/payments/save_credit_card_prompt_metrics.cc",
     "metrics/payments/save_credit_card_prompt_metrics.h",
     "metrics/payments/virtual_card_enrollment_metrics.cc",
