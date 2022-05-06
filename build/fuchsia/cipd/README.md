@@ -1,8 +1,8 @@
 # CIPD recipes
 
-The `//fuchsia/cipd` target generates a number of YAML files which are used to
+The `//build/fuchsia/cipd` target generates a number of YAML files that are used to
 produce archives that are uploaded to CIPD. The generated YAML files are stored
-under the output directory, under the path `gen/fuchsia/cipd/`.
+in the output directory under the path `gen/build/fuchsia/cipd/`.
 
 ## Example usage
 

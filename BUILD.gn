@@ -262,7 +262,7 @@ group("gn_all") {
   if (is_fuchsia && !is_chromecast) {
     deps += [
       ":d8_fuchsia",
-      "//fuchsia/cipd",
+      "//build/fuchsia/cipd",
       "//fuchsia/engine:web_engine",
       "//fuchsia/release:fuchsia_sizes",
       "//fuchsia/runners:cast_runner",
