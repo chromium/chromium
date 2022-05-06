@@ -27,6 +27,7 @@ import os
 import re
 import shutil
 import subprocess
+import urllib.request
 import zipfile
 
 # Assume this script is stored under third_party/android_deps/
@@ -428,6 +429,21 @@ def PrintPackageList(packages, list_name):
     print('\n'.join('    - ' + p for p in packages))
 
 
+def _DownloadOverrides(overrides, build_libs_dir):
+    for spec in overrides:
+        subpath, url = spec.split(':', 1)
+        target_path = os.path.join(build_libs_dir, subpath)
+        if not os.path.isfile(target_path):
+            found_files = 'Found instead:\n' + '\n'.join(
+                FindInDirectory(os.path.dirname(target_path), '*'))
+            raise Exception(
+                f'Override path does not exist: {target_path}\n{found_files}')
+        logging.info('Fetching override for %s', target_path)
+        with urllib.request.urlopen(url) as response:
+            with open(target_path, 'wb') as f:
+                shutil.copyfileobj(response, f)
+
+
 def _CreateAarInfos(aar_files):
     jobs = []
 
@@ -478,6 +494,9 @@ def main():
     parser.add_argument('--ignore-vulnerabilities',
                         help='Ignores vulnerabilities for these deps.',
                         action='store_true')
+    parser.add_argument('--override-artifact',
+                        action='append',
+                        help='lib_subpath:url of .aar / .jar to override.')
     parser.add_argument('-v',
                         '--verbose',
                         dest='verbose_count',
@@ -556,6 +575,8 @@ def main():
         RunCommand(gn_args, print_stdout=debug, cwd=_CHROMIUM_SRC)
 
         build_libs_dir = os.path.join(build_android_deps_dir, _LIBS_DIR)
+        if args.override_artifact:
+            _DownloadOverrides(args.override_artifact, build_libs_dir)
         aar_files = FindInDirectory(build_libs_dir, '*.aar')
 
         logging.info('# Generate Android .aar info files.')

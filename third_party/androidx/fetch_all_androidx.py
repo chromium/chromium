@@ -37,6 +37,15 @@ _ANDROIDX_LATEST_SNAPSHOT_BUILD_INFO_URL = 'https://androidx.dev/snapshots/lates
 # Snapshot repository URL with {{version}} placeholder.
 _SNAPSHOT_REPOSITORY_URL = 'https://androidx.dev/snapshots/builds/{{version}}/artifacts/repository'
 
+# When androidx roller is breaking, and a fix is not immenent, use this to pin a
+# broken library to an old known-working version.
+_OVERRIDES = [
+    # Example (find URL by looking in BUILD_INFO):
+    #('androidx_core_core/core-1.9.0-SNAPSHOT.aar',
+    # 'https://androidx.dev/snapshots/builds/8545498/artifacts/repository/'
+    # 'androidx/core/core/1.8.0-SNAPSHOT/core-1.8.0-20220505.122105-1.aar'),
+]
+
 
 def _build_snapshot_repository_url(version):
     return _SNAPSHOT_REPOSITORY_URL.replace('{{version}}', version)
@@ -258,6 +267,8 @@ def main():
         _FETCH_ALL_PATH, '--android-deps-dir', _ANDROIDX_PATH,
         '--ignore-vulnerabilities'
     ]
+    for subpath, url in _OVERRIDES:
+        fetch_all_cmd += ['--override-artifact', f'{subpath}:{url}']
     subprocess.run(fetch_all_cmd, check=True)
 
     if not args.local_repo:
