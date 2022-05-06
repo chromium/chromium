@@ -124,7 +124,7 @@ struct CORE_EXPORT PaintLayerRareData final
 // PaintLayer is an old object that handles lots of unrelated operations.
 //
 // We want it to die at some point and be replaced by more focused objects,
-// which would remove (or at least compartimentalize) a lot of complexity.
+// which would remove (or at least compartmentalize) a lot of complexity.
 // See the STATUS OF PAINTLAYER section below.
 //
 // The class is central to painting and hit-testing. That's because it handles
