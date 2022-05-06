@@ -105,6 +105,24 @@ void RecordDroppedSource(bool already_recorded_another_reason,
 void RecordDroppedEntry(uint64_t event_hash, DroppedDataReason reason) {
   LogEventHashAsUmaHistogram("UKM.Entries.Dropped.ByEntryHash", event_hash);
 
+  // Because the "UKM.Entries.Dropped.ByEntryHash" histogram will be emitted to
+  // every single time an entry is dropped, it will be dominated by the
+  // RECORDING_DISABLED reason (which is not very insightful). More interesting
+  // dropped reasons are MAX_HIT and SAMPLED_OUT, so we also emit histograms
+  // split by those reasons.
+  switch (reason) {
+    case DroppedDataReason::MAX_HIT:
+      LogEventHashAsUmaHistogram("UKM.Entries.Dropped.MaxHit.ByEntryHash",
+                                 event_hash);
+      break;
+    case DroppedDataReason::SAMPLED_OUT:
+      LogEventHashAsUmaHistogram("UKM.Entries.Dropped.SampledOut.ByEntryHash",
+                                 event_hash);
+      break;
+    default:
+      break;
+  }
+
   UMA_HISTOGRAM_ENUMERATION(
       "UKM.Entries.Dropped", static_cast<int>(reason),
       static_cast<int>(DroppedDataReason::NUM_DROPPED_DATA_REASONS));
