@@ -10,16 +10,17 @@ out_directory=out/Release
 Section .text: has 100.0% of 35982248 bytes accounted for from 11 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 83704 bytes (0.2%)
 * 11 have source paths. Accounts for 35982248 bytes (100.0%).
-* 11 have a component assigned. Accounts for 35982248 bytes (100.0%).
+* 5 have a component assigned. Accounts for 35906704 bytes (99.8%).
 * 1 placeholders exist (symbols that start with **). Accounts for 35897728 bytes (99.8%).
 * 5 aliases exist, mapped to 2 unique addresses (32 bytes saved)
 * 0 symbols have shared ownership.
 * 1 symbols are clones. Accounts for 8 bytes (0.0%).
+* 6 symbols are from generated sources. Accounts for 75544 bytes (0.2%).
 Large padding of 75512 between:
-  A) .text@28d900(size_without_padding=8,padding=0,full_name=startup._GLOBAL__sub_I_page_allocator.cc,object_path=,source_path=third_party/container/container.c,flags={},num_aliases=1,component=UI>Browser)
-  B) .text@2a0000(size_without_padding=16,padding=75512,full_name=BazAlias(bool),object_path=,source_path=third_party/container/container.c,flags={},num_aliases=2,component=UI>Browser)
+  A) .text@28d900(size_without_padding=8,padding=0,full_name=startup._GLOBAL__sub_I_page_allocator.cc,object_path=,source_path=$SYSTEM/container.c,flags={gen},num_aliases=1,component=)
+  B) .text@2a0000(size_without_padding=16,padding=75512,full_name=BazAlias(bool),object_path=,source_path=$SYSTEM/container.c,flags={gen},num_aliases=2,component=)
 Large padding of 8168 between:
-  A) .text@2a0010(size_without_padding=8,padding=0,full_name=blink::ContiguousContainerBase::shrinkToFit(),object_path=,source_path=third_party/container/container.c,flags={clone},num_aliases=3,component=UI>Browser)
+  A) .text@2a0010(size_without_padding=8,padding=0,full_name=blink::ContiguousContainerBase::shrinkToFit(),object_path=,source_path=$SYSTEM/container.c,flags={gen,clone},num_aliases=3,component=)
   B) .text@2a2000(size_without_padding=8,padding=8168,full_name=OUTLINED_FUNCTION_0,object_path=,source_path=base/allocator/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
 Section .rodata: has 100.0% of 5927652 bytes accounted for from 1 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 0 bytes (0.0%)
@@ -76,12 +77,12 @@ Section .other: has 100.0% of 90351129 bytes accounted for from 23 symbols. 0 by
 .data.rel.ro@0(size_without_padding=1065224,padding=0,full_name=** ELF Section: .data.rel.ro,object_path=,source_path=,flags={},num_aliases=1,component=)
 .data.rel.ro.local@0(size_without_padding=790024,padding=0,full_name=** ELF Section: .data.rel.ro.local,object_path=,source_path=,flags={},num_aliases=1,component=)
 .rodata@0(size_without_padding=5927652,padding=0,full_name=** ELF Section: .rodata,object_path=,source_path=,flags={},num_aliases=1,component=)
-.text@28d900(size_without_padding=8,padding=0,full_name=startup._GLOBAL__sub_I_page_allocator.cc,object_path=,source_path=third_party/container/container.c,flags={},num_aliases=1,component=UI>Browser)
-.text@2a0000(size_without_padding=16,padding=75512,full_name=BazAlias(bool),object_path=,source_path=third_party/container/container.c,flags={},num_aliases=2,component=UI>Browser)
-.text@2a0000(size_without_padding=16,padding=75512,full_name=blink::ContiguousContainerBase::shrinkToFit(),object_path=,source_path=third_party/container/container.c,flags={},num_aliases=2,component=UI>Browser)
-.text@2a0010(size_without_padding=8,padding=0,full_name=BarAlias(),object_path=,source_path=third_party/container/container.c,flags={},num_aliases=3,component=UI>Browser)
-.text@2a0010(size_without_padding=8,padding=0,full_name=FooAlias(),object_path=,source_path=third_party/container/container.c,flags={},num_aliases=3,component=UI>Browser)
-.text@2a0010(size_without_padding=8,padding=0,full_name=blink::ContiguousContainerBase::shrinkToFit(),object_path=,source_path=third_party/container/container.c,flags={clone},num_aliases=3,component=UI>Browser)
+.text@28d900(size_without_padding=8,padding=0,full_name=startup._GLOBAL__sub_I_page_allocator.cc,object_path=,source_path=$SYSTEM/container.c,flags={gen},num_aliases=1,component=)
+.text@2a0000(size_without_padding=16,padding=75512,full_name=BazAlias(bool),object_path=,source_path=$SYSTEM/container.c,flags={gen},num_aliases=2,component=)
+.text@2a0000(size_without_padding=16,padding=75512,full_name=blink::ContiguousContainerBase::shrinkToFit(),object_path=,source_path=$SYSTEM/container.c,flags={gen},num_aliases=2,component=)
+.text@2a0010(size_without_padding=8,padding=0,full_name=BarAlias(),object_path=,source_path=$SYSTEM/container.c,flags={gen},num_aliases=3,component=)
+.text@2a0010(size_without_padding=8,padding=0,full_name=FooAlias(),object_path=,source_path=$SYSTEM/container.c,flags={gen},num_aliases=3,component=)
+.text@2a0010(size_without_padding=8,padding=0,full_name=blink::ContiguousContainerBase::shrinkToFit(),object_path=,source_path=$SYSTEM/container.c,flags={gen,clone},num_aliases=3,component=)
 .text@2a2000(size_without_padding=8,padding=8168,full_name=OUTLINED_FUNCTION_0,object_path=,source_path=base/allocator/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
 .text@2a2020(size_without_padding=264,padding=24,full_name=OUTLINED_FUNCTION_1,object_path=,source_path=base/allocator/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
 .text@2a2128(size_without_padding=248,padding=0,full_name=AssemblySymbol,object_path=,source_path=base/allocator/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)

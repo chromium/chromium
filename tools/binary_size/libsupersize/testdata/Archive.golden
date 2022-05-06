@@ -65,7 +65,7 @@ Section .other: has 100.0% of 56448494 bytes accounted for from 22 symbols. 0 by
 * 22 placeholders exist (symbols that start with **). Accounts for 56448494 bytes (100.0%).
 * 0 symbols have shared ownership.
 .text@28d900(size_without_padding=16,padding=0,full_name=_GLOBAL__sub_I_page_allocator.cc,object_path=base/base/page_allocator.o,source_path=,flags={startup},num_aliases=1,component=)
-.text@28d910(size_without_padding=56,padding=0,full_name=_GLOBAL__sub_I_bbr_sender.cc,object_path=base/base/page_allocator.o,source_path=,flags={startup},num_aliases=1,component=)
+.text@28d910(size_without_padding=56,padding=0,full_name=_GLOBAL__sub_I_bbr_sender.cc,object_path=$SYSTEM/path.a/foo.o,source_path=,flags={startup},num_aliases=1,component=)
 .text@28d948(size_without_padding=28,padding=0,full_name=_GLOBAL__sub_I_pacing_sender.cc,object_path=base/base/page_allocator.o,source_path=,flags={startup},num_aliases=1,component=)
 .text@28d964(size_without_padding=38,padding=0,full_name=extFromUUseMapping(signed char, unsigned int, int),object_path=base/base/page_allocator.o,source_path=,flags={},num_aliases=1,component=)
 .text@28d98a(size_without_padding=32,padding=0,full_name=extFromUUseMapping(aj, int),object_path=base/base/page_allocator.o,source_path=,flags={},num_aliases=1,component=)

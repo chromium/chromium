@@ -6,14 +6,14 @@ Histogram of symbols based on PSS:
      [4,8): 6    [64,128): 3    [2048,4096): 4    [65536,131072): 2     [2097152,4194304): 2
     [8,16): 5   [128,256): 1    [4096,8192): 2   [131072,262144): 1   [16777216,33554432): 1
 Sizes: .text=34.3mb     .rodata=5.65mb     .data.rel.ro=1.02mb     .data=99.4kb     .bss=512kb      .other=86.2mb     total=128.0mb
-Counts: .text=22 .rodata=12 .data.rel.ro=4 .data=6 .bss=6 .other=23
-Number of unique paths: 9
+Counts: .text=23 .rodata=12 .data.rel.ro=4 .data=6 .bss=6 .other=23
+Number of unique paths: 10
 
 Section Legend: t=.text, r=.rodata, R=.data.rel.ro, d=.data, b=.bss, o=.other
 Index | Running Total | Section@Address | PSS | Path
 ------------------------------------------------------------
 0)         16 (0.0%)  *@Group      16              _GLOBAL__sub_I_page_allocator.cc (count=1)
-1)         72 (0.0%)  *@Group      56              _GLOBAL__sub_I_bbr_sender.cc (count=1)
+1)         72 (0.0%)  *@Group      56              _GLOBAL__sub_I_bbr_sender.cc (count=2)
 2)        100 (0.0%)  *@Group      28              _GLOBAL__sub_I_pacing_sender.cc (count=1)
 3)        170 (0.0%)  *@Group      70              extFromUUseMapping (count=2)
 4)       9928 (0.0%)  *@Group      9758            ** symbol gaps (count=1)
@@ -93,14 +93,14 @@ Histogram of symbols based on PSS:
      [4,8): 1    [64,128): 2    [2048,4096): 4    [65536,131072): 2     [2097152,4194304): 2
     [8,16): 6   [128,256): 2    [4096,8192): 2   [131072,262144): 1   [16777216,33554432): 1
 Sizes: .text=34.3mb     .rodata=5.65mb     .data.rel.ro=1.02mb     .data=99.4kb     .bss=512kb      .other=86.2mb     total=128.0mb
-Counts: .text=22 .rodata=12 .data.rel.ro=4 .data=6 .bss=6 .other=23
-Number of unique paths: 9
+Counts: .text=23 .rodata=12 .data.rel.ro=4 .data=6 .bss=6 .other=23
+Number of unique paths: 10
 
 Section Legend: t=.text, r=.rodata, R=.data.rel.ro, d=.data, b=.bss, o=.other
 Index | Running Total | Section@Address | PSS | Path
 ------------------------------------------------------------
 0)         16 (0.0%)  *@Group      16              _GLOBAL__sub_I_page_allocator.cc (count=1)
-1)         72 (0.0%)  *@Group      56              _GLOBAL__sub_I_bbr_sender.cc (count=1)
+1)         72 (0.0%)  *@Group      56              _GLOBAL__sub_I_bbr_sender.cc (count=2)
 2)        100 (0.0%)  *@Group      28              _GLOBAL__sub_I_pacing_sender.cc (count=1)
 3)        170 (0.0%)  *@Group      70              extFromUUseMapping (count=2)
 4)       9928 (0.0%)  *@Group      9758            ** symbol gaps (count=1)
@@ -172,14 +172,14 @@ Histogram of symbols based on PSS:
      [4,8): 2    [64,128): 3    [2048,4096): 4    [65536,131072): 2     [2097152,4194304): 2
     [8,16): 6   [128,256): 1    [4096,8192): 2   [131072,262144): 1   [16777216,33554432): 1
 Sizes: .text=34.3mb     .rodata=5.65mb     .data.rel.ro=1.02mb     .data=99.4kb     .bss=512kb      .other=86.2mb     total=128.0mb
-Counts: .text=22 .rodata=12 .data.rel.ro=4 .data=6 .bss=6 .other=23
-Number of unique paths: 9
+Counts: .text=23 .rodata=12 .data.rel.ro=4 .data=6 .bss=6 .other=23
+Number of unique paths: 10
 
 Section Legend: t=.text, r=.rodata, R=.data.rel.ro, d=.data, b=.bss, o=.other
 Index | Running Total | Section@Address | PSS | Path
 ------------------------------------------------------------
 0)         16 (0.0%)  *@Group      16              _GLOBAL__sub_I_page_allocator.cc (count=1)
-1)         72 (0.0%)  *@Group      56              _GLOBAL__sub_I_bbr_sender.cc (count=1)
+1)         72 (0.0%)  *@Group      56              _GLOBAL__sub_I_bbr_sender.cc (count=2)
 2)        100 (0.0%)  *@Group      28              _GLOBAL__sub_I_pacing_sender.cc (count=1)
 3)        170 (0.0%)  *@Group      70              extFromUUseMapping (count=2)
 4)       9928 (0.0%)  *@Group      9758            ** symbol gaps (count=1)
@@ -254,16 +254,16 @@ Histogram of symbols based on PSS:
      [8,16): 6    [128,256): 3    [4096,8192): 2   [131072,262144): 3     [2097152,4194304): 2
     [16,32): 12   [256,512): 3   [8192,16384): 1   [262144,524288): 1   [16777216,33554432): 1
 Sizes: .text=34.3mb     .rodata=5.65mb     .data.rel.ro=1.02mb     .data=99.4kb     .bss=512kb      .other=86.2mb     total=128.0mb
-Counts: .text=22 .rodata=12 .data.rel.ro=4 .data=6 .bss=6 .other=23
-Number of unique paths: 9
+Counts: .text=23 .rodata=12 .data.rel.ro=4 .data=6 .bss=6 .other=23
+Number of unique paths: 10
 
 Section Legend: t=.text, r=.rodata, R=.data.rel.ro, d=.data, b=.bss, o=.other
 Index | Running Total | Section@Address | PSS | Path
 ------------------------------------------------------------
 0)         16 (0.0%)  t@0x28d900   16             base/page_allocator.cc
              _GLOBAL__sub_I_page_allocator.cc
-1)         72 (0.0%)  t@0x28d910   56             base/page_allocator.cc
-             _GLOBAL__sub_I_bbr_sender.cc
+1)         72 (0.0%)  *@Group      56             {no path}
+             _GLOBAL__sub_I_bbr_sender.cc (count=2)
 2)        100 (0.0%)  t@0x28d948   28             base/page_allocator.cc
              _GLOBAL__sub_I_pacing_sender.cc
 3)        170 (0.0%)  *@Group      70             base/page_allocator.cc

@@ -34,7 +34,8 @@ apk_size=147858965
 zipalign_padding=32
 Symbols:
 <Container1:/test.so (armeabi-v7a)>.text@28d900(size_without_padding=16,padding=0,full_name=_GLOBAL__sub_I_page_allocator.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={startup},num_aliases=1,component=Blink>Internal)
-<Container1:/test.so (armeabi-v7a)>.text@28d910(size_without_padding=56,padding=0,full_name=_GLOBAL__sub_I_bbr_sender.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={startup},num_aliases=1,component=Blink>Internal)
+<Container1:/test.so (armeabi-v7a)>.text@28d910(size_without_padding=56,padding=0,full_name=_GLOBAL__sub_I_bbr_sender.cc,object_path=$SYSTEM/path.a/foo.o,source_path=,flags={startup},num_aliases=2,component=)
+<Container1:/test.so (armeabi-v7a)>.text@28d910(size_without_padding=56,padding=0,full_name=_GLOBAL__sub_I_bbr_sender.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=2,component=Blink>Internal)
 <Container1:/test.so (armeabi-v7a)>.text@28d948(size_without_padding=28,padding=0,full_name=_GLOBAL__sub_I_pacing_sender.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={startup},num_aliases=1,component=Blink>Internal)
 <Container1:/test.so (armeabi-v7a)>.text@28d964(size_without_padding=38,padding=0,full_name=extFromUUseMapping(signed char, unsigned int, int),object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
 <Container1:/test.so (armeabi-v7a)>.text@28d98a(size_without_padding=32,padding=0,full_name=extFromUUseMapping(aj, int),object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
@@ -112,7 +113,8 @@ Symbols:
 <Container1:/test.so (armeabi-v7a)>.other@0(size_without_padding=17166112,padding=0,full_name=** ELF Section: .symtab,object_path=,source_path=$NATIVE/test.so (arm),flags={},num_aliases=1,component=)
 <Container1:/test.so (armeabi-v7a)>.other@0(size_without_padding=0,padding=33902635,full_name=Overhead: ELF file,object_path=,source_path=$NATIVE/test.so (arm),flags={},num_aliases=1,component=)
 <Container2:>.text@28d900(size_without_padding=16,padding=0,full_name=_GLOBAL__sub_I_page_allocator.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={startup},num_aliases=1,component=Blink>Internal)
-<Container2:>.text@28d910(size_without_padding=56,padding=0,full_name=_GLOBAL__sub_I_bbr_sender.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={startup},num_aliases=1,component=Blink>Internal)
+<Container2:>.text@28d910(size_without_padding=56,padding=0,full_name=_GLOBAL__sub_I_bbr_sender.cc,object_path=$SYSTEM/path.a/foo.o,source_path=,flags={startup},num_aliases=2,component=)
+<Container2:>.text@28d910(size_without_padding=56,padding=0,full_name=_GLOBAL__sub_I_bbr_sender.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=2,component=Blink>Internal)
 <Container2:>.text@28d948(size_without_padding=28,padding=0,full_name=_GLOBAL__sub_I_pacing_sender.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={startup},num_aliases=1,component=Blink>Internal)
 <Container2:>.text@28d964(size_without_padding=38,padding=0,full_name=extFromUUseMapping(signed char, unsigned int, int),object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
 <Container2:>.text@28d98a(size_without_padding=32,padding=0,full_name=extFromUUseMapping(aj, int),object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)

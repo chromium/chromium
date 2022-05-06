@@ -5,8 +5,8 @@ map_file_name=../../../test.map
 out_directory=out/Release
 Section .text: has 100.0% of 35982248 bytes accounted for from 17 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 13808 bytes (0.0%)
-* 14 have source paths. Accounts for 74034 bytes (0.2%).
-* 14 have a component assigned. Accounts for 74034 bytes (0.2%).
+* 13 have source paths. Accounts for 73978 bytes (0.2%).
+* 13 have a component assigned. Accounts for 73978 bytes (0.2%).
 * 5 placeholders exist (symbols that start with **). Accounts for 35912296 bytes (99.8%).
 * 0 symbols have shared ownership.
 * 1 symbols are marked as "hot". Accounts for 12 bytes (0.0%).
@@ -69,7 +69,7 @@ Section .other: has 100.0% of 56448494 bytes accounted for from 22 symbols. 0 by
 * 22 placeholders exist (symbols that start with **). Accounts for 56448494 bytes (100.0%).
 * 0 symbols have shared ownership.
 .text@28d900(size_without_padding=16,padding=0,full_name=_GLOBAL__sub_I_page_allocator.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={startup},num_aliases=1,component=Blink>Internal)
-.text@28d910(size_without_padding=56,padding=0,full_name=_GLOBAL__sub_I_bbr_sender.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={startup},num_aliases=1,component=Blink>Internal)
+.text@28d910(size_without_padding=56,padding=0,full_name=_GLOBAL__sub_I_bbr_sender.cc,object_path=$SYSTEM/path.a/foo.o,source_path=,flags={startup},num_aliases=1,component=)
 .text@28d948(size_without_padding=28,padding=0,full_name=_GLOBAL__sub_I_pacing_sender.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={startup},num_aliases=1,component=Blink>Internal)
 .text@28d964(size_without_padding=38,padding=0,full_name=extFromUUseMapping(signed char, unsigned int, int),object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
 .text@28d98a(size_without_padding=32,padding=0,full_name=extFromUUseMapping(aj, int),object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)

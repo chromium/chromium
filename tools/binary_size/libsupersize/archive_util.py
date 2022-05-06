@@ -7,6 +7,8 @@ import logging
 import os
 import re
 
+import models
+
 
 def ExtendSectionRange(section_range_by_name, section_name, delta_size):
   """Adds |delta_size| to |section_name|'s size in |section_range_by_name|."""
@@ -26,6 +28,9 @@ def _NormalizeObjectPath(path):
   elif path.startswith('../../'):
     # Convert ../../third_party/... -> third_party/...
     path = path[6:]
+  elif path.startswith('/'):
+    # Convert absolute paths to $SYSTEM/basename.o.
+    path = os.path.join(models.SYSTEM_PREFIX_PATH, os.path.basename(path))
   if path.endswith(')'):
     # Convert foo/bar.a(baz.o) -> foo/bar.a/baz.o so that hierarchical
     # breakdowns consider the .o part to be a separate node.
@@ -52,6 +57,11 @@ def _NormalizeSourcePath(path, gen_dir_pattern):
   if path.startswith('../../'):
     # Convert ../../third_party/... -> third_party/...
     return False, path[6:]
+  if path.startswith('/'):
+    # Convert absolute paths to $SYSTEM/basename.cpp.
+    # E.g.: /buildbot/src/android/ndk-release-r23/toolchain/llvm-project/
+    #       libcxx/src/vector.cpp
+    path = os.path.join(models.SYSTEM_PREFIX_PATH, os.path.basename(path))
   return True, path
 
 

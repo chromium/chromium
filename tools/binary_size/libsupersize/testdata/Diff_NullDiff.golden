@@ -22,7 +22,7 @@ Section Sizes (Total=0 bytes (0 bytes)):
     .rodata: 0 bytes (0 bytes) (0.0%)
     .text: 0 bytes (0 bytes) (0.0%)
 
-0 symbols added (+), 0 changed (~), 0 removed (-), 77 unchanged (not shown)
+0 symbols added (+), 0 changed (~), 0 removed (-), 78 unchanged (not shown)
 Added/Removed by section: 
 Of changed symbols, 0 grew, 0 shrank
 Number of unique symbols 72 -> 72 (+0)

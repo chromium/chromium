@@ -18,7 +18,7 @@ _OUTPUT = """\
 0x06435f01: DW_TAG_compile_unit
               DW_AT_producer    ("")
               DW_AT_language    (DW_LANG_C_plus_plus_14)
-              DW_AT_name        ("../../third_party/container/container.c")
+              DW_AT_name        ("/third_party/container/container.c")
               DW_AT_stmt_list   (0x0846bbf7)
               DW_AT_comp_dir    (".")
               DW_AT_low_pc      (0x00000000)

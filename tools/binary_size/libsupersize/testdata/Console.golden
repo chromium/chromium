@@ -86,169 +86,171 @@ Section Sizes (Total=128.0mb (134218045 bytes)):
     .symtab: 16.4mb (17166112 bytes) (12.8%) (counted in .other)
     .text: 34.3mb (35982248 bytes) (26.8%)
 
-Showing 77 symbols (71 unique) with total pss: 134218029 bytes
+Showing 78 symbols (71 unique) with total pss: 134218029 bytes
 Histogram of symbols based on PSS:
-      [2,4): 7      [32,64): 11     [512,1024): 1     [32768,65536): 1      [524288,1048576): 2   [33554432,67108864): 3
+      [2,4): 7      [32,64): 10     [512,1024): 1     [32768,65536): 1      [524288,1048576): 2   [33554432,67108864): 3
       [4,8): 6     [64,128): 2     [2048,4096): 4    [65536,131072): 2     [1048576,2097152): 3
      [8,16): 5    [128,256): 2     [4096,8192): 2   [131072,262144): 3     [2097152,4194304): 2
-    [16,32): 15   [256,512): 3    [8192,16384): 1   [262144,524288): 1   [16777216,33554432): 1
+    [16,32): 17   [256,512): 3    [8192,16384): 1   [262144,524288): 1   [16777216,33554432): 1
 Sizes: .text=34.3mb     .rodata=5.65mb     .data.rel.ro=1.02mb     .data=99.4kb     .bss=512kb      .other=86.2mb     total=128.0mb
-Counts: .text=22 .rodata=12 .data.rel.ro=4 .data=6 .bss=6 .other=23
-Number of unique paths: 9
+Counts: .text=23 .rodata=12 .data.rel.ro=4 .data=6 .bss=6 .other=23
+Number of unique paths: 10
 
 Section Legend: t=.text, r=.rodata, R=.data.rel.ro, d=.data, b=.bss, o=.other
 Index | Running Total | Section@Address | PSS | Path
 ------------------------------------------------------------
 0)         16 (0.0%)  t@0x28d900   16             base/page_allocator.cc
              _GLOBAL__sub_I_page_allocator.cc
-1)         72 (0.0%)  t@0x28d910   56             base/page_allocator.cc
-             _GLOBAL__sub_I_bbr_sender.cc
-2)        100 (0.0%)  t@0x28d948   28             base/page_allocator.cc
+1)         44 (0.0%)  t@0x28d910   28 (size=56)   $SYSTEM/path.a/foo.o
+             _GLOBAL__sub_I_bbr_sender.cc (num_aliases=2)
+2)         72 (0.0%)  t@0x28d910   28 (size=56)   base/page_allocator.cc
+             _GLOBAL__sub_I_bbr_sender.cc (num_aliases=2)
+3)        100 (0.0%)  t@0x28d948   28             base/page_allocator.cc
              _GLOBAL__sub_I_pacing_sender.cc
-3)        138 (0.0%)  t@0x28d964   38             base/page_allocator.cc
+4)        138 (0.0%)  t@0x28d964   38             base/page_allocator.cc
              extFromUUseMapping
-4)        170 (0.0%)  t@0x28d98a   32             base/page_allocator.cc
+5)        170 (0.0%)  t@0x28d98a   32             base/page_allocator.cc
              extFromUUseMapping
-5)       9928 (0.0%)  t@Group      9758           {no path}
+6)       9928 (0.0%)  t@Group      9758           {no path}
              ** symbol gaps (count=2)
-6)      10376 (0.0%)  t@0x28f000   448            $root_gen_dir/third_party/icu/ucnv_ext.c
+7)      10376 (0.0%)  t@0x28f000   448            $root_gen_dir/third_party/icu/ucnv_ext.c
              ucnv_extMatchFromU
-7)      10404 (0.0%)  t@0x28f1c8   28             $root_gen_dir/third_party/icu/ucnv_ext.c
+8)      10404 (0.0%)  t@0x28f1c8   28             $root_gen_dir/third_party/icu/ucnv_ext.c
              _GLOBAL__sub_I_SkDeviceProfile.cpp
-8)      79528 (0.1%)  t@0x28f1e0   69124          $root_gen_dir/third_party/icu/ucnv_ext.c
+9)      79528 (0.1%)  t@0x28f1e0   69124          $root_gen_dir/third_party/icu/ucnv_ext.c
              foo_bar
-9)      79552 (0.1%)  t@0x2a0000   24 (size=48)   $root_gen_dir/third_party/icu/ucnv_ext.c
+10)     79552 (0.1%)  t@0x2a0000   24 (size=48)   $root_gen_dir/third_party/icu/ucnv_ext.c
              BazAlias (num_aliases=2)
-10)     79576 (0.1%)  t@0x2a0000   24 (size=48)   {no path}
+11)     79576 (0.1%)  t@0x2a0000   24 (size=48)   {no path}
              blink::ContiguousContainerBase::shrinkToFit (num_aliases=2)
-11)     79579 (0.1%)  t@0x2a0010   3 (size=12)    third_party/fft_float.cc
+12)     79579 (0.1%)  t@0x2a0010   3 (size=12)    third_party/fft_float.cc
              BarAlias (num_aliases=4)
-12)     79582 (0.1%)  t@0x2a0010   3 (size=12)    third_party/fft_float.cc
+13)     79582 (0.1%)  t@0x2a0010   3 (size=12)    third_party/fft_float.cc
              FooAlias (num_aliases=4)
-13)     79585 (0.1%)  t@0x2a0010   3 (size=12)    $root_gen_dir/third_party/icu/ucnv_ext.c
+14)     79585 (0.1%)  t@0x2a0010   3 (size=12)    $root_gen_dir/third_party/icu/ucnv_ext.c
              blink::ContiguousContainerBase::shrinkToFit (num_aliases=4)
-14)     79588 (0.1%)  t@0x2a0010   3 (size=12)    third_party/paint.cc
+15)     79588 (0.1%)  t@0x2a0010   3 (size=12)    third_party/paint.cc
              blink::ContiguousContainerBase::shrinkToFit (num_aliases=4)
-15)     79616 (0.1%)  t@0x2a0020   28             third_party/container/container.c
+16)     79616 (0.1%)  t@0x2a0020   28             third_party/container/container.c
              blink::ContiguousContainerBase::ContiguousContainerBase
-16)     79710 (0.1%)  t@0x2a1000   94             third_party/container/container.c
+17)     79710 (0.1%)  t@0x2a1000   94             third_party/container/container.c
              blink::PaintChunker::releasePaintChunks
-17)     83744 (0.1%)  t@0x2a2000   4034           third_party/container/container.c
+18)     83744 (0.1%)  t@0x2a2000   4034           third_party/container/container.c
              ** outlined function
-18)     83768 (0.1%)  t@0x2a2020   24 (size=48)   {no path}
+19)     83768 (0.1%)  t@0x2a2020   24 (size=48)   {no path}
              aliasedWithOutlinedFunction (num_aliases=2)
-19)     83792 (0.1%)  t@0x2a2020   24 (size=48)   {no path}
+20)     83792 (0.1%)  t@0x2a2020   24 (size=48)   {no path}
              ** outlined function * 2 (num_aliases=2)
-20)  35982248 (26.8%) t@0x2a2050   35898456       {no path}
+21)  35982248 (26.8%) t@0x2a2050   35898456       {no path}
              ** .text (unattributed)
-21)  35982250 (26.8%) r@0x266e600  2.5 (size=5)   base/page_allocator.cc
+22)  35982250 (26.8%) r@0x266e600  2.5 (size=5)   base/page_allocator.cc
              "Str1" (num_aliases=2)
-22)  35982253 (26.8%) r@0x266e600  2.5 (size=5)   $root_gen_dir/third_party/icu/ucnv_ext.c
+23)  35982253 (26.8%) r@0x266e600  2.5 (size=5)   $root_gen_dir/third_party/icu/ucnv_ext.c
              "Str1" (num_aliases=2)
-23)  35982269 (26.8%) r@0x266e605  16             $root_gen_dir/third_party/icu/ucnv_ext.c
+24)  35982269 (26.8%) r@0x266e605  16             $root_gen_dir/third_party/icu/ucnv_ext.c
              "String literal2"
-24)  35982312 (26.8%) r@0x266e630  43             {no path}
+25)  35982312 (26.8%) r@0x266e630  43             {no path}
              ** merge strings
-25)  37947657 (28.3%) r@0x284d600  1965345        {no path}
+26)  37947657 (28.3%) r@0x284d600  1965345        {no path}
              ** merge constants
-26)  37947660 (28.3%) r@0x284e364  3              {no path}
+27)  37947660 (28.3%) r@0x284e364  3              {no path}
              ** symbol gap 0
-27)  37947668 (28.3%) r@0x284e364  8              base/page_allocator.cc
-28)  37947712 (28.3%) r@0x284e370  44             base/page_allocator.cc
+28)  37947668 (28.3%) r@0x284e364  8              base/page_allocator.cc
+29)  37947712 (28.3%) r@0x284e370  44             base/page_allocator.cc
              Name
-29)  37947744 (28.3%) r@0x284e398  32             third_party/container/container.c
+30)  37947744 (28.3%) r@0x284e398  32             third_party/container/container.c
              chrome::mojom::FilePatcher::Name_
-30)  38623784 (28.8%) r@0x28f3450  676040         third_party/paint.cc
+31)  38623784 (28.8%) r@0x28f3450  676040         third_party/paint.cc
              kAnimationFrameTimeHistogramClassPath
-31)  38623788 (28.8%) r@0x28f3480  4              third_party/paint.cc
+32)  38623788 (28.8%) r@0x28f3480  4              third_party/paint.cc
              blink::CSSValueKeywordsHash::findValueImpl::value_word_list
-32)  41909884 (31.2%) r@0x28f3484  3286096        {no path}
+33)  41909884 (31.2%) r@0x28f3484  3286096        {no path}
              ** .rodata (unattributed)
-33)  41909940 (31.2%) R@0x2c176f0  56             $root_gen_dir/third_party/icu/ucnv_ext.c
+34)  41909940 (31.2%) R@0x2c176f0  56             $root_gen_dir/third_party/icu/ucnv_ext.c
              ChromeMainDelegate [vtable]
-34)  41909964 (31.2%) R@0x2c17728  24             $root_gen_dir/third_party/icu/ucnv_ext.c
+35)  41909964 (31.2%) R@0x2c17728  24             $root_gen_dir/third_party/icu/ucnv_ext.c
              chrome::mojom::FieldTrialRecorder [vtable]
-35)  42699868 (31.8%) R@0x2c17740  789904         third_party/container/container.c
+36)  42699868 (31.8%) R@0x2c17740  789904         third_party/container/container.c
              chrome::mojom::FieldTrialRecorderProxy [vtable]
-36)  42699900 (31.8%) R@0x2cd84e0  32             third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libcontroller_api_impl.a_controller_api_impl.o
+37)  42699900 (31.8%) R@0x2cd84e0  32             third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libcontroller_api_impl.a_controller_api_impl.o
              .Lswitch.table.45
-37)  42699908 (31.8%) R@0x2cd84f0  8              third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libport_android_jni.a_jni_utils.o
+38)  42699908 (31.8%) R@0x2cd84f0  8              third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libport_android_jni.a_jni_utils.o
              kSystemClassPrefixes
-38)  42699964 (31.8%) R@0x2cd8500  56             third_party/paint.cc
+39)  42699964 (31.8%) R@0x2cd8500  56             third_party/paint.cc
              ChromeMainDelegateAndroid [vtable]
-39)  42699988 (31.8%) R@0x2cd8538  24             base/page_allocator.cc
+40)  42699988 (31.8%) R@0x2cd8538  24             base/page_allocator.cc
              mojo::MessageReceiver [vtable]
-40)  42700000 (31.8%) R@0x2cd8550  12             base/page_allocator.cc
+41)  42700000 (31.8%) R@0x2cd8550  12             base/page_allocator.cc
              kMethodsAnimationFrameTimeHistogram
-41)  43765132 (32.6%) R@0x2cd855c  1065132        {no path}
+42)  43765132 (32.6%) R@0x2cd855c  1065132        {no path}
              ** .data.rel.ro (unattributed)
-42)  43765136 (32.6%) d@0x2de7000  4              base/page_allocator.cc
+43)  43765136 (32.6%) d@0x2de7000  4              base/page_allocator.cc
              google::protobuf::internal::pLinuxKernelCmpxchg
-43)  43765140 (32.6%) d@0x2de7004  4              third_party/container/container.c
+44)  43765140 (32.6%) d@0x2de7004  4              third_party/container/container.c
              google::protobuf::internal::pLinuxKernelMemoryBarrier
-44)  43765292 (32.6%) d@0x2de7008  152            third_party/container/container.c
+45)  43765292 (32.6%) d@0x2de7008  152            third_party/container/container.c
              base::android::kBaseRegisteredMethods
-45)  43765296 (32.6%) d@0x2de70a0  4              third_party/container/container.c
+46)  43765296 (32.6%) d@0x2de70a0  4              third_party/container/container.c
              base::android::g_renderer_histogram_code
-46)  43765300 (32.6%) d@0x2de70a4  4              third_party/container/container.c
+47)  43765300 (32.6%) d@0x2de70a4  4              third_party/container/container.c
              base::android::g_library_version_number
-47)  43866900 (32.7%) d@0x2de70a8  101600         {no path}
+48)  43866900 (32.7%) d@0x2de70a8  101600         {no path}
              ** .data (unattributed)
-48)  43866900 (32.7%) b@0x0        262144         third_party/fft_float.cc
+49)  43866900 (32.7%) b@0x0        262144         third_party/fft_float.cc
              ff_cos_131072
-49)  43866900 (32.7%) b@0x0        131072         third_party/fft_fixed.cc
+50)  43866900 (32.7%) b@0x0        131072         third_party/fft_fixed.cc
              ff_cos_131072_fixed
-50)  43866900 (32.7%) b@0x0        131072         third_party/fft_float.cc
+51)  43866900 (32.7%) b@0x0        131072         third_party/fft_float.cc
              ff_cos_65536
-51)  43866900 (32.7%) b@0x2dffda0  28             $root_gen_dir/third_party/icu/ucnv_ext.c
+52)  43866900 (32.7%) b@0x2dffda0  28             $root_gen_dir/third_party/icu/ucnv_ext.c
              g_chrome_content_browser_client
-52)  43866900 (32.7%) b@0x2dffe80  200            $root_gen_dir/third_party/icu/ucnv_ext.c
+53)  43866900 (32.7%) b@0x2dffe80  200            $root_gen_dir/third_party/icu/ucnv_ext.c
              SaveHistogram::atomic_histogram_pointer
-53)  43866900 (32.7%) b@0x2dffe84  4              $root_gen_dir/third_party/icu/ucnv_ext.c
+54)  43866900 (32.7%) b@0x2dffe84  4              $root_gen_dir/third_party/icu/ucnv_ext.c
              g_AnimationFrameTimeHistogram_clazz
-54)  43866960 (32.7%) o@0x0        60             {no path}
+55)  43866960 (32.7%) o@0x0        60             {no path}
              ** ELF Section: .ARM.attributes
-55)  45403416 (33.8%) o@0x0        1536456        {no path}
+56)  45403416 (33.8%) o@0x0        1536456        {no path}
              ** ELF Section: .ARM.exidx
-56)  45587048 (34.0%) o@0x0        183632         {no path}
+57)  45587048 (34.0%) o@0x0        183632         {no path}
              ** ELF Section: .ARM.extab
-57)  45587352 (34.0%) o@0x0        304            {no path}
+58)  45587352 (34.0%) o@0x0        304            {no path}
              ** ELF Section: .dynamic
-58)  45591377 (34.0%) o@0x0        4025           {no path}
+59)  45591377 (34.0%) o@0x0        4025           {no path}
              ** ELF Section: .dynstr
-59)  45597873 (34.0%) o@0x0        6496           {no path}
+60)  45597873 (34.0%) o@0x0        6496           {no path}
              ** ELF Section: .dynsym
-60)  45597881 (34.0%) o@0x0        8              {no path}
+61)  45597881 (34.0%) o@0x0        8              {no path}
              ** ELF Section: .fini_array
-61)  45598693 (34.0%) o@0x0        812            {no path}
+62)  45598693 (34.0%) o@0x0        812            {no path}
              ** ELF Section: .gnu.version
-62)  45598721 (34.0%) o@0x0        28             {no path}
+63)  45598721 (34.0%) o@0x0        28             {no path}
              ** ELF Section: .gnu.version_d
-63)  45598817 (34.0%) o@0x0        96             {no path}
+64)  45598817 (34.0%) o@0x0        96             {no path}
              ** ELF Section: .gnu.version_r
-64)  45641773 (34.0%) o@0x0        42956          {no path}
+65)  45641773 (34.0%) o@0x0        42956          {no path}
              ** ELF Section: .got
-65)  45644457 (34.0%) o@0x0        2684           {no path}
+66)  45644457 (34.0%) o@0x0        2684           {no path}
              ** ELF Section: .hash
-66)  45644465 (34.0%) o@0x0        8              {no path}
+67)  45644465 (34.0%) o@0x0        8              {no path}
              ** ELF Section: .init_array
-67)  45644484 (34.0%) o@0x0        19             {no path}
+68)  45644484 (34.0%) o@0x0        19             {no path}
              ** ELF Section: .interp
-68)  45644520 (34.0%) o@0x0        36             {no path}
+69)  45644520 (34.0%) o@0x0        36             {no path}
              ** ELF Section: .note.gnu.build-id
-69)  45644548 (34.0%) o@0x0        28             {no path}
+70)  45644548 (34.0%) o@0x0        28             {no path}
              ** ELF Section: .note.gnu.gold-version
-70)  45648792 (34.0%) o@0x0        4244           {no path}
+71)  45648792 (34.0%) o@0x0        4244           {no path}
              ** ELF Section: .plt
-71)  48304176 (36.0%) o@0x0        2655384        {no path}
+72)  48304176 (36.0%) o@0x0        2655384        {no path}
              ** ELF Section: .rel.dyn
-72)  48306992 (36.0%) o@0x0        2816           {no path}
+73)  48306992 (36.0%) o@0x0        2816           {no path}
              ** ELF Section: .rel.plt
-73)  48307428 (36.0%) o@0x0        436            {no path}
+74)  48307428 (36.0%) o@0x0        436            {no path}
              ** ELF Section: .shstrtab
-74)  83149282 (62.0%) o@0x0        34841854       {no path}
+75)  83149282 (62.0%) o@0x0        34841854       {no path}
              ** ELF Section: .strtab
-75)  100315394 (74.7%) o@0x0        17166112       {no path}
+76)  100315394 (74.7%) o@0x0        17166112       {no path}
              ** ELF Section: .symtab
-76)  134218029 (100.0%) o@0x0        33902635       {no path}
+77)  134218029 (100.0%) o@0x0        33902635       {no path}
              Overhead: ELF file
