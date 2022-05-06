@@ -27,7 +27,7 @@
   }
 
   #inputInfo {
-    background-color: var(--cros-bg-color);
+    background-color: var(--cros-bg-color-elevation-3);
     color: var(--cros-text-color-secondary);
     font-size: var(--cr-form-field-label-font-size);
     font-weight: 400;
@@ -37,15 +37,6 @@
     position: absolute;
     top: 97px;
     width: 100%;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #inputInfo {
-      /* Note: In dark mode, cr-dialog applies a linear-gradient() to add a 4%
-       * white layer on top of the fully opaque background-color. */
-      background-image: linear-gradient(rgba(255, 255, 255, 0.04),
-                                        rgba(255, 255, 255, 0.04));
-    }
   }
 
   #inputCount {

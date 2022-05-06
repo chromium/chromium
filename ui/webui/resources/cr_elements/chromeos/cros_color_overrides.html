@@ -16,6 +16,12 @@ To get Chrome OS System Colors, an element must:
         color: var(--cros-link-color);
       }
 
+      :host-context([cros]) cr-dialog::part(dialog) {
+        background-color: var(--cros-bg-color-elevation-3);
+        background-image: none;
+        box-shadow: var(--cros-elevation-3-shadow);
+      }
+
       :host-context([cros]) cr-radio-button {
         --cr-radio-button-checked-color: var(--cros-radio-button-color);
         --cr-radio-button-checked-ripple-color:
