@@ -23,7 +23,7 @@ class SamlConfirmPasswordView
   SamlConfirmPasswordView& operator=(const SamlConfirmPasswordView&) = delete;
 
   virtual void Show(const std::string& email, bool is_manual) = 0;
-  virtual void Retry() = 0;
+  virtual void ShowPasswordStep(bool retry) = 0;
 };
 
 // A class that handles WebUI hooks in Gaia screen.
@@ -42,7 +42,7 @@ class SamlConfirmPasswordHandler : public BaseScreenHandler,
 
   // SamlConfirmPasswordView:
   void Show(const std::string& email, bool is_manual) override;
-  void Retry() override;
+  void ShowPasswordStep(bool retry) override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(::login::LocalizedValuesBuilder* builder) final;

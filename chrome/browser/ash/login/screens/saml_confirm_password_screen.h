@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/check_passwords_against_cryptohome_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/saml_confirm_password_handler.h"
 #include "components/login/base_screen_handler_utils.h"
 
@@ -52,11 +53,14 @@ class SamlConfirmPasswordScreen : public BaseScreen {
   void OnUserAction(const base::Value::List& args) override;
 
   void TryPassword(const std::string& password);
+  void ShowPasswordStep(bool retry);
 
   base::WeakPtr<SamlConfirmPasswordView> view_;
 
   ScreenExitCallback exit_callback_;
 
+  std::unique_ptr<CheckPasswordsAgainstCryptohomeHelper>
+      check_passwords_against_cryptohome_helper_;
   std::unique_ptr<UserContext> user_context_;
   ::login::StringList scraped_saml_passwords_;
   int attempt_count_ = 0;

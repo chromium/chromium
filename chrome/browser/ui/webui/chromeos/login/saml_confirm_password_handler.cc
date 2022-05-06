@@ -25,8 +25,8 @@ void SamlConfirmPasswordHandler::Show(const std::string& email,
   ShowInWebUI(std::move(data));
 }
 
-void SamlConfirmPasswordHandler::Retry() {
-  CallExternalAPI("retry");
+void SamlConfirmPasswordHandler::ShowPasswordStep(bool retry) {
+  CallExternalAPI("showPasswordStep", retry);
 }
 
 void SamlConfirmPasswordHandler::DeclareLocalizedValues(

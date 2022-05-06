@@ -285,6 +285,11 @@ const base::Feature kCellularUseAttachApn{"CellularUseAttachApn",
 const base::Feature kCellularUseSecondEuicc{"CellularUseSecondEuicc",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, Multiple scraped passwords should be checked against password in
+// cryptohome.
+const base::Feature kCheckPasswordsAgainstCryptohomeHelper{
+    "CheckPasswordsAgainstCryptohomeHelper", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables pasting a few recently copied items in a menu when pressing search +
 // v.
 const base::Feature kClipboardHistory{"ClipboardHistory",
@@ -1623,6 +1628,10 @@ bool IsCalendarViewEnabled() {
 
 bool IsCaptureModeSelfieCameraEnabled() {
   return base::FeatureList::IsEnabled(kCaptureModeSelfieCamera);
+}
+
+bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
+  return base::FeatureList::IsEnabled(kCheckPasswordsAgainstCryptohomeHelper);
 }
 
 bool IsClipboardHistoryContextMenuNudgeEnabled() {

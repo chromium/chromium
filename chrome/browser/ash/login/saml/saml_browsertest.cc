@@ -387,6 +387,10 @@ class SamlTestWithFeatures
     } else {
       disabled_features.push_back(features::kRedirectToDefaultIdP);
     }
+    // TODO(https://crbug.com/1295294) Introduce a different test suite when the
+    // feature is enabled.
+    disabled_features.push_back(
+        features::kCheckPasswordsAgainstCryptohomeHelper);
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
