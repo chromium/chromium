@@ -91,7 +91,7 @@ export class Review<T> extends View {
    * Constructs the review view.
    */
   constructor(private readonly viewName: ViewName = ViewName.REVIEW) {
-    super(viewName, {defaultFocusSelector: '.primary'});
+    super(viewName, {defaultFocusSelector: '.primary', dismissByEsc: true});
 
     this.image = dom.getFrom(this.root, '.review-image', HTMLElement);
     this.video = dom.getFrom(this.root, '.review-video', HTMLVideoElement);
@@ -194,8 +194,9 @@ export class Review<T> extends View {
       }
       setupI18nElements(btnGroup.el);
     }
-
-    nav.open(this.viewName);
+    nav.open(this.viewName).then(() => {
+      onSelected.signal(null);
+    });
     const result = await onSelected.wait();
     nav.close(this.viewName);
     return result;
