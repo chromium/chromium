@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -90,6 +91,8 @@ public class CastWebContentsActivity extends Activity {
 
     @Nullable
     private CastWebContentsSurfaceHelper mSurfaceHelper;
+
+    private boolean mIsInPictureInPictureMode;
 
     {
         Observable<Intent> gotIntentAfterFinishingState =
@@ -274,12 +277,18 @@ public class CastWebContentsActivity extends Activity {
     }
 
     @Override
+    public void onPictureInPictureModeChanged(
+            boolean isInPictureInPictureMode, Configuration newConfig) {
+        mIsInPictureInPictureMode = isInPictureInPictureMode;
+    }
+
+    @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (mSurfaceHelper != null && mSurfaceHelper.isTouchInputEnabled()) {
-            return super.dispatchTouchEvent(ev);
-        } else {
+        if (mIsInPictureInPictureMode || mSurfaceHelper == null
+                || !mSurfaceHelper.isTouchInputEnabled()) {
             return false;
         }
+        return super.dispatchTouchEvent(ev);
     }
 
     private void turnScreenOn() {
