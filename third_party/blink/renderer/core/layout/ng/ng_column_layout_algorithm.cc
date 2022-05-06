@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/ng/list/ng_unpositioned_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_column_spanner_path.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
@@ -203,6 +204,13 @@ void MulticolPartWalker::MoveToNext() {
 
   // Otherwise, we're done.
   is_finished_ = true;
+}
+
+NGBlockNode GetSpannerFromPath(const NGColumnSpannerPath* path) {
+  while (path->Child())
+    path = path->Child();
+  DCHECK(path->BlockNode().IsColumnSpanAll());
+  return path->BlockNode();
 }
 
 }  // namespace
@@ -468,11 +476,12 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutChildren() {
       const auto* next_column_token =
           To<NGBlockBreakToken>(result->PhysicalFragment().BreakToken());
 
-      if (NGBlockNode spanner_node = result->ColumnSpanner()) {
+      if (const NGColumnSpannerPath* path = result->ColumnSpannerPath()) {
         // We found a spanner, and if there's column content to resume at after
         // it, |next_column_token| will be set. Move the walker to the
         // spanner. We'll now walk that spanner and any sibling spanners, before
         // resuming at |next_column_token|.
+        NGBlockNode spanner_node = GetSpannerFromPath(path);
         walker.MoveToSpanner(spanner_node, next_column_token);
         continue;
       }
@@ -715,8 +724,11 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
       NGFragmentGeometry fragment_geometry =
           CalculateInitialFragmentGeometry(child_space, Node(), BreakToken());
 
-      NGBlockLayoutAlgorithm child_algorithm(
-          {Node(), fragment_geometry, child_space, column_break_token});
+      NGLayoutAlgorithmParams params(Node(), fragment_geometry, child_space,
+                                     column_break_token);
+      params.column_spanner_path = spanner_path_;
+
+      NGBlockLayoutAlgorithm child_algorithm(params);
       child_algorithm.SetBoxType(NGPhysicalFragment::kColumnBox);
       result = child_algorithm.Layout();
       const auto& column =
@@ -734,7 +746,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
       }
       actual_column_count++;
 
-      if (result->ColumnSpanner()) {
+      if (result->ColumnSpannerPath()) {
         is_empty_spanner_parent = result->IsEmptySpannerParent();
         break;
       }
@@ -792,7 +804,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
     } while (column_break_token);
 
     if (!balance_columns) {
-      if (result->ColumnSpanner()) {
+      if (result->ColumnSpannerPath()) {
         // We always have to balance columns preceding a spanner, so if we
         // didn't do that initially, switch over to column balancing mode now,
         // and lay out again.
@@ -819,7 +831,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
     // we need to stop to lay out the spanner(s), and resume column layout
     // afterwards.
     if (!has_violating_break && actual_column_count <= used_column_count_ &&
-        (!column_break_token || result->ColumnSpanner()))
+        (!column_break_token || result->ColumnSpannerPath()))
       break;
 
     // Attempt to stretch the columns.
@@ -1063,8 +1075,16 @@ void NGColumnLayoutAlgorithm::PropagateBaselineFromChild(
     container_builder_.SetBaseline(block_offset + *baseline);
 }
 
-// Distribute as many implicit breaks into the content runs as we need.
 LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
+    const LogicalSize& column_size,
+    LayoutUnit row_offset,
+    const NGBlockBreakToken* child_break_token) {
+  spanner_path_ = nullptr;
+  return CalculateBalancedColumnBlockSizeInternal(column_size, row_offset,
+                                                  child_break_token);
+}
+
+LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSizeInternal(
     const LogicalSize& column_size,
     LayoutUnit row_offset,
     const NGBlockBreakToken* child_break_token) {
@@ -1159,8 +1179,10 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
   tallest_unbreakable_block_size_ = LayoutUnit();
   int forced_break_count = 0;
   do {
-    NGBlockLayoutAlgorithm balancing_algorithm(
-        {Node(), fragment_geometry, space, break_token});
+    NGLayoutAlgorithmParams params(Node(), fragment_geometry, space,
+                                   break_token);
+    params.column_spanner_path = spanner_path_;
+    NGBlockLayoutAlgorithm balancing_algorithm(params);
     balancing_algorithm.SetBoxType(NGPhysicalFragment::kColumnBox);
     const NGLayoutResult* result = balancing_algorithm.Layout();
 
@@ -1203,8 +1225,19 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
         tallest_unbreakable_block_size_, result->TallestUnbreakableBlockSize());
 
     // Stop when we reach a spanner. That's where this row of columns will end.
-    if (result->ColumnSpanner())
+    // When laying out a row of columns, we'll pass in the spanner path, so that
+    // the block layout algorithms can tell whether a node contains the spanner.
+    if (const NGColumnSpannerPath* spanner_path = result->ColumnSpannerPath()) {
+      bool knew_about_spanner = !!spanner_path_;
+      spanner_path_ = spanner_path;
+      if (forced_break_count && !knew_about_spanner) {
+        // We may incorrectly have entered parallel flows, because we didn't
+        // know about the spanner. Try again.
+        return CalculateBalancedColumnBlockSizeInternal(column_size, row_offset,
+                                                        child_break_token);
+      }
       break;
+    }
 
     if (result->HasForcedBreak())
       forced_break_count++;

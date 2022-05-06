@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_floats_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
@@ -218,6 +219,7 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
                              const NGPositionedFloatVector& leading_floats,
                              unsigned handled_leading_floats_index,
                              const NGInlineBreakToken* break_token,
+                             const NGColumnSpannerPath* column_spanner_path,
                              NGExclusionSpace* exclusion_space)
     : line_opportunity_(line_opportunity),
       node_(node),
@@ -239,6 +241,7 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
       constraint_space_(space),
       exclusion_space_(exclusion_space),
       break_token_(break_token),
+      column_spanner_path_(column_spanner_path),
       break_iterator_(text_content_),
       shaper_(text_content_),
       spacing_(text_content_, is_svg_text_),
@@ -2068,9 +2071,12 @@ void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
     constraint_space_.ExclusionSpace().MoveAndUpdateDerivedGeometry(
         *exclusion_space_);
 
+    NGBlockNode block_node(To<LayoutBox>(item.GetLayoutObject()));
+    const NGColumnSpannerPath* spanner_path_for_child =
+        FollowColumnSpannerPath(column_spanner_path_, block_node);
     const NGLayoutResult* layout_result =
-        NGBlockNode(To<LayoutBox>(item.GetLayoutObject()))
-            .Layout(constraint_space_, incoming_block_break_token);
+        block_node.Layout(constraint_space_, incoming_block_break_token,
+                          /* early_break */ nullptr, spanner_path_for_child);
     line_info->SetBlockInInlineLayoutResult(layout_result);
 
     // Early exit if the layout didn't succeed.

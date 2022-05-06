@@ -821,7 +821,7 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
     // spanner. Otherwise we have to break before it. We don't want empty
     // fragments with nothing useful inside, if it's to be resumed in the next
     // fragmentainer.
-    must_break_before = !layout_result.ColumnSpanner() && break_token &&
+    must_break_before = !layout_result.ColumnSpannerPath() && break_token &&
                         !break_token->IsAtBlockEnd();
   }
   if (must_break_before) {

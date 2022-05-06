@@ -157,19 +157,19 @@ TEST_F(NGInlineLayoutAlgorithmTest, BreakToken) {
   container_builder.SetItemsBuilder(&items_builder);
   context.SetItemsBuilder(&items_builder);
   const NGLayoutResult* layout_result =
-      inline_node.Layout(constraint_space, nullptr, &context);
+      inline_node.Layout(constraint_space, nullptr, nullptr, &context);
   const auto& line1 = layout_result->PhysicalFragment();
   EXPECT_TRUE(line1.BreakToken());
 
   // Perform 2nd layout with the break token from the 1st line.
-  const NGLayoutResult* layout_result2 =
-      inline_node.Layout(constraint_space, line1.BreakToken(), &context);
+  const NGLayoutResult* layout_result2 = inline_node.Layout(
+      constraint_space, line1.BreakToken(), nullptr, &context);
   const auto& line2 = layout_result2->PhysicalFragment();
   EXPECT_TRUE(line2.BreakToken());
 
   // Perform 3rd layout with the break token from the 2nd line.
-  const NGLayoutResult* layout_result3 =
-      inline_node.Layout(constraint_space, line2.BreakToken(), &context);
+  const NGLayoutResult* layout_result3 = inline_node.Layout(
+      constraint_space, line2.BreakToken(), nullptr, &context);
   const auto& line3 = layout_result3->PhysicalFragment();
   EXPECT_FALSE(line3.BreakToken());
 }

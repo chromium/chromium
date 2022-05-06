@@ -17,6 +17,7 @@
 namespace blink {
 
 class NGBreakToken;
+class NGColumnSpannerPath;
 class NGConstraintSpace;
 class NGInlineChildLayoutContext;
 class NGLayoutResult;
@@ -38,6 +39,7 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
 
   const NGLayoutResult* Layout(const NGConstraintSpace&,
                                const NGBreakToken*,
+                               const NGColumnSpannerPath*,
                                NGInlineChildLayoutContext* context) const;
 
   // Computes the value of min-content and max-content for this anonymous block

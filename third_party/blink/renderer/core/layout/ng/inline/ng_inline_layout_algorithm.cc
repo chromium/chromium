@@ -57,6 +57,7 @@ NGInlineLayoutAlgorithm::NGInlineLayoutAlgorithm(
     NGInlineNode inline_node,
     const NGConstraintSpace& space,
     const NGInlineBreakToken* break_token,
+    const NGColumnSpannerPath* column_spanner_path,
     NGInlineChildLayoutContext* context)
     : NGLayoutAlgorithm(
           inline_node,
@@ -71,6 +72,7 @@ NGInlineLayoutAlgorithm::NGInlineLayoutAlgorithm(
           break_token),
       box_states_(nullptr),
       context_(context),
+      column_spanner_path_(column_spanner_path),
       baseline_type_(container_builder_.Style().GetFontBaseline()),
       quirks_mode_(inline_node.GetDocument().InLineHeightQuirksMode()) {
   DCHECK(context);
@@ -1197,10 +1199,10 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
                                                  line_block_size, block_delta);
 
     STACK_UNINITIALIZED NGLineInfo line_info;
-    NGLineBreaker line_breaker(Node(), NGLineBreakerMode::kContent,
-                               ConstraintSpace(), line_opportunity,
-                               leading_floats, handled_leading_floats_index,
-                               break_token, &ExclusionSpace());
+    NGLineBreaker line_breaker(
+        Node(), NGLineBreakerMode::kContent, ConstraintSpace(),
+        line_opportunity, leading_floats, handled_leading_floats_index,
+        break_token, column_spanner_path_, &ExclusionSpace());
     line_breaker.NextLine(&line_info);
 
     const auto* block_in_inline_result = line_info.BlockInInlineLayoutResult();

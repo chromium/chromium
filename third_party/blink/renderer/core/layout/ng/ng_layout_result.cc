@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_column_spanner_path.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -263,12 +264,14 @@ NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
       (!physical_fragment_ || !physical_fragment_->BreakToken()))
     EnsureRareData()->early_break = builder->early_break_;
 
-  if (builder->column_spanner_) {
-    DCHECK(builder->column_spanner_.IsBlock());
-    EnsureRareData()->EnsureBlockData()->column_spanner =
-        builder->column_spanner_.GetLayoutBox();
+  if (builder->column_spanner_path_) {
+    EnsureRareData()->EnsureBlockData()->column_spanner_path =
+        builder->column_spanner_path_;
     bitfields_.is_empty_spanner_parent = builder->is_empty_spanner_parent_;
   }
+
+  bitfields_.should_force_same_fragmentation_flow =
+      builder->should_force_same_fragmentation_flow_;
 
   if (HasRareData()) {
     rare_data_->bfc_line_offset = builder->bfc_line_offset_;
@@ -374,7 +377,7 @@ void NGLayoutResult::RareData::Trace(Visitor* visitor) const {
   // This will not cause TOCTOU issue because data_union_type is set in the
   // constructor and never changed.
   if (const BlockData* data = GetBlockData())
-    visitor->Trace(data->column_spanner);
+    visitor->Trace(data->column_spanner_path);
 }
 
 }  // namespace blink

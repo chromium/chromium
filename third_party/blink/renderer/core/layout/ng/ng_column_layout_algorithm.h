@@ -14,6 +14,7 @@ namespace blink {
 enum class NGBreakStatus;
 class NGBlockNode;
 class NGBlockBreakToken;
+class NGColumnSpannerPath;
 class NGConstraintSpace;
 struct LogicalSize;
 struct NGMarginStrut;
@@ -73,7 +74,14 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
   void PropagateBaselineFromChild(const NGPhysicalBoxFragment& child,
                                   LayoutUnit block_offset);
 
+  // Calculate the smallest possible block-size for balanced columns. This will
+  // be the initial size we'll try with when actually lay out the columns.
   LayoutUnit CalculateBalancedColumnBlockSize(
+      const LogicalSize& column_size,
+      LayoutUnit row_offset,
+      const NGBlockBreakToken* child_break_token);
+
+  LayoutUnit CalculateBalancedColumnBlockSizeInternal(
       const LogicalSize& column_size,
       LayoutUnit row_offset,
       const NGBlockBreakToken* child_break_token);
@@ -111,6 +119,8 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
     DCHECK(is_constrained_by_outer_fragmentation_context_);
     return !Node().IsOutOfFlowPositioned();
   }
+
+  const NGColumnSpannerPath* spanner_path_ = nullptr;
 
   int used_column_count_;
   LayoutUnit column_inline_size_;

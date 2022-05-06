@@ -379,6 +379,8 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
 
   const NGLayoutResult* previous_result_ = nullptr;
 
+  const NGColumnSpannerPath* column_spanner_path_ = nullptr;
+
   // Intrinsic block size based on child layout and containment.
   LayoutUnit intrinsic_block_size_;
 

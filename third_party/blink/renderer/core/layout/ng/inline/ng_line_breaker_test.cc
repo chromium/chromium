@@ -70,7 +70,8 @@ class NGLineBreakerTest : public NGLayoutTest {
       NGLineInfo line_info;
       NGLineBreaker line_breaker(node, NGLineBreakerMode::kContent, space,
                                  line_opportunity, leading_floats, 0u,
-                                 break_token, &exclusion_space);
+                                 break_token, /* column_spanner_path */ nullptr,
+                                 &exclusion_space);
       line_breaker.NextLine(&line_info);
       if (callback)
         callback(line_breaker, line_info);

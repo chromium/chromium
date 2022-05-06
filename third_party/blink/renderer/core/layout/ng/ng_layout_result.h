@@ -28,6 +28,7 @@
 namespace blink {
 
 class NGBoxFragmentBuilder;
+class NGColumnSpannerPath;
 class NGContainerFragmentBuilder;
 class NGExclusionSpace;
 class NGLineBoxFragmentBuilder;
@@ -140,15 +141,13 @@ class CORE_EXPORT NGLayoutResult final
     return bitfields_.can_use_out_of_flow_positioned_first_tier_cache;
   }
 
-  // Get the column spanner (if any) that interrupted column layout.
-  NGBlockNode ColumnSpanner() const {
+  // Get the path to the column spanner (if any) that interrupted column layout.
+  const NGColumnSpannerPath* ColumnSpannerPath() const {
     if (HasRareData()) {
-      if (const RareData::BlockData* data = rare_data_->GetBlockData()) {
-        if (data->column_spanner)
-          return NGBlockNode(data->column_spanner);
-      }
+      if (const RareData::BlockData* data = rare_data_->GetBlockData())
+        return data->column_spanner_path;
     }
-    return NGBlockNode(nullptr);
+    return nullptr;
   }
 
   // True if this result is the parent of a column spanner and is empty (i.e.
@@ -296,6 +295,13 @@ class CORE_EXPORT NGLayoutResult final
   // use BlockSizeForFragmentation() for cache testing.
   bool IsBlockSizeForFragmentationClamped() const {
     return bitfields_.is_block_size_for_fragmentation_clamped;
+  }
+
+  // Return true if this generating node must stay within the same fragmentation
+  // flow as the parent (and not establish a parallel fragmentation flow), even
+  // if it has content that overflows into the next fragmentainer.
+  bool ShouldForceSameFragmentationFlow() const {
+    return bitfields_.should_force_same_fragmentation_flow;
   }
 
   // Return the (lowest) appeal among any unforced breaks inside the resulting
@@ -538,7 +544,7 @@ class CORE_EXPORT NGLayoutResult final
 
     struct BlockData {
       GC_PLUGIN_IGNORE("crbug.com/1146383")
-      Member<LayoutBox> column_spanner;
+      Member<const NGColumnSpannerPath> column_spanner_path;
     };
 
     struct FlexData {
@@ -831,6 +837,7 @@ class CORE_EXPORT NGLayoutResult final
           break_appeal(kBreakAppealPerfect),
           is_empty_spanner_parent(false),
           is_block_size_for_fragmentation_clamped(false),
+          should_force_same_fragmentation_flow(false),
           is_self_collapsing(is_self_collapsing),
           is_pushed_by_floats(is_pushed_by_floats),
           adjoining_object_types(static_cast<unsigned>(adjoining_object_types)),
@@ -851,6 +858,7 @@ class CORE_EXPORT NGLayoutResult final
     unsigned break_appeal : kNGBreakAppealBitsNeeded;
     unsigned is_empty_spanner_parent : 1;
     unsigned is_block_size_for_fragmentation_clamped : 1;
+    unsigned should_force_same_fragmentation_flow : 1;
 
     unsigned is_self_collapsing : 1;
     unsigned is_pushed_by_floats : 1;
