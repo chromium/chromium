@@ -159,7 +159,7 @@ void WaylandSurface::SetAcquireFence(gfx::GpuFenceHandle acquire_fence) {
     auto status = gfx::GpuFence::GetStatusChangeTime(
         acquire_fence.owned_fd.get(), &ticks);
     if (status == gfx::GpuFence::kSignaled)
-      return;
+      acquire_fence = gfx::GpuFenceHandle();
   }
   pending_state_.acquire_fence = std::move(acquire_fence);
   return;
@@ -398,6 +398,7 @@ void WaylandSurface::ApplyPendingState() {
       }
     }
   }
+  pending_state_.acquire_fence = gfx::GpuFenceHandle();
 
   if (pending_state_.buffer_transform != state_.buffer_transform) {
     wl_output_transform wl_transform =
@@ -675,7 +676,6 @@ WaylandSurface::State& WaylandSurface::State::operator=(
     WaylandSurface::State& other) {
   opaque_region_px = other.opaque_region_px;
   input_region_px = other.input_region_px;
-  acquire_fence = std::move(other.acquire_fence);
   buffer_id = other.buffer_id;
   buffer = other.buffer;
   buffer_size_px = other.buffer_size_px;

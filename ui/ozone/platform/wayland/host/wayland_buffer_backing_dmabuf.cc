@@ -33,6 +33,7 @@ WaylandBufferBackingDmabuf::~WaylandBufferBackingDmabuf() = default;
 void WaylandBufferBackingDmabuf::RequestBufferHandle(
     base::OnceCallback<void(wl::Object<wl_buffer>)> callback) {
   DCHECK(!callback.is_null());
+  DCHECK(fd_.is_valid());
   if (connection_->zwp_dmabuf()) {
     connection_->zwp_dmabuf()->CreateBuffer(fd_, size(), strides_, offsets_,
                                             modifiers_, format_, planes_count_,
@@ -46,6 +47,9 @@ void WaylandBufferBackingDmabuf::RequestBufferHandle(
     // are supported.
     NOTREACHED();
   }
+
+  if (UseExplicitSyncRelease())
+    auto close = std::move(fd_);
 }
 
 }  // namespace ui
