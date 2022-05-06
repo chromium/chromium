@@ -2895,8 +2895,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySvg) {
   RunHtmlTest(FILE_PATH_LITERAL("svg.html"));
 }
 
+// TODO: fails on android, the test hangs in WaitForAllFramesLoaded while
+// waiting for AccessibilityNotificationWaiter::WaitForNotification.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AccessibilitySvgAsObjectSource \
+  DISABLED_AccessibilitySvgAsObjectSource
+#else
+#define MAYBE_AccessibilitySvgAsObjectSource AccessibilitySvgAsObjectSource
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilitySvgAsObjectSource) {
+                       MAYBE_AccessibilitySvgAsObjectSource) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-as-object-source.html"));
 }
 
