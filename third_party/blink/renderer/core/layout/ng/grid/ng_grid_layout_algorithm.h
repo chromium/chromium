@@ -202,7 +202,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       NGGridLayoutData* layout_data,
       Vector<GridItemPlacementData>* grid_item_placement_data,
       Vector<LayoutUnit>* row_offset_adjustments,
-      LayoutUnit* intrinsic_block_size);
+      LayoutUnit* intrinsic_block_size,
+      LayoutUnit* consumed_grid_block_size);
 
   // Computes the static position, grid area and its offset of out of flow
   // elements in the grid.

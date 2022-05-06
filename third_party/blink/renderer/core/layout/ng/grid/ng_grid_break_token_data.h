@@ -33,18 +33,25 @@ struct NGGridBreakTokenData final : NGBlockBreakTokenData {
       const NGBlockBreakTokenData* break_token_data,
       const NGGridLayoutData& layout_data,
       LayoutUnit intrinsic_block_size,
+      LayoutUnit consumed_grid_block_size,
       const Vector<GridItemPlacementData>& grid_items_placement_data,
       const Vector<LayoutUnit>& row_offset_adjustments,
       const Vector<EBreakBetween>& row_break_between)
       : NGBlockBreakTokenData(kGridBreakTokenData, break_token_data),
         layout_data(layout_data),
         intrinsic_block_size(intrinsic_block_size),
+        consumed_grid_block_size(consumed_grid_block_size),
         grid_items_placement_data(grid_items_placement_data),
         row_offset_adjustments(row_offset_adjustments),
         row_break_between(row_break_between) {}
 
   NGGridLayoutData layout_data;
   LayoutUnit intrinsic_block_size;
+
+  // This is similar to |NGBlockBreakTokenData::consumed_block_size|, however
+  // it isn't used for determining the final block-size of the fragment and
+  // won't include any block-end padding (this prevents saturation bugs).
+  LayoutUnit consumed_grid_block_size;
 
   Vector<GridItemPlacementData> grid_items_placement_data;
   Vector<LayoutUnit> row_offset_adjustments;
