@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 839 tests; 598 PASS, 241 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 803 tests; 586 PASS, 217 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS query_should_be_parseable: (orientation)
 FAIL query_should_be_parseable: not (orientation) assert_true: expected true got false
 PASS query_should_not_be_parseable: only (orientation)
@@ -42,7 +42,6 @@ FAIL expression_should_be_parseable: width > 0.001mm assert_true: expected true 
 FAIL expression_should_be_parseable: width > 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-width > -0
 PASS expression_should_not_be_parseable: max-width > -0
-FAIL expression_should_be_parseable: 0px > width > 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: width > -1px
 PASS expression_should_not_be_parseable: min-width > -1px
 PASS expression_should_not_be_parseable: max-width > -1px
@@ -58,7 +57,6 @@ FAIL expression_should_be_parseable: width >= 0.001mm assert_true: expected true
 FAIL expression_should_be_parseable: width >= 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-width >= -0
 PASS expression_should_not_be_parseable: max-width >= -0
-FAIL expression_should_be_parseable: 0px >= width >= 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: width > = 0px
 PASS expression_should_not_be_parseable: width >= -1px
 PASS expression_should_not_be_parseable: min-width >= -1px
@@ -75,7 +73,6 @@ FAIL expression_should_be_parseable: width = 0.001mm assert_true: expected true 
 FAIL expression_should_be_parseable: width = 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-width = -0
 PASS expression_should_not_be_parseable: max-width = -0
-PASS expression_should_not_be_parseable: 0px = width = 100000px
 PASS expression_should_not_be_parseable: width = -1px
 PASS expression_should_not_be_parseable: min-width = -1px
 PASS expression_should_not_be_parseable: max-width = -1px
@@ -91,7 +88,6 @@ FAIL expression_should_be_parseable: width <= 0.001mm assert_true: expected true
 FAIL expression_should_be_parseable: width <= 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-width <= -0
 PASS expression_should_not_be_parseable: max-width <= -0
-FAIL expression_should_be_parseable: 0px <= width <= 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: width < = 0px
 PASS expression_should_not_be_parseable: width <= -1px
 PASS expression_should_not_be_parseable: min-width <= -1px
@@ -108,7 +104,6 @@ FAIL expression_should_be_parseable: width < 0.001mm assert_true: expected true 
 FAIL expression_should_be_parseable: width < 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-width < -0
 PASS expression_should_not_be_parseable: max-width < -0
-FAIL expression_should_be_parseable: 0px < width < 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: width < -1px
 PASS expression_should_not_be_parseable: min-width < -1px
 PASS expression_should_not_be_parseable: max-width < -1px
@@ -142,7 +137,6 @@ FAIL expression_should_be_parseable: height > 0.001mm assert_true: expected true
 FAIL expression_should_be_parseable: height > 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-height > -0
 PASS expression_should_not_be_parseable: max-height > -0
-FAIL expression_should_be_parseable: 0px > height > 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: height > -1px
 PASS expression_should_not_be_parseable: min-height > -1px
 PASS expression_should_not_be_parseable: max-height > -1px
@@ -158,7 +152,6 @@ FAIL expression_should_be_parseable: height >= 0.001mm assert_true: expected tru
 FAIL expression_should_be_parseable: height >= 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-height >= -0
 PASS expression_should_not_be_parseable: max-height >= -0
-FAIL expression_should_be_parseable: 0px >= height >= 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: height > = 0px
 PASS expression_should_not_be_parseable: height >= -1px
 PASS expression_should_not_be_parseable: min-height >= -1px
@@ -175,7 +168,6 @@ FAIL expression_should_be_parseable: height = 0.001mm assert_true: expected true
 FAIL expression_should_be_parseable: height = 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-height = -0
 PASS expression_should_not_be_parseable: max-height = -0
-PASS expression_should_not_be_parseable: 0px = height = 100000px
 PASS expression_should_not_be_parseable: height = -1px
 PASS expression_should_not_be_parseable: min-height = -1px
 PASS expression_should_not_be_parseable: max-height = -1px
@@ -191,7 +183,6 @@ FAIL expression_should_be_parseable: height <= 0.001mm assert_true: expected tru
 FAIL expression_should_be_parseable: height <= 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-height <= -0
 PASS expression_should_not_be_parseable: max-height <= -0
-FAIL expression_should_be_parseable: 0px <= height <= 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: height < = 0px
 PASS expression_should_not_be_parseable: height <= -1px
 PASS expression_should_not_be_parseable: min-height <= -1px
@@ -208,7 +199,6 @@ FAIL expression_should_be_parseable: height < 0.001mm assert_true: expected true
 FAIL expression_should_be_parseable: height < 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-height < -0
 PASS expression_should_not_be_parseable: max-height < -0
-FAIL expression_should_be_parseable: 0px < height < 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: height < -1px
 PASS expression_should_not_be_parseable: min-height < -1px
 PASS expression_should_not_be_parseable: max-height < -1px
@@ -242,7 +232,6 @@ FAIL expression_should_be_parseable: device-width > 0.001mm assert_true: expecte
 FAIL expression_should_be_parseable: device-width > 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-device-width > -0
 PASS expression_should_not_be_parseable: max-device-width > -0
-FAIL expression_should_be_parseable: 0px > device-width > 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: device-width > -1px
 PASS expression_should_not_be_parseable: min-device-width > -1px
 PASS expression_should_not_be_parseable: max-device-width > -1px
@@ -258,7 +247,6 @@ FAIL expression_should_be_parseable: device-width >= 0.001mm assert_true: expect
 FAIL expression_should_be_parseable: device-width >= 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-device-width >= -0
 PASS expression_should_not_be_parseable: max-device-width >= -0
-FAIL expression_should_be_parseable: 0px >= device-width >= 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: device-width > = 0px
 PASS expression_should_not_be_parseable: device-width >= -1px
 PASS expression_should_not_be_parseable: min-device-width >= -1px
@@ -275,7 +263,6 @@ FAIL expression_should_be_parseable: device-width = 0.001mm assert_true: expecte
 FAIL expression_should_be_parseable: device-width = 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-device-width = -0
 PASS expression_should_not_be_parseable: max-device-width = -0
-PASS expression_should_not_be_parseable: 0px = device-width = 100000px
 PASS expression_should_not_be_parseable: device-width = -1px
 PASS expression_should_not_be_parseable: min-device-width = -1px
 PASS expression_should_not_be_parseable: max-device-width = -1px
@@ -291,7 +278,6 @@ FAIL expression_should_be_parseable: device-width <= 0.001mm assert_true: expect
 FAIL expression_should_be_parseable: device-width <= 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-device-width <= -0
 PASS expression_should_not_be_parseable: max-device-width <= -0
-FAIL expression_should_be_parseable: 0px <= device-width <= 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: device-width < = 0px
 PASS expression_should_not_be_parseable: device-width <= -1px
 PASS expression_should_not_be_parseable: min-device-width <= -1px
@@ -308,7 +294,6 @@ FAIL expression_should_be_parseable: device-width < 0.001mm assert_true: expecte
 FAIL expression_should_be_parseable: device-width < 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-device-width < -0
 PASS expression_should_not_be_parseable: max-device-width < -0
-FAIL expression_should_be_parseable: 0px < device-width < 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: device-width < -1px
 PASS expression_should_not_be_parseable: min-device-width < -1px
 PASS expression_should_not_be_parseable: max-device-width < -1px
@@ -342,7 +327,6 @@ FAIL expression_should_be_parseable: device-height > 0.001mm assert_true: expect
 FAIL expression_should_be_parseable: device-height > 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-device-height > -0
 PASS expression_should_not_be_parseable: max-device-height > -0
-FAIL expression_should_be_parseable: 0px > device-height > 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: device-height > -1px
 PASS expression_should_not_be_parseable: min-device-height > -1px
 PASS expression_should_not_be_parseable: max-device-height > -1px
@@ -358,7 +342,6 @@ FAIL expression_should_be_parseable: device-height >= 0.001mm assert_true: expec
 FAIL expression_should_be_parseable: device-height >= 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-device-height >= -0
 PASS expression_should_not_be_parseable: max-device-height >= -0
-FAIL expression_should_be_parseable: 0px >= device-height >= 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: device-height > = 0px
 PASS expression_should_not_be_parseable: device-height >= -1px
 PASS expression_should_not_be_parseable: min-device-height >= -1px
@@ -375,7 +358,6 @@ FAIL expression_should_be_parseable: device-height = 0.001mm assert_true: expect
 FAIL expression_should_be_parseable: device-height = 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-device-height = -0
 PASS expression_should_not_be_parseable: max-device-height = -0
-PASS expression_should_not_be_parseable: 0px = device-height = 100000px
 PASS expression_should_not_be_parseable: device-height = -1px
 PASS expression_should_not_be_parseable: min-device-height = -1px
 PASS expression_should_not_be_parseable: max-device-height = -1px
@@ -391,7 +373,6 @@ FAIL expression_should_be_parseable: device-height <= 0.001mm assert_true: expec
 FAIL expression_should_be_parseable: device-height <= 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-device-height <= -0
 PASS expression_should_not_be_parseable: max-device-height <= -0
-FAIL expression_should_be_parseable: 0px <= device-height <= 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: device-height < = 0px
 PASS expression_should_not_be_parseable: device-height <= -1px
 PASS expression_should_not_be_parseable: min-device-height <= -1px
@@ -408,7 +389,6 @@ FAIL expression_should_be_parseable: device-height < 0.001mm assert_true: expect
 FAIL expression_should_be_parseable: device-height < 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: min-device-height < -0
 PASS expression_should_not_be_parseable: max-device-height < -0
-FAIL expression_should_be_parseable: 0px < device-height < 100000px assert_true: expected true got false
 PASS expression_should_not_be_parseable: device-height < -1px
 PASS expression_should_not_be_parseable: min-device-height < -1px
 PASS expression_should_not_be_parseable: max-device-height < -1px
@@ -432,10 +412,6 @@ PASS should_apply: all and (max-width: ${Math.ceil(value/em_size) + 1}em)
 PASS should_not_apply: all and (max-width: ${Math.floor(value/em_size) - 1}em)
 FAIL should_apply: (width <= ${value}px) assert_true: expected true got false
 FAIL should_apply: (width >= ${value}px) assert_true: expected true got false
-FAIL should_apply: (0px < width <= ${value}px) assert_true: expected true got false
-FAIL should_apply: (${value}px >= width > 0px) assert_true: expected true got false
-PASS should_not_apply: (0px < width < ${value}px)
-PASS should_not_apply: (${value}px > width > 0px)
 PASS should_not_apply: (width < ${value}px)
 PASS should_not_apply: (width > ${value}px)
 FAIL should_apply: (width < ${value + 1}px) assert_true: expected true got false
@@ -464,10 +440,6 @@ PASS should_apply: all and (max-height: ${Math.ceil(value/em_size) + 1}em)
 PASS should_not_apply: all and (max-height: ${Math.floor(value/em_size) - 1}em)
 FAIL should_apply: (height <= ${value}px) assert_true: expected true got false
 FAIL should_apply: (height >= ${value}px) assert_true: expected true got false
-FAIL should_apply: (0px < height <= ${value}px) assert_true: expected true got false
-FAIL should_apply: (${value}px >= height > 0px) assert_true: expected true got false
-PASS should_not_apply: (0px < height < ${value}px)
-PASS should_not_apply: (${value}px > height > 0px)
 PASS should_not_apply: (height < ${value}px)
 PASS should_not_apply: (height > ${value}px)
 FAIL should_apply: (height < ${value + 1}px) assert_true: expected true got false
@@ -496,10 +468,6 @@ PASS should_apply: all and (max-device-width: ${Math.ceil(value/em_size) + 1}em)
 PASS should_not_apply: all and (max-device-width: ${Math.floor(value/em_size) - 1}em)
 FAIL should_apply: (device-width <= ${value}px) assert_true: expected true got false
 FAIL should_apply: (device-width >= ${value}px) assert_true: expected true got false
-FAIL should_apply: (0px < device-width <= ${value}px) assert_true: expected true got false
-FAIL should_apply: (${value}px >= device-width > 0px) assert_true: expected true got false
-PASS should_not_apply: (0px < device-width < ${value}px)
-PASS should_not_apply: (${value}px > device-width > 0px)
 PASS should_not_apply: (device-width < ${value}px)
 PASS should_not_apply: (device-width > ${value}px)
 FAIL should_apply: (device-width < ${value + 1}px) assert_true: expected true got false
@@ -528,10 +496,6 @@ PASS should_apply: all and (max-device-height: ${Math.ceil(value/em_size) + 1}em
 PASS should_not_apply: all and (max-device-height: ${Math.floor(value/em_size) - 1}em)
 FAIL should_apply: (device-height <= ${value}px) assert_true: expected true got false
 FAIL should_apply: (device-height >= ${value}px) assert_true: expected true got false
-FAIL should_apply: (0px < device-height <= ${value}px) assert_true: expected true got false
-FAIL should_apply: (${value}px >= device-height > 0px) assert_true: expected true got false
-PASS should_not_apply: (0px < device-height < ${value}px)
-PASS should_not_apply: (${value}px > device-height > 0px)
 PASS should_not_apply: (device-height < ${value}px)
 PASS should_not_apply: (device-height > ${value}px)
 FAIL should_apply: (device-height < ${value + 1}px) assert_true: expected true got false

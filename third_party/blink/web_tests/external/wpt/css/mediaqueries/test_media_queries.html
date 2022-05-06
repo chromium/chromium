@@ -173,11 +173,17 @@ setup({ "explicit_done": true });
         } else {
           expression_should_not_be_parseable("min-" + feature + " " + separator + " -0");
           expression_should_not_be_parseable("max-" + feature + " " + separator + " -0");
+          let multi_range = "0px " + separator + " " + feature + " " + separator + " 100000px"
+          if (separator == "=") {
+            expression_should_not_be_parseable(multi_range);
+          } else {
+            expression_should_be_parseable(multi_range);
+          }
         }
         if (separator == ">=") {
-          expression_should_not_be_parseable(feature + " " + "> =" + " 0px");
+          expression_should_not_be_parseable(feature + " > = 0px");
         } else if (separator == "<=") {
-          expression_should_not_be_parseable(feature + " " + "< =" + " 0px");
+          expression_should_not_be_parseable(feature + " < = 0px");
         }
         expression_should_not_be_parseable(feature + " " + separator + " -1px");
         expression_should_not_be_parseable("min-" + feature + " " + separator + " -1px");
@@ -227,6 +233,13 @@ setup({ "explicit_done": true });
 
       should_apply("(" + feature + " <= ${value}px)");
       should_apply("(" + feature + " >= ${value}px)");
+
+      should_apply("(0px < " + feature + " <= ${value}px)");
+      should_apply("(${value}px >= " + feature + " > 0px)");
+
+      should_not_apply("(0px < " + feature + " < ${value}px)");
+      should_not_apply("(${value}px > " + feature + " > 0px)");
+
       should_not_apply("(" + feature + " < ${value}px)");
       should_not_apply("(" + feature + " > ${value}px)");
 
@@ -469,8 +482,8 @@ setup({ "explicit_done": true });
       should_not_apply("(resolution: ${resolution - 1}dpi)");
       dpi_high = resolution + 1;
     } else {
-	  // We have no way to test resolution applying since it need not be
-	  // an integer.
+      // We have no way to test resolution applying since it need not be
+      // an integer.
       testGroup = "resolution is inexact";
       should_not_apply("(resolution: ${resolution}dpi)");
       should_not_apply("(resolution: ${resolution - 1}dpi)");

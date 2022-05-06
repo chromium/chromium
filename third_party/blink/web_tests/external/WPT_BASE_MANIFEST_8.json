@@ -530,6 +530,13 @@
        {}
       ]
      ],
+     "empty-fieldset-tall-bottom-padding-crash.html": [
+      "170a744b287e90240a885530b248a8e0a26174ea",
+      [
+       null,
+       {}
+      ]
+     ],
      "firefox-bug1693616-001-crash.html": [
       "5aadb70037c3b31abc7bd91ee1dc8dc412e0c3e1",
       [
@@ -2746,6 +2753,13 @@
     },
     "css-transitions": {
      "crashtests": {
+      "transition-during-style-attr-mutation.html": [
+       "255794bfa86d8e24c2bad9a6e59d1f12338b1d00",
+       [
+        null,
+        {}
+       ]
+      ],
       "transition-large-word-spacing-001.html": [
        "24ac2a7780c642f86148eaacd4ef051a1f646361",
        [
@@ -72089,6 +72103,19 @@
         {}
        ]
       ],
+      "background-color-animation-will-change-contents.html": [
+       "a218098721c175064fcb988f31da2ed92fda67bc",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/animations/background-color-animation-will-change-contents-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "background-color-animation-with-images.html": [
        "0ea29b8f1cfd65fb4c2a4f9c570443f582403e9e",
        [
@@ -72213,6 +72240,19 @@
         [
          [
           "/css/css-backgrounds/animations/background-color-animation-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "background-color-scroll-into-viewport.html": [
+       "24b22b43e4d629e9644a2a6b47094aeb46ac8230",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/animations/background-color-scroll-into-viewport-ref.html",
           "=="
          ]
         ],
@@ -231084,6 +231124,19 @@
        ]
       },
       "the-fieldset-and-legend-elements": {
+       "empty-scrollable.html": [
+        "c968ed3f13666aef025b65a63c59d4f36a350ded",
+        [
+         null,
+         [
+          [
+           "/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/empty-scrollable-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "fieldset-baseline.html": [
         "23f5ad76f3eb302cd17f3a17d44ca37028cf98dc",
         [
@@ -245241,7 +245294,7 @@
   },
   "support": {
    ".gitignore": [
-    "23df18a95551f2c6e1fbc2417b9be1b84e0b1b14",
+    "d93e645d547894b50149d3726de2654957b6e06f",
     []
    ],
    ".well-known": {
@@ -257767,6 +257820,10 @@
        "823d8ac3821638dd92cdccbc39497d1cc1dc797a",
        []
       ],
+      "background-color-animation-will-change-contents-ref.html": [
+       "d980a29ff7fa4f1bfd25be504f9bf6390014f58d",
+       []
+      ],
       "background-color-animation-with-images-ref.html": [
        "ba414f7b349d6a3de8b10eb539de48b408365f2a",
        []
@@ -257789,6 +257846,10 @@
       ],
       "background-color-animation-zero-size-element-ref.html": [
        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+       []
+      ],
+      "background-color-scroll-into-viewport-ref.html": [
+       "e5bbf67dfeb63ad91469612b2584857bc204300c",
        []
       ],
       "background-color-transition-currentcolor-ref.html": [
@@ -307626,6 +307687,10 @@
         "f5b533c377160c77541187a301647e174069bd6d",
         []
        ],
+       "empty-scrollable-ref.html": [
+        "7fa15da174b701f2645fa588ed30395127707270",
+        []
+       ],
        "fieldset-baseline-ref.html": [
         "ff583435a662a6c2c635619d8e4ecbbdf9f8a05f",
         []
@@ -315717,7 +315782,7 @@
     ]
    },
    "lint.ignore": [
-    "fd01861553513e5a7857894f524b3734a731b661",
+    "33aafc900aa9302bba611822dfc002ca5722d03d",
     []
    ],
    "loading": {
@@ -323884,7 +323949,7 @@
        []
       ],
       "fetch-access-control.py": [
-       "a5f558d3d5901120e8c8110a2d4e022f76cb1288",
+       "446af87b24974f77051161950113685b14ecd1c5",
        []
       ],
       "fetch-canvas-tainting-double-write-worker.js": [
@@ -323892,7 +323957,7 @@
        []
       ],
       "fetch-canvas-tainting-iframe.html": [
-       "a65d2501a8508addf3ec2b6d2daf00b1bdc4af2c",
+       "75d766c193a8a214d7cb7f25ac74860d3ded7183",
        []
       ],
       "fetch-canvas-tainting-tests.js": [
@@ -325665,6 +325730,10 @@
       ],
       "web-database-access.html": [
        "fb00852caa9d6eaa0134662b7fe01f085641509e",
+       []
+      ],
+      "web-usb.https.html": [
+       "555825a81c530fe3f3e948c432412d22a7718ffc",
        []
       ],
       "window-move.html": [
@@ -394294,7 +394363,7 @@
       ]
      ],
      "test_media_queries.html": [
-      "a57a4c5a4537da56574e2d322d7c96965e72fd04",
+      "bacfe4a4f8f00d61fa9e2bafd49d02842db2878d",
       [
        null,
        {}
@@ -394615,6 +394684,20 @@
      ],
      "dir-selector-querySelector.html": [
       "a05e3fea78f378e37c1b73f7f9e2e3559db12f16",
+      [
+       null,
+       {}
+      ]
+     ],
+     "first-child.html": [
+      "c06aff3f89d01466710f875e19e8aa13250eaefd",
+      [
+       null,
+       {}
+      ]
+     ],
+     "first-of-type.html": [
+      "b585ed2951b1511a1ab0e2f4963309b7d926236a",
       [
        null,
        {}
@@ -395680,6 +395763,20 @@
      ],
      "is-where-shadow.html": [
       "1b25bb63f168a5da7ba3a9d9b871ebda9c9c032e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "last-child.html": [
+      "423ccf84f41cdf0dcb9e6e0b53cf7cf0b8ad6d65",
+      [
+       null,
+       {}
+      ]
+     ],
+     "last-of-type.html": [
+      "35328313e6dd42997da9242f8223458906aea542",
       [
        null,
        {}
@@ -518385,6 +518482,15 @@
      ],
      "restriction-service-worker-update.https.html": [
       "92c16e5433d5411c0222c3ca7d2a85513f86cd12",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "restriction-web-usb.https.html": [
+      "9d96a39c9c5528e3c0d41ba013343b6a4cbf0528",
       [
        null,
        {
