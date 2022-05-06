@@ -34,6 +34,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /** Unit tests for HistoryClustersMediator. */
@@ -85,10 +86,10 @@ public class HistoryClustersMediatorTest {
         mVisit1 = new ClusterVisit(1.0F, mGurl1, "Title 1");
         mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 1");
         mVisit3 = new ClusterVisit(1.0F, mGurl3, "Title 1");
-        mCluster1 =
-                new HistoryCluster(Arrays.asList("foo"), Arrays.asList(mVisit1, mVisit2), "label1");
-        mCluster2 =
-                new HistoryCluster(Arrays.asList("bar", "baz"), Arrays.asList(mVisit3), "label2");
+        mCluster1 = new HistoryCluster(
+                Arrays.asList("foo"), Arrays.asList(mVisit1, mVisit2), "label1", new ArrayList<>());
+        mCluster2 = new HistoryCluster(
+                Arrays.asList("bar", "baz"), Arrays.asList(mVisit3), "label2", new ArrayList<>());
         mHistoryClustersResult = new HistoryClustersResult(
                 Arrays.asList(mCluster1, mCluster2), "query", false, false);
     }

@@ -9,9 +9,11 @@ import org.chromium.base.Promise;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.history_clusters.HistoryCluster.MatchPosition;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -59,10 +61,19 @@ class HistoryClustersBridge {
     }
 
     @CalledByNative
-    static HistoryCluster buildCluster(ClusterVisit[] visits, String[] keywords, String label) {
+    static HistoryCluster buildCluster(ClusterVisit[] visits, String[] keywords, String label,
+            int[] labelMatchStarts, int[] labelMatchEnds) {
         List<String> keywordList = Arrays.asList(keywords);
         List<ClusterVisit> clusterVisitList = Arrays.asList(visits);
-        return new HistoryCluster(keywordList, clusterVisitList, label);
+
+        assert labelMatchEnds.length == labelMatchStarts.length;
+        List<MatchPosition> matchPositions = new ArrayList<>(labelMatchStarts.length);
+        for (int i = 0; i < labelMatchStarts.length; i++) {
+            MatchPosition matchPosition = new MatchPosition(labelMatchStarts[i], labelMatchEnds[i]);
+            matchPositions.add(matchPosition);
+        }
+
+        return new HistoryCluster(keywordList, clusterVisitList, label, matchPositions);
     }
 
     @CalledByNative
