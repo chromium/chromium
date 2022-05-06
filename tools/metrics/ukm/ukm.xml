@@ -12066,7 +12066,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Navigation.ReceivedResponse">
-  <owner>abeyad@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
   <owner>potassium-katabolism@google.com</owner>
   <summary>
     Recorded when the navigation receives a response from the networking layer.

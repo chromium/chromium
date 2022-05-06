@@ -876,6 +876,7 @@ chromium-metrics-reviews@google.com.
     expires_after="M110">
   <owner>miketaylr@chromium.org</owner>
   <owner>victortan@chromium.org</owner>
+  <owner>potassium-katabolism@google.com</owner>
   <summary>
     Whether the User-Agent header that was sent for a subresource request had a
     reduced user agent string value. The reduced user agent string is only sent
@@ -1824,8 +1825,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.Navigator.ReducedUserAgent" enum="Boolean"
     expires_after="2022-09-25">
-  <owner>abeyad@chromium.org</owner>
-  <owner>aarontag@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <owner>potassium-katabolism@google.com</owner>
   <summary>
     Whether the navigator.userAgent and navigator.appVersion JavaScript getters
     returned a reduced user agent string value. The reduced user agent string is

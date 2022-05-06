@@ -2667,8 +2667,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ClientHints.FetchLatency" units="ms"
     expires_after="2022-10-16">
-  <owner>abeyad@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
+  <owner>potassium-katabolism@google.com</owner>
   <summary>
     The latency (in milliseconds) to fetch the client hints for a given origin
     from the Accept-CH cache.
@@ -2693,8 +2693,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ClientHints.StoreLatency" units="ms"
     expires_after="2022-10-16">
-  <owner>abeyad@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
+  <owner>potassium-katabolism@google.com</owner>
   <summary>
     The latency (in milliseconds) to store the client hints for a given origin
     in the Accept-CH cache.
