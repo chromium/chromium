@@ -162,6 +162,63 @@ TEST_F(PedalSectionExtractorTest, Debounce) {
   [data_sink_ verify];
 }
 
+// When the list of suggestions is completely empty, prevent the pedal from
+// sticking around. This should only happen when the popup is being closed,
+// otherwise there's at least a what-you-type suggestion.
+TEST_F(PedalSectionExtractorTest, DontDebounceEmptyList) {
+  id mockSuggestionNoPedal =
+      [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
+  [[[mockSuggestionNoPedal stub] andReturn:nil] pedal];
+
+  id mockPedal = [OCMockObject mockForProtocol:@protocol(OmniboxPedal)];
+  [[[mockPedal stub] andReturn:@"pedal title"] title];
+  id mockSuggestionWithPedal =
+      [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
+  [[[mockSuggestionWithPedal stub] andReturn:mockPedal] pedal];
+
+  AutocompleteSuggestionGroupImpl* group = [AutocompleteSuggestionGroupImpl
+      groupWithTitle:@""
+         suggestions:@[ mockSuggestionNoPedal, mockSuggestionWithPedal ]];
+
+  // Showing a result with pedals passes a pedal to the sink.
+
+  [[data_sink_ expect] updateMatches:[OCMArg any] preselectedMatchGroupIndex:1];
+  [extractor_ updateMatches:@[ group ] preselectedMatchGroupIndex:0];
+  [data_sink_ verify];
+
+  AutocompleteSuggestionGroupImpl* groupNoPedals =
+      [AutocompleteSuggestionGroupImpl
+          groupWithTitle:@""
+             suggestions:@[ mockSuggestionNoPedal ]];
+
+  // Updating with no pedals continues to pass a pedal to the sink.
+
+  [[data_sink_ expect] updateMatches:[OCMArg any] preselectedMatchGroupIndex:1];
+  [extractor_ updateMatches:@[ groupNoPedals ] preselectedMatchGroupIndex:0];
+
+  [data_sink_ verify];
+
+  // Expect pedal removal when debounce timer expires
+  [[data_sink_ expect] updateMatches:@[ groupNoPedals ]
+          preselectedMatchGroupIndex:0];
+
+  // Wait for debounce to happen
+  Wait(1);
+  [data_sink_ verify];
+
+  // Now updating from no pedals to no suggestions at all, the update goes
+  // through.
+  [[data_sink_ expect] updateMatches:@[] preselectedMatchGroupIndex:0];
+  [extractor_ updateMatches:@[] preselectedMatchGroupIndex:0];
+
+  [data_sink_ verify];
+
+  // Since there's no update, nothing happens after the debounce timer expires
+  // again.
+  Wait(1);
+  [data_sink_ verify];
+}
+
 // Forwards methods that are not affected by the pedal section.
 TEST_F(PedalSectionExtractorTest, ForwardsIrrelevantMethods) {
   // consumer methods

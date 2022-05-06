@@ -55,7 +55,9 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
   self.highlightedPedalIndex = NSNotFound;
   self.originalResult = result;
 
+  NSInteger totalSuggestionCount = 0;
   for (id<AutocompleteSuggestionGroup> group in result) {
+    totalSuggestionCount += group.suggestions.count;
     for (NSUInteger i = 0; i < group.suggestions.count; i++) {
       id<AutocompleteSuggestion> suggestion = group.suggestions[i];
 
@@ -65,7 +67,8 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
     }
   }
 
-  if (extractedPedals.count == 0 && self.extractedPedals.count > 0) {
+  if (extractedPedals.count == 0 && self.extractedPedals.count > 0 &&
+      totalSuggestionCount > 0) {
     // If no pedals, display old pedal for a duration of `kPedalDebouceTimer`
     // with new suggestion. This avoids pedal flickering because the pedal
     // results are async. (cf. crbug.com/1316404).
