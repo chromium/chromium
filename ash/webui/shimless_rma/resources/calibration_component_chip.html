@@ -31,6 +31,8 @@
   }
 
   #labelDiv {
+    align-items: center;
+    display: flex;
     flex-basis: 155px;
     inset-inline-start: 0;
     padding-inline-start: 24px;
@@ -41,18 +43,13 @@
     color: var(--google-blue-700);
   }
 
-  #checkIcon {
-    margin-top: 6px;
-  }
-
   #infoIcon {
     fill: var(--google-blue-600);
-    margin-inline-end: 5px;
   }
 
   #checkIcon {
     height: 20px;
-    inset-inline-end: 16px;
+    inset-inline-end: 12px;
     position: absolute;
     width: 20px;
   }
@@ -61,7 +58,7 @@
 <cr-button id="componentButton" on-click="onComponentButtonClicked_"
     disabled="[[disabled]]">
   <div id="labelDiv">
-    <iron-icon id="infoIcon" icon="shimless-icon:info" hidden="[[!failed]]">
+    <iron-icon id="infoIcon" icon="shimless-icon:info" hidden="[[!failed]]" class="small-icon">
     </iron-icon>
     <span id="componentName">[[componentName]]</span>
     <div>[[componentId]]</div>
