@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/ios/ios_util.h"
@@ -85,6 +86,7 @@ using ::base::Bucket;
 using ::base::TimeTicks;
 using ::testing::ElementsAre;
 using ::testing::HasSubstr;
+using ::testing::IsSupersetOf;
 using ::testing::Matcher;
 using ::testing::NiceMock;
 using ::testing::UnorderedElementsAre;
@@ -326,9 +328,142 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
   return response_string;
 }
 
-template <typename... Bucket>
-auto AreBuckets(Bucket... buckets) {
-  return ::testing::UnorderedElementsAre(buckets...);
+// BucketsAre() and BucketsAreArray() match a container that contains exactly
+// the non-empty `buckets`.
+//
+// For example,
+//   EXPECT_THAT(histogram_tester.GetAllSamples("HistogramName"),
+//               BucketsAre(Bucket(Enum::A, 0),
+//                          Bucket(Enum::B, 1),
+//                          Bucket(Enum::C, 2)));
+// matches `{Bucket(B, 1), Bucket(C, 2)}`, and
+// does not match `{Bucket(A, n), Bucket(B, 1), Bucket(C, 2)}` for any `n`
+// (including `n == 0`).
+template <typename BucketArray>
+auto BucketsAreArray(BucketArray buckets) {
+  auto non_empty_buckets = buckets;
+  base::EraseIf(non_empty_buckets, [](Bucket b) { return b.count == 0; });
+  return ::testing::UnorderedElementsAreArray(non_empty_buckets);
+}
+
+template <typename... BucketTypes>
+auto BucketsAre(BucketTypes... buckets) {
+  return BucketsAreArray(std::vector<Bucket>{buckets...});
+}
+
+// BucketsInclude() and BucketsIncludeArray() match a container that
+// contains all non-empty `buckets` and none of the empty `buckets`.
+//
+// For example,
+//   EXPECT_THAT(histogram_tester.GetAllSamples("HistogramName"),
+//               BucketsInclude(Bucket(Enum::A, 0),
+//                               Bucket(Enum::B, 1),
+//                               Bucket(Enum::C, 2)));
+// matches `{Bucket(B, 1), Bucket(C, 2), Bucket(D, 3)}`, and
+// does not match `{Bucket(A, n), Bucket(B, 1), Bucket(C, 2), Bucket(D, 3)}` for
+// any `n` (including `n == 0`).
+template <typename BucketArray>
+auto BucketsIncludeArray(const BucketArray& buckets) {
+  std::vector<Bucket> non_empty_buckets;
+  std::vector<base::HistogramBase::Sample> empty_buckets;
+  for (const Bucket& b : buckets) {
+    if (b.count > 0) {
+      non_empty_buckets.push_back(b);
+    } else {
+      empty_buckets.push_back(b.min);
+    }
+  }
+  using ::testing::AllOf;
+  using ::testing::AnyOfArray;
+  using ::testing::Each;
+  using ::testing::Field;
+  using ::testing::Not;
+  return AllOf(
+      IsSupersetOf(non_empty_buckets),
+      Each(Field("Bucket::min", &Bucket::min, Not(AnyOfArray(empty_buckets)))));
+}
+
+template <typename... BucketTypes>
+auto BucketsInclude(BucketTypes... buckets) {
+  return BucketsIncludeArray(std::vector<Bucket>{buckets...});
+}
+
+TEST(BucketsAre, Matches) {
+  // Auxiliary functions for keeping the lines short.
+  auto a = [](std::vector<Bucket> b) { return b; };
+  auto b = [](base::Histogram::Sample min, base::Histogram::Count count) {
+    return Bucket(min, count);
+  };
+  using ::testing::Not;
+
+  EXPECT_THAT(a({}), BucketsAre());
+  EXPECT_THAT(a({}), BucketsAre(b(0, 0)));
+  EXPECT_THAT(a({}), BucketsAre(b(1, 0)));
+  EXPECT_THAT(a({}), BucketsAre(b(0, 0), b(1, 0)));
+  EXPECT_THAT(a({}), Not(BucketsAre(b(1, 1))));
+
+  EXPECT_THAT(a({b(1, 1)}), BucketsAre(b(1, 1)));
+  EXPECT_THAT(a({b(1, 1)}), BucketsAre(b(0, 0), b(1, 1)));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre()));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(0, 0))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(1, 0))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(2, 1))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(2, 2))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(0, 0), b(1, 0))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(0, 0), b(1, 1), b(2, 2))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(0, 0), b(1, 0), b(2, 0))));
+
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsAre(b(1, 1), b(2, 2)));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsAre(b(0, 0), b(1, 1), b(2, 2)));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre()));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(0, 0))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(1, 1))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(2, 2))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(0, 0), b(1, 1))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(1, 0))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(2, 1))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(0, 0), b(1, 0))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}),
+              Not(BucketsAre(b(0, 0), b(1, 0), b(2, 0))));
+}
+
+TEST(BucketsInclude, Matches) {
+  // Auxiliary function for the "actual" values to shorten lines.
+  auto a = [](std::vector<Bucket> b) { return b; };
+  auto b = [](base::Histogram::Sample min, base::Histogram::Count count) {
+    return Bucket(min, count);
+  };
+  using ::testing::Not;
+
+  EXPECT_THAT(a({}), BucketsInclude());
+  EXPECT_THAT(a({}), BucketsInclude(b(0, 0)));
+  EXPECT_THAT(a({}), BucketsInclude(b(1, 0)));
+  EXPECT_THAT(a({}), BucketsInclude(b(0, 0), b(1, 0)));
+  EXPECT_THAT(a({}), Not(BucketsInclude(b(1, 1))));
+
+  EXPECT_THAT(a({b(1, 1)}), BucketsInclude());
+  EXPECT_THAT(a({b(1, 1)}), BucketsInclude(b(0, 0)));
+  EXPECT_THAT(a({b(1, 1)}), BucketsInclude(b(1, 1)));
+  EXPECT_THAT(a({b(1, 1)}), BucketsInclude(b(0, 0), b(1, 1)));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(1, 0))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(2, 1))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(2, 2))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(0, 0), b(1, 0))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(0, 0), b(1, 1), b(2, 2))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(0, 0), b(1, 0), b(2, 0))));
+
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude());
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(0, 0)));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(1, 1)));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(2, 2)));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(0, 0), b(1, 1)));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(1, 1), b(2, 2)));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(0, 0), b(1, 1), b(2, 2)));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsInclude(b(1, 0))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsInclude(b(2, 1))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsInclude(b(0, 0), b(1, 0))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}),
+              Not(BucketsInclude(b(0, 0), b(1, 0), b(2, 0))));
 }
 
 }  // namespace
@@ -346,12 +481,11 @@ class AutofillMetricsTest : public metrics::AutofillMetricsBaseTest {
 
 // Test parameter indicates if the metrics are being logged for a form in an
 // iframe or the main frame. True means the form is in the main frame.
-class AutofillMetricsIFrameTest
-    : public testing::WithParamInterface<bool>,
-      public ::autofill::metrics::AutofillMetricsBaseTest {
+class AutofillMetricsIFrameTest : public testing::WithParamInterface<bool>,
+                                  public metrics::AutofillMetricsBaseTest {
  public:
   AutofillMetricsIFrameTest()
-      : ::autofill::metrics::AutofillMetricsBaseTest(
+      : metrics::AutofillMetricsBaseTest(
             /*is_in_any_main_frame=*/GetParam()),
         credit_card_form_events_frame_histogram_(
             std::string("Autofill.FormEvents.CreditCard.") +
@@ -566,13 +700,12 @@ TEST_F(AutofillMetricsTest, PerfectFillingForAddresses_AllAutofillFilled) {
 
   // Here, it is expected that there is a count for perfect filling for
   // addresses.
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.Addresses", 0, 0);
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.Addresses", 1, 1);
-
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.CreditCards", 0,
-                                     0);
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.CreditCards", 1,
-                                     0);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.PerfectFilling.Addresses"),
+      BucketsAre(Bucket(false, 0), Bucket(true, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.PerfectFilling.CreditCards"),
+      BucketsAre(Bucket(false, 0), Bucket(true, 0)));
 }
 
 // Test that we log the perfect filling metric correctly for an address form in
@@ -616,13 +749,12 @@ TEST_F(AutofillMetricsTest,
 
   // Here, it is expected that there is a count for perfect filling for
   // addresses.
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.Addresses", 0, 0);
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.Addresses", 1, 1);
-
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.CreditCards", 0,
-                                     0);
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.CreditCards", 1,
-                                     0);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.PerfectFilling.Addresses"),
+      BucketsAre(Bucket(false, 0), Bucket(true, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.PerfectFilling.CreditCards"),
+      BucketsAre(Bucket(false, 0), Bucket(true, 0)));
 }
 
 // Test that we log the perfect filling metric correctly for an address form in
@@ -665,13 +797,12 @@ TEST_F(AutofillMetricsTest, PerfectFillingForAddresses_NotAllAutofilled) {
 
   // Here, it is expected that there is a count for non-perfect filling for
   // addresses.
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.Addresses", 0, 1);
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.Addresses", 1, 0);
-
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.CreditCards", 0,
-                                     0);
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.CreditCards", 1,
-                                     0);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.PerfectFilling.Addresses"),
+      BucketsAre(Bucket(false, 1), Bucket(true, 0)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.PerfectFilling.CreditCards"),
+      BucketsAre(Bucket(false, 0), Bucket(true, 0)));
 }
 
 // Test that we log the perfect filling metric correctly for a credit card form
@@ -710,13 +841,12 @@ TEST_F(AutofillMetricsTest, PerfectFillingForCreditCards_AllAutofilled) {
 
   // Here, it is expected that there is a count for perfect filling for credit
   // cards.
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.Addresses", 0, 0);
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.Addresses", 1, 0);
-
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.CreditCards", 0,
-                                     0);
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.CreditCards", 1,
-                                     1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.PerfectFilling.Addresses"),
+      BucketsAre(Bucket(false, 0), Bucket(true, 0)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.PerfectFilling.CreditCards"),
+      BucketsAre(Bucket(false, 0), Bucket(true, 1)));
 }
 
 // Test that we log the perfect filling metric correctly for a credit card form
@@ -755,13 +885,12 @@ TEST_F(AutofillMetricsTest, PerfectFillingForCreditCards_NotAllAutofilled) {
 
   // Here, it is expected that there is a count for non-perfect filling for
   // credit cards.
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.Addresses", 0, 0);
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.Addresses", 1, 0);
-
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.CreditCards", 0,
-                                     1);
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.CreditCards", 1,
-                                     0);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.PerfectFilling.Addresses"),
+      BucketsAre(Bucket(false, 0), Bucket(true, 0)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.PerfectFilling.CreditCards"),
+      BucketsAre(Bucket(false, 1), Bucket(true, 0)));
 }
 
 // Test that we log the perfect filling metric correctly for a form that
@@ -800,13 +929,12 @@ TEST_F(AutofillMetricsTest, PerfectFillingForMixedForm_AllAutofilled) {
 
   // Here, it is expected that there is a count for perfect filling for credit
   // cards and for addresses.
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.Addresses", 0, 0);
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.Addresses", 1, 1);
-
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.CreditCards", 0,
-                                     0);
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.CreditCards", 1,
-                                     1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.PerfectFilling.Addresses"),
+      BucketsAre(Bucket(false, 0), Bucket(true, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.PerfectFilling.CreditCards"),
+      BucketsAre(Bucket(false, 0), Bucket(true, 1)));
 }
 
 // Test that we log the perfect filling metric correctly for a form that
@@ -846,13 +974,12 @@ TEST_F(AutofillMetricsTest, PerfectFillingForMixedForm_NotAllAutofilled) {
 
   // Here, it is expected that there is a count for non-perfect filling for
   // credit cards and for addresses.
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.Addresses", 0, 1);
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.Addresses", 1, 0);
-
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.CreditCards", 0,
-                                     1);
-  histogram_tester.ExpectBucketCount("Autofill.PerfectFilling.CreditCards", 1,
-                                     0);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.PerfectFilling.Addresses"),
+      BucketsAre(Bucket(false, 1), Bucket(true, 0)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.PerfectFilling.CreditCards"),
+      BucketsAre(Bucket(false, 1), Bucket(true, 0)));
 }
 
 // Test that we log quality metrics appropriately.
@@ -904,134 +1031,65 @@ TEST_F(AutofillMetricsTest, QualityMetrics) {
   autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
 
+  // Auxiliary function for GetAllSamples() expectations.
+  auto b = [](ServerFieldType field_type,
+              AutofillMetrics::FieldTypeQualityMetric metric,
+              base::HistogramBase::Count count) {
+    return Bucket(GetFieldTypeGroupPredictionQualityMetric(field_type, metric),
+                  count);
+  };
+
   // Heuristic predictions.
-  {
-    std::string aggregate_histogram =
-        "Autofill.FieldPredictionQuality.Aggregate.Heuristic";
-    std::string by_field_type_histogram =
-        "Autofill.FieldPredictionQuality.ByFieldType.Heuristic";
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.FieldPredictionQuality.Aggregate.Heuristic"),
+              BucketsAre(Bucket(AutofillMetrics::FALSE_NEGATIVE_UNKNOWN, 1),
+                         Bucket(AutofillMetrics::TRUE_POSITIVE, 2),
+                         Bucket(AutofillMetrics::FALSE_POSITIVE_EMPTY, 1),
+                         Bucket(AutofillMetrics::FALSE_POSITIVE_UNKNOWN, 1),
+                         Bucket(AutofillMetrics::FALSE_NEGATIVE_MISMATCH, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.FieldPredictionQuality.ByFieldType.Heuristic"),
+      BucketsAre(
+          b(ADDRESS_HOME_COUNTRY, AutofillMetrics::FALSE_NEGATIVE_UNKNOWN, 1),
+          b(NAME_FULL, AutofillMetrics::TRUE_POSITIVE, 1),
+          b(PHONE_HOME_CITY_AND_NUMBER, AutofillMetrics::TRUE_POSITIVE, 1),
+          b(EMAIL_ADDRESS, AutofillMetrics::FALSE_NEGATIVE_MISMATCH, 1),
+          b(PHONE_HOME_NUMBER, AutofillMetrics::FALSE_POSITIVE_MISMATCH, 1),
+          b(PHONE_HOME_NUMBER, AutofillMetrics::FALSE_POSITIVE_UNKNOWN, 1),
+          b(NAME_FULL, AutofillMetrics::FALSE_POSITIVE_EMPTY, 1)));
 
-    // Unknown:
-    histogram_tester.ExpectBucketCount(
-        aggregate_histogram, AutofillMetrics::FALSE_NEGATIVE_UNKNOWN, 1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            ADDRESS_HOME_COUNTRY, AutofillMetrics::FALSE_NEGATIVE_UNKNOWN),
-        1);
-    // Match:
-    histogram_tester.ExpectBucketCount(aggregate_histogram,
-                                       AutofillMetrics::TRUE_POSITIVE, 2);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            NAME_FULL, AutofillMetrics::TRUE_POSITIVE),
-        1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            PHONE_HOME_CITY_AND_NUMBER, AutofillMetrics::TRUE_POSITIVE),
-        1);
-    // Mismatch:
-    histogram_tester.ExpectBucketCount(
-        aggregate_histogram, AutofillMetrics::FALSE_NEGATIVE_MISMATCH, 1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            EMAIL_ADDRESS, AutofillMetrics::FALSE_NEGATIVE_MISMATCH),
-        1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            PHONE_HOME_NUMBER, AutofillMetrics::FALSE_POSITIVE_MISMATCH),
-        1);
-    // False Positive Unknown:
-    histogram_tester.ExpectBucketCount(
-        aggregate_histogram, AutofillMetrics::FALSE_POSITIVE_UNKNOWN, 1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            PHONE_HOME_NUMBER, AutofillMetrics::FALSE_POSITIVE_UNKNOWN),
-        1);
-    // False Positive Empty:
-    histogram_tester.ExpectBucketCount(
-        aggregate_histogram, AutofillMetrics::FALSE_POSITIVE_EMPTY, 1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            NAME_FULL, AutofillMetrics::FALSE_POSITIVE_EMPTY),
-        1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.FieldPredictionQuality.Aggregate.Server"),
+              BucketsAre(Bucket(AutofillMetrics::FALSE_NEGATIVE_UNKNOWN, 1),
+                         Bucket(AutofillMetrics::TRUE_POSITIVE, 2),
+                         Bucket(AutofillMetrics::FALSE_NEGATIVE_MISMATCH, 1),
+                         Bucket(AutofillMetrics::FALSE_POSITIVE_UNKNOWN, 1),
+                         Bucket(AutofillMetrics::FALSE_POSITIVE_EMPTY, 1)));
 
-    // Sanity Check:
-    histogram_tester.ExpectTotalCount(aggregate_histogram, 6);
-    histogram_tester.ExpectTotalCount(by_field_type_histogram, 7);
-  }
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.FieldPredictionQuality.ByFieldType.Server"),
+      BucketsAre(
+          b(ADDRESS_HOME_COUNTRY, AutofillMetrics::FALSE_NEGATIVE_UNKNOWN, 1),
+          b(EMAIL_ADDRESS, AutofillMetrics::TRUE_POSITIVE, 1),
+          b(PHONE_HOME_WHOLE_NUMBER, AutofillMetrics::TRUE_POSITIVE, 1),
+          b(NAME_FULL, AutofillMetrics::FALSE_NEGATIVE_MISMATCH, 1),
+          b(NAME_FIRST, AutofillMetrics::FALSE_POSITIVE_MISMATCH, 1),
+          b(EMAIL_ADDRESS, AutofillMetrics::FALSE_POSITIVE_UNKNOWN, 1),
+          b(NAME_FIRST, AutofillMetrics::FALSE_POSITIVE_EMPTY, 1)));
 
   // Server overrides heuristic so Overall and Server are the same predictions
   // (as there were no test fields where server == NO_SERVER_DATA and heuristic
   // != UNKNOWN_TYPE).
-  for (const std::string source : {"Server", "Overall"}) {
-    std::string aggregate_histogram =
-        "Autofill.FieldPredictionQuality.Aggregate." + source;
-    std::string by_field_type_histogram =
-        "Autofill.FieldPredictionQuality.ByFieldType." + source;
-
-    // Unknown:
-    histogram_tester.ExpectBucketCount(
-        aggregate_histogram, AutofillMetrics::FALSE_NEGATIVE_UNKNOWN, 1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            ADDRESS_HOME_COUNTRY, AutofillMetrics::FALSE_NEGATIVE_UNKNOWN),
-        1);
-    // Match:
-    histogram_tester.ExpectBucketCount(aggregate_histogram,
-                                       AutofillMetrics::TRUE_POSITIVE, 2);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            EMAIL_ADDRESS, AutofillMetrics::TRUE_POSITIVE),
-        1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            PHONE_HOME_WHOLE_NUMBER, AutofillMetrics::TRUE_POSITIVE),
-        1);
-    // Mismatch:
-    histogram_tester.ExpectBucketCount(
-        aggregate_histogram, AutofillMetrics::FALSE_NEGATIVE_MISMATCH, 1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            NAME_FULL, AutofillMetrics::FALSE_NEGATIVE_MISMATCH),
-        1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            NAME_FIRST, AutofillMetrics::FALSE_POSITIVE_MISMATCH),
-        1);
-
-    // False Positive Unknown:
-    histogram_tester.ExpectBucketCount(
-        aggregate_histogram, AutofillMetrics::FALSE_POSITIVE_UNKNOWN, 1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            EMAIL_ADDRESS, AutofillMetrics::FALSE_POSITIVE_UNKNOWN),
-        1);
-    // False Positive Empty:
-    histogram_tester.ExpectBucketCount(
-        aggregate_histogram, AutofillMetrics::FALSE_POSITIVE_EMPTY, 1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            NAME_FIRST, AutofillMetrics::FALSE_POSITIVE_EMPTY),
-        1);
-
-    // Sanity Check:
-    histogram_tester.ExpectTotalCount(aggregate_histogram, 6);
-    histogram_tester.ExpectTotalCount(by_field_type_histogram, 7);
-  }
+  EXPECT_EQ(histogram_tester.GetAllSamples(
+                "Autofill.FieldPredictionQuality.Aggregate.Server"),
+            histogram_tester.GetAllSamples(
+                "Autofill.FieldPredictionQuality.Aggregate.Overall"));
+  EXPECT_EQ(histogram_tester.GetAllSamples(
+                "Autofill.FieldPredictionQuality.ByFieldType.Server"),
+            histogram_tester.GetAllSamples(
+                "Autofill.FieldPredictionQuality.ByFieldType.Overall"));
 }
 
 // Test that the ProfileImportStatus logs a no import.
@@ -1076,17 +1134,12 @@ TEST_F(AutofillMetricsTest, ProfileImportStatus_NoImport) {
   autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
 
-  std::string histogram = "Autofill.AddressProfileImportStatus";
-  histogram_tester.ExpectBucketCount(
-      histogram,
-      AutofillMetrics::AddressProfileImportStatusMetric::REGULAR_IMPORT, 0);
-  histogram_tester.ExpectBucketCount(
-      histogram, AutofillMetrics::AddressProfileImportStatusMetric::NO_IMPORT,
-      1);
-  histogram_tester.ExpectBucketCount(
-      histogram,
-      AutofillMetrics::AddressProfileImportStatusMetric::SECTION_UNION_IMPORT,
-      0);
+  using Metric = AutofillMetrics::AddressProfileImportStatusMetric;
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.AddressProfileImportStatus"),
+      BucketsAre(Bucket(Metric::REGULAR_IMPORT, 0),
+                 Bucket(Metric::NO_IMPORT, 1),
+                 Bucket(Metric::SECTION_UNION_IMPORT, 0)));
 }
 
 // Test that the ProfileImportStatus logs a regular import.
@@ -1128,17 +1181,12 @@ TEST_F(AutofillMetricsTest, ProfileImportStatus_RegularImport) {
   autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
 
-  std::string histogram = "Autofill.AddressProfileImportStatus";
-  histogram_tester.ExpectBucketCount(
-      histogram,
-      AutofillMetrics::AddressProfileImportStatusMetric::REGULAR_IMPORT, 1);
-  histogram_tester.ExpectBucketCount(
-      histogram, AutofillMetrics::AddressProfileImportStatusMetric::NO_IMPORT,
-      0);
-  histogram_tester.ExpectBucketCount(
-      histogram,
-      AutofillMetrics::AddressProfileImportStatusMetric::SECTION_UNION_IMPORT,
-      0);
+  using Metric = AutofillMetrics::AddressProfileImportStatusMetric;
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.AddressProfileImportStatus"),
+      BucketsAre(Bucket(Metric::REGULAR_IMPORT, 1),
+                 Bucket(Metric::NO_IMPORT, 0),
+                 Bucket(Metric::SECTION_UNION_IMPORT, 0)));
 }
 
 // Test that the ProfileImportStatus logs a section union mport.
@@ -1188,22 +1236,16 @@ TEST_F(AutofillMetricsTest, ProfileImportStatus_UnionImport) {
       autofill_manager().MakeFrontendIDForTest(std::string(), guid));
 
   base::HistogramTester histogram_tester;
-  std::string histogram = "Autofill.AddressProfileImportStatus";
 
   autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
 
-  // Verify that one profile was imported using the union of the two sections.
-  histogram_tester.ExpectBucketCount(
-      histogram,
-      AutofillMetrics::AddressProfileImportStatusMetric::REGULAR_IMPORT, 0);
-  histogram_tester.ExpectBucketCount(
-      histogram, AutofillMetrics::AddressProfileImportStatusMetric::NO_IMPORT,
-      0);
-  histogram_tester.ExpectBucketCount(
-      histogram,
-      AutofillMetrics::AddressProfileImportStatusMetric::SECTION_UNION_IMPORT,
-      1);
+  using Metric = AutofillMetrics::AddressProfileImportStatusMetric;
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.AddressProfileImportStatus"),
+      BucketsAre(Bucket(Metric::REGULAR_IMPORT, 0),
+                 Bucket(Metric::NO_IMPORT, 0),
+                 Bucket(Metric::SECTION_UNION_IMPORT, 1)));
 }
 
 // Test that the ProfileImportRequirements are all counted as fulfilled for a
@@ -2412,102 +2454,62 @@ TEST_F(AutofillMetricsTest,
   autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
 
+  // Auxiliary function for GetAllSamples() expectations.
+  auto b = [](ServerFieldType field_type,
+              AutofillMetrics::FieldTypeQualityMetric metric,
+              base::HistogramBase::Count count) {
+    return Bucket(GetFieldTypeGroupPredictionQualityMetric(field_type, metric),
+                  count);
+  };
+
   // Rationalization quality.
-  {
-    std::string rationalization_histogram =
-        "Autofill.RationalizationQuality.PhoneNumber";
-    histogram_tester.ExpectBucketCount(
-        rationalization_histogram, AutofillMetrics::RATIONALIZATION_GOOD, 1);
-    histogram_tester.ExpectBucketCount(rationalization_histogram,
-                                       AutofillMetrics::RATIONALIZATION_OK, 1);
-    histogram_tester.ExpectBucketCount(rationalization_histogram,
-                                       AutofillMetrics::RATIONALIZATION_BAD, 1);
-  }
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.RationalizationQuality.PhoneNumber"),
+              BucketsAre(Bucket(AutofillMetrics::RATIONALIZATION_GOOD, 1),
+                         Bucket(AutofillMetrics::RATIONALIZATION_OK, 1),
+                         Bucket(AutofillMetrics::RATIONALIZATION_BAD, 1)));
 
-  // Heuristic predictions.
-  {
-    std::string aggregate_histogram =
-        "Autofill.FieldPredictionQuality.Aggregate.Heuristic";
-    std::string by_field_type_histogram =
-        "Autofill.FieldPredictionQuality.ByFieldType.Heuristic";
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.FieldPredictionQuality.Aggregate.Heuristic"),
+              BucketsAre(Bucket(AutofillMetrics::TRUE_POSITIVE, 4),
+                         Bucket(AutofillMetrics::TRUE_NEGATIVE_EMPTY, 1),
+                         Bucket(AutofillMetrics::FALSE_NEGATIVE_MISMATCH, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.FieldPredictionQuality.ByFieldType.Heuristic"),
+      BucketsAre(
+          b(NAME_FULL, AutofillMetrics::TRUE_POSITIVE, 1),
+          b(ADDRESS_HOME_LINE1, AutofillMetrics::TRUE_POSITIVE, 1),
+          b(PHONE_HOME_CITY_AND_NUMBER, AutofillMetrics::TRUE_POSITIVE, 2),
+          b(PHONE_HOME_WHOLE_NUMBER, AutofillMetrics::FALSE_NEGATIVE_MISMATCH,
+            1)));
 
-    // TRUE_POSITIVE:
-    histogram_tester.ExpectBucketCount(aggregate_histogram,
-                                       AutofillMetrics::TRUE_POSITIVE, 4);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            NAME_FULL, AutofillMetrics::TRUE_POSITIVE),
-        1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            ADDRESS_HOME_LINE1, AutofillMetrics::TRUE_POSITIVE),
-        1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            PHONE_HOME_CITY_AND_NUMBER, AutofillMetrics::TRUE_POSITIVE),
-        2);
-    // TRUE_NEGATIVE_EMPTY
-    histogram_tester.ExpectBucketCount(aggregate_histogram,
-                                       AutofillMetrics::TRUE_NEGATIVE_EMPTY, 1);
-    // FALSE_NEGATIVE_MISMATCH
-    histogram_tester.ExpectBucketCount(
-        aggregate_histogram, AutofillMetrics::FALSE_NEGATIVE_MISMATCH, 1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            PHONE_HOME_WHOLE_NUMBER, AutofillMetrics::FALSE_NEGATIVE_MISMATCH),
-        1);
-    // Sanity Check:
-    histogram_tester.ExpectTotalCount(aggregate_histogram, 6);
-    histogram_tester.ExpectTotalCount(by_field_type_histogram, 5);
-  }
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.FieldPredictionQuality.Aggregate.Server"),
+              BucketsAre(Bucket(AutofillMetrics::TRUE_POSITIVE, 4),
+                         Bucket(AutofillMetrics::TRUE_NEGATIVE_EMPTY, 1),
+                         Bucket(AutofillMetrics::FALSE_NEGATIVE_MISMATCH, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.FieldPredictionQuality.ByFieldType.Server"),
+      BucketsAre(
+          b(NAME_FULL, AutofillMetrics::TRUE_POSITIVE, 1),
+          b(ADDRESS_HOME_LINE1, AutofillMetrics::TRUE_POSITIVE, 1),
+          b(PHONE_HOME_CITY_AND_NUMBER, AutofillMetrics::TRUE_POSITIVE, 2),
+          b(PHONE_HOME_WHOLE_NUMBER, AutofillMetrics::FALSE_NEGATIVE_MISMATCH,
+            1)));
 
   // Server overrides heuristic so Overall and Server are the same predictions
   // (as there were no test fields where server == NO_SERVER_DATA and heuristic
   // != UNKNOWN_TYPE).
-  for (const std::string source : {"Server", "Overall"}) {
-    std::string aggregate_histogram =
-        "Autofill.FieldPredictionQuality.Aggregate." + source;
-    std::string by_field_type_histogram =
-        "Autofill.FieldPredictionQuality.ByFieldType." + source;
-
-    // TRUE_POSITIVE:
-    histogram_tester.ExpectBucketCount(aggregate_histogram,
-                                       AutofillMetrics::TRUE_POSITIVE, 4);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            NAME_FULL, AutofillMetrics::TRUE_POSITIVE),
-        1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            ADDRESS_HOME_LINE1, AutofillMetrics::TRUE_POSITIVE),
-        1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            PHONE_HOME_CITY_AND_NUMBER, AutofillMetrics::TRUE_POSITIVE),
-        2);
-    // TRUE_NEGATIVE_EMPTY
-    histogram_tester.ExpectBucketCount(aggregate_histogram,
-                                       AutofillMetrics::TRUE_NEGATIVE_EMPTY, 1);
-    // FALSE_NEGATIVE_MISMATCHFALSE_NEGATIVE_MATCH
-    histogram_tester.ExpectBucketCount(
-        aggregate_histogram, AutofillMetrics::FALSE_NEGATIVE_MISMATCH, 1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            PHONE_HOME_CITY_AND_NUMBER,
-            AutofillMetrics::FALSE_NEGATIVE_MISMATCH),
-        1);
-    // Sanity Check:
-    histogram_tester.ExpectTotalCount(aggregate_histogram, 6);
-    histogram_tester.ExpectTotalCount(by_field_type_histogram, 5);
-  }
+  EXPECT_EQ(histogram_tester.GetAllSamples(
+                "Autofill.FieldPredictionQuality.Aggregate.Server"),
+            histogram_tester.GetAllSamples(
+                "Autofill.FieldPredictionQuality.Aggregate.Overall"));
+  EXPECT_EQ(histogram_tester.GetAllSamples(
+                "Autofill.FieldPredictionQuality.FieldType.Server"),
+            histogram_tester.GetAllSamples(
+                "Autofill.FieldPredictionQuality.FieldType.Overall"));
 }
 
 // Tests the true negatives (empty + no prediction and unknown + no prediction)
@@ -4084,18 +4086,18 @@ TEST_F(AutofillMetricsTest, LogStoredOfferMetrics) {
   offers.push_back(std::make_unique<AutofillOfferData>(offer2));
 
   base::HistogramTester histogram_tester;
+  auto SamplesOf = [&histogram_tester](base::StringPiece metric) {
+    return histogram_tester.GetAllSamples(metric);
+  };
   AutofillMetrics::LogStoredOfferMetrics(offers);
 
   // Validate the count metrics.
-  histogram_tester.ExpectBucketCount("Autofill.Offer.StoredOfferCount", 2, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.Offer.StoredOfferRelatedMerchantCount", 1, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.Offer.StoredOfferRelatedMerchantCount", 2, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.Offer.StoredOfferRelatedCardCount", 1, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.Offer.StoredOfferRelatedCardCount", 3, 1);
+  EXPECT_THAT(SamplesOf("Autofill.Offer.StoredOfferCount"),
+              BucketsAre(Bucket(2, 1)));
+  EXPECT_THAT(SamplesOf("Autofill.Offer.StoredOfferRelatedMerchantCount"),
+              BucketsAre(Bucket(1, 1), Bucket(2, 1)));
+  EXPECT_THAT(SamplesOf("Autofill.Offer.StoredOfferRelatedCardCount"),
+              BucketsAre(Bucket(1, 1), Bucket(3, 1)));
 }
 
 // Test that we correctly log when Profile Autofill is enabled at startup.
@@ -5069,14 +5071,14 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardShownFormEvents) {
     base::HistogramTester histogram_tester;
     autofill_manager().DidShowSuggestions(false /* is_new_popup */, form,
                                           field);
-    histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
-                                       FORM_EVENT_SUGGESTIONS_SHOWN, 0);
-    histogram_tester.ExpectBucketCount(credit_card_form_events_frame_histogram_,
-                                       FORM_EVENT_SUGGESTIONS_SHOWN, 0);
-    histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
-                                       FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 0);
-    histogram_tester.ExpectBucketCount(credit_card_form_events_frame_histogram_,
-                                       FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 0);
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+        BucketsAre(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 0),
+                   Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 0)));
+    EXPECT_THAT(histogram_tester.GetAllSamples(
+                    credit_card_form_events_frame_histogram_),
+                BucketsAre(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 0),
+                           Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 0)));
   }
 }
 
@@ -7229,27 +7231,18 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
                     "6011000990139424");
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.CreditCard.WithOffer",
-        FORM_EVENT_SUGGESTIONS_SHOWN, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.CreditCard.WithOffer",
-        FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.CreditCard.WithOffer",
-        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.CreditCard.WithOffer",
-        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.CreditCard.WithOffer",
-        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.CreditCard.WithOffer",
-        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.CreditCard.WithOffer",
-        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, 1);
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            "Autofill.FormEvents.CreditCard.WithOffer"),
+        IsSupersetOf(
+            {Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1),
+             Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1),
+             Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 1),
+             Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE, 1),
+             Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 1),
+             Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, 1),
+             Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE,
+                    1)}));
 
     // Ensure we count the correct number of offers shown.
     histogram_tester.ExpectUniqueSample(
@@ -7557,27 +7550,18 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
         autofill_manager().MakeFrontendIDForTest(guid, std::string()));
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.CreditCard.WithOffer",
-        FORM_EVENT_SUGGESTIONS_SHOWN, 2);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.CreditCard.WithOffer",
-        FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.CreditCard.WithOffer",
-        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.CreditCard.WithOffer",
-        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.CreditCard.WithOffer",
-        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.CreditCard.WithOffer",
-        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.CreditCard.WithOffer",
-        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, 1);
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            "Autofill.FormEvents.CreditCard.WithOffer"),
+        IsSupersetOf(
+            {Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 2),
+             Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1),
+             Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 1),
+             Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE, 1),
+             Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 1),
+             Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, 1),
+             Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE,
+                    1)}));
 
     // Ensure we count the correct number of offers shown.
     histogram_tester.ExpectBucketCount("Autofill.Offer.SuggestedCardsHaveOffer",
@@ -8226,30 +8210,16 @@ TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
 
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_SERVER_SUGGESTION_WILL_SUBMIT_ONCE, 0);
-    histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address",
-                                       FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE,
-                                       1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE, 0);
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
+        BucketsInclude(Bucket(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1),
+                       Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0),
+                       Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+                       Bucket(FORM_EVENT_SERVER_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+                       Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1),
+                       Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0),
+                       Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 0),
+                       Bucket(FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE, 0)));
   }
 
   // Reset the autofill manager state.
@@ -8265,36 +8235,21 @@ TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
 
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_SERVER_SUGGESTION_WILL_SUBMIT_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0);
-    histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address",
-                                       FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE,
-                                       0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, 0);
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
+        BucketsInclude(
+            Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0),
+            Bucket(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+            Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+            Bucket(FORM_EVENT_SERVER_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE,
+                   0),
+            Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0),
+            Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 0),
+            Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 0),
+            Bucket(FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE, 0),
+            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE,
+                   0)));
 
     // Check if FormEvent UKM is logged properly
     auto entries =
@@ -8406,36 +8361,21 @@ TEST_F(AutofillMetricsTest, AddressWillSubmitFormEvents) {
                                        SubmissionSource::FORM_SUBMISSION);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_SERVER_SUGGESTION_WILL_SUBMIT_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0);
-    histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address",
-                                       FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE,
-                                       1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, 0);
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
+        BucketsInclude(
+            Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0),
+            Bucket(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1),
+            Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+            Bucket(FORM_EVENT_SERVER_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE,
+                   0),
+            Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0),
+            Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1),
+            Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 0),
+            Bucket(FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE, 0),
+            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE,
+                   0)));
     // Check if FormEvent UKM is logged properly
     auto entries =
         test_ukm_recorder_->GetEntriesByName(UkmFormEventType::kEntryName);
@@ -8454,36 +8394,21 @@ TEST_F(AutofillMetricsTest, AddressWillSubmitFormEvents) {
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_SERVER_SUGGESTION_WILL_SUBMIT_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0);
-    histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address",
-                                       FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE,
-                                       0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE, 0);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address",
-        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, 0);
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
+        BucketsInclude(
+            Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0),
+            Bucket(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+            Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+            Bucket(FORM_EVENT_SERVER_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE,
+                   0),
+            Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0),
+            Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 0),
+            Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 0),
+            Bucket(FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE, 0),
+            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE,
+                   0)));
     // Check if FormEvent UKM is logged properly
     auto entries =
         test_ukm_recorder_->GetEntriesByName(UkmFormEventType::kEntryName);
@@ -10246,13 +10171,11 @@ TEST_F(AutofillMetricsTest, ProfileActionOnFormSubmitted) {
                                  /*removed_forms=*/{});
   autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
-  histogram_tester.ExpectBucketCount("Autofill.ProfileActionOnFormSubmitted",
-                                     AutofillMetrics::NEW_PROFILE_CREATED, 1);
-  histogram_tester.ExpectBucketCount("Autofill.ProfileActionOnFormSubmitted",
-                                     AutofillMetrics::EXISTING_PROFILE_USED, 0);
-  histogram_tester.ExpectBucketCount("Autofill.ProfileActionOnFormSubmitted",
-                                     AutofillMetrics::EXISTING_PROFILE_UPDATED,
-                                     0);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.ProfileActionOnFormSubmitted"),
+      BucketsAre(Bucket(AutofillMetrics::NEW_PROFILE_CREATED, 1),
+                 Bucket(AutofillMetrics::EXISTING_PROFILE_USED, 0),
+                 Bucket(AutofillMetrics::EXISTING_PROFILE_UPDATED, 0)));
 
   // Expect to log EXISTING_PROFILE_USED for the metric since the same profile
   // is submitted.
@@ -10260,13 +10183,11 @@ TEST_F(AutofillMetricsTest, ProfileActionOnFormSubmitted) {
                                  /*removed_forms=*/{});
   autofill_manager().OnFormSubmitted(second_form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
-  histogram_tester.ExpectBucketCount("Autofill.ProfileActionOnFormSubmitted",
-                                     AutofillMetrics::NEW_PROFILE_CREATED, 1);
-  histogram_tester.ExpectBucketCount("Autofill.ProfileActionOnFormSubmitted",
-                                     AutofillMetrics::EXISTING_PROFILE_USED, 1);
-  histogram_tester.ExpectBucketCount("Autofill.ProfileActionOnFormSubmitted",
-                                     AutofillMetrics::EXISTING_PROFILE_UPDATED,
-                                     0);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.ProfileActionOnFormSubmitted"),
+      BucketsAre(Bucket(AutofillMetrics::NEW_PROFILE_CREATED, 1),
+                 Bucket(AutofillMetrics::EXISTING_PROFILE_USED, 1),
+                 Bucket(AutofillMetrics::EXISTING_PROFILE_UPDATED, 0)));
 
   // Expect to log NEW_PROFILE_CREATED for the metric since a new profile is
   // submitted.
@@ -10274,13 +10195,11 @@ TEST_F(AutofillMetricsTest, ProfileActionOnFormSubmitted) {
                                  /*removed_forms=*/{});
   autofill_manager().OnFormSubmitted(third_form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
-  histogram_tester.ExpectBucketCount("Autofill.ProfileActionOnFormSubmitted",
-                                     AutofillMetrics::NEW_PROFILE_CREATED, 2);
-  histogram_tester.ExpectBucketCount("Autofill.ProfileActionOnFormSubmitted",
-                                     AutofillMetrics::EXISTING_PROFILE_USED, 1);
-  histogram_tester.ExpectBucketCount("Autofill.ProfileActionOnFormSubmitted",
-                                     AutofillMetrics::EXISTING_PROFILE_UPDATED,
-                                     0);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.ProfileActionOnFormSubmitted"),
+      BucketsAre(Bucket(AutofillMetrics::NEW_PROFILE_CREATED, 2),
+                 Bucket(AutofillMetrics::EXISTING_PROFILE_USED, 1),
+                 Bucket(AutofillMetrics::EXISTING_PROFILE_UPDATED, 0)));
 
   // Expect to log EXISTING_PROFILE_UPDATED for the metric since the profile was
   // updated.
@@ -10288,13 +10207,11 @@ TEST_F(AutofillMetricsTest, ProfileActionOnFormSubmitted) {
                                  /*removed_forms=*/{});
   autofill_manager().OnFormSubmitted(fourth_form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
-  histogram_tester.ExpectBucketCount("Autofill.ProfileActionOnFormSubmitted",
-                                     AutofillMetrics::NEW_PROFILE_CREATED, 2);
-  histogram_tester.ExpectBucketCount("Autofill.ProfileActionOnFormSubmitted",
-                                     AutofillMetrics::EXISTING_PROFILE_USED, 1);
-  histogram_tester.ExpectBucketCount("Autofill.ProfileActionOnFormSubmitted",
-                                     AutofillMetrics::EXISTING_PROFILE_UPDATED,
-                                     1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.ProfileActionOnFormSubmitted"),
+      BucketsAre(Bucket(AutofillMetrics::NEW_PROFILE_CREATED, 2),
+                 Bucket(AutofillMetrics::EXISTING_PROFILE_USED, 1),
+                 Bucket(AutofillMetrics::EXISTING_PROFILE_UPDATED, 1)));
 }
 
 // Test class that shares setup code for testing ParseQueryResponse.
@@ -10726,33 +10643,27 @@ TEST_F(AutofillMetricsTest, DynamicFormMetrics) {
   // Simulate checking whether to fill a dynamic form after the form was filled
   // initially.
   autofill_manager().ShouldTriggerRefillForTest(form_structure);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address",
-                                     FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM,
-                                     1);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address",
-                                     FORM_EVENT_DID_DYNAMIC_REFILL, 0);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address",
-                                     FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL, 0);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
+      BucketsInclude(Bucket(FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, 1),
+                     Bucket(FORM_EVENT_DID_DYNAMIC_REFILL, 0),
+                     Bucket(FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL, 0)));
 
   // Trigger a refill, the refill metric should be updated.
   autofill_manager().TriggerRefillForTest(form);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address",
-                                     FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM,
-                                     1);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address",
-                                     FORM_EVENT_DID_DYNAMIC_REFILL, 1);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address",
-                                     FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL, 0);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
+      BucketsInclude(Bucket(FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, 1),
+                     Bucket(FORM_EVENT_DID_DYNAMIC_REFILL, 1),
+                     Bucket(FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL, 0)));
 
   // Trigger a check to see whether a refill should happen. The
   autofill_manager().ShouldTriggerRefillForTest(form_structure);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address",
-                                     FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM,
-                                     2);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address",
-                                     FORM_EVENT_DID_DYNAMIC_REFILL, 1);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address",
-                                     FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL, 1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
+      BucketsInclude(Bucket(FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, 2),
+                     Bucket(FORM_EVENT_DID_DYNAMIC_REFILL, 1),
+                     Bucket(FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL, 1)));
 }
 
 // Tests that the LogUserHappinessBySecurityLevel are recorded correctly.
@@ -12669,45 +12580,45 @@ TEST_F(AutofillMetricsCrossFrameFormTest,
 
   EXPECT_THAT(SamplesOf("Autofill.CreditCard.SeamlessFillable."
                         "AtFillTimeBeforeSecurityPolicy"),
-              AreBuckets(Bucket(Metric::kFullFill, 2)));
+              BucketsAre(Bucket(Metric::kFullFill, 2)));
   EXPECT_THAT(SamplesOf("Autofill.CreditCard.SeamlessFillable."
                         "AtFillTimeBeforeSecurityPolicy"),
-              AreBuckets(Bucket(Metric::kFullFill, 2)));
+              BucketsAre(Bucket(Metric::kFullFill, 2)));
   EXPECT_THAT(SamplesOf("Autofill.CreditCard.SeamlessFillable."
                         "AtFillTimeBeforeSecurityPolicy.Bitmask"),
-              AreBuckets(Bucket(kName | kNumber | kExp | kCvc, 2)));
+              BucketsAre(Bucket(kName | kNumber | kExp | kCvc, 2)));
 
   EXPECT_THAT(
       SamplesOf(
           "Autofill.CreditCard.SeamlessFillable.AtFillTimeAfterSecurityPolicy"),
-      AreBuckets(Bucket(Metric::kPartialFill, 2)));
+      BucketsAre(Bucket(Metric::kPartialFill, 2)));
   EXPECT_THAT(SamplesOf("Autofill.CreditCard.SeamlessFillable."
                         "AtFillTimeAfterSecurityPolicy.Bitmask"),
-              AreBuckets(Bucket(kName | kExp, 1), Bucket(kNumber | kCvc, 1)));
+              BucketsAre(Bucket(kName | kExp, 1), Bucket(kNumber | kCvc, 1)));
 
   EXPECT_THAT(
       SamplesOf(
           "Autofill.CreditCard.SeamlessFills.AtFillTimeBeforeSecurityPolicy"),
-      AreBuckets(Bucket(Metric::kOptionalCvcMissing, 1),
+      BucketsAre(Bucket(Metric::kOptionalCvcMissing, 1),
                  Bucket(Metric::kPartialFill, 1)));
   EXPECT_THAT(
       SamplesOf("Autofill.CreditCard.SeamlessFills."
                 "AtFillTimeBeforeSecurityPolicy.Bitmask"),
-      AreBuckets(Bucket(kName | kNumber | kExp, 1), Bucket(kNumber, 1)));
+      BucketsAre(Bucket(kName | kNumber | kExp, 1), Bucket(kNumber, 1)));
 
   EXPECT_THAT(
       SamplesOf(
           "Autofill.CreditCard.SeamlessFills.AtFillTimeAfterSecurityPolicy"),
-      AreBuckets(Bucket(Metric::kPartialFill, 2)));
+      BucketsAre(Bucket(Metric::kPartialFill, 2)));
   EXPECT_THAT(SamplesOf("Autofill.CreditCard.SeamlessFills."
                         "AtFillTimeAfterSecurityPolicy.Bitmask"),
-              AreBuckets(Bucket(kName | kExp, 1), Bucket(kNumber, 1)));
+              BucketsAre(Bucket(kName | kExp, 1), Bucket(kNumber, 1)));
 
   EXPECT_THAT(SamplesOf("Autofill.CreditCard.SeamlessFills.AtSubmissionTime"),
-              AreBuckets(Bucket(Metric::kOptionalCvcMissing, 1)));
+              BucketsAre(Bucket(Metric::kOptionalCvcMissing, 1)));
   EXPECT_THAT(
       SamplesOf("Autofill.CreditCard.SeamlessFills.AtSubmissionTime.Bitmask"),
-      AreBuckets(Bucket(kName | kNumber | kExp, 1)));
+      BucketsAre(Bucket(kName | kNumber | kExp, 1)));
 
   VerifyUkm(
       test_ukm_recorder_, form_, UkmBuilder::kEntryName,
