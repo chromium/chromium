@@ -11,9 +11,9 @@
 module ash.ime.mojom;
 
 // Do not modify this enum. If new values are needed, deprecate the entire enum.
-[Stable, RenamedFrom="chromeos.ime.mojom.KeyEventType"]
+[Stable, Extensible, RenamedFrom="chromeos.ime.mojom.KeyEventType"]
 enum KeyEventType {
-  kKeyDown = 0,
+  [Default] kKeyDown = 0,
   kKeyUp = 1,
 };
 
@@ -177,10 +177,10 @@ struct PhysicalKeyEvent {
 };
 
 // Do not modify this enum. If new values are needed, deprecate the entire enum.
-[Stable, RenamedFrom="chromeos.ime.mojom.KeyEventResult"]
+[Stable, Extensible, RenamedFrom="chromeos.ime.mojom.KeyEventResult"]
 enum KeyEventResult {
   // The event should be handled by the system.
-  kNeedsHandlingBySystem = 0,
+  [Default] kNeedsHandlingBySystem = 0,
   // The event was consumed by the IME and should not be handled by the system.
   kConsumedByIme = 1,
 };

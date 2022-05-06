@@ -14,9 +14,9 @@ import "ash/services/ime/public/mojom/input_method.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 
 // Do not modify this enum. If new values are needed, deprecate the entire enum.
-[Stable, RenamedFrom="chromeos.ime.mojom.CommitTextCursorBehavior"]
+[Stable, Extensible, RenamedFrom="chromeos.ime.mojom.CommitTextCursorBehavior"]
 enum CommitTextCursorBehavior {
-  kMoveCursorAfterText = 0,
+  [Default] kMoveCursorAfterText = 0,
   kMoveCursorBeforeText = 1,
 };
 
