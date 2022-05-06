@@ -440,6 +440,7 @@ enum ProtocolErrorCode {
   kExistingAdminSession = 16,
   kAuthzPolicyCheckFailed = 17,
   kDisallowedByPolicy = 18,
+  kLocationAuthzPolicyCheckFailed = 19,
 };
 
 // Provides the desktop integration process with a mechanism for controlling the

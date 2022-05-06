@@ -50,7 +50,7 @@ constexpr int kBufferSize = 4096;
 constexpr char kCertIssuerWildCard[] = "*";
 constexpr char kJsonSafetyPrefix[] = ")]}'\n";
 constexpr char kForbiddenExceptionToken[] = "ForbiddenException: ";
-constexpr char kAuthzDeniedErrorCode[] = "Error Code 23:";
+constexpr char kLocationAuthzError[] = "Error Code 23:";
 
 // Returns a value from the issuer field for certificate selection, in order of
 // preference.  If the O or OU entries are populated with multiple values, we
@@ -306,9 +306,11 @@ protocol::TokenValidator::ValidationResult TokenValidatorBase::ProcessResponse(
       // so seek forward to the exception info and then scan it for the code.
       size_t start_pos = data_.find(kForbiddenExceptionToken);
       if (start_pos != std::string::npos) {
-        if (data_.find(kAuthzDeniedErrorCode, start_pos) != std::string::npos) {
-          return RejectionReason::AUTHORIZATION_POLICY_CHECK_FAILED;
+        if (data_.find(kLocationAuthzError, start_pos) != std::string::npos) {
+          return RejectionReason::LOCATION_AUTHZ_POLICY_CHECK_FAILED;
         }
+
+        return RejectionReason::AUTHZ_POLICY_CHECK_FAILED;
       }
     }
 

@@ -80,8 +80,12 @@ class Authenticator {
     TOO_MANY_CONNECTIONS,
 
     // The client is not authorized to connect to this device due to a policy
-    // defined by the third party auth service.
-    AUTHORIZATION_POLICY_CHECK_FAILED,
+    // defined by the third party auth service. No denial reason was given.
+    AUTHZ_POLICY_CHECK_FAILED,
+
+    // The client is not authorized to connect to this device based on their
+    // current location due to a policy defined by the third party auth service.
+    LOCATION_AUTHZ_POLICY_CHECK_FAILED,
   };
 
   // Callback used for layered Authenticator implementations, particularly

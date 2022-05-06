@@ -1325,6 +1325,9 @@ struct EnumTraits<remoting::mojom::ProtocolErrorCode,
         return remoting::mojom::ProtocolErrorCode::kAuthzPolicyCheckFailed;
       case ::remoting::protocol::ErrorCode::DISALLOWED_BY_POLICY:
         return remoting::mojom::ProtocolErrorCode::kDisallowedByPolicy;
+      case ::remoting::protocol::ErrorCode::LOCATION_AUTHZ_POLICY_CHECK_FAILED:
+        return remoting::mojom::ProtocolErrorCode::
+            kLocationAuthzPolicyCheckFailed;
     }
 
     NOTREACHED();
@@ -1390,6 +1393,10 @@ struct EnumTraits<remoting::mojom::ProtocolErrorCode,
         return true;
       case remoting::mojom::ProtocolErrorCode::kDisallowedByPolicy:
         *out = ::remoting::protocol::ErrorCode::DISALLOWED_BY_POLICY;
+        return true;
+      case remoting::mojom::ProtocolErrorCode::kLocationAuthzPolicyCheckFailed:
+        *out =
+            ::remoting::protocol::ErrorCode::LOCATION_AUTHZ_POLICY_CHECK_FAILED;
         return true;
     }
 
