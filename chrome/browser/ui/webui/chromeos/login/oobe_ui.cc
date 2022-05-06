@@ -604,7 +604,7 @@ OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
   LOG(WARNING) << "OobeUI created";
   display_type_ = GetDisplayType(url);
 
-  auto core_handler = std::make_unique<CoreOobeHandler>();
+  auto core_handler = std::make_unique<CoreOobeHandler>(display_type_);
   core_handler_ = core_handler.get();
 
   AddWebUIHandler(std::move(core_handler));

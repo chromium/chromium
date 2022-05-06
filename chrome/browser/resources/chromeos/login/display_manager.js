@@ -11,7 +11,7 @@
 // #import {loadTimeData} from './i18n_setup.js';
 // #import {OobeTypes} from './components/oobe_types.m.js';
 
- // #import {DISPLAY_TYPE, ACCELERATOR_CANCEL, ACCELERATOR_VERSION, SCREEN_DEVICE_DISABLED, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.m.js';
+ // #import {DISPLAY_TYPE, ACCELERATOR_CANCEL, SCREEN_DEVICE_DISABLED, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.m.js';
 // #import {MultiTapDetector} from './multi_tap_detector.m.js';
 // #import {keyboard} from './keyboard_utils.m.js'
 
@@ -82,12 +82,6 @@ cr.define('cr.ui.login', function() {
        * @type {number}
        */
       this.currentStep_ = 0;
-
-      /**
-       * Whether version label can be toggled by ACCELERATOR_VERSION.
-       * @type {boolean}
-       */
-      this.allowToggleVersion_ = false;
 
       /**
        * Whether keyboard navigation flow is enforced.
@@ -224,13 +218,10 @@ cr.define('cr.ui.login', function() {
     }
 
     /**
-     * Shows/hides version labels.
-     * @param {boolean} show Whether labels should be visible by default. If
-     *     false, visibility can be toggled by ACCELERATOR_VERSION.
+     * Toggles system info visibility.
      */
-    showVersion(show) {
-      $('version-labels').hidden = !show;
-      this.allowToggleVersion_ = !show;
+    toggleSystemInfo() {
+      $('version-labels').hidden = !$('version-labels').hidden;
     }
 
     /**
@@ -257,10 +248,6 @@ cr.define('cr.ui.login', function() {
       if (name == ACCELERATOR_CANCEL) {
         if (this.currentScreen && this.currentScreen.cancel) {
           this.currentScreen.cancel();
-        }
-      } else if (name == ACCELERATOR_VERSION) {
-        if (this.allowToggleVersion_) {
-          $('version-labels').hidden = !$('version-labels').hidden;
         }
       }
     }

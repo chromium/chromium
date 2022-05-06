@@ -55,4 +55,3 @@
  * Must be kept in sync with webui_accelerator_mapping.cc.
  */
 /* #export */ const ACCELERATOR_CANCEL = 'cancel';
-/* #export */ const ACCELERATOR_VERSION = 'version';

@@ -38,6 +38,7 @@ class CoreOobeView {
   virtual void ReloadContent(base::Value::Dict dictionary) = 0;
   virtual void FocusReturned(bool reverse) = 0;
   virtual void UpdateClientAreaSize(const gfx::Size& size) = 0;
+  virtual void ToggleSystemInfo() = 0;
 };
 
 // The core handler for Javascript messages related to the "oobe" view.
@@ -49,7 +50,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
                         public OobeConfiguration::Observer,
                         public ChromeKeyboardControllerClient::Observer {
  public:
-  CoreOobeHandler();
+  explicit CoreOobeHandler(const std::string& display_type);
 
   CoreOobeHandler(const CoreOobeHandler&) = delete;
   CoreOobeHandler& operator=(const CoreOobeHandler&) = delete;
@@ -59,7 +60,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
 
   // BaseScreenHandler implementation:
   void GetAdditionalParameters(base::Value::Dict* dict) override;
@@ -95,6 +95,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void FocusReturned(bool reverse) override;
   // Updates client area size based on the primary screen size.
   void UpdateClientAreaSize(const gfx::Size& size) override;
+  void ToggleSystemInfo() override;
 
   // ash::TabletModeObserver:
   void OnTabletModeStarted() override;
@@ -121,14 +122,8 @@ class CoreOobeHandler : public BaseWebUIHandler,
   // to tab/shift-tab event.
   void HandleRaiseTabKeyEvent(bool reverse);
 
-  // Calls javascript to sync OOBE UI visibility with show_oobe_ui_.
-  void UpdateOobeUIVisibility();
-
   // Updates label with specified id with specified text.
   void UpdateLabel(const std::string& id, const std::string& text);
-
-  // True if we should show OOBE instead of login.
-  bool show_oobe_ui_ = false;
 
   // Updates when version info is changed.
   VersionInfoUpdater version_info_updater_{this};

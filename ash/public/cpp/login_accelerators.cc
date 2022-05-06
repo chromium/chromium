@@ -12,7 +12,6 @@ namespace {
 // These strings must be kept in sync with handleAccelerator()
 // in display_manager.js.
 const char kAccelNameCancel[] = "cancel";
-const char kAccelNameVersion[] = "version";
 const char kAccelNameReset[] = "reset";
 
 }  // namespace
@@ -83,14 +82,13 @@ const size_t kLoginAcceleratorDataLength = std::size(kLoginAcceleratorData);
 
 std::string MapToWebUIAccelerator(LoginAcceleratorAction action) {
   switch (action) {
-    case LoginAcceleratorAction::kToggleSystemInfo:
-      return kAccelNameVersion;
     case LoginAcceleratorAction::kShowResetScreen:
       return kAccelNameReset;
     case LoginAcceleratorAction::kCancelScreenAction:
       return kAccelNameCancel;
     case LoginAcceleratorAction::kAppLaunchBailout:
     case LoginAcceleratorAction::kAppLaunchNetworkConfig:
+    case LoginAcceleratorAction::kToggleSystemInfo:
     case LoginAcceleratorAction::kShowFeedback:
     case LoginAcceleratorAction::kStartEnrollment:
     case LoginAcceleratorAction::kStartKioskEnrollment:

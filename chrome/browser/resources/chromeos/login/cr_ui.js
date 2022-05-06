@@ -85,11 +85,10 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Updates version label visibility.
-     * @param {boolean} show True if version label should be visible.
+     * Toggles system info visibility.
      */
-    static showVersion(show) {
-      Oobe.getInstance().showVersion(show);
+    static toggleSystemInfo() {
+      Oobe.getInstance().toggleSystemInfo();
     }
 
     /**

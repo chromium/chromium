@@ -57,9 +57,7 @@
 
 namespace chromeos {
 
-// Note that show_oobe_ui_ defaults to false because WizardController assumes
-// OOBE UI is not visible by default.
-CoreOobeHandler::CoreOobeHandler() {
+CoreOobeHandler::CoreOobeHandler(const std::string& display_type) {
   ash::TabletMode::Get()->AddObserver(this);
 
   OobeConfiguration::Get()->AddAndFireObserver(this);
@@ -68,6 +66,30 @@ CoreOobeHandler::CoreOobeHandler() {
 
   OnKeyboardVisibilityChanged(
       ChromeKeyboardControllerClient::Get()->is_keyboard_visible());
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  version_info_updater_.StartUpdate(true);
+#else
+  version_info_updater_.StartUpdate(false);
+#endif
+  UpdateClientAreaSize(
+      display::Screen::GetScreen()->GetPrimaryDisplay().size());
+
+  bool has_api_keys_configured = google_apis::HasAPIKeyConfigured() &&
+                                 google_apis::HasOAuthClientConfigured();
+  CallJS("cr.ui.Oobe.showAPIKeysNotice",
+         !has_api_keys_configured && (display_type == OobeUI::kOobeDisplay ||
+                                      display_type == OobeUI::kLoginDisplay));
+
+  // Don't show version label on the stable and beta channels by default.
+  version_info::Channel channel = chrome::GetChannel();
+  if (channel != version_info::Channel::STABLE &&
+      channel != version_info::Channel::BETA) {
+    ToggleSystemInfo();
+  }
+
+  if (system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation())
+    CallJS("cr.ui.Oobe.enableKeyboardFlow", true);
 }
 
 CoreOobeHandler::~CoreOobeHandler() {
@@ -99,17 +121,6 @@ void CoreOobeHandler::DeclareLocalizedValues(
 
   builder->Add("back", IDS_EULA_BACK_BUTTON);
   builder->Add("next", IDS_EULA_NEXT_BUTTON);
-}
-
-void CoreOobeHandler::InitializeDeprecated() {
-  UpdateOobeUIVisibility();
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  version_info_updater_.StartUpdate(true);
-#else
-  version_info_updater_.StartUpdate(false);
-#endif
-  UpdateClientAreaSize(
-      display::Screen::GetScreen()->GetPrimaryDisplay().size());
 }
 
 void CoreOobeHandler::GetAdditionalParameters(base::Value::Dict* dict) {
@@ -183,13 +194,7 @@ void CoreOobeHandler::HandleSkipToLoginForTesting() {
 }
 
 void CoreOobeHandler::ShowOobeUI(bool show) {
-  if (show == show_oobe_ui_)
-    return;
-
-  show_oobe_ui_ = show;
-
-  if (IsJavascriptAllowed())
-    UpdateOobeUIVisibility();
+  CallJS("cr.ui.Oobe.showOobeUI", show);
 }
 
 void CoreOobeHandler::SetLoginUserCount(int user_count) {
@@ -198,27 +203,6 @@ void CoreOobeHandler::SetLoginUserCount(int user_count) {
 
 void CoreOobeHandler::ForwardAccelerator(std::string accelerator_name) {
   CallJS("cr.ui.Oobe.handleAccelerator", accelerator_name);
-}
-
-void CoreOobeHandler::UpdateOobeUIVisibility() {
-  const std::string& display = GetOobeUI()->display_type();
-  bool has_api_keys_configured = google_apis::HasAPIKeyConfigured() &&
-                                 google_apis::HasOAuthClientConfigured();
-  CallJS("cr.ui.Oobe.showAPIKeysNotice",
-         !has_api_keys_configured && (display == OobeUI::kOobeDisplay ||
-                                      display == OobeUI::kLoginDisplay));
-
-  // Don't show version label on the stable channel by default.
-  bool should_show_version = true;
-  version_info::Channel channel = chrome::GetChannel();
-  if (channel == version_info::Channel::STABLE ||
-      channel == version_info::Channel::BETA) {
-    should_show_version = false;
-  }
-  CallJS("cr.ui.Oobe.showVersion", should_show_version);
-  CallJS("cr.ui.Oobe.showOobeUI", show_oobe_ui_);
-  if (system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation())
-    CallJS("cr.ui.Oobe.enableKeyboardFlow", true);
 }
 
 void CoreOobeHandler::OnOSVersionLabelTextUpdated(
@@ -263,6 +247,10 @@ void CoreOobeHandler::UpdateClientAreaSize(const gfx::Size& size) {
   const gfx::Size dialog_size = CalculateOobeDialogSize(
       size, ash::ShelfConfig::Get()->shelf_size(), is_horizontal);
   CallJS("cr.ui.Oobe.setDialogSize", dialog_size.width(), dialog_size.height());
+}
+
+void CoreOobeHandler::ToggleSystemInfo() {
+  CallJS("cr.ui.Oobe.toggleSystemInfo");
 }
 
 void CoreOobeHandler::OnOobeConfigurationChanged() {
