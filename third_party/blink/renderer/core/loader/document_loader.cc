@@ -2309,6 +2309,8 @@ void DocumentLoader::CommitNavigation() {
   DCHECK(frame_->GetPage());
   DCHECK(!frame_->GetDocument() || !frame_->GetDocument()->IsActive());
   DCHECK_EQ(frame_->Tree().ChildCount(), 0u);
+  DCHECK(!frame_->GetDocument() ||
+         frame_->GetDocument()->ConnectedSubframeCount() == 0);
   state_ = kCommitted;
 
   if (body_loader_ && !loading_main_document_from_mhtml_archive_ &&

@@ -2775,7 +2775,8 @@ void Document::Initialize() {
 
 void Document::Shutdown() {
   TRACE_EVENT0("blink", "Document::shutdown");
-  CHECK(!GetFrame() || GetFrame()->Tree().ChildCount() == 0);
+  CHECK((!GetFrame() || GetFrame()->Tree().ChildCount() == 0) &&
+        ConnectedSubframeCount() == 0);
   if (!IsActive())
     return;
 
