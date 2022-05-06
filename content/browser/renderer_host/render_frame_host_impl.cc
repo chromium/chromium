@@ -11325,6 +11325,11 @@ void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
 void RenderFrameHostImpl::MaybeGenerateCrashReport(
     base::TerminationStatus status,
     int exit_code) {
+  // TODO(1301987): Remove this once the investigation is done.
+  VLOG(0) << "RenderFrameHostImpl::MaybeGenerateCrashReport url = "
+          << last_committed_url_ << ", status = " << status
+          << ", exit_code = " << exit_code;
+
   if (!last_committed_url_.SchemeIsHTTPOrHTTPS())
     return;
 
