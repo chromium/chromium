@@ -96,6 +96,11 @@ def deploy(args):
         # For better debugging experience on DUT.
         '--inlineSourceMap',
         '--inlineSources',
+        # For easier developing / test cycle.
+        '--noUnusedLocals',
+        'false',
+        '--noUnusedParameters',
+        'false',
     ])
 
     build_pak_cmd = [
