@@ -9,7 +9,7 @@ namespace apps {
 
 // Restricts the amount of apps displayed to the user without the need of a
 // ScrollView.
-enum { kMaxAppResults = 3 };
+constexpr int kMaxAppResults = 3;
 
 // Identifier for the Intent Chip In-Product Help feature used event.
 extern const char kIntentChipOpensAppEvent[];

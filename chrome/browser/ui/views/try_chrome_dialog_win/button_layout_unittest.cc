@@ -16,39 +16,36 @@
 class ButtonLayoutTest
     : public ::testing::TestWithParam<::testing::tuple<int, int>> {
  private:
-  enum {
-    // The width of an imaginary host view in the test.
-    kFixedHostWidth = 100,
-  };
+  // The width of an imaginary host view in the test.
+  static constexpr int kFixedHostWidth = 100;
 
  public:
   // Various button widths to be tested.
-  enum {
-    // Magic width meaning no button at all.
-    kNoButton = 0,
+  // Magic width meaning no button at all.
+  static constexpr int kNoButton = 0;
 
-    // Some small "narrow" button that fits within half of the test's host.
-    kNarrowButtonMin = 8,
+  // Some small "narrow" button that fits within half of the test's host.
+  static constexpr int kNarrowButtonMin = 8;
 
-    // The largest "narrow" button that could fit within the test's host.
-    kNarrowButtonMax =
-        (kFixedHostWidth - ButtonLayout::kPaddingBetweenButtons) / 2,
+  // The largest "narrow" button that could fit within the test's host.
+  static constexpr int kNarrowButtonMax =
+      (kFixedHostWidth - ButtonLayout::kPaddingBetweenButtons) / 2;
 
-    // Some mid-sized "narrow" button that could fit within the test's host.
-    kNarrowButtonMid = (kNarrowButtonMin + kNarrowButtonMax) / 2,
+  // Some mid-sized "narrow" button that could fit within the test's host.
+  static constexpr int kNarrowButtonMid =
+      (kNarrowButtonMin + kNarrowButtonMax) / 2;
 
-    // The least wide "wide" button that could fit within the test's host.
-    kWideButtonMin = kNarrowButtonMax + 1,
+  // The least wide "wide" button that could fit within the test's host.
+  static constexpr int kWideButtonMin = kNarrowButtonMax + 1;
 
-    // The largest "wide" button that could fit within the test's host.
-    kWideButtonMax = kFixedHostWidth,
+  // The largest "wide" button that could fit within the test's host.
+  static constexpr int kWideButtonMax = kFixedHostWidth;
 
-    // Some mid-sized "wide" button that could fit within the test's host.
-    kWideButtonMid = (kWideButtonMin + kWideButtonMax) / 2,
+  // Some mid-sized "wide" button that could fit within the test's host.
+  static constexpr int kWideButtonMid = (kWideButtonMin + kWideButtonMax) / 2;
 
-    // A button that is too big to fit within the host.
-    kSuperSizedButton = kWideButtonMax + 1,
-  };
+  // A button that is too big to fit within the host.
+  static constexpr int kSuperSizedButton = kWideButtonMax + 1;
 
   ButtonLayoutTest(const ButtonLayoutTest&) = delete;
   ButtonLayoutTest& operator=(const ButtonLayoutTest&) = delete;

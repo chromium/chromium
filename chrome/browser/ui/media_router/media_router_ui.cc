@@ -79,7 +79,7 @@ bool IssueMatches(const Issue& issue, const UIMediaSink& ui_sink) {
 std::u16string GetSinkFriendlyName(const MediaSink& sink) {
   // Use U+2010 (HYPHEN) instead of ASCII hyphen to avoid problems with RTL
   // languages.
-  const char* separator = u8" \u2010 ";
+  const char* separator = " \u2010 ";
   return base::UTF8ToUTF16(sink.description() ? sink.name() + separator +
                                                     sink.description().value()
                                               : sink.name());

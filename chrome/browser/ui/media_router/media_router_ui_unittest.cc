@@ -306,7 +306,7 @@ TEST_F(MediaRouterViewsUITest, SinkFriendlyName) {
   MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
   sink.set_description(kSinkDescription);
   MediaSinkWithCastModes sink_with_cast_modes(sink);
-  const char* separator = u8" \u2010 ";
+  const char* separator = " \u2010 ";
   EXPECT_CALL(observer, OnModelUpdated(_))
       .WillOnce(Invoke([&](const CastDialogModel& model) {
         EXPECT_EQ(base::UTF8ToUTF16(sink.name() + separator +

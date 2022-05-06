@@ -31,7 +31,7 @@ struct UserDeviceContext {
   // authenticate the user.
   std::wstring dm_token;
 
-  bool operator==(const UserDeviceContext& other_user_device_context);
+  bool operator==(const UserDeviceContext& other_user_device_context) const;
 };
 
 }  // namespace extension

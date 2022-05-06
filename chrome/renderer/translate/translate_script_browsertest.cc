@@ -99,8 +99,8 @@ class TranslateScriptBrowserTest : public ChromeRenderViewTest {
     return ExecuteScriptAndGetBoolResult(kError);
   }
 
-  double GetErrorCode() {
-    return ExecuteScriptAndGetNumberResult(kErrorCode);
+  int GetErrorCode() {
+    return static_cast<int>(ExecuteScriptAndGetNumberResult(kErrorCode));
   }
 
   bool IsLibReady() {

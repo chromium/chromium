@@ -1736,7 +1736,7 @@ bool ShellUtil::GetShortcutPath(ShortcutLocation location,
   std::wstring folder_to_append;
   switch (location) {
     case SHORTCUT_LOCATION_DESKTOP:
-      dir_key = (level == CURRENT_USER) ? base::DIR_USER_DESKTOP
+      dir_key = (level == CURRENT_USER) ? int{base::DIR_USER_DESKTOP}
                                         : base::DIR_COMMON_DESKTOP;
       break;
     case SHORTCUT_LOCATION_QUICK_LAUNCH:

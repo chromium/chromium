@@ -94,7 +94,7 @@ bool CreateSecureTempDir(UpdaterScope scope,
                          installer::SelfCleaningTempDir& temp_path) {
   base::FilePath temp_dir;
   if (!base::PathService::Get(scope == UpdaterScope::kSystem
-                                  ? base::DIR_PROGRAM_FILES
+                                  ? int{base::DIR_PROGRAM_FILES}
                                   : base::DIR_TEMP,
                               &temp_dir)) {
     return false;

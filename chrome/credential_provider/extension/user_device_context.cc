@@ -27,7 +27,7 @@ UserDeviceContext::UserDeviceContext(const UserDeviceContext& other)
       user_sid(other.user_sid),
       dm_token(other.dm_token) {}
 
-bool UserDeviceContext::operator==(const UserDeviceContext& other) {
+bool UserDeviceContext::operator==(const UserDeviceContext& other) const {
   return device_resource_id == other.device_resource_id &&
          serial_number == other.serial_number &&
          machine_guid == other.machine_guid && user_sid == other.user_sid &&

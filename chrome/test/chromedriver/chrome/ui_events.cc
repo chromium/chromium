@@ -148,17 +148,17 @@ void KeyEventBuilder::Generate(std::vector<KeyEvent>* key_events) {
 
 void KeyEventBuilder::UpdateKeyString() {
   ui::DomCode dom_code = ui::UsLayoutKeyboardCodeToDomCode(key_event_.key_code);
-  int flags = ui::EventFlags::EF_NONE;
+  int flags = ui::EF_NONE;
   if (key_event_.modifiers & kAltKeyModifierMask)
-    flags |= ui::EventFlags::EF_ALT_DOWN;
+    flags |= ui::EF_ALT_DOWN;
   if (key_event_.modifiers & kControlKeyModifierMask)
-    flags |= ui::EventFlags::EF_CONTROL_DOWN;
+    flags |= ui::EF_CONTROL_DOWN;
   if (key_event_.modifiers & kMetaKeyModifierMask)
-    flags |= ui::EventFlags::EF_COMMAND_DOWN;
+    flags |= ui::EF_COMMAND_DOWN;
   if (key_event_.modifiers & kShiftKeyModifierMask)
-    flags |= ui::EventFlags::EF_SHIFT_DOWN;
+    flags |= ui::EF_SHIFT_DOWN;
   if (key_event_.modifiers & kNumLockKeyModifierMask)
-    flags |= ui::EventFlags::EF_NUM_LOCK_ON;
+    flags |= ui::EF_NUM_LOCK_ON;
   ui::DomKey dom_key;
   ui::KeyboardCode ignored;
   if (ui::DomCodeToUsLayoutDomKey(dom_code, flags, &dom_key, &ignored))
