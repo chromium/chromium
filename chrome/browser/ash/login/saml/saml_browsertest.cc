@@ -152,6 +152,9 @@ constexpr test::UIPath kSamlBackButton = {"gaia-signin", "signin-frame-dialog",
 const test::UIPath kGaiaLoading = {"gaia-signin", "gaia-loading"};
 const test::UIPath kSamlInterstitial = {"gaia-signin", "saml-interstitial"};
 
+constexpr test::UIPath kFatalErrorActionButton = {"signin-fatal-error",
+                                                  "actionButton"};
+
 constexpr char kGAIASIDCookieName[] = "SID";
 constexpr char kGAIALSIDCookieName[] = "LSID";
 
@@ -822,6 +825,9 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures,
 
   ExpectFatalErrorMessage(
       l10n_util::GetStringUTF8(IDS_LOGIN_FATAL_ERROR_NO_ACCOUNT_DETAILS));
+
+  test::OobeJS().TapOnPath(kFatalErrorActionButton);
+  WaitForSigninScreen();
 }
 
 // Tests the password confirm flow when more than one password is scraped: show
@@ -833,6 +839,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures,
 #define MAYBE_PasswordConfirmFlow PasswordConfirmFlow
 #endif
 IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, MAYBE_PasswordConfirmFlow) {
+  base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFirstUserCorpExampleComEmail);
@@ -861,6 +868,24 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, MAYBE_PasswordConfirmFlow) {
   SendConfirmPassword("wrong_password");
   ExpectFatalErrorMessage(
       l10n_util::GetStringUTF8(IDS_LOGIN_FATAL_ERROR_PASSWORD_VERIFICATION));
+
+  test::OobeJS().TapOnPath(kFatalErrorActionButton);
+  WaitForSigninScreen();
+
+  histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 2, 1);
+  histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Scraping.PasswordCountAll",
+                                      2, 1);
+  histogram_tester.ExpectTotalCount("OOBE.GaiaLoginTime", 0);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 0,
+                                     0);
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 1,
+                                     1);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 0,
+                                     0);
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 1,
+                                     1);
 }
 
 // Verifies that when the login flow redirects from one host to another, the
@@ -933,6 +958,9 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, HTTPRedirectDisallowed) {
   const GURL url = fake_saml_idp()->GetHttpSamlPageUrl();
   ExpectFatalErrorMessage(l10n_util::GetStringFUTF8(
       IDS_LOGIN_FATAL_ERROR_TEXT_INSECURE_URL, base::UTF8ToUTF16(url.spec())));
+
+  test::OobeJS().TapOnPath(kFatalErrorActionButton);
+  WaitForSigninScreen();
 }
 
 // Verifies that when GAIA attempts to redirect to a page served over http, not
@@ -952,6 +980,9 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, MetaRefreshToHTTPDisallowed) {
 
   ExpectFatalErrorMessage(l10n_util::GetStringFUTF8(
       IDS_LOGIN_FATAL_ERROR_TEXT_INSECURE_URL, base::UTF8ToUTF16(url.spec())));
+
+  test::OobeJS().TapOnPath(kFatalErrorActionButton);
+  WaitForSigninScreen();
 }
 
 class SAMLEnrollmentTest : public SamlTestWithRedirectToDefaultIdPFeature {
@@ -1679,6 +1710,9 @@ IN_PROC_BROWSER_TEST_P(SAMLPasswordAttributesTest, LoginFailed) {
   // SAML login fails:
   ExpectFatalErrorMessage(
       l10n_util::GetStringUTF8(IDS_LOGIN_FATAL_ERROR_NO_ACCOUNT_DETAILS));
+
+  test::OobeJS().TapOnPath(kFatalErrorActionButton);
+  WaitForSigninScreen();
 
   // Make sure no SAML password attributes are saved.
   // None are saved for the logged in user, since there is no logged in user:

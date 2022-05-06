@@ -1996,7 +1996,16 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
     current_screen_->Hide();
   }
 
-  previous_screen_ = current_screen_;
+  // If the last screen user have visited before reaching SignInFatalError
+  // screen was SamlConfirmPassword screen. Then 'previous_screen_' shouldn't be
+  // saved to send the user back to the Login Screen not to SamlConfirmPassword
+  // screen.
+  if (current_screen_ &&
+      current_screen_->screen_id() != SamlConfirmPasswordView::kScreenId) {
+    previous_screen_ = current_screen_;
+  } else {
+    previous_screen_ = nullptr;
+  }
   current_screen_ = new_current;
 
   if (!current_screen_) {
