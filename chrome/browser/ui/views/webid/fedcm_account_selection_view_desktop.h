@@ -60,7 +60,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void OnDismiss(bool should_embargo);
 
   // Whether the user selected an account in the dialog.
-  bool was_account_selected_{false};
+  bool notify_delegate_of_dismiss_{true};
 
   base::WeakPtr<views::Widget> bubble_widget_;
 };

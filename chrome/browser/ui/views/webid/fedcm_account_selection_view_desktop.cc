@@ -37,6 +37,7 @@ FedCmAccountSelectionView::FedCmAccountSelectionView(
       content::WebContentsObserver(delegate->GetWebContents()) {}
 
 FedCmAccountSelectionView::~FedCmAccountSelectionView() {
+  notify_delegate_of_dismiss_ = false;
   Close();
 
   Browser* browser =
@@ -116,7 +117,7 @@ void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
 
 void FedCmAccountSelectionView::OnAccountSelected(
     const content::IdentityRequestAccount& account) {
-  was_account_selected_ = true;
+  notify_delegate_of_dismiss_ = false;
   delegate_->OnAccountSelected(account);
 }
 
@@ -135,6 +136,6 @@ void FedCmAccountSelectionView::OnDismiss(bool should_embargo) {
   bubble_widget_->RemoveObserver(this);
   bubble_widget_.reset();
 
-  if (!was_account_selected_)
+  if (notify_delegate_of_dismiss_)
     delegate_->OnDismiss(should_embargo);
 }
