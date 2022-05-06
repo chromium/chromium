@@ -376,6 +376,8 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
       mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
+  void StartLoadingResponseBody(mojo::ScopedDataPipeConsumerHandle body);
+
   bool CanGetResponseBody(std::string* error_reason);
   bool StartJobAndMaybeNotify();
 
@@ -833,7 +835,7 @@ void InterceptionJob::GetResponseBody(
   body_reader_->AddCallback(std::move(callback));
   // Needs to happen after |AddCallback| to avoid a DCHECK.
   if (body_reader_created && body_)
-    OnStartLoadingResponseBody(std::move(body_));
+    StartLoadingResponseBody(std::move(body_));
 }
 
 void InterceptionJob::TakeResponseBodyPipe(
@@ -851,7 +853,7 @@ void InterceptionJob::TakeResponseBodyPipe(
   pending_response_body_pipe_callback_ = std::move(callback);
   client_receiver_.Resume();
   if (body_)
-    OnStartLoadingResponseBody(std::move(body_));
+    StartLoadingResponseBody(std::move(body_));
   loader_->ResumeReadingBodyFromNet();
 }
 
@@ -1006,12 +1008,10 @@ Response InterceptionJob::InnerContinueRequest(
     DCHECK_EQ(State::kResponseReceived, state_);
     DCHECK(!body_reader_);
     client_->OnReceiveResponse(std::move(response_metadata_->head),
-                               mojo::ScopedDataPipeConsumerHandle());
+                               std::move(body_));
     response_metadata_.reset();
     loader_->ResumeReadingBodyFromNet();
     client_receiver_.Resume();
-    if (body_)
-      OnStartLoadingResponseBody(std::move(body_));
     return Response::Success();
   }
 
@@ -1234,12 +1234,7 @@ void InterceptionJob::ProcessRedirectByClient(const GURL& redirect_url) {
 
 void InterceptionJob::SendResponse(scoped_refptr<base::RefCountedMemory> body,
                                    size_t offset) {
-  client_->OnReceiveResponse(std::move(response_metadata_->head),
-                             mojo::ScopedDataPipeConsumerHandle());
-  if (response_metadata_->cached_metadata.size() != 0)
-    client_->OnReceiveCachedMetadata(
-        std::move(response_metadata_->cached_metadata));
-
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
   if (body) {
     DCHECK_LE(offset, body->size());
     size_t body_size = body->size() - offset;
@@ -1248,7 +1243,6 @@ void InterceptionJob::SendResponse(scoped_refptr<base::RefCountedMemory> body,
     DCHECK_LE(body_size, UINT32_MAX)
         << "Response bodies larger than " << UINT32_MAX << " are not supported";
     mojo::ScopedDataPipeProducerHandle producer_handle;
-    mojo::ScopedDataPipeConsumerHandle consumer_handle;
     CHECK_EQ(mojo::CreateDataPipe(body_size, producer_handle, consumer_handle),
              MOJO_RESULT_OK);
     uint32_t num_bytes = body_size;
@@ -1256,8 +1250,13 @@ void InterceptionJob::SendResponse(scoped_refptr<base::RefCountedMemory> body,
         body->front() + offset, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
     DCHECK_EQ(0u, res);
     DCHECK_EQ(num_bytes, body_size);
-    client_->OnStartLoadingResponseBody(std::move(consumer_handle));
   }
+  client_->OnReceiveResponse(std::move(response_metadata_->head),
+                             std::move(consumer_handle));
+  if (response_metadata_->cached_metadata.size() != 0)
+    client_->OnReceiveCachedMetadata(
+        std::move(response_metadata_->cached_metadata));
+
   if (response_metadata_->transfer_size)
     client_->OnTransferSizeUpdated(response_metadata_->transfer_size);
   CompleteRequest(response_metadata_->status);
@@ -1551,6 +1550,11 @@ void InterceptionJob::OnTransferSizeUpdated(int32_t transfer_size_diff) {
 
 void InterceptionJob::OnStartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle body) {
+  NOTREACHED();
+}
+
+void InterceptionJob::StartLoadingResponseBody(
+    mojo::ScopedDataPipeConsumerHandle body) {
   if (pending_response_body_pipe_callback_) {
     DCHECK_EQ(State::kResponseTaken, state_);
     DCHECK(!body_reader_);
@@ -1560,10 +1564,8 @@ void InterceptionJob::OnStartLoadingResponseBody(
     return;
   }
   DCHECK_EQ(State::kResponseReceived, state_);
-  if (ShouldBypassForResponse())
-    client_->OnStartLoadingResponseBody(std::move(body));
-  else
-    body_reader_->StartReading(std::move(body));
+  DCHECK(!ShouldBypassForResponse());
+  body_reader_->StartReading(std::move(body));
 }
 
 void InterceptionJob::OnComplete(
