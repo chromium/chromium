@@ -26,9 +26,6 @@ _grit_defines = [
   "chromeos_ash=${is_chromeos_ash}",
   "chromeos_lacros=${is_chromeos_lacros}",
 
-  # TODO(crbug.com/1317459): Remove after bug fixed.
-  "desktop_linux=false",
-
   # This is related to Chrome OS.
   "reven=${is_reven}",
 
