@@ -38,6 +38,10 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
 AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
     Browser* browser);
 
+// Returns the anchor configuration for bubbles that are aligned to the app menu
+// button.
+AnchorConfiguration GetAppMenuAnchorConfiguration(Browser* browser);
+
 }  // namespace bubble_anchor_util
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BUBBLE_ANCHOR_UTIL_VIEWS_H_

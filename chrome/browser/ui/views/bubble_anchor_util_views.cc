@@ -59,6 +59,10 @@ AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
   return GetPageInfoAnchorConfiguration(browser);
 }
 
+AnchorConfiguration GetAppMenuAnchorConfiguration(Browser* browser) {
+  return GetPageInfoAnchorConfiguration(browser, kAppMenuButton);
+}
+
 gfx::Rect GetPageInfoAnchorRect(Browser* browser) {
   // GetPageInfoAnchorConfiguration()'s anchor_view should be preferred if
   // available.
