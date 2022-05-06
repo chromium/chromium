@@ -75,25 +75,28 @@ const CGFloat kVerticalOffset = 6;
     viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     AddSameConstraints(viewController.view, _popupContainerView);
 
-    // Add bottom separator. This will only be visible on iPad where
-    // the omnibox doesn't fill the whole screen.
-    _bottomSeparator = [[UIView alloc] initWithFrame:CGRectZero];
-    _bottomSeparator.translatesAutoresizingMaskIntoConstraints = NO;
-    _bottomSeparator.backgroundColor = [UIColor colorNamed:kToolbarShadowColor];
+    if (!base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
+      // Add bottom separator. This will only be visible on iPad where
+      // the omnibox doesn't fill the whole screen.
+      _bottomSeparator = [[UIView alloc] initWithFrame:CGRectZero];
+      _bottomSeparator.translatesAutoresizingMaskIntoConstraints = NO;
+      _bottomSeparator.backgroundColor =
+          [UIColor colorNamed:kToolbarShadowColor];
 
-    [_popupContainerView addSubview:self.bottomSeparator];
-    CGFloat separatorHeight =
-        ui::AlignValueToUpperPixel(kToolbarSeparatorHeight);
-    [NSLayoutConstraint activateConstraints:@[
-      [self.bottomSeparator.heightAnchor
-          constraintEqualToConstant:separatorHeight],
-      [self.bottomSeparator.leadingAnchor
-          constraintEqualToAnchor:_popupContainerView.leadingAnchor],
-      [self.bottomSeparator.trailingAnchor
-          constraintEqualToAnchor:_popupContainerView.trailingAnchor],
-      [self.bottomSeparator.topAnchor
-          constraintEqualToAnchor:_popupContainerView.bottomAnchor],
-    ]];
+      [_popupContainerView addSubview:self.bottomSeparator];
+      CGFloat separatorHeight =
+          ui::AlignValueToUpperPixel(kToolbarSeparatorHeight);
+      [NSLayoutConstraint activateConstraints:@[
+        [self.bottomSeparator.heightAnchor
+            constraintEqualToConstant:separatorHeight],
+        [self.bottomSeparator.leadingAnchor
+            constraintEqualToAnchor:_popupContainerView.leadingAnchor],
+        [self.bottomSeparator.trailingAnchor
+            constraintEqualToAnchor:_popupContainerView.trailingAnchor],
+        [self.bottomSeparator.topAnchor
+            constraintEqualToAnchor:_popupContainerView.bottomAnchor],
+      ]];
+    }
   }
   return self;
 }

@@ -76,8 +76,13 @@ extension Color {
     return Color(kTableViewRowHighlightColor)
   }
 
-  /// The table view sseparator color.
+  /// The table view separator color.
   public static var separator: Color {
     return Color(kSeparatorColor)
+  }
+
+  /// The toolbar shadow color.
+  public static var toolbarShadow: Color {
+    return Color(kToolbarShadowColor)
   }
 }

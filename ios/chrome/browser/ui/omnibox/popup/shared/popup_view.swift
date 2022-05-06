@@ -40,10 +40,16 @@ struct AccessibilityIdentifierModifier: ViewModifier {
   }
 }
 
+/// Returns the closest pixel-aligned value higher than `value`, taking the scale
+/// factor into account. At a scale of 1, equivalent to ceil().
+func alignValueToUpperPixel(_ value: CGFloat) -> CGFloat {
+  let scale = UIScreen.main.scale
+  return ceil(value * scale) / scale
+}
+
 struct PopupView: View {
   enum Dimensions {
     static let matchListRowInsets = EdgeInsets(.zero)
-    static let selfSizingListBottomMargin: CGFloat = 16
 
     enum VariationOne {
       static let pedalSectionSeparatorPadding = EdgeInsets(
@@ -51,6 +57,8 @@ struct PopupView: View {
       static let visibleTopContentInset: CGFloat = 4
       // This allows hiding floating section headers at the top of the list in variation one.
       static let hiddenTopContentInset: CGFloat = -50
+
+      static let selfSizingListBottomMargin: CGFloat = 8
     }
 
     enum VariationTwo {
@@ -61,6 +69,8 @@ struct PopupView: View {
       // Default list row insets. These are removed to inset the popup to the
       // width of the omnibox.
       static let defaultInset: CGFloat = 16
+
+      static let selfSizingListBottomMargin: CGFloat = 16
     }
   }
 
@@ -161,7 +171,7 @@ struct PopupView: View {
           // If there is only one row or less in a section, no row separators.
           let shouldDisplayCustomSeparator =
             !highlighted && (section.matches.count > 1)
-            && (matchIndex < section.matches.count - 1 || popupUIVariation == .one)
+            && (matchIndex < section.matches.count - 1)
 
           PopupMatchRowView(
             match: match,
@@ -209,6 +219,20 @@ struct PopupView: View {
   }
 
   @ViewBuilder
+  var bottomSeparator: some View {
+    Color.toolbarShadow.frame(height: alignValueToUpperPixel(kToolbarSeparatorHeight))
+  }
+
+  var selfSizingListBottomMargin: CGFloat {
+    switch popupUIVariation {
+    case .one:
+      return Dimensions.VariationOne.selfSizingListBottomMargin
+    case .two:
+      return Dimensions.VariationTwo.selfSizingListBottomMargin
+    }
+  }
+
+  @ViewBuilder
   var listView: some View {
     let commonListModifier = AccessibilityIdentifierModifier(
       identifier: kOmniboxPopupTableViewAccessibilityIdentifier
@@ -226,7 +250,7 @@ struct PopupView: View {
         ZStack(alignment: .top) {
           listBackground.frame(height: selfSizingListHeight)
           SelfSizingList(
-            bottomMargin: Dimensions.selfSizingListBottomMargin,
+            bottomMargin: selfSizingListBottomMargin,
             listModifier: selfSizingListModifier,
             content: {
               listContent(geometry: geometry)
@@ -240,6 +264,7 @@ struct PopupView: View {
             selfSizingListHeight = height
           }
         }
+        bottomSeparator.offset(x: 0, y: selfSizingListHeight ?? 0)
       } else {
         List {
           listContent(geometry: geometry)
