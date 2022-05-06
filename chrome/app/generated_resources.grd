@@ -11901,6 +11901,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UTILITY_PROCESS_QUARANTINE_SERVICE_NAME" desc="The name of the utility process used to handle file quarantine.">
         Quarantine Service
     </message>
+      <message name="IDS_UTILITY_PROCESS_SYSTEM_SIGNALS_NAME" desc="The name of the utility process used to collect system signals. Only spawned on Windows.">
+        System Signals Utilities
+      </message>
     </if>
 
     <!-- Framebust / Blocked Redirection intervention message -->

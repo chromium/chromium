@@ -162,7 +162,10 @@ static_library("utility") {
       libs = [ "esent.lib" ]
       ldflags += [ "/DELAYLOAD:esent.dll" ]
 
-      deps += [ "//chrome/services/util_win:lib" ]
+      deps += [
+        "//chrome/services/system_signals/win",
+        "//chrome/services/util_win:lib",
+      ]
     }
   }
 

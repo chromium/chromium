@@ -35,6 +35,8 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "chrome/services/system_signals/public/mojom/system_signals.mojom.h"
+#include "chrome/services/system_signals/win/win_system_signals_service.h"
 #include "chrome/services/util_win/processor_metrics.h"
 #include "chrome/services/util_win/public/mojom/util_read_icon.mojom.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
@@ -170,6 +172,13 @@ auto RunQuarantineService(
 
 auto RunWindowsUtility(mojo::PendingReceiver<chrome::mojom::UtilWin> receiver) {
   return std::make_unique<UtilWinImpl>(std::move(receiver));
+}
+
+auto RunSystemSignalsService(
+    mojo::PendingReceiver<system_signals::mojom::SystemSignalsService>
+        receiver) {
+  return std::make_unique<system_signals::WinSystemSignalsService>(
+      std::move(receiver));
 }
 
 auto RunWindowsIconReader(
@@ -402,6 +411,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunProcessorMetrics);
   services.Add(RunQuarantineService);
   services.Add(RunWindowsUtility);
+  services.Add(RunSystemSignalsService);
   services.Add(RunWindowsIconReader);
 #endif  // BUILDFLAG(IS_WIN)
 

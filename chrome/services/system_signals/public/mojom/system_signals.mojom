@@ -1,0 +1,76 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module system_signals.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+
+enum TrileanValue {
+  kFalse,
+  kTrue,
+  kUnknown
+};
+
+struct BinarySignalsRequest {
+  mojo_base.mojom.FilePath file_path;
+};
+
+struct BinarySignalsResponse {
+  mojo_base.mojom.FilePath file_path;
+
+  bool is_running;
+
+  [EnableIfNot=is_linux]
+  string product_name;
+
+  [EnableIfNot=is_linux]
+  string public_key_sha256;
+
+  [EnableIfNot=is_linux]
+  string version;
+};
+
+[EnableIf=is_win]
+enum AntiVirusProductState {
+  // The security product software is turned on and protecting the user.
+  kOn,
+  // The security product software is turned off and protection is disabled.
+  kOff,
+  // The security product software is in the snoozed state, temporarily off,
+  // and not actively protecting the computer.
+  kSnoozed
+};
+
+[EnableIf=is_win]
+struct AntiVirusSignal {
+  string display_name;
+  AntiVirusProductState state;
+};
+
+[EnableIf=is_win]
+struct HotfixSignal {
+  string hotfix_id;
+};
+
+// Service in charge of collecting a specific set of device signals. The source
+// of these signals is platform-specific and, in some cases (i.e. Windows), may
+// need to be run a separate process.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
+interface SystemSignalsService {
+  // Collects signals about a set of binary files specified by `requests`.
+  // Returns the collected information in `response`.
+  GetBinarySignals(array<BinarySignalsRequest> requests)
+    => (array<BinarySignalsResponse> response);
+
+  // Collects information about AntiVirus software installed on the current
+  // device. Returns that information via `av_signals`.
+  [EnableIf=is_win]
+  GetAntiVirusSignals() => (array<AntiVirusSignal> av_signals);
+
+  // Collects information about hotfixes that were installed on the device.
+  // Returns that information via `hotfix_signals`.
+  [EnableIf=is_win]
+  GetHotfixSignals() => (array<HotfixSignal> hotfix_signals);
+};
