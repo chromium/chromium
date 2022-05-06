@@ -35,6 +35,12 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   ~AccountSelectionBubbleView() override;
 
  private:
+  // Returns a View containing the logo of the identity provider and the title
+  // of the bubble, properly formatted.
+  std::unique_ptr<views::View> CreateHeaderView();
+
+  void CloseBubble();
+
   // Returns a View containing the account chooser, i.e. everything that goes
   // below the horizontal separator on the initial FedCM bubble.
   std::unique_ptr<views::View> CreateAccountChooser(
@@ -101,6 +107,12 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
 
   // The privacy policy and terms of service URLs
   const content::ClientIdData client_data_;
+
+  // The bubble's icon, shown at the top left.
+  gfx::ImageSkia bubble_icon_;
+
+  // The bubble's current title.
+  std::u16string title_;
 
   // Used to ensure that callbacks are not run if the AccountSelectionBubbleView
   // is destroyed.

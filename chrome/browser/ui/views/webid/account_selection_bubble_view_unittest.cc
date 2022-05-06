@@ -136,6 +136,43 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     EXPECT_EQ(email_view->GetText(), email);
   }
 
+  void PerformHeaderChecks(views::View* header, const std::u16string& title) {
+    // Perform some basic dialog checks.
+    EXPECT_FALSE(dialog()->ShouldShowCloseButton());
+    EXPECT_FALSE(dialog()->ShouldShowWindowTitle());
+
+    EXPECT_FALSE(dialog()->GetOkButton());
+    EXPECT_FALSE(dialog()->GetCancelButton());
+
+    std::vector<views::View*> header_children = header->children();
+    ASSERT_EQ(header_children.size(), 3u);
+
+    // Check logo image.
+    views::ImageView* image_view =
+        static_cast<views::ImageView*>(header_children[0]);
+    EXPECT_TRUE(image_view);
+
+    // Check title text.
+    views::Label* title_view = static_cast<views::Label*>(header_children[1]);
+    ASSERT_TRUE(title_view);
+    EXPECT_EQ(title_view->GetText(), title);
+
+    // Check close button.
+    views::Button* button = static_cast<views::Button*>(header_children[2]);
+    EXPECT_TRUE(button);
+
+    // Check separator.
+    if (title == kTitleSignIn) {
+      views::Separator* separator =
+          static_cast<views::Separator*>(dialog()->children()[1]);
+      EXPECT_TRUE(separator);
+    } else if (title == kTitleSigningIn) {
+      views::ProgressBar* progress_bar =
+          static_cast<views::ProgressBar*>(dialog()->children()[1]);
+      EXPECT_TRUE(progress_bar);
+    }
+  }
+
   void SetUp() override {
     feature_list_.InitAndEnableFeature(features::kFedCm);
     test_web_contents_ =
@@ -178,21 +215,11 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
 TEST_F(AccountSelectionBubbleViewTest, SingleAccount) {
   CreateSingleAccountViewAndShow();
 
-  // Perform some basic dialog checks.
-  EXPECT_TRUE(dialog()->ShouldShowCloseButton());
-  EXPECT_TRUE(dialog()->ShouldShowWindowTitle());
-
-  EXPECT_FALSE(dialog()->GetOkButton());
-  EXPECT_FALSE(dialog()->GetCancelButton());
-
-  EXPECT_EQ(dialog()->GetWindowTitle(), kTitleSignIn);
-
-  // Check basic structure.
   std::vector<views::View*> children = dialog()->children();
-  ASSERT_EQ(children.size(), 2u);
-  views::Separator* separator = static_cast<views::Separator*>(children[0]);
-  EXPECT_TRUE(separator);
-  views::View* single_account_chooser = children[1];
+  ASSERT_EQ(children.size(), 3u);
+  PerformHeaderChecks(children[0], kTitleSignIn);
+
+  views::View* single_account_chooser = children[2];
   ASSERT_EQ(single_account_chooser->children().size(), 3u);
 
   CheckAccountRow(single_account_chooser->children()[0], u"name", u"email");
@@ -215,12 +242,11 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccount) {
 TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {
   CreateSingleAccountViewAndShow(true /*=exclude_terms_of_service*/);
 
-  // Check basic structure
   std::vector<views::View*> children = dialog()->children();
-  ASSERT_EQ(children.size(), 2u);
-  views::Separator* separator = static_cast<views::Separator*>(children[0]);
-  EXPECT_TRUE(separator);
-  views::View* single_account_chooser = children[1];
+  ASSERT_EQ(children.size(), 3u);
+  PerformHeaderChecks(children[0], kTitleSignIn);
+
+  views::View* single_account_chooser = children[2];
   ASSERT_EQ(single_account_chooser->children().size(), 3u);
 
   // Check the "Continue as" button.
@@ -241,21 +267,11 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {
 TEST_F(AccountSelectionBubbleViewTest, MultipleAccounts) {
   CreateMultipleAccountViewAndShow();
 
-  // Perform some basic dialog checks.
-  EXPECT_TRUE(dialog()->ShouldShowCloseButton());
-  EXPECT_TRUE(dialog()->ShouldShowWindowTitle());
-
-  EXPECT_FALSE(dialog()->GetOkButton());
-  EXPECT_FALSE(dialog()->GetCancelButton());
-
-  EXPECT_EQ(dialog()->GetWindowTitle(), kTitleSignIn);
-
-  // Check basic structure.
   std::vector<views::View*> children = dialog()->children();
-  ASSERT_EQ(children.size(), 2u);
-  views::Separator* separator = static_cast<views::Separator*>(children[0]);
-  EXPECT_TRUE(separator);
-  views::View* multiple_account_chooser = children[1];
+  ASSERT_EQ(children.size(), 3u);
+  PerformHeaderChecks(children[0], kTitleSignIn);
+
+  views::View* multiple_account_chooser = children[2];
   views::BoxLayout* layout_manager = static_cast<views::BoxLayout*>(
       multiple_account_chooser->GetLayoutManager());
   EXPECT_TRUE(layout_manager);
@@ -284,9 +300,12 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleAccounts) {
 TEST_F(AccountSelectionBubbleViewTest, MultipleAccountsFlow) {
   // Create multiple account view.
   CreateMultipleAccountViewAndShow();
+
   std::vector<views::View*> children = dialog()->children();
-  ASSERT_EQ(children.size(), 2u);
-  views::View* multiple_account_chooser = children[1];
+  ASSERT_EQ(children.size(), 3u);
+  PerformHeaderChecks(children[0], kTitleSignIn);
+
+  views::View* multiple_account_chooser = children[2];
   std::vector<views::View*> accounts = multiple_account_chooser->children();
   ASSERT_EQ(accounts.size(), 3u);
 
@@ -300,18 +319,11 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleAccountsFlow) {
 
   // Test that we arrive to the single account selection. Check buttons and
   // title.
-  EXPECT_TRUE(dialog()->ShouldShowCloseButton());
-  EXPECT_TRUE(dialog()->ShouldShowWindowTitle());
-  EXPECT_FALSE(dialog()->GetOkButton());
-  EXPECT_FALSE(dialog()->GetCancelButton());
-  EXPECT_EQ(dialog()->GetWindowTitle(), kTitleSignIn);
-
-  // Check basic structure.
   children = dialog()->children();
-  ASSERT_EQ(children.size(), 2u);
-  views::Separator* separator = static_cast<views::Separator*>(children[0]);
-  EXPECT_TRUE(separator);
-  views::View* single_account_chooser = children[1];
+  ASSERT_EQ(children.size(), 3u);
+  PerformHeaderChecks(children[0], kTitleSignIn);
+
+  views::View* single_account_chooser = children[2];
   ASSERT_EQ(single_account_chooser->children().size(), 3u);
   views::View* single_account_row = single_account_chooser->children()[0];
   std::vector<views::View*> row_children = single_account_row->children();
@@ -336,38 +348,22 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleAccountsFlow) {
   views::test::ButtonTestApi button_test_continue(button);
   button_test_continue.NotifyClick(event);
 
-  // Check that the UI changes to sign in.
-  EXPECT_TRUE(dialog()->ShouldShowCloseButton());
-  EXPECT_TRUE(dialog()->ShouldShowWindowTitle());
-  EXPECT_FALSE(dialog()->GetOkButton());
-  EXPECT_FALSE(dialog()->GetCancelButton());
-  EXPECT_EQ(dialog()->GetWindowTitle(), kTitleSigningIn);
+  // Check that the UI changes to 'verifying'.
+  children = dialog()->children();
+  ASSERT_EQ(children.size(), 3u);
+  PerformHeaderChecks(children[0], kTitleSigningIn);
 
-  ASSERT_EQ(dialog()->children().size(), 2u);
-  views::ProgressBar* progress_bar =
-      static_cast<views::ProgressBar*>(dialog()->children()[0]);
-  ASSERT_TRUE(progress_bar);
-
-  CheckAccountRow(dialog()->children()[1], u"name1", u"email1");
+  CheckAccountRow(dialog()->children()[2], u"name1", u"email1");
 }
 
 TEST_F(AccountSelectionBubbleViewTest, ReturningAccount) {
   CreateReturningAccountViewAndShow();
-  // Perform some basic dialog checks.
-  EXPECT_TRUE(dialog()->ShouldShowCloseButton());
-  EXPECT_TRUE(dialog()->ShouldShowWindowTitle());
 
-  EXPECT_FALSE(dialog()->GetOkButton());
-  EXPECT_FALSE(dialog()->GetCancelButton());
-
-  EXPECT_EQ(dialog()->GetWindowTitle(), kTitleSignIn);
-
-  // Check basic structure.
   std::vector<views::View*> children = dialog()->children();
-  ASSERT_EQ(children.size(), 2u);
-  views::Separator* separator = static_cast<views::Separator*>(children[0]);
-  EXPECT_TRUE(separator);
-  views::View* single_account_chooser = children[1];
+  ASSERT_EQ(children.size(), 3u);
+  PerformHeaderChecks(children[0], kTitleSignIn);
+
+  views::View* single_account_chooser = children[2];
 
   // There should be no disclosure text, so only 2 children: the account row and
   // the continue button.
@@ -386,8 +382,10 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleReturningAccounts) {
   CreateMultipleReturningAccountViewAndShow();
 
   std::vector<views::View*> children = dialog()->children();
-  ASSERT_EQ(children.size(), 2u);
-  views::View* multiple_account_chooser = children[1];
+  ASSERT_EQ(children.size(), 3u);
+  PerformHeaderChecks(children[0], kTitleSignIn);
+
+  views::View* multiple_account_chooser = children[2];
   std::vector<views::View*> accounts = multiple_account_chooser->children();
   ASSERT_EQ(accounts.size(), 3u);
 
@@ -400,16 +398,9 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleReturningAccounts) {
   button_test.NotifyClick(event);
 
   // Check that the UI changes directly to 'verifying'.
-  EXPECT_TRUE(dialog()->ShouldShowCloseButton());
-  EXPECT_TRUE(dialog()->ShouldShowWindowTitle());
-  EXPECT_FALSE(dialog()->GetOkButton());
-  EXPECT_FALSE(dialog()->GetCancelButton());
-  EXPECT_EQ(dialog()->GetWindowTitle(), kTitleSigningIn);
+  children = dialog()->children();
+  ASSERT_EQ(children.size(), 3u);
+  PerformHeaderChecks(children[0], kTitleSigningIn);
 
-  ASSERT_EQ(dialog()->children().size(), 2u);
-  views::ProgressBar* progress_bar =
-      static_cast<views::ProgressBar*>(dialog()->children()[0]);
-  ASSERT_TRUE(progress_bar);
-
-  CheckAccountRow(dialog()->children()[1], u"name1", u"email1");
+  CheckAccountRow(dialog()->children()[2], u"name1", u"email1");
 }

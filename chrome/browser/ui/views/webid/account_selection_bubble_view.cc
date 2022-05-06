@@ -27,16 +27,30 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
-constexpr int kButtonRadius = 20;
+// The radius used for the corner of the "Continue as" button.
+constexpr int kButtonRadius = 16;
+// The fixed, total width of the bubble.
 constexpr int kBubbleWidth = 375;
+// The desired size of the avatars of user accounts.
 constexpr int kDesiredAvatarSize = 40;
+// The desired size of the icon of the identity provider.
 constexpr int kDesiredIconSize = 20;
-constexpr int kPadding = 5;
+// The size of the padding used at the top and bottom of the bubble.
+constexpr int kTopBottomPadding = 4;
+// The size of the horizontal padding between the bubble content and the edge of
+// the bubble, as well as the horizontal padding between icons and text.
+constexpr int kLeftRightPadding = 12;
+// The size of the vertical padding for most elements in the bubble.
+constexpr int kBetweenChildSpacing = 8;
+// The height of the progress bar shown when showing "Verifying...".
 constexpr int kProgressBarHeight = 2;
 
 constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
@@ -109,26 +123,78 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
       std::make_unique<ImageDecoderImpl>(), url_loader_factory);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_fixed_width(kBubbleWidth);
-  set_margins(gfx::Insets(kPadding));
+  set_margins(
+      gfx::Insets().set_top_bottom(kTopBottomPadding, kTopBottomPadding));
+  // TODO(crbug.com/1323298): we are currently using a custom header because the
+  // icon, title, and close buttons from a bubble are not customizable enough to
+  // satisfy the UI requirements. However, this adds complexity to the code and
+  // makes this bubble lose any improvements made to the base bubble, so we
+  // should revisit this.
+  SetShowTitle(false);
+  SetShowCloseButton(false);
   set_close_on_deactivate(false);
-  SetTitle(l10n_util::GetStringFUTF16(
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      kBetweenChildSpacing));
+  title_ = l10n_util::GetStringFUTF16(
       IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
-      base::UTF8ToUTF16(rp_etld_plus_one), idp_etld_plus_one_));
-  gfx::ImageSkia imageSkia =
+      base::UTF8ToUTF16(rp_etld_plus_one), idp_etld_plus_one_);
+  bubble_icon_ =
       gfx::ImageSkia::CreateFrom1xBitmap(skia::ImageOperations::Resize(
           idp_metadata.brand_icon, skia::ImageOperations::RESIZE_LANCZOS3,
           kDesiredIconSize, kDesiredIconSize));
-  SetIcon(imageSkia);
-  SetShowIcon(true);
-  SetShowCloseButton(true);
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-
+  AddChildView(CreateHeaderView());
   AddChildView(std::make_unique<views::Separator>());
   AddChildView(CreateAccountChooser(accounts));
 }
 
 AccountSelectionBubbleView::~AccountSelectionBubbleView() = default;
+
+std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView() {
+  auto header = std::make_unique<views::View>();
+  header->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetInteriorMargin(gfx::Insets().set_top(8));
+
+  // Add the icon.
+  auto image_view = std::make_unique<views::ImageView>();
+  image_view->SetImage(bubble_icon_);
+  image_view->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kLeftRightPadding));
+  header->AddChildView(image_view.release());
+
+  // Add the title.
+  views::Label* title_label =
+      header->AddChildView(std::make_unique<views::Label>(
+          title_, views::style::CONTEXT_DIALOG_BODY_TEXT,
+          views::style::STYLE_PRIMARY));
+  title_label->SetMultiLine(true);
+  title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_label->SetAllowCharacterBreak(true);
+  title_label->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded,
+                               /*adjust_height_for_width =*/true));
+
+  // Add the close button.
+  std::unique_ptr<views::Button> close_button =
+      views::BubbleFrameView::CreateCloseButton(
+          base::BindRepeating(&AccountSelectionBubbleView::CloseBubble,
+                              weak_ptr_factory_.GetWeakPtr()));
+  close_button->SetVisible(true);
+  close_button->SetProperty(views::kMarginsKey,
+                            gfx::Insets().set_right(kLeftRightPadding));
+  header->AddChildView(close_button.release());
+  return header;
+}
+
+void AccountSelectionBubbleView::CloseBubble() {
+  if (!GetWidget())
+    return;
+  GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+}
 
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountChooser(
     base::span<const content::IdentityRequestAccount> accounts) {
@@ -144,8 +210,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
     const content::IdentityRequestAccount& account) {
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets::TLBR(0, 0, 4, 0)));
-
+      views::BoxLayout::Orientation::kVertical));
   row->AddChildView(CreateAccountRow(account, /*should_hover=*/false));
 
   // Prefer using the given name if it is provided, otherwise fallback to name.
@@ -257,11 +322,16 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
                             weak_ptr_factory_.GetWeakPtr(), account),
         std::move(image_view), account_name16,
         base::UTF8ToUTF16(account.email));
+    row->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kLeftRightPadding)));
     row->SetImageModel(views::Button::STATE_NORMAL, ui::ImageModel());
     return row;
   }
   auto row = std::make_unique<views::View>();
-  row->SetLayoutManager(std::make_unique<views::BoxLayout>());
+  row->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal,
+      gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kLeftRightPadding),
+      kLeftRightPadding));
   row->AddChildView(std::move(image_view));
   views::View* text_column = row->AddChildView(std::make_unique<views::View>());
   text_column->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -316,6 +386,7 @@ void AccountSelectionBubbleView::OnSingleAccountPicked(
     return;
   }
   RemoveAllChildViews();
+  AddChildView(CreateHeaderView());
   AddChildView(std::make_unique<views::Separator>());
   std::vector<content::IdentityRequestAccount> accounts = {account};
   AddChildView(CreateAccountChooser(accounts));
@@ -331,8 +402,9 @@ void AccountSelectionBubbleView::OnAccountSelected(
 
 void AccountSelectionBubbleView::ShowVerifySheet(
     const content::IdentityRequestAccount& account) {
-  SetTitle(l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
   RemoveAllChildViews();
+  title_ = l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
+  AddChildView(CreateHeaderView());
   views::ProgressBar* progress_bar =
       AddChildView(std::make_unique<views::ProgressBar>(kProgressBarHeight));
   // Use an infinite animation: SetValue(-1).
