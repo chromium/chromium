@@ -101,8 +101,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     bool close_on_deactivate = true;
     // Indicates whether tray bubble view should add a pre target event handler.
     bool reroute_event_handler = false;
-    // If not provided, the bg color will be derived from the NativeTheme.
-    absl::optional<SkColor> bg_color;
     int corner_radius = kBubbleCornerRadius;
     absl::optional<gfx::Insets> insets;
     absl::optional<gfx::Insets> margin;

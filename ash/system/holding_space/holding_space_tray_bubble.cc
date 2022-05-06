@@ -312,7 +312,6 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.anchor_rect =
       holding_space_tray->shelf()->GetSystemTrayAnchorRect();
-  init_params.bg_color = SK_ColorTRANSPARENT;
   init_params.insets = GetTrayBubbleInsets();
   init_params.shelf_alignment = holding_space_tray->shelf()->alignment();
   init_params.preferred_width = kHoldingSpaceBubbleWidth;
