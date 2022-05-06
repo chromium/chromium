@@ -3,6 +3,7 @@ include_rules = [
   "+components/content_settings/core/common",
   "+components/prefs",
   "+components/no_state_prefetch/browser",
+  "+components/services/storage/privileged",
   "+components/services/storage/public",
   "+components/site_isolation",
   "+content/public/browser",

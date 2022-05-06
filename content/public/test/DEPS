@@ -21,6 +21,7 @@ include_rules = [
   "+components/enterprise/common/download_item_reroute_info.h",
   "+components/leveldb_proto/public",
   "+components/network_session_configurator/common/network_switches.h",
+  "+components/services/storage/privileged",
   "+components/services/storage/public",
   "+components/startup_metric_utils/browser",
   "+components/viz/client",

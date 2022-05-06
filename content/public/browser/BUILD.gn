@@ -450,6 +450,7 @@ source_set("browser_sources") {
     "//build:chromecast_buildflags",
     "//components/browsing_topics/common:common",
     "//components/download/public/common:public",
+    "//components/services/storage/privileged/mojom",
     "//components/services/storage/public/mojom",
     "//content/public/common:common_sources",
     "//device/vr/buildflags",

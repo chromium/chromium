@@ -37,6 +37,7 @@ static_library("content") {
     "//components/content_settings/core/common",
     "//components/no_state_prefetch/browser",
     "//components/prefs",
+    "//components/services/storage/privileged/mojom",
     "//components/services/storage/public/cpp",
     "//components/services/storage/public/mojom",
     "//components/site_isolation",

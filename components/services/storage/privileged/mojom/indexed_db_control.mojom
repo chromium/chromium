@@ -4,8 +4,8 @@
 
 module storage.mojom;
 
+import "components/services/storage/privileged/mojom/indexed_db_control_test.mojom";
 import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
-import "components/services/storage/public/mojom/indexed_db_control_test.mojom";
 import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "components/services/storage/public/mojom/storage_usage_info.mojom";
 import "mojo/public/mojom/base/file_path.mojom";

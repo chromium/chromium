@@ -13,7 +13,7 @@
 
 #include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
-#include "components/services/storage/public/mojom/indexed_db_control_test.mojom.h"
+#include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_database.h"

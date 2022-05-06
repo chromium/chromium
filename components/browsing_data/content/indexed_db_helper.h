@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
+#include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 
 namespace blink {

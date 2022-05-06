@@ -94,4 +94,9 @@ specific_include_rules = {
   "external_pref_loader\.cc": [
     "+chrome/browser/apps/user_type_filter.h",
   ],
+
+  "extension_service_unittest.cc" : [
+    "+components/services/storage/privileged/mojom/indexed_db_control.mojom.h",
+    "+components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h",
+  ],
 }

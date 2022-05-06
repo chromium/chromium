@@ -88,6 +88,7 @@ source_set("storage") {
     "//base",
     "//components/services/storage/dom_storage:local_storage_proto",
     "//components/services/storage/indexed_db/scopes:scopes_metadata_proto",
+    "//components/services/storage/privileged/mojom",
     "//components/services/storage/public/mojom",
     "//components/services/storage/service_worker:service_worker_proto",
     "//components/services/storage/shared_storage/public/mojom",

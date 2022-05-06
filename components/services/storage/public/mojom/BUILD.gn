@@ -9,8 +9,6 @@ mojom("mojom") {
     "blob_storage_context.mojom",
     "cache_storage_control.mojom",
     "file_system_access_context.mojom",
-    "indexed_db_control.mojom",
-    "indexed_db_control_test.mojom",
     "local_storage_control.mojom",
     "origin_context.mojom",
     "partition.mojom",
