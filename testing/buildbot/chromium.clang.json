@@ -9199,7 +9199,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "fuchsia_mojo_unittests",
-        "test_id_prefix": "ninja://fuchsia/mojom:fuchsia_mojo_unittests/"
+        "test_id_prefix": "ninja://mojo/public/cpp/base/fuchsia:fuchsia_mojo_unittests/"
       },
       {
         "merge": {
@@ -10666,7 +10666,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "fuchsia_mojo_unittests",
-        "test_id_prefix": "ninja://fuchsia/mojom:fuchsia_mojo_unittests/"
+        "test_id_prefix": "ninja://mojo/public/cpp/base/fuchsia:fuchsia_mojo_unittests/"
       },
       {
         "merge": {

@@ -7,7 +7,7 @@
 
 #include <fuchsia/media/cpp/fidl.h>
 
-#include "fuchsia/mojom/fidl_interface_request_mojom_traits.h"
+#include "mojo/public/cpp/base/fuchsia/fidl_interface_request_mojom_traits.h"
 
 namespace mojo {
 
