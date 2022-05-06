@@ -260,6 +260,7 @@ TEST_F(GpuControlListEntryTest, AMDSwitchableEntry) {
 TEST_F(GpuControlListEntryTest, DriverVendorBeginWith) {
   const Entry& entry = GetEntry(kGpuControlListEntryTest_DriverVendorBeginWith);
   GPUInfo gpu_info;
+  gpu_info.gpu.vendor_id = 0x10de;
   gpu_info.gpu.driver_vendor = "NVIDIA Corporation";
   EXPECT_TRUE(entry.Contains(kOsMacosx, "10.9", gpu_info));
   // Case sensitive.
@@ -418,10 +419,12 @@ class GpuControlListEntryDualGPUTest : public GpuControlListEntryTest {
     // secondary, and initially Intel is active.
     gpu_info_.gpu.vendor_id = 0x10de;
     gpu_info_.gpu.device_id = 0x0640;
+    gpu_info_.gpu.driver_version = "24.21.13.9811";
     gpu_info_.gpu.active = false;
     GPUInfo::GPUDevice second_gpu;
     second_gpu.vendor_id = 0x8086;
     second_gpu.device_id = 0x0166;
+    second_gpu.driver_version = "30.0.101.1660";
     second_gpu.active = true;
     gpu_info_.secondary_gpus.push_back(second_gpu);
   }
@@ -499,6 +502,20 @@ TEST_F(GpuControlListEntryDualGPUTest, VendorOnlyActivePrimaryGPU) {
   const Entry& entry =
       GetEntry(kGpuControlListEntryDualGPUTest_VendorOnlyActivePrimaryGPU);
   // By default, secondary GPU is active.
+  EntryShouldNotApply(entry);
+  ActivatePrimaryGPU();
+  EntryShouldApply(entry);
+}
+
+TEST_F(GpuControlListEntryDualGPUTest, AnyDriverVersion) {
+  const Entry& entry = GetEntry(kGpuControlListEntryTest_AnyDriverVersion);
+  EntryShouldApply(entry);
+  ActivatePrimaryGPU();
+  EntryShouldApply(entry);
+}
+
+TEST_F(GpuControlListEntryDualGPUTest, ActiveDriverVersion) {
+  const Entry& entry = GetEntry(kGpuControlListEntryTest_ActiveDriverVersion);
   EntryShouldNotApply(entry);
   ActivatePrimaryGPU();
   EntryShouldApply(entry);
@@ -1112,6 +1129,7 @@ TEST_F(GpuControlListEntryTest, IntelDriverVendorEntry) {
   const Entry& entry =
       GetEntry(kGpuControlListEntryTest_IntelDriverVendorEntry);
   GPUInfo gpu_info;
+  gpu_info.gpu.vendor_id = 0x8086;
   gpu_info.gpu.driver_vendor = "Intel(R) UHD Graphics 630";
   gpu_info.gpu.driver_version = "25.20.100.5000";
   EXPECT_FALSE(entry.Contains(kOsWin, "", gpu_info));

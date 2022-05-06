@@ -590,6 +590,8 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
   write_multi_gpu_style(multi_gpu_style, data_file)
   # group driver info
   if driver_vendor != '' or driver_version != None:
+    if multi_gpu_category != '':
+      assert vendor_id != 0, 'Need vendor_id in entry with id: '+ str(entry_id)
     if driver_version and driver_version.get('schema') == 'intel_driver':
       assert os_type == 'win', 'Intel driver schema is only for Windows'
       is_intel = (format(vendor_id, '#04x') == '0x8086' or

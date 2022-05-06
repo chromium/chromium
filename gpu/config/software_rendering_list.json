@@ -989,6 +989,7 @@
       },
       "exceptions": [
         {
+          "vendor_id": "0x1002",
           "driver_version": {
             "comment": "INF_version: 21.19.384.0; date: 12/04/2016",
             "op": ">=",
@@ -1279,6 +1280,7 @@
           "value": "10"
         }
       },
+      "vendor_id": "0x1002",
       "driver_version": {
         "op": "<",
         "value": "20.19.0.32837"
@@ -1528,6 +1530,7 @@
       },
       "exceptions": [
         {
+          "vendor_id": "0x1002",
           "driver_version": {
             "op": ">=",
             "value": "8.17.10.1433"
