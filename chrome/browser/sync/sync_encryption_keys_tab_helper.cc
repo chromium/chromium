@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/sync_encryption_keys_extension.mojom.h"
@@ -29,10 +28,9 @@
 namespace {
 
 const url::Origin& GetAllowedOrigin() {
-  static const base::NoDestructor<url::Origin> origin(
-      url::Origin::Create(GaiaUrls::GetInstance()->gaia_url()));
-  CHECK(!origin->opaque());
-  return *origin;
+  const url::Origin& origin = GaiaUrls::GetInstance()->gaia_origin();
+  CHECK(!origin.opaque());
+  return origin;
 }
 
 bool ShouldExposeMojoApi(content::NavigationHandle* navigation_handle) {

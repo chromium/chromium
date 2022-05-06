@@ -301,8 +301,7 @@ void GaiaAuthFetcher::CreateAndStartGaiaFetcher(
     DCHECK_EQ(GaiaUrls::GetInstance()->gaia_url(),
               gaia_gurl.DeprecatedGetOriginAsURL())
         << gaia_gurl;
-    url::Origin origin =
-        url::Origin::Create(GaiaUrls::GetInstance()->gaia_url());
+    url::Origin origin = GaiaUrls::GetInstance()->gaia_origin();
     resource_request->site_for_cookies =
         net::SiteForCookies::FromOrigin(origin);
     resource_request->trusted_params =

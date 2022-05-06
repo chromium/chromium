@@ -121,11 +121,35 @@ GURL GetURLSwitchValueWithDefault(base::StringPiece switch_value,
   return GURL(default_value);
 }
 
+url::Origin GetOriginSwitchValueWithDefault(base::StringPiece switch_value,
+                                            base::StringPiece default_value) {
+  std::string string_value;
+  GetSwitchValueWithDefault(switch_value, default_value, &string_value);
+  const url::Origin result = url::Origin::Create(GURL(string_value));
+  if (result.GetURL().SchemeIsHTTPOrHTTPS() &&
+      result.GetURL() == GURL(string_value)) {
+    return result;
+  }
+  LOG(ERROR) << "Ignoring invalid origin \"" << string_value
+             << "\" for switch \"" << switch_value << "\"";
+  return url::Origin::Create(GURL(default_value));
+}
+
 void SetDefaultURLIfInvalid(GURL* url_to_set,
                             base::StringPiece switch_value,
                             base::StringPiece default_value) {
   if (!url_to_set->is_valid()) {
     *url_to_set = GetURLSwitchValueWithDefault(switch_value, default_value);
+  }
+}
+
+void SetDefaultOriginIfOpaqueOrInvalidScheme(url::Origin* origin_to_set,
+                                             base::StringPiece switch_value,
+                                             base::StringPiece default_value) {
+  if (origin_to_set->opaque() ||
+      !origin_to_set->GetURL().SchemeIsHTTPOrHTTPS()) {
+    *origin_to_set =
+        GetOriginSwitchValueWithDefault(switch_value, default_value);
   }
 }
 
@@ -161,8 +185,12 @@ const GURL& GaiaUrls::secure_google_url() const {
   return secure_google_url_;
 }
 
-const GURL& GaiaUrls::gaia_url() const {
-  return gaia_url_;
+const url::Origin& GaiaUrls::gaia_origin() const {
+  return gaia_origin_;
+}
+
+GURL GaiaUrls::gaia_url() const {
+  return gaia_origin_.GetURL();
 }
 
 const GURL& GaiaUrls::client_login_url() const {
@@ -335,7 +363,8 @@ GURL GaiaUrls::GetCheckConnectionInfoURLWithSource(const std::string& source) {
 
 void GaiaUrls::InitializeDefault() {
   SetDefaultURLIfInvalid(&google_url_, switches::kGoogleUrl, kDefaultGoogleUrl);
-  SetDefaultURLIfInvalid(&gaia_url_, switches::kGaiaUrl, kDefaultGaiaUrl);
+  SetDefaultOriginIfOpaqueOrInvalidScheme(&gaia_origin_, switches::kGaiaUrl,
+                                          kDefaultGaiaUrl);
   SetDefaultURLIfInvalid(&lso_origin_url_, switches::kLsoUrl, kDefaultGaiaUrl);
   SetDefaultURLIfInvalid(&google_apis_origin_url_, switches::kGoogleApisUrl,
                          kDefaultGoogleApisBaseUrl);
@@ -356,49 +385,52 @@ void GaiaUrls::InitializeDefault() {
   oauth2_chrome_client_secret_ =
       google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_MAIN);
 
-  // URLs from |gaia_url_|.
-  ResolveURLIfInvalid(&client_login_url_, gaia_url_, kClientLoginUrlSuffix);
-  ResolveURLIfInvalid(&service_login_url_, gaia_url_, kServiceLoginUrlSuffix);
-  ResolveURLIfInvalid(&embedded_setup_chromeos_url_v2_, gaia_url_,
+  CHECK(!gaia_origin_.opaque());
+  const GURL gaia_url = gaia_origin_.GetURL();
+  CHECK(gaia_url.SchemeIsHTTPOrHTTPS());
+
+  // URLs from |gaia_origin_|.
+  ResolveURLIfInvalid(&client_login_url_, gaia_url, kClientLoginUrlSuffix);
+  ResolveURLIfInvalid(&service_login_url_, gaia_url, kServiceLoginUrlSuffix);
+  ResolveURLIfInvalid(&embedded_setup_chromeos_url_v2_, gaia_url,
                       kEmbeddedSetupChromeOsUrlSuffixV2);
-  ResolveURLIfInvalid(&embedded_setup_chromeos_kid_signup_url_, gaia_url_,
+  ResolveURLIfInvalid(&embedded_setup_chromeos_kid_signup_url_, gaia_url,
                       kEmbeddedSetupChromeOsKidSignupUrlSuffix);
-  ResolveURLIfInvalid(&embedded_setup_chromeos_kid_signin_url_, gaia_url_,
+  ResolveURLIfInvalid(&embedded_setup_chromeos_kid_signin_url_, gaia_url,
                       kEmbeddedSetupChromeOsKidSigninUrlSuffix);
-  ResolveURLIfInvalid(&embedded_setup_windows_url_, gaia_url_,
+  ResolveURLIfInvalid(&embedded_setup_windows_url_, gaia_url,
                       kEmbeddedSetupWindowsUrlSuffix);
-  ResolveURLIfInvalid(&embedded_reauth_chromeos_url_, gaia_url_,
+  ResolveURLIfInvalid(&embedded_reauth_chromeos_url_, gaia_url,
                       kEmbeddedReauthChromeOsUrlSuffix);
-  ResolveURLIfInvalid(&signin_chrome_sync_dice_, gaia_url_,
+  ResolveURLIfInvalid(&signin_chrome_sync_dice_, gaia_url,
                       kSigninChromeSyncDice);
-  ResolveURLIfInvalid(&signin_chrome_sync_keys_retrieval_url_, gaia_url_,
+  ResolveURLIfInvalid(&signin_chrome_sync_keys_retrieval_url_, gaia_url,
                       kSigninChromeSyncKeysRetrievalUrl);
   ResolveURLIfInvalid(
-      &signin_chrome_sync_keys_recoverability_degraded_url_, gaia_url_,
+      &signin_chrome_sync_keys_recoverability_degraded_url_, gaia_url,
       base::StrCat({kSigninChromeSyncKeysRetrievalUrl,
                     kSigninChromeSyncKeysRecoverabilityUrlSuffix}));
-  ResolveURLIfInvalid(&service_login_auth_url_, gaia_url_,
+  ResolveURLIfInvalid(&service_login_auth_url_, gaia_url,
                       kServiceLoginAuthUrlSuffix);
-  ResolveURLIfInvalid(&service_logout_url_, gaia_url_, kServiceLogoutUrlSuffix);
-  ResolveURLIfInvalid(&continue_url_for_logout_, gaia_url_,
+  ResolveURLIfInvalid(&service_logout_url_, gaia_url, kServiceLogoutUrlSuffix);
+  ResolveURLIfInvalid(&continue_url_for_logout_, gaia_url,
                       kContinueUrlForLogoutSuffix);
-  ResolveURLIfInvalid(&get_user_info_url_, gaia_url_, kGetUserInfoUrlSuffix);
-  ResolveURLIfInvalid(&token_auth_url_, gaia_url_, kTokenAuthUrlSuffix);
-  ResolveURLIfInvalid(&merge_session_url_, gaia_url_, kMergeSessionUrlSuffix);
-  ResolveURLIfInvalid(&oauth_multilogin_url_, gaia_url_,
-                      kOAuthMultiloginSuffix);
-  ResolveURLIfInvalid(&oauth_get_access_token_url_, gaia_url_,
+  ResolveURLIfInvalid(&get_user_info_url_, gaia_url, kGetUserInfoUrlSuffix);
+  ResolveURLIfInvalid(&token_auth_url_, gaia_url, kTokenAuthUrlSuffix);
+  ResolveURLIfInvalid(&merge_session_url_, gaia_url, kMergeSessionUrlSuffix);
+  ResolveURLIfInvalid(&oauth_multilogin_url_, gaia_url, kOAuthMultiloginSuffix);
+  ResolveURLIfInvalid(&oauth_get_access_token_url_, gaia_url,
                       kOAuthGetAccessTokenUrlSuffix);
-  ResolveURLIfInvalid(&oauth_wrap_bridge_url_, gaia_url_,
+  ResolveURLIfInvalid(&oauth_wrap_bridge_url_, gaia_url,
                       kOAuthWrapBridgeUrlSuffix);
-  ResolveURLIfInvalid(&oauth_revoke_token_url_, gaia_url_,
+  ResolveURLIfInvalid(&oauth_revoke_token_url_, gaia_url,
                       kOAuthRevokeTokenUrlSuffix);
-  ResolveURLIfInvalid(&oauth1_login_url_, gaia_url_, kOAuth1LoginUrlSuffix);
-  ResolveURLIfInvalid(&list_accounts_url_, gaia_url_, kListAccountsSuffix);
-  ResolveURLIfInvalid(&embedded_signin_url_, gaia_url_, kEmbeddedSigninSuffix);
-  ResolveURLIfInvalid(&add_account_url_, gaia_url_, kAddAccountSuffix);
-  ResolveURLIfInvalid(&reauth_url_, gaia_url_, kReauthSuffix);
-  ResolveURLIfInvalid(&get_check_connection_info_url_, gaia_url_,
+  ResolveURLIfInvalid(&oauth1_login_url_, gaia_url, kOAuth1LoginUrlSuffix);
+  ResolveURLIfInvalid(&list_accounts_url_, gaia_url, kListAccountsSuffix);
+  ResolveURLIfInvalid(&embedded_signin_url_, gaia_url, kEmbeddedSigninSuffix);
+  ResolveURLIfInvalid(&add_account_url_, gaia_url, kAddAccountSuffix);
+  ResolveURLIfInvalid(&reauth_url_, gaia_url, kReauthSuffix);
+  ResolveURLIfInvalid(&get_check_connection_info_url_, gaia_url,
                       kGetCheckConnectionInfoSuffix);
 
   // URLs from |lso_origin_url_|.
@@ -436,7 +468,11 @@ void GaiaUrls::InitializeFromConfig() {
 
   config->GetURLIfExists(URL_KEY_AND_PTR(google_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(secure_google_url));
-  config->GetURLIfExists(URL_KEY_AND_PTR(gaia_url));
+
+  GURL gaia_origin_url;
+  config->GetURLIfExists("gaia_url", &gaia_origin_url);
+  gaia_origin_ = url::Origin::Create(gaia_origin_url);
+
   config->GetURLIfExists(URL_KEY_AND_PTR(lso_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(google_apis_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth_account_manager_origin_url));

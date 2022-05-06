@@ -2059,8 +2059,7 @@ ChromeContentBrowserClient::GetOriginsRequiringDedicatedProcess() {
 // Sign-in process isolation is not needed on Android, see
 // https://crbug.com/739418.
 #if !BUILDFLAG(IS_ANDROID)
-  isolated_origin_list.push_back(
-      url::Origin::Create(GaiaUrls::GetInstance()->gaia_url()));
+  isolated_origin_list.push_back(GaiaUrls::GetInstance()->gaia_origin());
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

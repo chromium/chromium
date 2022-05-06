@@ -21,7 +21,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/buildflags/buildflags.h"
-#include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
@@ -471,7 +471,7 @@ bool ProxyingURLLoaderFactory::MaybeProxyRequest(
 
   // This proxy should only be installed for subresource requests from a frame
   // that is rendering the GAIA signon realm.
-  if (!gaia::IsGaiaSignonRealm(request_initiator.GetURL()))
+  if (request_initiator != GaiaUrls::GetInstance()->gaia_origin())
     return false;
 
   auto* web_contents =

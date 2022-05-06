@@ -9,6 +9,7 @@
 
 #include "base/memory/singleton.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 // A signleton that provides all the URLs that are used for connecting to GAIA.
 //
@@ -23,7 +24,8 @@ class GaiaUrls {
   // The URLs for different calls in the Google Accounts programmatic login API.
   const GURL& google_url() const;
   const GURL& secure_google_url() const;
-  const GURL& gaia_url() const;
+  const url::Origin& gaia_origin() const;
+  GURL gaia_url() const;
   const GURL& client_login_url() const;
   const GURL& service_login_url() const;
   const GURL& embedded_setup_chromeos_url(unsigned version) const;
@@ -79,7 +81,7 @@ class GaiaUrls {
 
   GURL google_url_;
   GURL secure_google_url_;
-  GURL gaia_url_;
+  url::Origin gaia_origin_;
 
   GURL lso_origin_url_;
   GURL google_apis_origin_url_;
