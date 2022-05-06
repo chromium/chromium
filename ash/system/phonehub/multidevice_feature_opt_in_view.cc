@@ -103,9 +103,11 @@ int GetDescriptionStringId(phonehub::MultideviceFeatureAccessManager*
     case PermissionsOnboardingSetUpMode::kNotification:
       return IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_DESCRIPTION;
     case PermissionsOnboardingSetUpMode::kNotificationAndMessagingApps:
-    case PermissionsOnboardingSetUpMode::kMessagingAppsAndCameraRoll:
-    case PermissionsOnboardingSetUpMode::kAllPermissions:
       return IDS_ASH_PHONE_HUB_NOTIFICATION_AND_APPS_OPT_IN_DESCRIPTION;
+    case PermissionsOnboardingSetUpMode::kMessagingAppsAndCameraRoll:
+      return IDS_ASH_PHONE_HUB_CAMERA_ROLL_AND_APPS_OPT_IN_DESCRIPTION;
+    case PermissionsOnboardingSetUpMode::kAllPermissions:
+      return IDS_ASH_PHONE_HUB_ALL_FEATURES_OPT_IN_DESCRIPTION;
     case PermissionsOnboardingSetUpMode::kNone:
     default:
       // Just return the default strings since the MultideviceFeatureOptInView
