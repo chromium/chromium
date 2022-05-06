@@ -9,6 +9,7 @@ source_set("safe_browsing") {
     "safe_browsing_coordinator.mm",
   ]
   deps = [
+    "//components/safe_browsing/core/common",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/safe_browsing:safe_browsing",
     "//ios/chrome/browser/ui/commands",

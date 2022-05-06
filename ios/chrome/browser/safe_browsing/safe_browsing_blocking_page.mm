@@ -200,8 +200,10 @@ void SafeBrowsingBlockingPage::SafeBrowsingControllerClient::
 
 void SafeBrowsingBlockingPage::SafeBrowsingControllerClient::
     OpenEnhancedProtectionSettings() {
-  if (web_state()) {
-    SafeBrowsingTabHelper::FromWebState(web_state())
-        ->OpenSafeBrowsingSettings();
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+    if (web_state()) {
+      SafeBrowsingTabHelper::FromWebState(web_state())
+          ->OpenSafeBrowsingSettings();
+    }
   }
 }

@@ -9,6 +9,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/scoped_observation.h"
 #import "components/profile_metrics/browser_profile_type.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/autofill_tab_helper.h"
@@ -594,10 +595,12 @@
   self.viewController.infobarModalOverlayContainerViewController =
       self.infobarModalOverlayContainerCoordinator.viewController;
 
-  self.safeBrowsingCoordinator = [[SafeBrowsingCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  [self.safeBrowsingCoordinator start];
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+    self.safeBrowsingCoordinator = [[SafeBrowsingCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
+    [self.safeBrowsingCoordinator start];
+  }
 
   self.textFragmentsCoordinator = [[TextFragmentsCoordinator alloc]
       initWithBaseViewController:self.viewController
@@ -665,8 +668,12 @@
   [self.sadTabCoordinator disconnect];
   self.sadTabCoordinator = nil;
 
-  [self.safeBrowsingCoordinator stop];
-  self.safeBrowsingCoordinator = nil;
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+    [self.safeBrowsingCoordinator stop];
+    self.safeBrowsingCoordinator = nil;
+  } else {
+    DCHECK(!self.safeBrowsingCoordinator);
+  }
 
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;

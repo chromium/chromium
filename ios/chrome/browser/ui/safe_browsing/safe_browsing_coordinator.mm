@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/safe_browsing/safe_browsing_coordinator.h"
 
+#import "base/feature_list.h"
+#import "components/safe_browsing/core/common/features.h"
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -32,9 +34,14 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser {
+  DCHECK(base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection));
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _webStateList = browser->GetWebStateList();
+    for (int i = 0; i < _webStateList->count(); i++) {
+      web::WebState* web_state = _webStateList->GetWebStateAt(i);
+      SafeBrowsingTabHelper::FromWebState(web_state)->SetDelegate(self);
+    }
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserver.get());
   }
@@ -52,6 +59,7 @@
 #pragma mark - SafeBrowsingTabHelperDelegate
 
 - (void)openSafeBrowsingSettings {
+  DCHECK(base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection));
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   [applicationHandler showSafeBrowsingSettings];
@@ -63,6 +71,7 @@
     didInsertWebState:(web::WebState*)webState
               atIndex:(int)index
            activating:(BOOL)activating {
+  DCHECK(base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection));
   SafeBrowsingTabHelper::FromWebState(webState)->SetDelegate(self);
 }
 
