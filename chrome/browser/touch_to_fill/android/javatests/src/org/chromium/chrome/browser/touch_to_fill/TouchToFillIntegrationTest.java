@@ -141,6 +141,26 @@ public class TouchToFillIntegrationTest {
 
     @Test
     @MediumTest
+    public void testClickingManagePasswordsTriggersCallback() {
+        runOnUiThreadBlocking(() -> {
+            mTouchToFill.showCredentials(sExampleUrl, true, Collections.singletonList(sAna), false);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
+
+        // Swipe the sheet up to it's full state in order to see the 'Manage Passwords' button.
+        runOnUiThreadBlocking(() -> { sheetSupport.setSheetState(SheetState.FULL, false); });
+
+        pollUiThread(() -> getManagePasswordsButton() != null);
+        TouchCommon.singleClickView(getManagePasswordsButton());
+        waitForEvent(mMockBridge).onManagePasswordsSelected();
+        verify(mMockBridge, never()).onDismissed();
+        verify(mMockBridge, never()).onCredentialSelected(any());
+    }
+
+    @Test
+    @MediumTest
     @SuppressLint("SetTextI18n")
     public void testDismissedIfUnableToShow() throws Exception {
         BottomSheetContent otherBottomSheetContent = runOnUiThreadBlocking(() -> {
@@ -218,6 +238,11 @@ public class TouchToFillIntegrationTest {
 
     private RecyclerView getCredentials() {
         return mActivityTestRule.getActivity().findViewById(R.id.sheet_item_list);
+    }
+
+    private TextView getManagePasswordsButton() {
+        return mActivityTestRule.getActivity().findViewById(
+                R.id.touch_to_fill_sheet_manage_passwords);
     }
 
     public static <T> T waitForEvent(T mock) {
