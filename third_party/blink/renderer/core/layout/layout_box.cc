@@ -3721,10 +3721,17 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       cache_status == NGLayoutCacheStatus::kHit)
     cache_status = NGLayoutCacheStatus::kNeedsSimplifiedLayout;
 
-  // Only allow simplified layout for non-replaced boxes.
-  if (cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout &&
-      IsLayoutReplaced())
-    return nullptr;
+  if (cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout) {
+    // Only allow simplified layout for non-replaced boxes.
+    if (IsLayoutReplaced())
+      return nullptr;
+
+    // Simplified layout requires children to have a cached layout result. If
+    // the current box has no cached layout result, its children might not,
+    // either.
+    if (!use_layout_cache_slot && !GetCachedLayoutResult())
+      return nullptr;
+  }
 
   LayoutUnit bfc_line_offset = new_space.BfcOffset().line_offset;
   absl::optional<LayoutUnit> bfc_block_offset =
