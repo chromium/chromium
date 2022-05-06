@@ -8715,24 +8715,6 @@
             ]
         }
     ],
-    "WebViewOriginTrials": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledOnlyOriginTrials",
-                    "enable_features": [
-                        "WebViewOriginTrials"
-                    ],
-                    "disable_features": [
-                        "WebViewEmptyComponentLoaderPolicy"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewTempTrustTokens": [
         {
             "platforms": [
