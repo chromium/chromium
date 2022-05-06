@@ -412,6 +412,8 @@ static_library("unit_test_support") {
     "mock_autofill_assistant_tts_controller.h",
     "mock_client.cc",
     "mock_client.h",
+    "mock_common_dependencies.cc",
+    "mock_common_dependencies.h",
     "mock_controller_observer.cc",
     "mock_controller_observer.h",
     "mock_execution_delegate.cc",

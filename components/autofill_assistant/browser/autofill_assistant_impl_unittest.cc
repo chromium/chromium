@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "components/autofill_assistant/browser/mock_common_dependencies.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/mock_service_request_sender.h"
 #include "components/version_info/version_info.h"
@@ -32,8 +33,14 @@ class AutofillAssistantImpTest : public testing::Test {
         std::make_unique<NiceMock<MockServiceRequestSender>>();
     mock_request_sender_ = mock_request_sender.get();
 
+    auto mock_common_dependencies = std::make_unique<MockCommonDependencies>();
+    mock_dependencies_ = mock_common_dependencies.get();
+    ON_CALL(*mock_dependencies_, GetCountryCode).WillByDefault(Return("US"));
+    ON_CALL(*mock_dependencies_, GetLocale).WillByDefault(Return("en-US"));
+
     service_ = std::make_unique<AutofillAssistantImpl>(
-        std::move(mock_request_sender), GURL(kScriptServerUrl), "US", "en-US");
+        std::move(mock_request_sender), std::move(mock_common_dependencies),
+        GURL(kScriptServerUrl));
   }
   ~AutofillAssistantImpTest() override = default;
 
@@ -41,6 +48,7 @@ class AutofillAssistantImpTest : public testing::Test {
   base::MockCallback<AutofillAssistant::GetCapabilitiesResponseCallback>
       mock_response_callback_;
   raw_ptr<NiceMock<MockServiceRequestSender>> mock_request_sender_;
+  raw_ptr<MockCommonDependencies> mock_dependencies_;
   std::unique_ptr<AutofillAssistantImpl> service_;
 };
 

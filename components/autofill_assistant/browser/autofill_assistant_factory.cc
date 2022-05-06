@@ -4,8 +4,10 @@
 
 #include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
 
+#include <memory>
+
 #include "components/autofill_assistant/browser/autofill_assistant_impl.h"
-#include "components/version_info/channel.h"
+#include "components/autofill_assistant/browser/common_dependencies.h"
 
 namespace autofill_assistant {
 
@@ -13,11 +15,9 @@ namespace autofill_assistant {
 std::unique_ptr<AutofillAssistant>
 AutofillAssistantFactory::CreateForBrowserContext(
     content::BrowserContext* browser_context,
-    version_info::Channel channel,
-    const std::string& country_code,
-    const std::string& locale) {
-  return AutofillAssistantImpl::Create(browser_context, channel, country_code,
-                                       locale);
+    std::unique_ptr<CommonDependencies> dependencies) {
+  return AutofillAssistantImpl::Create(browser_context,
+                                       std::move(dependencies));
 }
 
 }  // namespace autofill_assistant

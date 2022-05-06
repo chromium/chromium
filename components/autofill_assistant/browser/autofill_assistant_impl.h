@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_AUTOFILL_ASSISTANT_IMPL_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_AUTOFILL_ASSISTANT_IMPL_H_
 
+#include <memory>
 #include <vector>
 
 #include "components/autofill_assistant/browser/public/autofill_assistant.h"
@@ -15,21 +16,21 @@
 
 namespace autofill_assistant {
 
+class CommonDependencies;
+
 class AutofillAssistantImpl : public autofill_assistant::AutofillAssistant {
  public:
   static std::unique_ptr<AutofillAssistantImpl> Create(
       content::BrowserContext* browser_context,
-      version_info::Channel channel,
-      const std::string& country_code,
-      const std::string& locale);
+      std::unique_ptr<CommonDependencies> dependencies);
 
   AutofillAssistantImpl(std::unique_ptr<ServiceRequestSender> request_sender,
-                        const GURL& script_server_url,
-                        const std::string& country_code,
-                        const std::string& locale);
+                        std::unique_ptr<CommonDependencies> dependencies,
+                        const GURL& script_server_url);
+  ~AutofillAssistantImpl() override;
+
   AutofillAssistantImpl(const AutofillAssistantImpl&) = delete;
   AutofillAssistantImpl& operator=(const AutofillAssistantImpl&) = delete;
-  ~AutofillAssistantImpl() override;
 
   void GetCapabilitiesByHashPrefix(
       uint32_t hash_prefix_length,
@@ -44,12 +45,12 @@ class AutofillAssistantImpl : public autofill_assistant::AutofillAssistant {
  private:
   // The request sender responsible for communicating with a remote endpoint.
   std::unique_ptr<ServiceRequestSender> request_sender_;
+
   // The RPC endpoint to send requests to.
   GURL script_server_url_;
-  // The client's country code.
-  std::string country_code_;
-  // The client's locale.
-  std::string locale_;
+
+  // Dependencies on client code such as country code or locale.
+  std::unique_ptr<CommonDependencies> dependencies_;
 };
 
 }  // namespace autofill_assistant

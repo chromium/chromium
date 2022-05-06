@@ -4,11 +4,12 @@
 
 #include "chrome/browser/password_manager/password_scripts_fetcher_factory.h"
 
+#include <memory>
+
 #include "base/no_destructor.h"
-#include "chrome/browser/browser_process.h"
+#include "chrome/browser/autofill_assistant/common_dependencies_chrome.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -16,23 +17,9 @@
 #include "components/password_manager/core/browser/password_scripts_fetcher_impl.h"
 #include "components/password_manager/core/browser/saved_passwords_capabilities_fetcher.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/variations/service/variations_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
-
-namespace {
-
-std::string GetCountryCode() {
-  variations::VariationsService* variations_service =
-      g_browser_process->variations_service();
-  // Use fallback "ZZ" if no country is available.
-  if (!variations_service || variations_service->GetLatestCountry().empty())
-    return "ZZ";
-  return base::ToUpperASCII(variations_service->GetLatestCountry());
-}
-
-}  // namespace
 
 PasswordScriptsFetcherFactory::PasswordScriptsFetcherFactory()
     : BrowserContextKeyedServiceFactory(
@@ -59,12 +46,10 @@ KeyedService* PasswordScriptsFetcherFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordDomainCapabilitiesFetching)) {
-    // TODO(crbug.com/1314010): Replace these dependencies by a |Dependencies|
-    // or |PlatformDependencies| object.
     std::unique_ptr<autofill_assistant::AutofillAssistant> autofill_assistant =
         autofill_assistant::AutofillAssistantFactory::CreateForBrowserContext(
-            browser_context, chrome::GetChannel(), GetCountryCode(),
-            g_browser_process->GetApplicationLocale());
+            browser_context,
+            std::make_unique<autofill_assistant::CommonDependenciesChrome>());
 
     std::unique_ptr<CapabilitiesServiceImpl> service =
         std::make_unique<CapabilitiesServiceImpl>(
