@@ -111,7 +111,10 @@ MediaStreamDispatcherHost::CropCallback WrapCropCallback(
         if (result ==
             media::mojom::CropRequestResult::kNonIncreasingCropVersion) {
           std::move(bad_message_callback).Run("Non-increasing crop-version.");
-          return;
+          // Intentionally avoid returning. Instead, continue execution and
+          // invoke the callback. If the callback were allowed to "drop" that
+          // would trigger a DCHECK in the mojom pipe.
+          // TODO(crbug.com/1299008): Avoid the necessity for this.
         }
         std::move(callback).Run(result);
       },
