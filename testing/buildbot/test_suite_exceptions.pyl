@@ -3326,6 +3326,12 @@
       'Optional Mac Release (Intel)',
     ],
   },
+  'webgl2_conformance_gl_passthrough_tests 8086:3e9b': {
+    'remove_from': [
+      # Only run validating on Mac Intel due to capacity http://crbug.com/1236796
+      'mac_optional_gpu_tests_rel'
+    ],
+  },
   'webgl2_conformance_gles_passthrough_tests': {
     'remove_from': [
       # Currently not enough capacity to run these tests on this config.

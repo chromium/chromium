@@ -7651,5 +7651,94 @@
         ],
       },
     },
+
+    'mac_optional_gpu_tests_rel_gpu_telemetry_tests': {
+      'gpu_common_and_optional_telemetry_tests': {
+        'variants': [
+          'MAC_MINI_INTEL_GPU_STABLE',
+          'MAC_RETINA_AMD_GPU_STABLE',
+          'MAC_RETINA_NVIDIA_GPU_STABLE',
+        ],
+      },
+      'gpu_mediapipe_passthrough_telemetry_tests': {
+        'variants': [
+          'MAC_MINI_INTEL_GPU_STABLE',
+          'MAC_RETINA_AMD_GPU_STABLE',
+          'MAC_RETINA_NVIDIA_GPU_STABLE',
+        ],
+      },
+      'gpu_mediapipe_validating_telemetry_tests': {
+        'variants': [
+          'MAC_MINI_INTEL_GPU_STABLE',
+          'MAC_RETINA_NVIDIA_GPU_STABLE',
+        ],
+      },
+      'gpu_passthrough_telemetry_tests': {
+        'variants': [
+          'MAC_MINI_INTEL_GPU_STABLE',
+          'MAC_RETINA_AMD_GPU_STABLE',
+        ],
+      },
+      'gpu_webcodecs_telemetry_test': {
+        'variants': [
+          'MAC_MINI_INTEL_GPU_STABLE',
+          'MAC_RETINA_AMD_GPU_STABLE',
+          'MAC_RETINA_NVIDIA_GPU_STABLE',
+        ],
+      },
+      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests': {
+        'variants': [
+          'MAC_MINI_INTEL_GPU_STABLE',
+          'MAC_RETINA_AMD_GPU_STABLE',
+        ],
+      },
+      'gpu_webgl2_conformance_validating_telemetry_tests': {
+        'variants': [
+          'MAC_MINI_INTEL_GPU_STABLE',
+        ],
+      },
+      'gpu_webgl_conformance_gl_passthrough_telemetry_tests': {
+        'variants': [
+          'MAC_MINI_INTEL_GPU_STABLE',
+          'MAC_RETINA_AMD_GPU_STABLE',
+        ],
+      },
+      'gpu_webgl_conformance_metal_passthrough_telemetry_tests': {
+        'variants': [
+          'MAC_MINI_INTEL_GPU_STABLE',
+          'MAC_RETINA_AMD_GPU_STABLE',
+        ],
+      },
+      'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests': {
+        'variants': [
+          'MAC_MINI_INTEL_GPU_STABLE',
+          'MAC_RETINA_AMD_GPU_STABLE',
+        ],
+      },
+    },
+
+    'mac_optional_gpu_tests_rel_gtests': {
+      'gpu_fyi_and_optional_non_linux_gtests': {
+        'variants': [
+          'MAC_MINI_INTEL_GPU_STABLE',
+          'MAC_RETINA_AMD_GPU_STABLE',
+          'MAC_RETINA_NVIDIA_GPU_STABLE',
+        ],
+      },
+      'gpu_fyi_mac_specific_gtests': {
+        'variants': [
+          'MAC_MINI_INTEL_GPU_STABLE',
+          'MAC_RETINA_AMD_GPU_STABLE',
+          'MAC_RETINA_NVIDIA_GPU_STABLE',
+        ],
+      },
+      'gpu_gles2_conform_gtests': {
+        'variants': [
+          'MAC_MINI_INTEL_GPU_STABLE',
+          'MAC_RETINA_AMD_GPU_STABLE',
+          'MAC_RETINA_NVIDIA_GPU_STABLE',
+        ],
+      },
+    },
   }
 }

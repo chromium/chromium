@@ -6785,6 +6785,20 @@
     },
   },
   {
+    'name': 'tryserver.chromium.mac',
+    'mixins': ['chromium-tester-service-account'],
+    'machines': {
+      'mac_optional_gpu_tests_rel': {
+        'os_type': 'mac',
+        'browser_config': 'release',
+        'test_suites': {
+          'gtest_tests': 'mac_optional_gpu_tests_rel_gtests',
+          'gpu_telemetry_tests': 'mac_optional_gpu_tests_rel_gpu_telemetry_tests',
+        },
+      },
+    },
+  },
+  {
     'name': 'tryserver.devtools-frontend',
     'mixins': ['chromium-tester-service-account'],
     'machines': {

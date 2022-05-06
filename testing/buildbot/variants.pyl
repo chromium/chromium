@@ -92,6 +92,24 @@
       'linux_nvidia_gtx_1660_stable',
     ],
   },
+  'MAC_MINI_INTEL_GPU_STABLE': {
+    'identifier': '8086:3e9b',
+    'mixins': [
+      'mac_mini_intel_gpu_stable',
+    ],
+  },
+  'MAC_RETINA_AMD_GPU_STABLE': {
+    'identifier': '1002:6821',
+    'mixins': [
+      'mac_retina_amd_gpu_stable',
+    ],
+  },
+  'MAC_RETINA_NVIDIA_GPU_STABLE': {
+    'identifier': '10de:0fe9',
+    'mixins': [
+      'mac_retina_nvidia_gpu_stable',
+    ],
+  },
   'SIM_IPAD_AIR_2_14_4': {
     'args': [
       '--platform',
