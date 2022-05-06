@@ -134,6 +134,14 @@ FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
     const GURL& url);
 #endif
 
+// Splits the hostname in the `url` into sub-strings for the full hostname,
+// the domain (TLD+1), and the subdomain (everything leading the domain).
+// The `url_subdomain` may be nullptr if it isn't needed by the caller.
+void SplitHost(const GURL& url,
+               std::u16string* url_host,
+               std::u16string* url_domain,
+               std::u16string* url_subdomain);
+
 }  // namespace url_formatter
 
 #endif  // COMPONENTS_URL_FORMATTER_ELIDE_URL_H_

@@ -29,6 +29,23 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/history_quick_provider.h"
 #include "components/search_engines/omnibox_focus_type.h"
+#include "components/url_formatter/elide_url.h"
+#include "url/gurl.h"
+
+namespace {
+
+// This utility function reduces a URL to the most meaningful and likely part
+// of the hostname to be matched against, i.e. the domain, the URL's TLD+1.
+// May return an empty string if the given URL is not a good candidate for
+// meaningful domain name matching.
+std::u16string UrlDomainReduction(const GURL& url) {
+  std::u16string url_host;
+  std::u16string url_domain;
+  url_formatter::SplitHost(url, &url_host, &url_domain, nullptr);
+  return url_domain;
+}
+
+}  // namespace
 
 namespace fuzzy {
 
@@ -357,7 +374,7 @@ class LoadSignificantUrls : public history::HistoryDBTask {
       history::URLRow row;
       while (enumerator.GetNextURL(&row)) {
         DVLOG(1) << "url #" << row.id() << ": " << row.url().host();
-        node_.Insert(base::ASCIIToUTF16(row.url().host()), 0);
+        node_.Insert(UrlDomainReduction(row.url()), 0);
       }
     } else {
       DVLOG(1) << "No significant InMemoryDatabase";
@@ -520,7 +537,7 @@ void HistoryFuzzyProvider::OnURLVisited(
     const history::RedirectList& redirects,
     base::Time visit_time) {
   DVLOG(1) << "URL Visit: " << row.url();
-  root_.Insert(base::ASCIIToUTF16(row.url().host()), 0);
+  root_.Insert(UrlDomainReduction(row.url()), 0);
 }
 
 void HistoryFuzzyProvider::OnURLsDeleted(
@@ -532,7 +549,7 @@ void HistoryFuzzyProvider::OnURLsDeleted(
     root_.Clear();
   } else {
     for (const history::URLRow& row : deletion_info.deleted_rows()) {
-      root_.Delete(base::ASCIIToUTF16(row.url().host()), 0);
+      root_.Delete(UrlDomainReduction(row.url()), 0);
     }
   }
 }
