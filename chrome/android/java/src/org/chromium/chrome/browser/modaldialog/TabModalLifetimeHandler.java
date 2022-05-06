@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.modaldialog;
 
 import android.app.Activity;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -23,9 +26,12 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
@@ -33,7 +39,8 @@ import org.chromium.url.GURL;
  * Class responsible for handling dismissal of a tab modal dialog on user actions outside the tab
  * modal dialog.
  */
-public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObserver {
+public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObserver,
+                                                ModalDialogManagerObserver, BackPressHandler {
     /** The observer to dismiss all dialogs when the attached tab is not interactable. */
     private final TabObserver mTabObserver = new EmptyTabObserver() {
         @Override
@@ -71,6 +78,9 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
             mBrowserControlsVisibilityManagerSupplier;
     private final Supplier<FullscreenManager> mFullscreenManagerSupplier;
     private final TabModalBrowserControlsVisibilityDelegate mVisibilityDelegate;
+    private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier =
+            new ObservableSupplierImpl<>();
+    private final BackPressManager mBackPressManager;
     private ChromeTabModalPresenter mPresenter;
     private TabModelSelectorTabModelObserver mTabModelObserver;
     private Tab mActiveTab;
@@ -89,6 +99,8 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
      * @param browserControlsVisibilityManagerSupplier Supplies the
      *                                                 {@link BrowserControlsVisibilityManager}.
      * @param fullscreenManagerSupplier Supplies the {@link FullscreenManager} object.
+     * @param backPressManager The {@link BackPressManager} which can register {@link
+     *                         BackPressHandler}.
      */
     public TabModalLifetimeHandler(Activity activity,
             ActivityLifecycleDispatcher activityLifecycleDispatcher, ModalDialogManager manager,
@@ -98,7 +110,8 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
             Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<BrowserControlsVisibilityManager> browserControlsVisibilityManagerSupplier,
-            Supplier<FullscreenManager> fullscreenManagerSupplier) {
+            Supplier<FullscreenManager> fullscreenManagerSupplier,
+            BackPressManager backPressManager) {
         mActivity = activity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
@@ -112,6 +125,11 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
         mVisibilityDelegate = new TabModalBrowserControlsVisibilityDelegate();
         mContextualSearchManagerSupplier = contextualSearchManagerSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mBackPressManager = backPressManager;
+        if (BackPressManager.isEnabled()) {
+            mManager.addObserver(this);
+            backPressManager.addHandler(this, Type.TAB_MODAL_HANDLER);
+        }
     }
 
     /**
@@ -127,10 +145,31 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
     /**
      * Handle a back press event.
      */
-    public boolean handleBackPress() {
-        if (mPresenter == null || mPresenter.getDialogModel() == null) return false;
+    public boolean onBackPressed() {
+        if (!shouldInterceptBackPress()) return false;
         mPresenter.dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
         return true;
+    }
+
+    @Override
+    public void handleBackPress() {
+        assert shouldInterceptBackPress();
+        mPresenter.dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mHandleBackPressChangedSupplier;
+    }
+
+    @Override
+    public void onDialogAdded(PropertyModel model) {
+        mHandleBackPressChangedSupplier.set(shouldInterceptBackPress());
+    }
+
+    @Override
+    public void onDialogDismissed(PropertyModel model) {
+        mHandleBackPressChangedSupplier.set(shouldInterceptBackPress());
     }
 
     @Override
@@ -157,6 +196,10 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
         };
     }
 
+    private boolean shouldInterceptBackPress() {
+        return mPresenter != null && mPresenter.getDialogModel() != null;
+    }
+
     private void handleTabChanged(Tab tab) {
         // Do not use lastId here since it can be the selected tab's ID if model is switched
         // inside tab switcher.
@@ -180,6 +223,11 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
         if (mActiveTab != null) {
             mActiveTab.removeObserver(mTabObserver);
             mActiveTab = null;
+        }
+
+        if (BackPressManager.isEnabled()) {
+            mManager.removeObserver(this);
+            mBackPressManager.removeHandler(Type.TAB_MODAL_HANDLER);
         }
 
         mActivityLifecycleDispatcher.unregister(this);

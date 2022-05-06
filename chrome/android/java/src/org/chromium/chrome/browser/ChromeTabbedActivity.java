@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.app.tabmodel.ChromeNextTabPolicySupplier;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabbedModeTabModelOrchestrator;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -2195,7 +2196,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // TODO(1091411): Find a better mechanism for back-press handling for features.
         if (mRootUiCoordinator.getBottomSheetController().handleBackPress()) return true;
 
-        if (mTabModalHandler.handleBackPress()) return true;
+        if (!BackPressManager.isEnabled() && mTabModalHandler.onBackPressed()) return true;
 
         final Tab currentTab = getActivityTab();
         if (currentTab == null) {
@@ -2708,7 +2709,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 this::getAppBrowserControlsVisibilityDelegate, this::getTabObscuringHandler,
                 this::getToolbarManager, getContextualSearchManagerSupplier(),
                 getTabModelSelectorSupplier(), this::getBrowserControlsManager,
-                this::getFullscreenManager);
+                this::getFullscreenManager, mBackPressManager);
         return manager;
     }
 
