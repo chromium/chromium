@@ -211,16 +211,16 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetPerfOutput(const std::vector<std::string>& quipper_args,
-                     bool disable_cpu_idle,
+  void GetPerfOutput(base::TimeDelta duration,
+                     const std::vector<std::string>& perf_args,
                      int file_descriptor,
                      DBusMethodCallback<uint64_t> callback) override {
     DCHECK(file_descriptor);
     dbus::MethodCall method_call(debugd::kDebugdInterface,
-                                 debugd::kGetPerfOutputV2);
+                                 debugd::kGetPerfOutputFd);
     dbus::MessageWriter writer(&method_call);
-    writer.AppendArrayOfStrings(quipper_args);
-    writer.AppendBool(disable_cpu_idle);
+    writer.AppendUint32(duration.InSeconds());
+    writer.AppendArrayOfStrings(perf_args);
     writer.AppendFileDescriptor(file_descriptor);
 
     debugdaemon_proxy_->CallMethod(

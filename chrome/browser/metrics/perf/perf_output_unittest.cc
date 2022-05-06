@@ -50,12 +50,13 @@ PerfDataProto GetExamplePerfDataProto() {
   return proto;
 }
 
-// Perf session ID returned by the GetPerfOutputV2 DBus method call.
+// Perf session ID returned by the GetPerfOutputFd DBus method call.
 const uint64_t kFakePerfSssionId = 101;
-// Quipper command line arguments for running perf.
-const std::vector<std::string> kQuipperArgs{
-    "--duration", "4",      "--", "perf", "record", "-a",
-    "-e",         "cycles", "-g", "-c",   "4000037"};
+// Profile collection duration is 4 seconds.
+const base::TimeDelta kProfileDuration = base::Seconds(4);
+// Perf command line arguments.
+const std::vector<std::string> kPerfArgs{"perf",   "record", "-a", "-e",
+                                         "cycles", "-g",     "-c", "4000037"};
 
 // This fakes DebugDaemonClient by serving example perf data when the profiling
 // duration elapses.
@@ -71,8 +72,8 @@ class FakeDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
     EXPECT_FALSE(perf_output_file_.IsValid());
   }
 
-  void GetPerfOutput(const std::vector<std::string>& quipper_args,
-                     bool disable_cpu_idle,
+  void GetPerfOutput(base::TimeDelta duration,
+                     const std::vector<std::string>& perf_args,
                      int file_descriptor,
                      chromeos::DBusMethodCallback<uint64_t> callback) override {
     // We will write perf output to this pipe FD. dup() |file_descriptor|
@@ -157,7 +158,7 @@ class PerfOutputCallTest : public testing::Test {
 // Test getting perf output after profile duration elapses.
 TEST_F(PerfOutputCallTest, GetPerfOutput) {
   perf_output_call_ = std::make_unique<PerfOutputCall>(
-      debug_daemon_client_.get(), kQuipperArgs, false,
+      debug_daemon_client_.get(), kProfileDuration, kPerfArgs,
       base::BindOnce(&PerfOutputCallTest::OnPerfOutputComplete,
                      base::Unretained(this)));
   // Not yet collected.
@@ -177,7 +178,7 @@ TEST_F(PerfOutputCallTest, GetPerfOutput) {
 // Test stopping the perf session and get perf output right away.
 TEST_F(PerfOutputCallTest, Stop) {
   perf_output_call_ = std::make_unique<PerfOutputCall>(
-      debug_daemon_client_.get(), kQuipperArgs, false,
+      debug_daemon_client_.get(), kProfileDuration, kPerfArgs,
       base::BindOnce(&PerfOutputCallTest::OnPerfOutputComplete,
                      base::Unretained(this)));
   // Not yet collected.
