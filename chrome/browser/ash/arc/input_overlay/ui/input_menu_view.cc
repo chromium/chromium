@@ -294,12 +294,13 @@ void InputMenuView::OnToggleGameControlPressed() {
   DCHECK(display_overlay_controller_);
   if (!display_overlay_controller_)
     return;
-  display_overlay_controller_->SetTouchInjectorEnable(
-      game_control_toggle_->GetIsOn());
-  // Also show/hide the input mapping when enable/disable the game controller.
-  show_hint_toggle_->SetIsOn(game_control_toggle_->GetIsOn());
-  display_overlay_controller_->SetInputMappingVisible(
-      show_hint_toggle_->GetIsOn());
+  const bool enabled = game_control_toggle_->GetIsOn();
+  display_overlay_controller_->SetTouchInjectorEnable(enabled);
+  // Adjust |enabled_| and |visible_| properties to match |Game Control|.
+  show_hint_toggle_->SetIsOn(enabled);
+  display_overlay_controller_->SetInputMappingVisible(enabled);
+  show_hint_toggle_->SetEnabled(enabled);
+  customize_button_->SetEnabled(enabled);
 }
 
 void InputMenuView::OnToggleShowHintPressed() {
@@ -312,6 +313,11 @@ void InputMenuView::OnButtonCustomizedPressed() {
   DCHECK(display_overlay_controller_);
   if (!display_overlay_controller_)
     return;
+  // Force key-binding labels ON before entering edit mode.
+  if (!show_hint_toggle_->GetIsOn()) {
+    show_hint_toggle_->SetIsOn(true);
+    display_overlay_controller_->SetInputMappingVisible(true);
+  }
   // Change display mode, load edit UI per action and overall edit buttons.
   display_overlay_controller_->SetDisplayMode(DisplayMode::kEdit);
 }
