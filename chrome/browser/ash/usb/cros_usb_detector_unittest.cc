@@ -420,7 +420,7 @@ TEST_F(CrosUsbDetectorTest, UsbDeviceClassBlockedAdded) {
   base::RunLoop().RunUntilIdle();
 
   scoped_refptr<device::FakeUsbDeviceInfo> device =
-      CreateTestDeviceOfClass(/* USB_CLASS_HID */ 0x03);
+      CreateTestDeviceOfClass(/* USB_CLASS_HUB */ 0x09);
 
   device_manager_.AddDevice(device);
   base::RunLoop().RunUntilIdle();
@@ -934,7 +934,7 @@ TEST_F(CrosUsbDetectorTest, DeviceAllowedInterfacesMaskSetCorrectly) {
 
   // Adb interface as well as a forbidden interface and allowed interface.
   scoped_refptr<device::FakeUsbDeviceInfo> device = CreateTestDeviceFromCodes(
-      /* USB_CLASS_HID */ 0x03,
+      /* USB_CLASS_HUB */ 0x09,
       {InterfaceCodes(0x03, 0xff, 0xff),
        InterfaceCodes(kAdbClass, kAdbSubclass, kAdbProtocol),
        InterfaceCodes(/*USB_CLASS_AUDIO*/ 0x01, 0xff, 0xff)});
@@ -947,7 +947,7 @@ TEST_F(CrosUsbDetectorTest, DeviceAllowedInterfacesMaskSetCorrectly) {
       CrosUsbDetector::MakeNotificationId(device->guid());
   EXPECT_TRUE(display_service_->GetNotification(notification_id));
 
-  EXPECT_EQ(0x00000006U, GetSingleAllowedInterfacesMask());
+  EXPECT_EQ(0x00000007U, GetSingleAllowedInterfacesMask());
 }
 
 TEST_F(CrosUsbDetectorTest, SwitchDeviceWithAttachSuccess) {
