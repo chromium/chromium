@@ -587,7 +587,7 @@
     "includes": [3330],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/personalization_app/resources/ash_personalization_app_resources.grd": {
-    "META": {"sizes": {"includes": [120],}},
+    "META": {"sizes": {"includes": [200],}},
     "includes": [3340],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/demo_mode_app_ui/ash_demo_mode_app_resources.grd": {

@@ -47,6 +47,7 @@ ts_library("build_ts") {
     "personalization_theme_element_test.ts",
     "personalization_toast_element_test.ts",
     "test_ambient_interface_provider.ts",
+    "test_keyboard_backlight_interface_provider.ts",
     "test_personalization_store.ts",
     "test_theme_interface_provider.ts",
     "test_user_interface_provider.ts",

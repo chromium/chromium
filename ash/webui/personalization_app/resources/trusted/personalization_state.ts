@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {AmbientState, emptyState as emptyAmbientState} from './ambient/ambient_state.js';
+import {emptyState as emptyKeyboardBacklightState, KeyboardBacklightState} from './keyboard_backlight/keyboard_backlight_state.js';
 import {emptyState as emptyThemeState, ThemeState} from './theme/theme_state.js';
 import {emptyState as emptyUserState, UserState} from './user/user_state.js';
 import {emptyState as emptyWallpaperState, WallpaperState} from './wallpaper/wallpaper_state.js';
@@ -26,6 +27,7 @@ export interface PersonalizationStateError {
 export interface PersonalizationState {
   error: PersonalizationStateError|null;
   ambient: AmbientState;
+  keyboardBacklight: KeyboardBacklightState;
   theme: ThemeState;
   user: UserState;
   wallpaper: WallpaperState;
@@ -35,6 +37,7 @@ export function emptyState(): PersonalizationState {
   return {
     error: null,
     ambient: emptyAmbientState(),
+    keyboardBacklight: emptyKeyboardBacklightState(),
     theme: emptyThemeState(),
     user: emptyUserState(),
     wallpaper: emptyWallpaperState(),

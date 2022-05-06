@@ -993,6 +993,11 @@ const char kFloatingWorkspaceEnabled[] = "ash.floating_workspace_enabled";
 // user.
 const char kShowPostRebootNotification[] = "ash.show_post_reboot_notification";
 
+// Integer pref indicating which color for the backlight keyboard is currently
+// selected for a user profile.
+const char kPersonalizationKeyboardBacklightColor[] =
+    "ash.personalization.keyboard_backlight_color";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

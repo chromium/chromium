@@ -519,3 +519,25 @@ interface AmbientProvider {
   // Record that the user viewed the Ambient mode page.
   SetPageViewed();
 };
+
+// The supported preset colors for keyboard backlight.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum BacklightColor {
+  kWallpaper = 0,
+  kWhite = 1,
+  kRed = 2,
+  kYellow = 3,
+  kGreen = 4,
+  kBlue = 5,
+  kIndigo = 6,
+  kPurple = 7,
+
+  kRainbow = 100,
+};
+
+// Provides APIs to expose keyboard backlight settings.
+interface KeyboardBacklightProvider {
+  // Sets the backlight color.
+  SetBacklightColor(BacklightColor backlight_color);
+};

@@ -13,6 +13,8 @@ import {isNonEmptyArray} from '../common/utils.js';
 
 import {ambientReducers} from './ambient/ambient_reducers.js';
 import {AmbientState} from './ambient/ambient_state.js';
+import {keyboardBacklightReducers} from './keyboard_backlight/keyboard_backlight_reducers.js';
+import {KeyboardBacklightState} from './keyboard_backlight/keyboard_backlight_state.js';
 import {Actions, PersonalizationActionName} from './personalization_actions.js';
 import {PersonalizationState} from './personalization_state.js';
 import {themeReducers} from './theme/theme_reducers.js';
@@ -109,6 +111,8 @@ function errorReducer(
 const root = combineReducers<PersonalizationState>({
   error: errorReducer,
   ambient: combineReducers<AmbientState>(ambientReducers),
+  keyboardBacklight:
+      combineReducers<KeyboardBacklightState>(keyboardBacklightReducers),
   theme: combineReducers<ThemeState>(themeReducers),
   user: combineReducers<UserState>(userReducers),
   wallpaper: combineReducers<WallpaperState>(wallpaperReducers),

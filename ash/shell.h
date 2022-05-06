@@ -535,6 +535,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   ResolutionNotificationController* resolution_notification_controller() {
     return resolution_notification_controller_.get();
   }
+  RgbKeyboardManager* rgb_keyboard_manager() {
+    return rgb_keyboard_manager_.get();
+  }
   ScreenLayoutObserver* screen_layout_observer() {
     return screen_layout_observer_.get();
   }

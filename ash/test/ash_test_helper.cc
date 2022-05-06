@@ -36,6 +36,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
+#include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 #include "chromeos/dbus/audio/cras_audio_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -167,6 +168,7 @@ void AshTestHelper::TearDown() {
   // shut the controller down first.
   power_policy_controller_initializer_.reset();
   chromeos::PowerManagerClient::Shutdown();
+  RgbkbdClient::Shutdown();
 
   TabletModeController::SetUseScreenshotForTest(true);
 
@@ -240,6 +242,8 @@ void AshTestHelper::SetUp(InitParams init_params) {
     bluez_dbus_manager_initializer_ =
         std::make_unique<BluezDBusManagerInitializer>();
   }
+  if (!RgbkbdClient::Get())
+    RgbkbdClient::InitializeFake();
   if (!chromeos::PowerManagerClient::Get())
     chromeos::PowerManagerClient::InitializeFake();
   if (!chromeos::PowerPolicyController::IsInitialized()) {

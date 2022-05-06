@@ -10,6 +10,7 @@ assert(is_chromeos_ash, "Personalization App is ash-chrome only")
 static_library("personalization_app") {
   sources = [
     "personalization_app_ambient_provider.h",
+    "personalization_app_keyboard_backlight_provider.h",
     "personalization_app_theme_provider.h",
     "personalization_app_ui.cc",
     "personalization_app_ui.h",
@@ -59,6 +60,8 @@ source_set("browser_test_support") {
   sources = [
     "test/fake_personalization_app_ambient_provider.cc",
     "test/fake_personalization_app_ambient_provider.h",
+    "test/fake_personalization_app_keyboard_backlight_provider.cc",
+    "test/fake_personalization_app_keyboard_backlight_provider.h",
     "test/fake_personalization_app_theme_provider.cc",
     "test/fake_personalization_app_theme_provider.h",
     "test/fake_personalization_app_user_provider.cc",

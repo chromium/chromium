@@ -1122,6 +1122,10 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         ash::personalization_app::mojom::UserProvider,
         ash::personalization_app::PersonalizationAppUI>(map);
+
+    RegisterWebUIControllerInterfaceBinder<
+        ash::personalization_app::mojom::KeyboardBacklightProvider,
+        ash::personalization_app::PersonalizationAppUI>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<

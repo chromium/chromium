@@ -15,6 +15,7 @@ namespace ash {
 namespace personalization_app {
 
 class PersonalizationAppAmbientProvider;
+class PersonalizationAppKeyboardBacklightProvider;
 class PersonalizationAppThemeProvider;
 class PersonalizationAppWallpaperProvider;
 class PersonalizationAppUserProvider;
@@ -24,6 +25,8 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
   PersonalizationAppUI(
       content::WebUI* web_ui,
       std::unique_ptr<PersonalizationAppAmbientProvider> ambient_provider,
+      std::unique_ptr<PersonalizationAppKeyboardBacklightProvider>
+          keyboard_backlight_provider,
       std::unique_ptr<PersonalizationAppThemeProvider> theme_provider,
       std::unique_ptr<PersonalizationAppUserProvider> user_provider,
       std::unique_ptr<PersonalizationAppWallpaperProvider> wallpaper_provider);
@@ -38,6 +41,10 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
           receiver);
 
   void BindInterface(
+      mojo::PendingReceiver<
+          personalization_app::mojom::KeyboardBacklightProvider> receiver);
+
+  void BindInterface(
       mojo::PendingReceiver<personalization_app::mojom::ThemeProvider>
           receiver);
 
@@ -50,6 +57,8 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
 
  private:
   std::unique_ptr<PersonalizationAppAmbientProvider> ambient_provider_;
+  std::unique_ptr<PersonalizationAppKeyboardBacklightProvider>
+      keyboard_backlight_provider_;
   std::unique_ptr<PersonalizationAppThemeProvider> theme_provider_;
   std::unique_ptr<PersonalizationAppUserProvider> user_provider_;
   std::unique_ptr<PersonalizationAppWallpaperProvider> wallpaper_provider_;

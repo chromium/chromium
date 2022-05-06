@@ -7,12 +7,13 @@
  * SWA.
  */
 
-import {emptyState, IFrameApi, PersonalizationState, setAmbientProviderForTesting, setThemeProviderForTesting, setUserProviderForTesting, setWallpaperProviderForTesting} from 'chrome://personalization/trusted/personalization_app.js';
+import {emptyState, IFrameApi, PersonalizationState, setAmbientProviderForTesting, setKeyboardBacklightProviderForTesting, setThemeProviderForTesting, setUserProviderForTesting, setWallpaperProviderForTesting} from 'chrome://personalization/trusted/personalization_app.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestAmbientProvider} from './test_ambient_interface_provider.js';
+import {TestKeyboardBacklightProvider} from './test_keyboard_backlight_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestThemeProvider} from './test_theme_interface_provider.js';
 import {TestUserProvider} from './test_user_interface_provider.js';
@@ -53,6 +54,8 @@ export function baseSetup(initialState: PersonalizationState = emptyState()) {
   setWallpaperProviderForTesting(wallpaperProvider);
   const ambientProvider = new TestAmbientProvider();
   setAmbientProviderForTesting(ambientProvider);
+  const keyboardBacklightProvider = new TestKeyboardBacklightProvider();
+  setKeyboardBacklightProviderForTesting(keyboardBacklightProvider);
   const themeProvider = new TestThemeProvider();
   setThemeProviderForTesting(themeProvider);
   const userProvider = new TestUserProvider();
@@ -62,6 +65,7 @@ export function baseSetup(initialState: PersonalizationState = emptyState()) {
   document.body.innerHTML = '';
   return {
     ambientProvider,
+    keyboardBacklightProvider,
     themeProvider,
     userProvider,
     wallpaperProvider,

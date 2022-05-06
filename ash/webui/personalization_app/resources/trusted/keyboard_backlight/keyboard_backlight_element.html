@@ -58,12 +58,6 @@
     width: 24px;
   }
 
-  /* The wallpaper color option for keyboard backlight. Declared separately
-   because it's not included in the preset colors list. */
-   #dynamicColor .color-inner-container {
-    background-color: #8AB4F8;
-  }
-
   .color-inner-container iron-icon {
     /* TODO(b/227374197): Show the icon for selected color. */
     display: none;
@@ -92,19 +86,21 @@
   <div id="keyboardBacklightLabel">
     <p class="title">$i18n{keyboardBacklightTitle}</p>
   </div>
-  <iron-a11y-keys id="keys" keys="left right" on-keys-pressed="onKeysPress_">
+  <iron-a11y-keys id="keys" keys="left right space enter" on-keys-pressed="onKeysPress_">
   </iron-a11y-keys>
   <iron-selector id="selector" selected="0" selectable=".color-container"
       selected-item="{{ironSelectedColor_}}">
-    <div id="dynamicColor" class="color-container" tabindex="0">
-      <div class="color-inner-container">
+    <div id$="[[wallpaperColorId_]]" class="color-container" tabindex="0">
+      <div class="color-inner-container"
+          style$="[[getColorInnerContainerStyle_(wallpaperColorId_, presetColors_)]]">
         <paper-ripple class="circle"></paper-ripple>
         <iron-icon icon="personalization:auto"></iron-icon>
       </div>
     </div>
     <div class="divider"></div>
     <template is="dom-repeat" items="[[presetColorIds_]]" as="presetColorId">
-      <div id$="[[presetColorId]]" class="color-container">
+      <div id$="[[presetColorId]]" class="color-container"
+          on-click="onPresetColorSelected_" on-keypress="onPresetColorSelected_">
         <div class="color-inner-container"
             style$="[[getColorInnerContainerStyle_(presetColorId, presetColors_)]]">
           <paper-ripple class="circle"></paper-ripple>
@@ -112,5 +108,13 @@
         </div>
       </div>
     </template>
+    <div id$="[[rainbowColorId_]]" class="color-container" tabindex="0"
+        on-click="onRainbowColorSelected_" on-keypress="onRainbowColorSelected_">
+      <div class="color-inner-container"
+          style$="[[getColorInnerContainerStyle_(rainbowColorId_, presetColors_)]]">
+        <paper-ripple class="circle"></paper-ripple>
+        <iron-icon icon="personalization:auto"></iron-icon>
+      </div>
+    </div>
   </iron-selector>
 </div>
