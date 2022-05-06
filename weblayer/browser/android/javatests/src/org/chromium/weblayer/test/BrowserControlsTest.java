@@ -433,6 +433,7 @@ public class BrowserControlsTest {
     //
     // Disabled on L bots due to unexplained flakes. See crbug.com/1035894.
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @DisabledTest(message = "https://crbug.com/1319870")
     @Test
     @SmallTest
     public void testAlertDoesntShowTopControlsIfOnlyExpandTopControlsAtPageTop() throws Exception {
