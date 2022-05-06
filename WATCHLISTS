@@ -928,11 +928,6 @@
     'dbus': {
       'filepath': 'dbus/',
     },
-    'demo_mode': {
-      'filepath': 'docs/login/demo_mode.md|'\
-                  'chrome/browser/ash/login/demo_mode/|'\
-                  'ash/metrics/demo_session_metrics_recorder',
-    },
     'desktop_in_product_help': {
       'filepath': 'chrome/browser/ui/in_product_help|'\
                   'chrome/browser/ui/views/in_product_help',
@@ -2502,7 +2497,6 @@
                    'pnevase@microsoft.com'],
     'data_decoder': ['mbarowsky+watch-data-decoder@chromium.org'],
     'dbus': ['hashimoto+watch@chromium.org'],
-    'demo_mode': ['cros-essential-apps-dev+watch@chromium.org'],
     'desktop_in_product_help': ['collinbaker+watch@chromium.org'],
     'device_bluetooth': ['mattreynolds+watch@chromium.org'],
     'device_chooser': ['mattreynolds+watch@chromium.org',
