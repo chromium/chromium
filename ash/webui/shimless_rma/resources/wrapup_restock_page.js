@@ -62,7 +62,25 @@ export class WrapupRestockPage extends WrapupRestockPageBase {
   }
 
   /** @protected */
-  onShutdownButtonClicked_() {
+  onShutdownButtonClicked_(e) {
+    e.preventDefault();
+    const dialog = /** @type {!CrDialogElement} */ (
+        this.shadowRoot.querySelector('#powerwashDialog'));
+    if (!dialog.open) {
+      dialog.showModal();
+    }
+  }
+
+  /** @protected */
+  onCancelClick_() {
+    const dialog = /** @type {!CrDialogElement} */ (
+        this.shadowRoot.querySelector('#powerwashDialog'));
+    dialog.close();
+  }
+
+  /** @protected */
+  onPowerwashButtonClick_(e) {
+    e.preventDefault();
     executeThenTransitionState(
         this, () => this.shimlessRmaService_.shutdownForRestock());
   }

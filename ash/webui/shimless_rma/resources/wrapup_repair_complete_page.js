@@ -179,8 +179,8 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
    */
   getPowerwashDescriptionString_() {
     return this.selectedFinishRmaOption_ === FinishRmaOption.SHUTDOWN ?
-        this.i18n('repairCompletedPowerwashShutdownDescription') :
-        this.i18n('repairCompletedPowerwashRebootDescription');
+        this.i18n('powerwashDialogShutdownDescription') :
+        this.i18n('powerwashDialogRebootDescription');
   }
 
   /** @protected */
