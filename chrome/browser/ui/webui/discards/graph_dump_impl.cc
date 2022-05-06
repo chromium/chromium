@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -46,38 +47,27 @@ std::string ToJSON(const base::Value& value) {
 
 class DiscardsGraphDumpImpl::FaviconRequestHelper {
  public:
-  FaviconRequestHelper(base::WeakPtr<DiscardsGraphDumpImpl> graph_dump,
-                       scoped_refptr<base::SequencedTaskRunner> task_runner);
+  FaviconRequestHelper() = default;
+  ~FaviconRequestHelper() = default;
 
   FaviconRequestHelper(const FaviconRequestHelper&) = delete;
   FaviconRequestHelper& operator=(const FaviconRequestHelper&) = delete;
 
   void RequestFavicon(GURL page_url,
                       performance_manager::WebContentsProxy contents_proxy,
-                      int64_t serialization_id);
-  void FaviconDataAvailable(int64_t serialization_id,
+                      FaviconAvailableCallback on_favicon_available);
+  void FaviconDataAvailable(FaviconAvailableCallback on_favicon_available,
                             const favicon_base::FaviconRawBitmapResult& result);
 
  private:
-  std::unique_ptr<base::CancelableTaskTracker> cancelable_task_tracker_;
-
-  base::WeakPtr<DiscardsGraphDumpImpl> graph_dump_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
+  base::CancelableTaskTracker cancelable_task_tracker_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
-
-DiscardsGraphDumpImpl::FaviconRequestHelper::FaviconRequestHelper(
-    base::WeakPtr<DiscardsGraphDumpImpl> graph_dump,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : graph_dump_(graph_dump), task_runner_(task_runner) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
 
 void DiscardsGraphDumpImpl::FaviconRequestHelper::RequestFavicon(
     GURL page_url,
     performance_manager::WebContentsProxy contents_proxy,
-    int64_t serialization_id) {
+    FaviconAvailableCallback on_favicon_available) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   content::WebContents* web_contents = contents_proxy.Get();
   if (!web_contents)
@@ -94,9 +84,6 @@ void DiscardsGraphDumpImpl::FaviconRequestHelper::RequestFavicon(
   if (!favicon_service)
     return;
 
-  if (!cancelable_task_tracker_)
-    cancelable_task_tracker_ = std::make_unique<base::CancelableTaskTracker>();
-
   constexpr size_t kIconSize = 16;
   constexpr bool kFallbackToHost = true;
   // It's safe to pass this unretained here, as the tasks are cancelled
@@ -104,21 +91,17 @@ void DiscardsGraphDumpImpl::FaviconRequestHelper::RequestFavicon(
   favicon_service->GetRawFaviconForPageURL(
       page_url, {favicon_base::IconType::kFavicon}, kIconSize, kFallbackToHost,
       base::BindOnce(&FaviconRequestHelper::FaviconDataAvailable,
-                     base::Unretained(this), serialization_id),
-      cancelable_task_tracker_.get());
+                     base::Unretained(this), std::move(on_favicon_available)),
+      &cancelable_task_tracker_);
 }
 
 void DiscardsGraphDumpImpl::FaviconRequestHelper::FaviconDataAvailable(
-    int64_t serialization_id,
+    FaviconAvailableCallback on_favicon_available,
     const favicon_base::FaviconRawBitmapResult& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result.is_valid())
     return;
-
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DiscardsGraphDumpImpl::SendFaviconNotification,
-                     graph_dump_, serialization_id, result.bitmap_data));
+  std::move(on_favicon_available).Run(result.bitmap_data);
 }
 
 DiscardsGraphDumpImpl::DiscardsGraphDumpImpl() {}
@@ -127,7 +110,6 @@ DiscardsGraphDumpImpl::~DiscardsGraphDumpImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!graph_);
   DCHECK(!change_subscriber_);
-  DCHECK(!favicon_request_helper_);
 }
 
 // static
@@ -248,13 +230,6 @@ void DiscardsGraphDumpImpl::OnTakenFromGraph(
   }
 
   change_subscriber_.reset();
-
-  // The favicon helper must be deleted on the UI thread.
-  if (favicon_request_helper_) {
-    content::GetUIThreadTaskRunner({})->DeleteSoon(
-        FROM_HERE, std::move(favicon_request_helper_));
-  }
-
   graph_ = nullptr;
 }
 
@@ -407,14 +382,21 @@ int64_t DiscardsGraphDumpImpl::GetNodeId(
   return it->second.GetUnsafeValue();
 }
 
-DiscardsGraphDumpImpl::FaviconRequestHelper*
+base::SequenceBound<DiscardsGraphDumpImpl::FaviconRequestHelper>&
 DiscardsGraphDumpImpl::EnsureFaviconRequestHelper() {
   if (!favicon_request_helper_) {
-    favicon_request_helper_ = std::make_unique<FaviconRequestHelper>(
-        weak_factory_.GetWeakPtr(), base::SequencedTaskRunnerHandle::Get());
+    favicon_request_helper_ = base::SequenceBound<FaviconRequestHelper>(
+        content::GetUIThreadTaskRunner({}));
   }
+  return favicon_request_helper_;
+}
 
-  return favicon_request_helper_.get();
+DiscardsGraphDumpImpl::FaviconAvailableCallback
+DiscardsGraphDumpImpl::GetFaviconAvailableCallback(int64_t serialization_id) {
+  return base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&DiscardsGraphDumpImpl::SendFaviconNotification,
+                     weak_factory_.GetWeakPtr(), serialization_id));
 }
 
 void DiscardsGraphDumpImpl::StartPageFaviconRequest(
@@ -423,25 +405,23 @@ void DiscardsGraphDumpImpl::StartPageFaviconRequest(
   if (!page_node->GetMainFrameUrl().is_valid())
     return;
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FaviconRequestHelper::RequestFavicon,
-                     base::Unretained(EnsureFaviconRequestHelper()),
-                     page_node->GetMainFrameUrl(),
-                     page_node->GetContentsProxy(), GetNodeId(page_node)));
+  EnsureFaviconRequestHelper()
+      .AsyncCall(&FaviconRequestHelper::RequestFavicon)
+      .WithArgs(page_node->GetMainFrameUrl(), page_node->GetContentsProxy(),
+                GetFaviconAvailableCallback(GetNodeId(page_node)));
 }
 
 void DiscardsGraphDumpImpl::StartFrameFaviconRequest(
     const performance_manager::FrameNode* frame_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!frame_node->GetURL().is_valid())
     return;
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&FaviconRequestHelper::RequestFavicon,
-                                base::Unretained(EnsureFaviconRequestHelper()),
-                                frame_node->GetURL(),
-                                frame_node->GetPageNode()->GetContentsProxy(),
-                                GetNodeId(frame_node)));
+  EnsureFaviconRequestHelper()
+      .AsyncCall(&FaviconRequestHelper::RequestFavicon)
+      .WithArgs(frame_node->GetURL(),
+                frame_node->GetPageNode()->GetContentsProxy(),
+                GetFaviconAvailableCallback(GetNodeId(frame_node)));
 }
 
 void DiscardsGraphDumpImpl::SendNotificationToAllNodes(bool created) {
