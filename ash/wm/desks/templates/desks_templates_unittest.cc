@@ -24,13 +24,13 @@
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_test_util.h"
 #include "ash/wm/desks/templates/save_desk_template_button.h"
 #include "ash/wm/desks/templates/save_desk_template_button_container.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
+#include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
 #include "ash/wm/desks/templates/saved_desk_icon_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
@@ -265,7 +265,7 @@ class DesksTemplatesTest : public OverviewTestBase {
 
     size_t total_item_count = 0;
 
-    DesksTemplatesGridView* grid_view = nullptr;
+    SavedDeskGridView* grid_view = nullptr;
     SavedDeskItemView* item_view = nullptr;
     for (auto* grid : saved_desk_library_view->grid_views()) {
       for (auto* item : grid->grid_items()) {
@@ -301,7 +301,7 @@ class DesksTemplatesTest : public OverviewTestBase {
                                 ->AsDialogDelegate();
     dialog_delegate->AcceptDialog();
     WaitForDesksTemplatesUI();
-    DesksTemplatesGridViewTestApi(grid_view).WaitForItemMoveAnimationDone();
+    SavedDeskGridViewTestApi(grid_view).WaitForItemMoveAnimationDone();
     SavedDeskLibraryViewTestApi(saved_desk_library_view).WaitForAnimationDone();
   }
 
@@ -2615,7 +2615,7 @@ TEST_F(DesksTemplatesTest, AccessibilityGridItemTraversalOrder) {
   SavedDeskLibraryView* library_view = overview_grid->GetSavedDeskLibraryView();
   ASSERT_FALSE(library_view->grid_views().empty());
 
-  DesksTemplatesGridView* grid_view = library_view->grid_views().front();
+  SavedDeskGridView* grid_view = library_view->grid_views().front();
   ASSERT_TRUE(grid_view);
 
   // The grid items are sorted and displayed alphabetically.

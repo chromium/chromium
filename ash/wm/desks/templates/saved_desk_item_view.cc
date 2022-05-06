@@ -19,10 +19,10 @@
 #include "ash/style/system_shadow.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_textfield.h"
-#include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
+#include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
@@ -613,7 +613,7 @@ views::View* SavedDeskItemView::TargetForRect(views::View* root,
 SavedDeskItemView* SavedDeskItemView::FindOtherTemplateWithName(
     const std::u16string& name) const {
   const auto templates_grid_view_items =
-      static_cast<const DesksTemplatesGridView*>(parent())->grid_items();
+      static_cast<const SavedDeskGridView*>(parent())->grid_items();
 
   auto iter = std::find_if(
       templates_grid_view_items.begin(), templates_grid_view_items.end(),

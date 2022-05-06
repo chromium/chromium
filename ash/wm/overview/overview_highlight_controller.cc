@@ -15,8 +15,8 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/save_desk_template_button.h"
+#include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
@@ -207,10 +207,10 @@ OverviewHighlightController::GetTraversableViews() const {
     if (grid->IsShowingDesksTemplatesGrid()) {
       SavedDeskLibraryView* desk_library_view = grid->GetSavedDeskLibraryView();
       DCHECK(desk_library_view);
-      for (DesksTemplatesGridView* templates_grid_view :
+      for (SavedDeskGridView* saved_desk_grid_view :
            desk_library_view->grid_views()) {
         for (SavedDeskItemView* saved_desk_item :
-             templates_grid_view->grid_items()) {
+             saved_desk_grid_view->grid_items()) {
           traversable_views.push_back(saved_desk_item);
 
           // Admin templates names cannot be edited or focused.

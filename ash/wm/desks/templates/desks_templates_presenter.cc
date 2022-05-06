@@ -16,8 +16,8 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
+#include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
@@ -215,7 +215,7 @@ void DesksTemplatesPresenter::OnGetAllEntries(
   UpdateDesksTemplatesUI();
 
   for (auto& overview_grid : overview_session_->grid_list()) {
-    // Populate `DesksTemplatesGridView` with the desk template entries.
+    // Populate `SavedDeskLibraryView` with the desk template entries.
     if (SavedDeskLibraryView* library_view =
             overview_grid->GetSavedDeskLibraryView()) {
       library_view->PopulateGridUI(entries,
@@ -416,7 +416,7 @@ void DesksTemplatesPresenter::RemoveUIEntries(
   UpdateDesksTemplatesUI();
 
   for (auto& overview_grid : overview_session_->grid_list()) {
-    // Remove the entries from `DesksTemplatesGridView`.
+    // Remove the entries from `SavedDeskLibraryView`.
     if (auto* library_view = overview_grid->GetSavedDeskLibraryView())
       library_view->DeleteTemplates(uuids);
   }

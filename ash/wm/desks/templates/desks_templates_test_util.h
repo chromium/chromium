@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/desk_template.h"
-#include "ash/wm/desks/templates/desks_templates_grid_view.h"
+#include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
 #include "ash/wm/desks/templates/saved_desk_icon_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
@@ -62,20 +62,19 @@ class SavedDeskLibraryViewTestApi {
   SavedDeskLibraryView* library_view_;
 };
 
-// Wrapper for `DesksTemplatesGridView` that exposes internal state to test
+// Wrapper for `SavedDeskGridView` that exposes internal state to test
 // functions.
-class DesksTemplatesGridViewTestApi {
+class SavedDeskGridViewTestApi {
  public:
-  explicit DesksTemplatesGridViewTestApi(DesksTemplatesGridView* grid_view);
-  DesksTemplatesGridViewTestApi(DesksTemplatesGridViewTestApi&) = delete;
-  DesksTemplatesGridViewTestApi& operator=(DesksTemplatesGridViewTestApi&) =
-      delete;
-  ~DesksTemplatesGridViewTestApi();
+  explicit SavedDeskGridViewTestApi(SavedDeskGridView* grid_view);
+  SavedDeskGridViewTestApi(SavedDeskGridViewTestApi&) = delete;
+  SavedDeskGridViewTestApi& operator=(SavedDeskGridViewTestApi&) = delete;
+  ~SavedDeskGridViewTestApi();
 
   void WaitForItemMoveAnimationDone();
 
  private:
-  DesksTemplatesGridView* grid_view_;
+  SavedDeskGridView* grid_view_;
 };
 
 // Wrapper for `SavedDeskItemView` that exposes internal state to test
@@ -145,7 +144,7 @@ std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
     SavedDeskLibraryView* saved_desk_library_view);
 
 // Return the `grid_item_index`th `SavedDeskItemView` from the first
-// `OverviewGrid`'s `DesksTemplatesGridView` in `GetOverviewGridList()`.
+// `OverviewGrid`'s `SavedDeskGridView` in `GetOverviewGridList()`.
 SavedDeskItemView* GetItemViewFromTemplatesGrid(int grid_item_index);
 
 // These buttons are the ones on the primary root window.

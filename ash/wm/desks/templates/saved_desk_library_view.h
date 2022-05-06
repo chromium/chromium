@@ -19,8 +19,8 @@
 namespace ash {
 
 class DeskTemplate;
-class DesksTemplatesGridView;
 class PillButton;
+class SavedDeskGridView;
 class SavedDeskItemView;
 class SavedDeskLibraryEventHandler;
 class SavedDeskLibraryWindowTargeter;
@@ -42,9 +42,7 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   static std::unique_ptr<views::Widget> CreateSavedDeskLibraryWidget(
       aura::Window* root);
 
-  const std::vector<DesksTemplatesGridView*>& grid_views() {
-    return grid_views_;
-  }
+  const std::vector<SavedDeskGridView*>& grid_views() { return grid_views_; }
 
   // Retrieve the item view for a given saved desk, or nullptr.
   SavedDeskItemView* GetItemForUUID(const base::GUID& uuid);
@@ -95,11 +93,11 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
 
   // Pointers to the grids with saved desks of specific types. These will be set
   // depending on which features are enabled.
-  DesksTemplatesGridView* desk_template_grid_view_ = nullptr;
-  DesksTemplatesGridView* save_and_recall_grid_view_ = nullptr;
+  SavedDeskGridView* desk_template_grid_view_ = nullptr;
+  SavedDeskGridView* save_and_recall_grid_view_ = nullptr;
 
   // Holds the active ones, for convenience.
-  std::vector<DesksTemplatesGridView*> grid_views_;
+  std::vector<SavedDeskGridView*> grid_views_;
 
   // Owned by views hierarchy. Temporary button to help users give feedback.
   // TODO(crbug.com/1289880): Remove this button when it is no longer needed.

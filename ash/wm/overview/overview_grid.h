@@ -532,8 +532,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Called back when the button to save a desk for later is pressed.
   void OnSaveDeskForLaterButtonPressed();
 
-  // Called when the animation for fading the `desks_templates_grid_widget_` out
-  // is completed.
+  // Called when the animation for fading the `saved_desk_grid_widget_` out is
+  // completed.
   void OnDesksTemplatesGridFadedOut();
 
   // Called when the animation for fading the

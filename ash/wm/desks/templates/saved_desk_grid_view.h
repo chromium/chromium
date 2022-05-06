@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_GRID_VIEW_H_
-#define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_GRID_VIEW_H_
+#ifndef ASH_WM_DESKS_TEMPLATES_SAVED_DESK_GRID_VIEW_H_
+#define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_GRID_VIEW_H_
 
 #include <vector>
 
@@ -17,33 +17,34 @@ namespace ash {
 class DeskTemplate;
 class SavedDeskItemView;
 
-// A view that acts as the content view of the desks templates widget. Displays
-// each desk template as a DesksTemplatesItemView.
-class DesksTemplatesGridView : public views::View {
+// A view that shows a grid of saved desks. Each saved desk is a
+// `SavedDeskItemView`.
+class SavedDeskGridView : public views::View {
  public:
-  METADATA_HEADER(DesksTemplatesGridView);
+  METADATA_HEADER(SavedDeskGridView);
 
-  DesksTemplatesGridView();
-  DesksTemplatesGridView(const DesksTemplatesGridView&) = delete;
-  DesksTemplatesGridView& operator=(const DesksTemplatesGridView&) = delete;
-  ~DesksTemplatesGridView() override;
+  SavedDeskGridView();
+  SavedDeskGridView(const SavedDeskGridView&) = delete;
+  SavedDeskGridView& operator=(const SavedDeskGridView&) = delete;
+  ~SavedDeskGridView() override;
 
   const std::vector<SavedDeskItemView*>& grid_items() const {
     return grid_items_;
   }
 
   // Updates the UI by creating a grid layout and populating the grid with the
-  // provided list of desk templates.
+  // provided list of saved desks.
   void PopulateGridUI(const std::vector<const DeskTemplate*>& desk_templates,
                       const base::GUID& last_saved_template_uuid);
 
-  // Updates `grid_items_` to ensure the templates grid is sorted.
+  // Updates `grid_items_` to ensure the saved desk grid is sorted.
   void SortTemplateGridItems(const base::GUID& last_saved_template_uuid);
 
-  // Updates existing templates and adds new templates to the grid. Also sorts
-  // `grid_items_` in alphabetical order. This will animate the `grid_items_` to
-  // their final positions if `initializing_grid_view` is false. Currently only
-  // allows a maximum of 6 templates to be shown in the grid.
+  // Updates existing saved desks and adds new saved desks to the grid. Also
+  // sorts `grid_items_` in alphabetical order. This will animate the
+  // `grid_items_` to their final positions if `initializing_grid_view` is
+  // false. Currently only allows a maximum of 6 saved desks to be shown in the
+  // grid.
   void AddOrUpdateTemplates(const std::vector<const DeskTemplate*>& entries,
                             bool initializing_grid_view,
                             const base::GUID& last_saved_template_uuid);
@@ -69,9 +70,9 @@ class DesksTemplatesGridView : public views::View {
   gfx::Size GetSizeForWidth(int width) const;
 
  private:
-  friend class DesksTemplatesGridViewTestApi;
+  friend class SavedDeskGridViewTestApi;
 
-  // Calculates the bounds for each grid item within the templates grid. The
+  // Calculates the bounds for each grid item within the saved desks grid. The
   // indices of the returned vector directly correlate to those of `grid_items_`
   // (i.e. the Rect at index 1 of the returned vector should be applied to the
   // `SavedDeskItemView` found at index 1 of `grid_items_`).
@@ -79,11 +80,11 @@ class DesksTemplatesGridView : public views::View {
 
   // Animates the bounds for all the `grid_items_` (using `bounds_animator_`) to
   // their calculated position. `new_grid_items` contains a list of the
-  // newly-created desk template items and will be animated differently than
-  // the existing views that are being shifted around.
+  // newly-created saved desk items and will be animated differently than the
+  // existing views that are being shifted around.
   void AnimateGridItems(const std::vector<SavedDeskItemView*>& new_grid_items);
 
-  // The views representing templates. They're owned by views hierarchy.
+  // The views representing saved desks. They're owned by views hierarchy.
   std::vector<SavedDeskItemView*> grid_items_;
 
   // Used to animate individual view positions.
@@ -92,4 +93,4 @@ class DesksTemplatesGridView : public views::View {
 
 }  // namespace ash
 
-#endif  // ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_GRID_VIEW_H_
+#endif  // ASH_WM_DESKS_TEMPLATES_SAVED_DESK_GRID_VIEW_H_

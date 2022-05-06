@@ -13,7 +13,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
-#include "ash/wm/desks/templates/desks_templates_grid_view.h"
+#include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -151,12 +151,12 @@ SavedDeskLibraryView::SavedDeskLibraryView()
   // Create grids depending on which features are enabled.
   if (features::AreDesksTemplatesEnabled()) {
     desk_template_grid_view_ =
-        AddChildView(std::make_unique<DesksTemplatesGridView>());
+        AddChildView(std::make_unique<SavedDeskGridView>());
     grid_views_.push_back(desk_template_grid_view_);
   }
   if (features::IsSavedDesksEnabled()) {
     save_and_recall_grid_view_ =
-        AddChildView(std::make_unique<DesksTemplatesGridView>());
+        AddChildView(std::make_unique<SavedDeskGridView>());
     grid_views_.push_back(save_and_recall_grid_view_);
   }
 

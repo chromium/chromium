@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/templates/desks_templates_grid_view.h"
+#include "ash/wm/desks/templates/saved_desk_grid_view.h"
 
 #include <algorithm>
 #include <memory>
@@ -83,7 +83,7 @@ size_t GetColumnsForWidth(int width) {
 
 }  // namespace
 
-DesksTemplatesGridView::DesksTemplatesGridView()
+SavedDeskGridView::SavedDeskGridView()
     : bounds_animator_(this, /*use_transforms=*/true) {
   // Bounds animator is unaffected by debug tools such as "--ui-slow-animations"
   // flag, so manually multiply the duration here.
@@ -93,9 +93,9 @@ DesksTemplatesGridView::DesksTemplatesGridView()
   bounds_animator_.set_tween_type(gfx::Tween::LINEAR);
 }
 
-DesksTemplatesGridView::~DesksTemplatesGridView() = default;
+SavedDeskGridView::~SavedDeskGridView() = default;
 
-void DesksTemplatesGridView::PopulateGridUI(
+void SavedDeskGridView::PopulateGridUI(
     const std::vector<const DeskTemplate*>& desk_templates,
     const base::GUID& last_saved_template_uuid) {
   DCHECK(grid_items_.empty());
@@ -113,7 +113,7 @@ void DesksTemplatesGridView::PopulateGridUI(
                        last_saved_template_uuid);
 }
 
-void DesksTemplatesGridView::SortTemplateGridItems(
+void SavedDeskGridView::SortTemplateGridItems(
     const base::GUID& last_saved_template_uuid) {
   // Sort the `grid_items_` into alphabetical order based on template name.
   // Note that this doesn't update the order of the child views, but just sorts
@@ -125,22 +125,21 @@ void DesksTemplatesGridView::SortTemplateGridItems(
   DCHECK(U_SUCCESS(error_code));
   // If there is a newly saved template, move that template to the front of the
   // grid, and sort the rest of the templates after it.
-  std::sort(
-      grid_items_.begin(), grid_items_.end(),
-      [&collator, last_saved_template_uuid](const SavedDeskItemView* a,
-                                            const SavedDeskItemView* b) {
-        if (last_saved_template_uuid.is_valid() &&
-            a->uuid() == last_saved_template_uuid) {
-          return true;
-        }
-        if (last_saved_template_uuid.is_valid() &&
-            b->uuid() == last_saved_template_uuid) {
-          return false;
-        }
-        return base::i18n::CompareString16WithCollator(
-                   *collator, a->name_view()->GetAccessibleName(),
-                   b->name_view()->GetAccessibleName()) < 0;
-      });
+  std::sort(grid_items_.begin(), grid_items_.end(),
+            [&collator, last_saved_template_uuid](const SavedDeskItemView* a,
+                                                  const SavedDeskItemView* b) {
+              if (last_saved_template_uuid.is_valid() &&
+                  a->uuid() == last_saved_template_uuid) {
+                return true;
+              }
+              if (last_saved_template_uuid.is_valid() &&
+                  b->uuid() == last_saved_template_uuid) {
+                return false;
+              }
+              return base::i18n::CompareString16WithCollator(
+                         *collator, a->name_view()->GetAccessibleName(),
+                         b->name_view()->GetAccessibleName()) < 0;
+            });
 
   // A11y traverses views based on the order of the children, so we need to
   // manually reorder the child views to match the order that they are
@@ -156,7 +155,7 @@ void DesksTemplatesGridView::SortTemplateGridItems(
   Layout();
 }
 
-void DesksTemplatesGridView::AddOrUpdateTemplates(
+void SavedDeskGridView::AddOrUpdateTemplates(
     const std::vector<const DeskTemplate*>& entries,
     bool initializing_grid_view,
     const base::GUID& last_saved_template_uuid) {
@@ -188,8 +187,7 @@ void DesksTemplatesGridView::AddOrUpdateTemplates(
     AnimateGridItems(new_grid_items);
 }
 
-void DesksTemplatesGridView::DeleteTemplates(
-    const std::vector<std::string>& uuids) {
+void SavedDeskGridView::DeleteTemplates(const std::vector<std::string>& uuids) {
   OverviewHighlightController* highlight_controller =
       Shell::Get()
           ->overview_controller()
@@ -236,7 +234,7 @@ void DesksTemplatesGridView::DeleteTemplates(
   NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
 }
 
-bool DesksTemplatesGridView::IsTemplateNameBeingModified() const {
+bool SavedDeskGridView::IsTemplateNameBeingModified() const {
   if (!GetWidget()->IsActive())
     return false;
 
@@ -247,7 +245,7 @@ bool DesksTemplatesGridView::IsTemplateNameBeingModified() const {
   return false;
 }
 
-void DesksTemplatesGridView::Layout() {
+void SavedDeskGridView::Layout() {
   if (grid_items_.empty())
     return;
 
@@ -259,7 +257,7 @@ void DesksTemplatesGridView::Layout() {
     grid_items_[i]->SetBoundsRect(positions[i]);
 }
 
-void DesksTemplatesGridView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+void SavedDeskGridView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // In the event where the bounds change while an animation is in progress
   // (i.e. screen rotation), we need to ensure that we stop the current
   // animation. This is because we block layouts while an animation is in
@@ -268,11 +266,11 @@ void DesksTemplatesGridView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
     bounds_animator_.Cancel();
 }
 
-bool DesksTemplatesGridView::IsAnimating() const {
+bool SavedDeskGridView::IsAnimating() const {
   return bounds_animator_.IsAnimating();
 }
 
-gfx::Size DesksTemplatesGridView::GetSizeForWidth(int width) const {
+gfx::Size SavedDeskGridView::GetSizeForWidth(int width) const {
   if (grid_items_.empty())
     return gfx::Size();
 
@@ -285,8 +283,7 @@ gfx::Size DesksTemplatesGridView::GetSizeForWidth(int width) const {
                               (rows - 1) * kGridPaddingDp);
 }
 
-SavedDeskItemView* DesksTemplatesGridView::GetItemForUUID(
-    const base::GUID& uuid) {
+SavedDeskItemView* SavedDeskGridView::GetItemForUUID(const base::GUID& uuid) {
   if (!uuid.is_valid())
     return nullptr;
 
@@ -297,8 +294,7 @@ SavedDeskItemView* DesksTemplatesGridView::GetItemForUUID(
   return it == grid_items_.end() ? nullptr : *it;
 }
 
-std::vector<gfx::Rect> DesksTemplatesGridView::CalculateGridItemPositions()
-    const {
+std::vector<gfx::Rect> SavedDeskGridView::CalculateGridItemPositions() const {
   std::vector<gfx::Rect> positions;
 
   if (grid_items_.empty())
@@ -332,7 +328,7 @@ std::vector<gfx::Rect> DesksTemplatesGridView::CalculateGridItemPositions()
   return positions;
 }
 
-void DesksTemplatesGridView::AnimateGridItems(
+void SavedDeskGridView::AnimateGridItems(
     const std::vector<SavedDeskItemView*>& new_grid_items) {
   const std::vector<gfx::Rect> positions = CalculateGridItemPositions();
   for (size_t i = 0; i < grid_items_.size(); i++) {
@@ -365,7 +361,7 @@ void DesksTemplatesGridView::AnimateGridItems(
   }
 }
 
-BEGIN_METADATA(DesksTemplatesGridView, views::View)
+BEGIN_METADATA(SavedDeskGridView, views::View)
 END_METADATA
 
 }  // namespace ash

@@ -90,18 +90,17 @@ SavedDeskLibraryViewTestApi::SavedDeskLibraryViewTestApi(
 void SavedDeskLibraryViewTestApi::WaitForAnimationDone() {
   BoundsAnimatorWaiter(library_view_->bounds_animator_).Wait();
   for (auto* grid_view : library_view_->grid_views())
-    DesksTemplatesGridViewTestApi(grid_view).WaitForItemMoveAnimationDone();
+    SavedDeskGridViewTestApi(grid_view).WaitForItemMoveAnimationDone();
 }
 
-DesksTemplatesGridViewTestApi::DesksTemplatesGridViewTestApi(
-    DesksTemplatesGridView* grid_view)
+SavedDeskGridViewTestApi::SavedDeskGridViewTestApi(SavedDeskGridView* grid_view)
     : grid_view_(grid_view) {
   DCHECK(grid_view_);
 }
 
-DesksTemplatesGridViewTestApi::~DesksTemplatesGridViewTestApi() = default;
+SavedDeskGridViewTestApi::~SavedDeskGridViewTestApi() = default;
 
-void DesksTemplatesGridViewTestApi::WaitForItemMoveAnimationDone() {
+void SavedDeskGridViewTestApi::WaitForItemMoveAnimationDone() {
   BoundsAnimatorWaiter(grid_view_->bounds_animator_).Wait();
 }
 
