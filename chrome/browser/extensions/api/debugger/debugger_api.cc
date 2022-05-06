@@ -152,7 +152,7 @@ constexpr char kBrowserTargetId[] = "browser";
 
 constexpr char kPerfettoUIExtensionId[] = "lfmkphfpdbjijhpomgecfikhfohaoine";
 
-bool ExtensionMayAttachToBrowser(const Extension& extension) {
+bool ExtensionIsTrusted(const Extension& extension) {
   return extension.id() == kPerfettoUIExtensionId;
 }
 
@@ -510,7 +510,7 @@ bool ExtensionDevToolsClientHost::MayAttachToURL(const GURL& url,
 }
 
 bool ExtensionDevToolsClientHost::IsTrusted() {
-  return ExtensionMayAttachToBrowser(*extension_);
+  return ExtensionIsTrusted(*extension_);
 }
 
 bool ExtensionDevToolsClientHost::MayReadLocalFiles() {
@@ -591,7 +591,7 @@ bool DebuggerFunction::InitAgentHost(std::string* error) {
       }
       agent_host_ = std::move(agent_host);
     } else if (*debuggee_.target_id == kBrowserTargetId &&
-               ExtensionMayAttachToBrowser(*extension())) {
+               ExtensionIsTrusted(*extension())) {
       // TODO(caseq): get rid of the below code, browser agent host should
       // really be a singleton.
       // Re-use existing browser agent hosts.
