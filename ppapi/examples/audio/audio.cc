@@ -78,10 +78,10 @@ class MyInstance : public pp::Instance {
   }
 
   void SineWaveCallback(void* samples, uint32_t num_bytes) {
-    double delta_l = 2.0 * M_PI * kLeftFrequency / sample_rate_ /
-        (visible_ ? 1 : 2);
-    double delta_r = 2.0 * M_PI * kRightFrequency / sample_rate_ /
-        (visible_ ? 1 : 2);
+    double delta_l = 2.0 * M_PI * kLeftFrequency /
+                     static_cast<double>(sample_rate_) / (visible_ ? 1 : 2);
+    double delta_r = 2.0 * M_PI * kRightFrequency /
+                     static_cast<double>(sample_rate_) / (visible_ ? 1 : 2);
 
     // Use per channel audio wave value to avoid clicks on buffer boundries.
     double wave_l = audio_wave_l_;
