@@ -17,13 +17,14 @@ TEST(FaviconUtilUnittest, Parse) {
   } test_cases[] = {
       {false, "chrome-extension://id"},
       {false, "chrome-extension://id/"},
+      {false, "chrome-extension://id?"},
       {false, "chrome-extension://id/?"},
       {false, "chrome-extension://id/_favicon"},
       {false, "chrome-extension://id/_favicon/"},
       {false, "chrome-extension://id/_favicon/?"},
       {true, "chrome-extension://id/_favicon?page_url=https://ok.com"},
       {true, "chrome-extension://id/_favicon/?page_url=https://ok.com"},
-      {true, "chrome-extension://id/_favicon/?icon_url=https://ok.com"},
+      {true, "chrome-extension://id/_favicon/?page_url=https://ok.com&size=16"},
       {true,
        "chrome-extension://id/_favicon/?page_url=https://"
        "ok.com&size=16&scale_factor=1.0x&server_fallback=1"}};

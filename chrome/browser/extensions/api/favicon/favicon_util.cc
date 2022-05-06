@@ -43,24 +43,25 @@ void GetFaviconForExtensionRequest(content::BrowserContext* browser_context,
     return;
   }
 
-  // Parse url.
+  // Parse url. Restrict which parameters are exposed to the Extension API.
   chrome::ParsedFaviconPath parsed;
   if (!ParseFaviconPath(url, &parsed)) {
     std::move(callback).Run(nullptr);
     return;
   }
 
-  // Restrict which parameters are exposed to the Extension API.
-  // TODO(solomonkinard): Discover why this must be true to work in the UI.
-  parsed.allow_favicon_server_fallback = false;
+  // Don't make requests to the favicon server if a favicon can't be found.
+  constexpr bool kAllowFaviconServerFallback = false;
+
+  int size_in_pixels = parsed.size_in_dip;
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
   favicon::FaviconService* favicon_service =
       FaviconServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
   favicon_service->GetRawFaviconForPageURL(
-      GURL(parsed.page_url), {favicon_base::IconType::kFavicon},
-      parsed.size_in_dip, parsed.allow_favicon_server_fallback,
+      GURL(parsed.page_url), {favicon_base::IconType::kFavicon}, size_in_pixels,
+      kAllowFaviconServerFallback,
       base::BindOnce(&favicon_util::OnFaviconAvailable, std::move(callback)),
       tracker);
 }
