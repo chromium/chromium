@@ -7,16 +7,12 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/history_clusters/core/history_clusters_buildflags.h"
+#include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
-
-#if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
-#include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
-#endif
 
 namespace chrome {
 
@@ -618,9 +614,7 @@ const char* const kChromeHostURLs[] = {
     kChromeUIFlagsHost,
     kChromeUIGCMInternalsHost,
     kChromeUIHistoryHost,
-#if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
     history_clusters_internals::kChromeUIHistoryClustersInternalsHost,
-#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     kChromeUIHpsInternalsHost,
 #endif

@@ -193,7 +193,6 @@ static_library("common_lib") {
     "//components/favicon_base",
     "//components/flags_ui:switches",
     "//components/gcm_driver/common",
-    "//components/history_clusters/core:history_clusters_buildflags",
     "//components/history_clusters/history_clusters_internals/webui",
     "//components/metrics",
     "//components/metrics:net",

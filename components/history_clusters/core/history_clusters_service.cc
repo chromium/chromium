@@ -23,17 +23,13 @@
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
-#include "components/history_clusters/core/history_clusters_buildflags.h"
 #include "components/history_clusters/core/history_clusters_debug_jsons.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/history_clusters_util.h"
+#include "components/history_clusters/core/on_device_clustering_backend.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
-
-#if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
-#include "components/history_clusters/core/on_device_clustering_backend.h"
-#endif
 
 namespace history_clusters {
 
@@ -71,11 +67,9 @@ HistoryClustersService::HistoryClustersService(
 
   visit_deletion_observer_.AttachToHistoryService(history_service);
 
-#if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
   backend_ = std::make_unique<OnDeviceClusteringBackend>(
       entity_metadata_provider, engagement_score_provider,
       optimization_guide_decider);
-#endif
 }
 
 HistoryClustersService::~HistoryClustersService() = default;

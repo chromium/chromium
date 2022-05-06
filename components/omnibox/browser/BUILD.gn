@@ -87,8 +87,6 @@ static_library("vector_icons") {
 
 static_library("browser") {
   sources = [
-    "actions/history_clusters_action.cc",
-    "actions/history_clusters_action.h",
     "actions/omnibox_action.cc",
     "actions/omnibox_action.h",
     "actions/omnibox_action_concepts.h",
@@ -256,7 +254,6 @@ static_library("browser") {
     "//components/dom_distiller/core:core",
     "//components/favicon/core",
     "//components/favicon_base",
-    "//components/history_clusters/core",
     "//components/keyed_service/core",
     "//components/metrics",
     "//components/navigation_metrics",
@@ -293,7 +290,14 @@ static_library("browser") {
   }
 
   if (!is_ios) {
-    deps += [ "//components/keyed_service/content" ]
+    sources += [
+      "actions/history_clusters_action.cc",
+      "actions/history_clusters_action.h",
+    ]
+    deps += [
+      "//components/history_clusters/core",
+      "//components/keyed_service/content",
+    ]
   }
 
   if (enable_extensions) {

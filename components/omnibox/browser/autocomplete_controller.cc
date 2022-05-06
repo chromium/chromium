@@ -30,7 +30,6 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/bookmark_provider.h"
 #include "components/omnibox/browser/builtin_provider.h"
@@ -63,6 +62,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_IOS)
+#include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/open_from_clipboard/clipboard_recent_content_generic.h"
 #endif
 
@@ -815,8 +815,11 @@ void AutocompleteController::UpdateResult(
   }
 
   // Below are all annotations after the match list is ready.
+#if !BUILDFLAG(IS_IOS)
+  // HistoryClusters is not enabled on iOS.
   AttachHistoryClustersActions(provider_client_->GetHistoryClustersService(),
                                provider_client_->GetPrefs(), result_);
+#endif
   UpdateKeywordDescriptions(&result_);
   UpdateAssociatedKeywords(&result_);
   UpdateAssistedQueryStats(&result_);
