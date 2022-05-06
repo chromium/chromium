@@ -151,4 +151,8 @@ public class AssistantTermsSection {
     View getView() {
         return mView;
     }
+
+    void setVisible(boolean visible) {
+        mView.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
 }

@@ -198,10 +198,17 @@ public class AutofillAssistantCollectUserDataUiTest {
                 .ViewHolder viewHolder = TestThreadUtils.runOnUiThreadBlocking(
                 () -> new AutofillAssistantCollectUserDataTestHelper.ViewHolder(coordinator));
 
-        /* Initially, everything is invisible. */
+        // Set WebContents such that editors can be built.
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> model.set(AssistantCollectUserDataModel.WEB_CONTENTS,
+                                mTestRule.getWebContents()));
+
+        // Initially, everything is invisible.
         onView(is(coordinator.getView())).check(matches(not(isDisplayed())));
 
-        /* PR is visible, but no section was requested: all sections should be invisible. */
+        // User data block is visible, but no section was requested: all sections should be
+        // invisible.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantCollectUserDataModel.VISIBLE, true));
         onView(is(coordinator.getView())).check(matches(isDisplayed()));
@@ -209,7 +216,7 @@ public class AutofillAssistantCollectUserDataUiTest {
         onView(is(viewHolder.mPaymentSection)).check(matches(not(isDisplayed())));
         onView(is(viewHolder.mShippingSection)).check(matches(not(isDisplayed())));
 
-        /* Contact details should be visible if either name, phone, or email is requested. */
+        // Contact details should be visible if either name, phone, or email is requested.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantCollectUserDataModel.REQUEST_NAME, true));
         onView(is(viewHolder.mContactSection)).check(matches(isDisplayed()));
@@ -241,22 +248,31 @@ public class AutofillAssistantCollectUserDataUiTest {
         onView(is(viewHolder.mPaymentSection)).check(matches(not(isDisplayed())));
         onView(is(viewHolder.mShippingSection)).check(matches(not(isDisplayed())));
 
-        /* Payment method section visibility test. */
+        // Payment method section visibility test.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantCollectUserDataModel.REQUEST_PAYMENT, true));
         onView(is(viewHolder.mPaymentSection)).check(matches(isDisplayed()));
 
-        /* Shipping address visibility test. */
+        // Shipping address visibility test.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantCollectUserDataModel.REQUEST_SHIPPING_ADDRESS, true));
         onView(is(viewHolder.mShippingSection)).check(matches(isDisplayed()));
 
-        /* Login section visibility test. */
+        // Login section visibility test.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantCollectUserDataModel.REQUEST_LOGIN_CHOICE, true));
+        onView(is(viewHolder.mLoginsSection)).check(matches(not(isDisplayed())));
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> model.set(AssistantCollectUserDataModel.AVAILABLE_LOGINS,
+                                Collections.singletonList(new AssistantLoginChoice("id",
+                                        /* label= */ "Guest", /* sublabel= */ "Description",
+                                        /* sublabelAccessibilityHint= */ "", /* priority= */ 0,
+                                        /* infoPopup= */ null,
+                                        /* editButtonContentDescription= */ ""))));
         onView(is(viewHolder.mLoginsSection)).check(matches(isDisplayed()));
 
-        /* Prepended section visibility test. */
+        // Prepended section visibility test.
         List<AssistantAdditionalSectionFactory> prependedSections = new ArrayList<>();
         prependedSections.add(
                 new AssistantStaticTextSection.Factory("Prepended section", "Lorem ipsum."));
@@ -264,17 +280,26 @@ public class AutofillAssistantCollectUserDataUiTest {
                 ()
                         -> model.set(AssistantCollectUserDataModel.PREPENDED_SECTIONS,
                                 prependedSections));
-        /* Login section is top-most regular section. */
+        // Login section is top-most regular section, the prepended section should be above that.
         onView(withText("Prepended section")).check(isAbove(is(viewHolder.mLoginsSection)));
 
-        /* Appended section visibility test. */
+        // Appended section visibility test.
         List<AssistantAdditionalSectionFactory> appendedSections = new ArrayList<>();
         appendedSections.add(
                 new AssistantStaticTextSection.Factory("Appended section", "Lorem ipsum."));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantCollectUserDataModel.APPENDED_SECTIONS, appendedSections));
-        /* Shipping address is bottom-most regular section. */
+        // Shipping address is bottom-most regular section, the appended section should be below
+        // that.
         onView(withText("Appended section")).check(isBelow(is(viewHolder.mShippingSection)));
+
+        // Sections without items and without editor should be hidden. Removing WebContents will
+        // clear the editors.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(AssistantCollectUserDataModel.WEB_CONTENTS, null));
+        onView(is(viewHolder.mContactSection)).check(matches(not(isDisplayed())));
+        onView(is(viewHolder.mPaymentSection)).check(matches(not(isDisplayed())));
+        onView(is(viewHolder.mShippingSection)).check(matches(not(isDisplayed())));
     }
 
     /**

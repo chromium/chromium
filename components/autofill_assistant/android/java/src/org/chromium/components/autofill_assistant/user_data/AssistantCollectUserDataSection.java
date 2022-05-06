@@ -132,8 +132,14 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
         return mSectionExpander;
     }
 
+    /**
+     * Set the view itself visible, if allowed. This can be overruled by the view deciding that
+     * it has no reason to be visible, by being empty (no items) and not having an editor.
+     *
+     * @param visible The flag to decide the visibility.
+     */
     void setVisible(boolean visible) {
-        mSectionExpander.setVisibility(visible ? View.VISIBLE : View.GONE);
+        mSectionExpander.setVisibility(visible && canBeVisible() ? View.VISIBLE : View.GONE);
     }
 
     void setDelegate(@Nullable Delegate<T> delegate) {
@@ -453,5 +459,9 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
     private void setBottomPadding(View view, int padding) {
         view.setPadding(
                 view.getPaddingLeft(), view.getPaddingTop(), view.getPaddingRight(), padding);
+    }
+
+    private boolean canBeVisible() {
+        return !isEmpty() || getEditor() != null;
     }
 }

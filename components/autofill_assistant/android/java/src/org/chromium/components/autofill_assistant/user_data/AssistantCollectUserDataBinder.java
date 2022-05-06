@@ -111,12 +111,11 @@ class AssistantCollectUserDataBinder
             AssistantCollectUserDataModel model, ViewHolder view, PropertyKey propertyKey) {
         boolean handled = updateEditors(model, propertyKey, view);
         handled = updateRootVisibility(model, propertyKey, view) || handled;
-        handled = updateSectionVisibility(model, propertyKey, view) || handled;
         handled = updateSectionTitles(model, propertyKey, view) || handled;
         handled = updateSectionContents(model, propertyKey, view) || handled;
         handled = updateSectionSelectedItem(model, propertyKey, view) || handled;
-        /* Update section paddings *after* updating section visibility. */
-        handled = updateSectionPaddings(model, propertyKey, view) || handled;
+        // Update section visibility/padding *after* updating editors and content.
+        handled = updateVisibilityAndPaddings(model, propertyKey, view) || handled;
 
         if (propertyKey == AssistantCollectUserDataModel.DELEGATE) {
             AssistantCollectUserDataDelegate collectUserDataDelegate =
@@ -358,45 +357,6 @@ class AssistantCollectUserDataBinder
     }
 
     /**
-     * Updates visibility of PR sections.
-     * @return whether the property key was handled.
-     */
-    private boolean updateSectionVisibility(
-            AssistantCollectUserDataModel model, PropertyKey propertyKey, ViewHolder view) {
-        if (propertyKey == AssistantCollectUserDataModel.REQUEST_NAME
-                || propertyKey == AssistantCollectUserDataModel.REQUEST_EMAIL
-                || propertyKey == AssistantCollectUserDataModel.REQUEST_PHONE) {
-            view.mContactDetailsSection.setVisible(shouldShowContactDetails(model));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY) {
-            view.mPhoneNumberSection.setVisible(
-                    model.get(AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.REQUEST_SHIPPING_ADDRESS) {
-            view.mShippingAddressSection.setVisible(
-                    model.get(AssistantCollectUserDataModel.REQUEST_SHIPPING_ADDRESS));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.REQUEST_PAYMENT) {
-            view.mPaymentMethodSection.setVisible(shouldShowPaymentInstruments(model));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.SHOW_TERMS_AS_CHECKBOX) {
-            if (model.get(AssistantCollectUserDataModel.SHOW_TERMS_AS_CHECKBOX)) {
-                view.mTermsSection.getView().setVisibility(View.GONE);
-                view.mTermsAsCheckboxSection.getView().setVisibility(View.VISIBLE);
-            } else {
-                view.mTermsSection.getView().setVisibility(View.VISIBLE);
-                view.mTermsAsCheckboxSection.getView().setVisibility(View.GONE);
-            }
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.REQUEST_LOGIN_CHOICE) {
-            view.mLoginSection.setVisible(
-                    model.get(AssistantCollectUserDataModel.REQUEST_LOGIN_CHOICE));
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * Updates visibility of the root widget.
      * @return whether the property key was handled.
      */
@@ -490,25 +450,58 @@ class AssistantCollectUserDataBinder
         return false;
     }
 
+    private boolean updateVisibilityAndPaddings(
+            AssistantCollectUserDataModel model, PropertyKey propertyKey, ViewHolder view) {
+        updateSectionVisibility(model, view);
+        updateSectionPaddings(model, view);
+
+        return propertyKey == AssistantCollectUserDataModel.REQUEST_NAME
+                || propertyKey == AssistantCollectUserDataModel.REQUEST_EMAIL
+                || propertyKey == AssistantCollectUserDataModel.REQUEST_PHONE
+                || propertyKey == AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY
+                || propertyKey == AssistantCollectUserDataModel.REQUEST_SHIPPING_ADDRESS
+                || propertyKey == AssistantCollectUserDataModel.REQUEST_PAYMENT
+                || propertyKey == AssistantCollectUserDataModel.SHOW_TERMS_AS_CHECKBOX
+                || propertyKey == AssistantCollectUserDataModel.REQUEST_LOGIN_CHOICE
+                || propertyKey == AssistantCollectUserDataModel.EXPANDED_SECTION
+                || propertyKey == AssistantCollectUserDataModel.PREPENDED_SECTIONS
+                || propertyKey == AssistantCollectUserDataModel.APPENDED_SECTIONS
+                || propertyKey == AssistantCollectUserDataModel.WEB_CONTENTS
+                || propertyKey == AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS
+                || propertyKey == AssistantCollectUserDataModel.ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN
+                || propertyKey == AssistantCollectUserDataModel.INITIALIZE_ADDRESS_COLLECTION_PARAMS
+                || propertyKey == AssistantCollectUserDataModel.AVAILABLE_CONTACTS
+                || propertyKey == AssistantCollectUserDataModel.AVAILABLE_PHONE_NUMBERS
+                || propertyKey == AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS
+                || propertyKey == AssistantCollectUserDataModel.AVAILABLE_SHIPPING_ADDRESSES
+                || propertyKey == AssistantCollectUserDataModel.AVAILABLE_LOGINS;
+    }
+
+    /**
+     * Updates visibility of user data sections.
+     */
+    private void updateSectionVisibility(AssistantCollectUserDataModel model, ViewHolder view) {
+        view.mContactDetailsSection.setVisible(shouldShowContactDetails(model));
+        view.mPhoneNumberSection.setVisible(
+                model.get(AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY));
+        view.mShippingAddressSection.setVisible(
+                model.get(AssistantCollectUserDataModel.REQUEST_SHIPPING_ADDRESS));
+        view.mPaymentMethodSection.setVisible(shouldShowPaymentInstruments(model));
+        if (model.get(AssistantCollectUserDataModel.SHOW_TERMS_AS_CHECKBOX)) {
+            view.mTermsSection.setVisible(false);
+            view.mTermsAsCheckboxSection.setVisible(true);
+        } else {
+            view.mTermsSection.setVisible(true);
+            view.mTermsAsCheckboxSection.setVisible(false);
+        }
+        view.mLoginSection.setVisible(
+                model.get(AssistantCollectUserDataModel.REQUEST_LOGIN_CHOICE));
+    }
+
     /**
      * Updates the paddings between sections and section dividers.
-     * @return whether the property key was handled.
      */
-    private boolean updateSectionPaddings(
-            AssistantCollectUserDataModel model, PropertyKey propertyKey, ViewHolder view) {
-        if ((propertyKey != AssistantCollectUserDataModel.REQUEST_SHIPPING_ADDRESS)
-                && (propertyKey != AssistantCollectUserDataModel.REQUEST_NAME)
-                && (propertyKey != AssistantCollectUserDataModel.REQUEST_EMAIL)
-                && (propertyKey != AssistantCollectUserDataModel.REQUEST_PHONE)
-                && (propertyKey != AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY)
-                && (propertyKey != AssistantCollectUserDataModel.REQUEST_PAYMENT)
-                && (propertyKey != AssistantCollectUserDataModel.REQUEST_LOGIN_CHOICE)
-                && (propertyKey != AssistantCollectUserDataModel.EXPANDED_SECTION)
-                && (propertyKey != AssistantCollectUserDataModel.PREPENDED_SECTIONS)
-                && (propertyKey != AssistantCollectUserDataModel.APPENDED_SECTIONS)) {
-            return false;
-        }
-
+    private void updateSectionPaddings(AssistantCollectUserDataModel model, ViewHolder view) {
         // Update section paddings such that the first and last section are flush to the top/bottom,
         // and all other sections have the same amount of padding in-between them.
 
@@ -590,7 +583,6 @@ class AssistantCollectUserDataBinder
                 prevSectionIsExpandedOrInvisible = false;
             }
         }
-        return true;
     }
 
     /**
