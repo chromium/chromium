@@ -1976,6 +1976,9 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kDisplay:
     case CSSPropertyID::kTextCombineUpright:
     case CSSPropertyID::kTextOrientation:
+    case CSSPropertyID::kToggleGroup:
+    case CSSPropertyID::kToggleRoot:
+    case CSSPropertyID::kToggleTrigger:
     case CSSPropertyID::kTransition:
     case CSSPropertyID::kTransitionDelay:
     case CSSPropertyID::kTransitionDuration:

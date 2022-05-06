@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<title>display interpolation</title>
-<link rel="help" href="https://www.w3.org/TR/CSS2/visuren.html#display-prop">
-<meta name="assert" content="display supports animation">
+<title>toggle-root is not animatable</title>
+<link rel="help" href="https://tabatkins.github.io/css-toggle/#toggle-root-property">
+<meta name="assert" content="toggle-root is not animatable">
 
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,10 +11,10 @@
 <body>
 <script>
 test_not_animatable({
-  property: 'display',
+  property: 'toggle-root',
   from: 'none',
-  to: 'flex',
-  underlying: 'block'
+  to: 'yourtoggle 3 / 1',
+  underlying: 'mytoggle 2',
 });
 </script>
 </body>
