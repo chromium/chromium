@@ -36,7 +36,7 @@ class FakeExtensionsBrowserClient : public TestExtensionsBrowserClient {
  public:
   struct Broadcast {
     Broadcast(events::HistogramValue histogram_value,
-              std::unique_ptr<base::ListValue> args,
+              base::Value::List args,
               bool dispatch_to_off_the_record_profiles)
         : histogram_value(histogram_value),
           args(std::move(args)),
@@ -46,7 +46,7 @@ class FakeExtensionsBrowserClient : public TestExtensionsBrowserClient {
     ~Broadcast() = default;
 
     events::HistogramValue histogram_value;
-    std::unique_ptr<base::ListValue> args;
+    base::Value::List args;
     bool dispatch_to_off_the_record_profiles;
   };
 
@@ -69,7 +69,7 @@ class FakeExtensionsBrowserClient : public TestExtensionsBrowserClient {
   void BroadcastEventToRenderers(
       events::HistogramValue histogram_value,
       const std::string& event_name,
-      std::unique_ptr<base::ListValue> args,
+      base::Value::List args,
       bool dispatch_to_off_the_record_profiles) override {
     event_name_to_broadcasts_map_[event_name].emplace_back(
         histogram_value, std::move(args), dispatch_to_off_the_record_profiles);
@@ -138,21 +138,21 @@ const storage_monitor::StorageInfo& GetFakeStorageInfo() {
   return *info;
 }
 
-base::ListValue GetStorageAttachedArgs() {
+base::Value::List GetStorageAttachedArgs() {
   // Because of the use of GetTransientIdForDeviceId() in
   // BuildStorageUnitInfo(), we cannot use a static variable and cache the
   // returned ListValue.
   api::system_storage::StorageUnitInfo unit;
   systeminfo::BuildStorageUnitInfo(GetFakeStorageInfo(), &unit);
-  base::ListValue args;
+  base::Value::List args;
   args.Append(base::Value::FromUniquePtrValue(unit.ToValue()));
   return args;
 }
 
-base::ListValue GetStorageDetachedArgs() {
+base::Value::List GetStorageDetachedArgs() {
   // Because of the use of GetTransientIdForDeviceId(), we cannot use a static
   // variable and cache the returned ListValue.
-  base::ListValue args;
+  base::Value::List args;
   args.Append(
       storage_monitor::StorageMonitor::GetInstance()->GetTransientIdForDeviceId(
           GetFakeStorageDeviceId()));
@@ -259,8 +259,7 @@ class SystemInfoAPITest : public testing::Test {
 
     return broadcasts.back().histogram_value ==
                events::SYSTEM_STORAGE_ON_ATTACHED &&
-           broadcasts.back().args &&
-           *broadcasts.back().args == GetStorageAttachedArgs() &&
+           broadcasts.back().args == GetStorageAttachedArgs() &&
            !broadcasts.back().dispatch_to_off_the_record_profiles;
   }
 
@@ -288,8 +287,7 @@ class SystemInfoAPITest : public testing::Test {
 
     return broadcasts.back().histogram_value ==
                events::SYSTEM_STORAGE_ON_DETACHED &&
-           broadcasts.back().args &&
-           *broadcasts.back().args == GetStorageDetachedArgs() &&
+           broadcasts.back().args == GetStorageDetachedArgs() &&
            !broadcasts.back().dispatch_to_off_the_record_profiles;
   }
 

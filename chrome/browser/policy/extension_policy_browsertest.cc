@@ -304,12 +304,12 @@ class ExtensionPolicyTest : public ExtensionPolicyTestBase {
                                const GURL& update_url) {
     // Setting the forcelist extension should install extension with ExtensionId
     // equal to id.
-    base::ListValue forcelist;
+    base::Value::List forcelist;
     forcelist.Append(base::StringPrintf(update_url.is_empty() ? "%s" : "%s;%s",
                                         id.c_str(), update_url.spec().c_str()));
     policies->Set(key::kExtensionInstallForcelist, POLICY_LEVEL_MANDATORY,
-                  POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, std::move(forcelist),
-                  nullptr);
+                  POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                  base::Value(std::move(forcelist)), nullptr);
   }
 
   const extensions::Extension* InstallForceListExtension(

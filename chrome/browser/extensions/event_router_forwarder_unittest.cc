@@ -43,7 +43,7 @@ class MockEventRouterForwarder : public EventRouterForwarder {
                        const std::string& extension_id,
                        events::HistogramValue histogram_value,
                        const std::string& event_name,
-                       std::unique_ptr<base::ListValue> event_args,
+                       base::Value::List args,
                        Profile* restrict_to_profile,
                        const GURL& event_url) override {
     CallEventRouter(profile, extension_id, histogram_value, event_name,
@@ -60,9 +60,8 @@ static void BroadcastEventToRenderers(
     const std::string& event_name,
     const GURL& url,
     bool dispatch_to_off_the_record_profiles) {
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
   event_router->BroadcastEventToRenderers(histogram_value, event_name,
-                                          std::move(args), url,
+                                          base::Value::List(), url,
                                           dispatch_to_off_the_record_profiles);
 }
 
@@ -73,9 +72,8 @@ static void DispatchEventToRenderers(EventRouterForwarder* event_router,
                                      bool use_profile_to_restrict_events,
                                      const GURL& url,
                                      bool dispatch_to_off_the_record_profiles) {
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
   event_router->DispatchEventToRenderers(
-      histogram_value, event_name, std::move(args), profile,
+      histogram_value, event_name, base::Value::List(), profile,
       use_profile_to_restrict_events, url, dispatch_to_off_the_record_profiles);
 }
 

@@ -224,7 +224,7 @@ CastExtensionsBrowserClient::GetComponentExtensionResourceManager() {
 void CastExtensionsBrowserClient::BroadcastEventToRenderers(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    std::unique_ptr<base::ListValue> args,
+    base::Value::List args,
     bool dispatch_to_off_the_record_profiles) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -234,10 +234,15 @@ void CastExtensionsBrowserClient::BroadcastEventToRenderers(
                        std::move(args), dispatch_to_off_the_record_profiles));
     return;
   }
+
+  std::vector<base::Value> event_args(args.size());
+  std::transform(args.begin(), args.end(), event_args.begin(),
+                 [](const base::Value& arg) { return arg.Clone(); });
+
   // Currently ignoring the dispatch_to_off_the_record_profiles attribute
   // as it is not necessary at the time
-  std::unique_ptr<Event> event(new Event(
-      histogram_value, event_name, std::move(*args).TakeListDeprecated()));
+  auto event = std::make_unique<Event>(histogram_value, event_name,
+                                       std::move(event_args));
   EventRouter::Get(browser_context_)->BroadcastEvent(std::move(event));
 }
 

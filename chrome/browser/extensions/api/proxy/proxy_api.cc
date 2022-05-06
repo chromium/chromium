@@ -37,13 +37,13 @@ void ProxyEventRouter::OnProxyError(
     EventRouterForwarder* event_router,
     void* profile,
     int error_code) {
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
+  base::Value::List args;
   base::Value::Dict dict;
   dict.Set(proxy_api_constants::kProxyEventFatal, true);
   dict.Set(proxy_api_constants::kProxyEventError,
            net::ErrorToString(error_code));
   dict.Set(proxy_api_constants::kProxyEventDetails, std::string());
-  args->Append(base::Value(std::move(dict)));
+  args.Append(base::Value(std::move(dict)));
 
   if (profile) {
     event_router->DispatchEventToRenderers(
@@ -62,7 +62,7 @@ void ProxyEventRouter::OnPACScriptError(EventRouterForwarder* event_router,
                                         void* profile,
                                         int line_number,
                                         const std::u16string& error) {
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
+  base::Value::List args;
   base::Value::Dict dict;
   dict.Set(proxy_api_constants::kProxyEventFatal, false);
   dict.Set(proxy_api_constants::kProxyEventError,
@@ -76,7 +76,7 @@ void ProxyEventRouter::OnPACScriptError(EventRouterForwarder* event_router,
     error_msg = base::UTF16ToUTF8(error);
   }
   dict.Set(proxy_api_constants::kProxyEventDetails, error_msg);
-  args->Append(base::Value(std::move(dict)));
+  args.Append(base::Value(std::move(dict)));
 
   if (profile) {
     event_router->DispatchEventToRenderers(

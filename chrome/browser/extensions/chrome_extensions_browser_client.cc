@@ -378,7 +378,7 @@ ChromeExtensionsBrowserClient::GetComponentExtensionResourceManager() {
 void ChromeExtensionsBrowserClient::BroadcastEventToRenderers(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    std::unique_ptr<base::ListValue> args,
+    base::Value::List args,
     bool dispatch_to_off_the_record_profiles) {
   g_browser_process->extension_event_router_forwarder()
       ->BroadcastEventToRenderers(histogram_value, event_name, std::move(args),

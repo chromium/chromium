@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/bluetooth_chooser.h"
@@ -35,7 +36,6 @@ class PrefService;
 namespace base {
 class CommandLine;
 class FilePath;
-class ListValue;
 }  // namespace base
 
 namespace content {
@@ -268,7 +268,7 @@ class ExtensionsBrowserClient {
   virtual void BroadcastEventToRenderers(
       events::HistogramValue histogram_value,
       const std::string& event_name,
-      std::unique_ptr<base::ListValue> args,
+      base::Value::List args,
       bool dispatch_to_off_the_record_profiles) = 0;
 
   // Gets the single ExtensionCache instance shared across the browser process.

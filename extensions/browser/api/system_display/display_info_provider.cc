@@ -198,7 +198,7 @@ void DisplayInfoProvider::DispatchOnDisplayChangedEvent() {
   ExtensionsBrowserClient::Get()->BroadcastEventToRenderers(
       events::SYSTEM_DISPLAY_ON_DISPLAY_CHANGED,
       extensions::api::system_display::OnDisplayChanged::kEventName,
-      std::make_unique<base::ListValue>(), dispatch_to_off_the_record_profiles);
+      base::Value::List(), dispatch_to_off_the_record_profiles);
 }
 
 void DisplayInfoProvider::UpdateDisplayUnitInfoForPlatform(
