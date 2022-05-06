@@ -38166,6 +38166,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4220" label="GestureScrollStart"/>
   <int value="4221" label="GestureScrollUpdate"/>
   <int value="4222" label="GestureScrollEnd"/>
+  <int value="4223" label="ArrayBufferTooBigForWebAPI"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

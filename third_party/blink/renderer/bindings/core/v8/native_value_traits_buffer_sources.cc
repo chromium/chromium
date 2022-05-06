@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
-
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/typed_arrays/typed_flexible_array_buffer_view.h"
 
 namespace blink {
@@ -214,8 +215,18 @@ DOMArrayBuffer* NativeValueTraits<DOMArrayBuffer>::NativeValue(
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
   DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
-  if (LIKELY(array_buffer))
+  if (LIKELY(array_buffer)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(array_buffer->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBuffer size exceeds the supported range");
+      return nullptr;
+    }
     return array_buffer;
+  }
 
   exception_state.ThrowTypeError(
       ExceptionMessages::FailedToConvertJSValue("ArrayBuffer"));
@@ -228,8 +239,18 @@ DOMArrayBuffer* NativeValueTraits<DOMArrayBuffer>::ArgumentValue(
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
   DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
-  if (LIKELY(array_buffer))
+  if (LIKELY(array_buffer)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(array_buffer->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBuffer size exceeds the supported range");
+      return nullptr;
+    }
     return array_buffer;
+  }
 
   exception_state.ThrowTypeError(
       ExceptionMessages::ArgumentNotOfType(argument_index, "ArrayBuffer"));
@@ -243,8 +264,18 @@ DOMArrayBuffer* NativeValueTraits<IDLNullable<DOMArrayBuffer>>::NativeValue(
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
   DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
-  if (LIKELY(array_buffer))
+  if (LIKELY(array_buffer)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(array_buffer->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBuffer size exceeds the supported range");
+      return nullptr;
+    }
     return array_buffer;
+  }
 
   if (LIKELY(value->IsNullOrUndefined()))
     return nullptr;
@@ -260,8 +291,18 @@ DOMArrayBuffer* NativeValueTraits<IDLNullable<DOMArrayBuffer>>::ArgumentValue(
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
   DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
-  if (LIKELY(array_buffer))
+  if (LIKELY(array_buffer)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(array_buffer->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBuffer size exceeds the supported range");
+      return nullptr;
+    }
     return array_buffer;
+  }
 
   if (LIKELY(value->IsNullOrUndefined()))
     return nullptr;
@@ -279,8 +320,18 @@ DOMSharedArrayBuffer* NativeValueTraits<DOMSharedArrayBuffer>::NativeValue(
     ExceptionState& exception_state) {
   DOMSharedArrayBuffer* shared_array_buffer =
       ToDOMSharedArrayBuffer(isolate, value);
-  if (LIKELY(shared_array_buffer))
+  if (LIKELY(shared_array_buffer)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(shared_array_buffer->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The SharedArrayBuffer size exceeds the supported range");
+      return nullptr;
+    }
     return shared_array_buffer;
+  }
 
   exception_state.ThrowTypeError(
       ExceptionMessages::FailedToConvertJSValue("SharedArrayBuffer"));
@@ -294,8 +345,18 @@ DOMSharedArrayBuffer* NativeValueTraits<DOMSharedArrayBuffer>::ArgumentValue(
     ExceptionState& exception_state) {
   DOMSharedArrayBuffer* shared_array_buffer =
       ToDOMSharedArrayBuffer(isolate, value);
-  if (LIKELY(shared_array_buffer))
+  if (LIKELY(shared_array_buffer)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(shared_array_buffer->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The SharedArrayBuffer size exceeds the supported range");
+      return nullptr;
+    }
     return shared_array_buffer;
+  }
 
   exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
       argument_index, "SharedArrayBuffer"));
@@ -311,8 +372,18 @@ NativeValueTraits<IDLNullable<DOMSharedArrayBuffer>>::NativeValue(
     ExceptionState& exception_state) {
   DOMSharedArrayBuffer* shared_array_buffer =
       ToDOMSharedArrayBuffer(isolate, value);
-  if (LIKELY(shared_array_buffer))
+  if (LIKELY(shared_array_buffer)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(shared_array_buffer->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The SharedArrayBuffer size exceeds the supported range");
+      return nullptr;
+    }
     return shared_array_buffer;
+  }
 
   if (LIKELY(value->IsNullOrUndefined()))
     return nullptr;
@@ -330,8 +401,18 @@ NativeValueTraits<IDLNullable<DOMSharedArrayBuffer>>::ArgumentValue(
     ExceptionState& exception_state) {
   DOMSharedArrayBuffer* shared_array_buffer =
       ToDOMSharedArrayBuffer(isolate, value);
-  if (LIKELY(shared_array_buffer))
+  if (LIKELY(shared_array_buffer)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(shared_array_buffer->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The SharedArrayBuffer size exceeds the supported range");
+      return nullptr;
+    }
     return shared_array_buffer;
+  }
 
   if (LIKELY(value->IsNullOrUndefined()))
     return nullptr;
@@ -348,13 +429,33 @@ DOMArrayBufferBase* NativeValueTraits<DOMArrayBufferBase>::NativeValue(
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
   DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
-  if (LIKELY(array_buffer))
+  if (LIKELY(array_buffer)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(array_buffer->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBuffer size exceeds the supported range");
+      return nullptr;
+    }
     return array_buffer;
+  }
 
   DOMSharedArrayBuffer* shared_array_buffer =
       ToDOMSharedArrayBuffer(isolate, value);
-  if (LIKELY(shared_array_buffer))
+  if (LIKELY(shared_array_buffer)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(shared_array_buffer->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The SharedArrayBuffer size exceeds the supported range");
+      return nullptr;
+    }
     return shared_array_buffer;
+  }
 
   exception_state.ThrowTypeError(
       ExceptionMessages::FailedToConvertJSValue("[AllowShared] ArrayBuffer"));
@@ -367,13 +468,33 @@ DOMArrayBufferBase* NativeValueTraits<DOMArrayBufferBase>::ArgumentValue(
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
   DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
-  if (LIKELY(array_buffer))
+  if (LIKELY(array_buffer)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(array_buffer->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBuffer size exceeds the supported range");
+      return nullptr;
+    }
     return array_buffer;
+  }
 
   DOMSharedArrayBuffer* shared_array_buffer =
       ToDOMSharedArrayBuffer(isolate, value);
-  if (LIKELY(shared_array_buffer))
+  if (LIKELY(shared_array_buffer)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(shared_array_buffer->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The SharedArrayBuffer size exceeds the supported range");
+      return nullptr;
+    }
     return shared_array_buffer;
+  }
 
   exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
       argument_index, "[AllowShared] ArrayBuffer"));
@@ -388,13 +509,33 @@ NativeValueTraits<IDLNullable<DOMArrayBufferBase>>::NativeValue(
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
   DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
-  if (LIKELY(array_buffer))
+  if (LIKELY(array_buffer)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(array_buffer->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBuffer size exceeds the supported range");
+      return nullptr;
+    }
     return array_buffer;
+  }
 
   DOMSharedArrayBuffer* shared_array_buffer =
       ToDOMSharedArrayBuffer(isolate, value);
-  if (LIKELY(shared_array_buffer))
+  if (LIKELY(shared_array_buffer)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(shared_array_buffer->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The SharedArrayBuffer size exceeds the supported range");
+      return nullptr;
+    }
     return shared_array_buffer;
+  }
 
   if (LIKELY(value->IsNullOrUndefined()))
     return nullptr;
@@ -411,13 +552,33 @@ NativeValueTraits<IDLNullable<DOMArrayBufferBase>>::ArgumentValue(
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
   DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
-  if (LIKELY(array_buffer))
+  if (LIKELY(array_buffer)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(array_buffer->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBuffer size exceeds the supported range");
+      return nullptr;
+    }
     return array_buffer;
+  }
 
   DOMSharedArrayBuffer* shared_array_buffer =
       ToDOMSharedArrayBuffer(isolate, value);
-  if (LIKELY(shared_array_buffer))
+  if (LIKELY(shared_array_buffer)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(shared_array_buffer->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The SharedArrayBuffer size exceeds the supported range");
+      return nullptr;
+    }
     return shared_array_buffer;
+  }
 
   if (LIKELY(value->IsNullOrUndefined()))
     return nullptr;
@@ -437,8 +598,18 @@ NotShared<T> NativeValueTraits<
                 v8::Local<v8::Value> value,
                 ExceptionState& exception_state) {
   T* blink_view = ToDOMViewType<T, kNotShared>(isolate, value);
-  if (LIKELY(blink_view))
+  if (LIKELY(blink_view)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(blink_view->byteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBufferView size exceeds the supported range");
+      return NotShared<T>();
+    }
     return NotShared<T>(blink_view);
+  }
 
   if (ABVTrait<T>::IsShared(value)) {
     exception_state.ThrowTypeError(
@@ -461,8 +632,18 @@ NotShared<T> NativeValueTraits<
                   v8::Local<v8::Value> value,
                   ExceptionState& exception_state) {
   T* blink_view = ToDOMViewType<T, kNotShared>(isolate, value);
-  if (LIKELY(blink_view))
+  if (LIKELY(blink_view)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(blink_view->byteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBufferView size exceeds the supported range");
+      return NotShared<T>();
+    }
     return NotShared<T>(blink_view);
+  }
 
   if (ABVTrait<T>::IsShared(value)) {
     exception_state.ThrowTypeError(
@@ -486,8 +667,18 @@ MaybeShared<T> NativeValueTraits<
                 v8::Local<v8::Value> value,
                 ExceptionState& exception_state) {
   T* blink_view = ToDOMViewType<T, kMaybeShared>(isolate, value);
-  if (LIKELY(blink_view))
+  if (LIKELY(blink_view)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(blink_view->byteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBufferView size exceeds the supported range");
+      return MaybeShared<T>();
+    }
     return MaybeShared<T>(blink_view);
+  }
 
   exception_state.ThrowTypeError(ExceptionMessages::FailedToConvertJSValue(
       T::GetStaticWrapperTypeInfo()->interface_name));
@@ -503,8 +694,18 @@ MaybeShared<T> NativeValueTraits<
                   v8::Local<v8::Value> value,
                   ExceptionState& exception_state) {
   T* blink_view = ToDOMViewType<T, kMaybeShared>(isolate, value);
-  if (LIKELY(blink_view))
+  if (LIKELY(blink_view)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(blink_view->byteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBufferView size exceeds the supported range");
+      return MaybeShared<T>();
+    }
     return MaybeShared<T>(blink_view);
+  }
 
   exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
       argument_index, T::GetStaticWrapperTypeInfo()->interface_name));
@@ -521,8 +722,18 @@ NotShared<T> NativeValueTraits<
                 v8::Local<v8::Value> value,
                 ExceptionState& exception_state) {
   T* blink_view = ToDOMViewType<T, kNotShared>(isolate, value);
-  if (LIKELY(blink_view))
+  if (LIKELY(blink_view)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(blink_view->byteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBufferView size exceeds the supported range");
+      return NotShared<T>();
+    }
     return NotShared<T>(blink_view);
+  }
 
   if (LIKELY(value->IsNullOrUndefined()))
     return NotShared<T>();
@@ -548,8 +759,18 @@ NotShared<T> NativeValueTraits<
                   v8::Local<v8::Value> value,
                   ExceptionState& exception_state) {
   T* blink_view = ToDOMViewType<T, kNotShared>(isolate, value);
-  if (LIKELY(blink_view))
+  if (LIKELY(blink_view)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(blink_view->byteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBufferView size exceeds the supported range");
+      return NotShared<T>();
+    }
     return NotShared<T>(blink_view);
+  }
 
   if (LIKELY(value->IsNullOrUndefined()))
     return NotShared<T>();
@@ -576,8 +797,18 @@ MaybeShared<T> NativeValueTraits<
                 v8::Local<v8::Value> value,
                 ExceptionState& exception_state) {
   T* blink_view = ToDOMViewType<T, kMaybeShared>(isolate, value);
-  if (LIKELY(blink_view))
+  if (LIKELY(blink_view)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(blink_view->byteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBufferView size exceeds the supported range");
+      return MaybeShared<T>();
+    }
     return MaybeShared<T>(blink_view);
+  }
 
   if (LIKELY(value->IsNullOrUndefined()))
     return MaybeShared<T>();
@@ -596,8 +827,18 @@ MaybeShared<T> NativeValueTraits<
                   v8::Local<v8::Value> value,
                   ExceptionState& exception_state) {
   T* blink_view = ToDOMViewType<T, kMaybeShared>(isolate, value);
-  if (LIKELY(blink_view))
+  if (LIKELY(blink_view)) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(blink_view->byteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBufferView size exceeds the supported range");
+      return MaybeShared<T>();
+    }
     return MaybeShared<T>(blink_view);
+  }
 
   if (LIKELY(value->IsNullOrUndefined()))
     return MaybeShared<T>();
@@ -617,8 +858,18 @@ T NativeValueTraits<T,
                   int argument_index,
                   v8::Local<v8::Value> value,
                   ExceptionState& exception_state) {
-  if (LIKELY(ABVTrait<T>::IsV8ViewType(value)))
+  if (LIKELY(ABVTrait<T>::IsV8ViewType(value))) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(value.As<typename ABVTrait<T>::V8ViewType>()->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBufferView size exceeds the supported range");
+      return T();
+    }
     return T(value.As<typename ABVTrait<T>::V8ViewType>());
+  }
 
   exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
       argument_index,
@@ -636,8 +887,18 @@ T NativeValueTraits<IDLNullable<T>,
                   int argument_index,
                   v8::Local<v8::Value> value,
                   ExceptionState& exception_state) {
-  if (LIKELY(ABVTrait<T>::IsV8ViewType(value)))
+  if (LIKELY(ABVTrait<T>::IsV8ViewType(value))) {
+    // TODO(chromium:1201109): Remove check once Blink can handle bigger sizes.
+    if (UNLIKELY(value.As<typename ABVTrait<T>::V8ViewType>()->ByteLength() >
+                 ::partition_alloc::internal::MaxDirectMapped())) {
+      UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                        WebFeature::kArrayBufferTooBigForWebAPI);
+      exception_state.ThrowRangeError(
+          "The ArrayBufferView size exceeds the supported range");
+      return T();
+    }
     return T(value.As<typename ABVTrait<T>::V8ViewType>());
+  }
 
   if (LIKELY(value->IsNullOrUndefined()))
     return T();
