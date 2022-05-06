@@ -25,14 +25,22 @@ enum class Channel;
 namespace ash {
 namespace device_activity {
 
+// Fields used in setting device active metadata, that are explicitly
+// required from outside of ASH_CHROME due to the dependency limitations
+// on chrome browser.
+struct COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) ChromeDeviceMetadataParameters {
+  version_info::Channel chromeos_channel;
+};
+
 // Base class for device active use cases.
 class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActiveUseCase {
  public:
-  DeviceActiveUseCase(const std::string& psm_device_active_secret,
-                      version_info::Channel chromeos_channel,
-                      const std::string& use_case_pref_key,
-                      private_membership::rlwe::RlweUseCase psm_use_case,
-                      PrefService* local_state);
+  DeviceActiveUseCase(
+      const std::string& psm_device_active_secret,
+      const ChromeDeviceMetadataParameters& chrome_passed_device_params,
+      const std::string& use_case_pref_key,
+      private_membership::rlwe::RlweUseCase psm_use_case,
+      PrefService* local_state);
   DeviceActiveUseCase(const DeviceActiveUseCase&) = delete;
   DeviceActiveUseCase& operator=(const DeviceActiveUseCase&) = delete;
   virtual ~DeviceActiveUseCase();
@@ -122,9 +130,9 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActiveUseCase {
   // This secret is used to generate a PSM identifier for the reporting window.
   const std::string psm_device_active_secret_;
 
-  // |ChromeBrowserMainPartsAsh| passes the ChromeOS channel through the class
-  // constructor.
-  const version_info::Channel chromeos_channel_;
+  // Creates a copy of chrome parameters, which is owned throughout
+  // |DeviceActiveUseCase| object lifetime.
+  const ChromeDeviceMetadataParameters chrome_passed_device_params_;
 
   // Key used to query the local state pref for the last ping timestamp by use
   // case.

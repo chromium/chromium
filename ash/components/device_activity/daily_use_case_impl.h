@@ -25,9 +25,10 @@ class ImportDataRequest;
 class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DailyUseCaseImpl
     : public DeviceActiveUseCase {
  public:
-  DailyUseCaseImpl(const std::string& psm_device_active_secret,
-                   version_info::Channel chromeos_channel,
-                   PrefService* local_state);
+  DailyUseCaseImpl(
+      const std::string& psm_device_active_secret,
+      const ChromeDeviceMetadataParameters& chrome_passed_device_params,
+      PrefService* local_state);
   DailyUseCaseImpl(const DailyUseCaseImpl&) = delete;
   DailyUseCaseImpl& operator=(const DailyUseCaseImpl&) = delete;
   ~DailyUseCaseImpl() override;

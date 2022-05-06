@@ -17,11 +17,12 @@ namespace device_activity {
 
 namespace psm_rlwe = private_membership::rlwe;
 
-DailyUseCaseImpl::DailyUseCaseImpl(const std::string& psm_device_active_secret,
-                                   version_info::Channel chromeos_channel,
-                                   PrefService* local_state)
+DailyUseCaseImpl::DailyUseCaseImpl(
+    const std::string& psm_device_active_secret,
+    const ChromeDeviceMetadataParameters& chrome_passed_device_params,
+    PrefService* local_state)
     : DeviceActiveUseCase(psm_device_active_secret,
-                          chromeos_channel,
+                          chrome_passed_device_params,
                           prefs::kDeviceActiveLastKnownDailyPingTimestamp,
                           psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY,
                           local_state) {}

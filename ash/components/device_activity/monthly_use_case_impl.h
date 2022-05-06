@@ -25,9 +25,10 @@ class ImportDataRequest;
 class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) MonthlyUseCaseImpl
     : public DeviceActiveUseCase {
  public:
-  MonthlyUseCaseImpl(const std::string& psm_device_active_secret,
-                     version_info::Channel chromeos_channel,
-                     PrefService* local_state);
+  MonthlyUseCaseImpl(
+      const std::string& psm_device_active_secret,
+      const ChromeDeviceMetadataParameters& chrome_passed_device_params,
+      PrefService* local_state);
   MonthlyUseCaseImpl(const MonthlyUseCaseImpl&) = delete;
   MonthlyUseCaseImpl& operator=(const MonthlyUseCaseImpl&) = delete;
   ~MonthlyUseCaseImpl() override;

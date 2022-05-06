@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/components/device_activity/device_active_use_case.h"
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "chromeos/system/statistics_provider.h"
@@ -24,6 +25,8 @@ namespace device_activity {
 
 class DeviceActivityClient;
 
+struct ChromeDeviceMetadataParameters;
+
 // Counts device actives in a privacy compliant way.
 class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityController {
  public:
@@ -38,7 +41,7 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityController {
   static base::TimeDelta DetermineStartUpDelay(base::Time chrome_first_run_ts);
 
   DeviceActivityController(
-      version_info::Channel chromeos_channel,
+      const ChromeDeviceMetadataParameters& chrome_passed_device_params,
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       base::TimeDelta start_up_delay);
@@ -48,26 +51,27 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityController {
 
  private:
   // Start Device Activity reporting.
-  void Start(version_info::Channel chromeos_channel,
-             PrefService* local_state,
+  void Start(PrefService* local_state,
              scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Stop Device Activity reporting.
   void Stop();
 
   void OnPsmDeviceActiveSecretFetched(
-      version_info::Channel chromeos_channel,
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& psm_device_active_secret);
 
   void OnMachineStatisticsLoaded(
-      version_info::Channel chromeos_channel,
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& psm_device_active_secret);
 
   std::unique_ptr<DeviceActivityClient> da_client_network_;
+
+  // Creates a copy of chrome parameters, which is owned throughout
+  // |DeviceActivityController| object lifetime.
+  const ChromeDeviceMetadataParameters chrome_passed_device_params_;
 
   // Singleton lives throughout class lifetime.
   chromeos::system::StatisticsProvider* const statistics_provider_;

@@ -24,8 +24,9 @@ namespace {
 // Initialize fake values used by the |DailyUseCaseImpl|.
 constexpr char kFakePsmDeviceActiveSecret[] = "FAKE_PSM_DEVICE_ACTIVE_SECRET";
 
-const version_info::Channel kFakeChromeOSChannel =
-    version_info::Channel::STABLE;
+constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
+    version_info::Channel::STABLE /* chromeos_channel */
+};
 
 }  // namespace
 
@@ -40,8 +41,9 @@ class DailyUseCaseImplTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     DeviceActivityController::RegisterPrefs(local_state_.registry());
+
     daily_use_case_impl_ = std::make_unique<DailyUseCaseImpl>(
-        kFakePsmDeviceActiveSecret, kFakeChromeOSChannel, &local_state_);
+        kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_);
   }
 
   void TearDown() override { daily_use_case_impl_.reset(); }

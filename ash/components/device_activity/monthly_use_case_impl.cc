@@ -19,10 +19,10 @@ namespace psm_rlwe = private_membership::rlwe;
 
 MonthlyUseCaseImpl::MonthlyUseCaseImpl(
     const std::string& psm_device_active_secret,
-    version_info::Channel chromeos_channel,
+    const ChromeDeviceMetadataParameters& chrome_passed_device_params,
     PrefService* local_state)
     : DeviceActiveUseCase(psm_device_active_secret,
-                          chromeos_channel,
+                          chrome_passed_device_params,
                           prefs::kDeviceActiveLastKnownMonthlyPingTimestamp,
                           psm_rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY,
                           local_state) {}

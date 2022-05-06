@@ -72,8 +72,9 @@ const char kPsmQueryRequestEndpoint[] = "/v1/fresnel/psmRlweQuery";
 constexpr char kFakePsmDeviceActiveSecret[] = "FAKE_PSM_DEVICE_ACTIVE_SECRET";
 constexpr char kFakeFresnelApiKey[] = "FAKE_FRESNEL_API_KEY";
 
-const version_info::Channel kFakeChromeOSChannel =
-    version_info::Channel::STABLE;
+constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
+    version_info::Channel::STABLE  // chromeos_channel
+};
 
 // Number of test cases exist in cros_test_data.binarypb file, which is part of
 // private_membership third_party library.
@@ -161,11 +162,12 @@ class FakePsmDelegate : public PsmDelegate {
 
 class FakeDailyUseCaseImpl : public DailyUseCaseImpl {
  public:
-  FakeDailyUseCaseImpl(const std::string& psm_device_active_secret,
-                       version_info::Channel chromeos_channel,
-                       PrefService* local_state)
+  FakeDailyUseCaseImpl(
+      const std::string& psm_device_active_secret,
+      const ChromeDeviceMetadataParameters& chrome_passed_device_params,
+      PrefService* local_state)
       : DailyUseCaseImpl(psm_device_active_secret,
-                         chromeos_channel,
+                         chrome_passed_device_params,
                          local_state) {}
   FakeDailyUseCaseImpl(const FakeDailyUseCaseImpl&) = delete;
   FakeDailyUseCaseImpl& operator=(const FakeDailyUseCaseImpl&) = delete;
@@ -174,11 +176,12 @@ class FakeDailyUseCaseImpl : public DailyUseCaseImpl {
 
 class FakeMonthlyUseCaseImpl : public MonthlyUseCaseImpl {
  public:
-  FakeMonthlyUseCaseImpl(const std::string& psm_device_active_secret,
-                         version_info::Channel chromeos_channel,
-                         PrefService* local_state)
+  FakeMonthlyUseCaseImpl(
+      const std::string& psm_device_active_secret,
+      const ChromeDeviceMetadataParameters& chrome_passed_device_params,
+      PrefService* local_state)
       : MonthlyUseCaseImpl(psm_device_active_secret,
-                           chromeos_channel,
+                           chrome_passed_device_params,
                            local_state) {}
   FakeMonthlyUseCaseImpl(const FakeMonthlyUseCaseImpl&) = delete;
   FakeMonthlyUseCaseImpl& operator=(const FakeMonthlyUseCaseImpl&) = delete;
@@ -302,9 +305,9 @@ class DeviceActivityClientTest : public testing::Test {
     // should maintain ownership of.
     std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases;
     use_cases.push_back(std::make_unique<FakeDailyUseCaseImpl>(
-        kFakePsmDeviceActiveSecret, kFakeChromeOSChannel, &local_state_));
+        kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_));
     use_cases.push_back(std::make_unique<FakeMonthlyUseCaseImpl>(
-        kFakePsmDeviceActiveSecret, kFakeChromeOSChannel, &local_state_));
+        kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_));
 
     device_activity_client_ = std::make_unique<DeviceActivityClient>(
         network_state_test_helper_->network_state_handler(),

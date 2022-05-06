@@ -26,12 +26,12 @@ const char kHardwareClassKeyNotFound[] = "HARDWARE_CLASS_KEY_NOT_FOUND";
 
 DeviceActiveUseCase::DeviceActiveUseCase(
     const std::string& psm_device_active_secret,
-    version_info::Channel chromeos_channel,
+    const ChromeDeviceMetadataParameters& chrome_passed_device_params,
     const std::string& use_case_pref_key,
     psm_rlwe::RlweUseCase psm_use_case,
     PrefService* local_state)
     : psm_device_active_secret_(psm_device_active_secret),
-      chromeos_channel_(chromeos_channel),
+      chrome_passed_device_params_(chrome_passed_device_params),
       use_case_pref_key_(use_case_pref_key),
       psm_use_case_(psm_use_case),
       local_state_(local_state),
@@ -140,7 +140,7 @@ std::string DeviceActiveUseCase::GetChromeOSVersion() const {
 }
 
 Channel DeviceActiveUseCase::GetChromeOSChannel() const {
-  switch (chromeos_channel_) {
+  switch (chrome_passed_device_params_.chromeos_channel) {
     case version_info::Channel::CANARY:
       return Channel::CHANNEL_CANARY;
     case version_info::Channel::DEV:

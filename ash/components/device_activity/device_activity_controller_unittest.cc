@@ -4,6 +4,7 @@
 
 #include "ash/components/device_activity/device_activity_controller.h"
 
+#include "ash/components/device_activity/device_active_use_case.h"
 #include "ash/components/device_activity/fresnel_pref_names.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -22,8 +23,9 @@ namespace device_activity {
 
 namespace {
 
-const version_info::Channel kFakeChromeOSChannel =
-    version_info::Channel::STABLE;
+constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
+    version_info::Channel::STABLE  // chromeos_channel
+};
 
 }  // namespace
 
@@ -52,7 +54,7 @@ class DeviceActivityControllerTest : public testing::Test {
             &test_url_loader_factory_);
 
     device_activity_controller_ = std::make_unique<DeviceActivityController>(
-        kFakeChromeOSChannel, local_state(), test_shared_loader_factory_,
+        kFakeChromeParameters, local_state(), test_shared_loader_factory_,
         /* start_up_delay */ base::Minutes(0));
   }
 

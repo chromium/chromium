@@ -17,6 +17,7 @@
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/cryptohome/system_salt_getter.h"
+#include "ash/components/device_activity/device_active_use_case.h"
 #include "ash/components/device_activity/device_activity_controller.h"
 #include "ash/components/disks/disk_mount_manager.h"
 #include "ash/components/drivefs/fake_drivefs_launcher_client.h"
@@ -1225,7 +1226,9 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   if (base::FeatureList::IsEnabled(features::kDeviceActiveClient)) {
     device_activity_controller_ =
         std::make_unique<device_activity::DeviceActivityController>(
-            chrome::GetChannel(), g_browser_process->local_state(),
+            device_activity::ChromeDeviceMetadataParameters{
+                chrome::GetChannel() /* chromeos_channel */},
+            g_browser_process->local_state(),
             g_browser_process->system_network_context_manager()
                 ->GetSharedURLLoaderFactory(),
             device_activity::DeviceActivityController::DetermineStartUpDelay(
