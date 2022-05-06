@@ -5,6 +5,7 @@
 import {assertInstanceof} from '../assert.js';
 import * as dom from '../dom.js';
 import * as nav from '../nav.js';
+import {speak} from '../spoken_msg.js';
 import * as state from '../state.js';
 import {ViewName} from '../type.js';
 import * as util from '../util.js';
@@ -55,6 +56,7 @@ export class OptionPanel extends View {
         if (input.checked) {
           triggerButton.setAttribute('i18n-aria', ariaLabel);
           util.setupI18nElements(triggerButton);
+          speak(ariaLabel);
 
           onStateChanged(isDisableOption ? null : targetState);
         }
