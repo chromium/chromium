@@ -102,14 +102,14 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
       async () => {
         const resolver = new PromiseResolver();
         await initializeEnterRsuWpDisableCodePage('', '');
-        const expectedCode = 'rsu code';
+        const expectedCode = 'RSU CODE';
         let savedCode = '';
         service.setRsuDisableWriteProtectCode = (code) => {
           savedCode = code;
           return resolver.promise;
         };
         const rsuCodeComponent = component.shadowRoot.querySelector('#rsuCode');
-        rsuCodeComponent.value = expectedCode;
+        rsuCodeComponent.value = expectedCode.toLowerCase();
 
         const expectedResult = {foo: 'bar'};
         let savedResult;

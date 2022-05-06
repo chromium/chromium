@@ -197,6 +197,7 @@ export class OnboardingEnterRsuWpDisableCodePage extends
     // Set to false whenever the user changes the code to remove the red invalid
     // warning.
     this.rsuCodeInvalid_ = false;
+    this.rsuCode_ = this.rsuCode_.toUpperCase();
   }
 
   /**
