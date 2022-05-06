@@ -1619,9 +1619,7 @@ const CSSValue* ColorScheme::ParseSingleValue(
     CSSValue* value =
         css_parsing_utils::ConsumeIdent<CSSValueID::kDark, CSSValueID::kLight,
                                         CSSValueID::kOnly>(range);
-    if (id == CSSValueID::kOnly &&
-        RuntimeEnabledFeatures::CSSColorSchemeOnlyEnabled(
-            context.GetExecutionContext())) {
+    if (id == CSSValueID::kOnly) {
       if (only)
         return nullptr;
       if (values->length()) {

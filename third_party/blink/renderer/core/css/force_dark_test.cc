@@ -7,14 +7,12 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
-class ForceDarkTest : public PageTestBase,
-                      public ScopedCSSColorSchemeOnlyForTest {
+class ForceDarkTest : public PageTestBase {
  protected:
-  ForceDarkTest() : ScopedCSSColorSchemeOnlyForTest(true) {}
+  ForceDarkTest() = default;
 
   void SetUp() override {
     PageTestBase::SetUp();

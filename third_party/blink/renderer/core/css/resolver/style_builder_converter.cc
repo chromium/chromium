@@ -2360,10 +2360,7 @@ ColorSchemeFlags StyleBuilderConverter::ExtractColorSchemes(
           flags |= static_cast<ColorSchemeFlags>(ColorSchemeFlag::kLight);
           break;
         case CSSValueID::kOnly:
-          if (RuntimeEnabledFeatures::CSSColorSchemeOnlyEnabled(
-                  document.GetExecutionContext())) {
-            flags |= static_cast<ColorSchemeFlags>(ColorSchemeFlag::kOnly);
-          }
+          flags |= static_cast<ColorSchemeFlags>(ColorSchemeFlag::kOnly);
           break;
         default:
           break;
