@@ -420,6 +420,9 @@ message SendBeginMainFrameToCommitBreakdown {
   // Layout update breakdown
   optional uint64 layout_update_us = 4;
 
+  // Accessibility update breakdown
+  optional uint64 accessibility_update_us = 12;
+
   // Prepaint breakdown
   optional uint64 prepaint_us = 5;
 

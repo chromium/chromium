@@ -861,6 +861,7 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" separator=".">
   <suffix name="AggregatedPreFCP"
       label="All the time spent Pre First Contentful Paint in this component"/>
+  <affected-histogram name="Blink.Accessibility.UpdateTime"/>
   <affected-histogram
       name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Animate.UpdateTime"/>
@@ -895,6 +896,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" separator=".">
   <suffix name="PostFCP" label="Update occurred after First Contentful Paint."/>
+  <affected-histogram name="Blink.Accessibility.UpdateTime"/>
   <affected-histogram
       name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Animate.UpdateTime"/>
@@ -929,6 +931,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" separator=".">
   <suffix name="PreFCP" label="Update occurred before First Contentful Paint."/>
+  <affected-histogram name="Blink.Accessibility.UpdateTime"/>
   <affected-histogram
       name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Animate.UpdateTime"/>

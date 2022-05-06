@@ -20,6 +20,7 @@ struct CC_EXPORT BeginMainFrameMetrics {
   base::TimeDelta animate;
   base::TimeDelta style_update;
   base::TimeDelta layout_update;
+  base::TimeDelta accessibility;
   base::TimeDelta prepaint;
   base::TimeDelta compositing_inputs;
   base::TimeDelta paint;

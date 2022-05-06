@@ -3006,6 +3006,12 @@ be describing additional metrics about the same event.
 
     This event is not recorded on machines with low-resolution clocks.
   </summary>
+  <metric name="Accessibility">
+    <summary>
+      The time spent in accessibility tree code, between navigation and First
+      Contentful Paint, in microseconds.
+    </summary>
+  </metric>
   <metric name="AnchorElementMetricsIntersectionObserver">
     <summary>
       Time spent computing IntersectionObservations for anchor elements, in
@@ -3283,6 +3289,17 @@ be describing additional metrics about the same event.
 
     This event is not recorded on machines with low-resolution clocks.
   </summary>
+  <metric name="Accessibility">
+    <summary>
+      The time taken for accessibility for the main frame in microseconds during
+      the sampled frame.
+    </summary>
+  </metric>
+  <metric name="AccessibilityBeginMainFrame">
+    <summary>
+      The total main frame time used in accessibility, in microseconds.
+    </summary>
+  </metric>
   <metric name="AnchorElementMetricsIntersectionObserver">
     <summary>
       Time spent computing IntersectionObservations for anchor elements, in
@@ -6930,6 +6947,20 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="SendBeginMainFrameToCommit.Accessibility">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on accessibility, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="SendBeginMainFrameToCommit.Animate">
     <summary>
       The time portion of SendBeginMainFrameToCommit spent on animations, in
@@ -7426,6 +7457,20 @@ be describing additional metrics about the same event.
     <summary>
       The time from when the BeginMainFrame is sent to the beginning of the
       commit, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.Accessibility">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on accessibility, in
+      microseconds.
     </summary>
     <aggregation>
       <history>

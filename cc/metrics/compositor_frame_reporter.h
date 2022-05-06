@@ -121,12 +121,13 @@ class CC_EXPORT CompositorFrameReporter {
     kAnimate = 1,
     kStyleUpdate = 2,
     kLayoutUpdate = 3,
-    kPrepaint = 4,
-    kCompositingInputs = 5,
-    kPaint = 6,
-    kCompositeCommit = 7,
-    kUpdateLayers = 8,
-    kBeginMainSentToStarted = 9,
+    kAccessibility = 4,
+    kPrepaint = 5,
+    kCompositingInputs = 6,
+    kPaint = 7,
+    kCompositeCommit = 8,
+    kUpdateLayers = 9,
+    kBeginMainSentToStarted = 10,
     kBreakdownCount
   };
 

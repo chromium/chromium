@@ -210,6 +210,9 @@ LocalFrameUkmAggregator::GetBeginMainFrameMetrics() {
   metrics_data->layout_update = base::Microseconds(
       absolute_metric_records_[static_cast<unsigned>(MetricId::kLayout)]
           .main_frame_count);
+  metrics_data->accessibility = base::Microseconds(
+      absolute_metric_records_[static_cast<unsigned>(MetricId::kAccessibility)]
+          .main_frame_count);
   metrics_data->prepaint = base::Microseconds(
       absolute_metric_records_[static_cast<unsigned>(MetricId::kPrePaint)]
           .main_frame_count);
@@ -553,6 +556,7 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent() {
   RECORD_METRIC(HitTestDocumentUpdate);
   RECORD_METRIC(JavascriptDocumentUpdate);
   RECORD_METRIC(ParseStyleSheet);
+  RECORD_METRIC(Accessibility);
 
   builder.Record(recorder_);
 #undef RECORD_METRIC
@@ -606,6 +610,7 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent() {
   RECORD_METRIC(HitTestDocumentUpdate);
   RECORD_METRIC(JavascriptDocumentUpdate);
   RECORD_METRIC(ParseStyleSheet);
+  RECORD_METRIC(Accessibility);
 
   builder.Record(recorder_);
 #undef RECORD_METRIC

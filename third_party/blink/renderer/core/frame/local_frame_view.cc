@@ -2812,6 +2812,9 @@ bool LocalFrameView::RunAccessibilityLifecyclePhase(
   TRACE_EVENT0("blink,benchmark",
                "LocalFrameView::RunAccessibilityLifecyclePhase");
 
+  SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
+                           LocalFrameUkmAggregator::kAccessibility);
+
   // Reduce redundant ancestor chain walking for display lock computations.
   auto display_lock_memoization_scope =
       DisplayLockUtilities::CreateLockCheckMemoizationScope();

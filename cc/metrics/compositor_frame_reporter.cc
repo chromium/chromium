@@ -180,6 +180,8 @@ CompositorFrameReporter::ProcessedBlinkBreakdown::ProcessedBlinkBreakdown(
       blink_breakdown.style_update;
   list_[static_cast<int>(BlinkBreakdown::kLayoutUpdate)] =
       blink_breakdown.layout_update;
+  list_[static_cast<int>(BlinkBreakdown::kAccessibility)] =
+      blink_breakdown.accessibility;
   list_[static_cast<int>(BlinkBreakdown::kPrepaint)] = blink_breakdown.prepaint;
   list_[static_cast<int>(BlinkBreakdown::kCompositingInputs)] =
       blink_breakdown.compositing_inputs;
@@ -375,6 +377,8 @@ const char* CompositorFrameReporter::GetStageName(
           return "SendBeginMainFrameToCommit.StyleUpdate";
         case BlinkBreakdown::kLayoutUpdate:
           return "SendBeginMainFrameToCommit.LayoutUpdate";
+        case BlinkBreakdown::kAccessibility:
+          return "SendBeginMainFrameToCommit.AccessibiltyUpdate";
         case BlinkBreakdown::kPrepaint:
           return "SendBeginMainFrameToCommit.Prepaint";
         case BlinkBreakdown::kCompositingInputs:
@@ -1053,6 +1057,9 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
                   break;
                 case static_cast<int>(BlinkBreakdown::kLayoutUpdate):
                   reporter->set_layout_update_us(latency);
+                  break;
+                case static_cast<int>(BlinkBreakdown::kAccessibility):
+                  reporter->set_accessibility_update_us(latency);
                   break;
                 case static_cast<int>(BlinkBreakdown::kPrepaint):
                   reporter->set_prepaint_us(latency);

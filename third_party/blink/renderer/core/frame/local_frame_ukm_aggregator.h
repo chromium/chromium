@@ -151,6 +151,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
     kServiceDocumentUpdate,
     kUserDrivenDocumentUpdate,
     kParseStyleSheet,
+    kAccessibility,
     kCount,
     kMainFrame
   };
@@ -201,7 +202,8 @@ class CORE_EXPORT LocalFrameUkmAggregator
         {"ScrollDocumentUpdate", true},
         {"ServiceDocumentUpdate", true},
         {"UserDrivenDocumentUpdate", true},
-        {"ParseStyleSheet", true}};
+        {"ParseStyleSheet", true},
+        {"Accessibility", true}};
     static_assert(std::size(data) == kCount, "Metrics data mismatch");
     return data;
   }
