@@ -78,6 +78,8 @@ public class AutofillUiUtils {
         int NONE = 7;
     }
 
+    // TODO(@vishwasuppoor): Reuse VirtualCardEnrollmentLinkType defined in
+    // virtual_card_enrollment_metrics.h (crbug.com/1318681).
     // Constants used to log UMA "enum" histograms about the type of links clicked in mobile virtual
     // card dialogs. Entries should not be renumbered and numeric values should never be reused.
     @IntDef({VirtualCardDialogLink.EDUCATION_TEXT, VirtualCardDialogLink.GOOGLE_LEGAL_MESSAGE,

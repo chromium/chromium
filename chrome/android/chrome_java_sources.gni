@@ -128,6 +128,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/autofill/PhoneNumberUtil.java",
   "java/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePrompt.java",
   "java/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePromptController.java",
+  "java/src/org/chromium/chrome/browser/autofill/VirtualCardEnrollmentDelegate.java",
+  "java/src/org/chromium/chrome/browser/autofill/VirtualCardEnrollmentDialogViewBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/prefeditor/DropdownFieldAdapter.java",
   "java/src/org/chromium/chrome/browser/autofill/prefeditor/EditorBase.java",
   "java/src/org/chromium/chrome/browser/autofill/prefeditor/EditorDialog.java",

@@ -11,8 +11,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.text.SpannableString;
 import android.view.View;
@@ -29,15 +27,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.Shadows;
-import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.LegalMessageLine;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.ui.autofill.FakeModalDialogManager;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -48,11 +45,21 @@ import java.util.List;
 /** Unit tests for {@link AutofillVirtualCardEnrollmentDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutofillVirtualCardEnrollmentDialogTest {
+    private static final String LEGAL_MESSAGE_URL = "http://www.google.com";
+    private static final String ACCEPT_BUTTON_TEXT = "Yes";
+    private static final String DECLINE_BUTTON_TEXT = "No thanks";
+
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock
-    private Callback<Boolean> mCallbackMock;
+    private Callback<Integer> mResultHandlerMock;
+    @Mock
+    private Callback<String> mOnEducationTextLinkClickedMock;
+    @Mock
+    private Callback<String> mOnGoogleLegalMessageLinkClickedMock;
+    @Mock
+    private Callback<String> mOnIssuerLegalMessageLinkClickedMock;
     private FakeModalDialogManager mModalDialogManager;
     private AutofillVirtualCardEnrollmentDialog mDialog;
     private VirtualCardEnrollmentFields mVirtualCardEnrollmentFields;
@@ -64,9 +71,11 @@ public class AutofillVirtualCardEnrollmentDialogTest {
                 "card label", Bitmap.createBitmap(100, 100, Bitmap.Config.ALPHA_8));
         mVirtualCardEnrollmentFields.mGoogleLegalMessages.add(createLegalMessageLine("google"));
         mVirtualCardEnrollmentFields.mIssuerLegalMessages.add(createLegalMessageLine("issuer"));
-        mDialog =
-                new AutofillVirtualCardEnrollmentDialog(ApplicationProvider.getApplicationContext(),
-                        mModalDialogManager, mVirtualCardEnrollmentFields, mCallbackMock);
+        mDialog = new AutofillVirtualCardEnrollmentDialog(
+                ApplicationProvider.getApplicationContext(), mModalDialogManager,
+                mVirtualCardEnrollmentFields, ACCEPT_BUTTON_TEXT, DECLINE_BUTTON_TEXT,
+                mOnEducationTextLinkClickedMock, mOnGoogleLegalMessageLinkClickedMock,
+                mOnIssuerLegalMessageLinkClickedMock, mResultHandlerMock);
         mDialog.show();
     }
 
@@ -75,7 +84,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
     public void dialogShown() {
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
         // The callback should not have been called yet.
-        verify(mCallbackMock, never()).onResult(any());
+        verify(mResultHandlerMock, never()).onResult(any());
     }
 
     @Test
@@ -84,8 +93,8 @@ public class AutofillVirtualCardEnrollmentDialogTest {
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
         mModalDialogManager.clickPositiveButton();
         assertThat(mModalDialogManager.getShownDialogModel()).isNull();
-        // Check that callback was called with true.
-        verify(mCallbackMock).onResult(true);
+        // Check that callback was called with positive button clicked as dismissal cause.
+        verify(mResultHandlerMock).onResult(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
     }
 
     @Test
@@ -94,19 +103,31 @@ public class AutofillVirtualCardEnrollmentDialogTest {
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
         mModalDialogManager.clickNegativeButton();
         assertThat(mModalDialogManager.getShownDialogModel()).isNull();
-        // Check that callback was called with false;
-        verify(mCallbackMock).onResult(false);
+        // Check that callback was called with negative button clicked as dismissal cause.
+        verify(mResultHandlerMock).onResult(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+    }
+
+    @Test
+    @SmallTest
+    public void dialogDismissed() {
+        assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
+        // Simulate dialog dismissal by native.
+        mDialog.dismiss(DialogDismissalCause.DISMISSED_BY_NATIVE);
+        assertThat(mModalDialogManager.getShownDialogModel()).isNull();
+        // Check that callback was called with dismissed by native as the dismissal cause.
+        verify(mResultHandlerMock).onResult(DialogDismissalCause.DISMISSED_BY_NATIVE);
     }
 
     @Test
     @SmallTest
     public void learnMoreTextClicked() {
-        // Create activity and its shadow to see if CustomTabActivity is launched.
+        // Create activity.
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        ShadowActivity shadowActivity = Shadows.shadowOf(activity);
         // Create a new AutofillVirtualCardEnrollmentDialog with Activity as the context instead.
-        mDialog = new AutofillVirtualCardEnrollmentDialog(
-                activity, mModalDialogManager, mVirtualCardEnrollmentFields, mCallbackMock);
+        mDialog = new AutofillVirtualCardEnrollmentDialog(activity, mModalDialogManager,
+                mVirtualCardEnrollmentFields, ACCEPT_BUTTON_TEXT, DECLINE_BUTTON_TEXT,
+                mOnEducationTextLinkClickedMock, mOnGoogleLegalMessageLinkClickedMock,
+                mOnIssuerLegalMessageLinkClickedMock, mResultHandlerMock);
         mDialog.show();
         // Make sure that the dialog was shown properly.
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
@@ -123,21 +144,21 @@ public class AutofillVirtualCardEnrollmentDialogTest {
                 .isEqualTo("Learn more about virtual cards");
         // Click on the link. The callback doesn't use the view so it can be null.
         learnMoreSpan.onClick(null);
-        // Check that the CustomTabActivity was started as expected.
-        Intent startedIntent = shadowActivity.getNextStartedActivity();
-        assertThat(startedIntent.getComponent())
-                .isEqualTo(new ComponentName(activity, CustomTabActivity.class));
+        // Verify that the callback is called with url for learn more page.
+        verify(mOnEducationTextLinkClickedMock)
+                .onResult(ChromeStringConstants.AUTOFILL_VIRTUAL_CARD_ENROLLMENT_SUPPORT_URL);
     }
 
     @Test
     @SmallTest
     public void googleLegalMessageClicked() {
-        // Create activity and its shadow to see if CustomTabActivity is launched.
+        // Create activity.
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        ShadowActivity shadowActivity = Shadows.shadowOf(activity);
         // Create a new AutofillVirtualCardEnrollmentDialog with Activity as the context instead.
-        mDialog = new AutofillVirtualCardEnrollmentDialog(
-                activity, mModalDialogManager, mVirtualCardEnrollmentFields, mCallbackMock);
+        mDialog = new AutofillVirtualCardEnrollmentDialog(activity, mModalDialogManager,
+                mVirtualCardEnrollmentFields, ACCEPT_BUTTON_TEXT, DECLINE_BUTTON_TEXT,
+                mOnEducationTextLinkClickedMock, mOnGoogleLegalMessageLinkClickedMock,
+                mOnIssuerLegalMessageLinkClickedMock, mResultHandlerMock);
         mDialog.show();
         // Make sure that the dialog was shown properly.
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
@@ -154,21 +175,20 @@ public class AutofillVirtualCardEnrollmentDialogTest {
                 .isEqualTo("oo");
         // Click on the link. The callback doesn't use the view so it can be null.
         googleSpan.onClick(null);
-        // Check that the CustomTabActivity was started as expected.
-        Intent startedIntent = shadowActivity.getNextStartedActivity();
-        assertThat(startedIntent.getComponent())
-                .isEqualTo(new ComponentName(activity, CustomTabActivity.class));
+        // Verify that the callback is called with LEGAL_MESSAGE_URL.
+        verify(mOnGoogleLegalMessageLinkClickedMock).onResult(LEGAL_MESSAGE_URL);
     }
 
     @Test
     @SmallTest
     public void issuerLegalMessageClicked() {
-        // Create activity and its shadow to see if CustomTabActivity is launched.
+        // Create activity.
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        ShadowActivity shadowActivity = Shadows.shadowOf(activity);
         // Create a new AutofillVirtualCardEnrollmentDialog with Activity as the context instead.
-        mDialog = new AutofillVirtualCardEnrollmentDialog(
-                activity, mModalDialogManager, mVirtualCardEnrollmentFields, mCallbackMock);
+        mDialog = new AutofillVirtualCardEnrollmentDialog(activity, mModalDialogManager,
+                mVirtualCardEnrollmentFields, ACCEPT_BUTTON_TEXT, DECLINE_BUTTON_TEXT,
+                mOnEducationTextLinkClickedMock, mOnGoogleLegalMessageLinkClickedMock,
+                mOnIssuerLegalMessageLinkClickedMock, mResultHandlerMock);
         mDialog.show();
         // Make sure that the dialog was shown properly.
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
@@ -185,10 +205,8 @@ public class AutofillVirtualCardEnrollmentDialogTest {
                 .isEqualTo("ss");
         // Click on the link. The callback doesn't use the view so it can be null.
         issuerSpan.onClick(null);
-        // Check that the CustomTabActivity was started as expected.
-        Intent startedIntent = shadowActivity.getNextStartedActivity();
-        assertThat(startedIntent.getComponent())
-                .isEqualTo(new ComponentName(activity, CustomTabActivity.class));
+        // Verify that the callback is called with LEGAL_MESSAGE_URL.
+        verify(mOnIssuerLegalMessageLinkClickedMock).onResult(LEGAL_MESSAGE_URL);
     }
 
     private SpannableString getSpannableStringForViewFromCurrentDialog(int textViewId) {
@@ -214,7 +232,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
 
     private static LegalMessageLine createLegalMessageLine(String text) {
         List<LegalMessageLine.Link> links = new ArrayList<>();
-        links.add(new LegalMessageLine.Link(1, 3, "http://www.google.com"));
+        links.add(new LegalMessageLine.Link(1, 3, LEGAL_MESSAGE_URL));
         LegalMessageLine legalMessageLine = new LegalMessageLine(text);
         legalMessageLine.links.addAll(links);
         return legalMessageLine;

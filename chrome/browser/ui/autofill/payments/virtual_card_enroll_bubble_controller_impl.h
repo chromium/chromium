@@ -10,6 +10,14 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include <jni.h>
+#include <memory>
+#include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
+#include "chrome/browser/ui/android/autofill/virtual_card_enrollment_view_android.h"
+#endif
+
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_ENROLL_BUBBLE_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_ENROLL_BUBBLE_CONTROLLER_IMPL_H_
 
@@ -57,6 +65,14 @@ class VirtualCardEnrollBubbleControllerImpl
   void OnLinkClicked(VirtualCardEnrollmentLinkType link_type,
                      const GURL& url) override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
+
+#if BUILDFLAG(IS_ANDROID)
+  void OnAccepted(JNIEnv* env);
+  void OnDeclined(JNIEnv* env);
+  void OnDismissed(JNIEnv* env);
+  void OnLinkClicked(JNIEnv* env, jstring url, jint link_type);
+#endif
+
   bool IsIconVisible() const override;
 
 #if defined(UNIT_TEST)
@@ -91,7 +107,7 @@ class VirtualCardEnrollBubbleControllerImpl
 
   // True if the icon should be showing on the webpage
   BubbleState bubble_state_ = BubbleState::kHidden;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
 
   // Denotes whether the bubble is shown due to user gesture. If this is true,
   // it means the bubble is a reshown bubble.
@@ -106,6 +122,16 @@ class VirtualCardEnrollBubbleControllerImpl
   // Closure used for testing purposes that notifies that the enrollment bubble
   // has been shown.
   base::RepeatingClosure bubble_shown_closure_for_testing_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // VirtualCardEnrollBubbleController:
+  base::android::ScopedJavaGlobalRef<jobject> GetOrCreateJavaDelegate()
+      override;
+
+  // The Android delegate that facilitates making native calls from Android
+  // view.
+  base::android::ScopedJavaGlobalRef<jobject> java_delegate_;
+#endif
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

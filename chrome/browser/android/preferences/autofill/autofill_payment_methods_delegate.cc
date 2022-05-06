@@ -7,14 +7,13 @@
 #include <memory>
 
 #include "base/android/callback_android.h"
-#include "base/android/jni_string.h"
 #include "chrome/android/chrome_jni_headers/AutofillPaymentMethodsDelegate_jni.h"
-#include "chrome/android/chrome_jni_headers/VirtualCardEnrollmentFields_jni.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/risk_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/android/autofill/virtual_card_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
@@ -22,67 +21,21 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "ui/gfx/android/java_bitmap.h"
-#include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_skia.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
-using base::android::AttachCurrentThread;
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
-using base::android::ScopedJavaLocalRef;
 
 namespace autofill {
-
-// static
-ScopedJavaLocalRef<jobject> GetVirtualCardEnrollmentFieldsJavaObject(
-    autofill::VirtualCardEnrollmentFields* virtual_card_enrollment_fields) {
-  JNIEnv* env = AttachCurrentThread();
-  // Create VirtualCardEnrollmentFields java object.
-  ScopedJavaLocalRef<jobject> java_object =
-      Java_VirtualCardEnrollmentFields_create(
-          env,
-          ConvertUTF16ToJavaString(
-              env, virtual_card_enrollment_fields->credit_card
-                       .CardIdentifierStringForAutofillDisplay()),
-          gfx::ConvertToJavaBitmap(
-              *virtual_card_enrollment_fields->card_art_image->bitmap()));
-  // Add Google legal messages.
-  for (const auto& legal_message_line :
-       virtual_card_enrollment_fields->google_legal_message) {
-    Java_VirtualCardEnrollmentFields_addGoogleLegalMessageLine(
-        env, java_object,
-        ConvertUTF16ToJavaString(env, legal_message_line.text()));
-    for (const auto& link : legal_message_line.links()) {
-      Java_VirtualCardEnrollmentFields_addLinkToLastGoogleLegalMessageLine(
-          env, java_object, link.range.start(), link.range.end(),
-          ConvertUTF8ToJavaString(env, link.url.spec()));
-    }
-  }
-  // Add issuer legal messages.
-  for (const auto& legal_message_line :
-       virtual_card_enrollment_fields->issuer_legal_message) {
-    Java_VirtualCardEnrollmentFields_addIssuerLegalMessageLine(
-        env, java_object,
-        ConvertUTF16ToJavaString(env, legal_message_line.text()));
-    for (const auto& link : legal_message_line.links()) {
-      Java_VirtualCardEnrollmentFields_addLinkToLastIssuerLegalMessageLine(
-          env, java_object, link.range.start(), link.range.end(),
-          ConvertUTF8ToJavaString(env, link.url.spec()));
-    }
-  }
-  return java_object;
-}
 
 // static
 void RunVirtualCardEnrollmentFieldsLoadedCallback(
     const JavaRef<jobject>& j_callback,
     VirtualCardEnrollmentFields* virtual_card_enrollment_fields) {
-  RunObjectCallbackAndroid(j_callback, GetVirtualCardEnrollmentFieldsJavaObject(
-                                           virtual_card_enrollment_fields));
+  RunObjectCallbackAndroid(
+      j_callback, autofill::CreateVirtualCardEnrollmentFieldsJavaObject(
+                      virtual_card_enrollment_fields));
 }
 
 AutofillPaymentMethodsDelegate::AutofillPaymentMethodsDelegate(Profile* profile)

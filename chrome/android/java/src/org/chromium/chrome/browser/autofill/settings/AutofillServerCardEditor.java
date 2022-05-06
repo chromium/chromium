@@ -13,12 +13,15 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils.VirtualCardDialogLink;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -27,18 +30,78 @@ import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Server credit card settings.
  */
 public class AutofillServerCardEditor extends AutofillCreditCardEditor {
+    private static final String SETTINGS_PAGE_ENROLLMENT_HISTOGRAM_TEXT =
+            "Autofill.VirtualCard.SettingsPageEnrollment";
+
     private View mLocalCopyLabel;
     private View mClearLocalCopy;
     private TextView mVirtualCardEnrollmentButton;
     private boolean mVirtualCardEnrollmentButtonShowsUnenroll;
     private AutofillPaymentMethodsDelegate mDelegate;
+
+    // Enum to represent the types of cards that show info in a server card editor page.
+    @IntDef({CardType.SERVER_CARD, CardType.VIRTUAL_CARD})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface CardType {
+        int SERVER_CARD = 1;
+        int VIRTUAL_CARD = 2;
+    }
+
+    // Enum to represent the buttons in a server card editor page.
+    @IntDef({ButtonType.EDIT_CARD, ButtonType.VIRTUAL_CARD_ENROLL,
+            ButtonType.VIRTUAL_CARD_UNENROLL})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface ButtonType {
+        int EDIT_CARD = 1;
+        int VIRTUAL_CARD_ENROLL = 2;
+        int VIRTUAL_CARD_UNENROLL = 3;
+    }
+
+    private static String getCardType(@CardType int type) {
+        switch (type) {
+            case CardType.SERVER_CARD:
+                return "ServerCard";
+            case CardType.VIRTUAL_CARD:
+                return "VirtualCard";
+            default:
+                return "None";
+        }
+    }
+
+    private static String getButtonType(@ButtonType int type) {
+        switch (type) {
+            case ButtonType.EDIT_CARD:
+                return "EditCard";
+            case ButtonType.VIRTUAL_CARD_ENROLL:
+                return "VirtualCardEnroll";
+            case ButtonType.VIRTUAL_CARD_UNENROLL:
+                return "VirtualCardUnenroll";
+            default:
+                return "None";
+        }
+    }
+
+    private static void logServerCardEditorButtonClicks(
+            @CardType int cardType, @ButtonType int buttonType) {
+        RecordHistogram.recordBooleanHistogram("Autofill.SettingsPage.ButtonClicked."
+                        + getCardType(cardType) + "." + getButtonType(buttonType),
+                true);
+    }
+
+    private static void logSettingsPageEnrollmentDialogUserSelection(boolean accepted) {
+        RecordHistogram.recordBooleanHistogram(SETTINGS_PAGE_ENROLLMENT_HISTOGRAM_TEXT, accepted);
+    }
 
     @UsedByReflection("AutofillPaymentMethodsFragment.java")
     public AutofillServerCardEditor() {}
@@ -65,10 +128,10 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
         ((TextView) v.findViewById(R.id.summary))
                 .setText(mCard.getFormattedExpirationDate(getActivity()));
         v.findViewById(R.id.edit_server_card).setOnClickListener(view -> {
-            RecordHistogram.recordBooleanHistogram(showVirtualCardEnrollmentButton()
-                            ? "Autofill.SettingsPage.ButtonClicked.VirtualCard.EditCard"
-                            : "Autofill.SettingsPage.ButtonClicked.ServerCard.EditCard",
-                    true);
+            logServerCardEditorButtonClicks(showVirtualCardEnrollmentButton()
+                            ? CardType.VIRTUAL_CARD
+                            : CardType.SERVER_CARD,
+                    ButtonType.EDIT_CARD);
             CustomTabActivity.showInfoPage(
                     getActivity(), ChromeStringConstants.AUTOFILL_MANAGE_WALLET_CARD_URL);
         });
@@ -86,10 +149,9 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                     : "mDelegate must be initialized before making (un)enrolment calls.";
                 final ModalDialogManager modalDialogManager = new ModalDialogManager(
                         new AppModalPresenter(getActivity()), ModalDialogType.APP);
-                RecordHistogram.recordBooleanHistogram(mVirtualCardEnrollmentButtonShowsUnenroll
-                                ? "Autofill.SettingsPage.ButtonClicked.VirtualCard.VirtualCardUnenroll"
-                                : "Autofill.SettingsPage.ButtonClicked.VirtualCard.VirtualCardEnroll",
-                        true);
+                logServerCardEditorButtonClicks(CardType.VIRTUAL_CARD,
+                        mVirtualCardEnrollmentButtonShowsUnenroll ? ButtonType.VIRTUAL_CARD_UNENROLL
+                                                                  : ButtonType.VIRTUAL_CARD_ENROLL);
                 if (!mVirtualCardEnrollmentButtonShowsUnenroll) {
                     mDelegate.offerVirtualCardEnrollment(mCard.getInstrumentId(),
                             result -> showVirtualCardEnrollmentDialog(result, modalDialogManager));
@@ -145,21 +207,44 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
     private void showVirtualCardEnrollmentDialog(
             VirtualCardEnrollmentFields virtualCardEnrollmentFields,
             ModalDialogManager modalDialogManager) {
-        AutofillVirtualCardEnrollmentDialog dialog =
-                new AutofillVirtualCardEnrollmentDialog(getActivity(), modalDialogManager,
-                        virtualCardEnrollmentFields, (positiveButtonClicked) -> {
-                            if (positiveButtonClicked) {
-                                // Silently enroll the virtual card.
-                                mDelegate.enrollOfferedVirtualCard();
-                                // Update the button label to allow un-enroll.
-                                setVirtualCardEnrollmentButtonLabel(true);
-                            } else {
-                                // Since the user canceled the enrollment dialog, enable the button
-                                // again to allow for enrollment.
-                                mVirtualCardEnrollmentButton.setEnabled(true);
-                            }
-                        });
+        Callback<String> onEducationTextLinkClicked =
+                url -> onLinkClicked(url, VirtualCardDialogLink.EDUCATION_TEXT);
+        Callback<String> onGoogleLegalMessageLinkClicked =
+                url -> onLinkClicked(url, VirtualCardDialogLink.GOOGLE_LEGAL_MESSAGE);
+        Callback<String> onIssuerLegalMessageLinkClicked =
+                url -> onLinkClicked(url, VirtualCardDialogLink.ISSUER_LEGAL_MESSAGE);
+        Callback<Integer> resultHandler = dismissalCause -> {
+            if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+                logSettingsPageEnrollmentDialogUserSelection(true);
+                // Silently enroll the virtual card.
+                mDelegate.enrollOfferedVirtualCard();
+                // Update the button label to allow un-enroll.
+                setVirtualCardEnrollmentButtonLabel(true);
+            } else {
+                // There can be cases where the user did not explicitly cancel the
+                // enrollment, but the dialog was closed.
+                if (dismissalCause == DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
+                    logSettingsPageEnrollmentDialogUserSelection(false);
+                }
+                // Since the user canceled the enrollment dialog, enable the button
+                // again to allow for enrollment.
+                mVirtualCardEnrollmentButton.setEnabled(true);
+            }
+        };
+        AutofillVirtualCardEnrollmentDialog dialog = new AutofillVirtualCardEnrollmentDialog(
+                getActivity(), modalDialogManager, virtualCardEnrollmentFields,
+                getActivity().getString(
+                        R.string.autofill_virtual_card_enrollment_accept_button_label),
+                getActivity().getString(R.string.no_thanks), onEducationTextLinkClicked,
+                onGoogleLegalMessageLinkClicked, onIssuerLegalMessageLinkClicked, resultHandler);
         dialog.show();
+    }
+
+    private void onLinkClicked(String url, @VirtualCardDialogLink int virtualCardDialogLink) {
+        RecordHistogram.recordEnumeratedHistogram(
+                SETTINGS_PAGE_ENROLLMENT_HISTOGRAM_TEXT + ".LinkClicked", virtualCardDialogLink,
+                VirtualCardDialogLink.NUM_ENTRIES);
+        CustomTabActivity.showInfoPage(getActivity(), url);
     }
 
     private void removeLocalCopyViews() {

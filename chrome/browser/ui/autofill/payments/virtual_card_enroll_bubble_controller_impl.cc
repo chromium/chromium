@@ -12,10 +12,15 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/android/chrome_jni_headers/VirtualCardEnrollmentDelegate_jni.h"
+
 #include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_mobile.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "components/messages/android/messages_feature.h"
+#include "ui/android/view_android.h"
+#include "ui/android/window_android.h"
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -31,7 +36,16 @@ VirtualCardEnrollBubbleControllerImpl::VirtualCardEnrollBubbleControllerImpl(
           *web_contents) {}
 
 VirtualCardEnrollBubbleControllerImpl::
-    ~VirtualCardEnrollBubbleControllerImpl() = default;
+    ~VirtualCardEnrollBubbleControllerImpl() {
+#if BUILDFLAG(IS_ANDROID)
+  HideBubble();
+  // Reset the controller reference in the Java delegate.
+  if (java_delegate_) {
+    Java_VirtualCardEnrollmentDelegate_onNativeDestroyed(
+        base::android::AttachCurrentThread(), java_delegate_);
+  }
+#endif
+}
 
 // static
 VirtualCardEnrollBubbleController*
@@ -190,6 +204,29 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
       virtual_card_enrollment_fields_.previously_declined);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void VirtualCardEnrollBubbleControllerImpl::OnAccepted(JNIEnv* env) {
+  OnAcceptButton();
+  OnBubbleClosed(PaymentsBubbleClosedReason::kAccepted);
+}
+
+void VirtualCardEnrollBubbleControllerImpl::OnDeclined(JNIEnv* env) {
+  OnDeclineButton();
+  OnBubbleClosed(PaymentsBubbleClosedReason::kCancelled);
+}
+
+void VirtualCardEnrollBubbleControllerImpl::OnDismissed(JNIEnv* env) {
+  OnBubbleClosed(PaymentsBubbleClosedReason::kNotInteracted);
+}
+
+void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(JNIEnv* env,
+                                                          jstring url,
+                                                          jint link_type) {
+  OnLinkClicked(static_cast<autofill::VirtualCardEnrollmentLinkType>(link_type),
+                GURL(base::android::ConvertJavaStringToUTF16(env, url)));
+}
+#endif
+
 bool VirtualCardEnrollBubbleControllerImpl::IsIconVisible() const {
 #if BUILDFLAG(IS_ANDROID)
   return false;
@@ -221,13 +258,25 @@ VirtualCardEnrollBubbleControllerImpl::GetPageActionIconType() {
 
 void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
 #if BUILDFLAG(IS_ANDROID)
-  infobars::ContentInfoBarManager* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents());
-  DCHECK(infobar_manager);
-  infobar_manager->RemoveAllInfoBars(true);
-  infobar_manager->AddInfoBar(CreateVirtualCardEnrollmentInfoBarMobile(
-      std::make_unique<AutofillVirtualCardEnrollmentInfoBarDelegateMobile>(
-          this)));
+  if (messages::IsSaveCardMessagesUiEnabled() &&
+      GetVirtualCardEnrollmentBubbleSource() ==
+          VirtualCardEnrollmentBubbleSource::
+              VIRTUAL_CARD_ENROLLMENT_UPSTREAM_SOURCE) {
+    DCHECK(!bubble_view());
+
+    set_bubble_view(
+        VirtualCardEnrollmentViewAndroid::CreateAndShow(web_contents(), this));
+
+    DCHECK(bubble_view());
+  } else {
+    infobars::ContentInfoBarManager* infobar_manager =
+        infobars::ContentInfoBarManager::FromWebContents(web_contents());
+    DCHECK(infobar_manager);
+    infobar_manager->RemoveAllInfoBars(true);
+    infobar_manager->AddInfoBar(CreateVirtualCardEnrollmentInfoBarMobile(
+        std::make_unique<AutofillVirtualCardEnrollmentInfoBarDelegateMobile>(
+            this)));
+  }
 #else
   // If bubble is already showing for another card, close it.
   if (bubble_view())
@@ -286,6 +335,17 @@ bool VirtualCardEnrollBubbleControllerImpl::IsWebContentsActive() {
 
   return active_browser->tab_strip_model()->GetActiveWebContents() ==
          web_contents();
+}
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+base::android::ScopedJavaGlobalRef<jobject>
+VirtualCardEnrollBubbleControllerImpl::GetOrCreateJavaDelegate() {
+  if (java_delegate_)
+    return java_delegate_;
+  return java_delegate_ = Java_VirtualCardEnrollmentDelegate_create(
+             base::android::AttachCurrentThread(),
+             reinterpret_cast<intptr_t>(this));
 }
 #endif
 
