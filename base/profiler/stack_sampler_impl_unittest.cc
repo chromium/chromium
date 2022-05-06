@@ -70,13 +70,14 @@ class TestStackCopier : public StackCopier {
                  TimeTicks* timestamp,
                  RegisterContext* thread_context,
                  Delegate* delegate) override {
-    std::memcpy(stack_buffer->buffer(), &fake_stack_[0], fake_stack_.size());
-    *stack_top =
-        reinterpret_cast<uintptr_t>(&fake_stack_[0] + fake_stack_.size());
-    // Set the stack pointer to be consistent with the provided fake stack.
+    std::memcpy(stack_buffer->buffer(), &fake_stack_[0],
+                fake_stack_.size() * sizeof(fake_stack_[0]));
+    *stack_top = reinterpret_cast<uintptr_t>(stack_buffer->buffer() +
+                                             fake_stack_.size());
+    // Set the stack pointer to be consistent with the copied stack.
     *thread_context = {};
     RegisterContextStackPointer(thread_context) =
-        reinterpret_cast<uintptr_t>(&fake_stack_[0]);
+        reinterpret_cast<uintptr_t>(stack_buffer->buffer());
 
     *timestamp = timestamp_;
 
@@ -107,37 +108,23 @@ class DelegateInvokingStackCopier : public StackCopier {
 // Trivial unwinder implementation for testing.
 class TestUnwinder : public Unwinder {
  public:
-  TestUnwinder(size_t stack_size = 0,
-               std::vector<uintptr_t>* stack_copy = nullptr,
-               // Variable to fill in with the bottom address of the
-               // copied stack. This will be different than
-               // &(*stack_copy)[0] because |stack_copy| is a copy of the
-               // copy so does not share memory with the actual copy.
-               uintptr_t* stack_copy_bottom = nullptr)
-      : stack_size_(stack_size),
-        stack_copy_(stack_copy),
-        stack_copy_bottom_(stack_copy_bottom) {}
+  explicit TestUnwinder(std::vector<uintptr_t>* stack_copy)
+      : stack_copy_(stack_copy) {}
 
   bool CanUnwindFrom(const Frame& current_frame) const override { return true; }
 
   UnwindResult TryUnwind(RegisterContext* thread_context,
                          uintptr_t stack_top,
                          std::vector<Frame>* stack) const override {
-    if (stack_copy_) {
-      auto* bottom = reinterpret_cast<uintptr_t*>(
-          RegisterContextStackPointer(thread_context));
-      auto* top = bottom + stack_size_;
-      *stack_copy_ = std::vector<uintptr_t>(bottom, top);
-    }
-    if (stack_copy_bottom_)
-      *stack_copy_bottom_ = RegisterContextStackPointer(thread_context);
+    auto* bottom = reinterpret_cast<uintptr_t*>(
+        RegisterContextStackPointer(thread_context));
+    *stack_copy_ =
+        std::vector<uintptr_t>(bottom, reinterpret_cast<uintptr_t*>(stack_top));
     return UnwindResult::kCompleted;
   }
 
  private:
-  size_t stack_size_;
   raw_ptr<std::vector<uintptr_t>> stack_copy_;
-  raw_ptr<uintptr_t> stack_copy_bottom_;
 };
 
 // Records invocations of calls to OnStackCapture()/UpdateModules().
@@ -279,8 +266,7 @@ TEST(StackSamplerImplTest, CopyStack) {
   std::vector<uintptr_t> stack_copy;
   StackSamplerImpl stack_sampler_impl(
       std::make_unique<TestStackCopier>(stack),
-      MakeUnwindersFactory(
-          std::make_unique<TestUnwinder>(stack.size(), &stack_copy)),
+      MakeUnwindersFactory(std::make_unique<TestUnwinder>(&stack_copy)),
       &module_cache);
 
   stack_sampler_impl.Initialize();
@@ -302,8 +288,7 @@ TEST(StackSamplerImplTest, CopyStackTimestamp) {
   TimeTicks timestamp = TimeTicks::UnixEpoch();
   StackSamplerImpl stack_sampler_impl(
       std::make_unique<TestStackCopier>(stack, timestamp),
-      MakeUnwindersFactory(
-          std::make_unique<TestUnwinder>(stack.size(), &stack_copy)),
+      MakeUnwindersFactory(std::make_unique<TestUnwinder>(&stack_copy)),
       &module_cache);
 
   stack_sampler_impl.Initialize();
