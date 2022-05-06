@@ -2861,8 +2861,17 @@ bool GpuImageDecodeCache::IsCompatible(const ImageData* image_data,
                              image_data->upload_scale_mip_level;
   bool quality_is_compatible =
       CalculateDesiredFilterQuality(draw_image) <= image_data->quality;
-  bool color_is_compatible =
-      image_data->target_color_params == draw_image.target_color_params();
+  sk_sp<SkColorSpace> decoded_target_colorspace =
+      ColorSpaceForImageDecode(draw_image, image_data->mode);
+  bool color_is_compatible = false;
+  if (!decoded_target_colorspace ||
+      !gfx::ColorSpace(*decoded_target_colorspace).IsPQOrHLG()) {
+    color_is_compatible = image_data->target_color_params.color_space ==
+                          draw_image.target_color_space();
+  } else {
+    color_is_compatible =
+        image_data->target_color_params == draw_image.target_color_params();
+  }
   if (!color_is_compatible)
     return false;
   if (is_scaled && (!scale_is_compatible || !quality_is_compatible))
