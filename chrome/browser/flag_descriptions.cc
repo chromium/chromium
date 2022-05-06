@@ -5657,6 +5657,15 @@ const char kDownloadShelfWebUI[] = "Download Shelf WebUI";
 const char kDownloadShelfWebUIDescription[] =
     "Replaces the Views download shelf with a WebUI download shelf.";
 
+const char kSideSearchName[] = "Side search";
+const char kSideSearchDescription[] =
+    "Enables an easily accessible way to access your most recent Google search "
+    "results page embedded in a browser side panel";
+
+const char kSideSearchDSESupportName[] = "Side search DSE support";
+const char kSideSearchDSESupportDescription[] =
+    "Side search with support for participating chrome search engines.";
+
 #endif  // defined(TOOLKIT_VIEWS)
 
 // Random platform combinations -----------------------------------------------
@@ -5782,17 +5791,6 @@ const char kPaintPreviewStartupDescription[] =
     "the tab to be restored on startup, the paint preview will be shown "
     "instead.";
 #endif  // ENABLE_PAINT_PREVIEW && BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
-const char kSideSearchName[] = "Side search";
-const char kSideSearchDescription[] =
-    "Enables an easily accessible way to access your most recent Google search "
-    "results page embedded in a browser side panel";
-
-const char kSideSearchDSESupportName[] = "Side search DSE support";
-const char kSideSearchDSESupportDescription[] =
-    "Side search with support for participating chrome search engines.";
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 const char kWebUITabStripFlagId[] = "webui-tab-strip";

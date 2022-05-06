@@ -4,6 +4,7 @@
 
 #include "chrome/test/base/test_browser_window.h"
 
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/sharing/sharing_dialog_data.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -14,10 +15,6 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/geometry/rect.h"
-
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
-#include "base/values.h"
-#endif
 
 // Helpers --------------------------------------------------------------------
 
@@ -333,14 +330,12 @@ void TestBrowserWindow::SetCloseCallback(base::OnceClosure close_callback) {
   close_callback_ = std::move(close_callback);
 }
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
 bool TestBrowserWindow::IsSideSearchPanelVisible() const {
   return false;
 }
 
 void TestBrowserWindow::MaybeRestoreSideSearchStatePerWindow(
     const std::map<std::string, std::string>& extra_data) {}
-#endif
 
 FeaturePromoController* TestBrowserWindow::GetFeaturePromoController() {
   return feature_promo_controller_.get();

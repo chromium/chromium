@@ -4042,6 +4042,18 @@ static_library("ui") {
 
       # This test header is included because it contains forward declarations
       # needed for "friend" statements for use in tests.
+      "side_search/side_search_config.cc",
+      "side_search/side_search_config.h",
+      "side_search/side_search_metrics.cc",
+      "side_search/side_search_metrics.h",
+      "side_search/side_search_prefs.cc",
+      "side_search/side_search_prefs.h",
+      "side_search/side_search_side_contents_helper.cc",
+      "side_search/side_search_side_contents_helper.h",
+      "side_search/side_search_tab_contents_helper.cc",
+      "side_search/side_search_tab_contents_helper.h",
+      "side_search/side_search_utils.cc",
+      "side_search/side_search_utils.h",
       "translate/translate_bubble_test_utils.h",
       "views/accessibility/caption_bubble_context_views.cc",
       "views/accessibility/caption_bubble_context_views.h",
@@ -4760,6 +4772,12 @@ static_library("ui") {
       "views/side_panel/user_note/user_note_ui_coordinator.h",
       "views/side_panel/user_note/user_note_view.cc",
       "views/side_panel/user_note/user_note_view.h",
+      "views/side_search/default_search_icon_source.cc",
+      "views/side_search/default_search_icon_source.h",
+      "views/side_search/side_search_browser_controller.cc",
+      "views/side_search/side_search_browser_controller.h",
+      "views/side_search/side_search_icon_view.cc",
+      "views/side_search/side_search_icon_view.h",
       "views/ssl_client_certificate_selector.cc",
       "views/ssl_client_certificate_selector.h",
       "views/status_bubble_views.cc",
@@ -4996,6 +5014,8 @@ static_library("ui") {
     ]
 
     deps += [
+      "side_search:side_search_tab_data_proto",
+      "side_search:side_search_window_data_proto",
       "//base",
       "//chrome/browser/ui/views",
       "//components/commerce/core:public",
@@ -5542,34 +5562,6 @@ static_library("ui") {
       "webui/tab_strip/tab_strip_ui_util.h",
       "webui/tab_strip/thumbnail_tracker.cc",
       "webui/tab_strip/thumbnail_tracker.h",
-    ]
-  }
-
-  if (enable_side_search) {
-    sources += [
-      "side_search/side_search_config.cc",
-      "side_search/side_search_config.h",
-      "side_search/side_search_metrics.cc",
-      "side_search/side_search_metrics.h",
-      "side_search/side_search_prefs.cc",
-      "side_search/side_search_prefs.h",
-      "side_search/side_search_side_contents_helper.cc",
-      "side_search/side_search_side_contents_helper.h",
-      "side_search/side_search_tab_contents_helper.cc",
-      "side_search/side_search_tab_contents_helper.h",
-      "side_search/side_search_utils.cc",
-      "side_search/side_search_utils.h",
-      "views/side_search/default_search_icon_source.cc",
-      "views/side_search/default_search_icon_source.h",
-      "views/side_search/side_search_browser_controller.cc",
-      "views/side_search/side_search_browser_controller.h",
-      "views/side_search/side_search_icon_view.cc",
-      "views/side_search/side_search_icon_view.h",
-    ]
-
-    deps += [
-      "side_search:side_search_tab_data_proto",
-      "side_search:side_search_window_data_proto",
     ]
   }
 }

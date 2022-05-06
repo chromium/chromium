@@ -8025,7 +8025,7 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kTrustedWebActivityNotificationPermissionDelegation)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#if defined(TOOKIT_VIEWS)
     {"side-search", flag_descriptions::kSideSearchName,
      flag_descriptions::kSideSearchDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSideSearch)},
@@ -8033,7 +8033,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"side-search-dse-support", flag_descriptions::kSideSearchDSESupportName,
      flag_descriptions::kSideSearchDSESupportDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSideSearchDSESupport)},
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+#endif  // defined(TOOKIT_VIEWS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-component-updater-test-request",

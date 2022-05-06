@@ -61,9 +61,6 @@ declare_args() {
   # Android stores them separately on the Java side.
   enable_session_service = !is_android && !is_castos
 
-  # Enables usage of the side search feature, which is disabled by default.
-  enable_side_search = toolkit_views
-
   # Enables supervision for Family Link users.
   # Supervision is only supported on Chrome OS and Android.
   enable_supervised_users = is_chromeos || is_android
@@ -95,7 +92,6 @@ chrome_grit_defines = [
   "enable_pdf=$enable_pdf",
   "enable_print_preview=$enable_print_preview",
   "enable_service_discovery=$enable_service_discovery",
-  "enable_side_search=$enable_side_search",
   "enable_supervised_users=$enable_supervised_users",
   "enable_vr=$enable_vr",
   "enable_webui_tab_strip=$enable_webui_tab_strip",

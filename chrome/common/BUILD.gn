@@ -45,7 +45,6 @@ buildflag_header("buildflags") {
     "ENABLE_ONE_CLICK_SIGNIN=$enable_one_click_signin",
     "ENABLE_SERVICE_DISCOVERY=$enable_service_discovery",
     "ENABLE_SESSION_SERVICE=$enable_session_service",
-    "ENABLE_SIDE_SEARCH=$enable_side_search",
     "ENABLE_SUPERVISED_USERS=$enable_supervised_users",
     "ENABLE_SYSTEM_NOTIFICATIONS=$enable_system_notifications",
     "ENABLE_WAYLAND_SERVER=$enable_wayland_server",

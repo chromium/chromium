@@ -67,11 +67,7 @@ bool ConvertedHitTest(views::View* src, views::View* dst, gfx::Point* point) {
 }
 
 bool IsSideSearchRightAligned() {
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
   return base::FeatureList::IsEnabled(features::kSideSearchDSESupport);
-#else
-  return false;
-#endif
 }
 }  // namespace
 

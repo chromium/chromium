@@ -130,6 +130,10 @@
 #include "components/media_router/common/pref_names.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if defined(TOOLKIT_VIEWS)
+#include "chrome/browser/ui/side_search/side_search_prefs.h"
+#endif  // BUILDFLAG(TOOLKIT_VIEWS)
+
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
 #else
@@ -180,10 +184,6 @@
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 #include "components/spellcheck/browser/pref_names.h"
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
-
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
-#include "chrome/browser/ui/side_search/side_search_prefs.h"
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
@@ -331,6 +331,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kBrowserLabsEnabled,
     chrome_labs_prefs::kBrowserLabsEnabled,
     base::Value::Type::BOOLEAN },
+#if defined(TOOLKIT_VIEWS)
+  { key::kSideSearchEnabled,
+    side_search_prefs::kSideSearchEnabled,
+    base::Value::Type::BOOLEAN },
+#endif // defined(TOOLKIT_VIEWS)
 #if BUILDFLAG(ENABLE_CLICK_TO_CALL)
   { key::kClickToCallEnabled,
     prefs::kClickToCallEnabled,
@@ -565,11 +570,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kShowHomeButton,
     prefs::kShowHomeButton,
     base::Value::Type::BOOLEAN },
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
-  { key::kSideSearchEnabled,
-    side_search_prefs::kSideSearchEnabled,
-    base::Value::Type::BOOLEAN },
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
   { key::kSignedHTTPExchangeEnabled,
     prefs::kSignedHTTPExchangeEnabled,
     base::Value::Type::BOOLEAN },

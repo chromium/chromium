@@ -38,9 +38,9 @@
 #include "chrome/browser/sessions/tab_loader.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/side_search/side_search_utils.h"
-#endif
+#endif  // defined(TOOLKIT_VIEWS)
 
 using content::NavigationController;
 using content::SessionStorageNamespace;
@@ -106,7 +106,7 @@ std::map<std::string, std::string> BrowserLiveTabContext::GetExtraDataForTab(
     int index) const {
   std::map<std::string, std::string> extra_data;
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#if defined(TOOLKIT_VIEWS)
   if (IsSideSearchEnabled(browser_->profile())) {
     absl::optional<std::pair<std::string, std::string>> side_search_data =
         side_search::MaybeGetSideSearchTabRestoreData(
@@ -114,7 +114,7 @@ std::map<std::string, std::string> BrowserLiveTabContext::GetExtraDataForTab(
     if (side_search_data.has_value())
       extra_data.insert(side_search_data.value());
   }
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+#endif  // defined(TOOLKIT_VIEWS)
 
   return extra_data;
 }
@@ -123,12 +123,12 @@ std::map<std::string, std::string>
 BrowserLiveTabContext::GetExtraDataForWindow() const {
   std::map<std::string, std::string> extra_data;
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#if defined(TOOLKIT_VIEWS)
   if (IsSideSearchEnabled(browser_->profile())) {
     side_search::MaybeAddSideSearchWindowRestoreData(
         browser_->window()->IsSideSearchPanelVisible(), extra_data);
   }
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+#endif  // defined(TOOLKIT_VIEWS)
 
   return extra_data;
 }
@@ -306,9 +306,9 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
   create_params->user_title = user_title;
   Browser* browser = Browser::Create(*create_params.get());
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#if defined(TOOLKIT_VIEWS)
   browser->window()->MaybeRestoreSideSearchStatePerWindow(extra_data);
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+#endif  // defined(TOOLKIT_VIEWS)
 
   return browser->live_tab_context();
 }

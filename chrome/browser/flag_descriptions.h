@@ -3247,6 +3247,12 @@ extern const char kZeroCopyVideoCaptureDescription[];
 #if defined(TOOLKIT_VIEWS)
 extern const char kDownloadShelfWebUI[];
 extern const char kDownloadShelfWebUIDescription[];
+
+extern const char kSideSearchName[];
+extern const char kSideSearchDescription[];
+
+extern const char kSideSearchDSESupportName[];
+extern const char kSideSearchDSESupportDescription[];
 #endif  // defined(TOOLKIT_VIEWS)
 
 // Random platform combinations -----------------------------------------------
@@ -3334,14 +3340,6 @@ extern const char kPaintPreviewDemoDescription[];
 extern const char kPaintPreviewStartupName[];
 extern const char kPaintPreviewStartupDescription[];
 #endif  // ENABLE_PAINT_PREVIEW && BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
-extern const char kSideSearchName[];
-extern const char kSideSearchDescription[];
-
-extern const char kSideSearchDSESupportName[];
-extern const char kSideSearchDSESupportDescription[];
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 extern const char kWebUITabStripFlagId[];

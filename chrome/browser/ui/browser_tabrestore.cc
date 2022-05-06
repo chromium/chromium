@@ -31,9 +31,9 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/range/range.h"
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/side_search/side_search_utils.h"
-#endif
+#endif  // defined(TOOLKIT_VIEWS)
 
 using content::NavigationEntry;
 using content::RestoreType;
@@ -97,12 +97,12 @@ std::unique_ptr<WebContents> CreateRestoredTab(
                                         RestoreType::kRestored, &entries);
   DCHECK_EQ(0u, entries.size());
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#if defined(TOOLKIT_VIEWS)
   if (IsSideSearchEnabled(browser->profile())) {
     side_search::SetSideSearchTabStateFromRestoreData(web_contents.get(),
                                                       extra_data);
   }
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+#endif  // defined(TOOLKIT_VIEWS)
 
   return web_contents;
 }
@@ -262,10 +262,10 @@ WebContents* AddRestoredTabFromCache(
       user_agent_override.opaque_ua_metadata_override);
   web_contents->SetUserAgentOverride(ua_override, false);
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#if defined(TOOLKIT_VIEWS)
   side_search::SetSideSearchTabStateFromRestoreData(web_contents.get(),
                                                     extra_data);
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+#endif  // defined(TOOLKIT_VIEWS)
 
   return AddRestoredTabImpl(std::move(web_contents), browser, tab_index, group,
                             select, pin, /*from_session_restore=*/false);

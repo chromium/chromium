@@ -226,11 +226,9 @@ class TestBrowserWindow : public BrowserWindow {
   void CreateTabSearchBubble() override {}
   void CloseTabSearchBubble() override {}
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
   bool IsSideSearchPanelVisible() const override;
   void MaybeRestoreSideSearchStatePerWindow(
       const std::map<std::string, std::string>& extra_data) override;
-#endif
 
   FeaturePromoController* GetFeaturePromoController() override;
   bool IsFeaturePromoActive(

@@ -63,10 +63,10 @@
 #include "extensions/common/constants.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/page_load_metrics/observers/side_search_page_load_metrics_observer.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+#endif  // defined(TOOLKIT_VIEWS)
 
 namespace chrome {
 
@@ -111,13 +111,13 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
     page_load_metrics::PageLoadTracker* tracker) {
   // TODO(crbug.com/1299103): Integrate side panel metrics with UKM.
   if (IsSidePanel(web_contents())) {
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#if defined(TOOLKIT_VIEWS)
     if (auto side_search_observer =
             SideSearchPageLoadMetricsObserver::CreateIfNeeded(
                 tracker->GetWebContents())) {
       tracker->AddObserver(std::move(side_search_observer));
     }
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+#endif  // defined(TOOLKIT_VIEWS)
     return;
   }
 
@@ -223,11 +223,11 @@ bool PageLoadMetricsEmbedder::IsExtensionUrl(const GURL& url) {
 }
 
 bool PageLoadMetricsEmbedder::IsSidePanel(content::WebContents* web_contents) {
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#if defined(TOOLKIT_VIEWS)
   return side_search::IsSidePanelWebContents(web_contents);
 #else
   return false;
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+#endif  // defined(TOOLKIT_VIEWS)
 }
 
 page_load_metrics::PageLoadMetricsMemoryTracker*

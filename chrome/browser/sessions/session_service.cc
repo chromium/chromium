@@ -67,9 +67,9 @@
 #include "chrome/browser/app_controller_mac.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/side_search/side_search_utils.h"
-#endif
+#endif  // defined(TOOLKIT_VIEWS)
 
 using content::NavigationEntry;
 using content::WebContents;
@@ -611,7 +611,7 @@ void SessionService::BuildCommandsForTab(
         sessions::CreateTabGroupCommand(session_id, std::move(group)));
   }
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#if defined(TOOLKIT_VIEWS)
   absl::optional<std::pair<std::string, std::string>> tab_restore_data =
       side_search::MaybeGetSideSearchTabRestoreData(tab);
   if (tab_restore_data.has_value()) {
@@ -619,7 +619,7 @@ void SessionService::BuildCommandsForTab(
         sessions::CreateAddTabExtraDataCommand(
             session_id, tab_restore_data->first, tab_restore_data->second));
   }
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+#endif  // defined(TOOLKIT_VIEWS)
 }
 
 void SessionService::ScheduleResetCommands() {

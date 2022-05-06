@@ -177,6 +177,11 @@
 #include "components/zoom/zoom_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if defined(TOOLKIT_VIEWS)
+#include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
+#include "chrome/browser/ui/side_search/side_search_utils.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/child_accounts/time_limits/web_time_navigation_observer.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder_tab_tracker.h"
@@ -248,11 +253,6 @@
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #endif
-
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
-#include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
-#include "chrome/browser/ui/side_search/side_search_utils.h"
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 using content::WebContents;
 
@@ -568,8 +568,13 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     FontPrewarmerTabHelper::CreateForWebContents(web_contents);
 #endif
 
-  // --- Section 3: Feature tab helpers behind BUILDFLAGs ---
-  // NOT for "if enabled"; put those in section 1.
+#if defined(TOOLKIT_VIEWS)
+  if (IsSideSearchEnabled(profile))
+    SideSearchTabContentsHelper::CreateForWebContents(web_contents);
+#endif
+
+    // --- Section 3: Feature tab helpers behind BUILDFLAGs ---
+    // NOT for "if enabled"; put those in section 1.
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   captive_portal::CaptivePortalTabHelper::CreateForWebContents(
@@ -615,11 +620,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   SupervisedUserNavigationObserver::CreateForWebContents(web_contents);
 #endif
-
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
-  if (IsSideSearchEnabled(profile))
-    SideSearchTabContentsHelper::CreateForWebContents(web_contents);
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 #if BUILDFLAG(ENABLE_FEED_V2)
   if (base::FeatureList::IsEnabled(feed::kWebUiFeed))

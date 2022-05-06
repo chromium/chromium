@@ -85,7 +85,6 @@ const base::Feature kProminentDarkModeActiveTabTitle{
 const base::Feature kQuickCommands{"QuickCommands",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
 // Enables the side search feature for Google Search. Presents recent Google
 // search results in a browser side panel.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -113,8 +112,6 @@ const base::Feature kSideSearchDSESupport{"SideSearchDSESupport",
 // panel is open.
 const base::Feature kClobberAllSideSearchSidePanels{
     "ClobberAllSideSearchSidePanels", base::FEATURE_ENABLED_BY_DEFAULT};
-
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 const base::Feature kSidePanelDragAndDrop{"SidePanelDragAndDrop",
                                           base::FEATURE_ENABLED_BY_DEFAULT};

@@ -73,6 +73,7 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_view.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
+#include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
@@ -138,6 +139,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
@@ -293,11 +295,6 @@
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/ui/views/lens/lens_side_panel_controller.h"
 #endif
-
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
-#include "chrome/browser/ui/side_search/side_search_utils.h"
-#include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 using base::UserMetricsAction;
 using content::NativeWebKeyboardEvent;
@@ -919,7 +916,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   }
 #endif
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
   if (browser_->is_type_normal() && IsSideSearchEnabled(browser_->profile())) {
     side_search_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
     left_aligned_side_panel_separator_ =
@@ -928,7 +924,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     side_search_controller_ = std::make_unique<SideSearchBrowserController>(
         side_search_side_panel_, this);
   }
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
   // needs to come after toolbar in focus order (see EnsureFocusOrder()).
@@ -1513,7 +1508,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   if (app_banner_manager)
     ObserveAppBannerManager(app_banner_manager);
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
   // Update the side panel before performing a layout on the BrowserView so that
   // the layout takes into account the presence (or absence) of the side panel.
   // This avoids unnecessary resize events propagating to the WebContents if it
@@ -1523,7 +1517,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     side_search_controller_->UpdateSidePanelForContents(new_contents,
                                                         old_contents);
   }
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
   UpdateUIForContents(new_contents);
   RevealTabStripIfNeeded();
@@ -1585,7 +1578,7 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
     infobar_container_->ChangeInfoBarManager(nullptr);
     app_banner_manager_observation_.Reset();
     UpdateDevToolsForContents(nullptr, true);
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+
     // We must ensure that we propagate an update to the side search controller
     // so that it removes the now detached tab WebContents from the side panel's
     // WebView. This is necessary as BrowserView::OnActiveTabChanged() will fire
@@ -1596,7 +1589,6 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
     // (see crbug.com/1306793).
     if (side_search_controller_)
       side_search_controller_->UpdateSidePanelForContents(contents, nullptr);
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
   }
 }
 
@@ -3324,13 +3316,11 @@ bool BrowserView::CloseOpenRightAlignedSidePanel(bool exclude_lens,
 
   // Ensure all side panels are closed. Close contextual panels first.
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
   // Hide side search panel if it's right aligned.
   if (!exclude_side_search && side_search_controller_ &&
       base::FeatureList::IsEnabled(features::kSideSearchDSESupport)) {
     side_search_controller_->CloseSidePanel();
   }
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
   toolbar()->side_panel_button()->HideSidePanel();
 
@@ -3343,7 +3333,6 @@ bool BrowserView::CloseOpenRightAlignedSidePanel(bool exclude_lens,
 }
 
 void BrowserView::MaybeClobberAllSideSearchSidePanels() {
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
   if (!base::FeatureList::IsEnabled(features::kSideSearchDSESupport) ||
       !base::FeatureList::IsEnabled(
           features::kClobberAllSideSearchSidePanels)) {
@@ -3353,7 +3342,6 @@ void BrowserView::MaybeClobberAllSideSearchSidePanels() {
   if (side_search_controller_) {
     side_search_controller_->ClobberAllInCurrentBrowser();
   }
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 }
 
 void BrowserView::RightAlignedSidePanelWasClosed() {
@@ -3366,7 +3354,6 @@ void BrowserView::RightAlignedSidePanelWasClosed() {
   }
 }
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
 bool BrowserView::IsSideSearchPanelVisible() const {
   if (side_search_controller_)
     return side_search_controller_->GetSidePanelToggledOpen();
@@ -3381,7 +3368,6 @@ void BrowserView::MaybeRestoreSideSearchStatePerWindow(
         side_search_controller_.get(), extra_data);
   }
 }
-#endif
 
 void BrowserView::RevealTabStripIfNeeded() {
   if (!immersive_mode_controller_->IsEnabled())
@@ -3476,7 +3462,6 @@ views::CloseRequestResult BrowserView::OnWindowCloseRequested() {
     result = views::CloseRequestResult::kCannotClose;
   }
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
   // Persist the side search browser controller's window side panel state for
   // use during session restoration. Since the side panel is closed by default,
   // we only want to persist the state if the side panel is currently open.
@@ -3486,7 +3471,6 @@ views::CloseRequestResult BrowserView::OnWindowCloseRequested() {
         GetProfile(), browser()->session_id(),
         side_search_controller_->GetSidePanelToggledOpen());
   }
-#endif
 
   browser_->OnWindowClosing();
   return result;
@@ -3604,12 +3588,10 @@ void BrowserView::AddedToWidget() {
       panels.push_back(lens_side_panel_);
     if (right_aligned_side_panel_)
       panels.push_back(right_aligned_side_panel_);
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
     if (base::FeatureList::IsEnabled(features::kSideSearchDSESupport) &&
         side_search_side_panel_) {
       panels.push_back(side_search_side_panel_);
     }
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
     side_panel_button_highlighter_ =
         std::make_unique<SidePanelButtonHighlighter>(
             toolbar_->side_panel_button(), panels);

@@ -16,9 +16,9 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+#endif  // defined(TOOLKIT_VIEWS)
 
 using page_load_metrics::PageAbortReason;
 
@@ -154,7 +154,7 @@ namespace {
 void SetUpLoggerForSidePanelIfNecessary(
     content::NavigationHandle& navigation_handle,
     FromGWSPageLoadMetricsLogger& logger) {
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#if defined(TOOLKIT_VIEWS)
   // If the side search helper does not exist for this tab, setup is not needed.
   const auto* helper = SideSearchTabContentsHelper::FromWebContents(
       navigation_handle.GetWebContents());
@@ -176,7 +176,7 @@ void SetUpLoggerForSidePanelIfNecessary(
         side_panel_initiated_redirect_info->initiated_redirect_url,
         side_panel_initiated_redirect_info->initiated_via_link);
   }
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+#endif  // defined(TOOLKIT_VIEWS)
 }
 
 void LogCommittedAbortsBeforePaint(PageAbortReason abort_reason,

@@ -215,7 +215,6 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_ReopenTab) {
   ShowAndVerifyUi();
 }
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
 // Need a separate fixture to override the feature flag.
 class FeaturePromoDialogSideSearchTest : public FeaturePromoDialogTest {
  public:
@@ -244,7 +243,6 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogSideSearchTest,
   set_baseline("3187662");
   ShowAndVerifyUi();
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_TabSearch) {
   set_baseline("2991858");

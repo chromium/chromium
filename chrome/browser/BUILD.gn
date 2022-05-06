@@ -4583,12 +4583,6 @@ static_library("browser") {
         "//extensions/common:mojom",
       ]
     }
-    if (enable_side_search) {
-      sources += [
-        "page_load_metrics/observers/side_search_page_load_metrics_observer.cc",
-        "page_load_metrics/observers/side_search_page_load_metrics_observer.h",
-      ]
-    }
 
     # On Windows, the hashes are embedded in //chrome:chrome_initial rather
     # than here in :chrome_dll.
@@ -5140,6 +5134,13 @@ static_library("browser") {
         "apps/app_service/app_service_proxy_desktop.h",
       ]
     }
+  }
+
+  if (toolkit_views) {
+    sources += [
+      "page_load_metrics/observers/side_search_page_load_metrics_observer.cc",
+      "page_load_metrics/observers/side_search_page_load_metrics_observer.h",
+    ]
   }
 
   if (is_chromeos) {

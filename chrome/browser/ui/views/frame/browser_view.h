@@ -89,9 +89,7 @@ class LensSidePanelController;
 }  // namespace lens
 #endif
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
 class SideSearchBrowserController;
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 namespace ui {
 class NativeTheme;
@@ -210,11 +208,9 @@ class BrowserView : public BrowserWindow,
   void DeleteLensSidePanelController();
 #endif
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
   SideSearchBrowserController* side_search_controller() {
     return side_search_controller_.get();
   }
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
   void set_contents_border_widget(views::Widget* contents_border_widget) {
     GetBrowserViewLayout()->set_contents_border_widget(contents_border_widget);
@@ -732,11 +728,9 @@ class BrowserView : public BrowserWindow,
   // aligned side panels.
   void RightAlignedSidePanelWasClosed();
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
   bool IsSideSearchPanelVisible() const override;
   void MaybeRestoreSideSearchStatePerWindow(
       const std::map<std::string, std::string>& extra_data) override;
-#endif
 
  private:
   // Do not friend BrowserViewLayout. Use the BrowserViewLayoutDelegate
@@ -1025,9 +1019,7 @@ class BrowserView : public BrowserWindow,
 #endif
 
   // Controls the browser window's side panel for the Side Search feature.
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
   std::unique_ptr<SideSearchBrowserController> side_search_controller_;
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
   // Provides access to the toolbar buttons this browser view uses. Buttons may
   // appear in a hosted app frame or in a tabbed UI toolbar.

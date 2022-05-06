@@ -459,16 +459,13 @@
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/browser_view_prefs.h"
+#include "chrome/browser/ui/side_search/side_search_prefs.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/session_data_service.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #endif
-
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
-#include "chrome/browser/ui/side_search/side_search_prefs.h"
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 namespace {
 
@@ -1561,12 +1558,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if defined(TOOLKIT_VIEWS)
   accessibility_prefs::RegisterInvertBubbleUserPrefs(registry);
+  side_search_prefs::RegisterProfilePrefs(registry);
   RegisterBrowserViewProfilePrefs(registry);
 #endif
-
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
-  side_search_prefs::RegisterProfilePrefs(registry);
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(

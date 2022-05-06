@@ -3252,6 +3252,7 @@ if (!is_android) {
         "../browser/ui/views/safe_browsing/prompt_for_scanning_modal_dialog_browsertest.cc",
         "../browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view_impl_browsertest.cc",
         "../browser/ui/views/session_crashed_bubble_view_browsertest.cc",
+        "../browser/ui/views/side_search/default_search_icon_source_browsertest.cc",
         "../browser/ui/views/status_bubble_views_browsertest.cc",
         "../browser/ui/views/tab_sharing/tab_sharing_ui_views_browsertest.cc",
         "../browser/ui/views/tabs/tab_group_editor_bubble_view_browsertest.cc",
@@ -4329,10 +4330,6 @@ if (!is_android) {
       ]
     }
 
-    if (enable_side_search) {
-      sources += [ "../browser/ui/views/side_search/default_search_icon_source_browsertest.cc" ]
-    }
-
     if (is_win || is_mac || is_linux) {
       sources += [
         "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
@@ -5383,6 +5380,14 @@ test("unit_tests") {
     sources += [ "../common/net/x509_certificate_model_unittest.cc" ]
   }
 
+  if (toolkit_views) {
+    sources += [
+      "../browser/page_load_metrics/observers/side_search_page_load_metrics_observer_unittest.cc",
+      "../browser/ui/side_search/side_search_side_contents_helper_unittest.cc",
+      "../browser/ui/side_search/side_search_tab_contents_helper_unittest.cc",
+    ]
+  }
+
   if (enable_webui_tab_strip) {
     sources += [
       "../browser/ui/views/frame/webui_tab_strip_container_view_unittest.cc",
@@ -5390,14 +5395,6 @@ test("unit_tests") {
       "../browser/ui/webui/tab_strip/tab_strip_page_handler_unittest.cc",
       "../browser/ui/webui/tab_strip/tab_strip_ui_layout_unittest.cc",
       "../browser/ui/webui/tab_strip/thumbnail_tracker_unittest.cc",
-    ]
-  }
-
-  if (enable_side_search) {
-    sources += [
-      "../browser/page_load_metrics/observers/side_search_page_load_metrics_observer_unittest.cc",
-      "../browser/ui/side_search/side_search_side_contents_helper_unittest.cc",
-      "../browser/ui/side_search/side_search_tab_contents_helper_unittest.cc",
     ]
   }
 
@@ -9152,6 +9149,7 @@ if (!is_android) {
         "../browser/ui/views/permission_bubble/permission_bubble_interactive_uitest.cc",
         "../browser/ui/views/permission_bubble/permission_chip_interactive_test.cc",
         "../browser/ui/views/sad_tab_view_interactive_uitest.cc",
+        "../browser/ui/views/side_search/side_search_browser_controller_interactive_uitest.cc",
         "../browser/ui/views/ssl_client_certificate_selector_browsertest.cc",
         "../browser/ui/views/tabs/tab_drag_controller_interactive_uitest.cc",
         "../browser/ui/views/tabs/tab_drag_controller_interactive_uitest.h",
@@ -9418,10 +9416,6 @@ if (!is_android) {
 
     if (enable_print_preview) {
       sources += [ "../browser/window_placement/window_placement_printing_interactive_uitest.cc" ]
-    }
-
-    if (enable_side_search) {
-      sources += [ "../browser/ui/views/side_search/side_search_browser_controller_interactive_uitest.cc" ]
     }
 
     # TODO(crbug.com/931218): Ninja cannot handle certain characters appearing
