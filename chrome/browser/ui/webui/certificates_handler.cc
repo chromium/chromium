@@ -283,7 +283,7 @@ CertificatesHandler::CertificatesHandler()
 CertificatesHandler::~CertificatesHandler() {
   if (select_file_dialog_.get())
     select_file_dialog_->ListenerDestroyed();
-  select_file_dialog_ = nullptr;
+  select_file_dialog_.reset();
 }
 
 void CertificatesHandler::RegisterMessages() {
@@ -382,6 +382,8 @@ void CertificatesHandler::FileSelected(const base::FilePath& path,
     default:
       NOTREACHED();
   }
+
+  select_file_dialog_.reset();
 }
 
 void CertificatesHandler::FileSelectionCanceled(void* params) {
@@ -486,6 +488,10 @@ void CertificatesHandler::HandleEditCATrust(const base::ListValue* args) {
 }
 
 void CertificatesHandler::HandleExportPersonal(const base::ListValue* args) {
+  // Early return if the select file dialog is already active.
+  if (select_file_dialog_)
+    return;
+
   CHECK_EQ(2U, args->GetList().size());
   AssignWebUICallbackId(args);
 
@@ -575,6 +581,10 @@ void CertificatesHandler::ExportPersonalFileWritten(const int* write_errno,
 }
 
 void CertificatesHandler::HandleImportPersonal(const base::ListValue* args) {
+  // Early return if the select file dialog is already active.
+  if (select_file_dialog_)
+    return;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // When policy changes while user on the certificate manager page, the UI
   // doesn't update without page refresh and user can still see and use import
@@ -741,10 +751,14 @@ void CertificatesHandler::ImportExportCleanup() {
   // away so they don't try and call back to us.
   if (select_file_dialog_.get())
     select_file_dialog_->ListenerDestroyed();
-  select_file_dialog_ = nullptr;
+  select_file_dialog_.reset();
 }
 
 void CertificatesHandler::HandleImportServer(const base::ListValue* args) {
+  // Early return if the select file dialog is already active.
+  if (select_file_dialog_)
+    return;
+
   CHECK_EQ(1U, args->GetList().size());
   AssignWebUICallbackId(args);
 
@@ -812,6 +826,10 @@ void CertificatesHandler::ImportServerFileRead(const int* read_errno,
 }
 
 void CertificatesHandler::HandleImportCA(const base::ListValue* args) {
+  // Early return if the select file dialog is already active.
+  if (select_file_dialog_)
+    return;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // When policy changes while user on the certificate manager page, the UI
   // doesn't update without page refresh and user can still see and use import
