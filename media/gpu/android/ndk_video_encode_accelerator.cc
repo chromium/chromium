@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/video_frame.h"
@@ -99,10 +100,17 @@ const base::Feature kAndroidNdkVideoEncoder{"AndroidNdkVideoEncoder",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 static bool InitMediaCodec() {
+  // We need at least Android P for AMediaCodec_getInputFormat(), but in
+  // Android P we have issues with CFI and dynamic linker on arm64.
+  const base::android::SdkVersion min_supported_version =
+#if defined(ARCH_CPU_ARMEL)
+      base::android::SDK_VERSION_P;
+#else
+      base::android::SDK_VERSION_Q;
+#endif
+
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_Q) {
-    // We need at least Android P for AMediaCodec_getInputFormat(), but in
-    // Android P we have issues with CFI and dynamic linker on arm64.
+      min_supported_version) {
     return false;
   }
 
