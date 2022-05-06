@@ -4,6 +4,6 @@
     "ref": "refs/branch-heads/4896",
     "chrome_project": "chrome-m100",
     "branch_types": [
-        "standard"
+        "desktop-extended-stable"
     ]
 }
