@@ -32,7 +32,8 @@ class BLINK_COMMON_EXPORT MimeSniffingThrottle : public URLLoaderThrottle {
 
   // Called from MimeSniffingURLLoader once mime type is ready.
   void ResumeWithNewResponseHead(
-      network::mojom::URLResponseHeadPtr new_response_head);
+      network::mojom::URLResponseHeadPtr new_response_head,
+      mojo::ScopedDataPipeConsumerHandle body);
 
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

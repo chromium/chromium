@@ -75,8 +75,10 @@ const char* MimeSniffingThrottle::NameForLoggingWillProcessResponse() {
 }
 
 void MimeSniffingThrottle::ResumeWithNewResponseHead(
-    network::mojom::URLResponseHeadPtr new_response_head) {
-  delegate_->UpdateDeferredResponseHead(std::move(new_response_head));
+    network::mojom::URLResponseHeadPtr new_response_head,
+    mojo::ScopedDataPipeConsumerHandle body) {
+  delegate_->UpdateDeferredResponseHead(std::move(new_response_head),
+                                        std::move(body));
   delegate_->Resume();
 }
 

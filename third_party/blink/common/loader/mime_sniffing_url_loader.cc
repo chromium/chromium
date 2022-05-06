@@ -142,7 +142,8 @@ void MimeSniffingURLLoader::OnComplete(
         Abort();
         return;
       }
-      throttle_->ResumeWithNewResponseHead(std::move(response_head_));
+      throttle_->ResumeWithNewResponseHead(
+          std::move(response_head_), mojo::ScopedDataPipeConsumerHandle());
       destination_url_loader_client_->OnComplete(status);
       return;
     case State::kSniffing:
@@ -260,7 +261,6 @@ void MimeSniffingURLLoader::CompleteSniffing() {
     Abort();
     return;
   }
-  throttle_->ResumeWithNewResponseHead(std::move(response_head_));
   mojo::ScopedDataPipeConsumerHandle body_to_send;
   MojoResult result =
       mojo::CreateDataPipe(nullptr, body_producer_handle_, body_to_send);
@@ -268,16 +268,14 @@ void MimeSniffingURLLoader::CompleteSniffing() {
     Abort();
     return;
   }
+  throttle_->ResumeWithNewResponseHead(std::move(response_head_),
+                                       std::move(body_to_send));
   // Set up the watcher for the producer handle.
   body_producer_watcher_.Watch(
       body_producer_handle_.get(),
       MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
       base::BindRepeating(&MimeSniffingURLLoader::OnBodyWritable,
                           base::Unretained(this)));
-
-  // Send deferred message.
-  destination_url_loader_client_->OnStartLoadingResponseBody(
-      std::move(body_to_send));
 
   if (bytes_remaining_in_buffer_) {
     SendReceivedBodyToClient();

@@ -75,7 +75,8 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
     // URLLoaderThrottle::WillProcessResponse() and before calling
     // Delegate::Resume().
     virtual void UpdateDeferredResponseHead(
-        network::mojom::URLResponseHeadPtr new_response_head);
+        network::mojom::URLResponseHeadPtr new_response_head,
+        mojo::ScopedDataPipeConsumerHandle body);
 
     // Pauses/resumes reading response body if the resource is fetched from
     // network.

@@ -152,11 +152,13 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
   }
 
   void UpdateDeferredResponseHead(
-      network::mojom::URLResponseHeadPtr new_response_head) override {
+      network::mojom::URLResponseHeadPtr new_response_head,
+      mojo::ScopedDataPipeConsumerHandle body) override {
     if (!loader_)
       return;
     ScopedDelegateCall scoped_delegate_call(this);
-    loader_->UpdateDeferredResponseHead(std::move(new_response_head));
+    loader_->UpdateDeferredResponseHead(std::move(new_response_head),
+                                        std::move(body));
   }
 
   void PauseReadingBodyFromNet() override {
@@ -1002,10 +1004,13 @@ void ThrottlingURLLoader::UpdateRequestHeaders(
 }
 
 void ThrottlingURLLoader::UpdateDeferredResponseHead(
-    network::mojom::URLResponseHeadPtr new_response_head) {
+    network::mojom::URLResponseHeadPtr new_response_head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   DCHECK(response_info_);
+  DCHECK(!body_);
   DCHECK_EQ(DEFERRED_RESPONSE, deferred_stage_);
   response_info_->response_head = std::move(new_response_head);
+  body_ = std::move(body);
 }
 
 void ThrottlingURLLoader::PauseReadingBodyFromNet(URLLoaderThrottle* throttle) {

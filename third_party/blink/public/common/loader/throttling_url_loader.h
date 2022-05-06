@@ -182,7 +182,8 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
       const net::HttpRequestHeaders& modified_cors_exempt_request_headers);
   void UpdateRequestHeaders(network::ResourceRequest& resource_request);
   void UpdateDeferredResponseHead(
-      network::mojom::URLResponseHeadPtr new_response_head);
+      network::mojom::URLResponseHeadPtr new_response_head,
+      mojo::ScopedDataPipeConsumerHandle body);
   void PauseReadingBodyFromNet(URLLoaderThrottle* throttle);
   void ResumeReadingBodyFromNet(URLLoaderThrottle* throttle);
   void InterceptResponse(
