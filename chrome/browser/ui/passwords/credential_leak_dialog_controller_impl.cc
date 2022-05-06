@@ -10,11 +10,8 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
 using password_manager::CreateDialogTraits;
-using password_manager::CredentialLeakFlags;
 using password_manager::CredentialLeakType;
-using password_manager::LeakDialogTraitsImp;
 using password_manager::metrics_util::LeakDialogDismissalReason;
-using password_manager::metrics_util::LeakDialogType;
 using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
 
 CredentialLeakDialogControllerImpl::CredentialLeakDialogControllerImpl(
