@@ -683,6 +683,12 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Label for expert mode option: show all resolutions." name="IDS_EXPERT_SHOW_ALL_RESOLUTIONS">
         Show all resolutions
       </message>
+      <message desc="Label for spoken feedback to indicate that the mute button is now off." name="IDS_ARIA_MUTE_OFF">
+        Mute button off
+      </message>
+      <message desc="Label for spoken feedback to indicate that the mute button is now on." name="IDS_ARIA_MUTE_ON">
+        Mute button on
+      </message>
     </messages>
   </release>
 </grit>

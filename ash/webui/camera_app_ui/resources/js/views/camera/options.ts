@@ -89,6 +89,13 @@ export class Options implements CameraUI {
     state.addObserver(state.State.TAKING, () => {
       this.updateOptionAvailability();
     });
+
+    util.bindElementAriaLabelWithState({
+      element: this.toggleMic,
+      state: state.State.MIC,
+      onLabel: I18nString.ARIA_MUTE_OFF,
+      offLabel: I18nString.ARIA_MUTE_ON,
+    });
   }
 
   private setAriaLabelForOptionButton(

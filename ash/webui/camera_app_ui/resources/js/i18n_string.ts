@@ -14,6 +14,8 @@ export enum I18nString {
   ARIA_GRID_OFF = 'aria_grid_off',
   ARIA_MIRROR_OFF = 'aria_mirror_off',
   ARIA_MIRROR_ON = 'aria_mirror_on',
+  ARIA_MUTE_OFF = 'aria_mute_off',
+  ARIA_MUTE_ON = 'aria_mute_on',
   ARIA_RECORD_TYPE_GROUP = 'aria_record_type_group',
   ARIA_SCAN_TYPE_GROUP = 'aria_scan_type_group',
   ARIA_TIMER_10S = 'aria_timer_10s',

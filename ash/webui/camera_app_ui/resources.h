@@ -23,6 +23,8 @@ const struct {
     {"aria_grid_off", IDS_ARIA_GRID_OFF},
     {"aria_mirror_off", IDS_ARIA_MIRROR_OFF},
     {"aria_mirror_on", IDS_ARIA_MIRROR_ON},
+    {"aria_mute_off", IDS_ARIA_MUTE_OFF},
+    {"aria_mute_on", IDS_ARIA_MUTE_ON},
     {"aria_record_type_group", IDS_ARIA_RECORD_TYPE_GROUP},
     {"aria_scan_type_group", IDS_ARIA_SCAN_TYPE_GROUP},
     {"aria_timer_10s", IDS_ARIA_TIMER_10S},
