@@ -45146,6 +45146,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="11" label="SPI flash update failed"/>
   <int value="12" label="MCU flash update sent but requested again on reboot"/>
   <int value="13" label="SPI flash update sent but requested again on reboot"/>
+  <int value="14" label="Power on recovery succeeded"/>
+  <int value="15" label="Power on recovery failed"/>
 </enum>
 
 <enum name="HrefTranslatePrefsFilterStatus">
