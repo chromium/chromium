@@ -19,8 +19,8 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './host_permissions_toggle_list.js';
 import './runtime_host_permissions.js';
-import './shared_style.js';
-import './shared_vars.js';
+import './shared_style.css.js';
+import './shared_vars.css.js';
 import './strings.m.js';
 import './toggle_row.js';
 
@@ -30,8 +30,8 @@ import {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_too
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getTemplate} from './detail_view.html.js';
 
+import {getTemplate} from './detail_view.html.js';
 import {ItemDelegate} from './item.js';
 import {ItemMixin} from './item_mixin.js';
 import {computeInspectableViewLabel, EnableControl, getEnableControl, getItemSource, getItemSourceString, isEnabled, userCanChangeEnablement} from './item_util.js';

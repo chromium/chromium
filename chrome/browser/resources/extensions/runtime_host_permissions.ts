@@ -16,7 +16,7 @@ import 'chrome://resources/cr_elements/action_link_css.m.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './runtime_hosts_dialog.js';
-import './shared_style.js';
+import './shared_style.css.js';
 import './strings.m.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';

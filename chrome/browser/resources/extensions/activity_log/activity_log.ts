@@ -11,8 +11,8 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './activity_log_stream.js';
 import './activity_log_history.js';
 import '../strings.m.js';
-import '../shared_style.js';
-import '../shared_vars.js';
+import '../shared_style.css.js';
+import '../shared_vars.css.js';
 
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';

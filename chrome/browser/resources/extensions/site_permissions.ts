@@ -6,8 +6,8 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './strings.m.js';
-import './shared_style.js';
-import './shared_vars.js';
+import './shared_style.css.js';
+import './shared_vars.css.js';
 import './site_permissions_list.js';
 
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';

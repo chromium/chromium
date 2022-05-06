@@ -7,12 +7,12 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './toggle_row.js';
-import './shared_style.js';
+import './shared_style.css.js';
 import './strings.m.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getTemplate} from './host_permissions_toggle_list.html.js';
 
+import {getTemplate} from './host_permissions_toggle_list.html.js';
 import {ItemDelegate} from './item.js';
 import {UserAction} from './item_util.js';
 import {ExtensionsToggleRowElement} from './toggle_row.js';

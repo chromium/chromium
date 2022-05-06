@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
 import './item.js';
-import './shared_style.js';
+import './shared_style.css.js';
 
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
