@@ -373,13 +373,12 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
 
 }  // namespace.
 
-BaselinePolicy::BaselinePolicy() : BaselinePolicy(EPERM) {
-  // Allocate crash keys set by Seccomp signal handlers.
-  AllocateCrashKeys();
-}
+BaselinePolicy::BaselinePolicy() : BaselinePolicy(EPERM) {}
 
 BaselinePolicy::BaselinePolicy(int fs_denied_errno)
     : fs_denied_errno_(fs_denied_errno), policy_pid_(sys_getpid()) {
+  // Allocate crash keys set by Seccomp signal handlers.
+  AllocateCrashKeys();
 }
 
 BaselinePolicy::~BaselinePolicy() {
