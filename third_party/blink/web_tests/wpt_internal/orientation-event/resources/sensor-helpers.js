@@ -33,7 +33,7 @@ class RingBuffer {
 export function sensorMocks() {
   // Class that mocks Sensor interface defined in sensor.mojom
   class MockSensor {
-    constructor(sensorRequest, buffer, reportingMode) {
+    constructor(sensorRequest, sharedBufferHandle, offset, size, reportingMode) {
       this.client_ = null;
       this.startShouldFail_ = false;
       this.notifyOnReadingChange_ = true;
@@ -45,7 +45,10 @@ export function sensorMocks() {
       this.addConfigurationCalled_ = null;
       this.removeConfigurationCalled_ = null;
       this.requestedFrequencies_ = [];
-      this.buffer_ = buffer;
+      const rv = sharedBufferHandle.mapBuffer(offset, size);
+      assert_equals(rv.result, Mojo.RESULT_OK, "Failed to map shared buffer");
+      this.bufferArray_ = rv.buffer;
+      this.buffer_ = new Float64Array(this.bufferArray_);
       this.resetBuffer();
       this.receiver_ = new SensorReceiver(this);
       this.receiver_.$.bindHandle(sensorRequest.handle);
@@ -138,6 +141,7 @@ export function sensorMocks() {
       this.addConfigurationCalled_ = null;
       this.removeConfigurationCalled_ = null;
       this.resetBuffer();
+      this.bufferArray_ = null;
       this.receiver_.$.close();
     }
 
@@ -292,17 +296,9 @@ export function sensorMocks() {
           Number(SensorInitParams_READ_BUFFER_SIZE_FOR_TESTS);
       this.sharedBufferSizeInBytes_ =
           this.readingSizeInBytes_ * (SensorType.MAX_VALUE + 1);
-      let rv = Mojo.createSharedBuffer(this.sharedBufferSizeInBytes_);
-      assert_equals(
-          rv.result, Mojo.RESULT_OK, 'Failed to create shared buffer');
-      const handle = rv.handle;
-      rv = handle.mapBuffer(0, this.sharedBufferSizeInBytes_);
-      assert_equals(rv.result, Mojo.RESULT_OK, 'Failed to map shared buffer');
-      this.shmemArrayBuffer_ = rv.buffer;
-      rv = handle.duplicateBufferHandle({readOnly: true});
-      assert_equals(
-          rv.result, Mojo.RESULT_OK, 'Failed to duplicate shared buffer');
-      this.readOnlySharedBufferHandle_ = rv.handle;
+      const rv = Mojo.createSharedBuffer(this.sharedBufferSizeInBytes_);
+      assert_equals(rv.result, Mojo.RESULT_OK, "Failed to create buffer");
+      this.sharedBufferHandle_ = rv.handle;
       this.activeSensors_ = new Map();
       this.resolveFuncs_ = new Map();
       this.isContinuous_ = false;
@@ -341,17 +337,14 @@ export function sensorMocks() {
 
       const sensorPtr = new SensorRemote();
       if (!this.activeSensors_.has(mojoSensorType)) {
-        const shmemView = new Float64Array(
-            this.shmemArrayBuffer_, offset,
-            this.readingSizeInBytes_ / Float64Array.BYTES_PER_ELEMENT);
         const mockSensor = new MockSensor(
-            sensorPtr.$.bindNewPipeAndPassReceiver(), shmemView, reportingMode);
+            sensorPtr.$.bindNewPipeAndPassReceiver(), this.sharedBufferHandle_,
+            offset, this.readingSizeInBytes_, reportingMode);
         this.activeSensors_.set(mojoSensorType, mockSensor);
         this.activeSensors_.get(mojoSensorType).client_ = new SensorClientRemote();
       }
 
-      const rv = this.readOnlySharedBufferHandle_.duplicateBufferHandle(
-          {readOnly: true});
+      const rv = this.sharedBufferHandle_.duplicateBufferHandle();
 
       assert_equals(rv.result, Mojo.RESULT_OK);
 
@@ -367,7 +360,7 @@ export function sensorMocks() {
       const initParams = {
         sensor: sensorPtr,
         clientReceiver: client.$.bindNewPipeAndPassReceiver(),
-        memory: {buffer: rv.handle},
+        memory: rv.handle,
         bufferOffset: BigInt(offset),
         mode: reportingMode,
         defaultConfiguration: defaultConfig,

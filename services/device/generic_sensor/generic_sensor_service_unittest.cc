@@ -7,8 +7,6 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/shared_memory_mapping.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -65,7 +63,7 @@ class TestSensorClient : public mojom::SensorClient {
                        mojom::SensorInitParamsPtr params) {
     ASSERT_TRUE(params);
     EXPECT_EQ(mojom::SensorCreationResult::SUCCESS, result);
-    EXPECT_TRUE(params->memory.IsValid());
+    EXPECT_TRUE(params->memory.is_valid());
     const double expected_default_frequency =
         std::min(30.0, GetSensorMaxAllowedFrequency(type_));
     EXPECT_DOUBLE_EQ(expected_default_frequency,
@@ -75,10 +73,10 @@ class TestSensorClient : public mojom::SensorClient {
     EXPECT_DOUBLE_EQ(expected_maximum_frequency, params->maximum_frequency);
     EXPECT_DOUBLE_EQ(1.0, params->minimum_frequency);
 
-    shared_mapping_ =
-        params->memory.MapAt(params->buffer_offset,
-                             mojom::SensorInitParams::kReadBufferSizeForTests);
-    ASSERT_TRUE(shared_mapping_.IsValid());
+    shared_buffer_ = params->memory->MapAtOffset(
+        mojom::SensorInitParams::kReadBufferSizeForTests,
+        params->buffer_offset);
+    ASSERT_TRUE(shared_buffer_);
 
     sensor_.Bind(std::move(params->sensor));
     client_receiver_.Bind(std::move(params->client_receiver));
@@ -123,7 +121,7 @@ class TestSensorClient : public mojom::SensorClient {
 
   bool TryReadFromBuffer(SensorReading& result) {
     const SensorReadingSharedBuffer* buffer =
-        static_cast<const SensorReadingSharedBuffer*>(shared_mapping_.memory());
+        static_cast<const SensorReadingSharedBuffer*>(shared_buffer_.get());
     const OneWriterSeqLock& seqlock = buffer->seqlock.value();
     auto version = seqlock.ReadBegin();
     auto reading_data = buffer->reading;
@@ -135,7 +133,7 @@ class TestSensorClient : public mojom::SensorClient {
 
   mojo::Remote<mojom::Sensor> sensor_;
   mojo::Receiver<mojom::SensorClient> client_receiver_{this};
-  base::ReadOnlySharedMemoryMapping shared_mapping_;
+  mojo::ScopedSharedBufferMapping shared_buffer_;
   SensorReading reading_data_;
 
   // Test Clients set |quit_closure_| and start a RunLoop in main thread, then

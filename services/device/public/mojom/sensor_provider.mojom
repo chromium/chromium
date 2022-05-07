@@ -4,7 +4,6 @@
 
 module device.mojom;
 
-import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/device/public/mojom/sensor.mojom";
 
 struct SensorInitParams {
@@ -15,7 +14,7 @@ struct SensorInitParams {
   pending_receiver<SensorClient> client_receiver;
 
   // The shared memory handle used to fetch the sensor reading.
-  mojo_base.mojom.ReadOnlySharedMemoryRegion memory;
+  handle<shared_buffer> memory;
 
   // The offset at which shared buffer must be mapped.
   uint64 buffer_offset;
