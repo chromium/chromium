@@ -17,7 +17,7 @@
 })();
 
 function usb_test(func, name, properties) {
-  promise_test(async () => {
+  promise_test(async (t) => {
     assert_implements(navigator.usb, 'missing navigator.usb');
     if (navigator.usb.test === undefined) {
       // Try loading a polyfill for the WebUSB Testing API.
@@ -29,7 +29,7 @@ function usb_test(func, name, properties) {
 
     await navigator.usb.test.initialize();
     try {
-      await func();
+      await func(t);
     } finally {
       await navigator.usb.test.reset();
     }
@@ -66,16 +66,6 @@ function waitForDisconnect(fakeDevice) {
   let promise = connectionEventPromise('disconnect');
   fakeDevice.disconnect();
   return promise;
-}
-
-function assertRejectsWithError(promise, name, message) {
-  return promise.then(() => {
-    assert_unreached('expected promise to reject with ' + name);
-  }, error => {
-    assert_equals(error.name, name);
-    if (message !== undefined)
-      assert_equals(error.message, message);
-  });
 }
 
 function assertDeviceInfoEquals(usbDevice, deviceInit) {
