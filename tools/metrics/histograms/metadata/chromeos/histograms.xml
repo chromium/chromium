@@ -1575,12 +1575,12 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.SystemTray.AnimationSmoothness" units="%"
-    expires_after="2022-04-13">
+    expires_after="2023-04-13">
 <!-- Name completed by histogram suffixes
      name="SystemTrayTransitionType" -->
 
   <owner>amehfooz@chromium.org</owner>
-  <owner>tengs@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <summary>
     Tracks the animation smoothness for the collapse / expand animation of the
     system tray.
@@ -1588,9 +1588,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.BlockedNotifiersAfterUpdate"
-    units="notifiers" expires_after="2022-05-10">
+    units="notifiers" expires_after="2023-05-10">
   <owner>amehfooz@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>cros-status-area@google.com</owner>
   <summary>
     Tracks the number of blocked notifiers in the system tray after the user
     blocks one or multiple notifiers. Note that this metric records the number
@@ -1599,18 +1599,18 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.BlockedNotifiersOnOpen" units="notifiers"
-    expires_after="2022-05-10">
+    expires_after="2023-05-10">
   <owner>amehfooz@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>cros-status-area@google.com</owner>
   <summary>
     Tracks the number of blocked notifiers in the system tray when it is opened.
   </summary>
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.FeaturePodCountOnOpen" units="count"
-    expires_after="2022-04-01">
+    expires_after="2023-04-01">
   <owner>amehfooz@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>cros-status-area@google.com</owner>
   <summary>
     The number of feature pods (e.g. WiFi, Bluetooth, IME, Accessibility, etc.)
     in the system tray quick settings when it is opened, including pods that
@@ -1621,9 +1621,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.FirstInteraction"
-    enum="CrosSystemTrayFirstInteraction" expires_after="2022-04-01">
+    enum="CrosSystemTrayFirstInteraction" expires_after="2023-04-01">
   <owner>amehfooz@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>cros-status-area@google.com</owner>
   <summary>
     Records the first interaction the user has with the system tray, which can
     be a click/tap on the quick settings or message center bubble. Note that
@@ -1633,9 +1633,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.Interaction"
-    enum="CrosSystemTrayInteraction" expires_after="2022-04-01">
+    enum="CrosSystemTrayInteraction" expires_after="2023-04-01">
   <owner>amehfooz@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>cros-status-area@google.com</owner>
   <summary>
     An enum value how system tray bubble is interacted e.g. by tap (touch
     screen), or click (mouse, trackpad, etc.) Reported every time the region
@@ -1644,9 +1644,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.IsExpandedOnOpen" enum="Boolean"
-    expires_after="2022-05-10">
-  <owner>tengs@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    expires_after="2023-05-10">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <summary>
     If the value is true, SystemTray is expanded when it's opened. Otherwise,
     it's closed when it's opened.
@@ -1654,9 +1654,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.NotificationsRemovedByClearAll"
-    units="notifications" expires_after="2022-04-01">
+    units="notifications" expires_after="2023-04-01">
   <owner>amehfooz@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>cros-status-area@google.com</owner>
   <summary>
     Records the number of notifications that are removed in a single clear all
     action by the user.
@@ -1673,9 +1673,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.ShelfPodCount" units="count"
-    expires_after="2022-04-01">
-  <owner>tengs@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    expires_after="2023-04-01">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <summary>
     The number of status area item pods (e.g. IME, Palette, Dictation, etc.) in
     the shelf status area whenever a pod appears/disappears. This histogram is
@@ -1685,9 +1685,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.Tablet.FeaturePodCountOnOpen"
-    units="count" expires_after="2022-05-10">
+    units="count" expires_after="2023-05-10">
   <owner>amehfooz@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>cros-status-area@google.com</owner>
   <summary>
     The number of feature pods (e.g. WiFi, Bluetooth, IME, Accessibility, etc.)
     in the system tray quick settings when it is opened, including pods that
@@ -1697,9 +1697,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.Tablet.ShelfPodCount" units="count"
-    expires_after="2022-04-01">
-  <owner>tengs@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    expires_after="2023-04-01">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <summary>
     The number of status area item pods (e.g. IME, Palette, Dictation, etc.) in
     the shelf status area whenever a pod appears/disappears. This histogram is
@@ -1719,9 +1719,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.TimeToClick2" units="ms"
-    expires_after="2022-04-01">
-  <owner>tengs@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    expires_after="2023-04-01">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <summary>
     The amount of time a user took after opening the system tray bubble, to
     clicking on an item in the system tray bubble.
@@ -1729,9 +1729,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.ToggleExpanded"
-    enum="CrosSystemTrayToggleExpanded" expires_after="2022-05-10">
+    enum="CrosSystemTrayToggleExpanded" expires_after="2023-05-10">
   <owner>amehfooz@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>cros-status-area@google.com</owner>
   <summary>
     An enum value how system tray bubble is expanded or collapsed. It can be
     toggled by the button and touch gesture.
