@@ -11,6 +11,8 @@
 #include <sys/uio.h>
 #include <unistd.h>
 
+#include <algorithm>
+
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
