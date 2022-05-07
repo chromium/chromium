@@ -5884,4 +5884,52 @@ TEST_F(SplitViewKeyboardTest, NoInputField) {
   EXPECT_TRUE(split_view_controller()->split_view_divider()->IsAdjustable());
 }
 
+// Tests that in the split view with Overview enabled, the snapped window bounds
+// will be updated when the on-screen keyboard is enabled and disabled.
+TEST_F(SplitViewKeyboardTest, ShowHideOnScreenKeyboardWithOverviewEnabled) {
+  UpdateDisplay("1200x800");
+  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  display::test::ScopedSetInternalDisplayId set_internal(display_manager,
+                                                         display_id);
+  ScreenOrientationControllerTestApi test_api(
+      Shell::Get()->screen_orientation_controller());
+  std::unique_ptr<aura::Window> right_window(
+      CreateWindow(gfx::Rect(0, 0, 400, 400)));
+  for (auto rotation :
+       {display::Display::ROTATE_0, display::Display::ROTATE_270}) {
+    EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+    test_api.SetDisplayRotation(rotation,
+                                display::Display::RotationSource::ACTIVE);
+    // Cache the original work area.
+    const gfx::Rect origin_work_area =
+        screen_util::GetDisplayWorkAreaBoundsInParent(right_window.get());
+
+    // Enable an on-screen virtual keyboard. The display work area should shrink
+    // the size of intersection between on-screen keyboard and original work
+    // area.
+    keyboard_controller()->ShowKeyboard(/*lock=*/true);
+    const gfx::Rect shrink_work_area =
+        screen_util::GetDisplayWorkAreaBoundsInParent(right_window.get());
+    const gfx::Rect keyboard_bounds =
+        keyboard_controller()->GetKeyboardWindow()->GetBoundsInScreen();
+    EXPECT_EQ(origin_work_area.height() - shrink_work_area.height(),
+              gfx::IntersectRects(keyboard_bounds, origin_work_area).height());
+
+    // Snapping the window will enable Overview, the window's bottom is equal to
+    // the shrunk work area bottom.
+    split_view_controller()->SnapWindow(right_window.get(),
+                                        SplitViewController::RIGHT);
+    EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+    EXPECT_EQ(right_window->bounds().bottom(), shrink_work_area.bottom());
+
+    // Dismiss on-screen keyboard, the window's bottom is equal to the original
+    // work area bottom.
+    keyboard_controller()->HideKeyboardByUser();
+    EXPECT_EQ(right_window->bounds().bottom(), origin_work_area.bottom());
+    EndSplitView();
+    ExitOverview();
+  }
+}
+
 }  // namespace ash
