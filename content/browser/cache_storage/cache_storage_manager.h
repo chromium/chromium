@@ -14,6 +14,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
@@ -68,6 +69,12 @@ class CONTENT_EXPORT CacheStorageManager
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner);
 
+  // Map a BuckeLocator to the path.
+  base::FilePath ConstructBucketPath(
+      const base::FilePath& root_path,
+      const storage::BucketLocator& bucket_locator,
+      storage::mojom::CacheStorageOwner owner);
+
   static bool IsValidQuotaStorageKey(const blink::StorageKey& storage_key);
 
   // Open the CacheStorage for the given storage_key and owner.  A reference
@@ -75,6 +82,10 @@ class CONTENT_EXPORT CacheStorageManager
   // pointer.
   CacheStorageHandle OpenCacheStorage(const blink::StorageKey& storage_key,
                                       storage::mojom::CacheStorageOwner owner);
+
+  CacheStorageHandle OpenCacheStorage(
+      const storage::BucketLocator& bucket_locator,
+      storage::mojom::CacheStorageOwner owner);
 
   // QuotaClient and Browsing Data Deletion support.
   void GetAllStorageKeysUsage(

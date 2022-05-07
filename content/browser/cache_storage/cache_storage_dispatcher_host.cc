@@ -990,8 +990,10 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
   content::CacheStorage* GetOrCreateCacheStorage() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(host_);
+    if (!bucket_.has_value())
+      return nullptr;
     if (!cache_storage_handle_.value())
-      cache_storage_handle_ = host_->OpenCacheStorage(storage_key_, owner_);
+      cache_storage_handle_ = host_->OpenCacheStorage(bucket_.value(), owner_);
     return cache_storage_handle_.value();
   }
 
@@ -1045,9 +1047,10 @@ void CacheStorageDispatcherHost::AddCacheReceiver(
 }
 
 CacheStorageHandle CacheStorageDispatcherHost::OpenCacheStorage(
-    const blink::StorageKey& storage_key,
+    const storage::BucketLocator& bucket_locator,
     storage::mojom::CacheStorageOwner owner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const blink::StorageKey storage_key = bucket_locator.storage_key;
   if (!context_ || !OriginCanAccessCacheStorage(storage_key.origin()))
     return CacheStorageHandle();
 
@@ -1055,7 +1058,7 @@ CacheStorageHandle CacheStorageDispatcherHost::OpenCacheStorage(
   if (!manager)
     return CacheStorageHandle();
 
-  return manager->OpenCacheStorage(storage_key, owner);
+  return manager->OpenCacheStorage(bucket_locator, owner);
 }
 
 }  // namespace content

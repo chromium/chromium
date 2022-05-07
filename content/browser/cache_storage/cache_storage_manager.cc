@@ -25,6 +25,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "content/browser/cache_storage/cache_storage.h"
 #include "content/browser/cache_storage/cache_storage.pb.h"
@@ -188,6 +189,9 @@ GetStorageKeysAndLastModifiedOnTaskRunner(
   return usages;
 }
 
+// Used by QuotaClient which only wants the storage keys that have data in the
+// default bucket. Keep this function to return a vector of StorageKeys, instead
+// of buckets.
 std::vector<blink::StorageKey> ListStorageKeysOnTaskRunner(
     base::FilePath root_path,
     storage::mojom::CacheStorageOwner owner) {
@@ -261,6 +265,35 @@ CacheStorageManager::~CacheStorageManager() {
 }
 
 CacheStorageHandle CacheStorageManager::OpenCacheStorage(
+    const storage::BucketLocator& bucket_locator,
+    storage::mojom::CacheStorageOwner owner) {
+  // TODO(https://crbug.com/1304786): unify two OpenCacheStorage
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Wait to create the MemoryPressureListener until the first CacheStorage
+  // object is needed.  This ensures we create the listener on the correct
+  // thread.
+  if (!memory_pressure_listener_) {
+    memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
+        FROM_HERE, base::BindRepeating(&CacheStorageManager::OnMemoryPressure,
+                                       base::Unretained(this)));
+  }
+
+  const blink::StorageKey& storage_key = bucket_locator.storage_key;
+  CacheStorageMap::const_iterator it =
+      cache_storage_map_.find({storage_key, owner});
+  if (it == cache_storage_map_.end()) {
+    CacheStorage* cache_storage = new CacheStorage(
+        ConstructBucketPath(root_path_, bucket_locator, owner),
+        IsMemoryBacked(), cache_task_runner_.get(), scheduler_task_runner_,
+        quota_manager_proxy_, blob_storage_context_, this, storage_key, owner);
+    cache_storage_map_[{storage_key, owner}] = base::WrapUnique(cache_storage);
+    return cache_storage->CreateHandle();
+  }
+  return it->second.get()->CreateHandle();
+}
+
+CacheStorageHandle CacheStorageManager::OpenCacheStorage(
     const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -287,6 +320,7 @@ CacheStorageHandle CacheStorageManager::OpenCacheStorage(
   return it->second.get()->CreateHandle();
 }
 
+// TODO(https://crbug.com/1304786): replace StorageKey with BucketLocator
 void CacheStorageManager::NotifyCacheListChanged(
     const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -294,6 +328,7 @@ void CacheStorageManager::NotifyCacheListChanged(
     observer->OnCacheListChanged(storage_key);
 }
 
+// TODO(https://crbug.com/1304786): replace StorageKey with BucketLocator
 void CacheStorageManager::NotifyCacheContentChanged(
     const blink::StorageKey& storage_key,
     const std::string& name) {
@@ -302,6 +337,7 @@ void CacheStorageManager::NotifyCacheContentChanged(
     observer->OnCacheContentChanged(storage_key, name);
 }
 
+// TODO(https://crbug.com/1304786): replace StorageKey with BucketLocator
 void CacheStorageManager::CacheStorageUnreferenced(
     CacheStorage* cache_storage,
     const blink::StorageKey& storage_key,
@@ -347,6 +383,7 @@ void CacheStorageManager::GetAllStorageKeysUsage(
                      base::WrapRefCounted(this), std::move(callback)));
 }
 
+// TODO(https://crbug.com/1304786):  Rename to or add GetAllBucketsUsageGetSizes
 void CacheStorageManager::GetAllStorageKeysUsageGetSizes(
     storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback callback,
     std::vector<storage::mojom::StorageUsageInfoPtr> usages) {
@@ -382,6 +419,7 @@ void CacheStorageManager::GetAllStorageKeysUsageGetSizes(
   }
 }
 
+// TODO(https://crbug.com/1304786):  rename to or add GetBucketUsage
 void CacheStorageManager::GetStorageKeyUsage(
     const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
@@ -409,6 +447,7 @@ void CacheStorageManager::GetStorageKeyUsage(
                      std::move(callback)));
 }
 
+// TODO(https://crbug.com/1304786): Rename to or add GetBucketUsageDidGetExists
 void CacheStorageManager::GetStorageKeyUsageDidGetExists(
     const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
@@ -424,6 +463,7 @@ void CacheStorageManager::GetStorageKeyUsageDidGetExists(
   CacheStorage::From(cache_storage)->Size(std::move(callback));
 }
 
+// TODO(https://crbug.com/1304786): remove or keep for bucket migration
 void CacheStorageManager::GetStorageKeys(
     storage::mojom::CacheStorageOwner owner,
     storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback) {
@@ -447,6 +487,7 @@ void CacheStorageManager::GetStorageKeys(
       std::move(callback));
 }
 
+// TODO(https://crbug.com/1304786): rename to or add DeleteBucketData
 void CacheStorageManager::DeleteStorageKeyData(
     const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
@@ -475,6 +516,8 @@ void CacheStorageManager::DeleteStorageKeyData(
                      std::move(callback)));
 }
 
+// TODO(https://crbug.com/1304786): rename to or add
+// DeleteBucketDataDidGetExists
 void CacheStorageManager::DeleteStorageKeyDataDidGetExists(
     const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
@@ -504,6 +547,8 @@ void CacheStorageManager::DeleteStorageKeyDataDidGetExists(
                      std::move(callback), base::WrapUnique(cache_storage)));
 }
 
+// TODO(https://crbug.com/1304786): rename to or add
+// DeleteBucketDataDidGetExists
 void CacheStorageManager::DeleteStorageKeyData(
     const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner) {
@@ -516,6 +561,7 @@ void CacheStorageManager::AddObserver(
   observers_.Add(std::move(observer));
 }
 
+// TODO(https://crbug.com/1304786): rename to or add DeleteBucketDidClose
 void CacheStorageManager::DeleteStorageKeyDidClose(
     const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
@@ -583,6 +629,23 @@ base::FilePath CacheStorageManager::ConstructStorageKeyPath(
   const std::string origin_hash_hex = base::ToLowerASCII(
       base::HexEncode(origin_hash.c_str(), origin_hash.length()));
   return root_path.AppendASCII(origin_hash_hex);
+}
+
+base::FilePath CacheStorageManager::ConstructBucketPath(
+    const base::FilePath& root_path,
+    const storage::BucketLocator& bucket_locator,
+    storage::mojom::CacheStorageOwner owner) {
+  if (bucket_locator.is_default &&
+      bucket_locator.storage_key.IsFirstPartyContext()) {
+    // Default-bucket & first-party partition:
+    // {{storage_partition_path}}/Service Worker/CacheStorage/{origin_hash}/...
+    return CacheStorageManager::ConstructStorageKeyPath(
+        root_path, bucket_locator.storage_key, owner);
+  }
+  // Non-default bucket & first/third-party partition:
+  // {{storage_partition_path}}/WebStorage/{{bucket_id}}/CacheStorage/...
+  return quota_manager_proxy_->GetClientBucketPath(
+      bucket_locator, storage::QuotaClientType::kServiceWorkerCache);
 }
 
 // static
