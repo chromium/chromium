@@ -1956,6 +1956,7 @@
 <translation id="2832124733806557606">Ձեր երեխան կարող է մտնել հաշիվ կամ ապակողպել սարքը PIN կոդի միջոցով։</translation>
 <translation id="2835177225987815960">Սկանավորման ձեր ընթացիկ կարգավորումները (այդ թվում՝ նշանակված փոխանջատիչները և ավտոմատ սկանավորման արագության պարամետրերը) կզրոյացվեն։</translation>
 <translation id="2835547721736623118">Խոսքի ճանաչման ծառայություն</translation>
+<translation id="2836232638504556905">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK" />գաղտնիության քաղաքականությանը<ph name="END_LINK" />։</translation>
 <translation id="2836269494620652131">Խափանում</translation>
 <translation id="2836635946302913370">Այս օգտանունով մուտքը կասեցվել է ձեր ադմինիստրատորի կողմից:</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> ցանցն օգտագործելու համար նախ կապակցվեք համացանցին:</translation>
@@ -2237,6 +2238,7 @@
 <translation id="3105796011181310544">Վերադառնա՞լ Google-ին</translation>
 <translation id="310671807099593501">Կայքն օգտագործում է Bluetooth-ը</translation>
 <translation id="3108931485517391283">Չհաջողվեց ստանալ ֆայլը</translation>
+<translation id="3109206895301430738">Պահված ներդիրների խմբեր</translation>
 <translation id="3109724472072898302">Կոծկված</translation>
 <translation id="311214366526552035">Միևնույն է ներբեռնել</translation>
 <translation id="3112292765614504292">Հավելվածի չափը՝ <ph name="APP_SIZE" /></translation>

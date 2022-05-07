@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">වහාම අලුත් එකක් තෝරන්න</translation>
 <translation id="4891842000192098784">ආතතිය</translation>
 <translation id="4897058166682006107">උපාංගයෙහි බැටරි බඩ් <ph name="BATTERY_PERCENTAGE" />% ඉතිරිව ඇත.</translation>
+<translation id="4915052247106771211">මෙය උපාංගය කර්මාන්තශාලා සැකසීම් වෙත යළි සකසනු ඇත (Powerwash).</translation>
 <translation id="4917385247580444890">ශක්තිමත්</translation>
 <translation id="4917889632206600977">නැවතිණි - කඩදාසි අවසන් වී ඇත</translation>
 <translation id="4921665434385737356">තත්පර <ph name="NUM_SECONDS" />ක් තුළ <ph name="RATE" /> ආරෝපණය විය.</translation>
@@ -430,6 +431,7 @@
 <translation id="5358174242040570474">යම් දෙයක් වැරදිණි. නැවත වෝල්පේපරයක් තෝරා ගැනීමට හෝ යෙදුම යළි විවෘත කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="5372659122375744710">WiFi ජාලය ආරක්ෂිත නැත</translation>
 <translation id="5376354385557966694">ස්වයංක්‍රිය ආලෝක ප්‍රකාරය</translation>
+<translation id="537872351913703572">උපාංගය වෙනත් පරිශීලකයෙකු හෝ සංවිධානයක් වෙත යනු ඇත</translation>
 <translation id="5400907029458559844">උපාංගය සම්බන්ධ වෙමින් පවතී.</translation>
 <translation id="5401938042319910061">සියලු දින චර්යා ධාවනය කරන්න</translation>
 <translation id="5423849171846380976">සක්‍රිය කෙරිණි</translation>
@@ -733,6 +735,7 @@
 <translation id="8671972493856476349"><ph name="VERSION_NUMBER" /> වෙත යාවත්කාලීන කර යළි අරඹන්න</translation>
 <translation id="8675354002693747642">පෙර-බෙදාගත් යතුර</translation>
 <translation id="8677859815076891398">ඇල්බම නොමැත. <ph name="LINK_BEGIN" />Google ඡායාරූප<ph name="LINK_END" /> තුළ ඇල්බමයක් තනන්න.</translation>
+<translation id="8680431479333800907">උපාංගය එම හිමිකරු වෙතම යනු ඇත</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> මෙම විශේෂාංගය කළමනාකරණය කිරීමට වම් හෝ දකුණු ඊතල යතුරු භාවිත කරන්න.</translation>
 <translation id="8712637175834984815">එය ලැබුණා</translation>
 <translation id="871560550817059752">අසාර්ථක විය - තීන්ත නැත</translation>

@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">Segera pilih satu sandi baru</translation>
 <translation id="4891842000192098784">Tegangan</translation>
 <translation id="4897058166682006107">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai earbud kiri.</translation>
+<translation id="4915052247106771211">Memilih opsi ini akan mereset perangkat ke setelan pabrik (Powerwash).</translation>
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4917889632206600977">Dihentikan - Kertas habis</translation>
 <translation id="4921665434385737356">Terisi <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
@@ -430,6 +431,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5358174242040570474">Terjadi error. Coba pilih wallpaper lagi atau buka aplikasi lagi.</translation>
 <translation id="5372659122375744710">Jaringan Wi-Fi tidak aman</translation>
 <translation id="5376354385557966694">Mode terang otomatis</translation>
+<translation id="537872351913703572">Perangkat akan digunakan oleh organisasi atau pengguna yang berbeda</translation>
 <translation id="5400907029458559844">Perangkat sedang menghubungkan.</translation>
 <translation id="5401938042319910061">Jalankan Semua Rutinitas</translation>
 <translation id="5423849171846380976">Diaktifkan</translation>
@@ -733,6 +735,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8671972493856476349">Update ke <ph name="VERSION_NUMBER" /> &amp; mulai ulang</translation>
 <translation id="8675354002693747642">Kunci yang dibagikan sebelumnya</translation>
 <translation id="8677859815076891398">Tidak ada album. Buat album di <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Perangkat akan digunakan oleh pengguna yang sama</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gunakan tombol Panah kiri atau kanan untuk mengelola fitur ini.</translation>
 <translation id="8712637175834984815">Mengerti</translation>
 <translation id="871560550817059752">Gagal - Tinta habis</translation>

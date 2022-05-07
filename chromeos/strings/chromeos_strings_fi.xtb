@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">Valitse uusi välittömästi</translation>
 <translation id="4891842000192098784">Rasitus</translation>
 <translation id="4897058166682006107">Laitteen vasemman kuulokkeen akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4915052247106771211">Tämä palauttaa laitteen tehdasasetukset (Powerwash).</translation>
 <translation id="4917385247580444890">Vahva</translation>
 <translation id="4917889632206600977">Pysähtynyt – Paperi loppu</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> ladattiin <ph name="NUM_SECONDS" /> sekunnissa.</translation>
@@ -430,6 +431,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5358174242040570474">Jotain meni pieleen. Kokeile valita taustakuva uudelleen tai avaa sovellus.</translation>
 <translation id="5372659122375744710">Wi-Fi-verkko ei ole suojattu</translation>
 <translation id="5376354385557966694">Automaattinen vaalea tila</translation>
+<translation id="537872351913703572">Laitteen omistaja vaihtuu</translation>
 <translation id="5400907029458559844">Laite muodostaa yhteyttä.</translation>
 <translation id="5401938042319910061">Suorita kaikki ohjelmat</translation>
 <translation id="5423849171846380976">Aktivoitu</translation>
@@ -733,6 +735,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8671972493856476349">Päivitä versioon <ph name="VERSION_NUMBER" /> ja käynnistä uudelleen</translation>
 <translation id="8675354002693747642">Esijaettu avain</translation>
 <translation id="8677859815076891398">Albumeja ei ole. Luo albumi <ph name="LINK_BEGIN" />Google Kuvissa<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Laite pysyy samalla käyttäjällä</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Säädä ominaisuutta vasemmalla ja oikealla nuolella.</translation>
 <translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="871560550817059752">Epäonnistui – Muste loppu</translation>

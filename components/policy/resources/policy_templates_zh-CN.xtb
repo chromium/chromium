@@ -617,6 +617,7 @@
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
 <translation id="1678137412645922426">控制是否使用“<ph name="AES_KL_NAME" />”进行用户存储加密（若支持）</translation>
+<translation id="1681688654564283886">为网站停用“设备使用时间”功能</translation>
 <translation id="1682063842123336408">安装 <ph name="PLUGIN_VM_NAME" /> 所需的可用磁盘空间 (GB)。
 
       如果此政策未设置，当设备上的可用磁盘空间少于 20 GB（默认值）时，<ph name="PLUGIN_VM_NAME" /> 安装会失败。
@@ -1078,6 +1079,9 @@
 <translation id="2149957154942061013">仅供内部使用</translation>
 <translation id="2151831603578119302">启用无障碍功能快捷方式</translation>
 <translation id="2156132677421487971">为 <ph name="PRODUCT_NAME" /> 配置相关政策。借助这项功能，用户可从浏览器将标签页、网站或桌面中的内容发送到远程显示器和音响系统。</translation>
+<translation id="2156179920247248678">此政策让 <ph name="PRODUCT_NAME" /> 能够使用 <ph name="MAC_OS_NAME" /> 的“设备使用时间”功能。
+      如果启用或未设置此政策，系统将会向操作系统报告用户已访问的源，而“设备使用时间”设置中已屏蔽的源会在用户访问时显示一个屏蔽屏幕。
+      如果停用此政策，系统将不会向操作系统报告用户已访问的源，而且“设备使用时间”设置中已屏蔽的源将可供用户访问。</translation>
 <translation id="2156755242840687300">已启用的外部打印服务器</translation>
 <translation id="2157842368188031417">此政策仅适用于受管理的访客会话。必须为 Imprivata 的共享工作站模式启用此政策，以允许在会话期间切换用户。
       如果此政策设为 True，系统将强制覆盖某些政策以实现相关功能，这些功能会保留敏感用户数据，而不会被清理机制（用于在 Imprivata 共享工作站模式下的会话期间切换用户）处理。
@@ -3192,6 +3196,7 @@
       请注意，此政策会覆盖 DisabledPlugins 和 DisabledPluginsExceptions。
 
       如果未设置此政策，则用户可以停用系统中安装的任何插件。</translation>
+<translation id="4549405078915181477">为网站启用“设备使用时间”功能</translation>
 <translation id="4554651132977135445">用户政策环回处理模式</translation>
 <translation id="4555850956567117258">为该用户启用远程认证</translation>
 <translation id="4557134566541205630">默认搜索服务提供商新标签页网址</translation>

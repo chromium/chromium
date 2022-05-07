@@ -971,6 +971,7 @@
 <translation id="1892341345406963517">హాయ్ <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">ఇతర భాషలు</translation>
 <translation id="1895658205118569222">షట్‌డౌన్</translation>
+<translation id="1897120393475391208">శక్తివంతమైన పాస్‌వర్డ్‌ను ఉపయోగించండి</translation>
 <translation id="1900305421498694955">బాహ్య నిల్వ పరికరాలలో ఫైళ్లను చదవడానికి, రాయడానికి, Google Play యాప్‌లకు పూర్తి ఫైల్ సిస్టమ్ యాక్సెస్ అవసరం పడొచ్చు. బాహ్య డిస్క్‌ను ఉపయోగించే ఎవరికైనా పరికరంలో క్రియేట్ చేసిన ఫైళ్లు, ఫోల్డర్‌లు కనిపిస్తాయి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">&amp;అన్నీ ఎంచుకోండి</translation>
 <translation id="1901396183631570154">Chrome ఈ పాస్‌వర్డ్‌లను మీ Google ఖాతాలో సేవ్ చేయలేకపోయింది. మీరు వాటిని ఇప్పటికీ మీ పరికరంలో సేవ్ చేయవచ్చు.</translation>
@@ -6557,6 +6558,7 @@
 <translation id="7444970023873202833">Google Photosలో మీ జ్ఞాపకాల గురించి మరింత తెలుసుకోండి</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" />ను నిలిపివేయి</translation>
 <translation id="7448430327655618736">యాప్‌లను ఆటోమేటిక్‌గా ఇన్‌స్టాల్ చేస్తుంది</translation>
+<translation id="7449381494541372002">ప్రారంభిస్తోంది…</translation>
 <translation id="7449752890690775568">పాస్‌వర్డ్‌ను తీసివేయాలా?</translation>
 <translation id="7450761244949417357">ఇప్పుడు <ph name="ALTERNATIVE_BROWSER_NAME" />లో తెరుస్తోంది</translation>
 <translation id="7452166281927983300">విస్మరించిన హెచ్చరికలు (<ph name="MUTED_PASSWORDS" />)</translation>

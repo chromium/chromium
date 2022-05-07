@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">立即選擇新密碼</translation>
 <translation id="4891842000192098784">壓力</translation>
 <translation id="4897058166682006107">裝置的左側無線耳機電池電量為 <ph name="BATTERY_PERCENTAGE" />%。</translation>
+<translation id="4915052247106771211">這項操作會將裝置恢復原廠設定 (Powerwash)。</translation>
 <translation id="4917385247580444890">強</translation>
 <translation id="4917889632206600977">已停止 - 紙張用盡</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒內已充電 <ph name="RATE" />。</translation>
@@ -430,6 +431,7 @@
 <translation id="5358174242040570474">發生錯誤，請重新選擇桌布或重新開啟應用程式。</translation>
 <translation id="5372659122375744710">WiFi 網路不安全</translation>
 <translation id="5376354385557966694">自動淺色模式</translation>
+<translation id="537872351913703572">裝置的擁有者或所屬機構會變更</translation>
 <translation id="5400907029458559844">正在連接裝置。</translation>
 <translation id="5401938042319910061">執行所有的日常網路診斷</translation>
 <translation id="5423849171846380976">已啟用</translation>
@@ -733,6 +735,7 @@
 <translation id="8671972493856476349">更新至 <ph name="VERSION_NUMBER" /> 並重新啟動</translation>
 <translation id="8675354002693747642">預先共用金鑰</translation>
 <translation id="8677859815076891398">沒有任何相簿。請在 <ph name="LINK_BEGIN" />Google 相簿<ph name="LINK_END" />中建立相簿。</translation>
+<translation id="8680431479333800907">裝置的擁有者不會變更</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" />請使用向左鍵或向右鍵管理這項功能。</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
 <translation id="871560550817059752">失敗 - 墨水用盡</translation>

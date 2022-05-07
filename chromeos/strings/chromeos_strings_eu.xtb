@@ -91,6 +91,7 @@
 <translation id="1801418420130173017">Desgaitu gai iluna</translation>
 <translation id="1807246157184219062">Argia</translation>
 <translation id="1827738518074806965">Arte-galeria</translation>
+<translation id="1840835860961531162">Desaktibatu idazketaren aurkako babesa</translation>
 <translation id="1851218745569890714">Bideokonferentziak</translation>
 <translation id="1852934301711881861">Instalatu ChromeOS Flex</translation>
 <translation id="1856388568474281774">Behera gezi-tekla</translation>
@@ -272,6 +273,7 @@
 <translation id="3941014780699102620">Ezin izan da ebatzi ostalaria</translation>
 <translation id="3942420633017001071">Diagnostikoak</translation>
 <translation id="3954678691475912818">Gailu mota ezezaguna da.</translation>
+<translation id="3958703339436883942">Berrabiarazteko prestatzen…</translation>
 <translation id="3966286471246132217">Emaitza zehatzagoak lortzeko, itxi aplikazio guztiak proba osatu arte.</translation>
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
 <translation id="3969602104473960991">Eguneratu da Chrome OS-ko pasahitza</translation>
@@ -376,6 +378,7 @@
 <translation id="4890353053343094602">Aukeratu beste bat berehala</translation>
 <translation id="4891842000192098784">Estresa</translation>
 <translation id="4897058166682006107">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuaren ezkerreko aurikularrari.</translation>
+<translation id="4915052247106771211">Powerwash bidez gailuaren jatorrizko ezarpenak berrezarriko dira.</translation>
 <translation id="4917385247580444890">Sendoa</translation>
 <translation id="4917889632206600977">Geldituta: ez dago paperik</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> segundo behar izan dira <ph name="RATE" /> kargatzeko.</translation>
@@ -417,6 +420,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5275828089655680674">Berrabiarazi errutinak</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029"><ph name="MILESTONE_VERSION" /> bertsioa</translation>
+<translation id="5298334025463010990">Desgaitu idazketaren aurkako babesa hurrengo pantailara joateko. Argibideak lortzeko, joan gailuaren fabrikatzailearen laguntza-orrira.</translation>
 <translation id="5300814202279832142">Eraman leihoa lan-eremura</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">Konektatu</translation>
@@ -430,6 +434,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5358174242040570474">Arazo bat izan da. Saiatu berriro horma-papera aukeratzen edo ireki berriro aplikazioa.</translation>
 <translation id="5372659122375744710">Wifi-sarea ez da segurua</translation>
 <translation id="5376354385557966694">Gai argi automatikoa</translation>
+<translation id="537872351913703572">Beste erabiltzaile edo erakunde batek erabiliko du gailua</translation>
 <translation id="5400907029458559844">Gailua konektatzen ari da.</translation>
 <translation id="5401938042319910061">Exekutatu errutina guztiak</translation>
 <translation id="5423849171846380976">Aktibatuta</translation>
@@ -466,6 +471,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="583281660410589416">Ezezaguna</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Hasierako hornitzailearen kodea</translation>
+<translation id="5856532218727053281">Idazketaren aurkako babesa egiaztatu ondoren, sistema berrabiaraziko da</translation>
 <translation id="5859603669299126575">Arte-galeria moduko albuma</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
 <translation id="5860491529813859533">Aktibatu</translation>
@@ -733,6 +739,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8671972493856476349">Eguneratu <ph name="VERSION_NUMBER" /> bertsiora eta berrabiarazi gailua</translation>
 <translation id="8675354002693747642">Aurrez partekatutako gakoa</translation>
 <translation id="8677859815076891398">Ez dago albumik. Sortu bat <ph name="LINK_BEGIN" />Google Argazkiak<ph name="LINK_END" /> zerbitzuan.</translation>
+<translation id="8680431479333800907">Erabiltzaile berberak jarraituko du gailua erabiltzen</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Erabili ezkerrera edo eskuinera egiteko gezi-tekla eginbide hori kudeatzeko.</translation>
 <translation id="8712637175834984815">Ados</translation>
 <translation id="871560550817059752">Hutsegitea - Ez dago tintarik</translation>

@@ -156,6 +156,7 @@
 <translation id="2446553403094072641">የተንሳፋፊ ነጥብ ትክክለኛነት</translation>
 <translation id="2448312741937722512">አይነት</translation>
 <translation id="2461822463642141190">የአሁኑ ጊዜ</translation>
+<translation id="2480034874476596812">ራስዎ ያጥፉ</translation>
 <translation id="2491955442992294626">ሌላ መስኮት ሲጠቀሙ ቁልፎች አይሞከሩም</translation>
 <translation id="2493126929778606526">የእርስዎ ምርጥ ፎቶዎች፣ በራስ-ሰር የተመረጡ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -251,6 +252,7 @@
 <translation id="3606583719724308068">ለኤችቲቲፒኤስ ድር ጣቢያዎች ከፍተኛ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="3621202678540785336">ግብዓት</translation>
 <translation id="3632579075709132555">የግላዊነት ማያ ገጽ መቀየሪያ</translation>
+<translation id="3678765385266369662">እንዴት የጻፍ ጥበቃን ማጥፋት እንደሚፈልጉ ይምረጡ</translation>
 <translation id="3689839747745352263">የ<ph name="TEST_NAME" /> ሙከራ</translation>
 <translation id="370665806235115550">በመጫን ላይ…</translation>
 <translation id="3708186454126126312">ከዚህ ቀደም የተገናኘ</translation>
@@ -305,6 +307,7 @@
 <translation id="4244962993387259361">የማህደረ ትውስታ ሙከራን ለማካሄድ ቢያንስ 500 ሜባ ነፃ ያስፈልገዎታል። ቦታን ለማስለቀቅ ወደ ቅንብሮች &gt; የማከማቻ አቀናባሪ ይሂዱ።</translation>
 <translation id="4250229828105606438">ቅጽበታዊ ገጽ እይታ</translation>
 <translation id="4258281355379922695">የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
+<translation id="4258561075226177474">መሣሪያው ወደ ተመሳሳዩ ተጠቃሚ ይሄዳል። የተጠቃሚ ውሂብ ይደምሰስ?</translation>
 <translation id="4271957103967917607">ሙሉ ማያ ገጽ ይመልከቱ</translation>
 <translation id="4275799948641988986">ከጥገና በኋላ መሳሪያውን ማን ይጠቀማል?</translation>
 <translation id="4289540628985791613">ማጠቃለያ</translation>
@@ -353,6 +356,7 @@
 <translation id="473775607612524610">አዘምን</translation>
 <translation id="4744944742468440486">ከእርስዎ ምርጫ ጋር የተዛመደ መረጃ</translation>
 <translation id="4773299976671772492">ቆሟል</translation>
+<translation id="4774530504324923332">RSU የነቃላቸው የደህንነት ቁልፍ፣ የQR ኮድ መቃኛ እና ሁለተኛ የበይነመረብ ግንኙነት ያለው ሁለተኛ መሣሪያ ያስፈልገዎታል</translation>
 <translation id="4782311465517282004">ጽሑፍን በቀኝ ጠቅ ሲያደርጉ ወይም ነክተው ሲይዙ ፍቺዎችን፣ ትርጉሞችን ወይም የአሃድ ልወጣዎችን ያግኙ</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ፎቶ</translation>
 <translation id="4793710386569335688">ለበለጠ እገዛ ወደ <ph name="BEGIN_LINK" />የእገዛ ማዕከል<ph name="END_LINK" /> ይሂዱ።</translation>
@@ -432,6 +436,7 @@
 <translation id="5372659122375744710">የWiFi አውታረ መረብ ደህንነት የተጠበቀ አይደለም</translation>
 <translation id="5376354385557966694">ራስሰር የብርሃን ሁነታ</translation>
 <translation id="537872351913703572">መሣሪያው ወደ ሌላ ተጠቃሚ ወይም ድርጅት ይሄዳል</translation>
+<translation id="5395600419410242651">ሁሉንም ውሂብ ደምስስ</translation>
 <translation id="5400907029458559844">መሣሪያው እየተገናኘ ነው።</translation>
 <translation id="5401938042319910061">ሁሉንም የዕለት ተዕለት ተግባራት አሂድ</translation>
 <translation id="5423849171846380976">ገብሯል</translation>
@@ -642,6 +647,7 @@
 <translation id="7570674786725311828">የዩኤስቢ መነካት የሚችል ማያ</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ቀርቷል</translation>
 <translation id="7620771111601174153">በእገዛ ማዕከል ውስጥ የበለጠ ይረዱ</translation>
+<translation id="7626501172915339021">የአርኤምኤ አገልጋይ ማስከፈት (RSU) ያከናውኑ</translation>
 <translation id="763165478673169849">የመጨረሻ ዳግም ማስጀመሪያ ጊዜ</translation>
 <translation id="7648838807254605802">ከፍተኛ የHTTPS የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="7656388927906093505">መሣሪያ መዳፊት ነው።</translation>
@@ -785,6 +791,8 @@
 <translation id="9087578468327036362">ይህንን መጠይቅ ሪፖርት ያድርጉ</translation>
 <translation id="9088306295921699330">የአሁኑ አጠቃቀም</translation>
 <translation id="9095775724867566971">PluginVm</translation>
+<translation id="90977145661420967">መሣሪያውን መከፋፈት ይኖርብዎታል</translation>
+<translation id="9098156406873149060">የተጠቃሚ ውሂብ ያቆዩት</translation>
 <translation id="910415269708673980">የ<ph name="PRINCIPAL_NAME" /> ቲኬትን ያድሱ</translation>
 <translation id="9106415115617144481">ገጽ <ph name="PAGE_NUMBER" />ን በመቃኘት ላይ</translation>
 <translation id="9111102763498581341">ክፈት</translation>

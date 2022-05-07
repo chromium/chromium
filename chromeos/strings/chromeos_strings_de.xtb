@@ -156,6 +156,7 @@
 <translation id="2446553403094072641">Gleitkommagenauigkeit</translation>
 <translation id="2448312741937722512">Art</translation>
 <translation id="2461822463642141190">Aktuell</translation>
+<translation id="2480034874476596812">Manuell deaktivieren</translation>
 <translation id="2491955442992294626">Tasten werden nicht getestet, wenn du ein anderes Fenster verwendest</translation>
 <translation id="2493126929778606526">Meine besten automatisch ausgewählten Fotos</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -251,6 +252,7 @@
 <translation id="3606583719724308068">Hohe Latenz zu HTTPS-Websites</translation>
 <translation id="3621202678540785336">Eingang</translation>
 <translation id="3632579075709132555">Privatsphärefunktion</translation>
+<translation id="3678765385266369662">Wähle aus, wie du den Schreibschutz deaktivieren möchtest</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – Test</translation>
 <translation id="370665806235115550">Wird geladen...</translation>
 <translation id="3708186454126126312">Zuletzt verbundene Geräte</translation>
@@ -305,6 +307,7 @@
 <translation id="4244962993387259361">Zum Ausführen eines Speichertests müssen mindestens 500 MB frei sein. Unter „Einstellungen“ &gt; „Speicherplatzverwaltung“ kannst du Speicherplatz freigeben.</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4258281355379922695">HTTP-Latenz</translation>
+<translation id="4258561075226177474">Der Nutzer des Geräts ändert sich nicht. Nutzerdaten löschen?</translation>
 <translation id="4271957103967917607">Vollbildmodus aufrufen</translation>
 <translation id="4275799948641988986">Wer wird das Gerät nach der Reparatur nutzen?</translation>
 <translation id="4289540628985791613">Übersicht</translation>
@@ -353,6 +356,7 @@
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4744944742468440486">Informationen in Bezug auf deine Auswahl</translation>
 <translation id="4773299976671772492">Angehalten</translation>
+<translation id="4774530504324923332">Du benötigst einen RSU-fähigen Sicherheitsschlüssel, einen QR-Code-Scanner und ein zweites Gerät mit einer Internetverbindung</translation>
 <translation id="4782311465517282004">Du kannst Definitionen oder Übersetzungen anzeigen oder Einheiten umrechnen lassen, indem du Text gedrückt hältst oder mit der rechten Maustaste darauf klickst</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> Foto(s)</translation>
 <translation id="4793710386569335688"><ph name="BEGIN_LINK" />Weitere Informationen findest du in der Hilfe.<ph name="END_LINK" /></translation>
@@ -376,6 +380,7 @@
 <translation id="4890353053343094602">Lege so schnell wie möglich ein neues fest</translation>
 <translation id="4891842000192098784">Belastung</translation>
 <translation id="4897058166682006107">Der Akkustand des linken Kopfhörers liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4915052247106771211">Dadurch wird das Gerät auf die Werkseinstellungen zurückgesetzt (Powerwash).</translation>
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4917889632206600977">Angehalten – Kein Papier</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden aufgeladen.</translation>
@@ -430,6 +435,8 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5358174242040570474">Es gab ein Problem. Wähle noch einmal einen Hintergrund aus oder öffne die App ein weiteres Mal.</translation>
 <translation id="5372659122375744710">WLAN ist nicht sicher</translation>
 <translation id="5376354385557966694">Automatischer heller Modus</translation>
+<translation id="537872351913703572">Gerät wird an einen anderen Nutzer oder eine andere Organisation übergeben</translation>
+<translation id="5395600419410242651">Alle Daten löschen</translation>
 <translation id="5400907029458559844">Das Gerät wird verbunden.</translation>
 <translation id="5401938042319910061">Alle Abläufe ausführen</translation>
 <translation id="5423849171846380976">Aktiviert</translation>
@@ -640,6 +647,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7570674786725311828">USB-Touchscreen</translation>
 <translation id="7595982850646262331">Noch <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Weitere Informationen in der Hilfe</translation>
+<translation id="7626501172915339021">Entsperrung über RMA-Server vornehmen (RSU)</translation>
 <translation id="763165478673169849">Zuletzt zurückgesetzt</translation>
 <translation id="7648838807254605802">Hohe HTTPS-Latenz</translation>
 <translation id="7656388927906093505">Das Gerät ist eine Maus.</translation>
@@ -733,6 +741,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8671972493856476349">Update auf <ph name="VERSION_NUMBER" /> durchführen und neu starten</translation>
 <translation id="8675354002693747642">Vorinstallierter Schlüssel</translation>
 <translation id="8677859815076891398">Keine Alben. Ein Album in <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" /> erstellen.</translation>
+<translation id="8680431479333800907">Nutzer des Geräts ändert sich nicht</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Verwende zum Verwalten dieser Funktion den Rechts- und Linkspfeil.</translation>
 <translation id="8712637175834984815">Alles klar</translation>
 <translation id="871560550817059752">Fehlgeschlagen – Keine Tinte</translation>
@@ -782,6 +791,8 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="9087578468327036362">Diese Anfrage melden</translation>
 <translation id="9088306295921699330">Aktuelle Nutzung</translation>
 <translation id="9095775724867566971">PluginVM</translation>
+<translation id="90977145661420967">Du musst das Gerät auseinanderbauen</translation>
+<translation id="9098156406873149060">Nutzerdaten beibehalten</translation>
 <translation id="910415269708673980">Aktualisiere das Ticket für <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Seite <ph name="PAGE_NUMBER" /> wird gescannt</translation>
 <translation id="9111102763498581341">Entsperren</translation>

@@ -91,6 +91,7 @@
 <translation id="1801418420130173017">Wyłącz ciemny motyw</translation>
 <translation id="1807246157184219062">Jasny</translation>
 <translation id="1827738518074806965">Galeria sztuki</translation>
+<translation id="1840835860961531162">Wyłącz zabezpieczenie przed zapisem</translation>
 <translation id="1851218745569890714">Rozmowy wideo</translation>
 <translation id="1852934301711881861">Zainstaluj ChromeOS Flex</translation>
 <translation id="1856388568474281774">Strzałka w dół</translation>
@@ -272,6 +273,7 @@
 <translation id="3941014780699102620">Nie udało się znaleźć hosta</translation>
 <translation id="3942420633017001071">Diagnostyka</translation>
 <translation id="3954678691475912818">Typ urządzenia jest nieznany.</translation>
+<translation id="3958703339436883942">Przygotowuję ponowne uruchomienie…</translation>
 <translation id="3966286471246132217">Aby uzyskać dokładniejsze wyniki, zamknij wszystkie aplikacje do czasu ukończenia testu.</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
 <translation id="3969602104473960991">Hasło do Chrome OS zostało zaktualizowane</translation>
@@ -418,6 +420,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5275828089655680674">Uruchom ponownie testy</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">wersja <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">Aby przejść na następny ekran, wyłącz zabezpieczenie przed zapisem. Instrukcje znajdziesz na stronie pomocy udostępnianej przez producenta urządzenia.</translation>
 <translation id="5300814202279832142">Przenieś okno na biurko</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">Połącz</translation>
@@ -468,6 +471,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="583281660410589416">Nieznany</translation>
 <translation id="5843706793424741864">Stopnie Fahrenheita</translation>
 <translation id="5849570051105887917">Kod operatora macierzystego</translation>
+<translation id="5856532218727053281">System uruchomi się ponownie po sprawdzeniu stanu zabezpieczenia przed zapisem</translation>
 <translation id="5859603669299126575">Album Galeria sztuki</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5860491529813859533">Włącz</translation>

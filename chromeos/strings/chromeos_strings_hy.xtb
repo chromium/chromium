@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">Հնարավորինս արագ փոխեք գաղտնաբառը</translation>
 <translation id="4891842000192098784">Ծանրաբեռնվածություն</translation>
 <translation id="4897058166682006107">Ձախ ականջակալի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
+<translation id="4915052247106771211">Կվերականգնվեն սարքի գործարանային կարգավորումները (Powerwash)։</translation>
 <translation id="4917385247580444890">Ուժեղ</translation>
 <translation id="4917889632206600977">Դադարեցվել է – Թուղթ չկա</translation>
 <translation id="4921665434385737356">Լիցքավորվել է <ph name="RATE" />-ով՝ <ph name="NUM_SECONDS" /> վայրկյանում։</translation>
@@ -430,6 +431,7 @@
 <translation id="5358174242040570474">Սխալ առաջացավ։ Նորից ընտրեք պաստառ կամ հավելվածը փակեք ու նորից բացեք։</translation>
 <translation id="5372659122375744710">Wi-Fi ցանցն անվտանգ չէ</translation>
 <translation id="5376354385557966694">Ավտոմատ բաց ռեժիմ</translation>
+<translation id="537872351913703572">Սարքը կփոխանցվի այլ օգտատիրոջ կամ կազմակերպության</translation>
 <translation id="5400907029458559844">Սարքը միանում է։</translation>
 <translation id="5401938042319910061">Գործարկել բոլոր հերթականությունները</translation>
 <translation id="5423849171846380976">Ակտիվացված է</translation>
@@ -733,6 +735,7 @@
 <translation id="8671972493856476349">Տեղադրել <ph name="VERSION_NUMBER" /> տարբերակը և վերագործարկել</translation>
 <translation id="8675354002693747642">Ընդհանուր բանալի</translation>
 <translation id="8677859815076891398">Ալբոմներ չկան: Ստեղծեք ալբոմ <ph name="LINK_BEGIN" />Google Լուսանկարներում<ph name="LINK_END" />։</translation>
+<translation id="8680431479333800907">Սարքը կփոխանցվի նույն օգտատիրոջը</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Այս գործառույթը կառավարելու համար օգտագործեք ձախ կամ աջ սլաքները։</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="871560550817059752">Չհաջողվեց տպել – Թանաքը սպառվել է</translation>

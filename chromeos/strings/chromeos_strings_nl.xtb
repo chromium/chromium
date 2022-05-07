@@ -156,6 +156,7 @@
 <translation id="2446553403094072641">Nauwkeurigheid van zwevendekommagetallen</translation>
 <translation id="2448312741937722512">Type</translation>
 <translation id="2461822463642141190">Huidig</translation>
+<translation id="2480034874476596812">Handmatig uitzetten</translation>
 <translation id="2491955442992294626">Toetsen worden niet getest als je een ander venster gebruikt</translation>
 <translation id="2493126929778606526">Je beste foto's, automatisch geselecteerd</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -251,6 +252,7 @@
 <translation id="3606583719724308068">Lange vertraging voor HTTPS-websites</translation>
 <translation id="3621202678540785336">Ingang</translation>
 <translation id="3632579075709132555">Privacyscherm schakelen</translation>
+<translation id="3678765385266369662">Selecteer hoe je Write Protect wilt uitzetten</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Bezig met laden...</translation>
 <translation id="3708186454126126312">Eerder verbonden</translation>
@@ -305,6 +307,7 @@
 <translation id="4244962993387259361">Je hebt minimaal 500 MB vrije ruimte nodig om een geheugentest uit te voeren. Ga naar Instellingen &gt; Opslagbeheer om ruimte vrij te maken.</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4258281355379922695">HTTP-vertraging</translation>
+<translation id="4258561075226177474">Het apparaat gaat naar dezelfde gebruiker. Gebruikersgegevens wissen?</translation>
 <translation id="4271957103967917607">Bekijken op volledig scherm</translation>
 <translation id="4275799948641988986">Door wie wordt het apparaat na reparatie gebruikt?</translation>
 <translation id="4289540628985791613">Overzicht</translation>
@@ -353,6 +356,7 @@
 <translation id="473775607612524610">Updaten</translation>
 <translation id="4744944742468440486">Informatie met betrekking tot je selectie</translation>
 <translation id="4773299976671772492">Beëindigd</translation>
+<translation id="4774530504324923332">Je hebt een beveiligingssleutel waarvoor RSU aanstaat, een QR-codescanner en een tweede apparaat met een internetverbinding nodig</translation>
 <translation id="4782311465517282004">Als je met de rechtermuisknop op tekst klikt of op tekst tikt en deze vasthoudt, kun je definities, vertalingen of eenheidsconversies opvragen</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto('s)</translation>
 <translation id="4793710386569335688">Ga voor meer hulp naar het <ph name="BEGIN_LINK" />Helpcentrum<ph name="END_LINK" />.</translation>
@@ -432,6 +436,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5372659122375744710">Wifi-netwerk is niet beveiligd</translation>
 <translation id="5376354385557966694">Automatisch lichte modus</translation>
 <translation id="537872351913703572">Het apparaat gaat naar een andere gebruiker of organisatie</translation>
+<translation id="5395600419410242651">Alle gegevens wissen</translation>
 <translation id="5400907029458559844">Apparaat maakt verbinding.</translation>
 <translation id="5401938042319910061">Alle routines uitvoeren</translation>
 <translation id="5423849171846380976">Geactiveerd</translation>
@@ -642,6 +647,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7570674786725311828">USB-touchscreen</translation>
 <translation id="7595982850646262331">Nog <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Meer informatie in het Helpcentrum</translation>
+<translation id="7626501172915339021">RSU (RMA Server Unlock) uitvoeren</translation>
 <translation id="763165478673169849">Laatste resettijd</translation>
 <translation id="7648838807254605802">Lage HTTPS-latentie</translation>
 <translation id="7656388927906093505">Apparaat is een muis.</translation>
@@ -785,6 +791,8 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="9087578468327036362">Deze zoekopdracht melden</translation>
 <translation id="9088306295921699330">Huidig gebruik</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">Je moet het apparaat uit elkaar halen</translation>
+<translation id="9098156406873149060">Gebruikersgegevens behouden</translation>
 <translation id="910415269708673980">Ticket voor <ph name="PRINCIPAL_NAME" /> vernieuwen</translation>
 <translation id="9106415115617144481">Pagina <ph name="PAGE_NUMBER" /> scannen</translation>
 <translation id="9111102763498581341">Ontgrendelen</translation>

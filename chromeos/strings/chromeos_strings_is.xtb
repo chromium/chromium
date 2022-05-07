@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">Veldu nýtt án tafar</translation>
 <translation id="4891842000192098784">Álag</translation>
 <translation id="4897058166682006107">Rafhleðsla vinstra heyrnartóls er <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4915052247106771211">Þetta mun núllstilla tækið (djúphreinsun).</translation>
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4917889632206600977">Stöðvað – pappír vantar</translation>
 <translation id="4921665434385737356">Hlóð <ph name="RATE" /> á <ph name="NUM_SECONDS" /> sekúndum.</translation>
@@ -430,6 +431,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5358174242040570474">Eitthvað fór úrskeiðis. Reyndu að velja veggfóður aftur eða endurræstu forritið.</translation>
 <translation id="5372659122375744710">Wi-Fi net er ekki öruggt</translation>
 <translation id="5376354385557966694">Sjálfvirk ljós stilling</translation>
+<translation id="537872351913703572">Tækið verður afhent öðrum notanda eða öðru fyrirtæki</translation>
 <translation id="5400907029458559844">Tækið er að tengjast.</translation>
 <translation id="5401938042319910061">Keyra allar rútínur</translation>
 <translation id="5423849171846380976">Virkjuð</translation>
@@ -733,6 +735,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8671972493856476349">Uppfæra í <ph name="VERSION_NUMBER" /> og endurræsa</translation>
 <translation id="8675354002693747642">PSK-lykill</translation>
 <translation id="8677859815076891398">Engin albúm. Búðu til albúm í <ph name="LINK_BEGIN" />Google myndum<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Tækið verður afhent sama notanda</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Notaðu ör til vinstri eða ör til hægri til að stjórna þessum eiginleika.</translation>
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="871560550817059752">Mistókst – blekið er búið</translation>

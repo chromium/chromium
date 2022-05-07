@@ -970,6 +970,7 @@
 <translation id="1892341345406963517">নমস্কাৰ <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">অন্য ভাষা</translation>
 <translation id="1895658205118569222">শ্বাটডাউন</translation>
+<translation id="1897120393475391208">বিশ্বস্ত পাছৱৰ্ড ব্যৱহাৰ কৰক</translation>
 <translation id="1900305421498694955">Google Playৰ এপ্‌সমূহক বাহ্যিক ষ্ট’ৰেজ ডিভাইচসমূহত থকা ফাইলসমূহ পঢ়িবলৈ আৰু লিখিবলৈ সম্পূৰ্ণ ফাইল ছিষ্টেমৰ এক্সেছ প্ৰয়োজন হ’ব পাৰে। ডিভাইচটোত সৃষ্টি কৰা ফাইল আৰু ফ’ল্ডাৰসমূহ বাহ্যিক ড্ৰাইভটো ব্যৱহাৰ কৰা সকলোৰে বাবে দৃশ্যমান। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">&amp;সকলো বাছনি কৰক</translation>
 <translation id="1901396183631570154">Chromeএ আপোনাৰ Google একাউণ্টত এই পাছৱৰ্ডসমূহ ছেভ কৰিব নোৱাৰিলে। আপুনি তথাপি সেইসমূহ এই ডিভাইচটোত ছেভ কৰিব পাৰে।</translation>
@@ -6563,6 +6564,7 @@
 <translation id="7444970023873202833">Google Photosত আপোনাৰ স্মৃতিসমূহ আৰু অন্বেষণ কৰক</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> অক্ষম কৰক</translation>
 <translation id="7448430327655618736">এপ্‌সমূহ স্বয়ংক্ৰিয়ভাৱে ইনষ্টল কৰক</translation>
+<translation id="7449381494541372002">আৰম্ভ হৈ আছে...</translation>
 <translation id="7449752890690775568">পাছৱৰ্ড আঁতৰাবনে?</translation>
 <translation id="7450761244949417357">এতিয়া <ph name="ALTERNATIVE_BROWSER_NAME" />ত খুলি থকা হৈছে</translation>
 <translation id="7452166281927983300">অগ্ৰাহ্য কৰা সকীয়নি (<ph name="MUTED_PASSWORDS" />)</translation>

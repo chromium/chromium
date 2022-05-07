@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">Dewiswch un newydd ar unwaith</translation>
 <translation id="4891842000192098784">Straen</translation>
 <translation id="4897058166682006107">Mae gan y ddyfais <ph name="BATTERY_PERCENTAGE" />% o fatri bud chwith.</translation>
+<translation id="4915052247106771211">Bydd hyn yn ailosod y ddyfais i'r gosodiadau ffatri (Powerwash).</translation>
 <translation id="4917385247580444890">Cryf</translation>
 <translation id="4917889632206600977">Wedi'i atal - Allan o bapur</translation>
 <translation id="4921665434385737356">Wedi gwefru <ph name="RATE" /> mewn <ph name="NUM_SECONDS" /> eiliad.</translation>
@@ -430,6 +431,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="5358174242040570474">Aeth rhywbeth o'i le. Rhowch gynnig arall ar ddewis papur wal neu ailagorwch yr ap.</translation>
 <translation id="5372659122375744710">Nid yw'r rhwydwaith Wi-Fi yn ddiogel</translation>
 <translation id="5376354385557966694">Modd golau awtomatig</translation>
+<translation id="537872351913703572">Bydd y ddyfais yn mynd i ddefnyddiwr neu sefydliad gwahanol</translation>
 <translation id="5400907029458559844">Mae'r ddyfais yn cysylltu.</translation>
 <translation id="5401938042319910061">Rhedeg Pob Arfer</translation>
 <translation id="5423849171846380976">Wedi gweithredu</translation>
@@ -733,6 +735,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="8671972493856476349">Diweddaru i <ph name="VERSION_NUMBER" /> ac ailgychwyn</translation>
 <translation id="8675354002693747642">Allwedd a rannwyd ymlaen llaw</translation>
 <translation id="8677859815076891398">Dim albymau. Creu albwm yn <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Bydd y ddyfais yn mynd i'r un defnyddiwr</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Defnyddiwch y bysellau saeth Chwith neu Dde i reoli'r nodwedd hon.</translation>
 <translation id="8712637175834984815">Iawn</translation>
 <translation id="871560550817059752">Wedi methu - Allan o inc</translation>

@@ -959,6 +959,7 @@
 <translation id="1892341345406963517">ഹായ് <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">മറ്റ് ഭാഷകൾ</translation>
 <translation id="1895658205118569222">ഷട്ട്‌ഡൗൺ ചെയ്യുക</translation>
+<translation id="1897120393475391208">ശക്തമായ പാസ്‌വേഡ് ഉപയോഗിക്കുക</translation>
 <translation id="1900305421498694955">ബാഹ്യ സ്‌റ്റോറേജ് ഉപകരണങ്ങളിലെ ഫയലുകൾ വായിക്കാനും എഴുതാനും Google Play-ൽ നിന്നുള്ള ആപ്പുകൾക്ക് പൂർണ്ണ ഫയൽ സിസ്‌റ്റം ആക്‌സസ് ആവശ്യമായേക്കാം. ഉപകരണത്തിൽ സൃഷ്‌ടിച്ച ഫയലുകളും ഫോൾഡറുകളും ബാഹ്യ ഡ്രൈവ് ഉപയോഗിക്കുന്ന ആർക്കും ദൃശ്യമാകും. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">എല്ലാം &amp;തിരഞ്ഞെടുക്കൂ</translation>
 <translation id="1901396183631570154">Chrome-ന് ഈ പാസ്‌വേഡുകൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കാനായില്ല. എങ്കിലും അവ നിങ്ങൾക്ക് ഈ ഉപകരണത്തിൽ തുടർന്നും സൂക്ഷിക്കാനാകും.</translation>
@@ -6542,6 +6543,7 @@
 <translation id="7444970023873202833">Google Photos-ൽ നിങ്ങളുടെ കൂടുതൽ മനോഹര ഓർമ്മകൾ കാണുക</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> അപ്രാപ്‌തമാക്കുക</translation>
 <translation id="7448430327655618736">സ്വയമേവ ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
+<translation id="7449381494541372002">ആരംഭിക്കുന്നു…</translation>
 <translation id="7449752890690775568">പാസ്‌വേഡ് നീക്കം ചെയ്യണോ?</translation>
 <translation id="7450761244949417357">ഇപ്പോൾ <ph name="ALTERNATIVE_BROWSER_NAME" />-ൽ തുറക്കുന്നു</translation>
 <translation id="7452166281927983300">ഡിസ്‌മിസ് ചെയ്‌ത മുന്നറിയിപ്പുകൾ (<ph name="MUTED_PASSWORDS" />)</translation>

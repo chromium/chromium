@@ -156,6 +156,7 @@
 <translation id="2446553403094072641">Точность чисел с плавающей запятой</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Расход энергии</translation>
+<translation id="2480034874476596812">Отключить вручную</translation>
 <translation id="2491955442992294626">Пока активно другое окно, проверка клавиатуры не выполняется</translation>
 <translation id="2493126929778606526">Ваши лучшие фото, отобранные автоматически</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -251,6 +252,7 @@
 <translation id="3606583719724308068">Длительная задержка у HTTPS-сайтов.</translation>
 <translation id="3621202678540785336">Вход</translation>
 <translation id="3632579075709132555">Включение экрана конфиденциальности</translation>
+<translation id="3678765385266369662">Выберите способ отключения защиты от записи</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />: тестирование</translation>
 <translation id="370665806235115550">Загрузка...</translation>
 <translation id="3708186454126126312">Ранее подключенные устройства</translation>
@@ -305,6 +307,7 @@
 <translation id="4244962993387259361">Для запуска проверки памяти вам нужно не менее 500 МБ незанятого пространства. Чтобы освободить место, выберите "Настройки &gt; Управление хранилищем".</translation>
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="4258281355379922695">Время ожидания HTTP</translation>
+<translation id="4258561075226177474">Устройство будет возвращено прежнему пользователю. Удалить данные?</translation>
 <translation id="4271957103967917607">Перейти в полноэкранный режим</translation>
 <translation id="4275799948641988986">Кто будет пользоваться устройством после ремонта?</translation>
 <translation id="4289540628985791613">Обзор</translation>
@@ -353,6 +356,7 @@
 <translation id="473775607612524610">Обновить</translation>
 <translation id="4744944742468440486">Информация на основе выделенного текста</translation>
 <translation id="4773299976671772492">Остановлено</translation>
+<translation id="4774530504324923332">Потребуется электронный ключ с поддержкой RSU, сканер QR-кодов и второе устройство с доступом в интернет</translation>
 <translation id="4782311465517282004">Получайте определения слов, перевод или значение в других единицах измерения: достаточно нажать на текст правой кнопкой мыши или коснуться его и удерживать.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> фото</translation>
 <translation id="4793710386569335688">Дополнительную информацию можно найти в <ph name="BEGIN_LINK" />Справочном центре<ph name="END_LINK" />.</translation>
@@ -432,6 +436,7 @@
 <translation id="5372659122375744710">Сеть Wi-Fi недостаточно безопасна.</translation>
 <translation id="5376354385557966694">Автоматическая светлая тема</translation>
 <translation id="537872351913703572">Устройство будет передано другому пользователю или организации</translation>
+<translation id="5395600419410242651">Удалить все данные</translation>
 <translation id="5400907029458559844">Устройство подключается.</translation>
 <translation id="5401938042319910061">Запустить все проверки</translation>
 <translation id="5423849171846380976">Активировано</translation>
@@ -642,6 +647,7 @@
 <translation id="7570674786725311828">Сенсорный экран USB</translation>
 <translation id="7595982850646262331">Ещё <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Узнать больше в Справочном центре</translation>
+<translation id="7626501172915339021">Выполнить RSU (разблокировать сервер разрешения на возврат товара)</translation>
 <translation id="763165478673169849">Время последнего сброса</translation>
 <translation id="7648838807254605802">большое время ожидания HTTPS</translation>
 <translation id="7656388927906093505">Это мышь.</translation>
@@ -785,6 +791,8 @@
 <translation id="9087578468327036362">Сообщить о запросе</translation>
 <translation id="9088306295921699330">Используется</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">Потребуется разобрать устройство</translation>
+<translation id="9098156406873149060">Сохранить пользовательские данные</translation>
 <translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Сканирование страницы <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Разблокировать</translation>

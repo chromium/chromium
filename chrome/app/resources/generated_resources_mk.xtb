@@ -1015,6 +1015,7 @@
 <translation id="1942600407708803723">Исклучи кога капакот е затворен</translation>
 <translation id="1944528062465413897">Код за спарување преку Bluetooth:</translation>
 <translation id="1944921356641260203">Најдено е ажурирање</translation>
+<translation id="1947136734041527201">Ви овозможува да се најавувате на веб-сајтови со сметката што ја имате на услугата за идентификација</translation>
 <translation id="1949584741547056205">Брзи одговори</translation>
 <translation id="1951012854035635156">Помошник</translation>
 <translation id="1954597385941141174">Сајтовите може да прашуваат дали да се поврзат со USB-уредите</translation>
@@ -2415,6 +2416,7 @@
 <translation id="32939749466444286">Контејнерот за Linux не се стартуваше. Обидете се повторно.</translation>
 <translation id="3294437725009624529">Гостин</translation>
 <translation id="3294686910656423119">Статистика на користење и извештаи за падовите</translation>
+<translation id="3297105622164376095">Дозволено е да се прикажува prompt за најавување од трети страни</translation>
 <translation id="3297536526040732495">Привремено ги поврзува податоциве со вашата сметка на Google кога сте најавени за да ве заштити на апликациите на Google</translation>
 <translation id="329838636886466101">Поправи</translation>
 <translation id="3298789223962368867">Внесена неважечка URL-адреса.</translation>
@@ -3671,6 +3673,7 @@
 <translation id="452750746583162491">Прегледајте ги синхронизираните податоци</translation>
 <translation id="4527929807707405172">Овозможи обратно лизгање. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Предлог за превод</translation>
+<translation id="4529455689802245339">„Автоматски титлови“ на Chrome може да не функционира</translation>
 <translation id="4530494379350999373">Потекло</translation>
 <translation id="4531924570968473143">Кого сакате да го додадете на овој <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532625150642446981">„<ph name="USB_DEVICE_NAME" />“ се користи. Преназначувањето на уредот додека се користи може да предизвика грешки. Дали сигурно сакате да продолжите?</translation>
@@ -3869,6 +3872,7 @@
 <translation id="471880041731876836">Немате дозвола за посета на сајтов</translation>
 <translation id="4722735765955348426">Лозинка за <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> го споделува вашиот екран.</translation>
+<translation id="4722989931633062466">Не е дозволено да се прикажува prompt за најавување од трети страни</translation>
 <translation id="4723140812774948886">Заменете ја со следната</translation>
 <translation id="4724450788351008910">Припадностa е променета</translation>
 <translation id="4725511304875193254">Корги</translation>
@@ -4839,6 +4843,7 @@
 <translation id="5711010025974903573">Евиденција за услугата за одржување</translation>
 <translation id="5711983031544731014">Не може да се отклучи. Внесете ја лозинката.</translation>
 <translation id="5712153969432126546">Сајтовите понекогаш објавуваат документи, договори и формулари во PDF-формат</translation>
+<translation id="571222594670061844">Сајтовите може да прикажуваат prompt за најавување од услуги за идентификација</translation>
 <translation id="5713158217420111469">Поврзан со <ph name="DEVICE" /></translation>
 <translation id="5715711091495208045">Посредник со приклучоци: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Стандардни пребарувачи</translation>
@@ -4997,6 +5002,7 @@
 <translation id="5876851302954717356">Нова картичка надесно</translation>
 <translation id="5877064549588274448">Каналот е сменет. Рестартирајте го вашиот уред за да ги примените измените.</translation>
 <translation id="5877584842898320529">Избраниот печатач не е достапен или не е правилно инсталиран. <ph name="BR" /> Проверете го или обидете се да изберете друг печатач.</translation>
+<translation id="5878945009165002849">Блокирајте prompt за најавување од услуги за идентификација</translation>
 <translation id="5882919346125742463">Познати мрежи</translation>
 <translation id="5883356647197510494">Автоматски блокирани: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Картичкава е поврзана со USB-уред.</translation>
@@ -5634,6 +5640,7 @@
 <translation id="6513247462497316522">Google Chrome ќе користи мобилен интернет ако не сте поврзани на друга мрежа.</translation>
 <translation id="6514010653036109809">Достапен уред:</translation>
 <translation id="6514565641373682518">Оваа страница го оневозможи курсорот на глушецот.</translation>
+<translation id="6517709704288360414">Можно е уредот да не ви функционира правилно и може да наидете на проблеми со безбедноста и изведбата. Ако ги исклучите ажурирањата, тоа може да влијае и врз вашето право на законски побарувања во случај да имате проблеми.</translation>
 <translation id="6518014396551869914">Копи&amp;рај слика</translation>
 <translation id="6518133107902771759">Потврди</translation>
 <translation id="651942933739530207">Дали сакате <ph name="APP_NAME" /> да го сподели вашиот екран и аудиоизлез?</translation>

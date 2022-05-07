@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">Επιλέξτε άμεσα έναν νέο</translation>
 <translation id="4891842000192098784">Καταπόνηση</translation>
 <translation id="4897058166682006107">Η μπαταρία αριστερού ακουστικού της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4915052247106771211">Αυτή η ενέργεια θα επαναφέρει τη συσκευή στις εργοστασιακές ρυθμίσεις (Powerwash).</translation>
 <translation id="4917385247580444890">Ισχυρό</translation>
 <translation id="4917889632206600977">Διακοπή - Τελείωσε το χαρτί</translation>
 <translation id="4921665434385737356">Φόρτιση κατά <ph name="RATE" /> σε <ph name="NUM_SECONDS" /> δευτερόλεπτα.</translation>
@@ -430,6 +431,7 @@
 <translation id="5358174242040570474">Κάτι δεν πήγε καλά. Δοκιμάστε να επιλέξετε ξανά μια ταπετσαρία ή να επαναλάβετε το άνοιγμα της εφαρμογής.</translation>
 <translation id="5372659122375744710">Το δίκτυο Wi-Fi δεν είναι ασφαλές.</translation>
 <translation id="5376354385557966694">Αυτόματη φωτεινή λειτουργία</translation>
+<translation id="537872351913703572">Η συσκευή θα μεταβιβαστεί σε διαφορετικό χρήστη ή οργανισμό</translation>
 <translation id="5400907029458559844">Η συσκευή συνδέεται.</translation>
 <translation id="5401938042319910061">Εκτέλεση όλων των ρουτινών</translation>
 <translation id="5423849171846380976">Ενεργοποιημένο</translation>
@@ -733,6 +735,7 @@
 <translation id="8671972493856476349">Ενημέρωση στην έκδοση <ph name="VERSION_NUMBER" /> και επανεκκίνηση</translation>
 <translation id="8675354002693747642">Ήδη κοινόχρηστο κλειδί</translation>
 <translation id="8677859815076891398">Δεν υπάρχουν λευκώματα. Δημιουργήστε ένα λεύκωμα στις <ph name="LINK_BEGIN" />Φωτογραφίες Google<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Η συσκευή θα μεταβιβαστεί στον ίδιο χρήστη</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Χρησιμοποιήστε τα πλήκτρα δεξιού ή αριστερού βέλους για τη διαχείριση αυτής της λειτουργίας.</translation>
 <translation id="8712637175834984815">Κατάλαβα!</translation>
 <translation id="871560550817059752">Σφάλμα - Τελείωσε το μελάνι</translation>

@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">Choisissez-en un nouveau immédiatement</translation>
 <translation id="4891842000192098784">Contrainte</translation>
 <translation id="4897058166682006107">L'écouteur gauche de l'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
+<translation id="4915052247106771211">La configuration d'usine sera rétablie sur l'appareil (Powerwash).</translation>
 <translation id="4917385247580444890">Très bon</translation>
 <translation id="4917889632206600977">Tâche suspendue - À court de papier</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> chargés en <ph name="NUM_SECONDS" /> secondes.</translation>
@@ -430,6 +431,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5358174242040570474">Un problème est survenu. Choisissez à nouveau un fond d'écran ou rouvrez l'appli.</translation>
 <translation id="5372659122375744710">Réseau Wi-Fi non sécurisé</translation>
 <translation id="5376354385557966694">Mode clair automatique</translation>
+<translation id="537872351913703572">L'appareil sera transféré à un autre utilisateur ou à une autre organisation</translation>
 <translation id="5400907029458559844">L'appareil se connecte.</translation>
 <translation id="5401938042319910061">Exécuter toutes les routines</translation>
 <translation id="5423849171846380976">Activé</translation>
@@ -733,6 +735,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8671972493856476349">Installer <ph name="VERSION_NUMBER" /> et redémarrer</translation>
 <translation id="8675354002693747642">Clé pré-partagée</translation>
 <translation id="8677859815076891398">Aucun album. Créez-en un dans <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">L'appareil sera transféré au même utilisateur</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Pour gérer cette fonctionnalité, utilisez les flèches vers la gauche ou vers la droite.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="871560550817059752">Échec – À court d'encre</translation>

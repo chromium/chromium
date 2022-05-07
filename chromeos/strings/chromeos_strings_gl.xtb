@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">Escolle un novo inmediatamente</translation>
 <translation id="4891842000192098784">Estrés</translation>
 <translation id="4897058166682006107">Nivel de batería do auricular esquerdo do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4915052247106771211">Ao marcar esta opción, restablecerase a configuración de fábrica do dispositivo (Powerwash).</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4917889632206600977">Detívose (esgotouse o papel)</translation>
 <translation id="4921665434385737356">Cargouse un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
@@ -430,6 +431,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5358174242040570474">Produciuse un erro. Proba a escoller un fondo de pantalla de novo ou volve abrir a aplicación.</translation>
 <translation id="5372659122375744710">A rede wifi non é segura</translation>
 <translation id="5376354385557966694">Modo claro automático</translation>
+<translation id="537872351913703572">O dispositivo utilizarao un usuario ou unha organización diferente</translation>
 <translation id="5400907029458559844">O dispositivo estase conectando.</translation>
 <translation id="5401938042319910061">Executar todas as rutinas</translation>
 <translation id="5423849171846380976">Activado</translation>
@@ -733,6 +735,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8671972493856476349">Actualiza á versión <ph name="VERSION_NUMBER" /> e reinicia o dispositivo</translation>
 <translation id="8675354002693747642">Clave compartida previamente</translation>
 <translation id="8677859815076891398">Non hai ningún álbum. Crea un en <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">O dispositivo utilizarao o mesmo usuario</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilizar teclas frecha cara á esquerda ou frecha arriba para xestionar esta función.</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="871560550817059752">Produciuse un erro: a impresora quedou sen tinta</translation>

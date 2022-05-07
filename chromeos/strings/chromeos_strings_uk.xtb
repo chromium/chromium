@@ -156,6 +156,7 @@
 <translation id="2446553403094072641">Точність рухомої коми</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Енергоспоживання</translation>
+<translation id="2480034874476596812">Вимкнути вручну</translation>
 <translation id="2491955442992294626">Якщо відкрити інше вікно, клавіші не будуть перевірятися</translation>
 <translation id="2493126929778606526">Ваші найкращі фото, вибрані автоматично</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -251,6 +252,7 @@
 <translation id="3606583719724308068">Велика затримка для веб-сайтів HTTPS</translation>
 <translation id="3621202678540785336">Вхід</translation>
 <translation id="3632579075709132555">Перемикач Екрана конфіденційності</translation>
+<translation id="3678765385266369662">Виберіть спосіб, у який хочете вимкнути захист від запису</translation>
 <translation id="3689839747745352263">Перевірка "<ph name="TEST_NAME" />"</translation>
 <translation id="370665806235115550">Завантаження...</translation>
 <translation id="3708186454126126312">Підключені раніше</translation>
@@ -305,6 +307,7 @@
 <translation id="4244962993387259361">Щоб виконати перевірку пам’яті, потрібно принаймні 500 МБ вільного місця. Щоб звільнити пам’ять, перейдіть у розділ "Налаштування" &gt; "Керування пам’яттю".</translation>
 <translation id="4250229828105606438">Знімок екрана</translation>
 <translation id="4258281355379922695">Затримка HTTP</translation>
+<translation id="4258561075226177474">Власник пристрою не зміниться. Видалити дані користувача?</translation>
 <translation id="4271957103967917607">Переглянути в повноекранному режимі</translation>
 <translation id="4275799948641988986">Хто використовуватиме пристрій після ремонту?</translation>
 <translation id="4289540628985791613">Огляд</translation>
@@ -353,6 +356,7 @@
 <translation id="473775607612524610">Оновити</translation>
 <translation id="4744944742468440486">Інформація, пов'язана з виділеним текстом</translation>
 <translation id="4773299976671772492">Зупинено</translation>
+<translation id="4774530504324923332">Вам знадобляться ключ безпеки з підтримкою RSU, сканер QR-коду й інший пристрій із доступом до Інтернету</translation>
 <translation id="4782311465517282004">Щоб дізнатися визначення слова, перекласти його або конвертувати одиницю, натисніть правою кнопкою миші або натисніть і втримуйте потрібний текст</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> фото</translation>
 <translation id="4793710386569335688">Щоб дізнатися більше, перейдіть у <ph name="BEGIN_LINK" />Довідковий центр<ph name="END_LINK" />.</translation>
@@ -432,6 +436,7 @@
 <translation id="5372659122375744710">Мережа Wi-Fi ненадійна</translation>
 <translation id="5376354385557966694">Автоматичний світлий режим</translation>
 <translation id="537872351913703572">Пристрій буде передано іншому користувачу або організації</translation>
+<translation id="5395600419410242651">Стерти всі дані</translation>
 <translation id="5400907029458559844">Підключення пристрою.</translation>
 <translation id="5401938042319910061">Виконати всі послідовності дій</translation>
 <translation id="5423849171846380976">Активовано</translation>
@@ -642,6 +647,7 @@
 <translation id="7570674786725311828">Сенсорний екран USB</translation>
 <translation id="7595982850646262331">Ще <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Дізнатися більше в Довідковому центрі</translation>
+<translation id="7626501172915339021">Виконати серверне розблокування RMA (RSU)</translation>
 <translation id="763165478673169849">Час останнього скидання</translation>
 <translation id="7648838807254605802">велика затримка HTTPS</translation>
 <translation id="7656388927906093505">Це миша.</translation>
@@ -785,6 +791,8 @@
 <translation id="9087578468327036362">Повідомити про проблеми із запитом</translation>
 <translation id="9088306295921699330">Використовується</translation>
 <translation id="9095775724867566971">PluginVM</translation>
+<translation id="90977145661420967">Вам доведеться розібрати пристрій</translation>
+<translation id="9098156406873149060">Зберегти дані користувача</translation>
 <translation id="910415269708673980">Оновити квиток для користувача <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканування сторінки <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Розблокувати</translation>

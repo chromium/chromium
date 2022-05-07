@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">Hemen yeni bir tane seçin</translation>
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4897058166682006107">Cihazın sol kulaklık pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
+<translation id="4915052247106771211">Bu işlemden sonra cihaz fabrika ayarlarına sıfırlanır (Powerwash).</translation>
 <translation id="4917385247580444890">Güçlü</translation>
 <translation id="4917889632206600977">Durduruldu - Kağıt bitti</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> saniyede <ph name="RATE" /> şarj oldu</translation>
@@ -430,6 +431,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5358174242040570474">Bir sorun oldu. Tekrar bir duvar kağıdı seçmeyi deneyin veya uygulamayı yeniden açın.</translation>
 <translation id="5372659122375744710">Kablosuz ağ güvenli değil</translation>
 <translation id="5376354385557966694">Otomatik açık mod</translation>
+<translation id="537872351913703572">Cihaz başka bir kullanıcı veya kuruluşa teslim edilir</translation>
 <translation id="5400907029458559844">Cihaz bağlanıyor.</translation>
 <translation id="5401938042319910061">Tüm Rutinleri Çalıştır</translation>
 <translation id="5423849171846380976">Etkin</translation>
@@ -733,6 +735,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8671972493856476349"><ph name="VERSION_NUMBER" /> sürümüne güncelle ve yeniden başlat</translation>
 <translation id="8675354002693747642">Önceden paylaşılan anahtar</translation>
 <translation id="8677859815076891398">Albüm yok. <ph name="LINK_BEGIN" />Google Fotoğraflar<ph name="LINK_END" />'da albüm oluşturun.</translation>
+<translation id="8680431479333800907">Cihaz aynı kullanıcıya teslim edilir</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bu özelliği yönetmek için sol veya sağ ok tuşlarını kullanın.</translation>
 <translation id="8712637175834984815">Anlaşıldı</translation>
 <translation id="871560550817059752">İşlem başarısız - Mürekkep yok</translation>

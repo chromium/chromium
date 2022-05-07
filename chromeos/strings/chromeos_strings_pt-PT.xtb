@@ -378,6 +378,7 @@
 <translation id="4890353053343094602">Escolha uma nova de imediato</translation>
 <translation id="4891842000192098784">Tensão</translation>
 <translation id="4897058166682006107">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria no auricular esquerdo.</translation>
+<translation id="4915052247106771211">Esta ação repõe as definições de fábrica do dispositivo (Powerwash).</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4917889632206600977">Parada – Sem papel</translation>
 <translation id="4921665434385737356">Carregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
@@ -433,6 +434,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5358174242040570474">Algo correu mal. Experimente escolher novamente uma imagem de fundo ou reabra a app.</translation>
 <translation id="5372659122375744710">A rede Wi-Fi não é segura.</translation>
 <translation id="5376354385557966694">Modo claro automático</translation>
+<translation id="537872351913703572">O dispositivo vai para um utilizador ou uma organização diferente</translation>
 <translation id="5400907029458559844">O dispositivo está a ligar.</translation>
 <translation id="5401938042319910061">Executar todas as rotinas</translation>
 <translation id="5423849171846380976">Activado</translation>
@@ -737,6 +739,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8671972493856476349">Atualizar para <ph name="VERSION_NUMBER" /> e reiniciar</translation>
 <translation id="8675354002693747642">Chave pré-partilhada</translation>
 <translation id="8677859815076891398">Não existem álbuns. Crie um álbum no <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">O dispositivo vai para o mesmo utilizador</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilize as teclas das setas para a esquerda ou para a direita para gerir esta funcionalidade.</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="871560550817059752">Falha – Sem tinta</translation>

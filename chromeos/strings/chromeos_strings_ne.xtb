@@ -91,6 +91,7 @@
 <translation id="1801418420130173017">अँध्यारो थिम अफ गर्नुहोस्</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1827738518074806965">आर्ट ग्यालेरी</translation>
+<translation id="1840835860961531162">Write Protect अफ गर्नुहोस्</translation>
 <translation id="1851218745569890714">भिडियो कन्फ्रेन्स</translation>
 <translation id="1852934301711881861">ChromeOS Flex इन्स्टल गर्नुहोस्</translation>
 <translation id="1856388568474281774">डाउन एरो</translation>
@@ -274,6 +275,7 @@
 <translation id="3941014780699102620">होस्टको समस्या समाधान गर्न सकिएन</translation>
 <translation id="3942420633017001071">निदान</translation>
 <translation id="3954678691475912818">यो डिभाइस कुन प्रकारको डिभाइस हो भन्ने जानकारी उपलब्ध छैन।</translation>
+<translation id="3958703339436883942">रिस्टार्ट गर्नका लागि तयार पारिँदै छ...</translation>
 <translation id="3966286471246132217">अझ सटीक परिणामहरू प्राप्त गर्न जाँच पूरा नहुँदासम्म सबै एप बन्द राख्नुहोस्।</translation>
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
 <translation id="3969602104473960991">ChromeOS को पासवर्ड परिवर्तन गरिएको छ</translation>
@@ -421,6 +423,7 @@
 <translation id="5275828089655680674">निदानसम्बन्धी रुटिनहरू पुनः सञ्चालन गर्नुहोस्</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">संस्करण <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">तपाईं अर्को स्क्रिनमा जान चाहनुहुन्छ भने Write Protect अफ गर्नुहोस्। तपाईं निर्देशनहरू प्राप्त गर्न चाहनुहुन्छ भने डिभाइसको उत्पादकको ग्राहक सेवा विभाग नामक पेजमा जानुहोस्।</translation>
 <translation id="5300814202279832142">विन्डो सारेर डेस्कमा लैजानुहोस्</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">कनेक्ट गर्नुहोस्</translation>
@@ -472,6 +475,7 @@
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5843706793424741864">फरेनहाइट</translation>
 <translation id="5849570051105887917">गृहपृष्ठ प्रदायकको कोड</translation>
+<translation id="5856532218727053281">Write Protection को स्थिति पुष्टि गरेपछि सिस्टम रिस्टार्ट गरिने छ</translation>
 <translation id="5859603669299126575">आर्ट ग्यालेरी एल्बम</translation>
 <translation id="5860033963881614850">बन्द</translation>
 <translation id="5860491529813859533">अन गर्नुहोस्</translation>

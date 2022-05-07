@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">ତୁରନ୍ତ ଏକ ନୂଆ ବାଛନ୍ତୁ</translation>
 <translation id="4891842000192098784">ଷ୍ଟ୍ରେସ୍</translation>
 <translation id="4897058166682006107">ଡିଭାଇସର ବାମପଟ ବଡରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
+<translation id="4915052247106771211">ଏହା ଡିଭାଇସକୁ ଫ୍ୟାକ୍ଟୋରୀ ସେଟିଂସ (ପାୱାରୱାସ)ରେ ରିସେଟ କରିବ।</translation>
 <translation id="4917385247580444890">ଦୃଢ଼</translation>
 <translation id="4917889632206600977">ବନ୍ଦ ହୋଇଯାଇଛି - କାଗଜ ସରିଯାଇଛି</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ <ph name="RATE" /> ଚାର୍ଜ ହୋଇଛି</translation>
@@ -430,6 +431,7 @@
 <translation id="5358174242040570474">କିଛି ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଏକ ୱାଲପେପର ବାଛିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପକୁ ପୁଣି ଖୋଲନ୍ତୁ।</translation>
 <translation id="5372659122375744710">ୱାଇଫାଇ ନେଟୱାର୍କ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
 <translation id="5376354385557966694">ସ୍ଵଚାଳିତ ଲାଇଟ୍ ମୋଡ୍</translation>
+<translation id="537872351913703572">ଡିଭାଇସଟି ଏକ ଭିନ୍ନ ଉପଯୋଗକର୍ତ୍ତା କିମ୍ବା ସଂସ୍ଥା ପାଖରେ ରହିବ</translation>
 <translation id="5400907029458559844">ଡିଭାଇସ ସଂଯୋଗ କରାଯାଉଛି।</translation>
 <translation id="5401938042319910061">ସମସ୍ତ ରୁଟିନ୍ ଚଲାନ୍ତୁ</translation>
 <translation id="5423849171846380976">ସକ୍ରିୟ କରାଯାଇଛି</translation>
@@ -733,6 +735,7 @@
 <translation id="8671972493856476349"><ph name="VERSION_NUMBER" />ରେ ଅପଡେଟ କରି ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="8675354002693747642">ପୂର୍ବରୁ-ସେୟାର୍ କରାଯାଇଥିବା କୀ</translation>
 <translation id="8677859815076891398">କୌଣସି ଆଲବମ୍ ନାହିଁ। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />ରେ ଏକ ଆଲବମ୍ ତିଆରି କରନ୍ତୁ।</translation>
+<translation id="8680431479333800907">ଡିଭାଇସଟି ସେହି ସମାନ ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ପାଖରେ ରହିବ</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ଏହି ଫିଚରକୁ ପରିଚାଳନା କରିବା ପାଇଁ ବାମ କିମ୍ବା ଡାହାଣ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="8712637175834984815">ବୁଝିଗଲି</translation>
 <translation id="871560550817059752">ବିଫଳ ହୋଇଛି - ସ୍ୟାହି ଶେଷ ହୋଇଯାଇଛି</translation>

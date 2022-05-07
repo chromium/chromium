@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">지금 바로 새 비밀번호를 선택하세요.</translation>
 <translation id="4891842000192098784">스트레스</translation>
 <translation id="4897058166682006107">기기의 왼쪽 이어폰 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
+<translation id="4915052247106771211">기기가 기본 설정으로 재설정됩니다(파워워시).</translation>
 <translation id="4917385247580444890">강함</translation>
 <translation id="4917889632206600977">중지됨 - 용지 부족</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" />초 동안 <ph name="RATE" /> 충전했습니다.</translation>
@@ -430,6 +431,7 @@
 <translation id="5358174242040570474">문제가 발생했습니다. 배경화면을 다시 선택하거나 앱을 다시 실행해 보세요.</translation>
 <translation id="5372659122375744710">Wi-Fi 네트워크가 안전하지 않습니다.</translation>
 <translation id="5376354385557966694">자동 밝은 모드</translation>
+<translation id="537872351913703572">기기의 사용자 또는 조직이 바뀜</translation>
 <translation id="5400907029458559844">기기 연결 중입니다.</translation>
 <translation id="5401938042319910061">모든 루틴 실행</translation>
 <translation id="5423849171846380976">활성화됨</translation>
@@ -733,6 +735,7 @@
 <translation id="8671972493856476349"><ph name="VERSION_NUMBER" />로 업데이트 및 다시 시작</translation>
 <translation id="8675354002693747642">사전 공유 키:</translation>
 <translation id="8677859815076891398">앨범이 없습니다. <ph name="LINK_BEGIN" />Google 포토<ph name="LINK_END" />에서 앨범을 만드세요.</translation>
+<translation id="8680431479333800907">기기의 사용자가 유지됨</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> 이 기능을 관리하려면 왼쪽 또는 오른쪽 화살표 키를 사용하세요.</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="871560550817059752">실패 - 잉크 없음</translation>

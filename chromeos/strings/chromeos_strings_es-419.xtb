@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">Elige una nueva de inmediato</translation>
 <translation id="4891842000192098784">Esfuerzo</translation>
 <translation id="4897058166682006107">Nivel de batería del auricular izquierdo <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4915052247106771211">Esta opción restablecerá el dispositivo a la configuración de fábrica (Powerwash).</translation>
 <translation id="4917385247580444890">Fuerte</translation>
 <translation id="4917889632206600977">Se detuvo: no hay papel</translation>
 <translation id="4921665434385737356">Se cargó <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
@@ -430,6 +431,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5358174242040570474">Se produjo un error. Intenta elegir un fondo de pantalla de nuevo o vuelve a abrir la app.</translation>
 <translation id="5372659122375744710">la red Wi-Fi no es segura</translation>
 <translation id="5376354385557966694">Modo claro automático</translation>
+<translation id="537872351913703572">El dispositivo cambiará de organización o usuario</translation>
 <translation id="5400907029458559844">El dispositivo se está conectando.</translation>
 <translation id="5401938042319910061">Ejecutar todas las rutinas</translation>
 <translation id="5423849171846380976">Activado</translation>
@@ -733,6 +735,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8671972493856476349">Actualizar a <ph name="VERSION_NUMBER" /> y reiniciar</translation>
 <translation id="8675354002693747642">Clave compartida previamente</translation>
 <translation id="8677859815076891398">No hay álbumes. Crea un álbum en <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">El dispositivo no cambiará de usuario</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Para administrar esta función, utiliza las flechas hacia la izquierda o la derecha.</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="871560550817059752">Error: Sin tinta</translation>

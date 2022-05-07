@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">Vælg omgående en ny adgangskode</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri på venstre øretelefon.</translation>
+<translation id="4915052247106771211">Denne handling vil gendanne fabriksindstillingerne på enheden (Powerwash).</translation>
 <translation id="4917385247580444890">Stærk</translation>
 <translation id="4917889632206600977">Stoppet – Papirbakken er tom</translation>
 <translation id="4921665434385737356">Opladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
@@ -429,6 +430,7 @@
 <translation id="5358174242040570474">Noget gik galt. Prøv at vælge en baggrund igen eller genåbne appen.</translation>
 <translation id="5372659122375744710">Wi-Fi-netværket er ikke sikkert</translation>
 <translation id="5376354385557966694">Automatisk lys tilstand</translation>
+<translation id="537872351913703572">Enheden overdrages til en anden bruger eller organisation</translation>
 <translation id="5400907029458559844">Enheden opretter forbindelse.</translation>
 <translation id="5401938042319910061">Kør alle rutiner</translation>
 <translation id="5423849171846380976">Aktiveret</translation>
@@ -732,6 +734,7 @@
 <translation id="8671972493856476349">Opdater til <ph name="VERSION_NUMBER" />, og genstart</translation>
 <translation id="8675354002693747642">Forhåndsdelt nøgle:</translation>
 <translation id="8677859815076891398">Der er ingen album. Opret et album i <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Enheden bliver hos den samme ejer</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tryk på venstre- eller højrepil for at bruge denne funktion.</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="871560550817059752">Handlingen mislykkedes – Mangler blæk</translation>

@@ -156,6 +156,7 @@
 <translation id="2446553403094072641">Precisión del punto flotante</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2461822463642141190">Actual</translation>
+<translation id="2480034874476596812">Desactivar manualmente</translation>
 <translation id="2491955442992294626">Las teclas no se prueban mientras usas otra ventana</translation>
 <translation id="2493126929778606526">Tus mejores fotos, seleccionadas automáticamente</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -251,6 +252,7 @@
 <translation id="3606583719724308068">Latencia alta a sitios web HTTPS</translation>
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Activar o desactivar Pantalla de privacidad</translation>
+<translation id="3678765385266369662">Selecciona cómo quieres desactivar la protección contra escritura</translation>
 <translation id="3689839747745352263">Prueba <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Cargando...</translation>
 <translation id="3708186454126126312">Conectado anteriormente</translation>
@@ -305,6 +307,7 @@
 <translation id="4244962993387259361">Necesitas al menos 500 MB de espacio libre para ejecutar una prueba de memoria. Para liberar espacio, ve a Configuración &gt; Gestión del almacenamiento.</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4258281355379922695">Latencia de HTTP</translation>
+<translation id="4258561075226177474">El dispositivo no cambiará de usuario. ¿Borrar datos de usuario?</translation>
 <translation id="4271957103967917607">Ver en pantalla completa</translation>
 <translation id="4275799948641988986">Una vez reparado, ¿quién va a usar el dispositivo?</translation>
 <translation id="4289540628985791613">Vista general</translation>
@@ -353,6 +356,7 @@
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4744944742468440486">Información relacionada con tu selección</translation>
 <translation id="4773299976671772492">Detenido</translation>
+<translation id="4774530504324923332">Necesitarás una clave de seguridad con RSU habilitado, un escáner de códigos QR y otro dispositivo con una conexión a Internet</translation>
 <translation id="4782311465517282004">Consulta definiciones, traducciones o conversiones de unidades haciendo clic con el botón derecho en un texto o manteniéndolo pulsado</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Para obtener más ayuda, accede al <ph name="BEGIN_LINK" />Centro de Ayuda<ph name="END_LINK" />.</translation>
@@ -376,6 +380,7 @@
 <translation id="4890353053343094602">Selecciona otra inmediatamente</translation>
 <translation id="4891842000192098784">Esfuerzo</translation>
 <translation id="4897058166682006107">Nivel de batería del auricular izquierdo del dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4915052247106771211">Si seleccionas esta opción, se restablecerán los ajustes de fábrica del dispositivo (Powerwash).</translation>
 <translation id="4917385247580444890">Buena</translation>
 <translation id="4917889632206600977">Detenido: sin papel</translation>
 <translation id="4921665434385737356">Se ha cargado un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
@@ -429,6 +434,8 @@
 <translation id="5358174242040570474">Se ha producido un error. Prueba a elegir un fondo de pantalla de nuevo o vuelve a abrir la aplicación.</translation>
 <translation id="5372659122375744710">La red Wi-Fi no es segura</translation>
 <translation id="5376354385557966694">Modo Claro automático</translation>
+<translation id="537872351913703572">El dispositivo lo utilizará otro usuario u otra organización</translation>
+<translation id="5395600419410242651">Borrar todos los datos</translation>
 <translation id="5400907029458559844">El dispositivo se está conectando.</translation>
 <translation id="5401938042319910061">Ejecutar todas las rutinas</translation>
 <translation id="5423849171846380976">Activado</translation>
@@ -639,6 +646,7 @@
 <translation id="7570674786725311828">Pantalla táctil USB</translation>
 <translation id="7595982850646262331">Tiempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Más información en el Centro de Ayuda</translation>
+<translation id="7626501172915339021">Realizar RMA Server Unlock (RSU)</translation>
 <translation id="763165478673169849">Hora a la que se restableció por última vez</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
 <translation id="7656388927906093505">El dispositivo es un ratón.</translation>
@@ -732,6 +740,7 @@
 <translation id="8671972493856476349">Actualizar a <ph name="VERSION_NUMBER" /> y reiniciar</translation>
 <translation id="8675354002693747642">Clave precompartida</translation>
 <translation id="8677859815076891398">No hay álbumes. Crea un álbum en <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">El dispositivo lo utilizará el mismo usuario</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Usa las teclas de flecha izquierda y derecha para gestionar esta función.</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="871560550817059752">No se ha podido imprimir - Sin tinta</translation>
@@ -781,6 +790,8 @@
 <translation id="9087578468327036362">Denunciar esta consulta</translation>
 <translation id="9088306295921699330">Uso actual</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">Tendrás que desmontar el dispositivo</translation>
+<translation id="9098156406873149060">Conservar datos de usuario</translation>
 <translation id="910415269708673980">Actualiza el ticket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>

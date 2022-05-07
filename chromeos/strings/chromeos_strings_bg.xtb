@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">Изберете нова незабавно</translation>
 <translation id="4891842000192098784">Стрес</translation>
 <translation id="4897058166682006107">Нивото на батерията на лявата слушалка е <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4915052247106771211">Това действие ще възстанови фабричните настройки на устройството (Powerwash).</translation>
 <translation id="4917385247580444890">Силен</translation>
 <translation id="4917889632206600977">Спряло – няма хартия</translation>
 <translation id="4921665434385737356">За <ph name="NUM_SECONDS" /> секунди се заредиха <ph name="RATE" />.</translation>
@@ -430,6 +431,7 @@
 <translation id="5358174242040570474">Нещо се обърка. Изберете тапет отново или отворете приложението пак.</translation>
 <translation id="5372659122375744710">Wi-Fi мрежата не е сигурна</translation>
 <translation id="5376354385557966694">Автоматичен светъл режим</translation>
+<translation id="537872351913703572">Устройството преминава в друг потребител или организация</translation>
 <translation id="5400907029458559844">Устройството установява връзка.</translation>
 <translation id="5401938042319910061">Стартиране на всички процедури</translation>
 <translation id="5423849171846380976">Активиран</translation>
@@ -733,6 +735,7 @@
 <translation id="8671972493856476349">Актуализиране до <ph name="VERSION_NUMBER" /> и рестартиране</translation>
 <translation id="8675354002693747642">Предварително споделен ключ</translation>
 <translation id="8677859815076891398">Няма албуми. Създайте албум в <ph name="LINK_BEGIN" />Google Снимки<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Устройството остава в същия потребител</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Използвайте клавишите със стрелки наляво и надясно, за да управлявате тази функция.</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="871560550817059752">Неуспешно – няма мастило</translation>

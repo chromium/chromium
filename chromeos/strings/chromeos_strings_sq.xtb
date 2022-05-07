@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">Zgjidh një të re menjëherë</translation>
 <translation id="4891842000192098784">Tensioni</translation>
 <translation id="4897058166682006107">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kufjen e majtë.</translation>
+<translation id="4915052247106771211">Kjo do ta rivendosë pajisjen te cilësimet e fabrikës (Powerwash).</translation>
 <translation id="4917385247580444890">I fortë</translation>
 <translation id="4917889632206600977">Ndaloi - Nuk ka letër</translation>
 <translation id="4921665434385737356">U karikua <ph name="RATE" /> në <ph name="NUM_SECONDS" /> sekonda.</translation>
@@ -429,6 +430,7 @@
 <translation id="5358174242040570474">Ndodhi një gabim. Provo të zgjedhësh sërish një imazh sfondi ose të rihapësh aplikacionin.</translation>
 <translation id="5372659122375744710">Rrjeti Wi-Fi nuk është i sigurt</translation>
 <translation id="5376354385557966694">Modaliteti i ndriçuar automatik</translation>
+<translation id="537872351913703572">Pajisja do të kalojë te një përdorues ose organizatë tjerër</translation>
 <translation id="5400907029458559844">Pajisja po lidhet.</translation>
 <translation id="5401938042319910061">Ekzekuto të gjitha rutinat</translation>
 <translation id="5423849171846380976">U aktivizua</translation>
@@ -732,6 +734,7 @@
 <translation id="8671972493856476349">Përditësoje në <ph name="VERSION_NUMBER" /> dhe rinise</translation>
 <translation id="8675354002693747642">Çelës i ndarë paraprakisht</translation>
 <translation id="8677859815076891398">Nuk ka albume. Krijo një album te <ph name="LINK_BEGIN" />Fotografitë e Google<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Pajisja do të kalojë tek i njëjti përdorues</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Përdor tastet "Shigjeta majtas" ose "Shigjeta djathtas" për ta menaxhuar këtë veçori.</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="871560550817059752">Dështoi - Nuk ka bojë</translation>

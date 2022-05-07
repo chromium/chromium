@@ -156,6 +156,7 @@
 <translation id="2446553403094072641">Katumpakan ng floating point</translation>
 <translation id="2448312741937722512">Uri</translation>
 <translation id="2461822463642141190">Kasalukuyan</translation>
+<translation id="2480034874476596812">Manual na i-off</translation>
 <translation id="2491955442992294626">Hindi sinusubukan ang mga key kapag gumagamit ka ng ibang window</translation>
 <translation id="2493126929778606526">Ang iyong mga pinakamagandang larawang awtomatikong napili</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -251,6 +252,7 @@
 <translation id="3606583719724308068">Mataas ang latency sa mga HTTPS na website</translation>
 <translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Toggle ng Privacy screen</translation>
+<translation id="3678765385266369662">Piliin kung paano mo gustong i-off ang Write Protect</translation>
 <translation id="3689839747745352263">Pagsusuri sa <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Naglo-load...</translation>
 <translation id="3708186454126126312">Dating nakakonekta</translation>
@@ -305,6 +307,7 @@
 <translation id="4244962993387259361">Kailangan mo ng hindi bababa sa bakanteng 500 MB para magpatakbo ng pagsusuri sa Memory. Para magbakante ng espasyo, pumunta sa Mga Setting &gt; Pamamahala sa storage.</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4258281355379922695">Latency ng HTTP</translation>
+<translation id="4258561075226177474">Mapupunta ang device sa parehong user. Burahin ang data ng user?</translation>
 <translation id="4271957103967917607">Tingnan nang Full Screen</translation>
 <translation id="4275799948641988986">Pagkatapos maayos, sino na ang gagamit sa device?</translation>
 <translation id="4289540628985791613">Pangkalahatang-ideya</translation>
@@ -353,6 +356,7 @@
 <translation id="473775607612524610">I-update</translation>
 <translation id="4744944742468440486">Impormasyong nauugnay sa iyong pinili</translation>
 <translation id="4773299976671772492">Inihinto</translation>
+<translation id="4774530504324923332">Mangangailangan ka ng security key na RSU-enabled, scanner ng QR code, at pangalawang device na may koneksyon sa internet</translation>
 <translation id="4782311465517282004">Makakuha ng mga kahulugan, pagsasalin, o conversion ng unit kapag nag-right click ka sa o pinindot mo nang matagal ang text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> larawan</translation>
 <translation id="4793710386569335688">Para sa higit pang tulong, pumunta sa <ph name="BEGIN_LINK" />Help Center<ph name="END_LINK" />.</translation>
@@ -432,6 +436,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5372659122375744710">Hindi secure ang WiFi network</translation>
 <translation id="5376354385557966694">Awtomatikong light mode</translation>
 <translation id="537872351913703572">Mapupunta ang device sa ibang user o organisayon</translation>
+<translation id="5395600419410242651">Burahin ang lahat ng data</translation>
 <translation id="5400907029458559844">Kumokonekta ang device.</translation>
 <translation id="5401938042319910061">Patakbuhin ang Lahat ng Routine</translation>
 <translation id="5423849171846380976">Na-activate</translation>
@@ -642,6 +647,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7570674786725311828">USB na touchscreen</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> pa</translation>
 <translation id="7620771111601174153">Matuto pa sa Help Center</translation>
+<translation id="7626501172915339021">I-unlock ang RMA Server (RMA Server Unlock o RSU)</translation>
 <translation id="763165478673169849">Oras ng Huling Pag-reset</translation>
 <translation id="7648838807254605802">Mataas na latency ng HTTPS</translation>
 <translation id="7656388927906093505">Mouse ang device.</translation>
@@ -785,6 +791,8 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="9087578468327036362">Iulat ang query na ito</translation>
 <translation id="9088306295921699330">Kasalukuyang paggamit</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">Kakailanganin mong baklasin ang device</translation>
+<translation id="9098156406873149060">Panatilihin ang data ng user</translation>
 <translation id="910415269708673980">I-refresh ang ticket para sa <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Sina-scan ang pahina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">I-unlock</translation>

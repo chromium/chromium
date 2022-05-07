@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">Tria'n una de nova immediatament</translation>
 <translation id="4891842000192098784">Estrès</translation>
 <translation id="4897058166682006107">L'auricular esquerre del dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
+<translation id="4915052247106771211">Es restablirà el dispositiu a la configuració de fàbrica (Powerwash).</translation>
 <translation id="4917385247580444890">Forta</translation>
 <translation id="4917889632206600977">S'ha aturat: no hi ha paper</translation>
 <translation id="4921665434385737356">S'ha carregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
@@ -430,6 +431,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5358174242040570474">S'ha produït un error. Prova novament de triar un fons de pantalla o d'obrir l'aplicació.</translation>
 <translation id="5372659122375744710">La xarxa Wi-Fi no és segura</translation>
 <translation id="5376354385557966694">Mode clar automàtic</translation>
+<translation id="537872351913703572">El dispositiu es retornarà a un altre usuari o a una altra organització</translation>
 <translation id="5400907029458559844">El dispositiu s'està connectant.</translation>
 <translation id="5401938042319910061">S'han executat totes les rutines</translation>
 <translation id="5423849171846380976">Activat</translation>
@@ -733,6 +735,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8671972493856476349">Actualitza a <ph name="VERSION_NUMBER" /> i reinicia</translation>
 <translation id="8675354002693747642">Clau precompartida</translation>
 <translation id="8677859815076891398">No hi ha cap àlbum. Crea'n un a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">El dispositiu es retornarà al mateix usuari</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilitza les tecles de fletxa dreta o esquerra per gestionar aquesta funció.</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="871560550817059752">Error: no hi ha tinta</translation>

@@ -957,6 +957,7 @@
 <translation id="1892341345406963517">नमस्ते <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">अन्य भाषाहरू</translation>
 <translation id="1895658205118569222">बन्द गर्नुहोस्</translation>
+<translation id="1897120393475391208">भरपर्दो पासवर्ड प्रयोग गर्नुहोस्</translation>
 <translation id="1900305421498694955">डिभाइसहरूको बाह्य भण्डारणमा रहेका फाइलहरू रिड र राइट गर्न Google Play का एपहरूलाई फाइलको प्रणालीमा पूर्ण पहुँच चाहिन सक्छ। बाह्य ड्राइभ प्रयोग गर्ने सबैले यन्त्रमा सिर्जना गरिएका फाइल र फोल्डरहरू देख्न सक्छन्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">&amp;सबै चयन गर्नुहोस्</translation>
 <translation id="1901396183631570154">Chrome ले यी पासवर्डहरू तपाईंको Google खातामा सुरक्षित गर्न सकेन। तर तपाईं ती पासवर्डहरू यो डिभाइसमा भने सुरक्षित गर्न सक्नुहुन्छ।</translation>
@@ -6545,6 +6546,7 @@
 <translation id="7444970023873202833">Google Photos मा भएका तपाईंका अझ धेरै स्मरणीय क्षणहरू हेर्नुहोस्</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> लाई अक्षम बनाउनुहोस्</translation>
 <translation id="7448430327655618736">एपहरू स्वतः स्थापना गर्नुहोस्</translation>
+<translation id="7449381494541372002">सुरु गरिँदै छ…</translation>
 <translation id="7449752890690775568">पासवर्ड हटाउने हो?</translation>
 <translation id="7450761244949417357">अहिले <ph name="ALTERNATIVE_BROWSER_NAME" /> मा खोलिँदै</translation>
 <translation id="7452166281927983300">खारेज गरिएका चेतावनी (<ph name="MUTED_PASSWORDS" />)</translation>

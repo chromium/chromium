@@ -376,6 +376,7 @@
 <translation id="4890353053343094602">立即選擇新密碼</translation>
 <translation id="4891842000192098784">壓力</translation>
 <translation id="4897058166682006107">裝置嘅左邊耳機有 <ph name="BATTERY_PERCENTAGE" />% 電。</translation>
+<translation id="4915052247106771211">此操作會將裝置回復原廠設定 (Powerwash)。</translation>
 <translation id="4917385247580444890">強</translation>
 <translation id="4917889632206600977">已停止 - 紙張已用完</translation>
 <translation id="4921665434385737356">已在 <ph name="NUM_SECONDS" /> 秒內充電 <ph name="RATE" />。</translation>
@@ -430,6 +431,7 @@
 <translation id="5358174242040570474">發生錯誤，請再次選取桌布，或者重新開啟應用程式</translation>
 <translation id="5372659122375744710">Wi-Fi 網絡不安全</translation>
 <translation id="5376354385557966694">自動明亮模式</translation>
+<translation id="537872351913703572">裝置的使用者或機構將會變更</translation>
 <translation id="5400907029458559844">連接緊裝置。</translation>
 <translation id="5401938042319910061">執行所有日常安排</translation>
 <translation id="5423849171846380976">已啟用</translation>
@@ -733,6 +735,7 @@
 <translation id="8671972493856476349">請更新至 <ph name="VERSION_NUMBER" /> 並重新啟動</translation>
 <translation id="8675354002693747642">預先共用密鑰</translation>
 <translation id="8677859815076891398">沒有相簿。請在「<ph name="LINK_BEGIN" />Google 相片<ph name="LINK_END" />」中建立相簿。</translation>
+<translation id="8680431479333800907">裝置的使用者不會變更</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" />用向左或者向右箭咀掣就可以管理呢個功能。</translation>
 <translation id="8712637175834984815">我知道了</translation>
 <translation id="871560550817059752">失敗 - 墨水已用完</translation>
