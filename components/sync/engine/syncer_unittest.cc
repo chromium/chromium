@@ -206,14 +206,6 @@ class SyncerTest : public testing::Test,
     scheduler_.reset();
   }
 
-  void VerifyNoHierarchyConflictsReported(
-      const sync_pb::ClientToServerMessage& message) {
-    // Our request should have reported no hierarchy conflicts detected.
-    const sync_pb::ClientStatus& client_status = message.client_status();
-    EXPECT_TRUE(client_status.has_hierarchy_conflict_detected());
-    EXPECT_FALSE(client_status.hierarchy_conflict_detected());
-  }
-
   const std::string local_cache_guid() { return "lD16ebCGCZh+zkiZ68gWDw=="; }
 
   const std::string foreign_cache_guid() { return "kqyg7097kro6GSUod+GSg=="; }

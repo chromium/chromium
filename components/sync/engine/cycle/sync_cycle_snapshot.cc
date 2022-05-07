@@ -29,7 +29,6 @@ std::u16string FormatTimeDelta(base::TimeDelta delta) {
 
 SyncCycleSnapshot::SyncCycleSnapshot()
     : is_silenced_(false),
-      num_hierarchy_conflicts_(0),
       num_server_conflicts_(0),
       notifications_enabled_(false),
       num_entries_by_type_(GetNumModelTypes(), 0),
@@ -43,7 +42,6 @@ SyncCycleSnapshot::SyncCycleSnapshot(
     const ModelNeutralState& model_neutral_state,
     const ProgressMarkerMap& download_progress_markers,
     bool is_silenced,
-    int num_hierarchy_conflicts,
     int num_server_conflicts,
     bool notifications_enabled,
     base::Time sync_start_time,
@@ -58,7 +56,6 @@ SyncCycleSnapshot::SyncCycleSnapshot(
       model_neutral_state_(model_neutral_state),
       download_progress_markers_(download_progress_markers),
       is_silenced_(is_silenced),
-      num_hierarchy_conflicts_(num_hierarchy_conflicts),
       num_server_conflicts_(num_server_conflicts),
       notifications_enabled_(notifications_enabled),
       sync_start_time_(sync_start_time),
@@ -93,7 +90,6 @@ std::unique_ptr<base::DictionaryValue> SyncCycleSnapshot::ToValue() const {
                     ProgressMarkerMapToValue(download_progress_markers_)));
   value->SetBoolKey("isSilenced", is_silenced_);
   // We don't care too much if we lose precision here, also.
-  value->SetIntKey("numHierarchyConflicts", num_hierarchy_conflicts_);
   value->SetIntKey("numServerConflicts", num_server_conflicts_);
   value->SetStringKey("getUpdatesOrigin",
                       ProtoEnumToString(get_updates_origin_));
@@ -131,10 +127,6 @@ const ProgressMarkerMap& SyncCycleSnapshot::download_progress_markers() const {
 
 bool SyncCycleSnapshot::is_silenced() const {
   return is_silenced_;
-}
-
-int SyncCycleSnapshot::num_hierarchy_conflicts() const {
-  return num_hierarchy_conflicts_;
 }
 
 int SyncCycleSnapshot::num_server_conflicts() const {

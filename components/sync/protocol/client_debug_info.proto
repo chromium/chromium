@@ -41,7 +41,7 @@ message SyncCycleCompletedEventInfo {
   // These new conflict counters replace the ones above.
   // TODO(crbug.com/1315573): Deprecated in M103.
   optional int32 num_encryption_conflicts = 4 [deprecated = true];
-  optional int32 num_hierarchy_conflicts = 5;
+  optional int32 num_hierarchy_conflicts = 5 [deprecated = true];
   optional int32 num_simple_conflicts = 6;  // No longer sent since M24.
   optional int32 num_server_conflicts = 7;
 

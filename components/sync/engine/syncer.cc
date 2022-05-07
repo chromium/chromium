@@ -143,8 +143,6 @@ bool Syncer::DownloadAndApplyUpdates(ModelTypeSet* request_types,
     get_updates_processor.ApplyUpdates(download_types,
                                        cycle->mutable_status_controller());
 
-    cycle->context()->set_hierarchy_conflict_detected(
-        cycle->status_controller().num_hierarchy_conflicts() > 0);
     cycle->SendEventNotification(SyncCycleEvent::STATUS_CHANGED);
   }
 

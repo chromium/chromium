@@ -29,7 +29,6 @@ SyncStatus SyncStatusTracker::CreateBlankStatus() const {
   // whose values accumulate (e.g. lifetime counters like updates_received)
   // are not to be cleared here.
   SyncStatus status = status_;
-  status.hierarchy_conflicts = 0;
   status.server_conflicts = 0;
   status.committed_count = 0;
   return status;
@@ -38,7 +37,6 @@ SyncStatus SyncStatusTracker::CreateBlankStatus() const {
 SyncStatus SyncStatusTracker::CalcSyncing(const SyncCycleEvent& event) const {
   SyncStatus status = CreateBlankStatus();
   const SyncCycleSnapshot& snapshot = event.snapshot;
-  status.hierarchy_conflicts = snapshot.num_hierarchy_conflicts();
   status.server_conflicts = snapshot.num_server_conflicts();
   status.committed_count =
       snapshot.model_neutral_state().num_successful_commits;

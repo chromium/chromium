@@ -50,10 +50,6 @@ void StatusController::increment_num_successful_commits() {
   model_neutral_.num_successful_commits++;
 }
 
-void StatusController::increment_num_hierarchy_conflicts_by(int value) {
-  model_neutral_.num_hierarchy_conflicts += value;
-}
-
 void StatusController::increment_num_server_conflicts() {
   model_neutral_.num_server_conflicts++;
 }
@@ -75,19 +71,12 @@ SyncerError StatusController::last_get_key_result() const {
   return model_neutral_.last_get_key_result;
 }
 
-int StatusController::num_hierarchy_conflicts() const {
-  return model_neutral_.num_hierarchy_conflicts;
-}
-
 int StatusController::num_server_conflicts() const {
   return model_neutral_.num_server_conflicts;
 }
 
 int StatusController::TotalNumConflictingItems() const {
-  int sum = 0;
-  sum += num_hierarchy_conflicts();
-  sum += num_server_conflicts();
-  return sum;
+  return num_server_conflicts();
 }
 
 }  // namespace syncer

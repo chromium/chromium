@@ -31,8 +31,6 @@ void DebugInfoEventListener::OnSyncCycleCompleted(
   sync_pb::SyncCycleCompletedEventInfo* sync_completed_event_info =
       event_info.mutable_sync_cycle_completed_event_info();
 
-  sync_completed_event_info->set_num_hierarchy_conflicts(
-      snapshot.num_hierarchy_conflicts());
   sync_completed_event_info->set_num_server_conflicts(
       snapshot.num_server_conflicts());
 

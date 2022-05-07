@@ -37,9 +37,6 @@ struct SyncStatus {
 
   SyncProtocolError sync_protocol_error;
 
-  // Number of hierarchy conflicts counted during most recent sync cycle.
-  int hierarchy_conflicts = 0;
-
   // Number of items the server refused to commit due to conflict during most
   // recent sync cycle.
   int server_conflicts = 0;

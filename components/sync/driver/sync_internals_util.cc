@@ -395,8 +395,6 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
 
   Section* section_this_cycle = section_list.AddSection(
       "Transient Counters (this cycle)", /*is_sensitive=*/false);
-  Stat<int>* hierarchy_conflicts =
-      section_this_cycle->AddIntStat("Hierarchy Conflicts");
   Stat<int>* server_conflicts =
       section_this_cycle->AddIntStat("Server Conflicts");
   Stat<int>* committed_items =
@@ -557,7 +555,6 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
 
   // Transient Counters (this cycle).
   if (is_status_valid) {
-    hierarchy_conflicts->Set(full_status.hierarchy_conflicts);
     server_conflicts->Set(full_status.server_conflicts);
     committed_items->Set(full_status.committed_count);
   }

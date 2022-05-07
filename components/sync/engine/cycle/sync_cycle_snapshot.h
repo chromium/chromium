@@ -36,7 +36,6 @@ class SyncCycleSnapshot {
                     const ModelNeutralState& model_neutral_state,
                     const ProgressMarkerMap& download_progress_markers,
                     bool is_silenced,
-                    int num_hierarchy_conflicts,
                     int num_server_conflicts,
                     bool notifications_enabled,
                     base::Time sync_start_time,
@@ -58,7 +57,6 @@ class SyncCycleSnapshot {
   ModelNeutralState model_neutral_state() const { return model_neutral_state_; }
   const ProgressMarkerMap& download_progress_markers() const;
   bool is_silenced() const;
-  int num_hierarchy_conflicts() const;
   int num_server_conflicts() const;
   bool notifications_enabled() const;
   base::Time sync_start_time() const;
@@ -79,7 +77,6 @@ class SyncCycleSnapshot {
   ModelNeutralState model_neutral_state_;
   ProgressMarkerMap download_progress_markers_;
   bool is_silenced_;
-  int num_hierarchy_conflicts_;
   int num_server_conflicts_;
   bool notifications_enabled_;
   base::Time sync_start_time_;

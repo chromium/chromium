@@ -22,7 +22,6 @@ SyncCycleSnapshot MakeDefaultCycleSnapshot() {
   return SyncCycleSnapshot(
       /*birthday=*/"", /*bag_of_chips=*/"", ModelNeutralState(),
       ProgressMarkerMap(), /*is_silenced-*/ false,
-      /*num_hierarchy_conflicts=*/2,
       /*num_server_conflicts=*/7, /*notifications_enabled=*/false,
       /*sync_start_time=*/base::Time::Now(),
       /*poll_finish_time=*/base::Time::Now(),

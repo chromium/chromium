@@ -42,19 +42,17 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
   const std::string kBirthday = "test_birthday";
   const std::string kBagOfChips = "bagofchips\1";
   const bool kIsSilenced = true;
-  const int kNumHierarchyConflicts = 1055;
   const int kNumServerConflicts = 1057;
-  SyncCycleSnapshot snapshot(kBirthday, kBagOfChips, model_neutral,
-                             download_progress_markers, kIsSilenced,
-                             kNumHierarchyConflicts, kNumServerConflicts, false,
-                             base::Time::Now(), base::Time::Now(),
-                             std::vector<int>(GetNumModelTypes(), 0),
-                             std::vector<int>(GetNumModelTypes(), 0),
-                             sync_pb::SyncEnums::UNKNOWN_ORIGIN,
-                             /*poll_interval=*/base::Minutes(30),
-                             /*has_remaining_local_changes=*/false);
+  SyncCycleSnapshot snapshot(
+      kBirthday, kBagOfChips, model_neutral, download_progress_markers,
+      kIsSilenced, kNumServerConflicts, false, base::Time::Now(),
+      base::Time::Now(), std::vector<int>(GetNumModelTypes(), 0),
+      std::vector<int>(GetNumModelTypes(), 0),
+      sync_pb::SyncEnums::UNKNOWN_ORIGIN,
+      /*poll_interval=*/base::Minutes(30),
+      /*has_remaining_local_changes=*/false);
   std::unique_ptr<base::DictionaryValue> value(snapshot.ToValue());
-  EXPECT_EQ(16u, value->DictSize());
+  EXPECT_EQ(15u, value->DictSize());
   ExpectDictStringValue(kBirthday, *value, "birthday");
   // Base64-encoded version of |kBagOfChips|.
   ExpectDictStringValue("YmFnb2ZjaGlwcwE=", *value, "bagOfChips");
@@ -69,8 +67,6 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
   ExpectDictValue(*expected_download_progress_markers_value, *value,
                   "downloadProgressMarkers");
   ExpectDictBooleanValue(kIsSilenced, *value, "isSilenced");
-  ExpectDictIntegerValue(kNumHierarchyConflicts, *value,
-                         "numHierarchyConflicts");
   ExpectDictIntegerValue(kNumServerConflicts, *value, "numServerConflicts");
   ExpectDictBooleanValue(false, *value, "notificationsEnabled");
   ExpectDictBooleanValue(false, *value, "hasRemainingLocalChanges");

@@ -12,7 +12,6 @@ ModelNeutralState::ModelNeutralState()
       num_updates_downloaded_total(0),
       num_tombstone_updates_downloaded_total(0),
       num_server_conflicts(0),
-      num_hierarchy_conflicts(0),
       items_committed(false) {}
 
 ModelNeutralState::ModelNeutralState(const ModelNeutralState& other) = default;

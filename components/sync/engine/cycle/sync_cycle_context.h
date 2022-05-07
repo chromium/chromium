@@ -93,10 +93,6 @@ class SyncCycleContext {
     return &listeners_;
   }
 
-  void set_hierarchy_conflict_detected(bool value) {
-    client_status_.set_hierarchy_conflict_detected(value);
-  }
-
   void set_is_sync_feature_enabled(bool value) {
     client_status_.set_is_sync_feature_enabled(value);
   }
