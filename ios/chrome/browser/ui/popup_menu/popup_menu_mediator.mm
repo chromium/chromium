@@ -245,7 +245,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   if (_webState) {
     _webState->RemoveObserver(_webStateObserver.get());
     _webStateObserver.reset();
-    if (IsWebChannelsEnabled()) {
+    if (self.followItem) {
       FollowTabHelper::FromWebState(_webState)->remove_follow_menu_updater();
     }
     _webState = nullptr;
@@ -505,7 +505,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
     switch (self.type) {
       case PopupMenuTypeToolsMenu:
         [self createToolsMenuItems];
-        if (self.webState && IsWebChannelsEnabled()) {
+        if (self.webState && self.followItem) {
           FollowTabHelper::FromWebState(self.webState)
               ->set_follow_menu_updater(self);
         }
