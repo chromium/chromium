@@ -359,6 +359,9 @@ void AwRenderFrameExt::OnDestruct() {
 
 void AwRenderFrameExt::BindLocalMainFrame(
     mojo::PendingAssociatedReceiver<mojom::LocalMainFrame> pending_receiver) {
+  // When bfcache is enabled, this bind can occur multiple times.
+  // receiver should be reset before.
+  local_main_frame_receiver_.reset();
   local_main_frame_receiver_.Bind(std::move(pending_receiver));
 }
 
