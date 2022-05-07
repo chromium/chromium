@@ -162,6 +162,7 @@ static_library("test_support") {
     "//base",
     "//testing/gmock",
     "//ui/display/types",
+    "//ui/display/util",
     "//ui/events/devices",
     "//ui/gfx",
     "//ui/gfx:test_support",

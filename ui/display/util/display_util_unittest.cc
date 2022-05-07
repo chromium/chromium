@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/test/display_test_util.h"
 #include "ui/display/util/edid_parser.h"
 
 namespace display {
@@ -339,31 +340,35 @@ TEST(DisplayUtilTest, MultipleInternalDisplayIds) {
 TEST(DisplayUtilTest, CompareDisplayIdsWithMultipleDisplays) {
   // Internal display is always first.
   EXPECT_TRUE(CompareDisplayIds(10, 12));
-  SetInternalDisplayIds({10});
-  EXPECT_TRUE(CompareDisplayIds(10, 12));
-  EXPECT_TRUE(CompareDisplayIds(10, 9));
-  EXPECT_TRUE(CompareDisplayIds(10, 15));
-  EXPECT_FALSE(CompareDisplayIds(12, 10));
-  EXPECT_FALSE(CompareDisplayIds(12, 9));
-  EXPECT_TRUE(CompareDisplayIds(12, 15));
-
-  SetInternalDisplayIds({12});
-  EXPECT_FALSE(CompareDisplayIds(10, 12));
-  EXPECT_FALSE(CompareDisplayIds(10, 9));
-  EXPECT_TRUE(CompareDisplayIds(10, 15));
-  EXPECT_TRUE(CompareDisplayIds(12, 10));
-  EXPECT_TRUE(CompareDisplayIds(12, 9));
-  EXPECT_TRUE(CompareDisplayIds(12, 15));
-
+  {
+    ScopedSetInternalDisplayIds set_internal(10);
+    EXPECT_TRUE(CompareDisplayIds(10, 12));
+    EXPECT_TRUE(CompareDisplayIds(10, 9));
+    EXPECT_TRUE(CompareDisplayIds(10, 15));
+    EXPECT_FALSE(CompareDisplayIds(12, 10));
+    EXPECT_FALSE(CompareDisplayIds(12, 9));
+    EXPECT_TRUE(CompareDisplayIds(12, 15));
+  }
+  {
+    ScopedSetInternalDisplayIds set_internal(12);
+    EXPECT_FALSE(CompareDisplayIds(10, 12));
+    EXPECT_FALSE(CompareDisplayIds(10, 9));
+    EXPECT_TRUE(CompareDisplayIds(10, 15));
+    EXPECT_TRUE(CompareDisplayIds(12, 10));
+    EXPECT_TRUE(CompareDisplayIds(12, 9));
+    EXPECT_TRUE(CompareDisplayIds(12, 15));
+  }
   // Internal displays are always first but compares values between internal
   // displays.
-  SetInternalDisplayIds({12, 10});
-  EXPECT_TRUE(CompareDisplayIds(10, 12));
-  EXPECT_TRUE(CompareDisplayIds(10, 9));
-  EXPECT_TRUE(CompareDisplayIds(10, 15));
-  EXPECT_FALSE(CompareDisplayIds(12, 10));
-  EXPECT_TRUE(CompareDisplayIds(12, 9));
-  EXPECT_TRUE(CompareDisplayIds(12, 15));
+  {
+    ScopedSetInternalDisplayIds set_internal({12, 10});
+    EXPECT_TRUE(CompareDisplayIds(10, 12));
+    EXPECT_TRUE(CompareDisplayIds(10, 9));
+    EXPECT_TRUE(CompareDisplayIds(10, 15));
+    EXPECT_FALSE(CompareDisplayIds(12, 10));
+    EXPECT_TRUE(CompareDisplayIds(12, 9));
+    EXPECT_TRUE(CompareDisplayIds(12, 15));
+  }
 }
 
 }  // namespace display

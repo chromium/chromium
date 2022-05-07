@@ -6,28 +6,11 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
+#include "ui/display/test/display_test_util.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/util/display_util.h"
 
 namespace display {
-
-namespace {
-
-class ScopedSetInternalDisplayId {
- public:
-  ScopedSetInternalDisplayId(int64_t);
-  ~ScopedSetInternalDisplayId();
-};
-
-ScopedSetInternalDisplayId::ScopedSetInternalDisplayId(int64_t id) {
-  SetInternalDisplayIds({id});
-}
-
-ScopedSetInternalDisplayId::~ScopedSetInternalDisplayId() {
-  SetInternalDisplayIds({});
-}
-
-}  // namespace
 
 TEST(DisplayUtilitiesTest, GenerateDisplayIdList) {
   DisplayIdList list;
@@ -58,7 +41,7 @@ TEST(DisplayUtilitiesTest, GenerateDisplayIdList) {
     EXPECT_EQ(1000, list[2]);
   }
   {
-    ScopedSetInternalDisplayId set_internal(100);
+    ScopedSetInternalDisplayIds set_internal(100);
     int64_t ids[] = {10, 100};
     list = GenerateDisplayIdList(std::begin(ids), std::end(ids));
     EXPECT_EQ(100, list[0]);
@@ -77,7 +60,7 @@ TEST(DisplayUtilitiesTest, GenerateDisplayIdList) {
     EXPECT_EQ(1000, list[2]);
   }
   {
-    ScopedSetInternalDisplayId set_internal(10);
+    ScopedSetInternalDisplayIds set_internal(10);
     int64_t ids[] = {10, 100};
     list = GenerateDisplayIdList(std::begin(ids), std::end(ids));
     EXPECT_EQ(10, list[0]);
@@ -104,7 +87,7 @@ TEST(DisplayUtilitiesTest, DisplayIdListToString) {
     EXPECT_EQ("1,10,16", DisplayIdListToString(list));
   }
   {
-    ScopedSetInternalDisplayId set_internal(16);
+    ScopedSetInternalDisplayIds set_internal(16);
     int64_t ids[] = {10, 1, 16};
     DisplayIdList list = GenerateDisplayIdList(std::begin(ids), std::end(ids));
     EXPECT_EQ("16,1,10", DisplayIdListToString(list));
