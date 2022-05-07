@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -36,8 +35,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -88,15 +85,6 @@ public class AutofillUiUtils {
         int GOOGLE_LEGAL_MESSAGE = 1;
         int ISSUER_LEGAL_MESSAGE = 2;
         int NUM_ENTRIES = 3;
-    }
-
-    /**
-     * Launches the Autofill help page on top of the current @{link android.app.Activity} and
-     * current @{link Profile}.
-     */
-    public static void launchAutofillHelpPage(Activity activity, Profile profile) {
-        HelpAndFeedbackLauncherImpl.getInstance().show(
-                activity, activity.getString(R.string.help_context_autofill), profile, null);
     }
 
     /**

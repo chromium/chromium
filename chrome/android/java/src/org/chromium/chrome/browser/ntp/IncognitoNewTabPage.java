@@ -14,12 +14,9 @@ import androidx.core.view.ViewCompat;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareThumbnailProvider;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPageView.IncognitoNewTabPageManager;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
@@ -41,13 +38,6 @@ public class IncognitoNewTabPage
 
     private final int mIncognitoNTPBackgroundColor;
 
-    private void showIncognitoLearnMore() {
-        HelpAndFeedbackLauncherImpl.getInstance().show(mActivity,
-                mActivity.getString(R.string.help_context_incognito_learn_more),
-                Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(/*createIfNeeded=*/true),
-                null);
-    }
-
     /**
      * Constructs an Incognito NewTabPage.
      * @param activity The activity used to create the new tab page's View.
@@ -62,15 +52,6 @@ public class IncognitoNewTabPage
         mIncognitoNewTabPageManager = new IncognitoNewTabPageManager() {
             @Override
             public void loadIncognitoLearnMore() {
-                // Incognito 'Learn More' either opens a new activity or a new non-incognito tab.
-                // Both is not supported in VR. Request to exit VR and if we succeed show the 'Learn
-                // More' page in 2D.
-                if (VrModuleProvider.getDelegate().isInVr()) {
-                    VrModuleProvider.getDelegate().requestToExitVrAndRunOnSuccess(
-                            IncognitoNewTabPage.this ::showIncognitoLearnMore);
-                    return;
-                }
-                showIncognitoLearnMore();
             }
 
             @Override

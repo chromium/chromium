@@ -220,7 +220,6 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/webapk/libs/common:splash_resources",
     "//chrome/app:java_strings_grd",
     "//chrome/browser/download/android:java_resources",
-    "//chrome/browser/feedback/android:java_resources",
     "//chrome/browser/lens:java_resources",
     "//chrome/browser/password_manager/android:java_resources",
     "//chrome/browser/signin/services/android:java_resources",
@@ -368,7 +367,6 @@ android_library("chrome_java") {
     "//chrome/browser/enterprise/util:java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/feature_guide/notifications:java",
-    "//chrome/browser/feedback/android:java",
     "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/fullscreen/android:java",
@@ -650,7 +648,6 @@ android_library("chrome_java") {
     "//chrome:offline_pages_enum_javagen",
     "//chrome:quick_action_category_enum_javagen",
     "//chrome:supervised_user_url_filter_enum_javagen",
-    "//chrome/browser:screenshot_mode_enum",
     "//chrome/browser:sharing_dialog_type_generated_enum",
     "//chrome/browser:sharing_send_message_result_generated_enum",
     "//chrome/browser:survey_http_client_type_enum",
@@ -848,7 +845,6 @@ java_cpp_enum("chrome_android_java_enums_srcjar") {
     "//chrome/browser/android/customtabs/detached_resource_request.h",
     "//chrome/browser/android/explore_sites/explore_sites_bridge.h",
     "//chrome/browser/android/explore_sites/explore_sites_feature.h",
-    "//chrome/browser/android/feedback/connectivity_checker.cc",
     "//chrome/browser/android/policy/policy_auditor.cc",
     "//chrome/browser/android/webapk/webapk_installer.h",
     "//chrome/browser/long_screenshots/long_screenshots_tab_service.h",
@@ -2150,86 +2146,6 @@ android_resources("trichrome_dummy_resources") {
   sources = [ "trichrome/res_dummy/values/strings.xml" ]
 }
 
-chrome_public_unit_test_apk_manifest =
-    "$root_gen_dir/chrome_public_unit_test_apk_manifest/AndroidManifest.xml"
-chrome_public_test_apk_manifest =
-    "$root_gen_dir/chrome_public_test_apk_manifest/AndroidManifest.xml"
-chrome_public_test_vr_apk_manifest =
-    "$root_gen_dir/chrome_public_test_vr_apk_manifest/AndroidManifest.xml"
-monochrome_public_test_ar_apk_manifest =
-    "$root_gen_dir/monochrome_public_test_ar_apk_manifest/AndroidManifest.xml"
-
-jinja_template("chrome_public_unit_test_apk_manifest") {
-  input = "javatests/AndroidManifest.xml"
-  includes = [ "java/AndroidManifest.xml" ]
-  output = chrome_public_unit_test_apk_manifest
-  variables = default_chrome_public_jinja_variables
-  variables += [
-    "manifest_package=$chrome_public_test_manifest_package",
-    "min_sdk_version=$default_min_sdk_version",
-    "target_sdk_version=$android_sdk_version",
-  ]
-}
-
-jinja_template("chrome_public_test_apk_manifest") {
-  input = "javatests/AndroidManifest.xml"
-  includes = [ "java/AndroidManifest.xml" ]
-  output = chrome_public_test_apk_manifest
-  variables = default_chrome_public_jinja_variables
-  variables += [
-    "manifest_package=$chrome_public_test_manifest_package",
-    "min_sdk_version=$default_min_sdk_version",
-    "target_sdk_version=$android_sdk_version",
-  ]
-}
-
-jinja_template("chrome_public_test_vr_apk_manifest") {
-  input = "javatests/AndroidManifest.xml"
-  includes = [ "java/AndroidManifest.xml" ]
-  output = chrome_public_test_vr_apk_manifest
-  variables = chrome_public_jinja_variables
-  variables += [
-    "min_sdk_version=$default_min_sdk_version",
-    "target_sdk_version=$android_sdk_version",
-  ]
-}
-
-template("monochrome_public_test_ar_apk_manifest_tmpl") {
-  jinja_template(target_name) {
-    forward_variables_from(invoker, "*")
-    input = "javatests/AndroidManifest_monochrome.xml"
-    includes = [
-      "java/AndroidManifest.xml",
-      "java/AndroidManifest_monochrome.xml",
-      "javatests/AndroidManifest.xml",
-      "//android_webview/nonembedded/java/AndroidManifest.xml",
-    ]
-    variables = chrome_public_jinja_variables +
-                monochrome_android_manifest_jinja_variables +
-                [
-                  "target_sdk_version=$android_sdk_version",
-                  "test_manifest_package=$chrome_public_test_manifest_package",
-                  "webview_library=$webview_library_name",
-                  "include_arcore_manifest_flag=$enable_arcore",
-                ]
-  }
-}
-
-monochrome_public_test_ar_apk_manifest_tmpl(
-    "monochrome_public_test_ar_apk_manifest") {
-  output = monochrome_public_test_ar_apk_manifest
-  webview_library_name = "libmonochrome.so"
-}
-
-if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
-  monochrome_public_test_ar_64_apk_manifest = "$root_gen_dir/monochrome_public_test_ar_64_apk_manifest/AndroidManifest.xml"
-  monochrome_public_test_ar_apk_manifest_tmpl(
-      "monochrome_public_test_ar_64_apk_manifest") {
-    output = monochrome_public_test_ar_64_apk_manifest
-    webview_library_name = "libmonochrome_64.so"
-  }
-}
-
 template("chrome_test_apk_tmpl") {
   chrome_public_common_apk_or_module_tmpl(target_name) {
     forward_variables_from(invoker,
@@ -2330,283 +2246,6 @@ template("monochrome_test_apk_tmpl") {
   }
 }
 
-# As compared to chrome_public_test_apk, this target contains only unit tests
-# that require on device capabilities. These tests are smaller, more tightly
-# scoped, and do not leave lingering state after execution.
-# TODO(crbug.com/1238057): Set clear rules for what tests can be added here.
-chrome_test_apk_tmpl("chrome_public_unit_test_apk") {
-  apk_name = "ChromePublicUnitTest"
-  android_manifest = chrome_public_unit_test_apk_manifest
-  android_manifest_dep = ":chrome_public_unit_test_apk_manifest"
-  shared_libraries = [ ":libchromefortest" ]
-  deps = [
-    ":chrome_unit_test_java",
-    "//chrome/browser/partnercustomizations:javatests",
-    "//chrome/browser/user_education:javatests",
-  ]
-}
-
-# TODO(crbug.com/1238057): Rename to chrome_public_integration_test_apk
-chrome_test_apk_tmpl("chrome_public_test_apk") {
-  # TODO(wnwen): Re-enable when new lint failures are disabled for test targets.
-  #enable_lint = true
-
-  apk_name = "ChromePublicTest"
-  android_manifest = chrome_public_test_apk_manifest
-  android_manifest_dep = ":chrome_public_test_apk_manifest"
-  shared_libraries = [ ":libchromefortest" ]
-  deps = [
-    ":chrome_test_apk_template_resources",
-    "//chrome/android/features/keyboard_accessory:test_java",
-    "//chrome/browser/banners/android:javatests",
-    "//chrome/browser/engagement/android:javatests",
-    "//chrome/browser/flags:javatests",
-    "//chrome/browser/subresource_filter:subresource_filter_javatests",
-    "//chrome/browser/touch_to_fill/android:test_java",
-    "//chrome/browser/ui/android/appmenu/internal:javatests",
-    "//chrome/browser/ui/android/webid/internal:javatests",
-    "//chrome/browser/ui/messages/android:javatests",
-    "//chrome/browser/util:javatests",
-  ]
-
-  data_deps = [ "//testing/buildbot/filters:chrome_public_test_apk_filters" ]
-
-  if (enable_chrome_android_internal) {
-    data_deps += [ "//clank/build/bot/filters:chrome_public_test_apk_filters" ]
-  }
-
-  # Required by //build/config/android/test/resource_overlay:javatests
-  enforce_resource_overlays_in_tests = true
-
-  additional_apks = [
-    "//chrome/android/webapk/shell_apk:javatests_webapk",
-    "//chrome/test/android/chrome_public_test_support:chrome_public_test_support_apk",
-    "//components/media_router/test/android/media_router_test_support:media_router_test_support_apk",
-  ]
-}
-
-if (enable_vr) {
-  chrome_test_apk_tmpl("chrome_public_test_vr_apk") {
-    apk_name = "ChromePublicTestVr"
-    android_manifest = chrome_public_test_vr_apk_manifest
-    android_manifest_dep = ":chrome_public_test_vr_apk_manifest"
-    shared_libraries = [ ":libchromefortest" ]
-
-    deps = [
-      ":chrome_test_vr_java",
-      ":vr_test_module_desc_java",
-      "//third_party/android_sdk:android_test_mock_java",
-    ]
-  }
-
-  # This is necessary since vr tests simulate a bundle build.
-  module_desc_java("vr_test_module_desc_java") {
-    module_name = "vr"
-    load_native_on_get_impl = false
-  }
-}
-
-if (enable_arcore) {
-  monochrome_test_apk_tmpl("monochrome_public_test_ar_apk") {
-    apk_name = "MonochromePublicTestAr"
-    min_sdk_version = 24
-    target_sdk_version = android_sdk_version
-
-    android_manifest = monochrome_public_test_ar_apk_manifest
-    android_manifest_dep = ":monochrome_public_test_ar_apk_manifest"
-    if (android_64bit_target_cpu) {
-      if (skip_secondary_abi_for_cq) {
-        android_manifest = monochrome_public_test_ar_64_apk_manifest
-        android_manifest_dep = ":monochrome_public_test_ar_64_apk_manifest"
-        is_64_bit_browser = true
-        include_32_bit_webview = false
-      } else {
-        is_64_bit_browser = false
-        include_64_bit_webview = true
-      }
-    }
-
-    # This is where we would add the shared_libraries entry for
-    # :libchromefortest in the non-Monochrome version. However, doing so in the
-    # Monochrome version causes Chrome to crash on startup due to being unable
-    # to load the library, and looking at the libraries included in the APK
-    # shows both libchromefortest and libmonochrome, when only one should be
-    # present. The tests currently work fine with just libmonochrome, so keep
-    # it this way until we actually need the test-only library. This may be
-    # related to monochrome_public_common_apk_or_module_tmpl adding its own
-    # shared libraries, but chrome_public_common_apk_or_module_tmpl not. See
-    # https://crbug.com/974017.
-    deps = [
-      ":chrome_test_ar_java",
-      "//third_party/android_sdk:android_test_mock_java",
-    ]
-
-    # Include ArCore files directly instead of using bundles.
-    deps += [
-      "//components/webxr/android:ar_java",
-      "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
-      "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest",
-    ]
-
-    _libarcore_dir = get_label_info(
-                         "//third_party/arcore-android-sdk-client:com_google_ar_core_java($default_toolchain)",
-                         "target_out_dir") + "/com_google_ar_core_java/jni"
-
-    # We store this as a separate .so in the APK and only load as needed.
-    if (android_64bit_target_cpu) {
-      if (skip_secondary_abi_for_cq) {
-        loadable_modules = [ "$_libarcore_dir/arm64-v8a/libarcore_sdk_c.so" ]
-      } else {
-        secondary_abi_loadable_modules =
-            [ "$_libarcore_dir/armeabi-v7a/libarcore_sdk_c.so" ]
-      }
-    } else {
-      loadable_modules = [ "$_libarcore_dir/armeabi-v7a/libarcore_sdk_c.so" ]
-    }
-
-    additional_apks = [ "//net/android:net_test_support_apk" ]
-  }
-}
-
-# Chrome smoke test is a minimal test to ensure Chrome is not DOA.  It is
-# designed to be runnable against uninstrumented Chrome apks.
-android_test_apk("chrome_smoke_test_apk") {
-  apk_name = "ChromeSmokeTest"
-  android_manifest =
-      "javatests/src/org/chromium/chrome/test/smoke/AndroidManifest.xml"
-  target_sdk_version = android_sdk_version
-  testonly = true
-  sources =
-      [ "javatests/src/org/chromium/chrome/test/smoke/ChromeSmokeTest.java" ]
-  deps = [
-    "//base:base_java_test_support",
-    "//chrome/test/android:chrome_java_test_pagecontroller",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/android_support_test_runner:runner_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/hamcrest:hamcrest_library_java",
-    "//third_party/junit",
-    "//third_party/ub-uiautomator:ub_uiautomator_java",
-  ]
-}
-
-_common_smoke_test_args = [
-  "--enable-breakpad-dump",
-  "--use-apk-under-test-flags-file",
-
-  # FRE is too flakey on some old devices https://crbug.com/1289733
-  "--disable-fre",
-]
-
-instrumentation_test_runner("chrome_public_smoke_test") {
-  apk_under_test = ":chrome_public_apk"
-  android_test_apk = ":chrome_smoke_test_apk"
-  android_test_apk_name = "ChromeSmokeTest"
-  if (!is_java_debug) {
-    proguard_mapping_path = "$root_build_dir/apks/ChromePublic.apk.mapping"
-  }
-
-  extra_args = _common_smoke_test_args
-}
-
-# Public webview targets don't work with non-public sdks.
-# https://crbug.com/1000763
-instrumentation_test_runner("monochrome_public_smoke_test") {
-  if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
-    apk_under_test = ":monochrome_64_public_apk"
-    if (!is_java_debug) {
-      proguard_mapping_path =
-          "$root_build_dir/apks/MonochromePublic64.apk.mapping"
-    }
-  } else {
-    apk_under_test = ":monochrome_public_apk"
-    if (!is_java_debug) {
-      proguard_mapping_path =
-          "$root_build_dir/apks/MonochromePublic.apk.mapping"
-    }
-  }
-  android_test_apk = ":chrome_smoke_test_apk"
-  android_test_apk_name = "ChromeSmokeTest"
-  never_incremental = true
-  extra_args = _common_smoke_test_args
-}
-
-android_test_apk("chrome_bundle_smoke_test_apk") {
-  apk_name = "ChromeBundleSmokeTest"
-  android_manifest =
-      "javatests/src/org/chromium/chrome/test/smoke/AndroidManifest_bundle.xml"
-  target_sdk_version = android_sdk_version
-  testonly = true
-  sources = [
-    "javatests/src/org/chromium/chrome/test/smoke/ChromeBundleSmokeTest.java",
-  ]
-
-  # Used as test_apk for bundle smoke tests, which are also never_incremental.
-  # The test_runner_script target does not support incremental test_apk when
-  # the parent target is never_incremental.
-  never_incremental = true
-  deps = [
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//chrome/test/android:chrome_java_test_pagecontroller",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/android_support_test_runner:runner_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit",
-  ]
-}
-
-_bundle_smoke_test_extra_args = [
-  # Make extra args be passed through to the bundle under test (see below).
-  "--use-apk-under-test-flags-file",
-
-  # Enable breakpad dumps in order to detect Chrome crashes (because the
-  # test intentionally does not set <instrumentation android:targetPackage> to
-  # the bundle under test.)
-  "--enable-breakpad-dump",
-
-  # Chrome crashes at startup if strict mode is turned on.
-  "--strict-mode=off",
-
-  # These args are passed through to the bundle under test.
-  "--enable-test-dummy-module",
-  "--disable-fre",
-]
-
-instrumentation_test_runner("chrome_modern_public_bundle_smoke_test") {
-  apk_under_test = ":chrome_modern_public_bundle_apks"
-  android_test_apk = ":chrome_bundle_smoke_test_apk"
-  android_test_apk_name = "ChromeBundleSmokeTest"
-  never_incremental = true
-  modules = [ "test_dummy" ]
-  if (!is_java_debug) {
-    proguard_mapping_path =
-        "$root_build_dir/apks/ChromeModernPublic.aab.mapping"
-  }
-  extra_args = _bundle_smoke_test_extra_args
-}
-
-instrumentation_test_runner("monochrome_public_bundle_smoke_test") {
-  if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
-    apk_under_test = "//chrome/android:monochrome_64_public_bundle_apks"
-    if (!is_java_debug) {
-      proguard_mapping_path =
-          "$root_build_dir/apks/MonochromePublic64.aab.mapping"
-    }
-  } else {
-    apk_under_test = "//chrome/android:monochrome_public_bundle_apks"
-    if (!is_java_debug) {
-      proguard_mapping_path =
-          "$root_build_dir/apks/MonochromePublic.aab.mapping"
-    }
-  }
-  android_test_apk = ":chrome_bundle_smoke_test_apk"
-  android_test_apk_name = "ChromeBundleSmokeTest"
-  never_incremental = true
-  modules = [ "test_dummy" ]
-  extra_args = _bundle_smoke_test_extra_args
-}
-
 if (defined(expected_static_initializer_count)) {
   action_with_pydeps("monochrome_static_initializers") {
     script = "//build/android/gyp/assert_static_initializers.py"
@@ -2626,28 +2265,6 @@ if (defined(expected_static_initializer_count)) {
       rebase_path(outputs[0], root_build_dir),
       rebase_path(inputs[0], root_build_dir),
     ]
-  }
-}
-
-instrumentation_test_runner("trichrome_chrome_bundle_smoke_test") {
-  android_test_apk = ":chrome_bundle_smoke_test_apk"
-  android_test_apk_name = "ChromeBundleSmokeTest"
-  never_incremental = true
-  modules = [ "test_dummy" ]
-  extra_args = _bundle_smoke_test_extra_args
-  if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
-    apk_under_test = "//chrome/android:trichrome_chrome_64_bundle_apks"
-    additional_apks = [ "//chrome/android:trichrome_library_64_apk" ]
-    if (!is_java_debug) {
-      proguard_mapping_path =
-          "$root_build_dir/apks/TrichromeChrome64.aab.mapping"
-    }
-  } else {
-    apk_under_test = "//chrome/android:trichrome_chrome_bundle_apks"
-    additional_apks = [ "//chrome/android:trichrome_library_apk" ]
-    if (!is_java_debug) {
-      proguard_mapping_path = "$root_build_dir/apks/TrichromeChrome.aab.mapping"
-    }
   }
 }
 
@@ -3140,8 +2757,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/explore_sites/ExploreSitesSite.java",
     "java/src/org/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationGuideBridge.java",
     "java/src/org/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationGuideServiceFactory.java",
-    "java/src/org/chromium/chrome/browser/feedback/ConnectivityChecker.java",
-    "java/src/org/chromium/chrome/browser/feedback/ScreenshotTask.java",
     "java/src/org/chromium/chrome/browser/firstrun/FirstRunUtils.java",
     "java/src/org/chromium/chrome/browser/flags/BadFlagsSnackbarManager.java",
     "java/src/org/chromium/chrome/browser/gesturenav/OverscrollSceneLayer.java",
@@ -3247,7 +2862,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/status_indicator/StatusIndicatorSceneLayer.java",
     "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSites.java",
     "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSitesBridge.java",
-    "java/src/org/chromium/chrome/browser/supervised_user/ChildAccountFeedbackReporter.java",
     "java/src/org/chromium/chrome/browser/survey/SurveyHttpClientBridge.java",
     "java/src/org/chromium/chrome/browser/sync/TrustedVaultClient.java",
     "java/src/org/chromium/chrome/browser/tab/TabBrowserControlsConstraintsHelper.java",

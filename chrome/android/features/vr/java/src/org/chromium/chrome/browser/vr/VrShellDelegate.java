@@ -52,16 +52,10 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.content_public.browser.ScreenOrientationDelegate;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
@@ -728,47 +722,6 @@ public class VrShellDelegate
             Log.e(TAG, "Unable to check if in VR session", ex);
             return false;
         }
-    }
-
-    private static void startFeedback(Tab tab) {
-        // TODO(ymalik): This call will connect to the Google Services api which can be slow. Can we
-        // connect to it beforehand when we know that we'll be prompting for feedback?
-        HelpAndFeedbackLauncherImpl.getInstance().showFeedback(TabUtils.getActivity(tab),
-                Profile.fromWebContents(tab.getWebContents()), tab.getUrl().getSpec(),
-                ContextUtils.getApplicationContext().getPackageName() + "." + FEEDBACK_REPORT_TYPE);
-    }
-
-    private static void promptForFeedback(final Tab tab) {
-        if (tab == null) return;
-        SimpleConfirmInfoBarBuilder.Listener listener = new SimpleConfirmInfoBarBuilder.Listener() {
-            @Override
-            public void onInfoBarDismissed() {}
-
-            @Override
-            public boolean onInfoBarButtonClicked(boolean isPrimary) {
-                if (isPrimary) {
-                    startFeedback(tab);
-                } else {
-                    VrFeedbackStatus.setFeedbackOptOut(true);
-                }
-                return false;
-            }
-
-            @Override
-            public boolean onInfoBarLinkClicked() {
-                return false;
-            }
-        };
-
-        SimpleConfirmInfoBarBuilder.create(tab.getWebContents(), listener,
-                InfoBarIdentifier.VR_FEEDBACK_INFOBAR_ANDROID, tab.getContext(),
-                org.chromium.chrome.vr.R.drawable.vr_services,
-                ContextUtils.getApplicationContext().getString(
-                        org.chromium.chrome.vr.R.string.vr_shell_feedback_infobar_description),
-                ContextUtils.getApplicationContext().getString(
-                        org.chromium.chrome.vr.R.string.vr_shell_feedback_infobar_feedback_button),
-                tab.getContext().getString(R.string.no_thanks), null /* linkText */,
-                true /* autoExpire  */);
     }
 
     private static void ensureLifecycleObserverInitialized() {
@@ -1474,8 +1427,6 @@ public class VrShellDelegate
         removeVrViews();
         destroyVrShell();
 
-        promptForFeedbackIfNeeded(stayingInChrome);
-
         // User exited VR (via something like the system back button) while looking at the exit VR
         // prompt.
         if (mShowingExitVrPrompt) callOnExitVrRequestListener(true);
@@ -1534,31 +1485,6 @@ public class VrShellDelegate
             }
         };
         return mSettingsButtonListener;
-    }
-
-    /**
-     * Prompts the user to enter feedback for their VR Browsing experience.
-     */
-    private void promptForFeedbackIfNeeded(boolean stayingInChrome) {
-        // We only prompt for feedback if:
-        // 1) The user hasn't explicitly opted-out of it in the past
-        // 2) The user has performed VR browsing
-        // 3) The user is exiting VR and going back into 2D Chrome
-        // 4) We're not exiting to complete an unsupported VR action in 2D (e.g. viewing PageInfo)
-        // 5) Every n'th visit (where n = mFeedbackFrequency)
-
-        if (!activitySupportsExitFeedback(mActivity)) return;
-        if (!stayingInChrome) return;
-        if (VrFeedbackStatus.getFeedbackOptOut()) return;
-        if (!mVrBrowserUsed) return;
-        if (mExitedDueToUnsupportedMode) return;
-
-        int exitCount = VrFeedbackStatus.getUserExitedAndEntered2DCount();
-        VrFeedbackStatus.setUserExitedAndEntered2DCount((exitCount + 1) % mFeedbackFrequency);
-
-        if (exitCount > 0) return;
-
-        promptForFeedback(mActivity.getActivityTab());
     }
 
     /* package */ void promptForKeyboardUpdate() {

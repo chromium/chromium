@@ -2789,9 +2789,6 @@ static_library("browser") {
       "android/favicon_helper.cc",
       "android/favicon_helper.h",
       "android/feature_engagement/tracker_factory_android.cc",
-      "android/feedback/connectivity_checker.cc",
-      "android/feedback/screenshot_mode.h",
-      "android/feedback/screenshot_task.cc",
       "android/flags/bad_flags_snackbar_manager.cc",
       "android/flags/bad_flags_snackbar_manager.h",
       "android/foreign_session_helper.cc",
@@ -3376,7 +3373,6 @@ static_library("browser") {
       "//chrome/browser/device_reauth/android:jni_headers",
       "//chrome/browser/download/internal/android",
       "//chrome/browser/endpoint_fetcher:jni_headers",
-      "//chrome/browser/feedback/android",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/language/android:jni_headers",
       "//chrome/browser/long_screenshots:services",
@@ -3523,8 +3519,6 @@ static_library("browser") {
 
     if (enable_supervised_users) {
       sources += [
-        "supervised_user/child_accounts/child_account_feedback_reporter_android.cc",
-        "supervised_user/child_accounts/child_account_feedback_reporter_android.h",
         "supervised_user/child_accounts/child_account_service_android.cc",
         "supervised_user/child_accounts/child_account_service_android.h",
       ]
@@ -8060,9 +8054,7 @@ if (is_android) {
   java_cpp_enum("tos_dialog_behavior_generated_enum") {
     sources = [ "first_run/android/first_run_prefs.h" ]
   }
-  java_cpp_enum("screenshot_mode_enum") {
-    sources = [ "android/feedback/screenshot_mode.h" ]
-  }
+
   java_cpp_enum("survey_http_client_type_enum") {
     sources = [ "android/survey/http_client_type.h" ]
   }

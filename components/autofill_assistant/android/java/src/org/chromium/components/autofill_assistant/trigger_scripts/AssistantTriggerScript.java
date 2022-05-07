@@ -51,7 +51,6 @@ public class AssistantTriggerScript {
         void onTriggerScriptAction(@TriggerScriptAction int action);
         void onBottomSheetClosedWithSwipe();
         boolean onBackButtonPressed();
-        void onFeedbackButtonClicked();
     }
 
     @Nullable
@@ -233,8 +232,6 @@ public class AssistantTriggerScript {
 
         mHeaderCoordinator = new AssistantHeaderCoordinator(
                 mContext, mHeaderModel, mAccessibilityUtil, mProfileImageUtil, mSettingsUtil);
-        mHeaderModel.set(
-                AssistantHeaderModel.FEEDBACK_BUTTON_CALLBACK, mDelegate::onFeedbackButtonClicked);
         if (AutofillAssistantDependencyInjector.hasServiceRequestSenderToInject()) {
             mHeaderModel.set(AssistantHeaderModel.DISABLE_ANIMATIONS_FOR_TESTING, true);
             mAnimateBottomSheet = false;

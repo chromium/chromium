@@ -48,8 +48,6 @@ public interface AssistantStaticDependencies {
     @CalledByNative
     AssistantInfoPageUtil createInfoPageUtil();
 
-    AssistantFeedbackUtil createFeedbackUtil();
-
     AssistantTabUtil createTabUtil();
 
     AssistantSettingsUtil createSettingsUtil();

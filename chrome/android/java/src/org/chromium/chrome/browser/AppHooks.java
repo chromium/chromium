@@ -17,9 +17,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.directactions.DirectActionCoordinator;
-import org.chromium.chrome.browser.feedback.FeedbackReporter;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.gsa.GSAHelper;
 import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.init.ChromeStartupDelegate;
@@ -30,7 +27,6 @@ import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
 import org.chromium.chrome.browser.omaha.RequestGenerator;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmark;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksDelegateImpl;
-import org.chromium.chrome.browser.password_manager.GooglePasswordManagerUIProvider;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.survey.SurveyController;
@@ -134,13 +130,6 @@ public abstract class AppHooks {
     }
 
     /**
-     * @return An instance of {@link FeedbackReporter} to report feedback.
-     */
-    public FeedbackReporter createFeedbackReporter() {
-        return new FeedbackReporter() {};
-    }
-
-    /**
      * @return An instance of GoogleActivityController.
      */
     public GoogleActivityController createGoogleActivityController() {
@@ -155,23 +144,8 @@ public abstract class AppHooks {
         return new GSAHelper();
     }
 
-    /**
-     * Returns a new instance of HelpAndFeedbackLauncher.
-     */
-    public HelpAndFeedbackLauncher createHelpAndFeedbackLauncher() {
-        return new HelpAndFeedbackLauncherImpl();
-    }
-
     public InstantAppsHandler createInstantAppsHandler() {
         return new InstantAppsHandler();
-    }
-
-    /**
-     * @return An instance of {@link GooglePasswordManagerUIProvider}. Will be null if one is not
-     *         available.
-     */
-    public GooglePasswordManagerUIProvider createGooglePasswordManagerUIProvider() {
-        return null;
     }
 
     /**

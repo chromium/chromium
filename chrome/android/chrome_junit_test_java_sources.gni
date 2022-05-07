@@ -108,8 +108,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/explore_sites/ExploreSitesBackgroundTaskUnitTest.java",
   "junit/src/org/chromium/chrome/browser/explore_sites/ExploreSitesCategoryUnitTest.java",
   "junit/src/org/chromium/chrome/browser/explore_sites/ExploreSitesPageStateUnitTest.java",
-  "junit/src/org/chromium/chrome/browser/feedback/ChromeFeedbackCollectorTest.java",
-  "junit/src/org/chromium/chrome/browser/feedback/FeedFeedbackCollectorTest.java",
   "junit/src/org/chromium/chrome/browser/findinpage/FindToolbarManagerTest.java",
   "junit/src/org/chromium/chrome/browser/firstrun/FirstRunAppRestrictionInfoTest.java",
   "junit/src/org/chromium/chrome/browser/firstrun/FirstRunFlowSequencerTest.java",

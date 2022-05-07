@@ -40,7 +40,6 @@ import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.settings.CreditCardNumberFormattingTextWatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
@@ -212,8 +211,6 @@ public class EditorDialog
                 if (item.getItemId() == R.id.delete_menu_id) {
                     mDeleteRunnable.run();
                     animateOutDialog();
-                } else if (item.getItemId() == R.id.help_menu_id) {
-                    AutofillUiUtils.launchAutofillHelpPage(mActivity, mProfile);
                 }
                 return true;
             }

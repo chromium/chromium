@@ -38,9 +38,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/supervised_user/child_accounts/child_account_feedback_reporter_android.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -262,9 +260,7 @@ void SupervisedUserInterstitial::ShowFeedback() {
           reason_, second_custodian.empty()));
   std::string message = l10n_util::GetStringFUTF8(
       IDS_BLOCK_INTERSTITIAL_DEFAULT_FEEDBACK_TEXT, reason);
-#if BUILDFLAG(IS_ANDROID)
-  ReportChildAccountFeedback(web_contents_, message, url_);
-#else
+#if !BUILDFLAG(IS_ANDROID)
   chrome::ShowFeedbackPage(
       url_, profile_, chrome::kFeedbackSourceSupervisedUserInterstitial,
       message, std::string() /* description_placeholder_text */,

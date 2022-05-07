@@ -56,12 +56,6 @@ public class AssistantTriggerScriptBridge {
             public boolean onBackButtonPressed() {
                 return safeNativeOnBackButtonPressed();
             }
-
-            @Override
-            public void onFeedbackButtonClicked() {
-                dependencies.createFeedbackUtil().showFeedback(dependencies.getActivity(),
-                        webContents, /* screenshotMode= */ 0, /* debugContext= */ null);
-            }
         };
 
         mTriggerScript = new AssistantTriggerScript(dependencies.getActivity(), delegate,

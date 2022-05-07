@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.autofill_assistant.AssistantAccessTokenUtil;
 import org.chromium.components.autofill_assistant.AssistantDependencies;
 import org.chromium.components.autofill_assistant.AssistantEditorFactory;
-import org.chromium.components.autofill_assistant.AssistantFeedbackUtil;
 import org.chromium.components.autofill_assistant.AssistantInfoPageUtil;
 import org.chromium.components.autofill_assistant.AssistantProfileImageUtil;
 import org.chromium.components.autofill_assistant.AssistantSettingsUtil;
@@ -75,11 +74,6 @@ public class AssistantStaticDependenciesChrome implements AssistantStaticDepende
     @Override
     public AssistantInfoPageUtil createInfoPageUtil() {
         return new AssistantInfoPageUtilChrome();
-    }
-
-    @Override
-    public AssistantFeedbackUtil createFeedbackUtil() {
-        return new AssistantFeedbackUtilChrome();
     }
 
     @Override

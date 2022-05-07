@@ -55,8 +55,6 @@ _DEFAULT_TARGETS = [
     '//android_webview/test:webview_instrumentation_test_apk',
     '//base:base_junit_tests',
     '//chrome/android:chrome_public_apk',
-    '//chrome/android:chrome_public_test_apk',
-    '//chrome/android:chrome_public_unit_test_apk',
     '//content/public/android:content_junit_tests',
     '//content/shell/android:content_shell_apk',
     # Below must be included even with --all since they are libraries.

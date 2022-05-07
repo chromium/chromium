@@ -104,7 +104,6 @@ import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.firstrun.ForcedSigninProcessor;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -2348,16 +2347,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         final Tab currentTab = getActivityTab();
 
-        if (id == R.id.help_id) {
-            String url = currentTab != null ? currentTab.getUrl().getSpec() : "";
-            Profile profile = getTabModelSelector().isIncognitoSelected()
-                    ? Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(
-                            /*createIfNeeded=*/true)
-                    : Profile.getLastUsedRegularProfile();
-            startHelpAndFeedback(url, "MobileMenuFeedback", profile);
-            return true;
-        }
-
         if (id == R.id.open_history_menu_id) {
             // 'currentTab' could only be null when opening history from start surface, which is
             // not available on tablet.
@@ -2500,21 +2489,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         return false;
-    }
-
-    /**
-     * Shows Help and Feedback and records the user action as well.
-     * @param url The URL of the tab the user is currently on.
-     * @param recordAction The user action to record.
-     * @param profile The current {@link Profile}.
-     */
-    public void startHelpAndFeedback(String url, String recordAction, Profile profile) {
-        // Since reading back the compositor is asynchronous, we need to do the readback
-        // before starting the GoogleHelp.
-        String helpContextId = HelpAndFeedbackLauncherImpl.getHelpContextIdFromUrl(
-                this, url, getCurrentTabModel().isIncognito());
-        HelpAndFeedbackLauncherImpl.getInstance().show(this, helpContextId, profile, url);
-        RecordUserAction.record(recordAction);
     }
 
     private void markSessionResume() {
