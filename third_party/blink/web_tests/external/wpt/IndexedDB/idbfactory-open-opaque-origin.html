@@ -33,6 +33,8 @@ const script =
   '  window.onmessage = () => {' +
   '    try {' +
   '      indexedDB.deleteDatabase("opaque-origin-test");' +
+  '    } catch {}' +
+  '    try {' +
   '      const r = indexedDB.open("opaque-origin-test");' +
   '      r.onupgradeneeded = () => { r.transaction.abort(); };' +
   '      window.parent.postMessage({result: "no exception"}, "*");' +
