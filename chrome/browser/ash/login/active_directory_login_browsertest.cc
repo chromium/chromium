@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/authpolicy/kerberos_files_handler.h"
 #include "chrome/browser/ash/login/test/active_directory_login_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -136,7 +137,13 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryLoginTest, KerberosVarsCopied) {
 }
 
 // Test different UI errors for Active Directory login.
-IN_PROC_BROWSER_TEST_F(ActiveDirectoryLoginTest, LoginErrors) {
+// TODO(1323271): Flakily times out with dbg or asan builds.
+#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
+#define MAYBE_LoginErrors DISABLED_LoginErrors
+#else
+#define MAYBE_LoginErrors LoginErrors
+#endif
+IN_PROC_BROWSER_TEST_F(ActiveDirectoryLoginTest, MAYBE_LoginErrors) {
   ASSERT_TRUE(InstallAttributes::Get()->IsActiveDirectoryManaged());
   ad_login_.TestNoError();
   ad_login_.TestDomainHidden();
