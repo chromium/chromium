@@ -67,12 +67,13 @@ class ExtensionPrinterHandler : public PrinterHandler {
   void SetPwgRasterConverterForTesting(
       std::unique_ptr<PwgRasterConverter> pwg_raster_converter);
 
-  // Converts |data| to PWG raster format (from PDF) for a printer described
-  // by |printer_description|.
-  // |callback| is called with the converted data.
+  // Converts `data` to PWG raster format (from PDF) for a printer described
+  // by `printer_description` and a given `print_ticket`.
+  // `callback` is called with the converted data.
   void ConvertToPWGRaster(
       scoped_refptr<base::RefCountedMemory> data,
       const cloud_devices::CloudDeviceDescription& printer_description,
+      const cloud_devices::CloudDeviceDescription& print_ticket,
       const gfx::Size& page_size,
       std::unique_ptr<extensions::PrinterProviderPrintJob> job,
       PrintJobCallback callback);
