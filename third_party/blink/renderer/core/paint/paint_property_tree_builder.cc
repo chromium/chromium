@@ -754,10 +754,6 @@ static bool NeedsTransformForSVGChild(
     return false;
   if (direct_compositing_reasons & CompositingReasonsForTransformProperty())
     return true;
-  // TODO(pdr): Check for the presence of a transform instead of the value.
-  // Checking for an identity matrix will cause the property tree structure
-  // to change during animations if the animation passes through the
-  // identity matrix.
   return !object.LocalToSVGParentTransform().IsIdentity();
 }
 
@@ -822,8 +818,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
 
       // TODO(pdr): There is additional logic in
       // FragmentPaintPropertyTreeBuilder::UpdateTransform that likely needs to
-      // be included here, such as setting animation_is_axis_aligned, which may
-      // be the only important difference remaining.
+      // be included here, such as setting animation_is_axis_aligned and setting
+      // additional compositing reasons (kAdditionalCompositingTrigger).
       state.direct_compositing_reasons =
           direct_compositing_reasons & CompositingReasonsForTransformProperty();
       state.flags.flattens_inherited_transform =
@@ -864,7 +860,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
 
   if (properties_->Transform()) {
     context_.current.transform = properties_->Transform();
-    context_.should_flatten_inherited_transform = false;
+    context_.should_flatten_inherited_transform = true;
     context_.rendering_context_id = 0;
   }
 }
@@ -1981,9 +1977,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
 
   if (properties_->ReplacedContentTransform()) {
     context_.current.transform = properties_->ReplacedContentTransform();
-    // TODO(pdr): SVG does not support 3D transforms so this should be
-    // should_flatten_inherited_transform = true.
-    context_.should_flatten_inherited_transform = false;
+    context_.should_flatten_inherited_transform = true;
     context_.rendering_context_id = 0;
   }
 
