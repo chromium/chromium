@@ -412,6 +412,12 @@ const base::Feature kCryptohomeRecoveryFlow{"CryptohomeRecoveryFlow",
 const base::Feature kDemoModeSWA{"DemoModeSWA",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables Assistant stylus features, including the
+// Assistant option in the stylus palette tool and the Assistant screen
+// selection flow triggered by the stylus long press action.
+const base::Feature kDeprecateAssistantStylusFeatures{
+    "DeprecateAssistantStylusFeatures", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables Sync for desk templates on ChromeOS.
 const base::Feature kDeskTemplateSync{"DeskTemplateSync",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1670,6 +1676,10 @@ bool IsDarkLightModeEnabled() {
 
 bool IsDemoModeSWAEnabled() {
   return base::FeatureList::IsEnabled(kDemoModeSWA);
+}
+
+bool IsDeprecateAssistantStylusFeaturesEnabled() {
+  return base::FeatureList::IsEnabled(kDeprecateAssistantStylusFeatures);
 }
 
 bool IsDeskTemplateSyncEnabled() {

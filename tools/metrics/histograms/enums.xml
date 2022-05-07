@@ -53993,6 +53993,7 @@ from previous Chrome versions.
   <int value="-1142933895" label="ReduceDisplayNotifications:disabled"/>
   <int value="-1142034548" label="BuiltInModuleKvStorage:enabled"/>
   <int value="-1141780291" label="DisplayChangeModal:disabled"/>
+  <int value="-1140923360" label="DeprecateAssistantStylusFeatures:disabled"/>
   <int value="-1138851579" label="QuerySearchBurnInPeriod:disabled"/>
   <int value="-1137696948" label="enable-chromeos-account-manager"/>
   <int value="-1137442543" label="enable-slimming-paint"/>
@@ -54664,6 +54665,7 @@ from previous Chrome versions.
   <int value="-697887799"
       label="AutofillSaveCardDialogUnlabeledExpirationDate:disabled"/>
   <int value="-697751423" label="disable-quickoffice-component-app"/>
+  <int value="-697321483" label="DeprecateAssistantStylusFeatures:enabled"/>
   <int value="-696693295" label="Canvas2DImageChromium:disabled"/>
   <int value="-696225611" label="UseSerialBusEnumerator:disabled"/>
   <int value="-695764575" label="NearbySharingBackgroundScanning:enabled"/>

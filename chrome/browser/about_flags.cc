@@ -5947,6 +5947,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableGoogleAssistantDspDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::assistant::features::kEnableDspHotword)},
 
+    {"deprecate-assistant-stylus-features",
+     flag_descriptions::kDeprecateAssistantStylusFeaturesName,
+     flag_descriptions::kDeprecateAssistantStylusFeaturesDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kDeprecateAssistantStylusFeatures)},
+
     {"disable-quick-answers-v2-translation",
      flag_descriptions::kDisableQuickAnswersV2TranslationName,
      flag_descriptions::kDisableQuickAnswersV2TranslationDescription, kOsCrOS,

@@ -4686,6 +4686,12 @@ const char kEnableVariableRefreshRateDescription[] =
     "Enable the variable refresh rate (Adaptive Sync) setting for capable "
     "displays.";
 
+const char kDeprecateAssistantStylusFeaturesName[] =
+    "Deprecate Assistant Stylus Features";
+const char kDeprecateAssistantStylusFeaturesDescription[] =
+    "Deprecates the stylus features associated with the Assistant \"what's on "
+    "my screen\" feature which is already deprecated.";
+
 const char kDisableQuickAnswersV2TranslationName[] =
     "Disable Quick Answers Translation";
 const char kDisableQuickAnswersV2TranslationDescription[] =

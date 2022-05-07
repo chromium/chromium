@@ -1158,6 +1158,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "deprecate-assistant-stylus-features",
+    "owners": [ "croissant-eng", "angelaxiao" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "deprecate-low-usage-codecs",
     "owners": [ "dalecurtis", "sweyn" ],
     "expiry_milestone": 92
