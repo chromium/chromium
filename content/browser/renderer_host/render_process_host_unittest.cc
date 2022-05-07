@@ -874,6 +874,29 @@ TEST_F(RenderProcessHostUnitTest,
                                                          kUrl);
   RenderProcessHost* process = site_instance->GetProcess();
   EXPECT_NE(main_test_rfh()->GetProcess(), process);
+  EXPECT_NE(main_test_rfh()->GetProcess()->GetStoragePartition(),
+            process->GetStoragePartition());
+
+  // Commit a navigation to foo.com in a new WebContents, so that there is a
+  // reusable foo.com process in the new StoragePartition.
+  std::unique_ptr<WebContents> contents(CreateTestWebContents());
+  static_cast<TestWebContents*>(contents.get())->NavigateAndCommit(kUrl);
+  RenderProcessHost* foo_process_in_new_partition =
+      contents->GetMainFrame()->GetProcess();
+
+  // Create another reusable foo.com SiteInstance in the new StoragePartition,
+  // and ensure that this SiteInstance reuse the process just created in that
+  // same StoragePartition.
+  scoped_refptr<SiteInstanceImpl> site_instance2 =
+      SiteInstanceImpl::CreateReusableInstanceForTesting(browser_context(),
+                                                         kUrl);
+  RenderProcessHost* process2 = site_instance2->GetProcess();
+  EXPECT_EQ(foo_process_in_new_partition, process2);
+  EXPECT_EQ(foo_process_in_new_partition->GetStoragePartition(),
+            process2->GetStoragePartition());
+  EXPECT_NE(main_test_rfh()->GetProcess(), process2);
+  EXPECT_NE(main_test_rfh()->GetProcess()->GetStoragePartition(),
+            process2->GetStoragePartition());
 
   SetBrowserClientForTesting(regular_client);
 }
@@ -903,6 +926,28 @@ TEST_F(RenderProcessHostUnitTest,
                                                          kUrl);
   RenderProcessHost* process = site_instance->GetProcess();
   EXPECT_NE(sw_process, process);
+
+  // Commit a navigation to foo.com in a new WebContents, so that there is a
+  // reusable foo.com process in the new StoragePartition.
+  std::unique_ptr<WebContents> contents(CreateTestWebContents());
+  static_cast<TestWebContents*>(contents.get())->NavigateAndCommit(kUrl);
+  RenderProcessHost* foo_process_in_new_partition =
+      contents->GetMainFrame()->GetProcess();
+
+  // Create a second foo.com service worker, this time in the new
+  // StoragePartition. Ensure that it reuses the process registered for foo.com
+  // in that same StoragePartition.
+  scoped_refptr<SiteInstanceImpl> sw_site_instance2 =
+      SiteInstanceImpl::CreateForServiceWorker(
+          browser_context(),
+          UrlInfo::CreateForTesting(kUrl,
+                                    site_instance->GetStoragePartitionConfig()),
+          /*can_reuse_process=*/true);
+  RenderProcessHost* sw_process2 = sw_site_instance2->GetProcess();
+  EXPECT_EQ(sw_process2, foo_process_in_new_partition);
+  EXPECT_NE(sw_process2, sw_process);
+  EXPECT_EQ(SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS,
+            sw_site_instance2->GetLastProcessAssignmentOutcome());
 
   SetBrowserClientForTesting(regular_client);
 }

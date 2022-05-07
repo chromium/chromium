@@ -3170,6 +3170,15 @@ UrlInfo NavigationRequest::GetUrlInfo() {
       .WithIsPdf(is_pdf_)
       .WithSandbox(is_origin_restricted_sandbox);
 
+  // Navigations within guests should always stay in the guest's
+  // StoragePartition.
+  SiteInstanceImpl* current_instance =
+      frame_tree_node_->current_frame_host()->GetSiteInstance();
+  if (current_instance->IsGuest()) {
+    url_info_init.WithStoragePartitionConfig(
+        current_instance->GetStoragePartitionConfig());
+  }
+
   if (GetWebBundleURL().is_valid()) {
     // Web Bundle navigations should use the origin of the bundle rather than
     // the target URL.

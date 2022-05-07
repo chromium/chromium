@@ -724,12 +724,6 @@ class RenderProcessHostIsReadyObserver : public RenderProcessHostObserver {
 // sites are hosted by a RenderProcessHost. This class is meant to help reusing
 // RenderProcessHosts among SiteInstances, not to perform security checks for a
 // RenderProcessHost.
-//
-// TODO(alexmos): Currently, the tracking in this class and in
-// UnmatchedServiceWorkerProcessTracker is associated with a BrowserContext,
-// but it needs to also consider StoragePartitions, so that process reuse is
-// allowed only within the same StoragePartition.  For now, the tracking is
-// done only for the default StoragePartition.  See https://crbug.com/752667.
 const void* const kCommittedSiteProcessCountTrackerKey =
     "CommittedSiteProcessCountTrackerKey";
 const void* const kPendingSiteProcessCountTrackerKey =
@@ -954,40 +948,12 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
   CountPerProcessPerSiteMap map_;
 };
 
-bool ShouldUseSiteProcessTracking(BrowserContext* browser_context,
-                                  StoragePartition* dest_partition) {
-  // TODO(alexmos): Sites should be tracked separately for each
-  // StoragePartition.  For now, track them only in the default one.
-  StoragePartition* default_partition =
-      browser_context->GetDefaultStoragePartition();
-  if (dest_partition != default_partition) {
-    MAYBEVLOG(2) << __func__
-                 << ": Site process tracking will not be available for a "
-                    "non-default partition.";
-    return false;
-  }
-
-  return true;
+bool ShouldTrackProcessForSite(const SiteInfo& site_info) {
+  return !site_info.site_url().is_empty();
 }
 
-bool ShouldTrackProcessForSite(BrowserContext* browser_context,
-                               RenderProcessHost* render_process_host,
-                               const SiteInfo& site_info) {
-  if (site_info.site_url().is_empty())
-    return false;
-
-  return ShouldUseSiteProcessTracking(
-      browser_context, render_process_host->GetStoragePartition());
-}
-
-bool ShouldFindReusableProcessHostForSite(BrowserContext* browser_context,
-                                          const SiteInfo& site_info) {
-  if (site_info.site_url().is_empty())
-    return false;
-
-  return ShouldUseSiteProcessTracking(
-      browser_context, browser_context->GetStoragePartition(
-                           site_info.storage_partition_config()));
+bool ShouldFindReusableProcessHostForSite(const SiteInfo& site_info) {
+  return !site_info.site_url().is_empty();
 }
 
 std::string GetCurrentHostMapDebugString(
@@ -1014,12 +980,6 @@ const void* const kUnmatchedServiceWorkerProcessTrackerKey =
 // processes are reused for a navigation to a matching site. After a single
 // matching navigation is put into the process, all service workers for that
 // site in that process are considered 'matched.'
-//
-// TODO(alexmos): Currently, the tracking in this class and in
-// SiteProcessCountTracker is associated with a BrowserContext, but it needs to
-// also consider StoragePartitions, so that process reuse is allowed only
-// within the same StoragePartition.  For now, the tracking is done only for
-// the default StoragePartition.  See https://crbug.com/752667.
 class UnmatchedServiceWorkerProcessTracker
     : public base::SupportsUserData::Data,
       public RenderProcessHostObserver {
@@ -1030,8 +990,7 @@ class UnmatchedServiceWorkerProcessTracker
                        SiteInstanceImpl* site_instance) {
     BrowserContext* browser_context = site_instance->GetBrowserContext();
     DCHECK(!site_instance->GetSiteInfo().site_url().is_empty());
-    if (!ShouldTrackProcessForSite(browser_context, render_process_host,
-                                   site_instance->GetSiteInfo()))
+    if (!ShouldTrackProcessForSite(site_instance->GetSiteInfo()))
       return;
 
     UnmatchedServiceWorkerProcessTracker* tracker =
@@ -1050,8 +1009,7 @@ class UnmatchedServiceWorkerProcessTracker
   // removes the process from the tracker if it exists.
   static RenderProcessHost* MatchWithSite(SiteInstanceImpl* site_instance) {
     BrowserContext* browser_context = site_instance->GetBrowserContext();
-    if (!ShouldFindReusableProcessHostForSite(browser_context,
-                                              site_instance->GetSiteInfo()))
+    if (!ShouldFindReusableProcessHostForSite(site_instance->GetSiteInfo()))
       return nullptr;
 
     UnmatchedServiceWorkerProcessTracker* tracker =
@@ -2127,7 +2085,7 @@ void RenderProcessHostImpl::DelayProcessShutdown(
 
   // Add to the delayed-shutdown tracker with the site that triggered the delay.
   if (base::FeatureList::IsEnabled(features::kSubframeShutdownDelay) &&
-      ShouldTrackProcessForSite(GetBrowserContext(), this, site_info)) {
+      ShouldTrackProcessForSite(site_info)) {
     SiteProcessCountTracker* delayed_shutdown_tracker =
         SiteProcessCountTracker::GetInstance(
             GetBrowserContext(),
@@ -2949,10 +2907,8 @@ void RenderProcessHostImpl::AddFrameWithSite(
     BrowserContext* browser_context,
     RenderProcessHost* render_process_host,
     const SiteInfo& site_info) {
-  if (!ShouldTrackProcessForSite(browser_context, render_process_host,
-                                 site_info)) {
+  if (!ShouldTrackProcessForSite(site_info))
     return;
-  }
 
   SiteProcessCountTracker* tracker = SiteProcessCountTracker::GetInstance(
       browser_context, kCommittedSiteProcessCountTrackerKey);
@@ -2969,10 +2925,8 @@ void RenderProcessHostImpl::RemoveFrameWithSite(
     BrowserContext* browser_context,
     RenderProcessHost* render_process_host,
     const SiteInfo& site_info) {
-  if (!ShouldTrackProcessForSite(browser_context, render_process_host,
-                                 site_info)) {
+  if (!ShouldTrackProcessForSite(site_info))
     return;
-  }
 
   SiteProcessCountTracker* tracker = SiteProcessCountTracker::GetInstance(
       browser_context, kCommittedSiteProcessCountTrackerKey);
@@ -2984,10 +2938,8 @@ void RenderProcessHostImpl::AddExpectedNavigationToSite(
     BrowserContext* browser_context,
     RenderProcessHost* render_process_host,
     const SiteInfo& site_info) {
-  if (!ShouldTrackProcessForSite(browser_context, render_process_host,
-                                 site_info)) {
+  if (!ShouldTrackProcessForSite(site_info))
     return;
-  }
 
   SiteProcessCountTracker* tracker = SiteProcessCountTracker::GetInstance(
       browser_context, kPendingSiteProcessCountTrackerKey);
@@ -2999,10 +2951,8 @@ void RenderProcessHostImpl::RemoveExpectedNavigationToSite(
     BrowserContext* browser_context,
     RenderProcessHost* render_process_host,
     const SiteInfo& site_info) {
-  if (!ShouldTrackProcessForSite(browser_context, render_process_host,
-                                 site_info)) {
+  if (!ShouldTrackProcessForSite(site_info))
     return;
-  }
 
   SiteProcessCountTracker* tracker = SiteProcessCountTracker::GetInstance(
       browser_context, kPendingSiteProcessCountTrackerKey);
@@ -4155,13 +4105,10 @@ bool RenderProcessHostImpl::IsSuitableHost(
   if (host->GetBrowserContext() != browser_context)
     return false;
 
-  // Do not allow sharing of guest hosts. This is to prevent bugs where guest
-  // and non-guest storage gets mixed. In the future, we might consider
-  // enabling the sharing of guests, in this case this check should be removed
-  // and InSameStoragePartition should handle the possible sharing. Also
-  // deny any attempt where a guest SiteInfo tries to use a |host| that is not
-  // explicitly created for guests.
-  if (host->IsForGuestsOnly() || site_info.is_guest())
+  // Do not allow sharing of guest and non-guest hosts.  Note that we also
+  // enforce that `host` and `site_info` must belong to the same
+  // StoragePartition via the InSameStoragePartition() check below.
+  if (host->IsForGuestsOnly() != site_info.is_guest())
     return false;
 
   // If this process has a different JIT policy to the site then it can't be
@@ -5096,10 +5043,8 @@ RenderProcessHost*
 RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
     SiteInstanceImpl* site_instance) {
   BrowserContext* browser_context = site_instance->GetBrowserContext();
-  if (!ShouldFindReusableProcessHostForSite(browser_context,
-                                            site_instance->GetSiteInfo())) {
+  if (!ShouldFindReusableProcessHostForSite(site_instance->GetSiteInfo()))
     return nullptr;
-  }
 
   std::set<RenderProcessHost*> eligible_foreground_hosts;
   std::set<RenderProcessHost*> eligible_background_hosts;
@@ -5207,7 +5152,7 @@ void RenderProcessHostImpl::CancelProcessShutdownDelay(
   // in StopTrackingProcessForShutdownDelay() if the process was reused before
   // this task executed.
   if (base::FeatureList::IsEnabled(features::kSubframeShutdownDelay) &&
-      ShouldTrackProcessForSite(GetBrowserContext(), this, site_info)) {
+      ShouldTrackProcessForSite(site_info)) {
     SiteProcessCountTracker* delayed_shutdown_tracker =
         SiteProcessCountTracker::GetInstance(
             GetBrowserContext(),
