@@ -8,10 +8,12 @@
 #include "components/feed/core/proto/v2/wire/capability.pb.h"
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_request.pb.h"
+#include "components/feed/core/proto/v2/wire/info_card.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/test/proto_printer.h"
+#include "components/feed/core/v2/test/test_util.h"
 #include "components/feed/core/v2/types.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/reading_list/features/reading_list_switches.h"
@@ -22,6 +24,7 @@
 namespace feed {
 namespace {
 
+using feedwire::InfoCardTrackingState;
 using ::testing::Contains;
 using ::testing::IsSupersetOf;
 using ::testing::Not;
@@ -181,6 +184,35 @@ TEST(ProtoUtilTest, NoticeNotAcknowledged) {
                    .feed_query()
                    .chrome_fulfillment_info()
                    .acknowledged_notice_key_size());
+}
+
+TEST(ProtoUtilTest, InfoCardTrackingStates) {
+  RequestMetadata request_metadata;
+  InfoCardTrackingState state1;
+  state1.set_type(101);
+  state1.set_view_count(2);
+  InfoCardTrackingState state2;
+  state1.set_type(2000);
+  state1.set_view_count(5);
+  state1.set_click_count(2);
+  state1.set_explicitly_dismissed_count(1);
+  request_metadata.info_card_tracking_states = {state1, state2};
+  feedwire::Request request = CreateFeedQueryRefreshRequest(
+      kForYouStream, feedwire::FeedQuery::MANUAL_REFRESH, request_metadata,
+      /*consistency_token=*/std::string());
+
+  ASSERT_EQ(2, request.feed_request()
+                   .feed_query()
+                   .chrome_fulfillment_info()
+                   .info_card_tracking_state_size());
+  EXPECT_THAT(state1, EqualsProto(request.feed_request()
+                                      .feed_query()
+                                      .chrome_fulfillment_info()
+                                      .info_card_tracking_state(0)));
+  EXPECT_THAT(state2, EqualsProto(request.feed_request()
+                                      .feed_query()
+                                      .chrome_fulfillment_info()
+                                      .info_card_tracking_state(1)));
 }
 
 TEST(ProtoUtilTest, AutoplayEnabled) {

@@ -15,6 +15,7 @@
 #include "base/types/id_type.h"
 #include "base/values.h"
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
+#include "components/feed/core/proto/v2/wire/info_card.pb.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/public/common_enums.h"
@@ -59,6 +60,7 @@ struct RequestMetadata {
   bool autoplay_enabled = false;
   int followed_from_web_page_menu_count = 0;
   std::vector<std::string> acknowledged_notice_keys;
+  std::vector<feedwire::InfoCardTrackingState> info_card_tracking_states;
 };
 
 // Data internal to MetricsReporter which is persisted to Prefs.

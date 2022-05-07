@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/feed/core/common/pref_names.h"
+#include "components/feed/core/proto/v2/wire/info_card.pb.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/api_test/feed_api_test.h"
 #include "components/feed/core/v2/config.h"
@@ -39,6 +40,9 @@ namespace test {
 namespace {
 
 const char kTestKey[] = "Youtube";
+const int kTestInfoCardType1 = 101;
+const int kTestInfoCardType2 = 8888;
+const int kMinimumViewIntervalSeconds = 5 * 60;
 
 TEST_F(FeedApiTest, IsArticlesListVisibleByDefault) {
   EXPECT_TRUE(stream_->IsArticlesListVisible());
@@ -3094,6 +3098,75 @@ TEST_F(FeedApiTest, FollowedFromWebPageMenuCount) {
   EXPECT_EQ(1, stream_->GetMetadata().followed_from_web_page_menu_count());
   EXPECT_EQ(1, stream_->GetRequestMetadata(kWebFeedStream, false)
                    .followed_from_web_page_menu_count);
+}
+
+TEST_F(FeedApiTest, InfoCardTrackingActions) {
+  StreamModelUpdateRequestGenerator model_generator;
+  response_translator_.InjectResponse(model_generator.MakeFirstPage());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  base::HistogramTester histograms;
+
+  stream_->ReportInfoCardTrackViewStarted(kForYouStream, kTestInfoCardType2);
+  stream_->ReportInfoCardViewed(kForYouStream, kTestInfoCardType2,
+                                kMinimumViewIntervalSeconds);
+  stream_->ReportInfoCardClicked(kForYouStream, kTestInfoCardType2);
+  stream_->ReportInfoCardClicked(kForYouStream, kTestInfoCardType2);
+  histograms.ExpectUniqueSample("ContentSuggestions.Feed.InfoCard.Started",
+                                kTestInfoCardType2, 1);
+  histograms.ExpectBucketCount("ContentSuggestions.Feed.InfoCard.Viewed",
+                               kTestInfoCardType2, 1);
+  histograms.ExpectBucketCount("ContentSuggestions.Feed.InfoCard.Clicked",
+                               kTestInfoCardType2, 2);
+  histograms.ExpectBucketCount("ContentSuggestions.Feed.InfoCard.Dismissed",
+                               kTestInfoCardType2, 0);
+
+  stream_->ReportInfoCardViewed(kForYouStream, kTestInfoCardType1,
+                                kMinimumViewIntervalSeconds);
+  task_environment_.AdvanceClock(base::Seconds(kMinimumViewIntervalSeconds));
+  stream_->ReportInfoCardViewed(kForYouStream, kTestInfoCardType1,
+                                kMinimumViewIntervalSeconds);
+  task_environment_.AdvanceClock(base::Seconds(kMinimumViewIntervalSeconds));
+  stream_->ReportInfoCardViewed(kForYouStream, kTestInfoCardType1,
+                                kMinimumViewIntervalSeconds);
+  stream_->ReportInfoCardClicked(kForYouStream, kTestInfoCardType1);
+  stream_->ReportInfoCardDismissedExplicitly(kForYouStream, kTestInfoCardType1);
+  histograms.ExpectBucketCount("ContentSuggestions.Feed.InfoCard.Started",
+                               kTestInfoCardType1, 0);
+  histograms.ExpectBucketCount("ContentSuggestions.Feed.InfoCard.Viewed",
+                               kTestInfoCardType1, 3);
+  histograms.ExpectBucketCount("ContentSuggestions.Feed.InfoCard.Clicked",
+                               kTestInfoCardType1, 1);
+  histograms.ExpectBucketCount("ContentSuggestions.Feed.InfoCard.Dismissed",
+                               kTestInfoCardType1, 1);
+
+  response_translator_.InjectResponse(model_generator.MakeFirstPage());
+  stream_->UnloadModel(kForYouStream);
+  stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
+  WaitForIdleTaskQueue();
+
+  ASSERT_EQ(2, network_.query_request_sent->feed_request()
+                   .feed_query()
+                   .chrome_fulfillment_info()
+                   .info_card_tracking_state_size());
+  feedwire::InfoCardTrackingState state1;
+  state1.set_type(kTestInfoCardType1);
+  state1.set_view_count(3);
+  state1.set_click_count(1);
+  state1.set_explicitly_dismissed_count(1);
+  EXPECT_THAT(state1, EqualsProto(network_.query_request_sent->feed_request()
+                                      .feed_query()
+                                      .chrome_fulfillment_info()
+                                      .info_card_tracking_state(0)));
+  feedwire::InfoCardTrackingState state2;
+  state2.set_type(kTestInfoCardType2);
+  state2.set_view_count(1);
+  state2.set_click_count(2);
+  EXPECT_THAT(state2, EqualsProto(network_.query_request_sent->feed_request()
+                                      .feed_query()
+                                      .chrome_fulfillment_info()
+                                      .info_card_tracking_state(1)));
 }
 
 // Keep instantiations at the bottom.

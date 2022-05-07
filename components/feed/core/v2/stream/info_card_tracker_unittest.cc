@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/v2/config.h"
-#include "components/feed/core/v2/test/proto_printer.h"
+#include "components/feed/core/v2/test/test_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,13 +26,6 @@ const feedwire::InfoCardType kTestInfoCardType1 =
     feedwire::INFO_CARD_MAIN_PRIVACY_NOTICE;
 const feedwire::InfoCardType kTestInfoCardType2 =
     feedwire::INFO_CARD_YOUTUBE_PRIVACY_NOTICE;
-
-MATCHER_P(EqualsProto, message, ToTextProto(message)) {
-  std::string expected_serialized, actual_serialized;
-  message.SerializeToString(&expected_serialized);
-  arg.SerializeToString(&actual_serialized);
-  return expected_serialized == actual_serialized;
-}
 
 }  // namespace
 

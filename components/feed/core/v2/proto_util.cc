@@ -236,6 +236,17 @@ void SetCardSpecificNoticeAcknowledged(
   }
 }
 
+void SetInfoCardTrackingStates(feedwire::Request* request,
+                               const RequestMetadata& request_metadata) {
+  for (const auto& state : request_metadata.info_card_tracking_states) {
+    request->mutable_feed_request()
+        ->mutable_feed_query()
+        ->mutable_chrome_fulfillment_info()
+        ->add_info_card_tracking_state()
+        ->CopyFrom(state);
+  }
+}
+
 }  // namespace
 
 std::string ContentIdString(const feedwire::ContentId& content_id) {
@@ -332,6 +343,7 @@ feedwire::Request CreateFeedQueryRefreshRequest(
   }
   SetNoticeCardAcknowledged(&request, request_metadata);
   SetCardSpecificNoticeAcknowledged(&request, request_metadata);
+  SetInfoCardTrackingStates(&request, request_metadata);
   return request;
 }
 
