@@ -346,9 +346,9 @@ class IndexedDBBackingStoreTest : public testing::Test {
     leveldb::Status s;
     std::tie(bucket_state_handle_, s, std::ignore, data_loss_info_,
              std::ignore) =
-        idb_factory_->GetOrOpenBucketFactory(bucket_locator,
-                                             idb_context_->data_path(),
-                                             /*create_if_missing=*/true);
+        idb_factory_->GetOrOpenBucketFactory(
+            bucket_locator, idb_context_->GetDataPath(bucket_locator),
+            /*create_if_missing=*/true);
     if (!bucket_state_handle_.IsHeld()) {
       backing_store_ = nullptr;
       return;

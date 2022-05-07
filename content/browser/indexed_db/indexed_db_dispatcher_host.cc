@@ -290,7 +290,8 @@ void IndexedDBDispatcherHost::GetDatabaseInfo(
       this->AsWeakPtr(), bucket_locator, std::move(pending_callbacks),
       IDBTaskRunner());
 
-  base::FilePath indexed_db_path = indexed_db_context_->data_path();
+  base::FilePath indexed_db_path =
+      indexed_db_context_->GetDataPath(bucket_locator);
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
       std::move(callbacks), bucket_locator, indexed_db_path);
 }
@@ -324,7 +325,8 @@ void IndexedDBDispatcherHost::Open(
   auto database_callbacks = base::MakeRefCounted<IndexedDBDatabaseCallbacks>(
       indexed_db_context_, std::move(database_callbacks_remote),
       IDBTaskRunner());
-  base::FilePath indexed_db_path = indexed_db_context_->data_path();
+  base::FilePath indexed_db_path =
+      indexed_db_context_->GetDataPath(bucket_locator);
 
   auto create_transaction_callback = base::BindOnce(
       &IndexedDBDispatcherHost::CreateAndBindTransactionImpl, AsWeakPtr(),
@@ -362,7 +364,8 @@ void IndexedDBDispatcherHost::DeleteDatabase(
       this->AsWeakPtr(), bucket_locator, std::move(pending_callbacks),
       IDBTaskRunner());
 
-  base::FilePath indexed_db_path = indexed_db_context_->data_path();
+  base::FilePath indexed_db_path =
+      indexed_db_context_->GetDataPath(bucket_locator);
   indexed_db_context_->GetIDBFactory()->DeleteDatabase(
       name, std::move(callbacks), bucket_locator, indexed_db_path, force_close);
 }

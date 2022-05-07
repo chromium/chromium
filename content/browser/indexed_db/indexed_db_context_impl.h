@@ -64,11 +64,11 @@ class CONTENT_EXPORT IndexedDBContextImpl
   static void ReleaseOnIDBSequence(
       scoped_refptr<IndexedDBContextImpl>&& context);
 
-  // If `data_path` is empty, nothing will be saved to disk.
+  // If `base_data_path` is empty, nothing will be saved to disk.
   // `task_runner` is optional, and only set during testing.
   // This is *not* called on the IDBTaskRunner, unlike most other functions.
   IndexedDBContextImpl(
-      const base::FilePath& data_path,
+      const base::FilePath& base_data_path,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       base::Clock* clock,
       mojo::PendingRemote<storage::mojom::BlobStorageContext>
@@ -195,12 +195,15 @@ class CONTENT_EXPORT IndexedDBContextImpl
   std::vector<base::FilePath> GetStoragePaths(
       const storage::BucketLocator& bucket_locator) const;
 
-  const base::FilePath& data_path() const { return data_path_; }
-  bool IsInMemoryContext() const { return data_path_.empty(); }
+  const base::FilePath GetDataPath(
+      const storage::BucketLocator& bucket_locator) const;
+  const base::FilePath GetFirstPartyDataPathForTesting() const;
+
+  bool IsInMemoryContext() const { return base_data_path_.empty(); }
   size_t GetConnectionCountSync(const storage::BucketLocator& bucket_locator);
   int GetBucketBlobFileCount(const storage::BucketLocator& bucket_locator);
 
-  bool is_incognito() const { return data_path_.empty(); }
+  bool is_incognito() const { return base_data_path_.empty(); }
 
   storage::mojom::BlobStorageContext* blob_storage_context() const {
     return blob_storage_context_ ? blob_storage_context_.get() : nullptr;
@@ -223,12 +226,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
  private:
   friend class base::RefCountedThreadSafe<IndexedDBContextImpl>;
-
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, ClearLocalState);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, ClearSessionOnlyDatabases);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, SetForceKeepSessionState);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, ForceCloseOpenDatabasesOnDelete);
-  friend class IndexedDBQuotaClientTest;
 
   class IndexedDBGetUsageAndQuotaCallback;
 
@@ -258,6 +255,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   void ShutdownOnIDBSequence();
 
+  const base::FilePath GetFirstPartyDataPath() const;
   base::FilePath GetBlobStorePath(
       const storage::BucketLocator& bucket_locator) const;
   base::FilePath GetLevelDBPath(
@@ -302,9 +300,9 @@ class CONTENT_EXPORT IndexedDBContextImpl
       file_system_access_context_;
   std::unique_ptr<IndexedDBFactoryImpl> indexeddb_factory_;
 
-  // If `data_path_` is empty then this is an incognito session and the backing
-  // store will be held in-memory rather than on-disk.
-  const base::FilePath data_path_;
+  // If `base_data_path_` is empty then this is an incognito session and the
+  // backing store will be held in-memory rather than on-disk.
+  const base::FilePath base_data_path_;
 
   // If true, nothing (not even session-only data) should be deleted on exit.
   bool force_keep_session_state_;

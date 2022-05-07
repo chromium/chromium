@@ -162,7 +162,7 @@ class IndexedDBFactoryTest : public testing::Test {
       callbacks->CallOnUpgradeNeeded(
           base::BindLambdaForTesting([&]() { loop.Quit(); }));
       factory()->Open(name, std::move(connection), bucket_locator,
-                      context()->data_path());
+                      context()->GetDataPath(bucket_locator));
       loop.Run();
     }
 
@@ -248,16 +248,16 @@ TEST_F(IndexedDBFactoryTest, BasicFactoryCreationAndTearDown) {
   leveldb::Status s;
 
   std::tie(bucket_state1_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator_1,
-                                        context()->data_path(),
-                                        /*create_if_missing=*/true);
+      factory()->GetOrOpenBucketFactory(
+          bucket_locator_1, context()->GetDataPath(bucket_locator_1),
+          /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state1_handle.IsHeld()) << s.ToString();
   EXPECT_TRUE(s.ok()) << s.ToString();
 
   std::tie(bucket_state2_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator_2,
-                                        context()->data_path(),
-                                        /*create_if_missing=*/true);
+      factory()->GetOrOpenBucketFactory(
+          bucket_locator_2, context()->GetDataPath(bucket_locator_2),
+          /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state2_handle.IsHeld()) << s.ToString();
   EXPECT_TRUE(s.ok()) << s.ToString();
 
@@ -280,7 +280,8 @@ TEST_F(IndexedDBFactoryTest, CloseSequenceStarts) {
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
   bucket_state_handle.Release();
@@ -306,7 +307,8 @@ TEST_F(IndexedDBFactoryTest, ImmediateClose) {
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
   bucket_state_handle.Release();
@@ -332,7 +334,8 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   // Open a connection & immediately release it to cause the closing sequence to
   // start.
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
   bucket_state_handle.Release();
@@ -356,7 +359,8 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   // Open a connection & immediately release it to cause the closing sequence to
   // start again.
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
   bucket_state_handle.Release();
@@ -378,7 +382,8 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
 
   // Stop sweep by opening a connection.
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
   EXPECT_FALSE(
@@ -404,7 +409,8 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   //  Finally, move the clock forward so the storage key should allow a sweep.
   clock.Advance(IndexedDBBucketState::kMaxEarliestBucketSweepFromNow);
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
                                         /*create_if_missing=*/true);
   bucket_state_handle.Release();
   factory()->GetBucketFactory(bucket_locator)->close_timer()->FireNow();
@@ -435,7 +441,8 @@ TEST_F(IndexedDBFactoryTestWithMockTime, TombstoneSweeperTiming) {
   // Open a connection & immediately release it to cause the closing sequence to
   // start.
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
@@ -474,7 +481,8 @@ TEST_F(IndexedDBFactoryTestWithMockTime, CompactionTaskTiming) {
   // Open a connection & immediately release it to cause the closing sequence to
   // start.
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
@@ -516,7 +524,8 @@ TEST_F(IndexedDBFactoryTest, CompactionKillSwitchWorks) {
   // Open a connection & immediately release it to cause the closing sequence to
   // start.
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
@@ -535,7 +544,8 @@ TEST_F(IndexedDBFactoryTest, InMemoryFactoriesStay) {
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
   EXPECT_TRUE(StorageBucketFromHandle(bucket_state_handle)
@@ -556,7 +566,8 @@ TEST_F(IndexedDBFactoryTest, InMemoryFactoriesStay) {
 TEST_F(IndexedDBFactoryTest, TooLongOrigin) {
   SetupContext();
 
-  base::FilePath temp_dir = context()->data_path().DirName();
+  base::FilePath temp_dir =
+      context()->GetFirstPartyDataPathForTesting().DirName();
   int limit = base::GetMaximumPathComponentLength(temp_dir);
   EXPECT_GT(limit, 0);
 
@@ -570,9 +581,10 @@ TEST_F(IndexedDBFactoryTest, TooLongOrigin) {
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(too_long_bucket_locator,
-                                        context()->data_path(),
-                                        /*create_if_missing=*/true);
+      factory()->GetOrOpenBucketFactory(
+          too_long_bucket_locator,
+          context()->GetDataPath(too_long_bucket_locator),
+          /*create_if_missing=*/true);
   EXPECT_FALSE(bucket_state_handle.IsHeld());
   EXPECT_TRUE(s.IsIOError());
 }
@@ -595,7 +607,7 @@ TEST_F(IndexedDBFactoryTest, ContextDestructionClosesConnections) {
       transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback));
   factory()->Open(u"db", std::move(connection), bucket_locator,
-                  context()->data_path());
+                  context()->GetDataPath(bucket_locator));
   RunPostedTasks();
 
   // Now simulate shutdown, which should clear all factories.
@@ -613,7 +625,8 @@ TEST_F(IndexedDBFactoryTest, ContextDestructionClosesHandles) {
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
@@ -633,7 +646,8 @@ TEST_F(IndexedDBFactoryTest, FactoryForceClose) {
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
@@ -663,7 +677,7 @@ TEST_F(IndexedDBFactoryTest, ConnectionForceClose) {
       transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback));
   factory()->Open(u"db", std::move(connection), bucket_locator,
-                  context()->data_path());
+                  context()->GetDataPath(bucket_locator));
   EXPECT_FALSE(callbacks->connection());
   RunPostedTasks();
   EXPECT_TRUE(callbacks->connection());
@@ -703,7 +717,7 @@ TEST_F(IndexedDBFactoryTest, DatabaseForceCloseDuringUpgrade) {
     callbacks->CallOnUpgradeNeeded(
         base::BindLambdaForTesting([&]() { loop.Quit(); }));
     factory()->Open(u"db", std::move(connection), bucket_locator,
-                    context()->data_path());
+                    context()->GetDataPath(bucket_locator));
     loop.Run();
   }
 
@@ -743,7 +757,7 @@ TEST_F(IndexedDBFactoryTest, ConnectionCloseDuringUpgrade) {
     callbacks->CallOnUpgradeNeeded(
         base::BindLambdaForTesting([&]() { loop.Quit(); }));
     factory()->Open(u"db", std::move(connection), bucket_locator,
-                    context()->data_path());
+                    context()->GetDataPath(bucket_locator));
     loop.Run();
   }
 
@@ -792,7 +806,7 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabase) {
   bucket_locator.storage_key = storage_key;
 
   factory()->DeleteDatabase(u"db", callbacks, bucket_locator,
-                            context()->data_path(),
+                            context()->GetDataPath(bucket_locator),
                             /*force_close=*/false);
 
   // Since there are no more references the factory should be closing.
@@ -826,7 +840,7 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabaseWithForceClose) {
       /*expect_connection=*/false);
 
   factory()->DeleteDatabase(name, callbacks, bucket_locator,
-                            context()->data_path(),
+                            context()->GetDataPath(bucket_locator),
                             /*force_close=*/true);
 
   // Force close means the connection has been force closed, but the factory
@@ -852,7 +866,8 @@ TEST_F(IndexedDBFactoryTest, GetDatabaseNames_NoFactory) {
   auto bucket_locator = storage::BucketLocator();
   bucket_locator.storage_key = storage_key;
 
-  factory()->GetDatabaseInfo(callbacks, bucket_locator, context()->data_path());
+  factory()->GetDatabaseInfo(callbacks, bucket_locator,
+                             context()->GetDataPath(bucket_locator));
 
   EXPECT_TRUE(callbacks->info_called());
   // Don't create a factory if one doesn't exist.
@@ -873,11 +888,13 @@ TEST_F(IndexedDBFactoryTest, GetDatabaseNames_ExistingFactory) {
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
-  factory()->GetDatabaseInfo(callbacks, bucket_locator, context()->data_path());
+  factory()->GetDatabaseInfo(callbacks, bucket_locator,
+                             context()->GetDataPath(bucket_locator));
 
   EXPECT_TRUE(callbacks->info_called());
   EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
@@ -933,7 +950,7 @@ TEST_F(IndexedDBFactoryTest, QuotaErrorOnDiskFull) {
       /*transaction_id=*/1, /*version=*/1,
       std::move(create_transaction_callback));
   factory()->Open(name, std::move(connection), bucket_locator,
-                  context()->data_path());
+                  context()->GetDataPath(bucket_locator));
   EXPECT_TRUE(callbacks->error_called());
   base::RunLoop().RunUntilIdle();
 
@@ -1009,7 +1026,7 @@ TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
       callbacks->CallOnUpgradeNeeded(
           base::BindLambdaForTesting([&]() { loop.Quit(); }));
       factory()->Open(db_name, std::move(connection), bucket_locator,
-                      context()->data_path());
+                      context()->GetDataPath(bucket_locator));
       loop.Run();
     }
     EXPECT_TRUE(callbacks->upgrade_called());
@@ -1040,7 +1057,7 @@ TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
         failed_open_callbacks, db_callbacks2,
         transaction_id, db_version, std::move(create_transaction_callback));
     factory()->Open(db_name, std::move(connection), bucket_locator,
-                    context()->data_path());
+                    context()->GetDataPath(bucket_locator));
     EXPECT_TRUE(factory()->IsDatabaseOpen(bucket_locator, db_name));
     RunPostedTasks();
     EXPECT_TRUE(failed_open_callbacks->saw_error());
@@ -1101,7 +1118,8 @@ TEST_F(IndexedDBFactoryTest, DataFormatVersion) {
           base::BindLambdaForTesting([&]() { loop.Quit(); }));
 
       this->factory()->Open(u"test_db", std::move(pending_connection),
-                            bucket_locator, context()->data_path());
+                            bucket_locator,
+                            context()->GetDataPath(bucket_locator));
       loop.Run();
 
       // If an upgrade was requested, then commit the upgrade transaction.

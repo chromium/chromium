@@ -56,47 +56,47 @@ const base::FilePath::CharType kLevelDBExtension[] =
 // static
 base::FilePath GetBlobStoreFileName(
     const storage::BucketLocator& bucket_locator) {
-  std::string storage_key_id;
   // TODO(crbug.com/1315371): Allow custom bucket names.
   if (bucket_locator.storage_key.IsFirstPartyContext()) {
-    storage_key_id =
-        storage::GetIdentifierFromOrigin(bucket_locator.storage_key.origin());
+    // First-party blob files, for legacy reasons, are stored at:
+    // {{first_party_data_path}}/{{serialized_origin}}.indexeddb.blob
+    return base::FilePath()
+        .AppendASCII(storage::GetIdentifierFromOrigin(
+            bucket_locator.storage_key.origin()))
+        .AddExtension(kIndexedDBExtension)
+        .AddExtension(kBlobExtension);
   } else {
-    // TODO(crbug.com/1218100): This is a stop-gap to prevent crashes, we need
-    // to point to a real storage bucket here not a transient one. We only
-    // hit this case when `kThirdPartyStoragePartitioning` is enabled.
-    storage_key_id = storage::GetIdentifierFromOrigin(url::Origin());
+    // Third-party blob files are stored at:
+    // {{third_party_data_path}}/indexeddb.blob
+    // TODO(crbug.com/1218100): Support the correct third-party blob path.
+    return base::FilePath()
+        .AppendASCII(storage::GetIdentifierFromOrigin(url::Origin()))
+        .AddExtension(kIndexedDBExtension)
+        .AddExtension(kBlobExtension);
   }
-  // TODO(crbug.com/1218100): Desired first and third party paths:
-  // {{storage_partition}}/IndexedDB/{{serialized_origin}}.blob/
-  // {{storage_partition}}/WebStorage/{{bucket_id}}/IndexedDB/indexeddb.blob/
-  return base::FilePath()
-      .AppendASCII(storage_key_id)
-      .AddExtension(kIndexedDBExtension)
-      .AddExtension(kBlobExtension);
 }
 
 // static
 base::FilePath GetLevelDBFileName(
     const storage::BucketLocator& bucket_locator) {
-  std::string storage_key_id;
   // TODO(crbug.com/1315371): Allow custom bucket names.
   if (bucket_locator.storage_key.IsFirstPartyContext()) {
-    storage_key_id =
-        storage::GetIdentifierFromOrigin(bucket_locator.storage_key.origin());
+    // First-party leveldb files, for legacy reasons, are stored at:
+    // {{first_party_data_path}}/{{serialized_origin}}.indexeddb.leveldb
+    return base::FilePath()
+        .AppendASCII(storage::GetIdentifierFromOrigin(
+            bucket_locator.storage_key.origin()))
+        .AddExtension(kIndexedDBExtension)
+        .AddExtension(kLevelDBExtension);
   } else {
-    // TODO(crbug.com/1218100): This is a stop-gap to prevent crashes, we need
-    // to point to a real storage bucket here not a transient one. We only
-    // hit this case when `kThirdPartyStoragePartitioning` is enabled.
-    storage_key_id = storage::GetIdentifierFromOrigin(url::Origin());
+    // Third-party leveldb files are stored at:
+    // {{unique_bucket_path}}/indexeddb.leveldb
+    // TODO(crbug.com/1218100): Support the correct third-party leveldb path.
+    return base::FilePath()
+        .AppendASCII(storage::GetIdentifierFromOrigin(url::Origin()))
+        .AddExtension(kIndexedDBExtension)
+        .AddExtension(kLevelDBExtension);
   }
-  // TODO(crbug.com/1218100): Desired first and third party paths:
-  // {{storage_partition}}/IndexedDB/{{serialized_origin}}.leveldb/
-  // {{storage_partition}}/WebStorage/{{bucket_id}}/IndexedDB/indexeddb.leveldb/
-  return base::FilePath()
-      .AppendASCII(storage_key_id)
-      .AddExtension(kIndexedDBExtension)
-      .AddExtension(kLevelDBExtension);
 }
 
 base::FilePath ComputeCorruptionFileName(

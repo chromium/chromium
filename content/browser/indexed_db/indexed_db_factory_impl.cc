@@ -437,7 +437,7 @@ void IndexedDBFactoryImpl::HandleBackingStoreCorruption(
   // of a backing store which this function will be deleting.
   storage::BucketLocator saved_bucket_locator(bucket_locator);
   DCHECK(context_);
-  base::FilePath path_base = context_->data_path();
+  base::FilePath path_base = context_->GetDataPath(saved_bucket_locator);
 
   // The message may contain the database path, which may be considered
   // sensitive data, and those strings are passed to the extension, so strip it.

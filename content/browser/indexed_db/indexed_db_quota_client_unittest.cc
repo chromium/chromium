@@ -73,7 +73,8 @@ class IndexedDBQuotaClientTest : public testing::Test {
   void CreateTempDir() { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   void SetupTempDir() {
-    ASSERT_TRUE(base::CreateDirectory(idb_context_->data_path()));
+    ASSERT_TRUE(
+        base::CreateDirectory(idb_context_->GetFirstPartyDataPathForTesting()));
   }
 
   IndexedDBQuotaClientTest(const IndexedDBQuotaClientTest&) = delete;

@@ -276,7 +276,7 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
                 std::make_unique<IndexedDBPendingConnection>(
                     open_callbacks, open_db_callbacks, host_transaction_id,
                     version, std::move(create_transaction_callback1)),
-                bucket_locator, context()->data_path());
+                bucket_locator, context()->GetDataPath(bucket_locator));
   EXPECT_TRUE(base::DirectoryExists(test_path));
 
   auto create_transaction_callback2 =
@@ -285,7 +285,7 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
                 std::make_unique<IndexedDBPendingConnection>(
                     closed_callbacks, closed_db_callbacks, host_transaction_id,
                     version, std::move(create_transaction_callback2)),
-                bucket_locator, context()->data_path());
+                bucket_locator, context()->GetDataPath(bucket_locator));
   RunPostedTasks();
   ASSERT_TRUE(closed_callbacks->connection());
   closed_callbacks->connection()->AbortTransactionsAndClose(
@@ -356,7 +356,7 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailure) {
       transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback1));
   factory->Open(u"db", std::move(connection), bucket_locator,
-                context()->data_path());
+                context()->GetDataPath(bucket_locator));
   RunPostedTasks();
 
   ASSERT_TRUE(callbacks->connection());

@@ -95,11 +95,13 @@ TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
   auto example_bucket_locator = storage::BucketLocator();
   example_bucket_locator.storage_key = example_storage_key_;
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
-      callbacks, example_bucket_locator, indexed_db_context_->data_path());
+      callbacks, example_bucket_locator,
+      indexed_db_context_->GetDataPath(example_bucket_locator));
   auto google_bucket_locator = storage::BucketLocator();
   google_bucket_locator.storage_key = google_storage_key_;
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
-      callbacks, google_bucket_locator, indexed_db_context_->data_path());
+      callbacks, google_bucket_locator,
+      indexed_db_context_->GetDataPath(google_bucket_locator));
   loop.Run();
 
   // Check default bucket exists for https://example.com.

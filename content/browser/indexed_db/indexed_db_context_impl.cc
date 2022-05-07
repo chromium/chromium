@@ -125,7 +125,7 @@ void IndexedDBContextImpl::ReleaseOnIDBSequence(
 }
 
 IndexedDBContextImpl::IndexedDBContextImpl(
-    const base::FilePath& data_path,
+    const base::FilePath& base_data_path,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     base::Clock* clock,
     mojo::PendingRemote<storage::mojom::BlobStorageContext>
@@ -143,8 +143,8 @@ IndexedDBContextImpl::IndexedDBContextImpl(
                      // BLOCK_SHUTDOWN to support clearing session-only storage.
                      base::TaskShutdownBehavior::BLOCK_SHUTDOWN}))),
       dispatcher_host_(this, std::move(io_task_runner)),
-      data_path_(data_path.empty() ? base::FilePath()
-                                   : data_path.Append(kIndexedDBDirectory)),
+      base_data_path_(base_data_path.empty() ? base::FilePath()
+                                             : base_data_path),
       force_keep_session_state_(false),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       clock_(clock),
@@ -272,7 +272,7 @@ void IndexedDBContextImpl::DeleteForBucketImpl(
   // InitializeFromFilesIfNeeded might not have finished, so we need to check
   // if there's a file in the directory and not exit early if so.
   const auto& storage_key_to_file_path =
-      DefaultBucketFilePerFirstPartyStorageKey(data_path_);
+      DefaultBucketFilePerFirstPartyStorageKey(GetFirstPartyDataPath());
   if (!HasBucket(*bucket_locator) &&
       storage_key_to_file_path.find(bucket_locator->storage_key) ==
           storage_key_to_file_path.end()) {
@@ -431,7 +431,7 @@ void IndexedDBContextImpl::DownloadBucketDataImpl(
                                 .AddExtension(FILE_PATH_LITERAL("zip"));
 
   std::vector<base::FilePath> paths = GetStoragePaths(*bucket_locator);
-  zip::ZipWithFilterCallback(data_path(), zip_path,
+  zip::ZipWithFilterCallback(GetDataPath(*bucket_locator), zip_path,
                              base::BindRepeating(IsAllowedPath, paths));
 
   success = true;
@@ -619,7 +619,7 @@ void IndexedDBContextImpl::AddObserver(
 
 void IndexedDBContextImpl::GetBaseDataPathForTesting(
     GetBaseDataPathForTestingCallback callback) {
-  std::move(callback).Run(data_path());
+  std::move(callback).Run(GetFirstPartyDataPath());
 }
 
 void IndexedDBContextImpl::GetFilePathForTesting(
@@ -685,7 +685,8 @@ void IndexedDBContextImpl::WriteToIndexedDBForTesting(
   IndexedDBBucketStateHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator, data_path(),
+      GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator,
+                                              GetDataPath(bucket_locator),
                                               /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
@@ -713,7 +714,8 @@ void IndexedDBContextImpl::GetNextBlobNumberForTesting(
   IndexedDBBucketStateHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator, data_path(),
+      GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator,
+                                              GetDataPath(bucket_locator),
                                               /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
@@ -744,7 +746,8 @@ void IndexedDBContextImpl::GetPathForBlobForTesting(
   IndexedDBBucketStateHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator, data_path(),
+      GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator,
+                                              GetDataPath(bucket_locator),
                                               /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
@@ -865,6 +868,31 @@ std::vector<base::FilePath> IndexedDBContextImpl::GetStoragePaths(
   return paths;
 }
 
+const base::FilePath IndexedDBContextImpl::GetDataPath(
+    const storage::BucketLocator& bucket_locator) const {
+  // TODO(crbug.com/1315371): Allow custom bucket names.
+  if (bucket_locator.storage_key.IsFirstPartyContext()) {
+    // First-party idb files, for legacy reasons, are stored at:
+    // {{storage_partition_path}}/IndexedDB/
+    return GetFirstPartyDataPath();
+  } else {
+    // Third-party idb files are stored at:
+    // {{storage_partition_path}}/WebStorage/{{bucket_id}}/IndexedDB/
+    // TODO(crbug.com/1218100): Support the correct third-party data path.
+    return GetFirstPartyDataPath();
+  }
+}
+
+const base::FilePath IndexedDBContextImpl::GetFirstPartyDataPath() const {
+  return base_data_path_.empty() ? base_data_path_
+                                 : base_data_path_.Append(kIndexedDBDirectory);
+}
+
+const base::FilePath IndexedDBContextImpl::GetFirstPartyDataPathForTesting()
+    const {
+  return GetFirstPartyDataPath();
+}
+
 void IndexedDBContextImpl::FactoryOpened(
     const storage::BucketLocator& bucket_locator) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
@@ -969,7 +997,7 @@ void IndexedDBContextImpl::ShutdownOnIDBSequence() {
 
   IndexedDBFactoryImpl* factory = GetIDBFactory();
   const auto& storage_key_to_file_path =
-      DefaultBucketFilePerFirstPartyStorageKey(data_path_);
+      DefaultBucketFilePerFirstPartyStorageKey(GetFirstPartyDataPath());
   for (const auto& pair : storage_key_to_file_path) {
     const auto& bucket_locator_it =
         storage_key_to_bucket_locator_.find(pair.first);
@@ -998,13 +1026,15 @@ void IndexedDBContextImpl::Shutdown() {
 base::FilePath IndexedDBContextImpl::GetBlobStorePath(
     const storage::BucketLocator& bucket_locator) const {
   DCHECK(!is_incognito());
-  return data_path_.Append(indexed_db::GetBlobStoreFileName(bucket_locator));
+  return GetDataPath(bucket_locator)
+      .Append(indexed_db::GetBlobStoreFileName(bucket_locator));
 }
 
 base::FilePath IndexedDBContextImpl::GetLevelDBPath(
     const storage::BucketLocator& bucket_locator) const {
   DCHECK(!is_incognito());
-  return data_path_.Append(indexed_db::GetLevelDBFileName(bucket_locator));
+  return GetDataPath(bucket_locator)
+      .Append(indexed_db::GetLevelDBFileName(bucket_locator));
 }
 
 int64_t IndexedDBContextImpl::ReadUsageFromDisk(
@@ -1050,7 +1080,7 @@ void IndexedDBContextImpl::InitializeFromFilesIfNeeded(
     return;
   }
   const auto& storage_key_to_file_path =
-      DefaultBucketFilePerFirstPartyStorageKey(data_path_);
+      DefaultBucketFilePerFirstPartyStorageKey(GetFirstPartyDataPath());
   if (storage_key_to_file_path.empty()) {
     did_initialize_from_files_ = true;
     std::move(callback).Run();
