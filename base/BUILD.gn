@@ -1926,6 +1926,7 @@ mixed_component("base") {
       "process/process_stubs.cc",
       "profiler/stack_sampler_posix.cc",
       "sync_socket_nacl.cc",
+      "system/sys_info_nacl.cc",
       "threading/platform_thread_linux.cc",
     ]
 
