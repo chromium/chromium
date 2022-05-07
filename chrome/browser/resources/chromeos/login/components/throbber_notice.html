@@ -6,13 +6,14 @@
 
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+<link rel="import" href="chrome://resources/cr_elements/chromeos/cros_color_overrides.html">
 
 <link rel="import" href="./behaviors/oobe_i18n_behavior.html">
 
-<!-- TODO(1172980): Delete once oobe-loading-dialog replaces throbber-notice -->
+<!-- TODO(http://crbug.com/1172980): Delete once oobe-loading-dialog replaces throbber-notice -->
 <dom-module id="throbber-notice">
   <template>
-    <style>
+    <style include="cros-color-overrides">
       :host {
         align-items: center;
         display: flex;
@@ -29,7 +30,7 @@
 
       #comment {
         @apply --oobe-default-font;
-        color: #747474;
+        color: var(--cros-text-color-secondary);
       }
     </style>
     <paper-spinner-lite dir="ltr" active></paper-spinner-lite>

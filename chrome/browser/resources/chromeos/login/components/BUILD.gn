@@ -233,7 +233,10 @@ js_library("security_token_pin.m") {
 
 js_library("throbber_notice.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/throbber_notice.m.js" ]
-  deps = [ "./behaviors:oobe_i18n_behavior.m" ]
+  deps = [
+    "./behaviors:oobe_i18n_behavior.m",
+    "//ui/webui/resources/cr_elements/chromeos:cros_color_overrides_module",
+  ]
   extra_deps = [ ":throbber_notice_module" ]
 }
 
