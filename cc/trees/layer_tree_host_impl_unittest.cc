@@ -16338,7 +16338,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RasterColorSpaceHDR) {
   EXPECT_EQ(wcg_params.sdr_max_luminance_nits, kCustomWhiteLevel);
   EXPECT_EQ(wcg_params.hdr_max_luminance_relative, 1.f);
 
-  EXPECT_EQ(hdr_params.color_space, hdr);
+  EXPECT_EQ(hdr_params.color_space, gfx::ColorSpace::CreateExtendedSRGB());
   EXPECT_EQ(hdr_params.sdr_max_luminance_nits, kCustomWhiteLevel);
   EXPECT_EQ(hdr_params.hdr_max_luminance_relative, kHDRMaxLuminanceRelative);
 }

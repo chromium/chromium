@@ -1892,11 +1892,19 @@ TargetColorParams LayerTreeHostImpl::GetTargetColorParams(
   if (!hdr_color_space.IsValid())
     return params;
 
-  // It's expensive to rasterize in HDR, so we only want to do so when we know
-  // we have HDR content to rasterize.
-  if (hdr_color_space.IsHDR() &&
-      content_color_usage != gfx::ContentColorUsage::kHDR) {
-    params.color_space = gfx::ColorSpace::CreateDisplayP3D65();
+  if (hdr_color_space.IsHDR()) {
+    if (content_color_usage == gfx::ContentColorUsage::kHDR) {
+      // Rasterization of HDR content is always done in extended-sRGB space.
+      params.color_space = gfx::ColorSpace::CreateExtendedSRGB();
+
+      // Only report the HDR capabilities if they are requested.
+      params.hdr_max_luminance_relative =
+          display_cs.GetHDRMaxLuminanceRelative();
+    } else {
+      // If the content is not HDR, then use Display P3 as the rasterization
+      // color space.
+      params.color_space = gfx::ColorSpace::CreateDisplayP3D65();
+    }
     return params;
   }
 
@@ -1905,10 +1913,6 @@ TargetColorParams LayerTreeHostImpl::GetTargetColorParams(
   if (CheckColorSpaceContainsSrgb(hdr_color_space)) {
     params.color_space = hdr_color_space;
   }
-
-  // Only report the HDR capabilities if they are requested.
-  if (content_color_usage == gfx::ContentColorUsage::kHDR)
-    params.hdr_max_luminance_relative = display_cs.GetHDRMaxLuminanceRelative();
 
   return params;
 }

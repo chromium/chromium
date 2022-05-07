@@ -3569,7 +3569,7 @@ TEST_F(DecodedImageTrackerTileManagerTest, DecodedImageTrackerDropsLocksOnUse) {
 
 class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
  public:
-  void DecodeHdrImage(const gfx::ColorSpace& raster_cs) {
+  void DecodeHdrImage(const gfx::ColorSpace& output_cs) {
     auto color_space = gfx::ColorSpace::CreateHDR10();
     auto size = gfx::Size(250, 250);
     auto info =
@@ -3586,7 +3586,7 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
 
     // Add the image to our decoded_image_tracker.
     TargetColorParams target_color_params;
-    target_color_params.color_space = raster_cs;
+    target_color_params.color_space = output_cs;
     host_impl()->tile_manager()->decoded_image_tracker().QueueImageDecode(
         hdr_image, target_color_params, base::DoNothing());
     FlushDecodeTasks();
@@ -3606,8 +3606,8 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
     SetupPendingTree(raster_source, kTileSize, invalidation);
 
     constexpr float kCustomWhiteLevel = 200.f;
-    auto display_cs = gfx::DisplayColorSpaces(raster_cs);
-    if (raster_cs.IsHDR())
+    auto display_cs = gfx::DisplayColorSpaces(output_cs);
+    if (output_cs.IsHDR())
       display_cs.SetSDRMaxLuminanceNits(kCustomWhiteLevel);
 
     pending_layer()->layer_tree_impl()->SetDisplayColorSpaces(display_cs);
@@ -3628,7 +3628,8 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
     auto pending_tiles = pending_tiling->AllTilesForTesting();
     ASSERT_FALSE(pending_tiles.empty());
 
-    if (raster_cs.IsHDR()) {
+    const auto raster_cs = gfx::ColorSpace::CreateExtendedSRGB();
+    if (output_cs.IsHDR()) {
       // Only the last tile will have any pending tasks.
       const auto& pending_tasks =
           host_impl()->tile_manager()->decode_tasks_for_testing(
@@ -3647,7 +3648,7 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
     ASSERT_FALSE(
         host_impl()->tile_manager()->HasScheduledTileTasksForTesting());
 
-    auto expected_format = raster_cs.IsHDR() ? viz::RGBA_F16 : viz::RGBA_8888;
+    auto expected_format = output_cs.IsHDR() ? viz::RGBA_F16 : viz::RGBA_8888;
     auto all_tiles = host_impl()->tile_manager()->AllTilesForTesting();
     for (const auto* tile : all_tiles)
       EXPECT_EQ(expected_format, tile->draw_info().resource_format());
