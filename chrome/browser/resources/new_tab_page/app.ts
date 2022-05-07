@@ -47,15 +47,15 @@ type CanShowPromoWithBrowserCommandData = {
  * renumbered, removed or reused.
  */
 export enum NtpElement {
-  kOther = 0,
-  kBackground = 1,
-  kOneGoogleBar = 2,
-  kLogo = 3,
-  kRealbox = 4,
-  kMostVisited = 5,
-  kMiddleSlotPromo = 6,
-  kModule = 7,
-  kCustomize = 8,
+  OTHER = 0,
+  BACKGROUND = 1,
+  ONE_GOOGLE_BAR = 2,
+  LOGO = 3,
+  REALBOX = 4,
+  MOST_VISITED = 5,
+  MIDDLE_SLOT_PROMO = 6,
+  MODULE = 7,
+  CUSTOMIZE = 8,
 }
 
 const CUSTOMIZE_URL_PARAM: string = 'customize';
@@ -425,7 +425,7 @@ export class AppElement extends PolymerElement {
 
   private onOpenVoiceSearch_() {
     this.showVoiceSearchOverlay_ = true;
-    recordVoiceAction(VoiceAction.kActivateSearchBox);
+    recordVoiceAction(VoiceAction.ACTIVATE_SEARCH_BOX);
   }
 
   private onCustomizeClick_() {
@@ -453,7 +453,7 @@ export class AppElement extends PolymerElement {
     // </if>
     if (ctrlKeyPressed && e.code === 'Period' && e.shiftKey) {
       this.showVoiceSearchOverlay_ = true;
-      recordVoiceAction(VoiceAction.kActivateKeyboard);
+      recordVoiceAction(VoiceAction.ACTIVATE_KEYBOARD);
     }
   }
 
@@ -608,7 +608,7 @@ export class AppElement extends PolymerElement {
       this.executePromoBrowserCommand_(
           data.data, event.source as Window, event.origin);
     } else if (data.messageType === 'click') {
-      recordClick(NtpElement.kOneGoogleBar);
+      recordClick(NtpElement.ONE_GOOGLE_BAR);
     }
   }
 
@@ -665,33 +665,33 @@ export class AppElement extends PolymerElement {
 
   private onWindowClick_(e: Event) {
     if (e.composedPath() && e.composedPath()[0] === $$(this, '#content')) {
-      recordClick(NtpElement.kBackground);
+      recordClick(NtpElement.BACKGROUND);
       return;
     }
     for (const target of e.composedPath()) {
       switch (target) {
         case $$(this, 'ntp-logo'):
-          recordClick(NtpElement.kLogo);
+          recordClick(NtpElement.LOGO);
           return;
         case $$(this, 'ntp-realbox'):
-          recordClick(NtpElement.kRealbox);
+          recordClick(NtpElement.REALBOX);
           return;
         case $$(this, 'cr-most-visited'):
-          recordClick(NtpElement.kMostVisited);
+          recordClick(NtpElement.MOST_VISITED);
           return;
         case $$(this, 'ntp-middle-slot-promo'):
-          recordClick(NtpElement.kMiddleSlotPromo);
+          recordClick(NtpElement.MIDDLE_SLOT_PROMO);
           return;
         case $$(this, 'ntp-modules'):
-          recordClick(NtpElement.kModule);
+          recordClick(NtpElement.MODULE);
           return;
         case $$(this, '#customizeButton'):
         case $$(this, 'ntp-customize-dialog'):
-          recordClick(NtpElement.kCustomize);
+          recordClick(NtpElement.CUSTOMIZE);
           return;
       }
     }
-    recordClick(NtpElement.kOther);
+    recordClick(NtpElement.OTHER);
   }
 }
 

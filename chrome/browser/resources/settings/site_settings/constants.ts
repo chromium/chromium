@@ -151,7 +151,7 @@ export enum SortMethod {
  * Contains types of dialogs on the AllSites page,
  * used for logging userActions.
  */
-export enum ALL_SITES_DIALOG {
+export enum AllSitesDialog {
   CLEAR_DATA = 'ClearData',
   RESET_PERMISSIONS = 'ResetPermissions',
 }

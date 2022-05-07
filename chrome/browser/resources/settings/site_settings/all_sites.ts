@@ -35,7 +35,7 @@ import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {getTemplate} from './all_sites.html.js';
-import {ALL_SITES_DIALOG, AllSitesAction2, ContentSetting, SortMethod} from './constants.js';
+import {AllSitesAction2, AllSitesDialog, ContentSetting, SortMethod} from './constants.js';
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_browser_proxy.js';
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {OriginInfo, SiteGroup} from './site_settings_prefs_browser_proxy.js';
@@ -517,7 +517,7 @@ export class AllSitesElement extends AllSitesElementBase {
     e.preventDefault();
     const scope = this.actionMenuModel_!.actionScope === 'origin' ? 'Origin' :
                                                                     'SiteGroup';
-    const scopes = [ALL_SITES_DIALOG.RESET_PERMISSIONS, scope, 'DialogOpened'];
+    const scopes = [AllSitesDialog.RESET_PERMISSIONS, scope, 'DialogOpened'];
     this.recordUserAction_(scopes);
     this.$.confirmResetSettings.get().showModal();
   }
@@ -537,7 +537,7 @@ export class AllSitesElement extends AllSitesElementBase {
     const installed = appInstalled ? 'Installed' : '';
 
     const scopes =
-        [ALL_SITES_DIALOG.CLEAR_DATA, scope, installed, 'DialogOpened'];
+        [AllSitesDialog.CLEAR_DATA, scope, installed, 'DialogOpened'];
     this.recordUserAction_(scopes);
     this.$.confirmClearData.get().showModal();
   }
@@ -549,7 +549,7 @@ export class AllSitesElement extends AllSitesElementBase {
     e.preventDefault();
     this.clearAllData_ = true;
     const anyAppsInstalled = this.filteredList_.some(g => g.hasInstalledPWA);
-    const scopes = [ALL_SITES_DIALOG.CLEAR_DATA, 'All'];
+    const scopes = [AllSitesDialog.CLEAR_DATA, 'All'];
     const installed = anyAppsInstalled ? 'Installed' : '';
     this.recordUserAction_([...scopes, installed, 'DialogOpened']);
     this.$.confirmClearAllData.get().showModal();
@@ -767,7 +767,7 @@ export class AllSitesElement extends AllSitesElementBase {
     if (actionScope === 'origin') {
       this.browserProxy.recordAction(AllSitesAction2.RESET_ORIGIN_PERMISSIONS);
       this.recordUserAction_(
-          [ALL_SITES_DIALOG.RESET_PERMISSIONS, 'Origin', 'Confirm']);
+          [AllSitesDialog.RESET_PERMISSIONS, 'Origin', 'Confirm']);
 
       this.resetPermissionsForOrigin_(origin);
       updatedSiteGroup.origins = siteGroupToUpdate.origins;
@@ -783,7 +783,7 @@ export class AllSitesElement extends AllSitesElementBase {
       this.browserProxy.recordAction(
           AllSitesAction2.RESET_SITE_GROUP_PERMISSIONS);
       this.recordUserAction_(
-          [ALL_SITES_DIALOG.RESET_PERMISSIONS, 'SiteGroup', 'Confirm']);
+          [AllSitesDialog.RESET_PERMISSIONS, 'SiteGroup', 'Confirm']);
 
       if (this.actionMenuModel_!.item.etldPlus1 !==
           siteGroupToUpdate.etldPlus1) {
@@ -905,7 +905,7 @@ export class AllSitesElement extends AllSitesElementBase {
    */
   private onClearData_(e: Event) {
     const {index, actionScope, origin} = this.actionMenuModel_!;
-    const scopes: Array<string> = [ALL_SITES_DIALOG.CLEAR_DATA];
+    const scopes: Array<string> = [AllSitesDialog.CLEAR_DATA];
 
     if (actionScope === 'origin') {
       this.browserProxy.recordAction(AllSitesAction2.CLEAR_ORIGIN_DATA);
@@ -942,7 +942,7 @@ export class AllSitesElement extends AllSitesElementBase {
   private onClearAllData_(e: Event) {
     this.browserProxy.recordAction(AllSitesAction2.CLEAR_ALL_DATA);
 
-    const scopes = [ALL_SITES_DIALOG.CLEAR_DATA, 'All'];
+    const scopes = [AllSitesDialog.CLEAR_DATA, 'All'];
     const anyAppsInstalled = this.filteredList_.some(g => g.hasInstalledPWA);
     const installed = anyAppsInstalled ? 'Installed' : '';
     this.recordUserAction_([...scopes, installed, 'Confirm']);

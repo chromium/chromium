@@ -11,10 +11,10 @@ import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bun
 const ANCHOR_HIGHLIGHT_CLASS = 'iph-anchor-highlight';
 
 enum Position {
-  Above = 'above',
-  Below = 'below',
-  Left = 'left',
-  Right = 'right',
+  ABOVE = 'above',
+  BELOW = 'below',
+  LEFT = 'left',
+  RIGHT = 'right',
 }
 
 export interface IPHBubbleElement {
@@ -61,7 +61,7 @@ export class IPHBubbleElement extends PolymerElement {
        * bubble's arrow points. Must be one of 'above', 'below', 'left' or
        * 'right'. Required.
        */
-      position: {type: Position, value: Position.Above},
+      position: {type: Position, value: Position.ABOVE},
     };
   }
 
@@ -130,28 +130,28 @@ export class IPHBubbleElement extends PolymerElement {
     const anchorTop = anchorRect.top - parentRect.top;
     let iphLeft: string, iphTop: string, iphTransform: string;
     switch (this.position) {
-      case Position.Above:
+      case Position.ABOVE:
         // Anchor the iph bubble to the top center of the anchor element.
         iphTop = `${anchorTop - offset}px`;
         iphLeft = `${anchorLeft + anchorRect.width / 2}px`;
         // Horizontally center the iph bubble.
         iphTransform = `translate(-50%, -100%)`;
         break;
-      case Position.Below:
+      case Position.BELOW:
         // Anchor the iph bubble to the bottom center of the anchor element.
         iphTop = `${anchorTop + anchorRect.height + offset}px`;
         iphLeft = `${anchorLeft + anchorRect.width / 2}px`;
         // Horizontally center the iph bubble.
         iphTransform = `translateX(-50%)`;
         break;
-      case Position.Left:
+      case Position.LEFT:
         // Anchor the iph bubble to the center left of the anchor element.
         iphTop = `${anchorTop + anchorRect.height / 2}px`;
         iphLeft = `${anchorLeft - offset}px`;
         // Vertically center the iph bubble.
         iphTransform = `translate(-100%, -50%)`;
         break;
-      case Position.Right:
+      case Position.RIGHT:
         // Anchor the iph bubble to the center right of the anchor element.
         iphTop = `${anchorTop + anchorRect.height / 2}px`;
         iphLeft = `${anchorLeft + anchorRect.width + offset}px`;

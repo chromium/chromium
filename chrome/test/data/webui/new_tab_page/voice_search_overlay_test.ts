@@ -185,23 +185,25 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     assertStyle(voiceSearchOverlay.$.micVolume, '--mic-volume-level', '0');
     assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
     assertEquals(
-        1, metrics.count('NewTabPage.VoiceActions', Action.kQuerySubmitted));
+        1, metrics.count('NewTabPage.VoiceActions', Action.QUERY_SUBMITTED));
   });
 
   ([
-    ['no-speech', 'no-speech', 'learn-more', Error.kNoSpeech],
-    ['audio-capture', 'audio-capture', 'learn-more', Error.kAudioCapture],
-    ['network', 'network', 'none', Error.kNetwork],
-    ['not-allowed', 'not-allowed', 'details', Error.kNotAllowed],
-    ['service-not-allowed', 'not-allowed', 'details', Error.kServiceNotAllowed],
+    ['no-speech', 'no-speech', 'learn-more', Error.NO_SPEECH],
+    ['audio-capture', 'audio-capture', 'learn-more', Error.AUDIO_CAPTURE],
+    ['network', 'network', 'none', Error.NETWORK],
+    ['not-allowed', 'not-allowed', 'details', Error.NOT_ALLOWED],
+    [
+      'service-not-allowed', 'not-allowed', 'details', Error.SERVICE_NOT_ALLOWED
+    ],
     [
       'language-not-supported', 'language-not-supported', 'none',
-      Error.kLanguageNotSupported
+      Error.LANGUAGE_NOT_SUPPORTED
     ],
-    ['aborted', 'other', 'none', Error.kAborted],
-    ['bad-grammar', 'other', 'none', Error.kBadGrammar],
-    ['foo', 'other', 'none', Error.kOther],
-    ['no-match', 'no-match', 'try-again', Error.kNoMatch],
+    ['aborted', 'other', 'none', Error.ABORTED],
+    ['bad-grammar', 'other', 'none', Error.BAD_GRAMMAR],
+    ['foo', 'other', 'none', Error.OTHER],
+    ['no-match', 'no-match', 'try-again', Error.NO_MATCH],
   ] as [SpeechRecognitionErrorCode & 'no-match', string, string, Error][])
       .forEach(([error, text, link, logError]) => {
         test(`on '${error}' received shows error text`, async () => {
@@ -336,8 +338,8 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
   });
 
   ([
-    ['#retryLink', Action.kTryAgainLink],
-    ['#micButton', Action.kTryAgainMicButton],
+    ['#retryLink', Action.TRY_AGAIN_LINK],
+    ['#micButton', Action.TRY_AGAIN_MIC_BUTTON],
   ] as [string, Action][])
       .forEach(([id, action]) => {
         test(`clicking '${id}' starts voice search if in retry state`, () => {
@@ -408,7 +410,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     assertFalse(voiceSearchOverlay.$.dialog.open);
     assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
     assertEquals(
-        1, metrics.count('NewTabPage.VoiceActions', Action.kCloseOverlay));
+        1, metrics.count('NewTabPage.VoiceActions', Action.CLOSE_OVERLAY));
   });
 
   test('Click closes overlay', () => {
@@ -419,7 +421,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     assertFalse(voiceSearchOverlay.$.dialog.open);
     assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
     assertEquals(
-        1, metrics.count('NewTabPage.VoiceActions', Action.kCloseOverlay));
+        1, metrics.count('NewTabPage.VoiceActions', Action.CLOSE_OVERLAY));
   });
 
   test('Clicking learn more logs action', () => {
@@ -437,6 +439,6 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     // Assert.
     assertEquals(
         1,
-        metrics.count('NewTabPage.VoiceActions', Action.kSupportLinkClicked));
+        metrics.count('NewTabPage.VoiceActions', Action.SUPPORT_LINK_CLICKED));
   });
 });

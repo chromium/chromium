@@ -9,12 +9,12 @@ const NUX_SET_AS_DEFAULT_INTERACTION_METRIC_NAME =
     'FirstRun.NewUserExperience.SetAsDefaultInteraction';
 
 enum NuxSetAsDefaultInteractions {
-  PageShown = 0,
-  NavigatedAway,
-  Skip,
-  ClickSetDefault,
-  SuccessfullySetDefault,
-  NavigatedAwayThroughBrowserHistory,
+  PAGE_SHOWN = 0,
+  NAVIGATED_AWAY,
+  SKIP,
+  CLICK_SET_DEFAULT,
+  SUCCESSFULLY_SET_DEFAULT,
+  NAVIGATED_AWAY_THROUGH_BROWSER_HISTORY,
 }
 
 const NUX_SET_AS_DEFAULT_INTERACTIONS_COUNT =
@@ -41,28 +41,29 @@ export class NuxSetAsDefaultProxyImpl implements NuxSetAsDefaultProxy {
   }
 
   recordPageShown() {
-    this.recordInteraction_(NuxSetAsDefaultInteractions.PageShown);
+    this.recordInteraction_(NuxSetAsDefaultInteractions.PAGE_SHOWN);
   }
 
   recordNavigatedAway() {
-    this.recordInteraction_(NuxSetAsDefaultInteractions.NavigatedAway);
+    this.recordInteraction_(NuxSetAsDefaultInteractions.NAVIGATED_AWAY);
   }
 
   recordNavigatedAwayThroughBrowserHistory() {
     this.recordInteraction_(
-        NuxSetAsDefaultInteractions.NavigatedAwayThroughBrowserHistory);
+        NuxSetAsDefaultInteractions.NAVIGATED_AWAY_THROUGH_BROWSER_HISTORY);
   }
 
   recordSkip() {
-    this.recordInteraction_(NuxSetAsDefaultInteractions.Skip);
+    this.recordInteraction_(NuxSetAsDefaultInteractions.SKIP);
   }
 
   recordBeginSetDefault() {
-    this.recordInteraction_(NuxSetAsDefaultInteractions.ClickSetDefault);
+    this.recordInteraction_(NuxSetAsDefaultInteractions.CLICK_SET_DEFAULT);
   }
 
   recordSuccessfullySetDefault() {
-    this.recordInteraction_(NuxSetAsDefaultInteractions.SuccessfullySetDefault);
+    this.recordInteraction_(
+        NuxSetAsDefaultInteractions.SUCCESSFULLY_SET_DEFAULT);
   }
 
   private recordInteraction_(interaction: number): void {

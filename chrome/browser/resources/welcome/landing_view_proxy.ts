@@ -6,10 +6,10 @@ const NUX_LANDING_PAGE_INTERACTION_METRIC_NAME =
     'FirstRun.NewUserExperience.LandingPageInteraction';
 
 enum NuxLandingPageInteractions {
-  PageShown = 0,
-  NavigatedAway,
-  NewUser,
-  ExistingUser,
+  PAGE_SHOWN = 0,
+  NAVIGATED_AWAY,
+  NEW_USER,
+  EXISTING_USER,
 }
 
 const NUX_LANDING_PAGE_INTERACTIONS_COUNT =
@@ -24,19 +24,19 @@ export interface LandingViewProxy {
 
 export class LandingViewProxyImpl implements LandingViewProxy {
   recordPageShown() {
-    this.recordInteraction_(NuxLandingPageInteractions.PageShown);
+    this.recordInteraction_(NuxLandingPageInteractions.PAGE_SHOWN);
   }
 
   recordNavigatedAway() {
-    this.recordInteraction_(NuxLandingPageInteractions.NavigatedAway);
+    this.recordInteraction_(NuxLandingPageInteractions.NAVIGATED_AWAY);
   }
 
   recordNewUser() {
-    this.recordInteraction_(NuxLandingPageInteractions.NewUser);
+    this.recordInteraction_(NuxLandingPageInteractions.NEW_USER);
   }
 
   recordExistingUser() {
-    this.recordInteraction_(NuxLandingPageInteractions.ExistingUser);
+    this.recordInteraction_(NuxLandingPageInteractions.EXISTING_USER);
   }
 
   private recordInteraction_(interaction: number) {

@@ -6,11 +6,11 @@ const NUX_SIGNIN_VIEW_INTERACTION_METRIC_NAME =
     'FirstRun.NewUserExperience.SignInInterstitialInteraction';
 
 enum NuxSignInInterstitialInteractions {
-  PageShown = 0,
-  NavigatedAway,
-  Skip,
-  SignIn,
-  NavigatedAwayThroughBrowserHistory,
+  PAGE_SHOWN = 0,
+  NAVIGATED_AWAY,
+  SKIP,
+  SIGN_IN,
+  NAVIGATED_AWAY_THROUGH_BROWSER_HISTORY,
 }
 
 const NUX_SIGNIN_VIEW_INTERACTIONS_COUNT =
@@ -26,24 +26,24 @@ export interface SigninViewProxy {
 
 export class SigninViewProxyImpl implements SigninViewProxy {
   recordPageShown() {
-    this.recordInteraction_(NuxSignInInterstitialInteractions.PageShown);
+    this.recordInteraction_(NuxSignInInterstitialInteractions.PAGE_SHOWN);
   }
 
   recordNavigatedAway() {
-    this.recordInteraction_(NuxSignInInterstitialInteractions.NavigatedAway);
+    this.recordInteraction_(NuxSignInInterstitialInteractions.NAVIGATED_AWAY);
   }
 
   recordNavigatedAwayThroughBrowserHistory() {
-    this.recordInteraction_(
-        NuxSignInInterstitialInteractions.NavigatedAwayThroughBrowserHistory);
+    this.recordInteraction_(NuxSignInInterstitialInteractions
+                                .NAVIGATED_AWAY_THROUGH_BROWSER_HISTORY);
   }
 
   recordSkip() {
-    this.recordInteraction_(NuxSignInInterstitialInteractions.Skip);
+    this.recordInteraction_(NuxSignInInterstitialInteractions.SKIP);
   }
 
   recordSignIn() {
-    this.recordInteraction_(NuxSignInInterstitialInteractions.SignIn);
+    this.recordInteraction_(NuxSignInInterstitialInteractions.SIGN_IN);
   }
 
   private recordInteraction_(interaction: number): void {

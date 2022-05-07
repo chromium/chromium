@@ -55,11 +55,11 @@ interface Step {
 export enum DiscountConsentVariation {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  Default = 0,
-  StringChange = 1,
-  Inline = 2,
-  Dialog = 3,
-  NativeDialog = 4
+  DEFAULT = 0,
+  STRING_CHANGE = 1,
+  INLINE = 2,
+  DIALOG = 3,
+  NATIVE_DIALOG = 4
 }
 
 // This is a configurable multi-step card. Each step is represented by the Step
@@ -116,7 +116,7 @@ export class DiscountConsentCard extends I18nMixin
   private getTotalStep_(): number {
     // Inline-variation is 2, see ntp_feature::DiscountConsentNtpVariation.
     if (loadTimeData.getInteger('modulesCartDiscountConsentVariation') ===
-        DiscountConsentVariation.Inline) {
+        DiscountConsentVariation.INLINE) {
       return 2;
     }
     return 1;
@@ -146,7 +146,7 @@ export class DiscountConsentCard extends I18nMixin
           this.dispatchEvent(
               new CustomEvent('discount-consent-continued', {composed: true}));
           if (loadTimeData.getInteger('modulesCartDiscountConsentVariation') ===
-              DiscountConsentVariation.NativeDialog) {
+              DiscountConsentVariation.NATIVE_DIALOG) {
             return;
           }
           if (this.currentStep + 1 < this.getTotalStep_()) {

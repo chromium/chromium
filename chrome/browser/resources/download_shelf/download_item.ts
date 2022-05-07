@@ -20,11 +20,11 @@ import {DownloadShelfApiProxy, DownloadShelfApiProxyImpl} from './download_shelf
 
 enum DisplayMode {
   // Shows icon + filename + context menu button.
-  kNormal = 'normal',
+  NORMAL = 'normal',
   // Shows icon + warning text + discard button + context menu button.
-  kWarn = 'warn',
+  WARN = 'warn',
   // Shows icon + warning text + keep button + discard button.
-  kWarnKeep = 'warn-keep',
+  WARN_KEEP = 'warn-keep',
 }
 
 export class DownloadItemElement extends CustomElement {
@@ -154,13 +154,13 @@ export class DownloadItemElement extends CustomElement {
     });
 
     if (item.mode === DownloadMode.kNormal) {
-      downloadElement.dataset['displayMode'] = DisplayMode.kNormal;
+      downloadElement.dataset['displayMode'] = DisplayMode.NORMAL;
     } else if (
         item.mode === DownloadMode.kDangerous ||
         item.mode === DownloadMode.kMixedContentWarn) {
-      downloadElement.dataset['displayMode'] = DisplayMode.kWarnKeep;
+      downloadElement.dataset['displayMode'] = DisplayMode.WARN_KEEP;
     } else {
-      downloadElement.dataset['displayMode'] = DisplayMode.kWarn;
+      downloadElement.dataset['displayMode'] = DisplayMode.WARN;
     }
 
     (this.$('#keep-button') as HTMLElement).innerText =

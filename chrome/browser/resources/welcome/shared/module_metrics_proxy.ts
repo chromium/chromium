@@ -9,16 +9,16 @@
  * See tools/metrics/histograms/enums.xml.
  */
 export enum NuxNtpBackgroundInteractions {
-  PageShown = 0,
-  DidNothingAndNavigatedAway,
-  DidNothingAndChoseSkip,
-  DidNothingAndChoseNext,
-  ChoseAnOptionAndNavigatedAway,
-  ChoseAnOptionAndChoseSkip,
-  ChoseAnOptionAndChoseNext,
-  NavigatedAwayThroughBrowserHistory,
-  BackgroundImageFailedToLoad,
-  BackgroundImageNeverLoaded,
+  PAGE_SHOWN = 0,
+  DID_NOTHING_AND_NAVIGATED_AWAY,
+  DID_NOTHING_AND_CHOSE_SKIP,
+  DID_NOTHING_AND_CHOSE_NEXT,
+  CHOSE_AN_OPTION_AND_NAVIGATED_AWAY,
+  CHOSE_AN_OPTION_AND_CHOSE_SKIP,
+  CHOSE_AN_OPTION_AND_CHOSE_NEXT,
+  NAVIGATED_AWAY_THROUGH_BROWSER_HISTORY,
+  BACKGROUND_IMAGE_FAILED_TO_LOAD,
+  BACKGROUND_IMAGE_NEVER_LOADED,
 }
 
 /**
@@ -28,19 +28,19 @@ export enum NuxNtpBackgroundInteractions {
  * See tools/metrics/histograms/enums.xml.
  */
 export enum NuxGoogleAppsInteractions {
-  PageShown = 0,
-  NotUsed_DEPRECATED,
-  GetStarted_DEPRECATED,
-  DidNothingAndNavigatedAway,
-  DidNothingAndChoseSkip,
-  ChoseAnOptionAndNavigatedAway,
-  ChoseAnOptionAndChoseSkip,
-  ChoseAnOptionAndChoseNext,
-  ClickedDisabledNextButtonAndNavigatedAway,
-  ClickedDisabledNextButtonAndChoseSkip,
-  ClickedDisabledNextButtonAndChoseNext,
-  DidNothingAndChoseNext,
-  NavigatedAwayThroughBrowserHistory,
+  PAGE_SHOWN = 0,
+  NOT_USED_DEPRECATED,
+  GET_STARTED_DEPRECATED,
+  DID_NOTHING_AND_NAVIGATED_AWAY,
+  DID_NOTHING_AND_CHOSE_SKIP,
+  CHOSE_AN_OPTION_AND_NAVIGATED_AWAY,
+  CHOSE_AN_OPTION_AND_CHOSE_SKIP,
+  CHOSE_AN_OPTION_AND_CHOSE_NEXT,
+  CLICKED_DISABLED_NEXT_BUTTON_AND_NAVIGATED_AWAY,
+  CLICKED_DISABLED_NEXT_BUTTON_AND_CHOSE_SKIP,
+  CLICKED_DISABLED_NEXT_BUTTON_AND_CHOSE_NEXT,
+  DID_NOTHING_AND_CHOSE_NEXT,
+  NAVIGATED_AWAY_THROUGH_BROWSER_HISTORY,
 }
 
 export interface ModuleMetricsProxy {
@@ -72,72 +72,75 @@ export class ModuleMetricsProxyImpl implements ModuleMetricsProxy {
 
   recordPageShown() {
     chrome.metricsPrivate.recordEnumerationValue(
-        this.interactionMetric_, this.interactions_.PageShown,
+        this.interactionMetric_, this.interactions_.PAGE_SHOWN,
         Object.keys(this.interactions_).length);
   }
 
   recordDidNothingAndNavigatedAway() {
     chrome.metricsPrivate.recordEnumerationValue(
-        this.interactionMetric_, this.interactions_.DidNothingAndNavigatedAway,
+        this.interactionMetric_,
+        this.interactions_.DID_NOTHING_AND_NAVIGATED_AWAY,
         Object.keys(this.interactions_).length);
   }
 
   recordDidNothingAndChoseSkip() {
     chrome.metricsPrivate.recordEnumerationValue(
-        this.interactionMetric_, this.interactions_.DidNothingAndChoseSkip,
+        this.interactionMetric_, this.interactions_.DID_NOTHING_AND_CHOSE_SKIP,
         Object.keys(this.interactions_).length);
   }
 
   recordDidNothingAndChoseNext() {
     chrome.metricsPrivate.recordEnumerationValue(
-        this.interactionMetric_, this.interactions_.DidNothingAndChoseNext,
+        this.interactionMetric_, this.interactions_.DID_NOTHING_AND_CHOSE_NEXT,
         Object.keys(this.interactions_).length);
   }
 
   recordChoseAnOptionAndNavigatedAway() {
     chrome.metricsPrivate.recordEnumerationValue(
         this.interactionMetric_,
-        this.interactions_.ChoseAnOptionAndNavigatedAway,
+        this.interactions_.CHOSE_AN_OPTION_AND_NAVIGATED_AWAY,
         Object.keys(this.interactions_).length);
   }
 
   recordChoseAnOptionAndChoseSkip() {
     chrome.metricsPrivate.recordEnumerationValue(
-        this.interactionMetric_, this.interactions_.ChoseAnOptionAndChoseSkip,
+        this.interactionMetric_,
+        this.interactions_.CHOSE_AN_OPTION_AND_CHOSE_SKIP,
         Object.keys(this.interactions_).length);
   }
 
   recordChoseAnOptionAndChoseNext() {
     chrome.metricsPrivate.recordEnumerationValue(
-        this.interactionMetric_, this.interactions_.ChoseAnOptionAndChoseNext,
+        this.interactionMetric_,
+        this.interactions_.CHOSE_AN_OPTION_AND_CHOSE_NEXT,
         Object.keys(this.interactions_).length);
   }
 
   recordClickedDisabledNextButtonAndNavigatedAway() {
     chrome.metricsPrivate.recordEnumerationValue(
         this.interactionMetric_,
-        this.interactions_.ClickedDisabledNextButtonAndNavigatedAway,
+        this.interactions_.CLICKED_DISABLED_NEXT_BUTTON_AND_NAVIGATED_AWAY,
         Object.keys(this.interactions_).length);
   }
 
   recordClickedDisabledNextButtonAndChoseSkip() {
     chrome.metricsPrivate.recordEnumerationValue(
         this.interactionMetric_,
-        this.interactions_.ClickedDisabledNextButtonAndChoseSkip,
+        this.interactions_.CLICKED_DISABLED_NEXT_BUTTON_AND_CHOSE_SKIP,
         Object.keys(this.interactions_).length);
   }
 
   recordClickedDisabledNextButtonAndChoseNext() {
     chrome.metricsPrivate.recordEnumerationValue(
         this.interactionMetric_,
-        this.interactions_.ClickedDisabledNextButtonAndChoseNext,
+        this.interactions_.CLICKED_DISABLED_NEXT_BUTTON_AND_CHOSE_NEXT,
         Object.keys(this.interactions_).length);
   }
 
   recordNavigatedAwayThroughBrowserHistory() {
     chrome.metricsPrivate.recordEnumerationValue(
         this.interactionMetric_,
-        this.interactions_.NavigatedAwayThroughBrowserHistory,
+        this.interactions_.NAVIGATED_AWAY_THROUGH_BROWSER_HISTORY,
         Object.keys(this.interactions_).length);
   }
 }

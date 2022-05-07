@@ -119,7 +119,7 @@ suite('NewTabPageAppTest', () => {
       assertEquals(
           1,
           metrics.count(
-              'NewTabPage.VoiceActions', VoiceAction.kActivateSearchBox));
+              'NewTabPage.VoiceActions', VoiceAction.ACTIVATE_SEARCH_BOX));
     });
 
     test('voice search keyboard shortcut', async () => {
@@ -138,7 +138,7 @@ suite('NewTabPageAppTest', () => {
       assertEquals(
           1,
           metrics.count(
-              'NewTabPage.VoiceActions', VoiceAction.kActivateKeyboard));
+              'NewTabPage.VoiceActions', VoiceAction.ACTIVATE_KEYBOARD));
 
       // Test other shortcut doesn't close voice search.
       // Act
@@ -405,12 +405,12 @@ suite('NewTabPageAppTest', () => {
     });
 
     ([
-      ['#content', NtpElement.kBackground],
-      ['ntp-logo', NtpElement.kLogo],
-      ['ntp-realbox', NtpElement.kRealbox],
-      ['cr-most-visited', NtpElement.kMostVisited],
-      ['ntp-middle-slot-promo', NtpElement.kMiddleSlotPromo],
-      ['ntp-modules', NtpElement.kModule],
+      ['#content', NtpElement.BACKGROUND],
+      ['ntp-logo', NtpElement.LOGO],
+      ['ntp-realbox', NtpElement.REALBOX],
+      ['cr-most-visited', NtpElement.MOST_VISITED],
+      ['ntp-middle-slot-promo', NtpElement.MIDDLE_SLOT_PROMO],
+      ['ntp-modules', NtpElement.MODULE],
     ] as [string, NtpElement][])
         .forEach(([selector, element]) => {
           test(`clicking '${selector}' records click`, () => {
@@ -431,7 +431,7 @@ suite('NewTabPageAppTest', () => {
 
       // Assert.
       assertEquals(2, metrics.count('NewTabPage.Click'));
-      assertEquals(2, metrics.count('NewTabPage.Click', NtpElement.kCustomize));
+      assertEquals(2, metrics.count('NewTabPage.Click', NtpElement.CUSTOMIZE));
     });
 
     test('clicking OGB records click', () => {
@@ -446,7 +446,7 @@ suite('NewTabPageAppTest', () => {
       // Assert.
       assertEquals(1, metrics.count('NewTabPage.Click'));
       assertEquals(
-          1, metrics.count('NewTabPage.Click', NtpElement.kOneGoogleBar));
+          1, metrics.count('NewTabPage.Click', NtpElement.ONE_GOOGLE_BAR));
     });
   });
 

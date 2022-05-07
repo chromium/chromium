@@ -109,9 +109,9 @@ suite(extension_shortcut_tests.suiteName, function() {
     assertTrue(isValidKeyCode('F'.charCodeAt(0)));
     assertTrue(isValidKeyCode('Z'.charCodeAt(0)));
     assertTrue(isValidKeyCode('4'.charCodeAt(0)));
-    assertTrue(isValidKeyCode(Key.PageUp));
-    assertTrue(isValidKeyCode(Key.MediaPlayPause));
-    assertTrue(isValidKeyCode(Key.Down));
+    assertTrue(isValidKeyCode(Key.PAGE_UP));
+    assertTrue(isValidKeyCode(Key.MEDIA_PLAY_PAUSE));
+    assertTrue(isValidKeyCode(Key.DOWN));
     assertFalse(isValidKeyCode(16));   // Shift
     assertFalse(isValidKeyCode(17));   // Ctrl
     assertFalse(isValidKeyCode(18));   // Alt

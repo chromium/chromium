@@ -44,7 +44,7 @@ export class NtpBackgroundProxyImpl implements NtpBackgroundProxy {
   recordBackgroundImageFailedToLoad() {
     chrome.metricsPrivate.recordEnumerationValue(
         'FirstRun.NewUserExperience.NtpBackgroundInteraction',
-        NuxNtpBackgroundInteractions.BackgroundImageFailedToLoad,
+        NuxNtpBackgroundInteractions.BACKGROUND_IMAGE_FAILED_TO_LOAD,
         Object.keys(NuxNtpBackgroundInteractions).length);
   }
 
@@ -56,7 +56,7 @@ export class NtpBackgroundProxyImpl implements NtpBackgroundProxy {
   recordBackgroundImageNeverLoaded() {
     chrome.metricsPrivate.recordEnumerationValue(
         'FirstRun.NewUserExperience.NtpBackgroundInteraction',
-        NuxNtpBackgroundInteractions.BackgroundImageNeverLoaded,
+        NuxNtpBackgroundInteractions.BACKGROUND_IMAGE_NEVER_LOADED,
         Object.keys(NuxNtpBackgroundInteractions).length);
   }
 

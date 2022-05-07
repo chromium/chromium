@@ -7,25 +7,25 @@ import {isChromeOS, isMac} from 'chrome://resources/js/cr.m.js';
 
 
 export enum Key {
-  Comma = 188,
-  Del = 46,
-  Down = 40,
-  End = 35,
-  Escape = 27,
-  Home = 36,
-  Ins = 45,
-  Left = 37,
-  MediaNextTrack = 176,
-  MediaPlayPause = 179,
-  MediaPrevTrack = 177,
-  MediaStop = 178,
-  PageDown = 34,
-  PageUp = 33,
-  Period = 190,
-  Right = 39,
-  Space = 32,
-  Tab = 9,
-  Up = 38,
+  COMMA = 188,
+  DEL = 46,
+  DOWN = 40,
+  END = 35,
+  ESCAPE = 27,
+  HOME = 36,
+  INS = 45,
+  LEFT = 37,
+  MEDIA_NEXT_TRACK = 176,
+  MEDIA_PLAY_PAUSE = 179,
+  MEDIA_PREV_TRACK = 177,
+  MEDIA_STOP = 178,
+  PAGE_DOWN = 34,
+  PAGE_UP = 33,
+  PERIOD = 190,
+  RIGHT = 39,
+  SPACE = 32,
+  TAB = 9,
+  UP = 38,
 }
 
 /**
@@ -42,10 +42,10 @@ enum ModifierPolicy {
  */
 function getModifierPolicy(keyCode: number): ModifierPolicy {
   switch (keyCode) {
-    case Key.MediaNextTrack:
-    case Key.MediaPlayPause:
-    case Key.MediaPrevTrack:
-    case Key.MediaStop:
+    case Key.MEDIA_NEXT_TRACK:
+    case Key.MEDIA_PLAY_PAUSE:
+    case Key.MEDIA_PREV_TRACK:
+    case Key.MEDIA_STOP:
       return ModifierPolicy.NOT_ALLOWED;
     default:
       return ModifierPolicy.REQUIRED;
@@ -72,7 +72,7 @@ function hasModifier(e: KeyboardEvent, countShiftAsModifier: boolean): boolean {
  * @return Whether the key is valid.
  */
 export function isValidKeyCode(keyCode: number): boolean {
-  if (keyCode === Key.Escape) {
+  if (keyCode === Key.ESCAPE) {
     return false;
   }
   for (const k in Key) {
@@ -114,58 +114,58 @@ export function keystrokeToString(e: KeyboardEvent): string {
       output.push(String.fromCharCode(keyCode));
     } else {
       switch (keyCode) {
-        case Key.Comma:
+        case Key.COMMA:
           output.push('Comma');
           break;
-        case Key.Del:
+        case Key.DEL:
           output.push('Delete');
           break;
-        case Key.Down:
+        case Key.DOWN:
           output.push('Down');
           break;
-        case Key.End:
+        case Key.END:
           output.push('End');
           break;
-        case Key.Home:
+        case Key.HOME:
           output.push('Home');
           break;
-        case Key.Ins:
+        case Key.INS:
           output.push('Insert');
           break;
-        case Key.Left:
+        case Key.LEFT:
           output.push('Left');
           break;
-        case Key.MediaNextTrack:
+        case Key.MEDIA_NEXT_TRACK:
           output.push('MediaNextTrack');
           break;
-        case Key.MediaPlayPause:
+        case Key.MEDIA_PLAY_PAUSE:
           output.push('MediaPlayPause');
           break;
-        case Key.MediaPrevTrack:
+        case Key.MEDIA_PREV_TRACK:
           output.push('MediaPrevTrack');
           break;
-        case Key.MediaStop:
+        case Key.MEDIA_STOP:
           output.push('MediaStop');
           break;
-        case Key.PageDown:
+        case Key.PAGE_DOWN:
           output.push('PageDown');
           break;
-        case Key.PageUp:
+        case Key.PAGE_UP:
           output.push('PageUp');
           break;
-        case Key.Period:
+        case Key.PERIOD:
           output.push('Period');
           break;
-        case Key.Right:
+        case Key.RIGHT:
           output.push('Right');
           break;
-        case Key.Space:
+        case Key.SPACE:
           output.push('Space');
           break;
-        case Key.Tab:
+        case Key.TAB:
           output.push('Tab');
           break;
-        case Key.Up:
+        case Key.UP:
           output.push('Up');
           break;
       }

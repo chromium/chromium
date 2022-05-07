@@ -23,9 +23,9 @@ import {PhotosProxy} from './photos_module_proxy.js';
  * to logs. Entries should not be renumbered, removed or reused.
  */
 enum OptInStatus {
-  kHardOptOut = 0,
-  kOptIn = 1,
-  kSoftOptOut = 2,
+  HARD_OPT_OUT = 0,
+  OPT_IN = 1,
+  SOFT_OPT_OUT = 2,
 }
 
 function recordOptInStatus(optInStatus: OptInStatus) {
@@ -134,7 +134,7 @@ export class PhotosModuleElement extends I18nMixin
   }
 
   private onSoftOptOutClick_() {
-    recordOptInStatus(OptInStatus.kSoftOptOut);
+    recordOptInStatus(OptInStatus.SOFT_OPT_OUT);
     PhotosProxy.getHandler().softOptOut();
     this.dispatchEvent(new CustomEvent('dismiss-module', {
       bubbles: true,
@@ -167,7 +167,7 @@ export class PhotosModuleElement extends I18nMixin
   }
 
   private onOptInClick_() {
-    recordOptInStatus(OptInStatus.kOptIn);
+    recordOptInStatus(OptInStatus.OPT_IN);
     PhotosProxy.getHandler().onUserOptIn(true);
     this.showOptInScreen = false;
     this.hideMenuButton = false;
@@ -175,7 +175,7 @@ export class PhotosModuleElement extends I18nMixin
   }
 
   private onOptOutClick_() {
-    recordOptInStatus(OptInStatus.kHardOptOut);
+    recordOptInStatus(OptInStatus.HARD_OPT_OUT);
     PhotosProxy.getHandler().onUserOptIn(false);
     // Disable the module when user opt out.
     this.onDisableButtonClick_();

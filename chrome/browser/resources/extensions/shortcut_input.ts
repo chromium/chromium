@@ -147,7 +147,7 @@ export class ExtensionsShortcutInputElement extends
       return;
     }
 
-    if (e.keyCode === Key.Escape) {
+    if (e.keyCode === Key.ESCAPE) {
       if (!this.capturing_) {
         // If we're not currently capturing, allow escape to propagate.
         return;
@@ -158,7 +158,7 @@ export class ExtensionsShortcutInputElement extends
       e.stopPropagation();
       return;
     }
-    if (e.keyCode === Key.Tab) {
+    if (e.keyCode === Key.TAB) {
       // Allow tab propagation for keyboard navigation.
       return;
     }
@@ -183,7 +183,7 @@ export class ExtensionsShortcutInputElement extends
       return;
     }
 
-    if (e.keyCode === Key.Escape || e.keyCode === Key.Tab) {
+    if (e.keyCode === Key.ESCAPE || e.keyCode === Key.TAB) {
       return;
     }
 

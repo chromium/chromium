@@ -16,8 +16,8 @@ import {isChildVisible} from 'chrome://webui-test/test_util.js';
 /** @fileoverview Suite of tests for cr-view-manager. */
 /** @enum {string} */
 enum TestNames {
-  Visibility = 'visibility',
-  EventFiring = 'event firing',
+  VISIBILITY = 'visibility',
+  EVENT_FIRING = 'event firing',
 }
 
 let viewManager: CrViewManagerElement;
@@ -42,7 +42,7 @@ suite(suiteName, function() {
     viewManager = document.body.querySelector('#viewManager')!;
   });
 
-  test(assert(TestNames.Visibility), function() {
+  test(assert(TestNames.VISIBILITY), function() {
     function assertViewVisible(id: string, expectIsVisible: boolean) {
       assertEquals(
           expectIsVisible,
@@ -68,7 +68,7 @@ suite(suiteName, function() {
         });
   });
 
-  test(assert(TestNames.EventFiring), function() {
+  test(assert(TestNames.EVENT_FIRING), function() {
     const viewOne = viewManager.querySelector('#viewOne')!;
 
     let fired = new Set();

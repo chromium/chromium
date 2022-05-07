@@ -73,6 +73,20 @@ module.exports = {
       'semi': 'off',
       '@typescript-eslint/semi': ['error'],
 
+      '@typescript-eslint/naming-convention': [
+        'error',
+        {
+          // https://google.github.io/styleguide/jsguide.html#naming-enum-names
+          selector: 'enum',
+          format: ['PascalCase'],
+        },
+        {
+          // https://google.github.io/styleguide/jsguide.html#naming-enum-names
+          selector: 'enumMember',
+          format: ['UPPER_CASE'],
+        },
+      ],
+
       '@typescript-eslint/member-delimiter-style': ['error', {
         multiline: {
           delimiter: 'comma',

@@ -38,7 +38,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         ruleBasedDiscountEnabled: false,
-        modulesCartDiscountConsentVariation: DiscountConsentVariation.Default
+        modulesCartDiscountConsentVariation: DiscountConsentVariation.DEFAULT
       });
     });
 
@@ -1186,7 +1186,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
         modulesCartConsentStepTwoDifferentColor: false,
         modulesCartDiscountConsentRejectConfirmation: 'Reject confirmation!',
         modulesCartDiscountConsentAcceptConfirmation: 'Accept confirmation!',
-        modulesCartDiscountConsentVariation: DiscountConsentVariation.Inline,
+        modulesCartDiscountConsentVariation: DiscountConsentVariation.INLINE,
         modulesCartStepOneUseStaticContent: true,
         modulesCartConsentStepOneButton: 'Continue',
         modulesCartStepOneStaticContent: 'Step one consent',
@@ -1406,7 +1406,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       setup(async () => {
         loadTimeData.overrideValues({
           modulesCartDiscountConsentVariation:
-              DiscountConsentVariation.NativeDialog
+              DiscountConsentVariation.NATIVE_DIALOG
         });
 
         const carts = [
