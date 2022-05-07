@@ -156,8 +156,6 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_CALIBRATION_FAILED_PAGE_TITLE},
       {"calibrationFailedInstructionsText",
        IDS_SHIMLESS_RMA_CALIBRATION_FAILED_INSTRUCTIONS},
-      {"calibrationFailedRetryButtonLabel",
-       IDS_SHIMLESS_RMA_CALIBRATION_FAILED_RETRY_BUTTON_LABEL},
       {"calibrationFailedDialogTitle",
        IDS_SHIMLESS_RMA_CALIBRATION_FAILED_DIALOG_TITLE},
       {"calibrationFailedDialogText",
