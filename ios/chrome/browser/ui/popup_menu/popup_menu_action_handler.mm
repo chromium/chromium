@@ -132,7 +132,7 @@ using base::UserMetricsAction;
                                                      GURL(kChromeUINewTabURL))];
       break;
     case PopupMenuActionFollow:
-      // TODO(crbug.com/1264872): add action.
+      [self.delegate updateFollowStatus];
       break;
     case PopupMenuActionBookmarks:
       RecordAction(UserMetricsAction("MobileMenuAllBookmarks"));

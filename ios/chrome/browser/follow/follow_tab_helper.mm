@@ -148,11 +148,12 @@ void FollowTabHelper::UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls) {
                                     base::UTF8ToUTF16(domainName));
   }
 
-  bool enable = GetFollowActionState(web_state_) == FollowActionStateEnabled;
+  bool enabled = GetFollowActionState(web_state_) == FollowActionStateEnabled;
 
-  [follow_menu_updater_ updateFollowMenuItemWithFollowStatus:status
-                                                       title:title
-                                                     enabled:enable];
+  [follow_menu_updater_ updateFollowMenuItemWithFollowWebPageURLs:web_page_urls
+                                                           status:status
+                                                            title:title
+                                                          enabled:enabled];
   should_update_follow_item_ = false;
 }
 

@@ -321,6 +321,11 @@ enum class IOSOverflowMenuActionType {
             .triggerFollowUpAction;
     self.bubblePresenter.incognitoTabTipBubblePresenter.triggerFollowUpAction =
         NO;
+    if (IsWebChannelsEnabled()) {
+      ios::GetChromeBrowserProvider()
+          .GetFollowProvider()
+          ->SetFollowEventDelegate(self.browser);
+    }
   }
 
   OverlayPresenter* overlayPresenter = OverlayPresenter::FromBrowser(
