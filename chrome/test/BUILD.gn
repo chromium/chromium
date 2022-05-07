@@ -1386,6 +1386,7 @@ if (!is_android) {
       "//components/sync_device_info:test_support",
       "//components/tab_count_metrics",
       "//components/tab_groups",
+      "//components/tracing:background_tracing_utils",
       "//components/translate/content/browser:test_support",
       "//components/translate/content/renderer",
       "//components/translate/core/common",

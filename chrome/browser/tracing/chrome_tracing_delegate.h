@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_TRACING_CHROME_TRACING_DELEGATE_H_
 #define CHROME_BROWSER_TRACING_CHROME_TRACING_DELEGATE_H_
 
-#include <memory>
-
-#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
@@ -24,7 +21,6 @@
 class PrefRegistrySimple;
 
 namespace base {
-class Time;
 class Value;
 }
 
@@ -80,69 +76,6 @@ class ChromeTracingDelegate : public content::TracingDelegate,
                            BackgroundTracingFinalizationStarted);
   FRIEND_TEST_ALL_PREFIXES(ChromeTracingDelegateBrowserTest,
                            BackgroundTracingFinalizationBefore30Seconds);
-
-  // Do not remove or change the order of enum fields since it is stored in
-  // preferences.
-  enum class BackgroundTracingState : int {
-    // Default state when tracing is not started in previous session, or when
-    // state is not found or invalid.
-    NOT_ACTIVATED = 0,
-    STARTED = 1,
-    RAN_30_SECONDS = 2,
-    FINALIZATION_STARTED = 3,
-    LAST = FINALIZATION_STARTED,
-  };
-
-  using ScenarioUploadTimestampMap = base::flat_map<std::string, base::Time>;
-
-  // Manages local state prefs for background tracing, and tracks state from
-  // previous background tracing session(s). This is a singleton, but there
-  // could be many instances of ChromeTracingDelegate. All the calls are
-  // expected to run on UI thread.
-  class BackgroundTracingStateManager {
-   public:
-    static BackgroundTracingStateManager& GetInstance();
-
-    // Initializes state from previous session and writes current state to
-    // prefs, when called the first time. NOOP on any calls after that. It also
-    // deletes any expired entries from prefs.
-    void Initialize();
-
-    // True if last session potentially crashed and it is unsafe to turn on
-    // background tracing in current session.
-    bool DidLastSessionEndUnexpectedly() const;
-    // True if chrome uploaded a trace for the given |config| recently, and
-    // uploads should be throttled for the |config|.
-    bool DidRecentlyUploadForScenario(
-        const content::BackgroundTracingConfig& config) const;
-
-    // Updates the current tracing state and saves it to prefs.
-    void SetState(BackgroundTracingState new_state);
-    // Updates the state to include the upload time for |scenario_name|, and
-    // saves it to prefs.
-    void OnScenarioUploaded(const std::string& scenario_name);
-
-    // Saves the given state to prefs, public for testing.
-    static void SaveState(const ScenarioUploadTimestampMap& upload_times,
-                          BackgroundTracingState state);
-
-   private:
-    friend base::NoDestructor<BackgroundTracingStateManager>;
-
-    BackgroundTracingStateManager();
-    ~BackgroundTracingStateManager();
-
-    void SaveState();
-
-    BackgroundTracingState state_ = BackgroundTracingState::NOT_ACTIVATED;
-
-    bool initialized_ = false;
-
-    // Following are valid only when |initialized_| = true.
-    BackgroundTracingState last_session_end_state_ =
-        BackgroundTracingState::NOT_ACTIVATED;
-    base::flat_map<std::string, base::Time> scenario_last_upload_timestamp_;
-  };
 
 #if BUILDFLAG(IS_ANDROID)
   // TabModelListObserver implementation.

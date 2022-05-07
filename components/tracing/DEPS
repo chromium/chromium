@@ -1,6 +1,7 @@
 include_rules = [
   "+ipc",
   "+components/metrics",
+  "+components/prefs",
   "+third_party/metrics_proto",
   "+content/public/browser/background_tracing_manager.h",
   "+content/public/browser/background_tracing_config.h",
@@ -9,6 +10,9 @@ include_rules = [
 
 specific_include_rules = {
   '.*browsertest\.cc': [
+    "+content/public/test",
+  ],
+  '.*unittest.cc': [
     "+content/public/test",
   ],
 }
