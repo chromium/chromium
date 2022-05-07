@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -1040,9 +1041,8 @@ class MediaEngagementContentsObserverFencedFrameBrowserTest
   std::unique_ptr<content::test::FencedFrameTestHelper> fenced_frame_helper_;
 };
 
-// TODO(crbug.com/1320380): Re-enable this test
 IN_PROC_BROWSER_TEST_F(MediaEngagementContentsObserverFencedFrameBrowserTest,
-                       DISABLED_SendEngagementLevelToRenderFrameOnFencedFrame) {
+                       SendEngagementLevelToRenderFrameOnFencedFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   MockAutoplayConfigurationClient client;
@@ -1071,10 +1071,13 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementContentsObserverFencedFrameBrowserTest,
   OverrideInterface(fenced_frame_host, &fenced_frame_client);
   GURL fenced_frame_navigate_url =
       embedded_test_server()->GetURL("b.com", "/fenced_frames/title2.html");
+  base::RunLoop run_loop;
   EXPECT_CALL(fenced_frame_client,
               AddAutoplayFlags(url::Origin::Create(fenced_frame_navigate_url),
                                testing::_))
-      .Times(1);
+      .Times(1)
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
       fenced_frame_host, fenced_frame_navigate_url);
+  run_loop.Run();
 }
