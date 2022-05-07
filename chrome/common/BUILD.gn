@@ -293,8 +293,6 @@ static_library("common_lib") {
       "extensions/chrome_manifest_handlers.h",
       "extensions/chrome_manifest_url_handlers.cc",
       "extensions/chrome_manifest_url_handlers.h",
-      "extensions/command.cc",
-      "extensions/command.h",
       "extensions/extension_constants.cc",
       "extensions/extension_constants.h",
       "extensions/extension_metrics.cc",

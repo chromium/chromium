@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_EXTENSIONS_COMMAND_H_
-#define CHROME_COMMON_EXTENSIONS_COMMAND_H_
+#ifndef EXTENSIONS_COMMON_COMMAND_H_
+#define EXTENSIONS_COMMON_COMMAND_H_
 
 #include <map>
 #include <string>
@@ -59,9 +59,7 @@ class Command {
   void set_accelerator(const ui::Accelerator& accelerator) {
     accelerator_ = accelerator;
   }
-  void set_global(bool global) {
-    global_ = global;
-  }
+  void set_global(bool global) { global_ = global; }
 
  private:
   std::string command_name_;
@@ -75,4 +73,4 @@ typedef std::map<std::string, Command> CommandMap;
 
 }  // namespace extensions
 
-#endif  // CHROME_COMMON_EXTENSIONS_COMMAND_H_
+#endif  // EXTENSIONS_COMMON_COMMAND_H_

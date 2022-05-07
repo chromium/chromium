@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/extensions/command.h"
+#include "extensions/common/command.h"
 
 #include <stddef.h>
 
@@ -132,19 +132,13 @@ ui::Accelerator ParseImpl(const std::string& accelerator,
       modifiers |= ui::EF_SHIFT_DOWN;
     } else if (tokens[i].size() == 1 ||  // A-Z, 0-9.
                tokens[i] == values::kKeyComma ||
-               tokens[i] == values::kKeyPeriod ||
-               tokens[i] == values::kKeyUp ||
-               tokens[i] == values::kKeyDown ||
-               tokens[i] == values::kKeyLeft ||
-               tokens[i] == values::kKeyRight ||
-               tokens[i] == values::kKeyIns ||
-               tokens[i] == values::kKeyDel ||
-               tokens[i] == values::kKeyHome ||
-               tokens[i] == values::kKeyEnd ||
-               tokens[i] == values::kKeyPgUp ||
+               tokens[i] == values::kKeyPeriod || tokens[i] == values::kKeyUp ||
+               tokens[i] == values::kKeyDown || tokens[i] == values::kKeyLeft ||
+               tokens[i] == values::kKeyRight || tokens[i] == values::kKeyIns ||
+               tokens[i] == values::kKeyDel || tokens[i] == values::kKeyHome ||
+               tokens[i] == values::kKeyEnd || tokens[i] == values::kKeyPgUp ||
                tokens[i] == values::kKeyPgDwn ||
-               tokens[i] == values::kKeySpace ||
-               tokens[i] == values::kKeyTab ||
+               tokens[i] == values::kKeySpace || tokens[i] == values::kKeyTab ||
                tokens[i] == values::kKeyMediaNextTrack ||
                tokens[i] == values::kKeyMediaPlayPause ||
                tokens[i] == values::kKeyMediaPrevTrack ||
@@ -309,9 +303,8 @@ std::string Command::CommandPlatform() {
 ui::Accelerator Command::StringToAccelerator(const std::string& accelerator,
                                              const std::string& command_name) {
   std::u16string error;
-  ui::Accelerator parsed =
-      ParseImpl(accelerator, Command::CommandPlatform(), 0,
-                IsNamedCommand(command_name), &error);
+  ui::Accelerator parsed = ParseImpl(accelerator, Command::CommandPlatform(), 0,
+                                     IsNamedCommand(command_name), &error);
   return parsed;
 }
 
@@ -346,7 +339,7 @@ std::string Command::AcceleratorToString(const ui::Accelerator& accelerator) {
       accelerator.key_code() <= ui::VKEY_9) {
     shortcut += '0' + (accelerator.key_code() - ui::VKEY_0);
   } else if (accelerator.key_code() >= ui::VKEY_A &&
-           accelerator.key_code() <= ui::VKEY_Z) {
+             accelerator.key_code() <= ui::VKEY_Z) {
     shortcut += 'A' + (accelerator.key_code() - ui::VKEY_A);
   } else {
     switch (accelerator.key_code()) {
@@ -489,8 +482,8 @@ bool Command::Parse(const base::DictionaryValue* command,
       return false;
     }
 
-    suggestions[iter->first] = NormalizeShortcutSuggestion(iter->second,
-                                                           iter->first);
+    suggestions[iter->first] =
+        NormalizeShortcutSuggestion(iter->second, iter->first);
   }
 
   std::string platform = CommandPlatform();
@@ -508,7 +501,7 @@ bool Command::Parse(const base::DictionaryValue* command,
   // errors for platforms other than the current one) but use only what we need.
   std::map<const std::string, std::string>::const_iterator iter =
       suggestions.begin();
-  for ( ; iter != suggestions.end(); ++iter) {
+  for (; iter != suggestions.end(); ++iter) {
     ui::Accelerator accelerator;
     if (!iter->second.empty()) {
       // Note that we pass iter->first to pretend we are on a platform we're not

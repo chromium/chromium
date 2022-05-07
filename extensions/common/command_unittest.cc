@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/extensions/command.h"
+#include "extensions/common/command.h"
 
 #include <stddef.h>
 
@@ -95,8 +95,8 @@ void CheckParse(const ConstCommandsTestData& data,
 
 TEST(CommandTest, ExtensionCommandParsing) {
   const ui::Accelerator none = ui::Accelerator();
-  const ui::Accelerator shift_f = ui::Accelerator(ui::VKEY_F,
-                                                  ui::EF_SHIFT_DOWN);
+  const ui::Accelerator shift_f =
+      ui::Accelerator(ui::VKEY_F, ui::EF_SHIFT_DOWN);
 #if BUILDFLAG(IS_MAC)
   int ctrl = ui::EF_COMMAND_DOWN;
 #else
@@ -245,7 +245,9 @@ TEST(CommandTest, ExtensionCommandParsingFallback) {
   ui::Accelerator accelerator(ui::VKEY_D,
                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
 #endif
-  EXPECT_EQ(accelerator, command.accelerator());
+  EXPECT_EQ(accelerator, command.accelerator())
+      << Command::AcceleratorToString(command.accelerator()) << " vs "
+      << Command::AcceleratorToString(accelerator);
 
   // Misspell a platform.
   key_dict->SetStringKey("windosw", "Ctrl+M");

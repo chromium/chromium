@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "chrome/common/extensions/command.h"
+#include "extensions/common/command.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handler.h"
