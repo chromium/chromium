@@ -3,7 +3,9 @@
 -ExternalStencilPixelTest.StencilTestDisabled/GL
 -ExternalStencilPixelTest.StencilTestEnabled/GL
 -RendererPixelTestWithOverdrawFeedback.TranslucentRectangles/GL
+-VideoRendererPixelHiLoTest.ClippedYUVRect/1
 -VideoRendererPixelHiLoTest.ClippedYUVRect/GL_true
 -VideoRendererPixelHiLoTest.ClippedYUVRect/SkiaGL_true
+-VideoRendererPixelHiLoTest.SimpleYUVRect/1
 -VideoRendererPixelHiLoTest.SimpleYUVRect/GL_true
 -VideoRendererPixelHiLoTest.SimpleYUVRect/SkiaGL_true

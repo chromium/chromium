@@ -7473,12 +7473,8 @@
         'variants': [
           'CROS_HANA_RELEASE_LKGM',
           'CROS_HANA_RELEASE_DEV',
-          'CROS_HANA_RELEASE_BETA',
-          'CROS_HANA_RELEASE_STABLE',
           'CROS_JACUZZI_RELEASE_LKGM',
           'CROS_JACUZZI_RELEASE_DEV',
-          'CROS_JACUZZI_RELEASE_BETA',
-          'CROS_JACUZZI_RELEASE_STABLE',
         ]
       },
     },
@@ -7501,12 +7497,8 @@
         'variants': [
           'CROS_ATLAS_RELEASE_LKGM',
           'CROS_ATLAS_RELEASE_DEV',
-          'CROS_ATLAS_RELEASE_BETA',
-          'CROS_ATLAS_RELEASE_STABLE',
           'CROS_EVE_RELEASE_LKGM',
           'CROS_EVE_RELEASE_DEV',
-          'CROS_EVE_RELEASE_BETA',
-          'CROS_EVE_RELEASE_STABLE',
         ]
       },
     },
