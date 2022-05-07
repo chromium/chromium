@@ -494,6 +494,25 @@ const FeatureEntry::FeatureVariation
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const FeatureEntry::FeatureParam
+    kAutofillSaveCardUiExperimentEnableFasterAndProtected[] = {
+        {"autofill_save_card_ui_experiment_selector_in_number", "1"},
+};
+
+const FeatureEntry::FeatureParam
+    kAutofillSaveCardUiExperimentEnableEncryptedAndSecure[] = {
+        {"autofill_save_card_ui_experiment_selector_in_number", "2"},
+};
+
+const FeatureEntry::FeatureVariation kAutofillSaveCardUiExperimentOptions[] = {
+    {flag_descriptions::kAutofillSaveCardUiExperimentFasterAndProtected,
+     kAutofillSaveCardUiExperimentEnableFasterAndProtected,
+     std::size(kAutofillSaveCardUiExperimentEnableFasterAndProtected), nullptr},
+    {flag_descriptions::kAutofillSaveCardUiExperimentEncryptedAndSecure,
+     kAutofillSaveCardUiExperimentEnableEncryptedAndSecure,
+     std::size(kAutofillSaveCardUiExperimentEnableEncryptedAndSecure), nullptr},
+};
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::FeatureParam kForceDark_SimpleHsl[] = {
     {"inversion_method", "hsl_based"},
@@ -8519,7 +8538,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"autofill-enable-upstream-save-card-offer-ui-experiment",
      flag_descriptions::kAutofillSaveCardUiExperimentName,
      flag_descriptions::kAutofillSaveCardUiExperimentDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillSaveCardUiExperiment)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         autofill::features::kAutofillSaveCardUiExperiment,
+         kAutofillSaveCardUiExperimentOptions,
+         "AutofillSaveCardUiExperiment")},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

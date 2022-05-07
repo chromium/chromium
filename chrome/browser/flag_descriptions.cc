@@ -444,6 +444,10 @@ const char kAutofillSaveCardUiExperimentName[] =
 const char kAutofillSaveCardUiExperimentDescription[] =
     "When enabled, it will trigger slightly different UI variants along with "
     "notification texts, when the upload credit card save bubble is shown.";
+const char kAutofillSaveCardUiExperimentFasterAndProtected[] =
+    "Faster and Protected";
+const char kAutofillSaveCardUiExperimentEncryptedAndSecure[] =
+    "Encrypted and Secure";
 
 const char kAutofillSuggestVirtualCardsOnIncompleteFormName[] =
     "Autofill suggests virtual cards on incomplete forms";
