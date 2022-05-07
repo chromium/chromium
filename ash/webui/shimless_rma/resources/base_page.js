@@ -22,16 +22,6 @@ export class BasePageElement extends PolymerElement {
   /** @override */
   constructor() {
     super();
-
-    /**
-     * This property is used by the CSS to set the height of the right pane.
-     * The height of the right pane needs to be set to a fixed number to make
-     * scrollable regions display properly. This has to be done in javascript
-     * because there is no way to get screen height in CSS.
-     * @type {number}
-     * */
-    const windowHeight = window.innerHeight;
-    this.style.setProperty('--window-height', windowHeight.toString() + 'px');
   }
 
   /** @override */

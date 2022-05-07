@@ -3,9 +3,7 @@
     :host {
       --cr-dialog-width: 320px;
       --cr-dialog-button-container-padding-horizontal: 24px;
-      --footer-height: 80px;
-      --header-height: 80px;
-      --page-left-margin: 40px;
+      --content-container-padding: 40px;
       --radio-button-top-padding: 20px;
       --title-bottom-margin: 16px;
     }
@@ -178,7 +176,7 @@
     }
 
     .scroll-container {
-      height: 100%;
+      height: var(--content-container-height);
       overflow: auto;
     }
 

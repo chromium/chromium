@@ -44,6 +44,12 @@ export const ButtonState = {
   HIDDEN: 'hidden'
 };
 
+/** @type {number} */
+const HEADER_FOOTER_HEIGHT_PX = 80;
+
+/** @type {number} */
+const OOBE_LARGE_SCREEN_WIDTH_PX = 80;
+
 /**
  * @typedef {{
  *  componentIs: string,
@@ -444,6 +450,26 @@ export class ShimlessRma extends ShimlessRmaBase {
   /** @override */
   ready() {
     super.ready();
+
+    this.style.setProperty(
+        '--header-footer-height', `${HEADER_FOOTER_HEIGHT_PX}px`);
+
+    const screenWidth = window.innerWidth;
+    const containerHorizontalPadding =
+        screenWidth > OOBE_LARGE_SCREEN_WIDTH_PX ? ((screenWidth - 1040) / 2) :
+                                                   (screenWidth * .08);
+    this.style.setProperty(
+        '--container-horizontal-padding', `${containerHorizontalPadding}px`);
+
+    const screenHeight = window.innerHeight;
+    const containerVerticalPadding = screenHeight * .06;
+    this.style.setProperty(
+        '--container-vertical-padding', `${containerVerticalPadding}px`);
+
+    const contentContainerHeight = screenHeight -
+        (containerVerticalPadding * 2) - (HEADER_FOOTER_HEIGHT_PX * 2);
+    this.style.setProperty(
+        '--content-container-height', `${contentContainerHeight}px`);
 
     const splashComponent = this.loadComponent_(this.currentPage_.componentIs);
     splashComponent.hidden = false;

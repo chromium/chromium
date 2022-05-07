@@ -5,13 +5,20 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding-inline-end: 40px;
-    padding-inline-start: var(--page-left-margin);
+    padding-bottom: var(--container-vertical-padding);
+    padding-inline: var(--container-horizontal-padding);
+    padding-top: var(--container-vertical-padding);
     width: 100%;
   }
 
+  #header,
+  #contentContainer,
+  #footer {
+    padding-inline: var(--content-container-padding);
+  }
+
   #contentContainer {
-    flex-grow: 1;
+    min-height: var(--content-container-height);
   }
 
   .shimless-content {
@@ -19,13 +26,13 @@
     width: 100%;
   }
 
-  .shimless-footer {
-    height: var(--footer-height);
+  #footer {
+    min-height: var(--header-footer-height);
     text-align: end;
   }
 
-  .shimless-header {
-    height: var(--header-height);
+  #header {
+    min-height: var(--header-footer-height);
   }
 
   #back {
@@ -82,7 +89,7 @@
 
 <div id="shimlessRMAContainer">
   <div id="busyStateOverlay"></div>
-  <div class="shimless-header">
+  <div id="header">
     <cr-button
       id="back" on-click="onBackButtonClicked_"
       disabled="[[isButtonDisabled_(currentPage_.buttonBack, allButtonsDisabled_)]]"
@@ -99,7 +106,7 @@
     </cr-button>
   </div>
   <div id="contentContainer"></div>
-  <div class="shimless-footer">
+  <div id="footer">
     <cr-button
       id="cancel" class="pill" on-click="onCancelButtonClicked_"
       disabled="[[isButtonDisabled_(currentPage_.buttonCancel, allButtonsDisabled_)]]"
