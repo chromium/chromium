@@ -37,16 +37,14 @@ for (const scene of kScenes) {
   for (const transform of kTransforms) {
     let iframe, idoc;
     promise_test((test) => {
-      return Promise.resolve(true).then(() => {
+      return new Promise((resolve, reject) => {
         iframe = document.createElement("iframe");
         document.body.appendChild(iframe);
         idoc = iframe.contentDocument;
         idoc.body.innerHTML = kCommonStyle + scene.markup;
         idoc.getElementById("transform").style.transform = transform.value;
-        return new Promise((resolve, reject) => {
-          // wait for it to paint
-          runAfterLayoutAndPaint(() => { resolve(true); });
-        });
+        // wait for it to paint
+        runAfterLayoutAndPaint(() => { resolve(true); });
       }).then(() => {
         assert_equals(internals.isUseCounted(idoc, kTransform3dScene),
                       scene.is_3d && transform.is_3d);
@@ -62,7 +60,7 @@ promise_test((test) => {
   let k3DScene = kScenes.find(scene => scene.is_3d);
   let k3DTransform = kTransforms.find(transform => transform.is_3d);
   let iframe, idoc, div;
-  return Promise.resolve(true).then(() => {
+  return new Promise((resolve, reject) => {
     div = document.createElement("div");
     div.style.height = "10000px";
     document.body.appendChild(div);
@@ -71,10 +69,8 @@ promise_test((test) => {
     idoc = iframe.contentDocument;
     idoc.body.innerHTML = kCommonStyle + k3DScene.markup;
     idoc.getElementById("transform").style.transform = k3DTransform.value;
-    return new Promise((resolve, reject) => {
-      // wait for it to paint
-      runAfterLayoutAndPaint(() => { resolve(true); });
-    });
+    // wait for it to paint
+    runAfterLayoutAndPaint(() => { resolve(true); });
   }).then(() => {
     assert_true(internals.isUseCounted(idoc, kTransform3dScene));
     document.body.removeChild(iframe);
@@ -87,21 +83,19 @@ promise_test((test) => {
 // offscreen.
 promise_test((test) => {
   let iframe, div;
-  return Promise.resolve(true).then(() => {
+  return new Promise((resolve, reject) => {
     div = document.createElement("div");
     div.style.height = "10000px";
     document.body.appendChild(div);
     iframe = document.createElement("iframe");
     iframe.src = "http://localhost:8080/misc/resources/transform-usecounter-3d-iframe.html";
     document.body.appendChild(iframe);
-    return new Promise((resolve, reject) => {
-      iframe.addEventListener("load", function(event) {
-        // wait for it to paint
-        runAfterLayoutAndPaint(() => {
-          iframe.contentWindow.postMessage(kTransform3dScene, "*");
-          window.addEventListener("message", function(event) {
-            resolve(event.data);
-          });
+    iframe.addEventListener("load", function(event) {
+      // wait for it to paint
+      runAfterLayoutAndPaint(() => {
+        iframe.contentWindow.postMessage(kTransform3dScene, "*");
+        window.addEventListener("message", function(event) {
+          resolve(event.data);
         });
       });
     });
