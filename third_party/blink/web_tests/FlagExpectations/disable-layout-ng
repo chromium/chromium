@@ -13,6 +13,9 @@
 # Tests that fail in legacy but pass in NG
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/CSS2/floats/floats-wrap-bfc-with-margin-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/floats/floats-wrap-bfc-with-margin-001a.tentative.html [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/floats/floats-wrap-bfc-with-margin-002.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Timeout ]

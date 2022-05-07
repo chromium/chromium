@@ -38451,6 +38451,58 @@
         {}
        ]
       ],
+      "floats-wrap-bfc-with-margin-001.html": [
+       "cc344f0fd580191af444b9d9ef2b469abd1a8fda",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/floats/floats-wrap-bfc-with-margin-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "floats-wrap-bfc-with-margin-001a.tentative.html": [
+       "9aa6b69ab7545a3a172d3d19d2ac4d6f0e52737b",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/floats/floats-wrap-bfc-with-margin-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "floats-wrap-bfc-with-margin-002.tentative.html": [
+       "9c10f2cccf6a97d652d8b2db89a77cd5a9db3bb6",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/floats/floats-wrap-bfc-with-margin-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "floats-wrap-bfc-with-margin-003.tentative.html": [
+       "f69a11002dd957cc03295844b7f7ae5f4e7263af",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/floats/floats-wrap-bfc-with-margin-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "floats-wrap-top-below-bfc-001l.xht": [
        "17bec33eb143ce14f13c439e83f433c3fef74fdd",
        [
@@ -253102,6 +253154,18 @@
        "20ae62757d41bc51c29192e8be71ad7be0fc5b78",
        []
       ],
+      "floats-wrap-bfc-with-margin-001-ref.html": [
+       "8e079b1f178400224da985693b403f67f25c455d",
+       []
+      ],
+      "floats-wrap-bfc-with-margin-002-ref.html": [
+       "03b7d86acbc2df227dab3c65bf6dd674ab62d6f0",
+       []
+      ],
+      "floats-wrap-bfc-with-margin-003-ref.html": [
+       "ac45eb30bf43748284a1c7a19061f8df56fa5dca",
+       []
+      ],
       "floats-wrap-top-below-001l-notref.xht": [
        "0953df73d203c1bb3e8d1dba0a3b7a2cde465e18",
        []
@@ -324643,7 +324707,7 @@
        []
       ],
       "partitioned-service-worker-nested-iframe-child.html": [
-       "0362b584cc7bdb5008c1025acfc9b51a8ab277f0",
+       "d05fef48bf0e56d9ecb96339818a348bfe497e3e",
        []
       ],
       "partitioned-service-worker-nested-iframe-parent.html": [
@@ -465116,6 +465180,13 @@
          {}
         ]
        ],
+       "scrolling-below-viewport-image-lazy-loading-in-iframe.html": [
+        "3c26323426391a60cfe9dd0feee2bab496ce69e3",
+        [
+         null,
+         {}
+        ]
+       ],
        "sizes": {
         "implicit-sizes-ignores-width.html": [
          "db61db351eacb5f38ce6767a55a61e588f5580e5",
@@ -515888,7 +515959,7 @@
       ]
      ],
      "partitioned.tentative.https.html": [
-      "4004aed06dbc5081942ccdffa68a45693066fe99",
+      "17a375f9c7320291e64178695cfce8c21fae1773",
       [
        null,
        {}
