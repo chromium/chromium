@@ -623,7 +623,7 @@ class SingleTestRunner(object):
             use_luci = not gold_properties.local_pixel_tests
             img_path = self._filesystem.join(
                 str(self._port.skia_gold_temp_dir()),
-                '%s.png' % self._test_name.replace(self._filesystem.sep, '_'))
+                '%s.png' % self._test_name.replace('/', '_'))
             self._filesystem.write_binary_file(img_path, driver_output.image)
             status, error = gold_session.RunComparison(name=self._test_name,
                                                        png_file=img_path,
