@@ -84,6 +84,7 @@ js_library("gaia_password_changed.m") {
 js_library("lacros_data_migration.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/lacros_data_migration.m.js" ]
   deps = [
+    "../../components:oobe_slide.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/dialogs:oobe_loading_dialog.m",

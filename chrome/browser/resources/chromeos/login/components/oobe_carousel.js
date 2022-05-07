@@ -2,93 +2,99 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-Polymer({
-  is: 'oobe-carousel',
+/* #js_imports_placeholder */
 
-  properties: {
+class OobeCarousel extends Polymer.Element {
+  static get is() {
+    return 'oobe-carousel';
+  }
+
+  /* #html_template_placeholder */
+
+  static get properties() {
+    return {
+      /**
+       * Current slide index.
+       */
+      slideIndex: {
+        type: Number,
+        value: 0,
+        observer: 'onSlideIndexChanged_',
+      },
+
+      /**
+       * Controls if slides will be rotated automatically.
+       * Note: This feature is not a11y friendly and will cause bugs when
+       * ChromeVox is turned on. There is a need to observe ChromeVox and stop
+       * auto transition when ChromeVox is turned on.
+       */
+      autoTransition: {
+        type: Boolean,
+        value: false,
+        observer: 'restartAutoTransition_',
+      },
+
+      /**
+       * Number of seconds each slide should remain for.
+       */
+      slideDurationInSeconds: {
+        type: Number,
+        value: 10,
+        observer: 'restartAutoTransition_',
+      },
+
+      /**
+       * Slide aria-label.
+       */
+      slideLabel: String,
+
+      /**
+       * Selected button aria-label.
+       */
+      selectedButtonLabel: String,
+
+      /**
+       * Unselected button aria-label.
+       */
+      unselectedButtonLabel: String,
+    };
+  }
+
+  constructor() {
+    super();
+
     /**
-     * Current slide index.
+     * Array for storing number leading up to totalSlides
+     * Example: [ 0 1 2 3 ... ]
+     * @type {Array<number>}
      */
-    slideIndex: {
-      type: Number,
-      value: 0,
-      observer: 'onSlideIndexChanged_',
-    },
+    this.dots = [];
 
     /**
-     * Controls if slides will be rotated automatically.
-     * Note: This feature is not a11y friendly and will cause bugs when
-     * ChromeVox is turned on. There is a need to observe ChromeVox and stop
-     * auto transition when ChromeVox is turned on.
+     * Array of slotted slides.
+     * @type {Array<HTMLElement>}
      */
-    autoTransition: {
-      type: Boolean,
-      value: false,
-      observer: 'restartAutoTransition_',
-    },
+    this.slides = [];
 
     /**
-     * Number of seconds each slide should remain for.
+     * Total number of slides.
+     * @type {number}
      */
-    slideDurationInSeconds: {
-      type: Number,
-      value: 10,
-      observer: 'restartAutoTransition_',
-    },
+    this.totalSlides = 0;
 
     /**
-     * Slide aria-label.
+     * ID of the timer which rotates slides.
+     * @type {number|null}
      */
-    slideLabel: String,
+    this.timerID = null;
+  }
 
-    /**
-     * Selected button aria-label.
-     */
-    selectedButtonLabel: String,
-
-    /**
-     * Unselected button aria-label.
-     */
-    unselectedButtonLabel: String,
-  },
-
-  /**
-   * Array for storing number leading up to totalSlides
-   * @type {Array<number>}
-   */
-  dots: [],
-
-  /**
-   * Array of slotted slides.
-   * @type {Array<HTMLElement>}
-   */
-  slides: [],
-
-  /**
-   * Total number of slides.
-   * @type {number}
-   */
-  totalSlides: 0,
-
-  /**
-   * ID of the timer which rotates slides.
-   * @type {number|null}
-   */
-  timerID: null,
-
-  /** @type {function(Event)} */
-  removeAnimateToHandler: Function,
-
-  /** @type {function(Event)} */
-  removeAnimateFromHandler: Function,
-
-  attached() {
-    this.removeAnimateToHandler = this.removeAnimateTo_.bind(this);
-    this.removeAnimateFromHandler = this.removeAnimateFrom_.bind(this);
+  ready() {
+    super.ready();
     this.prepareCarousel_();
     this.restartAutoTransition_();
     this.hideNonActiveSlides_();
-  },
+  }
 
   /**
    * @private
@@ -97,14 +103,12 @@ Polymer({
   prepareCarousel_() {
     this.slides = this.$.slot.assignedElements();
     this.totalSlides = this.slides.length;
-    const array = [];
+    this.dots = [...Array(this.totalSlides).keys()];
     for (let i = 0; i < this.totalSlides; ++i) {
       this.slides[i].setAttribute('aria-label', this.getSlideLabel_(i));
       this.slides[i].setAttribute('role', 'group');
-      array.push(i);
     }
-    this.dots = array;
-  },
+  }
 
   /**
    * @private
@@ -114,7 +118,7 @@ Polymer({
   getSlideLabel_(index) {
     return loadTimeData.getStringF(
         this.slideLabel, index + 1, this.totalSlides);
-  },
+  }
 
   /**
    * @private
@@ -122,10 +126,10 @@ Polymer({
   hideNonActiveSlides_() {
     for (let idx = 0; idx < this.totalSlides; ++idx) {
       if (idx != this.slideIndex) {
-        this.hideSlide(this.slides[idx]);
+        OobeCarousel.hideSlide(this.slides[idx]);
       }
     }
-  },
+  }
 
   /**
    * @private
@@ -134,7 +138,7 @@ Polymer({
   restartAutoTransition_() {
     this.stopAutoTransition_();
     this.startAutoTransition_();
-  },
+  }
 
   /**
    * @private
@@ -145,7 +149,7 @@ Polymer({
       this.timerID = setInterval(
           this.moveNext.bind(this), (this.slideDurationInSeconds * 1000));
     }
-  },
+  }
 
   /**
    * @private
@@ -156,7 +160,7 @@ Polymer({
       clearInterval(this.timerID);
       this.timerID = null;
     }
-  },
+  }
 
   /**
    * @private
@@ -180,7 +184,7 @@ Polymer({
     if (toIndex > fromIndex) {
       this.animateInternal_(toIndex, fromIndex, true);
     }
-  },
+  }
 
   /**
    * @private
@@ -197,57 +201,58 @@ Polymer({
       this.animateInternalWithStyles_(
           toIndex, fromIndex, 'backward', 'forward');
     }
-  },
+  }
 
   /**
    * @private
    * @param {EventTarget|null} slide
    */
-  hideSlide(slide) {
+  static hideSlide(slide) {
     slide.setAttribute('aria-hidden', 'true');
     slide.hidden = true;
-  },
+  }
 
   /**
    * @private
    * @param {EventTarget|null} slide
    */
-  showSlide(slide) {
+  static showSlide(slide) {
     slide.removeAttribute('aria-hidden');
     slide.hidden = false;
-  },
+  }
 
   /**
    * @private
    * @param {EventTarget|null} slide
    */
-  cleanStyles(slide) {
+  static cleanStyles(slide) {
     slide.classList.remove('animated', 'forward', 'backward', 'hide-slide');
-  },
+  }
 
   /**
    * @private
    * @param {Event} event transitionend event.
    */
-  removeAnimateTo_(event) {
+  static removeAnimateTo_(event) {
     const toElement = event.target;
 
-    this.cleanStyles(toElement);
-    toElement.removeEventListener('transitionend', this.removeAnimateToHandler);
-  },
+    OobeCarousel.cleanStyles(toElement);
+    toElement.removeEventListener(
+        'transitionend', OobeCarousel.removeAnimateTo_);
+  }
 
   /**
    * @private
    * @param {Event} event transitionend event.
    */
-  removeAnimateFrom_(event) {
+  static removeAnimateFrom_(event) {
     const fromElement = event.target;
 
-    this.hideSlide(fromElement);
-    this.cleanStyles(fromElement);
+    OobeCarousel.hideSlide(fromElement);
+    OobeCarousel.cleanStyles(fromElement);
     fromElement.removeEventListener(
-        'transitionend', this.removeAnimateFromHandler);
-  },
+        'transitionend', OobeCarousel.removeAnimateFrom_);
+  }
 
   /**
    * @private
@@ -258,15 +263,16 @@ Polymer({
   cleanUpState_(fromIndex) {
     for (let idx = 0; idx < this.totalSlides; ++idx) {
       const slide = this.slides[idx];
-      slide.removeEventListener('transitionend', this.removeAnimateFromHandler);
-      slide.removeEventListener('transitionend', this.removeAnimateToHandler);
+      slide.removeEventListener(
+          'transitionend', OobeCarousel.removeAnimateFrom_);
+      slide.removeEventListener('transitionend', OobeCarousel.removeAnimateTo_);
       if (idx != fromIndex) {
-        this.hideSlide(slide);
+        OobeCarousel.hideSlide(slide);
       }
-      this.cleanStyles(slide);
+      OobeCarousel.cleanStyles(slide);
     }
-    this.showSlide(this.slides[fromIndex]);
-  },
+    OobeCarousel.showSlide(this.slides[fromIndex]);
+  }
 
   /**
    * @private
@@ -298,10 +304,10 @@ Polymer({
     fromElement.classList.add(fromStyle);
     fromElement.classList.add('hide-slide');
 
-    toElement.addEventListener('transitionend', this.removeAnimateToHandler);
+    toElement.addEventListener('transitionend', OobeCarousel.removeAnimateTo_);
     fromElement.addEventListener(
-        'transitionend', this.removeAnimateFromHandler);
-  },
+        'transitionend', OobeCarousel.removeAnimateFrom_);
+  }
 
   /**
    * @private
@@ -313,7 +319,7 @@ Polymer({
     if (e.keyCode == 32 || e.keyCode == 13) {
       this.slideIndex = e.model.item;
     }
-  },
+  }
 
   /**
    * @private
@@ -322,7 +328,11 @@ Polymer({
    */
   onClick_(e) {
     this.slideIndex = e.model.item;
-  },
+    // Set a timer to remove the focus ring.
+    setTimeout(
+        element => element.blur(), this.slideDurationInSeconds * 1000,
+        e.currentTarget);
+  }
 
   /**
    * @private
@@ -331,7 +341,7 @@ Polymer({
    */
   isActive_(index) {
     return index == this.slideIndex;
-  },
+  }
 
   /**
    * @private
@@ -345,7 +355,7 @@ Polymer({
     }
     return loadTimeData.getStringF(
         this.unselectedButtonLabel, index + 1, this.totalSlides);
-  },
+  }
 
   /**
    * @private
@@ -357,14 +367,16 @@ Polymer({
   onSlideIndexChanged_(toIndex, fromIndex) {
     this.restartAutoTransition_();
     this.animateSlides_(toIndex, fromIndex);
-  },
+  }
 
   moveNext() {
     this.slideIndex = (this.slideIndex + 1) % this.totalSlides;
-  },
+  }
 
   movePrev() {
     this.slideIndex =
         (this.slideIndex + this.totalSlides - 1) % this.totalSlides;
-  },
-});
+  }
+}
+
+customElements.define(OobeCarousel.is, OobeCarousel);
