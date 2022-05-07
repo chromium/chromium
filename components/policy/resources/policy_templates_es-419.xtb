@@ -4583,7 +4583,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Si no la estableces, se inhabilitarán estas sugerencias para los usuarios administrados y se habilitarán para los demás usuarios.
       </translation>
 <translation id="6233173491898450179">Establecer el directorio de descarga</translation>
-<translation id="6234177445959386333">Configura la lista de las URL de acceso empresariales donde el servicio de protección de contraseñas debe capturar los hash con sal de las contraseñas.</translation>
+<translation id="6234177445959386333">Configura la lista de las URLs de acceso empresariales donde el servicio de protección de contraseñas debe capturar los hash con sal de las contraseñas.</translation>
 <translation id="6242147107333796512">Proporciona datos relacionados con informes de fallas, como id remota,
       marca de tiempo de captura y causa.
 

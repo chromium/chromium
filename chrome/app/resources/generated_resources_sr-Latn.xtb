@@ -2778,7 +2778,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Bezbednosne provere su gotove. Podaci će se otpremiti.}=1{Bezbednosne provere su gotove. Datoteka će se otpremiti.}one{Bezbednosne provere su gotove. Datoteke će se otpremiti.}few{Bezbednosne provere su gotove. Datoteke će se otpremiti.}other{Bezbednosne provere su gotove. Datoteke će se otpremiti.}}</translation>
 <translation id="3698471669415859717">Pregled je završen</translation>
 <translation id="3699624789011381381">Imejl adresa</translation>
-<translation id="3699920817649120894">Želite li da isključite sinhronizaciju i personalizaciju?</translation>
+<translation id="3699920817649120894">Želite da isključite sinhronizaciju i personalizaciju?</translation>
 <translation id="3700888195348409686">Prikazuje se (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Ne dozvoljavaj sajtovima da prate položaj kamere</translation>
 <translation id="3702500414347826004">Polazne stranice su promenjene, pa sada obuhvataju <ph name="URL" />.</translation>
@@ -3367,7 +3367,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4280325816108262082">Veza sa uređajem će se automatski isključiti kada se uređaj isključi ili se ne koristi</translation>
 <translation id="4281844954008187215">Uslovi korišćenja usluge</translation>
 <translation id="4282196459431406533">Smart Lock je uključen</translation>
-<translation id="4284755288573763878">Želite li da isključite poboljšanu bezbednost?</translation>
+<translation id="4284755288573763878">Želite da isključite poboljšanu bezbednost?</translation>
 <translation id="4285418559658561636">Ažuriraj lozinku</translation>
 <translation id="4285498937028063278">Otkači</translation>
 <translation id="428565720843367874">Došlo je do neočekivane greške sa antivirusnim softverom pri skeniranju ove datoteke.</translation>
@@ -5184,7 +5184,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6122093587541546701">Imejl (opcionalno):</translation>
 <translation id="6122095009389448667">Nastavi da blokiraš uvid u privremenu memoriju ovom sajtu</translation>
 <translation id="6122600716821516697">Želite da delite sadržaj sa ovim uređajem?</translation>
-<translation id="6122831415929794347">Želite li da isključite Bezbednosno pregledanje?</translation>
+<translation id="6122831415929794347">Želite da isključite Bezbednosno pregledanje?</translation>
 <translation id="6122875415561139701">Operacija pisanja nije dozvoljena na: „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="6124213551517593835">Ovim brišete sve podatke i kolačiće koje čuvaju sajt <ph name="SITE_GROUP_NAME" /> i svi njemu podređeni sajtovi</translation>
 <translation id="6124650939968185064">Sledeći dodaci zavise od ovog dodatka:</translation>
