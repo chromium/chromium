@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -9,6 +10,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -95,12 +98,10 @@ class VROrientationDeviceTest : public testing::Test {
     fake_sensor_ = std::make_unique<FakeOrientationSensor>(
         sensor_.InitWithNewPipeAndPassReceiver());
 
-    shared_buffer_handle_ = mojo::SharedBufferHandle::Create(
+    mapped_region_ = base::ReadOnlySharedMemoryRegion::Create(
         sizeof(SensorReadingSharedBuffer) *
         (static_cast<uint64_t>(mojom::SensorType::kMaxValue) + 1));
-
-    shared_buffer_mapping_ = shared_buffer_handle_->MapAtOffset(
-        mojom::SensorInitParams::kReadBufferSizeForTests, GetBufferOffset());
+    ASSERT_TRUE(mapped_region_.IsValid());
 
     fake_screen_ = std::make_unique<FakeScreen>();
 
@@ -110,9 +111,7 @@ class VROrientationDeviceTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  void TearDown() override { shared_buffer_handle_.reset(); }
-
-  double GetBufferOffset() {
+  uint64_t GetBufferOffset() {
     return SensorReadingSharedBuffer::GetOffset(kOrientationSensorType);
   }
 
@@ -198,8 +197,7 @@ class VROrientationDeviceTest : public testing::Test {
 
     init_params->client_receiver = sensor_client_.BindNewPipeAndPassReceiver();
 
-    init_params->memory = shared_buffer_handle_->Clone(
-        mojo::SharedBufferHandle::AccessMode::READ_ONLY);
+    init_params->memory = mapped_region_.region.Duplicate();
 
     init_params->buffer_offset = GetBufferOffset();
 
@@ -207,11 +205,10 @@ class VROrientationDeviceTest : public testing::Test {
   }
 
   void WriteToBuffer(gfx::Quaternion q) {
-    if (!shared_buffer_mapping_)
-      return;
-
     SensorReadingSharedBuffer* buffer =
-        static_cast<SensorReadingSharedBuffer*>(shared_buffer_mapping_.get());
+        reinterpret_cast<SensorReadingSharedBuffer*>(
+            static_cast<char*>(mapped_region_.mapping.memory()) +
+            GetBufferOffset());
 
     auto& seqlock = buffer->seqlock.value();
     seqlock.WriteBegin();
@@ -236,8 +233,7 @@ class VROrientationDeviceTest : public testing::Test {
   // Fake Sensor Init params objects
   std::unique_ptr<FakeOrientationSensor> fake_sensor_;
   mojo::PendingRemote<mojom::Sensor> sensor_;
-  mojo::ScopedSharedBufferHandle shared_buffer_handle_;
-  mojo::ScopedSharedBufferMapping shared_buffer_mapping_;
+  base::MappedReadOnlyRegion mapped_region_;
   mojo::Remote<mojom::SensorClient> sensor_client_;
 
   std::unique_ptr<FakeScreen> fake_screen_;

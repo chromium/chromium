@@ -7,7 +7,8 @@
 
 #include <memory>
 
-#include "mojo/public/cpp/system/buffer.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/shared_memory_mapping.h"
 
 namespace device {
 
@@ -19,7 +20,7 @@ class SensorReadingSharedBufferReader {
   // Creates a new SensorReadingSharedBufferReader instance that reads
   // sensor readings from the shared buffer.
   static std::unique_ptr<SensorReadingSharedBufferReader> Create(
-      mojo::ScopedSharedBufferHandle reading_buffer_handle,
+      base::ReadOnlySharedMemoryRegion region,
       uint64_t reading_buffer_offset);
 
   SensorReadingSharedBufferReader(const SensorReadingSharedBufferReader&) =
@@ -36,14 +37,12 @@ class SensorReadingSharedBufferReader {
 
  private:
   explicit SensorReadingSharedBufferReader(
-      mojo::ScopedSharedBufferHandle shared_buffer_handle,
-      mojo::ScopedSharedBufferMapping shared_buffer);
+      base::ReadOnlySharedMemoryMapping mapping);
 
   static bool TryReadFromBuffer(const SensorReadingSharedBuffer* buffer,
                                 SensorReading* result);
 
-  mojo::ScopedSharedBufferHandle shared_buffer_handle_;
-  mojo::ScopedSharedBufferMapping shared_buffer_;
+  base::ReadOnlySharedMemoryMapping mapping_;
 };
 
 }  // namespace device

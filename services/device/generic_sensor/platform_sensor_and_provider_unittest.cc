@@ -6,6 +6,8 @@
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 
 #include "base/bind.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "services/device/generic_sensor/fake_platform_sensor_and_provider.h"
@@ -130,13 +132,14 @@ TEST_F(PlatformSensorAndProviderTest, ResourcesAreNotFreedOnPendingRequest) {
 
 // This test verifies that the shared buffer's default values are 0.
 TEST_F(PlatformSensorAndProviderTest, SharedBufferDefaultValue) {
-  mojo::ScopedSharedBufferHandle handle = provider_->CloneSharedBufferHandle();
-  mojo::ScopedSharedBufferMapping mapping = handle->MapAtOffset(
-      sizeof(SensorReadingSharedBuffer),
-      SensorReadingSharedBuffer::GetOffset(mojom::SensorType::AMBIENT_LIGHT));
+  base::ReadOnlySharedMemoryRegion region =
+      provider_->CloneSharedMemoryRegion();
+  base::ReadOnlySharedMemoryMapping mapping = region.MapAt(
+      SensorReadingSharedBuffer::GetOffset(mojom::SensorType::AMBIENT_LIGHT),
+      sizeof(SensorReadingSharedBuffer));
 
-  SensorReadingSharedBuffer* buffer =
-      static_cast<SensorReadingSharedBuffer*>(mapping.get());
+  const SensorReadingSharedBuffer* buffer =
+      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
   EXPECT_THAT(buffer->reading.als.value, 0);
 }
 
