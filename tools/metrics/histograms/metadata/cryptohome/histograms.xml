@@ -354,6 +354,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.MaskedDownloadsItems" units="items"
+    expires_after="2022-10-01">
+  <owner>benreich@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    If the Downloads bind mount fails, files may be saved to ~/MyFiles/Downloads
+    directly and upon next login an attempt will be made to move these back into
+    ~/Downloads to perform a bind mount. This metric records the number of items
+    (as direct children of ~/MyFiles/Downloads) that get migrated on the next
+    successful cryptohome mount.
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.MigrationUI.ConsumedBatteryPercent" units="%"
     expires_after="2020-07-01">
   <owner>fukino@chromium.org</owner>
