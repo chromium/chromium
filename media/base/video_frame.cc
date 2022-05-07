@@ -1421,21 +1421,23 @@ gfx::Size VideoFrame::DetermineAlignedSize(VideoPixelFormat format,
   return adjusted;
 }
 
+// static
 bool VideoFrame::IsValidSize(const gfx::Size& coded_size,
                              const gfx::Rect& visible_rect,
                              const gfx::Size& natural_size) {
-  int coded_size_area = coded_size.GetCheckedArea().ValueOrDefault(INT_MAX);
-  int natural_size_area = natural_size.GetCheckedArea().ValueOrDefault(INT_MAX);
-  static_assert(limits::kMaxCanvas < INT_MAX, "");
-  return !(coded_size_area > limits::kMaxCanvas ||
-           coded_size.width() > limits::kMaxDimension ||
-           coded_size.height() > limits::kMaxDimension ||
-           visible_rect.x() < 0 || visible_rect.y() < 0 ||
+  return IsValidCodedSize(coded_size) && IsValidCodedSize(natural_size) &&
+         !(visible_rect.x() < 0 || visible_rect.y() < 0 ||
            visible_rect.right() > coded_size.width() ||
-           visible_rect.bottom() > coded_size.height() ||
-           natural_size_area > limits::kMaxCanvas ||
-           natural_size.width() > limits::kMaxDimension ||
-           natural_size.height() > limits::kMaxDimension);
+           visible_rect.bottom() > coded_size.height());
+}
+
+// static
+bool VideoFrame::IsValidCodedSize(const gfx::Size& size) {
+  const int size_area = size.GetCheckedArea().ValueOrDefault(INT_MAX);
+  static_assert(limits::kMaxCanvas < INT_MAX, "");
+  return size_area <= limits::kMaxCanvas &&
+         size.width() <= limits::kMaxDimension &&
+         size.height() <= limits::kMaxDimension;
 }
 
 // static
