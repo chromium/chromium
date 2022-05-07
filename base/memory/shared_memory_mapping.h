@@ -105,8 +105,8 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
   ReadOnlySharedMemoryMapping& operator=(
       ReadOnlySharedMemoryMapping&&) noexcept;
 
-  // Returns the base address of the read-only mapping. Returns nullptr for
-  // invalid instances.
+  // Returns the base address of the mapping. This is read-only memory. This is
+  // page-aligned. This is nullptr for invalid instances.
   const void* memory() const { return raw_memory_ptr(); }
 
   // Returns a pointer to a page-aligned const T if the mapping is valid and
@@ -180,8 +180,8 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
   WritableSharedMemoryMapping& operator=(
       WritableSharedMemoryMapping&&) noexcept;
 
-  // Returns the base address of the writable mapping. Returns nullptr for
-  // invalid instances.
+  // Returns the base address of the mapping. This is writable memory. This is
+  // page-aligned. This is nullptr for invalid instances.
   void* memory() const { return raw_memory_ptr(); }
 
   // Returns a pointer to a page-aligned T if the mapping is valid and large

@@ -4,13 +4,11 @@
 
 #include "base/memory/platform_shared_memory_region.h"
 
-#include "base/bits.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/shared_memory_security_policy.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
-#include "base/system/sys_info.h"
 
 namespace base {
 namespace subtle {
@@ -62,9 +60,6 @@ absl::optional<span<uint8_t>> PlatformSharedMemoryRegion::MapAt(
     return absl::nullopt;
   }
 
-  // TODO(dcheng): Presumably the actual size of the mapping is rounded to
-  // `SysInfo::VMAllocationGranularity()`. Should this accounting be done with
-  // that in mind?
   if (!SharedMemorySecurityPolicy::AcquireReservationForMapping(size)) {
     RecordMappingWasBlockedHistogram(/*blocked=*/true);
     return absl::nullopt;
@@ -75,23 +70,11 @@ absl::optional<span<uint8_t>> PlatformSharedMemoryRegion::MapAt(
   if (!mapper)
     mapper = SharedMemoryMapper::GetDefaultInstance();
 
-  // The backing mapper expects offset to be aligned to
-  // `SysInfo::VMAllocationGranularity()`.
-  size_t aligned_offset =
-      bits::AlignDown(offset, SysInfo::VMAllocationGranularity());
-  size_t adjustment_for_alignment = offset - aligned_offset;
-
   bool write_allowed = mode_ != Mode::kReadOnly;
-  auto result = mapper->Map(GetPlatformHandle(), write_allowed, aligned_offset,
-                            size + adjustment_for_alignment);
+  auto result = mapper->Map(GetPlatformHandle(), write_allowed, offset, size);
 
   if (result.has_value()) {
     DCHECK(IsAligned(result.value().data(), kMapMinimumAlignment));
-    if (offset != 0) {
-      // Undo the previous adjustment so the returned mapping respects the exact
-      // requested `offset` and `size`.
-      result = result->subspan(adjustment_for_alignment);
-    }
   } else {
     SharedMemorySecurityPolicy::ReleaseReservationForMapping(size);
   }
