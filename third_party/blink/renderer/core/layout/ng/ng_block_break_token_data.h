@@ -14,6 +14,7 @@ struct NGBlockBreakTokenData : public GarbageCollected<NGBlockBreakTokenData> {
  public:
   enum NGBreakTokenDataType {
     kBlockBreakTokenData,
+    kFieldsetBreakTokenData,
     kFlexBreakTokenData,
     kGridBreakTokenData,
     kTableRowBreakTokenData
@@ -37,6 +38,7 @@ struct NGBlockBreakTokenData : public GarbageCollected<NGBlockBreakTokenData> {
 
   virtual ~NGBlockBreakTokenData() = default;
 
+  bool IsFieldsetType() const { return Type() == kFieldsetBreakTokenData; }
   bool IsFlexType() const { return Type() == kFlexBreakTokenData; }
   bool IsGridType() const { return Type() == kGridBreakTokenData; }
   bool IsTableRowType() const { return Type() == kTableRowBreakTokenData; }
@@ -47,7 +49,7 @@ struct NGBlockBreakTokenData : public GarbageCollected<NGBlockBreakTokenData> {
   LayoutUnit consumed_block_size_legacy_adjustment;
 
   unsigned sequence_number = 0;
-  unsigned type : 2;
+  unsigned type : 3;
 };
 
 }  // namespace blink

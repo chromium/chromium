@@ -537,6 +537,7 @@ blink_core_sources_layout = [
   "ng/ng_disable_side_effects_scope.cc",
   "ng/ng_disable_side_effects_scope.h",
   "ng/ng_early_break.h",
+  "ng/ng_fieldset_break_token_data.h",
   "ng/ng_fieldset_layout_algorithm.cc",
   "ng/ng_fieldset_layout_algorithm.h",
   "ng/ng_floats_utils.cc",
