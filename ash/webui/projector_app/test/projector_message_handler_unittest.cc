@@ -78,7 +78,7 @@ class ProjectorMessageHandlerUnitTest : public testing::Test {
     registry->RegisterBooleanPref(ash::prefs::kProjectorCreationFlowEnabled,
                                   false);
     registry->RegisterBooleanPref(
-        ash::prefs::kProjectorSkipTranscriptDialogShown, false);
+        ash::prefs::kProjectorExcludeTranscriptDialogShown, false);
     registry->RegisterIntegerPref(
         ash::prefs::kProjectorGalleryOnboardingShowCount, 0);
     registry->RegisterIntegerPref(
@@ -423,13 +423,13 @@ TEST_F(ProjectorMessageHandlerUnitTest, CreationFlowEnabled) {
   EXPECT_TRUE(args->GetBool());
 }
 
-TEST_F(ProjectorMessageHandlerUnitTest, SkipTranscriptDialogShownPref) {
+TEST_F(ProjectorMessageHandlerUnitTest, ExcludeTranscriptDialogShownPref) {
   base::ListValue list_args;
   list_args.Append(base::Value(kSetUserPrefCallback));
 
   base::ListValue func_args;
   func_args.Append(
-      base::Value(ash::prefs::kProjectorSkipTranscriptDialogShown));
+      base::Value(ash::prefs::kProjectorExcludeTranscriptDialogShown));
   func_args.Append(base::Value(true));
   list_args.Append(std::move(func_args));
 
@@ -445,7 +445,7 @@ TEST_F(ProjectorMessageHandlerUnitTest, SkipTranscriptDialogShownPref) {
   list_args.ClearList();
   list_args.Append(base::Value(kGetUserPrefCallback));
   func_args.ClearList();
-  func_args.Append(ash::prefs::kProjectorSkipTranscriptDialogShown);
+  func_args.Append(ash::prefs::kProjectorExcludeTranscriptDialogShown);
   list_args.Append(std::move(func_args));
 
   web_ui().HandleReceivedMessage("getUserPref", &list_args);

@@ -58,8 +58,9 @@ void ProjectorAppClientImpl::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       ash::prefs::kProjectorDogfoodForFamilyLinkEnabled,
       /*default_value=*/false);
-  registry->RegisterBooleanPref(ash::prefs::kProjectorSkipTranscriptDialogShown,
-                                /*default_value=*/false);
+  registry->RegisterBooleanPref(
+      ash::prefs::kProjectorExcludeTranscriptDialogShown,
+      /*default_value=*/false);
 }
 
 ProjectorAppClientImpl::ProjectorAppClientImpl()

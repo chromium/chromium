@@ -89,7 +89,7 @@ bool IsUserPrefSupported(const std::string& pref) {
   return pref == ash::prefs::kProjectorCreationFlowEnabled ||
          pref == ash::prefs::kProjectorGalleryOnboardingShowCount ||
          pref == ash::prefs::kProjectorViewerOnboardingShowCount ||
-         pref == ash::prefs::kProjectorSkipTranscriptDialogShown;
+         pref == ash::prefs::kProjectorExcludeTranscriptDialogShown;
 }
 
 bool IsValidOnboardingPref(const SetUserPrefArgs& args) {
@@ -103,14 +103,14 @@ bool IsValidCreationFlowPref(const SetUserPrefArgs& args) {
          args.pref_name == ash::prefs::kProjectorCreationFlowEnabled;
 }
 
-bool IsValidSkipTranscriptDialogShownPref(const SetUserPrefArgs& args) {
+bool IsValidExcludeTranscriptDialogShownPref(const SetUserPrefArgs& args) {
   return args.value.is_bool() &&
-         args.pref_name == ash::prefs::kProjectorSkipTranscriptDialogShown;
+         args.pref_name == ash::prefs::kProjectorExcludeTranscriptDialogShown;
 }
 
 bool IsValidPrefValueArg(const SetUserPrefArgs& args) {
   return IsValidCreationFlowPref(args) || IsValidOnboardingPref(args) ||
-         IsValidSkipTranscriptDialogShownPref(args);
+         IsValidExcludeTranscriptDialogShownPref(args);
 }
 
 // Returns true if the request, `args`, contains a valid user preference string.
