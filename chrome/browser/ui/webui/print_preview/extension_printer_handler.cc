@@ -248,11 +248,10 @@ void ExtensionPrinterHandler::ConvertToPWGRaster(
     pwg_raster_converter_ = PwgRasterConverter::CreateDefault();
 
   cloud_devices::CloudDeviceDescription ticket;
-  bool ok = ticket.InitFromValue(std::move(job->ticket));
+  bool ok = ticket.InitFromValue(job->ticket.Clone());
   DCHECK(ok);
   PwgRasterSettings bitmap_settings =
       PwgRasterConverter::GetBitmapSettings(printer_description, ticket);
-  job->ticket = std::move(ticket).ToValue();
 
   pwg_raster_converter_->Start(
       data.get(),
