@@ -112,6 +112,18 @@ void TestSendMessageFunction::ReplyWithError(const std::string& error) {
     Respond(std::move(response_));
 }
 
+TestSendScriptResultFunction::TestSendScriptResultFunction() = default;
+TestSendScriptResultFunction::~TestSendScriptResultFunction() = default;
+
+ExtensionFunction::ResponseAction TestSendScriptResultFunction::Run() {
+  std::unique_ptr<api::test::SendScriptResult::Params> params(
+      api::test::SendScriptResult::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  TestApiObserverRegistry::GetInstance()->NotifyScriptResult(*params->result);
+  return RespondNow(NoArguments());
+}
+
 // static
 void TestGetConfigFunction::set_test_config_state(
     base::DictionaryValue* value) {

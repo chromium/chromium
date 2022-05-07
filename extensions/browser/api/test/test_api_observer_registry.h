@@ -11,6 +11,10 @@
 #include "base/observer_list.h"
 #include "extensions/browser/api/test/test_api_observer.h"
 
+namespace base {
+class Value;
+}
+
 namespace content {
 class BrowserContext;
 }
@@ -38,6 +42,9 @@ class TestApiObserverRegistry {
   // respond to the message.
   bool NotifyTestMessage(TestSendMessageFunction* function,
                          const std::string& message);
+
+  // Notifies observers of a result sent via sendScriptResult.
+  void NotifyScriptResult(const base::Value& result_value);
 
   void AddObserver(TestApiObserver* observer);
   void RemoveObserver(TestApiObserver* observer);

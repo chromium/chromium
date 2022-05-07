@@ -132,6 +132,17 @@
         }
       },
       {
+        "name": "sendScriptResult",
+        "type": "function",
+        "description": "Sends a result back to the browser as a result of script executing; this is handy for communicating results from browser-driven script execution.",
+        "parameters": [{"type": "any", "name": "result"}],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
+      },
+      {
         "name": "callbackAdded",
         "type": "function",
         "nocompile": true,

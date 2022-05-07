@@ -773,6 +773,8 @@ source_set("test_support") {
     "mock_screen.h",
     "preload_check_test_util.cc",
     "preload_check_test_util.h",
+    "script_result_queue.cc",
+    "script_result_queue.h",
     "service_worker/service_worker_test_utils.cc",
     "service_worker/service_worker_test_utils.h",
     "test_event_router_observer.cc",

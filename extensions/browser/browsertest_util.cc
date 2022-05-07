@@ -15,6 +15,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/script_result_queue.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,8 +45,17 @@ BackgroundScriptExecutor::~BackgroundScriptExecutor() = default;
 base::Value BackgroundScriptExecutor::ExecuteScript(
     const ExtensionId& extension_id,
     const std::string& script,
+    ResultCapture result_capture,
     ScriptUserActivation script_user_activation) {
-  ExecuteScriptAsync(extension_id, script, script_user_activation);
+  if (result_capture == ResultCapture::kNone) {
+    AddTestFailure(
+        "Cannot wait for a result with no result capture. "
+        "Use ExecuteScriptAsync() instead");
+    return base::Value();
+  }
+
+  ExecuteScriptAsync(extension_id, script, result_capture,
+                     script_user_activation);
   return WaitForResult();
 }
 
@@ -54,17 +64,21 @@ base::Value BackgroundScriptExecutor::ExecuteScript(
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
     const std::string& script,
+    ResultCapture result_capture,
     ScriptUserActivation script_user_activation) {
   return BackgroundScriptExecutor(browser_context)
-      .ExecuteScript(extension_id, script, script_user_activation);
+      .ExecuteScript(extension_id, script, result_capture,
+                     script_user_activation);
 }
 
 bool BackgroundScriptExecutor::ExecuteScriptAsync(
     const ExtensionId& extension_id,
     const std::string& script,
+    ResultCapture result_capture,
     ScriptUserActivation script_user_activation) {
   extension_ = registry_->enabled_extensions().GetByID(extension_id);
   script_ = script;
+  result_capture_method_ = result_capture;
   if (!extension_) {
     AddTestFailure("No enabled extension with id: " + extension_id);
     return false;
@@ -72,6 +86,9 @@ bool BackgroundScriptExecutor::ExecuteScriptAsync(
 
   if (BackgroundInfo::IsServiceWorkerBased(extension_)) {
     background_type_ = BackgroundType::kServiceWorker;
+    DCHECK_NE(ResultCapture::kWindowDomAutomationController,
+              result_capture_method_)
+        << "Cannot use domAutomationController in a worker.";
     DCHECK_EQ(ScriptUserActivation::kDontActivate, script_user_activation)
         << "Cannot provide a user gesture to service worker scripts";
     return ExecuteScriptInServiceWorker();
@@ -95,20 +112,22 @@ bool BackgroundScriptExecutor::ExecuteScriptAsync(
     const std::string& script,
     ScriptUserActivation script_user_activation) {
   return BackgroundScriptExecutor(browser_context)
-      .ExecuteScriptAsync(extension_id, script, script_user_activation);
+      .ExecuteScriptAsync(extension_id, script, ResultCapture::kNone,
+                          script_user_activation);
 }
 
 base::Value BackgroundScriptExecutor::WaitForResult() {
   DCHECK(background_type_);
+  DCHECK_NE(ResultCapture::kNone, result_capture_method_)
+      << "Trying to wait for a result when no result was expected.";
 
-  if (background_type_ == BackgroundType::kServiceWorker) {
-    base::RunLoop run_loop;
-    quit_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
-    return std::move(result_);
+  if (result_capture_method_ == ResultCapture::kSendScriptResult) {
+    DCHECK(script_result_queue_);
+    return script_result_queue_->GetNextResult();
   }
 
-  DCHECK_EQ(BackgroundType::kPage, *background_type_);
+  DCHECK_EQ(ResultCapture::kWindowDomAutomationController,
+            result_capture_method_);
   DCHECK(message_queue_);
   std::string next_message;
   if (!message_queue_->WaitForMessage(&next_message)) {
@@ -131,26 +150,38 @@ bool BackgroundScriptExecutor::ExecuteScriptInServiceWorker() {
     AddTestFailure("Incorrect number of workers registered for extension");
     return false;
   }
+
+  if (result_capture_method_ == ResultCapture::kSendScriptResult)
+    script_result_queue_ = std::make_unique<ScriptResultQueue>();
+
   content::ServiceWorkerContext* service_worker_context =
       util::GetStoragePartitionForExtensionId(extension_->id(),
                                               browser_context_)
           ->GetServiceWorkerContext();
   service_worker_context->ExecuteScriptForTest(  // IN-TEST
-      script_, worker_ids[0].version_id,
-      base::BindOnce(&BackgroundScriptExecutor::OnServiceWorkerResult,
-                     weak_factory_.GetWeakPtr()));
+      script_, worker_ids[0].version_id, base::DoNothing());
   return true;
 }
 
 bool BackgroundScriptExecutor::ExecuteScriptInBackgroundPage(
     ScriptUserActivation script_user_activation) {
-  message_queue_ = std::make_unique<content::DOMMessageQueue>();
-
   ExtensionHost* host =
       process_manager_->GetBackgroundHostForExtension(extension_->id());
   if (!host) {
     AddTestFailure("Extension does not have an active background page");
     return false;
+  }
+
+  switch (result_capture_method_) {
+    case ResultCapture::kNone:
+      break;
+    case ResultCapture::kSendScriptResult:
+      script_result_queue_ = std::make_unique<ScriptResultQueue>();
+      break;
+    case ResultCapture::kWindowDomAutomationController:
+      message_queue_ =
+          std::make_unique<content::DOMMessageQueue>(host->host_contents());
+      break;
   }
 
   if (script_user_activation == ScriptUserActivation::kActivate) {
@@ -159,15 +190,6 @@ bool BackgroundScriptExecutor::ExecuteScriptInBackgroundPage(
     NOTREACHED() << "Not yet supported. Use ExecuteScriptInBackgroundPage().";
   }
   return true;
-}
-
-void BackgroundScriptExecutor::OnServiceWorkerResult(
-    base::Value result,
-    const absl::optional<std::string>& error) {
-  ASSERT_FALSE(error) << *error;
-  result_ = std::move(result);
-  if (quit_closure_)
-    std::move(quit_closure_).Run();
 }
 
 void BackgroundScriptExecutor::AddTestFailure(const std::string& message) {
@@ -206,8 +228,13 @@ std::string ExecuteScriptInBackgroundPage(
 
   DCHECK_EQ(ScriptUserActivation::kActivate, script_user_activation);
 
-  base::Value value = BackgroundScriptExecutor::ExecuteScript(
-      context, extension_id, script, script_user_activation);
+  BackgroundScriptExecutor script_executor(context);
+  // Legacy scripts were written to pass the (string) result via
+  // window.domAutomationController.send().
+  base::Value value = script_executor.ExecuteScript(
+      extension_id, script,
+      BackgroundScriptExecutor::ResultCapture::kWindowDomAutomationController,
+      script_user_activation);
   if (!value.is_string()) {
     ADD_FAILURE() << "Bad return value: " << value.type()
                   << "; script: " << GetScriptToLog(script);

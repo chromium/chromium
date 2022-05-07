@@ -392,14 +392,18 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, InjectImmediately) {
   // A helper function to run the script in the worker context.
   auto run_script_in_worker = [this, extension](const std::string& script) {
     return browsertest_util::BackgroundScriptExecutor::ExecuteScript(
-        profile(), extension->id(), script);
+        profile(), extension->id(), script,
+        browsertest_util::BackgroundScriptExecutor::ResultCapture::
+            kSendScriptResult);
   };
 
   auto get_default_result = [run_script_in_worker]() {
-    return run_script_in_worker("self.defaultResult;");
+    return run_script_in_worker(
+        "chrome.test.sendScriptResult(self.defaultResult);");
   };
   auto get_immediate_result = [run_script_in_worker]() {
-    return run_script_in_worker("self.immediateResult;");
+    return run_script_in_worker(
+        "chrome.test.sendScriptResult(self.immediateResult);");
   };
 
   // Send back some HTML for the request (this can only be done once the
@@ -415,7 +419,8 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, InjectImmediately) {
                                                   /*will_reply=*/false);
   ExtensionTestMessageListener default_listener("default complete",
                                                 /*will_reply=*/false);
-  run_script_in_worker(base::StringPrintf(kInjectScripts, tab_id));
+  browsertest_util::BackgroundScriptExecutor::ExecuteScriptAsync(
+      profile(), extension->id(), base::StringPrintf(kInjectScripts, tab_id));
 
   // The script with immediate injection should finish (but it's still round
   // trips to the browser and renderer, so it won't be synchronous).

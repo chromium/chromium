@@ -50,6 +50,12 @@ bool TestApiObserverRegistry::NotifyTestMessage(
   return any_listener_will_respond;
 }
 
+void TestApiObserverRegistry::NotifyScriptResult(
+    const base::Value& result_value) {
+  for (auto& observer : observers_)
+    observer.OnScriptResult(result_value);
+}
+
 void TestApiObserverRegistry::AddObserver(TestApiObserver* observer) {
   observers_.AddObserver(observer);
 }

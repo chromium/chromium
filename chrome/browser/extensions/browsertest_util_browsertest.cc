@@ -12,6 +12,8 @@
 
 namespace extensions {
 
+using browsertest_util::BackgroundScriptExecutor;
+
 using BrowserTestUtilBrowserTest = ExtensionBrowserTest;
 
 // Tests the ability to run JS in an extension-registered service worker.
@@ -36,10 +38,79 @@ IN_PROC_BROWSER_TEST_F(BrowserTestUtilBrowserTest,
   ASSERT_TRUE(extension);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
-  base::Value value = browsertest_util::BackgroundScriptExecutor::ExecuteScript(
-      profile(), extension->id(), "console.warn('script ran'); myTestFlag;");
+  {
+    // Synchronous result.
+    base::Value value = BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension->id(), "chrome.test.sendScriptResult(myTestFlag);",
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+    EXPECT_THAT(value, base::test::IsJson(R"("HELLO!")"));
+  }
 
-  EXPECT_THAT(value, base::test::IsJson(R"("HELLO!")"));
+  {
+    // Asynchronous result.
+    static constexpr char kScript[] =
+        R"(setTimeout(() => {
+             chrome.test.sendScriptResult(myTestFlag);
+           });)";
+    base::Value value = BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension->id(), kScript,
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+    EXPECT_THAT(value, base::test::IsJson(R"("HELLO!")"));
+  }
+}
+
+// Tests the ability to run JS in an extension background page.
+IN_PROC_BROWSER_TEST_F(BrowserTestUtilBrowserTest,
+                       ExecuteScriptInBackgroundPage) {
+  constexpr char kManifest[] =
+      R"({
+          "name": "Test",
+          "manifest_version": 2,
+          "background": {"scripts": ["background.js"]},
+          "version": "0.1"
+        })";
+  constexpr char kBackgroundScript[] = R"(self.myTestFlag = 'HELLO!';)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundScript);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  {
+    // Synchronous result.
+    base::Value value = BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension->id(), "chrome.test.sendScriptResult(myTestFlag);",
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult,
+        browsertest_util::ScriptUserActivation::kActivate);
+    EXPECT_THAT(value, base::test::IsJson(R"("HELLO!")"));
+  }
+
+  {
+    // Asynchronous result with sendScriptResult().
+    static constexpr char kScript[] =
+        R"(setTimeout(() => {
+             chrome.test.sendScriptResult(myTestFlag);
+           }, 0);)";
+    base::Value value = BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension->id(), kScript,
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult,
+        browsertest_util::ScriptUserActivation::kActivate);
+    EXPECT_THAT(value, base::test::IsJson(R"("HELLO!")"));
+  }
+
+  {
+    // Asynchronous result with domAutomationController.send().
+    static constexpr char kScript[] =
+        R"(setTimeout(() => {
+             window.domAutomationController.send(myTestFlag);
+           }, 0);)";
+    base::Value value = BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension->id(), kScript,
+        BackgroundScriptExecutor::ResultCapture::kWindowDomAutomationController,
+        browsertest_util::ScriptUserActivation::kActivate);
+    EXPECT_THAT(value, base::test::IsJson(R"("HELLO!")"));
+  }
 }
 
 }  // namespace extensions

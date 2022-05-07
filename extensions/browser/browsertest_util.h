@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension_id.h"
@@ -23,6 +21,7 @@ namespace extensions {
 class Extension;
 class ExtensionRegistry;
 class ProcessManager;
+class ScriptResultQueue;
 
 namespace browsertest_util {
 
@@ -36,19 +35,28 @@ enum class ScriptUserActivation {
 // A helper class to execute a script in an extension's background context,
 // either its service worker or its (possibly lazy) background page.
 // Returning results:
-//  Currently, results are returned differently for service worker-based and
-//  background page-based extensions.
-//  - The result for a service worker-based extension is the result of the
-//    final line of the execution - the same as you might get if you were to
-//    enter the script into devtools.
-//  - The result for a background page-based extension is instead returned via
-//    domAutomationController.send().
-// TODO(https://crbug.com/1319642): This should change. This class isn't as
-// helpful if the same script cannot be used in both service worker-based and
-// background page-based extensions.
+//  Return results with chrome.test.sendScriptResult(). This can be called
+//  either synchronously or asynchronously from the injected script.
+//  For compatibility with legacy scripts, background page contexts can choose
+//  send results via window.domAutomationController.send(). New code should not
+//  do this.
 // This class is designed for single-use executions.
 class BackgroundScriptExecutor {
  public:
+  // The manner in which the script will use to send the result.
+  enum class ResultCapture {
+    // No result will be captured. The caller only cares about injecting the
+    // script and may wait for another signal of execution.
+    kNone,
+    // Result sent with chrome.test.sendScriptResult().
+    kSendScriptResult,
+    // Result sent with window.domAutomationController.send().
+    // DON'T USE. This is only here for backwards compatibility with tests that
+    // were written before chrome.test.sendScriptResult() exists, and this
+    // doesn't work with service worker contexts.
+    kWindowDomAutomationController,
+  };
+
   explicit BackgroundScriptExecutor(content::BrowserContext* browser_context);
   ~BackgroundScriptExecutor();
 
@@ -58,12 +66,14 @@ class BackgroundScriptExecutor {
   // service worker-based extensions.
   base::Value ExecuteScript(const ExtensionId& extension_id,
                             const std::string& script,
+                            ResultCapture result_capture,
                             ScriptUserActivation script_user_activation =
                                 ScriptUserActivation::kDontActivate);
   // Static variant of the above.
   static base::Value ExecuteScript(content::BrowserContext* browser_context,
                                    const ExtensionId& extension_id,
                                    const std::string& script,
+                                   ResultCapture result_capture,
                                    ScriptUserActivation script_user_activation =
                                        ScriptUserActivation::kDontActivate);
 
@@ -73,9 +83,12 @@ class BackgroundScriptExecutor {
   // `kDontActivate` for service worker-based extensions.
   bool ExecuteScriptAsync(const ExtensionId& extension_id,
                           const std::string& script,
+                          ResultCapture result_capture,
                           ScriptUserActivation script_user_activation =
                               ScriptUserActivation::kDontActivate);
-  // Static variant of the above.
+  // Static variant of the above. Inherently, this cannot handle a result
+  // (because it is not returned synchronously and there's no exposed instance
+  // of BackgroundScriptExecutor).
   static bool ExecuteScriptAsync(content::BrowserContext* browser_context,
                                  const ExtensionId& extension_id,
                                  const std::string& script,
@@ -99,10 +112,6 @@ class BackgroundScriptExecutor {
   bool ExecuteScriptInBackgroundPage(
       ScriptUserActivation script_user_activation);
 
-  // Method invoked when the service worker script has finished executing.
-  void OnServiceWorkerResult(base::Value result,
-                             const absl::optional<std::string>& error);
-
   // Method to ADD_FAILURE() to the currently-running test with the given
   // `message` and other debugging info, like the injected script and associated
   // extension.
@@ -119,23 +128,22 @@ class BackgroundScriptExecutor {
   // ExecuteScript*().
   absl::optional<BackgroundType> background_type_;
 
+  // The method the script will use to send the result.
+  ResultCapture result_capture_method_ = ResultCapture::kNone;
+
   // The DOMMessageQueue used for retrieving results from background page-based
-  // extensions.
+  // extensions with `ResultCapture::kWindowDomAutomationController`.
   std::unique_ptr<content::DOMMessageQueue> message_queue_;
 
-  // The returned result; only used for service worker-based extensions.
-  base::Value result_;
-  // A quit closure for a running RunLoop; only used for service worker-based
-  // extensions.
-  base::OnceClosure quit_closure_;
+  // The ScriptResultQueue for retrieving results from contexts using
+  // `ResultCapture::kSendScriptResult`.
+  std::unique_ptr<ScriptResultQueue> script_result_queue_;
 
   // The associated Extension.
   const Extension* extension_ = nullptr;
 
-  // The script to inject.
+  // The script to inject; cached mostly for logging purposes.
   std::string script_;
-
-  base::WeakPtrFactory<BackgroundScriptExecutor> weak_factory_{this};
 };
 
 // Waits until |script| calls "window.domAutomationController.send(result)",
