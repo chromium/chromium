@@ -43,7 +43,7 @@ bool CloudDeviceDescription::InitFromValue(base::Value ticket) {
   return IsValidTicket(root_);
 }
 
-std::string CloudDeviceDescription::ToString() const {
+std::string CloudDeviceDescription::ToStringForTesting() const {
   std::string json;
   base::JSONWriter::WriteWithOptions(
       root_, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);

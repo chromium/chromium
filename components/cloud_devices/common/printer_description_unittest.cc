@@ -622,7 +622,8 @@ const struct TestTypedValueCapabilities {
 
 TEST(PrinterDescriptionTest, CddInit) {
   CloudDeviceDescription description;
-  EXPECT_EQ(NormalizeJson(kDefaultCdd), NormalizeJson(description.ToString()));
+  EXPECT_EQ(NormalizeJson(kDefaultCdd),
+            NormalizeJson(description.ToStringForTesting()));
 
   ContentTypesCapability content_types;
   PwgRasterConfigCapability pwg_raster;
@@ -741,7 +742,8 @@ TEST(PrinterDescriptionTest, CddSetAll) {
   reverse.SaveTo(&description);
   pwg_raster_config.SaveTo(&description);
 
-  EXPECT_EQ(NormalizeJson(kCdd), NormalizeJson(description.ToString()));
+  EXPECT_EQ(NormalizeJson(kCdd),
+            NormalizeJson(description.ToStringForTesting()));
 }
 
 TEST(PrinterDescriptionTest, CddGetDocumentTypeSupported) {
@@ -841,7 +843,7 @@ TEST(PrinterDescriptionTest, CddSetDocumentTypeSupported) {
     pwg_raster.SaveTo(&description);
 
     EXPECT_EQ(NormalizeJson(kDocumentTypeColorOnlyCdd),
-              NormalizeJson(description.ToString()));
+              NormalizeJson(description.ToStringForTesting()));
   }
   {
     CloudDeviceDescription description;
@@ -856,7 +858,7 @@ TEST(PrinterDescriptionTest, CddSetDocumentTypeSupported) {
     pwg_raster.SaveTo(&description);
 
     EXPECT_EQ(NormalizeJson(kDocumentTypeGrayOnlyCdd),
-              NormalizeJson(description.ToString()));
+              NormalizeJson(description.ToStringForTesting()));
   }
   {
     CloudDeviceDescription description;
@@ -873,7 +875,7 @@ TEST(PrinterDescriptionTest, CddSetDocumentTypeSupported) {
     pwg_raster.SaveTo(&description);
 
     EXPECT_EQ(NormalizeJson(kDocumentTypeColorAndGrayCdd),
-              NormalizeJson(description.ToString()));
+              NormalizeJson(description.ToStringForTesting()));
   }
   {
     CloudDeviceDescription description;
@@ -886,7 +888,7 @@ TEST(PrinterDescriptionTest, CddSetDocumentTypeSupported) {
     pwg_raster.SaveTo(&description);
 
     EXPECT_EQ(NormalizeJson(kDocumentTypeNoneCdd),
-              NormalizeJson(description.ToString()));
+              NormalizeJson(description.ToStringForTesting()));
   }
 }
 
@@ -1090,7 +1092,7 @@ TEST(PrinterDescriptionTest, CddSetVendorCapability) {
 
   vendor_capabilities.SaveTo(&description);
   EXPECT_EQ(NormalizeJson(kVendorCapabilityOnlyCdd),
-            NormalizeJson(description.ToString()));
+            NormalizeJson(description.ToStringForTesting()));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1117,7 +1119,8 @@ TEST(PrinterDescriptionTest, CddSetPin) {
   PinCapability pin_capability;
   pin_capability.set_value(true);
   pin_capability.SaveTo(&description);
-  EXPECT_EQ(NormalizeJson(kPinOnlyCdd), NormalizeJson(description.ToString()));
+  EXPECT_EQ(NormalizeJson(kPinOnlyCdd),
+            NormalizeJson(description.ToStringForTesting()));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -1211,12 +1214,14 @@ TEST(PrinterDescriptionTest, CddGetAll) {
   EXPECT_FALSE(collate.default_value());
   EXPECT_TRUE(reverse.default_value());
 
-  EXPECT_EQ(NormalizeJson(kCdd), NormalizeJson(description.ToString()));
+  EXPECT_EQ(NormalizeJson(kCdd),
+            NormalizeJson(description.ToStringForTesting()));
 }
 
 TEST(PrinterDescriptionTest, CjtInit) {
   CloudDeviceDescription description;
-  EXPECT_EQ(NormalizeJson(kDefaultCjt), NormalizeJson(description.ToString()));
+  EXPECT_EQ(NormalizeJson(kDefaultCjt),
+            NormalizeJson(description.ToStringForTesting()));
 
   PwgRasterConfigTicketItem pwg_raster_config;
   ColorTicketItem color;
@@ -1300,7 +1305,8 @@ TEST(PrinterDescriptionTest, CjtSetAll) {
   collate.SaveTo(&description);
   reverse.SaveTo(&description);
 
-  EXPECT_EQ(NormalizeJson(kCjt), NormalizeJson(description.ToString()));
+  EXPECT_EQ(NormalizeJson(kCjt),
+            NormalizeJson(description.ToStringForTesting()));
 }
 
 TEST(PrinterDescriptionTest, CjtGetAll) {
@@ -1353,7 +1359,8 @@ TEST(PrinterDescriptionTest, CjtGetAll) {
   EXPECT_FALSE(collate.value());
   EXPECT_TRUE(reverse.value());
 
-  EXPECT_EQ(NormalizeJson(kCjt), NormalizeJson(description.ToString()));
+  EXPECT_EQ(NormalizeJson(kCjt),
+            NormalizeJson(description.ToStringForTesting()));
 }
 
 }  // namespace printer
