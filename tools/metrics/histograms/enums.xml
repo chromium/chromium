@@ -75196,6 +75196,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Browser"/>
 </enum>
 
+<enum name="PrintOopResult">
+  <int value="0" label="Successful"/>
+  <int value="1" label="Cancelled"/>
+  <int value="2" label="Access Denied"/>
+  <int value="3" label="Failed"/>
+</enum>
+
 <enum name="PrintPreviewFailureType">
 <!-- This must be kept current with PrintPreviewErrorBuckets in
      components/printing/renderer/print_render_frame_helper.h. -->

@@ -353,6 +353,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Printing.Oop.PrintResult" enum="PrintOopResult"
+    expires_after="2022-11-07">
+  <owner>awscreen@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Records the final result of a print job where the interactions with the
+    system printing APIs are performed out-of-process in the PrintBackend
+    service.
+
+    This covers printing initiated from Print Preview as well as from a system
+    print dialog for platforms which provide that.
+
+    Recorded upon completion of each print job by PrintJobWorkerOop.
+  </summary>
+</histogram>
+
 <histogram
     name="Printing.PrintBackend.DriversRequiringElevatedPrivilegeEncountered"
     enum="BooleanFound" expires_after="2022-10-09">

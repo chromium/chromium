@@ -4,6 +4,7 @@
 
 #include "chrome/browser/printing/print_job_worker_oop.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -31,6 +32,20 @@ using content::BrowserThread;
 namespace printing {
 
 namespace {
+
+// Enumeration of printing events when submitting a job to a print driver.
+// This must stay in sync with the corresponding histogram in `histograms.xml`.
+// These values are persisted to logs.  Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PrintOopResult {
+  kSuccessful = 0,
+  kCanceled = 1,
+  kAccessDenied = 2,
+  kFailed = 3,
+  kMaxValue = kFailed,
+};
+
+constexpr char kPrintOopPrintResultHistogramName[] = "Printing.Oop.PrintResult";
 
 mojom::PrintTargetType DeterminePrintTargetType(
     const base::Value::Dict& job_settings) {
@@ -210,6 +225,8 @@ void PrintJobWorkerOop::OnDidDocumentDone(int job_id,
   VLOG(1) << "Printing completed with service for document "
           << document()->cookie();
   UnregisterServiceManagerClient();
+  base::UmaHistogramEnumeration(kPrintOopPrintResultHistogramName,
+                                PrintOopResult::kSuccessful);
   FinishDocumentDone(job_id);
 }
 
@@ -380,6 +397,7 @@ bool PrintJobWorkerOop::TryRestartPrinting() {
 void PrintJobWorkerOop::NotifyFailure(mojom::ResultCode result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  PrintOopResult uma_result = PrintOopResult::kFailed;
   if (result == mojom::ResultCode::kAccessDenied) {
     // An attempt to restart could be undesirable if some pages were able to
     // be sent to the destination before the error occurred.  If we receive
@@ -393,7 +411,11 @@ void PrintJobWorkerOop::NotifyFailure(mojom::ResultCode result) {
     PrintBackendServiceManager& service_mgr =
         PrintBackendServiceManager::GetInstance();
     service_mgr.SetPrinterDriverFoundToRequireElevatedPrivilege(device_name_);
+    uma_result = PrintOopResult::kAccessDenied;
+  } else if (result == mojom::ResultCode::kCanceled) {
+    uma_result = PrintOopResult::kCanceled;
   }
+  base::UmaHistogramEnumeration(kPrintOopPrintResultHistogramName, uma_result);
   ShowErrorDialog();
 
   // Initiate rest of regular failure handling.
