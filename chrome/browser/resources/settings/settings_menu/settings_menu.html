@@ -108,23 +108,30 @@
             <paper-ripple></paper-ripple>
           </a>
           <div class="menu-separator"></div>
-          <a role="menuitem" href="/languages" class="cr-nav-menu-item">
+          <a role="menuitem" id="languages" href="/languages"
+              class="cr-nav-menu-item"
+              hidden="[[!pageVisibility.languages]]">
             <iron-icon icon="settings:language"></iron-icon>
             $i18n{languagesPageTitle}
             <paper-ripple></paper-ripple>
           </a>
-          <a role="menuitem" href="/downloads" class="cr-nav-menu-item">
+          <a role="menuitem" id="downloads" href="/downloads"
+              class="cr-nav-menu-item"
+              hidden="[[!pageVisibility.downloads]]">
             <iron-icon icon="cr:file-download"></iron-icon>
             $i18n{downloadsPageTitle}
             <paper-ripple></paper-ripple>
           </a>
-          <a role="menuitem" href="/accessibility" class="cr-nav-menu-item">
+          <a role="menuitem" id="accessibility" href="/accessibility"
+              class="cr-nav-menu-item"
+              hidden="[[!pageVisibility.a11y]]">
             <iron-icon icon="settings:accessibility"></iron-icon>
             $i18n{a11yPageTitle}
             <paper-ripple></paper-ripple>
           </a>
     <if expr="not chromeos_ash">
-          <a role="menuitem" href="/system" class="cr-nav-menu-item">
+          <a role="menuitem" id="system" href="/system" class="cr-nav-menu-item"
+              hidden="[[!pageVisibility.system]]">
             <iron-icon icon="settings:build"></iron-icon>
             $i18n{systemPageTitle}
             <paper-ripple></paper-ripple>
@@ -136,7 +143,8 @@
             $i18n{resetPageTitle}
             <paper-ripple></paper-ripple>
           </a>
-          <div class="menu-separator"></div>
+          <div hidden="[[!pageVisibility.advancedSettings]]"
+              class="menu-separator"></div>
           <a role="menuitem" id="extensionsLink" class="cr-nav-menu-item"
               href="chrome://extensions" target="_blank"
               hidden="[[!pageVisibility.extensions]]"

@@ -91,26 +91,23 @@ suite('SettingsMenuReset', function() {
 
   test('pageVisibility', function() {
     function assertPagesHidden(expectedHidden: boolean) {
-      assertEquals(expectedHidden, settingsMenu.$.people.hidden);
-      assertEquals(
-          expectedHidden,
-          settingsMenu.shadowRoot!.querySelector<HTMLElement>(
-                                      '#appearance')!.hidden);
-      assertEquals(
-          expectedHidden,
-          settingsMenu.shadowRoot!.querySelector<HTMLElement>(
-                                      '#onStartup')!.hidden);
-      assertEquals(
-          expectedHidden,
-          settingsMenu.shadowRoot!.querySelector<HTMLElement>(
-                                      '#reset')!.hidden);
+      const ids = [
+        'accessibility', 'appearance',
+        // <if expr="not chromeos_ash and not chromeos_lacros">
+        'defaultBrowser',
+        // </if>
+        'downloads', 'languages', 'onStartup', 'people', 'reset',
+        // <if expr="not chromeos_ash">
+        'system',
+        // </if>
+      ];
 
-      // <if expr="not chromeos_ash and not chromeos_lacros">
-      assertEquals(
-          expectedHidden,
-          settingsMenu.shadowRoot!
-              .querySelector<HTMLElement>('#defaultBrowser')!.hidden);
-      // </if>
+      for (const id of ids) {
+        assertEquals(
+            expectedHidden,
+            settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+                                        `#${id}`)!.hidden);
+      }
     }
 
     // The default pageVisibility should not cause menu items to be hidden.
@@ -118,14 +115,18 @@ suite('SettingsMenuReset', function() {
 
     // Set the visibility of the pages under test to "false".
     settingsMenu.pageVisibility = Object.assign(pageVisibility || {}, {
+      a11y: false,
       advancedSettings: false,
       appearance: false,
       defaultBrowser: false,
+      downloads: false,
+      languages: false,
       multidevice: false,
       onStartup: false,
       people: false,
       reset: false,
       safetyCheck: false,
+      system: false,
     });
     flush();
 

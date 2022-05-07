@@ -28,7 +28,6 @@ import {getTemplate} from './settings_menu.html.js';
 export interface SettingsMenuElement {
   $: {
     autofill: HTMLLinkElement,
-    advancedButton: HTMLElement,
     menu: IronSelectorElement,
     people: HTMLLinkElement,
   };

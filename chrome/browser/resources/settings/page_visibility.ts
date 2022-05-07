@@ -21,6 +21,7 @@ export type PageVisibility = {
   privacy?: boolean|PrivacyPageVisibility,
   reset?: boolean,
   safetyCheck?: boolean,
+  system?: boolean,
 };
 
 export type AppearancePageVisibility = {
@@ -45,17 +46,20 @@ if (loadTimeData.getBoolean('isGuest')) {
   // to work around closure compiler.
   // <if expr="not (chromeos_ash or chromeos_lacros)">
   pageVisibility = {
-    autofill: false,
-    people: false,
-    privacy: false,
-    onStartup: false,
-    reset: false,
-    safetyCheck: false,
-    appearance: false,
-    defaultBrowser: false,
+    a11y: false,
     advancedSettings: false,
+    appearance: false,
+    autofill: false,
+    defaultBrowser: false,
+    downloads: false,
     extensions: false,
     languages: false,
+    onStartup: false,
+    people: false,
+    privacy: false,
+    reset: false,
+    safetyCheck: false,
+    system: false,
   };
   // </if>
   // <if expr="chromeos_ash or chromeos_lacros">
