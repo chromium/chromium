@@ -23,6 +23,8 @@
        <include name="IDR_IO_COM_DATAVISIONSTUDIO_ROGUELIKE" file="com.datavisionstudio.roguelike.json" type="BINDATA" />
        <include name="IDR_IO_COM_BLACKPANTHER_NINJAARASHI" file="com.blackpanther.ninjaarashi.json" type="BINDATA" />
        <include name="IDR_IO_COM_LOONGCHEER_NEVERLATE_WIZARDLEGEND_FIGHTMASTER" file="com.loongcheer.neverlate.wizardlegend.fightmaster.json" type="BINDATA" />
+       <include name="IDR_IO_COM_DIRELIGHT_GRIMVALOR" file="com.direlight.grimvalor.json" type="BINDATA" />
+       <include name="IDR_IO_COM_PIXELSTAR_PBR" file="com.pixelstar.pbr.json" type="BINDATA" />
     </includes>
   </release>
 </grit>
