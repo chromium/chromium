@@ -12,10 +12,9 @@ const AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
 
-/**
- * @implements {TtsCapturingEventListener}
- */
+/** @implements {TtsCapturingEventListener} */
 export class MediaAutomationHandler extends BaseAutomationHandler {
+  /** @private */
   constructor() {
     super(null);
     /** @type {!Set<AutomationNode>} @private */
@@ -34,6 +33,13 @@ export class MediaAutomationHandler extends BaseAutomationHandler {
       this.addListener_(
           EventType.MEDIA_STOPPED_PLAYING, this.onMediaStoppedPlaying);
     });
+  }
+
+  static init() {
+    if (MediaAutomationHandler.instance) {
+      throw 'Error: trying to create two instances of singleton MediaAutomationHandler';
+    }
+    MediaAutomationHandler.instance = new MediaAutomationHandler();
   }
 
   /** @override */
@@ -108,5 +114,8 @@ export class MediaAutomationHandler extends BaseAutomationHandler {
   }
 }
 
-/** @type {number} */
+/** @const {number} */
 MediaAutomationHandler.MIN_WAITTIME_MS = 1000;
+
+/** @type {MediaAutomationHandler} */
+MediaAutomationHandler.instance;

@@ -20,6 +20,7 @@ const StateType = chrome.automation.StateType;
  * @implements {ChromeVoxStateObserver}
  */
 export class RangeAutomationHandler extends BaseAutomationHandler {
+  /** @private */
   constructor() {
     super(null);
 
@@ -33,6 +34,13 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     this.delayedAttributeOutputId_ = -1;
 
     ChromeVoxState.addObserver(this);
+  }
+
+  static init() {
+    if (RangeAutomationHandler.instance) {
+      throw 'Error: Trying to create two copies of singleton RangeAutomationHandler';
+    }
+    RangeAutomationHandler.instance = new RangeAutomationHandler();
   }
 
   /**
@@ -248,3 +256,6 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
         rectA.width === rectB.width && rectA.height === rectB.height;
   }
 }
+
+/** @type {RangeAutomationHandler} */
+RangeAutomationHandler.instance;

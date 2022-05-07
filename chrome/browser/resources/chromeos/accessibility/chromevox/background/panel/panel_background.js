@@ -14,6 +14,7 @@ const AutomationNode = chrome.automation.AutomationNode;
 
 /** @implements {ISearchHandler} */
 export class PanelBackground {
+  /** @private */
   constructor() {
     /** @private {ISearch} */
     this.iSearch_;

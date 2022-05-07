@@ -27,9 +27,7 @@ import {InstanceChecker} from '/common/instance_checker.js';
  * background page.
  */
 
-const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
-const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
@@ -40,17 +38,30 @@ export class Background extends ChromeVoxState {
 
     // Initialize legacy background page first.
     ChromeVoxBackground.init();
-    LocaleOutputHelper.init();
 
     /** @private {cursors.Range} */
     this.currentRange_ = null;
 
-    /** @private {cursors.Range} */
-    this.previousRange_ = null;
-
     /** @type {!AbstractEarcons} @private */
     this.earcons_ = new Earcons();
 
+    /** @private {string|undefined} */
+    this.lastClipboardEvent_;
+
+    /** @private {cursors.Range} */
+    this.pageSel_;
+
+    /** @private {cursors.Range} */
+    this.previousRange_ = null;
+
+    /** @type {boolean} */
+    this.talkBackEnabled = false;
+
+    this.init_();
+  }
+
+  /** @private */
+  init_() {
     // Read-only earcons.
     Object.defineProperty(ChromeVox, 'earcons', {
       get: () => this.earcons_,
@@ -65,15 +76,6 @@ export class Background extends ChromeVoxState {
       }
     });
 
-    /** @type {!BackgroundKeyboardHandler} @private */
-    this.keyboardHandler_ = new BackgroundKeyboardHandler();
-
-    /** @type {!LiveRegions} @private */
-    this.liveRegions_ = new LiveRegions(this);
-
-    /** @private {string|undefined} */
-    this.lastClipboardEvent_;
-
     chrome.clipboard.onClipboardDataChanged.addListener(() => {
       this.onClipboardDataChanged_();
     });
@@ -81,27 +83,18 @@ export class Background extends ChromeVoxState {
       this.onClipboardCopyEvent_(event);
     });
 
-    /** @private {cursors.Range} */
-    this.pageSel_;
-
-    /** @type {boolean} */
-    this.talkBackEnabled = false;
-
-    // Initialize various handlers for automation.
+    BackgroundKeyboardHandler.init();
     DesktopAutomationHandler.init();
-    /** @private {!RangeAutomationHandler} */
-    this.rangeAutomationHandler_ = new RangeAutomationHandler();
-    /** @private {!FocusAutomationHandler} */
-    this.focusAutomationHandler_ = new FocusAutomationHandler();
-    /** @private {!MediaAutomationHandler} */
-    this.mediaAutomationHandler_ = new MediaAutomationHandler();
-    /** @private {!PageLoadSoundHandler} */
-    this.pageLoadSoundHandler_ = new PageLoadSoundHandler();
-
-    FindHandler.init();
     DownloadHandler.init();
+    FindHandler.init();
+    FocusAutomationHandler.init();
     JaPhoneticData.init(JaPhoneticMap.MAP);
+    LiveRegions.init(this);
+    LocaleOutputHelper.init();
+    MediaAutomationHandler.init();
+    PageLoadSoundHandler.init();
     PanelBackground.init();
+    RangeAutomationHandler.init();
 
     chrome.accessibilityPrivate.onAnnounceForAccessibility.addListener(
         (announceText) => {
@@ -151,9 +144,8 @@ export class Background extends ChromeVoxState {
     this.previousRange_ = this.currentRange_;
     this.currentRange_ = newRange;
 
-    ChromeVoxState.observers.forEach(function(observer) {
-      observer.onCurrentRangeChanged(newRange, opt_fromEditing);
-    });
+    ChromeVoxState.observers.forEach(
+        observer => observer.onCurrentRangeChanged(newRange, opt_fromEditing));
 
     if (!this.currentRange_) {
       ChromeVoxState.instance.setFocusBounds([]);
@@ -336,14 +328,13 @@ export class Background extends ChromeVoxState {
   }
 
   /** @private */
-  setCurrentRangeToFocus_() {
-    chrome.automation.getFocus((focus) => {
-      if (focus) {
-        this.setCurrentRange(cursors.Range.fromNode(focus));
-      } else {
-        this.setCurrentRange(null);
-      }
-    });
+  async setCurrentRangeToFocus_() {
+    const focus = await new Promise(chrome.automation.getFocus);
+    if (focus) {
+      this.setCurrentRange(cursors.Range.fromNode(focus));
+    } else {
+      this.setCurrentRange(null);
+    }
   }
 
   /**
@@ -377,10 +368,9 @@ export class Background extends ChromeVoxState {
       return;
     }
 
-    const isFocusableLinkOrControl = function(node) {
-      return node.state[StateType.FOCUSABLE] &&
-          AutomationPredicate.linkOrControl(node);
-    };
+    const isFocusableLinkOrControl = (node) =>
+        node.state[StateType.FOCUSABLE] &&
+        AutomationPredicate.linkOrControl(node);
 
     // Next, try to focus the start or end node.
     if (!AutomationPredicate.structuralContainer(start) &&
@@ -430,11 +420,10 @@ export class Background extends ChromeVoxState {
     return new RegExp(
         '^(' +
         globs
-            .map(function(glob) {
-              return glob.replace(/[.+^$(){}|[\]\\]/g, '\\$&')
-                  .replace(/\*/g, '.*')
-                  .replace(/\?/g, '.');
-            })
+            .map(
+                glob => glob.replace(/[.+^$(){}|[\]\\]/g, '\\$&')
+                            .replace(/\*/g, '.*')
+                            .replace(/\?/g, '.'))
             .join('|') +
         ')$');
   }

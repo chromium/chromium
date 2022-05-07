@@ -16,6 +16,7 @@ const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
 export class FocusAutomationHandler extends BaseAutomationHandler {
+  /** @private */
   constructor() {
     super(null);
 
@@ -25,6 +26,13 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
     chrome.automation.getDesktop((desktop) => {
       desktop.addEventListener(EventType.FOCUS, this.onFocus.bind(this), false);
     });
+  }
+
+  static init() {
+    if (FocusAutomationHandler.instance) {
+      throw 'Error: Trying to create two instances of singleton FocusAutomationHandler';
+    }
+    FocusAutomationHandler.instance = new FocusAutomationHandler();
   }
 
   /**
@@ -147,3 +155,6 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
     }
   }
 }
+
+/** @type {FocusAutomationHandler} */
+FocusAutomationHandler.instance;

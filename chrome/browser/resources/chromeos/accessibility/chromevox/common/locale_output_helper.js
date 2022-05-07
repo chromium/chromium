@@ -184,3 +184,6 @@ LocaleOutputHelper = class {
                locale, locale) !== '';
   }
 };
+
+/** @type {LocaleOutputHelper} */
+LocaleOutputHelper.instance;

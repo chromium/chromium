@@ -9,6 +9,7 @@
 const TreeChangeObserverFilter = chrome.automation.TreeChangeObserverFilter;
 
 export class FindHandler {
+  /** @private */
   constructor() {
     /**
      * The last time a find marker was received.
@@ -25,6 +26,9 @@ export class FindHandler {
 
   /** Initializes this module. */
   static init() {
+    if (FindHandler.instance) {
+      throw 'Error: Trying to create two instances of singleton FindHandler';
+    }
     FindHandler.instance = new FindHandler();
   }
 
@@ -70,3 +74,6 @@ export class FindHandler {
  * @const {number}
  */
 FindHandler.DROP_MATCH_WITHIN_TIME_MS = 50;
+
+/** @type {FindHandler} */
+FindHandler.instance;

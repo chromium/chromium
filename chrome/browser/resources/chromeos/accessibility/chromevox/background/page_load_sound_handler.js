@@ -17,6 +17,7 @@ const StateType = chrome.automation.StateType;
 
 /** @implements {ChromeVoxStateObserver} */
 export class PageLoadSoundHandler extends BaseAutomationHandler {
+  /** @private */
   constructor() {
     super(null);
 
@@ -31,6 +32,13 @@ export class PageLoadSoundHandler extends BaseAutomationHandler {
 
       ChromeVoxState.addObserver(this);
     });
+  }
+
+  static init() {
+    if (PageLoadSoundHandler.instance) {
+      throw 'Error: Trying to create two instances of singleton PageLoadSoundHandler';
+    }
+    PageLoadSoundHandler.instance = new PageLoadSoundHandler();
   }
 
   /**
@@ -81,3 +89,6 @@ export class PageLoadSoundHandler extends BaseAutomationHandler {
     // the docLoadingProgress < 1.
   }
 }
+
+/** @type {PageLoadSoundHandler} */
+PageLoadSoundHandler.instance;

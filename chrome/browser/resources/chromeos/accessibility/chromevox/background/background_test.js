@@ -22,6 +22,9 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     this.forceContextualLastOutput();
 
     await importModule(
+        'BackgroundKeyboardHandler',
+        '/chromevox/background/keyboard_handler.js');
+    await importModule(
         'BaseAutomationHandler',
         '/chromevox/background/base_automation_handler.js');
     await importModule(
@@ -3510,7 +3513,7 @@ TEST_F(
   `;
       const root = await this.runWithLoadedTree(site);
       // Different ways to navigate to the next object.
-      const keyboardHandler = ChromeVoxState.instance.keyboardHandler_;
+      const keyboardHandler = BackgroundKeyboardHandler.instance;
       const nextObjectKeyboard =
           keyboardHandler.onKeyDown.bind(keyboardHandler, {
             keyCode: KeyCode.RIGHT,
