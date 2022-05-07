@@ -28,6 +28,14 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// The prefix of domain name that can be removed. It is used when generating the
+// follow item text.
+const std::string kRemovablePrefix = "www.";
+
+}  // namespace.
+
 FollowTabHelper::~FollowTabHelper() {
   DCHECK(!web_state_);
 }
@@ -128,6 +136,10 @@ void FollowTabHelper::UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls) {
   NSString* title = nil;
   std::string domainName =
       web::GetMainFrame(web_state_)->GetSecurityOrigin().host();
+  if (domainName.substr(0, kRemovablePrefix.length()) == kRemovablePrefix) {
+    domainName =
+        domainName.substr(kRemovablePrefix.length(), domainName.length());
+  }
   if (!status) {
     title = l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW,
                                     base::UTF8ToUTF16(domainName));
