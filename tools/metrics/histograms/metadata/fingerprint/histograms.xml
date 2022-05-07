@@ -192,11 +192,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.MatchIgnoredDueToPowerButtonPress"
-    enum="BooleanIgnored" expires_after="2022-05-01">
+    enum="BooleanIgnored" expires_after="2023-04-05">
   <owner>ravisadineni@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
-    Whether fingerprint touch was ignored due to parallel power button press.
+    ChromeOS only. Record when a fingerprint touch was ignored due to parallel
+    power button press. Fingerprint matches will be ignored for a duration of
+    kAuthIgnoreTimeoutmsecs (1000 ms) after each power button press. This only
+    applies to fingerprint sensors that reside on a power button.
   </summary>
 </histogram>
 
@@ -230,20 +233,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.ReadPositiveMatchSecret.Success"
-    enum="BooleanSuccess" expires_after="2022-05-01">
+    enum="BooleanSuccess" expires_after="2023-04-05">
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
-    Whether successfully read positive match secret from FPMCU when needed.
+    ChromeOS Only. After a positive fingerprint match has been identified,
+    record when a positive match secret is read from FPMCU. Note that this does
+    not indicate that the match was was validated, only that the secret was
+    read. Fingerprint.Unlock.Match.PositiveMatchSecretCorrect may be used to
+    track validation.
   </summary>
 </histogram>
 
 <histogram name="Fingerprint.Unlock.RecordFormatVersion"
-    enum="FingerprintRecordFormatVersion" expires_after="2022-05-01">
+    enum="FingerprintRecordFormatVersion" expires_after="2023-04-05">
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
-    Format version of a fingerprint template record read from storage.
+    Format version of a fingerprint template record read from storage. ChromeOS
+    Only. Records the format version of each fingerprint template record prior
+    to uploading to the FPMCU. Format version will not be recorded if there are
+    no available record slots.
   </summary>
 </histogram>
 
