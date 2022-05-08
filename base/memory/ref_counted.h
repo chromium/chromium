@@ -28,8 +28,12 @@ class BASE_EXPORT RefCountedBase {
   RefCountedBase(const RefCountedBase&) = delete;
   RefCountedBase& operator=(const RefCountedBase&) = delete;
 
-  bool HasOneRef() const { return ref_count_ == 1; }
-  bool HasAtLeastOneRef() const { return ref_count_ >= 1; }
+  bool HasOneRef() const {
+    return ref_count_ == 1;
+  }
+  bool HasAtLeastOneRef() const {
+    return ref_count_ >= 1;
+  }
 
  protected:
   explicit RefCountedBase(StartRefCountFromZeroTag) {
@@ -398,7 +402,9 @@ class RefCountedThreadSafe : public subtle::RefCountedThreadSafeBase {
   RefCountedThreadSafe(const RefCountedThreadSafe&) = delete;
   RefCountedThreadSafe& operator=(const RefCountedThreadSafe&) = delete;
 
-  void AddRef() const { AddRefImpl(T::kRefCountPreference); }
+  void AddRef() const {
+    AddRefImpl(T::kRefCountPreference);
+  }
 
   void Release() const {
     if (subtle::RefCountedThreadSafeBase::Release()) {

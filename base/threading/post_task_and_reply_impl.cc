@@ -141,7 +141,8 @@ bool PostTaskAndReplyImpl::PostTaskAndReply(const Location& from_here,
       from_here,
       BindOnce(&PostTaskAndReplyRelay::RunTaskAndPostReply,
                PostTaskAndReplyRelay(
-                   from_here, std::move(task), std::move(reply),
+                   from_here, std::move(task),
+                   std::move(reply),
                    has_sequenced_context ? SequencedTaskRunnerHandle::Get()
                                          : nullptr)));
 

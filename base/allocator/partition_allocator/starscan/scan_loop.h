@@ -43,6 +43,9 @@ namespace internal {
 // incoming ranges are properly aligned. The class is designed around the CRTP
 // version of the "template method" (in GoF terms). CRTP is needed for fast
 // static dispatch.
+// 使用可用的最佳 SIMD 扩展对内存范围进行迭代。假设64位平台支持笼子，并且传入范围的
+// 开始指针正确对齐。该类是围绕“模板方法”的 CRTP 版本（在 GoF 术语中）设计的。
+// 快速静态调度需要 CRTP。
 template <typename Derived>
 class ScanLoop {
  public:
@@ -55,8 +58,12 @@ class ScanLoop {
   void Run(uintptr_t* begin, uintptr_t* end);
 
  private:
-  const Derived& derived() const { return static_cast<const Derived&>(*this); }
-  Derived& derived() { return static_cast<Derived&>(*this); }
+  const Derived& derived() const {
+    return static_cast<const Derived&>(*this);
+  }
+  Derived& derived() {
+    return static_cast<Derived&>(*this);
+  }
 
 #if defined(ARCH_CPU_X86_64)
   __attribute__((target("avx2"))) void RunAVX2(uintptr_t*, uintptr_t*);
@@ -109,9 +116,8 @@ void ScanLoop<Derived>::RunUnvectorized(uintptr_t* begin, uintptr_t* end) {
 
 #if defined(ARCH_CPU_X86_64)
 template <typename Derived>
-__attribute__((target("avx2"))) void ScanLoop<Derived>::RunAVX2(
-    uintptr_t* begin,
-    uintptr_t* end) {
+__attribute__((target("avx2")))
+void ScanLoop<Derived>::RunAVX2(uintptr_t* begin, uintptr_t* end) {
   static constexpr size_t kAlignmentRequirement = 32;
   static constexpr size_t kWordsInVector = 4;
   PA_SCAN_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % kAlignmentRequirement));

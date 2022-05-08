@@ -265,7 +265,8 @@ const char* PlatformThread::GetName() {
 }
 
 // static
-bool PlatformThread::CreateWithPriority(size_t stack_size, Delegate* delegate,
+bool PlatformThread::CreateWithPriority(size_t stack_size,
+                                        Delegate* delegate,
                                         PlatformThreadHandle* thread_handle,
                                         ThreadPriority priority) {
   return CreateThread(stack_size, true /* joinable thread */, delegate,

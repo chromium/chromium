@@ -163,8 +163,10 @@ class BASE_EXPORT ThreadPool {
     auto* result = new std::unique_ptr<TaskReturnType>();
     return PostTaskAndReply(
         from_here, traits,
-        BindOnce(&internal::ReturnAsParamAdapter<TaskReturnType>, std::move(task), result),
-        BindOnce(&internal::ReplyAdapter<TaskReturnType, ReplyArgType>, std::move(reply), Owned(result)));
+        BindOnce(&internal::ReturnAsParamAdapter<TaskReturnType>,
+                 std::move(task), result),
+        BindOnce(&internal::ReplyAdapter<TaskReturnType, ReplyArgType>,
+                 std::move(reply), Owned(result)));
   }
 
   // Returns a TaskRunner whose PostTask invocations result in scheduling tasks
@@ -173,7 +175,8 @@ class BASE_EXPORT ThreadPool {
 
   // Returns a SequencedTaskRunner whose PostTask invocations result in
   // scheduling tasks using |traits|. Tasks run one at a time in posting order.
-  static scoped_refptr<SequencedTaskRunner> CreateSequencedTaskRunner(const TaskTraits& traits);
+  static scoped_refptr<SequencedTaskRunner> CreateSequencedTaskRunner(
+      const TaskTraits& traits);
 
   // Returns a task runner whose PostTask invocations result in scheduling tasks
   // using |traits|. The priority in |traits| can be updated at any time via
@@ -220,7 +223,8 @@ class BASE_EXPORT ThreadPool {
   // COM pointers are not smuggled across apartments.
   static scoped_refptr<SingleThreadTaskRunner> CreateCOMSTATaskRunner(
       const TaskTraits& traits,
-      SingleThreadTaskRunnerThreadMode thread_mode = SingleThreadTaskRunnerThreadMode::SHARED);
+      SingleThreadTaskRunnerThreadMode thread_mode =
+          SingleThreadTaskRunnerThreadMode::SHARED);
 #endif  // defined(OS_WIN)
 };
 

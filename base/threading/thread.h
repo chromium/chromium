@@ -40,17 +40,23 @@ class RunLoop;
 
 // IMPORTANT: Instead of creating a base::Thread, consider using
 // base::Create(Sequenced|SingleThread)TaskRunner().
+// 考虑使用 base::Create(Sequenced|SingleThread)TaskRunner()，而不是创建
+// base::Thread。
 //
 // A simple thread abstraction that establishes a MessageLoop on a new thread.
 // The consumer uses the MessageLoop of the thread to cause code to execute on
 // the thread.  When this object is destroyed the thread is terminated.  All
 // pending tasks queued on the thread's message loop will run to completion
 // before the thread is terminated.
+// 在新线程上建立 MessageLoop 的简单线程抽象。消费者使用线程的 MessageLoop 使代码
+// 在线程上执行。当这个对象被销毁时，线程被终止。在线程的消息循环中排队的所有未决任务
+// 将在线程终止之前运行到完成。
 //
 // WARNING! SUBCLASSES MUST CALL Stop() IN THEIR DESTRUCTORS!  See ~Thread().
+// 警告！子类必须在其析构函数中调用 Stop()！ 请参阅 ~Thread()。
 //
 // After the thread is stopped, the destruction sequence is:
-//
+// 线程停止后，销毁顺序为：
 //  (1) Thread::CleanUp()
 //  (2) MessageLoop::~MessageLoop
 //  (3.b) CurrentThread::DestructionObserver::WillDestroyCurrentMessageLoop
@@ -58,6 +64,8 @@ class RunLoop;
 // This API is not thread-safe: unless indicated otherwise its methods are only
 // valid from the owning sequence (which is the one from which Start() is
 // invoked -- should it differ from the one on which it was constructed).
+// 此 API 不是线程安全的：除非另有说明，否则它的方法仅在拥有序列中有效（这是调用
+// Start() 的序列——如果它与构造它的序列不同）。
 //
 // Sometimes it's useful to kick things off on the initial sequence (e.g.
 // construction, Start(), task_runner()), but to then hand the Thread over to a
@@ -66,6 +74,10 @@ class RunLoop;
 // ownership. The caller is then responsible to ensure a happens-after
 // relationship between the DetachFromSequence() call and the next use of that
 // Thread object (including ~Thread()).
+// 有时在初始序列上开始（例如构造、Start()、task_runner()）很有用，但随后将线程移
+// 交给用户池，供最后一个用户在完成后销毁它。对于该用例，Thread::DetachFromSequence()
+// 允许拥有序列放弃所有权。 然后调用者负责确保 DetachFromSequence() 调用和该
+// Thread 对象的下一次使用（包括 ~Thread()）之间的发生后关系。
 class BASE_EXPORT Thread : PlatformThread::Delegate {
  public:
   class BASE_EXPORT Delegate {
@@ -77,6 +89,8 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     // Binds a RunLoop::Delegate and TaskRunnerHandle to the thread. The
     // underlying MessagePump will have its |timer_slack| set to the specified
     // amount.
+    // 将 RunLoop::Delegate 和 TaskRunnerHandle 绑定到线程。 底层 MessagePump
+    // 将有它的 |timer_slack| 设置为指定的数量。
     virtual void BindToCurrentThread(TimerSlack timer_slack) = 0;
   };
 
@@ -106,6 +120,10 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     // appropriate for |message_pump_type| is created. Setting this forces the
     // MessagePumpType to TYPE_CUSTOM. This is not compatible with a non-null
     // |delegate|.
+    // 用于为 MessageLoop 创建 MessagePump。回调是线程上的 Run()。如果
+    // message_pump_factory.is_null()，那么适合 |message_pump_type| 的
+    // MessagePump 被建造。设置此项会强制 MessagePumpType 为 TYPE_CUSTOM。
+    // 这与非空 |delegate| 不兼容。
     // MessagePumpFactory的真实类型是std::unique_ptr<MessagePump>()
     MessagePumpFactory message_pump_factory;
 
@@ -130,8 +148,8 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     }
 
    private:
-    // Set to true when the object is moved into another. Use to prevent reuse
-    // of a moved-from object.
+    // Set to true when the object is moved into another. Use to prevent
+    // reuse of a moved-from object.
     bool moved_from = false;
   };
 

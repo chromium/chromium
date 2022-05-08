@@ -187,6 +187,11 @@ class BASE_EXPORT PlatformThread {
   // NOTE: When you are done with the thread handle, you must call Join to
   // release system resources associated with the thread.  You must ensure that
   // the Delegate object outlives the thread.
+  // 创建一个新线程。`stack_size` 参数可以为0，表示应使用默认堆栈大小。成功后，
+  // `*thread_handle` 将被分配一个新创建线程的句柄，`delegate` 的 ThreadMain
+  // 方法将在新创建的线程上执行。
+  // 注意：当您完成线程句柄时，您必须调用 Join 以释放与线程关联的系统资源。您必须确
+  // 保 Delegate 对象的寿命比线程长。
   static bool Create(size_t stack_size,
                      Delegate* delegate,
                      PlatformThreadHandle* thread_handle) {
@@ -196,7 +201,8 @@ class BASE_EXPORT PlatformThread {
 
   // CreateWithPriority() does the same thing as Create() except the priority of
   // the thread is set based on `priority`.
-  static bool CreateWithPriority(size_t stack_size, Delegate* delegate,
+  static bool CreateWithPriority(size_t stack_size,
+                                 Delegate* delegate,
                                  PlatformThreadHandle* thread_handle,
                                  ThreadPriority priority);
 

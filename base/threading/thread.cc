@@ -153,6 +153,15 @@ Thread::~Thread() {
   Stop();
 }
 
+/**
+ * @brief 开始执行线程（模型），本质上是通过:
+ * SequenceManagerImpl ->
+ * ThreadControllerWithMessagePumpImpl ->
+ * MessagePump(例如：MessagePumpLibevent)
+ * 来实现的线程模型，即：通过给MessagePump设置Delegate实例来执行消息泵唤醒时的调用，
+ * 进而调用 SingleThreadTaskRunner(本质是TaskRunner) 去真正的执行消息队列。
+ * 这样就准备好了消息模型.
+ */
 bool Thread::Start() {
   DCHECK(owning_sequence_checker_.CalledOnValidSequence());
 
@@ -191,10 +200,12 @@ bool Thread::StartWithOptions(Options options) {
     delegate_ = std::make_unique<SequenceManagerThreadDelegate>(
         MessagePumpType::CUSTOM, options.message_pump_factory);
   } else {
+    // 在 MessagePumpType 构造函数中会创建并初始化消息泵，使其处于等待休眠状态
     delegate_ = std::make_unique<SequenceManagerThreadDelegate>(
         options.message_pump_type,
-        BindOnce([](MessagePumpType type) { return MessagePump::Create(type); },
-                 options.message_pump_type));
+        BindOnce([](MessagePumpType type) {
+          return MessagePump::Create(type);
+        }, options.message_pump_type));
   }
 
   start_event_.Reset();
@@ -292,7 +303,8 @@ void Thread::StopSoon() {
   stopping_ = true;
 
   task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&Thread::ThreadQuitHelper, Unretained(this)));
+      FROM_HERE,
+      base::BindOnce(&Thread::ThreadQuitHelper, Unretained(this)));
 }
 
 void Thread::DetachFromSequence() {
