@@ -29,7 +29,7 @@
 
 namespace blink {
 
-class HTMLButtonElement final : public HTMLFormControlElement {
+class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

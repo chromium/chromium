@@ -1,0 +1,57 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored invisible
+++++++++staticText ignored name='Div popup'
+++++++listBox ignored invisible
+++++++++genericContainer ignored invisible
+++++++++++staticText ignored name='Listbox role on ul'
+++++++listBox ignored invisible
+++++++++genericContainer ignored invisible
+++++++++++staticText ignored name='Listbox role on ul'
+++++++details ignored invisible
+++++++button collapsed name='Button pointing to hidden popup'
+++++++++staticText name='Button pointing to hidden popup'
+++++++++++inlineTextBox name='Button pointing to hidden popup'
+++++++genericContainer ignored invisible
+++++++++staticText ignored name='Popup'
+++++++button name='Show button pointing to hidden hint'
+++++++++staticText name='Show button pointing to hidden hint'
+++++++++++inlineTextBox name='Show button pointing to hidden hint'
+++++++genericContainer ignored invisible
+++++++++staticText ignored name='Hint'
+++++++button name='Hide button pointing to hidden async'
+++++++++staticText name='Hide button pointing to hidden async'
+++++++++++inlineTextBox name='Hide button pointing to hidden async'
+++++++genericContainer ignored invisible
+++++++++staticText ignored name='Async'
+++++++button name='Button pointing to showing popup'
+++++++++staticText name='Button pointing to showing popup'
+++++++++++inlineTextBox name='Button pointing to showing popup'
+++++++button name='Show button pointing to showing hint'
+++++++++staticText name='Show button pointing to showing hint'
+++++++++++inlineTextBox name='Show button pointing to showing hint'
+++++++genericContainer
+++++++++staticText name='Popup'
+++++++++++inlineTextBox name='Popup'
+++++++++genericContainer
+++++++++++staticText name='Hint (nested)'
+++++++++++++inlineTextBox name='Hint (nested)'
+++++++button name='Hide button pointing to showing async'
+++++++++staticText name='Hide button pointing to showing async'
+++++++++++inlineTextBox name='Hide button pointing to showing async'
+++++++genericContainer
+++++++++staticText name='Async'
+++++++++++inlineTextBox name='Async'
+++++++button name='Button pointing to non-popup'
+++++++++staticText name='Button pointing to non-popup'
+++++++++++inlineTextBox name='Button pointing to non-popup'
+++++++genericContainer
+++++++++staticText name='No popup attribute'
+++++++++++inlineTextBox name='No popup attribute'
+++++++button name='Button pointing to invalid popup value'
+++++++++staticText name='Button pointing to invalid popup value'
+++++++++++inlineTextBox name='Button pointing to invalid popup value'
+++++++genericContainer
+++++++++staticText name='Invalid popup attribute value'
+++++++++++inlineTextBox name='Invalid popup attribute value'

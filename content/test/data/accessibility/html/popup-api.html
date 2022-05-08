@@ -1,0 +1,33 @@
+<html>
+<body>
+<div popup=popup>Div popup</div>
+<ul popup=popup role=listbox><li>Listbox role on ul</li></ul>
+<ul popup=popup role=listbox><li>Listbox role on ul</li></ul>
+<details popup=popup><summary>summary/details popup</summary></details>
+
+<button togglepopup=popup1>Button pointing to hidden popup</button>
+<div popup=popup id=popup1>Popup</div>
+<button showpopup=hint1>Show button pointing to hidden hint</button>
+<div popup=hint id=hint1>Hint</div>
+<button hidepopup=async1>Hide button pointing to hidden async</button>
+<div popup=async id=async1>Async</div>
+
+<button togglepopup=popup2>Button pointing to showing popup</button>
+<button showpopup=hint2>Show button pointing to showing hint</button>
+<div popup=popup id=popup2>Popup
+  <div popup=hint id=hint2>Hint (nested)</div>
+</div>
+<button hidepopup=async2>Hide button pointing to showing async</button>
+<div popup=async id=async2>Async</div>
+<script>
+  popup2.showPopup();
+  hint2.showPopup();
+  async2.showPopup();
+</script>
+
+<button togglepopup=noattr>Button pointing to non-popup</button>
+<div id=noattr>No popup attribute</div>
+<button togglepopup=badattr>Button pointing to invalid popup value</button>
+<div id=badattr popup=invalid_value>Invalid popup attribute value</div>
+</body>
+</html>

@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
@@ -1833,6 +1834,18 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
     return To<HTMLSelectElement>(element)->PopupIsVisible()
                ? kExpandedExpanded
                : kExpandedCollapsed;
+  }
+
+  // For buttons that contain the |togglepopup|, |showpopup|, or |hidepopup|
+  // popup triggering attributes, and the pointed-to element is a valid popup
+  // with type kPopup, then set aria-expanded=false when the popup is hidden,
+  // and aria-expanded=true when it is showing.
+  if (auto* button = DynamicTo<HTMLButtonElement>(element)) {
+    if (auto* popup = button->togglePopupElement()) {
+      if (popup->PopupType() == PopupValueType::kPopup) {
+        return popup->popupOpen() ? kExpandedExpanded : kExpandedCollapsed;
+      }
+    }
   }
 
   if (IsA<HTMLSummaryElement>(*element)) {
