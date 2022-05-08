@@ -15,9 +15,13 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
+#include "url/gurl.h"
 
 namespace {
 
+using ax::mojom::IntAttribute;
+using ax::mojom::Role;
+using ax::mojom::StringAttribute;
 using read_anything::mojom::ContentNode;
 using read_anything::mojom::ContentNodePtr;
 using read_anything::mojom::ContentType;
@@ -30,17 +34,27 @@ ContentNodePtr GetFromAXNode(ui::AXNode* ax_node) {
   if (ui::IsHeading(ax_node->GetRole())) {
     content_node->type = ContentType::kHeading;
     content_node->heading_level =
-        ax_node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
-  } else if (ax_node->GetRole() == ax::mojom::Role::kParagraph) {
+        ax_node->GetIntAttribute(IntAttribute::kHierarchicalLevel);
+  } else if (ui::IsLink(ax_node->GetRole())) {
+    content_node->type = ContentType::kLink;
+    content_node->url =
+        GURL(ax_node->GetStringAttribute(StringAttribute::kUrl));
+  } else if (ax_node->GetRole() == Role::kParagraph) {
     content_node->type = ContentType::kParagraph;
+  } else if (ax_node->GetRole() == Role::kStaticText) {
+    content_node->type = ContentType::kStaticText;
+    content_node->text = ax_node->GetTextContentUTF8();
   } else {
     return nullptr;
   }
 
-  // Set ContentNode.text. If ax_node doesn't contain any text, return nullptr.
-  if (!ax_node->GetTextContentLengthUTF8())
-    return nullptr;
-  content_node->text = ax_node->GetTextContentUTF8();
+  // Set ContentNode.children.
+  for (auto it = ax_node->UnignoredChildrenBegin();
+       it != ax_node->UnignoredChildrenEnd(); ++it) {
+    ContentNodePtr child_content_node = GetFromAXNode(it.get());
+    if (child_content_node)
+      content_node->children.push_back(std::move(child_content_node));
+  }
 
   return content_node;
 }

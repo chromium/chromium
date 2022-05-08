@@ -68,7 +68,6 @@ ts_library("build_ts") {
     "bookmarks/bookmarks_drag_manager.ts",
     "bookmarks/bookmarks.mojom-webui.js",
     "read_anything/app.ts",
-    "read_anything/heading_element.ts",
     "read_anything/read_anything_api_proxy.ts",
     "read_anything/read_anything.mojom-webui.js",
     "reading_list/app.ts",

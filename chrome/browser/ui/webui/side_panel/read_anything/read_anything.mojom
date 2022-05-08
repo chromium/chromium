@@ -5,6 +5,8 @@
 // A module for a prototype of the Read Anything feature.
 module read_anything.mojom;
 
+import "url/mojom/url.mojom";
+
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -15,16 +17,22 @@ interface PageHandlerFactory {
 // The type of content node.
 enum ContentType {
   kHeading,
+  kLink,
   kParagraph,
+  kStaticText,
 };
 
-// A node that contains distilled content. All nodes have type ContentType and
-// text. Some node types have additional values, which are verified in WebUI:
+// A node that contains distilled content. All nodes have type ContentType.
+// Some node types have additional values, which are verified in WebUI:
 //   ContentNode with type kHeading must have a heading_level.
+//   ContentNode with type kStaticText must have text.
+//   ContentNode with type kUrl must have a url.
 struct ContentNode {
-  ContentType type;
-  string text;
+  array<ContentNode> children;
   uint32 heading_level;
+  string text;
+  ContentType type;
+  url.mojom.Url url;
 };
 
 // Browser-side handler for requests from WebUI page.

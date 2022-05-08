@@ -24,15 +24,5 @@
   .calibri {
     font-family: Calibri, 'Times New Roman', serif;
   }
-
 </style>
-<div id="container" class$="[[fontName_]]">
-  <template is="dom-repeat" items="[[content_]]">
-    <template is="dom-if" if="[[isParagraph_(item)]]">
-      <p>[[item.text]]</p>
-    </template>
-    <template is="dom-if" if="[[isHeading_(item)]]">
-      <read-anything-heading content-node="[[item]]"></read-anything-heading>
-    </template>
-  </template>
-</div>
+<div id="container" class$="[[fontName_]]"></div>

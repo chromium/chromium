@@ -27,15 +27,9 @@ preprocess_if_expr("preprocess_web_components") {
   deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = preprocess_folder
-  in_files = [
-    "app.ts",
-    "heading_element.ts",
-  ]
+  in_files = [ "app.ts" ]
 }
 
 html_to_js("web_components") {
-  js_files = [
-    "app.ts",
-    "heading_element.ts",
-  ]
+  js_files = [ "app.ts" ]
 }
