@@ -139,7 +139,6 @@ component("gtk") {
     "//ui/gfx/geometry",
     "//ui/native_theme",
     "//ui/shell_dialogs",
-    "//ui/shell_dialogs",
     "//ui/strings",
     "//ui/views",
     "//url",
