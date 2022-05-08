@@ -1,8 +1,9 @@
 # GPU Demo for Video Conferencing Simulation
 
 The demo files display MxN videos with a small rectangle (UI) on top of each
-video. A small video simulating the image from the local camera is displays at
-the top right corner.
+video, and 2 FPS panels to respectively indicate the whole page and the average
+video refreshment rates. A small video simulating the image from the local
+camera is displayed at the top right corner.
 
 
 ## Configurations
@@ -23,6 +24,11 @@ All default videos are VP9 coding format. It can be changed to VP8.
 ### videos_mxn.html
 Video elements are played through the default web media player. The UI are added
 with CSS icons.
+
+### webgl_videos_mxn.html
+  PLEASE RUN http-server TO SERVE THIS DEMO, OTHERWISE THIS DEMO WILL NOT START.
+The image of each video frame is uploaded and rendered by WebGL. The UI is also
+rendered by WebGL. The demo uses texImage2D API to copy the video textures into GPU.
 
 ### webgpu_videos_mxn.html
   PLEASE RUN http-server TO SERVE THIS DEMO, OTHERWISE THIS DEMO WILL NOT START.
@@ -50,10 +56,15 @@ videos_mxn.html?codec=vp8
 webgpu_videos_mxn.html?codec=vp8
 ```
 
-For webgpu_videos_mxn.html only:
+For webgl_videos_mxn.html and webgpu_videos_mxn.html:
 To remove the UI icons. Use `ui=none`.
 ```
 webgpu_videos_mxn.html?ui=none
+```
+
+To remove the FPS panels. Use `fps=none`.
+```
+webgpu_videos_mxn.html?fps=none
 ```
 
 For webgpu_videos_mxn.html only:

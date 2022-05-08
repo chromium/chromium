@@ -1,11 +1,11 @@
 <!--
-Copyright(c) 2021 The Chromium Authors.All rights reserved.
+Copyright(c) 2022 The Chromium Authors.All rights reserved.
 Use of this source code is governed by a BSD - style license that can be
 found in the LICENSE file.
 -->
 <html>
 <head>
-  <title>WebGpu MxN Video playbacks</title>
+  <title>WebGL MxN Video playbacks</title>
   <style>
     #message {
       position: absolute;
@@ -17,7 +17,7 @@ found in the LICENSE file.
   </style>
   <script type="text/javascript" src="../third_party/stats-js/stats.js"></script>
   <script type="text/javascript" src="video_utils.js"></script>
-  <script type="text/javascript" src="webgpu_video.js"></script>
+  <script type="text/javascript" src="webgl_video.js"></script>
   <script>
     const _defaultRows = 7;
     const _defaultColumns = 7;
@@ -25,20 +25,17 @@ found in the LICENSE file.
     const _totalVideoHeight = 900;
     var hasUIOnTop = true;
     var hasFPSOnTop = true;
-    var useImportTextureApi = true;
     var codec = 'vp9';
 
     async function startMxNVideos() {
       const container = document.getElementById('container');
       const p = document.getElementById('message');
 
-      // Initialize WebGpu
-      const gpuSetting = await webGpuInit(_totalVideoWidth, _totalVideoHeight);
-      if (!gpuSetting) {
-        p.innerHTML = "Webgpu not supported!" + "<br />" + "<br />" +
-          "Did you forget to add command line switch --enable-unsafe-webgpu?" +
-          "<br />" +
-          "Are you running on the latest Canary or Chromium build?"
+      // Initialize WebGL
+
+      const gl = await webglInit(_totalVideoWidth, _totalVideoHeight);
+      if (!gl) {
+        p.innerHTML = "WebGL not supported!";
         return;
       }
 
@@ -50,12 +47,6 @@ found in the LICENSE file.
       const fpsOption = parsedString['fps'];
       if (fpsOption == 'none')
         hasFPSOnTop = false;
-
-      const api = parsedString['import_texture_api']
-      if (api == '0')
-        useImportTextureApi = false;
-      else if (api == '1')
-        useImportTextureApi = true;
 
       codecString = parsedString['codec']
       if (codecString == 'vp8')
@@ -111,9 +102,9 @@ found in the LICENSE file.
       await Promise.all(videos.map(video => video.play()));
       p.remove();
 
-      // Simulate video playback by WebGpu rendering.
-      webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
-        hasUIOnTop , hasFPSOnTop, useImportTextureApi);
+      // Simulate video playback by WebGL rendering.
+      webglDrawVideoFrames(gl, videos, videoRows, videoColumns,
+        hasUIOnTop , hasFPSOnTop);
     }
 
   </script>

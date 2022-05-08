@@ -1,0 +1,13 @@
+Name: JavaScript Performance Monitor
+Short Name: stats.js
+URL: https://github.com/mrdoob/stats.js/
+Version: r17
+Date: 20220405
+Revision: 1ecb62cd10f30789b540dcdbbd473f1de6eed614
+Security Critical: no
+License: MIT
+License File: NOT_SHIPPED
+
+Description:
+  This package provides a simple info box that will help you monitor your code
+  performance.
