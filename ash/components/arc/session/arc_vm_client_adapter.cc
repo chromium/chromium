@@ -95,10 +95,6 @@ constexpr int kLogdConfigSizeSmall = 256;   // kBytes
 constexpr int kLogdConfigSizeMed = 512;     // kBytes
 constexpr int kLogdConfigSizeLarge = 1024;  // kBytes
 
-// Disk size of virtio-blk image for /data.
-// TODO(b/217650747): Optimize this value.
-constexpr int64_t kDataDiskSizeBytes = 5LL * 1024 * 1024 * 1024;  // 5GB
-
 // The owner ID that ARCVM is started with for mini-ARCVM. On UpgradeArc,
 // the owner ID is set to the logged-in user.
 constexpr const char kArcVmDefaultOwner[] = "ARCVM_DEFAULT_OWNER";
@@ -1002,10 +998,11 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     }
 
     // Use virtio-blk for /data.
+    // If request.disk_size is not set, concierge calculates the desired size
+    // (90% of the available space) and creates a sparse disk image.
     vm_tools::concierge::CreateDiskImageRequest request;
     request.set_cryptohome_id(user_id_hash_);
     request.set_vm_name(kArcVmName);
-    request.set_disk_size(kDataDiskSizeBytes);
     request.set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
     request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
 
