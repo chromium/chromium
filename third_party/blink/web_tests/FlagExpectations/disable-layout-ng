@@ -1279,6 +1279,9 @@ crbug.com/958381 fast/table/border-collapsing/composited-row-collapsed-border.ht
 ### Tests that pass in ng and fail in Legacy
 
 # external/wpt/css/CSS2/normal-flow/
+crbug.com/716930 external/wpt/css/CSS2/normal-flow/block-in-inline-float-in-layer-001.html [ Failure ]
+crbug.com/711807 external/wpt/css/CSS2/normal-flow/block-in-inline-insert-001f.xht [ Failure ]
+crbug.com/711807 external/wpt/css/CSS2/normal-flow/block-in-inline-insert-002f.xht [ Failure ]
 crbug.com/711807 external/wpt/css/CSS2/normal-flow/max-width-applies-to-013.xht [ Failure ]
 crbug.com/711807 external/wpt/css/CSS2/normal-flow/max-width-applies-to-014.xht [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/normal-flow/min-height-applies-to-014.xht [ Failure ]

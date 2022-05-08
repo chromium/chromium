@@ -932,8 +932,6 @@ crbug.com/711805 external/wpt/css/CSS2/positioning/position-relative-034.xht [ S
 crbug.com/711805 external/wpt/css/CSS2/positioning/position-relative-035.xht [ Skip ]
 crbug.com/711805 external/wpt/css/CSS2/positioning/position-relative-036.xht [ Skip ]
 
-crbug.com/711807 external/wpt/css/CSS2/normal-flow/block-in-inline-insert-001f.xht [ Failure ]
-crbug.com/711807 external/wpt/css/CSS2/normal-flow/block-in-inline-insert-002f.xht [ Failure ]
 crbug.com/711807 external/wpt/css/CSS2/normal-flow/inline-block-002.xht [ Skip ]
 crbug.com/711807 external/wpt/css/CSS2/normal-flow/inline-block-003.xht [ Skip ]
 crbug.com/711807 external/wpt/css/CSS2/normal-flow/inline-block-004.xht [ Skip ]
@@ -946,8 +944,6 @@ crbug.com/711807 external/wpt/css/CSS2/normal-flow/max-width-applies-to-005.xht 
 crbug.com/711807 external/wpt/css/CSS2/normal-flow/max-width-applies-to-006.xht [ Failure ]
 crbug.com/711807 external/wpt/css/CSS2/normal-flow/replaced-intrinsic-001.xht [ Failure ]
 crbug.com/711807 external/wpt/css/CSS2/normal-flow/replaced-intrinsic-002.xht [ Failure ]
-
-crbug.com/716930 external/wpt/css/CSS2/normal-flow/block-in-inline-float-in-layer-001.html [ Failure ]
 
 #### external/wpt/css/css-sizing
 crbug.com/1261306 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-004.html [ Failure ]
