@@ -24,7 +24,9 @@
 <translation id="1201402288615127009">Növbəti</translation>
 <translation id="1204296502688602597">DNS Gecikməsi</translation>
 <translation id="123124571410524056">Portal şübhəsi var</translation>
+<translation id="1236400083787698183">Yenidən başlamazdan əvvəl cihazınızı yenidən formatlayın. Cihazınızın qapağı varsa, qapağı bağlamazdan əvvəl yenidən formatlamanın tamamlanmasını gözləyin. Yenidən formatlamanın tamamlanması bir dəqiqə çəkə bilər.</translation>
 <translation id="1238612778414822719">HTTPS Gecikməsi</translation>
+<translation id="1240699967155581440">Yenidən formatlama (zavod sıfırlaması) tələb edilir</translation>
 <translation id="1264116747675686718">OS versiyası güncəllənir</translation>
 <translation id="1264369926465113395">Chromebook'un yaradıcılar üçün yeni rəqəmsal jurnalına baxın</translation>
 <translation id="1270369111467284986">Avtorizasiya portalı şübhəsi var</translation>
@@ -147,6 +149,7 @@
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Uyğunsuz komponentlər<ph name="LINK_END" /> aşkarlanıb. Bunun quraşdırıldığını təsdiqləməyi seçsəniz, indi bunu edin.</translation>
 <translation id="2363636958541445404">Ekran qoruyucu seçimlərini seçmək üçün funksiyanı aktiv edin</translation>
 <translation id="2364498172489649528">Keçdi</translation>
+<translation id="236594517359128026">Davam etməzdən əvvəl noutbuku düz bir səthə qoyun</translation>
 <translation id="2380886658946992094">Hüquqi</translation>
 <translation id="2391082728065870591">Rəy Hesabatını Göndərin</translation>
 <translation id="2407209115954268704">SIM Kilid Statusu</translation>
@@ -263,6 +266,7 @@
 <translation id="3820172043799983114">Yanlış PIN.</translation>
 <translation id="3838338534323494292">Yeni parol</translation>
 <translation id="385051799172605136">Geri</translation>
+<translation id="385832974417157471">Söndürməzdən əvvəl cihazınızı yenidən formaylayın. Cihazınızın qapağı varsa, qapağı bağlamazdan əvvəl yenidən formatlamanın tamamlanmasını gözləyin. Yenidən formatlamanın tamamlanması bir dəqiqə çəkə bilər.</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3865414814144988605">Dəqiqlik</translation>
 <translation id="387301095347517405">Batareyanızın tam şarj edilmə sayı</translation>
@@ -445,6 +449,7 @@
 <translation id="5507300744274596613">Chrome OS-in güncəl olduğuna əmin olun</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5548284010950733518">Komponentləri tənzimləyin</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Yenidən skan edin</translation>
 <translation id="5583640892426849032">Geri silmə</translation>
@@ -693,6 +698,7 @@
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">İmtiyazlar</translation>
 <translation id="8217675307824400706">Qoşulun</translation>
+<translation id="8221728673725659466">Tənzimləmə tamamdır</translation>
 <translation id="8226628635270268143">Sevimli fotolarınızı və albomlarınızı seçin</translation>
 <translation id="8230672074305416752">Defolt şəbəkə girişini yoxlamaq alınmadı</translation>
 <translation id="8246209727385807362">Naməlum operator</translation>
@@ -703,6 +709,7 @@
 <translation id="8297006494302853456">Zəif</translation>
 <translation id="8302368968391049045">HTTPS Qoruyucu divarı</translation>
 <translation id="8318753676953949627">Heç bir şəkil yoxdur</translation>
+<translation id="8327249300223641918">Davam etməzdən əvvəl cihazınızı (baza və qapaq) düz bir səthə qoyun.</translation>
 <translation id="8336739000755212683">Cihazın hesab şəklini dəyişin</translation>
 <translation id="8347227221149377169">Çap işləri</translation>
 <translation id="8352772353338965963">Çoxsaylı giriş üçün hesab əlavə edin. Bu hesablara parolsuz daxil olmaq olar, ona görə də bu funksiya yalnız güvənilən hesablar ilə işlədilməlidir.</translation>
@@ -717,6 +724,7 @@
 <translation id="844521431886043384">DNS ayarlanmayıb</translation>
 <translation id="8456761643544401578">Avtomatik qaranlıq rejim</translation>
 <translation id="8461329675984532579">Əsas səhifə provayder adı</translation>
+<translation id="8467104829907989997">Komponentlər tənzimlənir...</translation>
 <translation id="8475690821716466388">WiFi şəbəkəsi zəif protokol WEP PSK ilə qorunur</translation>
 <translation id="8477551185774834963">DNS gecikməsi icazə verilən həddən azca yuxarıdır</translation>
 <translation id="8483248364096924578">IP ünvanı</translation>
@@ -776,6 +784,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skan edin}=1{Bu səhifəni skan edin: {NUMBER_OF_PAGES}}other{Bu səhifəni skan edin: {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Cihazın batareya səviyyəsi: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Tezlik</translation>
+<translation id="9025198690966128418">Şəxsi cihaz kimi istifadə edin</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ayırdetmə dəqiqliyində yüksək gecikmə var</translation>
 <translation id="9073281213608662541">PAP</translation>

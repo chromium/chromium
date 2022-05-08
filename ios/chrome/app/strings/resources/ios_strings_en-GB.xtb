@@ -451,6 +451,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4840495572919996524">Your bookmarks, history, passwords and more will no longer be synced to your Google Account.</translation>
 <translation id="4844899002472726590">See and edit the topics that you're interested in</translation>
 <translation id="4854345657858711387">Set A Passcode</translation>
+<translation id="4858786880085262208">Upgrade to HTTPS, when possible. Secure sites might embed content that isn't secure.</translation>
 <translation id="4860895144060829044">Call</translation>
 <translation id="4872323082491632254">Check passwords</translation>
 <translation id="4881695831933465202">Open</translation>
@@ -800,6 +801,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7781069478569868053">New Tab Page</translation>
 <translation id="7781829728241885113">Yesterday</translation>
 <translation id="778855399387580014">Start a search in a new Chrome tab.</translation>
+<translation id="7790892308048519147">Try to use secure connections</translation>
 <translation id="7791543448312431591">Add</translation>
 <translation id="7807060072011926525">Provided by Google</translation>
 <translation id="7839985698273989086">Offline page</translation>

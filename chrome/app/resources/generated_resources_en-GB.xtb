@@ -1015,6 +1015,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1942600407708803723">Shut down when cover is closed</translation>
 <translation id="1944528062465413897">Bluetooth pairing code</translation>
 <translation id="1944921356641260203">Update found</translation>
+<translation id="1947136734041527201">Lets you sign in to websites using the account that you have with an identity service</translation>
 <translation id="1949584741547056205">Quick answers</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954597385941141174">Sites can ask to connect to USB devices</translation>
@@ -2415,6 +2416,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="32939749466444286">The Linux container didn't start. Please try again.</translation>
 <translation id="3294437725009624529">Guest</translation>
 <translation id="3294686910656423119">Usage statistics and crash reports</translation>
+<translation id="3297105622164376095">Allowed to show third-party sign-in prompts</translation>
 <translation id="3297536526040732495">Temporarily links this data to your Google Account when you're signed in, to protect you across Google apps</translation>
 <translation id="329838636886466101">Repair</translation>
 <translation id="3298789223962368867">Invalid URL entered.</translation>
@@ -3671,6 +3673,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="452750746583162491">Review your synced data</translation>
 <translation id="4527929807707405172">Enable reverse scrolling. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Translation suggestion</translation>
+<translation id="4529455689802245339">Chrome Live Caption might not work</translation>
 <translation id="4530494379350999373">Origin</translation>
 <translation id="4531924570968473143">Who would you like to add to this <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532625150642446981">"<ph name="USB_DEVICE_NAME" />" is in use. Reassigning the device while it's in use could cause errors. Are you sure that you want to continue?</translation>
@@ -3869,6 +3872,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="471880041731876836">You don't have permission to visit this site</translation>
 <translation id="4722735765955348426">Password for <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> is sharing your screen.</translation>
+<translation id="4722989931633062466">Not allowed to show third-party sign-in prompts</translation>
 <translation id="4723140812774948886">Swap with next</translation>
 <translation id="4724450788351008910">Affiliation Changed</translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -4839,6 +4843,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5711010025974903573">Service logs</translation>
 <translation id="5711983031544731014">Unable to unlock. Enter your password.</translation>
 <translation id="5712153969432126546">Sites sometimes publish PDFs, like documents, contracts and forms</translation>
+<translation id="571222594670061844">Sites can show sign-in prompts from identity services</translation>
 <translation id="5713158217420111469">Connected to <ph name="DEVICE" /></translation>
 <translation id="5715711091495208045">Plug-in Broker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Default search engines</translation>
@@ -4997,6 +5002,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5876851302954717356">New Tab to the Right</translation>
 <translation id="5877064549588274448">Channel changed. Restart your device to apply changes.</translation>
 <translation id="5877584842898320529">The selected printer is not available or not installed correctly. <ph name="BR" /> Check your printer or try selecting another printer.</translation>
+<translation id="5878945009165002849">Block sign-in prompts from identity services</translation>
 <translation id="5882919346125742463">Known Networks</translation>
 <translation id="5883356647197510494">Automatically blocked <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">This tab is connected to a USB device.</translation>
@@ -5634,6 +5640,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6513247462497316522">Google Chrome will use mobile data if you're not connected to another network.</translation>
 <translation id="6514010653036109809">Available device:</translation>
 <translation id="6514565641373682518">This page has disabled your mouse cursor.</translation>
+<translation id="6517709704288360414">Your device may no longer work properly, and you may experience security and performance issues. Turning off updates may also impact your right to make legal claims if you experience any issues.</translation>
 <translation id="6518014396551869914">Cop&amp;y image</translation>
 <translation id="6518133107902771759">Verify</translation>
 <translation id="651942933739530207">Do you want <ph name="APP_NAME" /> to share your screen and audio output?</translation>

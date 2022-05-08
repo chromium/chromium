@@ -419,6 +419,7 @@
 <translation id="1415708812149920388">Buferdəki kontenti oxumaq üçün giriş rədd edildi</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> ("<ph name="EXTENSION_ID" />") identifikasiyalı artırmaya bu tip sessiyada icazə verilmir.</translation>
 <translation id="1418552618736477642">Bildirişlər və tətbiqlər</translation>
+<translation id="1418882096915998312">Müəssisə qeydiyyatı davam edir</translation>
 <translation id="1418954524306642206">Printer PPD faylını təyin etmək üçün baxış keçirin</translation>
 <translation id="1420834118113404499">Media lisenziyası</translation>
 <translation id="1420920093772172268">Cütləməyə icazə vermək üçün <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
@@ -3402,6 +3403,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4275830172053184480">Cihazınızı yenidən başladın</translation>
 <translation id="4277434192562187284">XML konfiqurasiya mənbəyi</translation>
 <translation id="4278390842282768270">İcazə verilib</translation>
+<translation id="4278498748067682896">Cihazın yalnız köşk və ya işarə rejimində işləməsinə imkan verən Köşk və İşarə Güncəlləməsindən istifadə edəcəksiniz. İstifadəçilərin cihaza daxil olmasını istəyirsinizsə, geri qayıdın və Chrome Enterprise Upgrade ilə qeydiyyatdan keçin.</translation>
 <translation id="4279129444466079448">Bu cihazda maksimum <ph name="PROFILE_LIMIT" /> eSIM profili quraşdıra bilərsiniz. Başqa bir profil əlavə etmək üçün əvvəlcə mövcud profili silin.</translation>
 <translation id="4280325816108262082">Cihaz söndürüldükdə və ya istifadə edilmədikdə avtomatik olaraq ayrılacaq</translation>
 <translation id="4281844954008187215">Xidmət Şərtləri</translation>

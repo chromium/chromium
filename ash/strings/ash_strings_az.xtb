@@ -303,6 +303,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2834813915651407382">Bu yaxınlarda açılıb</translation>
 <translation id="2841907151129139818">Planşet rejiminə keçirilib</translation>
 <translation id="2844169650293029770">USB-C cihazı (ön sol port)</translation>
+<translation id="2848120746144143659">Tam ekran skrinşot çəkmək üçün enter düyməsini basın</translation>
 <translation id="2849936225196189499">Kritik</translation>
 <translation id="2860184359326882502">Ən Uyğun Nəticə</translation>
 <translation id="2865888419503095837">Şəbəkə haqqında məlumat</translation>
@@ -481,6 +482,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3846575436967432996">Heç bir şəbəkə məlumatı yoxdur</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="385300504083504382">Başlanğıc</translation>
+<translation id="3861651314799684201">Tam ekranı qeydə almaq üçün enter düyməsini basın</translation>
 <translation id="3886872229787704059">Bugün açılıb</translation>
 <translation id="3891340733213178823">Hesabdan çıxmaq üçün iki dəfə Ctrl+Shift+Q basın.</translation>
 <translation id="3893630138897523026">ChromeVox (şifahi geri əlaqə)</translation>
@@ -807,6 +809,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="595202126637698455">Fəaliyyət izləməsi aktiv edildi</translation>
 <translation id="5955304353782037793">tətbiq</translation>
 <translation id="5958529069007801266">Nəzarət olunan istifadəçi</translation>
+<translation id="5976112937189445008">Pəncərəni qeydə almaq üçün enter düyməsini basın</translation>
 <translation id="5977415296283489383">Qulaqlıq</translation>
 <translation id="5978382165065462689">Uzaq Yardım vasitəsilə ekranınızın kontrolunu paylaşır.</translation>
 <translation id="5980301590375426705">Qonaq hesabından çıxın</translation>
@@ -1195,6 +1198,7 @@ Yeni quraşdırma</translation>
 <translation id="8364673525741149932">Shelf Party rejimini keçirin. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Hərf üzrə irəli keçin</translation>
 <translation id="8371991222807690464">Qonaq rejimində periferik cihaz performansı məhdud ola bilər</translation>
+<translation id="8374601332003098278">Qismən ekranı qeydə almaq üçün enter düyməsini basın</translation>
 <translation id="8375916635258623388">Bu <ph name="DEVICE_NAME" /> və telefon avtomatik qoşulacaq</translation>
 <translation id="8380784334203145311">Gecəniz xeyir,</translation>
 <translation id="8382715499079447151">Baxış qoruması</translation>
@@ -1247,6 +1251,7 @@ Yeni quraşdırma</translation>
 <translation id="8653151467777939995">Bildiriş ayarlarını göstərin. Bildirişlər aktivdir</translation>
 <translation id="8660331759611631213">71-in kvadrat kökü</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">Qismən skrinşot çəkmək üçün enter düyməsini basın</translation>
 <translation id="8664753092453405566">Şəbəkə siyahısını göstərin. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Cihazınızı ayarlamaq üçün <ph name="NAME" /> tətbiqini açın</translation>
 <translation id="8676770494376880701">Enerjiyə qənaət edən şarjer qoşuldu</translation>
@@ -1288,6 +1293,7 @@ Yeni quraşdırma</translation>
 <translation id="8909138438987180327">Batareya <ph name="PERCENTAGE" /> faizdir.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistentdə bu dil mövcud deyil.</translation>
+<translation id="8924458948354692166">Pəncərə skrinşotunu çəkmək üçün enter düyməsini basın</translation>
 <translation id="8926951137623668982">Rəf həmişə gizlidir</translation>
 <translation id="8936501819958976551">deaktiv</translation>
 <translation id="8938800817013097409">USB-C cihazı (arxadakı sağ port)</translation>

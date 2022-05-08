@@ -157,6 +157,7 @@
 <translation id="2446553403094072641">Floating point accuracy</translation>
 <translation id="2448312741937722512">Types</translation>
 <translation id="2461822463642141190">Current</translation>
+<translation id="2480034874476596812">Manually turn off</translation>
 <translation id="2491955442992294626">Keys aren't tested when you're using another window</translation>
 <translation id="2493126929778606526">Your best photos, selected automatically</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -252,6 +253,7 @@
 <translation id="3606583719724308068">High latency to HTTPS websites</translation>
 <translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Privacy screen toggle</translation>
+<translation id="3678765385266369662">Select how you would like to turn off write protect</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> test</translation>
 <translation id="370665806235115550">Loading...</translation>
 <translation id="3708186454126126312">Previously connected</translation>
@@ -307,6 +309,7 @@
 <translation id="4244962993387259361">You need at least 500 MB free to run a Memory test. To free up space, go to Settings &gt; Storage management.</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4258281355379922695">HTTP latency</translation>
+<translation id="4258561075226177474">Device is going to the same user. Erase user data?</translation>
 <translation id="4271957103967917607">View full screen</translation>
 <translation id="4275799948641988986">After repair, who will be using the device?</translation>
 <translation id="4289540628985791613">Overview</translation>
@@ -355,6 +358,7 @@
 <translation id="473775607612524610">Update</translation>
 <translation id="4744944742468440486">Info related to your selection</translation>
 <translation id="4773299976671772492">Stopped</translation>
+<translation id="4774530504324923332">You'll need an RSU-enabled security key, a QR code scanner and a second device with an Internet connection</translation>
 <translation id="4782311465517282004">Get definitions, translations or unit conversions when you right-click or touch &amp; hold text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
 <translation id="4793710386569335688">For more help, go to the <ph name="BEGIN_LINK" />Help Centre<ph name="END_LINK" />.</translation>
@@ -435,6 +439,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5372659122375744710">Wi-Fi network is not secure</translation>
 <translation id="5376354385557966694">Automatic light mode</translation>
 <translation id="537872351913703572">Device will go to a different user or organisation</translation>
+<translation id="5395600419410242651">Erase all data</translation>
 <translation id="5400907029458559844">Device is connecting.</translation>
 <translation id="5401938042319910061">Run all routines</translation>
 <translation id="5423849171846380976">Activated</translation>
@@ -646,6 +651,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7570674786725311828">USB touchscreen</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> left</translation>
 <translation id="7620771111601174153">Find out more in the Help Centre</translation>
+<translation id="7626501172915339021">Perform RMA server unlock (RSU)</translation>
 <translation id="763165478673169849">Last reset time</translation>
 <translation id="7648838807254605802">High HTTPS latency</translation>
 <translation id="7656388927906093505">Device is a mouse.</translation>
@@ -789,6 +795,8 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="9087578468327036362">Report this query</translation>
 <translation id="9088306295921699330">Current usage</translation>
 <translation id="9095775724867566971">PluginVm</translation>
+<translation id="90977145661420967">You'll need to take the device apart</translation>
+<translation id="9098156406873149060">Keep user data</translation>
 <translation id="910415269708673980">Refresh ticket for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanning page <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Unlock</translation>
