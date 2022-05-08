@@ -5682,21 +5682,27 @@ TEST_F(LegacySWPictureLayerImplTest, HighResWasLowResCollision) {
 
 TEST_F(LegacySWPictureLayerImplTest, CompositedImageCalculateContentsScale) {
   gfx::Size layer_bounds(400, 400);
+  gfx::Rect layer_rect(layer_bounds);
+
+  host_impl()->active_tree()->SetDeviceViewportRect(layer_rect);
+
   scoped_refptr<FakeRasterSource> pending_raster_source =
       FakeRasterSource::CreateFilled(layer_bounds);
+  SetupPendingTree(pending_raster_source);
 
-  host_impl()->CreatePendingTree();
   LayerTreeImpl* pending_tree = host_impl()->pending_tree();
+  const int kLayerId = 100;
 
   std::unique_ptr<FakePictureLayerImpl> pending_layer =
-      FakePictureLayerImpl::Create(pending_tree, root_id(),
+      FakePictureLayerImpl::Create(pending_tree, kLayerId,
                                    pending_raster_source);
   pending_layer->SetDirectlyCompositedImageDefaultRasterScale(
       gfx::Vector2dF(1, 1));
   pending_layer->SetDrawsContent(true);
   FakePictureLayerImpl* pending_layer_ptr = pending_layer.get();
-  pending_tree->SetRootLayerForTesting(std::move(pending_layer));
-  SetupRootProperties(pending_layer_ptr);
+  pending_tree->AddLayer(std::move(pending_layer));
+  CopyProperties(pending_tree->root_layer(), pending_layer_ptr);
+
   UpdateDrawProperties(pending_tree);
 
   SetupDrawPropertiesAndUpdateTiles(pending_layer_ptr, 2.f, 3.f, 4.f);
@@ -5706,23 +5712,26 @@ TEST_F(LegacySWPictureLayerImplTest, CompositedImageCalculateContentsScale) {
 TEST_F(LegacySWPictureLayerImplTest, CompositedImageIgnoreIdealContentsScale) {
   gfx::Size layer_bounds(400, 400);
   gfx::Rect layer_rect(layer_bounds);
-  scoped_refptr<FakeRasterSource> pending_raster_source =
-      FakeRasterSource::CreateFilled(layer_bounds);
 
   host_impl()->active_tree()->SetDeviceViewportRect(layer_rect);
-  host_impl()->CreatePendingTree();
+
+  scoped_refptr<FakeRasterSource> pending_raster_source =
+      FakeRasterSource::CreateFilled(layer_bounds);
+  SetupPendingTree(pending_raster_source);
+
   LayerTreeImpl* pending_tree = host_impl()->pending_tree();
+  const int kLayerId = 100;
 
   std::unique_ptr<FakePictureLayerImpl> pending_layer =
-      FakePictureLayerImpl::Create(pending_tree, root_id(),
+      FakePictureLayerImpl::Create(pending_tree, kLayerId,
                                    pending_raster_source);
   pending_layer->SetDirectlyCompositedImageDefaultRasterScale(
       gfx::Vector2dF(1, 1));
   pending_layer->SetDrawsContent(true);
   FakePictureLayerImpl* pending_layer_ptr = pending_layer.get();
-  pending_tree->SetRootLayerForTesting(std::move(pending_layer));
-  pending_tree->SetDeviceViewportRect(layer_rect);
-  SetupRootProperties(pending_layer_ptr);
+  pending_tree->AddLayer(std::move(pending_layer));
+  CopyProperties(pending_tree->root_layer(), pending_layer_ptr);
+
   UpdateDrawProperties(pending_tree);
 
   // Set PictureLayerImpl::ideal_contents_scale_ to 2.f.
@@ -5739,7 +5748,7 @@ TEST_F(LegacySWPictureLayerImplTest, CompositedImageIgnoreIdealContentsScale) {
   host_impl()->ActivateSyncTree();
 
   FakePictureLayerImpl* active_layer = static_cast<FakePictureLayerImpl*>(
-      host_impl()->active_tree()->root_layer());
+      host_impl()->active_tree()->LayerById(kLayerId));
   SetupDrawPropertiesAndUpdateTiles(active_layer,
                                     suggested_ideal_contents_scale,
                                     device_scale_factor, page_scale_factor);

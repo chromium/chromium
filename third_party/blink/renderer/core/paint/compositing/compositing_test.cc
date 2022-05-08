@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -1755,6 +1756,116 @@ TEST_P(CompositingSimTest, ImplSideScrollSkipsCommit) {
 
   // A full commit is not needed.
   EXPECT_FALSE(Compositor().LayerTreeHost()->CommitRequested());
+}
+
+TEST_P(CompositingSimTest, ImplSideScaleSkipsCommit) {
+  InitializeWithHTML(R"HTML(
+    <div>Empty Page</div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  ASSERT_FALSE(Compositor().LayerTreeHost()->CommitRequested());
+  ASSERT_EQ(1.f, GetPropertyTrees()->transform_tree().page_scale_factor());
+
+  // Simulate a page scale delta (i.e. user pinch-zoomed) on the compositor.
+  cc::CompositorCommitData commit_data;
+  commit_data.page_scale_delta = 2.f;
+
+  {
+    auto sync = Compositor().LayerTreeHost()->SimulateSyncingDeltasForTesting();
+    Compositor().LayerTreeHost()->ApplyCompositorChanges(&commit_data);
+  }
+
+  // The transform tree's page scale factor isn't computed until we perform a
+  // lifecycle update.
+  ASSERT_EQ(1.f, GetPropertyTrees()->transform_tree().page_scale_factor());
+
+  // Update just the blink lifecycle because a full frame would clear the bit
+  // for whether a commit was requested.
+  UpdateAllLifecyclePhases();
+
+  EXPECT_EQ(2.f, GetPropertyTrees()->transform_tree().page_scale_factor());
+
+  // A main frame is needed to call UpdateLayers which updates property trees,
+  // re-calculating cached to/from-screen transforms.
+  EXPECT_TRUE(Compositor().LayerTreeHost()->RequestedMainFramePending());
+
+  // A full commit is not needed.
+  EXPECT_FALSE(Compositor().LayerTreeHost()->CommitRequested());
+}
+
+// Ensure that updates to page scale coming from the main thread update the
+// page scale factor on the transform tree.
+TEST_P(CompositingSimTest, MainThreadScaleUpdatesTransformTree) {
+  InitializeWithHTML(R"HTML(
+    <div>Empty Page</div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  ASSERT_EQ(1.f, GetPropertyTrees()->transform_tree().page_scale_factor());
+
+  VisualViewport& viewport = WebView().GetPage()->GetVisualViewport();
+
+  // This test checks that the transform tree's page scale factor is correctly
+  // updated when scale is set with an existing property tree.
+  ASSERT_TRUE(viewport.GetPageScaleNode());
+  viewport.SetScale(2.f);
+
+  // The scale factor on the layer tree should be updated immediately.
+  ASSERT_EQ(2.f, Compositor().LayerTreeHost()->page_scale_factor());
+
+  // The transform tree's page scale factor isn't computed until we perform a
+  // lifecycle update.
+  ASSERT_EQ(1.f, GetPropertyTrees()->transform_tree().page_scale_factor());
+
+  Compositor().BeginFrame();
+
+  EXPECT_EQ(2.f, GetPropertyTrees()->transform_tree().page_scale_factor());
+
+  // Ensure the transform node is also correctly updated.
+  const cc::TransformNode* scale_node =
+      GetPropertyTrees()->transform_tree().FindNodeFromElementId(
+          viewport.GetPageScaleNode()->GetCompositorElementId());
+  ASSERT_TRUE(scale_node);
+  EXPECT_TRUE(scale_node->local.IsScale2d());
+  EXPECT_EQ(gfx::Vector2dF(2, 2), scale_node->local.To2dScale());
+}
+
+// Similar to above but ensure the transform tree is correctly setup when scale
+// already exists when building the tree.
+TEST_P(CompositingSimTest, BuildTreeSetsScaleOnTransformTree) {
+  SimRequest main_resource("https://origin-a.com/a.html", "text/html");
+  LoadURL("https://origin-a.com/a.html");
+  main_resource.Complete(R"HTML(
+      <!DOCTYPE html>
+      <div>Empty Page</div>
+  )HTML");
+
+  VisualViewport& viewport = WebView().GetPage()->GetVisualViewport();
+
+  // This test checks that the transform tree's page scale factor is correctly
+  // set when scale is set before property trees have been built.
+  ASSERT_FALSE(viewport.GetPageScaleNode());
+  viewport.SetScale(2.f);
+
+  // The scale factor on the layer tree should be updated immediately.
+  ASSERT_EQ(2.f, Compositor().LayerTreeHost()->page_scale_factor());
+
+  // The transform tree's page scale factor isn't computed until we perform a
+  // lifecycle update.
+  ASSERT_EQ(1.f, GetPropertyTrees()->transform_tree().page_scale_factor());
+
+  Compositor().BeginFrame();
+
+  EXPECT_EQ(2.f, GetPropertyTrees()->transform_tree().page_scale_factor());
+
+  // Ensure the transform node is also correctly updated.
+  const cc::TransformNode* scale_node =
+      GetPropertyTrees()->transform_tree().FindNodeFromElementId(
+          viewport.GetPageScaleNode()->GetCompositorElementId());
+  ASSERT_TRUE(scale_node);
+  EXPECT_TRUE(scale_node->local.IsScale2d());
+  EXPECT_EQ(gfx::Vector2dF(2, 2), scale_node->local.To2dScale());
 }
 
 TEST_P(CompositingSimTest, FrameAttribution) {

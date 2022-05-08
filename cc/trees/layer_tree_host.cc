@@ -732,7 +732,7 @@ void LayerTreeHost::SetDebugState(const LayerTreeDebugState& new_debug_state) {
 
 void LayerTreeHost::ApplyPageScaleDeltaFromImplSide(float page_scale_delta) {
   DCHECK(IsMainThread());
-  DCHECK(CommitRequested());
+  DCHECK(syncing_deltas_for_test_ || CommitRequested());
   if (page_scale_delta == 1.f)
     return;
   float page_scale =
@@ -1574,14 +1574,14 @@ void LayerTreeHost::AddLayerShouldPushProperties(Layer* layer) {
 }
 
 void LayerTreeHost::SetPageScaleFromImplSide(float page_scale) {
-  DCHECK(CommitRequested());
+  DCHECK(syncing_deltas_for_test_ || CommitRequested());
   pending_commit_state()->page_scale_factor = page_scale;
   SetPropertyTreesNeedRebuild();
 }
 
 void LayerTreeHost::SetElasticOverscrollFromImplSide(
     gfx::Vector2dF elastic_overscroll) {
-  DCHECK(CommitRequested());
+  DCHECK(syncing_deltas_for_test_ || CommitRequested());
   pending_commit_state()->elastic_overscroll = elastic_overscroll;
 }
 

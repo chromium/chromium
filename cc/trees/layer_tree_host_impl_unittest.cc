@@ -15832,7 +15832,7 @@ TEST_F(MsaaCompatibilityLayerTreeHostImplTest,
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, UpdatePageScaleFactorOnActiveTree) {
-  // Check page scale factor update in property trees when an update is made
+  // Check page scale factor updates the property trees when an update is made
   // on the active tree.
   CreatePendingTree();
   host_impl_->pending_tree()->PushPageScaleFromMainThread(1, 1, 3);
@@ -15851,20 +15851,26 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, UpdatePageScaleFactorOnActiveTree) {
   EXPECT_EQ(gfx::Vector2dF(2, 2), active_tree_node->local.To2dScale());
   EXPECT_EQ(gfx::Point3F(), active_tree_node->origin);
   EXPECT_EQ(2, host_impl_->active_tree()->current_page_scale_factor());
-
-  TransformNode* pending_tree_node =
-      host_impl_->pending_tree()->PageScaleTransformNode();
-  // Before pending tree updates draw properties, its properties are still
-  // based on 1.0 page scale, except for current_page_scale_factor() which is a
-  // shared data between the active and pending trees.
-  EXPECT_TRUE(pending_tree_node->local.IsIdentity());
-  EXPECT_EQ(gfx::Point3F(), pending_tree_node->origin);
-  EXPECT_EQ(2, host_impl_->pending_tree()->current_page_scale_factor());
-  EXPECT_EQ(1, host_impl_->pending_tree()
+  EXPECT_EQ(2, host_impl_->active_tree()
                    ->property_trees()
                    ->transform_tree()
                    .page_scale_factor());
 
+  TransformNode* pending_tree_node =
+      host_impl_->pending_tree()->PageScaleTransformNode();
+
+  // Since the pending tree shares the scale factor with the active tree, its
+  // value and property trees should also have been updated.
+  EXPECT_TRUE(pending_tree_node->local.IsScale2d());
+  EXPECT_EQ(gfx::Vector2dF(2, 2), pending_tree_node->local.To2dScale());
+  EXPECT_EQ(gfx::Point3F(), pending_tree_node->origin);
+  EXPECT_EQ(2, host_impl_->pending_tree()->current_page_scale_factor());
+  EXPECT_EQ(2, host_impl_->pending_tree()
+                   ->property_trees()
+                   ->transform_tree()
+                   .page_scale_factor());
+
+  // Update draw properties doesn't change the correct values
   host_impl_->pending_tree()->set_needs_update_draw_properties();
   UpdateDrawProperties(host_impl_->pending_tree());
   pending_tree_node = host_impl_->pending_tree()->PageScaleTransformNode();

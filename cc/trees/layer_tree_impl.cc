@@ -1180,10 +1180,8 @@ void LayerTreeImpl::SetPageScaleOnActiveTree(float active_page_scale) {
   DCHECK(IsActiveTree());
   DCHECK(lifecycle().AllowsPropertyTreeAccess());
   float clamped_page_scale = ClampPageScaleFactorToLimits(active_page_scale);
-  if (page_scale_factor()->SetCurrent(clamped_page_scale)) {
+  if (page_scale_factor()->SetCurrent(clamped_page_scale))
     DidUpdatePageScale();
-    UpdatePageScaleNode();
-  }
 }
 
 void LayerTreeImpl::PushPageScaleFromMainThread(float page_scale_factor,
@@ -1214,10 +1212,6 @@ void LayerTreeImpl::PushPageScaleFactorAndLimits(const float* page_scale_factor,
 
   if (changed_page_scale)
     DidUpdatePageScale();
-
-  DCHECK(lifecycle().AllowsPropertyTreeAccess());
-  if (page_scale_factor)
-    UpdatePageScaleNode();
 }
 
 void LayerTreeImpl::SetBrowserControlsParams(
@@ -1322,27 +1316,33 @@ bool LayerTreeImpl::SetPageScaleFactorLimits(float min_page_scale_factor,
 }
 
 void LayerTreeImpl::DidUpdatePageScale() {
-  if (IsActiveTree())
+  if (IsActiveTree()) {
     page_scale_factor()->SetCurrent(
         ClampPageScaleFactorToLimits(current_page_scale_factor()));
 
-  set_needs_update_draw_properties();
+    // Ensure the other trees are kept in sync.
+    if (host_impl_->pending_tree())
+      host_impl_->pending_tree()->DidUpdatePageScale();
+    if (host_impl_->recycle_tree())
+      host_impl_->recycle_tree()->DidUpdatePageScale();
 
-  // Viewport scrollbar sizes depend on the page scale factor.
-  SetScrollbarGeometriesNeedUpdate();
-
-  if (IsActiveTree()) {
     if (settings().scrollbar_flash_after_any_scroll_update) {
       host_impl_->FlashAllScrollbars(true);
-      return;
-    }
-    if (auto* scroll_node = host_impl_->OuterViewportScrollNode()) {
+    } else if (auto* scroll_node = host_impl_->OuterViewportScrollNode()) {
       if (ScrollbarAnimationController* controller =
               host_impl_->ScrollbarAnimationControllerForElementId(
                   scroll_node->element_id))
         controller->DidScrollUpdate();
     }
   }
+
+  DCHECK(lifecycle().AllowsPropertyTreeAccess());
+  UpdatePageScaleNode();
+
+  set_needs_update_draw_properties();
+
+  // Viewport scrollbar sizes depend on the page scale factor.
+  SetScrollbarGeometriesNeedUpdate();
 }
 
 void LayerTreeImpl::SetDeviceScaleFactor(float device_scale_factor) {

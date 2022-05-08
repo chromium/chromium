@@ -197,7 +197,6 @@ bool PropertyTreeManager::DirectlyUpdatePageScaleTransform(
                                   cc_transform);
   cc_transform->transform_changed = true;
   property_trees->transform_tree_mutable().set_needs_update(true);
-  host.SetNeedsCommit();
   return true;
 }
 
