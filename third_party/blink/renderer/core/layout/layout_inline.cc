@@ -824,7 +824,7 @@ LayoutBlockFlow* LayoutInline::CreateAnonymousContainerForBlockChildren(
 LayoutBox* LayoutInline::CreateAnonymousBoxToSplit(
     const LayoutBox* box_to_split) const {
   NOT_DESTROYED();
-  DCHECK(box_to_split->IsAnonymous());
+  DCHECK(box_to_split->IsBlockInInline());
   DCHECK(IsA<LayoutBlockFlow>(box_to_split));
   DCHECK(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled());
   DCHECK(!ForceLegacyLayout());
