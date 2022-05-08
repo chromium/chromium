@@ -503,7 +503,7 @@
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M101',
-          'revision': 'version:101.0.4951.61',
+          'revision': 'version:101.0.4951.62',
         }
       ],
     },
@@ -647,7 +647,7 @@
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M101',
-          'revision': 'version:101.0.4951.61',
+          'revision': 'version:101.0.4951.62',
         }
       ],
     },
@@ -791,7 +791,7 @@
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M101',
-          'revision': 'version:101.0.4951.61',
+          'revision': 'version:101.0.4951.62',
         }
       ],
     },
