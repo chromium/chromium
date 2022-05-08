@@ -91,8 +91,7 @@ IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest, MultipleInputEvents) {
     };
 
     runtest = async () => {
-      // return await eventPromise;
-      return true;
+      return await eventPromise;
     };
     </script>
   )HTML");
