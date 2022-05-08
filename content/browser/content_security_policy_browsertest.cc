@@ -115,7 +115,8 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest,
       "Refused to frame '' because it violates the following Content Security "
       "Policy directive: \"frame-src *\". Note that '*' matches only URLs with "
       "network schemes ('http', 'https', 'ws', 'wss'), or URLs whose scheme "
-      "matches `self`'s scheme. mailto:' must be added explicitely.\n");
+      "matches `self`'s scheme. The scheme 'mailto:' must be added "
+      "explicitly.\n");
   EXPECT_TRUE(NavigateToURL(shell(), url));
   console_observer.Wait();
 }
@@ -136,7 +137,8 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest,
       "\"script-src *\". Note that 'script-src-elem' was not explicitly set, "
       "so 'script-src' is used as a fallback. Note that '*' matches only URLs "
       "with network schemes ('http', 'https', 'ws', 'wss'), or URLs whose "
-      "scheme matches `self`'s scheme. mailto:' must be added explicitely.\n");
+      "scheme matches `self`'s scheme. The scheme 'mailto:' must be added "
+      "explicitly.\n");
   EXPECT_TRUE(NavigateToURL(shell(), url));
   console_observer.Wait();
 }

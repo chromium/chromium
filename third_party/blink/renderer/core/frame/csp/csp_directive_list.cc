@@ -614,8 +614,8 @@ bool CheckSourceAndReportViolation(
     suffix = suffix +
              " Note that '*' matches only URLs with network schemes ('http', "
              "'https', 'ws', 'wss'), or URLs whose scheme matches `self`'s "
-             "scheme. " +
-             url.Protocol() + ":' must be added explicitely.";
+             "scheme. The scheme '" +
+             url.Protocol() + ":' must be added explicitly.";
   }
 
   String raw_directive =

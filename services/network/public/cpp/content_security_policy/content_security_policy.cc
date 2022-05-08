@@ -233,8 +233,8 @@ void ReportViolation(CSPContext* context,
   if (policy->directives[effective_directive_name]->allow_star) {
     message << " Note that '*' matches only URLs with network schemes ('http', "
                "'https', 'ws', 'wss'), or URLs whose scheme matches `self`'s "
-               "scheme. "
-            << blocked_url_scheme << ":' must be added explicitely.";
+               "scheme. The scheme '"
+            << blocked_url_scheme << ":' must be added explicitly.";
   }
 
   message << "\n";

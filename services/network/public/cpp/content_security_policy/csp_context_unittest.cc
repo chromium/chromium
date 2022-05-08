@@ -352,7 +352,8 @@ TEST(CSPContextTest, BlockedDespiteWildcard) {
             "violates the following Content Security Policy directive: "
             "\"frame-src *\". Note that '*' matches only URLs with network "
             "schemes ('http', 'https', 'ws', 'wss'), or URLs whose scheme "
-            "matches `self`'s scheme. data:' must be added explicitely.\n");
+            "matches `self`'s scheme. The scheme 'data:' must be added "
+            "explicitly.\n");
 }
 
 }  // namespace network
