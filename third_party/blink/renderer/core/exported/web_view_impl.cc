@@ -154,6 +154,7 @@
 #include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -644,6 +645,9 @@ bool WebViewImpl::StartPageScaleAnimation(const gfx::Point& target_position,
   if (!use_anchor) {
     clamped_point =
         visual_viewport.ClampDocumentOffsetAtScale(target_position, new_scale);
+
+    // TODO(bokan): Why special case duration zero? PageScaleAnimation should
+    // work ok for that.
     if (duration.is_zero()) {
       SetPageScaleFactor(new_scale);
 
@@ -2036,35 +2040,40 @@ void WebViewImpl::SetFocusedFrame(WebFrame* frame) {
   core_frame->GetPage()->GetFocusController().SetFocusedFrame(core_frame);
 }
 
-bool WebViewImpl::ShouldZoomToLegibleScale(const Element& element) {
+void WebViewImpl::FinishScrollFocusedEditableIntoView(
+    const gfx::RectF& caret_rect_in_root_frame,
+    mojom::blink::ScrollIntoViewParamsPtr params) {
+  DCHECK(MainFrameImpl());
+  DCHECK(!IsFencedFrameRoot());
+  DCHECK(!caret_rect_in_root_frame.IsEmpty());
+  DCHECK(params->for_focused_editable);
+
+  // Zoom if:
+  // (1) Zoom to legible scale is enabled (i.e. Android)
+  // (2) We're on a non-mobile-friendly page
+  // (3) The element doesn't explicitly block pinch-zoom gestures so the user
+  //     can zoom back out.
   bool zoom_into_legible_scale =
       web_settings_->AutoZoomFocusedEditableToLegibleScale() &&
-      !GetPage()->GetVisualViewport().ShouldDisableDesktopWorkarounds();
+      !GetPage()->GetVisualViewport().ShouldDisableDesktopWorkarounds() &&
+      params->for_focused_editable->can_zoom;
 
-  if (zoom_into_legible_scale) {
-    // When deciding whether to zoom in on a focused text box, we should
-    // decide not to zoom in if the user won't be able to zoom out. e.g if the
-    // textbox is within a touch-action: none container the user can't zoom
-    // back out.
-    TouchAction action =
-        touch_action_util::ComputeEffectiveTouchAction(element);
-    if (!(static_cast<int>(action) & static_cast<int>(TouchAction::kPinchZoom)))
-      zoom_into_legible_scale = false;
-  }
+  // Reconstruct the editable element's absolute rect from the caret-relative
+  // location.
+  gfx::RectF editable_rect_in_root_frame =
+      scroll_into_view_util::FocusedEditableBoundsFromParams(
+          caret_rect_in_root_frame, params);
 
-  return zoom_into_legible_scale;
-}
+  DCHECK(!editable_rect_in_root_frame.IsEmpty());
 
-void WebViewImpl::ZoomAndScrollToFocusedEditableElementRect(
-    const gfx::Rect& element_bounds_in_document,
-    const gfx::Rect& caret_bounds_in_document,
-    bool zoom_into_legible_scale) {
   float scale;
   gfx::Point scroll;
   bool need_animation = false;
   ComputeScaleAndScrollForEditableElementRects(
-      element_bounds_in_document, caret_bounds_in_document,
-      zoom_into_legible_scale, scale, scroll, need_animation);
+      gfx::ToEnclosedRect(editable_rect_in_root_frame),
+      gfx::ToEnclosedRect(caret_rect_in_root_frame), zoom_into_legible_scale,
+      scale, scroll, need_animation);
+
   if (need_animation) {
     StartPageScaleAnimation(scroll, false, scale,
                             kScrollAndScaleAnimationDuration);
@@ -2079,11 +2088,11 @@ void WebViewImpl::SmoothScroll(int target_x,
 }
 
 void WebViewImpl::ComputeScaleAndScrollForEditableElementRects(
-    const gfx::Rect& element_bounds_in_document,
-    const gfx::Rect& caret_bounds_in_document,
+    const gfx::Rect& element_bounds_in_root_frame,
+    const gfx::Rect& caret_bounds_in_root_frame,
     bool zoom_into_legible_scale,
     float& new_scale,
-    gfx::Point& new_scroll,
+    gfx::Point& new_scroll_position,
     bool& need_animation) {
   VisualViewport& visual_viewport = GetPage()->GetVisualViewport();
 
@@ -2091,15 +2100,20 @@ void WebViewImpl::ComputeScaleAndScrollForEditableElementRects(
       GetPage()->GlobalRootScrollerController();
   Node* root_scroller = controller.GlobalRootScroller();
 
+  gfx::Rect element_bounds_in_document =
+      MainFrameImpl()->GetFrameView()->RootFrameToDocument(
+          element_bounds_in_root_frame);
+  gfx::Rect caret_bounds_in_document =
+      MainFrameImpl()->GetFrameView()->RootFrameToDocument(
+          caret_bounds_in_root_frame);
+
   gfx::Rect element_bounds_in_content = element_bounds_in_document;
   gfx::Rect caret_bounds_in_content = caret_bounds_in_document;
 
   // If the page has a non-default root scroller then we need to scroll that
   // rather than the "real" viewport. However, the given coordinates are in the
   // real viewport's document space rather than the root scroller's so we
-  // perform the conversion here.  TODO(bokan): Convert this function to take
-  // coordinates in absolute/root-frame coordinates to make this more
-  // consistent. https://crbug.com/931447.
+  // perform the conversion here.
   if (root_scroller != MainFrameImpl()->GetFrame()->GetDocument() &&
       controller.RootScrollerArea()) {
     ScrollOffset offset = controller.RootScrollerArea()->GetScrollOffset();
@@ -2156,6 +2170,9 @@ void WebViewImpl::ComputeScaleAndScrollForEditableElementRects(
   gfx::SizeF target_viewport_size(visual_viewport.Size());
   target_viewport_size.Scale(1 / new_scale);
 
+  // TODO(bokan): The logic below is all tailored assuming LTR writing mode.
+  // Ideally, it'd perform its computations based on writing mode.
+  ScrollOffset scroll_offset;
   if (element_bounds_in_content.width() <= target_viewport_size.width()) {
     // Field is narrower than screen. Try to leave padding on left so field's
     // label is visible, but it's more important to ensure entire field is
@@ -2163,31 +2180,37 @@ void WebViewImpl::ComputeScaleAndScrollForEditableElementRects(
     int ideal_left_padding = target_viewport_size.width() * leftBoxRatio;
     int max_left_padding_keeping_box_onscreen =
         target_viewport_size.width() - element_bounds_in_content.width();
-    new_scroll.set_x(element_bounds_in_content.x() -
-                     std::min<int>(ideal_left_padding,
-                                   max_left_padding_keeping_box_onscreen));
+    scroll_offset.set_x(element_bounds_in_content.x() -
+                        std::min<int>(ideal_left_padding,
+                                      max_left_padding_keeping_box_onscreen));
   } else {
     // Field is wider than screen. Try to left-align field, unless caret would
     // be offscreen, in which case right-align the caret.
-    new_scroll.set_x(std::max<int>(
+    scroll_offset.set_x(std::max<int>(
         element_bounds_in_content.x(),
         caret_bounds_in_content.x() + caret_bounds_in_content.width() +
             caretPadding - target_viewport_size.width()));
   }
   if (element_bounds_in_content.height() <= target_viewport_size.height()) {
     // Field is shorter than screen. Vertically center it.
-    new_scroll.set_y(
+    scroll_offset.set_y(
         element_bounds_in_content.y() -
         (target_viewport_size.height() - element_bounds_in_content.height()) /
             2);
   } else {
     // Field is taller than screen. Try to top align field, unless caret would
     // be offscreen, in which case bottom-align the caret.
-    new_scroll.set_y(std::max<int>(
+    scroll_offset.set_y(std::max<int>(
         element_bounds_in_content.y(),
         caret_bounds_in_content.y() + caret_bounds_in_content.height() +
             caretPadding - target_viewport_size.height()));
   }
+
+  // The output scroll will be used by the compositor so we must convert the
+  // scroll-origin relative (i.e. writing-mode dependent) ScrollOffset with a
+  // top-left relative scroll position.
+  new_scroll_position =
+      ToFlooredPoint(root_viewport->ScrollOffsetToPosition(scroll_offset));
 }
 
 void WebViewImpl::AdvanceFocus(bool reverse) {

@@ -527,6 +527,7 @@ _CONFIG = [
             'root_scroller_util::.+',
             'scheduler::.+',
             'scroll_customization::.+',
+            'scroll_into_view_util::.+',
             'scroll_timeline_util::.+',
             'style_change_extra_data::.+',
             'style_change_reason::.+',

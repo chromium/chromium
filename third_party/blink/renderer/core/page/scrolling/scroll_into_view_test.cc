@@ -7,6 +7,7 @@
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/web/web_script_source.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_scrollintoviewoptions.h"
@@ -548,9 +549,11 @@ TEST_F(ScrollIntoViewTest, ApplyRootElementScrollBehaviorToViewport) {
   ASSERT_EQ(Window().scrollY(), content->OffsetTop());
 }
 
-// This test ensures the stop-at-layout viewport option works correctly when a
-// non-default root scroller is set as the layout viewport.
-TEST_F(ScrollIntoViewTest, StopAtLayoutViewportOption) {
+// This test ensures the for_focused_editable option works correctly to
+// prevent scrolling a non-default root scroller from the page revealing
+// ScrollIntoView (the layout viewport scroll will be animated, potentially
+// with zoom, from WebViewImpl::FinishScrollFocusedEditableIntoView.
+TEST_F(ScrollIntoViewTest, StopAtLayoutViewportForFocusedEditable) {
   ScopedImplicitRootScrollerForTest implicit_root_scroller(true);
 
   v8::HandleScope HandleScope(v8::Isolate::GetCurrent());
@@ -585,7 +588,7 @@ TEST_F(ScrollIntoViewTest, StopAtLayoutViewportOption) {
     </style>
     <div id='root'>
       <div id='inner'>
-        <div id='target'></div>
+        <input id='target'>
       <div>
     </div>
   )HTML");
@@ -603,15 +606,30 @@ TEST_F(ScrollIntoViewTest, StopAtLayoutViewportOption) {
     ASSERT_EQ(root, rs_controller.GlobalRootScroller());
   }
 
+  Element* editable = GetDocument().getElementById("target");
+
+  // Ensure the input is focused, as it normally would be when ScrollIntoView
+  // is invoked with this param.
+  {
+    FocusOptions* focus_options = FocusOptions::Create();
+    focus_options->setPreventScroll(true);
+    editable->Focus(focus_options);
+  }
+
   // Use ScrollRectToVisible on the #target element, specifying
-  // stop_at_main_frame_layout_viewport.
-  LayoutObject* target =
-      GetDocument().getElementById("target")->GetLayoutObject();
+  // for_focused_editable.
+  LayoutObject* target = editable->GetLayoutObject();
   auto params = ScrollAlignment::CreateScrollIntoViewParams(
       ScrollAlignment::LeftAlways(), ScrollAlignment::TopAlways(),
       mojom::blink::ScrollType::kProgrammatic, false,
       mojom::blink::ScrollBehavior::kInstant);
-  params->stop_at_main_frame_layout_viewport = true;
+
+  params->for_focused_editable = mojom::blink::FocusedEditableParams::New();
+  params->for_focused_editable->relative_location = gfx::Vector2dF();
+  params->for_focused_editable->size =
+      gfx::SizeF(target->AbsoluteBoundingBoxRect().size());
+  params->for_focused_editable->can_zoom = false;
+
   target->ScrollRectToVisible(PhysicalRect(target->AbsoluteBoundingBoxRect()),
                               std::move(params));
 

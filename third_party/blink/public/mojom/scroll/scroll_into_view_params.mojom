@@ -30,6 +30,24 @@ struct ScrollAlignment {
   Behavior rect_partial = kClosestEdge;
 };
 
+struct FocusedEditableParams {
+  // The location and size of the focused editable element whose caret is being
+  // used as the rect to ScrollIntoView. The location is relative to the caret
+  // rect which is being used to ScrollIntoView. The location must be stored
+  // relative to the caret (rather than typical absolute, relative to frame,
+  // coordinates) since each scroll will change the caret absolute position
+  // which is transformed by ScrollIntoView but this out-of-bound rect isn't.
+  // The absolute rect for the editable can then be reconstructed at the end of
+  // the ScrollIntoView from the caret rect.
+  gfx.mojom.Vector2dF relative_location;
+  gfx.mojom.SizeF size;
+
+  // This can be set to false to indicate that zooming shouldn't occur, e.g.
+  // because the editable may block pinch gestures. e.g if the textbox is
+  // within a touch-action: none container the user can't zoom back out.
+  bool can_zoom = true;
+};
+
 struct ScrollIntoViewParams {
   ScrollAlignment align_x;
   ScrollAlignment align_y;
@@ -38,22 +56,12 @@ struct ScrollIntoViewParams {
   ScrollBehavior behavior = ScrollBehavior.kAuto;
   bool is_for_scroll_sequence = false;
 
-  // If true, once the root frame scrolls into view it will zoom into the scroll
-  // rect.
-  bool zoom_into_rect = false;
-
-  // The following bounds are normalized to the scrolling rect, i.e., to
-  // retrieve the approximate bounds in root layer's document, the relative
-  // bounds should be scaled by the width and height of the scrolling rect in x
-  // and y coordinates respectively (and then offset by the rect's location).
-  gfx.mojom.RectF relative_element_bounds;
-  gfx.mojom.RectF relative_caret_bounds;
-
-  // If true, avoid recursing the ScrollIntoView into the layout viewport of
-  // the main frame. This is so that we can then do a smooth page scale
-  // animation that zooms both layout and visual viewport into a focused
-  // editable element.
-  bool stop_at_main_frame_layout_viewport = false;
+  // If present, indicates that the scroll into view is a result of focusing an
+  // editable element. Unlike regular scroll into view, after revealing the
+  // caret in the top most document, the viewport will perform an animated
+  // scroll and zoom to make the editable a legible size and has special logic
+  // for placement of the caret and editable for convenient input.
+  FocusedEditableParams? for_focused_editable;
 
   // Whether a ScrollIntoView should bubble from an iframe to a parent that
   // isn't same-origin. This defaults to true since that's the behavior of JS

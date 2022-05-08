@@ -17,6 +17,8 @@ blink_core_sources_scroll = [
   "scroll_animator_compositor_coordinator.h",
   "scroll_customization.cc",
   "scroll_customization.h",
+  "scroll_into_view_util.cc",
+  "scroll_into_view_util.h",
   "scroll_state_data.h",
   "scroll_types.h",
   "scrollable_area.cc",

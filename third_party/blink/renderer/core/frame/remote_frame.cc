@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/page/plugin_script_forbidden_scope.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -80,14 +81,6 @@ static RemoteFramesByTokenMap& GetRemoteFramesMap() {
   DEFINE_STATIC_LOCAL(Persistent<RemoteFramesByTokenMap>, map,
                       (MakeGarbageCollected<RemoteFramesByTokenMap>()));
   return *map;
-}
-
-gfx::RectF DeNormalizeRect(const gfx::RectF& normalized,
-                           const gfx::Rect& base) {
-  gfx::RectF result = normalized;
-  result.Scale(base.width(), base.height());
-  result.Offset(base.OffsetFromOrigin());
-  return result;
 }
 
 }  // namespace
@@ -718,46 +711,13 @@ void RemoteFrame::ScrollRectToVisible(
     return;
   }
 
-  // Schedule the scroll.
+  scroll_into_view_util::ConvertParamsToParentFrame(
+      params, rect_to_scroll, *owner_object, *owner_object->View());
+
   PhysicalRect absolute_rect = owner_object->LocalToAncestorRect(
       PhysicalRect::EnclosingRect(rect_to_scroll), owner_object->View());
 
-  if (!params->zoom_into_rect ||
-      !owner_object->GetDocument().GetFrame()->LocalFrameRoot().IsMainFrame()) {
-    owner_object->ScrollRectToVisible(absolute_rect, std::move(params));
-    return;
-  }
-
-  // ZoomAndScrollToFocusedEditableElementRect will scroll only the layout and
-  // visual viewports. Ensure the element is actually visible in the viewport
-  // scrolling layer. (i.e. isn't clipped by some other content).
-  auto relative_element_bounds = params->relative_element_bounds;
-  auto relative_caret_bounds = params->relative_caret_bounds;
-
-  params->stop_at_main_frame_layout_viewport = true;
-  absolute_rect =
-      owner_object->ScrollRectToVisible(absolute_rect, std::move(params));
-
-  gfx::Rect rect_in_document =
-      owner_object->GetDocument()
-          .GetFrame()
-          ->LocalFrameRoot()
-          .View()
-          ->RootFrameToDocument(ToEnclosingRect(
-              owner_element->GetDocument().View()->ConvertToRootFrame(
-                  absolute_rect)));
-  gfx::Rect element_bounds_in_document = gfx::ToEnclosingRect(
-      DeNormalizeRect(relative_element_bounds, rect_in_document));
-  gfx::Rect caret_bounds_in_document = gfx::ToEnclosingRect(
-      DeNormalizeRect(relative_caret_bounds, rect_in_document));
-
-  // This is due to something such as scroll focused editable element into
-  // view on Android which also requires an automatic zoom into legible scale.
-  // This is handled by main frame's WebView.
-  WebViewImpl* web_view =
-      To<WebViewImpl>(WebFrame::FromCoreFrame(this)->View());
-  web_view->ZoomAndScrollToFocusedEditableElementRect(
-      element_bounds_in_document, caret_bounds_in_document, true);
+  owner_object->ScrollRectToVisible(absolute_rect, std::move(params));
 }
 
 void RemoteFrame::IntrinsicSizingInfoOfChildChanged(

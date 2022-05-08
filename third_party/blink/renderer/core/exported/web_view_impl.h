@@ -357,18 +357,17 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // TODO(https://crbug.com/1139104): Remove this.
   std::string GetNullFrameReasonForBug1139104() const;
 
-  // Changes the zoom and scroll for zooming into an editable element
-  // with bounds |element_bounds_in_document| and caret bounds
-  // |caret_bounds_in_document|.
-  void ZoomAndScrollToFocusedEditableElementRect(
-      const gfx::Rect& element_bounds_in_document,
-      const gfx::Rect& caret_bounds_in_document,
-      bool zoom_into_legible_scale);
-
-  bool StartPageScaleAnimation(const gfx::Point& target_position,
-                               bool use_anchor,
-                               float new_scale,
-                               base::TimeDelta duration);
+  // Finishes a ScrollIntoView for a focused editable element by performing a
+  // view-level reveal. That is, when an embedder requests to reveal a focused
+  // editable, the editable is first ScrollIntoView'ed in the layout tree to
+  // ensure it's visible in the outermost document but stops short of scrolling
+  // the outermost frame. This method will then perform a platform-specific
+  // reveal of the editable, e.g. by animating a scroll and zoom in to a
+  // legible scale. This should only be called in a WebView where the main
+  // frame is local and outermost.
+  void FinishScrollFocusedEditableIntoView(
+      const gfx::RectF& caret_rect_in_root_frame,
+      mojom::blink::ScrollIntoViewParamsPtr params);
 
   // Handles context menu events orignated via the the keyboard. These
   // include the VK_APPS virtual key and the Shift+F10 combine. Code is
@@ -500,8 +499,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   class ChromeClient& GetChromeClient() const {
     return *chrome_client_.Get();
   }
-
-  bool ShouldZoomToLegibleScale(const Element&);
 
   // Allows main frame updates to occur if they were previously blocked. They
   // are blocked during loading a navigation, to allow Blink to proceed without
@@ -689,19 +686,33 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void RemoveFocusAndTextInputState();
 
   // Finds the zoom and scroll parameters for zooming into an editable element
-  // with bounds |element_bounds_in_document| and caret bounds
-  // |caret_bounds_in_document|. If the original element belongs to the local
-  // root of MainFrameImpl(), then the bounds are exactly those of the element
-  // and caret. Otherwise (when the editable element is inside an OOPIF), the
-  // bounds are projection of the original element's bounds in the main frame
-  // which is inside the layout area of some remote frame in this frame tree.
+  // with bounds |element_bounds_in_root_frame| and caret bounds
+  // |caret_bounds_in_root_frame|.
   void ComputeScaleAndScrollForEditableElementRects(
-      const gfx::Rect& element_bounds_in_document,
-      const gfx::Rect& caret_bounds_in_document,
+      const gfx::Rect& element_bounds_in_root_frame,
+      const gfx::Rect& caret_bounds_in_root_frame,
       bool zoom_into_legible_scale,
-      float& scale,
-      gfx::Point& scroll,
+      float& new_scale,
+      gfx::Point& new_scroll_position,
       bool& need_animation);
+
+  // Starts a page scale (and scroll!) animation on the compositor thread that
+  // will smoothly animate the viewport position and zoom. Returns true if an
+  // animation was queued, false if an animation was not needed.
+  //
+  // * target_position - A position in root document coordinates ("position"
+  // meaning it's relative to the top-left of the document).  This is the
+  // location that scroll will animate to.
+  // * use_anchor: If true, the animation `target_position` is used as an
+  // "anchor". `target_position` must already be visible in the viewport and
+  // scroll/zoom will be animated such that the anchor will be kept fixed in
+  // the viewport (if possible).
+  // * new_scale: The target page scale factor to animate to.
+  // * duration: The animation's duration.
+  bool StartPageScaleAnimation(const gfx::Point& target_position,
+                               bool use_anchor,
+                               float new_scale,
+                               base::TimeDelta duration);
 
   // Sends any outstanding TrackedFeaturesUpdate messages to the browser.
   void ReportActiveSchedulerTrackedFeatures();

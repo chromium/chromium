@@ -789,6 +789,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   void MoveRangeSelectionExtent(const gfx::Point& extent_in_dips) override;
   void ScrollFocusedEditableNodeIntoRect(
       const gfx::Rect& rect_in_dips) override;
+  void WaitForPageScaleAnimationForTesting(
+      WaitForPageScaleAnimationForTestingCallback callback) override;
   void MoveCaret(const gfx::Point& point_in_dips) override;
 #if BUILDFLAG(IS_ANDROID)
   void SelectAroundCaret(mojom::blink::SelectionGranularity granularity,
@@ -822,14 +824,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SendScrollEndEventFromImplSide(cc::ElementId scroll_latched_element_id);
 
   void RecordManipulationTypeCounts(cc::ManipulationInfo info);
-
-  // Finds the parameters required for scrolling the focused editable |element|
-  // into view. |out_rect_to_scroll| is used for recursive scrolling of the
-  // element into view and contains all or part of element's bounding box and
-  // always includes the caret and is with respect to absolute coordinates.
-  mojom::blink::ScrollIntoViewParamsPtr
-  GetScrollParamsForFocusedEditableElement(const Element& element,
-                                           PhysicalRect& out_rect_to_scroll);
 
   enum DragAction { kDragEnter, kDragOver };
   // Consolidate some common code between starting a drag over a target and
@@ -1093,6 +1087,9 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // Whether this widget is for a child local root, or otherwise a main frame.
   const bool is_for_child_local_root_;
+
+  WaitForPageScaleAnimationForTestingCallback
+      page_scale_animation_for_testing_callback_;
 
   // This stores the last hidden page popup. If a GestureTap attempts to open
   // the popup that is closed by its previous GestureTapDown, the popup remains

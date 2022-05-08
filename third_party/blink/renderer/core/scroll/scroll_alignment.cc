@@ -257,7 +257,6 @@ ScrollAlignment::CreateScrollIntoViewParams(
     bool make_visible_in_visual_viewport,
     mojom::blink::ScrollBehavior scroll_behavior,
     bool is_for_scroll_sequence,
-    bool zoom_into_rect,
     bool cross_origin_boundaries) {
   auto params = mojom::blink::ScrollIntoViewParams::New();
   params->align_x = mojom::blink::ScrollAlignment::New(align_x);
@@ -266,7 +265,6 @@ ScrollAlignment::CreateScrollIntoViewParams(
   params->make_visible_in_visual_viewport = make_visible_in_visual_viewport;
   params->behavior = scroll_behavior;
   params->is_for_scroll_sequence = is_for_scroll_sequence;
-  params->zoom_into_rect = zoom_into_rect;
   params->cross_origin_boundaries = cross_origin_boundaries;
   return params;
 }

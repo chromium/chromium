@@ -331,6 +331,16 @@ void ChromeClientImpl::InjectGestureScrollEvent(
       device, delta, granularity, scrollable_area_element_id, injected_type);
 }
 
+void ChromeClientImpl::FinishScrollFocusedEditableIntoView(
+    const gfx::RectF& caret_rect_in_root_frame,
+    mojom::blink::ScrollIntoViewParamsPtr params) {
+  DCHECK(web_view_);
+  DCHECK(web_view_->MainFrameImpl());
+  DCHECK(!web_view_->IsFencedFrameRoot());
+  web_view_->FinishScrollFocusedEditableIntoView(caret_rect_in_root_frame,
+                                                 std::move(params));
+}
+
 void ChromeClientImpl::SetOverscrollBehavior(
     LocalFrame& main_frame,
     const cc::OverscrollBehavior& overscroll_behavior) {

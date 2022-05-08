@@ -359,6 +359,31 @@ void FrameWidgetInputHandlerImpl::ScrollFocusedEditableNodeIntoRect(
       main_thread_frame_widget_input_handler_, rect));
 }
 
+void FrameWidgetInputHandlerImpl::WaitForPageScaleAnimationForTesting(
+    WaitForPageScaleAnimationForTestingCallback callback) {
+  // Ensure the Mojo callback is invoked from the thread on which the message
+  // was received.
+  if (ThreadedCompositingEnabled()) {
+    callback = base::BindOnce(
+        [](scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner,
+           WaitForPageScaleAnimationForTestingCallback callback) {
+          callback_task_runner->PostTask(FROM_HERE,
+                                         base::BindOnce(std::move(callback)));
+        },
+        base::ThreadTaskRunnerHandle::Get(), std::move(callback));
+  }
+
+  RunOnMainThread(base::BindOnce(
+      [](base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler,
+         WaitForPageScaleAnimationForTestingCallback callback) {
+        if (handler)
+          handler->WaitForPageScaleAnimationForTesting(std::move(callback));
+        else
+          std::move(callback).Run();
+      },
+      main_thread_frame_widget_input_handler_, std::move(callback)));
+}
+
 void FrameWidgetInputHandlerImpl::MoveCaret(const gfx::Point& point) {
   RunOnMainThread(base::BindOnce(
       [](base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler,

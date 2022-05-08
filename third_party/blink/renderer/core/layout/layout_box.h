@@ -890,10 +890,17 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Reveals the given rect, given in absolute coordinates, by scrolling this
   // LayoutBox and then all its ancestors up to the local root frame. To
   // continue the reveal through remote ancestors, use
-  // LayoutObject::ScrollRectToVisible.
+  // LayoutObject::ScrollRectToVisible. Returns the updated absolute rect, in
+  // the absolute coordinates of the frame in which the scroll stopped (either
+  // due to reaching a local root or a frame which isn't allowed to bubble
+  // scrolls.
+  // TODO(bokan): Having just a rect as the return value is awkward since the
+  // coordinate space it'll be relative to isn't predictable; the bubbling can
+  // stop at an arbitrary frame.
+  // TODO(bokan): Move this into scroll_into_view_util.h.
   PhysicalRect ScrollRectToVisibleLocally(
       const PhysicalRect& absolute_rect,
-      const mojom::blink::ScrollIntoViewParamsPtr&);
+      mojom::blink::ScrollIntoViewParamsPtr&);
 
   LayoutRectOutsets MarginBoxOutsets() const {
     NOT_DESTROYED();

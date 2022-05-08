@@ -2523,7 +2523,7 @@ protocol::Response InspectorDOMAgent::scrollIntoViewIfNeeded(
           mojom::blink::ScrollType::kProgrammatic,
           true /* make_visible_in_visual_viewport */,
           mojom::blink::ScrollBehavior::kInstant,
-          true /* is_for_scroll_sequence */, false /* zoom_into_rect */));
+          true /* is_for_scroll_sequence */));
   return Response::Success();
 }
 

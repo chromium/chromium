@@ -110,6 +110,9 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                                 ui::ScrollGranularity granularity,
                                 CompositorElementId scrollable_area_element_id,
                                 WebInputEvent::Type injected_type) override;
+  void FinishScrollFocusedEditableIntoView(
+      const gfx::RectF& caret_rect_in_root_frame,
+      mojom::blink::ScrollIntoViewParamsPtr params) override;
   bool ShouldReportDetailedMessageForSourceAndSeverity(
       LocalFrame&,
       mojom::blink::ConsoleMessageLevel log_level,

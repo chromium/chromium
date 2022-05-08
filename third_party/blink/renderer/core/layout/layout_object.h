@@ -435,13 +435,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // Takes the given rect, assumed to be in absolute coordinates, and scrolls
   // this Element and all it's containers such that the child content of this
-  // Element at that rect is visible in the viewport. Returns the new absolute
-  // rect of the target rect after all scrolls are completed, in the coordinate
-  // space of the local root frame.
-  // TODO(nburris): The returned rect is actually in document coordinates, not
-  // root frame coordinates.
-  PhysicalRect ScrollRectToVisible(const PhysicalRect&,
-                                   mojom::blink::ScrollIntoViewParamsPtr);
+  // Element at that rect is visible in the viewport.
+  // TODO(bokan): Move this to scroll_into_view_util.h.
+  void ScrollRectToVisible(const PhysicalRect&,
+                           mojom::blink::ScrollIntoViewParamsPtr);
 
   // Convenience function for getting to the nearest enclosing box of a
   // LayoutObject.

@@ -107,6 +107,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_size.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
@@ -1185,7 +1186,7 @@ LayoutBox* LayoutBox::GetScrollParent(
 
 PhysicalRect LayoutBox::ScrollRectToVisibleLocally(
     const PhysicalRect& absolute_rect,
-    const mojom::blink::ScrollIntoViewParamsPtr& params) {
+    mojom::blink::ScrollIntoViewParamsPtr& params) {
   NOT_DESTROYED();
   DCHECK(params->type == mojom::blink::ScrollType::kProgrammatic ||
          params->type == mojom::blink::ScrollType::kUser);
@@ -1207,8 +1208,9 @@ PhysicalRect LayoutBox::ScrollRectToVisibleLocally(
     // if the stop_at_main_frame_layout_viewport option is set. We do this so
     // that we can allow a smooth "scroll and zoom" animation to do the final
     // scroll in cases like scrolling a focused editable box into view.
-    if (params->stop_at_main_frame_layout_viewport &&
-        current_box->IsGlobalRootScroller())
+    // TODO(bokan): This may need to account for fenced frames.
+    // https://crbug.com/1314858
+    if (params->for_focused_editable && current_box->IsGlobalRootScroller())
       break;
 
     ScrollableArea* area_to_scroll = nullptr;
@@ -1253,6 +1255,10 @@ PhysicalRect LayoutBox::ScrollRectToVisibleLocally(
     // If the next box to scroll is in another frame, we need to convert the
     // scroll box to the new frame's absolute coordinates.
     if (next_box && next_box->View() != current_box->View()) {
+      scroll_into_view_util::ConvertParamsToParentFrame(
+          params, gfx::RectF(absolute_rect_to_scroll), *current_box->View(),
+          *next_box->View());
+
       absolute_rect_to_scroll = current_box->View()->LocalToAncestorRect(
           absolute_rect_to_scroll, next_box->View(),
           kTraverseDocumentBoundaries);

@@ -352,7 +352,22 @@ interface FrameWidgetInputHandler {
   // Tells the renderer to scroll the currently focused node into rect only if
   // the currently focused node is a Text node (textfield, text area or content
   // editable divs).
+  // TODO(bokan): This method scrolls the currently focused node into the
+  // viewport, not the given `rect`. The parameter is used only to suppress
+  // redundant calls but could probably be removed the API name fixed.
+  // https://crbug.com/1323115
   ScrollFocusedEditableNodeIntoRect(gfx.mojom.Rect rect);
+
+  // Replies when the next PageScaleAnimation has completed. Can only be called
+  // on the outermost main frame. Can be used to reliably wait for a
+  // ScrollFocusedEditableNodeIntoRect to complete since that may create a
+  // PageScaleAnimation which can take several frames to complete.
+  // ScrollFocusedEditableNodeIntoRect cannot use a reply callback for this
+  // since it may be called on a subframe but the scroll will be completed in
+  // another renderer when it bubbles up to the root. Additionally, the caller
+  // may not be the one to have called ScrollFocusedEditableNodeIntoRect; for
+  // example, a test that simulates tapping an input box.
+  WaitForPageScaleAnimationForTesting() => ();
 
   // Requests the renderer to move the caret selection toward the point.
   MoveCaret(gfx.mojom.Point point);

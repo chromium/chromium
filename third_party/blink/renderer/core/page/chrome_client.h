@@ -40,6 +40,7 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/external_date_time_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/popup_menu.h"
@@ -255,6 +256,18 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
       ui::ScrollGranularity granularity,
       CompositorElementId scrollable_area_element_id,
       WebInputEvent::Type injected_type) {}
+
+  // Finishes a ScrollIntoView for a focused editable element by performing a
+  // view-level reveal. That is, when an embedder requests to reveal a focused
+  // editable, the editable is first ScrollIntoView'ed in the layout tree to
+  // ensure it's visible in the outermost document but stops short of scrolling
+  // the outermost frame. This method will then perform a platform-specific
+  // reveal of the editable, e.g. by animating a scroll and zoom in to a
+  // legible scale. This should only be called in a WebView where the main
+  // frame is local and outermost.
+  virtual void FinishScrollFocusedEditableIntoView(
+      const gfx::RectF& caret_rect_in_root_frame,
+      mojom::blink::ScrollIntoViewParamsPtr params) {}
 
   // Set the browser's behavior when overscroll happens, e.g. whether to glow
   // or navigate. This may only be called for the main frame, and takes it as

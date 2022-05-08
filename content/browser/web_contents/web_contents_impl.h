@@ -1305,6 +1305,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool CancelPrerendering(FrameTreeNode* frame_tree_node,
                           PrerenderHost::FinalStatus final_status);
 
+  void set_suppress_ime_events_for_testing(bool suppress) {
+    suppress_ime_events_for_testing_ = suppress;
+  }
+
  private:
   using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree*)>;
   using RenderViewHostIterationCallback =
@@ -2157,6 +2161,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // IME-related state for RenderWidgetHosts on the inner WebContents is tracked
   // by the TextInputManager in the outer WebContents.
   std::unique_ptr<TextInputManager> text_input_manager_;
+
+  // Tests can set this to true in order to force this web contents to always
+  // return nullptr for the above `text_input_manager_`, effectively blocking
+  // IME events from propagating out of the renderer.
+  bool suppress_ime_events_for_testing_ = false;
 
   // Stores the RenderWidgetHost that currently holds a mouse lock or nullptr if
   // there's no RenderWidgetHost holding a lock.

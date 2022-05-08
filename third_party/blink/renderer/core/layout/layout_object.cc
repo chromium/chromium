@@ -100,6 +100,7 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/image_element_timing.h"
@@ -1025,13 +1026,13 @@ bool LayoutObject::IsFixedPositionObjectInPagedMedia() const {
          view->IsHorizontalWritingMode();
 }
 
-PhysicalRect LayoutObject::ScrollRectToVisible(
+void LayoutObject::ScrollRectToVisible(
     const PhysicalRect& absolute_rect,
     mojom::blink::ScrollIntoViewParamsPtr params) {
   NOT_DESTROYED();
   LayoutBox* enclosing_box = EnclosingBox();
   if (!enclosing_box)
-    return absolute_rect;
+    return;
 
   GetFrame()->GetSmoothScrollSequencer().AbortAnimations();
   GetFrame()->GetSmoothScrollSequencer().SetScrollType(params->type);
@@ -1040,21 +1041,31 @@ PhysicalRect LayoutObject::ScrollRectToVisible(
   PhysicalRect updated_absolute_rect =
       enclosing_box->ScrollRectToVisibleLocally(absolute_rect, params);
 
-  // Continue the scroll via IPC if there's a remote ancestor.
-  // TODO(bokan): This probably needs to happen fenced frames in at least some
-  // cases. crbug.com/1314858.
-  LocalFrame& local_root = GetFrame()->LocalFrameRoot();
-  if (!local_root.IsMainFrame()) {
-    LocalFrameView* view = local_root.View();
-    if (view->AllowedToPropagateScrollIntoView(params)) {
-      view->ScrollRectToVisibleInRemoteParent(updated_absolute_rect,
-                                              std::move(params));
-    }
-  }
-
   GetFrame()->GetSmoothScrollSequencer().RunQueuedAnimations();
 
-  return updated_absolute_rect;
+  LocalFrame& local_root = GetFrame()->LocalFrameRoot();
+  LocalFrameView* local_root_view = local_root.View();
+
+  if (!local_root_view)
+    return;
+
+  if (!local_root.IsMainFrame()) {
+    // Continue the scroll via IPC if there's a remote ancestor.
+    // TODO(bokan): This probably needs to happen fenced frames in at least some
+    // cases. crbug.com/1314858.
+    if (local_root_view->AllowedToPropagateScrollIntoView(params)) {
+      local_root_view->ScrollRectToVisibleInRemoteParent(updated_absolute_rect,
+                                                         std::move(params));
+    }
+  } else if (params->for_focused_editable) {
+    // If we're scrolling a focused editable into view, once we reach the main
+    // frame we need to perform an animated scroll and zoom to bring the
+    // editable into a legible size.
+    gfx::RectF caret_rect_in_root_frame(updated_absolute_rect);
+    DCHECK(!caret_rect_in_root_frame.IsEmpty());
+    local_root.GetPage()->GetChromeClient().FinishScrollFocusedEditableIntoView(
+        caret_rect_in_root_frame, std::move(params));
+  }
 }
 
 LayoutBox* LayoutObject::EnclosingBox() const {

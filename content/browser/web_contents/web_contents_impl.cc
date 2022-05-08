@@ -4515,6 +4515,9 @@ void WebContentsImpl::SendActiveState(bool active) {
 }
 
 TextInputManager* WebContentsImpl::GetTextInputManager() {
+  if (suppress_ime_events_for_testing_)
+    return nullptr;
+
   if (GetOuterWebContents())
     return GetOuterWebContents()->GetTextInputManager();
 
