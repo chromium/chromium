@@ -545,9 +545,26 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
       !IsEventTimingBufferFull()) {
     AddEventTimingBuffer(*entry);
   }
-  TRACE_EVENT2("devtools.timeline", "EventTiming", "data",
-               entry->ToTracedValue(), "frame",
-               ToTraceValue(DomWindow()->GetFrame()));
+  bool tracing_enabled;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED("devtools.timeline", &tracing_enabled);
+  if (tracing_enabled) {
+    base::TimeTicks unsafe_start_time =
+        GetTimeOriginInternal() + base::Milliseconds(entry->startTime());
+    // At this point in the code, the duration has been rounded. Estimate the
+    // end time as the maximum of the processing end + 4ms or the render time.
+    base::TimeTicks unsafe_end_time = std::max(
+        unsafe_start_time + base::Milliseconds(entry->duration()),
+        GetTimeOriginInternal() + base::Milliseconds(entry->processingEnd()) +
+            base::Milliseconds(4));
+    unsigned hash = WTF::StringHash::GetHash(entry->name());
+    WTF::AddFloatToHash(hash, entry->startTime());
+    TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+        "devtools.timeline", "EventTiming", hash, unsafe_start_time, "data",
+        entry->ToTracedValue(DomWindow()->GetFrame()));
+
+    TRACE_EVENT_COPY_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+        "devtools.timeline", "EventTiming", hash, unsafe_end_time);
+  }
 }
 
 void WindowPerformance::MaybeNotifyInteractionAndAddEventTimingBuffer(

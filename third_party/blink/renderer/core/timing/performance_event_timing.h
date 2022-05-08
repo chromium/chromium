@@ -12,6 +12,8 @@
 
 namespace blink {
 
+class Frame;
+
 class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -55,7 +57,7 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   void Trace(Visitor*) const override;
 
-  std::unique_ptr<TracedValue> ToTracedValue() const;
+  std::unique_ptr<TracedValue> ToTracedValue(Frame* frame) const;
 
  private:
   AtomicString entry_type_;

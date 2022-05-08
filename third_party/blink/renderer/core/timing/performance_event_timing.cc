@@ -6,6 +6,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
@@ -101,7 +103,8 @@ void PerformanceEventTiming::Trace(Visitor* visitor) const {
   visitor->Trace(target_);
 }
 
-std::unique_ptr<TracedValue> PerformanceEventTiming::ToTracedValue() const {
+std::unique_ptr<TracedValue> PerformanceEventTiming::ToTracedValue(
+    Frame* frame) const {
   auto traced_value = std::make_unique<TracedValue>();
   traced_value->SetString("type", name());
   traced_value->SetInteger("timeStamp", startTime());
@@ -111,6 +114,8 @@ std::unique_ptr<TracedValue> PerformanceEventTiming::ToTracedValue() const {
   traced_value->SetBoolean("cancelable", cancelable());
   // If int overflows occurs, the static_cast may not work correctly.
   traced_value->SetInteger("interactionId", static_cast<int>(interactionId()));
+  traced_value->SetInteger("nodeId", DOMNodeIds::IdForNode(target_));
+  traced_value->SetString("frame", String::FromUTF8(ToTraceValue(frame)));
   return traced_value;
 }
 
