@@ -87,7 +87,7 @@
 <translation id="1079766198702302550">บล็อกการเข้าถึงกล้องเสมอ</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 แท็บ}other{<ph name="GROUP_TITLE" /> - # แท็บ}}</translation>
 <translation id="1082214733466244292">ผู้ดูแลระบบบล็อกฟังก์ชันการทำงานบางอย่างในอุปกรณ์นี้</translation>
-<translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> ต้องการคืนค่าการตั้งค่า Chrome ของคุณกลับไปเป็นค่าเริ่มต้นดั้งเดิม การดำเนินการนี้จะรีเซ็ตหน้าหลักของคุณ หน้าแท็บใหม่ และเครื่องมือค้นหา ปิดใช้ส่วนขยาย และเลิกตรึงแท็บทั้งหมด นอกจากนี้ยังล้างข้อมูลชั่วคราวอื่นๆ และข้อมูลที่แคชไว้ เช่น คุกกี้ เนื้อหา และข้อมูลเว็บไซต์อีกด้วย</translation>
+<translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> ต้องการคืนค่าการตั้งค่า Chrome ของคุณกลับไปเป็นค่าเริ่มต้นดั้งเดิม การดำเนินการนี้จะรีเซ็ตหน้าหลักของคุณ หน้าแท็บใหม่ และเครื่องมือค้นหา ปิดใช้ส่วนขยาย และเลิกปักหมุดแท็บทั้งหมด นอกจากนี้ยังล้างข้อมูลชั่วคราวอื่นๆ และข้อมูลที่แคชไว้ เช่น คุกกี้ เนื้อหา และข้อมูลเว็บไซต์อีกด้วย</translation>
 <translation id="1084096383128641877">การนำรหัสผ่านนี้ออกจะไม่ลบบัญชีของคุณใน <ph name="DOMAIN" /> เปลี่ยนรหัสผ่านหรือลบบัญชีของคุณใน <ph name="DOMAIN_LINK" /> เพื่อให้ปลอดภัยจากบุคคลอื่น</translation>
 <translation id="1084824384139382525">คัดลอก&amp;ที่อยู่ลิงก์</translation>
 <translation id="1085064499066015002">ตลอดเวลาในทุกเว็บไซต์</translation>
@@ -299,7 +299,7 @@
 <translation id="1293264513303784526">อุปกรณ์ USB-C (พอร์ตด้านซ้าย)</translation>
 <translation id="1293556467332435079">ไฟล์</translation>
 <translation id="1294807885394205587">ขั้นตอนนี้อาจใช้เวลาสักครู่ กำลังเริ่มต้นตัวจัดการคอนเทนเนอร์</translation>
-<translation id="1296911687402551044">ตรึงแท็บที่เลือก</translation>
+<translation id="1296911687402551044">ปักหมุดแท็บที่เลือก</translation>
 <translation id="1297175357211070620">ปลายทาง</translation>
 <translation id="129770436432446029">ส่งความคิดเห็นสำหรับ <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> แก้ไขไฟล์ต่อไปนี้ได้</translation>
@@ -445,7 +445,7 @@
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1431188203598586230">การอัปเดตซอฟต์แวร์ครั้งสุดท้าย</translation>
 <translation id="1432581352905426595">จัดการเครื่องมือค้นหา</translation>
-<translation id="1434696352799406980">การดำเนินการนี้จะรีเซ็ตหน้าเริ่มต้นใช้งาน หน้าแท็บใหม่ เครื่องมือค้นหา แท็บที่ถูกตรึง และยังปิดใช้ส่วนขยายทั้งหมด ตลอดจนล้างข้อมูลชั่วคราว เช่น คุกกี้ โดยจะไม่ล้างบุ๊กมาร์ก ประวัติ และรหัสผ่านที่บันทึกไว้</translation>
+<translation id="1434696352799406980">การดำเนินการนี้จะรีเซ็ตหน้าเริ่มต้นใช้งาน หน้าแท็บใหม่ เครื่องมือค้นหา แท็บที่ถูกปักหมุด และยังปิดใช้ส่วนขยายทั้งหมด ตลอดจนล้างข้อมูลชั่วคราว เช่น คุกกี้ โดยจะไม่ล้างบุ๊กมาร์ก ประวัติ และรหัสผ่านที่บันทึกไว้</translation>
 <translation id="1434886155212424586">หน้าแรกคือหน้าแท็บใหม่</translation>
 <translation id="1436390408194692385">ใช้ได้เป็นเวลา <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">ลบออกแล้ว</translation>
@@ -1168,7 +1168,7 @@
 <translation id="211144231511833662">ล้างประเภท</translation>
 <translation id="2111670510994270194">แท็บใหม่อยู่ด้านขวา</translation>
 <translation id="2112554630428445878">ยินดีต้อนรับ <ph name="USERNAME" /></translation>
-<translation id="21133533946938348">ตรึงแท็บ</translation>
+<translation id="21133533946938348">ปักหมุดแท็บ</translation>
 <translation id="2113479184312716848">เปิดไ&amp;ฟล์...</translation>
 <translation id="2113921862428609753">การเข้าถึงข้อมูลผู้ออกใบรับรอง</translation>
 <translation id="2114326799768592691">โหลดเ&amp;ฟรมซ้ำ</translation>
@@ -1990,7 +1990,7 @@
 <translation id="2864601841139725659">ตั้งรูปโปรไฟล์</translation>
 <translation id="2865919525181940183">ภาพหน้าจอของโปรแกรมที่กำลังแสดงอยู่ในหน้าจอ</translation>
 <translation id="286674810810214575">กำลังตรวจสอบแหล่งจ่ายไฟ...</translation>
-<translation id="2867768963760577682">เปิดเป็นแท็บที่ถูกตรึง</translation>
+<translation id="2867768963760577682">เปิดเป็นแท็บที่ถูกปักหมุด</translation>
 <translation id="2868746137289129307">ส่วนขยายนี้ล้าสมัยแล้วและปิดใช้อยู่โดยนโยบายองค์กร แต่อาจเปิดใช้โดยอัตโนมัติได้เมื่อมีเวอร์ชันใหม่</translation>
 <translation id="2870560284913253234">เว็บไซต์</translation>
 <translation id="2870909136778269686">กำลังอัปเดต...</translation>
@@ -3560,7 +3560,7 @@
 <translation id="4441124369922430666">คุณต้องการเริ่มแอปนี้โดยอัตโนมัติเมื่อเครื่องเปิดไหม</translation>
 <translation id="4441147046941420429">หากต้องการดำเนินการต่อ ให้ดึงคีย์ความปลอดภัยออกจากอุปกรณ์ จากนั้นเสียบกลับเข้าไปใหม่แล้วแตะที่คีย์นั้น</translation>
 <translation id="444134486829715816">ขยาย...</translation>
-<translation id="4441928470323187829">ผู้ดูแลระบบตรึงไว้</translation>
+<translation id="4441928470323187829">ผู้ดูแลระบบปักหมุดไว้</translation>
 <translation id="4443536555189480885">&amp;ความช่วยเหลือ</translation>
 <translation id="4444304522807523469">เข้าถึงเครื่องสแกนเอกสารที่เชื่อมต่อผ่าน USB หรือบนเครือข่าย LAN</translation>
 <translation id="4444512841222467874">หากไม่เพิ่มพื้นที่ว่าง ระบบอาจลบผู้ใช้และข้อมูลโดยอัตโนมัติ</translation>
@@ -4257,7 +4257,7 @@
 <translation id="5154108062446123722">การตั้งค่าขั้นสูงสำหรับ <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">เรื่อง</translation>
 <translation id="5155327081870541046">ป้อนทางลัดของเว็บไซต์ที่ต้องการค้นหาในแถบที่อยู่ เช่น @bookmarks จากนั้นกดแป้นพิมพ์ลัดที่ต้องการ แล้วป้อนข้อความค้นหา</translation>
-<translation id="5157635116769074044">ตรึงหน้าเว็บนี้ไว้ที่หน้าจอเริ่ม...</translation>
+<translation id="5157635116769074044">ปักหมุดหน้าเว็บนี้ไว้ที่หน้าจอเริ่ม...</translation>
 <translation id="5159094275429367735">ตั้งค่า Crostini</translation>
 <translation id="5159419673777902220">ผู้ปกครองของคุณปิดใช้สิทธิ์ของส่วนขยาย</translation>
 <translation id="5159643365935452998">ตรวจสอบการล้างข้อมูลอัตโนมัติ</translation>
@@ -4473,7 +4473,7 @@
 <translation id="5369694795837229225">ตั้งค่าสภาพแวดล้อมในการพัฒนาซอฟต์แวร์ Linux</translation>
 <translation id="5370819323174483825">&amp;โหลดซ้ำ</translation>
 <translation id="5372529912055771682">รุ่นของระบบปฏิบัติการนี้ไม่สนับสนุนโหมดการลงทะเบียนที่กำหนด โปรดตรวจสอบให้แน่ใจว่าคุณกำลังใช้งานรุ่นใหม่ล่าสุดและลองอีกครั้ง</translation>
-<translation id="5372579129492968947">เลิกตรึงส่วนขยาย</translation>
+<translation id="5372579129492968947">เลิกปักหมุดส่วนขยาย</translation>
 <translation id="5372632722660566343">ดำเนินการต่อโดยไม่มีบัญชี</translation>
 <translation id="5375318608039113175">หากต้องการใช้การแชร์ใกล้เคียงกับรายชื่อติดต่อเหล่านี้ ให้เพิ่มอีเมลที่ลิงก์กับบัญชี Google ของรายชื่อติดต่อนั้นลงในรายชื่อติดต่อของคุณ</translation>
 <translation id="5376169624176189338">คลิกเพื่อย้อนกลับ กดค้างเพื่อดูประวัติการเข้าชม</translation>
@@ -5210,7 +5210,7 @@
 <translation id="6113942107547980621">โปรดเปลี่ยนเป็นโปรไฟล์ผู้ใช้หลักในโทรศัพท์เพื่อใช้ Smart Lock</translation>
 <translation id="6116921718742659598">เปลี่ยนการตั้งค่าภาษาและการป้อนข้อมูล</translation>
 <translation id="6119927814891883061">ตั้งชื่ออุปกรณ์ว่า <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">ตรึงหน้าเว็บนี้ไว้ที่หน้าจอเริ่ม...</translation>
+<translation id="6120205520491252677">ปักหมุดหน้าเว็บนี้ไว้ที่หน้าจอเริ่ม...</translation>
 <translation id="6120707837086723438">สิ่งที่เห็นนี้คือสูตรอาหารที่แนะนำตามกิจกรรมการค้นหาสูตรอาหารครั้งล่าสุดของคุณ
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -6636,7 +6636,7 @@
 <translation id="7548856833046333824">เลมอนเนด</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">ดาวน์โหลด <ph name="FILE_NAME" /> สำเร็จแล้ว</translation>
-<translation id="7551643184018910560">ตรึงที่ชั้นวาง</translation>
+<translation id="7551643184018910560">ปักหมุดที่ชั้นวาง</translation>
 <translation id="7552846755917812628">ลองทำตามเคล็ดลับต่อไปนี้:</translation>
 <translation id="7553012839257224005">กำลังตรวจสอบคอนเทนเนอร์ Linux</translation>
 <translation id="7553242001898162573">ป้อนรหัสผ่าน</translation>
@@ -6723,7 +6723,7 @@
 <translation id="7633724038415831385">ต้องรอการอัปเดตเพียงแค่ครั้งนี้เท่านั้น เพราะตามปกติการอัปเดตซอฟต์แวร์บน Chromebooks จะเกิดขึ้นในเบื้องหลัง</translation>
 <translation id="7634280112532283638">การลดจำนวนสแปมและการประพฤติมิชอบ</translation>
 <translation id="7634566076839829401">เกิดข้อผิดพลาดบางอย่าง โปรดลองอีกครั้ง</translation>
-<translation id="7635048370253485243">ผู้ดูแลระบบตรึงไว้</translation>
+<translation id="7635048370253485243">ผู้ดูแลระบบปักหมุดไว้</translation>
 <translation id="7636919061354591437">ติดตั้งในอุปกรณ์นี้</translation>
 <translation id="7637593984496473097">มีพื้นที่ในดิสก์ไม่เพียงพอ</translation>
 <translation id="7639914187072011620">ดึงข้อมูล URL เปลี่ยนเส้นทาง SAML จากเซิร์ฟเวอร์ไม่สำเร็จ</translation>
@@ -7464,7 +7464,7 @@
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{ประเภทไฟล์ที่รองรับ ได้แก่ <ph name="FILE_TYPE1" />}=2{ประเภทไฟล์ที่รองรับ ได้แก่ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{ประเภทไฟล์ที่รองรับ ได้แก่ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{ประเภทไฟล์ที่รองรับ ได้แก่ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{ประเภทไฟล์ที่รองรับ ได้แก่ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />และอีก {OVERFLOW_COUNT} ประเภท<ph name="END_LINK" />)}}</translation>
 <translation id="8331822764922665615">ตั้งชื่อกลุ่ม เลือกสี แล้วกด Esc</translation>
 <translation id="833256022891467078">โฟลเดอร์ที่แชร์ใน Crostini</translation>
-<translation id="8335587457941836791">เลิกตรึงในชั้นวาง</translation>
+<translation id="8335587457941836791">เลิกปักหมุดในชั้นวาง</translation>
 <translation id="8336407002559723354">การอัปเดตจะสิ้นสุดใน<ph name="MONTH_AND_YEAR" /></translation>
 <translation id="8336739000755212683">เปลี่ยนรูปภาพของบัญชีอุปกรณ์</translation>
 <translation id="8337047789441383384">คุณลงทะเบียนคีย์ความปลอดภัยนี้ไปแล้ว ไม่จำเป็นต้องลงทะเบียนซ้ำ</translation>
@@ -7943,7 +7943,7 @@
 <translation id="8823704566850948458">แนะนำรหัสผ่าน...</translation>
 <translation id="8824701697284169214">เพิ่มหน้&amp;า...</translation>
 <translation id="8827125715368568315">บล็อก<ph name="PERMISSION" />และอีก <ph name="COUNT" /> รายการ</translation>
-<translation id="8827289157496676362">ตรึงส่วนขยาย</translation>
+<translation id="8827289157496676362">ปักหมุดส่วนขยาย</translation>
 <translation id="8827752199525959199">การดำเนินการอื่นๆ รหัสผ่านของ <ph name="USERNAME" /> ใน <ph name="DOMAIN" /></translation>
 <translation id="882854468542856424">ไม่อนุญาตให้เว็บไซต์ค้นหาอุปกรณ์บลูทูธใกล้เคียง</translation>
 <translation id="8828933418460119530">ชื่อ DNS</translation>
@@ -7991,7 +7991,7 @@
 <translation id="8868838761037459823">รายละเอียดเครือข่ายมือถือ</translation>
 <translation id="8868964574897075186">ย้ายรหัสผ่านไปยังบัญชี Google ของคุณแล้ว</translation>
 <translation id="8870413625673593573">เพิ่งปิด</translation>
-<translation id="8871551568777368300">ตรึงโดยผู้ดูแลระบบ</translation>
+<translation id="8871551568777368300">ปักหมุดโดยผู้ดูแลระบบ</translation>
 <translation id="8871696467337989339">คุณกำลังใช้แฟล็กบรรทัดคำสั่งที่ไม่ได้รับการสนับสนุน: <ph name="BAD_FLAG" /> ซึ่งอาจส่งผลต่อเสถียรภาพและความปลอดภัย</translation>
 <translation id="8871974300055371298">การตั้งค่าเนื้อหา</translation>
 <translation id="8872155268274985541">พบไฟล์ Manifest การอัปเดตภายนอกของคีออสก์ที่ไม่ถูกต้อง ไม่สามารถอัปเดตแอปคีออสก์ได้ โปรดนำ USB สติ๊กออก</translation>
