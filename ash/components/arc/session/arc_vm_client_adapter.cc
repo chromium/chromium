@@ -95,10 +95,6 @@ constexpr int kLogdConfigSizeSmall = 256;   // kBytes
 constexpr int kLogdConfigSizeMed = 512;     // kBytes
 constexpr int kLogdConfigSizeLarge = 1024;  // kBytes
 
-// The owner ID that ARCVM is started with for mini-ARCVM. On UpgradeArc,
-// the owner ID is set to the logged-in user.
-constexpr const char kArcVmDefaultOwner[] = "ARCVM_DEFAULT_OWNER";
-
 constexpr int64_t kInvalidCid = -1;
 
 constexpr base::TimeDelta kConnectTimeoutLimit = base::Seconds(20);
@@ -366,6 +362,7 @@ std::vector<std::string> GenerateKernelCmdline(
 }
 
 vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
+    const std::string& user_id_hash,
     uint32_t cpus,
     const base::FilePath& demo_session_apps_path,
     const absl::optional<base::FilePath>& data_image_path,
@@ -376,7 +373,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   vm_tools::concierge::StartArcVmRequest request;
 
   request.set_name(kArcVmName);
-  request.set_owner_id(kArcVmDefaultOwner);
+  request.set_owner_id(user_id_hash);
   request.set_use_per_vm_core_scheduling(use_per_vm_core_scheduling);
 
   if (file_system_status.is_host_rootfs_writable() &&
@@ -690,6 +687,15 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   // ArcClientAdapter overrides:
   void StartMiniArc(StartParams params,
                     chromeos::VoidDBusMethodCallback callback) override {
+    // This step is mandatory regardless of StartMiniArc is called or not
+    // from |ArcSessionManager|. It is also called after login for ARCVM.
+    if (user_id_hash_.empty()) {
+      LOG(ERROR) << "User ID hash is not set";
+      StopArcInstanceInternal();
+      std::move(callback).Run(false);
+      return;
+    }
+
     start_params_ = std::move(params);
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
@@ -701,12 +707,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
   void UpgradeArc(UpgradeParams params,
                   chromeos::VoidDBusMethodCallback callback) override {
-    if (user_id_hash_.empty()) {
-      LOG(ERROR) << "User ID hash is not set";
-      StopArcInstanceInternal();
-      std::move(callback).Run(false);
-      return;
-    }
+    DCHECK(!user_id_hash_.empty());
     if (serial_number_.empty()) {
       LOG(ERROR) << "Serial number is not set";
       StopArcInstanceInternal();
@@ -714,15 +715,10 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       return;
     }
 
-    // Stop the existing full-VM if any (e.g. in case of a chrome crash).
-    VLOG(1) << "Stopping the existing full-VM if any.";
-    vm_tools::concierge::StopVmRequest request;
-    request.set_name(kArcVmName);
-    request.set_owner_id(user_id_hash_);
-    GetConciergeClient()->StopVm(
-        request, base::BindOnce(&ArcVmClientAdapter::OnExistingFullVmStopped,
-                                weak_factory_.GetWeakPtr(), std::move(params),
-                                std::move(callback)));
+    VLOG(1) << "Checking adb sideload status";
+    chromeos::SessionManagerClient::Get()->QueryAdbSideload(base::BindOnce(
+        &ArcVmClientAdapter::OnQueryAdbSideload, weak_factory_.GetWeakPtr(),
+        std::move(params), std::move(callback)));
   }
 
   void StopArcInstance(bool on_shutdown, bool should_backup_log) override {
@@ -777,6 +773,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
                          /*failure_reason=*/"user_id_hash_ is not set"));
       return;
     }
+
     vm_tools::concierge::ReclaimVmMemoryRequest request;
     request.set_name(kArcVmName);
     request.set_owner_id(user_id_hash_);
@@ -844,23 +841,9 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     // regardless of whether the VM exists, check to see which VM is actually
     // running.
 
-    vm_tools::concierge::GetVmInfoRequest request;
-    request.set_name(kArcVmName);
-    request.set_owner_id(user_id_hash_);
-    GetConciergeClient()->GetVmInfo(
-        request, base::BindOnce(&ArcVmClientAdapter::OnGetVmReply,
-                                weak_factory_.GetWeakPtr()));
-  }
-
-  void OnGetVmReply(
-      absl::optional<vm_tools::concierge::GetVmInfoResponse> reply) {
     vm_tools::concierge::StopVmRequest request;
     request.set_name(kArcVmName);
-
-    if (reply.has_value() && reply.value().success())
-      request.set_owner_id(user_id_hash_);
-    else
-      request.set_owner_id(kArcVmDefaultOwner);
+    request.set_owner_id(user_id_hash_);
 
     GetConciergeClient()->StopVm(
         request, base::BindOnce(&ArcVmClientAdapter::OnStopVmReply,
@@ -915,18 +898,18 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       return;
     }
 
-    // Stop the existing mini-VM if any (e.g. in case of a chrome crash).
-    VLOG(1) << "Stopping the existing mini-VM if any.";
+    // Stop the existing VM if any (e.g. in case of a chrome crash).
+    VLOG(1) << "Stopping the existing VM if any.";
     vm_tools::concierge::StopVmRequest request;
     request.set_name(kArcVmName);
-    request.set_owner_id(kArcVmDefaultOwner);
+    request.set_owner_id(user_id_hash_);
     GetConciergeClient()->StopVm(
         request,
-        base::BindOnce(&ArcVmClientAdapter::OnExistingMiniVmStopped,
+        base::BindOnce(&ArcVmClientAdapter::OnExistingVmStopped,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void OnExistingMiniVmStopped(
+  void OnExistingVmStopped(
       chromeos::VoidDBusMethodCallback callback,
       absl::optional<vm_tools::concierge::StopVmResponse> reply) {
     // reply->success() returns true even when there was no VM running.
@@ -1070,8 +1053,9 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         start_params_, file_system_status, *is_dev_mode_, is_host_on_vm_,
         GetChromeOsChannelFromLsbRelease());
     auto start_request = CreateStartArcVmRequest(
-        cpus, demo_session_apps_path, data_image_path, file_system_status,
-        use_per_vm_core_scheduling, std::move(kernel_cmdline), delegate_.get());
+        user_id_hash_, cpus, demo_session_apps_path, data_image_path,
+        file_system_status, use_per_vm_core_scheduling,
+        std::move(kernel_cmdline), delegate_.get());
 
     GetConciergeClient()->StartArcVm(
         start_request,
@@ -1099,26 +1083,6 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     should_notify_observers_ = true;
     VLOG(1) << "ARCVM started cid=" << current_cid_;
     std::move(callback).Run(true);
-  }
-
-  void OnExistingFullVmStopped(
-      UpgradeParams params,
-      chromeos::VoidDBusMethodCallback callback,
-      absl::optional<vm_tools::concierge::StopVmResponse> reply) {
-    // reply->success() returns true even when there was no VM running.
-    if (!reply.has_value() || !reply->success()) {
-      LOG(ERROR) << "StopVm failed: "
-                 << (reply.has_value() ? reply->failure_reason()
-                                       : "No D-Bus response.");
-      StopArcInstanceInternal();
-      std::move(callback).Run(false);
-      return;
-    }
-
-    VLOG(1) << "Checking adb sideload status";
-    chromeos::SessionManagerClient::Get()->QueryAdbSideload(base::BindOnce(
-        &ArcVmClientAdapter::OnQueryAdbSideload, weak_factory_.GetWeakPtr(),
-        std::move(params), std::move(callback)));
   }
 
   void OnQueryAdbSideload(
@@ -1173,38 +1137,6 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       std::move(callback).Run(false);
       return;
     }
-
-    VLOG(1) << "Setting owner ID for mini-VM instance.";
-    vm_tools::concierge::SetVmIdRequest request;
-    request.set_name(kArcVmName);
-    request.set_src_owner_id(kArcVmDefaultOwner);
-    request.set_dest_owner_id(user_id_hash_);
-    GetConciergeClient()->SetVmId(
-        request, base::BindOnce(&ArcVmClientAdapter::OnSetVmId,
-                                weak_factory_.GetWeakPtr(), std::move(params),
-                                std::move(callback)));
-  }
-
-  void OnSetVmId(UpgradeParams params,
-                 chromeos::VoidDBusMethodCallback callback,
-                 absl::optional<vm_tools::concierge::SetVmIdResponse> reply) {
-    if (!reply.has_value()) {
-      LOG(ERROR) << "Failed to set VM ID. Empty response.";
-      StopArcInstanceInternal();
-      std::move(callback).Run(false);
-      return;
-    }
-
-    const vm_tools::concierge::SetVmIdResponse& response = reply.value();
-    if (!response.success()) {
-      LOG(ERROR) << "Failed to set VM ID. Failure reason="
-                 << response.failure_reason();
-      StopArcInstanceInternal();
-      std::move(callback).Run(false);
-      return;
-    }
-
-    VLOG(2) << "Set VM id for default instance";
 
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
