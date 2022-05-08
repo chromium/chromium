@@ -231,6 +231,10 @@ const base::FeatureParam<int> kVerifyDrawOffsetX{
 const base::FeatureParam<int> kVerifyDrawOffsetY{
     &kDirectCompositionVerifyDrawOffset, "verify_draw_offset_y", 0};
 
+// Allow overlay swapchain to use Intel video processor for super resolution.
+const base::Feature kIntelVpSuperResolution{"IntelVpSuperResolution",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Default to using ANGLE's OpenGL backend
 const base::Feature kDefaultANGLEOpenGL{"DefaultANGLEOpenGL",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

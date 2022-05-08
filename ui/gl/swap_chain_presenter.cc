@@ -175,6 +175,78 @@ void UpdateSwapChainTransform(const gfx::Size& quad_size,
   transform->Scale(swap_chain_scale_x, swap_chain_scale_y);
 }
 
+const GUID GUID_INTEL_VPE_INTERFACE = {
+    0xedd1d4b9,
+    0x8659,
+    0x4cbc,
+    {0xa4, 0xd6, 0x98, 0x31, 0xa2, 0x16, 0x3a, 0xc3}};
+
+enum : UINT {
+  kIntelVpeFnVersion = 0x01,
+  kIntelVpeFnMode = 0x20,
+  kIntelVpeFnScaling = 0x37,
+};
+
+enum : UINT {
+  kIntelVpeVersion3 = 0x0003,
+};
+
+enum : UINT {
+  kIntelVpeModeNone = 0x0,
+  kIntelVpeModePreproc = 0x01,
+};
+
+enum : UINT {
+  kIntelVpeScalingDefault = 0x0,
+  kIntelVpeScalingSuperResolution = 0x2,
+};
+
+struct IntelVpeExt {
+  UINT function;
+  void* param;
+};
+
+void ToggleIntelVpSuperResolution(
+    Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context,
+    Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor,
+    bool is_on_battery_power) {
+  TRACE_EVENT1("gpu", "ToggleIntelVpSuperResolution", "on",
+               !is_on_battery_power);
+
+  IntelVpeExt ext = {};
+  UINT param = 0;
+  ext.param = &param;
+
+  ext.function = kIntelVpeFnVersion;
+  param = kIntelVpeVersion3;
+  HRESULT hr = video_context->VideoProcessorSetOutputExtension(
+      video_processor.Get(), &GUID_INTEL_VPE_INTERFACE, sizeof(ext), &ext);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "VideoProcessorSetOutputExtension failed with error 0x"
+                << std::hex << hr;
+  }
+
+  ext.function = kIntelVpeFnMode;
+  param = is_on_battery_power ? kIntelVpeModeNone : kIntelVpeModePreproc;
+  hr = video_context->VideoProcessorSetOutputExtension(
+      video_processor.Get(), &GUID_INTEL_VPE_INTERFACE, sizeof(ext), &ext);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "VideoProcessorSetOutputExtension failed with error 0x"
+                << std::hex << hr;
+  }
+
+  ext.function = kIntelVpeFnScaling;
+  param = is_on_battery_power ? kIntelVpeScalingDefault
+                              : kIntelVpeScalingSuperResolution;
+
+  hr = video_context->VideoProcessorSetStreamExtension(
+      video_processor.Get(), 0, &GUID_INTEL_VPE_INTERFACE, sizeof(ext), &ext);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "VideoProcessorSetStreamExtension failed with error 0x"
+                << std::hex << hr;
+  }
+}
+
 }  // namespace
 
 SwapChainPresenter::PresentationHistory::PresentationHistory() = default;
@@ -1399,6 +1471,12 @@ bool SwapChainPresenter::VideoProcessorBlt(
         return false;
       }
       DCHECK(output_view_);
+    }
+
+    if (!layer_tree_->disable_vp_super_resolution() &&
+        base::FeatureList::IsEnabled(features::kIntelVpSuperResolution)) {
+      ToggleIntelVpSuperResolution(video_context, video_processor,
+                                   is_on_battery_power_);
     }
 
     hr = video_context->VideoProcessorBlt(video_processor.Get(),

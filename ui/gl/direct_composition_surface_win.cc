@@ -399,6 +399,7 @@ DirectCompositionSurfaceWin::DirectCompositionSurfaceWin(
       layer_tree_(std::make_unique<DCLayerTree>(
           settings.disable_nv12_dynamic_textures,
           settings.disable_vp_scaling,
+          settings.disable_vp_super_resolution,
           settings.no_downscaled_overlay_promotion)) {
   ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
 }

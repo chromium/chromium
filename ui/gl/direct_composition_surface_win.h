@@ -42,6 +42,7 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   struct Settings {
     bool disable_nv12_dynamic_textures = false;
     bool disable_vp_scaling = false;
+    bool disable_vp_super_resolution = false;
     size_t max_pending_frames = 2;
     bool use_angle_texture_offset = false;
     bool force_root_surface_full_damage = false;

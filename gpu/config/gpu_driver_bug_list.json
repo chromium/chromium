@@ -3988,6 +3988,30 @@
       "features": [
         "use_virtualized_gl_contexts"
       ]
+    },
+    {
+      "id": 394,
+      "cr_bugs": [1318380],
+      "description": "Don't use video processor super resolution on Intel Gen9 and older GPUs and non-Intel GPUs.",
+      "os": {
+        "type" : "win"
+      },
+      "exceptions": [
+        {
+          "vendor_id": "0x8086",
+          "intel_gpu_generation": {
+            "op": ">",
+            "value": "9"
+          },
+          "driver_version": {
+            "op": ">",
+            "value": "27.20.100.8681"
+          }
+        }
+      ],
+      "features": [
+          "disable_vp_super_resolution"
+      ]
     }
   ]
 }

@@ -33,9 +33,11 @@ VideoProcessorWrapper& VideoProcessorWrapper::operator=(
 
 DCLayerTree::DCLayerTree(bool disable_nv12_dynamic_textures,
                          bool disable_vp_scaling,
+                         bool disable_vp_super_resolution,
                          bool no_downscaled_overlay_promotion)
     : disable_nv12_dynamic_textures_(disable_nv12_dynamic_textures),
       disable_vp_scaling_(disable_vp_scaling),
+      disable_vp_super_resolution_(disable_vp_super_resolution),
       no_downscaled_overlay_promotion_(no_downscaled_overlay_promotion),
       ink_renderer_(std::make_unique<DelegatedInkRenderer>()) {}
 

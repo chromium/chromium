@@ -32,6 +32,8 @@ CreateDirectCompositionSurfaceSettings(
   settings.disable_nv12_dynamic_textures =
       workarounds.disable_nv12_dynamic_textures;
   settings.disable_vp_scaling = workarounds.disable_vp_scaling;
+  settings.disable_vp_super_resolution =
+      workarounds.disable_vp_super_resolution;
   settings.use_angle_texture_offset = features::IsUsingSkiaRenderer();
   settings.force_root_surface_full_damage =
       features::IsUsingSkiaRenderer() &&
