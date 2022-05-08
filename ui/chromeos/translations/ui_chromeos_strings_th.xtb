@@ -758,7 +758,7 @@
 <translation id="7547009467130558110">รองเท้าผ้าใบ</translation>
 <translation id="7547780573915868306">ลิทัวเนีย</translation>
 <translation id="7547811415869834682">ดัตช์</translation>
-<translation id="7551643184018910560">ตรึงที่ชั้นวาง</translation>
+<translation id="7551643184018910560">ปักหมุดที่ชั้นวาง</translation>
 <translation id="7553492409867692754">ให้สิทธิ์แอป Linux เข้าถึงไฟล์ในโฟลเดอร์ "<ph name="FOLDER_NAME" />"</translation>
 <translation id="7575645593344061397">กำลังคืนค่า "<ph name="FILENAME" />"...</translation>
 <translation id="7589661784326793847">รอสักครู่</translation>
@@ -785,7 +785,7 @@
 <translation id="7765158879357617694">ย้าย</translation>
 <translation id="7774365994322694683">นก</translation>
 <translation id="7788080748068240085">หากต้องการบันทึก "<ph name="FILE_NAME" />" เป็นแบบออฟไลน์ คุณจะต้องเพิ่มพื้นที่ว่างอีก <ph name="TOTAL_FILE_SIZE" /> โดยทำดังนี้:<ph name="MARKUP_1" />
-    <ph name="MARKUP_2" />เลิกตรึงไฟล์ที่คุณไม่ต้องการเข้าถึงแบบออฟไลน์อีกต่อไป<ph name="MARKUP_3" />
+    <ph name="MARKUP_2" />เลิกปักหมุดไฟล์ที่คุณไม่ต้องการเข้าถึงแบบออฟไลน์อีกต่อไป<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />ลบไฟล์จากโฟลเดอร์ "ดาวน์โหลด"<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">ฟอร์แมตอุปกรณ์</translation>
 <translation id="7799329977874311193">เอกสาร HTML</translation>
@@ -857,7 +857,7 @@
 <translation id="8308481408797647857">ที่เก็บถาวร Tar ซึ่งบีบอัดโดย XZ</translation>
 <translation id="8312871300878166382">วางลงในโฟลเดอร์</translation>
 <translation id="8329978297633540474">ข้อความล้วน</translation>
-<translation id="8335587457941836791">เลิกตรึงในชั้นวาง</translation>
+<translation id="8335587457941836791">เลิกปักหมุดในชั้นวาง</translation>
 <translation id="8335837413233998004">เบลารุส</translation>
 <translation id="8336153091935557858">เมื่อวานนี้ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">มีไฟล์หรือไดเรกทอรีที่มีชื่อเดียวกันนี้อยู่แล้ว</translation>
@@ -873,7 +873,7 @@
 <translation id="8452135315243592079">ไม่มีซิมการ์ด</translation>
 <translation id="8456681095658380701">ชื่อไม่ถูกต้อง</translation>
 <translation id="8459404855768962328">การคัดลอกรายการนี้จะเป็นการแชร์กับทุกคนที่ดูโฟลเดอร์ที่แชร์ "<ph name="DESTINATION_NAME" />" ได้</translation>
-<translation id="8461467696380332069">คลิกขวาที่ไฟล์แล้วเลือก "ตรึงที่ชั้นวาง" เพื่อให้เข้าถึงไฟล์ในชั้นวางได้อย่างรวดเร็ว</translation>
+<translation id="8461467696380332069">คลิกขวาที่ไฟล์แล้วเลือก "ปักหมุดที่ชั้นวาง" เพื่อให้เข้าถึงไฟล์ในชั้นวางได้อย่างรวดเร็ว</translation>
 <translation id="8461914792118322307">พร็อกซี</translation>
 <translation id="8463494891489624050">เวียดนาม (VIQR)</translation>
 <translation id="8466234950814670489">ไฟล์ Tar</translation>
@@ -912,7 +912,7 @@
 <translation id="8719721339511222681">เลือก <ph name="ENTRY_NAME" /> ไว้</translation>
 <translation id="872537912056138402">โครเอเชีย</translation>
 <translation id="8743164338060742337">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, จัดการโดยผู้ดูแลระบบ, เชื่อมต่อ</translation>
-<translation id="8750438273876807512">แตะไฟล์ค้างไว้แล้วแตะ <ph name="ICON" /> จากนั้นเลือก "ตรึงที่ชั้นวาง" เพื่อให้เข้าถึงไฟล์ในชั้นวางได้อย่างรวดเร็ว</translation>
+<translation id="8750438273876807512">แตะไฟล์ค้างไว้แล้วแตะ <ph name="ICON" /> จากนั้นเลือก "ปักหมุดที่ชั้นวาง" เพื่อให้เข้าถึงไฟล์ในชั้นวางได้อย่างรวดเร็ว</translation>
 <translation id="8787254343425541995">อนุญาตให้ใช้พร็อกซีสำหรับเครือข่ายที่แชร์ไว้</translation>
 <translation id="8790981080411996443">คนกำลังรดน้ำต้นไม้</translation>
 <translation id="8798099450830957504">ค่าเริ่มต้น</translation>

@@ -74,7 +74,7 @@
 <translation id="1306549533752902673">แอปแนะนำ</translation>
 <translation id="1312604459020188865">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">แสดงชั้นวางเสมอ</translation>
-<translation id="1316811122439383437">Tote: การจับภาพหน้าจอ การดาวน์โหลด และไฟล์ที่ตรึงไว้ล่าสุด</translation>
+<translation id="1316811122439383437">Tote: การจับภาพหน้าจอ การดาวน์โหลด และไฟล์ที่ปักหมุดไว้ล่าสุด</translation>
 <translation id="1333308631814936910">เชื่อมต่อ <ph name="DISPLAY_NAME" /> แล้ว</translation>
 <translation id="1341651618736211726">รายการเพิ่มเติม</translation>
 <translation id="1346748346194534595">ขวา</translation>
@@ -149,7 +149,7 @@
 <translation id="181103072419391116">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="1812997170047690955">รายการที่อยู่ในหน้าจอของฉัน</translation>
 <translation id="1823873187264960516">อีเทอร์เน็ต: <ph name="ADDRESS" /></translation>
-<translation id="1830308660060964064">เลิกตรึง <ph name="ITEM_TITLE" /> แล้ว</translation>
+<translation id="1830308660060964064">เลิกปักหมุด <ph name="ITEM_TITLE" /> แล้ว</translation>
 <translation id="1836215606488044471">Assistant (กำลังโหลด...)</translation>
 <translation id="1838895407229022812">แสงตอนกลางคืนปิดอยู่</translation>
 <translation id="1864454756846565995">อุปกรณ์ USB-C (พอร์ตด้านหลัง)</translation>
@@ -413,7 +413,7 @@
 <translation id="353086728817903341">เชื่อมต่ออยู่กับอุปกรณ์ <ph name="NUM_DEVICES" /> เครื่อง</translation>
 <translation id="3542066395059568317">คุณจะเห็นคำแนะนำเพื่อให้ดำเนินการต่อจากจุดที่คุณค้างไว้ได้ โดยสามารถคลิกขวาหากต้องการนำคำแนะนำออก</translation>
 <translation id="3552189655002856821">Wi-Fi ปิดอยู่</translation>
-<translation id="3554637740840164787">ตรึง <ph name="ITEM_TITLE" /> แล้ว</translation>
+<translation id="3554637740840164787">ปักหมุด <ph name="ITEM_TITLE" /> แล้ว</translation>
 <translation id="3560866052109807830">เครื่องมือวาดเครื่องหมาย</translation>
 <translation id="3563775809269155755">เปิดใช้ฮอตสปอต</translation>
 <translation id="3566240529365775567">เปิดเมื่อสักครู่</translation>
@@ -768,7 +768,7 @@
 <translation id="576453121877257266">แสงตอนกลางคืนเปิดอยู่</translation>
 <translation id="5769373120130404283">หน้าจอส่วนตัว</translation>
 <translation id="5777841717266010279">ต้องการหยุดแชร์หน้าจอไหม</translation>
-<translation id="5779721926447984944">ไฟล์ที่ตรึงไว้</translation>
+<translation id="5779721926447984944">ไฟล์ที่ปักหมุดไว้</translation>
 <translation id="5788127256798019331">ไฟล์ Play</translation>
 <translation id="5790085346892983794">สำเร็จ</translation>
 <translation id="5805809050170488595">คลิกเพื่อเปิดใช้ <ph name="NETWORK_NAME" /></translation>
@@ -837,7 +837,7 @@
 <translation id="615957422585914272">แสดงแป้นพิมพ์บนหน้าจอ</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6166852626429024716">ค้นหาอุปกรณ์ แอป การตั้งค่า เว็บ...</translation>
-<translation id="6179832488876878285">คุณตรึงไฟล์สำคัญๆ ไว้ที่นี่ได้ เปิดแอป Files เพื่อเริ่มต้นใช้งาน</translation>
+<translation id="6179832488876878285">คุณปักหมุดไฟล์สำคัญๆ ไว้ที่นี่ได้ เปิดแอป Files เพื่อเริ่มต้นใช้งาน</translation>
 <translation id="619279033188484792">ดูรูปภาพ สื่อ และการแจ้งเตือนล่าสุดของโทรศัพท์ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="6220928844947387476">ตอนนี้สามารถบันทึกตัวคุณเองไปพร้อมกับหน้าจอได้แล้ว</translation>
 <translation id="622484624075952240">ลง</translation>
@@ -1047,7 +1047,7 @@
 <translation id="7543399541175347147">ขณะนี้ยังไม่รองรับแอป Linux และหน้าต่างที่ไม่ระบุตัวตน ระบบจะบันทึกแอปอื่นๆ</translation>
 <translation id="7544300628205093162">ไฟแบ็กไลต์ของแป้นพิมพ์เปิดอยู่</translation>
 <translation id="7548434653388805669">ได้เวลาเข้านอนแล้ว</translation>
-<translation id="7551643184018910560">ตรึงที่ชั้นวาง</translation>
+<translation id="7551643184018910560">ปักหมุดที่ชั้นวาง</translation>
 <translation id="7561982940498449837">ปิดเมนู</translation>
 <translation id="7564874036684306347">การย้ายหน้าต่างไปยังเดสก์ท็อปอื่นอาจส่งผลให้ลักษณะการทำงานผิกปกติ การแจ้งเตือน หน้าต่าง และกล่องโต้ตอบที่ตามมาอาจแสดงแยกส่วนในเดสก์ท็อปทั้งสอง</translation>
 <translation id="7569509451529460200">เปิดใช้เบรลล์และ ChromeVox แล้ว</translation>
