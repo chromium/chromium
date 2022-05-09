@@ -30,11 +30,12 @@ ForegroundDurationUKMObserver::OnStart(
   return CONTINUE_OBSERVING;
 }
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 ForegroundDurationUKMObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // This class doesn't use information on subframes and inner pages. No need to
+  // forward.
   return STOP_OBSERVING;
 }
 
