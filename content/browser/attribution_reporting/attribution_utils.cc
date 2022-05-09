@@ -149,14 +149,13 @@ bool AttributionFilterDataMatch(const AttributionFilterData& source,
           return negated != source_filter->second.empty();
         }
 
-        auto predicate = [&](const std::string& value) {
-          return negated != base::Contains(source_filter->second, value);
-        };
-
-        // Negating filters must ensure no value matches any source-side value,
-        // whereas only one value must match normally.
-        return negated ? base::ranges::all_of(trigger_filter.second, predicate)
-                       : base::ranges::any_of(trigger_filter.second, predicate);
+        bool has_intersection = base::ranges::any_of(
+            trigger_filter.second, [&](const std::string& value) {
+              return base::Contains(source_filter->second, value);
+            });
+        // Negating filters are considered matched if the intersection of the
+        // filter values is empty.
+        return negated != has_intersection;
       });
 }
 
