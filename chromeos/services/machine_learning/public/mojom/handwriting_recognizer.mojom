@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 // Datatypes and interfaces of handwriting recognition API.
 
@@ -139,7 +139,13 @@ struct HandwritingRecognizerSpec {
   string language;
 
   // Path to the language pack to use (downloaded by Chrome via DLC).
+  // If unset, ml-service will try to find the model from rootfs.
   [MinVersion=1] string? language_pack_path;
+
+  // Path to already-installed handwriting recognition library (downloaded by
+  // chrome via DLC).
+  // If unset, ml-service will try to find the library from rootfs.
+  [MinVersion=2] string? library_dlc_path;
 };
 
 // The mojom interface for performing the recognition of handwritten text.
