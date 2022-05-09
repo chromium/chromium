@@ -438,8 +438,13 @@ template("test") {
       _test_program_fragment =
           "${target_out_dir}/${target_name}_program.test-cml"
       generated_file(_test_program_fragment_target) {
-        contents = "{ program: { binary: \"${_program_name}\",},}"
+        contents = {
+          program = {
+            binary = _program_name
+          }
+        }
         outputs = [ _test_program_fragment ]
+        output_conversion = "json"
       }
 
       _test_runner_shard =
