@@ -48,9 +48,9 @@ class DevToolsIssueStorageBrowserTest : public DevToolsProtocolTest {
   }
 
   void WaitForDummyIssueNotification() {
-    std::unique_ptr<base::DictionaryValue> notification =
+    base::Value::Dict notification =
         WaitForNotification("Audits.issueAdded", true);
-    EXPECT_EQ(*(notification->FindDictPath("issue")->FindStringPath("code")),
+    EXPECT_EQ(*notification.FindStringByDottedPath("issue.code"),
               protocol::Audits::InspectorIssueCodeEnum::CookieIssue);
   }
 };
@@ -72,41 +72,23 @@ void ReportDummyIssue(RenderFrameHostImpl* rfh) {
 
 IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
                        DevToolsReceivesBrowserIssues) {
-  // 1) Navigate to about:blank.
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-
-  // 2) Report an empty SameSite cookie issue.
+  // Report an empty SameSite cookie issue.
   ReportDummyIssue(main_frame_host());
-
-  // 3) Open DevTools.
   Attach();
-
-  // 4) Verify we haven't received any Issues yet.
-  ASSERT_TRUE(notifications_.empty());
-
-  // 5) Enable audits domain.
   SendCommand("Audits.enable", std::make_unique<base::DictionaryValue>());
-
-  // 6) Verify we have received the SameSite issue.
+  // Verify we have received the SameSite issue.
   WaitForDummyIssueNotification();
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
                        DevToolsReceivesBrowserIssuesWhileAttached) {
-  // 1) Navigate to about:blank.
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-
-  // 2) Open DevTools and enable Audits domain.
   Attach();
   SendCommand("Audits.enable", std::make_unique<base::DictionaryValue>());
-
-  // 3) Verify we haven't received any Issues yet.
-  ASSERT_TRUE(notifications_.empty());
-
-  // 4) Report an empty SameSite cookie issue.
+  // Report an empty SameSite cookie issue.
   ReportDummyIssue(main_frame_host());
-
-  // 5) Verify we have received the SameSite issue.
+  // Verify we have received the SameSite issue.
   WaitForDummyIssueNotification();
 }
 
@@ -157,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
   SendCommand("Audits.enable", std::make_unique<base::DictionaryValue>());
 
   // 5) Verify that we haven't received any notifications.
-  ASSERT_TRUE(notifications_.empty());
+  ASSERT_FALSE(HasExistingNotification());
 }
 
 class DevToolsIssueStorageWithBackForwardCacheBrowserTest

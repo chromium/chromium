@@ -12,13 +12,12 @@
 #include "base/callback.h"
 #include "base/values.h"
 #include "content/public/browser/devtools_agent_host.h"
-#include "content/public/browser/web_contents_delegate.h"
 
 namespace content {
 
 class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
  public:
-  typedef base::RepeatingCallback<bool(base::DictionaryValue*)>
+  typedef base::RepeatingCallback<bool(const base::DictionaryValue*)>
       NotificationMatcher;
 
   TestDevToolsProtocolClient();
@@ -49,8 +48,6 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
       const std::string& session_id,
       bool wait);
 
-  void WaitForResponse();
-
   void AttachToWebContents(WebContents* web_contents);
   void AttachToBrowserTarget();
 
@@ -61,32 +58,23 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
     }
   }
 
+  bool HasExistingNotification() const { return !notifications_.empty(); }
   bool HasExistingNotification(const std::string& notification) const;
-  std::unique_ptr<base::DictionaryValue> WaitForNotification(
-      const std::string& notification) {
+
+  base::Value::Dict WaitForNotification(const std::string& notification,
+                                        bool allow_existing);
+
+  base::Value::Dict WaitForNotification(const std::string& notification) {
     return WaitForNotification(notification, false);
   }
 
-  std::unique_ptr<base::DictionaryValue> WaitForNotification(
-      const std::string& notification,
-      bool allow_existing);
-
   // Waits for a notification whose params, when passed to |matcher|, returns
   // true. Existing notifications are allowed.
-  std::unique_ptr<base::DictionaryValue> WaitForMatchingNotification(
+  base::Value::Dict WaitForMatchingNotification(
       const std::string& notification,
       const NotificationMatcher& matcher);
 
-  void ClearNotifications() {
-    notifications_.clear();
-    notification_params_.clear();
-  }
-
-  std::string RemovePort(const GURL& url) {
-    GURL::Replacements remove_port;
-    remove_port.ClearPort();
-    return url.ReplaceComponents(remove_port).spec();
-  }
+  void ClearNotifications() { notifications_.clear(); }
 
   void set_agent_host_can_close() { agent_host_can_close_ = true; }
 
@@ -96,25 +84,29 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
 
   const base::Value::Dict* result() const;
   const base::Value::Dict* error() const;
+  int received_responses_count() const { return received_responses_count_; }
 
   scoped_refptr<DevToolsAgentHost> agent_host_;
-  int last_sent_id_ = 0;
-  std::vector<int> result_ids_;
-  std::vector<std::string> notifications_;
-  std::vector<std::unique_ptr<base::DictionaryValue>> notification_params_;
 
  private:
+  void WaitForResponse();
   void RunLoopUpdatingQuitClosure();
+
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override;
   void AgentHostClosed(DevToolsAgentHost* agent_host) override;
   bool AllowUnsafeOperations() override;
 
-  base::Value::Dict response_;
+  int last_sent_id_ = 0;
+  int waiting_for_command_result_id_ = 0;
   std::string waiting_for_notification_;
   NotificationMatcher waiting_for_notification_matcher_;
-  std::unique_ptr<base::DictionaryValue> waiting_for_notification_params_;
-  int waiting_for_command_result_id_ = 0;
+
+  int received_responses_count_ = 0;
+  base::Value::Dict response_;
+  base::Value::Dict received_notification_params_;
+  std::vector<base::Value::Dict> notifications_;
+
   bool in_dispatch_ = false;
   bool agent_host_can_close_ = false;
   base::OnceClosure run_loop_quit_closure_;

@@ -75,52 +75,53 @@ void TestDevToolsProtocolClient::AttachToBrowserTarget() {
 
 bool TestDevToolsProtocolClient::HasExistingNotification(
     const std::string& search) const {
-  for (const std::string& notification : notifications_) {
-    if (notification == search)
+  for (const auto& notification : notifications_) {
+    if (*notification.FindString(kMethodParam) == search)
       return true;
   }
   return false;
 }
 
-std::unique_ptr<base::DictionaryValue>
-TestDevToolsProtocolClient::WaitForNotification(const std::string& notification,
-                                                bool allow_existing) {
-  if (allow_existing) {
-    for (size_t i = 0; i < notifications_.size(); i++) {
-      if (notifications_[i] == notification) {
-        std::unique_ptr<base::DictionaryValue> result =
-            std::move(notification_params_[i]);
-        notifications_.erase(notifications_.begin() + i);
-        notification_params_.erase(notification_params_.begin() + i);
-        return result;
-      }
-    }
-  }
-
-  waiting_for_notification_ = notification;
-  RunLoopUpdatingQuitClosure();
-  return std::move(waiting_for_notification_params_);
-}
-
-std::unique_ptr<base::DictionaryValue>
-TestDevToolsProtocolClient::WaitForMatchingNotification(
+base::Value::Dict TestDevToolsProtocolClient::WaitForNotification(
     const std::string& notification,
-    const NotificationMatcher& matcher) {
-  for (size_t i = 0; i < notifications_.size(); i++) {
-    if (notifications_[i] == notification &&
-        matcher.Run(notification_params_[i].get())) {
-      std::unique_ptr<base::DictionaryValue> result =
-          std::move(notification_params_[i]);
-      notifications_.erase(notifications_.begin() + i);
-      notification_params_.erase(notification_params_.begin() + i);
+    bool allow_existing) {
+  if (allow_existing) {
+    for (auto it = notifications_.begin(); it != notifications_.end(); ++it) {
+      if (*it->FindString(kMethodParam) != notification)
+        continue;
+      base::Value::Dict result;
+      if (base::Value::Dict* params = it->FindDict(kParamsParam))
+        result = std::move(*params);
+      notifications_.erase(it);
       return result;
     }
   }
 
   waiting_for_notification_ = notification;
+  RunLoopUpdatingQuitClosure();
+  return std::move(received_notification_params_);
+}
+
+base::Value::Dict TestDevToolsProtocolClient::WaitForMatchingNotification(
+    const std::string& notification,
+    const NotificationMatcher& matcher) {
+  for (auto it = notifications_.begin(); it != notifications_.end(); ++it) {
+    if (*it->FindString(kMethodParam) != notification)
+      continue;
+    base::Value* params = it->Find(kParamsParam);
+    if (!params)
+      continue;
+    if (!matcher.Run(&base::Value::AsDictionaryValue(*params)))
+      continue;
+    base::Value::Dict result = std::move(params->GetDict());
+    notifications_.erase(it);
+    return result;
+  }
+
+  waiting_for_notification_ = notification;
   waiting_for_notification_matcher_ = matcher;
   RunLoopUpdatingQuitClosure();
-  return std::move(waiting_for_notification_params_);
+  return std::move(received_notification_params_);
 }
 
 const base::Value::Dict* TestDevToolsProtocolClient::result() const {
@@ -144,32 +145,25 @@ void TestDevToolsProtocolClient::DispatchProtocolMessage(
                                 message.size());
   base::Value parsed = *base::JSONReader::Read(message_str);
   if (absl::optional<int> id = parsed.GetDict().FindInt("id")) {
+    received_responses_count_++;
     response_ = std::move(parsed.GetDict());
-    result_ids_.push_back(*id);
     in_dispatch_ = false;
     if (*id && *id == waiting_for_command_result_id_) {
       waiting_for_command_result_id_ = 0;
       std::move(run_loop_quit_closure_).Run();
     }
   } else {
-    std::string& notification = *parsed.GetDict().FindString("method");
-    notifications_.push_back(notification);
-    base::Value* params = parsed.GetDict().Find("params");
-    if (params) {
-      notification_params_.push_back(
-          base::Value::AsDictionaryValue(*params).CreateDeepCopy());
-    } else {
-      notification_params_.push_back(
-          base::WrapUnique(new base::DictionaryValue()));
-    }
-    if (waiting_for_notification_ == notification &&
-        (waiting_for_notification_matcher_.is_null() ||
-         waiting_for_notification_matcher_.Run(
-             notification_params_[notification_params_.size() - 1].get()))) {
+    const std::string* notification = parsed.GetDict().FindString("method");
+    notifications_.push_back(std::move(parsed.GetDict()));
+    if (waiting_for_notification_ != *notification)
+      return;
+    const base::Value* params = notifications_.back().Find(kParamsParam);
+    if (waiting_for_notification_matcher_.is_null() ||
+        waiting_for_notification_matcher_.Run(
+            &base::Value::AsDictionaryValue(*params))) {
       waiting_for_notification_ = std::string();
       waiting_for_notification_matcher_ = NotificationMatcher();
-      waiting_for_notification_params_ = base::WrapUnique(
-          notification_params_[notification_params_.size() - 1]->DeepCopy());
+      received_notification_params_ = params->GetDict().Clone();
       std::move(run_loop_quit_closure_).Run();
     }
   }
