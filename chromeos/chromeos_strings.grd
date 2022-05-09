@@ -2907,54 +2907,63 @@ Try tapping the mic to ask me anything.
       </message>
       <!-- Repair complete page -->
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED" desc="Title for the page shown when the RMA process repair process is completed.">
-        Repair completed
+        Repair is complete
       </message>
-      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_DESCRIPTION" translateable="false" desc="Notice for the user that repair is complete and they can shutdown when ready or run diagnostics/view logs.">
-        Your repair was successful. You can exit or take some additional actions.
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_DESCRIPTION" desc="Notice for the user that repair is complete and they can shutdown when ready or run diagnostics/view logs.">
+        Your repair was successful. You can shut down the device or take some additional actions.
       </message>
-      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_DIAGNOSTICS_BUTTON" translateable="false" desc="Label of the button that launches the post-boot diagnostics SWA.">
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_DIAGNOSTICS_BUTTON" desc="Label of the button that launches the post-boot diagnostics SWA.">
         Run Diagnostics
       </message>
-      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_DIAGNOSTICS_DESCRIPTION" translateable="false" desc="Description of what the diagnostics SWA is for">
-        Confirm everything's in the right place and make a diagnostic report.
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_DIAGNOSTICS_DESCRIPTION" desc="Description of what the diagnostics SWA is for">
+        Confirm everything's in the right place and view the diagnostic report
       </message>
-      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_LOGS_BUTTON" translateable="false" desc="Label for the button that opens the view/save logs dialog">
-        See RMA Logs
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_LOGS_BUTTON" desc="Label for the button that opens the view/save logs dialog">
+        See RMA logs
       </message>
-      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_LOGS_DESCRIPTION" translateable="false" desc="Description of what the logs dialog is used for.">
-        Review what's been fixed and results of diagnostic tests, and save the logs to a USB storage device.
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_LOGS_DESCRIPTION" desc="Description of what the logs dialog is used for.">
+        See what's been fixed
       </message>
-      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_BUTTON" translateable="false" desc="Label of the button that triggers a shutdown with battery cutoff.">
-        Battery Cutoff
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_BUTTON" desc="Label of the button that triggers a shutdown with battery cutoff.">
+        Battery cutoff
       </message>
-      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_DESCRIPTION" translateable="false" desc="Explanation of why user would choose battery cutoff.">
-        Perform battery cutoff for devices being shipped or stored.
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_DESCRIPTION" desc="Explanation of why user would choose battery cutoff.">
+        Perform battery cutoff for devices being shipped or stored
       </message>
-      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_INSTRUCTIONS" translateable="false" desc="Instructions for battery cutoff. These instructions will display when a power cable is attached and the button is disabled.">
-        Remove power cable to enable this option.
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_INSTRUCTIONS" desc="Instructions for battery cutoff. These instructions will display when a power cable is attached and the button is disabled.">
+        Unplug the device to perform battery cutoff
       </message>
-      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_SHUT_DOWN_BUTTON_LABEL" translateable="false" desc="Label for the shutdown button.">
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_SHUT_DOWN_BUTTON_LABEL" desc="Label for the shutdown button.">
         Shut down
       </message>
-      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_REBOOT_BUTTON_LABEL" translateable="false" desc="Label for the reboot button.">
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_REBOOT_BUTTON_LABEL" desc="Label for the reboot button.">
         Reboot
       </message>
-      <message name="IDS_SHIMLESS_RMA_LOGS_TITLE" translateable="false" desc="Title for the logs dialog displayed on repair complete page">
+      <message name="IDS_SHIMLESS_RMA_LOGS_TITLE" desc="Title for the logs dialog displayed on repair complete page">
         RMA Logs
       </message>
-      <message name="IDS_SHIMLESS_RMA_LOGS_CANCEL_BUTTON" translateable="false" desc="Label for the logs dialog cancel button">
+      <message name="IDS_SHIMLESS_RMA_LOGS_CANCEL_BUTTON" desc="Label for the logs dialog cancel button">
         Cancel
       </message>
-      <message name="IDS_SHIMLESS_RMA_LOGS_SAVE_BUTTON" translateable="false" desc="Label for the logs dialog save to USB button. This triggers saving to the root of a USB drive with no option to select location or title of the logs. It is automatic as the file browser is not available to the shimless RMA app.">
+      <message name="IDS_SHIMLESS_RMA_LOGS_SAVE_BUTTON" desc="Label for the logs dialog save to USB button. This triggers saving to the root of a USB drive with no option to select location or title of the logs. It is automatic as the file browser is not available to the shimless RMA app.">
         Save to USB
       </message>
-      <message name="IDS_SHIMLESS_BATTERY_SHUTOFF_TOOLTIP_TEXT" translateable="false" desc="Label for the battery shutoff tooltip.">
-        Unplug power to perform battery cutoff
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_POWERWASH_TITLE" desc="Title for the powerwash dialog displayed on repair complete page">
+        Powerwash (factory reset) required
       </message>
-      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_CUTOFF_COUNTDOWN_DESCRIPTION" translateable="false" desc="Contents of the countdown dialog displayed on repair complete page when trying to cut off the battery">
-        Device is shutting down in 5 seconds...
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_POWERWASH_SHUTDOWN_DESCRIPTION" desc="Contents of the powerwash dialog displayed on repair complete page when trying to shut down">
+        Before shutting down, powerwash your device. If your device has a lid, wait until powerwash completes before closing the lid. Powerwash may take up to a minute to complete.
       </message>
-      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_SHUTDOWN_BUTTON" translateable="false" desc="Label for the button in the battery cutoff countdown dialog that shuts down the device and cuts off the battery immediately">
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_POWERWASH_REBOOT_DESCRIPTION" desc="Contents of the powerwash dialog displayed on repair complete page when trying to reboot">
+        Before restarting, powerwash your device. If your device has a lid, wait until powerwash completes before closing the lid. Powerwash may take up to a minute to complete.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_POWERWASH_BUTTON" desc="Label for the button that starts a powerwash">
+        Powerwash
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_CUTOFF_COUNTDOWN_DESCRIPTION" desc="Contents of the countdown dialog displayed on repair complete page when trying to cut off the battery">
+        Device will shut down in 5 seconds
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_SHUTDOWN_BUTTON" desc="Label for the button in the battery cutoff countdown dialog that shuts down the device and cuts off the battery immediately">
         Shut down
       </message>
       <!-- Powerwash dialog -->

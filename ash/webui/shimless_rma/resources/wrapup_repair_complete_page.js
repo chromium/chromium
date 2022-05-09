@@ -312,6 +312,16 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   disableShutdownButtons_() {
     return this.shutdownButtonsDisabled_ || this.allButtonsDisabled;
   }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getRepairCompletedShutoffText_() {
+    return this.pluggedIn_ ?
+        this.i18n('repairCompletedShutoffInstructionsText') :
+        this.i18n('repairCompletedShutoffDescriptionText');
+  }
 }
 
 customElements.define(WrapupRepairCompletePage.is, WrapupRepairCompletePage);

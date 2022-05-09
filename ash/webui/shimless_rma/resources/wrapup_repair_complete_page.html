@@ -194,23 +194,14 @@
           </iron-icon>
           <div class="button-text">
             <div class="button-label">
-              <iron-icon id="batteryCutoffInfoIcon" hidden="[[!pluggedIn_]]"
-                  icon="shimless-icon:info-grey">
-              </iron-icon>
               <span>[[i18n('repairCompletedShutoffButtonText')]]</span>
             </div>
             <div class="button-description">
-              [[i18n('repairCompletedShutoffDescriptionText')]]
-            </div>
-            <div class="button-description" hidden="[[!pluggedIn_]]">
-              [[i18n('repairCompletedShutoffInstructionsText')]]
+              [[getRepairCompletedShutoffText_(pluggedIn_)]]
             </div>
           </div>
         </cr-button>
       </div>
-      <paper-tooltip for="batteryCutoffTooltipWrapper" hidden="[[!pluggedIn_]]">
-        [[i18n('batteryShutoffTooltipText')]]
-      </paper-tooltip>
     </div>
   </div>
 </base-page>
