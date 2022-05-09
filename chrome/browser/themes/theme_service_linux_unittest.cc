@@ -117,7 +117,13 @@ class ThemeProviderRedirectedEquivalenceLinuxTest : public ThemeServiceTest {
 
 // TODO(crbug.com/1310397): There're mismatched colors in some Linux themes.
 // Enable this test after fixing them.
-TEST_F(ThemeProviderRedirectedEquivalenceLinuxTest, GetColor) {
+// TODO(crbug.com/1323745): Fix consecutive failures on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_GetColor DISABLED_GetColor
+#else
+#define MAYBE_GetColor GetColor
+#endif  // BUILDFLAG(IS_LINUX)
+TEST_F(ThemeProviderRedirectedEquivalenceLinuxTest, MAYBE_GetColor) {
   const ui::ThemeProvider& theme_provider =
       ThemeService::GetThemeProviderForProfile(profile());
 
