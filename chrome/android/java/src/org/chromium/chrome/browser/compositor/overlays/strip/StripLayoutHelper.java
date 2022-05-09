@@ -653,10 +653,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         if (!mShouldCascadeTabs) {
-            if (CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)
-                    && !selected) {
+            int selIndex = mModel.index();
+            if (CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS) && !selected
+                    && selIndex >= 0 && selIndex < mStripTabs.length) {
                 // Prioritize focusing on selected tab over newly created unselected tabs.
-                fastExpandTab = mStripTabs[mModel.index()];
+                fastExpandTab = mStripTabs[selIndex];
             } else {
                 fastExpandTab = tab;
             }
@@ -1435,9 +1436,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private float calculateOffsetToMakeTabVisible(StripLayoutTab tab, boolean canExpandSelectedTab,
             boolean canExpandLeft, boolean canExpandRight, boolean selected) {
         if (tab == null) return 0.f;
-        final int selIndex = mModel.index();
-        StripLayoutTab currentlyFocusedTab = mStripTabs[selIndex];
 
+        final int selIndex = mModel.index();
         final int index = TabModelUtils.getTabIndexById(mModel, tab.getId());
 
         // 1. The selected tab is always visible.  Early out unless we want to unstack it.
@@ -1457,6 +1457,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 3. Account for the selected tab always being visible. Need to buffer by one extra
         // tab width depending on if the tab is to the left or right of the selected tab.
+        StripLayoutTab currentlyFocusedTab = null;
+        if (selIndex >= 0 && selIndex < mStripTabs.length) {
+            currentlyFocusedTab = mStripTabs[selIndex];
+        }
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)
                 && currentlyFocusedTab != null
                 && isSelectedTabCompletelyVisible(currentlyFocusedTab) && !selected) {
