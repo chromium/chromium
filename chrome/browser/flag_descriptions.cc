@@ -336,6 +336,12 @@ const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =
     "When enabled, offers will be displayed in the keyboard accessory when "
     "available.";
 
+const char kAutofillEnableRankingFormulaName[] =
+    "Enable new Autofill suggestion ranking formula";
+const char kAutofillEnableRankingFormulaDescription[] =
+    "When enabled, Autofill will use a new ranking formula to rank Autofill "
+    "data model suggestions such as credit cards or profiles.";
+
 const char kAutofillEnableSendingBcnInGetUploadDetailsName[] =
     "Enable sending billing customer number in GetUploadDetails";
 const char kAutofillEnableSendingBcnInGetUploadDetailsDescription[] =

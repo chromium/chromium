@@ -131,12 +131,12 @@ bool PaymentApp::operator<(const PaymentApp& other) const {
   if (completeness != 0)
     return completeness > 0;
 
-  // Sort autofill cards using their frecency scores as tie breaker.
+  // Sort autofill cards using their ranking scores as tie breaker.
   if (type_ == Type::AUTOFILL) {
     DCHECK_EQ(other.type(), Type::AUTOFILL);
     return static_cast<const AutofillPaymentApp*>(this)
         ->credit_card()
-        ->HasGreaterFrecencyThan(
+        ->HasGreaterRankingThan(
             static_cast<const AutofillPaymentApp*>(&other)->credit_card(),
             autofill::AutofillClock::Now());
   }

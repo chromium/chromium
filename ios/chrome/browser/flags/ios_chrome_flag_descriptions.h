@@ -20,6 +20,11 @@ extern const char kAddPasswordsInSettingsDescription[];
 extern const char kAutofillCreditCardUploadName[];
 extern const char kAutofillCreditCardUploadDescription[];
 
+// Title and description for the flag to control the new autofill suggestion
+// ranking formula.
+extern const char kAutofillEnableRankingFormulaName[];
+extern const char kAutofillEnableRankingFormulaDescription[];
+
 // Title and description for the flag enable sending billing customer number in
 // GetUploadDetails preflight call.
 extern const char kAutofillEnableSendingBcnInGetUploadDetailsName[];

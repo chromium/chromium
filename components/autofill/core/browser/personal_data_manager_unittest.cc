@@ -2262,7 +2262,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ProfilesLimit) {
             .c_str(),
         "unit 5", "Hollywood", "CA", "91601", "US", "12345678910");
 
-    // Set frecency such that they appear before the "last" profile (added
+    // Set ranking score such that they appear before the "last" profile (added
     // next).
     profile.set_use_count(12);
     profile.set_use_date(AutofillClock::Now() - base::Days(1));
@@ -2292,11 +2292,11 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ProfilesLimit) {
   EXPECT_EQ(u"Marion", suggestions[0].main_text.value);
 }
 
-// Tests that GetProfileSuggestions orders its suggestions based on the frecency
+// Tests that GetProfileSuggestions orders its suggestions based on the ranking
 // formula.
 TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Ranking) {
   // Set up the profiles. They are named with number suffixes X so the X is the
-  // order in which they should be ordered by frecency.
+  // order in which they should be ordered by the ranking formula.
   AutofillProfile profile3(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile3, "Marion3", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
@@ -2693,6 +2693,12 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_FormWithOneProfile) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(PersonalDataManagerTest,
        GetProfileSuggestions_AddressContactFormWithProfiles) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableRankingFormula,
+                            features::kAutofillUseImprovedLabelDisambiguation},
+      /*disabled_features=*/{});
+
   AutofillProfile profile1(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
                        "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
@@ -2713,14 +2719,10 @@ TEST_F(PersonalDataManagerTest,
   profile2.set_use_date(AutofillClock::Now() - base::Days(10));
   profile2.set_use_count(1);
 
-  EXPECT_TRUE(profile1.HasGreaterFrecencyThan(&profile2, AutofillClock::Now()));
+  EXPECT_TRUE(profile1.HasGreaterRankingThan(&profile2, AutofillClock::Now()));
 
   AddProfileToPersonalDataManager(profile1);
   AddProfileToPersonalDataManager(profile2);
-
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kAutofillUseImprovedLabelDisambiguation);
 
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
@@ -3962,8 +3964,8 @@ INSTANTIATE_TEST_SUITE_P(
                                         {{COMPANY_NAME, u"Stark Inc."}}})));
 
 // Tests that MergeProfile tries to merge the imported profile into the
-// existing profile in decreasing order of frecency.
-TEST_F(PersonalDataManagerTest, MergeProfile_Frecency) {
+// existing profile in decreasing order of ranking score.
+TEST_F(PersonalDataManagerTest, MergeProfile_Ranking) {
   // Create two very similar profiles except with different company names.
   std::unique_ptr<AutofillProfile> profile1 = std::make_unique<AutofillProfile>(
       base::GenerateGUID(), test::kEmptyOrigin);
@@ -3976,7 +3978,7 @@ TEST_F(PersonalDataManagerTest, MergeProfile_Frecency) {
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "12345678910");
 
-  // Give the "Fox" profile a bigger frecency score.
+  // Give the "Fox" profile a larger ranking score.
   profile2->set_use_count(15);
 
   // Create the |existing_profiles| vector.
@@ -4061,7 +4063,7 @@ TEST_F(PersonalDataManagerTest, MAYBE_MergeProfile_UsageStats) {
 // delete after merging similar profiles.
 TEST_F(PersonalDataManagerTest, DedupeProfiles_ProfilesToDelete) {
   // Create the profile for which to find duplicates. It has the highest
-  // frecency.
+  // ranking score.
   AutofillProfile* profile1 =
       new AutofillProfile(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(profile1, "Homer", "Jay", "Simpson",
@@ -4095,8 +4097,8 @@ TEST_F(PersonalDataManagerTest, DedupeProfiles_ProfilesToDelete) {
   profile4->set_use_count(3);
 
   // Create another profile similar to profile1. Since that one has the lowest
-  // frecency, the result of the merge should be in this profile at the end of
-  // the test.
+  // ranking score, the result of the merge should be in this profile at the end
+  // of the test.
   AutofillProfile* profile5 =
       new AutofillProfile(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(profile5, "Homer", "Jay", "Simpson",
@@ -4144,7 +4146,7 @@ TEST_F(PersonalDataManagerTest, DedupeProfiles_ProfilesToDelete) {
 // id references.
 TEST_F(PersonalDataManagerTest, DedupeProfiles_GuidsMergeMap) {
   // Create the profile for which to find duplicates. It has the highest
-  // frecency.
+  // ranking score.
   AutofillProfile* profile1 =
       new AutofillProfile(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(profile1, "Homer", "Jay", "Simpson",
@@ -4178,8 +4180,8 @@ TEST_F(PersonalDataManagerTest, DedupeProfiles_GuidsMergeMap) {
   profile4->set_use_count(3);
 
   // Create another profile similar to profile1. Since that one has the lowest
-  // frecency, the result of the merge should be in this profile at the end of
-  // the test.
+  // ranking score, the result of the merge should be in this profile at the end
+  // of the test.
   AutofillProfile* profile5 =
       new AutofillProfile(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(profile5, "Homer", "Jay", "Simpson",
@@ -4285,7 +4287,7 @@ TEST_F(PersonalDataManagerTest,
   // verifying results.
 
   // Create a set of 3 profiles to be merged together.
-  // Create a profile with a higher frecency score.
+  // Create a profile with a higher ranking score.
   AutofillProfile profile1(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
@@ -4293,7 +4295,7 @@ TEST_F(PersonalDataManagerTest,
   profile1.set_use_count(12);
   profile1.set_use_date(AutofillClock::Now() - base::Days(1));
 
-  // Create a profile with a medium frecency score.
+  // Create a profile with a medium ranking score.
   AutofillProfile profile2(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile2, "Homer", "Jay", "Simpson",
                        "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
@@ -4301,7 +4303,7 @@ TEST_F(PersonalDataManagerTest,
   profile2.set_use_count(5);
   profile2.set_use_date(AutofillClock::Now() - base::Days(3));
 
-  // Create a profile with a lower frecency score.
+  // Create a profile with a lower ranking score.
   AutofillProfile profile3(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile3, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
@@ -4310,7 +4312,7 @@ TEST_F(PersonalDataManagerTest,
   profile3.set_use_date(AutofillClock::Now() - base::Days(5));
 
   // Create a set of two profiles to be merged together.
-  // Create a profile with a higher frecency score.
+  // Create a profile with a higher ranking score.
   AutofillProfile profile4(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile4, "Marge", "B", "Simpson",
                        "marge.simpson@abc.com", "", "742. Evergreen Terrace",
@@ -4318,7 +4320,7 @@ TEST_F(PersonalDataManagerTest,
   profile4.set_use_count(11);
   profile4.set_use_date(AutofillClock::Now() - base::Days(1));
 
-  // Create a profile with a lower frecency score.
+  // Create a profile with a lower ranking score.
   AutofillProfile profile5(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile5, "Marge", "B", "Simpson",
                        "marge.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
@@ -4334,7 +4336,7 @@ TEST_F(PersonalDataManagerTest,
   profile6.set_use_count(10);
   profile6.set_use_date(AutofillClock::Now() - base::Days(1));
 
-  // Add three credit cards. Give them a frecency score so that they are
+  // Add three credit cards. Give them a ranking score so that they are
   // suggested in order (1, 2, 3). This will ensure a deterministic order for
   // verifying results.
   CreditCard credit_card1(base::GenerateGUID(), test::kEmptyOrigin);
@@ -4381,8 +4383,8 @@ TEST_F(PersonalDataManagerTest,
                   ->ApplyDedupingRoutineForTesting());
   WaitForOnPersonalDataChanged();
 
-  // Get the profiles and cards sorted by frecency to have a deterministic
-  // order.
+  // Get the profiles and cards sorted by their ranking score to have a
+  // deterministic order.
   std::vector<AutofillProfile*> profiles =
       personal_data_->GetProfilesToSuggest();
   std::vector<CreditCard*> credit_cards =
@@ -4411,12 +4413,12 @@ TEST_F(PersonalDataManagerTest,
 
 // Tests that ApplyDedupingRoutine merges the profile values correctly, i.e.
 // never lose information and keep the syntax of the profile with the higher
-// frecency score.
+// ranking score.
 TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MergedProfileValues) {
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
 
-  // Create a profile with a higher frecency score.
+  // Create a profile with a higher ranking score.
   AutofillProfile profile1(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
@@ -4424,7 +4426,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MergedProfileValues) {
   profile1.set_use_count(10);
   profile1.set_use_date(AutofillClock::Now() - base::Days(1));
 
-  // Create a profile with a medium frecency score.
+  // Create a profile with a medium ranking score.
   AutofillProfile profile2(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile2, "Homer", "Jay", "Simpson",
                        "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
@@ -4432,7 +4434,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MergedProfileValues) {
   profile2.set_use_count(5);
   profile2.set_use_date(AutofillClock::Now() - base::Days(3));
 
-  // Create a profile with a lower frecency score.
+  // Create a profile with a lower ranking score.
   AutofillProfile profile3(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile3, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
@@ -4466,16 +4468,16 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MergedProfileValues) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.NumberOfProfilesRemovedDuringDedupe", 2, 1);
 
-  // Since profiles with higher frecency scores are merged into profiles with
-  // lower frecency scores, the result of the merge should be contained in
-  // profile3 since it had a lower frecency score compared to profile1.
+  // Since profiles with higher ranking scores are merged into profiles with
+  // lower ranking scores, the result of the merge should be contained in
+  // profile3 since it had a lower ranking score compared to profile1.
   EXPECT_EQ(profile3.guid(), profiles[0]->guid());
   // The address syntax that results from the merge should be the one from the
-  // imported profile (highest frecency).
+  // imported profile (highest ranking).
   EXPECT_EQ(u"742. Evergreen Terrace",
             profiles[0]->GetRawInfo(ADDRESS_HOME_LINE1));
   // The middle name should be full, even if the profile with the higher
-  // frecency only had an initial (no loss of information).
+  // ranking only had an initial (no loss of information).
   EXPECT_EQ(u"Jay", profiles[0]->GetRawInfo(NAME_MIDDLE));
   // The specified phone number from profile1 should be kept (no loss of
   // information).
@@ -4496,12 +4498,12 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MergedProfileValues) {
 
 // Tests that ApplyDedupingRoutine only keeps the verified profile with its
 // original data when deduping with similar profiles, even if it has a higher
-// frecency score.
+// ranking score.
 TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileFirst) {
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
 
-  // Create a verified profile with a higher frecency score.
+  // Create a verified profile with a higher ranking score.
   AutofillProfile profile1(base::GenerateGUID(), kSettingsOrigin);
   test::SetProfileInfo(
       &profile1, "Homer", "Jay", "Simpson", "homer.simpson@abc.com", "",
@@ -4511,7 +4513,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileFirst) {
   profile1.set_use_count(7);
   profile1.set_use_date(kMuchLaterTime);
 
-  // Create a similar non verified profile with a medium frecency score.
+  // Create a similar non verified profile with a medium ranking score.
   AutofillProfile profile2(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile2, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
@@ -4519,7 +4521,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileFirst) {
   profile2.set_use_count(5);
   profile2.set_use_date(kSomeLaterTime);
 
-  // Create a similar non verified profile with a lower frecency score.
+  // Create a similar non verified profile with a lower ranking score.
   AutofillProfile profile3(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile3, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
@@ -4569,12 +4571,12 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileFirst) {
 
 // Tests that ApplyDedupingRoutine only keeps the verified profile with its
 // original data when deduping with similar profiles, even if it has a lower
-// frecency score.
+// ranking score.
 TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileLast) {
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
 
-  // Create a profile to dedupe with a higher frecency score.
+  // Create a profile to dedupe with a higher ranking score.
   AutofillProfile profile1(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
@@ -4582,7 +4584,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileLast) {
   profile1.set_use_count(5);
   profile1.set_use_date(kMuchLaterTime);
 
-  // Create a similar non verified profile with a medium frecency score.
+  // Create a similar non verified profile with a medium ranking score.
   AutofillProfile profile2(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile2, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
@@ -4590,7 +4592,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileLast) {
   profile2.set_use_count(5);
   profile2.set_use_date(kSomeLaterTime);
 
-  // Create a similar verified profile with a lower frecency score.
+  // Create a similar verified profile with a lower ranking score.
   AutofillProfile profile3(base::GenerateGUID(), kSettingsOrigin);
   test::SetProfileInfo(
       &profile3, "Homer", "Jay", "Simpson", "homer.simpson@abc.com", "",
@@ -4639,7 +4641,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleVerifiedProfiles) {
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
 
-  // Create a profile to dedupe with a higher frecency score.
+  // Create a profile to dedupe with a higher ranking score.
   AutofillProfile profile1(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
@@ -4647,7 +4649,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleVerifiedProfiles) {
   profile1.set_use_count(5);
   profile1.set_use_date(kMuchLaterTime);
 
-  // Create a similar verified profile with a medium frecency score.
+  // Create a similar verified profile with a medium ranking score.
   AutofillProfile profile2(base::GenerateGUID(), kSettingsOrigin);
   test::SetProfileInfo(
       &profile2, "Homer", "J", "Simpson", "homer.simpson@abc.com", "Fox",
@@ -4658,7 +4660,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleVerifiedProfiles) {
   profile2.set_use_count(5);
   profile2.set_use_date(kSomeLaterTime);
 
-  // Create a similar verified profile with a lower frecency score.
+  // Create a similar verified profile with a lower ranking score.
   AutofillProfile profile3(base::GenerateGUID(), kSettingsOrigin);
   test::SetProfileInfo(
       &profile3, "Homer", "Jay", "Simpson", "homer.simpson@abc.com", "",
@@ -4681,7 +4683,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleVerifiedProfiles) {
                   ->ApplyDedupingRoutineForTesting());
   WaitForOnPersonalDataChanged();
 
-  // Get the profiles, sorted by frecency to have a deterministic order.
+  // Get the profiles, sorted by ranking to have a deterministic order.
   std::vector<AutofillProfile*> profiles =
       personal_data_->GetProfilesToSuggest();
 
@@ -4693,7 +4695,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleVerifiedProfiles) {
       structured_address::VerificationStatus::kParsed);
 
   // |profile1| should have been discarded because the saved profile with the
-  // highest frecency score is verified (|profile2|). Therefore, |profile1|'s
+  // highest ranking score is verified (|profile2|). Therefore, |profile1|'s
   // data should not have been merged with |profile2|'s data. Then |profile2|
   // should have been compared to |profile3| but they should not have merged
   // because both profiles are verified.
@@ -4724,7 +4726,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
 
-  // Create a Homer home profile with a higher frecency score than other Homer
+  // Create a Homer home profile with a higher ranking score than other Homer
   // profiles.
   AutofillProfile Homer1(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&Homer1, "Homer", "J", "Simpson",
@@ -4733,7 +4735,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
   Homer1.set_use_count(10);
   Homer1.set_use_date(AutofillClock::Now() - base::Days(1));
 
-  // Create a Homer home profile with a medium frecency score compared to other
+  // Create a Homer home profile with a medium ranking score compared to other
   // Homer profiles.
   AutofillProfile Homer2(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&Homer2, "Homer", "Jay", "Simpson",
@@ -4742,7 +4744,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
   Homer2.set_use_count(5);
   Homer2.set_use_date(AutofillClock::Now() - base::Days(3));
 
-  // Create a Homer home profile with a lower frecency score than other Homer
+  // Create a Homer home profile with a lower ranking score than other Homer
   // profiles.
   AutofillProfile Homer3(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&Homer3, "Homer", "J", "Simpson",
@@ -4759,7 +4761,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
   Homer4.set_use_count(3);
   Homer4.set_use_date(AutofillClock::Now() - base::Days(5));
 
-  // Create a Marge profile with a lower frecency score that other Marge
+  // Create a Marge profile with a lower ranking score that other Marge
   // profiles.
   AutofillProfile Marge1(base::GenerateGUID(), kSettingsOrigin);
   test::SetProfileInfo(&Marge1, "Marjorie", "J", "Simpson",
@@ -4768,7 +4770,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
   Marge1.set_use_count(4);
   Marge1.set_use_date(AutofillClock::Now() - base::Days(3));
 
-  // Create a verified Marge home profile with a lower frecency score that the
+  // Create a verified Marge home profile with a lower ranking score that the
   // other Marge profile.
   AutofillProfile Marge2(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&Marge2, "Marjorie", "Jacqueline", "Simpson",
@@ -4806,11 +4808,11 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
                   ->ApplyDedupingRoutineForTesting());
   WaitForOnPersonalDataChanged();
 
-  // Get the profiles, sorted by frecency to have a deterministic order.
+  // Get the profiles, sorted by ranking score to have a deterministic order.
   std::vector<AutofillProfile*> profiles =
       personal_data_->GetProfilesToSuggest();
 
-  // The 2 duplicates Homer home profiles with the higher frecency and the
+  // The 2 duplicates Homer home profiles with the higher ranking score and the
   // unverified Marge profile should have been deduped.
   ASSERT_EQ(4U, profiles.size());
   // 7 profiles were considered for dedupe.
@@ -4821,7 +4823,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
       "Autofill.NumberOfProfilesRemovedDuringDedupe", 3, 1);
 
   // The remaining profiles should be |Homer3|, |Marge1|, |Homer4| and |Barney|
-  // in this order of frecency.
+  // in this order of ranking score.
   EXPECT_EQ(Homer3.guid(), profiles[0]->guid());
   EXPECT_EQ(Marge1.guid(), profiles[1]->guid());
   EXPECT_EQ(Homer4.guid(), profiles[2]->guid());
@@ -4829,7 +4831,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
 
   // |Homer3|'s data:
   // The address should be saved with the syntax of |Homer1| since it has the
-  // highest frecency score.
+  // highest ranking score.
   EXPECT_EQ(u"742. Evergreen Terrace",
             profiles[0]->GetRawInfo(ADDRESS_HOME_LINE1));
   // The middle name should be the full version found in |Homer2|,
@@ -5182,7 +5184,7 @@ TEST_F(PersonalDataManagerTest,
   const std::string kServerAddressId("server_address1");
 
   // Add two different profiles, a local and a server one. Set the use stats so
-  // the server profile has a higher frecency, to have a predictable ordering to
+  // the server profile has a higher ranking, to have a predictable ordering to
   // validate results.
   AutofillProfile local_profile(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&local_profile, "Josephine", "Alicia", "Saenz",
@@ -5246,7 +5248,7 @@ TEST_F(PersonalDataManagerTest,
   // The conversion should be recorded in the Wallet address.
   EXPECT_TRUE(personal_data_->GetServerProfiles().back()->has_converted());
 
-  // Get the profiles, sorted by frecency to have a deterministic order.
+  // Get the profiles, sorted by ranking to have a deterministic order.
   std::vector<AutofillProfile*> profiles =
       personal_data_->GetProfilesToSuggest();
 
@@ -5281,7 +5283,7 @@ TEST_F(PersonalDataManagerTest,
   const std::string kServerAddressId("server_address1");
 
   // Add two similar profile, a local and a server one. Set the use stats so
-  // the server card has a higher frecency, to have a predicatble ordering to
+  // the server card has a higher ranking, to have a predictable ordering to
   // validate results.
   // Add a local profile.
   AutofillProfile local_profile(base::GenerateGUID(), test::kEmptyOrigin);
@@ -5416,7 +5418,7 @@ TEST_F(
   const std::string kServerAddressId2("server_address2");
 
   // Add a unique local profile and two similar server profiles. Set the use
-  // stats to have a predicatble ordering to validate results.
+  // stats to have a predictable ordering to validate results.
   // Add a local profile.
   AutofillProfile local_profile(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&local_profile, "Bob", "", "Doe", "", "Fox",
@@ -5496,7 +5498,7 @@ TEST_F(
   EXPECT_TRUE(personal_data_->GetServerProfiles()[0]->has_converted());
   EXPECT_TRUE(personal_data_->GetServerProfiles()[1]->has_converted());
 
-  // Get the profiles, sorted by frecency to have a deterministic order.
+  // Get the profiles, sorted by ranking to have a deterministic order.
   std::vector<AutofillProfile*> profiles =
       personal_data_->GetProfilesToSuggest();
 
@@ -5596,7 +5598,7 @@ TEST_F(
   // The conversion should still be recorded in the Wallet address.
   EXPECT_TRUE(personal_data_->GetServerProfiles().back()->has_converted());
 
-  // Get the profiles, sorted by frecency to have a deterministic order.
+  // Get the profiles, sorted by ranking score to have a deterministic order.
   profiles = personal_data_->GetProfilesToSuggest();
 
   // Make sure that there is still only one profile.

@@ -129,6 +129,23 @@ const base::Feature kAutofillDisableAddressImport{
 const base::Feature kAutofillDisableShadowHeuristics{
     "AutofillDisableShadowHeuristics", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, autofill will use the new ranking algorithm for card and
+// profile autofill suggestions.
+const base::Feature kAutofillEnableRankingFormula{
+    "AutofillEnableRankingFormula", base::FEATURE_DISABLED_BY_DEFAULT};
+// The half life applied to the use count.
+const base::FeatureParam<int> kAutofillRankingFormulaUsageHalfLife{
+    &kAutofillEnableRankingFormula, "autofill_ranking_formula_usage_half_life",
+    20};
+// The boost factor applied to ranking virtual cards.
+const base::FeatureParam<int> kAutofillRankingFormulaVirtualCardBoost{
+    &kAutofillEnableRankingFormula,
+    "autofill_ranking_formula_virtual_card_boost", 5};
+// The half life applied to the virtual card boost.
+const base::FeatureParam<int> kAutofillRankingFormulaVirtualCardBoostHalfLife{
+    &kAutofillEnableRankingFormula,
+    "autofill_ranking_formula_virtual_card_boost_half_life", 15};
+
 // Controls if the heuristic field parsing utilizes shared labels.
 // TODO(crbug.com/1165780): Remove once shared labels are launched.
 const base::Feature kAutofillEnableSupportForParsingWithSharedLabels{

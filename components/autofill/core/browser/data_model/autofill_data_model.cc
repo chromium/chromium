@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -22,8 +23,28 @@ AutofillDataModel::AutofillDataModel(const std::string& guid,
 }
 AutofillDataModel::~AutofillDataModel() {}
 
+int AutofillDataModel::GetDaysSinceLastUse(base::Time current_time) const {
+  DCHECK(current_time >= use_date_);
+
+  return (current_time - use_date_).InDays();
+}
+
 bool AutofillDataModel::IsVerified() const {
   return !origin_.empty() && !GURL(origin_).is_valid();
+}
+
+double AutofillDataModel::GetRankingScore(base::Time current_time) const {
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableRankingFormula)) {
+    // Exponentially decay the use count by the days since the data model was
+    // last used.
+    return log10(use_count_ + 1) *
+           exp(-GetDaysSinceLastUse(current_time) /
+               features::kAutofillRankingFormulaUsageHalfLife.Get());
+  }
+
+  // Default to legacy frecency scoring.
+  return -log(static_cast<double>(GetDaysSinceLastUse(current_time)) + 2) /
+         log(use_count_ + 1);
 }
 
 // TODO(crbug.com/629507): Add support for injected mock clock for testing.
@@ -37,11 +58,11 @@ bool AutofillDataModel::UseDateEqualsInSeconds(
   return !((other->use_date() - use_date()).InSeconds());
 }
 
-bool AutofillDataModel::HasGreaterFrecencyThan(
+bool AutofillDataModel::HasGreaterRankingThan(
     const AutofillDataModel* other,
     base::Time comparison_time) const {
-  double score = GetFrecencyScore(comparison_time);
-  double other_score = other->GetFrecencyScore(comparison_time);
+  double score = GetRankingScore(comparison_time);
+  double other_score = other->GetRankingScore(comparison_time);
 
   // Ties are broken by MRU, then by GUID comparison.
   const double kEpsilon = 0.00001;
@@ -65,16 +86,6 @@ bool AutofillDataModel::SetMetadata(const AutofillMetadata metadata) {
   use_count_ = metadata.use_count;
   use_date_ = metadata.use_date;
   return true;
-}
-
-double AutofillDataModel::GetFrecencyScore(base::Time time) const {
-  // The formula calculates a score based on both the frequency and the recency
-  // of the profile and leveraging the properties of the logarithmic function.
-  // DaysSinceLastUse() and |use_count_| are offset because their minimum values
-  // are respectively 0 and 1 but the formula requires at least a value of 2.
-  // Please update getFrecencyScore in ChromePaymentRequestService.java as well
-  // if below formula needs update.
-  return -log((time - use_date_).InDays() + 2) / log(use_count_ + 1);
 }
 
 bool AutofillDataModel::IsDeletable() const {

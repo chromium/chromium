@@ -905,6 +905,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"upgrade-center-refactor", flag_descriptions::kUpgradeCenterRefactorName,
      flag_descriptions::kUpgradeCenterRefactorDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kUpgradeCenterRefactor)},
+    {"autofill-enable-ranking-formula",
+     flag_descriptions::kAutofillEnableRankingFormulaName,
+     flag_descriptions::kAutofillEnableRankingFormulaDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableRankingFormula)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

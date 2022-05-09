@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
 #include "url/gurl.h"
@@ -129,6 +130,7 @@ class CreditCard : public AutofillDataModel {
 
   // AutofillDataModel:
   AutofillMetadata GetMetadata() const override;
+  double GetRankingScore(base::Time current_time) const override;
   bool SetMetadata(const AutofillMetadata metadata) override;
   // Returns whether the card is deletable: if it is expired and has not been
   // used for longer than |kDisusedCreditCardDeletionTimeDelta|.

@@ -197,6 +197,9 @@ extern const char kAutofillEnableOfferNotificationForPromoCodesDescription[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryName[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 
+extern const char kAutofillEnableRankingFormulaName[];
+extern const char kAutofillEnableRankingFormulaDescription[];
+
 extern const char kAutofillEnableSendingBcnInGetUploadDetailsName[];
 extern const char kAutofillEnableSendingBcnInGetUploadDetailsDescription[];
 

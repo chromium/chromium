@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/test_autofill_data_model.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -1756,5 +1757,78 @@ TEST_F(CreditCardTestForKeyboardAccessory, GetObfuscatedStringForCardDigits) {
                           digits, /*obfuscation_length=*/2));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+enum Expectation { GREATER, LESS };
+
+struct VirtualCardRankingTestCase {
+  const std::string guid_a;
+  const int use_count_a;
+  const base::Time use_date_a;
+  const std::string guid_b;
+  const int use_count_b;
+  const base::Time use_date_b;
+  Expectation expectation;
+};
+
+base::Time current_time = AutofillClock::Now();
+
+class VirtualCardRankingTest
+    : public testing::TestWithParam<VirtualCardRankingTestCase> {};
+
+TEST_P(VirtualCardRankingTest, HasGreaterRankingThan) {
+  // Enable kAutofillEnableRankingFormula so that it uses new formula instead of
+  // frecency.
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(features::kAutofillEnableRankingFormula);
+
+  auto test_case = GetParam();
+
+  CreditCard model_a = test::GetVirtualCard();
+  model_a.set_guid(test_case.guid_a);
+  model_a.set_use_count(test_case.use_count_a);
+  model_a.set_use_date(test_case.use_date_a);
+
+  TestAutofillDataModel model_b(test_case.guid_b, test_case.use_count_b,
+                                test_case.use_date_b);
+
+  EXPECT_EQ(test_case.expectation == GREATER,
+            model_a.HasGreaterRankingThan(&model_b, current_time));
+  EXPECT_NE(test_case.expectation == GREATER,
+            model_b.HasGreaterRankingThan(&model_a, current_time));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CreditCardTest,
+    VirtualCardRankingTest,
+    testing::Values(
+        // Same days since last use and use count, but model A is a virtual card
+        // and ranked higher.
+        VirtualCardRankingTestCase{"guid_a", 10, current_time, "guid_b", 10,
+                                   current_time, GREATER},
+        // Same days since last use and although model A has a smaller use
+        // count, it is a virtual card and ranked higher.
+        VirtualCardRankingTestCase{"guid_a", 1, current_time, "guid_b", 10,
+                                   current_time, GREATER},
+        // Model A has a larger use count but smaller days since last use. model
+        // A is ranked higher due to virtual card boost.
+        VirtualCardRankingTestCase{"guid_a", 10, current_time - base::Days(10),
+                                   "guid_b", 5, current_time, GREATER},
+        // Model A has a larger use count but also a much larger days since last
+        // use. Due to this, model B is ranked higher despite the virtual card
+        // boost and greater use count of model A.
+        VirtualCardRankingTestCase{"guid_a", 10, current_time - base::Days(40),
+                                   "guid_b", 3, current_time, LESS},
+        // Model A only has a use count of 1 but due to its virtual card bost
+        // and much smaller days since last use it is ranked higher than model
+        // B.
+        VirtualCardRankingTestCase{"guid_a", 1, current_time - base::Days(30),
+                                   "guid_b", 300, current_time - base::Days(90),
+                                   GREATER},
+        // Model B only has a use count of 1 but due to its much smaller day
+        // since last use it is ranked higher than model A despite its virtual
+        // card boost and much higher use count.
+        VirtualCardRankingTestCase{"guid_a", 300, current_time - base::Days(90),
+                                   "guid_b", 1, current_time - base::Days(30),
+                                   LESS}));
 
 }  // namespace autofill

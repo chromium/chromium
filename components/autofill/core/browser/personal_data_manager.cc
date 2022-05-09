@@ -1214,12 +1214,12 @@ std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
 
   std::vector<AutofillProfile*> profiles = GetProfiles();
 
-  // Rank the suggestions by frecency.
+  // Rank the suggestions by ranking score.
   const base::Time comparison_time = AutofillClock::Now();
   std::sort(
       profiles.begin(), profiles.end(),
       [comparison_time](const AutofillProfile* a, const AutofillProfile* b) {
-        return a->HasGreaterFrecencyThan(b, comparison_time);
+        return a->HasGreaterRankingThan(b, comparison_time);
       });
 
   return profiles;
@@ -1343,8 +1343,8 @@ const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest(
       std::make_move_iterator(std::begin(cards_to_dedupe)),
       std::make_move_iterator(std::end(cards_to_dedupe)));
 
-  // Rank the cards by frecency (see AutofillDataModel for details). All expired
-  // cards should be suggested last, also by frecency.
+  // Rank the cards by ranking score (see AutofillDataModel for details). All
+  // expired cards should be suggested last, also by ranking score.
   base::Time comparison_time = AutofillClock::Now();
   std::stable_sort(cards_to_suggest.begin(), cards_to_suggest.end(),
                    [comparison_time](const CreditCard* a, const CreditCard* b) {
@@ -1352,7 +1352,7 @@ const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest(
                      if (a_is_expired != b->IsExpired(comparison_time))
                        return !a_is_expired;
 
-                     return a->HasGreaterFrecencyThan(b, comparison_time);
+                     return a->HasGreaterRankingThan(b, comparison_time);
                    });
 
   return cards_to_suggest;

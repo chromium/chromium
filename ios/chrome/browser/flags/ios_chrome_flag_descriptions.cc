@@ -21,6 +21,12 @@ const char kAutofillCreditCardUploadDescription[] =
     "Offers uploading Autofilled credit cards to Google Payments after form "
     "submission.";
 
+const char kAutofillEnableRankingFormulaName[] =
+    "Enable new Autofill suggestion ranking formula";
+const char kAutofillEnableRankingFormulaDescription[] =
+    "When enabled, Autofill will use a new ranking formula to rank Autofill "
+    "data model suggestions such as credit cards or profiles";
+
 const char kAutofillEnableSendingBcnInGetUploadDetailsName[] =
     "Enable sending billing customer number in GetUploadDetails";
 const char kAutofillEnableSendingBcnInGetUploadDetailsDescription[] =

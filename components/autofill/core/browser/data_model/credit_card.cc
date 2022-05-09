@@ -386,6 +386,18 @@ AutofillMetadata CreditCard::GetMetadata() const {
   return metadata;
 }
 
+double CreditCard::GetRankingScore(base::Time current_time) const {
+  int virtual_card_boost = 0;
+  if (virtual_card_enrollment_state_ == VirtualCardEnrollmentState::ENROLLED) {
+    virtual_card_boost =
+        features::kAutofillRankingFormulaVirtualCardBoost.Get() *
+        exp(-GetDaysSinceLastUse(current_time) /
+            features::kAutofillRankingFormulaVirtualCardBoostHalfLife.Get());
+  }
+
+  return AutofillDataModel::GetRankingScore(current_time) + virtual_card_boost;
+}
+
 bool CreditCard::SetMetadata(const AutofillMetadata metadata) {
   // Make sure the ids matches.
   if (metadata.id != (record_type_ == LOCAL_CARD ? guid() : server_id_))

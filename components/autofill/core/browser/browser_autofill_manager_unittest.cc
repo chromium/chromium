@@ -1993,8 +1993,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   external_delegate_->CheckNoSuggestions(kDefaultPageID);
 }
 
-// Test that expired cards are ordered by frecency and are always suggested
-// after non expired cards even if they have a higher frecency score.
+// Test that expired cards are ordered by their ranking score and are always
+// suggested after non expired cards even if they have a higher ranking score.
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        GetCreditCardSuggestions_ExpiredCards) {
   personal_data().ClearCreditCards();
@@ -2008,7 +2008,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   credit_card0.set_guid("00000000-0000-0000-0000-000000000001");
   personal_data().AddCreditCard(credit_card0);
 
-  // Add an expired card with a higher frecency score.
+  // Add an expired card with a higher ranking score.
   CreditCard credit_card1("287151C8-6AB1-487C-9095-28E80BE5DA15",
                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card1, "Clyde Barrow",
@@ -2019,7 +2019,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   credit_card1.set_use_date(AutofillClock::Now() - base::Days(10));
   personal_data().AddCreditCard(credit_card1);
 
-  // Add an expired card with a lower frecency score.
+  // Add an expired card with a lower ranking score.
   CreditCard credit_card2("1141084B-72D7-4B73-90CF-3D6AC154673B",
                           test::kEmptyOrigin);
   credit_card2.set_use_count(3);

@@ -7,11 +7,15 @@
 #include <stddef.h>
 
 #include "base/compiler_specific.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
+#include "components/autofill/core/browser/data_model/test_autofill_data_model.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -21,35 +25,6 @@ using structured_address::VerificationStatus;
 namespace {
 
 const base::Time kArbitraryTime = base::Time::FromDoubleT(25);
-
-// Provides concrete implementations for pure virtual methods.
-class TestAutofillDataModel : public AutofillDataModel {
- public:
-  TestAutofillDataModel(const std::string& guid, const std::string& origin)
-      : AutofillDataModel(guid, origin) {}
-  TestAutofillDataModel(const std::string& guid,
-                        size_t use_count,
-                        base::Time use_date)
-      : AutofillDataModel(guid, std::string()) {
-    set_use_count(use_count);
-    set_use_date(use_date);
-  }
-
-  TestAutofillDataModel(const TestAutofillDataModel&) = delete;
-  TestAutofillDataModel& operator=(const TestAutofillDataModel&) = delete;
-
-  ~TestAutofillDataModel() override {}
-
- private:
-  std::u16string GetRawInfo(ServerFieldType type) const override {
-    return std::u16string();
-  }
-  void SetRawInfoWithVerificationStatus(
-      ServerFieldType type,
-      const std::u16string& value,
-      structured_address::VerificationStatus status) override {}
-  void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override {}
-};
 
 }  // namespace
 
@@ -117,7 +92,7 @@ TEST(AutofillDataModelTest, IsDeletable) {
 }
 
 enum Expectation { GREATER, LESS };
-struct HasGreaterFrecencyThanTestCase {
+struct AutofillDataModelRankingTestCase {
   const std::string guid_a;
   const int use_count_a;
   const base::Time use_date_a;
@@ -129,8 +104,62 @@ struct HasGreaterFrecencyThanTestCase {
 
 base::Time now = AutofillClock::Now();
 
+class AutofillDataModelRankingTest
+    : public testing::TestWithParam<AutofillDataModelRankingTestCase> {};
+
+TEST_P(AutofillDataModelRankingTest, HasGreaterRankingThan) {
+  // Enable kAutofillEnableRankingFormula so that it uses the new formula
+  // instead of frecency.
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(features::kAutofillEnableRankingFormula);
+
+  auto test_case = GetParam();
+  TestAutofillDataModel model_a(test_case.guid_a, test_case.use_count_a,
+                                test_case.use_date_a);
+  TestAutofillDataModel model_b(test_case.guid_b, test_case.use_count_b,
+                                test_case.use_date_b);
+
+  EXPECT_EQ(test_case.expectation == GREATER,
+            model_a.HasGreaterRankingThan(&model_b, now));
+  EXPECT_NE(test_case.expectation == GREATER,
+            model_b.HasGreaterRankingThan(&model_a, now));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillDataModelTest,
+    AutofillDataModelRankingTest,
+    testing::Values(
+        // Same ranking score, model_a has a smaller GUID (tie breaker).
+        AutofillDataModelRankingTestCase{"guid_a", 8, now, "guid_b", 8, now,
+                                         LESS},
+        // Same days since last use, model_a has a bigger use count.
+        AutofillDataModelRankingTestCase{"guid_a", 10, now, "guid_b", 8, now,
+                                         GREATER},
+        // Same days since last use, model_a has a smaller use count.
+        AutofillDataModelRankingTestCase{"guid_a", 8, now, "guid_b", 10, now,
+                                         LESS},
+        // Same days since last use, model_a has larger use count.
+        AutofillDataModelRankingTestCase{"guid_a", 8, now, "guid_b", 8,
+                                         now - base::Days(1), GREATER},
+        // Same use count, model_a has smaller days since last use.
+        AutofillDataModelRankingTestCase{"guid_a", 8, now - base::Days(1),
+                                         "guid_b", 8, now, LESS},
+        // Special case: occasional profiles. A profile with relatively low
+        // usage and used recently (model_b) should not rank higher than a more
+        // used profile that has been unused for a short amount of time
+        // (model_a).
+        AutofillDataModelRankingTestCase{"guid_a", 300, now - base::Days(5),
+                                         "guid_b", 10, now - base::Days(1),
+                                         GREATER},
+        // Special case: moving. A new profile used frequently (model_b) should
+        // rank higher than a profile with more usage that has not been used for
+        // a while (model_a).
+        AutofillDataModelRankingTestCase{"guid_a", 90, now - base::Days(20),
+                                         "guid_b", 10, now - base::Days(5),
+                                         LESS}));
+
 class HasGreaterFrecencyThanTest
-    : public testing::TestWithParam<HasGreaterFrecencyThanTestCase> {};
+    : public testing::TestWithParam<AutofillDataModelRankingTestCase> {};
 
 TEST_P(HasGreaterFrecencyThanTest, HasGreaterFrecencyThan) {
   auto test_case = GetParam();
@@ -140,42 +169,42 @@ TEST_P(HasGreaterFrecencyThanTest, HasGreaterFrecencyThan) {
                                 test_case.use_date_b);
 
   EXPECT_EQ(test_case.expectation == GREATER,
-            model_a.HasGreaterFrecencyThan(&model_b, now));
+            model_a.HasGreaterRankingThan(&model_b, now));
   EXPECT_NE(test_case.expectation == GREATER,
-            model_b.HasGreaterFrecencyThan(&model_a, now));
+            model_b.HasGreaterRankingThan(&model_a, now));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     AutofillDataModelTest,
     HasGreaterFrecencyThanTest,
     testing::Values(
-        // Same frecency, model_a has a smaller GUID (tie breaker).
-        HasGreaterFrecencyThanTestCase{"guid_a", 8, now, "guid_b", 8, now,
-                                       LESS},
-        // Same recency, model_a has a bigger frequency.
-        HasGreaterFrecencyThanTestCase{"guid_a", 10, now, "guid_b", 8, now,
-                                       GREATER},
-        // Same recency, model_a has a smaller frequency.
-        HasGreaterFrecencyThanTestCase{"guid_a", 8, now, "guid_b", 10, now,
-                                       LESS},
-        // Same frequency, model_a is more recent.
-        HasGreaterFrecencyThanTestCase{"guid_a", 8, now, "guid_b", 8,
-                                       now - base::Days(1), GREATER},
-        // Same frequency, model_a is less recent.
-        HasGreaterFrecencyThanTestCase{"guid_a", 8, now - base::Days(1),
-                                       "guid_b", 8, now, LESS},
+        // Same ranking score, model_a has a smaller GUID (tie breaker).
+        AutofillDataModelRankingTestCase{"guid_a", 8, now, "guid_b", 8, now,
+                                         LESS},
+        // Same days since last use, model_a has a bigger use count.
+        AutofillDataModelRankingTestCase{"guid_a", 10, now, "guid_b", 8, now,
+                                         GREATER},
+        // Same days since last use, model_a has a smaller use count.
+        AutofillDataModelRankingTestCase{"guid_a", 8, now, "guid_b", 10, now,
+                                         LESS},
+        // Same days since last use, model_a has larger use count.
+        AutofillDataModelRankingTestCase{"guid_a", 8, now, "guid_b", 8,
+                                         now - base::Days(1), GREATER},
+        // Same use count, model_a has smaller days since last use.
+        AutofillDataModelRankingTestCase{"guid_a", 8, now - base::Days(1),
+                                         "guid_b", 8, now, LESS},
         // Special case: occasional profiles. A profile with relatively low
         // usage and used recently (model_b) should not rank higher than a more
         // used profile that has been unused for a short amount of time
         // (model_a).
-        HasGreaterFrecencyThanTestCase{"guid_a", 300, now - base::Days(5),
-                                       "guid_b", 10, now - base::Days(1),
-                                       GREATER},
+        AutofillDataModelRankingTestCase{"guid_a", 300, now - base::Days(5),
+                                         "guid_b", 10, now - base::Days(1),
+                                         GREATER},
         // Special case: moving. A new profile used frequently (model_b) should
         // rank higher than a profile with more usage that has not been used for
         // a while (model_a).
-        HasGreaterFrecencyThanTestCase{"guid_a", 300, now - base::Days(15),
-                                       "guid_b", 10, now - base::Days(1),
-                                       LESS}));
+        AutofillDataModelRankingTestCase{"guid_a", 300, now - base::Days(15),
+                                         "guid_b", 10, now - base::Days(1),
+                                         LESS}));
 
 }  // namespace autofill

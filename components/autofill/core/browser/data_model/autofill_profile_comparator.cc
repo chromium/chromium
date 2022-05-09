@@ -197,13 +197,13 @@ void CopyAddressLineInformationFromProfile(const AutofillProfile& source,
                     source.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
 }
 
-// Sorts |profiles| by frecency.
-void SortProfilesByFrecency(std::vector<AutofillProfile*>* profiles) {
+// Sorts |profiles| by ranking score.
+void SortProfilesByRankingScore(std::vector<AutofillProfile*>* profiles) {
   base::Time comparison_time = AutofillClock::Now();
   std::sort(
       profiles->begin(), profiles->end(),
       [comparison_time](const AutofillProfile* a, const AutofillProfile* b) {
-        return a->HasGreaterFrecencyThan(b, comparison_time);
+        return a->HasGreaterRankingThan(b, comparison_time);
       });
 }
 
@@ -1071,8 +1071,8 @@ AutofillProfileComparator::GetAutofillProfileMergeCandidate(
   // effects.
   std::vector<AutofillProfile*> existing_profiles_copies = existing_profiles;
 
-  // Sort the profiles by frecency.
-  SortProfilesByFrecency(&existing_profiles_copies);
+  // Sort the profiles by ranking score.
+  SortProfilesByRankingScore(&existing_profiles_copies);
 
   // Find and return the first profile that classifies as a merge candidate. If
   // not profile classifies, return |absl::nullopt|.
@@ -1102,10 +1102,10 @@ std::string AutofillProfileComparator::MergeProfile(
   for (const auto& profile : existing_profiles)
     existing_profile_copies.push_back(*profile.get());
 
-  // Sort the existing profiles in decreasing order of frecency, so the "best"
-  // profiles are checked first. Put the verified profiles last so the non
-  // verified profiles get deduped among themselves before reaching the verified
-  // profiles.
+  // Sort the existing profiles in decreasing order of ranking score, so the
+  // "best" profiles are checked first. Put the verified profiles last so the
+  // non verified profiles get deduped among themselves before reaching the
+  // verified profiles.
   // TODO(crbug.com/620521): Remove the check for verified from the sort.
   base::Time comparison_time = AutofillClock::Now();
   std::sort(
@@ -1113,7 +1113,7 @@ std::string AutofillProfileComparator::MergeProfile(
       [comparison_time](const AutofillProfile& a, const AutofillProfile& b) {
         if (a.IsVerified() != b.IsVerified())
           return !a.IsVerified();
-        return a.HasGreaterFrecencyThan(&b, comparison_time);
+        return a.HasGreaterRankingThan(&b, comparison_time);
       });
 
   // Set to true if |existing_profile_copies| already contains an equivalent
