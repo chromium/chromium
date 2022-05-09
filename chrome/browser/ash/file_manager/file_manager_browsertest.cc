@@ -428,9 +428,13 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenVideoMediaApp, /* open_video_media_app.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("videoOpenDownloads").MediaSwa().InGuestMode(),
-                      TestCase("videoOpenDownloads").MediaSwa(),
-                      TestCase("videoOpenDrive").MediaSwa()));
+    ::testing::Values(
+        TestCase("videoOpenDownloads").MediaSwa().InGuestMode(),
+        TestCase("videoOpenDownloads").MediaSwa().InGuestMode().FilesSwa(),
+        TestCase("videoOpenDownloads").MediaSwa().FilesSwa(),
+        TestCase("videoOpenDownloads").MediaSwa(),
+        TestCase("videoOpenDrive").MediaSwa(),
+        TestCase("videoOpenDrive").MediaSwa().FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenAudioMediaApp, /* open_audio_media_app.js */
@@ -444,8 +448,14 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("imageOpenMediaAppDownloads").MediaSwa().InGuestMode(),
+        TestCase("imageOpenMediaAppDownloads")
+            .MediaSwa()
+            .InGuestMode()
+            .FilesSwa(),
         TestCase("imageOpenMediaAppDownloads").MediaSwa(),
-        TestCase("imageOpenMediaAppDrive").MediaSwa()));
+        TestCase("imageOpenMediaAppDownloads").MediaSwa().FilesSwa(),
+        TestCase("imageOpenMediaAppDrive").MediaSwa(),
+        TestCase("imageOpenMediaAppDrive").MediaSwa().FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenSniffedFiles, /* open_sniffed_files.js */
@@ -888,17 +898,29 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("directoryTreeActiveDirectory"),
+        TestCase("directoryTreeActiveDirectory").FilesSwa(),
         TestCase("directoryTreeSelectedDirectory"),
+        TestCase("directoryTreeSelectedDirectory").FilesSwa(),
         TestCase("directoryTreeRecentsSubtypeScroll"),
+        // TODO(b/189173190): Enable
+        // TestCase("directoryTreeRecentsSubtypeScroll").FilesSwa(),
         TestCase("directoryTreeHorizontalScroll"),
+        TestCase("directoryTreeHorizontalScroll").FilesSwa(),
         TestCase("directoryTreeExpandHorizontalScroll"),
+        TestCase("directoryTreeExpandHorizontalScroll").FilesSwa(),
         TestCase("directoryTreeExpandHorizontalScrollRTL"),
+        TestCase("directoryTreeExpandHorizontalScrollRTL").FilesSwa(),
         TestCase("directoryTreeVerticalScroll"),
+        TestCase("directoryTreeVerticalScroll").FilesSwa(),
         TestCase("directoryTreeExpandFolder"),
+        TestCase("directoryTreeExpandFolder").FilesSwa(),
         TestCase(
             "directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOff"),
-        TestCase(
-            "directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOn")));
+        TestCase("directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOff")
+            .FilesSwa(),
+        TestCase("directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOn"),
+        TestCase("directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOn")
+            .FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DirectoryTreeContextMenu, /* directory_tree_context_menu.js */
@@ -1037,32 +1059,65 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("driveOpenSidebarOffline").EnableGenericDocumentsProvider(),
+        TestCase("driveOpenSidebarOffline")
+            .EnableGenericDocumentsProvider()
+            .FilesSwa(),
         TestCase("driveOpenSidebarSharedWithMe"),
+        TestCase("driveOpenSidebarSharedWithMe").FilesSwa(),
         TestCase("driveAutoCompleteQuery"),
+        TestCase("driveAutoCompleteQuery").FilesSwa(),
         TestCase("drivePinMultiple"),
+        TestCase("drivePinMultiple").FilesSwa(),
         TestCase("drivePinHosted"),
+        TestCase("drivePinHosted").FilesSwa(),
         TestCase("drivePinFileMobileNetwork"),
+        // TODO(b/189173190): Enable
+        // TestCase("drivePinFileMobileNetwork").FilesSwa(),
         TestCase("drivePinToggleUpdatesInFakeEntries"),
+        TestCase("drivePinToggleUpdatesInFakeEntries").FilesSwa(),
         TestCase("driveClickFirstSearchResult"),
+        TestCase("driveClickFirstSearchResult").FilesSwa(),
         TestCase("drivePressEnterToSearch"),
+        TestCase("drivePressEnterToSearch").FilesSwa(),
         TestCase("drivePressClearSearch"),
         TestCase("drivePressClearSearch").FilesSwa(),
         TestCase("drivePressCtrlAFromSearch"),
+        TestCase("drivePressCtrlAFromSearch").FilesSwa(),
         TestCase("driveBackupPhotos"),
         TestCase("driveBackupPhotos").EnableSinglePartitionFormat(),
         TestCase("driveAvailableOfflineGearMenu"),
+        TestCase("driveAvailableOfflineGearMenu").FilesSwa(),
         TestCase("driveAvailableOfflineDirectoryGearMenu"),
+        TestCase("driveAvailableOfflineDirectoryGearMenu").FilesSwa(),
         TestCase("driveAvailableOfflineActionBar"),
+        TestCase("driveAvailableOfflineActionBar").FilesSwa(),
         TestCase("driveLinkToDirectory"),
+        TestCase("driveLinkToDirectory").FilesSwa(),
         TestCase("driveLinkOpenFileThroughLinkedDirectory").MediaSwa(),
+        TestCase("driveLinkOpenFileThroughLinkedDirectory")
+            .MediaSwa()
+            .FilesSwa(),
         TestCase("driveLinkOpenFileThroughTransitiveLink").MediaSwa(),
         TestCase("driveWelcomeBanner"),
         TestCase("driveOfflineInfoBanner").EnableDriveDssPin(),
         TestCase("driveOfflineInfoBannerWithoutFlag"),
+        TestCase("driveLinkOpenFileThroughTransitiveLink")
+            .MediaSwa()
+            .FilesSwa(),
         TestCase("driveEnableDocsOfflineDialog"),
+        // TODO(b/189173190): Enable
+        // TestCase("driveEnableDocsOfflineDialog").FilesSwa(),
         TestCase("driveEnableDocsOfflineDialogWithoutWindow"),
+        // TODO(b/189173190): Enable
+        // TestCase("driveEnableDocsOfflineDialogWithoutWindow").FilesSwa(),
         TestCase("driveEnableDocsOfflineDialogMultipleWindows"),
-        TestCase("driveEnableDocsOfflineDialogDisappearsOnUnmount")));
+        // TODO(b/189173190): Enable
+        // TestCase("driveEnableDocsOfflineDialogMultipleWindows").FilesSwa(),
+        TestCase("driveEnableDocsOfflineDialogDisappearsOnUnmount")
+        // TODO(b/189173190): Enable
+        // TestCase("driveEnableDocsOfflineDialogDisappearsOnUnmount")
+        //     .FilesSwa()
+        ));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     HoldingSpace, /* holding_space.js */
@@ -1153,8 +1208,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("transferDeletedFile"),
         TestCase("transferDeletedFile").FilesSwa(),
         TestCase("transferDeletedFile").EnableTrash(),
-        TestCase("transferDeletedFile").FilesSwa().EnableTrash(),
+        TestCase("transferDeletedFile").EnableTrash().FilesSwa(),
         TestCase("transferInfoIsRemembered"),
+        // TODO(b/189173190): Enable
         // TestCase("transferInfoIsRemembered").FilesSwa(),
         TestCase("transferToUsbHasDestinationText"),
         // TODO(lucmult): Re-enable this once SWA uses the feedback panel.
@@ -1167,8 +1223,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .FilesSwa(),
         TestCase("transferUpdateSamePanelItem"),
         TestCase("transferUpdateSamePanelItem").FilesSwa(),
-        TestCase("transferShowPendingMessageForZeroRemainingTime").FilesSwa(),
-        TestCase("transferShowPendingMessageForZeroRemainingTime")));
+        TestCase("transferShowPendingMessageForZeroRemainingTime"),
+        TestCase("transferShowPendingMessageForZeroRemainingTime").FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Transfer, /* transfer.js */
@@ -1179,8 +1235,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     RestorePrefs, /* restore_prefs.js */
     FilesAppBrowserTest,
     ::testing::Values(TestCase("restoreSortColumn").InGuestMode(),
+                      TestCase("restoreSortColumn").InGuestMode().FilesSwa(),
                       TestCase("restoreSortColumn"),
+                      TestCase("restoreSortColumn").FilesSwa(),
                       TestCase("restoreCurrentView").InGuestMode(),
+                      TestCase("restoreCurrentView").InGuestMode().FilesSwa(),
+                      TestCase("restoreCurrentView").FilesSwa(),
                       TestCase("restoreCurrentView")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
@@ -1194,53 +1254,86 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ShareAndManageDialog, /* share_and_manage_dialog.js */
     FilesAppBrowserTest,
     ::testing::Values(TestCase("shareFileDrive"),
+                      TestCase("shareFileDrive").FilesSwa(),
                       TestCase("shareDirectoryDrive"),
+                      TestCase("shareDirectoryDrive").FilesSwa(),
                       TestCase("shareHostedFileDrive"),
+                      TestCase("shareHostedFileDrive").FilesSwa(),
                       TestCase("manageHostedFileDrive"),
+                      TestCase("manageHostedFileDrive").FilesSwa(),
                       TestCase("manageFileDrive"),
+                      TestCase("manageFileDrive").FilesSwa(),
                       TestCase("manageDirectoryDrive"),
+                      TestCase("manageDirectoryDrive").FilesSwa(),
                       TestCase("shareFileTeamDrive"),
+                      TestCase("shareFileTeamDrive").FilesSwa(),
                       TestCase("shareDirectoryTeamDrive"),
+                      TestCase("shareDirectoryTeamDrive").FilesSwa(),
                       TestCase("shareHostedFileTeamDrive"),
+                      TestCase("shareHostedFileTeamDrive").FilesSwa(),
                       TestCase("shareTeamDrive"),
+                      TestCase("shareTeamDrive").FilesSwa(),
                       TestCase("manageHostedFileTeamDrive"),
+                      TestCase("manageHostedFileTeamDrive").FilesSwa(),
                       TestCase("manageFileTeamDrive"),
+                      TestCase("manageFileTeamDrive").FilesSwa(),
                       TestCase("manageDirectoryTeamDrive"),
+                      TestCase("manageDirectoryTeamDrive").FilesSwa(),
+                      TestCase("manageTeamDrive").FilesSwa(),
                       TestCase("manageTeamDrive")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Traverse, /* traverse.js */
     FilesAppBrowserTest,
     ::testing::Values(TestCase("traverseDownloads").InGuestMode(),
+                      TestCase("traverseDownloads").InGuestMode().FilesSwa(),
                       TestCase("traverseDownloads"),
+                      TestCase("traverseDownloads").FilesSwa(),
+                      TestCase("traverseDrive").FilesSwa(),
                       TestCase("traverseDrive")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Tasks, /* tasks.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("executeDefaultTaskDownloads"),
-                      TestCase("executeDefaultTaskDownloads").InGuestMode(),
-                      TestCase("executeDefaultTaskDrive"),
-                      TestCase("defaultTaskForPdf"),
-                      TestCase("defaultTaskForTextPlain"),
-                      TestCase("defaultTaskDialogDownloads"),
-                      TestCase("defaultTaskDialogDownloads").InGuestMode(),
-                      TestCase("defaultTaskDialogDrive"),
-                      TestCase("changeDefaultDialogScrollList"),
-                      TestCase("genericTaskIsNotExecuted"),
-                      TestCase("genericTaskAndNonGenericTask"),
-                      TestCase("noActionBarOpenForDirectories")));
+    ::testing::Values(
+        TestCase("executeDefaultTaskDownloads"),
+        TestCase("executeDefaultTaskDownloads").FilesSwa(),
+        TestCase("executeDefaultTaskDownloads").InGuestMode(),
+        TestCase("executeDefaultTaskDownloads").InGuestMode().FilesSwa(),
+        TestCase("executeDefaultTaskDrive"),
+        TestCase("executeDefaultTaskDrive").FilesSwa(),
+        TestCase("defaultTaskForPdf"),
+        TestCase("defaultTaskForPdf").FilesSwa(),
+        TestCase("defaultTaskForTextPlain"),
+        TestCase("defaultTaskForTextPlain").FilesSwa(),
+        TestCase("defaultTaskDialogDownloads"),
+        TestCase("defaultTaskDialogDownloads").FilesSwa(),
+        TestCase("defaultTaskDialogDownloads").InGuestMode(),
+        TestCase("defaultTaskDialogDownloads").InGuestMode().FilesSwa(),
+        TestCase("defaultTaskDialogDrive"),
+        TestCase("defaultTaskDialogDrive").FilesSwa(),
+        TestCase("changeDefaultDialogScrollList"),
+        TestCase("changeDefaultDialogScrollList").FilesSwa(),
+        TestCase("genericTaskIsNotExecuted"),
+        TestCase("genericTaskIsNotExecuted").FilesSwa(),
+        TestCase("genericTaskAndNonGenericTask"),
+        TestCase("genericTaskAndNonGenericTask").FilesSwa(),
+        TestCase("noActionBarOpenForDirectories").FilesSwa(),
+        TestCase("noActionBarOpenForDirectories")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FolderShortcuts, /* folder_shortcuts.js */
     FilesAppBrowserTest,
     ::testing::Values(TestCase("traverseFolderShortcuts"),
+                      TestCase("traverseFolderShortcuts").FilesSwa(),
+                      TestCase("addRemoveFolderShortcuts").FilesSwa(),
                       TestCase("addRemoveFolderShortcuts")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     SortColumns, /* sort_columns.js */
     FilesAppBrowserTest,
     ::testing::Values(TestCase("sortColumns"),
+                      TestCase("sortColumns").FilesSwa(),
                       TestCase("sortColumns").InGuestMode()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
@@ -1248,12 +1341,24 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("tabindexSearchBoxFocus"),
+        TestCase("tabindexSearchBoxFocus").FilesSwa(),
         TestCase("tabindexFocus"),
+        TestCase("tabindexFocus").FilesSwa(),
         TestCase("tabindexFocusDownloads"),
+        TestCase("tabindexFocusDownloads").FilesSwa(),
         TestCase("tabindexFocusDownloads").InGuestMode(),
+        TestCase("tabindexFocusDownloads").InGuestMode().FilesSwa(),
         TestCase("tabindexFocusDirectorySelected"),
+        TestCase("tabindexFocusDirectorySelected").FilesSwa(),
         TestCase("tabindexOpenDialogDownloads").WithBrowser(),
+        // TODO(b/189173190): Enable
+        // TestCase("tabindexOpenDialogDownloads").WithBrowser().FilesSwa(),
         TestCase("tabindexOpenDialogDownloads").WithBrowser().InGuestMode()
+        // TODO(b/189173190): Enable
+        // TestCase("tabindexOpenDialogDownloads")
+        //     .WithBrowser()
+        //     .InGuestMode()
+        //     .FilesSwa()
         // TODO(crbug.com/1236842): Remove flakiness and enable this test.
         //      ,
         //      TestCase("tabindexSaveFileDialogDrive").WithBrowser(),
@@ -1275,8 +1380,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .InGuestMode()
             .FilesSwa(),
         TestCase("openFileDialogDownloads").WithBrowser().InIncognito(),
-        // TODO(b/194255793): Fix this.
-        // TestCase("openFileDialogDownloads").WithBrowser().InIncognito().FilesSwa(),
+        // TestCase("openFileDialogDownloads")
+        //     .WithBrowser()
+        //     .InIncognito()
+        //     .FilesSwa(),
         TestCase("openFileDialogPanelsDisabled").WithBrowser(),
         TestCase("openFileDialogPanelsDisabled").WithBrowser().FilesSwa(),
         TestCase("openFileDialogAriaMultipleSelect").WithBrowser(),
@@ -1301,6 +1408,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         // TestCase("saveFileDialogDownloadsNewFolderButton")
         //     .WithBrowser()
         //     .FilesSwa(),
+        TestCase("saveFileDialogDownloadsNewFolderButton").WithBrowser(),
+        TestCase("saveFileDialogDownloadsNewFolderButton")
+            .WithBrowser()
+            .FilesSwa(),
         TestCase("saveFileDialogPanelsDisabled").WithBrowser(),
         TestCase("saveFileDialogPanelsDisabled").WithBrowser().FilesSwa(),
         TestCase("openFileDialogCancelDownloads").WithBrowser(),
@@ -1391,68 +1502,103 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     CopyBetweenWindows, /* copy_between_windows.js */
     FilesAppBrowserTest,
     ::testing::Values(TestCase("copyBetweenWindowsLocalToDrive"),
+                      TestCase("copyBetweenWindowsLocalToDrive").FilesSwa(),
                       TestCase("copyBetweenWindowsLocalToUsb"),
+                      // TODO(b/189173190): Enable
+                      // TestCase("copyBetweenWindowsLocalToUsb").FilesSwa(),
                       TestCase("copyBetweenWindowsUsbToDrive"),
+                      TestCase("copyBetweenWindowsUsbToDrive").FilesSwa(),
                       TestCase("copyBetweenWindowsDriveToLocal"),
+                      TestCase("copyBetweenWindowsDriveToLocal").FilesSwa(),
                       TestCase("copyBetweenWindowsDriveToUsb"),
+                      // TODO(b/189173190): Enable
+                      // TestCase("copyBetweenWindowsDriveToUsb").FilesSwa(),
+                      TestCase("copyBetweenWindowsUsbToLocal").FilesSwa(),
                       TestCase("copyBetweenWindowsUsbToLocal")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     GridView, /* grid_view.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("showGridViewDownloads").InGuestMode(),
-                      TestCase("showGridViewDownloads"),
-                      TestCase("showGridViewDrive"),
-                      TestCase("showGridViewButtonSwitches"),
-                      TestCase("showGridViewButtonSwitches").FilesSwa(),
-                      TestCase("showGridViewKeyboardSelectionA11y"),
-                      TestCase("showGridViewTitles"),
-                      TestCase("showGridViewTitles").FilesSwa(),
-                      TestCase("showGridViewMouseSelectionA11y"),
-                      TestCase("showGridViewDocumentsProvider")
-                          .EnableGenericDocumentsProvider(),
-                      TestCase("showGridViewDocumentsProvider")
-                          .EnableGenericDocumentsProvider()
-                          .FilesSwa()));
+    ::testing::Values(
+        TestCase("showGridViewDownloads").InGuestMode(),
+        TestCase("showGridViewDownloads").InGuestMode().FilesSwa(),
+        TestCase("showGridViewDownloads"),
+        TestCase("showGridViewDownloads").FilesSwa(),
+        TestCase("showGridViewButtonSwitches"),
+        TestCase("showGridViewButtonSwitches").FilesSwa(),
+        TestCase("showGridViewKeyboardSelectionA11y"),
+        TestCase("showGridViewKeyboardSelectionA11y").FilesSwa(),
+        TestCase("showGridViewTitles"),
+        TestCase("showGridViewTitles").FilesSwa(),
+        TestCase("showGridViewMouseSelectionA11y"),
+        TestCase("showGridViewMouseSelectionA11y").FilesSwa(),
+        TestCase("showGridViewDocumentsProvider")
+            .EnableGenericDocumentsProvider(),
+        TestCase("showGridViewDocumentsProvider")
+            .EnableGenericDocumentsProvider()
+            .FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Providers, /* providers.js */
     ExtendedFilesAppBrowserTest,
     ::testing::Values(
         TestCase("requestMount"),
+        TestCase("requestMount").FilesSwa(),
         TestCase("requestMount").DisableNativeSmb(),
+        TestCase("requestMount").DisableNativeSmb().FilesSwa(),
         TestCase("requestMountMultipleMounts"),
+        TestCase("requestMountMultipleMounts").FilesSwa(),
         TestCase("requestMountMultipleMounts").DisableNativeSmb(),
+        TestCase("requestMountMultipleMounts").DisableNativeSmb().FilesSwa(),
         TestCase("requestMountSourceDevice"),
+        TestCase("requestMountSourceDevice").FilesSwa(),
         TestCase("requestMountSourceDevice").DisableNativeSmb(),
+        TestCase("requestMountSourceDevice").DisableNativeSmb().FilesSwa(),
         TestCase("requestMountSourceFile"),
+        TestCase("requestMountSourceFile").FilesSwa(),
         TestCase("requestMountSourceFile").DisableNativeSmb(),
+        TestCase("requestMountSourceFile").DisableNativeSmb().FilesSwa(),
         TestCase("providerEject"),
+        TestCase("providerEject").FilesSwa(),
         TestCase("providerEject").DisableNativeSmb(),
-        TestCase("deduplicatedUmaMetricForFileSystemProviders"),
-        TestCase("deduplicatedUmaMetricForFileSystemProviders").FilesSwa()));
+        TestCase("providerEject").DisableNativeSmb().FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     GearMenu, /* gear_menu.js */
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("showHiddenFilesDownloads"),
+        TestCase("showHiddenFilesDownloads").FilesSwa(),
         TestCase("showHiddenFilesDownloads").InGuestMode(),
+        TestCase("showHiddenFilesDownloads").InGuestMode().FilesSwa(),
         TestCase("showHiddenFilesDrive"),
+        TestCase("showHiddenFilesDrive").FilesSwa(),
         TestCase("showPasteIntoCurrentFolder"),
+        TestCase("showPasteIntoCurrentFolder").FilesSwa(),
         TestCase("showSelectAllInCurrentFolder"),
+        TestCase("showSelectAllInCurrentFolder").FilesSwa(),
         TestCase("showToggleHiddenAndroidFoldersGearMenuItemsInMyFiles"),
+        TestCase("showToggleHiddenAndroidFoldersGearMenuItemsInMyFiles")
+            .FilesSwa(),
         TestCase("enableToggleHiddenAndroidFoldersShowsHiddenFiles"),
+        TestCase("enableToggleHiddenAndroidFoldersShowsHiddenFiles").FilesSwa(),
         TestCase("hideCurrentDirectoryByTogglingHiddenAndroidFolders"),
+        TestCase("hideCurrentDirectoryByTogglingHiddenAndroidFolders")
+            .FilesSwa(),
         TestCase("newFolderInDownloads"),
+        TestCase("newFolderInDownloads").FilesSwa(),
         TestCase("showSendFeedbackAction"),
         TestCase("showSendFeedbackAction").FilesSwa(),
         TestCase("enableDisableStorageSettingsLink"),
+        TestCase("enableDisableStorageSettingsLink").FilesSwa(),
         TestCase("showAvailableStorageMyFiles"),
+        TestCase("showAvailableStorageMyFiles").FilesSwa(),
         // Disabled until Drive quota can be properly displayed.
         // crbug.com/1177203
         // TestCase("showAvailableStorageDrive"),
+        // TestCase("showAvailableStorageDrive").FilesSwa(),
         TestCase("showAvailableStorageSmbfs"),
+        TestCase("showAvailableStorageSmbfs").FilesSwa(),
         TestCase("showAvailableStorageDocProvider")
             .EnableGenericDocumentsProvider(),
         TestCase("showAvailableStorageDocProvider")
@@ -1763,14 +1909,27 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Trash, /* trash.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("trashMoveToTrash").EnableTrash(),
-                      TestCase("trashPermanentlyDelete").EnableTrash(),
-                      TestCase("trashRestoreFromToast").EnableTrash(),
-                      TestCase("trashRestoreFromTrash").EnableTrash(),
-                      TestCase("trashRestoreFromTrashShortcut").EnableTrash(),
-                      TestCase("trashEmptyTrash").EnableTrash(),
-                      TestCase("trashEmptyTrashShortcut").EnableTrash(),
-                      TestCase("trashDeleteFromTrash").EnableTrash()));
+    ::testing::Values(
+        TestCase("trashMoveToTrash").EnableTrash(),
+        TestCase("trashMoveToTrash").EnableTrash().FilesSwa(),
+        TestCase("trashPermanentlyDelete").EnableTrash(),
+        TestCase("trashPermanentlyDelete").EnableTrash().FilesSwa(),
+        TestCase("trashRestoreFromToast").EnableTrash(),
+        TestCase("trashRestoreFromToast").EnableTrash().FilesSwa(),
+        TestCase("trashRestoreFromTrash").EnableTrash(),
+        TestCase("trashRestoreFromTrash").EnableTrash().FilesSwa(),
+        TestCase("trashRestoreFromTrashShortcut").EnableTrash(),
+        TestCase("trashRestoreFromTrashShortcut").EnableTrash().FilesSwa(),
+        TestCase("trashEmptyTrash").EnableTrash(),
+        // TODO(b/189173190): Enable
+        // TestCase("trashEmptyTrash").EnableTrash().FilesSwa(),
+        TestCase("trashEmptyTrashShortcut").EnableTrash(),
+        // TODO(b/189173190): Enable
+        // TestCase("trashEmptyTrashShortcut").EnableTrash().FilesSwa(),
+        TestCase("trashDeleteFromTrash").EnableTrash()
+        // TODO(b/189173190): Enable
+        // TestCase("trashDeleteFromTrash").EnableTrash().FilesSwa()
+        ));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     AndroidPhotos, /* android_photos.js */

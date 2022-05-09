@@ -1255,6 +1255,7 @@ test.util.sync.forceErrorsOnFileOperations = (contentWindow, enable) => {
  */
 test.util.sync.setPreferences = preferences => {
   chrome.fileManagerPrivate.setPreferences(preferences);
+  return true;
 };
 
 /**
@@ -1267,6 +1268,7 @@ test.util.sync.setPreferences = preferences => {
  */
 test.util.sync.recordEnumMetric = (name, value, validValues) => {
   metrics.recordEnum(name, value, validValues);
+  return true;
 };
 
 /**
