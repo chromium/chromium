@@ -246,6 +246,10 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   // an alert dialog. This would make screen readers announce the whole of the
   // system tray which is undesirable.
   SetAccessibleRole(ax::mojom::Role::kDialog);
+  // We force to create contents background since the bubble border background
+  // is not shown in this view.
+  if (features::IsDarkLightModeEnabled())
+    set_force_create_contents_background(true);
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
   SetPaintClientToLayer(false);
@@ -269,15 +273,11 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
     // The following code will not work with bubble's shadow.
     DCHECK(!init_params.has_shadow);
 
-    if (features::IsDarkLightModeEnabled()) {
-      // TODO(crbug/1313073): Remove layer creation in children views of this
-      // view to improve performance.
-      SetPaintToLayer();
-    } else {
-      SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-      layer()->SetFillsBoundsOpaquely(false);
-    }
-
+    // TODO(crbug/1313073): In the dark light mode feature, remove layer
+    // creation in children views of this view to improve performance.
+    SetPaintToLayer(features::IsDarkLightModeEnabled() ? ui::LAYER_TEXTURED
+                                                       : ui::LAYER_SOLID_COLOR);
+    layer()->SetFillsBoundsOpaquely(false);
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF{static_cast<float>(params_.corner_radius)});
     layer()->SetIsFastRoundedCorner(true);
