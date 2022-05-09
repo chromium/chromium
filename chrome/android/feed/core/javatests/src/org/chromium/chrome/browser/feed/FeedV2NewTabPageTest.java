@@ -42,8 +42,6 @@ import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
-import com.google.common.base.Optional;
-
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -91,6 +89,7 @@ import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependencies
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
@@ -129,7 +128,6 @@ public class FeedV2NewTabPageTest {
             Swipe.FAST, GeneralLocation.CENTER, GeneralLocation.CENTER_LEFT, Press.FINGER);
 
     private boolean mIsCachePopulatedInAccountManagerFacade = true;
-    private boolean mCanOfferExtendedSyncPromos = true;
 
     private final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -143,11 +141,6 @@ public class FeedV2NewTabPageTest {
                         return super.getAccounts();
                     }
                     return new Promise<>();
-                }
-
-                @Override
-                public Optional<Boolean> canOfferExtendedSyncPromos(Account account) {
-                    return Optional.of(mCanOfferExtendedSyncPromos);
                 }
             };
 
@@ -386,9 +379,10 @@ public class FeedV2NewTabPageTest {
     @MediumTest
     @Feature({"FeedNewTabPage"})
     public void testSignInPromoWhenDefaultAccountCanNotOfferExtendedSyncPromos() {
-        mAccountManagerTestRule.addAccount("test@gmail.com");
+        final AccountCapabilitiesBuilder capabilitiesBuilder = new AccountCapabilitiesBuilder();
+        mAccountManagerTestRule.addAccount(
+                "test@gmail.com", capabilitiesBuilder.setCanOfferExtendedSyncPromos(false).build());
         mIsCachePopulatedInAccountManagerFacade = true;
-        mCanOfferExtendedSyncPromos = false;
 
         openNewTabPage();
         onView(withId(R.id.feed_stream_recycler_view))

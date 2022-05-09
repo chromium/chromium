@@ -12,8 +12,6 @@ import androidx.annotation.GuardedBy;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
-import com.google.common.base.Optional;
-
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
@@ -117,12 +115,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     @Override
     public Promise<AccountCapabilities> getAccountCapabilities(Account account) {
         return Promise.fulfilled(new AccountCapabilities(new HashMap<>()));
-    }
-
-    @Override
-    public Optional<Boolean> canOfferExtendedSyncPromos(Account account) {
-        assert account != null;
-        return Optional.absent();
     }
 
     @Override

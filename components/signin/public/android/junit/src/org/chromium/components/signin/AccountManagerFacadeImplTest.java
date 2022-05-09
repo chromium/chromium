@@ -279,44 +279,6 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testCanOfferExtendedSyncPromosForUnknownAccount() {
-        final Account account = AccountUtils.createAccountFromName("test@gmail.com");
-
-        Assert.assertFalse(mFacade.canOfferExtendedSyncPromos(account).isPresent());
-    }
-
-    @Test
-    public void testAccountCanNotOfferExtendedSyncPromos() {
-        final AccountHolder accountHolder = AccountHolder.createFromEmail("test@gmail.com");
-        mDelegate.addAccount(accountHolder);
-
-        Assert.assertFalse(mFacade.canOfferExtendedSyncPromos(accountHolder.getAccount()).get());
-    }
-
-    @Test
-    public void testAccountCanNotOfferExtendedSyncPromosWhenExceptionCodeReturns() {
-        final AccountHolder accountHolder = AccountHolder.createFromEmail("test@gmail.com");
-        doReturn(CapabilityResponse.EXCEPTION)
-                .when(mDelegate)
-                .hasCapability(eq(accountHolder.getAccount()), any());
-        mDelegate.addAccount(accountHolder);
-
-        Assert.assertFalse(mFacade.canOfferExtendedSyncPromos(accountHolder.getAccount()).get());
-    }
-
-    @Test
-    public void testAccountCanOfferExtendedSyncPromos() {
-        final AccountHolder accountHolder1 = AccountHolder.createFromEmail("test1@gmail.com");
-        mDelegate.addAccount(accountHolder1);
-        final AccountHolder accountHolder2 = AccountHolder.createFromEmailAndFeatures(
-                "test2@gmail.com", AccountManagerFacadeImpl.CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS);
-        mDelegate.addAccount(accountHolder2);
-
-        Assert.assertFalse(mFacade.canOfferExtendedSyncPromos(accountHolder1.getAccount()).get());
-        Assert.assertTrue(mFacade.canOfferExtendedSyncPromos(accountHolder2.getAccount()).get());
-    }
-
-    @Test
     public void testGetAccessToken() throws AuthException {
         final Account account = AccountUtils.createAccountFromName("test@gmail.com");
         final AccessTokenData originalToken =
