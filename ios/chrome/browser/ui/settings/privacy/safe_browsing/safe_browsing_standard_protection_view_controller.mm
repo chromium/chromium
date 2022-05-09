@@ -55,6 +55,22 @@ const CGFloat kSafeBrowsingStandardProtectionContentInset = 16;
 
 @implementation SafeBrowsingStandardProtectionViewController
 
+- (instancetype)initWithStyle:(UITableViewStyle)style {
+  if (self = [super initWithStyle:style]) {
+    // Wraps view controller to properly show navigation bar, otherwise "Done"
+    // button won't show.
+    self.navigationController =
+        [[UINavigationController alloc] initWithRootViewController:self];
+    UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                             target:self
+                             action:@selector(dismiss)];
+    self.modalPresentationStyle = UIModalPresentationFormSheet;
+    self.navigationItem.rightBarButtonItem = doneButton;
+  }
+  return self;
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.tableView.accessibilityIdentifier =
@@ -69,6 +85,12 @@ const CGFloat kSafeBrowsingStandardProtectionContentInset = 16;
                           0)];
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+  [self.presentationDelegate
+      safeBrowsingStandardProtectionViewControllerDidRemove:self];
+  [super viewDidDisappear:animated];
+}
+
 #pragma mark - Private
 
 // Called when switch is toggled.
@@ -78,6 +100,11 @@ const CGFloat kSafeBrowsingStandardProtectionContentInset = 16;
   DCHECK(indexPath);
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   [self.modelDelegate toggleSwitchItem:item withValue:sender.isOn];
+}
+
+// Removes the view as a result of pressing "Done" button.
+- (void)dismiss {
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - UITableViewDataSource

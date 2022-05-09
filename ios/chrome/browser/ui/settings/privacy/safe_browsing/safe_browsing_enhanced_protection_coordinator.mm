@@ -62,8 +62,10 @@
       id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>>(
       self.browser->GetCommandDispatcher());
   DCHECK(self.baseNavigationController);
-  [self.baseNavigationController pushViewController:self.viewController
-                                           animated:YES];
+  [self.baseNavigationController
+      presentViewController:self.viewController.navigationController
+                   animated:YES
+                 completion:nil];
 }
 
 #pragma mark - SafeBrowsingEnhancedProtectionViewControllerPresentationDelegate

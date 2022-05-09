@@ -26,6 +26,9 @@
     : SettingsRootTableViewController <SafeBrowsingStandardProtectionConsumer,
                                        SettingsControllerProtocol>
 
+// Navigation controller.
+@property(nonatomic, strong) UINavigationController* navigationController;
+
 // Presentation delegate.
 @property(nonatomic, weak)
     id<SafeBrowsingStandardProtectionViewControllerPresentationDelegate>

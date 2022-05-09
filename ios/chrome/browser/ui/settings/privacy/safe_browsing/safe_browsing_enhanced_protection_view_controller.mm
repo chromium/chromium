@@ -41,6 +41,23 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 @implementation SafeBrowsingEnhancedProtectionViewController
 
+- (instancetype)initWithStyle:(UITableViewStyle)style {
+  if (self = [super initWithStyle:style]) {
+    // Wraps view controller to properly show navigation bar, otherwise "Done"
+    // button won't show.
+    self.navigationController =
+        [[UINavigationController alloc] initWithRootViewController:self];
+    UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                             target:self
+                             action:@selector(dismiss)];
+    self.navigationController.modalPresentationStyle =
+        UIModalPresentationFormSheet;
+    self.navigationItem.rightBarButtonItem = doneButton;
+  }
+  return self;
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.tableView.accessibilityIdentifier =
@@ -49,6 +66,19 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       l10n_util::GetNSString(IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_TITLE);
   self.styler.cellBackgroundColor = UIColor.clearColor;
   [self loadModel];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+  [self.presentationDelegate
+      safeBrowsingEnhancedProtectionViewControllerDidRemove:self];
+  [super viewDidDisappear:animated];
+}
+
+#pragma mark - Private
+
+// Removes the view as a result of pressing "Done" button.
+- (void)dismiss {
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - SettingsControllerProtocol
