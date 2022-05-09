@@ -24,7 +24,8 @@ AutofillDataModel::AutofillDataModel(const std::string& guid,
 AutofillDataModel::~AutofillDataModel() {}
 
 int AutofillDataModel::GetDaysSinceLastUse(base::Time current_time) const {
-  DCHECK(current_time >= use_date_);
+  if (current_time <= use_date_)
+    return 0;
 
   return (current_time - use_date_).InDays();
 }
