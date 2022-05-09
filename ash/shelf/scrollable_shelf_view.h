@@ -245,6 +245,7 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   void HandleAccessibleActionScrollToMakeVisible(ShelfButton* button) override;
   std::unique_ptr<ScopedActiveInkDropCount> CreateScopedActiveInkDropCount(
       const ShelfButton* sender) override;
+  void OnButtonWillBeRemoved() override;
 
   // ContextMenuController:
   void ShowContextMenuForViewImpl(views::View* source,
