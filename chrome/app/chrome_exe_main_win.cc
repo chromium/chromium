@@ -35,6 +35,7 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
+#include "chrome/app/delay_load_failure_hook_win.h"
 #include "chrome/app/main_dll_loader_win.h"
 #include "chrome/app/packed_resources_integrity.h"
 #include "chrome/browser/policy/policy_path_parser.h"
@@ -280,6 +281,8 @@ int main() {
   SetCwdForBrowserProcess();
   install_static::InitializeFromPrimaryModule();
   SignalInitializeCrashReporting();
+  if (IsBrowserProcess())
+    chrome::DisableDelayLoadFailureHooksForMainExecutable();
 #if defined(ARCH_CPU_32_BITS)
   // Intentionally crash if converting to a fiber failed.
   CHECK_EQ(fiber_status, FiberStatus::kSuccess);

@@ -167,6 +167,8 @@ if (!is_android && !is_mac) {
       sources += [
         "app/chrome_exe.rc",
         "app/chrome_exe_main_win.cc",
+        "app/delay_load_failure_hook_win.cc",
+        "app/delay_load_failure_hook_win.h",
         "app/main_dll_loader_win.cc",
         "app/main_dll_loader_win.h",
         "common/crash_keys.cc",
