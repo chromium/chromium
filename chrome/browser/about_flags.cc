@@ -6107,6 +6107,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceStartupSigninPromoName,
      flag_descriptions::kForceStartupSigninPromoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kForceStartupSigninPromo)},
+
+    {"tangible-sync", flag_descriptions::kTangibleSyncName,
+     flag_descriptions::kTangibleSyncDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kTangibleSync)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-use-improved-label-disambiguation",

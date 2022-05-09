@@ -48,6 +48,9 @@ const base::Feature kForceDisableExtendedSyncPromos{
 // Features to trigger the startup sign-in promo at boot.
 const base::Feature kForceStartupSigninPromo{"ForceStartupSigninPromo",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kTangibleSync{"TangibleSync",
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

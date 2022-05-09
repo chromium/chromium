@@ -5670,6 +5670,11 @@
       "expiry_milestone":102
   },
   {
+    "name": "tangible-sync",
+    "owners": [ "aliceywang", "chrome-signin-team" ],
+    "expiry_milestone":120
+  },
+  {
     "name": "terminal-dev",
     "owners": [ "joelhockey", "lxj@google.com", "//chrome/browser/ash/guest_os/OWNERS" ],
     // This flag is used by CrOS Terminal developers for testing SSH on devices

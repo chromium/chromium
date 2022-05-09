@@ -53136,6 +53136,7 @@ from previous Chrome versions.
   <int value="-1827599944" label="QueryTilesLocalOrdering:enabled"/>
   <int value="-1826649921" label="ContextualSuggestionsButton:disabled"/>
   <int value="-1826309726" label="ArcCustomTabsExperiment:disabled"/>
+  <int value="-1825184776" label="TangibleSync:disabled"/>
   <int value="-1824539611" label="U2fPermissionPrompt:disabled"/>
   <int value="-1823193038" label="QuietNotificationPrompts:disabled"/>
   <int value="-1823073826" label="TabGroupsSave:disabled"/>
@@ -58469,6 +58470,7 @@ from previous Chrome versions.
   <int value="1775730290" label="OmniboxKeywordSearchButton:enabled"/>
   <int value="1776136073" label="ExtensionsMenuAccessControl:enabled"/>
   <int value="1776163541" label="DesktopPWAsWebBundles:enabled"/>
+  <int value="1776221137" label="TangibleSync:enabled"/>
   <int value="1776475705" label="show-composited-layer-borders"/>
   <int value="1777059507" label="trust-autofill-server-name-types"/>
   <int value="1777241671" label="EnableAriaElementReflection:disabled"/>

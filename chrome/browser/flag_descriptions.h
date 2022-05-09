@@ -99,6 +99,9 @@ extern const char kDeferredFontShapingDescription[];
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
+extern const char kTangibleSyncName[];
+extern const char kTangibleSyncDescription[];
+
 extern const char kLauncherAppSortName[];
 extern const char kLauncherAppSortDescription[];
 
