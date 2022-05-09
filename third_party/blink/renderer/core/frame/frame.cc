@@ -362,7 +362,7 @@ bool Frame::IsInFencedFrameTree() const {
 
   switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
     case blink::features::FencedFramesImplementationType::kMPArch:
-      return GetPage()->IsMainFrameFencedFrameRoot();
+      return GetPage() && GetPage()->IsMainFrameFencedFrameRoot();
     case blink::features::FencedFramesImplementationType::kShadowDOM:
       return Tree().Top(FrameTreeBoundary::kFenced) !=
              Tree().Top(FrameTreeBoundary::kIgnoreFence);
