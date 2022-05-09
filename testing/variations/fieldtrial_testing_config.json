@@ -8738,21 +8738,6 @@
             ]
         }
     ],
-    "WebViewEmptyComponentLoaderPolicy": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebViewEmptyComponentLoaderPolicy"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewLegacyTlsSupport": [
         {
             "platforms": [
@@ -8793,6 +8778,24 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WebViewNativeContextMenuPhase2"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebViewOriginTrials": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledOnlyOriginTrials",
+                    "enable_features": [
+                        "WebViewOriginTrials"
+                    ],
+                    "disable_features": [
+                        "WebViewEmptyComponentLoaderPolicy"
                     ]
                 }
             ]
