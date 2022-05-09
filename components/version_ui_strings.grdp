@@ -64,7 +64,7 @@
     No such file or directory
   </message>
   <message name="IDS_VERSION_UI_VARIATIONS" desc="label for the variations list on the about:version page">
-    Variations
+    Active Variations
   </message>
   <message name="IDS_VERSION_UI_VARIATIONS_CMD" desc="label for the variations information in command-line format on the about:version page">
     Command-line variations
