@@ -512,6 +512,8 @@ class ChromiumDepGraph {
 
         // Build |fileUrl| by swapping '.pom' file extension with artifact file extension.
         String fileUrl = pomUrl[0..-4] + artifact.extension
+        // Check that the URL is correct explicitly here. Otherwise, we won't
+        // find out until 3pp bot runs.
         checkDownloadable(fileUrl)
 
         // Get rid of irrelevant indent that might be present in the XML file.
@@ -692,16 +694,18 @@ class ChromiumDepGraph {
     }
 
     private void checkDownloadable(String url) {
-        try {
-            InputStream inStream = new URL(url).openStream()
-            if (inStream) {
-                inStream.close()
-                logger.debug("Succeeded in resolving url $url")
-                return
-            }
-        } catch (any) {
-            throw new RuntimeException("Resolved POM but could not resolve $url")
-        }
+        // Use a background thread to avoid slowing down main thread.
+        // Saves about 80 seconds currently.
+        new Thread().start(() -> {
+            HttpURLConnection http = new URL(url).openConnection();
+            http.setRequestMethod("HEAD");
+            if (http.getResponseCode() != 200) {
+                new RuntimeException("Resolved POM but could not resolve $url").printStackTrace();
+                // Exception is logged and ignored if thrown, so explicitly exit.
+                System.exit(1);
+              }
+            http.disconnect();
+        });
     }
 
     // Checks if currentVersion is lower than versionInQuestion.
