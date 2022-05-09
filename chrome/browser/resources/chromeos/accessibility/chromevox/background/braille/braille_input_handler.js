@@ -19,39 +19,31 @@ export class BrailleInputHandler {
   constructor(translatorManager) {
     /**
      * Port of the connected IME if any.
-     * @type {Port}
-     * @private
+     * @private {Port}
      */
     this.imePort_ = null;
     /**
      * {code true} when the Braille IME is connected and has signaled that it is
      * active.
-     * @type {boolean}
-     * @private
+     * @private {boolean}
      */
     this.imeActive_ = false;
     /**
      * The input context of the current input field, as reported by the IME.
      * {@code null} if no input field has focus.
-     * @type {{contextID: number, type: string}?}
-     * @private
+     * @private {?{contextID: number, type: string}}
      */
     this.inputContext_ = null;
-    /**
-     * @type {!BrailleTranslatorManager}
-     * @private
-     */
+    /** @private {!BrailleTranslatorManager} */
     this.translatorManager_ = translatorManager;
     /**
      * Text that currently precedes the first selection end-point.
-     * @type {string}
-     * @private
+     * @private {string}
      */
     this.currentTextBefore_ = '';
     /**
      * Text that currently follows the last selection end-point.
-     * @type {string}
-     * @private
+     * @private {string}
      */
     this.currentTextAfter_ = '';
     /**
@@ -61,33 +53,21 @@ export class BrailleInputHandler {
      * braille dots command, but we'll receive the command in parallel.  To work
      * around the race, we store the cell entered until we can submit it to the
      * IME.
-     * @type {!Array<number>}
-     * @private
+     * @private {!Array<number>}
      */
     this.pendingCells_ = [];
-    /**
-     * @type {BrailleInputHandler.EntryState_}
-     * @private
-     */
+    /** @private {BrailleInputHandler.EntryState_} */
     this.entryState_ = null;
-    /**
-     * @type {ExtraCellsSpan}
-     * @private
-     */
+    /** @private {ExtraCellsSpan} */
     this.uncommittedCellsSpan_ = null;
-    /**
-     * @type {function()?}
-     * @private
-     */
+    /** @private {function()?} */
     this.uncommittedCellsChangedListener_ = null;
 
     this.translatorManager_.addChangeListener(
         this.commitAndClearEntryState_.bind(this));
   }
 
-  /**
-   * Starts to listen for connections from the Chrome OS braille IME.
-   */
+  /** Starts to listen for connections from the Chrome OS braille IME. */
   init() {
     chrome.runtime.onConnectExternal.addListener(this.onImeConnect_.bind(this));
   }
@@ -455,43 +435,36 @@ BrailleInputHandler.EntryState_ = class {
    * @param {!LibLouis.Translator} translator
    */
   constructor(inputHandler, translator) {
-    /**
-     * @type {BrailleInputHandler}
-     * @private
-     */
+    /** @private {BrailleInputHandler} */
     this.inputHandler_ = inputHandler;
     /**
      * The translator currently used for typing, if
      * {@code this.cells_.length > 0}.
-     * @type {!LibLouis.Translator}
-     * @private
+     * @private {!LibLouis.Translator}
      */
     this.translator_ = translator;
     /**
      * Braille cells that have been typed by the user so far.
-     * @type {!Array<number>}
-     * @private
+     * @private {!Array<number>}
      */
     this.cells_ = [];
     /**
      * Text resulting from translating {@code this.cells_}.
-     * @type {string}
-     * @private
+     * @private {string}
      */
     this.text_ = '';
     /**
      * List of strings that we expect to be set as preceding text of the
-     * selection.  This is populated when we send text changes to the IME so
+     * selection. This is populated when we send text changes to the IME so
      * that our own changes don't reset the pending cells.
-     * @type {!Array<string>}
-     * @private
+     * @private {!Array<string>}
      */
     this.pendingTextsBefore_ = [];
   }
 
   /**
    * @return {!LibLouis.Translator} The translator used by this entry
-   *     state.  This doesn't change for a given object.
+   *     state. This doesn't change for a given object.
    */
   get translator() {
     return this.translator_;
