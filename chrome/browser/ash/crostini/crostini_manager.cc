@@ -237,7 +237,12 @@ class CrostiniManager::CrostiniRestarter
   CrostiniManager::RestartId restart_id() const { return restart_id_; }
   const ContainerId& container_id() { return container_id_; }
   bool is_aborted() const { return !abort_callbacks_.empty(); }
-  bool DidSuccessfulFullRestart() { return did_successful_full_restart_; }
+  // If the restarter was not aborted early (either via Abort() or an option
+  // like start_vm_only), the result can be used to complete other restarters
+  // for the same ContainerId.
+  bool RestartAppliesToEquivalentRestarters() {
+    return restart_applies_to_equivalent_restarters_;
+  }
 
   // This is public so CallRestarterStartLxdContainerFinishedForTesting can call
   // it.
@@ -313,7 +318,7 @@ class CrostiniManager::CrostiniRestarter
       observer_list_;
   CrostiniManager::RestartId restart_id_;
   bool is_running_ = false;
-  bool did_successful_full_restart_ = false;
+  bool restart_applies_to_equivalent_restarters_ = true;
   mojom::InstallerState stage_ = mojom::InstallerState::kStart;
   CrostiniResult result_ = CrostiniResult::NEVER_FINISHED;
 
@@ -445,6 +450,7 @@ void CrostiniManager::CrostiniRestarter::Timeout(mojom::InstallerState state) {
 }
 
 void CrostiniManager::CrostiniRestarter::Abort(base::OnceClosure callback) {
+  restart_applies_to_equivalent_restarters_ = false;
   abort_callbacks_.push_back(std::move(callback));
   if (abort_callbacks_.size() > 1) {
     // The subsequent steps only need to be run once.
@@ -541,7 +547,6 @@ void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
                                           true);
   }
 
-  did_successful_full_restart_ = true;
   FinishRestart(result);
 }
 
@@ -696,6 +701,7 @@ void CrostiniManager::CrostiniRestarter::StartTerminaVmFinished(bool success) {
   }
 
   if (options_.start_vm_only) {
+    restart_applies_to_equivalent_restarters_ = false;
     FinishRestart(CrostiniResult::SUCCESS);
     return;
   }
@@ -730,8 +736,13 @@ void CrostiniManager::CrostiniRestarter::StartLxdFinished(
     return;
   }
   EmitMetricIfInIncorrectState(mojom::InstallerState::kStartLxd);
-  if (result != CrostiniResult::SUCCESS || options_.stop_after_lxd_available) {
+  if (result != CrostiniResult::SUCCESS) {
     FinishRestart(result);
+    return;
+  }
+  if (options_.stop_after_lxd_available) {
+    restart_applies_to_equivalent_restarters_ = false;
+    FinishRestart(CrostiniResult::SUCCESS);
     return;
   }
   StartStage(mojom::InstallerState::kCreateContainer);
@@ -3318,7 +3329,7 @@ void CrostiniManager::OnRemoveCrostini(CrostiniResult result) {
 
 void CrostiniManager::FinishRestart(CrostiniRestarter* restarter,
                                     CrostiniResult result) {
-  if (restarter->DidSuccessfulFullRestart()) {
+  if (restarter->RestartAppliesToEquivalentRestarters()) {
     // Invoke callbacks for all restarters of that container and then delete
     // the restarters.
     auto range =

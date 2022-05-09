@@ -1353,6 +1353,33 @@ TEST_F(CrostiniManagerRestartTest, MultiRestartAllowed) {
   ExpectRestarterUmaCount(3);
 }
 
+TEST_F(CrostiniManagerRestartTest, FailureWithMultipleRestarts) {
+  // When multiple restarters are running, a failure in the first should cause
+  // the others to fail immediately.
+
+  vm_tools::concierge::StartVmResponse response;
+  response.set_status(vm_tools::concierge::VmStatus::VM_STATUS_FAILURE);
+  fake_concierge_client_->set_start_vm_response(response);
+
+  auto barrier_closure = base::BarrierClosure(3, run_loop()->QuitClosure());
+  auto result_callback =
+      base::BindLambdaForTesting([barrier_closure](CrostiniResult result) {
+        EXPECT_EQ(CrostiniResult::VM_START_FAILED, result);
+        barrier_closure.Run();
+      });
+  CrostiniManager::RestartId id1, id2, id3;
+  id1 = crostini_manager()->RestartCrostini(container_id(), result_callback);
+  id2 = crostini_manager()->RestartCrostini(container_id(), result_callback);
+  id3 = crostini_manager()->RestartCrostini(container_id(), result_callback);
+
+  run_loop()->Run();
+
+  EXPECT_EQ(1, fake_concierge_client_->start_termina_vm_call_count());
+  EXPECT_FALSE(crostini_manager()->IsRestartPending(id1));
+  EXPECT_FALSE(crostini_manager()->IsRestartPending(id2));
+  EXPECT_FALSE(crostini_manager()->IsRestartPending(id3));
+}
+
 TEST_F(CrostiniManagerRestartTest, IsContainerRunningFalseIfVmNotStarted) {
   restart_id_ = crostini_manager()->RestartCrostini(
       container_id(),
