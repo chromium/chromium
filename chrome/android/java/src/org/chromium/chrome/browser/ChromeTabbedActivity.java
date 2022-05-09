@@ -349,6 +349,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      * Whether the StartSurface is shown when Chrome is launched.
      */
     private boolean mOverviewShownOnStart;
+    // Whether the activity is staring from a resumption. False if the activity is starting from
+    // onCreate(), a cold startup.
+    private boolean mFromResumption;
 
     private NextTabPolicySupplier mNextTabPolicySupplier;
 
@@ -983,6 +986,17 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void onResumeWithNative() {
+        // On warm startup, call setInitialOverviewState in onResume() instead of onStart(). This is
+        // because onResume() is guaranteed to called after onNewIntent() and thus have the updated
+        // Intent which is used by shouldShowOverviewPageOnStart(). See https://crbug.com/1321607.
+        if (mFromResumption) {
+            setInitialOverviewState();
+        } else {
+            // Set mFromResumption to be true to skip the call of setInitialOverviewState() in
+            // onStart() when the next time onStart() is called, since it is no longer a cold start.
+            mFromResumption = true;
+        }
+
         super.onResumeWithNative();
 
         IncognitoStartup.onResumeWithNative(
@@ -1035,9 +1049,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mMainIntentMetrics.logLaunchBehavior();
         super.onStartWithNative();
 
-        // Don't call setInitialOverviewState if we're waiting for the tab's creation or we risk
-        // showing a glimpse of the tab selector during start up.
-        if (!mPendingInitialTabCreation) {
+        // Don't call setInitialOverviewState if 1) we're waiting for the tab's creation or we risk
+        // showing a glimpse of the tab selector during start up. 2) on warm startup from an
+        // resumption. Defer it to onResumeWitheNative() since it needs to check the latest Intent
+        // which is only guaranteed to be updated onResume() if onNewIntent() is called.
+        if (!mPendingInitialTabCreation && !mFromResumption) {
             setInitialOverviewState();
         }
 
@@ -1810,7 +1826,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      * an LayoutManagerChrome object, add overview mode observer and so on.
      */
     private void prepareToShowStartPagePreNative() {
-        assert isInstantStartEnabled() && !hadWarmStart();
+        assert isInstantStartEnabled() && !hadWarmStart() && !mFromResumption;
         try (TraceEvent e =
                         TraceEvent.scoped("ChromeTabbedActivity.prepareToShowStartPagePreNative")) {
             setupCompositorContentPreNativeForPhone();
