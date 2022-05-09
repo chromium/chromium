@@ -15,7 +15,7 @@ TEST(StringUtilICUTest, HasGraphicCharacter) {
   EXPECT_TRUE(HasGraphicCharacter("A"));
   EXPECT_TRUE(HasGraphicCharacter("#"));
   EXPECT_TRUE(HasGraphicCharacter("3"));
-  EXPECT_TRUE(HasGraphicCharacter(u8"\u2764" /* Heart Symbol */));
+  EXPECT_TRUE(HasGraphicCharacter("\u2764" /* Heart Symbol */));
   EXPECT_TRUE(HasGraphicCharacter("   A"));
   EXPECT_TRUE(HasGraphicCharacter("A   "));
   EXPECT_TRUE(HasGraphicCharacter("   A   "));
@@ -36,7 +36,7 @@ TEST(StringUtilICUTest, HasGraphicCharacter) {
   EXPECT_FALSE(HasGraphicCharacter(std::string(3, '\0')));
   EXPECT_FALSE(HasGraphicCharacter("\n\t\v\b\r "));
   // Unicode Control characters.
-  EXPECT_FALSE(HasGraphicCharacter(u8"\u0000\u001f\u007f\u009f"));
+  EXPECT_FALSE(HasGraphicCharacter("\u0000\u001f\u007f\u009f"));
 }
 
 }  // namespace device
