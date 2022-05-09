@@ -5,6 +5,7 @@
 #include "chromeos/services/cros_healthd/private/cpp/data_collector.h"
 
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -13,10 +14,38 @@ namespace cros_healthd {
 namespace internal {
 namespace {
 
+class DataCollectorDelegateImpl : public DataCollector::Delegate {
+ public:
+  DataCollectorDelegateImpl();
+  DataCollectorDelegateImpl(const DataCollectorDelegateImpl&) = delete;
+  DataCollectorDelegateImpl& operator=(const DataCollectorDelegateImpl&) =
+      delete;
+
+ private:
+  ~DataCollectorDelegateImpl() override;
+
+  // DataCollector::Delegate override.
+  std::string GetTouchpadLibraryName() override;
+};
+
+DataCollectorDelegateImpl::DataCollectorDelegateImpl() = default;
+
+DataCollectorDelegateImpl::~DataCollectorDelegateImpl() = default;
+
+std::string DataCollectorDelegateImpl::GetTouchpadLibraryName() {
+  NOTIMPLEMENTED();
+  return "";
+}
+
+DataCollectorDelegateImpl* GetDataCollectorDelegate() {
+  static base::NoDestructor<DataCollectorDelegateImpl> delegate;
+  return delegate.get();
+}
+
 class DataCollectorImpl : public DataCollector,
                           public mojom::ChromiumDataCollector {
  public:
-  DataCollectorImpl();
+  explicit DataCollectorImpl(Delegate* delegate);
   DataCollectorImpl(const DataCollectorImpl&) = delete;
   DataCollectorImpl& operator=(const DataCollectorImpl&) = delete;
   ~DataCollectorImpl() override;
@@ -30,11 +59,14 @@ class DataCollectorImpl : public DataCollector,
   void GetTouchscreenDevices(GetTouchscreenDevicesCallback callback) override;
   void GetTouchpadLibraryName(GetTouchpadLibraryNameCallback callback) override;
 
+  // Pointer to the delegate.
+  Delegate* const delegate_;
   // The receiver set to keep the mojo receivers.
   mojo::ReceiverSet<mojom::ChromiumDataCollector> receiver_set_;
 };
 
-DataCollectorImpl::DataCollectorImpl() = default;
+DataCollectorImpl::DataCollectorImpl(Delegate* delegate)
+    : delegate_(delegate) {}
 
 DataCollectorImpl::~DataCollectorImpl() = default;
 
@@ -50,7 +82,7 @@ void DataCollectorImpl::GetTouchscreenDevices(
 
 void DataCollectorImpl::GetTouchpadLibraryName(
     GetTouchpadLibraryNameCallback callback) {
-  NOTIMPLEMENTED();
+  std::move(callback).Run(delegate_->GetTouchpadLibraryName());
 }
 
 // The pointer to the global instance.
@@ -70,7 +102,12 @@ DataCollector::~DataCollector() {
 
 // static
 void DataCollector::Initialize() {
-  new DataCollectorImpl();
+  new DataCollectorImpl(GetDataCollectorDelegate());
+}
+
+// static
+void DataCollector::InitializeWithDelegateForTesting(Delegate* delegate) {
+  new DataCollectorImpl(delegate);
 }
 
 // static

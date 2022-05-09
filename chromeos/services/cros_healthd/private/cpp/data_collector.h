@@ -14,11 +14,24 @@ namespace internal {
 
 class DataCollector {
  public:
+  // Delegate class to be replaced for testing.
+  class Delegate {
+   public:
+    Delegate() = default;
+    virtual ~Delegate() = default;
+
+    // Get the touchpad library name.
+    virtual std::string GetTouchpadLibraryName() = 0;
+  };
+
   DataCollector(const DataCollector&) = delete;
   DataCollector& operator=(const DataCollector&) = delete;
 
   // Initialize a global instance.
   static void Initialize();
+
+  // Initialize a global instance with delegate for testing.
+  static void InitializeWithDelegateForTesting(Delegate* delegate);
 
   // Shutdown the global instance.
   static void Shutdown();
