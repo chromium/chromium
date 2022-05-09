@@ -48,3 +48,62 @@ interface CrosHealthdInternalServiceFactory {
   GetNetworkDiagnosticsRoutines@1(pending_receiver<
       chromeos.network_diagnostics.mojom.NetworkDiagnosticsRoutines> receiver);
 };
+
+// Collects data from chromium to Healthd.
+//
+// NextMinVersion: 1, NextIndex: 2
+interface ChromiumDataCollector {
+  // Get touchscreen devices info.
+  GetTouchscreenDevices@0() => (array<TouchscreenDevice> devices);
+  // Get the touchpad library name.
+  GetTouchpadLibraryName@1() => (string library_name);
+};
+
+// Data of a touch screen device in chromium.
+//
+// NextMinVersion: 1, NextIndex: 4
+struct TouchscreenDevice {
+  // The input device of this touchscreen.
+  InputDevice input_device@0;
+  // Number of touch points this device supports (0 if unknown).
+  int32 touch_points@1;
+  // True if the specified touchscreen device is stylus capable.
+  bool has_stylus@2;
+  // True if there is a garage/dock switch associated with the stylus.
+  bool has_stylus_garage_switch@3;
+};
+
+// Data of a input device in chromium.
+//
+// NextMinVersion: 1, NextIndex: 5
+struct InputDevice {
+  // Name of the device.
+  string name@0;
+
+  // The connection type of the input device.
+  [Extensible]
+  enum ConnectionType {
+    // For mojo backward compatibility.
+    [Default] kUnmappedEnumValue,
+    // Internally connected input device.
+    kInternal,
+    // Known externally connected usb input device.
+    kUSB,
+    // Known externally connected bluetooth input device.
+    kBluetooth,
+    // Device that may or may not be an external device.
+    kUnknown,
+  };
+
+  ConnectionType connection_type@1;
+  // The physical location(port) associated with the input device. This is
+  // (supposed to be) stable between reboots and hotplugs. However this may not
+  // always be set and will change when the device is connected via a different
+  // port.
+  string physical_location@2;
+  // If the device is enabled, and whether events should be dispatched to UI.
+  bool is_enabled@3;
+  // The path to the input device in the sysfs filesystem, this should be a path
+  // under /sys directory.
+  string sysfs_path@4;
+};
