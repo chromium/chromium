@@ -55,7 +55,6 @@
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
-#import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_dependency_factory.h"
@@ -104,6 +103,7 @@
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
 #import "ios/chrome/browser/ui/side_swipe/swipe_view.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
+#import "ios/chrome/browser/ui/sync/utils/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/background_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/foreground_tab_animation_view.h"
@@ -270,7 +270,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                      OmniboxPopupPresenterDelegate,
                                      PreloadControllerDelegate,
                                      SideSwipeControllerDelegate,
-                                     SigninPresenter,
                                      TabStripPresentation,
                                      UIGestureRecognizerDelegate,
                                      URLLoadingObserver,
@@ -4045,11 +4044,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [[UpgradeCenter sharedInstance] addInfoBarToManager:infoBarManager
                                              forTabId:tabID];
 
-  // TODO(crbug.com/1272545): Factor this logic into a browser agent.
-  if (!ReSignInInfoBarDelegate::Create(self.browserState, webState,
-                                       self /* id<SigninPresenter> */)) {
-    DisplaySyncErrors(self.browserState, webState,
-                      self /* id<SyncPresenter> */);
+  if (!IsDisplaySyncErrorsRefactorEnabled()) {
+    if (!ReSignInInfoBarDelegate::Create(self.browserState, webState,
+                                         self /* id<SigninPresenter> */)) {
+      DisplaySyncErrors(self.browserState, webState,
+                        self /* id<SyncPresenter> */);
+    }
   }
 
   BOOL inBackground = !activating;

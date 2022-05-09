@@ -96,6 +96,8 @@
 #import "ios/chrome/browser/ui/safe_browsing/safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
+#import "ios/chrome/browser/ui/sync/sync_error_browser_agent.h"
+#import "ios/chrome/browser/ui/sync/utils/features.h"
 #import "ios/chrome/browser/ui/text_fragments/text_fragments_coordinator.h"
 #import "ios/chrome/browser/ui/text_zoom/text_zoom_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
@@ -1217,6 +1219,11 @@
   // The view controller should have been created.
   DCHECK(self.viewController);
 
+  if (IsDisplaySyncErrorsRefactorEnabled()) {
+    SyncErrorBrowserAgent::FromBrowser(self.browser)
+        ->SetUIProviders(self.viewController, self.viewController);
+  }
+
   WebStateDelegateBrowserAgent::FromBrowser(self.browser)
       ->SetUIProviders(self.contextMenuProvider,
                        self.formInputAccessoryCoordinator, self.viewController);
@@ -1235,12 +1242,16 @@
 
 // Uninstalls delegates for self.browser.
 - (void)uninstallDelegatesForBrowser {
-  WebStateDelegateBrowserAgent::FromBrowser(self.browser)->ClearUIProviders();
-
   UrlLoadingBrowserAgent* loadingAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
   if (loadingAgent) {
     loadingAgent->SetDelegate(nil);
+  }
+
+  WebStateDelegateBrowserAgent::FromBrowser(self.browser)->ClearUIProviders();
+
+  if (IsDisplaySyncErrorsRefactorEnabled()) {
+    SyncErrorBrowserAgent::FromBrowser(self.browser)->ClearUIProviders();
   }
 }
 

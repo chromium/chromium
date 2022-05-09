@@ -50,9 +50,9 @@ class SyncErrorBrowserAgent : public BrowserObserver,
   Browser* browser_ = nullptr;
 
   // Provider to a SignIn presenter
-  __weak id<SigninPresenter> signin_presenter_provider_ = nil;
+  __weak id<SigninPresenter> signin_presenter_provider_;
   // Provider to a Sync presenter
-  __weak id<SyncPresenter> sync_presenter_provider_ = nil;
+  __weak id<SyncPresenter> sync_presenter_provider_;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_SYNC_SYNC_ERROR_BROWSER_AGENT_H_

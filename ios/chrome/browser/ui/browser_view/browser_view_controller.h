@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
 #import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
@@ -38,6 +39,7 @@ class Browser;
                         LogoAnimationControllerOwnerOwner,
                         PageInfoPresentation,
                         PrintControllerDelegate,
+                        SigninPresenter,
                         SyncPresenter,
                         ThumbStripSupporting,
                         ToolbarCoordinatorDelegate,
