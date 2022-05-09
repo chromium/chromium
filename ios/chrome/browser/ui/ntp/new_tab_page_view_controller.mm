@@ -870,19 +870,15 @@
   }
 
   // Handles the sticky feed header.
-  if (IsWebChannelsEnabled()) {
+  if (IsWebChannelsEnabled() && self.feedHeaderViewController) {
     if ((!self.isScrolledIntoFeed || force) &&
         scrollPosition > [self offsetWhenScrolledIntoFeed]) {
       [self setIsScrolledIntoFeed:YES];
-      if (self.feedHeaderViewController) {
-        [self stickFeedHeaderToTop];
-      }
+      [self stickFeedHeaderToTop];
     } else if ((self.isScrolledIntoFeed || force) &&
                scrollPosition <= [self offsetWhenScrolledIntoFeed]) {
       [self setIsScrolledIntoFeed:NO];
-      if (IsWebChannelsEnabled()) {
-        [self setInitialFeedHeaderConstraints];
-      }
+      [self setInitialFeedHeaderConstraints];
     }
   }
 
