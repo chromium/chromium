@@ -297,12 +297,7 @@ TEST_F(ExtensionEventObserverTest, DeletedExtensionHostDoesNotBlockSuspend) {
   scoped_refptr<const extensions::Extension> app =
       CreateApp("DeletedExtensionHost", true);
 
-  // The easiest way to delete an extension host is to delete the Profile it is
-  // associated with so we create a new Profile here.
-  const char kProfileName[] = "DeletedExtensionHostProfile";
-  Profile* new_profile = profile_manager_->CreateTestingProfile(kProfileName);
-
-  extensions::ExtensionHost* host = CreateHostForApp(new_profile, app.get());
+  extensions::ExtensionHost* host = CreateHostForApp(profile_, app.get());
   ASSERT_TRUE(host);
   EXPECT_TRUE(test_api_->WillDelaySuspendForExtensionHost(host));
 
@@ -312,9 +307,8 @@ TEST_F(ExtensionEventObserverTest, DeletedExtensionHostDoesNotBlockSuspend) {
       host, extensions::api::gcm::OnMessage::kEventName, kPushId);
   extension_event_observer_->OnNetworkRequestStarted(host, kNetworkId);
 
-  // Now delete the Profile.  This has the side-effect of also deleting all the
-  // ExtensionHosts.
-  profile_manager_->DeleteTestingProfile(kProfileName);
+  // Now delete the ExtensionHosts.
+  host->Close();
 
   FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
