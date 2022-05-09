@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
-import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
@@ -121,7 +120,6 @@ public abstract class ToolbarLayout
      * @param tabController       The controller that handles interactions with the tab.
      * @param menuButtonCoordinator Coordinator for interacting with the MenuButton.
      * @param isProgressBarVisibleSupplier A supplier of whether the progress bar should be visible.
-     * @param historyDelegate Delegate used to display navigation history.
      * @param partnerHomepageEnabledSupplier A supplier of a boolean indicating that partner
      *        homepage is enabled.
      * @param offlineDownloader Triggers downloading an offline page.
@@ -130,7 +128,7 @@ public abstract class ToolbarLayout
     protected void initialize(ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController, MenuButtonCoordinator menuButtonCoordinator,
             ObservableSupplier<Boolean> isProgressBarVisibleSupplier,
-            HistoryDelegate historyDelegate, BooleanSupplier partnerHomepageEnabledSupplier,
+            BooleanSupplier partnerHomepageEnabledSupplier,
             OfflineDownloader offlineDownloader) {
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarTabController = tabController;

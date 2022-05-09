@@ -18,7 +18,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.DocumentMetadata;
 import org.chromium.blink.mojom.WebPage;
-import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
@@ -69,7 +68,6 @@ public class AppIndexingUtil {
 
                 @Override
                 public void didFirstVisuallyNonEmptyPaint(Tab tab) {
-                    reportPageView(tab);
                 }
             };
         }
@@ -118,16 +116,8 @@ public class AppIndexingUtil {
                 if (sCallbackForTesting != null) {
                     sCallbackForTesting.onResult(webpage);
                 }
-                if (webpage == null) return;
-                getAppIndexingReporter().reportWebPage(webpage);
             });
         }
-    }
-
-    @VisibleForTesting
-    void reportPageView(Tab tab) {
-        if (!isEnabledForTab(tab)) return;
-        getAppIndexingReporter().reportWebPageView(tab.getUrl().getSpec(), tab.getTitle());
     }
 
     @VisibleForTesting
@@ -162,11 +152,6 @@ public class AppIndexingUtil {
         entry.lastSeenTimeMs = getElapsedTime();
         entry.containedEntity = containedEntity;
         getPageCache().put(url, entry);
-    }
-
-    @VisibleForTesting
-    AppIndexingReporter getAppIndexingReporter() {
-        return AppIndexingReporter.getInstance();
     }
 
     @VisibleForTesting

@@ -2815,8 +2815,6 @@ static_library("browser") {
       "android/history_report/get_all_urls_from_history_task.h",
       "android/history_report/historic_visits_migration_task.cc",
       "android/history_report/historic_visits_migration_task.h",
-      "android/history_report/history_report_jni_bridge.cc",
-      "android/history_report/history_report_jni_bridge.h",
       "android/history_report/usage_report_util.cc",
       "android/history_report/usage_report_util.h",
       "android/history_report/usage_reports_buffer_backend.cc",

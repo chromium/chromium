@@ -117,7 +117,6 @@ import org.chromium.chrome.browser.notifications.permissions.NotificationPermiss
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionRationaleDialogController;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
-import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelperSupplier;
@@ -2562,23 +2561,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (!mUIWithNativeInitialized) {
             return super.onKeyDown(keyCode, event);
         }
-        // Detecting a long press of the back button via onLongPress is broken in Android N.
-        // To work around this, use a postDelayed, which is supported in all versions.
-        if (keyCode == KeyEvent.KEYCODE_BACK && !isTablet()
-                && !getFullscreenManager().getPersistentFullscreenMode()) {
-            if (mShowHistoryRunnable == null) mShowHistoryRunnable = this::showFullHistorySheet;
-            mHandler.postDelayed(mShowHistoryRunnable, ViewConfiguration.getLongPressTimeout());
-            return super.onKeyDown(keyCode, event);
-        }
         boolean isCurrentTabVisible = !mOverviewModeController.overviewVisible()
                 && (!isTablet() || getCurrentTabModel().getCount() != 0);
         return KeyboardShortcuts.onKeyDown(event, isCurrentTabVisible, true, getTabModelSelector(),
                        /* menuOrKeyboardActionController= */ this, getToolbarManager())
                 || super.onKeyDown(keyCode, event);
-    }
-
-    private void showFullHistorySheet() {
-        ((TabbedRootUiCoordinator) mRootUiCoordinator).showFullHistorySheet();
     }
 
     @Override

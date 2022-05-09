@@ -66,7 +66,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/compositor/layouts/StaticLayoutUnitTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutHelperTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/TabUsageTrackerTest.java",
-  "junit/src/org/chromium/chrome/browser/content_capture/ContentCaptureHistoryDeletionObserverTest.java",
   "junit/src/org/chromium/chrome/browser/contextmenu/ContextMenuCoordinatorTest.java",
   "junit/src/org/chromium/chrome/browser/contextmenu/ContextMenuHeaderMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchContextTest.java",

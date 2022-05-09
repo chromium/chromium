@@ -6,34 +6,16 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//chrome/browser/buildflags.gni")
 
-android_resources("java_resources") {
-  sources = [
-    "java/res/drawable/ic_journeys.xml",
-    "java/res/layout/history_cluster_visit.xml",
-    "java/res/layout/history_clusters_bottom_sheet_content.xml",
-    "java/res/layout/history_clusters_bottom_sheet_toolbar.xml",
-  ]
-  deps = [ "//components/browser_ui/widget/android:java_resources" ]
-}
-
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/history_clusters/ClusterVisit.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryCluster.java",
-    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersBottomSheetContent.java",
-    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersBottomSheetToolbarProperties.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersBridge.java",
-    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersCoordinator.java",
-    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersItemProperties.java",
-    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersItemView.java",
-    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersMediator.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersResult.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersTabHelper.java",
-    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersViewBinder.java",
   ]
 
   deps = [
-    ":java_resources",
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",

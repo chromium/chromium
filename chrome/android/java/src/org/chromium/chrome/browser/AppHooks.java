@@ -18,7 +18,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.directactions.DirectActionCoordinator;
 import org.chromium.chrome.browser.gsa.GSAHelper;
-import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.init.ChromeStartupDelegate;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
@@ -87,14 +86,6 @@ public abstract class AppHooks {
      */
     public AppDetailsDelegate createAppDetailsDelegate() {
         return null;
-    }
-
-    /**
-     * Creates a new {@link AppIndexingReporter}.
-     * @return the created {@link AppIndexingReporter}.
-     */
-    public AppIndexingReporter createAppIndexingReporter() {
-        return new AppIndexingReporter();
     }
 
     /**

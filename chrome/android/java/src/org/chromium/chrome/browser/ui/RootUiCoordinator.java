@@ -27,7 +27,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -55,7 +54,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
@@ -253,9 +251,6 @@ public class RootUiCoordinator
     private final IntentRequestTracker mIntentRequestTracker;
     private final OneshotSupplier<TabReparentingController> mTabReparentingControllerSupplier;
     private final boolean mInitializeUiWithIncognitoColors;
-    private HistoryClustersCoordinator mHistoryClustersCoordinator;
-    private final OneshotSupplierImpl<HistoryClustersCoordinator>
-            mHistoryClustersCoordinatorSupplier = new OneshotSupplierImpl<>();
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -684,16 +679,6 @@ public class RootUiCoordinator
             mIncognitoReauthController = new IncognitoReauthController(tabModelSelector,
                     mActivityLifecycleDispatcher, mLayoutStateProviderOneShotSupplier,
                     mProfileSupplier, incognitoReauthCoordinatorFactory);
-        }
-
-        new OneShotCallback<>(mProfileSupplier, this::initHistoryClustersCoordinator);
-    }
-
-    private void initHistoryClustersCoordinator(Profile profile) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_JOURNEYS)) {
-            mHistoryClustersCoordinator =
-                    new HistoryClustersCoordinator(profile, mActivity, mBottomSheetController);
-            mHistoryClustersCoordinatorSupplier.set(mHistoryClustersCoordinator);
         }
     }
 

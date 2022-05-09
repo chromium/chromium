@@ -1015,28 +1015,6 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 23): `clearAllContentCaptureData`"
-        errorLine1="            contentCaptureController.clearAllContentCaptureData();"
-        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/content_capture/ContentCaptureHistoryDeletionObserver.java"
-            line="30"
-            column="38"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 23): `clearContentCaptureDataForURLs`"
-        errorLine1="                    contentCaptureController.clearContentCaptureDataForURLs(deletedURLs);"
-        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/content_capture/ContentCaptureHistoryDeletionObserver.java"
-            line="35"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="NewApi"
         message="Call requires API level 29 (current min is 23): `notifyViewAppeared`"
         errorLine1="        return notifyViewAppeared(parentPlatformSessionData, data);"
         errorLine2="               ~~~~~~~~~~~~~~~~~~">

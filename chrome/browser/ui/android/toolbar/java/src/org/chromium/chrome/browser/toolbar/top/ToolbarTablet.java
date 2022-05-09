@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
-import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -108,7 +107,6 @@ public class ToolbarTablet
     private final int mStartPaddingWithoutButtons;
     private boolean mShouldAnimateButtonVisibilityChange;
     private AnimatorSet mButtonVisibilityAnimators;
-    private HistoryDelegate mHistoryDelegate;
     private OfflineDownloader mOfflineDownloader;
 
     /**
@@ -322,7 +320,7 @@ public class ToolbarTablet
         mNavigationPopup = new NavigationPopup(Profile.fromWebContents(tab.getWebContents()),
                 getContext(), tab.getWebContents().getNavigationController(),
                 isForward ? NavigationPopup.Type.TABLET_FORWARD : NavigationPopup.Type.TABLET_BACK,
-                getToolbarDataProvider()::getTab, mHistoryDelegate);
+                getToolbarDataProvider()::getTab);
         mNavigationPopup.show(anchorView);
     }
 
@@ -572,12 +570,11 @@ public class ToolbarTablet
     protected void initialize(ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController, MenuButtonCoordinator menuButtonCoordinator,
             ObservableSupplier<Boolean> isProgressBarVisibleSupplier,
-            HistoryDelegate historyDelegate, BooleanSupplier partnerHomepageEnabledSupplier,
+            BooleanSupplier partnerHomepageEnabledSupplier,
             OfflineDownloader offlineDownloader) {
         super.initialize(toolbarDataProvider, tabController, menuButtonCoordinator,
-                isProgressBarVisibleSupplier, historyDelegate, partnerHomepageEnabledSupplier,
+                isProgressBarVisibleSupplier, partnerHomepageEnabledSupplier,
                 offlineDownloader);
-        mHistoryDelegate = historyDelegate;
         mOfflineDownloader = offlineDownloader;
         menuButtonCoordinator.setVisibility(true);
     }

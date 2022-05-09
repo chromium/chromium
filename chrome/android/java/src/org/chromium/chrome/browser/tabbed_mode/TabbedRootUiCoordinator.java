@@ -50,8 +50,6 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.gesturenav.BackActionDelegate;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
-import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
-import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -98,7 +96,6 @@ import org.chromium.chrome.browser.webapps.AddToHomescreenMostVisitedTileClickOb
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -399,35 +396,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      */
     public ToolbarButtonInProductHelpController getToolbarButtonInProductHelpController() {
         return mToolbarButtonInProductHelpController;
-    }
-
-    /**
-     * Show navigation history sheet.
-     */
-    public void showFullHistorySheet() {
-        if (mActivity == null) return;
-        Tab tab = mActivityTabProvider.get();
-        if (tab == null || tab.getWebContents() == null || !tab.isUserInteractable()) return;
-        Profile profile = Profile.fromWebContents(tab.getWebContents());
-        mNavigationSheet = NavigationSheet.create(
-                mActivity.getWindow().getDecorView().findViewById(android.R.id.content), mActivity,
-                this::getBottomSheetController, profile);
-        mNavigationSheet.setDelegate(new TabbedSheetDelegate(tab, aTab -> {
-            HistoryManagerUtils.showHistoryManager(mActivity, aTab,
-                    mTabModelSelectorSupplier.hasValue()
-                            && mTabModelSelectorSupplier.get().isIncognitoSelected());
-        }, mActivity.getResources().getString(R.string.show_full_history)));
-        if (!mNavigationSheet.startAndExpand(/* forward= */ false, /* animate=*/true)) {
-            mNavigationSheet = null;
-        } else {
-            getBottomSheetController().addObserver(new EmptyBottomSheetObserver() {
-                @Override
-                public void onSheetClosed(int reason) {
-                    getBottomSheetController().removeObserver(this);
-                    mNavigationSheet = null;
-                }
-            });
-        }
     }
 
     @Override

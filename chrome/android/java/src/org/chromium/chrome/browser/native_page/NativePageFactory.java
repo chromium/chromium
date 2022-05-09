@@ -20,15 +20,11 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginSupplie
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesPage;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
-import org.chromium.chrome.browser.history.HistoryManagerUtils;
-import org.chromium.chrome.browser.history.HistoryPage;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.management.ManagementPage;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
-import org.chromium.chrome.browser.ntp.RecentTabsManager;
-import org.chromium.chrome.browser.ntp.RecentTabsPage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -173,24 +169,6 @@ public class NativePageFactory {
                     mTabModelSelector);
         }
 
-        protected NativePage buildHistoryPage(Tab tab) {
-            return new HistoryPage(mActivity,
-                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
-                    mSnackbarManagerSupplier.get(), mTabModelSelector.isIncognitoSelected(),
-                    mCurrentTabSupplier);
-        }
-
-        protected NativePage buildRecentTabsPage(Tab tab) {
-            RecentTabsManager recentTabsManager = new RecentTabsManager(tab, mTabModelSelector,
-                    Profile.fromWebContents(tab.getWebContents()), mActivity,
-                    ()
-                            -> HistoryManagerUtils.showHistoryManager(
-                                    mActivity, tab, mTabModelSelector.isIncognitoSelected()));
-            return new RecentTabsPage(mActivity, recentTabsManager,
-                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
-                    mBrowserControlsManager);
-        }
-
         protected NativePage buildLaunchpadPage(Tab tab) {
             return null;
         }
@@ -231,12 +209,6 @@ public class NativePageFactory {
                 break;
             case NativePageType.BOOKMARKS:
                 page = getBuilder().buildBookmarksPage(tab);
-                break;
-            case NativePageType.HISTORY:
-                page = getBuilder().buildHistoryPage(tab);
-                break;
-            case NativePageType.RECENT_TABS:
-                page = getBuilder().buildRecentTabsPage(tab);
                 break;
             case NativePageType.EXPLORE:
                 page = getBuilder().buildExploreSitesPage(tab);
