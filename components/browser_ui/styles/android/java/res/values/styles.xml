@@ -198,10 +198,10 @@
 
     <!-- Chip Text Styles -->
     <style name="TextAppearance.ChipText" parent="TextAppearance.TextAccentMediumThick">
-        <item name="android:textColor">@color/chip_text_color_secondary</item>
+        <item name="android:textColor">@color/chip_text_color_secondary_list</item>
     </style>
     <style name="TextAppearance.ChipHint" parent="TextAppearance.TextAccentMediumThick">
-        <item name="android:textColor">@color/chip_text_color_secondary</item>
+        <item name="android:textColor">@color/chip_text_color_secondary_list</item>
     </style>
 
     <!-- Other text styles -->
