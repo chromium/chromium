@@ -7388,6 +7388,39 @@
             ]
         }
     ],
+    "TabStripImprovements": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithMediumTabWidth_04212022",
+                    "params": {
+                        "min_tab_width": "156.0"
+                    },
+                    "enable_features": [
+                        "TabStripImprovements"
+                    ]
+                },
+                {
+                    "name": "Enabled_04212022",
+                    "enable_features": [
+                        "TabStripImprovements"
+                    ]
+                },
+                {
+                    "name": "EnabledWithShortTabWidth_04212022",
+                    "params": {
+                        "min_tab_width": "108.0"
+                    },
+                    "enable_features": [
+                        "TabStripImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabSwitchMetrics2": [
         {
             "platforms": [
