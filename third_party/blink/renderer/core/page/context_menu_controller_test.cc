@@ -57,10 +57,6 @@ class MockWebMediaPlayerForContextMenu : public EmptyWebMediaPlayer {
   MOCK_CONST_METHOD0(Duration, double());
   MOCK_CONST_METHOD0(HasAudio, bool());
   MOCK_CONST_METHOD0(HasVideo, bool());
-
-  SurfaceLayerMode GetVideoSurfaceLayerMode() const override {
-    return SurfaceLayerMode::kAlways;
-  }
 };
 
 class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {

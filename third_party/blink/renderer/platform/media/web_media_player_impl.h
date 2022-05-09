@@ -217,8 +217,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   WebMediaPlayer::NetworkState GetNetworkState() const override;
   WebMediaPlayer::ReadyState GetReadyState() const override;
 
-  WebMediaPlayer::SurfaceLayerMode GetVideoSurfaceLayerMode() const override;
-
   WebString GetErrorMessage() const override;
   bool DidLoadingProgress() override;
   bool WouldTaintOrigin() const override;

@@ -37,9 +37,6 @@ class EmptyWebMediaPlayer : public WebMediaPlayer,
   void SetPreservesPitch(bool) override {}
   void SetWasPlayedWithUserActivation(bool) override {}
   void OnRequestPictureInPicture() override {}
-  SurfaceLayerMode GetVideoSurfaceLayerMode() const override {
-    return SurfaceLayerMode::kNever;
-  }
   WebTimeRanges Buffered() const override;
   WebTimeRanges Seekable() const override;
   bool SetSinkId(const WebString& sink_id,

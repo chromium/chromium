@@ -995,11 +995,6 @@ WebMediaPlayer::ReadyState WebMediaPlayerMS::GetReadyState() const {
   return ready_state_;
 }
 
-WebMediaPlayer::SurfaceLayerMode WebMediaPlayerMS::GetVideoSurfaceLayerMode()
-    const {
-  return surface_layer_mode_;
-}
-
 WebString WebMediaPlayerMS::GetErrorMessage() const {
   return WebString::FromUTF8(media_log_->GetErrorMessage());
 }

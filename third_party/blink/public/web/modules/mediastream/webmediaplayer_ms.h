@@ -154,8 +154,6 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   WebMediaPlayer::NetworkState GetNetworkState() const override;
   WebMediaPlayer::ReadyState GetReadyState() const override;
 
-  WebMediaPlayer::SurfaceLayerMode GetVideoSurfaceLayerMode() const override;
-
   WebString GetErrorMessage() const override;
   bool DidLoadingProgress() override;
 

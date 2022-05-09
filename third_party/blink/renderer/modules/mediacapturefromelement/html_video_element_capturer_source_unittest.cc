@@ -72,9 +72,6 @@ class MockWebMediaPlayer : public WebMediaPlayer {
   bool IsEnded() const override { return false; }
   NetworkState GetNetworkState() const override { return kNetworkStateEmpty; }
   ReadyState GetReadyState() const override { return kReadyStateHaveNothing; }
-  SurfaceLayerMode GetVideoSurfaceLayerMode() const override {
-    return SurfaceLayerMode::kNever;
-  }
   WebString GetErrorMessage() const override { return WebString(); }
 
   bool DidLoadingProgress() override { return true; }
