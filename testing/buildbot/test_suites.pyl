@@ -4083,6 +4083,10 @@
       },
     },
 
+    'lacros_vm_gtests': {
+      'base_unittests': {},
+    },
+
     'layout_ng_gtests': {
       'webkit_unit_tests_ng': {
         'args': [
@@ -7442,6 +7446,11 @@
         'variants': [
           'LACROS_AMD64_GENERIC',
           'LACROS_EVE',
+        ]
+      },
+      'lacros_vm_gtests': {
+        'variants': [
+          'LACROS_AMD64_GENERIC',
         ]
       },
     },
