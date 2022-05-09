@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 310 tests; 204 PASS, 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 311 tests; 208 PASS, 103 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -38,7 +38,7 @@ PASS inbound-rtp's nackCount
 PASS inbound-rtp's firCount
 PASS inbound-rtp's pliCount
 FAIL inbound-rtp's sliCount assert_true: Is sliCount present expected true got false
-FAIL inbound-rtp's totalProcessingDelay assert_true: Is totalProcessingDelay present expected true got false
+PASS inbound-rtp's totalProcessingDelay
 FAIL inbound-rtp's estimatedPlayoutTimestamp assert_true: Is estimatedPlayoutTimestamp present expected true got false
 PASS inbound-rtp's jitterBufferDelay
 PASS inbound-rtp's jitterBufferEmittedCount
@@ -231,8 +231,8 @@ PASS transport's packetsReceived
 PASS transport's bytesSent
 PASS transport's bytesReceived
 FAIL transport's rtcpTransportStatsId assert_true: Is rtcpTransportStatsId present expected true got false
-FAIL transport's iceRole assert_true: Is iceRole present expected true got false
-FAIL transport's iceLocalUsernameFragment assert_true: Is iceLocalUsernameFragment present expected true got false
+PASS transport's iceRole
+PASS transport's iceLocalUsernameFragment
 PASS transport's dtlsState
 FAIL transport's iceState assert_true: Is iceState present expected true got false
 PASS transport's selectedCandidatePairId
@@ -240,6 +240,7 @@ PASS transport's localCertificateId
 PASS transport's remoteCertificateId
 PASS transport's tlsVersion
 PASS transport's dtlsCipher
+PASS transport's dtlsRole
 PASS transport's srtpCipher
 FAIL transport's tlsGroup assert_true: Is tlsGroup present expected true got false
 PASS transport's selectedCandidatePairChanges

@@ -6891,9 +6891,6 @@ crbug.com/1318456 [ Win ] virtual/prerender/external/wpt/speculation-rules/prere
 # Sheriff 2022-04-25
 crbug.com/1319320 rootscroller/root-scroller-apply-filter-to-parent.html [ Failure Pass ]
 
-# Temporarily allow pass or failure while new WebRTC stats are added and rolled into Chromium.
-crbug.com/webrtc/13984 external/wpt/webrtc-stats/supported-stats.html [ Failure Pass ]
-
 # Sheriff 2022-04-25
 crbug.com/1319808 virtual/wbn-from-network/external/wpt/web-bundle/subresource-loading/script-reuse-web-bundle-resource.https.tentative.html [ Skip ]
 
