@@ -980,11 +980,7 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       GetContentClient()->browser()->GetFirstPartySetsDirectory(),
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          network::switches::kUseFirstPartySet),
-      base::BindOnce([](const base::flat_map<net::SchemefulSite,
-                                             net::SchemefulSite>& sets) {
-        content::GetNetworkService()->SetFirstPartySets(sets);
-      }));
+          network::switches::kUseFirstPartySet));
 
   variations::MaybeScheduleFakeCrash();
 

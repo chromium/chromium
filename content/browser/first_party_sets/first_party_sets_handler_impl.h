@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
@@ -36,7 +37,7 @@ namespace content {
 class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
  public:
   using FlattenedSets = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
-  using SetsReadyOnceCallback = base::OnceCallback<void(const FlattenedSets&)>;
+  using SetsReadyOnceCallback = base::OnceCallback<void(FlattenedSets)>;
 
   static FirstPartySetsHandlerImpl* GetInstance();
 
@@ -47,24 +48,25 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
       delete;
 
   // This method reads the persisted First-Party Sets from the file under
-  // `user_data_dir`, sets the First-Party Set that was provided via the
-  // flag/switch, and sets a callback that should eventually be invoked with the
-  // current First-Party Sets data.
+  // `user_data_dir` and sets the First-Party Set that was provided via the
+  // flag/switch.
   //
   // If First-Party Sets is disabled, then this method still needs to read the
   // persisted sets, since we may still need to clear data from a previous
   // invocation of Chromium which had First-Party Sets enabled.
   //
-  // If First-Party Sets is enabled, `on_sets_ready` must not be null.
-  //
   // Must be called exactly once.
-  void Init(const base::FilePath& user_data_dir,
-            const std::string& flag_value,
-            SetsReadyOnceCallback on_sets_ready);
+  void Init(const base::FilePath& user_data_dir, const std::string& flag_value);
 
-  // Returns the current First-Party Sets data, if the data is ready and the
-  // feature is enabled.
-  absl::optional<FlattenedSets> GetSetsIfEnabledAndReady() const;
+  // Returns the current First-Party Sets data. Returns the data synchronously
+  // via an optional if it's available, or via an asynchronously-invoked
+  // callback if the data is not ready yet.
+  //
+  // `callback` must not be null.
+  //
+  // Must not be called if First-Party Sets is disabled.
+  [[nodiscard]] absl::optional<FlattenedSets> GetSets(
+      SetsReadyOnceCallback callback);
 
   // FirstPartySetsHandler
   bool IsEnabled() const override;
@@ -110,6 +112,9 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // Sets the current First-Party Sets data. Must be called exactly once.
   void SetCompleteSets(FlattenedSets sets);
 
+  // Invokes any pending queries.
+  void InvokePendingQueries();
+
   // Does the following:
   // 1) computes the diff between the `sets_` and the parsed
   // `raw_persisted_sets_`;
@@ -119,11 +124,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   //
   // TODO(shuuran@chromium.org): Implement the code to clear site state.
   void ClearSiteDataOnChangedSets() const;
-
-  // Returns true if:
-  // * First-Party Sets are enabled;
-  // * `sets_` is ready to be used.
-  bool IsEnabledAndReady() const;
 
   // Whether Init has been called already or not.
   bool initialized_ = false;
@@ -149,7 +149,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
 
   // We use a OnceCallback to ensure we only pass along the sets once
   // during Chrome's lifetime (modulo reconfiguring the network service).
-  SetsReadyOnceCallback on_sets_ready_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::circular_deque<SetsReadyOnceCallback> on_sets_ready_callbacks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<FirstPartySetsLoader> sets_loader_
       GUARDED_BY_CONTEXT(sequence_checker_);

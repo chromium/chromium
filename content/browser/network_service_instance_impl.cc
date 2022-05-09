@@ -582,11 +582,18 @@ network::mojom::NetworkService* GetNetworkService() {
         }
       }
 
-      if (absl::optional<FirstPartySetsHandlerImpl::FlattenedSets> sets =
-              FirstPartySetsHandlerImpl::GetInstance()
-                  ->GetSetsIfEnabledAndReady();
-          sets.has_value()) {
-        g_network_service_remote->get()->SetFirstPartySets(*sets);
+      if (FirstPartySetsHandlerImpl::GetInstance()->IsEnabled()) {
+        if (absl::optional<FirstPartySetsHandlerImpl::FlattenedSets> sets =
+                FirstPartySetsHandlerImpl::GetInstance()->GetSets(
+                    base::BindOnce(
+                        [](FirstPartySetsHandlerImpl::FlattenedSets sets) {
+                          GetNetworkService()->SetFirstPartySets(
+                              std::move(sets));
+                        }));
+            sets.has_value()) {
+          g_network_service_remote->get()->SetFirstPartySets(
+              std::move(sets.value()));
+        }
       }
 
       GetContentClient()->browser()->OnNetworkServiceCreated(

@@ -108,25 +108,27 @@ FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl(
 FirstPartySetsHandlerImpl::~FirstPartySetsHandlerImpl() = default;
 
 absl::optional<FirstPartySetsHandlerImpl::FlattenedSets>
-FirstPartySetsHandlerImpl::GetSetsIfEnabledAndReady() const {
+FirstPartySetsHandlerImpl::GetSets(SetsReadyOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return IsEnabledAndReady() ? sets_ : absl::nullopt;
+  DCHECK(IsEnabled());
+  DCHECK(!callback.is_null());
+  if (sets_.has_value())
+    return sets_;
+
+  on_sets_ready_callbacks_.push_back(std::move(callback));
+  return absl::nullopt;
 }
 
 void FirstPartySetsHandlerImpl::Init(const base::FilePath& user_data_dir,
-                                     const std::string& flag_value,
-                                     SetsReadyOnceCallback on_sets_ready) {
+                                     const std::string& flag_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!initialized_);
   DCHECK(persisted_sets_path_.empty());
-  DCHECK(on_sets_ready_.is_null());
 
   initialized_ = true;
-  on_sets_ready_ = std::move(on_sets_ready);
   SetPersistedSets(user_data_dir);
 
   if (IsEnabled()) {
-    DCHECK(!on_sets_ready_.is_null());
     sets_loader_->SetManuallySpecifiedSet(flag_value);
     if (!embedder_will_provide_public_sets_) {
       sets_loader_->SetComponentSets(base::File());
@@ -164,7 +166,7 @@ void FirstPartySetsHandlerImpl::ResetForTesting() {
                      base::Unretained(this)),
       IsEnabled() ? GetContentClient()->browser()->GetFirstPartySetsOverrides()
                   : base::Value::Dict());
-  on_sets_ready_.Reset();
+  on_sets_ready_callbacks_.clear();
   persisted_sets_path_ = base::FilePath();
   sets_ = absl::nullopt;
   raw_persisted_sets_ = absl::nullopt;
@@ -208,8 +210,7 @@ void FirstPartySetsHandlerImpl::OnReadPersistedSetsFile(
     ClearSiteDataOnChangedSets();
 
     if (IsEnabled()) {
-      DCHECK(!on_sets_ready_.is_null());
-      std::move(on_sets_ready_).Run(sets_.value());
+      InvokePendingQueries();
     }
   }
 }
@@ -224,10 +225,20 @@ void FirstPartySetsHandlerImpl::SetCompleteSets(
     ClearSiteDataOnChangedSets();
 
     if (IsEnabled()) {
-      DCHECK(!on_sets_ready_.is_null());
-      std::move(on_sets_ready_).Run(sets_.value());
+      InvokePendingQueries();
     }
   }
+}
+
+void FirstPartySetsHandlerImpl::InvokePendingQueries() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  while (!on_sets_ready_callbacks_.empty()) {
+    SetsReadyOnceCallback callback =
+        std::move(on_sets_ready_callbacks_.front());
+    on_sets_ready_callbacks_.pop_front();
+    std::move(callback).Run(sets_.value());
+  }
+  on_sets_ready_callbacks_.shrink_to_fit();
 }
 
 // static
@@ -279,11 +290,6 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSets() const {
             &MaybeWriteSetsToDisk, persisted_sets_path_,
             FirstPartySetParser::SerializeFirstPartySets(sets_.value())));
   }
-}
-
-bool FirstPartySetsHandlerImpl::IsEnabledAndReady() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return IsEnabled() && sets_.has_value();
 }
 
 }  // namespace content

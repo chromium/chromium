@@ -41,6 +41,13 @@ FirstPartySetsHandlerImpl::FlattenedSets ParseSetsFromStream(
   return FirstPartySetParser::ParseSetsFromStream(stream);
 }
 
+FirstPartySetsHandlerImpl::FlattenedSets GetSetsAndWait() {
+  base::test::TestFuture<FirstPartySetsHandlerImpl::FlattenedSets> future;
+  absl::optional<FirstPartySetsHandlerImpl::FlattenedSets> result =
+      FirstPartySetsHandlerImpl::GetInstance()->GetSets(future.GetCallback());
+  return result.has_value() ? result.value() : future.Get();
+}
+
 TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_SitesJoined) {
   FirstPartySetsHandlerImpl::FlattenedSets old_sets = {
       {net::SchemefulSite(GURL("https://example.test")),
@@ -359,13 +366,8 @@ class FirstPartySetsHandlerImplDisabledTest
 
 TEST_F(FirstPartySetsHandlerImplDisabledTest, IgnoresValid) {
   // Persisted sets are expected to be loaded with the provided path.
-  FirstPartySetsHandlerImpl::GetInstance()->Init(
-      scoped_dir_.GetPath(),
-      /*flag_value=*/"",
-      base::BindLambdaForTesting(
-          [](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
-            FAIL();  // Should not be called.
-          }));
+  FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
+                                                 /*flag_value=*/"");
 
   env().RunUntilIdle();
 
@@ -375,23 +377,6 @@ TEST_F(FirstPartySetsHandlerImplDisabledTest, IgnoresValid) {
   std::string got;
   ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &got));
   EXPECT_EQ(got, "{}");
-}
-
-TEST_F(FirstPartySetsHandlerImplDisabledTest,
-       GetSetsIfEnabledAndReady_AfterSetsReady) {
-  ASSERT_TRUE(base::WriteFile(persisted_sets_path_, "{}"));
-
-  FirstPartySetsHandlerImpl::GetInstance()->Init(
-      scoped_dir_.GetPath(),
-      /*flag_value=*/"",
-      base::BindLambdaForTesting(
-          [](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
-            FAIL();  // Should not be called.
-          }));
-
-  EXPECT_EQ(
-      FirstPartySetsHandlerImpl::GetInstance()->GetSetsIfEnabledAndReady(),
-      absl::nullopt);
 }
 
 class FirstPartySetsHandlerImplEnabledTest
@@ -404,35 +389,15 @@ class FirstPartySetsHandlerImplEnabledTest
 TEST_F(FirstPartySetsHandlerImplEnabledTest, EmptyPersistedSetsDir) {
   // Empty `user_data_dir` will fail to load persisted sets, but that will not
   // prevent `on_sets_ready` from being invoked.
-  base::test::TestFuture<const FirstPartySetsHandlerImpl::FlattenedSets&>
-      future;
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       /*user_data_dir=*/{},
-      /*flag_value=*/"https://example.test,https://member1.test",
-      future.GetCallback());
+      /*flag_value=*/"https://example.test,https://member1.test");
 
-  EXPECT_THAT(future.Get(),
+  EXPECT_THAT(GetSetsAndWait(),
               UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
                                         SerializesTo("https://example.test")),
                                    Pair(SerializesTo("https://member1.test"),
                                         SerializesTo("https://example.test"))));
-}
-
-TEST_F(FirstPartySetsHandlerImplEnabledTest, PublicFirstPartySetsNotReady) {
-  FirstPartySetsHandlerImpl::GetInstance()
-      ->SetEmbedderWillProvidePublicSetsForTesting(true);
-  ASSERT_TRUE(base::WriteFile(persisted_sets_path_, "{}"));
-
-  // Persisted sets are expected to be loaded with the provided path.
-  FirstPartySetsHandlerImpl::GetInstance()->Init(
-      scoped_dir_.GetPath(),
-      /*flag_value=*/"https://example.test,https://member1.test",
-      base::BindLambdaForTesting(
-          [](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
-            FAIL();  // Should not be called.
-          }));
-
-  env().RunUntilIdle();
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
@@ -454,13 +419,10 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
            SerializesTo("https://foo.test")));
 
   // Persisted sets are expected to be loaded with the provided path.
-  base::test::TestFuture<const FirstPartySetsHandlerImpl::FlattenedSets&>
-      future;
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       scoped_dir_.GetPath(),
-      /*flag_value=*/"https://example.test,https://member1.test",
-      future.GetCallback());
-  EXPECT_THAT(future.Get(), expected_sets);
+      /*flag_value=*/"https://example.test,https://member1.test");
+  EXPECT_THAT(GetSetsAndWait(), expected_sets);
 
   env().RunUntilIdle();
 
@@ -490,13 +452,10 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, Successful_PersistedSetsEmpty) {
            SerializesTo("https://foo.test")));
 
   // Persisted sets are expected to be loaded with the provided path.
-  base::test::TestFuture<const FirstPartySetsHandlerImpl::FlattenedSets&>
-      future;
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       scoped_dir_.GetPath(),
-      /*flag_value=*/"https://example.test,https://member1.test",
-      future.GetCallback());
-  EXPECT_THAT(future.Get(), expected_sets);
+      /*flag_value=*/"https://example.test,https://member1.test");
+  EXPECT_THAT(GetSetsAndWait(), expected_sets);
 
   env().RunUntilIdle();
 
@@ -524,12 +483,9 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
                                 SerializesTo("https://example.test")));
 
   // Persisted sets are expected to be loaded with the provided path.
-  base::test::TestFuture<const FirstPartySetsHandlerImpl::FlattenedSets&>
-      future;
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
-                                                 /*flag_value=*/"",
-                                                 future.GetCallback());
-  EXPECT_THAT(future.Get(), expected_sets);
+                                                 /*flag_value=*/"");
+  EXPECT_THAT(GetSetsAndWait(), expected_sets);
 
   env().RunUntilIdle();
 
@@ -539,7 +495,9 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
               expected_sets);
 
   EXPECT_THAT(
-      FirstPartySetsHandlerImpl::GetInstance()->GetSetsIfEnabledAndReady(),
+      FirstPartySetsHandlerImpl::GetInstance()->GetSets(
+          base::BindLambdaForTesting(
+              [](FirstPartySetsHandlerImpl::FlattenedSets) { FAIL(); })),
       testing::Optional(expected_sets));
 }
 
@@ -549,17 +507,15 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       ->SetEmbedderWillProvidePublicSetsForTesting(true);
   ASSERT_TRUE(base::WriteFile(persisted_sets_path_, "{}"));
 
-  // Call GetSetsIfEnabledAndReady before the sets are ready.
+  // Call GetSets before the sets are ready, and before Init has been called.
+  base::test::TestFuture<FirstPartySetsHandlerImpl::FlattenedSets> future;
   EXPECT_EQ(
-      FirstPartySetsHandlerImpl::GetInstance()->GetSetsIfEnabledAndReady(),
+      FirstPartySetsHandlerImpl::GetInstance()->GetSets(future.GetCallback()),
       absl::nullopt);
 
   // Persisted sets are expected to be loaded with the provided path.
-  base::test::TestFuture<const FirstPartySetsHandlerImpl::FlattenedSets&>
-      future;
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
-                                                 /*flag_value=*/"",
-                                                 future.GetCallback());
+                                                 /*flag_value=*/"");
 
   const std::string input = R"({"owner": "https://example.test", )"
                             R"("members": ["https://member.test"]})";
@@ -573,7 +529,9 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
                                         SerializesTo("https://example.test"))));
 
   EXPECT_THAT(
-      FirstPartySetsHandlerImpl::GetInstance()->GetSetsIfEnabledAndReady(),
+      FirstPartySetsHandlerImpl::GetInstance()->GetSets(
+          base::BindLambdaForTesting(
+              [](FirstPartySetsHandlerImpl::FlattenedSets) { FAIL(); })),
       testing::Optional(
           UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
                                     SerializesTo("https://example.test")),
