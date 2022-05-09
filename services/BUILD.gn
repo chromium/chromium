@@ -85,15 +85,12 @@ test("services_unittests") {
   }
 
   if (is_fuchsia) {
-    # Enable the test HTTP server for use by NetworkServiceTestWithService.*
-    use_test_server = true
-    use_cfv2 = false
-    additional_manifest_fragments = [
-      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
-      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+    use_cfv1 = false
 
-      "//build/config/fuchsia/test/network_capabilities.test-cmx",
-    ]
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/network.shard.test-cml" ]
   }
 }
 
