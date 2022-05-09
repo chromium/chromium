@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_link.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
@@ -560,6 +561,13 @@ void NGTableSectionPainter::PaintBoxDecorationBackground(
         paint_info, paint_rect, fragment_.Style(), PhysicalBoxSides(),
         !box_decoration_data.ShouldPaintBackground());
   }
+
+  // If we are fragmented - determine the total part size, relative to the
+  // current fragment.
+  PhysicalRect part_rect = paint_rect;
+  if (!fragment_.IsOnlyForNode())
+    part_rect.offset -= OffsetInStitchedFragments(fragment_, &part_rect.size);
+
   for (const NGLink& child : fragment_.Children()) {
     const auto& child_fragment = *child;
     DCHECK(child_fragment.IsBox());
@@ -567,7 +575,7 @@ void NGTableSectionPainter::PaintBoxDecorationBackground(
       continue;
     NGTableRowPainter(To<NGPhysicalBoxFragment>(child_fragment))
         .PaintTablePartBackgroundIntoCells(
-            paint_info, *To<LayoutBox>(fragment_.GetLayoutObject()), paint_rect,
+            paint_info, *To<LayoutBox>(fragment_.GetLayoutObject()), part_rect,
             paint_rect.offset + child.offset);
   }
   if (box_decoration_data.ShouldPaintShadow()) {
@@ -601,9 +609,15 @@ void NGTableRowPainter::PaintBoxDecorationBackground(
         !box_decoration_data.ShouldPaintBackground());
   }
 
+  // If we are fragmented - determine the total part size, relative to the
+  // current fragment.
+  PhysicalRect part_rect = paint_rect;
+  if (!fragment_.IsOnlyForNode())
+    part_rect.offset -= OffsetInStitchedFragments(fragment_, &part_rect.size);
+
   PaintTablePartBackgroundIntoCells(paint_info,
                                     *To<LayoutBox>(fragment_.GetLayoutObject()),
-                                    paint_rect, paint_rect.offset);
+                                    part_rect, paint_rect.offset);
   if (box_decoration_data.ShouldPaintShadow()) {
     BoxPainterBase::PaintInsetBoxShadowWithInnerRect(paint_info, paint_rect,
                                                      fragment_.Style());
