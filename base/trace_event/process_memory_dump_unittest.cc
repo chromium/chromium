@@ -529,6 +529,21 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
     ASSERT_EQ(res1.value(), kDirtyMemorySize);
   }
 
+  // Allocate a shared memory segment but map at a non-page-aligned offset.
+  {
+    const size_t kDirtyMemorySize = 5 * page_size;
+    auto region =
+        base::WritableSharedMemoryRegion::Create(kDirtyMemorySize + page_size);
+    base::WritableSharedMemoryMapping mapping =
+        region.MapAt(page_size / 2, kDirtyMemorySize);
+    memset(mapping.memory(), 0, kDirtyMemorySize);
+    absl::optional<size_t> res1 =
+        ProcessMemoryDump::CountResidentBytesInSharedMemory(
+            mapping.memory(), mapping.mapped_size());
+    ASSERT_TRUE(res1.has_value());
+    ASSERT_EQ(res1.value(), kDirtyMemorySize + page_size);
+  }
+
   // Allocate a large memory segment (> 8Mib).
   {
     const size_t kVeryLargeMemorySize = 15 * 1024 * 1024;

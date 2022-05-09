@@ -80,10 +80,16 @@ class BASE_EXPORT UnsafeSharedMemoryRegion {
   // the region can be provided using the optional |mapper| parameter.
   WritableSharedMemoryMapping Map(SharedMemoryMapper* mapper = nullptr) const;
 
-  // Same as above, but maps only |size| bytes of the shared memory region
-  // starting with the given |offset|. |offset| must be aligned to value of
-  // |SysInfo::VMAllocationGranularity()|. Returns an invalid mapping if
-  // requested bytes are out of the region limits.
+  // Similar to `Map()`, but maps only `size` bytes of the shared memory block
+  // at byte `offset`. Returns an invalid mapping if requested bytes are out of
+  // the region limits.
+  //
+  // `offset` does not need to be aligned; if `offset` is not a multiple of
+  // `subtle::PlatformSharedMemoryRegion::kMapMinimumAlignment`, then the
+  // returned mapping will not respect alignment either. Internally, `offset`
+  // and `size` are still first adjusted to respect alignment when mapping in
+  // the shared memory region, but the returned mapping will be "unadjusted" to
+  // match the exact `offset` and `size` requested.
   WritableSharedMemoryMapping MapAt(uint64_t offset,
                                     size_t size,
                                     SharedMemoryMapper* mapper = nullptr) const;
