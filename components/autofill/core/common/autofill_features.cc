@@ -490,7 +490,7 @@ const base::Feature kAutofillUseNewSectioningMethod{
 // DOM traversals.
 // TODO(crbug/1201875): Remove once experiment is finished.
 const base::Feature kAutofillUseUnassociatedListedElements{
-    "AutofillUseUnassociatedListedElements", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillUseUnassociatedListedElements", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Introduces various visual improvements of the Autofill suggestion UI that is
 // also used for the password manager.
