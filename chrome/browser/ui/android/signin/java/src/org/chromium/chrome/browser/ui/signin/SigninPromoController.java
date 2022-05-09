@@ -120,7 +120,6 @@ public class SigninPromoController {
     // TODO(https://crbug.com/1254399): Remove these fields related to impressions.
     private final @Nullable String mImpressionsTilDismissHistogramName;
     private final @Nullable String mImpressionsTilSigninButtonsHistogramName;
-    private final @Nullable String mImpressionsTilXButtonHistogramName;
     private final @StringRes int mDescriptionStringId;
     private final @StringRes int mDescriptionStringIdNoAccount;
     private final SyncConsentActivityLauncher mSyncConsentActivityLauncher;
@@ -300,8 +299,6 @@ public class SigninPromoController {
                         "MobileSignInPromo.BookmarkManager.ImpressionsTilDismiss";
                 mImpressionsTilSigninButtonsHistogramName =
                         "MobileSignInPromo.BookmarkManager.ImpressionsTilSigninButtons";
-                mImpressionsTilXButtonHistogramName =
-                        "MobileSignInPromo.BookmarkManager.ImpressionsTilXButton";
                 mDescriptionStringId = R.string.signin_promo_description_bookmarks;
                 mDescriptionStringIdNoAccount =
                         R.string.signin_promo_description_bookmarks_no_account;
@@ -325,8 +322,6 @@ public class SigninPromoController {
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED;
                 mImpressionsTilDismissHistogramName = null;
                 mImpressionsTilSigninButtonsHistogramName = null;
-                mImpressionsTilXButtonHistogramName =
-                        "MobileSignInPromo.NTPContentSuggestions.ImpressionsTilXButton";
                 mDescriptionStringId = R.string.signin_promo_description_ntp_content_suggestions;
                 mDescriptionStringIdNoAccount =
                         R.string.signin_promo_description_ntp_content_suggestions_no_account;
@@ -348,7 +343,6 @@ public class SigninPromoController {
                 mSyncPromoDismissedPreferenceTracker = null;
                 mImpressionsTilDismissHistogramName = null;
                 mImpressionsTilSigninButtonsHistogramName = null;
-                mImpressionsTilXButtonHistogramName = null;
                 mDescriptionStringId = R.string.signin_promo_description_recent_tabs;
                 mDescriptionStringIdNoAccount =
                         R.string.signin_promo_description_recent_tabs_no_account;
@@ -371,8 +365,6 @@ public class SigninPromoController {
                         "MobileSignInPromo.SettingsManager.ImpressionsTilDismiss";
                 mImpressionsTilSigninButtonsHistogramName =
                         "MobileSignInPromo.SettingsManager.ImpressionsTilSigninButtons";
-                mImpressionsTilXButtonHistogramName =
-                        "MobileSignInPromo.SettingsManager.ImpressionsTilXButton";
                 mDescriptionStringId = R.string.signin_promo_description_settings;
                 mDescriptionStringIdNoAccount =
                         R.string.signin_promo_description_settings_no_account;
@@ -451,11 +443,8 @@ public class SigninPromoController {
             assert mAccessPoint != SigninAccessPoint.RECENT_TABS;
             view.getDismissButton().setVisibility(View.VISIBLE);
             view.getDismissButton().setOnClickListener(promoView -> {
-                assert mImpressionsTilXButtonHistogramName != null;
                 assert mSyncPromoDismissedPreferenceTracker != null;
                 mWasUsed = true;
-                RecordHistogram.recordCount100Histogram(
-                        mImpressionsTilXButtonHistogramName, getNumImpressions());
                 SharedPreferencesManager.getInstance().writeBoolean(
                         mSyncPromoDismissedPreferenceTracker, true);
                 recordShowCountHistogram(UserAction.DISMISSED);

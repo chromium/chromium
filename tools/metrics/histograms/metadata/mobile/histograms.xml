@@ -1075,7 +1075,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.NTPContentSuggestions.ImpressionsTilXButton"
-    units="impressions" expires_after="2023-04-01">
+    units="impressions" expires_after="2022-05-10">
+  <obsolete>
+    Removed in 2022/05. Replaced with Signin.SyncPromo.Dismissed.Count.Ntp.
+  </obsolete>
   <owner>bsazonov@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
