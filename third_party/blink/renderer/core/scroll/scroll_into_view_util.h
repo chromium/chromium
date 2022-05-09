@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLL_INTO_VIEW_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLL_INTO_VIEW_UTIL_H_
 
-#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
+#include "third_party/blink/renderer/core/core_export.h"
 
 namespace gfx {
 class RectF;
@@ -15,6 +16,7 @@ namespace blink {
 
 class LayoutObject;
 class LayoutView;
+struct PhysicalRect;
 
 namespace scroll_into_view_util {
 
@@ -31,8 +33,16 @@ gfx::RectF FocusedEditableBoundsFromParams(
 // parameters in `params` into the updated coordinate space.
 void ConvertParamsToParentFrame(mojom::blink::ScrollIntoViewParamsPtr& params,
                                 const gfx::RectF& caret_rect_in_src,
-                                LayoutObject& src_frame,
-                                LayoutView& dest_frame);
+                                const LayoutObject& src_frame,
+                                const LayoutView& dest_frame);
+
+// Takes the given rect, in absolute coordinates of the frame of the given
+// LayoutObject, and scrolls the LayoutObject and all its containers such that
+// the child content of the LayoutObject at that rect is visible in the
+// viewport.
+void CORE_EXPORT ScrollRectToVisible(const LayoutObject&,
+                                     const PhysicalRect&,
+                                     mojom::blink::ScrollIntoViewParamsPtr);
 
 }  // namespace scroll_into_view_util
 

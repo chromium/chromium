@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -135,8 +136,8 @@ void AnnotationAgentImpl::ScrollIntoView() {
           mojom::blink::ScrollType::kProgrammatic);
   params->cross_origin_boundaries = false;
 
-  first_node.GetLayoutObject()->ScrollRectToVisible(bounding_box,
-                                                    std::move(params));
+  scroll_into_view_util::ScrollRectToVisible(*first_node.GetLayoutObject(),
+                                             bounding_box, std::move(params));
 }
 
 void AnnotationAgentImpl::DidFinishAttach(const RangeInFlatTree* range) {

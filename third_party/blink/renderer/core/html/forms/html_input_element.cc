@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
@@ -341,8 +342,8 @@ void HTMLInputElement::UpdateSelectionOnFocus(
         this, DocumentUpdateReason::kFocus);
     if (!options->preventScroll()) {
       if (GetLayoutObject()) {
-        GetLayoutObject()->ScrollRectToVisible(
-            BoundingBoxForScrollIntoView(),
+        scroll_into_view_util::ScrollRectToVisible(
+            *GetLayoutObject(), BoundingBoxForScrollIntoView(),
             ScrollAlignment::CreateScrollIntoViewParams());
       }
       if (GetDocument().GetFrame())

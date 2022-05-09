@@ -887,21 +887,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   int PixelSnappedScrollWidth() const;
   int PixelSnappedScrollHeight() const;
 
-  // Reveals the given rect, given in absolute coordinates, by scrolling this
-  // LayoutBox and then all its ancestors up to the local root frame. To
-  // continue the reveal through remote ancestors, use
-  // LayoutObject::ScrollRectToVisible. Returns the updated absolute rect, in
-  // the absolute coordinates of the frame in which the scroll stopped (either
-  // due to reaching a local root or a frame which isn't allowed to bubble
-  // scrolls.
-  // TODO(bokan): Having just a rect as the return value is awkward since the
-  // coordinate space it'll be relative to isn't predictable; the bubbling can
-  // stop at an arbitrary frame.
-  // TODO(bokan): Move this into scroll_into_view_util.h.
-  PhysicalRect ScrollRectToVisibleLocally(
-      const PhysicalRect& absolute_rect,
-      mojom::blink::ScrollIntoViewParamsPtr&);
-
   LayoutRectOutsets MarginBoxOutsets() const {
     NOT_DESTROYED();
     return margin_box_outsets_;
@@ -2303,10 +2288,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void AddSnapArea(LayoutBox&);
   void RemoveSnapArea(const LayoutBox&);
-
-  // Returns the parent LayoutBox, crossing local frame boundaries, that a
-  // scroll should bubble up to or nullptr if no such box exists.
-  LayoutBox* GetScrollParent(const mojom::blink::ScrollIntoViewParamsPtr&);
 
   PhysicalRect DebugRect() const override;
 

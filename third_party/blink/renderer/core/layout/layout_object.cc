@@ -100,7 +100,6 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
-#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/image_element_timing.h"
@@ -109,7 +108,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
-#include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/core/style/cursor_data.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
@@ -1024,48 +1023,6 @@ bool LayoutObject::IsFixedPositionObjectInPagedMedia() const {
          // TODO(crbug.com/619094): Figure out the correct behaviour for fixed
          // position objects in paged media with vertical writing modes.
          view->IsHorizontalWritingMode();
-}
-
-void LayoutObject::ScrollRectToVisible(
-    const PhysicalRect& absolute_rect,
-    mojom::blink::ScrollIntoViewParamsPtr params) {
-  NOT_DESTROYED();
-  LayoutBox* enclosing_box = EnclosingBox();
-  if (!enclosing_box)
-    return;
-
-  GetFrame()->GetSmoothScrollSequencer().AbortAnimations();
-  GetFrame()->GetSmoothScrollSequencer().SetScrollType(params->type);
-  params->is_for_scroll_sequence |=
-      params->type == mojom::blink::ScrollType::kProgrammatic;
-  PhysicalRect updated_absolute_rect =
-      enclosing_box->ScrollRectToVisibleLocally(absolute_rect, params);
-
-  GetFrame()->GetSmoothScrollSequencer().RunQueuedAnimations();
-
-  LocalFrame& local_root = GetFrame()->LocalFrameRoot();
-  LocalFrameView* local_root_view = local_root.View();
-
-  if (!local_root_view)
-    return;
-
-  if (!local_root.IsMainFrame()) {
-    // Continue the scroll via IPC if there's a remote ancestor.
-    // TODO(bokan): This probably needs to happen fenced frames in at least some
-    // cases. crbug.com/1314858.
-    if (local_root_view->AllowedToPropagateScrollIntoView(params)) {
-      local_root_view->ScrollRectToVisibleInRemoteParent(updated_absolute_rect,
-                                                         std::move(params));
-    }
-  } else if (params->for_focused_editable) {
-    // If we're scrolling a focused editable into view, once we reach the main
-    // frame we need to perform an animated scroll and zoom to bring the
-    // editable into a legible size.
-    gfx::RectF caret_rect_in_root_frame(updated_absolute_rect);
-    DCHECK(!caret_rect_in_root_frame.IsEmpty());
-    local_root.GetPage()->GetChromeClient().FinishScrollFocusedEditableIntoView(
-        caret_rect_in_root_frame, std::move(params));
-  }
 }
 
 LayoutBox* LayoutObject::EnclosingBox() const {

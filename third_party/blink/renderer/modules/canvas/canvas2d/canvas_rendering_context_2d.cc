@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_formatted_text.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
@@ -382,11 +383,12 @@ void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
                                                : ScrollAlignment::LeftAlways());
     vertical_scroll_mode = ScrollAlignment::ToEdgeIfNeeded();
   }
-  renderer->ScrollRectToVisible(
-      path_rect, ScrollAlignment::CreateScrollIntoViewParams(
-                     horizontal_scroll_mode, vertical_scroll_mode,
-                     mojom::blink::ScrollType::kProgrammatic, false,
-                     mojom::blink::ScrollBehavior::kAuto));
+  scroll_into_view_util::ScrollRectToVisible(
+      *renderer, path_rect,
+      ScrollAlignment::CreateScrollIntoViewParams(
+          horizontal_scroll_mode, vertical_scroll_mode,
+          mojom::blink::ScrollType::kProgrammatic, false,
+          mojom::blink::ScrollBehavior::kAuto));
 }
 
 void CanvasRenderingContext2D::clearRect(double x,

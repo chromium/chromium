@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
@@ -168,8 +169,8 @@ static void ScrollToVisible(Range* match) {
   mojom::blink::ScrollBehavior scroll_behavior =
       smooth_find_enabled ? mojom::blink::ScrollBehavior::kSmooth
                           : mojom::blink::ScrollBehavior::kAuto;
-  first_node.GetLayoutObject()->ScrollRectToVisible(
-      PhysicalRect(match->BoundingBox()),
+  scroll_into_view_util::ScrollRectToVisible(
+      *first_node.GetLayoutObject(), PhysicalRect(match->BoundingBox()),
       ScrollAlignment::CreateScrollIntoViewParams(
           ScrollAlignment::CenterIfNeeded(), ScrollAlignment::CenterIfNeeded(),
           mojom::blink::ScrollType::kUser,
@@ -795,7 +796,8 @@ int TextFinder::SelectFindMatch(unsigned index, gfx::Rect* selection_rect) {
   if (!active_match_bounding_box.IsEmpty()) {
     if (active_match_->FirstNode() &&
         active_match_->FirstNode()->GetLayoutObject()) {
-      active_match_->FirstNode()->GetLayoutObject()->ScrollRectToVisible(
+      scroll_into_view_util::ScrollRectToVisible(
+          *active_match_->FirstNode()->GetLayoutObject(),
           PhysicalRect(active_match_bounding_box),
           ScrollAlignment::CreateScrollIntoViewParams(
               ScrollAlignment::CenterIfNeeded(),

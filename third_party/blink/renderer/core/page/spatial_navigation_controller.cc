@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -468,8 +469,8 @@ void SpatialNavigationController::MoveInterestTo(Node* next_node) {
       LayoutObject* layout_object = interest_element_->GetLayoutObject();
       DCHECK(layout_object);
 
-      layout_object->ScrollRectToVisible(
-          element->BoundingBoxForScrollIntoView(),
+      scroll_into_view_util::ScrollRectToVisible(
+          *layout_object, element->BoundingBoxForScrollIntoView(),
           ScrollAlignment::CreateScrollIntoViewParams());
     }
 

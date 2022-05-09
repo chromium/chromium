@@ -88,6 +88,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_g_element.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
@@ -5726,8 +5727,8 @@ bool AXObject::OnNativeScrollToMakeVisibleAction() const {
   if (!layout_object)
     return false;
   PhysicalRect target_rect(layout_object->AbsoluteBoundingBoxRect());
-  layout_object->ScrollRectToVisible(
-      target_rect,
+  scroll_into_view_util::ScrollRectToVisible(
+      *layout_object, target_rect,
       ScrollAlignment::CreateScrollIntoViewParams(
           ScrollAlignment::CenterIfNeeded(), ScrollAlignment::CenterIfNeeded(),
           mojom::blink::ScrollType::kProgrammatic, false,
@@ -5748,12 +5749,13 @@ bool AXObject::OnNativeScrollToMakeVisibleWithSubFocusAction(
 
   PhysicalRect target_rect =
       layout_object->LocalToAbsoluteRect(PhysicalRect(rect));
-  layout_object->ScrollRectToVisible(
-      target_rect, ScrollAlignment::CreateScrollIntoViewParams(
-                       horizontal_scroll_alignment, vertical_scroll_alignment,
-                       mojom::blink::ScrollType::kProgrammatic,
-                       false /* make_visible_in_visual_viewport */,
-                       mojom::blink::ScrollBehavior::kAuto));
+  scroll_into_view_util::ScrollRectToVisible(
+      *layout_object, target_rect,
+      ScrollAlignment::CreateScrollIntoViewParams(
+          horizontal_scroll_alignment, vertical_scroll_alignment,
+          mojom::blink::ScrollType::kProgrammatic,
+          false /* make_visible_in_visual_viewport */,
+          mojom::blink::ScrollBehavior::kAuto));
   AXObjectCache().PostNotification(
       AXObjectCache().GetOrCreate(GetDocument()->GetLayoutView()),
       ax::mojom::blink::Event::kLocationChanged);
@@ -5768,8 +5770,8 @@ bool AXObject::OnNativeScrollToGlobalPointAction(
 
   PhysicalRect target_rect(layout_object->AbsoluteBoundingBoxRect());
   target_rect.Move(-PhysicalOffset(global_point));
-  layout_object->ScrollRectToVisible(
-      target_rect,
+  scroll_into_view_util::ScrollRectToVisible(
+      *layout_object, target_rect,
       ScrollAlignment::CreateScrollIntoViewParams(
           ScrollAlignment::LeftAlways(), ScrollAlignment::TopAlways(),
           mojom::blink::ScrollType::kProgrammatic, false,

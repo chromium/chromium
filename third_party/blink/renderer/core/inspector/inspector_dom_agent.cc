@@ -90,6 +90,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/xml/document_xpath_evaluator.h"
 #include "third_party/blink/renderer/core/xml/xpath_result.h"
@@ -2516,8 +2517,8 @@ protocol::Response InspectorDOMAgent::scrollIntoViewIfNeeded(
     rect_to_scroll.SetWidth(LayoutUnit(rect.fromJust()->getWidth()));
     rect_to_scroll.SetHeight(LayoutUnit(rect.fromJust()->getHeight()));
   }
-  layout_object->ScrollRectToVisible(
-      rect_to_scroll,
+  scroll_into_view_util::ScrollRectToVisible(
+      *layout_object, rect_to_scroll,
       ScrollAlignment::CreateScrollIntoViewParams(
           ScrollAlignment::CenterIfNeeded(), ScrollAlignment::CenterIfNeeded(),
           mojom::blink::ScrollType::kProgrammatic,

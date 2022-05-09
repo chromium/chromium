@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -1088,8 +1089,8 @@ void FrameSelection::RevealSelection(
       !start.AnchorNode()->GetLayoutObject()->EnclosingBox())
     return;
 
-  start.AnchorNode()->GetLayoutObject()->ScrollRectToVisible(
-      selection_rect,
+  scroll_into_view_util::ScrollRectToVisible(
+      *start.AnchorNode()->GetLayoutObject(), selection_rect,
       ScrollAlignment::CreateScrollIntoViewParams(alignment, alignment));
   UpdateAppearance();
 }

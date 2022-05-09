@@ -46,7 +46,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -54,7 +53,6 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
-#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -1145,131 +1143,6 @@ int LayoutBox::PixelSnappedScrollHeight() const {
   return SnapSizeToPixel(ScrollHeight(), Location().Y() + ClientTop());
 }
 
-LayoutBox* LayoutBox::GetScrollParent(
-    const mojom::blink::ScrollIntoViewParamsPtr& params) {
-  NOT_DESTROYED();
-
-  bool is_fixed_to_frame =
-      StyleRef().GetPosition() == EPosition::kFixed && Container() == View();
-
-  // Within a document scrolls bubble along the containing block chain but if
-  // we're in a position:fixed element, we want to immediately bubble up across
-  // the frame boundary since scrolling the frame won't affect the box's
-  // position.
-  if (ContainingBlock() && !is_fixed_to_frame)
-    return ContainingBlock();
-
-  // Otherwise, we're bubbling across a frame boundary. We may be
-  // prevented from doing so for security or policy reasons. If so, we're
-  // done.
-  if (!GetFrame()->View()->AllowedToPropagateScrollIntoView(params))
-    return nullptr;
-
-  if (!GetFrame()->IsLocalRoot()) {
-    // The parent is a local iframe, convert to the absolute coordinate space
-    // of its document and continue from the owner's LayoutBox.
-    HTMLFrameOwnerElement* owner_element = GetDocument().LocalOwner();
-    DCHECK(owner_element);
-
-    // A display:none iframe can have a LayoutView but its owner element won't
-    // have a LayoutObject. If that happens, don't bubble the scroll.
-    if (!owner_element->GetLayoutObject())
-      return nullptr;
-
-    return owner_element->GetLayoutObject()->EnclosingBox();
-  }
-
-  // If the owner is remote, the scroll must continue via IPC.
-  DCHECK(GetFrame()->IsMainFrame() || GetFrame()->Parent()->IsRemoteFrame());
-  return nullptr;
-}
-
-PhysicalRect LayoutBox::ScrollRectToVisibleLocally(
-    const PhysicalRect& absolute_rect,
-    mojom::blink::ScrollIntoViewParamsPtr& params) {
-  NOT_DESTROYED();
-  DCHECK(params->type == mojom::blink::ScrollType::kProgrammatic ||
-         params->type == mojom::blink::ScrollType::kUser);
-
-  if (!GetFrameView())
-    return absolute_rect;
-
-  LayoutBox* current_box = this;
-  PhysicalRect absolute_rect_to_scroll = absolute_rect;
-
-  while (current_box) {
-    if (absolute_rect_to_scroll.Width() <= 0)
-      absolute_rect_to_scroll.SetWidth(LayoutUnit(1));
-    if (absolute_rect_to_scroll.Height() <= 0)
-      absolute_rect_to_scroll.SetHeight(LayoutUnit(1));
-
-    // If we've reached the main frame's layout viewport (which is always set to
-    // the global root scroller, see ViewportScrollCallback::SetScroller), abort
-    // if the stop_at_main_frame_layout_viewport option is set. We do this so
-    // that we can allow a smooth "scroll and zoom" animation to do the final
-    // scroll in cases like scrolling a focused editable box into view.
-    // TODO(bokan): This may need to account for fenced frames.
-    // https://crbug.com/1314858
-    if (params->for_focused_editable && current_box->IsGlobalRootScroller())
-      break;
-
-    ScrollableArea* area_to_scroll = nullptr;
-
-    if (current_box->IsScrollContainer() && !IsA<LayoutView>(current_box)) {
-      area_to_scroll = current_box->GetScrollableArea();
-    } else if (!current_box->ContainingBlock()) {
-      area_to_scroll = params->make_visible_in_visual_viewport
-                           ? current_box->GetFrameView()->GetScrollableArea()
-                           : current_box->GetFrameView()->LayoutViewport();
-    }
-
-    if (area_to_scroll) {
-      absolute_rect_to_scroll =
-          area_to_scroll->ScrollIntoView(absolute_rect_to_scroll, params);
-    }
-
-    bool is_fixed_to_frame =
-        current_box->StyleRef().GetPosition() == EPosition::kFixed &&
-        current_box->Container() == current_box->View();
-
-    if (is_fixed_to_frame && current_box->GetFrame()->IsMainFrame() &&
-        params->make_visible_in_visual_viewport) {
-      // If we're in a position:fixed element, scrolling the layout viewport
-      // won't have any effect and would be wrong so we want to bubble up to
-      // the layout viewport's parent. For subframes that's the frame's owner.
-      // For the main frame that's the visual viewport but it isn't associated
-      // with a LayoutBox so we just scroll it here as a special case.
-      // Note: In non-fixed cases, the visual viewport will have been scrolled
-      // by the frame scroll via the RootFrameViewport
-      // (GetFrameView()->GetScrollableArea() above).
-      absolute_rect_to_scroll =
-          current_box->GetFrame()
-              ->GetPage()
-              ->GetVisualViewport()
-              .ScrollIntoView(absolute_rect_to_scroll, params);
-      break;
-    }
-
-    LayoutBox* next_box = current_box->GetScrollParent(params);
-
-    // If the next box to scroll is in another frame, we need to convert the
-    // scroll box to the new frame's absolute coordinates.
-    if (next_box && next_box->View() != current_box->View()) {
-      scroll_into_view_util::ConvertParamsToParentFrame(
-          params, gfx::RectF(absolute_rect_to_scroll), *current_box->View(),
-          *next_box->View());
-
-      absolute_rect_to_scroll = current_box->View()->LocalToAncestorRect(
-          absolute_rect_to_scroll, next_box->View(),
-          kTraverseDocumentBoundaries);
-    }
-
-    current_box = next_box;
-  }
-
-  return absolute_rect_to_scroll;
-}
-
 void LayoutBox::SetMargin(const NGPhysicalBoxStrut& box) {
   NOT_DESTROYED();
   margin_box_outsets_.SetTop(box.top);
@@ -1883,10 +1756,11 @@ void LayoutBox::Autoscroll(const PhysicalOffset& position_in_root_frame) {
       ScrollAlignment::CreateScrollIntoViewParams(
           ScrollAlignment::ToEdgeIfNeeded(), ScrollAlignment::ToEdgeIfNeeded(),
           mojom::blink::ScrollType::kUser);
-  ScrollRectToVisibleLocally(
+  scroll_into_view_util::ScrollRectToVisible(
+      *this,
       PhysicalRect(absolute_position,
                    PhysicalSize(LayoutUnit(1), LayoutUnit(1))),
-      params);
+      std::move(params));
 }
 
 // If specified point is outside the border-belt-excluded box (the border box

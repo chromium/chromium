@@ -118,6 +118,7 @@
 #include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -1967,8 +1968,8 @@ bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
   params->for_focused_editable->relative_location = editable_offset_from_caret;
   params->for_focused_editable->size = editable_size;
 
-  element->GetLayoutObject()->ScrollRectToVisible(absolute_caret_bounds,
-                                                  std::move(params));
+  scroll_into_view_util::ScrollRectToVisible(
+      *element->GetLayoutObject(), absolute_caret_bounds, std::move(params));
 
   return true;
 }

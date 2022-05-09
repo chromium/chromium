@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -630,8 +631,9 @@ TEST_F(ScrollIntoViewTest, StopAtLayoutViewportForFocusedEditable) {
       gfx::SizeF(target->AbsoluteBoundingBoxRect().size());
   params->for_focused_editable->can_zoom = false;
 
-  target->ScrollRectToVisible(PhysicalRect(target->AbsoluteBoundingBoxRect()),
-                              std::move(params));
+  scroll_into_view_util::ScrollRectToVisible(
+      *target, PhysicalRect(target->AbsoluteBoundingBoxRect()),
+      std::move(params));
 
   ScrollableArea* root_scroller =
       To<LayoutBox>(root->GetLayoutObject())->GetScrollableArea();
@@ -719,8 +721,8 @@ TEST_F(ScrollIntoViewTest, SmoothUserScrollNotAbortedByProgrammaticScrolls) {
 
   // A smooth UserScroll.
   Element* content = GetDocument().getElementById("content");
-  content->GetLayoutObject()->ScrollRectToVisible(
-      content->BoundingBoxForScrollIntoView(),
+  scroll_into_view_util::ScrollRectToVisible(
+      *content->GetLayoutObject(), content->BoundingBoxForScrollIntoView(),
       ScrollAlignment::CreateScrollIntoViewParams(
           ScrollAlignment::ToEdgeIfNeeded(), ScrollAlignment::TopAlways(),
           mojom::blink::ScrollType::kUser, false,
@@ -853,7 +855,8 @@ TEST_F(ScrollIntoViewTest, FromDisplayNoneIframe) {
       ScrollAlignment::LeftAlways(), ScrollAlignment::TopAlways(),
       mojom::blink::ScrollType::kProgrammatic, false,
       mojom::blink::ScrollBehavior::kInstant);
-  child_document->GetLayoutView()->ScrollRectToVisible(rect, std::move(params));
+  scroll_into_view_util::ScrollRectToVisible(*child_document->GetLayoutView(),
+                                             rect, std::move(params));
 
   EXPECT_EQ(Window().scrollY(), 0);
   EXPECT_EQ(Window().scrollX(), 0);

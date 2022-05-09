@@ -169,6 +169,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observation.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
@@ -1222,7 +1223,8 @@ void Element::ScrollIntoViewNoVisualUpdate(
   }
 
   PhysicalRect bounds = BoundingBoxForScrollIntoView();
-  GetLayoutObject()->ScrollRectToVisible(bounds, std::move(params));
+  scroll_into_view_util::ScrollRectToVisible(*GetLayoutObject(), bounds,
+                                             std::move(params));
 
   GetDocument().SetSequentialFocusNavigationStartingPoint(this);
 }
@@ -1236,15 +1238,17 @@ void Element::scrollIntoViewIfNeeded(bool center_if_needed) {
 
   PhysicalRect bounds = BoundingBoxForScrollIntoView();
   if (center_if_needed) {
-    GetLayoutObject()->ScrollRectToVisible(
-        bounds, ScrollAlignment::CreateScrollIntoViewParams(
-                    ScrollAlignment::CenterIfNeeded(),
-                    ScrollAlignment::CenterIfNeeded()));
+    scroll_into_view_util::ScrollRectToVisible(
+        *GetLayoutObject(), bounds,
+        ScrollAlignment::CreateScrollIntoViewParams(
+            ScrollAlignment::CenterIfNeeded(),
+            ScrollAlignment::CenterIfNeeded()));
   } else {
-    GetLayoutObject()->ScrollRectToVisible(
-        bounds, ScrollAlignment::CreateScrollIntoViewParams(
-                    ScrollAlignment::ToEdgeIfNeeded(),
-                    ScrollAlignment::ToEdgeIfNeeded()));
+    scroll_into_view_util::ScrollRectToVisible(
+        *GetLayoutObject(), bounds,
+        ScrollAlignment::CreateScrollIntoViewParams(
+            ScrollAlignment::ToEdgeIfNeeded(),
+            ScrollAlignment::ToEdgeIfNeeded()));
   }
 }
 
@@ -5229,8 +5233,9 @@ void Element::UpdateSelectionOnFocus(
       params->align_x->rect_partial =
           mojom::blink::ScrollAlignment::Behavior::kNoScroll;
 
-      GetLayoutObject()->ScrollRectToVisible(BoundingBoxForScrollIntoView(),
-                                             std::move(params));
+      scroll_into_view_util::ScrollRectToVisible(*GetLayoutObject(),
+                                                 BoundingBoxForScrollIntoView(),
+                                                 std::move(params));
     }
   }
 }

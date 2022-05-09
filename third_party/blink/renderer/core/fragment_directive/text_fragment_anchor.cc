@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/search_engine_utils.h"
 
@@ -378,8 +379,8 @@ void TextFragmentAnchor::DidFindMatch(const RangeInFlatTree& range,
             ScrollAlignment::CenterAlways(), ScrollAlignment::CenterAlways(),
             mojom::blink::ScrollType::kProgrammatic);
     params->cross_origin_boundaries = false;
-    first_node.GetLayoutObject()->ScrollRectToVisible(bounding_box,
-                                                      std::move(params));
+    scroll_into_view_util::ScrollRectToVisible(*first_node.GetLayoutObject(),
+                                               bounding_box, std::move(params));
     did_scroll_into_view_ = true;
 
     if (AXObjectCache* cache = frame_->GetDocument()->ExistingAXObjectCache())
