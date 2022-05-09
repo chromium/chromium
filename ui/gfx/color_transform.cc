@@ -639,8 +639,8 @@ class ColorTransformHLGToLinear : public ColorTransformPerChannelTransferFn {
  public:
   explicit ColorTransformHLGToLinear(float sdr_white_level)
       : ColorTransformPerChannelTransferFn(false),
-        sdr_scale_factor_(gfx::ColorSpace::kDefaultSDRWhiteLevel /
-                          sdr_white_level) {}
+        sdr_scale_factor_(ColorSpace::kDefaultSDRWhiteLevel / sdr_white_level) {
+  }
 
   // ColorTransformPerChannelTransferFn implementation:
   float Evaluate(float v) const override {
@@ -1047,6 +1047,58 @@ class ColorTransformPQToneMapToLinear : public ColorTransformStep {
   }
 };
 
+// Apply the HLG OOTF for a specified maximum luminance.
+class ColorTransformHLGOOTF : public ColorTransformStep {
+ public:
+  ColorTransformHLGOOTF(float max_luminance_nits)
+      : gamma_minus_one_(
+            1.2f + 0.42f * logf(max_luminance_nits / 1000.f) / logf(10.f) -
+            1.f) {}
+
+  // The luminance vector in linear space.
+  static constexpr float kLr = 0.2627;
+  static constexpr float kLg = 0.6780;
+  static constexpr float kLb = 0.0593;
+
+  // ColorTransformStep implementation:
+  void Transform(ColorTransform::TriStim* color, size_t num) const override {
+    for (size_t i = 0; i < num; i++) {
+      float L = kLr * color[i].x() + kLg * color[i].y() + kLb * color[i].z();
+      if (L > 0.f)
+        color[i].Scale(powf(L, gamma_minus_one_));
+    }
+  }
+  void AppendShaderSource(std::stringstream* hdr,
+                          std::stringstream* src,
+                          size_t step_index) const override {
+    *hdr << "vec3 ToneMapStep" << step_index << "(vec3 color) {\n"
+         << "  vec3 result = color;\n"
+         << "  vec3 luma_vec = vec3(" << kLr << ", " << kLg << ", " << kLb
+         << ");\n"
+         << "  float L = dot(color, luma_vec);\n"
+         << "  if (L > 0.0) {\n"
+         << "    result *= pow(L, " << gamma_minus_one_ << ");\n"
+         << "  }\n"
+         << "  return result;\n"
+         << "}\n";
+    *src << "  color.rgb = ToneMapStep" << step_index << "(color.rgb);\n";
+  }
+  void AppendSkShaderSource(std::stringstream* src) const override {
+    *src << "{\n"
+         << "  half4 luma_vec = half4(" << kLr << ", " << kLg << ", " << kLb
+         << ", 0.0);\n"
+         << "  half L = dot(color, luma_vec);\n"
+         << "  if (L > 0.0) {\n"
+         << "    color.rgb *= pow(L, " << gamma_minus_one_ << ");\n"
+         << "  }\n"
+         << "}\n";
+  }
+
+ private:
+  // The gamma parameter for the power function specified in Rec 2100.
+  const float gamma_minus_one_;
+};
+
 // Scale the color such that the luminance `input_max_value` maps to
 // `output_max_value`.
 class ColorTransformToneMapInRec2020Linear : public ColorTransformStep {
@@ -1143,6 +1195,10 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
         constexpr skcms_TransferFunction kGamma22 = {2.2, 1, 0, 0, 0, 0, 0};
         steps_.push_back(
             std::make_unique<ColorTransformSkTransferFn>(kGamma22, false));
+      } else if (options.tone_map_pq_and_hlg_to_dst) {
+        // Convert to linear with a maximum value of 1.
+        steps_.push_back(std::make_unique<ColorTransformHLGToLinear>(
+            12.f * ColorSpace::kDefaultSDRWhiteLevel));
       } else {
         steps_.push_back(std::make_unique<ColorTransformHLGToLinear>(
             options.sdr_max_luminance_nits));
@@ -1187,32 +1243,42 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
 
   // Perform tone mapping in a linear space
   if (options.tone_map_pq_and_hlg_to_dst) {
-    float src_max_luminance_relative = 0.f;
     switch (src.GetTransferID()) {
       case ColorSpace::TransferID::HLG: {
-        // The maximum value that ColorTransformHLGToLinear can produce.
-        src_max_luminance_relative =
-            12 * (gfx::ColorSpace::kDefaultSDRWhiteLevel /
-                  options.sdr_max_luminance_nits);
+        const float hdr_max_luminance_nits =
+            options.sdr_max_luminance_nits * options.dst_max_luminance_relative;
+        // Apply the HLG OOTF for the specified maximum luminance.
+        steps_.push_back(
+            std::make_unique<ColorTransformHLGOOTF>(hdr_max_luminance_nits));
+        // Scale the result to the full HDR range.
+        steps_.push_back(std::make_unique<ColorTransformMatrix>(
+            SkM44::Scale(options.dst_max_luminance_relative,
+                         options.dst_max_luminance_relative,
+                         options.dst_max_luminance_relative)));
+
         break;
       }
-      case ColorSpace::TransferID::PQ:
+      case ColorSpace::TransferID::PQ: {
         // The maximum value that ColorTransformPQToLinear can produce.
-        src_max_luminance_relative = 10000 / options.sdr_max_luminance_nits;
+        const float src_max_luminance_relative =
+            10000 / options.sdr_max_luminance_nits;
+        if (src_max_luminance_relative > options.dst_max_luminance_relative) {
+          const ColorSpace rec2020_linear(
+              ColorSpace::PrimaryID::BT2020, ColorSpace::TransferID::LINEAR,
+              ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
+          steps_.push_back(std::make_unique<ColorTransformMatrix>(
+              Invert(rec2020_linear.GetPrimaryMatrix())));
+          steps_.push_back(
+              std::make_unique<ColorTransformToneMapInRec2020Linear>(
+                  src_max_luminance_relative,
+                  options.dst_max_luminance_relative));
+          steps_.push_back(std::make_unique<ColorTransformMatrix>(
+              rec2020_linear.GetPrimaryMatrix()));
+        }
         break;
+      }
       default:
         break;
-    }
-    if (src_max_luminance_relative > options.dst_max_luminance_relative) {
-      const ColorSpace rec2020_linear(
-          ColorSpace::PrimaryID::BT2020, ColorSpace::TransferID::LINEAR,
-          ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
-      steps_.push_back(std::make_unique<ColorTransformMatrix>(
-          Invert(rec2020_linear.GetPrimaryMatrix())));
-      steps_.push_back(std::make_unique<ColorTransformToneMapInRec2020Linear>(
-          src_max_luminance_relative, options.dst_max_luminance_relative));
-      steps_.push_back(std::make_unique<ColorTransformMatrix>(
-          rec2020_linear.GetPrimaryMatrix()));
     }
   }
 
