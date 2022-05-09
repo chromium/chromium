@@ -185,6 +185,9 @@ AX_BASE_EXPORT extern const base::Feature kScreenAI;
 // IsReadAnythingWithScreen2xEnabled.
 AX_BASE_EXPORT bool IsScreenAIEnabled();
 
+// If enabled, ScreenAI library writes some debug data in /tmp.
+AX_BASE_EXPORT bool IsScreenAIDebugModeEnabled();
+
 // Enables a feature whereby inaccessible (i.e. untagged) PDFs are made
 // accessible using an optical character recognition service. Due to the size of
 // the OCR component, this feature targets desktop versions of Chrome for now.

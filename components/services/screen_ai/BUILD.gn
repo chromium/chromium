@@ -31,6 +31,7 @@ source_set("screen_ai_sandbox_hook") {
     "//components/component_updater",
     "//components/services/screen_ai/public/cpp:utilities",
     "//sandbox/linux:sandbox_services",
+    "//ui/accessibility:ax_base",
   ]
 
   public_deps = [ "//sandbox/policy" ]

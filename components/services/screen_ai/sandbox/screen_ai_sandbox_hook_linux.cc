@@ -10,6 +10,7 @@
 #include "components/services/screen_ai/public/cpp/utilities.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
+#include "ui/accessibility/accessibility_features.h"
 
 using sandbox::syscall_broker::BrokerFilePermission;
 using sandbox::syscall_broker::MakeBrokerCommandSet;
@@ -40,6 +41,11 @@ bool ScreenAIPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
   std::vector<BrokerFilePermission> permissions{
       BrokerFilePermission::ReadOnly("/dev/urandom"),
       BrokerFilePermission::ReadOnly("/proc/meminfo")};
+
+  if (features::IsScreenAIDebugModeEnabled()) {
+    permissions.push_back(
+        BrokerFilePermission::ReadWriteCreateRecursive("/tmp/"));
+  }
 
   instance->StartBrokerProcess(
       MakeBrokerCommandSet({sandbox::syscall_broker::COMMAND_ACCESS,

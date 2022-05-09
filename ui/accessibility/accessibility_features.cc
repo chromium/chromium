@@ -206,6 +206,15 @@ bool IsScreenAIEnabled() {
   return base::FeatureList::IsEnabled(::features::kScreenAI);
 }
 
+// This feature is only for debug purposes and for security/privacy reasons,
+// should be never enabled by default .
+const base::Feature kScreenAIDebugMode{"ScreenAIDebugMode",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsScreenAIDebugModeEnabled() {
+  return base::FeatureList::IsEnabled(::features::kScreenAIDebugMode);
+}
+
 const base::Feature kPdfOcr{"PdfOcr", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsPdfOcrEnabled() {
