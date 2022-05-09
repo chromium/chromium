@@ -83,10 +83,6 @@ constexpr int kProgressBarHeight = 4;
 // the ratio of the message width is limited to this value.
 constexpr double kProgressNotificationMessageRatio = 0.7;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr int kLargeImageCornerRadius = 8;
-#endif  // IS_CHROMEOS_ASH
-
 class ClickActivator : public ui::EventHandler {
  public:
   explicit ClickActivator(NotificationViewBase* owner) : owner_(owner) {}
@@ -222,7 +218,7 @@ void LargeImageView::OnPaint(gfx::Canvas* canvas) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::features::IsNotificationsRefreshEnabled()) {
     SkPath path;
-    const SkScalar corner_radius = SkIntToScalar(kLargeImageCornerRadius);
+    const SkScalar corner_radius = SkIntToScalar(kImageCornerRadius);
     const SkScalar kRadius[8] = {corner_radius, corner_radius, corner_radius,
                                  corner_radius, corner_radius, corner_radius,
                                  corner_radius, corner_radius};
@@ -769,7 +765,9 @@ void NotificationViewBase::CreateOrUpdateActionButtonViews(
 
   for (size_t i = 0; i < buttons.size(); ++i) {
     ButtonInfo button_info = buttons[i];
-    std::u16string label = base::i18n::ToUpper(button_info.title);
+    std::u16string label = for_ash_notification_
+                               ? button_info.title
+                               : base::i18n::ToUpper(button_info.title);
     if (new_buttons) {
       action_buttons_.push_back(
           action_buttons_row_->AddChildView(GenerateNotificationLabelButton(

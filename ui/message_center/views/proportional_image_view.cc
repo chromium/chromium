@@ -10,11 +10,9 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/message_center/message_center_style.h"
+#include "ui/message_center/public/cpp/message_center_constants.h"
 
 namespace message_center {
-namespace {
-constexpr int kRoundedCornerRadius = 8;
-}
 
 ProportionalImageView::ProportionalImageView(const gfx::Size& view_size) {
   SetPreferredSize(view_size);
@@ -50,7 +48,8 @@ void ProportionalImageView::OnPaint(gfx::Canvas* canvas) {
 
   if (apply_rounded_corners_) {
     SkPath path;
-    const SkScalar corner_radius = SkIntToScalar(kRoundedCornerRadius);
+    const SkScalar corner_radius =
+        SkIntToScalar(message_center::kImageCornerRadius);
     const SkScalar kRadius[8] = {corner_radius, corner_radius, corner_radius,
                                  corner_radius, corner_radius, corner_radius,
                                  corner_radius, corner_radius};

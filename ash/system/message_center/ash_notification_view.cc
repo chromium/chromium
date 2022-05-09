@@ -120,6 +120,10 @@ constexpr int kIconViewSize = 48;
 // Target contrast ratio to reach when adjusting colors in dark mode.
 constexpr float kDarkModeMinContrastRatio = 6.0;
 
+// If the image displayed in `icon_view()` is smaller in either width or height
+// than this value, we draw a background around the image.
+constexpr int kSmallImageBackgroundThreshold = 6;
+
 // Helpers ---------------------------------------------------------------------
 
 // Configure the style for labels in notification view. `is_color_primary`
@@ -1011,6 +1015,19 @@ void AshNotificationView::OnThemeChanged() {
     inline_reply()->textfield()->SetTextColor(text_color);
     inline_reply()->textfield()->set_placeholder_text_color(text_color);
   }
+
+  if (icon_view() &&
+      (right_content()->width() - icon_view()->GetImageDrawingSize().width() >
+           kSmallImageBackgroundThreshold ||
+       right_content()->height() - icon_view()->GetImageDrawingSize().height() >
+           kSmallImageBackgroundThreshold)) {
+    icon_view()->set_apply_rounded_corners(false);
+    right_content()->SetBackground(views::CreateRoundedRectBackground(
+        ash::AshColorProvider::Get()->GetControlsLayerColor(
+            ash::AshColorProvider::ControlsLayerType::
+                kControlBackgroundColorInactive),
+        message_center::kImageCornerRadius));
+  }
 }
 
 std::unique_ptr<message_center::NotificationInputContainer>
@@ -1026,11 +1043,6 @@ AshNotificationView::GenerateNotificationLabelButton(
       std::make_unique<PillButton>(
           std::move(callback), label, PillButton::Type::kIconlessAccentFloating,
           /*icon=*/nullptr, kNotificationPillButtonHorizontalSpacing);
-  // Override the inkdrop configuration to make sure it will show up when hover
-  // or focus on the button.
-  StyleUtil::SetUpInkDropForButton(actions_button.get(), gfx::Insets(),
-                                   /*highlight_on_hover=*/true,
-                                   /*highlight_on_focus=*/true);
   return actions_button;
 }
 

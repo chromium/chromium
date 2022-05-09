@@ -28,6 +28,9 @@ const int kSmallImageSize = 16;
 const int kSmallImageSizeMD = 18;
 const int kSmallImagePadding = 4;
 
+// Rounded corners are applied to large and small images in ash
+constexpr int kImageCornerRadius = 8;
+
 // Limits.
 const size_t kMaxVisibleMessageCenterNotifications = 100;
 const size_t kMaxVisiblePopupNotifications = 3;
