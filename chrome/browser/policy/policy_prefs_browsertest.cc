@@ -117,15 +117,10 @@ class PolicyPrefsTest : public PlatformBrowserTest {
 // README SHERIFFs: This test encapsulates a whole suite of individual browser
 // tests for performance reasons and therefore has an increased chance of
 // failure/flakiness.
-// IPORTANT: Please add hendrich@chromium.org on any related bugs when
+// IMPORTANT: Please add hendrich@chromium.org on any related bugs when
 // disabling this test.
-// Flake on linux-chromeos-dbg: crbug.com/1294825
-#if (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
-#define MAYBE_PolicyToPrefsMapping DISABLED_PolicyToPrefsMapping
-#else
-#define MAYBE_PolicyToPrefsMapping PolicyToPrefsMapping
-#endif
-IN_PROC_BROWSER_TEST_F(PolicyPrefsTest, MAYBE_PolicyToPrefsMapping) {
+// Flaky on all platforms: crbug.com/1294825
+IN_PROC_BROWSER_TEST_F(PolicyPrefsTest, DISABLED_PolicyToPrefsMapping) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage storage;
   policy::BrowserDMTokenStorage::SetForTesting(&storage);
