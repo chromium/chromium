@@ -136,10 +136,15 @@ static_library("shopping_service") {
   ]
 
   deps = [
+    ":feature_list",
+    ":proto",
     "//base",
     "//components/bookmarks/browser",
     "//components/keyed_service/core",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:prefs",
+    "//url:url",
   ]
 
   if (is_android) {
@@ -148,7 +153,10 @@ static_library("shopping_service") {
       "android/shopping_service_android.h",
     ]
 
-    deps += [ ":shopping_service_jni_headers" ]
+    deps += [
+      ":shopping_service_jni_headers",
+      "//url:gurl_android",
+    ]
   }
 }
 
@@ -156,4 +164,23 @@ if (is_android) {
   generate_jni("shopping_service_jni_headers") {
     sources = [ "android/java/src/org/chromium/components/commerce/core/ShoppingService.java" ]
   }
+}
+
+source_set("shopping_service_unit_tests") {
+  testonly = true
+
+  sources = [ "shopping_service_unittest.cc" ]
+
+  deps = [
+    ":feature_list",
+    ":shopping_service",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/commerce/core:proto",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//testing/gtest",
+    "//url:url",
+  ]
 }

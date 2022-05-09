@@ -40,6 +40,7 @@ static_library("shopping_service") {
     "//components/keyed_service/ios",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/optimization_guide",
     "//ios/web",
   ]
 

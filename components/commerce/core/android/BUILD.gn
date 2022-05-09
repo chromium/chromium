@@ -12,5 +12,6 @@ android_library("core_java") {
   deps = [
     "//base:jni_java",
     "//build/android:build_java",
+    "//url:gurl_java",
   ]
 }
