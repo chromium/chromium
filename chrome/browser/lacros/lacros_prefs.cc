@@ -35,4 +35,41 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(::prefs::kExternalStorageReadOnly, false);
 }
 
+void RegisterExtensionControlledAshPrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  // These settings are used by extensions when the feature itself is controlled
+  // by a pref in ash. In lacros, these prefs hold the computed value across all
+  // extensions (and also the value set by each individual extension in lacros),
+  // and the final value is sent to ash.
+  registry->RegisterBooleanPref(
+      ::prefs::kLacrosAccessibilityFocusHighlightEnabled, false);
+  registry->RegisterBooleanPref(::prefs::kLacrosDockedMagnifierEnabled, false);
+  registry->RegisterBooleanPref(::prefs::kLacrosAccessibilityAutoclickEnabled,
+                                false);
+  registry->RegisterBooleanPref(
+      ::prefs::kLacrosAccessibilityCaretHighlightEnabled, false);
+  registry->RegisterBooleanPref(::prefs::kLacrosAccessibilityCursorColorEnabled,
+                                false);
+  registry->RegisterBooleanPref(
+      ::prefs::kLacrosAccessibilityCursorHighlightEnabled, false);
+  registry->RegisterBooleanPref(::prefs::kLacrosAccessibilityDictationEnabled,
+                                false);
+  registry->RegisterBooleanPref(
+      ::prefs::kLacrosAccessibilityHighContrastEnabled, false);
+  registry->RegisterBooleanPref(::prefs::kLacrosAccessibilityLargeCursorEnabled,
+                                false);
+  registry->RegisterBooleanPref(
+      ::prefs::kLacrosAccessibilityScreenMagnifierEnabled, false);
+  registry->RegisterBooleanPref(
+      ::prefs::kLacrosAccessibilitySelectToSpeakEnabled, false);
+  registry->RegisterBooleanPref(
+      ::prefs::kLacrosAccessibilitySpokenFeedbackEnabled, false);
+  registry->RegisterBooleanPref(::prefs::kLacrosAccessibilityStickyKeysEnabled,
+                                false);
+  registry->RegisterBooleanPref(
+      ::prefs::kLacrosAccessibilitySwitchAccessEnabled, false);
+  registry->RegisterBooleanPref(
+      ::prefs::kLacrosAccessibilityVirtualKeyboardEnabled, false);
+}
+
 }  // namespace lacros_prefs

@@ -4550,6 +4550,7 @@ if (is_chromeos_lacros) {
     sources = [
       "../browser/apps/intent_helper/supported_links_infobar_delegate_browsertest.cc",
       "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_apitest.cc",
+      "../browser/extensions/api/preference/preference_api_lacros_browsertest.cc",
       "../browser/lacros/browser_service_lacros_browsertest.cc",
       "../browser/lacros/browser_test_util.cc",
       "../browser/lacros/browser_test_util.h",
@@ -4615,6 +4616,7 @@ if (is_chromeos_lacros) {
 
     data = [
       "data/extensions/api_test/login_screen_apis/",
+      "data/extensions/api_test/preference/",
       "data/extensions/platform_apps/minimal/",
       "data/media/",
       "data/web_apps/",

@@ -83,6 +83,10 @@
 #include "ui/chromeos/events/pref_names.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/chromeos/extensions/controlled_pref_mapping.h"
+#endif
+
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -455,10 +459,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kLiveCaptionLanguageCode] =
       settings_api::PrefType::PREF_TYPE_STRING;
 #endif
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  (*s_allowlist)[::prefs::kAccessibilityFocusHighlightEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
-#endif
+
   (*s_allowlist)[::prefs::kCaretBrowsingEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
@@ -485,10 +486,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_STRING;
 
   // Accessibility.
-  (*s_allowlist)[ash::prefs::kAccessibilitySpokenFeedbackEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[ash::prefs::kAccessibilityAutoclickEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kAccessibilityAutoclickDelayMs] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[ash::prefs::kAccessibilityAutoclickEventType] =
@@ -499,30 +496,14 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kAccessibilityAutoclickMovementThreshold] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
-  (*s_allowlist)[ash::prefs::kAccessibilityCaretHighlightEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[ash::prefs::kAccessibilityCursorHighlightEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kShouldAlwaysShowAccessibilityMenu] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[ash::prefs::kAccessibilityDictationEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kAccessibilityDictationLocale] =
       settings_api::PrefType::PREF_TYPE_STRING;
-  (*s_allowlist)[ash::prefs::kAccessibilityFocusHighlightEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[ash::prefs::kAccessibilityHighContrastEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[ash::prefs::kAccessibilityLargeCursorEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kAccessibilityLargeCursorDipSize] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
-  (*s_allowlist)[ash::prefs::kAccessibilityCursorColorEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kAccessibilityCursorColor] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
-  (*s_allowlist)[ash::prefs::kAccessibilityScreenMagnifierEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)
       [ash::prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled] =
           settings_api::PrefType::PREF_TYPE_BOOLEAN;
@@ -530,12 +511,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[ash::prefs::kAccessibilityScreenMagnifierScale] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
-  (*s_allowlist)[ash::prefs::kAccessibilitySelectToSpeakEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[ash::prefs::kAccessibilityStickyKeysEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[ash::prefs::kAccessibilitySwitchAccessEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes] =
       settings_api::PrefType::PREF_TYPE_DICTIONARY;
   (*s_allowlist)[ash::prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes] =
@@ -555,8 +530,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)
       [ash::prefs::kAccessibilitySwitchAccessPointScanSpeedDipsPerSecond] =
           settings_api::PrefType::PREF_TYPE_NUMBER;
-  (*s_allowlist)[ash::prefs::kAccessibilityVirtualKeyboardEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kAccessibilityMonoAudioEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)
@@ -731,8 +704,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[ash::prefs::kNightLightCustomEndTime] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
-  (*s_allowlist)[ash::prefs::kDockedMagnifierEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kDockedMagnifierScale] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[ash::prefs::kDockedMagnifierScreenHeightDivisor] =
@@ -856,11 +827,54 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
   (*s_allowlist)[::prefs::kSettingsShowOSBanner] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kPrintingAPIExtensionsAllowlist] =
       settings_api::PrefType::PREF_TYPE_LIST;
+#endif
+
+// Accessibility features in ash that can be set in lacros.
+// The Lacros version of these have their own name.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
+  (*s_allowlist)[chromeos::prefs::kAccessibilityFocusHighlightEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[chromeos::prefs::kDockedMagnifierEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[chromeos::prefs::kAccessibilityAutoclickEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[chromeos::prefs::kAccessibilityCaretHighlightEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[chromeos::prefs::kAccessibilityCursorColorEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[chromeos::prefs::kAccessibilityCursorHighlightEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[chromeos::prefs::kAccessibilityDictationEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[chromeos::prefs::kAccessibilityHighContrastEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[chromeos::prefs::kAccessibilityLargeCursorEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[chromeos::prefs::kAccessibilityScreenMagnifierEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[chromeos::prefs::kAccessibilitySelectToSpeakEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[chromeos::prefs::kAccessibilitySpokenFeedbackEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[chromeos::prefs::kAccessibilityStickyKeysEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[chromeos::prefs::kAccessibilitySwitchAccessEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[chromeos::prefs::kAccessibilityVirtualKeyboardEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // This feature exists in all platforms but is enabled in ash above. In lacros
+  // the value in ash can be controlled by extensions.
+  (*s_allowlist)[prefs::kAccessibilityFocusHighlightEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 #endif
 
   // Proxy settings.

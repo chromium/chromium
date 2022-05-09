@@ -21,6 +21,7 @@ extern const char kValue[];
 extern const char kIncognitoErrorMessage[];
 extern const char kIncognitoSessionOnlyErrorMessage[];
 extern const char kPermissionErrorMessage[];
+extern const char kPrimaryProfileOnlyErrorMessage[];
 
 }  // namespace preference_api_constants
 }  // namespace extensions

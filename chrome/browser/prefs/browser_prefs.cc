@@ -1477,6 +1477,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   lacros_prefs::RegisterProfilePrefs(registry);
   chromeos::ProxyConfigServiceLacros::RegisterProfilePrefs(registry);
+  lacros_prefs::RegisterExtensionControlledAshPrefs(registry);
 #endif
 
 #if BUILDFLAG(IS_WIN)

@@ -20,6 +20,13 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_prefs_scope.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/prefs.mojom-shared.h"
+#include "chromeos/crosapi/mojom/prefs.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#endif
+
 class ExtensionPrefValueMap;
 class PrefService;
 
@@ -196,8 +203,26 @@ class GetPreferenceFunction : public PreferenceFunction {
  protected:
   ~GetPreferenceFunction() override;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnLacrosGetSuccess(absl::optional<::base::Value> opt_value,
+                          crosapi::mojom::PrefControlState control_state);
+#endif
+
   // ExtensionFunction:
   ResponseAction Run() override;
+
+ private:
+  void ProduceGetResult(base::Value* result,
+                        const base::Value* pref_value,
+                        const std::string& level_of_control,
+                        const std::string& browser_pref,
+                        bool incognito);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // The name of the Chrome preference being retrieved. Used to avoid a second
+  // lookup from the extension API preference name.
+  std::string cached_browser_pref_;
+#endif
 };
 
 class SetPreferenceFunction : public PreferenceFunction {
@@ -206,6 +231,10 @@ class SetPreferenceFunction : public PreferenceFunction {
 
  protected:
   ~SetPreferenceFunction() override;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnLacrosSetSuccess();
+#endif
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -218,6 +247,10 @@ class ClearPreferenceFunction : public PreferenceFunction {
 
  protected:
   ~ClearPreferenceFunction() override;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnLacrosClearSuccess();
+#endif
 
   // ExtensionFunction:
   ResponseAction Run() override;

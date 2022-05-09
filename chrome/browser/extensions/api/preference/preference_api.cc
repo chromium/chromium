@@ -56,6 +56,10 @@
 #include "ash/constants/ash_pref_names.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/chromeos/extensions/controlled_pref_mapping.h"
+#endif
+
 using extensions::mojom::APIPermissionID;
 
 namespace extensions {
@@ -135,50 +139,54 @@ const PrefMappingEntry kPrefMapping[] = {
     {"animationPolicy", prefs::kAnimationPolicy,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"autoclick", ash::prefs::kAccessibilityAutoclickEnabled,
+// Below is the list of extension-controlled preferences where the underlying
+// feature being controlled exists in ash. They should be kept in sync/in order.
+// If a new extension-controlled pref of this type is added, it should be added
+// to both lists.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    {"autoclick", chromeos::prefs::kAccessibilityAutoclickEnabled,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
-    {"caretHighlight", ash::prefs::kAccessibilityCaretHighlightEnabled,
+    {"caretHighlight", chromeos::prefs::kAccessibilityCaretHighlightEnabled,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
-    {"cursorColor", ash::prefs::kAccessibilityCursorColorEnabled,
+    {"cursorColor", chromeos::prefs::kAccessibilityCursorColorEnabled,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
-    {"cursorHighlight", ash::prefs::kAccessibilityCursorHighlightEnabled,
+    {"cursorHighlight", chromeos::prefs::kAccessibilityCursorHighlightEnabled,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
-    {"dictation", ash::prefs::kAccessibilityDictationEnabled,
+    {"dictation", chromeos::prefs::kAccessibilityDictationEnabled,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
-    {"dockedMagnifier", ash::prefs::kDockedMagnifierEnabled,
+    {"dockedMagnifier", chromeos::prefs::kDockedMagnifierEnabled,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
-    {"focusHighlight", ash::prefs::kAccessibilityFocusHighlightEnabled,
+    {"focusHighlight", chromeos::prefs::kAccessibilityFocusHighlightEnabled,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
-    {"highContrast", ash::prefs::kAccessibilityHighContrastEnabled,
+    {"highContrast", chromeos::prefs::kAccessibilityHighContrastEnabled,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
-    {"largeCursor", ash::prefs::kAccessibilityLargeCursorEnabled,
+    {"largeCursor", chromeos::prefs::kAccessibilityLargeCursorEnabled,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
-    {"screenMagnifier", ash::prefs::kAccessibilityScreenMagnifierEnabled,
+    {"screenMagnifier", chromeos::prefs::kAccessibilityScreenMagnifierEnabled,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
-    {"selectToSpeak", ash::prefs::kAccessibilitySelectToSpeakEnabled,
+    {"selectToSpeak", chromeos::prefs::kAccessibilitySelectToSpeakEnabled,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
-    {"spokenFeedback", ash::prefs::kAccessibilitySpokenFeedbackEnabled,
+    {"spokenFeedback", chromeos::prefs::kAccessibilitySpokenFeedbackEnabled,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
-    {"stickyKeys", ash::prefs::kAccessibilityStickyKeysEnabled,
+    {"stickyKeys", chromeos::prefs::kAccessibilityStickyKeysEnabled,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
-    {"switchAccess", ash::prefs::kAccessibilitySwitchAccessEnabled,
+    {"switchAccess", chromeos::prefs::kAccessibilitySwitchAccessEnabled,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
-    {"virtualKeyboard", ash::prefs::kAccessibilityVirtualKeyboardEnabled,
+    {"virtualKeyboard", chromeos::prefs::kAccessibilityVirtualKeyboardEnabled,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
 #endif
@@ -326,9 +334,54 @@ class PrefMapping {
     return identity_transformer_.get();
   }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Given a pref name for an extension-controlled pref where the underlying
+  // pref is controlled by ash, returns the PrefPath used by the crosapi to set
+  // the pref in ash, or nullptr if no pref exists.
+  crosapi::mojom::PrefPath GetPrefPathForPrefName(
+      const std::string& pref_name) {
+    static base::NoDestructor<std::map<std::string, crosapi::mojom::PrefPath>>
+        name_to_extension_prefpath(
+            {{chromeos::prefs::kDockedMagnifierEnabled,
+              crosapi::mojom::PrefPath::kDockedMagnifierEnabled},
+             {chromeos::prefs::kAccessibilityAutoclickEnabled,
+              crosapi::mojom::PrefPath::kAccessibilityAutoclickEnabled},
+             {chromeos::prefs::kAccessibilityCaretHighlightEnabled,
+              crosapi::mojom::PrefPath::kAccessibilityCaretHighlightEnabled},
+             {chromeos::prefs::kAccessibilityCursorColorEnabled,
+              crosapi::mojom::PrefPath::kAccessibilityCursorColorEnabled},
+             {chromeos::prefs::kAccessibilityCursorHighlightEnabled,
+              crosapi::mojom::PrefPath::kAccessibilityCursorHighlightEnabled},
+             {chromeos::prefs::kAccessibilityDictationEnabled,
+              crosapi::mojom::PrefPath::kAccessibilityDictationEnabled},
+             {chromeos::prefs::kAccessibilityFocusHighlightEnabled,
+              crosapi::mojom::PrefPath::kAccessibilityFocusHighlightEnabled},
+             {chromeos::prefs::kAccessibilityHighContrastEnabled,
+              crosapi::mojom::PrefPath::kAccessibilityHighContrastEnabled},
+             {chromeos::prefs::kAccessibilityLargeCursorEnabled,
+              crosapi::mojom::PrefPath::kAccessibilityLargeCursorEnabled},
+             {chromeos::prefs::kAccessibilityScreenMagnifierEnabled,
+              crosapi::mojom::PrefPath::kAccessibilityScreenMagnifierEnabled},
+             {chromeos::prefs::kAccessibilitySelectToSpeakEnabled,
+              crosapi::mojom::PrefPath::kAccessibilitySelectToSpeakEnabled},
+             {chromeos::prefs::kAccessibilitySpokenFeedbackEnabled,
+              crosapi::mojom::PrefPath::
+                  kExtensionAccessibilitySpokenFeedbackEnabled},
+             {chromeos::prefs::kAccessibilityStickyKeysEnabled,
+              crosapi::mojom::PrefPath::kAccessibilityStickyKeysEnabled},
+             {chromeos::prefs::kAccessibilitySwitchAccessEnabled,
+              crosapi::mojom::PrefPath::kAccessibilitySwitchAccessEnabled},
+             {chromeos::prefs::kAccessibilityVirtualKeyboardEnabled,
+              crosapi::mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled}});
+    auto pref_path = name_to_extension_prefpath->find(pref_name);
+    return pref_path == name_to_extension_prefpath->end()
+               ? crosapi::mojom::PrefPath::kUnknown
+               : pref_path->second;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
  private:
   friend struct base::DefaultSingletonTraits<PrefMapping>;
-
   PrefMapping() {
     identity_transformer_ = std::make_unique<IdentityPrefTransformer>();
     for (const auto& pref : kPrefMapping) {
@@ -692,7 +745,7 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
     }
   }
 
-  // Obtain pref.
+  // Obtain and check read/write permission for pref.
   std::string browser_pref;
   APIPermissionID read_permission = APIPermissionID::kInvalid;
   APIPermissionID write_permission = APIPermissionID::kInvalid;
@@ -705,45 +758,126 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
               pref_key));
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Check whether this is a lacros extension controlled pref.
+  cached_browser_pref_ = browser_pref;
+  crosapi::mojom::PrefPath pref_path =
+      PrefMapping::GetInstance()->GetPrefPathForPrefName(cached_browser_pref_);
+  if (pref_path != crosapi::mojom::PrefPath::kUnknown) {
+    if (!profile->IsMainProfile()) {
+      return RespondNow(Error(
+          extensions::preference_api_constants::kPrimaryProfileOnlyErrorMessage,
+          pref_key));
+    }
+    // This pref should be read from ash.
+    auto* lacros_service = chromeos::LacrosService::Get();
+    if (!lacros_service ||
+        !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
+      return RespondNow(Error("OS Service is unavailable."));
+    }
+    lacros_service->GetRemote<crosapi::mojom::Prefs>()
+        ->GetExtensionPrefWithControl(
+            pref_path,
+            base::BindOnce(&GetPreferenceFunction::OnLacrosGetSuccess, this));
+    return RespondLater();
+  }
+#endif
+
   PrefService* prefs =
       extensions::preference_helpers::GetProfilePrefService(profile, incognito);
 
   const PrefService::Preference* pref = prefs->FindPreference(browser_pref);
   CHECK(pref);
 
-  base::Value result(base::Value::Type::DICTIONARY);
-
   // Retrieve level of control.
   std::string level_of_control =
       extensions::preference_helpers::GetLevelOfControl(
           profile, extension_id(), browser_pref, incognito);
-  result.SetStringKey(extensions::preference_api_constants::kLevelOfControl,
-                      level_of_control);
 
-  // Retrieve pref value.
+  base::Value result(base::Value::Type::DICTIONARY);
+  ProduceGetResult(&result, pref->GetValue(), level_of_control, browser_pref,
+                   incognito);
+
+  return RespondNow(OneArgument(std::move(result)));
+}
+
+void GetPreferenceFunction::ProduceGetResult(
+    base::Value* result,
+    const base::Value* pref_value,
+    const std::string& level_of_control,
+    const std::string& browser_pref,
+    bool incognito) {
   PrefTransformerInterface* transformer =
       PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
   std::unique_ptr<base::Value> transformed_value =
-      transformer->BrowserToExtensionPref(pref->GetValue(), incognito);
+      transformer->BrowserToExtensionPref(pref_value, incognito);
   if (!transformed_value) {
     // TODO(devlin): Can this happen?  When?  Should it be an error, or a bad
     // message?
     LOG(ERROR) << ErrorUtils::FormatErrorMessage(kConversionErrorMessage,
-                                                 pref->name());
-    return RespondNow(Error(kUnknownErrorDoNotUse));
+                                                 browser_pref);
+    return;
   }
-  result.SetKey(extensions::preference_api_constants::kValue,
-                base::Value::FromUniquePtrValue(std::move(transformed_value)));
+
+  result->SetKey(extensions::preference_api_constants::kValue,
+                 base::Value::FromUniquePtrValue(std::move(transformed_value)));
+  result->SetStringKey(extensions::preference_api_constants::kLevelOfControl,
+                       level_of_control);
 
   // Retrieve incognito status.
   if (incognito) {
     ExtensionPrefs* ep = ExtensionPrefs::Get(browser_context());
-    result.SetBoolKey(extensions::preference_api_constants::kIncognitoSpecific,
-                      ep->HasIncognitoPrefValue(browser_pref));
+    result->SetBoolKey(extensions::preference_api_constants::kIncognitoSpecific,
+                       ep->HasIncognitoPrefValue(browser_pref));
+  }
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void GetPreferenceFunction::OnLacrosGetSuccess(
+    absl::optional<::base::Value> opt_value,
+    crosapi::mojom::PrefControlState control_state) {
+  if (!browser_context()) {
+    return;
   }
 
-  return RespondNow(OneArgument(std::move(result)));
+  // Get read/write permissions and pref name again.
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+
+  std::string pref_key = args()[0].GetString();
+  const base::Value& details = args()[1];
+
+  bool incognito = false;
+  if (absl::optional<bool> result = details.FindBoolKey(
+          extensions::preference_api_constants::kIncognitoKey)) {
+    incognito = *result;
+  }
+
+  ::base::Value* pref_value = &opt_value.value();
+
+  std::string level_of_control;
+  switch (control_state) {
+    case crosapi::mojom::PrefControlState::kNotExtensionControllable:
+      level_of_control = preference_helpers::kNotControllable;
+      break;
+    case crosapi::mojom::PrefControlState::kLacrosExtensionControllable:
+      level_of_control = preference_helpers::kControllableByThisExtension;
+      break;
+    case crosapi::mojom::PrefControlState::kLacrosExtensionControlled:
+    default:
+      level_of_control = extensions::preference_helpers::GetLevelOfControl(
+          profile, extension_id(), cached_browser_pref_, incognito);
+      break;
+  }
+
+  base::Value result(base::Value::Type::DICTIONARY);
+
+  ProduceGetResult(&result, pref_value, level_of_control, cached_browser_pref_,
+                   incognito);
+
+  Respond(OneArgument(std::move(result)));
 }
+#endif
 
 SetPreferenceFunction::~SetPreferenceFunction() = default;
 
@@ -806,6 +940,28 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
         Error(extensions::preference_api_constants::kPermissionErrorMessage,
               pref_key));
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If the pref is ash-controlled, check that the service is present.
+  // If it isn't, don't allow the pref to be set.
+  crosapi::mojom::PrefPath pref_path =
+      PrefMapping::GetInstance()->GetPrefPathForPrefName(browser_pref);
+  chromeos::LacrosService* lacros_service;
+  if (pref_path != crosapi::mojom::PrefPath::kUnknown) {
+    if (!profile->IsMainProfile()) {
+      return RespondNow(Error(
+          extensions::preference_api_constants::kPrimaryProfileOnlyErrorMessage,
+          pref_key));
+    }
+    // This pref should be set in ash.
+    // Check that the service exists so we can set it.
+    lacros_service = chromeos::LacrosService::Get();
+    if (!lacros_service ||
+        !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
+      return RespondNow(Error("OS Service is unavailable."));
+    }
+  }
+#endif
+
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
   const PrefService::Preference* pref =
       prefs->pref_service()->FindPreference(browser_pref);
@@ -857,12 +1013,30 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
                                                scope, base::Value(false));
   }
 
-  preference_api->SetExtensionControlledPref(
-      extension_id(), browser_pref, scope,
-      base::Value::FromUniquePtrValue(std::move(browser_pref_value)));
+  base::Value val =
+      base::Value::FromUniquePtrValue(std::move(browser_pref_value));
+
+  preference_api->SetExtensionControlledPref(extension_id(), browser_pref,
+                                             scope, val.Clone());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (pref_path != crosapi::mojom::PrefPath::kUnknown &&
+      preference_api->DoesExtensionControlPref(extension_id(), browser_pref,
+                                               nullptr)) {
+    lacros_service->GetRemote<crosapi::mojom::Prefs>()->SetPref(
+        pref_path, val.Clone(),
+        base::BindOnce(&SetPreferenceFunction::OnLacrosSetSuccess, this));
+    return RespondLater();
+  }
+#endif
 
   return RespondNow(NoArguments());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void SetPreferenceFunction::OnLacrosSetSuccess() {
+  Respond(NoArguments());
+}
+#endif
 
 ClearPreferenceFunction::~ClearPreferenceFunction() = default;
 
@@ -906,6 +1080,31 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
         Error(extensions::preference_api_constants::kPermissionErrorMessage,
               pref_key));
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  // If the pref is ash-controlled, check that the service is present.
+  // If it isn't, don't allow the pref to be cleared.
+  crosapi::mojom::PrefPath pref_path =
+      PrefMapping::GetInstance()->GetPrefPathForPrefName(browser_pref);
+  chromeos::LacrosService* lacros_service;
+  if (pref_path != crosapi::mojom::PrefPath::kUnknown) {
+    if (!profile->IsMainProfile()) {
+      return RespondNow(Error(
+          extensions::preference_api_constants::kPrimaryProfileOnlyErrorMessage,
+          pref_key));
+    }
+    // This pref should be cleared in ash.
+    lacros_service = chromeos::LacrosService::Get();
+    if (!lacros_service ||
+        !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
+      return RespondNow(Error("OS Service is unavailable."));
+    }
+  }
+  bool did_just_control_pref =
+      PreferenceAPI::Get(browser_context())
+          ->DoesExtensionControlPref(extension_id(), browser_pref, nullptr);
+#endif
+
   PreferenceAPI::Get(browser_context())
       ->RemoveExtensionControlledPref(extension_id(), browser_pref, scope);
 
@@ -920,8 +1119,42 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
         ->RemoveExtensionControlledPref(extension_id(),
                                         prefs::kSafeBrowsingEnhanced, scope);
   }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (pref_path != crosapi::mojom::PrefPath::kUnknown &&
+      did_just_control_pref) {
+    // This is an ash pref and we need to update ash because the extension that
+    // just cleared the pref used to control it. Now, either another extension
+    // of lower precedence controls the pref (in which case we update the pref
+    // to that value), or no other extension has set the pref (in which case
+    // we can clear the value set by extensions in ash).
+    Profile* profile = Profile::FromBrowserContext(browser_context());
+    PrefService* pref_service =
+        extensions::preference_helpers::GetProfilePrefService(profile,
+                                                              incognito);
 
+    const PrefService::Preference* pref =
+        pref_service->FindPreference(browser_pref);
+    CHECK(pref);
+    if (pref->IsExtensionControlled()) {
+      lacros_service->GetRemote<crosapi::mojom::Prefs>()->SetPref(
+          pref_path, pref->GetValue()->Clone(),
+          base::BindOnce(&ClearPreferenceFunction::OnLacrosClearSuccess, this));
+      return RespondLater();
+    }
+    // No extension in lacros is claiming this pref.
+    lacros_service->GetRemote<crosapi::mojom::Prefs>()
+        ->ClearExtensionControlledPref(
+            pref_path,
+            base::BindOnce(&ClearPreferenceFunction::OnLacrosClearSuccess,
+                           this));
+    return RespondLater();
+  }
+#endif
   return RespondNow(NoArguments());
 }
-
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ClearPreferenceFunction::OnLacrosClearSuccess() {
+  Respond(NoArguments());
+}
+#endif
 }  // namespace extensions

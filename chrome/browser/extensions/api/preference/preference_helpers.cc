@@ -32,11 +32,6 @@ const char kRegularOnly[] = "regular_only";
 
 const char kLevelOfControlKey[] = "levelOfControl";
 
-const char kNotControllable[] = "not_controllable";
-const char kControlledByOtherExtensions[] = "controlled_by_other_extensions";
-const char kControllableByThisExtension[] = "controllable_by_this_extension";
-const char kControlledByThisExtension[] = "controlled_by_this_extension";
-
 }  // namespace
 
 bool StringToScope(const std::string& s,

@@ -28,6 +28,11 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 // This function registers Lacros-related profile specific prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+// Registers prefs used by extension-controlled prefs. In lacros, these prefs
+// hold the computed value across all extensions, which is then sent to ash.
+void RegisterExtensionControlledAshPrefs(
+    user_prefs::PrefRegistrySyncable* registry);
+
 }  // namespace lacros_prefs
 
 #endif  // CHROME_BROWSER_LACROS_LACROS_PREFS_H_
