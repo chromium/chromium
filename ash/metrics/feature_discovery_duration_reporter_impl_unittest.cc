@@ -47,9 +47,12 @@ class FeatureDiscoveryDurationReporterImplTest : public AshTestBase {
   }
 
   // Returns true if the feature discovery reporter has ongoing observations.
-  bool HasActiveObservation() {
-    return !GetFeatureDiscoveryDurationReporter()
-                ->active_time_recordings_.empty();
+  bool IsMockFeatureUnderActiveObservation() {
+    const auto& active_time_recordings =
+        GetFeatureDiscoveryDurationReporter()->active_time_recordings_;
+    return active_time_recordings.find(
+               feature_discovery::TrackableFeature::kMockFeature) !=
+           active_time_recordings.cend();
   }
 
   // AshTestBase:
@@ -161,7 +164,7 @@ TEST_F(FeatureDiscoveryDurationReporterImplTest, CountDurationInOneSession) {
 
   // Verify that the finished observation does not resume.
   EXPECT_TRUE(IsReporterActive());
-  EXPECT_FALSE(HasActiveObservation());
+  EXPECT_FALSE(IsMockFeatureUnderActiveObservation());
 }
 
 // Verifies that the feature discovery duration is recorded correctly across

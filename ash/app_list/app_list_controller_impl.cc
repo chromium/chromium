@@ -299,6 +299,7 @@ AppListControllerImpl::AppListControllerImpl()
   shell->window_tree_host_manager()->AddObserver(this);
   AssistantController::Get()->AddObserver(this);
   AssistantUiController::Get()->GetModel()->AddObserver(this);
+  FeatureDiscoveryDurationReporter::GetInstance()->AddObserver(this);
 }
 
 AppListControllerImpl::~AppListControllerImpl() {
@@ -577,9 +578,13 @@ void AppListControllerImpl::UpdateAppListWithNewTemporarySortOrder(
 
   if (new_order) {
     RecordAppListSortAction(*new_order, IsInTabletMode());
-    FeatureDiscoveryDurationReporter::GetInstance()->MaybeFinishObservation(
-        feature_discovery::TrackableFeature::
-            kAppListReorderAfterEducationNudge);
+
+    FeatureDiscoveryDurationReporter* reporter =
+        FeatureDiscoveryDurationReporter::GetInstance();
+    reporter->MaybeFinishObservation(feature_discovery::TrackableFeature::
+                                         kAppListReorderAfterEducationNudge);
+    reporter->MaybeFinishObservation(feature_discovery::TrackableFeature::
+                                         kAppListReorderAfterSessionActivation);
   }
 
   // Adapt the bubble app list to the new sorting order. NOTE: the bubble app
@@ -2083,6 +2088,7 @@ void AppListControllerImpl::Shutdown() {
   shell->wallpaper_controller()->RemoveObserver(this);
   shell->tablet_mode_controller()->RemoveObserver(this);
   shell->session_controller()->RemoveObserver(this);
+  FeatureDiscoveryDurationReporter::GetInstance()->RemoveObserver(this);
 
   badge_controller_->Shutdown();
 }
@@ -2147,6 +2153,15 @@ void AppListControllerImpl::RecordAnimationSmoothness() {
 void AppListControllerImpl::OnGoHomeWindowAnimationsEnded(int64_t display_id) {
   RecordAnimationSmoothness();
   OnHomeLauncherAnimationComplete(/*shown=*/true, display_id);
+}
+
+void AppListControllerImpl::OnReporterActivated() {
+  if (!features::IsProductivityLauncherEnabled())
+    return;
+
+  FeatureDiscoveryDurationReporter::GetInstance()->MaybeActivateObservation(
+      feature_discovery::TrackableFeature::
+          kAppListReorderAfterSessionActivation);
 }
 
 }  // namespace ash

@@ -40,6 +40,8 @@ class FeatureDiscoveryDurationReporterImpl
       feature_discovery::TrackableFeature feature) override;
   void MaybeFinishObservation(
       feature_discovery::TrackableFeature feature) override;
+  void AddObserver(ReporterObserver* observer) override;
+  void RemoveObserver(ReporterObserver* observer) override;
 
  private:
   friend class FeatureDiscoveryDurationReporterImplTest;
@@ -59,6 +61,8 @@ class FeatureDiscoveryDurationReporterImpl
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   bool is_active() const { return is_active_; }
+
+  base::ObserverList<ReporterObserver> observers_;
 
   // The mappings from trackable feature enum types to observation start
   // timestamps. It gets cleared when the reporter is deactivated. New entries

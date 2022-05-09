@@ -153,6 +153,16 @@ void FeatureDiscoveryDurationReporterImpl::MaybeFinishObservation(
   active_time_recordings_.erase(iter);
 }
 
+void FeatureDiscoveryDurationReporterImpl::AddObserver(
+    ReporterObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FeatureDiscoveryDurationReporterImpl::RemoveObserver(
+    ReporterObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void FeatureDiscoveryDurationReporterImpl::SetActive(bool active) {
   // Return early if:
   // 1. the activity state does not change; or
@@ -204,6 +214,9 @@ void FeatureDiscoveryDurationReporterImpl::Activate() {
     active_time_recordings_.emplace(feature_info.feature,
                                     base::TimeTicks::Now());
   }
+
+  for (ReporterObserver& observer : observers_)
+    observer.OnReporterActivated();
 }
 
 void FeatureDiscoveryDurationReporterImpl::Deactivate() {

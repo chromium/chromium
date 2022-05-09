@@ -258,6 +258,8 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ContextMenuSortItemsInTopLevel) {
   histograms.ExpectBucketCount(ash::kClamshellReorderActionHistogram,
                                ash::AppListSortOrder::kNameAlphabetical, 1);
   histograms.ExpectTotalCount(ash::kAppListSortDiscoveryDurationAfterNudge, 1);
+  histograms.ExpectTotalCount(ash::kAppListSortDiscoveryDurationAfterActivation,
+                              1);
 
   ReorderTopLevelAppsGridAndWaitForCompletion(ash::AppListSortOrder::kColor,
                                               MenuType::kAppListPageMenu);

@@ -18,11 +18,17 @@ const char kMockFeatureName[] = "kMockFeature";
 
 }  // namespace
 
-const std::array<TrackableFeatureInfo, 2> kTrackableFeatureArray{
-    TrackableFeatureInfo{TrackableFeature::kMockFeature, kMockFeatureName,
-                         kMockFeatureHistogram},
-    TrackableFeatureInfo{TrackableFeature::kAppListReorderAfterEducationNudge,
-                         "AppListReorderAfterEducationNudge",
-                         kAppListSortDiscoveryDurationAfterNudge}};
+const std::array<TrackableFeatureInfo, static_cast<int>(TrackableFeature::kMax)>
+    kTrackableFeatureArray{
+        TrackableFeatureInfo{TrackableFeature::kMockFeature, kMockFeatureName,
+                             kMockFeatureHistogram},
+        TrackableFeatureInfo{
+            TrackableFeature::kAppListReorderAfterEducationNudge,
+            "AppListReorderAfterEducationNudge",
+            kAppListSortDiscoveryDurationAfterNudge},
+        TrackableFeatureInfo{
+            TrackableFeature::kAppListReorderAfterSessionActivation,
+            "AppListReorderAfterSessionActivation",
+            kAppListSortDiscoveryDurationAfterActivation}};
 
 }  // namespace ash::feature_discovery

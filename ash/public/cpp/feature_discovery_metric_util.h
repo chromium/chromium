@@ -25,8 +25,13 @@ enum class ASH_PUBLIC_EXPORT TrackableFeature {
   // clamshell and another one for tablet.
   kAppListReorderAfterEducationNudge = 1,
 
+  // App list reorder after the user session activation.
+  // TODO(https://crbug.com/1316185): split this histogram into the one for
+  // clamshell and another one for tablet.
+  kAppListReorderAfterSessionActivation = 2,
+
   // Used to mark the end. It should always be the last one.
-  kMax = 2,
+  kMax = 3,
 };
 
 struct ASH_PUBLIC_EXPORT TrackableFeatureInfo {
@@ -42,8 +47,9 @@ struct ASH_PUBLIC_EXPORT TrackableFeatureInfo {
 
 // A hardcoded array of trackable features' info.
 // NOTE: update `kTrackableFeatureArray` if a new trackable feature is added.
-ASH_PUBLIC_EXPORT extern const std::array<TrackableFeatureInfo, 2>
-    kTrackableFeatureArray;
+ASH_PUBLIC_EXPORT extern const std::
+    array<TrackableFeatureInfo, static_cast<int>(TrackableFeature::kMax)>
+        kTrackableFeatureArray;
 
 }  // namespace ash::feature_discovery
 

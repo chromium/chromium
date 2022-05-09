@@ -307,6 +307,17 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
+<histogram name="Apps.AppList.AppListSortDiscoveryDurationAfterActivation"
+    units="ms" expires_after="M107">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The time duration between the earliest user session activation with the app
+    list sort enabled and the first sort usage. This metric is recorded when app
+    list sort is triggered.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.AppSearchProvider.QueryTime" units="ms"
     expires_after="2022-12-24">
   <owner>tbarzic@chromium.org</owner>

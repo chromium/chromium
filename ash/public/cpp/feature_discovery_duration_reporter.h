@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_FEATURE_DISCOVERY_DURATION_REPORTER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/observer_list_types.h"
 
 namespace ash {
 
@@ -32,6 +33,12 @@ enum class TrackableFeature;
 // In this case, the feature discovery time duration should be A + C.
 class ASH_PUBLIC_EXPORT FeatureDiscoveryDurationReporter {
  public:
+  class ReporterObserver : public base::CheckedObserver {
+   public:
+    // Called when the reporter is ready to use.
+    virtual void OnReporterActivated() = 0;
+  };
+
   FeatureDiscoveryDurationReporter();
   FeatureDiscoveryDurationReporter(const FeatureDiscoveryDurationReporter&) =
       delete;
@@ -50,6 +57,9 @@ class ASH_PUBLIC_EXPORT FeatureDiscoveryDurationReporter {
   // on this feature is in progress.
   virtual void MaybeFinishObservation(
       feature_discovery::TrackableFeature feature) = 0;
+
+  virtual void AddObserver(ReporterObserver* observer) = 0;
+  virtual void RemoveObserver(ReporterObserver* observer) = 0;
 };
 
 }  // namespace ash
