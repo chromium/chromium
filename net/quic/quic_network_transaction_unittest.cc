@@ -3286,7 +3286,7 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmed) {
                        client_maker_->MakeConnectionClosePacket(
                            packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
                            "No recent network activity after 4s. Timeout:4s"));
-  } else if (version_.UsesTls() || GetQuicRestartFlag(quic_default_on_pto2)) {
+  } else {
     // Settings were sent in the request packet so there is only 1 packet to
     // retransmit.
     // QuicConnection::OnRetransmissionTimeout skips a packet number when
@@ -3305,29 +3305,6 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmed) {
     // sending PTO packets.
     packet_num++;
     // PTO 3
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
-
-    quic_data.AddWrite(SYNCHRONOUS,
-                       client_maker_->MakeConnectionClosePacket(
-                           packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
-                           "No recent network activity after 4s. Timeout:4s"));
-  } else {
-    // Settings were sent in the request packet so there is only 1 packet to
-    // retransmit.
-    // TLP 1
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
-    // TLP 2
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
-    // RTO 1
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
-    // RTO 2
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
-    // RTO 3
     quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
                                         1, packet_num++, true));
 
@@ -3509,7 +3486,7 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmedThenBroken2) {
                        client_maker_->MakeConnectionClosePacket(
                            packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
                            "No recent network activity after 4s. Timeout:4s"));
-  } else if (version_.UsesTls() || GetQuicRestartFlag(quic_default_on_pto2)) {
+  } else {
     // Settings were sent in the request packet so there is only 1 packet to
     // retransmit.
     // QuicConnection::OnRetransmissionTimeout skips a packet number when
@@ -3528,27 +3505,6 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmedThenBroken2) {
     // sending PTO packets.
     packet_num++;
     // PTO 3
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
-
-    quic_data.AddWrite(SYNCHRONOUS,
-                       client_maker_->MakeConnectionClosePacket(
-                           packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
-                           "No recent network activity after 4s. Timeout:4s"));
-  } else {
-    // TLP 1
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
-    // TLP 2
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
-    // RTO 1
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
-    // RTO 2
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
-    // RTO 3
     quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
                                         1, packet_num++, true));
 

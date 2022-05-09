@@ -1989,11 +1989,8 @@ void QuicChromiumClientSession::OnConnectionClosed(
             "Net.QuicSession.TimedOutWithOpenStreams.HasUnackedPackets",
             connection()->sent_packet_manager().HasInFlightPackets());
         UMA_HISTOGRAM_COUNTS_1M(
-            "Net.QuicSession.TimedOutWithOpenStreams.ConsecutiveRTOCount",
-            connection()->sent_packet_manager().GetConsecutiveRtoCount());
-        UMA_HISTOGRAM_COUNTS_1M(
-            "Net.QuicSession.TimedOutWithOpenStreams.ConsecutiveTLPCount",
-            connection()->sent_packet_manager().GetConsecutiveTlpCount());
+            "Net.QuicSession.TimedOutWithOpenStreams.ConsecutivePTOCount",
+            connection()->sent_packet_manager().GetConsecutivePtoCount());
         base::UmaHistogramSparse(
             "Net.QuicSession.TimedOutWithOpenStreams.LocalPort",
             connection()->self_address().port());

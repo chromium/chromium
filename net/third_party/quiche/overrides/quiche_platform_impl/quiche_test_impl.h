@@ -17,7 +17,7 @@
 namespace quiche {
 namespace test {
 
-class QuicheTest : public ::testing::Test {
+class QuicheTestImpl : public ::testing::Test {
  private:
   QuicFlagChecker checker_;
   QuicFlagSaverImpl saver_;  // Save/restore all QUIC flag values.

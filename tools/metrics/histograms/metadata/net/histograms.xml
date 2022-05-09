@@ -3884,6 +3884,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.TimedOutWithOpenStreams.ConsecutivePTOCount"
+    units="units" expires_after="2023-05-11">
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    If a QUIC connection timed out with open streams, this contains a count of
+    consecutive PTOs.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.TimedOutWithOpenStreams.ConsecutiveRTOCount"
     units="units" expires_after="2023-05-11">
   <owner>dschinazi@chromium.org</owner>

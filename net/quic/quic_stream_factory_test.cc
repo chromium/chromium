@@ -14326,10 +14326,10 @@ TEST_P(QuicStreamFactoryTest, ConfigInitialRttForHandshake) {
   EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
 
   // The pending task is scheduled for handshake timeout retransmission,
-  // which is 2 * 400ms with crypto frames and 1.5 * 400ms otherwise.
+  // which is 3 * 400ms with crypto frames and 1.5 * 400ms otherwise.
   base::TimeDelta handshake_timeout =
       QuicVersionUsesCryptoFrames(version_.transport_version)
-          ? (GetQuicRestartFlag(quic_default_on_pto2) ? 3 : 2) * kInitialRtt
+          ? 3 * kInitialRtt
           : 1.5 * kInitialRtt;
   EXPECT_EQ(handshake_timeout, task_runner->NextPendingTaskDelay());
 
