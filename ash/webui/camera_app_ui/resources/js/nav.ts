@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertExists, assertInstanceof} from './assert.js';
-import * as dom from './dom.js';
+import {assert, assertInstanceof} from './assert.js';
 import {toggleExpertMode} from './expert.js';
 import * as state from './state.js';
 import * as toast from './toast.js';
@@ -52,45 +51,6 @@ export function setup(views: View[]): void {
 }
 
 /**
- * Activates the view to be focusable.
- *
- * @param index Index of the view.
- */
-function activate(index: number) {
-  // Restore the view's child elements' tabindex and then focus the view.
-  const view = allViews[index];
-  view.root.setAttribute('aria-hidden', 'false');
-  for (const element of dom.getAllFrom(view.root, '[tabindex]', HTMLElement)) {
-    if (element.dataset['tabindex'] === undefined) {
-      // First activation, no need to restore tabindex from data-tabindex.
-      continue;
-    }
-    element.setAttribute('tabindex', element.dataset['tabindex']);
-    element.removeAttribute('data-tabindex');
-  }
-  view.focus();
-}
-
-/**
- * Deactivates the view to be unfocusable.
- *
- * @param index Index of the view.
- */
-function deactivate(index: number) {
-  const view = allViews[index];
-  view.root.setAttribute('aria-hidden', 'true');
-  for (const element of dom.getAllFrom(view.root, '[tabindex]', HTMLElement)) {
-    element.dataset['tabindex'] =
-        assertExists(element.getAttribute('tabindex'));
-    element.setAttribute('tabindex', '-1');
-  }
-  const activeElement = document.activeElement;
-  if (activeElement instanceof HTMLElement) {
-    activeElement.blur();
-  }
-}
-
-/**
  * Checks if the view is already shown.
  *
  * @param index Index of the view.
@@ -109,16 +69,17 @@ function isShown(index: number): boolean {
  */
 function show(index: number): View {
   const view = allViews[index];
-  if (!isShown(index)) {
-    state.set(view.name, true);
-    view.layout();
-    if (index > topmostIndex) {
-      if (topmostIndex >= 0) {
-        deactivate(topmostIndex);
-      }
-      activate(index);
-      topmostIndex = index;
+  if (isShown(index)) {
+    return view;
+  }
+  state.set(view.name, true);
+  view.layout();
+  if (index > topmostIndex) {
+    if (topmostIndex >= 0) {
+      allViews[topmostIndex].onCoveredAsTop();
     }
+    topmostIndex = index;
+    allViews[index].onShownAsTop();
   }
   return view;
 }
@@ -144,13 +105,14 @@ function findNextTopmostIndex(): number {
  * @param index Index of the view.
  */
 function hide(index: number) {
+  assert(isShown(index));
   if (index === topmostIndex) {
-    deactivate(index);
+    allViews[index].onHideAsTop();
     const next = findNextTopmostIndex();
-    if (next >= 0) {
-      activate(next);
-    }
     topmostIndex = next;
+    if (next >= 0) {
+      allViews[next].onUncoveredAsTop(allViews[index].name);
+    }
   }
   state.set(allViews[index].name, false);
 }

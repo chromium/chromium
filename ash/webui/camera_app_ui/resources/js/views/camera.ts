@@ -254,6 +254,9 @@ export class Camera extends View implements CameraViewUI {
           state.set(state.State.MODE_SWITCHING, true);
           const isSuccess = await this.cameraManager.switchMode(mode);
           state.set(state.State.MODE_SWITCHING, false, {hasError: !isSuccess});
+          if (isSuccess) {
+            this.focusShutterButton();
+          }
         }
       });
     }
@@ -360,13 +363,8 @@ export class Camera extends View implements CameraViewUI {
     // to take document photo with space key as shortcut. See b/196907822.
     const checkRefocus = () => {
       if (!state.get(state.State.CAMERA_CONFIGURING) && state.get(Mode.SCAN) &&
-          this.scanOptions.isDocumentModeEanbled() &&
-          nav.isTopMostView(this.name)) {
-        for (const btn of dom.getAll('button.shutter', HTMLButtonElement)) {
-          if (btn.offsetParent !== null) {
-            btn.focus();
-          }
-        }
+          this.scanOptions.isDocumentModeEanbled()) {
+        this.focusShutterButton();
       }
     };
     state.addObserver(state.State.CAMERA_CONFIGURING, checkRefocus);
@@ -377,27 +375,46 @@ export class Camera extends View implements CameraViewUI {
     return this.subViews;
   }
 
-  override focus(): void {
-    (async () => {
-      await this.cameraReady.wait();
-
-      // Check the view is still on the top after await.
-      if (!nav.isTopMostView(ViewName.CAMERA)) {
-        return;
+  private focusShutterButton(): void {
+    if (!nav.isTopMostView(this.name)) {
+      return;
+    }
+    // Avoid focusing invisible shutters.
+    for (const btn of dom.getAll('button.shutter', HTMLButtonElement)) {
+      if (btn.offsetParent !== null) {
+        btn.focus();
       }
+    }
+  }
 
-      if (newFeatureToast.isShowing()) {
-        newFeatureToast.focus();
-        return;
-      }
+  private async defaultFocus(): Promise<void> {
+    await this.cameraReady.wait();
 
-      // Avoid focusing invisible shutters.
-      for (const btn of dom.getAll('button.shutter', HTMLButtonElement)) {
-        if (btn.offsetParent !== null) {
-          btn.focus();
-        }
-      }
-    })();
+    // Check the view is still on the top after await.
+    if (!nav.isTopMostView(ViewName.CAMERA)) {
+      return;
+    }
+
+    if (newFeatureToast.isShowing()) {
+      newFeatureToast.focus();
+      return;
+    }
+
+    this.focusShutterButton();
+  }
+
+  override onShownAsTop(): void {
+    this.defaultFocus();
+  }
+
+  override onUncoveredAsTop(viewName: ViewName): void {
+    if ([ViewName.SETTINGS, ViewName.OPTION_PANEL].includes(viewName)) {
+      // Don't refocus on shutter button when coming back from setting menu.
+      super.onUncoveredAsTop(viewName);
+    } else {
+      this.setFocusable();
+      this.defaultFocus();
+    }
   }
 
   /**
@@ -415,7 +432,8 @@ export class Camera extends View implements CameraViewUI {
 
     state.set(state.State.TAKING, true);
     this.shutterType = shutterType;
-    this.focus();  // Refocus the visible shutter button for ChromeVox.
+    // Refocus the visible shutter button for ChromeVox.
+    this.focusShutterButton();
     this.take = (async () => {
       let hasError = false;
       try {
@@ -449,7 +467,8 @@ export class Camera extends View implements CameraViewUI {
           hasError,
           facing: this.getFacing(),
         });
-        this.focus();  // Refocus the visible shutter button for ChromeVox.
+        // Refocus the visible shutter button for ChromeVox.
+        this.focusShutterButton();
       }
     })();
     return this.take;

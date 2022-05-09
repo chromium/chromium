@@ -33,11 +33,10 @@ import {VideoResolutionSettings} from './video_resolution.js';
 const helpUrl =
     'https://support.google.com/chromebook/?p=camera_usage_on_chromebook';
 
-function bindButton(
-    openerId: string, callback: (element: HTMLElement) => void): void {
+function bindButton(openerId: string, callback: () => void): void {
   const opener = dom.get(`#${openerId}`, HTMLElement);
   opener.addEventListener('click', () => {
-    callback(opener);
+    callback();
   });
 }
 
@@ -64,19 +63,16 @@ export class PrimarySettings extends BaseSettings {
 
     bindButton(
         'settings-photo-resolution',
-        (element) =>
-            this.openSubSettings(element, ViewName.PHOTO_RESOLUTION_SETTINGS));
+        () => this.openSubSettings(ViewName.PHOTO_RESOLUTION_SETTINGS));
     bindButton(
         'settings-photo-aspect-ratio',
-        (element) => this.openSubSettings(
-            element, ViewName.PHOTO_ASPECT_RATIO_SETTINGS));
+        () => this.openSubSettings(ViewName.PHOTO_ASPECT_RATIO_SETTINGS));
     bindButton(
         'settings-video-resolution',
-        (element) =>
-            this.openSubSettings(element, ViewName.VIDEO_RESOLUTION_SETTINGS));
+        () => this.openSubSettings(ViewName.VIDEO_RESOLUTION_SETTINGS));
     bindButton(
         'settings-expert',
-        (element) => this.openSubSettings(element, ViewName.EXPERT_SETTINGS));
+        () => this.openSubSettings(ViewName.EXPERT_SETTINGS));
     bindButton('settings-feedback', () => {
       // Prevent setting view overlapping preview when sending app
       // window feedback screenshot b/155938542.
@@ -217,12 +213,9 @@ export class PrimarySettings extends BaseSettings {
   /**
    * Opens sub-settings.
    *
-   * @param opener The DOM element triggering the open.
    * @param name Name of settings view.
    */
-  private async openSubSettings(opener: HTMLElement, name: ViewName):
-      Promise<void> {
-    this.focusElement = opener;
+  private async openSubSettings(name: ViewName): Promise<void> {
     // Dismiss primary-settings if sub-settings was dismissed by background
     // click.
     const cond = await nav.open(name);
