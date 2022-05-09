@@ -22,10 +22,6 @@ WrappingRendererFactorySelector::WrappingRendererFactorySelector(
 
 WrappingRendererFactorySelector::~WrappingRendererFactorySelector() = default;
 
-media::RendererType WrappingRendererFactorySelector::GetCurrentRendererType() {
-  return media::RendererType::kCastStreaming;
-}
-
 media::RendererFactory* WrappingRendererFactorySelector::GetCurrentFactory() {
   DCHECK(wrapping_factory_);
   media::RendererFactory* wrapped_factory =

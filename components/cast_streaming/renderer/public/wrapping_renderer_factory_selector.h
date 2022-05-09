@@ -29,7 +29,6 @@ class WrappingRendererFactorySelector : public media::RendererFactorySelector {
   ~WrappingRendererFactorySelector() override;
 
   // media::RendererFactorySelector overrides.
-  media::RendererType GetCurrentRendererType() override;
   media::RendererFactory* GetCurrentFactory() override;
 
  private:
