@@ -682,6 +682,7 @@ test("gpu_unittests") {
     "//testing/gtest",
     "//third_party/angle:translator",
     "//third_party/mesa_headers",
+    "//third_party/re2",
     "//ui/gfx",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
