@@ -74,7 +74,7 @@ bool ArcDiskQuotaBridge::convertPathForSetProjectId(
   *child_path_out = base::FilePath();
   if (kDownloadPath.IsParent(android_path)) {
     // /storage/emulated/0/Download/* =>
-    //     parent=/home/user/<hash>/Downloads/, child=*
+    //     parent=/home/user/<hash>/MyFiles/Downloads/, child=*
     *parent_path_out =
         user_data_auth::SetProjectIdAllowedPathType::PATH_DOWNLOADS;
     return kDownloadPath.AppendRelativePath(android_path, child_path_out);
