@@ -15,7 +15,7 @@ namespace prerender {
 
 namespace {
 
-bool ListEntryMatches(base::Value::ListView list,
+bool ListEntryMatches(const base::Value::List& list,
                       size_t index,
                       const char* expected_url,
                       FinalStatus expected_final_status,
@@ -23,27 +23,27 @@ bool ListEntryMatches(base::Value::ListView list,
                       const std::string& expected_end_time) {
   if (index >= list.size())
     return false;
-  base::Value& dict = list[index];
+  const base::Value& dict = list[index];
   if (!dict.is_dict())
     return false;
   if (dict.DictSize() != 4u)
     return false;
-  std::string* url = dict.FindStringPath("url");
+  const std::string* url = dict.FindStringPath("url");
   if (!url)
     return false;
   if (*url != expected_url)
     return false;
-  std::string* final_status = dict.FindStringPath("final_status");
+  const std::string* final_status = dict.FindStringPath("final_status");
   if (!final_status)
     return false;
   if (*final_status != NameFromFinalStatus(expected_final_status))
     return false;
-  std::string* origin = dict.FindStringPath("origin");
+  const std::string* origin = dict.FindStringPath("origin");
   if (!origin)
     return false;
   if (*origin != NameFromOrigin(expected_origin))
     return false;
-  std::string* end_time = dict.FindStringPath("end_time");
+  const std::string* end_time = dict.FindStringPath("end_time");
   if (!end_time)
     return false;
   if (*end_time != expected_end_time)
@@ -52,16 +52,12 @@ bool ListEntryMatches(base::Value::ListView list,
 }
 
 TEST(PrerenderHistoryTest, GetAsValue) {
-  std::unique_ptr<base::Value> entry_value;
-
   // Create a history with only 2 values.
   PrerenderHistory history(2);
 
   // Make sure an empty list exists when retrieving as value.
-  entry_value = history.CopyEntriesAsValue();
-  ASSERT_TRUE(entry_value.get() != nullptr);
-  ASSERT_TRUE(entry_value->is_list());
-  EXPECT_TRUE(entry_value->GetListDeprecated().empty());
+  base::Value::List entry_value = history.CopyEntriesAsValue();
+  EXPECT_TRUE(entry_value.empty());
 
   // Base time used for all events.  Each event is given a time 1 millisecond
   // after that of the previous one.
@@ -75,11 +71,9 @@ TEST(PrerenderHistoryTest, GetAsValue) {
                                       kFirstOrigin, epoch_start);
   history.AddEntry(entry_first);
   entry_value = history.CopyEntriesAsValue();
-  ASSERT_TRUE(entry_value.get() != nullptr);
-  ASSERT_TRUE(entry_value->is_list());
-  EXPECT_EQ(1u, entry_value->GetListDeprecated().size());
-  EXPECT_TRUE(ListEntryMatches(entry_value->GetListDeprecated(), 0u, kFirstUrl,
-                               kFirstFinalStatus, kFirstOrigin, "0"));
+  EXPECT_EQ(1u, entry_value.size());
+  EXPECT_TRUE(ListEntryMatches(entry_value, 0u, kFirstUrl, kFirstFinalStatus,
+                               kFirstOrigin, "0"));
 
   // Add a second entry and make sure both first and second appear.
   const char* const kSecondUrl = "http://www.beta.com/";
@@ -90,13 +84,11 @@ TEST(PrerenderHistoryTest, GetAsValue) {
                                        epoch_start + base::Milliseconds(1));
   history.AddEntry(entry_second);
   entry_value = history.CopyEntriesAsValue();
-  ASSERT_TRUE(entry_value.get() != nullptr);
-  ASSERT_TRUE(entry_value->is_list());
-  EXPECT_EQ(2u, entry_value->GetListDeprecated().size());
-  EXPECT_TRUE(ListEntryMatches(entry_value->GetListDeprecated(), 0u, kSecondUrl,
-                               kSecondFinalStatus, kSecondOrigin, "1"));
-  EXPECT_TRUE(ListEntryMatches(entry_value->GetListDeprecated(), 1u, kFirstUrl,
-                               kFirstFinalStatus, kFirstOrigin, "0"));
+  EXPECT_EQ(2u, entry_value.size());
+  EXPECT_TRUE(ListEntryMatches(entry_value, 0u, kSecondUrl, kSecondFinalStatus,
+                               kSecondOrigin, "1"));
+  EXPECT_TRUE(ListEntryMatches(entry_value, 1u, kFirstUrl, kFirstFinalStatus,
+                               kFirstOrigin, "0"));
 
   // Add a third entry and make sure that the first one drops off.
   const char* const kThirdUrl = "http://www.gamma.com/";
@@ -107,20 +99,16 @@ TEST(PrerenderHistoryTest, GetAsValue) {
                                       epoch_start + base::Milliseconds(2));
   history.AddEntry(entry_third);
   entry_value = history.CopyEntriesAsValue();
-  ASSERT_TRUE(entry_value.get() != nullptr);
-  ASSERT_TRUE(entry_value->is_list());
-  EXPECT_EQ(2u, entry_value->GetListDeprecated().size());
-  EXPECT_TRUE(ListEntryMatches(entry_value->GetListDeprecated(), 0u, kThirdUrl,
-                               kThirdFinalStatus, kThirdOrigin, "2"));
-  EXPECT_TRUE(ListEntryMatches(entry_value->GetListDeprecated(), 1u, kSecondUrl,
-                               kSecondFinalStatus, kSecondOrigin, "1"));
+  EXPECT_EQ(2u, entry_value.size());
+  EXPECT_TRUE(ListEntryMatches(entry_value, 0u, kThirdUrl, kThirdFinalStatus,
+                               kThirdOrigin, "2"));
+  EXPECT_TRUE(ListEntryMatches(entry_value, 1u, kSecondUrl, kSecondFinalStatus,
+                               kSecondOrigin, "1"));
 
   // Make sure clearing history acts as expected.
   history.Clear();
   entry_value = history.CopyEntriesAsValue();
-  ASSERT_TRUE(entry_value.get() != nullptr);
-  ASSERT_TRUE(entry_value->is_list());
-  EXPECT_TRUE(entry_value->GetListDeprecated().empty());
+  EXPECT_TRUE(entry_value.empty());
 }
 
 }  // namespace

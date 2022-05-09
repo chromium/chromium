@@ -33,24 +33,23 @@ void PrerenderHistory::Clear() {
   entries_.clear();
 }
 
-std::unique_ptr<base::Value> PrerenderHistory::CopyEntriesAsValue() const {
-  auto return_list = std::make_unique<base::ListValue>();
+base::Value::List PrerenderHistory::CopyEntriesAsValue() const {
+  base::Value::List return_list;
   // Javascript needs times in terms of milliseconds since Jan 1, 1970.
   base::Time epoch_start = base::Time::UnixEpoch();
   for (const Entry& entry : base::Reversed(entries_)) {
-    auto entry_dict = std::make_unique<base::DictionaryValue>();
-    entry_dict->SetString("url", entry.url.spec());
-    entry_dict->SetString("final_status",
-                          NameFromFinalStatus(entry.final_status));
-    entry_dict->SetString("origin", NameFromOrigin(entry.origin));
+    base::Value::Dict entry_dict;
+    entry_dict.Set("url", entry.url.spec());
+    entry_dict.Set("final_status", NameFromFinalStatus(entry.final_status));
+    entry_dict.Set("origin", NameFromOrigin(entry.origin));
     // Use a string to prevent overflow, as Values don't support 64-bit
     // integers.
-    entry_dict->SetString(
+    entry_dict.Set(
         "end_time",
         base::NumberToString((entry.end_time - epoch_start).InMilliseconds()));
-    return_list->Append(std::move(entry_dict));
+    return_list.Append(std::move(entry_dict));
   }
-  return std::move(return_list);
+  return return_list;
 }
 
 }  // namespace prerender

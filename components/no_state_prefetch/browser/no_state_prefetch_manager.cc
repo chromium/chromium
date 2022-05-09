@@ -374,8 +374,8 @@ std::unique_ptr<base::DictionaryValue> NoStatePrefetchManager::CopyAsValue()
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto dict_value = std::make_unique<base::DictionaryValue>();
-  dict_value->SetKey("history", base::Value::FromUniquePtrValue(
-                                    prerender_history_->CopyEntriesAsValue()));
+  dict_value->GetDict().Set("history",
+                            prerender_history_->CopyEntriesAsValue());
   dict_value->SetKey(
       "active", base::Value::FromUniquePtrValue(GetActivePrerendersAsValue()));
   dict_value->SetBoolKey("enabled",
@@ -931,7 +931,8 @@ NoStatePrefetchManager::GetActivePrerendersAsValue() const {
   for (const auto& prefetch : active_prefetches_) {
     auto prefetch_value = prefetch->contents()->GetAsValue();
     if (prefetch_value)
-      list_value->Append(std::move(prefetch_value));
+      list_value->GetList().Append(
+          base::Value::FromUniquePtrValue(std::move(prefetch_value)));
   }
   return list_value;
 }

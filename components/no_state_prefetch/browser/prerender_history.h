@@ -11,13 +11,10 @@
 
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "url/gurl.h"
-
-namespace base {
-class Value;
-}
 
 namespace prerender {
 
@@ -70,8 +67,8 @@ class PrerenderHistory {
   // Deletes all history entries.
   void Clear();
 
-  // Retrieves the entries as a value which can be displayed.
-  std::unique_ptr<base::Value> CopyEntriesAsValue() const;
+  // Retrieves the entries as a list of values which can be displayed.
+  base::Value::List CopyEntriesAsValue() const;
 
  private:
   std::list<Entry> entries_;
