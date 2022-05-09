@@ -146,10 +146,10 @@ void StartupAppLauncher::OnKioskAppDataLoadStatusChanged(
     const std::string& app_id) {
   DCHECK(state_ == LaunchState::kWaitingForCache);
 
-  kiosk_app_manager_observation_.Reset();
-
   if (app_id != app_id_)
     return;
+
+  kiosk_app_manager_observation_.Reset();
 
   if (KioskAppManager::Get()->HasCachedCrx(app_id_))
     BeginInstall();
