@@ -92,16 +92,10 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
 
  protected:
   static void ReportLongIntervalHistograms(
-      const UsageScenarioDataStore::IntervalData& interval_data,
       const ProcessMonitor::Metrics& aggregated_process_metrics,
       base::TimeDelta interval_duration,
-      BatteryDischarge battery_discharge
-#if BUILDFLAG(IS_MAC)
-      ,
-      const absl::optional<CoalitionResourceUsageRate>&
-          coalition_resource_usage_rate
-#endif
-  );
+      BatteryDischarge battery_discharge,
+      const std::vector<const char*> histogram_suffixes);
 
 #if BUILDFLAG(IS_MAC)
   // Emit trace event when CPU usage is high for 10 secondes or more.

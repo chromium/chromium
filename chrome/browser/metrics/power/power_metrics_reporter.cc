@@ -141,19 +141,12 @@ void PowerMetricsReporter::OnAggregatedMetricsSampled(
 }
 
 void PowerMetricsReporter::ReportLongIntervalHistograms(
-    const UsageScenarioDataStore::IntervalData& interval_data,
     const ProcessMonitor::Metrics& aggregated_process_metrics,
     base::TimeDelta interval_duration,
-    BatteryDischarge battery_discharge
-#if BUILDFLAG(IS_MAC)
-    ,
-    const absl::optional<CoalitionResourceUsageRate>&
-        coalition_resource_usage_rate
-#endif
-) {
-  const auto suffixes = GetLongIntervalSuffixes(interval_data);
+    BatteryDischarge battery_discharge,
+    const std::vector<const char*> histogram_suffixes) {
   ReportAggregatedProcessMetricsHistograms(aggregated_process_metrics,
-                                           suffixes);
+                                           histogram_suffixes);
 
   // Ratio by which the time elapsed can deviate from
   // |ProcessMonitor::kGatherInterval| without invalidating this sample.
@@ -164,13 +157,8 @@ void PowerMetricsReporter::ReportLongIntervalHistograms(
           ProcessMonitor::kGatherInterval * kTolerableTimeElapsedRatio)) {
     battery_discharge.mode = BatteryDischargeMode::kInvalidInterval;
   }
-  ReportBatteryHistograms(interval_duration, battery_discharge, suffixes);
-#if BUILDFLAG(IS_MAC)
-  if (coalition_resource_usage_rate.has_value()) {
-    ReportResourceCoalitionHistograms(coalition_resource_usage_rate.value(),
-                                      suffixes);
-  }
-#endif
+  ReportBatteryHistograms(interval_duration, battery_discharge,
+                          histogram_suffixes);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -230,6 +218,15 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
   auto long_interval_data =
       long_usage_scenario_data_store_->ResetIntervalData();
 
+  // Report UKMs.
+  ReportUKMs(long_interval_data, aggregated_process_metrics, interval_duration,
+             battery_discharge);
+
+  // Report histograms.
+  auto long_interval_suffixes = GetLongIntervalSuffixes(long_interval_data);
+  ReportLongIntervalHistograms(aggregated_process_metrics, interval_duration,
+                               battery_discharge, long_interval_suffixes);
+
 #if BUILDFLAG(IS_MAC)
   // Sample coalition resource usage rate.
   absl::optional<power_metrics::CoalitionResourceUsageRate>
@@ -238,21 +235,14 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
       long_interval_resource_usage_rate;
   coalition_resource_usage_provider_->EndIntervals(
       &short_interval_resource_usage_rate, &long_interval_resource_usage_rate);
-#endif  // BUILDFLAG(IS_MAC)
 
-  // Report UKMs.
-  ReportUKMs(long_interval_data, aggregated_process_metrics, interval_duration,
-             battery_discharge);
+  // Report resource coalition histograms for the long interval.
+  if (long_interval_resource_usage_rate.has_value()) {
+    ReportResourceCoalitionHistograms(long_interval_resource_usage_rate.value(),
+                                      long_interval_suffixes);
+  }
 
-  // Report histograms.
-  ReportLongIntervalHistograms(long_interval_data, aggregated_process_metrics,
-                               interval_duration, battery_discharge
-#if BUILDFLAG(IS_MAC)
-                               ,
-                               long_interval_resource_usage_rate
-#endif
-  );
-#if BUILDFLAG(IS_MAC)
+  // Then do it for the short interval.
   auto short_interval_data =
       short_usage_scenario_data_store_->ResetIntervalData();
   const ScenarioParams short_interval_scenario_params =
