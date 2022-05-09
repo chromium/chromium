@@ -726,6 +726,10 @@ void BookmarksIOFunction::ShowSelectFileDialog(
   if (!dispatcher())
     return;  // Extension was unloaded.
 
+  // Early return if the select file dialog is already active.
+  if (select_file_dialog_)
+    return;
+
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Balanced in one of the three callbacks of SelectFileDialog:
@@ -751,11 +755,13 @@ void BookmarksIOFunction::ShowSelectFileDialog(
 }
 
 void BookmarksIOFunction::FileSelectionCanceled(void* params) {
+  select_file_dialog_.reset();
   Release();  // Balanced in BookmarksIOFunction::SelectFile()
 }
 
 void BookmarksIOFunction::MultiFilesSelected(
     const std::vector<base::FilePath>& files, void* params) {
+  select_file_dialog_.reset();
   Release();  // Balanced in BookmarsIOFunction::SelectFile()
   NOTREACHED() << "Should not be able to select multiple files";
 }
@@ -787,6 +793,7 @@ void BookmarksImportFunction::FileSelected(const base::FilePath& path,
 
   importer::LogImporterUseToMetrics("BookmarksAPI",
                                     importer::TYPE_BOOKMARKS_FILE);
+  select_file_dialog_.reset();
   Release();  // Balanced in BookmarksIOFunction::SelectFile()
 }
 
@@ -813,6 +820,7 @@ void BookmarksExportFunction::FileSelected(const base::FilePath& path,
                                            int index,
                                            void* params) {
   bookmark_html_writer::WriteBookmarks(GetProfile(), path, nullptr);
+  select_file_dialog_.reset();
   Release();  // Balanced in BookmarksIOFunction::SelectFile()
 }
 
