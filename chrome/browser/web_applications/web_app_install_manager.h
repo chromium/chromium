@@ -65,16 +65,6 @@ class WebAppInstallManager final : public SyncInstallDelegate {
                                   webapps::WebappInstallSource install_source,
                                   WebAppManifestCheckCallback callback);
 
-  // Infers WebApp info from the blink renderer process and then retrieves a
-  // manifest in a way similar to |InstallWebAppFromManifest|. If the manifest
-  // is incomplete or missing, the inferred info is used.
-  void InstallWebAppFromManifestWithFallback(
-      content::WebContents* contents,
-      WebAppInstallFlow flow,
-      webapps::WebappInstallSource install_source,
-      WebAppInstallDialogCallback dialog_callback,
-      OnceInstallCallback callback);
-
   void InstallSubApp(const AppId& parent_app_id,
                      const GURL& install_url,
                      OnceInstallCallback callback);

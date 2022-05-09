@@ -127,26 +127,6 @@ void WebAppInstallManager::LoadWebAppAndCheckManifest(
   tasks_.insert(std::move(task));
 }
 
-void WebAppInstallManager::InstallWebAppFromManifestWithFallback(
-    content::WebContents* contents,
-    WebAppInstallFlow flow,
-    webapps::WebappInstallSource install_surface,
-    WebAppInstallDialogCallback dialog_callback,
-    OnceInstallCallback callback) {
-  if (!started_)
-    return;
-
-  auto task = std::make_unique<WebAppInstallTask>(profile_, finalizer_,
-                                                  data_retriever_factory_.Run(),
-                                                  registrar_, install_surface);
-  task->InstallWebAppFromManifestWithFallback(
-      contents, flow, std::move(dialog_callback),
-      base::BindOnce(&WebAppInstallManager::OnInstallTaskCompleted,
-                     GetWeakPtr(), task.get(), std::move(callback)));
-
-  tasks_.insert(std::move(task));
-}
-
 void WebAppInstallManager::InstallSubApp(const AppId& parent_app_id,
                                          const GURL& install_url,
                                          OnceInstallCallback callback) {

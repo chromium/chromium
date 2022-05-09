@@ -291,23 +291,6 @@ class WebAppInstallManagerTest
     webapps::InstallResultCode code;
   };
 
-  InstallResult InstallWebAppFromManifestWithFallback() {
-    InstallResult result;
-    base::RunLoop run_loop;
-    install_manager().InstallWebAppFromManifestWithFallback(
-        web_contents(), WebAppInstallFlow::kInstallSite,
-        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-        base::BindOnce(test::TestAcceptDialogCallback),
-        base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                       webapps::InstallResultCode code) {
-          result.app_id = installed_app_id;
-          result.code = code;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return result;
-  }
-
   InstallResult InstallSubApp(const AppId& parent_app_id,
                               const GURL& install_url) {
     UseDefaultDataRetriever(install_url);
@@ -1211,43 +1194,6 @@ TEST_P(WebAppInstallManagerTest, DefaultNotActivelyInstalled) {
   InitRegistrarWithApp(std::move(default_app));
 
   EXPECT_FALSE(registrar().IsActivelyInstalled(app_id));
-}
-
-TEST_P(WebAppInstallManagerTest_SyncOnly,
-       InstallWebAppFromManifestWithFallback_OverwriteIsLocallyInstalled) {
-  const GURL start_url{"https://example.com/path"};
-  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
-
-  {
-    std::unique_ptr<WebApp> app_in_sync_install =
-        CreateWebAppFromSyncAndPendingInstallation(
-            start_url, "Name from sync",
-            /*user_display_mode=*/UserDisplayMode::kStandalone, SK_ColorRED,
-            /*is_locally_installed=*/false, /*scope=*/GURL(),
-            /*icon_infos=*/{});
-
-    InitRegistrarWithApp(std::move(app_in_sync_install));
-  }
-
-  EXPECT_FALSE(registrar().IsLocallyInstalled(app_id));
-  EXPECT_FALSE(registrar().IsActivelyInstalled(app_id));
-  EXPECT_EQ(DisplayMode::kBrowser,
-            registrar().GetAppEffectiveDisplayMode(app_id));
-
-  // DefaultDataRetriever returns DisplayMode::kStandalone app's display mode.
-  UseDefaultDataRetriever(start_url);
-
-  InstallResult result = InstallWebAppFromManifestWithFallback();
-  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
-  EXPECT_EQ(app_id, result.app_id);
-
-  EXPECT_TRUE(registrar().IsInstalled(app_id));
-  EXPECT_TRUE(registrar().IsLocallyInstalled(app_id));
-  EXPECT_TRUE(registrar().IsActivelyInstalled(app_id));
-  // InstallWebAppFromManifestWithFallback sets user_display_mode to kBrowser
-  // because TestAcceptDialogCallback doesn't set open_as_window to true.
-  EXPECT_EQ(DisplayMode::kBrowser,
-            registrar().GetAppEffectiveDisplayMode(app_id));
 }
 
 TEST_P(WebAppInstallManagerTest_SyncOnly,
