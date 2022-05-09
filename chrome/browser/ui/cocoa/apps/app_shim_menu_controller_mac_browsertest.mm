@@ -31,20 +31,17 @@ namespace {
 
 class AppShimMenuControllerBrowserTest
     : public extensions::PlatformAppBrowserTest {
- protected:
-  // The apps that can be installed and launched by SetUpApps().
-  enum AvailableApps { PACKAGED_1 = 0x1, PACKAGED_2 = 0x2, HOSTED = 0x4 };
-
-  AppShimMenuControllerBrowserTest()
-      : app_1_(nullptr),
-        app_2_(nullptr),
-        hosted_app_(nullptr),
-        initial_menu_item_count_(0) {}
-
+ public:
   AppShimMenuControllerBrowserTest(const AppShimMenuControllerBrowserTest&) =
       delete;
   AppShimMenuControllerBrowserTest& operator=(
       const AppShimMenuControllerBrowserTest&) = delete;
+
+ protected:
+  // The apps that can be installed and launched by SetUpApps().
+  enum AvailableApps { PACKAGED_1 = 0x1, PACKAGED_2 = 0x2, HOSTED = 0x4 };
+
+  AppShimMenuControllerBrowserTest() = default;
 
   // Start testing apps and wait for them to launch. |flags| is a bitmask of
   // AvailableApps.
@@ -126,10 +123,10 @@ class AppShimMenuControllerBrowserTest
     return window_list.front();
   }
 
-  const extensions::Extension* app_1_;
-  const extensions::Extension* app_2_;
-  const extensions::Extension* hosted_app_;
-  NSUInteger initial_menu_item_count_;
+  const extensions::Extension* app_1_ = nullptr;
+  const extensions::Extension* app_2_ = nullptr;
+  const extensions::Extension* hosted_app_ = nullptr;
+  NSUInteger initial_menu_item_count_ = 0;
 };
 
 // Test that focusing an app window changes the menu bar.
@@ -181,8 +178,9 @@ IN_PROC_BROWSER_TEST_F(AppShimMenuControllerBrowserTest,
 }
 
 // Test that closing windows without main status do not update the menu.
+// Disabled; https://crbug.com/1322740.
 IN_PROC_BROWSER_TEST_F(AppShimMenuControllerBrowserTest,
-                       ClosingBackgroundWindowLeavesMenuBar) {
+                       DISABLED_ClosingBackgroundWindowLeavesMenuBar) {
   // Start with app1 active.
   SetUpApps(PACKAGED_1);
   extensions::AppWindow* app_1_app_window = FirstWindowForApp(app_1_);
