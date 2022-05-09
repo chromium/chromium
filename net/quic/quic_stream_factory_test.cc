@@ -79,7 +79,7 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_session_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_spdy_session_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_test_utils.h"
+#include "net/third_party/quiche/src/quiche/spdy/test_tools/spdy_test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
