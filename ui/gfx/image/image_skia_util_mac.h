@@ -27,7 +27,7 @@ GFX_EXPORT gfx::ImageSkia ImageSkiaFromNSImage(NSImage* image);
 GFX_EXPORT gfx::ImageSkia ImageSkiaFromResizedNSImage(NSImage* image,
                                                       NSSize size);
 
-// Converts to NSImage from ImageSkia.
+// Converts to NSImage from ImageSkia. Uses the sRGB color space.
 GFX_EXPORT NSImage* NSImageFromImageSkia(const gfx::ImageSkia& image_skia);
 
 // Converts to NSImage from given ImageSkia and a color space.

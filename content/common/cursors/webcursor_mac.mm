@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/check.h"
+#include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/notreached.h"
 #include "content/app/resources/grit/content_resources.h"
@@ -141,7 +142,8 @@ NSCursor* CreateCustomCursor(const ui::Cursor& cursor) {
   // Both the image and its representation need to have the same size for
   // cursors to appear in high resolution on retina displays. Note that the
   // size of a representation is not the same as pixelsWide or pixelsHigh.
-  NSImage* cursor_image = skia::SkBitmapToNSImage(cursor.custom_bitmap());
+  NSImage* cursor_image = skia::SkBitmapToNSImageWithColorSpace(
+      cursor.custom_bitmap(), base::mac::GetSRGBColorSpace());
   [cursor_image setSize:dip_size];
   [[[cursor_image representations] objectAtIndex:0] setSize:dip_size];
 

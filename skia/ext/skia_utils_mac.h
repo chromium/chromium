@@ -7,6 +7,7 @@
 
 #include <ApplicationServices/ApplicationServices.h>
 
+#include "base/mac/scoped_cftyperef.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPixmap.h"
@@ -56,7 +57,8 @@ SK_API SkColor NSSystemColorToSkColor(NSColor* color);
 SK_API SkColor CGColorRefToSkColor(CGColorRef color);
 
 // Converts a Skia ARGB color to CGColorRef. Assumes sRGB color space.
-SK_API CGColorRef CGColorCreateFromSkColor(SkColor color);
+SK_API base::ScopedCFTypeRef<CGColorRef> CGColorCreateFromSkColor(
+    SkColor color);
 
 // Converts NSColor to ARGB. Returns raw rgb values and does no colorspace
 // conversion. Only valid for colors in calibrated and device color spaces.
@@ -82,10 +84,7 @@ SK_API SkBitmap NSImageRepToSkBitmapWithColorSpace(NSImageRep* image,
                                                    bool is_opaque,
                                                    CGColorSpaceRef colorspace);
 
-// Given an SkBitmap, return an autoreleased NSBitmapImageRep in the generic
-// color space.
-SK_API NSBitmapImageRep* SkBitmapToNSBitmapImageRep(const SkBitmap& image);
-
+// Given an SkBitmap, return an autoreleased NSBitmapImageRep.
 SK_API NSBitmapImageRep* SkBitmapToNSBitmapImageRepWithColorSpace(
     const SkBitmap& skiaBitmap,
     CGColorSpaceRef colorSpace);
@@ -93,11 +92,6 @@ SK_API NSBitmapImageRep* SkBitmapToNSBitmapImageRepWithColorSpace(
 // Given an SkBitmap and a color space, return an autoreleased NSImage.
 SK_API NSImage* SkBitmapToNSImageWithColorSpace(const SkBitmap& icon,
                                                 CGColorSpaceRef colorSpace);
-
-// Given an SkBitmap, return an autoreleased NSImage in the generic color space.
-// DEPRECATED, use SkBitmapToNSImageWithColorSpace() instead.
-// TODO(thakis): Remove this -- http://crbug.com/69432
-SK_API NSImage* SkBitmapToNSImage(const SkBitmap& icon);
 
 }  // namespace skia
 

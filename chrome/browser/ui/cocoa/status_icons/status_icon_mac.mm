@@ -7,6 +7,7 @@
 #import <AppKit/AppKit.h>
 
 #include "base/check.h"
+#include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -40,8 +41,7 @@
 
 @end
 
-StatusIconMac::StatusIconMac()
-    : item_(NULL) {
+StatusIconMac::StatusIconMac() {
   controller_.reset([[StatusItemController alloc] initWithIcon:this]);
 }
 
@@ -66,7 +66,8 @@ NSStatusItem* StatusIconMac::item() {
 
 void StatusIconMac::SetImage(const gfx::ImageSkia& image) {
   if (!image.isNull()) {
-    NSImage* ns_image = skia::SkBitmapToNSImage(*image.bitmap());
+    NSImage* ns_image = skia::SkBitmapToNSImageWithColorSpace(
+        *image.bitmap(), base::mac::GetSRGBColorSpace());
     if (ns_image)
       [item() setImage:ns_image];
   }

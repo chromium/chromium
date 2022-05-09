@@ -7,40 +7,65 @@
 #import <AppKit/AppKit.h>
 
 #include "base/mac/foundation_util.h"
+#include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
 
 namespace {
 
 class SkiaUtilsMacTest : public testing::Test {
  public:
-  // Creates a red or blue bitmap.
-  SkBitmap CreateSkBitmap(int width, int height, bool isred, bool tfbit);
+  enum class TestColor {
+    kRed,
+    kBlue,
+  };
+
+  enum class ColorType {
+    k24Bit,  // kN32_SkColorType
+    k16Bit,  // kARGB_4444_SkColorType
+  };
+
+  // Creates a test bitmap of the specified color and color type.
+  SkBitmap CreateSkBitmap(int width,
+                          int height,
+                          TestColor test_color,
+                          ColorType color_type);
 
   // Creates a red image.
   NSImage* CreateNSImage(int width, int height);
 
-  // Checks that the given bitmap rep is actually red or blue.
-  void TestImageRep(NSBitmapImageRep* imageRep, bool isred);
+  // Checks that the given bitmap rep is actually the correct color.
+  void TestImageRep(NSBitmapImageRep* image_rep, TestColor test_color);
 
   // Checks that the given bitmap is red.
   void TestSkBitmap(const SkBitmap& bitmap);
 
-  // If not red, is blue.
-  // If not tfbit (twenty-four-bit), is 444.
-  void ShapeHelper(int width, int height, bool isred, bool tfbit);
+  // Tests `SkBitmapToNSImageWithColorSpace` for a specific combination of color
+  // and color type. Creates a bitmap with `CreateSkBitmap`, converts it into an
+  // `NSImage`, then tests it with `TestImageRep`.
+  void ShapeHelper(int width,
+                   int height,
+                   TestColor test_color,
+                   ColorType color_type);
 };
 
-SkBitmap SkiaUtilsMacTest::CreateSkBitmap(int width, int height,
-                                          bool isred, bool tfbit) {
-  SkColorType ct = tfbit ? kN32_SkColorType : kARGB_4444_SkColorType;
-  SkImageInfo info = SkImageInfo::Make(width, height, ct, kPremul_SkAlphaType);
+SkBitmap SkiaUtilsMacTest::CreateSkBitmap(int width,
+                                          int height,
+                                          TestColor test_color,
+                                          ColorType color_type) {
+  SkColorType sk_color_type = color_type == ColorType::k24Bit
+                                  ? kN32_SkColorType
+                                  : kARGB_4444_SkColorType;
+  SkImageInfo info =
+      SkImageInfo::Make(width, height, sk_color_type, kPremul_SkAlphaType,
+                        SkColorSpace::MakeSRGB());
 
   SkBitmap bitmap;
   bitmap.allocPixels(info);
 
-  if (isred)
+  if (test_color == TestColor::kRed)
     bitmap.eraseARGB(0xff, 0xff, 0, 0);
   else
     bitmap.eraseARGB(0xff, 0, 0, 0xff);
@@ -49,18 +74,23 @@ SkBitmap SkiaUtilsMacTest::CreateSkBitmap(int width, int height,
 }
 
 NSImage* SkiaUtilsMacTest::CreateNSImage(int width, int height) {
-  base::scoped_nsobject<NSBitmapImageRep> bitmap([[NSBitmapImageRep alloc]
-      initWithBitmapDataPlanes:nil
-                    pixelsWide:width
-                    pixelsHigh:height
-                 bitsPerSample:8
-               samplesPerPixel:4
-                      hasAlpha:YES
-                      isPlanar:NO
-                colorSpaceName:NSCalibratedRGBColorSpace
-                  bitmapFormat:0
-                   bytesPerRow:4 * width
-                  bitsPerPixel:32]);
+  // An `NSBitmapImageRep` can only be created with a handful of named color
+  // spaces, and sRGB isn't one. Do a retagging after creation to switch it.
+  base::scoped_nsobject<NSBitmapImageRep> initial_bitmap(
+      [[NSBitmapImageRep alloc]
+          initWithBitmapDataPlanes:nil
+                        pixelsWide:width
+                        pixelsHigh:height
+                     bitsPerSample:8
+                   samplesPerPixel:4
+                          hasAlpha:YES
+                          isPlanar:NO
+                    colorSpaceName:NSCalibratedRGBColorSpace
+                      bitmapFormat:0
+                       bytesPerRow:4 * width
+                      bitsPerPixel:32]);
+  NSBitmapImageRep* bitmap = [initial_bitmap
+      bitmapImageRepByRetaggingWithColorSpace:NSColorSpace.sRGBColorSpace];
 
   {
     gfx::ScopedNSGraphicsContextSaveGState scopedGState;
@@ -69,10 +99,9 @@ NSImage* SkiaUtilsMacTest::CreateNSImage(int width, int height) {
                               graphicsContextWithBitmapImageRep:bitmap]];
 
     CGFloat comps[] = {1.0, 0.0, 0.0, 1.0};
-    NSColor* color =
-        [NSColor colorWithColorSpace:[NSColorSpace genericRGBColorSpace]
-                          components:comps
-                               count:4];
+    NSColor* color = [NSColor colorWithColorSpace:NSColorSpace.sRGBColorSpace
+                                       components:comps
+                                            count:4];
     [color set];
     NSRectFill(NSMakeRect(0, 0, width, height));
   }
@@ -84,30 +113,32 @@ NSImage* SkiaUtilsMacTest::CreateNSImage(int width, int height) {
   return [image.release() autorelease];
 }
 
-void SkiaUtilsMacTest::TestImageRep(NSBitmapImageRep* imageRep, bool isred) {
-  // Get the color of a pixel and make sure it looks fine
-  int x = [imageRep size].width > 17 ? 17 : 0;
-  int y = [imageRep size].height > 17 ? 17 : 0;
-  NSColor* color = [imageRep colorAtX:x y:y];
-  CGFloat red = 0, green = 0, blue = 0, alpha = 0;
+void SkiaUtilsMacTest::TestImageRep(NSBitmapImageRep* image_rep,
+                                    TestColor test_color) {
+  // Get the color of a pixel and make sure it looks fine.
+  int x = image_rep.size.width > 17 ? 17 : 0;
+  int y = image_rep.size.height > 17 ? 17 : 0;
+  NSColor* color = [image_rep colorAtX:x y:y];
 
-  // SkBitmapToNSImage returns a bitmap in the calibrated color space (sRGB),
-  // while NSReadPixel returns a color in the device color space. Convert back
-  // to the calibrated color space before testing.
-  color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+  ASSERT_EQ(4, color.numberOfComponents);
+  CGFloat color_components[4];
+  [color getComponents:color_components];
+  const CGFloat& red = color_components[0];
+  const CGFloat& green = color_components[1];
+  const CGFloat& blue = color_components[2];
+  const CGFloat& alpha = color_components[3];
 
-  [color getRed:&red green:&green blue:&blue alpha:&alpha];
-
-  // Be tolerant of floating point rounding and lossy color space conversions.
-  if (isred) {
-    EXPECT_GT(red, 0.95);
-    EXPECT_LT(blue, 0.05);
+  // Be a little tolerant of floating point rounding, maybe, but everything is
+  // done in SRGB so there should be no color space conversion affecting things.
+  if (test_color == TestColor::kRed) {
+    EXPECT_GT(red, 0.9995);
+    EXPECT_LT(blue, 0.0005);
   } else {
-    EXPECT_LT(red, 0.05);
-    EXPECT_GT(blue, 0.95);
+    EXPECT_LT(red, 0.0005);
+    EXPECT_GT(blue, 0.9995);
   }
-  EXPECT_LT(green, 0.05);
-  EXPECT_GT(alpha, 0.95);
+  EXPECT_LT(green, 0.0005);
+  EXPECT_GT(alpha, 0.9995);
 }
 
 void SkiaUtilsMacTest::TestSkBitmap(const SkBitmap& bitmap) {
@@ -121,45 +152,50 @@ void SkiaUtilsMacTest::TestSkBitmap(const SkBitmap& bitmap) {
   EXPECT_EQ(255u, SkColorGetA(color));
 }
 
-void SkiaUtilsMacTest::ShapeHelper(int width, int height,
-                                   bool isred, bool tfbit) {
-  SkBitmap thing(CreateSkBitmap(width, height, isred, tfbit));
+void SkiaUtilsMacTest::ShapeHelper(int width,
+                                   int height,
+                                   TestColor test_color,
+                                   ColorType color_type) {
+  SkBitmap bitmap(CreateSkBitmap(width, height, test_color, color_type));
 
   // Confirm size
-  NSImage* image = skia::SkBitmapToNSImage(thing);
-  EXPECT_DOUBLE_EQ([image size].width, (double)width);
-  EXPECT_DOUBLE_EQ([image size].height, (double)height);
+  NSImage* image = skia::SkBitmapToNSImageWithColorSpace(
+      bitmap, base::mac::GetSRGBColorSpace());
+  EXPECT_DOUBLE_EQ(image.size.width, (CGFloat)width);
+  EXPECT_DOUBLE_EQ(image.size.height, (CGFloat)height);
 
-  EXPECT_TRUE([[image representations] count] == 1);
-  EXPECT_TRUE([[[image representations] lastObject]
+  EXPECT_TRUE(image.representations.count == 1);
+  EXPECT_TRUE([image.representations.lastObject
       isKindOfClass:[NSBitmapImageRep class]]);
   TestImageRep(base::mac::ObjCCastStrict<NSBitmapImageRep>(
-                   [[image representations] lastObject]),
-               isred);
+                   image.representations.lastObject),
+               test_color);
 }
 
 TEST_F(SkiaUtilsMacTest, BitmapToNSImage_RedSquare64x64) {
-  ShapeHelper(64, 64, true, true);
+  ShapeHelper(64, 64, TestColor::kRed, ColorType::k24Bit);
 }
 
 TEST_F(SkiaUtilsMacTest, BitmapToNSImage_BlueRectangle199x19) {
-  ShapeHelper(199, 19, false, true);
+  ShapeHelper(199, 19, TestColor::kBlue, ColorType::k24Bit);
 }
 
 TEST_F(SkiaUtilsMacTest, BitmapToNSImage_BlueRectangle444) {
-  ShapeHelper(200, 200, false, false);
+  ShapeHelper(200, 200, TestColor::kBlue, ColorType::k16Bit);
 }
 
 TEST_F(SkiaUtilsMacTest, BitmapToNSBitmapImageRep_BlueRectangle20x30) {
   int width = 20;
   int height = 30;
 
-  SkBitmap bitmap(CreateSkBitmap(width, height, false, true));
-  NSBitmapImageRep* imageRep = skia::SkBitmapToNSBitmapImageRep(bitmap);
+  SkBitmap bitmap(
+      CreateSkBitmap(width, height, TestColor::kBlue, ColorType::k24Bit));
+  NSBitmapImageRep* imageRep = skia::SkBitmapToNSBitmapImageRepWithColorSpace(
+      bitmap, base::mac::GetSRGBColorSpace());
 
-  EXPECT_DOUBLE_EQ(width, [imageRep size].width);
-  EXPECT_DOUBLE_EQ(height, [imageRep size].height);
-  TestImageRep(imageRep, false);
+  EXPECT_DOUBLE_EQ(width, imageRep.size.width);
+  EXPECT_DOUBLE_EQ(height, imageRep.size.height);
+  TestImageRep(imageRep, TestColor::kBlue);
 }
 
 TEST_F(SkiaUtilsMacTest, NSImageRepToSkBitmap) {
@@ -167,14 +203,12 @@ TEST_F(SkiaUtilsMacTest, NSImageRepToSkBitmap) {
   int height = 15;
 
   NSImage* image = CreateNSImage(width, height);
-  EXPECT_EQ(1u, [[image representations] count]);
+  EXPECT_EQ(1u, image.representations.count);
   NSBitmapImageRep* imageRep = base::mac::ObjCCastStrict<NSBitmapImageRep>(
-      [[image representations] lastObject]);
-  NSColorSpace* colorSpace = [NSColorSpace genericRGBColorSpace];
+      image.representations.lastObject);
   SkBitmap bitmap(skia::NSImageRepToSkBitmapWithColorSpace(
-      imageRep, [image size], false, [colorSpace CGColorSpace]));
+      imageRep, image.size, false, base::mac::GetSRGBColorSpace()));
   TestSkBitmap(bitmap);
 }
 
 }  // namespace
-
