@@ -59,7 +59,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // to the user explicitly dismissing the dialog.
   void OnDismiss(bool should_embargo);
 
-  // Whether the user selected an account in the dialog.
+  // Whether to notify the delegate when the widget is closed.
   bool notify_delegate_of_dismiss_{true};
 
   base::WeakPtr<views::Widget> bubble_widget_;
