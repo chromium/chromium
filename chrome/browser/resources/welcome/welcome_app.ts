@@ -14,6 +14,7 @@ import '../strings.m.js';
 
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -90,6 +91,10 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
     this.setAttribute('role', 'main');
     this.addEventListener(
         'default-browser-change', () => this.onDefaultBrowserChange_());
+
+    // Initiate focus-outline-manager for this document so that action-link
+    // style can take advantage of it.
+    FocusOutlineManager.forDocument(document);
   }
 
   private onDefaultBrowserChange_() {

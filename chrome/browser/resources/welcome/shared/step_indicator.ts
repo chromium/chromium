@@ -7,7 +7,7 @@
  * animated and responsive background for any page that contains it.
  */
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import './navi_colors_css.js';
+import './navi_colors.css.js';
 
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

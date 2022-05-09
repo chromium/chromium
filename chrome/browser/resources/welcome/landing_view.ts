@@ -4,9 +4,9 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
-import './shared/action_link_style_css.js';
+import './shared/action_link_style.css.js';
 import './shared/onboarding_background.js';
-import './shared/splash_pages_shared_css.js';
+import './shared/splash_pages_shared.css.js';
 import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

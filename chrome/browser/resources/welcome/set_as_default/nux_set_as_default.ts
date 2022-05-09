@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 // </if>
-import '../shared/animations_css.js';
+import '../shared/animations.css.js';
 import '../shared/step_indicator.js';
 import '../strings.m.js';
 
