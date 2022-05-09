@@ -13,63 +13,79 @@ import '//resources/cr_elements/shared_vars_css.m.js';
 import './text_with_tooltip.js';
 import '../../settings_shared_css.js';
 
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AmbientModeAlbum, AmbientModeTopicSource} from './constants.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'album-item',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const AlbumItemElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class AlbumItemElement extends AlbumItemElementBase {
+  static get is() {
+    return 'album-item';
+  }
 
-  properties: {
-    /** @type {?AmbientModeAlbum} */
-    album: {
-      type: AmbientModeAlbum,
-      value: null,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private {!AmbientModeTopicSource} */
-    topicSource: Number,
+  static get properties() {
+    return {
+      /** @type {?AmbientModeAlbum} */
+      album: {
+        type: AmbientModeAlbum,
+        value: null,
+      },
 
-    /** @private */
-    checked: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-      notify: true,
-    },
+      /** @private {!AmbientModeTopicSource} */
+      topicSource: Number,
 
-    /** Aria label for the album. */
-    ariaLabel: {
-      type: String,
-      computed: 'computeAriaLabel_(album.*, checked)',
-      reflectToAttribute: true,
-    },
+      /** @private */
+      checked: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+        notify: true,
+      },
 
-    titleTooltipIsVisible: {
-      type: Boolean,
-      observer: 'tooltipVisibilityChanged_',
-    },
+      /** Aria label for the album. */
+      ariaLabel: {
+        type: String,
+        computed: 'computeAriaLabel_(album.*, checked)',
+        reflectToAttribute: true,
+      },
 
-    descriptionTooltipIsVisible: {
-      type: Boolean,
-      observer: 'tooltipVisibilityChanged_',
-    },
+      titleTooltipIsVisible: {
+        type: Boolean,
+        observer: 'tooltipVisibilityChanged_',
+      },
 
-    /**
-     * Whether dark mode is the active preferred color scheme.
-     * @private {boolean}
-     */
-    isDarkModeActive_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      descriptionTooltipIsVisible: {
+        type: Boolean,
+        observer: 'tooltipVisibilityChanged_',
+      },
 
-  listeners: {keydown: 'onKeydown_'},
+      /**
+       * Whether dark mode is the active preferred color scheme.
+       * @private {boolean}
+       */
+      isDarkModeActive_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  ready() {
+    super.ready();
+    this.addEventListener('keydown', this.onKeydown_);
+  }
 
   /**
    * @return {string} Class name of album type.
@@ -79,7 +95,7 @@ Polymer({
     return this.topicSource === AmbientModeTopicSource.GOOGLE_PHOTOS ?
         'personal-album' :
         'art-album';
-  },
+  }
 
   /**
    * @return {string} Checked icon for album.
@@ -88,7 +104,7 @@ Polymer({
   computeCheckedIcon_() {
     return this.isDarkModeActive_ ? 'os-settings:ic-checked-filled-dark' :
                                     'os-settings:ic-checked-filled';
-  },
+  }
 
   /**
    * @return {string} Aria label string for ChromeVox to verbalize.
@@ -108,13 +124,13 @@ Polymer({
     return this.i18n(
         'ambientModeAlbumsSubpageAlbumUnselected', this.album.title,
         this.album.description);
-  },
+  }
 
   /**
-   * @param {!KeyboardEvent} event
+   * @param {!Event} event
    * @private
    */
-  onKeydown_(event) {
+  onKeydown_(/** @type {!KeyboardEvent}*/ event) {
     // The only key event handled by this element is pressing Enter.
     if (event.key !== 'Enter') {
       return;
@@ -123,7 +139,7 @@ Polymer({
     this.fireSelectedAlbumsChanged_();
     event.preventDefault();
     event.stopPropagation();
-  },
+  }
 
   /**
    * Because of the paper-tooltips anchored in this item exceed the bounds of
@@ -136,7 +152,7 @@ Polymer({
     const tooltipIsVisible =
         this.titleTooltipIsVisible || this.descriptionTooltipIsVisible;
     this.style.zIndex = tooltipIsVisible ? '1' : '0';
-  },
+  }
 
   /**
    * @param {!MouseEvent} event
@@ -146,7 +162,7 @@ Polymer({
     this.fireSelectedAlbumsChanged_();
     event.preventDefault();
     event.stopPropagation();
-  },
+  }
 
   /**
    * Fires a 'selected-albums-changed' event with |this.album| as the details.
@@ -154,7 +170,11 @@ Polymer({
    */
   fireSelectedAlbumsChanged_() {
     this.checked = !this.checked;
-    this.fire('selected-albums-changed', this.album);
-  },
+    const event = new CustomEvent(
+        'selected-albums-changed',
+        {bubbles: true, composed: true, detail: this.album});
+    this.dispatchEvent(event);
+  }
+}
 
-});
+customElements.define(AlbumItemElement.is, AlbumItemElement);

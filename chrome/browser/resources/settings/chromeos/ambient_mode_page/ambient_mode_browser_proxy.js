@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 import {AmbientModeSettings, AmbientModeTemperatureUnit, AmbientModeTopicSource} from './constants.js';
 
 /**
@@ -62,8 +60,17 @@ export class AmbientModeBrowserProxyImpl {
   setSelectedAlbums(settings) {
     chrome.send('setSelectedAlbums', [settings]);
   }
+
+  /** @return {!AmbientModeBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new AmbientModeBrowserProxyImpl());
+  }
+
+  /** @param {!AmbientModeBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-// The singleton instance_ is replaced with a test version of this wrapper
-// during testing.
-addSingletonGetter(AmbientModeBrowserProxyImpl);
+/** @type {?AmbientModeBrowserProxy} */
+let instance = null;

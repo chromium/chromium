@@ -10,19 +10,33 @@ import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '../../settings_shared_css.js';
 
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'art-album-dialog',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ArtAlbumDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class ArtAlbumDialogElement extends ArtAlbumDialogElementBase {
+  static get is() {
+    return 'art-album-dialog';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.$.dialog.showModal();
-  },
+  }
 
   /**
    * Closes the dialog.
@@ -32,5 +46,7 @@ Polymer({
     if (this.$.dialog.open) {
       this.$.dialog.close();
     }
-  },
-});
+  }
+}
+
+customElements.define(ArtAlbumDialogElement.is, ArtAlbumDialogElement);

@@ -93,6 +93,33 @@ export const GlobalScrollTargetBehaviorImpl = {
   },
 };
 
+/** @interface */
+export class GlobalScrollTargetBehaviorInterface {
+  constructor() {
+    /**
+     * Read only property for the scroll target.
+     * @type {HTMLElement}
+     */
+    this.scrollTarget;
+
+    /**
+     * Read only property for the scroll target that a subpage should use.
+     * It will be set/cleared based on the current route.
+     * @type {HTMLElement}
+     */
+    this.subpageScrollTarget;
+
+    /**
+     * The |subpageScrollTarget| should only be set for this route.
+     * @private {Route}
+     */
+    this.subpageRoute;
+  }
+
+  /** @param {!Route} route */
+  currentRouteChanged(route) {}
+}
+
 /**
  * This should only be called once.
  * @param {HTMLElement} scrollTarget
@@ -101,13 +128,12 @@ export function setGlobalScrollTarget(scrollTarget) {
   scrollTargetResolver.resolve(scrollTarget);
 }
 
-  export function resetGlobalScrollTargetForTesting() {
-    scrollTargetResolver = new PromiseResolver();
-  }
+export function resetGlobalScrollTargetForTesting() {
+  scrollTargetResolver = new PromiseResolver();
+}
 
-  // This is done to make the closure compiler happy: it needs fully qualified
-  // names when specifying an array of behaviors.
-  /** @polymerBehavior */
-  export const GlobalScrollTargetBehavior =
-      [RouteObserverBehavior, GlobalScrollTargetBehaviorImpl];
-
+// This is done to make the closure compiler happy: it needs fully qualified
+// names when specifying an array of behaviors.
+/** @polymerBehavior */
+export const GlobalScrollTargetBehavior =
+    [RouteObserverBehavior, GlobalScrollTargetBehaviorImpl];

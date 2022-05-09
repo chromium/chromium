@@ -14,58 +14,68 @@ import '//resources/cr_elements/shared_style_css.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import '../../settings_shared_css.js';
 
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AmbientModeTopicSource} from './constants.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'topic-source-item',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const TopicSourceItemElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class TopicSourceItemElement extends TopicSourceItemElementBase {
+  static get is() {
+    return 'topic-source-item';
+  }
 
-  properties: {
-    /**
-     * Whether this item is selected. This property is related to
-     * cr_radio_button_style and used to style the disc appearance.
-     */
-    checked: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    hasGooglePhotosAlbums: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      /**
+       * Whether this item is selected. This property is related to
+       * cr_radio_button_style and used to style the disc appearance.
+       */
+      checked: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
 
-    /** @type {!AmbientModeTopicSource} */
-    item: Object,
+      hasGooglePhotosAlbums: {
+        type: Boolean,
+        value: false,
+      },
 
-    buttonLabel: {
-      type: String,
-      computed: 'getButtonLabel_(item)',
-    },
+      /** @type {!AmbientModeTopicSource} */
+      item: Object,
 
-    /** Aria label for the row. */
-    ariaLabel: {
-      type: String,
-      computed: 'computeAriaLabel_(item, checked)',
-      reflectToAttribute: true,
-    },
-  },
+      buttonLabel: {
+        type: String,
+        computed: 'getButtonLabel_(item)',
+      },
 
-  /** @override */
-  attached() {
-    this.listen(this, 'keydown', 'onKeydown_');
-  },
+      /** Aria label for the row. */
+      ariaLabel: {
+        type: String,
+        computed: 'computeAriaLabel_(item, checked)',
+        reflectToAttribute: true,
+      },
+    };
+  }
 
-  /** @override */
-  detached() {
-    this.unlisten(this, 'keydown', 'onKeydown_');
-  },
+  ready() {
+    super.ready();
+
+    this.addEventListener('keydown', this.onKeydown_);
+  }
 
   /**
    * @return {string}
@@ -79,7 +89,7 @@ Polymer({
     } else {
       return '';
     }
-  },
+  }
 
   /**
    * @return {string}
@@ -98,7 +108,7 @@ Polymer({
     } else {
       return '';
     }
-  },
+  }
 
   /**
    * The aria label for the subpage button.
@@ -107,7 +117,7 @@ Polymer({
    */
   getButtonLabel_() {
     return this.i18n('ambientModeTopicSourceSubpage', this.getItemName_());
-  },
+  }
 
   /**
    * @return {string} Aria label string for ChromeVox to verbalize.
@@ -122,13 +132,13 @@ Polymer({
     return this.i18n(
         'ambientModeTopicSourceUnselectedRow', this.getItemName_(),
         this.getItemDescription_());
-  },
+  }
 
   /**
-   * @param {!KeyboardEvent} event
+   * @param {!Event} event
    * @private
    */
-  onKeydown_(event) {
+  onKeydown_(/** @type {!KeyboardEvent}*/ event) {
     // The only key event handled by this element is pressing Enter.
     // Pressing anywhere leads to the subpage.
     if (event.key !== 'Enter') {
@@ -138,7 +148,7 @@ Polymer({
     this.fireShowAlbums_();
     event.preventDefault();
     event.stopPropagation();
-  },
+  }
 
   /**
    * @param {!MouseEvent} event
@@ -148,7 +158,7 @@ Polymer({
     // Clicking anywhere leads to the subpage.
     this.fireShowAlbums_();
     event.stopPropagation();
-  },
+  }
 
   /**
    * @param {!MouseEvent} event
@@ -157,13 +167,17 @@ Polymer({
   onSubpageArrowClick_(event) {
     this.fireShowAlbums_();
     event.stopPropagation();
-  },
+  }
 
   /**
    * Fires a 'show-albums' event with |this.item| as the details.
    * @private
    */
   fireShowAlbums_() {
-    this.fire('show-albums', this.item);
-  },
-});
+    const event = new CustomEvent(
+        'show-albums', {bubbles: true, composed: true, detail: this.item});
+    this.dispatchEvent(event);
+  }
+}
+
+customElements.define(TopicSourceItemElement.is, TopicSourceItemElement);

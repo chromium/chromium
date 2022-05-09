@@ -55,7 +55,7 @@ suite('AmbientModeHandler', function() {
 
   setup(function() {
     browserProxy = new TestAmbientModeBrowserProxy();
-    AmbientModeBrowserProxyImpl.instance_ = browserProxy;
+    AmbientModeBrowserProxyImpl.setInstance(browserProxy);
 
     PolymerTest.clearBody();
 
@@ -81,7 +81,8 @@ suite('AmbientModeHandler', function() {
   });
 
   test('toggleAmbientMode', () => {
-    const button = ambientModePage.$$('#ambientModeEnable');
+    const button =
+        ambientModePage.shadowRoot.querySelector('#ambientModeEnable');
     assertTrue(!!button);
     assertFalse(button.disabled);
 
@@ -108,22 +109,26 @@ suite('AmbientModeHandler', function() {
   });
 
   test('hasNoTopicSourceItemsWhenLoading', () => {
-    const spinner = ambientModePage.$$('paper-spinner-lite');
+    const spinner =
+        ambientModePage.shadowRoot.querySelector('paper-spinner-lite');
     assertTrue(!!spinner);
     assertTrue(spinner.active);
     assertFalse(spinner.hidden);
 
-    const topicSourceListDiv = ambientModePage.$$('#topicSourceListDiv');
+    const topicSourceListDiv =
+        ambientModePage.shadowRoot.querySelector('#topicSourceListDiv');
     assertFalse(!!topicSourceListDiv);
   });
 
   test('hasTopicSourceItemsAfterLoad', function() {
-    const spinner = ambientModePage.$$('paper-spinner-lite');
+    const spinner =
+        ambientModePage.shadowRoot.querySelector('paper-spinner-lite');
     assertTrue(!!spinner);
     assertTrue(spinner.active);
     assertFalse(spinner.hidden);
 
-    const topicSourceListDiv = ambientModePage.$$('#topicSourceListDiv');
+    const topicSourceListDiv =
+        ambientModePage.shadowRoot.querySelector('#topicSourceListDiv');
     assertFalse(!!topicSourceListDiv);
 
     // Select the google photos topic source.
@@ -140,8 +145,9 @@ suite('AmbientModeHandler', function() {
     assertFalse(spinner.active);
     assertTrue(spinner.hidden);
 
-    const topicSourceList = ambientModePage.$$('topic-source-list');
-    const ironList = topicSourceList.$$('iron-list');
+    const topicSourceList =
+        ambientModePage.shadowRoot.querySelector('topic-source-list');
+    const ironList = topicSourceList.shadowRoot.querySelector('iron-list');
     const topicSourceItems = ironList.querySelectorAll('topic-source-item');
 
     // Only have two topics source items: GOOGLE_PHOTOS and ART_GALLERY.
@@ -159,8 +165,9 @@ suite('AmbientModeHandler', function() {
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
     flush();
 
-    const topicSourceList = ambientModePage.$$('topic-source-list');
-    const ironList = topicSourceList.$$('iron-list');
+    const topicSourceList =
+        ambientModePage.shadowRoot.querySelector('topic-source-list');
+    const ironList = topicSourceList.shadowRoot.querySelector('iron-list');
     const topicSourceItems = ironList.querySelectorAll('topic-source-item');
 
     topicSourceItems.forEach((row) => {
@@ -179,11 +186,13 @@ suite('AmbientModeHandler', function() {
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
     flush();
 
-    const topicSourceList = ambientModePage.$$('topic-source-list');
-    const ironList = topicSourceList.$$('iron-list');
+    const topicSourceList =
+        ambientModePage.shadowRoot.querySelector('topic-source-list');
+    const ironList = topicSourceList.shadowRoot.querySelector('iron-list');
     const topicSourceItem =
         ironList.querySelector('topic-source-item[checked]');
-    const clickableDiv = topicSourceItem.$$('#rowContainer');
+    const clickableDiv =
+        topicSourceItem.shadowRoot.querySelector('#rowContainer');
 
     // Verify that the show-albums event is sent when the google photos radio
     // button is clicked again.
@@ -218,7 +227,8 @@ suite('AmbientModeHandler', function() {
     flush();
 
     const deepLinkElement =
-        ambientModePage.$$('topic-source-list').$$('topic-source-item');
+        ambientModePage.shadowRoot.querySelector('topic-source-list')
+            .shadowRoot.querySelector('topic-source-item');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -235,7 +245,8 @@ suite('AmbientModeHandler', function() {
 
     // When |selectedTemperatureUnit_| is invalid the radio buttons is not
     // visible. This is the initial state.
-    let radioGroup = ambientModePage.$$('#weatherDiv cr-radio-group');
+    let radioGroup =
+        ambientModePage.shadowRoot.querySelector('#weatherDiv cr-radio-group');
     assertFalse(!!radioGroup);
 
     // When |selectedTemperatureUnit_| is valid the radio buttons should be
@@ -244,7 +255,8 @@ suite('AmbientModeHandler', function() {
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
     flush();
 
-    radioGroup = ambientModePage.$$('#weatherDiv cr-radio-group');
+    radioGroup =
+        ambientModePage.shadowRoot.querySelector('#weatherDiv cr-radio-group');
     assertTrue(!!radioGroup);
     assertFalse(radioGroup.disabled);
   });
@@ -260,9 +272,10 @@ suite('AmbientModeHandler', function() {
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
     flush();
 
-    const celsiusButton = ambientModePage.$$('cr-radio-button[name=celsius]');
-    const fahrenheitButton =
-        ambientModePage.$$('cr-radio-button[name=fahrenheit]');
+    const celsiusButton = ambientModePage.shadowRoot.querySelector(
+        'cr-radio-button[name=celsius]');
+    const fahrenheitButton = ambientModePage.shadowRoot.querySelector(
+        'cr-radio-button[name=fahrenheit]');
 
     assertTrue(celsiusButton.checked);
     assertFalse(fahrenheitButton.checked);
@@ -307,7 +320,8 @@ suite('AmbientModeHandler', function() {
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
     flush();
 
-    const celsiusButton = ambientModePage.$$('cr-radio-button[name=celsius]');
+    const celsiusButton = ambientModePage.shadowRoot.querySelector(
+        'cr-radio-button[name=celsius]');
 
     browserProxy.resetResolver('setSelectedTemperatureUnit');
 
@@ -327,7 +341,8 @@ suite('AmbientModeHandler', function() {
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
     flush();
 
-    const button = ambientModePage.$$('#ambientModeEnable');
+    const button =
+        ambientModePage.shadowRoot.querySelector('#ambientModeEnable');
     assertTrue(!!button);
     assertFalse(button.disabled);
 
@@ -338,9 +353,11 @@ suite('AmbientModeHandler', function() {
     assertEquals(enabled, button.checked);
 
     // Topic source list and weather radio group are enabled.
-    const topicSourceList = ambientModePage.$$('topic-source-list');
+    const topicSourceList =
+        ambientModePage.shadowRoot.querySelector('topic-source-list');
     assertFalse(topicSourceList.disabled);
-    const radioGroup = ambientModePage.$$('#weatherDiv cr-radio-group');
+    const radioGroup =
+        ambientModePage.shadowRoot.querySelector('#weatherDiv cr-radio-group');
     assertFalse(radioGroup.disabled);
 
     // Click the button will toggle the pref value.
