@@ -90,7 +90,9 @@ enum MountCompletedStatus {
   error_unknown_filesystem,
   error_unsupported_filesystem,
   error_invalid_archive,
-  error_need_password
+  error_need_password,
+  error_in_progress,
+  error_cancelled
 };
 
 // Filesystem to format to.

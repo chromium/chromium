@@ -206,6 +206,7 @@ VolumeManagerCommon.VolumeError = {
   INVALID_ARGUMENT: 'error_invalid_argument',
   INVALID_PATH: 'error_invalid_path',
   ALREADY_MOUNTED: 'error_path_already_mounted',
+  CANCELLED: 'error_cancelled',
   PATH_NOT_MOUNTED: 'error_path_not_mounted',
   DIRECTORY_CREATION_FAILED: 'error_directory_creation_failed',
   INVALID_MOUNT_OPTIONS: 'error_invalid_mount_options',

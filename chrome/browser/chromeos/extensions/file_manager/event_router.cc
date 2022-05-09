@@ -191,6 +191,10 @@ MountErrorToMountCompletedStatus(chromeos::MountError error) {
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_INVALID_ARCHIVE;
     case chromeos::MOUNT_ERROR_NEED_PASSWORD:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_NEED_PASSWORD;
+    case chromeos::MOUNT_ERROR_IN_PROGRESS:
+      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_IN_PROGRESS;
+    case chromeos::MOUNT_ERROR_CANCELLED:
+      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_CANCELLED;
     // Not a real error.
     case chromeos::MOUNT_ERROR_COUNT:
       NOTREACHED();

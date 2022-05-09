@@ -89,9 +89,9 @@ chrome.fileManagerPrivate.MountCompletedStatus = {
   ERROR_UNKNOWN_FILESYSTEM: 'error_unknown_filesystem',
   ERROR_UNSUPPORTED_FILESYSTEM: 'error_unsupported_filesystem',
   ERROR_INVALID_ARCHIVE: 'error_invalid_archive',
-  ERROR_AUTHENTICATION: 'error_authentication',
-  ERROR_PATH_UNMOUNTED: 'error_path_unmounted',
   ERROR_NEED_PASSWORD: 'error_need_password',
+  ERROR_IN_PROGRESS: 'error_in_progress',
+  ERROR_CANCELLED: 'error_cancelled',
 };
 
 /** @enum {string} */

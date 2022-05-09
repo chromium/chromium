@@ -1714,6 +1714,7 @@ enum HistogramValue {
   ENTERPRISEREPORTINGPRIVATE_ENQUEUERECORD = 1651,
   FILEMANAGERPRIVATE_SENDFEEDBACK = 1652,
   DECLARATIVENETREQUEST_TESTMATCHOUTCOME = 1653,
+  FILEMANAGERPRIVATE_CANCELMOUNTING = 1654,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

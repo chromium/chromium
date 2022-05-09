@@ -121,6 +121,10 @@ MountError CrosDisksMountErrorToChromeMountError(
       return MOUNT_ERROR_UNKNOWN;
     case cros_disks::MOUNT_ERROR_NEED_PASSWORD:
       return MOUNT_ERROR_NEED_PASSWORD;
+    case cros_disks::MOUNT_ERROR_IN_PROGRESS:
+      return MOUNT_ERROR_IN_PROGRESS;
+    case cros_disks::MOUNT_ERROR_CANCELLED:
+      return MOUNT_ERROR_CANCELLED;
     default:
       LOG(ERROR) << "Unrecognised mount error code " << mount_error;
       return MOUNT_ERROR_UNKNOWN;
