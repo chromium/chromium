@@ -78,7 +78,7 @@ class FullChecker : public TokenHardwareChecker {
 
     // The board-specific tokens.
     if (BoardIn({"hatch-borealis", "puff-borealis", "zork-borealis",
-                 "volteer-borealis"})) {
+                 "volteer-borealis", "aurora-borealis"})) {
       if (TokenHashMatches("MXlY+SFZ!2,P_k^02]hK",
                            "FbxB2mxNa/uqskX4X+NqHhAE6ebHeWC0u+Y+UlGEB/4=")) {
         LOG(WARNING) << "Dogfooder token provided, bypassing hardware checks.";
