@@ -90,7 +90,8 @@ void SendRequestImpl(
   if (max_retries > 0) {
     loader->SetRetryOptions(
         max_retries, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
-                         network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
+                         network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED |
+                         network::SimpleURLLoader::RETRY_ON_5XX);
   }
   loader->AttachStringForUpload(request_body, "application/x-protobuffer");
 #ifndef NDEBUG

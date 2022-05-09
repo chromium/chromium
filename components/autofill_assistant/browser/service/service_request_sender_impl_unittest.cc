@@ -187,7 +187,8 @@ TEST_F(ServiceRequestSenderImplTest, ForceAuthenticatedRequest) {
   EXPECT_CALL(*loader,
               SetRetryOptions(
                   2, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
-                         network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED));
+                         network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED |
+                         network::SimpleURLLoader::RETRY_ON_5XX));
   EXPECT_CALL(*loader,
               AttachStringForUpload(std::string("request"),
                                     std::string("application/x-protobuffer")));
