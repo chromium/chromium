@@ -32,10 +32,6 @@
     "args": ["--js-flags=--future"]
   },
   {
-    "name": "layout-ng-fragment-item",
-    "args": ["--enable-blink-features=LayoutNGFragmentItem"]
-  },
-  {
     "name": "new-system-colors",
     "args": ["--enable-blink-features=NewSystemColors"]
   },
