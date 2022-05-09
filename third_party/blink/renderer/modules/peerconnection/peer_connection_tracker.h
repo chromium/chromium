@@ -124,13 +124,8 @@ class MODULES_EXPORT PeerConnectionTracker
   // the |constraints| is the media constraints used to create the offer/answer.
   virtual void TrackCreateOffer(RTCPeerConnectionHandler* pc_handler,
                                 RTCOfferOptionsPlatform* options);
-  // TODO(hta): Get rid of the version below.
-  virtual void TrackCreateOffer(RTCPeerConnectionHandler* pc_handler,
-                                const MediaConstraints& options);
   virtual void TrackCreateAnswer(RTCPeerConnectionHandler* pc_handler,
                                  blink::RTCAnswerOptionsPlatform* options);
-  virtual void TrackCreateAnswer(RTCPeerConnectionHandler* pc_handler,
-                                 const MediaConstraints& constraints);
 
   // Sends an update when setLocalDescription or setRemoteDescription is called.
   virtual void TrackSetSessionDescription(RTCPeerConnectionHandler* pc_handler,

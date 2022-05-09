@@ -602,11 +602,6 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       type = protocol::Audits::DeprecationIssueTypeEnum::
           RTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics;
       break;
-    case DeprecationIssueType::
-        kRTCPeerConnectionLegacyCreateWithMediaConstraints:
-      type = protocol::Audits::DeprecationIssueTypeEnum::
-          RTCPeerConnectionLegacyCreateWithMediaConstraints;
-      break;
     case DeprecationIssueType::kRTCPeerConnectionSdpSemanticsPlanB:
       type = protocol::Audits::DeprecationIssueTypeEnum::
           RTCPeerConnectionSdpSemanticsPlanB;

@@ -95,12 +95,7 @@ class MockRTCPeerConnectionHandlerPlatform : public RTCPeerConnectionHandler {
 
   Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> CreateOffer(
       RTCSessionDescriptionRequest*,
-      const MediaConstraints&) override;
-  Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> CreateOffer(
-      RTCSessionDescriptionRequest*,
       RTCOfferOptionsPlatform*) override;
-  void CreateAnswer(RTCSessionDescriptionRequest*,
-                    const MediaConstraints&) override;
   void CreateAnswer(RTCSessionDescriptionRequest*,
                     RTCAnswerOptionsPlatform*) override;
   void SetLocalDescription(RTCVoidRequest*) override;

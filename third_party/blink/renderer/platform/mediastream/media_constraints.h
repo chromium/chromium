@@ -262,10 +262,6 @@ struct MediaTrackConstraintSetPlatform {
   BooleanConstraint goog_audio_mirroring;
   BooleanConstraint goog_da_echo_cancellation;
   BooleanConstraint goog_noise_reduction;
-  LongConstraint offer_to_receive_audio;
-  LongConstraint offer_to_receive_video;
-  BooleanConstraint voice_activity_detection;
-  BooleanConstraint ice_restart;
 #if BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
   BooleanConstraint enable_dtls_srtp;

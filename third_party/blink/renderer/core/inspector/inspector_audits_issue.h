@@ -84,7 +84,6 @@ enum class DeprecationIssueType {
   kRTCConstraintEnableDtlsSrtpFalse,
   kRTCConstraintEnableDtlsSrtpTrue,
   kRTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics,
-  kRTCPeerConnectionLegacyCreateWithMediaConstraints,
   kRTCPeerConnectionSdpSemanticsPlanB,
   kRtcpMuxPolicyNegotiate,
   kRTPDataChannel,

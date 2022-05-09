@@ -196,6 +196,8 @@ bool IsIceCandidateMissingSdpMidAndMLineIndex(
 
 RTCOfferOptionsPlatform* ConvertToRTCOfferOptionsPlatform(
     const RTCOfferOptions* options) {
+  if (!options)
+    return nullptr;
   return MakeGarbageCollected<RTCOfferOptionsPlatform>(
       options->hasOfferToReceiveVideo()
           ? std::max(options->offerToReceiveVideo(), 0)
@@ -210,6 +212,8 @@ RTCOfferOptionsPlatform* ConvertToRTCOfferOptionsPlatform(
 
 RTCAnswerOptionsPlatform* ConvertToRTCAnswerOptionsPlatform(
     const RTCAnswerOptions* options) {
+  if (!options)
+    return nullptr;
   return MakeGarbageCollected<RTCAnswerOptionsPlatform>(
       options->hasVoiceActivityDetection() ? options->voiceActivityDetection()
                                            : true);
@@ -426,48 +430,6 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
   }
 
   return web_configuration;
-}
-
-RTCOfferOptionsPlatform* ParseOfferOptions(const Dictionary& options,
-                                           ExceptionState* exception_state) {
-  if (options.IsUndefinedOrNull())
-    return nullptr;
-
-  const Vector<String>& property_names =
-      options.GetPropertyNames(*exception_state);
-  if (exception_state->HadException())
-    return nullptr;
-
-  // Treat |options| as MediaConstraints if it is empty or has "optional" or
-  // "mandatory" properties for compatibility.
-  // TODO(jiayl): remove constraints when RTCOfferOptions reaches Stable and
-  // client code is ready.
-  if (property_names.IsEmpty() || property_names.Contains("optional") ||
-      property_names.Contains("mandatory"))
-    return nullptr;
-
-  int32_t offer_to_receive_video = -1;
-  int32_t offer_to_receive_audio = -1;
-  bool voice_activity_detection = true;
-  bool ice_restart = false;
-
-  if (DictionaryHelper::Get(options, "offerToReceiveVideo",
-                            offer_to_receive_video) &&
-      offer_to_receive_video < 0)
-    offer_to_receive_video = 0;
-  if (DictionaryHelper::Get(options, "offerToReceiveAudio",
-                            offer_to_receive_audio) &&
-      offer_to_receive_audio < 0)
-    offer_to_receive_audio = 0;
-  DictionaryHelper::Get(options, "voiceActivityDetection",
-                        voice_activity_detection);
-  DictionaryHelper::Get(options, "iceRestart", ice_restart);
-
-  RTCOfferOptionsPlatform* rtc_offer_options =
-      MakeGarbageCollected<RTCOfferOptionsPlatform>(
-          offer_to_receive_video, offer_to_receive_audio,
-          voice_activity_detection, ice_restart);
-  return rtc_offer_options;
 }
 
 bool SdpMismatch(String old_sdp, String new_sdp, String attribute) {
@@ -909,46 +871,19 @@ ScriptPromise RTCPeerConnection::createOffer(
     ScriptState* script_state,
     V8RTCSessionDescriptionCallback* success_callback,
     V8RTCPeerConnectionErrorCallback* error_callback,
-    const ScriptValue& rtc_offer_options_value,
-    ExceptionState& exception_state) {
-  Dictionary rtc_offer_options(script_state->GetIsolate(),
-                               rtc_offer_options_value.V8Value(),
-                               exception_state);
-  if (exception_state.HadException())
-    return ScriptPromise();
-
-  return CreateOffer(script_state, success_callback, error_callback,
-                     rtc_offer_options, exception_state);
-}
-
-ScriptPromise RTCPeerConnection::createOffer(
-    ScriptState* script_state,
-    V8RTCSessionDescriptionCallback* success_callback,
-    V8RTCPeerConnectionErrorCallback* error_callback,
-    ExceptionState& exception_state) {
-  return CreateOffer(script_state, success_callback, error_callback,
-                     Dictionary(), exception_state);
-}
-
-ScriptPromise RTCPeerConnection::CreateOffer(
-    ScriptState* script_state,
-    V8RTCSessionDescriptionCallback* success_callback,
-    V8RTCPeerConnectionErrorCallback* error_callback,
-    const Dictionary& rtc_offer_options,
+    const RTCOfferOptions* options,
     ExceptionState& exception_state) {
   DCHECK(success_callback);
   DCHECK(error_callback);
   ExecutionContext* context = ExecutionContext::From(script_state);
+  UseCounter::Count(context, WebFeature::kRTCPeerConnectionCreateOffer);
   UseCounter::Count(
       context, WebFeature::kRTCPeerConnectionCreateOfferLegacyFailureCallback);
-  UseCounter::Count(context, WebFeature::kRTCPeerConnectionCreateOffer);
+  UseCounter::Count(context,
+                    WebFeature::kRTCPeerConnectionCreateOfferLegacyCompliant);
   if (CallErrorCallbackIfSignalingStateClosed(signaling_state_, error_callback))
     return ScriptPromise::CastUndefined(script_state);
 
-  RTCOfferOptionsPlatform* offer_options =
-      ParseOfferOptions(rtc_offer_options, &exception_state);
-  if (exception_state.HadException())
-    return ScriptPromise();
   call_setup_state_tracker_.NoteOffererStateEvent(
       OffererState::kCreateOfferPending, HasDocumentMedia());
   RTCSessionDescriptionRequest* request =
@@ -957,49 +892,9 @@ ScriptPromise RTCPeerConnection::CreateOffer(
           RTCCreateSessionDescriptionOperation::kCreateOffer, this,
           success_callback, error_callback);
 
-  Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> platform_transceivers;
-  if (offer_options) {
-    if (offer_options->OfferToReceiveAudio() != -1 ||
-        offer_options->OfferToReceiveVideo() != -1) {
-      UseCounter::Count(
-          context, WebFeature::kRTCPeerConnectionCreateOfferLegacyOfferOptions);
-    } else {
-      UseCounter::Count(
-          context, WebFeature::kRTCPeerConnectionCreateOfferLegacyCompliant);
-    }
-
-    platform_transceivers = peer_handler_->CreateOffer(request, offer_options);
-  } else {
-    if (rtc_offer_options.IsObject()) {
-      Deprecation::CountDeprecation(
-          context,
-          WebFeature::kRTCPeerConnectionLegacyCreateWithMediaConstraints);
-    }
-
-    MediaErrorState media_error_state;
-    MediaConstraints constraints = media_constraints_impl::Create(
-        context, rtc_offer_options, media_error_state);
-    // Report constraints parsing errors via the callback, but ignore
-    // unknown/unsupported constraints as they would be silently discarded by
-    // WebIDL.
-    if (media_error_state.CanGenerateException()) {
-      String error_msg = media_error_state.GetErrorMessage();
-      AsyncCallErrorCallback(error_callback,
-                             MakeGarbageCollected<DOMException>(
-                                 DOMExceptionCode::kOperationError, error_msg));
-      return ScriptPromise::CastUndefined(script_state);
-    }
-
-    if (!constraints.IsUnconstrained()) {
-      UseCounter::Count(
-          context, WebFeature::kRTCPeerConnectionCreateOfferLegacyConstraints);
-    } else {
-      UseCounter::Count(
-          context, WebFeature::kRTCPeerConnectionCreateOfferLegacyCompliant);
-    }
-
-    platform_transceivers = peer_handler_->CreateOffer(request, constraints);
-  }
+  Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> platform_transceivers =
+      peer_handler_->CreateOffer(request,
+                                 ConvertToRTCOfferOptionsPlatform(options));
   for (auto& platform_transceiver : platform_transceivers)
     CreateOrUpdateTransceiver(std::move(platform_transceiver));
 
@@ -1037,66 +932,18 @@ ScriptPromise RTCPeerConnection::createAnswer(
     ScriptState* script_state,
     V8RTCSessionDescriptionCallback* success_callback,
     V8RTCPeerConnectionErrorCallback* error_callback,
-    const ScriptValue& media_constraints_value,
-    ExceptionState& exception_state) {
-  Dictionary media_constraints(script_state->GetIsolate(),
-                               media_constraints_value.V8Value(),
-                               exception_state);
-  if (exception_state.HadException())
-    return ScriptPromise();
-  return CreateAnswer(script_state, success_callback, error_callback,
-                      media_constraints);
-}
-
-ScriptPromise RTCPeerConnection::createAnswer(
-    ScriptState* script_state,
-    V8RTCSessionDescriptionCallback* success_callback,
-    V8RTCPeerConnectionErrorCallback* error_callback,
     ExceptionState&) {
-  return CreateAnswer(script_state, success_callback, error_callback,
-                      Dictionary());
-}
-
-ScriptPromise RTCPeerConnection::CreateAnswer(
-    ScriptState* script_state,
-    V8RTCSessionDescriptionCallback* success_callback,
-    V8RTCPeerConnectionErrorCallback* error_callback,
-    const Dictionary& media_constraints) {
   DCHECK(success_callback);
   DCHECK(error_callback);
   ExecutionContext* context = ExecutionContext::From(script_state);
   UseCounter::Count(context, WebFeature::kRTCPeerConnectionCreateAnswer);
   UseCounter::Count(
       context, WebFeature::kRTCPeerConnectionCreateAnswerLegacyFailureCallback);
-  if (media_constraints.IsObject()) {
-    UseCounter::Count(
-        context, WebFeature::kRTCPeerConnectionCreateAnswerLegacyConstraints);
-  } else {
-    UseCounter::Count(
-        context, WebFeature::kRTCPeerConnectionCreateAnswerLegacyCompliant);
-  }
+  UseCounter::Count(context,
+                    WebFeature::kRTCPeerConnectionCreateAnswerLegacyCompliant);
 
   if (CallErrorCallbackIfSignalingStateClosed(signaling_state_, error_callback))
     return ScriptPromise::CastUndefined(script_state);
-
-  if (media_constraints.IsObject()) {
-    Deprecation::CountDeprecation(
-        context,
-        WebFeature::kRTCPeerConnectionLegacyCreateWithMediaConstraints);
-  }
-  MediaErrorState media_error_state;
-  MediaConstraints constraints = media_constraints_impl::Create(
-      context, media_constraints, media_error_state);
-  // Report constraints parsing errors via the callback, but ignore
-  // unknown/unsupported constraints as they would be silently discarded by
-  // WebIDL.
-  if (media_error_state.CanGenerateException()) {
-    String error_msg = media_error_state.GetErrorMessage();
-    AsyncCallErrorCallback(error_callback,
-                           MakeGarbageCollected<DOMException>(
-                               DOMExceptionCode::kOperationError, error_msg));
-    return ScriptPromise::CastUndefined(script_state);
-  }
 
   call_setup_state_tracker_.NoteAnswererStateEvent(
       AnswererState::kCreateAnswerPending, HasDocumentMedia());
@@ -1105,7 +952,7 @@ ScriptPromise RTCPeerConnection::CreateAnswer(
           GetExecutionContext(),
           RTCCreateSessionDescriptionOperation::kCreateAnswer, this,
           success_callback, error_callback);
-  peer_handler_->CreateAnswer(request, constraints);
+  peer_handler_->CreateAnswer(request, nullptr);
   return ScriptPromise::CastUndefined(script_state);
 }
 

@@ -475,54 +475,6 @@ void GetRTCStatsOnSignalingThread(
           .get());
 }
 
-void ConvertOfferOptionsToWebrtcOfferOptions(
-    const RTCOfferOptionsPlatform* options,
-    webrtc::PeerConnectionInterface::RTCOfferAnswerOptions* output) {
-  DCHECK(options);
-  output->offer_to_receive_audio = options->OfferToReceiveAudio();
-  output->offer_to_receive_video = options->OfferToReceiveVideo();
-  output->voice_activity_detection = options->VoiceActivityDetection();
-  output->ice_restart = options->IceRestart();
-}
-
-void ConvertAnswerOptionsToWebrtcAnswerOptions(
-    blink::RTCAnswerOptionsPlatform* options,
-    webrtc::PeerConnectionInterface::RTCOfferAnswerOptions* output) {
-  output->voice_activity_detection = options->VoiceActivityDetection();
-}
-
-void ConvertConstraintsToWebrtcOfferOptions(
-    const MediaConstraints& constraints,
-    webrtc::PeerConnectionInterface::RTCOfferAnswerOptions* output) {
-  if (constraints.IsUnconstrained()) {
-    return;
-  }
-  String failing_name;
-  if (constraints.Basic().HasMandatoryOutsideSet(
-          {constraints.Basic().offer_to_receive_audio.GetName(),
-           constraints.Basic().offer_to_receive_video.GetName(),
-           constraints.Basic().voice_activity_detection.GetName(),
-           constraints.Basic().ice_restart.GetName()},
-          failing_name)) {
-    // TODO(hta): Reject the calling operation with "constraint error"
-    // https://crbug.com/594894
-    DLOG(ERROR) << "Invalid mandatory constraint to CreateOffer/Answer: "
-                << failing_name;
-  }
-  GetConstraintValueAsInteger(
-      constraints, &MediaTrackConstraintSetPlatform::offer_to_receive_audio,
-      &output->offer_to_receive_audio);
-  GetConstraintValueAsInteger(
-      constraints, &MediaTrackConstraintSetPlatform::offer_to_receive_video,
-      &output->offer_to_receive_video);
-  GetConstraintValueAsBoolean(
-      constraints, &MediaTrackConstraintSetPlatform::voice_activity_detection,
-      &output->voice_activity_detection);
-  GetConstraintValueAsBoolean(constraints,
-                              &MediaTrackConstraintSetPlatform::ice_restart,
-                              &output->ice_restart);
-}
-
 std::set<RTCPeerConnectionHandler*>* GetPeerConnectionHandlers() {
   static std::set<RTCPeerConnectionHandler*>* handlers =
       new std::set<RTCPeerConnectionHandler*>();
@@ -1250,20 +1202,6 @@ bool RTCPeerConnectionHandler::InitializeForTest(
 
 Vector<std::unique_ptr<RTCRtpTransceiverPlatform>>
 RTCPeerConnectionHandler::CreateOffer(RTCSessionDescriptionRequest* request,
-                                      const MediaConstraints& options) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::createOffer");
-
-  if (peer_connection_tracker_)
-    peer_connection_tracker_->TrackCreateOffer(this, options);
-
-  webrtc::PeerConnectionInterface::RTCOfferAnswerOptions webrtc_options;
-  ConvertConstraintsToWebrtcOfferOptions(options, &webrtc_options);
-  return CreateOfferInternal(request, std::move(webrtc_options));
-}
-
-Vector<std::unique_ptr<RTCRtpTransceiverPlatform>>
-RTCPeerConnectionHandler::CreateOffer(RTCSessionDescriptionRequest* request,
                                       RTCOfferOptionsPlatform* options) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::createOffer");
@@ -1272,15 +1210,13 @@ RTCPeerConnectionHandler::CreateOffer(RTCSessionDescriptionRequest* request,
     peer_connection_tracker_->TrackCreateOffer(this, options);
 
   webrtc::PeerConnectionInterface::RTCOfferAnswerOptions webrtc_options;
-  ConvertOfferOptionsToWebrtcOfferOptions(options, &webrtc_options);
-  return CreateOfferInternal(request, std::move(webrtc_options));
-}
+  if (options) {
+    webrtc_options.offer_to_receive_audio = options->OfferToReceiveAudio();
+    webrtc_options.offer_to_receive_video = options->OfferToReceiveVideo();
+    webrtc_options.voice_activity_detection = options->VoiceActivityDetection();
+    webrtc_options.ice_restart = options->IceRestart();
+  }
 
-Vector<std::unique_ptr<RTCRtpTransceiverPlatform>>
-RTCPeerConnectionHandler::CreateOfferInternal(
-    blink::RTCSessionDescriptionRequest* request,
-    webrtc::PeerConnectionInterface::RTCOfferAnswerOptions options) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   scoped_refptr<CreateSessionDescriptionRequest> description_request(
       new rtc::RefCountedObject<CreateSessionDescriptionRequest>(
           task_runner_, request, weak_factory_.GetWeakPtr(),
@@ -1289,10 +1225,11 @@ RTCPeerConnectionHandler::CreateOfferInternal(
   blink::TransceiverStateSurfacer transceiver_state_surfacer(
       task_runner_, signaling_thread());
   RunSynchronousOnceClosureOnSignalingThread(
-      base::BindOnce(
-          &RTCPeerConnectionHandler::CreateOfferOnSignalingThread,
-          base::Unretained(this), base::Unretained(description_request.get()),
-          std::move(options), base::Unretained(&transceiver_state_surfacer)),
+      base::BindOnce(&RTCPeerConnectionHandler::CreateOfferOnSignalingThread,
+                     base::Unretained(this),
+                     base::Unretained(description_request.get()),
+                     std::move(webrtc_options),
+                     base::Unretained(&transceiver_state_surfacer)),
       "CreateOfferOnSignalingThread");
   DCHECK(transceiver_state_surfacer.is_initialized());
 
@@ -1323,26 +1260,6 @@ void RTCPeerConnectionHandler::CreateOfferOnSignalingThread(
 
 void RTCPeerConnectionHandler::CreateAnswer(
     blink::RTCSessionDescriptionRequest* request,
-    const MediaConstraints& options) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::createAnswer");
-  scoped_refptr<CreateSessionDescriptionRequest> description_request(
-      new rtc::RefCountedObject<CreateSessionDescriptionRequest>(
-          task_runner_, request, weak_factory_.GetWeakPtr(),
-          peer_connection_tracker_,
-          PeerConnectionTracker::kActionCreateAnswer));
-  webrtc::PeerConnectionInterface::RTCOfferAnswerOptions webrtc_options;
-  ConvertConstraintsToWebrtcOfferOptions(options, &webrtc_options);
-  // TODO(tommi): Do this asynchronously via e.g. PostTaskAndReply.
-  native_peer_connection_->CreateAnswer(description_request.get(),
-                                        webrtc_options);
-
-  if (peer_connection_tracker_)
-    peer_connection_tracker_->TrackCreateAnswer(this, options);
-}
-
-void RTCPeerConnectionHandler::CreateAnswer(
-    blink::RTCSessionDescriptionRequest* request,
     blink::RTCAnswerOptionsPlatform* options) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::createAnswer");
@@ -1353,7 +1270,9 @@ void RTCPeerConnectionHandler::CreateAnswer(
           PeerConnectionTracker::kActionCreateAnswer));
   // TODO(tommi): Do this asynchronously via e.g. PostTaskAndReply.
   webrtc::PeerConnectionInterface::RTCOfferAnswerOptions webrtc_options;
-  ConvertAnswerOptionsToWebrtcAnswerOptions(options, &webrtc_options);
+  if (options) {
+    webrtc_options.voice_activity_detection = options->VoiceActivityDetection();
+  }
   native_peer_connection_->CreateAnswer(description_request.get(),
                                         webrtc_options);
 

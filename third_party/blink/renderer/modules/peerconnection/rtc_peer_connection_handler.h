@@ -196,13 +196,8 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
 
   virtual Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> CreateOffer(
       RTCSessionDescriptionRequest* request,
-      const MediaConstraints& options);
-  virtual Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> CreateOffer(
-      RTCSessionDescriptionRequest* request,
       RTCOfferOptionsPlatform* options);
 
-  virtual void CreateAnswer(blink::RTCSessionDescriptionRequest* request,
-                            const MediaConstraints& options);
   virtual void CreateAnswer(blink::RTCSessionDescriptionRequest* request,
                             blink::RTCAnswerOptionsPlatform* options);
 
@@ -419,9 +414,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       webrtc::RtpSenderInterface* sender,
       blink::TransceiverStateSurfacer* transceiver_state_surfacer,
       absl::optional<webrtc::RTCError>* result);
-  Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> CreateOfferInternal(
-      blink::RTCSessionDescriptionRequest* request,
-      webrtc::PeerConnectionInterface::RTCOfferAnswerOptions options);
   void CreateOfferOnSignalingThread(
       webrtc::CreateSessionDescriptionObserver* observer,
       webrtc::PeerConnectionInterface::RTCOfferAnswerOptions offer_options,

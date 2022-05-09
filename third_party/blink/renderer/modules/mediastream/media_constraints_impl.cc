@@ -115,16 +115,6 @@ const char kDAEchoCancellation[] = "googDAEchoCancellation";
 // Google-specific constraint keys for a local video source (getUserMedia).
 const char kNoiseReduction[] = "googNoiseReduction";
 
-// Legacy RTCPeerConnection createOffer() and createAnswer() constraints.
-// Legacy versions of the attributes in the spec only used with callback-based
-// versions of the spec APIs.
-// TODO(https://crbug.com/1315572): Remove these as part of removing the
-// callback-based versions.
-const char kOfferToReceiveAudio[] = "OfferToReceiveAudio";
-const char kOfferToReceiveVideo[] = "OfferToReceiveVideo";
-const char kVoiceActivityDetection[] = "VoiceActivityDetection";
-const char kIceRestart[] = "IceRestart";
-
 // Legacy RTCPeerConnection constructor constraints.
 
 // DtlsSrtpKeyAgreement and RtpDataChannels are already ignored, except when
@@ -351,30 +341,6 @@ static void ParseOldStyleNames(
       result.goog_da_echo_cancellation.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kNoiseReduction)) {
       result.goog_noise_reduction.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kOfferToReceiveAudio)) {
-      // This constraint has formerly been defined both as a boolean
-      // and as an integer. Allow both forms.
-      if (constraint.value_.Equals("true"))
-        result.offer_to_receive_audio.SetExact(1);
-      else if (constraint.value_.Equals("false"))
-        result.offer_to_receive_audio.SetExact(0);
-      else
-        result.offer_to_receive_audio.SetExact(
-            atoi(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kOfferToReceiveVideo)) {
-      // This constraint has formerly been defined both as a boolean
-      // and as an integer. Allow both forms.
-      if (constraint.value_.Equals("true"))
-        result.offer_to_receive_video.SetExact(1);
-      else if (constraint.value_.Equals("false"))
-        result.offer_to_receive_video.SetExact(0);
-      else
-        result.offer_to_receive_video.SetExact(
-            atoi(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kVoiceActivityDetection)) {
-      result.voice_activity_detection.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kIceRestart)) {
-      result.ice_restart.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kEnableDtlsSrtp)) {
       bool value = ToBoolean(constraint.value_);
       if (value) {

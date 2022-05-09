@@ -366,10 +366,6 @@ MediaTrackConstraintSetPlatform::MediaTrackConstraintSetPlatform()
       goog_audio_mirroring("googAudioMirroring"),
       goog_da_echo_cancellation("googDAEchoCancellation"),
       goog_noise_reduction("googNoiseReduction"),
-      offer_to_receive_audio("offerToReceiveAudio"),
-      offer_to_receive_video("offerToReceiveVideo"),
-      voice_activity_detection("voiceActivityDetection"),
-      ice_restart("iceRestart"),
 #if BUILDFLAG(IS_FUCHSIA)
       // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
       enable_dtls_srtp("enableDtlsSrtp"),
@@ -390,8 +386,7 @@ Vector<const BaseConstraint*> MediaTrackConstraintSetPlatform::AllConstraints()
         &goog_experimental_auto_gain_control, &goog_noise_suppression,
         &goog_highpass_filter, &goog_experimental_noise_suppression,
         &goog_audio_mirroring, &goog_da_echo_cancellation,
-        &goog_noise_reduction, &offer_to_receive_audio, &offer_to_receive_video,
-        &voice_activity_detection, &ice_restart,
+        &goog_noise_reduction,
 #if BUILDFLAG(IS_FUCHSIA)
         // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
         &enable_dtls_srtp,

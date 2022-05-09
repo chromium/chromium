@@ -160,10 +160,10 @@ class MockPeerConnectionTracker : public PeerConnectionTracker {
   // TODO(jiayl): add coverage for the following methods
   MOCK_METHOD2(TrackCreateOffer,
                void(RTCPeerConnectionHandler* pc_handler,
-                    const MediaConstraints& constraints));
+                    RTCOfferOptionsPlatform* options));
   MOCK_METHOD2(TrackCreateAnswer,
                void(RTCPeerConnectionHandler* pc_handler,
-                    const MediaConstraints& constraints));
+                    RTCAnswerOptionsPlatform* options));
   MOCK_METHOD4(TrackSetSessionDescription,
                void(RTCPeerConnectionHandler* pc_handler,
                     const String& sdp,
@@ -670,25 +670,23 @@ TEST_F(RTCPeerConnectionHandlerTest, NoCallbacksToClientAfterStop) {
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, CreateOffer) {
-  MediaConstraints options;
   EXPECT_CALL(*mock_tracker_.Get(), TrackCreateOffer(pc_handler_.get(), _));
 
   // TODO(perkj): Can blink::RTCSessionDescriptionRequest be changed so
   // the |request| requestSucceeded can be tested? Currently the |request|
   // object can not be initialized from a unit test.
   EXPECT_FALSE(mock_peer_connection_->created_session_description());
-  pc_handler_->CreateOffer(nullptr /*RTCSessionDescriptionRequest*/, options);
+  pc_handler_->CreateOffer(nullptr /*RTCSessionDescriptionRequest*/, nullptr);
   EXPECT_TRUE(mock_peer_connection_->created_session_description());
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, CreateAnswer) {
-  MediaConstraints options;
   EXPECT_CALL(*mock_tracker_.Get(), TrackCreateAnswer(pc_handler_.get(), _));
   // TODO(perkj): Can blink::RTCSessionDescriptionRequest be changed so
   // the |request| requestSucceeded can be tested? Currently the |request|
   // object can not be initialized from a unit test.
   EXPECT_FALSE(mock_peer_connection_->created_session_description());
-  pc_handler_->CreateAnswer(nullptr /*RTCSessionDescriptionRequest*/, options);
+  pc_handler_->CreateAnswer(nullptr /*RTCSessionDescriptionRequest*/, nullptr);
   EXPECT_TRUE(mock_peer_connection_->created_session_description());
 }
 

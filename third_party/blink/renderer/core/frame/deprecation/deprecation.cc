@@ -215,10 +215,6 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
           feature,
           DeprecationIssueType::
               kRTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics);
-    case WebFeature::kRTCPeerConnectionLegacyCreateWithMediaConstraints:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::
-                       kRTCPeerConnectionLegacyCreateWithMediaConstraints);
     case WebFeature::kRTCPeerConnectionSdpSemanticsPlanB:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kRTCPeerConnectionSdpSemanticsPlanB);

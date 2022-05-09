@@ -814,39 +814,15 @@ void PeerConnectionTracker::TrackCreateOffer(
                            "options: {" + SerializeOfferOptions(options) + "}");
 }
 
-void PeerConnectionTracker::TrackCreateOffer(
-    RTCPeerConnectionHandler* pc_handler,
-    const MediaConstraints& constraints) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
-  int id = GetLocalIDForHandler(pc_handler);
-  if (id == -1)
-    return;
-  SendPeerConnectionUpdate(
-      id, "createOffer",
-      "constraints: {" + SerializeMediaConstraints(constraints) + "}");
-}
-
 void PeerConnectionTracker::TrackCreateAnswer(
     RTCPeerConnectionHandler* pc_handler,
-    blink::RTCAnswerOptionsPlatform* options) {
+    RTCAnswerOptionsPlatform* options) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
   SendPeerConnectionUpdate(
       id, "createAnswer", "options: {" + SerializeAnswerOptions(options) + "}");
-}
-
-void PeerConnectionTracker::TrackCreateAnswer(
-    RTCPeerConnectionHandler* pc_handler,
-    const MediaConstraints& constraints) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
-  int id = GetLocalIDForHandler(pc_handler);
-  if (id == -1)
-    return;
-  SendPeerConnectionUpdate(
-      id, "createAnswer",
-      "constraints: {" + SerializeMediaConstraints(constraints) + "}");
 }
 
 void PeerConnectionTracker::TrackSetSessionDescription(

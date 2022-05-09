@@ -732,24 +732,10 @@ class FakeRTCPeerConnectionHandlerPlatform
  public:
   Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> CreateOffer(
       RTCSessionDescriptionRequest* request,
-      const MediaConstraints&) override {
-    PostToCompleteRequest<RTCSessionDescriptionRequest>(async_operation_action_,
-                                                        request);
-    return {};
-  }
-
-  Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> CreateOffer(
-      RTCSessionDescriptionRequest* request,
       RTCOfferOptionsPlatform*) override {
     PostToCompleteRequest<RTCSessionDescriptionRequest>(async_operation_action_,
                                                         request);
     return {};
-  }
-
-  void CreateAnswer(RTCSessionDescriptionRequest* request,
-                    const MediaConstraints&) override {
-    PostToCompleteRequest<RTCSessionDescriptionRequest>(async_operation_action_,
-                                                        request);
   }
 
   void CreateAnswer(RTCSessionDescriptionRequest* request,
@@ -825,12 +811,6 @@ class RTCPeerConnectionCallSetupStateTest : public RTCPeerConnectionTest {
     v8::Local<v8::Function> v8_function =
         v8::Function::New(scope.GetContext(), EmptyHandler).ToLocalChecked();
     return CallbackType::Create(v8_function);
-  }
-
-  ScriptValue ToScriptValue(V8TestingScope& scope, RTCOfferOptions* value) {
-    return ScriptValue(scope.GetIsolate(), ToV8Traits<RTCOfferOptions>::ToV8(
-                                               scope.GetScriptState(), value)
-                                               .ToLocalChecked());
   }
 
  private:
@@ -932,8 +912,7 @@ TEST_F(RTCPeerConnectionCallSetupStateTest, OffererLegacyApiPath) {
   pc->createOffer(scope.GetScriptState(),
                   CreateEmptyCallback<V8RTCSessionDescriptionCallback>(scope),
                   CreateEmptyCallback<V8RTCPeerConnectionErrorCallback>(scope),
-                  ToScriptValue(scope, RTCOfferOptions::Create()),
-                  scope.GetExceptionState());
+                  RTCOfferOptions::Create(), scope.GetExceptionState());
   EXPECT_EQ(OffererState::kCreateOfferPending, tracker_->offerer_state());
   EXPECT_EQ(CallSetupState::kStarted, tracker_->GetCallSetupState());
   platform_->RunUntilIdle();

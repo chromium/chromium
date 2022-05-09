@@ -276,19 +276,9 @@ bool MockRTCPeerConnectionHandlerPlatform::Initialize(
 
 Vector<std::unique_ptr<RTCRtpTransceiverPlatform>>
 MockRTCPeerConnectionHandlerPlatform::CreateOffer(RTCSessionDescriptionRequest*,
-                                                  const MediaConstraints&) {
-  return {};
-}
-
-Vector<std::unique_ptr<RTCRtpTransceiverPlatform>>
-MockRTCPeerConnectionHandlerPlatform::CreateOffer(RTCSessionDescriptionRequest*,
                                                   RTCOfferOptionsPlatform*) {
   return {};
 }
-
-void MockRTCPeerConnectionHandlerPlatform::CreateAnswer(
-    RTCSessionDescriptionRequest*,
-    const MediaConstraints&) {}
 
 void MockRTCPeerConnectionHandlerPlatform::CreateAnswer(
     RTCSessionDescriptionRequest*,

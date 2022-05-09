@@ -35028,12 +35028,14 @@ Called by update_use_counter_feature_enum.py.-->
       label="RTCPeerConnectionCreateOfferLegacyNoFailureCallback"/>
   <int value="1044" label="RTCPeerConnectionCreateOfferLegacyFailureCallback"/>
   <int value="1045" label="RTCPeerConnectionCreateOfferLegacyConstraints"/>
-  <int value="1046" label="RTCPeerConnectionCreateOfferLegacyOfferOptions"/>
+  <int value="1046"
+      label="OBSOLETE_RTCPeerConnectionCreateOfferLegacyOfferOptions"/>
   <int value="1047" label="RTCPeerConnectionCreateOfferLegacyCompliant"/>
   <int value="1048"
       label="RTCPeerConnectionCreateAnswerLegacyNoFailureCallback"/>
   <int value="1049" label="RTCPeerConnectionCreateAnswerLegacyFailureCallback"/>
-  <int value="1050" label="RTCPeerConnectionCreateAnswerLegacyConstraints"/>
+  <int value="1050"
+      label="OBSOLETE_RTCPeerConnectionCreateAnswerLegacyConstraints"/>
   <int value="1051" label="RTCPeerConnectionCreateAnswerLegacyCompliant"/>
   <int value="1052"
       label="RTCPeerConnectionSetLocalDescriptionLegacyNoSuccessCallback"/>
@@ -38342,7 +38344,8 @@ Called by update_use_counter_feature_enum.py.-->
       label="ExplicitOverflowVisibleOnReplacedElementWithObjectProp"/>
   <int value="4203" label="PrivateNetworkAccessNullIpAddress"/>
   <int value="4204" label="OBSOLETE_LegacyConstraintGoogScreencastMinBitrate"/>
-  <int value="4205" label="RTCPeerConnectionLegacyCreateWithMediaConstraints"/>
+  <int value="4205"
+      label="OBSOLETE_RTCPeerConnectionLegacyCreateWithMediaConstraints"/>
   <int value="4206" label="ClientHintsSaveData"/>
   <int value="4207" label="LegacyConstraintGoogIPv6"/>
   <int value="4208"
