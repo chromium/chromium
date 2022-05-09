@@ -17,6 +17,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -46,17 +47,17 @@ void RecordReportingUploadHeaderType(ReportingUploadHeaderType header_type) {
 }
 
 std::string SerializeReports(const ReportList& reports, base::TimeTicks now) {
-  base::ListValue reports_value;
+  base::Value::List reports_value;
 
   for (const ReportingReport* report : reports) {
-    std::unique_ptr<base::DictionaryValue> report_value =
-        std::make_unique<base::DictionaryValue>();
+    base::Value::Dict report_value;
 
-    report_value->SetInteger("age", (now - report->queued).InMilliseconds());
-    report_value->SetString("type", report->type);
-    report_value->SetString("url", report->url.spec());
-    report_value->SetString("user_agent", report->user_agent);
-    report_value->SetKey("body", report->body->Clone());
+    report_value.Set("age", base::saturated_cast<int>(
+                                (now - report->queued).InMilliseconds()));
+    report_value.Set("type", report->type);
+    report_value.Set("url", report->url.spec());
+    report_value.Set("user_agent", report->user_agent);
+    report_value.Set("body", report->body->Clone());
 
     reports_value.Append(std::move(report_value));
   }
