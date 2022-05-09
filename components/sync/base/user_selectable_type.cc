@@ -75,7 +75,8 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     case UserSelectableType::kHistory:
       return {kTypedUrlsTypeName,
               TYPED_URLS,
-              {TYPED_URLS, HISTORY_DELETE_DIRECTIVES, SESSIONS, USER_EVENTS}};
+              {TYPED_URLS, HISTORY, HISTORY_DELETE_DIRECTIVES, SESSIONS,
+               USER_EVENTS}};
     case UserSelectableType::kExtensions:
       return {
           kExtensionsTypeName, EXTENSIONS, {EXTENSIONS, EXTENSION_SETTINGS}};

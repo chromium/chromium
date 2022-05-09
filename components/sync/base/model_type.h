@@ -134,6 +134,8 @@ enum ModelType {
   // used by the server and Play Services, not Chrome itself.
   // (crbug.com/1223853)
   // WEBAUTHN_CREDENTIAL,
+  // Synced history. An entity roughly corresponds to a navigation.
+  HISTORY,
 
   // Proxy types are excluded from the sync protocol, but are still considered
   // real user types. By convention, we prefix them with 'PROXY_' to distinguish
@@ -230,7 +232,8 @@ enum class ModelTypeForHistograms {
   kSharingMessage = 48,
   kAutofillWalletOffer = 49,
   kWorkspaceDesk = 50,
-  kMaxValue = kWorkspaceDesk
+  kHistory = 51,
+  kMaxValue = kHistory
 };
 
 // Used to mark the type of EntitySpecifics that has no actual data.
@@ -252,7 +255,8 @@ constexpr ModelTypeSet ProtocolTypes() {
       DEVICE_INFO, PRIORITY_PREFERENCES, SUPERVISED_USER_SETTINGS, APP_LIST,
       ARC_PACKAGE, PRINTERS, READING_LIST, USER_EVENTS, NIGORI, USER_CONSENTS,
       SEND_TAB_TO_SELF, SECURITY_EVENTS, WEB_APPS, WIFI_CONFIGURATIONS,
-      OS_PREFERENCES, OS_PRIORITY_PREFERENCES, SHARING_MESSAGE, WORKSPACE_DESK);
+      OS_PREFERENCES, OS_PRIORITY_PREFERENCES, SHARING_MESSAGE, WORKSPACE_DESK,
+      HISTORY);
 }
 
 // These are the normal user-controlled types. This is to distinguish from

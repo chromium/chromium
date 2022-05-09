@@ -277,6 +277,7 @@ const char* const kAllocatorDumpNameAllowlist[] = {
     "sync/0x?/model_type/DICTIONARY",
     "sync/0x?/model_type/EXTENSION",
     "sync/0x?/model_type/EXTENSION_SETTING",
+    "sync/0x?/model_type/HISTORY",
     "sync/0x?/model_type/HISTORY_DELETE_DIRECTIVE",
     "sync/0x?/model_type/MANAGED_USER",
     "sync/0x?/model_type/MANAGED_USER_SETTING",
