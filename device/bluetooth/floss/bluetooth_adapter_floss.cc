@@ -569,7 +569,13 @@ void BluetoothAdapterFloss::AdapterClearedDevice(
       device::CanonicalizeBluetoothAddress(device_floss->GetAddress());
   if (base::Contains(devices_, canonical_address)) {
     BluetoothDeviceFloss* device_ptr = device_floss.get();
-    devices_.erase(canonical_address);
+    BluetoothDeviceFloss* found_ptr = static_cast<BluetoothDeviceFloss*>(
+        GetDevice(device_floss->GetAddress()));
+
+    // Only remove devices from devices_ that are not paired
+    if (!found_ptr || !found_ptr->IsPaired()) {
+      devices_.erase(canonical_address);
+    }
 
     for (auto& observer : observers_)
       observer.DeviceRemoved(this, device_ptr);
