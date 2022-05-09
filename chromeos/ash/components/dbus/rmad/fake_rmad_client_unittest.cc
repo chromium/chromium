@@ -495,6 +495,20 @@ TEST_F(FakeRmadClientTest, GetLog) {
   run_loop.RunUntilIdle();
 }
 
+TEST_F(FakeRmadClientTest, SaveLog) {
+  const std::string expected_save_path = "fake save path for testing";
+  fake_client_()->SetSaveLogReply(expected_save_path, rmad::RMAD_ERROR_OK);
+  base::RunLoop run_loop;
+  client_->SaveLog(base::BindLambdaForTesting(
+      [&](absl::optional<rmad::SaveLogReply> response) {
+        EXPECT_TRUE(response.has_value());
+        EXPECT_EQ(response->save_path(), expected_save_path);
+        EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
+  run_loop.RunUntilIdle();
+}
+
 // Tests that synchronous observers are notified about errors that occur outside
 // of state transitions.
 TEST_F(FakeRmadClientTest, ErrorObservation) {

@@ -48,6 +48,8 @@ class RmadClientImpl : public RmadClient {
 
   void GetLog(DBusMethodCallback<rmad::GetLogReply> callback) override;
 
+  void SaveLog(DBusMethodCallback<rmad::SaveLogReply> callback) override;
+
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   bool HasObserver(const Observer* observer) const override;
@@ -437,6 +439,15 @@ void RmadClientImpl::GetLog(DBusMethodCallback<rmad::GetLogReply> callback) {
   rmad_proxy_->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&RmadClientImpl::OnProtoReply<rmad::GetLogReply>,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void RmadClientImpl::SaveLog(DBusMethodCallback<rmad::SaveLogReply> callback) {
+  dbus::MethodCall method_call(rmad::kRmadInterfaceName, rmad::kSaveLogMethod);
+  dbus::MessageWriter writer(&method_call);
+  rmad_proxy_->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&RmadClientImpl::OnProtoReply<rmad::SaveLogReply>,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 

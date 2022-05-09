@@ -103,6 +103,9 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
   // Request the RMA process logs.
   virtual void GetLog(DBusMethodCallback<rmad::GetLogReply> callback) = 0;
 
+  // Save RMA logs to a USB drive.
+  virtual void SaveLog(DBusMethodCallback<rmad::SaveLogReply> callback) = 0;
+
   // Adds and removes the observer.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

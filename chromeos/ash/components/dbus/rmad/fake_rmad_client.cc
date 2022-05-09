@@ -210,6 +210,13 @@ void FakeRmadClient::GetLog(DBusMethodCallback<rmad::GetLogReply> callback) {
                      absl::optional<rmad::GetLogReply>(get_log_reply_)));
 }
 
+void FakeRmadClient::SaveLog(DBusMethodCallback<rmad::SaveLogReply> callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback),
+                     absl::optional<rmad::SaveLogReply>(save_log_reply_)));
+}
+
 void FakeRmadClient::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -341,6 +348,12 @@ void FakeRmadClient::SetGetLogReply(const std::string& log,
                                     rmad::RmadErrorCode error) {
   get_log_reply_.set_log(log);
   get_log_reply_.set_error(error);
+}
+
+void FakeRmadClient::SetSaveLogReply(const std::string& save_path,
+                                     rmad::RmadErrorCode error) {
+  save_log_reply_.set_save_path(save_path);
+  save_log_reply_.set_error(error);
 }
 
 void FakeRmadClient::TriggerErrorObservation(rmad::RmadErrorCode error) {
