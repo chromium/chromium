@@ -43,8 +43,8 @@ MATCHER(HasUserNoteManager, "") {
 
 class MockUserNoteService : public UserNoteService {
  public:
-  MockUserNoteService()
-      : UserNoteService(std::unique_ptr<UserNoteServiceDelegate>()) {}
+  // A service delegate is not needed for these tests, so pass nullptr.
+  MockUserNoteService() : UserNoteService(/*delegate=*/nullptr) {}
 
   MOCK_METHOD(void,
               OnFrameNavigated,

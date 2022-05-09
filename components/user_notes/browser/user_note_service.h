@@ -37,7 +37,11 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
   UserNoteService(const UserNoteService&) = delete;
   UserNoteService& operator=(const UserNoteService&) = delete;
 
-  base::SafeRef<UserNoteService> GetSafeRef();
+  base::SafeRef<UserNoteService> GetSafeRef() const;
+
+  // Returns a pointer to the note model associated with the given ID, or
+  // `nullptr` if none exists.
+  const UserNote* GetNoteModel(const base::UnguessableToken& id) const;
 
   // Called by the embedder when a frame navigates to a new URL. Queries the
   // storage to find notes associated with that URL, and if there are any, kicks

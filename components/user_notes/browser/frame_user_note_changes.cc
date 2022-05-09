@@ -4,33 +4,44 @@
 
 #include "components/user_notes/browser/frame_user_note_changes.h"
 
-#include "base/notreached.h"
+#include "base/barrier_closure.h"
+#include "components/user_notes/browser/user_note_manager.h"
+#include "components/user_notes/model/user_note.h"
+#include "components/user_notes/model/user_note_target.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace user_notes {
 
-FrameUserNoteChanges::FrameUserNoteChanges(content::RenderFrameHost* rfh,
-                                           const ChangeList& notes_added,
-                                           const ChangeList& notes_modified,
-                                           const ChangeList& notes_removed)
-    : rfh_(rfh),
+FrameUserNoteChanges::FrameUserNoteChanges(
+    base::SafeRef<UserNoteService> service,
+    content::RenderFrameHost* rfh,
+    const ChangeList& notes_added,
+    const ChangeList& notes_modified,
+    const ChangeList& notes_removed)
+    : service_(service),
+      rfh_(rfh),
       notes_added_(notes_added),
       notes_modified_(notes_modified),
       notes_removed_(notes_removed) {
   DCHECK(!notes_added_.empty() || !notes_modified_.empty() ||
          !notes_removed_.empty());
+  DCHECK(rfh_);
 }
 
-FrameUserNoteChanges::FrameUserNoteChanges(content::RenderFrameHost* rfh,
-                                           ChangeList&& notes_added,
-                                           ChangeList&& notes_modified,
-                                           ChangeList&& notes_removed)
-    : rfh_(rfh),
+FrameUserNoteChanges::FrameUserNoteChanges(
+    base::SafeRef<UserNoteService> service,
+    content::RenderFrameHost* rfh,
+    ChangeList&& notes_added,
+    ChangeList&& notes_modified,
+    ChangeList&& notes_removed)
+    : service_(service),
+      rfh_(rfh),
       notes_added_(std::move(notes_added)),
       notes_modified_(std::move(notes_modified)),
       notes_removed_(std::move(notes_removed)) {
   DCHECK(!notes_added_.empty() || !notes_modified_.empty() ||
          !notes_removed_.empty());
+  DCHECK(rfh_);
 }
 
 FrameUserNoteChanges::FrameUserNoteChanges(FrameUserNoteChanges&& other) =
@@ -38,8 +49,39 @@ FrameUserNoteChanges::FrameUserNoteChanges(FrameUserNoteChanges&& other) =
 
 FrameUserNoteChanges::~FrameUserNoteChanges() = default;
 
-void FrameUserNoteChanges::Apply() {
-  NOTIMPLEMENTED();
+void FrameUserNoteChanges::Apply(base::OnceClosure callback) {
+  UserNoteManager* manager = UserNoteManager::GetForPage(rfh_->GetPage());
+  DCHECK(manager);
+
+  // Removed notes can be synchronously deleted from the note manager. There is
+  // no need to wait for the async removal of the page highlights on the
+  // renderer side.
+  for (const base::UnguessableToken& note_id : notes_removed_) {
+    manager->RemoveNote(note_id);
+  }
+
+  // For added notes, the async highlight creation on the renderer side must be
+  // awaited, because the order in which notes are shown in the Notes UI depends
+  // on the order of the corresponding highlights in the page. Use a barrier
+  // closure to wait until all note highlights have been created in the page.
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(notes_added_.size(), std::move(callback));
+  for (const base::UnguessableToken& note_id : notes_added_) {
+    const UserNote* note = service_->GetNoteModel(note_id);
+    DCHECK(note);
+
+    // TODO(gujen): Support the note authoring workflow, in which case a
+    // temporary note instance will already exist in the service's temporary
+    // map, which we can synchronously move to the note manager here.
+
+    std::unique_ptr<UserNoteInstance> instance_unique = MakeNoteInstance(note);
+    manager->AddNoteInstance(std::move(instance_unique), barrier);
+  }
+}
+
+std::unique_ptr<UserNoteInstance> FrameUserNoteChanges::MakeNoteInstance(
+    const UserNote* note_model) const {
+  return std::make_unique<UserNoteInstance>(note_model->GetSafeRef());
 }
 
 }  // namespace user_notes

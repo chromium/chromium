@@ -17,8 +17,14 @@ UserNoteService::UserNoteService(
 
 UserNoteService::~UserNoteService() = default;
 
-base::SafeRef<UserNoteService> UserNoteService::GetSafeRef() {
+base::SafeRef<UserNoteService> UserNoteService::GetSafeRef() const {
   return weak_ptr_factory_.GetSafeRef();
+}
+
+const UserNote* UserNoteService::GetNoteModel(
+    const base::UnguessableToken& id) const {
+  const auto& entry_it = model_map_.find(id);
+  return entry_it == model_map_.end() ? nullptr : entry_it->second.model.get();
 }
 
 void UserNoteService::OnFrameNavigated(content::RenderFrameHost* rfh) {

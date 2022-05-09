@@ -35,16 +35,22 @@ class UserNoteManager : public content::PageUserData<UserNoteManager> {
 
   // Returns the note instance for the given ID, or nullptr if this page does
   // not have an instance of that note.
-  UserNoteInstance* GetNoteInstance(const base::UnguessableToken id);
+  UserNoteInstance* GetNoteInstance(const base::UnguessableToken& id);
 
   // Returns all note instances for the |Page| this object is attached to.
   const std::vector<UserNoteInstance*> GetAllNoteInstances();
 
   // Destroys the note instance associated with the given GUID.
-  void RemoveNote(const base::UnguessableToken id);
+  void RemoveNote(const base::UnguessableToken& id);
 
-  // Stores the given note instance into this object's note instance container.
+  // Stores the given note instance into this object's instance map, then kicks
+  // off its asynchronous initialization in the renderer process, passing it the
+  // provided callback for when it finishes.
+  // TODO(gujen): Remove the overload without the callback after tests are
+  //              fixed.
   void AddNoteInstance(std::unique_ptr<UserNoteInstance> note);
+  void AddNoteInstance(std::unique_ptr<UserNoteInstance> note,
+                       base::OnceClosure initialize_callback);
 
  private:
   friend class content::PageUserData<UserNoteManager>;

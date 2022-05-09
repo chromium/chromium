@@ -22,7 +22,27 @@ class UserNoteServiceTest : public UserNoteBaseTest {
   }
 };
 
-TEST_F(UserNoteServiceTest, AddNoteIntancesToModelMap) {
+TEST_F(UserNoteServiceTest, GetNoteModel) {
+  // Verify initial state.
+  EXPECT_EQ(ModelMapSize(), 2u);
+  EXPECT_EQ(ManagerCountForId(note_ids_[0]), 0u);
+  EXPECT_EQ(ManagerCountForId(note_ids_[1]), 0u);
+
+  // Getting existing note models should return the expected model.
+  const UserNote* model1 = note_service_->GetNoteModel(note_ids_[0]);
+  const UserNote* model2 = note_service_->GetNoteModel(note_ids_[1]);
+  ASSERT_TRUE(model1);
+  ASSERT_TRUE(model2);
+  EXPECT_EQ(model1->id(), note_ids_[0]);
+  EXPECT_EQ(model2->id(), note_ids_[1]);
+
+  // Getting a note model that doesn't exist should return `nullptr` and not
+  // crash.
+  EXPECT_EQ(note_service_->GetNoteModel(base::UnguessableToken::Create()),
+            nullptr);
+}
+
+TEST_F(UserNoteServiceTest, OnNoteInstanceAddedToPage) {
   // Verify initial state.
   EXPECT_EQ(ModelMapSize(), 2u);
   EXPECT_EQ(ManagerCountForId(note_ids_[0]), 0u);
@@ -40,7 +60,7 @@ TEST_F(UserNoteServiceTest, AddNoteIntancesToModelMap) {
   EXPECT_EQ(ManagerCountForId(note_ids_[1]), 1u);
 }
 
-TEST_F(UserNoteServiceTest, RemoveNoteIntancesFromModelMap) {
+TEST_F(UserNoteServiceTest, OnNoteInstanceRemovedFromPage) {
   // Initial setup.
   UserNoteManager* m1 = ConfigureNewManager();
   UserNoteManager* m2 = ConfigureNewManager();

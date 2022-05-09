@@ -22,7 +22,7 @@ UserNoteManager::~UserNoteManager() {
 }
 
 UserNoteInstance* UserNoteManager::GetNoteInstance(
-    const base::UnguessableToken id) {
+    const base::UnguessableToken& id) {
   const auto& entry_it = instance_map_.find(id);
   if (entry_it == instance_map_.end()) {
     return nullptr;
@@ -41,7 +41,7 @@ const std::vector<UserNoteInstance*> UserNoteManager::GetAllNoteInstances() {
   return notes;
 }
 
-void UserNoteManager::RemoveNote(const base::UnguessableToken id) {
+void UserNoteManager::RemoveNote(const base::UnguessableToken& id) {
   const auto& entry_it = instance_map_.find(id);
   DCHECK(entry_it != instance_map_.end())
       << "Attempted to remove a note instance from a page where it didn't "
@@ -52,6 +52,11 @@ void UserNoteManager::RemoveNote(const base::UnguessableToken id) {
 }
 
 void UserNoteManager::AddNoteInstance(std::unique_ptr<UserNoteInstance> note) {
+  AddNoteInstance(std::move(note), base::BindOnce([] {}));
+}
+
+void UserNoteManager::AddNoteInstance(std::unique_ptr<UserNoteInstance> note,
+                                      base::OnceClosure initialize_callback) {
   // TODO(crbug.com/1313967): This DCHECK is only applicable if notes are only
   // supported in the top-level frame. If notes are ever supported in subframes,
   // it is possible for the same note ID to be added to the same page more than
@@ -63,7 +68,9 @@ void UserNoteManager::AddNoteInstance(std::unique_ptr<UserNoteInstance> note) {
          "more than once";
 
   service_->OnNoteInstanceAddedToPage(note->model().id(), this);
+  UserNoteInstance* note_raw = note.get();
   instance_map_.emplace(note->model().id(), std::move(note));
+  note_raw->InitializeHighlightIfNeeded(std::move(initialize_callback));
 }
 
 PAGE_USER_DATA_KEY_IMPL(UserNoteManager);

@@ -14,7 +14,7 @@ namespace user_notes {
 // Model class for a note target.
 class UserNoteTarget {
  public:
-  enum TargetType { PAGE = 0, PAGE_TEXT };
+  enum TargetType { kPage = 0, kPageText };
 
   explicit UserNoteTarget(TargetType type,
                           const std::string& original_text,

@@ -27,7 +27,7 @@ class UserNote {
   UserNote(const UserNote&) = delete;
   UserNote& operator=(const UserNote&) = delete;
 
-  base::SafeRef<UserNote> GetSafeRef();
+  base::SafeRef<UserNote> GetSafeRef() const;
 
   const base::UnguessableToken& id() const { return id_; }
   const UserNoteMetadata& metadata() const { return *metadata_; }

@@ -17,7 +17,7 @@ UserNote::UserNote(const base::UnguessableToken& id,
 
 UserNote::~UserNote() = default;
 
-base::SafeRef<UserNote> UserNote::GetSafeRef() {
+base::SafeRef<UserNote> UserNote::GetSafeRef() const {
   return weak_ptr_factory_.GetSafeRef();
 }
 

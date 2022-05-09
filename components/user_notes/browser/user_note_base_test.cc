@@ -86,8 +86,8 @@ size_t UserNoteBaseTest::ManagerCountForId(
   return entry_it->second.managers.size();
 }
 
-bool UserNoteBaseTest::DoesModelExist(const base::UnguessableToken& id) {
-  const auto& entry_it = note_service_->model_map_.find(id);
+bool UserNoteBaseTest::DoesModelExist(const base::UnguessableToken& note_id) {
+  const auto& entry_it = note_service_->model_map_.find(note_id);
   return entry_it != note_service_->model_map_.end();
 }
 

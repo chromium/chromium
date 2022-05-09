@@ -701,7 +701,7 @@ TEST_P(UserNoteUtilsTest, CalculateNoteChanges) {
   // Calculate the diff between the notes in the frames and the notes in the
   // metadata.
   const std::vector<FrameUserNoteChanges>& actual_diffs =
-      CalculateNoteChanges(frame_hosts, metadata_snapshot);
+      CalculateNoteChanges(*note_service_, frame_hosts, metadata_snapshot);
 
   std::unordered_set<content::RenderFrameHost*> frames_with_diff;
   for (const FrameUserNoteChanges& diff : actual_diffs) {

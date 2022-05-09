@@ -20,7 +20,7 @@ std::unique_ptr<UserNoteBody> GetTestUserNoteBody() {
 
 std::unique_ptr<UserNoteTarget> GetTestUserNotePageTarget(
     const std::string& url) {
-  return std::make_unique<UserNoteTarget>(UserNoteTarget::TargetType::PAGE, "",
+  return std::make_unique<UserNoteTarget>(UserNoteTarget::TargetType::kPage, "",
                                           GURL(url), "");
 }
 

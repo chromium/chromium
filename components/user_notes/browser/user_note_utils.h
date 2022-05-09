@@ -17,12 +17,14 @@ namespace user_notes {
 
 class FrameUserNoteChanges;
 class UserNoteMetadataSnapshot;
+class UserNoteService;
 
 // Compares the notes each frame currently contains with the notes it should
 // actually contain based on the provided metadata snapshot. A
 // `FrameUserNoteChanges` object is generated for each frame where notes
 // don't match the metadata.
 std::vector<FrameUserNoteChanges> CalculateNoteChanges(
+    const UserNoteService& note_service,
     const std::vector<content::RenderFrameHost*>& rfhs,
     const UserNoteMetadataSnapshot& metadata_snapshot);
 

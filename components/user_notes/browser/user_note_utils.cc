@@ -7,6 +7,7 @@
 #include "base/unguessable_token.h"
 #include "components/user_notes/browser/frame_user_note_changes.h"
 #include "components/user_notes/browser/user_note_manager.h"
+#include "components/user_notes/browser/user_note_service.h"
 #include "components/user_notes/interfaces/user_note_metadata_snapshot.h"
 #include "components/user_notes/model/user_note_metadata.h"
 #include "content/public/browser/render_frame_host.h"
@@ -15,6 +16,7 @@
 namespace user_notes {
 
 std::vector<FrameUserNoteChanges> CalculateNoteChanges(
+    const UserNoteService& note_service,
     const std::vector<content::RenderFrameHost*>& rfhs,
     const UserNoteMetadataSnapshot& metadata_snapshot) {
   std::vector<FrameUserNoteChanges> result;
@@ -76,8 +78,9 @@ std::vector<FrameUserNoteChanges> CalculateNoteChanges(
     }
 
     if (!added.empty() || !removed.empty() || !modified.empty()) {
-      result.emplace_back(FrameUserNoteChanges(
-          rfh, std::move(added), std::move(modified), std::move(removed)));
+      result.emplace_back(
+          FrameUserNoteChanges(note_service.GetSafeRef(), rfh, std::move(added),
+                               std::move(modified), std::move(removed)));
     }
   }
 

@@ -31,6 +31,7 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "frame_user_note_changes_unittest.cc",
     "user_note_base_test.cc",
     "user_note_base_test.h",
     "user_note_manager_unittest.cc",
@@ -43,6 +44,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/user_notes:features",
     "//components/user_notes/interfaces",
+    "//components/user_notes/model",
     "//components/user_notes/model:unit_tests",
     "//content/public/browser",
     "//content/test:test_support",

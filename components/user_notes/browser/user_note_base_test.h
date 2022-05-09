@@ -37,11 +37,11 @@ class UserNoteBaseTest : public content::RenderViewHostTestHarness {
   void AddNewInstanceToManager(UserNoteManager* manager,
                                base::UnguessableToken note_id);
 
-  size_t ManagerCountForId(const base::UnguessableToken& id);
+  size_t ManagerCountForId(const base::UnguessableToken& note_id);
 
-  bool DoesModelExist(const base::UnguessableToken& id);
+  bool DoesModelExist(const base::UnguessableToken& note_id);
 
-  bool DoesManagerExistForId(const base::UnguessableToken& id,
+  bool DoesManagerExistForId(const base::UnguessableToken& note_id,
                              UserNoteManager* manager);
 
   size_t ModelMapSize();
