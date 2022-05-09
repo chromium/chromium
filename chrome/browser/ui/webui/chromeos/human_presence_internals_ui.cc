@@ -26,23 +26,25 @@
 namespace {
 
 // Class acting as a controller of the chrome://hps-internals WebUI.
-class HpsInternalsUIMessageHandler : public content::WebUIMessageHandler,
-                                     public chromeos::HpsDBusClient::Observer {
+class HumanPresenceInternalsUIMessageHandler
+    : public content::WebUIMessageHandler,
+      public chromeos::HumanPresenceDBusClient::Observer {
  public:
-  HpsInternalsUIMessageHandler();
+  HumanPresenceInternalsUIMessageHandler();
 
-  HpsInternalsUIMessageHandler(const HpsInternalsUIMessageHandler&) = delete;
-  HpsInternalsUIMessageHandler& operator=(const HpsInternalsUIMessageHandler&) =
-      delete;
+  HumanPresenceInternalsUIMessageHandler(
+      const HumanPresenceInternalsUIMessageHandler&) = delete;
+  HumanPresenceInternalsUIMessageHandler& operator=(
+      const HumanPresenceInternalsUIMessageHandler&) = delete;
 
-  ~HpsInternalsUIMessageHandler() override;
+  ~HumanPresenceInternalsUIMessageHandler() override;
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
-  // chromeos::HpsDBusClient::Observer implementation.
+  // chromeos::HumanPresenceDBusClient::Observer implementation.
   void OnHpsSenseChanged(hps::HpsResult state) override;
   void OnHpsNotifyChanged(hps::HpsResult state) override;
   void OnRestart() override;
@@ -50,38 +52,43 @@ class HpsInternalsUIMessageHandler : public content::WebUIMessageHandler,
 
  private:
   void Connect(const base::Value::List& args);
-  void EnableSense(const base::Value::List& args);
-  void DisableSense(const base::Value::List& args);
-  void QuerySense(const base::Value::List& args);
-  void EnableNotify(const base::Value::List& args);
-  void DisableNotify(const base::Value::List& args);
-  void QueryNotify(const base::Value::List& args);
+  void EnableLockOnLeave(const base::Value::List& args);
+  void DisableLockOnLeave(const base::Value::List& args);
+  void QueryLockOnLeave(const base::Value::List& args);
+  void EnableSnoopingProtection(const base::Value::List& args);
+  void DisableSnoopingProtection(const base::Value::List& args);
+  void QuerySnoopingProtection(const base::Value::List& args);
 
   void OnConnected(bool connected);
-  void OnHpsSenseResult(absl::optional<hps::HpsResult>);
-  void OnHpsNotifyResult(absl::optional<hps::HpsResult>);
+  void OnLockOnLeaveResult(absl::optional<hps::HpsResult>);
+  void OnSnoopingProtectionResult(absl::optional<hps::HpsResult>);
 
-  base::ScopedObservation<chromeos::HpsDBusClient,
-                          chromeos::HpsDBusClient::Observer>
-      hps_observation_{this};
-  base::WeakPtrFactory<HpsInternalsUIMessageHandler> msg_weak_ptr_factory_{
-      this};
-  base::WeakPtrFactory<HpsInternalsUIMessageHandler> weak_ptr_factory_{this};
+  base::ScopedObservation<chromeos::HumanPresenceDBusClient,
+                          chromeos::HumanPresenceDBusClient::Observer>
+      human_presence_observation_{this};
+  base::WeakPtrFactory<HumanPresenceInternalsUIMessageHandler>
+      msg_weak_ptr_factory_{this};
+  base::WeakPtrFactory<HumanPresenceInternalsUIMessageHandler>
+      weak_ptr_factory_{this};
 };
 
-HpsInternalsUIMessageHandler::HpsInternalsUIMessageHandler() = default;
+HumanPresenceInternalsUIMessageHandler::
+    HumanPresenceInternalsUIMessageHandler() = default;
 
-HpsInternalsUIMessageHandler::~HpsInternalsUIMessageHandler() = default;
+HumanPresenceInternalsUIMessageHandler::
+    ~HumanPresenceInternalsUIMessageHandler() = default;
 
-void HpsInternalsUIMessageHandler::OnHpsSenseChanged(hps::HpsResult state) {
-  OnHpsSenseResult(state);
+void HumanPresenceInternalsUIMessageHandler::OnHpsSenseChanged(
+    hps::HpsResult state) {
+  OnLockOnLeaveResult(state);
 }
 
-void HpsInternalsUIMessageHandler::OnHpsNotifyChanged(hps::HpsResult state) {
-  OnHpsNotifyResult(state);
+void HumanPresenceInternalsUIMessageHandler::OnHpsNotifyChanged(
+    hps::HpsResult state) {
+  OnSnoopingProtectionResult(state);
 }
 
-void HpsInternalsUIMessageHandler::OnHpsSenseResult(
+void HumanPresenceInternalsUIMessageHandler::OnLockOnLeaveResult(
     absl::optional<hps::HpsResult> state) {
   base::DictionaryValue value;
   if (state.has_value()) {
@@ -89,10 +96,10 @@ void HpsInternalsUIMessageHandler::OnHpsSenseResult(
   } else {
     value.SetBoolean("disabled", true);
   }
-  FireWebUIListener(hps::kHpsInternalsSenseChangedEvent, value);
+  FireWebUIListener(hps::kHumanPresenceInternalsLockOnLeaveChangedEvent, value);
 }
 
-void HpsInternalsUIMessageHandler::OnHpsNotifyResult(
+void HumanPresenceInternalsUIMessageHandler::OnSnoopingProtectionResult(
     absl::optional<hps::HpsResult> state) {
   base::DictionaryValue value;
   if (state.has_value()) {
@@ -100,147 +107,165 @@ void HpsInternalsUIMessageHandler::OnHpsNotifyResult(
   } else {
     value.SetBoolean("disabled", true);
   }
-  FireWebUIListener(hps::kHpsInternalsNotifyChangedEvent, value);
+  FireWebUIListener(hps::kHumanPresenceInternalsSnoopingProtectionChangedEvent,
+                    value);
 }
 
-void HpsInternalsUIMessageHandler::OnRestart() {
+void HumanPresenceInternalsUIMessageHandler::OnRestart() {
   OnConnected(true);
 }
 
-void HpsInternalsUIMessageHandler::OnShutdown() {
+void HumanPresenceInternalsUIMessageHandler::OnShutdown() {
   OnConnected(false);
 }
 
-void HpsInternalsUIMessageHandler::Connect(const base::Value::List& args) {
-  if (!chromeos::HpsDBusClient::Get()) {
+void HumanPresenceInternalsUIMessageHandler::Connect(
+    const base::Value::List& args) {
+  if (!chromeos::HumanPresenceDBusClient::Get()) {
     LOG(ERROR) << "HPS dbus client not available";
     return;
   }
   AllowJavascript();
-  chromeos::HpsDBusClient::Get()->WaitForServiceToBeAvailable(
-      base::BindOnce(&HpsInternalsUIMessageHandler::OnConnected,
+  chromeos::HumanPresenceDBusClient::Get()->WaitForServiceToBeAvailable(
+      base::BindOnce(&HumanPresenceInternalsUIMessageHandler::OnConnected,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void HpsInternalsUIMessageHandler::OnConnected(bool connected) {
+void HumanPresenceInternalsUIMessageHandler::OnConnected(bool connected) {
   base::DictionaryValue value;
   value.SetBoolean("connected", connected);
-  FireWebUIListener(hps::kHpsInternalsConnectedEvent, value);
+  FireWebUIListener(hps::kHumanPresenceInternalsConnectedEvent, value);
 }
 
-void HpsInternalsUIMessageHandler::EnableSense(const base::Value::List& args) {
-  if (!chromeos::HpsDBusClient::Get() ||
-      !hps::GetEnableHpsSenseConfig().has_value()) {
-    FireWebUIListener(hps::kHpsInternalsEnableErrorEvent);
-    return;
-  }
-  hps::FeatureConfig config(*hps::GetEnableHpsSenseConfig());
-  chromeos::HpsDBusClient::Get()->EnableHpsSense(config);
-}
-
-void HpsInternalsUIMessageHandler::DisableSense(const base::Value::List& args) {
-  if (chromeos::HpsDBusClient::Get())
-    chromeos::HpsDBusClient::Get()->DisableHpsSense();
-}
-
-void HpsInternalsUIMessageHandler::QuerySense(const base::Value::List& args) {
-  if (!chromeos::HpsDBusClient::Get())
-    return;
-  chromeos::HpsDBusClient::Get()->GetResultHpsSense(
-      base::BindOnce(&HpsInternalsUIMessageHandler::OnHpsSenseResult,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void HpsInternalsUIMessageHandler::EnableNotify(const base::Value::List& args) {
-  if (!chromeos::HpsDBusClient::Get() ||
-      !hps::GetEnableHpsNotifyConfig().has_value()) {
-    FireWebUIListener(hps::kHpsInternalsEnableErrorEvent);
-    return;
-  }
-  hps::FeatureConfig config(*hps::GetEnableHpsNotifyConfig());
-  chromeos::HpsDBusClient::Get()->EnableHpsNotify(config);
-}
-
-void HpsInternalsUIMessageHandler::DisableNotify(
+void HumanPresenceInternalsUIMessageHandler::EnableLockOnLeave(
     const base::Value::List& args) {
-  if (chromeos::HpsDBusClient::Get())
-    chromeos::HpsDBusClient::Get()->DisableHpsNotify();
-}
-
-void HpsInternalsUIMessageHandler::QueryNotify(const base::Value::List& args) {
-  if (!chromeos::HpsDBusClient::Get())
+  if (!chromeos::HumanPresenceDBusClient::Get() ||
+      !hps::GetEnableLockOnLeaveConfig().has_value()) {
+    FireWebUIListener(hps::kHumanPresenceInternalsEnableErrorEvent);
     return;
-  chromeos::HpsDBusClient::Get()->GetResultHpsNotify(
-      base::BindOnce(&HpsInternalsUIMessageHandler::OnHpsNotifyResult,
-                     weak_ptr_factory_.GetWeakPtr()));
+  }
+  hps::FeatureConfig config(*hps::GetEnableLockOnLeaveConfig());
+  chromeos::HumanPresenceDBusClient::Get()->EnableHpsSense(config);
 }
 
-void HpsInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
-      hps::kHpsInternalsConnectCmd,
-      base::BindRepeating(&HpsInternalsUIMessageHandler::Connect,
-                          msg_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      hps::kHpsInternalsEnableSenseCmd,
-      base::BindRepeating(&HpsInternalsUIMessageHandler::EnableSense,
-                          msg_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      hps::kHpsInternalsDisableSenseCmd,
-      base::BindRepeating(&HpsInternalsUIMessageHandler::DisableSense,
-                          msg_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      hps::kHpsInternalsQuerySenseCmd,
-      base::BindRepeating(&HpsInternalsUIMessageHandler::QuerySense,
-                          msg_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      hps::kHpsInternalsEnableNotifyCmd,
-      base::BindRepeating(&HpsInternalsUIMessageHandler::EnableNotify,
-                          msg_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      hps::kHpsInternalsDisableNotifyCmd,
-      base::BindRepeating(&HpsInternalsUIMessageHandler::DisableNotify,
-                          msg_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      hps::kHpsInternalsQueryNotifyCmd,
-      base::BindRepeating(&HpsInternalsUIMessageHandler::QueryNotify,
-                          msg_weak_ptr_factory_.GetWeakPtr()));
+void HumanPresenceInternalsUIMessageHandler::DisableLockOnLeave(
+    const base::Value::List& args) {
+  if (chromeos::HumanPresenceDBusClient::Get())
+    chromeos::HumanPresenceDBusClient::Get()->DisableHpsSense();
 }
 
-void HpsInternalsUIMessageHandler::OnJavascriptAllowed() {
-  if (chromeos::HpsDBusClient::Get())
-    hps_observation_.Observe(chromeos::HpsDBusClient::Get());
+void HumanPresenceInternalsUIMessageHandler::QueryLockOnLeave(
+    const base::Value::List& args) {
+  if (!chromeos::HumanPresenceDBusClient::Get())
+    return;
+  chromeos::HumanPresenceDBusClient::Get()->GetResultHpsSense(base::BindOnce(
+      &HumanPresenceInternalsUIMessageHandler::OnLockOnLeaveResult,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void HpsInternalsUIMessageHandler::OnJavascriptDisallowed() {
+void HumanPresenceInternalsUIMessageHandler::EnableSnoopingProtection(
+    const base::Value::List& args) {
+  if (!chromeos::HumanPresenceDBusClient::Get() ||
+      !hps::GetEnableSnoopingProtectionConfig().has_value()) {
+    FireWebUIListener(hps::kHumanPresenceInternalsEnableErrorEvent);
+    return;
+  }
+  hps::FeatureConfig config(*hps::GetEnableSnoopingProtectionConfig());
+  chromeos::HumanPresenceDBusClient::Get()->EnableHpsNotify(config);
+}
+
+void HumanPresenceInternalsUIMessageHandler::DisableSnoopingProtection(
+    const base::Value::List& args) {
+  if (chromeos::HumanPresenceDBusClient::Get())
+    chromeos::HumanPresenceDBusClient::Get()->DisableHpsNotify();
+}
+
+void HumanPresenceInternalsUIMessageHandler::QuerySnoopingProtection(
+    const base::Value::List& args) {
+  if (!chromeos::HumanPresenceDBusClient::Get())
+    return;
+  chromeos::HumanPresenceDBusClient::Get()->GetResultHpsNotify(base::BindOnce(
+      &HumanPresenceInternalsUIMessageHandler::OnSnoopingProtectionResult,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void HumanPresenceInternalsUIMessageHandler::RegisterMessages() {
+  web_ui()->RegisterMessageCallback(
+      hps::kHumanPresenceInternalsConnectCmd,
+      base::BindRepeating(&HumanPresenceInternalsUIMessageHandler::Connect,
+                          msg_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      hps::kHumanPresenceInternalsEnableLockOnLeaveCmd,
+      base::BindRepeating(
+          &HumanPresenceInternalsUIMessageHandler::EnableLockOnLeave,
+          msg_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      hps::kHumanPresenceInternalsDisableLockOnLeaveCmd,
+      base::BindRepeating(
+          &HumanPresenceInternalsUIMessageHandler::DisableLockOnLeave,
+          msg_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      hps::kHumanPresenceInternalsQueryLockOnLeaveCmd,
+      base::BindRepeating(
+          &HumanPresenceInternalsUIMessageHandler::QueryLockOnLeave,
+          msg_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      hps::kHumanPresenceInternalsEnableSnoopingProtectionCmd,
+      base::BindRepeating(
+          &HumanPresenceInternalsUIMessageHandler::EnableSnoopingProtection,
+          msg_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      hps::kHumanPresenceInternalsDisableSnoopingProtectionCmd,
+      base::BindRepeating(
+          &HumanPresenceInternalsUIMessageHandler::DisableSnoopingProtection,
+          msg_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      hps::kHumanPresenceInternalsQuerySnoopingProtectionCmd,
+      base::BindRepeating(
+          &HumanPresenceInternalsUIMessageHandler::QuerySnoopingProtection,
+          msg_weak_ptr_factory_.GetWeakPtr()));
+}
+
+void HumanPresenceInternalsUIMessageHandler::OnJavascriptAllowed() {
+  if (chromeos::HumanPresenceDBusClient::Get())
+    human_presence_observation_.Observe(
+        chromeos::HumanPresenceDBusClient::Get());
+}
+
+void HumanPresenceInternalsUIMessageHandler::OnJavascriptDisallowed() {
   // Invalidate weak ptrs in order to cancel any pending callbacks.
   weak_ptr_factory_.InvalidateWeakPtrs();
-  hps_observation_.Reset();
+  human_presence_observation_.Reset();
 }
 
 }  // namespace
 
 namespace chromeos {
 
-HpsInternalsUI::HpsInternalsUI(content::WebUI* web_ui)
+HumanPresenceInternalsUI::HumanPresenceInternalsUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   // Set up the chrome://gcm-internals source.
-  content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(chrome::kChromeUIHpsInternalsHost);
+  content::WebUIDataSource* html_source = content::WebUIDataSource::Create(
+      chrome::kChromeUIHumanPresenceInternalsHost);
 
   html_source->UseStringsJs();
 
   // Add required resources.
-  html_source->AddResourcePath(hps::kHpsInternalsCSS, IDR_HPS_INTERNALS_CSS);
-  html_source->AddResourcePath(hps::kHpsInternalsJS, IDR_HPS_INTERNALS_JS);
-  html_source->AddResourcePath(hps::kHpsInternalsIcon, IDR_HPS_INTERNALS_ICON);
-  html_source->SetDefaultResource(IDR_HPS_INTERNALS_HTML);
+  html_source->AddResourcePath(hps::kHumanPresenceInternalsCSS,
+                               IDR_HUMAN_PRESENCE_INTERNALS_CSS);
+  html_source->AddResourcePath(hps::kHumanPresenceInternalsJS,
+                               IDR_HUMAN_PRESENCE_INTERNALS_JS);
+  html_source->AddResourcePath(hps::kHumanPresenceInternalsIcon,
+                               IDR_HUMAN_PRESENCE_INTERNALS_ICON);
+  html_source->SetDefaultResource(IDR_HUMAN_PRESENCE_INTERNALS_HTML);
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, html_source);
 
-  web_ui->AddMessageHandler(std::make_unique<HpsInternalsUIMessageHandler>());
+  web_ui->AddMessageHandler(
+      std::make_unique<HumanPresenceInternalsUIMessageHandler>());
 }
 
-HpsInternalsUI::~HpsInternalsUI() = default;
+HumanPresenceInternalsUI::~HumanPresenceInternalsUI() = default;
 
 }  //  namespace chromeos

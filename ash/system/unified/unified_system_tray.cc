@@ -163,9 +163,9 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
           std::make_unique<PrivacyScreenToastController>(this)),
       notification_icons_controller_(
           std::make_unique<NotificationIconsController>(this)),
-      hps_notify_view_(features::IsSnoopingProtectionEnabled()
-                           ? new HpsNotifyView(shelf)
-                           : nullptr),
+      snooping_protection_view_(features::IsSnoopingProtectionEnabled()
+                                    ? new SnoopingProtectionView(shelf)
+                                    : nullptr),
       current_locale_view_(new CurrentLocaleView(shelf)),
       ime_mode_view_(new ImeModeView(shelf)),
       managed_device_view_(new ManagedDeviceTrayItemView(shelf)),
@@ -198,7 +198,7 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   AddObservedTrayItem(notification_icons_controller_->quiet_mode_view());
 
   if (features::IsSnoopingProtectionEnabled())
-    AddTrayItemToContainer(hps_notify_view_);
+    AddTrayItemToContainer(snooping_protection_view_);
 
   AddTrayItemToContainer(current_locale_view_);
   AddTrayItemToContainer(ime_mode_view_);

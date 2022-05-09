@@ -90,9 +90,9 @@ std::u16string GetTitlesBlockedMessage(
 
 }  // namespace hps_internal
 
-HpsNotifyNotificationBlocker::HpsNotifyNotificationBlocker(
+SnoopingProtectionNotificationBlocker::SnoopingProtectionNotificationBlocker(
     message_center::MessageCenter* message_center,
-    HpsNotifyController* controller)
+    SnoopingProtectionController* controller)
     : NotificationBlocker(message_center),
       message_center_(message_center),
       controller_(controller) {
@@ -109,9 +109,10 @@ HpsNotifyNotificationBlocker::HpsNotifyNotificationBlocker(
   UpdateInfoNotificationIfNecessary();
 }
 
-HpsNotifyNotificationBlocker::~HpsNotifyNotificationBlocker() = default;
+SnoopingProtectionNotificationBlocker::
+    ~SnoopingProtectionNotificationBlocker() = default;
 
-void HpsNotifyNotificationBlocker::OnActiveUserPrefServiceChanged(
+void SnoopingProtectionNotificationBlocker::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   OnBlockingActiveChanged();
 
@@ -121,16 +122,16 @@ void HpsNotifyNotificationBlocker::OnActiveUserPrefServiceChanged(
   pref_change_registrar_->Add(
       prefs::kSnoopingProtectionNotificationSuppressionEnabled,
       base::BindRepeating(
-          &HpsNotifyNotificationBlocker::OnBlockingActiveChanged,
+          &SnoopingProtectionNotificationBlocker::OnBlockingActiveChanged,
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void HpsNotifyNotificationBlocker::OnBlockingActiveChanged() {
+void SnoopingProtectionNotificationBlocker::OnBlockingActiveChanged() {
   NotifyBlockingStateChanged();
   UpdateInfoNotificationIfNecessary();
 }
 
-bool HpsNotifyNotificationBlocker::ShouldShowNotificationAsPopup(
+bool SnoopingProtectionNotificationBlocker::ShouldShowNotificationAsPopup(
     const message_center::Notification& notification) const {
   // If we've populated our info popup, we're definitely hiding some other
   // notifications and need to inform the user.
@@ -148,7 +149,8 @@ bool HpsNotifyNotificationBlocker::ShouldShowNotificationAsPopup(
          !base::StartsWith(notification.id(), SmsObserver::kNotificationPrefix);
 }
 
-void HpsNotifyNotificationBlocker::OnSnoopingStatusChanged(bool /*snooper*/) {
+void SnoopingProtectionNotificationBlocker::OnSnoopingStatusChanged(
+    bool /*snooper*/) {
   // Need to reevaluate blocking for (i.e. un/hide) all notifications when a
   // snooper appears. This also catches disabling the snooping feature all
   // together, since that is translated to a "no snooper" event by the
@@ -156,17 +158,18 @@ void HpsNotifyNotificationBlocker::OnSnoopingStatusChanged(bool /*snooper*/) {
   OnBlockingActiveChanged();
 }
 
-void HpsNotifyNotificationBlocker::OnHpsNotifyControllerDestroyed() {
+void SnoopingProtectionNotificationBlocker::
+    OnSnoopingProtectionControllerDestroyed() {
   controller_observation_.Reset();
 }
 
-void HpsNotifyNotificationBlocker::OnNotificationAdded(
+void SnoopingProtectionNotificationBlocker::OnNotificationAdded(
     const std::string& notification_id) {
   if (notification_id != kInfoNotificationId)
     UpdateInfoNotificationIfNecessary();
 }
 
-void HpsNotifyNotificationBlocker::OnNotificationRemoved(
+void SnoopingProtectionNotificationBlocker::OnNotificationRemoved(
     const std::string& notification_id,
     bool /*by_user*/) {
   if (notification_id == kInfoNotificationId)
@@ -175,21 +178,21 @@ void HpsNotifyNotificationBlocker::OnNotificationRemoved(
     UpdateInfoNotificationIfNecessary();
 }
 
-void HpsNotifyNotificationBlocker::OnNotificationUpdated(
+void SnoopingProtectionNotificationBlocker::OnNotificationUpdated(
     const std::string& notification_id) {
   if (notification_id != kInfoNotificationId)
     UpdateInfoNotificationIfNecessary();
 }
 
-void HpsNotifyNotificationBlocker::OnBlockingStateChanged(
+void SnoopingProtectionNotificationBlocker::OnBlockingStateChanged(
     message_center::NotificationBlocker* blocker) {
   if (blocker != this)
     UpdateInfoNotificationIfNecessary();
 }
 
-void HpsNotifyNotificationBlocker::Close(bool by_user) {}
+void SnoopingProtectionNotificationBlocker::Close(bool by_user) {}
 
-void HpsNotifyNotificationBlocker::Click(
+void SnoopingProtectionNotificationBlocker::Click(
     const absl::optional<int>& button_index,
     const absl::optional<std::u16string>& reply) {
   if (!button_index.has_value())
@@ -212,7 +215,7 @@ void HpsNotifyNotificationBlocker::Click(
   }
 }
 
-bool HpsNotifyNotificationBlocker::BlockingActive() const {
+bool SnoopingProtectionNotificationBlocker::BlockingActive() const {
   // Never block if the feature is disabled.
   const PrefService* const pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
@@ -225,7 +228,8 @@ bool HpsNotifyNotificationBlocker::BlockingActive() const {
   return controller_->SnooperPresent();
 }
 
-void HpsNotifyNotificationBlocker::UpdateInfoNotificationIfNecessary() {
+void SnoopingProtectionNotificationBlocker::
+    UpdateInfoNotificationIfNecessary() {
   // Collect the IDs whose popups would be shown but for us.
   std::set<std::string> new_blocked_popups;
   if (BlockingActive()) {
@@ -257,7 +261,7 @@ void HpsNotifyNotificationBlocker::UpdateInfoNotificationIfNecessary() {
 }
 
 std::unique_ptr<message_center::Notification>
-HpsNotifyNotificationBlocker::CreateInfoNotification() const {
+SnoopingProtectionNotificationBlocker::CreateInfoNotification() const {
   // Create a list of popup titles in descending order of recentness and with no
   // duplicates.
   std::vector<std::u16string> titles;
@@ -300,7 +304,7 @@ HpsNotifyNotificationBlocker::CreateInfoNotification() const {
       notification_data,
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           weak_ptr_factory_.GetWeakPtr()),
-      kSystemTrayHpsNotifyIcon,
+      kSystemTraySnoopingProtectionIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 
   return notification;

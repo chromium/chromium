@@ -34,14 +34,15 @@ constexpr base::TimeDelta kLongTime = base::Seconds(30);
 
 // A fixture that provides access to a fake daemon and an instance of the
 // controller hooked up to the test environment.
-class HpsNotifyControllerTestBase : public NoSessionAshTestBase {
+class SnoopingProtectionControllerTestBase : public NoSessionAshTestBase {
  public:
   // Arguments control the state of the feature and service on controller
   // construction. We can't set this value in individual tests since it must be
   // done before AshTestBase::SetUp() executes.
-  HpsNotifyControllerTestBase(bool service_available,
-                              bool service_state,
-                              const std::map<std::string, std::string>& params)
+  SnoopingProtectionControllerTestBase(
+      bool service_available,
+      bool service_state,
+      const std::map<std::string, std::string>& params)
       : NoSessionAshTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         service_available_(service_available),
@@ -53,21 +54,22 @@ class HpsNotifyControllerTestBase : public NoSessionAshTestBase {
         switches::kHasHps);
   }
 
-  HpsNotifyControllerTestBase(const HpsNotifyControllerTestBase&) = delete;
-  HpsNotifyControllerTestBase& operator=(const HpsNotifyControllerTestBase&) =
-      delete;
-  ~HpsNotifyControllerTestBase() override = default;
+  SnoopingProtectionControllerTestBase(
+      const SnoopingProtectionControllerTestBase&) = delete;
+  SnoopingProtectionControllerTestBase& operator=(
+      const SnoopingProtectionControllerTestBase&) = delete;
+  ~SnoopingProtectionControllerTestBase() override = default;
 
   void SetUp() override {
-    chromeos::HpsDBusClient::InitializeFake();
-    dbus_client_ = chromeos::FakeHpsDBusClient::Get();
+    chromeos::HumanPresenceDBusClient::InitializeFake();
+    dbus_client_ = chromeos::FakeHumanPresenceDBusClient::Get();
     dbus_client_->set_hps_service_is_available(service_available_);
     dbus_client_->set_hps_notify_result(
         service_state_ ? hps::HpsResult::POSITIVE : hps::HpsResult::NEGATIVE);
 
     AshTestBase::SetUp();
 
-    controller_ = Shell::Get()->hps_notify_controller();
+    controller_ = Shell::Get()->snooping_protection_controller();
 
     // The controller has now been initialized, part of which entails sending a
     // method to the DBus service. Here we wait for the service to
@@ -77,7 +79,7 @@ class HpsNotifyControllerTestBase : public NoSessionAshTestBase {
 
   void TearDown() override {
     AshTestBase::TearDown();
-    chromeos::HpsDBusClient::Shutdown();
+    chromeos::HumanPresenceDBusClient::Shutdown();
   }
 
  protected:
@@ -88,8 +90,8 @@ class HpsNotifyControllerTestBase : public NoSessionAshTestBase {
   const bool service_state_;
   const std::map<std::string, std::string> params_;
 
-  chromeos::FakeHpsDBusClient* dbus_client_ = nullptr;
-  HpsNotifyController* controller_ = nullptr;
+  chromeos::FakeHumanPresenceDBusClient* dbus_client_ = nullptr;
+  SnoopingProtectionController* controller_ = nullptr;
 
   // Simulates a login. This will trigger a DBus call if and only if logging in
   // was the final precondition required for the feature. Hence we wait for any
@@ -113,17 +115,18 @@ class HpsNotifyControllerTestBase : public NoSessionAshTestBase {
 
 // A test fixture where no snooper is initially detected (using a minimal set of
 // valid params).
-class HpsNotifyControllerTestAbsent : public HpsNotifyControllerTestBase {
+class SnoopingProtectionControllerTestAbsent
+    : public SnoopingProtectionControllerTestBase {
  public:
-  HpsNotifyControllerTestAbsent()
-      : HpsNotifyControllerTestBase(
+  SnoopingProtectionControllerTestAbsent()
+      : SnoopingProtectionControllerTestBase(
             /*service_available=*/true,
             /*service_state=*/false,
             /*params=*/{{"SnoopingProtection_filter_config_case", "1"}}) {}
 };
 
 // Test that icon is hidden by default.
-TEST_F(HpsNotifyControllerTestAbsent, Hidden) {
+TEST_F(SnoopingProtectionControllerTestAbsent, Hidden) {
   SimulateLogin();
   SetEnabledPref(false);
 
@@ -133,7 +136,7 @@ TEST_F(HpsNotifyControllerTestAbsent, Hidden) {
 }
 
 // Test that messages from the daemon toggle the icon.
-TEST_F(HpsNotifyControllerTestAbsent, HpsStateChange) {
+TEST_F(SnoopingProtectionControllerTestAbsent, PresenceChange) {
   SimulateLogin();
   SetEnabledPref(true);
 
@@ -154,7 +157,7 @@ TEST_F(HpsNotifyControllerTestAbsent, HpsStateChange) {
 
 // Test that daemon signals are only enabled when session and pref state means
 // they will be used.
-TEST_F(HpsNotifyControllerTestAbsent, ReconfigureOnPrefs) {
+TEST_F(SnoopingProtectionControllerTestAbsent, ReconfigureOnPrefs) {
   // When the service becomes available for the first time, one disable is
   // performed in case the last session ended in a crash without de-configuring
   // the daemon.
@@ -189,7 +192,7 @@ TEST_F(HpsNotifyControllerTestAbsent, ReconfigureOnPrefs) {
 
 // Test that daemon signals are correctly enabled/disabled when the daemon
 // starts and stops.
-TEST_F(HpsNotifyControllerTestAbsent, ReconfigureOnRestarts) {
+TEST_F(SnoopingProtectionControllerTestAbsent, ReconfigureOnRestarts) {
   SimulateLogin();
   SetEnabledPref(true);
 
@@ -215,7 +218,7 @@ TEST_F(HpsNotifyControllerTestAbsent, ReconfigureOnRestarts) {
 
 // Test that the service is only re-configured when the user is _both_ logged-in
 // and has enabled the preference.
-TEST_F(HpsNotifyControllerTestAbsent, ReconfigureOnlyIfNecessary) {
+TEST_F(SnoopingProtectionControllerTestAbsent, ReconfigureOnlyIfNecessary) {
   // Only the clean-up de-configure should have been sent.
   EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 0);
   EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 1);
@@ -237,17 +240,18 @@ TEST_F(HpsNotifyControllerTestAbsent, ReconfigureOnlyIfNecessary) {
 
 // A test fixture where a snooper is initially detected (using a minimal set of
 // valid params).
-class HpsNotifyControllerTestPresent : public HpsNotifyControllerTestBase {
+class SnoopingProtectionControllerTestPresent
+    : public SnoopingProtectionControllerTestBase {
  public:
-  HpsNotifyControllerTestPresent()
-      : HpsNotifyControllerTestBase(
+  SnoopingProtectionControllerTestPresent()
+      : SnoopingProtectionControllerTestBase(
             /*service_available=*/true,
             /*service_state=*/true,
             /*params=*/{{"SnoopingProtection_filter_config_case", "1"}}) {}
 };
 
 // Test that initial daemon state is considered.
-TEST_F(HpsNotifyControllerTestPresent, HpsState) {
+TEST_F(SnoopingProtectionControllerTestPresent, PresenceState) {
   SimulateLogin();
   SetEnabledPref(true);
   EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
@@ -256,7 +260,7 @@ TEST_F(HpsNotifyControllerTestPresent, HpsState) {
 }
 
 // Test that a user changing their preference toggles the icon.
-TEST_F(HpsNotifyControllerTestPresent, PrefChanged) {
+TEST_F(SnoopingProtectionControllerTestPresent, PrefChanged) {
   SimulateLogin();
   SetEnabledPref(false);
   EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
@@ -270,7 +274,7 @@ TEST_F(HpsNotifyControllerTestPresent, PrefChanged) {
 }
 
 // Test that eye icon isn't shown during the OOBE.
-TEST_F(HpsNotifyControllerTestPresent, Oobe) {
+TEST_F(SnoopingProtectionControllerTestPresent, Oobe) {
   TestSessionControllerClient* session = GetSessionControllerClient();
 
   // Simulate end of OOBE when user is logged in.
@@ -295,7 +299,7 @@ TEST_F(HpsNotifyControllerTestPresent, Oobe) {
 }
 
 // Test that the eye icon isn't shown at the login page.
-TEST_F(HpsNotifyControllerTestPresent, Login) {
+TEST_F(SnoopingProtectionControllerTestPresent, Login) {
   // Note: login deferred.
 
   // Shouldn't configure, as the session isn't active.
@@ -314,7 +318,7 @@ TEST_F(HpsNotifyControllerTestPresent, Login) {
 }
 
 // Test that the controller handles service restarts.
-TEST_F(HpsNotifyControllerTestPresent, Restarts) {
+TEST_F(SnoopingProtectionControllerTestPresent, Restarts) {
   SimulateLogin();
   SetEnabledPref(true);
 
@@ -340,7 +344,7 @@ TEST_F(HpsNotifyControllerTestPresent, Restarts) {
 
 // Check that the controller state stays consistent even when the daemon starts
 // and stops.
-TEST_F(HpsNotifyControllerTestPresent, ClearHpsState) {
+TEST_F(SnoopingProtectionControllerTestPresent, ClearPresenceState) {
   SimulateLogin();
   SetEnabledPref(true);
   EXPECT_EQ(controller_->SnooperPresent(), true);
@@ -358,7 +362,7 @@ TEST_F(HpsNotifyControllerTestPresent, ClearHpsState) {
 
 // Test that detection is started and stopped based on whether the device's
 // physical orientation is suitable for sensing.
-TEST_F(HpsNotifyControllerTestPresent, Orientation) {
+TEST_F(SnoopingProtectionControllerTestPresent, Orientation) {
   SimulateLogin();
   SetEnabledPref(true);
   EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 1);
@@ -367,7 +371,7 @@ TEST_F(HpsNotifyControllerTestPresent, Orientation) {
   EXPECT_TRUE(controller_->SnooperPresent());
 
   // When the orientation becomes unsuitable, we should disable the daemon.
-  controller_->OnOrientationChanged(/*suitable_for_hps=*/false);
+  controller_->OnOrientationChanged(/*suitable_for_human_presence=*/false);
   task_environment()->FastForwardBy(kLongTime);
   EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 1);
   EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 2);
@@ -376,7 +380,7 @@ TEST_F(HpsNotifyControllerTestPresent, Orientation) {
 
   // When the orientation becomes suitable again, we should re-enable the
   // daemon.
-  controller_->OnOrientationChanged(/*suitable_for_hps=*/true);
+  controller_->OnOrientationChanged(/*suitable_for_human_presence=*/true);
   task_environment()->FastForwardBy(kLongTime);
   EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 2);
   EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 2);
@@ -385,7 +389,7 @@ TEST_F(HpsNotifyControllerTestPresent, Orientation) {
 }
 
 // Test that the minimum positive window is respected.
-TEST_F(HpsNotifyControllerTestPresent, PositiveWindow) {
+TEST_F(SnoopingProtectionControllerTestPresent, PositiveWindow) {
   SimulateLogin();
   SetEnabledPref(true);
   EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
@@ -408,7 +412,7 @@ TEST_F(HpsNotifyControllerTestPresent, PositiveWindow) {
   task_environment()->FastForwardBy(kLongTime);
   EXPECT_TRUE(controller_->SnooperPresent());
 
-  // Snooping status should immediately become false if there is an HPS
+  // Snooping status should immediately become false if there is a service
   // reconfiguration (v.s. state change).
   controller_->OnShutdown();
   task_environment()->FastForwardBy(kShortTime);
@@ -417,10 +421,11 @@ TEST_F(HpsNotifyControllerTestPresent, PositiveWindow) {
 
 // Fixture with the DBus service initially unavailable (using a minimal set of
 // valid params).
-class HpsNotifyControllerTestUnavailable : public HpsNotifyControllerTestBase {
+class SnoopingProtectionControllerTestUnavailable
+    : public SnoopingProtectionControllerTestBase {
  public:
-  HpsNotifyControllerTestUnavailable()
-      : HpsNotifyControllerTestBase(
+  SnoopingProtectionControllerTestUnavailable()
+      : SnoopingProtectionControllerTestBase(
             /*service_available=*/false,
             /*service_state=*/true,
             /*params=*/{{"SnoopingProtection_filter_config_case", "1"}}) {}
@@ -428,7 +433,7 @@ class HpsNotifyControllerTestUnavailable : public HpsNotifyControllerTestBase {
 
 // Test that the controller waits for the DBus service to be available and
 // doesn't communicate until it is.
-TEST_F(HpsNotifyControllerTestUnavailable, WaitForService) {
+TEST_F(SnoopingProtectionControllerTestUnavailable, WaitForService) {
   SimulateLogin();
   SetEnabledPref(true);
 
@@ -455,17 +460,18 @@ TEST_F(HpsNotifyControllerTestUnavailable, WaitForService) {
 }
 
 // Fixture with an invalid feature config.
-class HpsNotifyControllerTestBadParams : public HpsNotifyControllerTestBase {
+class SnoopingProtectionControllerTestBadParams
+    : public SnoopingProtectionControllerTestBase {
  public:
-  HpsNotifyControllerTestBadParams()
-      : HpsNotifyControllerTestBase(
+  SnoopingProtectionControllerTestBadParams()
+      : SnoopingProtectionControllerTestBase(
             /*service_available=*/true,
             /*service_state=*/true,
             /*params=*/{{"SnoopingProtection_filter_config_case", "0"}}) {}
 };
 
 // Test that the controller gracefully handles invalid feature parameters.
-TEST_F(HpsNotifyControllerTestBadParams, BadParams) {
+TEST_F(SnoopingProtectionControllerTestBadParams, BadParams) {
   SimulateLogin();
   SetEnabledPref(true);
 

@@ -21,38 +21,40 @@ MATCHER_P(ProtoEquals, expected_message, "") {
   return expected_serialized == actual_serialized;
 }
 
-TEST(HpsFeatureConfigTest, EmptyParamsValid) {
+TEST(HumanPresenceFeatureConfigTest, EmptyParamsValid) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {ash::features::kQuickDim, ash::features::kSnoopingProtection},
       {} /* disabled_features */);
 
-  EXPECT_EQ(GetEnableHpsSenseConfig()->filter_config_case(),
+  EXPECT_EQ(GetEnableLockOnLeaveConfig()->filter_config_case(),
             hps::FeatureConfig::kConsecutiveResultsFilterConfig);
-  EXPECT_EQ(GetEnableHpsNotifyConfig()->filter_config_case(),
+  EXPECT_EQ(GetEnableSnoopingProtectionConfig()->filter_config_case(),
             hps::FeatureConfig::kConsecutiveResultsFilterConfig);
 }
 
-TEST(HpsFeatureConfigTest, ReturnNullIfTypeIsNotRecognizableHpsSense) {
+TEST(HumanPresenceFeatureConfigTest,
+     ReturnNullIfTypeIsNotRecognizableLockOnLeave) {
   const base::FieldTrialParams params = {{"QuickDim_filter_config_case", "0"}};
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{ash::features::kQuickDim, params}}, {});
 
-  EXPECT_FALSE(GetEnableHpsSenseConfig().has_value());
+  EXPECT_FALSE(GetEnableLockOnLeaveConfig().has_value());
 }
 
-TEST(HpsFeatureConfigTest, ReturnNullIfTypeIsNotRecognizableHpsNotify) {
+TEST(HumanPresenceFeatureConfigTest,
+     ReturnNullIfTypeIsNotRecognizableSnoopingProtection) {
   const base::FieldTrialParams params = {
       {"SnoopingProtection_filter_config_case", "0"}};
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{ash::features::kSnoopingProtection, params}}, {});
 
-  EXPECT_FALSE(GetEnableHpsNotifyConfig().has_value());
+  EXPECT_FALSE(GetEnableSnoopingProtectionConfig().has_value());
 }
 
-TEST(HpsFeatureConfigTest, VerifyBasicFilterConfigHpsSense) {
+TEST(HumanPresenceFeatureConfigTest, VerifyBasicFilterConfigLockOnLeave) {
   const std::map<std::string, std::string> params = {
       {"QuickDim_filter_config_case", "1"}};
   base::test::ScopedFeatureList feature_list;
@@ -62,10 +64,12 @@ TEST(HpsFeatureConfigTest, VerifyBasicFilterConfigHpsSense) {
   hps::FeatureConfig expected_config;
   expected_config.mutable_basic_filter_config();
 
-  EXPECT_THAT(GetEnableHpsSenseConfig().value(), ProtoEquals(expected_config));
+  EXPECT_THAT(GetEnableLockOnLeaveConfig().value(),
+              ProtoEquals(expected_config));
 }
 
-TEST(HpsFeatureConfigTest, VerifyBasicFilterConfigHpsNotify) {
+TEST(HumanPresenceFeatureConfigTest,
+     VerifyBasicFilterConfigSnoopingProtection) {
   const std::map<std::string, std::string> params = {
       {"SnoopingProtection_filter_config_case", "1"}};
   base::test::ScopedFeatureList feature_list;
@@ -75,10 +79,12 @@ TEST(HpsFeatureConfigTest, VerifyBasicFilterConfigHpsNotify) {
   hps::FeatureConfig expected_config;
   expected_config.mutable_basic_filter_config();
 
-  EXPECT_THAT(GetEnableHpsNotifyConfig().value(), ProtoEquals(expected_config));
+  EXPECT_THAT(GetEnableSnoopingProtectionConfig().value(),
+              ProtoEquals(expected_config));
 }
 
-TEST(HpsFeatureConfigTest, VerifyConsecutiveResultsFilterConfigHpsSense) {
+TEST(HumanPresenceFeatureConfigTest,
+     VerifyConsecutiveResultsFilterConfigLockOnLeave) {
   const std::map<std::string, std::string> params = {
       {"QuickDim_filter_config_case", "2"},
       {"QuickDim_positive_count_threshold", "3"},
@@ -100,11 +106,12 @@ TEST(HpsFeatureConfigTest, VerifyConsecutiveResultsFilterConfigHpsSense) {
   consecutive_results_filter_config.set_positive_score_threshold(7);
   consecutive_results_filter_config.set_negative_score_threshold(6);
 
-  const auto hps_sense_config = GetEnableHpsSenseConfig();
-  EXPECT_THAT(*hps_sense_config, ProtoEquals(expected_config));
+  const auto lock_on_leave = GetEnableLockOnLeaveConfig();
+  EXPECT_THAT(*lock_on_leave, ProtoEquals(expected_config));
 }
 
-TEST(HpsFeatureConfigTest, VerifyConsecutiveResultsFilterConfigHpsNotify) {
+TEST(HumanPresenceFeatureConfigTest,
+     VerifyConsecutiveResultsFilterConfigSnoopingProtection) {
   const std::map<std::string, std::string> params = {
       {"SnoopingProtection_filter_config_case", "2"},
       {"SnoopingProtection_positive_count_threshold", "3"},
@@ -126,11 +133,11 @@ TEST(HpsFeatureConfigTest, VerifyConsecutiveResultsFilterConfigHpsNotify) {
   consecutive_results_filter_config.set_positive_score_threshold(7);
   consecutive_results_filter_config.set_negative_score_threshold(6);
 
-  const auto hps_notify_config = GetEnableHpsNotifyConfig();
-  EXPECT_THAT(*hps_notify_config, ProtoEquals(expected_config));
+  const auto snooping_protection_config = GetEnableSnoopingProtectionConfig();
+  EXPECT_THAT(*snooping_protection_config, ProtoEquals(expected_config));
 }
 
-TEST(HpsFeatureConfigTest, VerifyAverageFilterConfigHpsSense) {
+TEST(HumanPresenceFeatureConfigTest, VerifyAverageFilterConfigLockOnLeave) {
   const std::map<std::string, std::string> params = {
       {"QuickDim_filter_config_case", "3"},
       {"QuickDim_average_window_size", "4"},
@@ -149,11 +156,12 @@ TEST(HpsFeatureConfigTest, VerifyAverageFilterConfigHpsSense) {
   average_filter_config.set_negative_score_threshold(6);
   average_filter_config.set_default_uncertain_score(7);
 
-  const auto hps_sense_config = GetEnableHpsSenseConfig();
-  EXPECT_THAT(*hps_sense_config, ProtoEquals(expected_config));
+  const auto lock_on_leave = GetEnableLockOnLeaveConfig();
+  EXPECT_THAT(*lock_on_leave, ProtoEquals(expected_config));
 }
 
-TEST(HpsFeatureConfigTest, VerifyAverageFilterConfigHpsNotify) {
+TEST(HumanPresenceFeatureConfigTest,
+     VerifyAverageFilterConfigSnoopingProtection) {
   const std::map<std::string, std::string> params = {
       {"SnoopingProtection_filter_config_case", "3"},
       {"SnoopingProtection_average_window_size", "4"},
@@ -172,8 +180,8 @@ TEST(HpsFeatureConfigTest, VerifyAverageFilterConfigHpsNotify) {
   average_filter_config.set_negative_score_threshold(6);
   average_filter_config.set_default_uncertain_score(7);
 
-  const auto hps_notify_config = GetEnableHpsNotifyConfig();
-  EXPECT_THAT(*hps_notify_config, ProtoEquals(expected_config));
+  const auto snooping_protection_config = GetEnableSnoopingProtectionConfig();
+  EXPECT_THAT(*snooping_protection_config, ProtoEquals(expected_config));
 }
 
 }  // namespace hps

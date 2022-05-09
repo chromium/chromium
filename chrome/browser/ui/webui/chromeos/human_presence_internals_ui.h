@@ -10,14 +10,14 @@
 namespace chromeos {
 
 // The WebUI for chrome://hps-internals.
-class HpsInternalsUI : public content::WebUIController {
+class HumanPresenceInternalsUI : public content::WebUIController {
  public:
-  explicit HpsInternalsUI(content::WebUI* web_ui);
+  explicit HumanPresenceInternalsUI(content::WebUI* web_ui);
 
-  HpsInternalsUI(const HpsInternalsUI&) = delete;
-  HpsInternalsUI& operator=(const HpsInternalsUI&) = delete;
+  HumanPresenceInternalsUI(const HumanPresenceInternalsUI&) = delete;
+  HumanPresenceInternalsUI& operator=(const HumanPresenceInternalsUI&) = delete;
 
-  ~HpsInternalsUI() override;
+  ~HumanPresenceInternalsUI() override;
 };
 
 }  // namespace chromeos

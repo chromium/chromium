@@ -23,14 +23,16 @@
 
 namespace ash {
 
-HpsNotifyView::HpsNotifyView(Shelf* shelf) : TrayItemView(shelf) {
+SnoopingProtectionView::SnoopingProtectionView(Shelf* shelf)
+    : TrayItemView(shelf) {
   CreateImageView();
 
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
   session_observation_.Observe(session_controller);
 
-  HpsNotifyController* controller = Shell::Get()->hps_notify_controller();
+  SnoopingProtectionController* controller =
+      Shell::Get()->snooping_protection_controller();
   controller_observation_.Observe(controller);
 
   SetVisible(controller->SnooperPresent());
@@ -39,37 +41,37 @@ HpsNotifyView::HpsNotifyView(Shelf* shelf) : TrayItemView(shelf) {
       IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_SYSTEM_TRAY_TOOLTIP_TEXT));
 }
 
-HpsNotifyView::~HpsNotifyView() = default;
+SnoopingProtectionView::~SnoopingProtectionView() = default;
 
-void HpsNotifyView::HandleLocaleChange() {}
+void SnoopingProtectionView::HandleLocaleChange() {}
 
-void HpsNotifyView::OnSessionStateChanged(
+void SnoopingProtectionView::OnSessionStateChanged(
     session_manager::SessionState session_state) {
   UpdateIconColor(session_state);
 }
 
-void HpsNotifyView::OnThemeChanged() {
+void SnoopingProtectionView::OnThemeChanged() {
   TrayItemView::OnThemeChanged();
   UpdateIconColor(Shell::Get()->session_controller()->GetSessionState());
 }
 
-const char* HpsNotifyView::GetClassName() const {
-  return "HpsNotifyView";
+const char* SnoopingProtectionView::GetClassName() const {
+  return "SnoopingProtectionView";
 }
 
-void HpsNotifyView::OnSnoopingStatusChanged(bool snooper) {
+void SnoopingProtectionView::OnSnoopingStatusChanged(bool snooper) {
   SetVisible(snooper);
 }
 
-void HpsNotifyView::OnHpsNotifyControllerDestroyed() {
+void SnoopingProtectionView::OnSnoopingProtectionControllerDestroyed() {
   controller_observation_.Reset();
 }
 
-void HpsNotifyView::UpdateIconColor(
+void SnoopingProtectionView::UpdateIconColor(
     session_manager::SessionState session_state) {
   const SkColor new_color = TrayIconColor(session_state);
   const gfx::ImageSkia new_icon = gfx::CreateVectorIcon(gfx::IconDescription(
-      kSystemTrayHpsNotifyIcon, kUnifiedTrayIconSize, new_color));
+      kSystemTraySnoopingProtectionIcon, kUnifiedTrayIconSize, new_color));
   image_view()->SetImage(new_icon);
 }
 

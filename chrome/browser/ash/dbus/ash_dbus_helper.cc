@@ -185,7 +185,7 @@ void InitializeFeatureListDependentDBus() {
 
   if (ash::features::IsSnoopingProtectionEnabled() ||
       ash::features::IsQuickDimEnabled()) {
-    InitializeDBusClient<chromeos::HpsDBusClient>(bus);
+    InitializeDBusClient<chromeos::HumanPresenceDBusClient>(bus);
   }
 }
 
@@ -194,7 +194,7 @@ void ShutdownDBus() {
   // shut down in reverse order of initialization (in case of dependencies).
   if (ash::features::IsSnoopingProtectionEnabled() ||
       ash::features::IsQuickDimEnabled()) {
-    chromeos::HpsDBusClient::Shutdown();
+    chromeos::HumanPresenceDBusClient::Shutdown();
   }
   chromeos::WilcoDtcSupportdClient::Shutdown();
 #if BUILDFLAG(PLATFORM_CFM)

@@ -88,7 +88,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   GestureEducationNotificationController::RegisterProfilePrefs(registry,
                                                                for_test);
   holding_space_prefs::RegisterProfilePrefs(registry);
-  HpsNotifyController::RegisterProfilePrefs(registry);
   LoginScreenController::RegisterProfilePrefs(registry, for_test);
   LogoutButtonTray::RegisterProfilePrefs(registry);
   LogoutConfirmationController::RegisterProfilePrefs(registry);
@@ -103,6 +102,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   PrivacyScreenController::RegisterProfilePrefs(registry);
   quick_pair::Mediator::RegisterProfilePrefs(registry);
   ShelfController::RegisterProfilePrefs(registry);
+  SnoopingProtectionController::RegisterProfilePrefs(registry);
   TouchDevicesController::RegisterProfilePrefs(registry, for_test);
   UnifiedSystemTrayController::RegisterProfilePrefs(registry);
   MediaTray::RegisterProfilePrefs(registry);

@@ -18,14 +18,14 @@ namespace ash {
 namespace {
 
 // A simple observer that lists its last observation.
-class TestObserver : public HpsOrientationController::Observer {
+class TestObserver : public HumanPresenceOrientationController::Observer {
  public:
   TestObserver() = default;
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
   ~TestObserver() override = default;
 
-  // HpsOrientationController::Observer::
+  // HumanPresenceOrientationController::Observer::
   void OnOrientationChanged(bool suitable_for_hps) override {
     ++observation_count_;
     last_observation_ = suitable_for_hps;
@@ -40,13 +40,14 @@ class TestObserver : public HpsOrientationController::Observer {
   bool last_observation_ = false;
 };
 
-class HpsOrientationControllerTest : public AshTestBase {
+class HumanPresenceOrientationControllerTest : public AshTestBase {
  public:
-  HpsOrientationControllerTest() = default;
-  HpsOrientationControllerTest(const HpsOrientationControllerTest&) = delete;
-  HpsOrientationControllerTest& operator=(const HpsOrientationControllerTest&) =
-      delete;
-  ~HpsOrientationControllerTest() override = default;
+  HumanPresenceOrientationControllerTest() = default;
+  HumanPresenceOrientationControllerTest(
+      const HumanPresenceOrientationControllerTest&) = delete;
+  HumanPresenceOrientationControllerTest& operator=(
+      const HumanPresenceOrientationControllerTest&) = delete;
+  ~HumanPresenceOrientationControllerTest() override = default;
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({ash::features::kSnoopingProtection},
@@ -55,7 +56,8 @@ class HpsOrientationControllerTest : public AshTestBase {
 
     AshTestBase::SetUp();
 
-    orientation_controller_ = Shell::Get()->hps_orientation_controller();
+    orientation_controller_ =
+        Shell::Get()->human_presence_orientation_controller();
     tablet_mode_controller_ = Shell::Get()->tablet_mode_controller();
     display_manager_ = Shell::Get()->display_manager();
 
@@ -73,7 +75,7 @@ class HpsOrientationControllerTest : public AshTestBase {
         display::Display::RotationSource::ACTIVE);
   }
 
-  HpsOrientationController* orientation_controller_ = nullptr;
+  HumanPresenceOrientationController* orientation_controller_ = nullptr;
   TabletModeController* tablet_mode_controller_ = nullptr;
   display::DisplayManager* display_manager_ = nullptr;
 
@@ -82,7 +84,7 @@ class HpsOrientationControllerTest : public AshTestBase {
   base::test::ScopedCommandLine scoped_command_line_;
 };
 
-TEST_F(HpsOrientationControllerTest, TabletMode) {
+TEST_F(HumanPresenceOrientationControllerTest, TabletMode) {
   ASSERT_TRUE(orientation_controller_->IsOrientationSuitable());
 
   tablet_mode_controller_->SetEnabledForTest(true);
@@ -91,7 +93,7 @@ TEST_F(HpsOrientationControllerTest, TabletMode) {
   EXPECT_TRUE(orientation_controller_->IsOrientationSuitable());
 }
 
-TEST_F(HpsOrientationControllerTest, DisplayOrientation) {
+TEST_F(HumanPresenceOrientationControllerTest, DisplayOrientation) {
   ASSERT_TRUE(orientation_controller_->IsOrientationSuitable());
 
   // Rotating the external display has no effect on our sensor.
@@ -109,7 +111,7 @@ TEST_F(HpsOrientationControllerTest, DisplayOrientation) {
   EXPECT_TRUE(orientation_controller_->IsOrientationSuitable());
 }
 
-TEST_F(HpsOrientationControllerTest, Observer) {
+TEST_F(HumanPresenceOrientationControllerTest, Observer) {
   TestObserver observer;
   orientation_controller_->AddObserver(&observer);
 

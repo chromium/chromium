@@ -51,7 +51,7 @@ absl::optional<int> GetIntParam(const base::FieldTrialParams& params,
 // The config to use when no parameters are specified. We need to ensure that
 // that empty params induce a working config (as required for, e.g., a
 // chrome:://flags entry).
-hps::FeatureConfig GetDefaultHpsNotifyFeatureConfig() {
+hps::FeatureConfig GetDefaultSnoopingProtectionConfig() {
   hps::FeatureConfig config;
 
   // Just apply a threshold to the last-seen inference.
@@ -65,7 +65,7 @@ hps::FeatureConfig GetDefaultHpsNotifyFeatureConfig() {
   return config;
 }
 
-hps::FeatureConfig GetDefaultHpsSenseFeatureConfig() {
+hps::FeatureConfig GetDefaultLockOnLeaveConfig() {
   hps::FeatureConfig config;
   auto& filter_config = *config.mutable_consecutive_results_filter_config();
   // Any positive result will undim the screen.
@@ -80,15 +80,15 @@ hps::FeatureConfig GetDefaultHpsSenseFeatureConfig() {
   return config;
 }
 
-// This function constructs a FeatureConfig proto from feature parameters..
+// This function constructs a FeatureConfig proto from feature parameters.
 // The FeatureConfig contains one type of FilterConfig that will be used for
-// enabling a Hps feature.
+// enabling a human presence feature.
 //
 // If empty parameters are provided, a reasonable default is used.
 //
 // More details can be found at:
 // src/platform2/hps/daemon/filters/filter_factory.h
-absl::optional<hps::FeatureConfig> ConstructHpsFilterConfigFromFeatureParams(
+absl::optional<hps::FeatureConfig> ConstructFilterConfigFromFeatureParams(
     const base::Feature& feature,
     const hps::FeatureConfig& default_value) {
   // Load current params map for the feature.
@@ -105,7 +105,7 @@ absl::optional<hps::FeatureConfig> ConstructHpsFilterConfigFromFeatureParams(
   const absl::optional<int> filter_config_case =
       GetIntParam(params, feature_name, "filter_config_case");
   if (!filter_config_case.has_value()) {
-    LOG(ERROR) << "HpsFilterConfig error: missing param filter_config_case for "
+    LOG(ERROR) << "Filter config error: missing param filter_config_case for "
                << feature_name;
     return absl::nullopt;
   }
@@ -134,7 +134,7 @@ absl::optional<hps::FeatureConfig> ConstructHpsFilterConfigFromFeatureParams(
           !uncertain_count_threshold.has_value() ||
           !positive_score_threshold.has_value() ||
           !negative_score_threshold.has_value()) {
-        LOG(ERROR) << "HpsFilterConfig error: missing params for "
+        LOG(ERROR) << "Filter config error: missing params for "
                       "ConsecutiveResultsFilterConfig for "
                    << feature_name;
         return absl::nullopt;
@@ -164,7 +164,7 @@ absl::optional<hps::FeatureConfig> ConstructHpsFilterConfigFromFeatureParams(
           !positive_score_threshold.has_value() ||
           !negative_score_threshold.has_value() ||
           !default_uncertain_score.has_value()) {
-        LOG(ERROR) << "HpsFilterConfig error: missing params for "
+        LOG(ERROR) << "Filter config error: missing params for "
                       "AverageFilterConfig for "
                    << feature_name;
         return absl::nullopt;
@@ -186,14 +186,14 @@ absl::optional<hps::FeatureConfig> ConstructHpsFilterConfigFromFeatureParams(
 
 }  // namespace
 
-absl::optional<hps::FeatureConfig> GetEnableHpsSenseConfig() {
-  return ConstructHpsFilterConfigFromFeatureParams(
-      ash::features::kQuickDim, GetDefaultHpsSenseFeatureConfig());
+absl::optional<hps::FeatureConfig> GetEnableLockOnLeaveConfig() {
+  return ConstructFilterConfigFromFeatureParams(ash::features::kQuickDim,
+                                                GetDefaultLockOnLeaveConfig());
 }
 
-absl::optional<hps::FeatureConfig> GetEnableHpsNotifyConfig() {
-  return ConstructHpsFilterConfigFromFeatureParams(
-      ash::features::kSnoopingProtection, GetDefaultHpsNotifyFeatureConfig());
+absl::optional<hps::FeatureConfig> GetEnableSnoopingProtectionConfig() {
+  return ConstructFilterConfigFromFeatureParams(
+      ash::features::kSnoopingProtection, GetDefaultSnoopingProtectionConfig());
 }
 
 base::TimeDelta GetQuickDimDelay() {

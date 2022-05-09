@@ -134,8 +134,7 @@ class GeolocationController;
 class HighContrastController;
 class HighlighterController;
 class HoldingSpaceController;
-class HpsNotifyController;
-class HpsOrientationController;
+class HumanPresenceOrientationController;
 class ImeControllerImpl;
 class WebAuthNDialogControllerImpl;
 class KeyAccessibilityEnabler;
@@ -197,6 +196,7 @@ struct ShellInitParams;
 class ShellObserver;
 class ShutdownControllerImpl;
 class SmsObserver;
+class SnoopingProtectionController;
 class StickyKeysController;
 class SystemGestureEventFilter;
 class SystemModalContainerEventFilter;
@@ -450,11 +450,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   HighContrastController* high_contrast_controller() {
     return high_contrast_controller_.get();
   }
-  HpsNotifyController* hps_notify_controller() {
-    return hps_notify_controller_.get();
-  }
-  HpsOrientationController* hps_orientation_controller() {
-    return hps_orientation_controller_.get();
+  HumanPresenceOrientationController* human_presence_orientation_controller() {
+    return human_presence_orientation_controller_.get();
   }
   ImeControllerImpl* ime_controller() { return ime_controller_.get(); }
   WebAuthNDialogControllerImpl* webauthn_dialog_controller() {
@@ -564,6 +561,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   ShellDelegate* shell_delegate() { return shell_delegate_.get(); }
   ShutdownControllerImpl* shutdown_controller() {
     return shutdown_controller_.get();
+  }
+  SnoopingProtectionController* snooping_protection_controller() {
+    return snooping_protection_controller_.get();
   }
   StickyKeysController* sticky_keys_controller() {
     return sticky_keys_controller_.get();
@@ -790,8 +790,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<GeolocationController> geolocation_controller_;
   std::unique_ptr<HoldingSpaceController> holding_space_controller_;
   std::unique_ptr<PowerPrefs> power_prefs_;
-  std::unique_ptr<HpsNotifyController> hps_notify_controller_;
-  std::unique_ptr<HpsOrientationController> hps_orientation_controller_;
+  std::unique_ptr<SnoopingProtectionController> snooping_protection_controller_;
+  std::unique_ptr<HumanPresenceOrientationController>
+      human_presence_orientation_controller_;
   std::unique_ptr<ImeControllerImpl> ime_controller_;
   std::unique_ptr<chromeos::ImmersiveContext> immersive_context_;
   std::unique_ptr<WebAuthNDialogControllerImpl> webauthn_dialog_controller_;

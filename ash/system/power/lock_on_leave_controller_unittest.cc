@@ -19,208 +19,213 @@
 
 namespace ash {
 
-class HpsSenseControllerTest : public AshTestBase {
+class LockOnLeaveControllerTest : public AshTestBase {
  public:
   void SetUp() override {
-    // We need to enable kQuickDim to construct HpsOrientationController.
+    // We need to enable kQuickDim to construct
+    // HumanPresenceOrientationController.
     scoped_feature_list_.InitAndEnableFeature(features::kQuickDim);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kHasHps);
 
-    // Initialize FakeHpsDBusClient.
-    chromeos::HpsDBusClient::InitializeFake();
-    hps_client_ = chromeos::FakeHpsDBusClient::Get();
-    hps_client_->Reset();
+    // Initialize FakeHumanPresenceDBusClient.
+    chromeos::HumanPresenceDBusClient::InitializeFake();
+    human_presence_client_ = chromeos::FakeHumanPresenceDBusClient::Get();
+    human_presence_client_->Reset();
 
     AshTestBase::SetUp();
   }
 
  protected:
-  chromeos::FakeHpsDBusClient* hps_client_ = nullptr;
+  chromeos::FakeHumanPresenceDBusClient* human_presence_client_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::ScopedCommandLine scoped_command_line_;
 };
 
-// EnableHpsSense should be skipped if HpsService is not available.
-TEST_F(HpsSenseControllerTest,
-       EnableHpsSenseDoesNothingIfHpsServiceUnavailable) {
-  auto hps_sense_controller = std::make_unique<HpsSenseController>();
+// EnableLockOnLeave should be skipped if the service is not available.
+TEST_F(LockOnLeaveControllerTest,
+       EnableLockOnLeaveDoesNothingIfServiceUnavailable) {
+  auto lock_on_leave_controller = std::make_unique<LockOnLeaveController>();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 0);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 0);
 
-  hps_sense_controller->EnableHpsSense();
+  lock_on_leave_controller->EnableLockOnLeave();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 0);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 0);
 }
 
-// DisableHpsSense should be called on HpsServiceAvailable.
-TEST_F(HpsSenseControllerTest, CallDisableHpsSenseOnHpsServiceAvailable) {
-  hps_client_->set_hps_service_is_available(true);
-  auto hps_sense_controller = std::make_unique<HpsSenseController>();
+// DisableLockOnLeave should be called when the human presence service becomes
+// available.
+TEST_F(LockOnLeaveControllerTest, CallDisableLockOnLeaveOnServiceAvailable) {
+  human_presence_client_->set_hps_service_is_available(true);
+  auto lock_on_leave_controller = std::make_unique<LockOnLeaveController>();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 1);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 1);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 0);
 }
 
-// EnableHpsSense should succeed if HpsService is available.
-TEST_F(HpsSenseControllerTest, EnableHpsSenseSucceedsIfHpsServiceAvailable) {
-  hps_client_->set_hps_service_is_available(true);
-  auto hps_sense_controller = std::make_unique<HpsSenseController>();
+// EnableLockOnLeave should succeed if the service is available.
+TEST_F(LockOnLeaveControllerTest, EnableLockOnLeaveSucceedsIfServiceAvailable) {
+  human_presence_client_->set_hps_service_is_available(true);
+  auto lock_on_leave_controller = std::make_unique<LockOnLeaveController>();
   base::RunLoop().RunUntilIdle();
-  hps_client_->Reset();
+  human_presence_client_->Reset();
 
-  hps_sense_controller->EnableHpsSense();
+  lock_on_leave_controller->EnableLockOnLeave();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 0);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 1);
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 1);
 }
 
-// EnableHpsSense should only be applied once for multiple calls of
-// EnableHpsSense.
-TEST_F(HpsSenseControllerTest, EnableHpsSenseOnlyCalledOnceOnTwoCalls) {
-  hps_client_->set_hps_service_is_available(true);
-  auto hps_sense_controller = std::make_unique<HpsSenseController>();
+// The DBus EnableHpsSense method should only be called once for multiple calls
+// of EnableLockOnLeave.
+TEST_F(LockOnLeaveControllerTest, EnableHpsSenseOnlyCalledOnceOnTwoCalls) {
+  human_presence_client_->set_hps_service_is_available(true);
+  auto lock_on_leave_controller = std::make_unique<LockOnLeaveController>();
   base::RunLoop().RunUntilIdle();
-  hps_client_->Reset();
+  human_presence_client_->Reset();
 
   // Only 1 dbus calls should be sent.
-  hps_sense_controller->EnableHpsSense();
-  hps_sense_controller->EnableHpsSense();
+  lock_on_leave_controller->EnableLockOnLeave();
+  lock_on_leave_controller->EnableLockOnLeave();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 0);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 1);
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 1);
 }
 
-TEST_F(HpsSenseControllerTest, DisableHpsSenseDoesNothingIfNotEnabled) {
-  hps_client_->set_hps_service_is_available(true);
-  auto hps_sense_controller = std::make_unique<HpsSenseController>();
+TEST_F(LockOnLeaveControllerTest, DisableLockOnLeaveDoesNothingIfNotEnabled) {
+  human_presence_client_->set_hps_service_is_available(true);
+  auto lock_on_leave_controller = std::make_unique<LockOnLeaveController>();
   base::RunLoop().RunUntilIdle();
-  hps_client_->Reset();
+  human_presence_client_->Reset();
 
-  // Calls DisableHpsSense does nothing if HpsSense is not enabled.
-  hps_sense_controller->DisableHpsSense();
+  // Calls DisableLockOnLeave does nothing if LockOnLeave is not enabled.
+  lock_on_leave_controller->DisableLockOnLeave();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 0);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 0);
 }
 
-// DisableHpsSense should succeed if HpsSense is enabled.
-TEST_F(HpsSenseControllerTest, DisableHpsSenseSuceedsIfEnabled) {
-  hps_client_->set_hps_service_is_available(true);
-  auto hps_sense_controller = std::make_unique<HpsSenseController>();
-  hps_sense_controller->EnableHpsSense();
-  hps_client_->Reset();
+// DisableLockOnLeave should succeed if LockOnLeave is enabled.
+TEST_F(LockOnLeaveControllerTest, DisableLockOnLeaveSuceedsIfEnabled) {
+  human_presence_client_->set_hps_service_is_available(true);
+  auto lock_on_leave_controller = std::make_unique<LockOnLeaveController>();
+  lock_on_leave_controller->EnableLockOnLeave();
+  human_presence_client_->Reset();
 
-  // DisableHpsSense succeeds since HpsSense is enabled.
-  hps_sense_controller->DisableHpsSense();
+  // DisableLockOnLeave succeeds since LockOnLeave is enabled.
+  lock_on_leave_controller->DisableLockOnLeave();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 1);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 1);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 0);
 }
 
-// DisableHpsSense should only be applied once with two consecutive calls.
-TEST_F(HpsSenseControllerTest, DisableHpsSenseOnlyCalledOnceOnTwoCalls) {
-  hps_client_->set_hps_service_is_available(true);
-  auto hps_sense_controller = std::make_unique<HpsSenseController>();
-  hps_sense_controller->EnableHpsSense();
+// The DBus method DisableHpsSense should only be called once with two
+// consecutive calls to DisableLockOnLeave.
+TEST_F(LockOnLeaveControllerTest, DisableHpsSenseOnlyCalledOnceOnTwoCalls) {
+  human_presence_client_->set_hps_service_is_available(true);
+  auto lock_on_leave_controller = std::make_unique<LockOnLeaveController>();
+  lock_on_leave_controller->EnableLockOnLeave();
   base::RunLoop().RunUntilIdle();
-  hps_client_->Reset();
+  human_presence_client_->Reset();
 
   // Only 1 dbus calls should be sent.
-  hps_sense_controller->DisableHpsSense();
-  hps_sense_controller->DisableHpsSense();
+  lock_on_leave_controller->DisableLockOnLeave();
+  lock_on_leave_controller->DisableLockOnLeave();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 1);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 1);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 0);
 }
 
-// No dbus call should be sent on restart if HpsSense is currently disabled.
-TEST_F(HpsSenseControllerTest, NoDbusCallsOnRestartIfHpsSenseDisabled) {
-  hps_client_->set_hps_service_is_available(true);
-  auto hps_sense_controller = std::make_unique<HpsSenseController>();
+// No dbus call should be sent on restart if LockOnLeave is currently disabled.
+TEST_F(LockOnLeaveControllerTest, NoDbusCallsOnRestartIfLockOnLeaveDisabled) {
+  human_presence_client_->set_hps_service_is_available(true);
+  auto lock_on_leave_controller = std::make_unique<LockOnLeaveController>();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 1);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 1);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 0);
 
-  // HpsSense is disabled; Restart will not send dbus calls.
-  hps_client_->Shutdown();
-  hps_client_->Restart();
+  // LockOnLeave is disabled; Restart will not send dbus calls.
+  human_presence_client_->Shutdown();
+  human_presence_client_->Restart();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 1);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 1);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 0);
 }
 
-// EnableHpsSense should be called on restart if HpsSense is enabled currently.
-TEST_F(HpsSenseControllerTest, EnableHpsSenseOnRestartIfHpsSenseWasEnabled) {
-  hps_client_->set_hps_service_is_available(true);
-  auto hps_sense_controller = std::make_unique<HpsSenseController>();
+// The DBus method EnableHpsSense should be called on restart if LockOnLeave is
+// enabled currently.
+TEST_F(LockOnLeaveControllerTest,
+       EnableLockOnLeaveOnRestartIfLockOnLeaveWasEnabled) {
+  human_presence_client_->set_hps_service_is_available(true);
+  auto lock_on_leave_controller = std::make_unique<LockOnLeaveController>();
   base::RunLoop().RunUntilIdle();
-  hps_sense_controller->EnableHpsSense();
+  lock_on_leave_controller->EnableLockOnLeave();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 1);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 1);
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 1);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 1);
 
-  // HpsSense is enabled; Restart will call EnableHpsSense.
-  hps_client_->Shutdown();
-  hps_client_->Restart();
+  // LockOnLeave is enabled; Restart will call EnableHpsSense.
+  human_presence_client_->Shutdown();
+  human_presence_client_->Restart();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 1);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 2);
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 1);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 2);
 }
 
-// DisableHpsSense should be called on service available even if we need to
-// enable it immediately after that.
-TEST_F(HpsSenseControllerTest, AlwaysCallDisableOnServiceAvailable) {
-  hps_client_->set_hps_service_is_available(true);
-  auto hps_sense_controller = std::make_unique<HpsSenseController>();
-  hps_sense_controller->EnableHpsSense();
+// The DBus method DisableHpsSense should be called on service available even if
+// we need to enable it immediately after that.
+TEST_F(LockOnLeaveControllerTest, AlwaysCallDisableOnServiceAvailable) {
+  human_presence_client_->set_hps_service_is_available(true);
+  auto lock_on_leave_controller = std::make_unique<LockOnLeaveController>();
+  lock_on_leave_controller->EnableLockOnLeave();
   // At this point, OnServiceAvailable is not called yet, so no disable/enable
   // functions should be called.
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 0);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 0);
   base::RunLoop().RunUntilIdle();
   // Although we only need enabling, the disable function should also be called.
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 1);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 1);
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 1);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 1);
 }
 
-// Confirm that enable_hps_sense is only called when both EnableHpsSense and
-// OnOrientationChanged(true) is set.
-TEST_F(HpsSenseControllerTest, OreientationChanging) {
-  hps_client_->set_hps_service_is_available(true);
-  auto hps_sense_controller = std::make_unique<HpsSenseController>();
-  hps_sense_controller->EnableHpsSense();
+// Confirm that the DBus method EnableHpsSense is only called when both
+// EnableLockOnLeave and OnOrientationChanged(true) is set.
+TEST_F(LockOnLeaveControllerTest, OrientationChanging) {
+  human_presence_client_->set_hps_service_is_available(true);
+  auto lock_on_leave_controller = std::make_unique<LockOnLeaveController>();
+  lock_on_leave_controller->EnableLockOnLeave();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 1);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 1);
-  hps_client_->Reset();
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 1);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 1);
+  human_presence_client_->Reset();
 
-  // Orientation changed, HpsSense should be disabled.
-  hps_sense_controller->OnOrientationChanged(false);
+  // Orientation changed, LockOnLeave should be disabled.
+  lock_on_leave_controller->OnOrientationChanged(false);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 1);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 0);
-  hps_client_->Reset();
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 1);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 0);
+  human_presence_client_->Reset();
 
   // Calling enable/disable will not sent any dbus call while OrientationChanged
   // to be false.
-  hps_sense_controller->DisableHpsSense();
+  lock_on_leave_controller->DisableLockOnLeave();
   base::RunLoop().RunUntilIdle();
-  hps_sense_controller->OnOrientationChanged(false);
+  lock_on_leave_controller->OnOrientationChanged(false);
   base::RunLoop().RunUntilIdle();
-  hps_sense_controller->EnableHpsSense();
+  lock_on_leave_controller->EnableLockOnLeave();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 0);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 0);
 
-  // Changing oritiantation will trigger enabling if EnableHpsSense was set.
-  hps_sense_controller->OnOrientationChanged(true);
+  // Changing orientation will trigger enabling if EnableLockOnLeave was set.
+  lock_on_leave_controller->OnOrientationChanged(true);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hps_client_->disable_hps_sense_count(), 0);
-  EXPECT_EQ(hps_client_->enable_hps_sense_count(), 1);
+  EXPECT_EQ(human_presence_client_->disable_hps_sense_count(), 0);
+  EXPECT_EQ(human_presence_client_->enable_hps_sense_count(), 1);
 }
 
 }  // namespace ash

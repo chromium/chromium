@@ -16,15 +16,15 @@ class TimeDelta;
 
 namespace hps {
 
-// Gets FeatureConfig for enabling HpsSense from Finch.
+// Gets FeatureConfig for enabling LockOnLeave from Finch.
 // Returns nullopt if feature is not enabled or can't be parsed correctly.
 COMPONENT_EXPORT(HPS)
-absl::optional<hps::FeatureConfig> GetEnableHpsSenseConfig();
+absl::optional<hps::FeatureConfig> GetEnableLockOnLeaveConfig();
 
-// Gets FeatureConfig for enabling HpsNotify from Finch.
+// Gets FeatureConfig for enabling SnoopingProtection from Finch.
 // Returns nullopt if feature is not enabled or can't be parsed correctly.
 COMPONENT_EXPORT(HPS)
-absl::optional<hps::FeatureConfig> GetEnableHpsNotifyConfig();
+absl::optional<hps::FeatureConfig> GetEnableSnoopingProtectionConfig();
 
 // Gets quick dim delay to configure power_manager.
 COMPONENT_EXPORT(HPS) base::TimeDelta GetQuickDimDelay();

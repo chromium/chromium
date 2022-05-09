@@ -18,14 +18,12 @@ class Bus;
 
 namespace chromeos {
 
-// D-Bus client for ambient presence sensing. Communicates with the Chrome OS
+// D-Bus client for human presence sensing. Communicates with the Chrome OS
 // presence daemon to allow for features that depend on user presence.
 //
 // Use of this API is restricted by policy. Consult
 // go/cros-pdd#bookmark=id.7emuxnhxv638 and Chrome OS Privacy before using.
-//
-// TODO(crbug/1241706): clarify naming.
-class COMPONENT_EXPORT(HPS) HpsDBusClient {
+class COMPONENT_EXPORT(HPS) HumanPresenceDBusClient {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -48,29 +46,29 @@ class COMPONENT_EXPORT(HPS) HpsDBusClient {
   using GetResultCallback =
       base::OnceCallback<void(absl::optional<hps::HpsResult>)>;
 
-  HpsDBusClient(const HpsDBusClient&) = delete;
-  HpsDBusClient& operator=(const HpsDBusClient&) = delete;
+  HumanPresenceDBusClient(const HumanPresenceDBusClient&) = delete;
+  HumanPresenceDBusClient& operator=(const HumanPresenceDBusClient&) = delete;
 
-  // Registers the given observer to receive HPS signals.
+  // Registers the given observer to receive human presence signals.
   virtual void AddObserver(Observer* observer) = 0;
   // Deregisters the given observer.
   virtual void RemoveObserver(Observer* observer) = 0;
 
   // D-Bus methods.
-  // Polls the HPS sense state.
+  // Polls the lock-on-leave state.
   virtual void GetResultHpsSense(GetResultCallback cb) = 0;
-  // Polls the HPS notify state.
+  // Polls the snooping protection state.
   virtual void GetResultHpsNotify(GetResultCallback cb) = 0;
-  // Enables HpsSense in HpsService.
+  // Enables lock-on-leave in the service.
   virtual void EnableHpsSense(const hps::FeatureConfig& config) = 0;
-  // Disables HpsSense in HpsService.
+  // Disables lock-on-leave in the service.
   virtual void DisableHpsSense() = 0;
-  // Enables HpsNotify in HpsService.
+  // Enables snooping protection in the service.
   virtual void EnableHpsNotify(const hps::FeatureConfig& config) = 0;
-  // Disables HpsNotify in HpsService.
+  // Disables snooping protection in the service.
   virtual void DisableHpsNotify() = 0;
 
-  // Registers |callback| to run when the HpsService becomes available.
+  // Registers |callback| to run when the presence service becomes available.
   // If the service is already available, or if connecting to the name-owner-
   // changed signal fails, |callback| will be run once asynchronously.
   // Otherwise, |callback| will be run once in the future after the service
@@ -85,12 +83,12 @@ class COMPONENT_EXPORT(HPS) HpsDBusClient {
   // Destroys the global instance.
   static void Shutdown();
   // Returns the global instance which may be null if not initialized.
-  static HpsDBusClient* Get();
+  static HumanPresenceDBusClient* Get();
 
  protected:
   // Initialize/Shutdown should be used instead.
-  HpsDBusClient();
-  virtual ~HpsDBusClient();
+  HumanPresenceDBusClient();
+  virtual ~HumanPresenceDBusClient();
 };
 
 }  // namespace chromeos

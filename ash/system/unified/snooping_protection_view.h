@@ -18,14 +18,15 @@ namespace ash {
 
 // The icon in the system tray notifying a user that a second person has been
 // detected looking over their shoulder.
-class ASH_EXPORT HpsNotifyView : public TrayItemView,
-                                 public SessionObserver,
-                                 public HpsNotifyController::Observer {
+class ASH_EXPORT SnoopingProtectionView
+    : public TrayItemView,
+      public SessionObserver,
+      public SnoopingProtectionController::Observer {
  public:
-  explicit HpsNotifyView(Shelf* shelf);
-  HpsNotifyView(const HpsNotifyView&) = delete;
-  HpsNotifyView& operator=(const HpsNotifyView&) = delete;
-  ~HpsNotifyView() override;
+  explicit SnoopingProtectionView(Shelf* shelf);
+  SnoopingProtectionView(const SnoopingProtectionView&) = delete;
+  SnoopingProtectionView& operator=(const SnoopingProtectionView&) = delete;
+  ~SnoopingProtectionView() override;
 
   // views::TrayItemView:
   const char* GetClassName() const override;
@@ -35,9 +36,9 @@ class ASH_EXPORT HpsNotifyView : public TrayItemView,
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
-  // HpsNotifyController::Observer:
+  // SnoopingProtectionController::Observer:
   void OnSnoopingStatusChanged(bool snooper) override;
-  void OnHpsNotifyControllerDestroyed() override;
+  void OnSnoopingProtectionControllerDestroyed() override;
 
  private:
   // Updates the system tray icon to use the color corresponding to the current
@@ -47,11 +48,12 @@ class ASH_EXPORT HpsNotifyView : public TrayItemView,
   base::ScopedObservation<SessionController, SessionObserver>
       session_observation_{this};
 
-  base::ScopedObservation<HpsNotifyController, HpsNotifyController::Observer>
+  base::ScopedObservation<SnoopingProtectionController,
+                          SnoopingProtectionController::Observer>
       controller_observation_{this};
 
   // Must be last.
-  base::WeakPtrFactory<HpsNotifyView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SnoopingProtectionView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

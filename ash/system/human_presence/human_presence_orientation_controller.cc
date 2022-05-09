@@ -15,7 +15,7 @@
 
 namespace ash {
 
-HpsOrientationController::HpsOrientationController() {
+HumanPresenceOrientationController::HumanPresenceOrientationController() {
   TabletModeController* tablet_mode_controller =
       Shell::Get()->tablet_mode_controller();
   DCHECK(tablet_mode_controller);
@@ -34,27 +34,28 @@ HpsOrientationController::HpsOrientationController() {
           .rotation() != display::Display::ROTATE_0;
 }
 
-HpsOrientationController::~HpsOrientationController() = default;
+HumanPresenceOrientationController::~HumanPresenceOrientationController() =
+    default;
 
-void HpsOrientationController::AddObserver(Observer* observer) {
+void HumanPresenceOrientationController::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void HpsOrientationController::RemoveObserver(Observer* observer) {
+void HumanPresenceOrientationController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool HpsOrientationController::IsOrientationSuitable() const {
+bool HumanPresenceOrientationController::IsOrientationSuitable() const {
   return !physical_tablet_state_ && !display_rotated_;
 }
 
-void HpsOrientationController::OnTabletPhysicalStateChanged() {
+void HumanPresenceOrientationController::OnTabletPhysicalStateChanged() {
   const bool physical_tablet_state =
       Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
   UpdateOrientation(physical_tablet_state, display_rotated_);
 }
 
-void HpsOrientationController::OnDisplayMetricsChanged(
+void HumanPresenceOrientationController::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
   // We only care when the rotation of the in-built display changes.
@@ -67,8 +68,9 @@ void HpsOrientationController::OnDisplayMetricsChanged(
   UpdateOrientation(physical_tablet_state_, display_rotated);
 }
 
-void HpsOrientationController::UpdateOrientation(bool physical_tablet_state,
-                                                 bool display_rotated) {
+void HumanPresenceOrientationController::UpdateOrientation(
+    bool physical_tablet_state,
+    bool display_rotated) {
   const bool was_suitable = IsOrientationSuitable();
 
   physical_tablet_state_ = physical_tablet_state;

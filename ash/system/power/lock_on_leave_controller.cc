@@ -14,100 +14,103 @@ namespace ash {
 namespace {
 
 // Helper for EnableHpsSense.
-void EnableHpsSenseViaDBus() {
-  const auto config = hps::GetEnableHpsSenseConfig();
+void EnableLockOnLeaveViaDBus() {
+  const auto config = hps::GetEnableLockOnLeaveConfig();
   if (config.has_value()) {
-    chromeos::HpsDBusClient::Get()->EnableHpsSense(config.value());
+    chromeos::HumanPresenceDBusClient::Get()->EnableHpsSense(config.value());
   }
 }
 
 // Helper for DisableHpsSense.
-void DisableHpsSenseViaDBus() {
-  chromeos::HpsDBusClient::Get()->DisableHpsSense();
+void DisableLockOnLeaveViaDBus() {
+  chromeos::HumanPresenceDBusClient::Get()->DisableHpsSense();
 }
 
 }  // namespace
 
-HpsSenseController::HpsSenseController() {
-  hps_observation_.Observe(chromeos::HpsDBusClient::Get());
+LockOnLeaveController::LockOnLeaveController() {
+  human_presence_observation_.Observe(chromeos::HumanPresenceDBusClient::Get());
 
-  chromeos::HpsDBusClient::Get()->WaitForServiceToBeAvailable(
-      base::BindOnce(&HpsSenseController::OnHpsServiceAvailable,
+  chromeos::HumanPresenceDBusClient::Get()->WaitForServiceToBeAvailable(
+      base::BindOnce(&LockOnLeaveController::OnServiceAvailable,
                      weak_ptr_factory_.GetWeakPtr()));
 
   // Orientation controller is instantiated before us in the shell.
-  HpsOrientationController* orientation_controller =
-      Shell::Get()->hps_orientation_controller();
-  suitable_for_hps_ = orientation_controller->IsOrientationSuitable();
+  HumanPresenceOrientationController* orientation_controller =
+      Shell::Get()->human_presence_orientation_controller();
+  suitable_for_human_presence_ =
+      orientation_controller->IsOrientationSuitable();
   orientation_observation_.Observe(orientation_controller);
 }
 
-HpsSenseController::~HpsSenseController() {
-  hps_observation_.Reset();
+LockOnLeaveController::~LockOnLeaveController() {
+  human_presence_observation_.Reset();
   orientation_observation_.Reset();
 }
 
-void HpsSenseController::EnableHpsSense() {
-  want_hps_sense_ = true;
+void LockOnLeaveController::EnableLockOnLeave() {
+  want_lock_on_leave_ = true;
   ReconfigViaDbus();
 }
 
-void HpsSenseController::DisableHpsSense() {
-  want_hps_sense_ = false;
+void LockOnLeaveController::DisableLockOnLeave() {
+  want_lock_on_leave_ = false;
   ReconfigViaDbus();
 }
 
-// HpsOrientationObserver:
-void HpsSenseController::OnOrientationChanged(bool suitable_for_hps) {
-  suitable_for_hps_ = suitable_for_hps;
+// HumanPresenceOrientationObserver:
+void LockOnLeaveController::OnOrientationChanged(
+    bool suitable_for_human_presence) {
+  suitable_for_human_presence_ = suitable_for_human_presence;
   ReconfigViaDbus();
 }
 
-void HpsSenseController::OnHpsSenseChanged(hps::HpsResult state) {}
+void LockOnLeaveController::OnHpsSenseChanged(hps::HpsResult state) {}
 
-void HpsSenseController::OnHpsNotifyChanged(hps::HpsResult state) {}
+void LockOnLeaveController::OnHpsNotifyChanged(hps::HpsResult state) {}
 
-void HpsSenseController::OnRestart() {
+void LockOnLeaveController::OnRestart() {
   service_available_ = true;
   ReconfigViaDbus();
 }
 
-void HpsSenseController::OnShutdown() {
-  // HpsDBusService just stopped.
+void LockOnLeaveController::OnShutdown() {
+  // The service just stopped.
   service_available_ = false;
-  configured_state_ = ConfiguredHpsSenseState::kDisabled;
+  configured_state_ = ConfiguredLockOnLeaveState::kDisabled;
 }
 
-void HpsSenseController::OnHpsServiceAvailable(const bool service_available) {
+void LockOnLeaveController::OnServiceAvailable(const bool service_available) {
   service_available_ = service_available;
   ReconfigViaDbus();
 }
 
-void HpsSenseController::ReconfigViaDbus() {
+void LockOnLeaveController::ReconfigViaDbus() {
   if (!service_available_)
     return;
 
   // When chrome starts, it does not know the current configured_state_, because
   // it could be left enabled from previous chrome session, disable it so that
   // the new configuration can apply.
-  if (configured_state_ == ConfiguredHpsSenseState::kUnknown) {
-    DisableHpsSenseViaDBus();
-    configured_state_ = ConfiguredHpsSenseState::kDisabled;
+  if (configured_state_ == ConfiguredLockOnLeaveState::kUnknown) {
+    DisableLockOnLeaveViaDBus();
+    configured_state_ = ConfiguredLockOnLeaveState::kDisabled;
   }
 
   // Wanted state should be either kEnabled or kDisabled.
-  const ConfiguredHpsSenseState wanted_state =
-      want_hps_sense_ && suitable_for_hps_ ? ConfiguredHpsSenseState::kEnabled
-                                           : ConfiguredHpsSenseState::kDisabled;
+  const ConfiguredLockOnLeaveState wanted_state =
+      want_lock_on_leave_ && suitable_for_human_presence_
+          ? ConfiguredLockOnLeaveState::kEnabled
+          : ConfiguredLockOnLeaveState::kDisabled;
 
   // Return if already configured to the wanted state.
   if (wanted_state == configured_state_)
     return;
 
-  if (wanted_state == ConfiguredHpsSenseState::kEnabled) {
-    EnableHpsSenseViaDBus();
+  if (wanted_state == ConfiguredLockOnLeaveState::kEnabled) {
+    EnableLockOnLeaveViaDBus();
   } else {
-    DisableHpsSenseViaDBus();
+    DisableLockOnLeaveViaDBus();
   }
   configured_state_ = wanted_state;
 }

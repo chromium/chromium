@@ -22,7 +22,7 @@ namespace chromeos {
 
 namespace {
 
-HpsDBusClient* g_instance = nullptr;
+HumanPresenceDBusClient* g_instance = nullptr;
 
 // Extracts result data out of a DBus response.
 absl::optional<hps::HpsResult> UnwrapHpsResult(dbus::Response* response) {
@@ -40,37 +40,42 @@ absl::optional<hps::HpsResult> UnwrapHpsResult(dbus::Response* response) {
   return result.value();
 }
 
-class HpsDBusClientImpl : public HpsDBusClient {
+class HumanPresenceDBusClientImpl : public HumanPresenceDBusClient {
  public:
-  explicit HpsDBusClientImpl(dbus::Bus* bus)
-      : hps_proxy_(bus->GetObjectProxy(hps::kHpsServiceName,
-                                       dbus::ObjectPath(hps::kHpsServicePath))),
+  explicit HumanPresenceDBusClientImpl(dbus::Bus* bus)
+      : human_presence_proxy_(
+            bus->GetObjectProxy(hps::kHpsServiceName,
+                                dbus::ObjectPath(hps::kHpsServicePath))),
         weak_ptr_factory_(this) {
-    // Connect to HpsSenseChanged signal.
-    hps_proxy_->ConnectToSignal(
+    // Connect to lock-on-leave changed signal.
+    human_presence_proxy_->ConnectToSignal(
         hps::kHpsServiceInterface, hps::kHpsSenseChanged,
-        base::BindRepeating(&HpsDBusClientImpl::HpsSenseChangedReceived,
-                            weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&HpsDBusClientImpl::HpsSenseChangedConnected,
+        base::BindRepeating(
+            &HumanPresenceDBusClientImpl::HpsSenseChangedReceived,
+            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&HumanPresenceDBusClientImpl::HpsSenseChangedConnected,
                        weak_ptr_factory_.GetWeakPtr()));
 
-    // Connect to HpsNotifyChanged signal.
-    hps_proxy_->ConnectToSignal(
+    // Connect to snooping protection changed signal.
+    human_presence_proxy_->ConnectToSignal(
         hps::kHpsServiceInterface, hps::kHpsNotifyChanged,
-        base::BindRepeating(&HpsDBusClientImpl::HpsNotifyChangedReceived,
-                            weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&HpsDBusClientImpl::HpsNotifyChangedConnected,
+        base::BindRepeating(
+            &HumanPresenceDBusClientImpl::HpsNotifyChangedReceived,
+            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&HumanPresenceDBusClientImpl::HpsNotifyChangedConnected,
                        weak_ptr_factory_.GetWeakPtr()));
 
     // Monitor daemon restarts.
-    hps_proxy_->SetNameOwnerChangedCallback(base::BindRepeating(
-        &HpsDBusClientImpl::NameOwnerChanged, weak_ptr_factory_.GetWeakPtr()));
+    human_presence_proxy_->SetNameOwnerChangedCallback(
+        base::BindRepeating(&HumanPresenceDBusClientImpl::NameOwnerChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 
-  ~HpsDBusClientImpl() override = default;
+  ~HumanPresenceDBusClientImpl() override = default;
 
-  HpsDBusClientImpl(const HpsDBusClientImpl&) = delete;
-  HpsDBusClientImpl& operator=(const HpsDBusClientImpl&) = delete;
+  HumanPresenceDBusClientImpl(const HumanPresenceDBusClientImpl&) = delete;
+  HumanPresenceDBusClientImpl& operator=(const HumanPresenceDBusClientImpl&) =
+      delete;
 
   // Called when user presence signal is received.
   void HpsSenseChangedReceived(dbus::Signal* signal) {
@@ -127,12 +132,12 @@ class HpsDBusClientImpl : public HpsDBusClient {
     LOG_IF(ERROR, !success) << "Failed to connect to HpsNotifyChanged signal.";
   }
 
-  // HpsDBusClient:
+  // HumanPresenceDBusClient:
   void GetResultHpsSense(GetResultCallback cb) override {
     dbus::MethodCall method_call(hps::kHpsServiceInterface,
                                  hps::kGetResultHpsSense);
     dbus::MessageWriter writer(&method_call);
-    hps_proxy_->CallMethod(
+    human_presence_proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&UnwrapHpsResult).Then(std::move(cb)));
   }
@@ -141,7 +146,7 @@ class HpsDBusClientImpl : public HpsDBusClient {
     dbus::MethodCall method_call(hps::kHpsServiceInterface,
                                  hps::kGetResultHpsNotify);
     dbus::MessageWriter writer(&method_call);
-    hps_proxy_->CallMethod(
+    human_presence_proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&UnwrapHpsResult).Then(std::move(cb)));
   }
@@ -155,92 +160,96 @@ class HpsDBusClientImpl : public HpsDBusClient {
   }
 
   void EnableHpsSense(const hps::FeatureConfig& config) override {
-    EnableHpsFeature(hps::kEnableHpsSense, config);
+    EnableHumanPresenceFeature(hps::kEnableHpsSense, config);
   }
 
-  void DisableHpsSense() override { DisableHpsFeature(hps::kDisableHpsSense); }
+  void DisableHpsSense() override {
+    DisableHumanPresenceFeature(hps::kDisableHpsSense);
+  }
 
   void EnableHpsNotify(const hps::FeatureConfig& config) override {
-    EnableHpsFeature(hps::kEnableHpsNotify, config);
+    EnableHumanPresenceFeature(hps::kEnableHpsNotify, config);
   }
 
   void DisableHpsNotify() override {
-    DisableHpsFeature(hps::kDisableHpsNotify);
+    DisableHumanPresenceFeature(hps::kDisableHpsNotify);
   }
 
   void WaitForServiceToBeAvailable(
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback)
       override {
-    hps_proxy_->WaitForServiceToBeAvailable(std::move(callback));
+    human_presence_proxy_->WaitForServiceToBeAvailable(std::move(callback));
   }
 
  private:
-  // Send a method call to HpsDBus with given method name and config.
-  void EnableHpsFeature(const std::string& method_name,
-                        const hps::FeatureConfig& config) {
+  // Send a method call to the human presence service with given method name and
+  // config.
+  void EnableHumanPresenceFeature(const std::string& method_name,
+                                  const hps::FeatureConfig& config) {
     dbus::MethodCall method_call(hps::kHpsServiceInterface, method_name);
     dbus::MessageWriter writer(&method_call);
 
     if (!writer.AppendProtoAsArrayOfBytes(config)) {
       LOG(ERROR) << "Failed to encode protobuf for " << method_name;
     } else {
-      hps_proxy_->CallMethod(&method_call,
-                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                             base::DoNothing());
+      human_presence_proxy_->CallMethod(&method_call,
+                                        dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                        base::DoNothing());
     }
   }
 
   // Send a method call to HpsDBus with given method name.
-  void DisableHpsFeature(const std::string& method_name) {
+  void DisableHumanPresenceFeature(const std::string& method_name) {
     dbus::MethodCall method_call(hps::kHpsServiceInterface, method_name);
-    hps_proxy_->CallMethod(&method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                           base::DoNothing());
+    human_presence_proxy_->CallMethod(&method_call,
+                                      dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                      base::DoNothing());
   }
 
-  dbus::ObjectProxy* const hps_proxy_;
+  dbus::ObjectProxy* const human_presence_proxy_;
 
   base::ObserverList<Observer> observers_;
 
   // Must be last class member.
-  base::WeakPtrFactory<HpsDBusClientImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<HumanPresenceDBusClientImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace
 
-HpsDBusClient::Observer::~Observer() = default;
+HumanPresenceDBusClient::Observer::~Observer() = default;
 
-HpsDBusClient::HpsDBusClient() {
+HumanPresenceDBusClient::HumanPresenceDBusClient() {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
 }
 
-HpsDBusClient::~HpsDBusClient() {
+HumanPresenceDBusClient::~HumanPresenceDBusClient() {
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
 
 // static
-void HpsDBusClient::Initialize(dbus::Bus* bus) {
+void HumanPresenceDBusClient::Initialize(dbus::Bus* bus) {
   DCHECK_NE(bus, nullptr);
-  new HpsDBusClientImpl(bus);
+  new HumanPresenceDBusClientImpl(bus);
 }
 
 // static
-void HpsDBusClient::InitializeFake() {
+void HumanPresenceDBusClient::InitializeFake() {
   // Do not create a new fake if it was initialized early in a test, to allow
   // the test to set its own client.
-  if (!FakeHpsDBusClient::Get())
-    new FakeHpsDBusClient();
+  if (!FakeHumanPresenceDBusClient::Get())
+    new FakeHumanPresenceDBusClient();
 }
 
 // static
-void HpsDBusClient::Shutdown() {
+void HumanPresenceDBusClient::Shutdown() {
   DCHECK_NE(g_instance, nullptr);
   delete g_instance;
 }
 
 // static
-HpsDBusClient* HpsDBusClient::Get() {
+HumanPresenceDBusClient* HumanPresenceDBusClient::Get() {
   return g_instance;
 }
 

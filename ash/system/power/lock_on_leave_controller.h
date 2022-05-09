@@ -14,72 +14,76 @@
 
 namespace ash {
 
-// Helper class for chromeos::HpsDBusClient, responsible for enabling/disabling
-// the DBus service via the client and is responsible for maintaining state
-// between restarts.
-class ASH_EXPORT HpsSenseController : public HpsOrientationController::Observer,
-                                      chromeos::HpsDBusClient::Observer {
+// Helper class for chromeos::HumanPresenceDBusClient, responsible for
+// enabling/disabling the DBus service via the client and is responsible for
+// maintaining state between restarts.
+class ASH_EXPORT LockOnLeaveController
+    : public HumanPresenceOrientationController::Observer,
+      chromeos::HumanPresenceDBusClient::Observer {
  public:
-  // The state of HpsSense inside HpsDbusService that is configured. It is set
-  // as kUnknown in this class on initialization. And is set to either kEnable
-  // or kDisable when EnableHpsSense() or DisableHpsSense() is called.
-  enum class ConfiguredHpsSenseState {
+  // The state of lock on leave inside DBus service that is configured. It is
+  // set as kUnknown in this class on initialization. And is set to either
+  // kEnable or kDisable when EnableLockOnLeave() or DisableLockOnLeave() is
+  // called.
+  enum class ConfiguredLockOnLeaveState {
     kUnknown,
     kEnabled,
     kDisabled,
   };
 
-  HpsSenseController();
-  HpsSenseController(const HpsSenseController&) = delete;
-  HpsSenseController& operator=(const HpsSenseController&) = delete;
+  LockOnLeaveController();
+  LockOnLeaveController(const LockOnLeaveController&) = delete;
+  LockOnLeaveController& operator=(const LockOnLeaveController&) = delete;
 
-  ~HpsSenseController() override;
+  ~LockOnLeaveController() override;
 
-  // Enables the HpsSense feature inside HpsDBusClient; and it only sends the
-  // method call if HpsSense is not enabled yet.
-  void EnableHpsSense();
-  // Disables the HpsSense feature inside HpsDBusClient if it is currently
-  // enabled.
-  void DisableHpsSense();
+  // Enables the LockOnLeave feature inside HumanPresenceDBusClient; and it only
+  // sends the method call if LockOnLeave is not enabled yet.
+  void EnableLockOnLeave();
+  // Disables the LockOnLeave feature inside HumanPresenceDBusClient if it is
+  // currently enabled.
+  void DisableLockOnLeave();
 
-  // HpsOrientationObserver:
-  void OnOrientationChanged(bool suitable_for_hps) override;
+  // HumanPresenceOrientationObserver:
+  void OnOrientationChanged(bool suitable_for_human_presence) override;
 
-  // chromeos::HpsDBusClient::Observer:
+  // chromeos::HumanPresenceDBusClient::Observer:
   void OnHpsSenseChanged(hps::HpsResult state) override;
   void OnHpsNotifyChanged(hps::HpsResult state) override;
-  // Re-enables HpsSense on HpsBusService restart if it was enabled before.
+  // Re-enables LockOnLeave on human presence service restart if it was enabled
+  // before.
   void OnRestart() override;
   void OnShutdown() override;
 
  private:
-  // Called when the Hps Service is available.
-  void OnHpsServiceAvailable(bool service_available);
+  // Called when the human presence service is available.
+  void OnServiceAvailable(bool service_available);
 
-  // May disable/enable hps_sense based on current state.
+  // May disable/enable lock-on-leave based on current state.
   void ReconfigViaDbus();
 
-  // Indicates whether the hps service is available; it is set inside
-  // OnHpsServiceAvailable and set to false OnShutdown.
+  // Indicates whether the human presence service is available; it is set inside
+  // OnServiceAvailable and set to false OnShutdown.
   bool service_available_ = false;
 
-  // Records requested hps sense enable state from client.
-  bool want_hps_sense_ = false;
+  // Records requested lock-on-leave enable state from client.
+  bool want_lock_on_leave_ = false;
 
   // Whether the device is in physical orientation where our models are
   // accurate.
-  bool suitable_for_hps_ = false;
+  bool suitable_for_human_presence_ = false;
 
-  // Current configured state of HpsSense.
-  ConfiguredHpsSenseState configured_state_ = ConfiguredHpsSenseState::kUnknown;
+  // Current configured state of LockOnLeave.
+  ConfiguredLockOnLeaveState configured_state_ =
+      ConfiguredLockOnLeaveState::kUnknown;
 
-  base::ScopedObservation<chromeos::HpsDBusClient,
-                          chromeos::HpsDBusClient::Observer>
-      hps_observation_{this};
-  base::ScopedObservation<HpsOrientationController,
-                          HpsOrientationController::Observer>
+  base::ScopedObservation<chromeos::HumanPresenceDBusClient,
+                          chromeos::HumanPresenceDBusClient::Observer>
+      human_presence_observation_{this};
+  base::ScopedObservation<HumanPresenceOrientationController,
+                          HumanPresenceOrientationController::Observer>
       orientation_observation_{this};
-  base::WeakPtrFactory<HpsSenseController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<LockOnLeaveController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

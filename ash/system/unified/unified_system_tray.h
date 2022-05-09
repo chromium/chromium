@@ -33,11 +33,11 @@ class AshMessagePopupCollection;
 class CameraMicTrayItemView;
 class CurrentLocaleView;
 class ImeModeView;
-class HpsNotifyView;
 class ManagedDeviceTrayItemView;
 class NetworkTrayView;
 class NotificationIconsController;
 class PrivacyScreenToastController;
+class SnoopingProtectionView;
 class TimeTrayItemView;
 class TrayItemView;
 class UnifiedSliderBubbleController;
@@ -272,7 +272,7 @@ class ASH_EXPORT UnifiedSystemTray
   const std::unique_ptr<NotificationIconsController>
       notification_icons_controller_;
 
-  HpsNotifyView* const hps_notify_view_;
+  SnoopingProtectionView* const snooping_protection_view_;
   CurrentLocaleView* const current_locale_view_;
   ImeModeView* const ime_mode_view_;
   ManagedDeviceTrayItemView* const managed_device_view_;

@@ -34,24 +34,26 @@ namespace ash {
 // TODO(crbug.com/1241706): make this naming less opaque. Currently using "HPS
 // notify" because it was the feature name early in development, but paths /
 // identifiers will be renamed in one fell swoop.
-class ASH_EXPORT HpsNotifyNotificationBlocker
+class ASH_EXPORT SnoopingProtectionNotificationBlocker
     : public SessionObserver,
       public message_center::NotificationBlocker,
       public message_center::NotificationObserver,
-      public HpsNotifyController::Observer,
+      public SnoopingProtectionController::Observer,
       public message_center::MessageCenterObserver {
  public:
   // The ID of the informational popup.
   static constexpr char kInfoNotificationId[] = "hps-notify-info";
 
-  HpsNotifyNotificationBlocker(message_center::MessageCenter* message_center,
-                               HpsNotifyController* controller);
+  SnoopingProtectionNotificationBlocker(
+      message_center::MessageCenter* message_center,
+      SnoopingProtectionController* controller);
 
-  HpsNotifyNotificationBlocker(const HpsNotifyNotificationBlocker&) = delete;
-  HpsNotifyNotificationBlocker& operator=(const HpsNotifyNotificationBlocker&) =
-      delete;
+  SnoopingProtectionNotificationBlocker(
+      const SnoopingProtectionNotificationBlocker&) = delete;
+  SnoopingProtectionNotificationBlocker& operator=(
+      const SnoopingProtectionNotificationBlocker&) = delete;
 
-  ~HpsNotifyNotificationBlocker() override;
+  ~SnoopingProtectionNotificationBlocker() override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
@@ -60,9 +62,9 @@ class ASH_EXPORT HpsNotifyNotificationBlocker
   bool ShouldShowNotificationAsPopup(
       const message_center::Notification& notification) const override;
 
-  // HpsNotifyController::Observer:
+  // SnoopingProtectionController::Observer:
   void OnSnoopingStatusChanged(bool snooper) override;
-  void OnHpsNotifyControllerDestroyed() override;
+  void OnSnoopingProtectionControllerDestroyed() override;
 
   // message_center::MessageCenterObserver:
   void OnNotificationAdded(const std::string& notification_id) override;
@@ -94,7 +96,7 @@ class ASH_EXPORT HpsNotifyNotificationBlocker
   std::unique_ptr<message_center::Notification> CreateInfoNotification() const;
 
   message_center::MessageCenter* const message_center_;
-  HpsNotifyController* const controller_;
+  SnoopingProtectionController* const controller_;
 
   bool info_popup_exists_ = false;
 
@@ -103,7 +105,8 @@ class ASH_EXPORT HpsNotifyNotificationBlocker
 
   base::ScopedObservation<SessionController, SessionObserver>
       session_observation_{this};
-  base::ScopedObservation<HpsNotifyController, HpsNotifyController::Observer>
+  base::ScopedObservation<SnoopingProtectionController,
+                          SnoopingProtectionController::Observer>
       controller_observation_{this};
   base::ScopedObservation<message_center::MessageCenter,
                           message_center::MessageCenterObserver>
@@ -112,7 +115,8 @@ class ASH_EXPORT HpsNotifyNotificationBlocker
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Must be last.
-  base::WeakPtrFactory<HpsNotifyNotificationBlocker> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SnoopingProtectionNotificationBlocker> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace ash

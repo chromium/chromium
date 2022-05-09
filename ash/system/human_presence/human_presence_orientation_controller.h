@@ -19,8 +19,9 @@ namespace ash {
 //
 // This controller tracks the physical state of the device and signals observers
 // when it enters or leaves non-standard orientations.
-class ASH_EXPORT HpsOrientationController : public TabletModeObserver,
-                                            public display::DisplayObserver {
+class ASH_EXPORT HumanPresenceOrientationController
+    : public TabletModeObserver,
+      public display::DisplayObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -30,11 +31,12 @@ class ASH_EXPORT HpsOrientationController : public TabletModeObserver,
     virtual void OnOrientationChanged(bool suitable_for_hps) = 0;
   };
 
-  HpsOrientationController();
-  HpsOrientationController(const HpsOrientationController& other) = delete;
-  HpsOrientationController& operator=(const HpsOrientationController& other) =
-      delete;
-  ~HpsOrientationController() override;
+  HumanPresenceOrientationController();
+  HumanPresenceOrientationController(
+      const HumanPresenceOrientationController& other) = delete;
+  HumanPresenceOrientationController& operator=(
+      const HumanPresenceOrientationController& other) = delete;
+  ~HumanPresenceOrientationController() override;
 
   // Start or stop listening for changes to device orientation status.
   void AddObserver(Observer* observer);

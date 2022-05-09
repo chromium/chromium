@@ -26,14 +26,14 @@ class PrefRegistrySimple;
 
 namespace ash {
 
-class HpsNotifyNotificationBlocker;
+class SnoopingProtectionNotificationBlocker;
 
 // Pushes status changes to the snooping protection icon and notification
 // blocker based on DBus state, preferences and session type.
-class ASH_EXPORT HpsNotifyController
+class ASH_EXPORT SnoopingProtectionController
     : public SessionObserver,
-      public HpsOrientationController::Observer,
-      public chromeos::HpsDBusClient::Observer {
+      public HumanPresenceOrientationController::Observer,
+      public chromeos::HumanPresenceDBusClient::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -44,13 +44,14 @@ class ASH_EXPORT HpsNotifyController
     virtual void OnSnoopingStatusChanged(bool snooper) = 0;
 
     // Used to coordinate observers that might outlive the controller.
-    virtual void OnHpsNotifyControllerDestroyed() = 0;
+    virtual void OnSnoopingProtectionControllerDestroyed() = 0;
   };
 
-  HpsNotifyController();
-  HpsNotifyController(const HpsNotifyController&) = delete;
-  HpsNotifyController& operator=(const HpsNotifyController&) = delete;
-  ~HpsNotifyController() override;
+  SnoopingProtectionController();
+  SnoopingProtectionController(const SnoopingProtectionController&) = delete;
+  SnoopingProtectionController& operator=(const SnoopingProtectionController&) =
+      delete;
+  ~SnoopingProtectionController() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -58,10 +59,10 @@ class ASH_EXPORT HpsNotifyController
   void OnSessionStateChanged(session_manager::SessionState state) override;
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
-  // HpsOrientationObserver:
-  void OnOrientationChanged(bool suitable_for_hps) override;
+  // HumanPresenceOrientationObserver:
+  void OnOrientationChanged(bool suitable_for_human_presence) override;
 
-  // chromeos::HpsDBusClient::Observer:
+  // chromeos::HumanPresenceDBusClient::Observer:
   void OnHpsSenseChanged(hps::HpsResult state) override;
   void OnHpsNotifyChanged(hps::HpsResult state) override;
   void OnRestart() override;
@@ -77,37 +78,44 @@ class ASH_EXPORT HpsNotifyController
  private:
   // Used to track whether a signal should actually trigger a visibility change.
   struct State {
-    bool hps_state = false;       // The state last reported by the daemon.
-    bool session_active = false;  // Whether there is an active user
-                                  // session ongoing.
-    bool pref_enabled = false;    // Whether the user has enabled the
-                                  // feature via preferences.
-    bool hps_available = false;   // Whether the daemon is available for
-                                  // communication.
-    bool hps_configured = false;  // Whether the daemon has been
-                                  // successfully configured.
-    bool orientation_suitable = false;  // Whether the device is in physical
-                                        // orientation where our models are
-                                        // accurate.
-    bool within_pos_window = false;     // Whether we are within the minimum
-                                        // time window for which to report a
-                                        // positive result.
+    // Whether a snooper is present, as last reported by the service.
+    bool present = false;
+
+    // Whether there is an active user session ongoing.
+    bool session_active = false;
+
+    // Whether the user has enabled the feature via preferences.
+    bool pref_enabled = false;
+
+    // Whether the daemon is available for communication.
+    bool service_available = false;
+
+    // Whether the daemon has been successfully configured.
+    bool service_configured = false;
+
+    // Whether the device is in physical orientation where our models are
+    // accurate.
+    bool orientation_suitable = false;
+
+    // Whether we are within the minimum time window for which to report a
+    // positive result.
+    bool within_pos_window = false;
   };
 
   // Updates snooper state as appropriate given the signal, session,
   // preference and device orientation state. If changed, notifies observers.
   void UpdateSnooperStatus(const State& new_state);
 
-  // Requests the start or stop of the HPS snooping signal, so that the daemon
-  // need not be running snooping logic while the user has the feature disabled.
-  // Also updates the new state of HPS availability.
-  void ReconfigureHps(State* new_state);
+  // Requests the start or stop of the snooping signal, so that the daemon need
+  // not be running snooping logic while the user has the feature disabled.
+  // Also updates the new state of service availability.
+  void ReconfigureService(State* new_state);
 
   // Configures the daemon, polls its initial state and opts into its signals.
-  void StartHpsObservation(bool service_is_available);
+  void StartServiceObservation(bool service_is_available);
 
   // Performs the state update from the daemon response.
-  void UpdateHpsState(absl::optional<hps::HpsResult> result);
+  void UpdateServiceState(absl::optional<hps::HpsResult> result);
 
   // A callback to update visibility when the user enables or disables the
   // feature.
@@ -125,12 +133,12 @@ class ASH_EXPORT HpsNotifyController
 
   base::ScopedObservation<SessionController, SessionObserver>
       session_observation_{this};
-  base::ScopedObservation<HpsOrientationController,
-                          HpsOrientationController::Observer>
+  base::ScopedObservation<HumanPresenceOrientationController,
+                          HumanPresenceOrientationController::Observer>
       orientation_observation_{this};
-  base::ScopedObservation<chromeos::HpsDBusClient,
-                          chromeos::HpsDBusClient::Observer>
-      hps_dbus_observation_{this};
+  base::ScopedObservation<chromeos::HumanPresenceDBusClient,
+                          chromeos::HumanPresenceDBusClient::Observer>
+      human_presence_dbus_observation_{this};
 
   // Used to notify ourselves of changes to the pref that enables / disables
   // this feature.
@@ -140,14 +148,15 @@ class ASH_EXPORT HpsNotifyController
   base::ObserverList<Observer> observers_;
 
   // Controls popup hiding and our info notification.
-  const std::unique_ptr<HpsNotifyNotificationBlocker> notification_blocker_;
+  const std::unique_ptr<SnoopingProtectionNotificationBlocker>
+      notification_blocker_;
 
   // The minimum amount of time between emitting an initial positive signal and
   // then a subsequent negative one.
   const base::TimeDelta pos_window_;
 
   // Must be last.
-  base::WeakPtrFactory<HpsNotifyController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SnoopingProtectionController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

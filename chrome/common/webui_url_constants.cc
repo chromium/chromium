@@ -109,7 +109,7 @@ const char kChromeUIHistoryClustersURL[] = "chrome://history/journeys";
 const char kChromeUIHistoryHost[] = "history";
 const char kChromeUIHistorySyncedTabs[] = "/syncedTabs";
 const char kChromeUIHistoryURL[] = "chrome://history/";
-const char kChromeUIHpsInternalsHost[] = "hps-internals";
+const char kChromeUIHumanPresenceInternalsHost[] = "hps-internals";
 const char kChromeUIIdentityInternalsHost[] = "identity-internals";
 const char kChromeUIImageEditorHost[] = "image-editor";
 const char kChromeUIImageEditorURL[] = "chrome://image-editor/";
@@ -616,7 +616,7 @@ const char* const kChromeHostURLs[] = {
     kChromeUIHistoryHost,
     history_clusters_internals::kChromeUIHistoryClustersInternalsHost,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    kChromeUIHpsInternalsHost,
+    kChromeUIHumanPresenceInternalsHost,
 #endif
     kChromeUIInterstitialHost,
     kChromeUIInvalidationsHost,

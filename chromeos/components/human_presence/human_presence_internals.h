@@ -8,24 +8,24 @@
 namespace hps {
 
 // Resource paths.
-extern const char kHpsInternalsCSS[];
-extern const char kHpsInternalsJS[];
-extern const char kHpsInternalsIcon[];
+extern const char kHumanPresenceInternalsCSS[];
+extern const char kHumanPresenceInternalsJS[];
+extern const char kHumanPresenceInternalsIcon[];
 
 // Message handlers.
-extern const char kHpsInternalsConnectCmd[];
-extern const char kHpsInternalsEnableSenseCmd[];
-extern const char kHpsInternalsDisableSenseCmd[];
-extern const char kHpsInternalsQuerySenseCmd[];
-extern const char kHpsInternalsEnableNotifyCmd[];
-extern const char kHpsInternalsDisableNotifyCmd[];
-extern const char kHpsInternalsQueryNotifyCmd[];
+extern const char kHumanPresenceInternalsConnectCmd[];
+extern const char kHumanPresenceInternalsEnableLockOnLeaveCmd[];
+extern const char kHumanPresenceInternalsDisableLockOnLeaveCmd[];
+extern const char kHumanPresenceInternalsQueryLockOnLeaveCmd[];
+extern const char kHumanPresenceInternalsEnableSnoopingProtectionCmd[];
+extern const char kHumanPresenceInternalsDisableSnoopingProtectionCmd[];
+extern const char kHumanPresenceInternalsQuerySnoopingProtectionCmd[];
 
 // Events.
-extern const char kHpsInternalsConnectedEvent[];
-extern const char kHpsInternalsSenseChangedEvent[];
-extern const char kHpsInternalsNotifyChangedEvent[];
-extern const char kHpsInternalsEnableErrorEvent[];
+extern const char kHumanPresenceInternalsConnectedEvent[];
+extern const char kHumanPresenceInternalsLockOnLeaveChangedEvent[];
+extern const char kHumanPresenceInternalsSnoopingProtectionChangedEvent[];
+extern const char kHumanPresenceInternalsEnableErrorEvent[];
 
 }  // namespace hps
 

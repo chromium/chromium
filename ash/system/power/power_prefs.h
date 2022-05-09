@@ -28,7 +28,7 @@ class ScreenIdleState;
 
 namespace ash {
 
-class HpsSenseController;
+class LockOnLeaveController;
 class PowerPrefsTest;
 
 // Sends an updated power policy to the |power_policy_controller| whenever one
@@ -87,7 +87,7 @@ class ASH_EXPORT PowerPrefs : public chromeos::PowerManagerClient::Observer,
 
   std::unique_ptr<PrefChangeRegistrar> profile_registrar_;
   std::unique_ptr<PrefChangeRegistrar> local_state_registrar_;
-  std::unique_ptr<HpsSenseController> hps_sense_controller_;
+  std::unique_ptr<LockOnLeaveController> lock_on_leave_controller_;
 
   const base::TickClock* tick_clock_;  // Not owned.
 

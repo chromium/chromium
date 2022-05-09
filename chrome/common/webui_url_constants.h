@@ -107,7 +107,7 @@ extern const char kChromeUIHistoryClustersURL[];
 extern const char kChromeUIHistoryHost[];
 extern const char kChromeUIHistorySyncedTabs[];
 extern const char kChromeUIHistoryURL[];
-extern const char kChromeUIHpsInternalsHost[];
+extern const char kChromeUIHumanPresenceInternalsHost[];
 extern const char kChromeUIIdentityInternalsHost[];
 extern const char kChromeUIImageEditorHost[];
 extern const char kChromeUIImageEditorURL[];
