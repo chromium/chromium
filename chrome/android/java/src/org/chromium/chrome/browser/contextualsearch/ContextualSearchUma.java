@@ -970,33 +970,6 @@ public class ContextualSearchUma {
     }
 
     /**
-     * Log whether results were seen due to a Tap on a short word.
-     * @param wasSearchContentViewSeen If the panel was opened.
-     * @param isTapOnShortWord Whether this tap was on a "short" word.
-     */
-    public static void logTapShortWordSeen(
-            boolean wasSearchContentViewSeen, boolean isTapOnShortWord) {
-        if (!isTapOnShortWord) return;
-
-        // We just record CTR of short words.
-        RecordHistogram.recordEnumeratedHistogram("Search.ContextualSearchTapShortWordSeen",
-                wasSearchContentViewSeen ? Results.SEEN : Results.NOT_SEEN, Results.NUM_ENTRIES);
-    }
-
-    /**
-     * Log whether results were seen due to a Tap on a long word.
-     * @param wasSearchContentViewSeen If the panel was opened.
-     * @param isTapOnLongWord Whether this tap was on a long word.
-     */
-    public static void logTapLongWordSeen(
-            boolean wasSearchContentViewSeen, boolean isTapOnLongWord) {
-        if (!isTapOnLongWord) return;
-
-        RecordHistogram.recordEnumeratedHistogram("Search.ContextualSearchTapLongWordSeen",
-                wasSearchContentViewSeen ? Results.SEEN : Results.NOT_SEEN, Results.NUM_ENTRIES);
-    }
-
-    /**
      * Log whether results were seen due to a Tap that was on the middle of a word.
      * @param wasSearchContentViewSeen If the panel was opened.
      * @param isTapOnWordMiddle Whether this tap was on the middle of a word.

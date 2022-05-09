@@ -1004,16 +1004,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearchTapLongWordSeen"
-    enum="ContextualSearchResultsSeen" expires_after="M72">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether results were seen for a Tap that was on a word considered long.
-    Recorded when the UX is hidden. Implemented for Android.
-  </summary>
-</histogram>
-
 <histogram name="Search.ContextualSearchTapOnWordMiddleSeen"
     enum="ContextualSearchResultsSeen" expires_after="M72">
   <owner>donnd@chromium.org</owner>
@@ -1031,16 +1021,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether results were seen for a Tap that was of short duration. Recorded
     when the UX is hidden. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchTapShortWordSeen"
-    enum="ContextualSearchResultsSeen" expires_after="M72">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether results were seen for a Tap that was on a word considered short.
-    Recorded when the UX is hidden. Implemented for Android.
   </summary>
 </histogram>
 

@@ -116,9 +116,15 @@ public class ContextualSearchFieldTrial {
         int IS_BAR_OVERLAP_SUPPRESSION_ENABLED = 6;
         /** Whether triggering is suppressed by a tap that's near the edge of a word. */
         int IS_WORD_EDGE_SUPPRESSION_ENABLED = 7;
-        /** Whether triggering is suppressed by a tap that's in a short word. */
+        /**
+         * @deprecated
+         * Whether triggering is suppressed by a tap that's in a short word.
+         * */
         int IS_SHORT_WORD_SUPPRESSION_ENABLED = 8;
-        /** Whether triggering is suppressed by a tap that's not in a long word. */
+        /**
+         * @deprecated
+         * Whether triggering is suppressed by a tap that's not in a long word.
+         */
         int IS_NOT_LONG_WORD_SUPPRESSION_ENABLED = 9;
         /** Whether triggering is suppressed for a tap that's not on an entity. */
         int IS_NOT_AN_ENTITY_SUPPRESSION_ENABLED = 10;
