@@ -9,6 +9,7 @@
 #include <lib/fidl/cpp/binding.h>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/main_function_params.h"
@@ -43,6 +44,34 @@ class ComponentInspector;
 
 class WebEngineMemoryInspector;
 
+// Implements the fuchsia.web.FrameHost protocol using a ContextImpl with
+// incognito browser context.
+class FrameHostImpl final : public fuchsia::web::FrameHost {
+ public:
+  explicit FrameHostImpl(
+      inspect::Node inspect_node,
+      WebEngineDevToolsController* devtools_controller,
+      network::NetworkQualityTracker* network_quality_tracker)
+      : context_(
+            WebEngineBrowserContext::CreateIncognito(network_quality_tracker),
+            std::move(inspect_node),
+            devtools_controller) {}
+  ~FrameHostImpl() override = default;
+
+  FrameHostImpl(const FrameHostImpl&) = delete;
+  FrameHostImpl& operator=(const FrameHostImpl&) = delete;
+
+  // fuchsia.web.FrameHost implementation.
+  void CreateFrameWithParams(
+      fuchsia::web::CreateFrameParams params,
+      fidl::InterfaceRequest<fuchsia::web::Frame> request) override;
+
+  ContextImpl* context_impl_for_test() { return &context_; }
+
+ private:
+  ContextImpl context_;
+};
+
 class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
     : public content::BrowserMainParts {
  public:
@@ -70,7 +99,12 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
   // Methods used by tests.
   static void SetContextRequestForTest(
       fidl::InterfaceRequest<fuchsia::web::Context> request);
+
+  // Returns the bound ContextImpl instance, or nullptr if there isn't one.
   ContextImpl* context_for_test() const;
+
+  // Returns all FrameHostImpl instances.
+  std::vector<FrameHostImpl*> frame_hosts_for_test() const;
 
  private:
   // Handle fuchsia.web.Context and fuchsia.web.FrameHost connection requests.
@@ -94,11 +128,12 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
   std::unique_ptr<sys::ComponentInspector> component_inspector_;
   std::unique_ptr<WebEngineMemoryInspector> memory_inspector_;
 
-  // Browsing contexts for the connected clients.
+  // Browsing contexts for the connected clients. There is at most one
+  // fuchsia.web.Context binding, and any number of fuchsia.web.FrameHost
+  // bindings.
   fidl::BindingSet<fuchsia::web::Context, std::unique_ptr<ContextImpl>>
       context_bindings_;
-  fidl::BindingSet<fuchsia::web::FrameHost,
-                   std::unique_ptr<fuchsia::web::FrameHost>>
+  fidl::BindingSet<fuchsia::web::FrameHost, std::unique_ptr<FrameHostImpl>>
       frame_host_bindings_;
 
   std::unique_ptr<WebEngineDevToolsController> devtools_controller_;

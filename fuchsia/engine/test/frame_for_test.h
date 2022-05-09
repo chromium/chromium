@@ -26,6 +26,8 @@ class FrameForTest {
                              fuchsia::web::CreateFrameParams params);
   static FrameForTest Create(const fuchsia::web::ContextPtr& context,
                              fuchsia::web::CreateFrameParams params);
+  static FrameForTest Create(const fuchsia::web::FrameHostPtr& frame_host,
+                             fuchsia::web::CreateFrameParams params);
 
   FrameForTest();
   FrameForTest(FrameForTest&&);
