@@ -1458,5 +1458,9 @@ const base::Feature kAllowSourceSwitchOnPausedVideoMediaStream{
 const base::Feature kDispatchPopstateSync{"DispatchPopstateSync",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Exposes non-standard stats in the WebRTC getStats() API.
+const base::Feature kWebRtcExposeNonStandardStats{
+    "WebRtc-ExposeNonStandardStats", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

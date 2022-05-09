@@ -13,6 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_scoped_refptr_cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -78,6 +79,10 @@ bool IsAllowlistedStats(const webrtc::RTCStats& stats) {
 std::vector<const webrtc::RTCStatsMemberInterface*> FilterMembers(
     std::vector<const webrtc::RTCStatsMemberInterface*> stats_members,
     const Vector<webrtc::NonStandardGroupId>& exposed_group_ids) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebRtcExposeNonStandardStats)) {
+    return stats_members;
+  }
   // Note that using "is_standarized" avoids having to maintain an allowlist of
   // every single standardized member, as we do at the "stats object" level
   // with "RTCStatsAllowlist".

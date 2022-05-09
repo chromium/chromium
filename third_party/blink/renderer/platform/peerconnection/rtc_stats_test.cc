@@ -6,7 +6,9 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/webrtc/api/stats/rtc_stats_report.h"
 #include "third_party/webrtc/api/stats/rtcstats_objects.h"
@@ -96,6 +98,27 @@ TEST(RTCStatsTest, OnlyIncludeStandarizedMembers) {
 }
 
 TEST(RTCStatsTest, IncludeAllMembers) {
+  rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
+      webrtc::RTCStatsReport::Create(7);
+  AllowStatsForTesting(TestStats::kType);
+  webrtc_report->AddStats(std::make_unique<TestStats>("id", 0));
+
+  // Include both standard and non-standard member.
+  RTCStatsReportPlatform report(
+      webrtc_report.get(), Vector<webrtc::NonStandardGroupId>{
+                               webrtc::NonStandardGroupId::kGroupIdForTesting});
+  std::unique_ptr<RTCStats> stats = report.GetStats("id");
+  ASSERT_NE(nullptr, stats);
+  ASSERT_EQ(2u, stats->MembersCount());
+  EXPECT_EQ("standardized", stats->GetMember(0)->GetName());
+  EXPECT_EQ("non_standardized", stats->GetMember(1)->GetName());
+}
+
+TEST(RTCStatsTest, IncludeAllMembersFeatureFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kWebRtcExposeNonStandardStats);
+
   rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
       webrtc::RTCStatsReport::Create(7);
   AllowStatsForTesting(TestStats::kType);

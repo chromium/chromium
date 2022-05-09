@@ -743,9 +743,12 @@ BLINK_COMMON_EXPORT extern const base::Feature kDecodeScriptSourceOffThread;
 BLINK_COMMON_EXPORT extern const base::Feature
     kAllowSourceSwitchOnPausedVideoMediaStream;
 
-// Kill switch for firing popstate immediately, instaed of deferring it until
+// Kill switch for firing popstate immediately, instead of deferring it until
 // after onload.
 BLINK_COMMON_EXPORT extern const base::Feature kDispatchPopstateSync;
+
+// If enabled, expose non-standard stats in the WebRTC getStats API.
+BLINK_COMMON_EXPORT extern const base::Feature kWebRtcExposeNonStandardStats;
 
 }  // namespace features
 }  // namespace blink
