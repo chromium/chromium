@@ -25,6 +25,7 @@
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
+#include "components/permissions/permissions_client.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
@@ -306,6 +307,40 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
         /*incognito=*/false, &exceptions);
     ASSERT_EQ(0U, exceptions.GetListDeprecated().size());
   }
+}
+
+// Test that the exception list contains embargo information for
+// FEDERATED_IDENTITY_API even though FEDERATED_IDENTITY_API is a content
+// setting (and not a permission).
+TEST_F(SiteSettingsHelperTest, ExceptionListFedCmEmbargo) {
+  TestingProfile profile;
+
+  constexpr char kOriginToEmbargo[] = "https://embargoed.co.uk:443";
+  auto* auto_blocker =
+      PermissionDecisionAutoBlockerFactory::GetForProfile(&profile);
+  auto_blocker->RecordDismissAndEmbargo(
+      GURL(kOriginToEmbargo), ContentSettingsType::FEDERATED_IDENTITY_API,
+      /*dismissed_prompt_was_quiet=*/false);
+
+  base::ListValue exceptions;
+  site_settings::GetExceptionsForContentType(
+      ContentSettingsType::FEDERATED_IDENTITY_API, &profile,
+      /*extension_registry=*/nullptr,
+      /*web_ui=*/nullptr,
+      /*incognito=*/false, &exceptions);
+
+  // |exceptions| should have an exception for the embargoed origin.
+  const base::Value::List& list = exceptions.GetList();
+  ASSERT_EQ(1U, list.size());
+
+  absl::optional<bool> is_embargoed =
+      list[0].GetDict().FindBool(site_settings::kIsEmbargoed);
+  ASSERT_TRUE(is_embargoed.has_value());
+  EXPECT_TRUE(*is_embargoed);
+  const std::string* primary_pattern =
+      list[0].GetDict().FindString(site_settings::kOrigin);
+  ASSERT_TRUE(primary_pattern);
+  EXPECT_EQ(kOriginToEmbargo, *primary_pattern);
 }
 
 TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {

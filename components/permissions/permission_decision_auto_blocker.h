@@ -50,6 +50,10 @@ class PermissionDecisionAutoBlocker : public KeyedService {
 
   ~PermissionDecisionAutoBlocker() override;
 
+  // Returns whether the permission auto blocker is enabled for the passed-in
+  // content setting.
+  static bool IsEnabledForContentSetting(ContentSettingsType content_setting);
+
   // Checks the status of the content setting to determine if |request_origin|
   // is under embargo for |permission|. This checks all types of embargo.
   // Prefer to use PermissionManager::GetPermissionStatus when possible. This

@@ -660,8 +660,10 @@ void GetExceptionsForContentType(
     if (map->IsOffTheRecord() && !setting.incognito)
       continue;
 
-    if (!permissions::PermissionUtil::IsPermission(type))
+    if (!permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
+            type)) {
       continue;
+    }
 
     if (auto_blocker
             ->GetEmbargoResult(GURL(setting.primary_pattern.ToString()), type)
@@ -772,10 +774,18 @@ ContentSetting GetContentSettingForOrigin(
   permissions::PermissionResult result(
       CONTENT_SETTING_DEFAULT,
       permissions::PermissionStatusSource::UNSPECIFIED);
-  if (permissions::PermissionUtil::IsPermission(content_type)) {
-    result =
-        PermissionManagerFactory::GetForProfile(profile)
-            ->GetPermissionStatusForDisplayOnSettingsUI(content_type, origin);
+  if (permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
+          content_type)) {
+    if (permissions::PermissionUtil::IsPermission(content_type)) {
+      result =
+          PermissionManagerFactory::GetForProfile(profile)
+              ->GetPermissionStatusForDisplayOnSettingsUI(content_type, origin);
+    } else {
+      permissions::PermissionDecisionAutoBlocker* auto_blocker =
+          permissions::PermissionsClient::Get()
+              ->GetPermissionDecisionAutoBlocker(profile);
+      result = auto_blocker->GetEmbargoResult(origin, content_type);
+    }
   } else {
     DCHECK_EQ(base::Value::Type::INTEGER, value.type());
     result.content_setting = content_settings::ValueToContentSetting(value);

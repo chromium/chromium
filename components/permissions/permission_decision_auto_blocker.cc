@@ -67,11 +67,6 @@ int g_dismissal_embargo_days = kDefaultEmbargoDays;
 // permission due to repeated ignores.
 int g_ignore_embargo_days = kDefaultEmbargoDays;
 
-bool IsAutoBlockerEnabledForContentType(ContentSettingsType content_type) {
-  return PermissionUtil::IsPermission(content_type) ||
-         content_type == ContentSettingsType::FEDERATED_IDENTITY_API;
-}
-
 std::string GetStringForContentType(ContentSettingsType content_type) {
   if (content_type == ContentSettingsType::FEDERATED_IDENTITY_API)
     return "FederatedIdentityApi";
@@ -226,13 +221,20 @@ const char PermissionDecisionAutoBlocker::kPermissionIgnoreEmbargoKey[] =
     "ignore_embargo_days";
 
 // static
+bool PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
+    ContentSettingsType content_setting) {
+  return PermissionUtil::IsPermission(content_setting) ||
+         content_setting == ContentSettingsType::FEDERATED_IDENTITY_API;
+}
+
+// static
 PermissionResult PermissionDecisionAutoBlocker::GetEmbargoResult(
     HostContentSettingsMap* settings_map,
     const GURL& request_origin,
     ContentSettingsType permission,
     base::Time current_time) {
   DCHECK(settings_map);
-  DCHECK(IsAutoBlockerEnabledForContentType(permission));
+  DCHECK(IsEnabledForContentSetting(permission));
 
   std::unique_ptr<base::Value> dict =
       GetOriginAutoBlockerData(settings_map, request_origin);
@@ -346,7 +348,7 @@ std::set<GURL> PermissionDecisionAutoBlocker::GetEmbargoedOrigins(
   std::set<GURL> origins;
   for (const auto& e : embargo_settings) {
     for (auto content_type : content_types) {
-      if (!IsAutoBlockerEnabledForContentType(content_type))
+      if (!IsEnabledForContentSetting(content_type))
         continue;
       const GURL url(e.primary_pattern.ToString());
       PermissionResult result =
@@ -447,7 +449,7 @@ bool PermissionDecisionAutoBlocker::RecordIgnoreAndEmbargo(
 void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
     const GURL& url,
     ContentSettingsType permission) {
-  if (!IsAutoBlockerEnabledForContentType(permission))
+  if (!IsEnabledForContentSetting(permission))
     return;
 
   std::unique_ptr<base::Value> dict =
