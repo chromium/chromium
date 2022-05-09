@@ -138,10 +138,15 @@ void OSSettingsUI::BindInterface(
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<::ash::personalization_app::mojom::SearchHandler>
         receiver) {
-  ::ash::personalization_app::PersonalizationAppManagerFactory::
-      GetForBrowserContext(Profile::FromWebUI(web_ui()))
-          ->search_handler()
-          ->BindInterface(std::move(receiver));
+  DCHECK(ash::features::IsPersonalizationHubEnabled())
+      << "This interface should only be bound if personalization hub feature "
+         "is enabled";
+  auto* search_handler =
+      ::ash::personalization_app::PersonalizationAppManagerFactory::
+          GetForBrowserContext(Profile::FromWebUI(web_ui()))
+              ->search_handler();
+  DCHECK(search_handler);
+  search_handler->BindInterface(std::move(receiver));
 }
 
 void OSSettingsUI::BindInterface(

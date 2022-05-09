@@ -45,10 +45,16 @@ class PersonalizationAppManagerImpl : public PersonalizationAppManager {
       content::BrowserContext* context,
       ::chromeos::local_search_service::LocalSearchServiceProxy&
           local_search_service_proxy)
-      : context_(context),
-        search_handler_(std::make_unique<SearchHandler>(
-            local_search_service_proxy,
-            Profile::FromBrowserContext(context)->GetPrefs())) {}
+      : context_(context) {
+    if (ash::features::IsPersonalizationHubEnabled()) {
+      // Only create the search handler if personalization hub feature is
+      // enabled. This makes it simpler to reason about settings vs
+      // personalization search results when the feature is off.
+      search_handler_ = std::make_unique<SearchHandler>(
+          local_search_service_proxy,
+          Profile::FromBrowserContext(context)->GetPrefs());
+    }
+  }
 
   ~PersonalizationAppManagerImpl() override = default;
 
@@ -93,7 +99,8 @@ class PersonalizationAppManagerImpl : public PersonalizationAppManager {
   base::OneShotTimer hats_timer_;
   scoped_refptr<HatsNotificationController> hats_notification_controller_;
 
-  // Handles running search queries for Personalization App features.
+  // Handles running search queries for Personalization App features. Only set
+  // if |PersonalizationHub| feature is enabled.
   std::unique_ptr<SearchHandler> search_handler_;
 };
 
