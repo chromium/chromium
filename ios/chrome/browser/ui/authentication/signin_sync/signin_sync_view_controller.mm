@@ -156,6 +156,15 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
     [self.identityControlArea.topAnchor
         constraintEqualToAnchor:self.specificContentView.topAnchor]
         .active = YES;
+    [self.identityControlArea.bottomAnchor
+        constraintLessThanOrEqualToAnchor:self.specificContentView.bottomAnchor]
+        .active = YES;
+    if (self.enterpriseSignInRestrictions != kNoEnterpriseRestriction) {
+      [self.learnMoreTextView.topAnchor
+          constraintGreaterThanOrEqualToAnchor:self.identityControlArea
+                                                   .bottomAnchor]
+          .active = YES;
+    }
   } else {
     [self.identityControlArea.topAnchor
         constraintGreaterThanOrEqualToAnchor:self.specificContentView.topAnchor]
@@ -273,7 +282,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
     NSDictionary* textAttributes = @{
       NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
       NSFontAttributeName :
-          [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+          [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2],
       NSParagraphStyleAttributeName : paragraphStyle
     };
 
