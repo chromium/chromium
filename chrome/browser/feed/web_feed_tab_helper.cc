@@ -60,15 +60,7 @@ WebFeedTabHelper::WebFeedTabHelper(content::WebContents* web_contents)
 
 WebFeedTabHelper::~WebFeedTabHelper() = default;
 
-void WebFeedTabHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame())
-    return;
-  if (!navigation_handle->HasCommitted())
-    return;
-  if (navigation_handle->IsSameDocument())
-    return;
-
+void WebFeedTabHelper::PrimaryPageChanged(content::Page& page) {
   // This is a new navigation so we can invalidate any previously scheduled
   // operations.
   weak_ptr_factory_.InvalidateWeakPtrs();

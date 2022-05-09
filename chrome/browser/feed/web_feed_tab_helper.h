@@ -68,8 +68,7 @@ class WebFeedTabHelper : public content::WebContentsObserver,
   explicit WebFeedTabHelper(content::WebContents* web_contents);
 
   // Overridden from content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   void OnWebFeedInfoRetrieved(const GURL& url, WebFeedMetadata metadata);
 
