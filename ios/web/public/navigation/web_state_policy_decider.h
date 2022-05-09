@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 #include "base/callback.h"
-#include "base/observer_list_types.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -18,7 +17,7 @@ class WebState;
 class FakeWebState;
 
 // Decides the navigation policy for a web state.
-class WebStatePolicyDecider : public base::CheckedObserver {
+class WebStatePolicyDecider {
  public:
   // Specifies a navigation decision. Used as a return value by
   // WebStatePolicyDecider::ShouldAllowRequest(), and used by
@@ -115,7 +114,7 @@ class WebStatePolicyDecider : public base::CheckedObserver {
   WebStatePolicyDecider& operator=(const WebStatePolicyDecider&) = delete;
 
   // Removes self as a policy decider of |web_state_|.
-  ~WebStatePolicyDecider() override;
+  virtual ~WebStatePolicyDecider();
 
   // Asks the decider whether the navigation corresponding to |request| should
   // be allowed to continue. Defaults to PolicyDecision::Allow() if not

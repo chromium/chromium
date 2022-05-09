@@ -12,8 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/observer_list_types.h"
-
 namespace web {
 
 struct FaviconURL;
@@ -26,12 +24,12 @@ enum class PageLoadCompletionStatus : bool { SUCCESS = 0, FAILURE = 1 };
 
 // An observer API implemented by classes which are interested in various page
 // load events from WebState.
-class WebStateObserver : public base::CheckedObserver {
+class WebStateObserver {
  public:
   WebStateObserver(const WebStateObserver&) = delete;
   WebStateObserver& operator=(const WebStateObserver&) = delete;
 
-  ~WebStateObserver() override;
+  virtual ~WebStateObserver();
 
   // These methods are invoked every time the WebState changes visibility.
   virtual void WasShown(WebState* web_state) {}

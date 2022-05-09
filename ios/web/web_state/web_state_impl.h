@@ -343,10 +343,11 @@ class WebStateImpl final : public WebState {
 
   // Type aliases for the various ObserverList or ScriptCommandCallback map
   // used by WebStateImpl (those are reused by the RealizedWebState class).
-  using WebStateObserverList = base::ObserverList<WebStateObserver, true>;
+  using WebStateObserverList =
+      base::ObserverList<WebStateObserver, true>::Unchecked;
 
   using WebStatePolicyDeciderList =
-      base::ObserverList<WebStatePolicyDecider, true>;
+      base::ObserverList<WebStatePolicyDecider, true>::Unchecked;
 
   using ScriptCommandCallbackMap =
       std::map<std::string,
