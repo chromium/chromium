@@ -51,5 +51,9 @@ bool IsHdcpKeyProvisioningRequired() {
   return base::FeatureList::IsEnabled(kRequireHdcpKeyProvisioning);
 }
 
+#if BUILDFLAG(IS_MAC)
+const base::Feature kForce60Hz{"Force60Hz", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 }  // namespace features
 }  // namespace display
