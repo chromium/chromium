@@ -987,12 +987,21 @@ const FeatureEntry::FeatureVariation kJourneysVariations[] = {
     {"All Supported Locales", kJourneysAllLocalesParams,
      std::size(kJourneysAllLocalesParams), nullptr},
 };
-const FeatureEntry::FeatureParam kJourneysOmniboxActionOnURLsParams[] = {
+const FeatureEntry::FeatureParam kJourneysOmniboxActionOnAllURLsParams[] = {
     {"omnibox_action_on_urls", "true"},
+    {"omnibox_action_on_noisy_urls", "true"},
+};
+const FeatureEntry::FeatureParam kJourneysOmniboxActionOnNonNoisyURLsParams[] =
+    {
+        {"omnibox_action_on_urls", "true"},
+        {"omnibox_action_on_noisy_urls", "false"},
 };
 const FeatureEntry::FeatureVariation kJourneysOmniboxActionVariations[] = {
-    {"Action Chips on URLs", kJourneysOmniboxActionOnURLsParams,
-     std::size(kJourneysOmniboxActionOnURLsParams), nullptr},
+    {"Action Chips on All URLs", kJourneysOmniboxActionOnAllURLsParams,
+     std::size(kJourneysOmniboxActionOnAllURLsParams), nullptr},
+    {"Action Chips on Non-Noisy URLs",
+     kJourneysOmniboxActionOnNonNoisyURLsParams,
+     std::size(kJourneysOmniboxActionOnNonNoisyURLsParams), nullptr},
 };
 const FeatureEntry::FeatureParam
     kJourneysOnDeviceClusteringLabelingNoContentClusteringParams[] = {

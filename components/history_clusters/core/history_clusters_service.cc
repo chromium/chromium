@@ -456,6 +456,15 @@ void HistoryClustersService::PopulateClusterKeywordCache(
     // Push a simplified form of the URL for each visit into the cache.
     if (url_keyword_accumulator->size() < max_keyword_phrases) {
       for (const auto& visit : cluster.visits) {
+        if (visit.engagement_score >
+                GetConfig().noisy_cluster_visits_engagement_threshold &&
+            !GetConfig().omnibox_action_on_noisy_urls) {
+          // Do not add a noisy visit to the URL keyword accumulator if not
+          // enabled via flag. Note that this is at the visit-level rather than
+          // at the cluster-level, which is handled by the NoisyClusterFinalizer
+          // in the ClusteringBackend.
+          continue;
+        }
         url_keyword_accumulator->insert(
             (!visit.annotated_visit.content_annotations.search_normalized_url
                   .is_empty())
