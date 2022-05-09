@@ -5028,6 +5028,15 @@ const char kLacrosPrimaryDescription[] =
     "Use Lacros-chrome as the primary web browser on ChromeOS. "
     "This flag is ignored if Lacros support is disabled.";
 
+const char kLacrosResourcesFileSharingName[] =
+    "Share resources file with ash-chrome";
+const char kLacrosResourcesFileSharingDescription[] =
+    "Map lacros-chrome resource ids to ash-chrome resources and remove "
+    "duplicated resources to reduce the memory consumption. This feature "
+    "generate two additional paks for resources.pak, chrome_100_percent.pak "
+    "and chrome_200_percent.pak. Additional paks are mapping table and "
+    "fallback resources.";
+
 const char kLacrosStabilityName[] = "Lacros stability";
 const char kLacrosStabilityDescription[] = "Lacros update channel.";
 
@@ -5509,15 +5518,6 @@ const char kLacrosNonSyncingProfilesName[] =
     "Enable non-syncing profiles on lacros";
 const char kLacrosNonSyncingProfilesDescription[] =
     "Enables further types of profiles: (1) local, (2) signed-in non-syncing.";
-
-const char kLacrosResourcesFileSharingName[] =
-    "Share resources file with ash-chrome";
-const char kLacrosResourcesFileSharingDescription[] =
-    "Map lacros-chrome resource ids to ash-chrome resources and remove "
-    "duplicated resources to reduce the memory consumption. This feature "
-    "generate two additional paks for resources.pak, chrome_100_percent.pak "
-    "and chrome_200_percent.pak. Additional paks are mapping table and "
-    "fallback resources.";
 
 const char kLacrosScreenCoordinatesEnabledName[] =
     "Enable screen coordinates system in lacros-chrome";

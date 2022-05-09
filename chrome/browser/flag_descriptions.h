@@ -2889,6 +2889,9 @@ extern const char kLacrosOnlyDescription[];
 extern const char kLacrosPrimaryName[];
 extern const char kLacrosPrimaryDescription[];
 
+extern const char kLacrosResourcesFileSharingName[];
+extern const char kLacrosResourcesFileSharingDescription[];
+
 extern const char kLacrosStabilityName[];
 extern const char kLacrosStabilityDescription[];
 
@@ -3164,9 +3167,6 @@ extern const char kLacrosMergeIcuDataFileDescription[];
 
 extern const char kLacrosNonSyncingProfilesName[];
 extern const char kLacrosNonSyncingProfilesDescription[];
-
-extern const char kLacrosResourcesFileSharingName[];
-extern const char kLacrosResourcesFileSharingDescription[];
 
 extern const char kLacrosScreenCoordinatesEnabledName[];
 extern const char kLacrosScreenCoordinatesEnabledDescription[];

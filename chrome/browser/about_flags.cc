@@ -8258,11 +8258,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLacrosNonSyncingProfilesDescription, kOsAll,
      FEATURE_VALUE_TYPE(switches::kLacrosNonSyncingProfiles)},
 
-    {"lacros-resources-file-sharing",
-     flag_descriptions::kLacrosResourcesFileSharingName,
-     flag_descriptions::kLacrosResourcesFileSharingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kLacrosResourcesFileSharing)},
-
     {"lacros-screen-coordinates-enabled",
      flag_descriptions::kLacrosScreenCoordinatesEnabledName,
      flag_descriptions::kLacrosScreenCoordinatesEnabledDescription,

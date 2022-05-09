@@ -136,12 +136,9 @@ extern const base::Feature kShortcutCustomizationApp;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsShortcutCustomizationAppEnabled();
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kLacrosResourcesFileSharing;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Indicates whether DrmOverlayManager should used the synchronous API to
 // perform pageflip tests.
