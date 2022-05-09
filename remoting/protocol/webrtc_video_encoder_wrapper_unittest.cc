@@ -330,18 +330,28 @@ TEST_F(WebrtcVideoEncoderWrapperTest, EmptyFrameDropped) {
 
 TEST_F(WebrtcVideoEncoderWrapperTest, EmptyFrameNotDroppedAfter2Seconds) {
   EXPECT_CALL(callback_, OnEncodedImage(_, _))
-      .Times(2)
+      .Times(3)
       .WillRepeatedly(Return(kResultOk));
 
   auto frame1 = MakeVideoFrame();
-  auto frame2 = MakeEmptyVideoFrame();
+  auto frame2 = MakeVideoFrame();
+  auto frame3 = MakeEmptyVideoFrame();
   auto encoder = InitEncoder(GetVp9Format(), GetVp9Codec());
   // Delta is used in this test, because key-frames should never be dropped
   // anyway.
   std::vector<VideoFrameType> frame_types{VideoFrameType::kVideoFrameDelta};
   encoder->Encode(frame1, &frame_types);
-  task_environment_.FastForwardBy(base::Milliseconds(2500));
+  // Sending a frame, waiting 2500ms, and then sending an empty frame causes an
+  // assert to fire on debug builds deep in the VP9 encoder due to an
+  // interpolation filter mismatch. Note that this only occurs when CPUUSED is
+  // set to 9 and AQ mode is set to 3 (the scenario is highly specific). The
+  // assert appears to be benign as there are no problems seen in normal usage
+  // and it does not fire if we send another frame a few milliseconds before we
+  // wait and send the empty frame.
+  task_environment_.FastForwardBy(base::Milliseconds(33));
   encoder->Encode(frame2, &frame_types);
+  task_environment_.FastForwardBy(base::Milliseconds(2500));
+  encoder->Encode(frame3, &frame_types);
 
   PostQuitAndRun();
 }
