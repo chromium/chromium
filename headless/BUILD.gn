@@ -811,7 +811,7 @@ test("headless_browsertests") {
     ]
   }
 
-  # TODO(https://crbug.com/1107396): These tests flakily timeout on fuchsia.
+  # TODO(crbug.com/1318548): Enable on Fuchsia when no longer flakily timeout.
   if (!is_fuchsia) {
     sources += [
       "test/headless_compositor_browsertest.cc",
