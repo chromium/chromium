@@ -361,7 +361,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
                 mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
-        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isMainFrame());
+        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
     }
 
     @Test
@@ -411,7 +411,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
                 httpPathOnServer, mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
-        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isMainFrame());
+        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
     }
 
     @Test
@@ -447,7 +447,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         // It's not a server-side redirect.
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
-        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isMainFrame());
+        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
     }
 
     @Test
@@ -469,7 +469,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         // It's not a server-side redirect.
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
-        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isMainFrame());
+        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
     }
 
     @Test
@@ -526,7 +526,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
                 mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
-        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isMainFrame());
+        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
     }
 
     @Test
@@ -588,7 +588,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
                 mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
         Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
-        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isMainFrame());
+        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
     }
 
     @Test
@@ -641,7 +641,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
                 mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
-        Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isMainFrame());
+        Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
     }
 
     /**
@@ -682,7 +682,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
                 redirectTarget, mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
         Assert.assertEquals(serverSideRedirect, mShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
-        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isMainFrame());
+        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
 
         // Test clicking with JS, hasUserGesture must be false.
         int indirectLoadCallCount = mShouldOverrideUrlLoadingHelper.getCallCount();
@@ -697,13 +697,13 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
                 redirectUrl, mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
-        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isMainFrame());
+        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
         mShouldOverrideUrlLoadingHelper.waitForCallback(indirectLoadCallCount + 1, 1);
         Assert.assertEquals(
                 redirectTarget, mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
         Assert.assertEquals(serverSideRedirect, mShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
-        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isMainFrame());
+        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
 
         // Make sure the redirect target page has finished loading.
         mActivityTestRule.pollUiThread(() -> !mAwContents.getTitle().equals(pageTitle));
@@ -720,13 +720,13 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
                 redirectUrl, mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertTrue(mShouldOverrideUrlLoadingHelper.hasUserGesture());
-        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isMainFrame());
+        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
         mShouldOverrideUrlLoadingHelper.waitForCallback(indirectLoadCallCount + 1, 1);
         Assert.assertEquals(
                 redirectTarget, mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
         Assert.assertEquals(serverSideRedirect, mShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
-        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isMainFrame());
+        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
     }
 
     @Test
@@ -1243,7 +1243,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
                 popupShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
         Assert.assertEquals(false, popupShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertFalse(popupShouldOverrideUrlLoadingHelper.hasUserGesture());
-        Assert.assertTrue(popupShouldOverrideUrlLoadingHelper.isMainFrame());
+        Assert.assertTrue(popupShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
     }
 
     private TestAwContentsClient.ShouldOverrideUrlLoadingHelper createPopUp(

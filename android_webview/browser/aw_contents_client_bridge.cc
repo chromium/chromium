@@ -349,11 +349,12 @@ void AwContentsClientBridge::RunBeforeUnloadDialog(
                                                    callback_id);
 }
 
-bool AwContentsClientBridge::ShouldOverrideUrlLoading(const std::u16string& url,
-                                                      bool has_user_gesture,
-                                                      bool is_redirect,
-                                                      bool is_main_frame,
-                                                      bool* ignore_navigation) {
+bool AwContentsClientBridge::ShouldOverrideUrlLoading(
+    const std::u16string& url,
+    bool has_user_gesture,
+    bool is_redirect,
+    bool is_outermost_main_frame,
+    bool* ignore_navigation) {
   *ignore_navigation = false;
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
@@ -363,7 +364,7 @@ bool AwContentsClientBridge::ShouldOverrideUrlLoading(const std::u16string& url,
   devtools_instrumentation::ScopedEmbedderCallbackTask(
       "shouldOverrideUrlLoading");
   *ignore_navigation = Java_AwContentsClientBridge_shouldOverrideUrlLoading(
-      env, obj, jurl, has_user_gesture, is_redirect, is_main_frame);
+      env, obj, jurl, has_user_gesture, is_redirect, is_outermost_main_frame);
   if (HasException(env)) {
     // Tell the chromium message loop to not perform any tasks after the current
     // one - we want to make sure we return to Java cleanly without first making
@@ -448,7 +449,7 @@ void AwContentsClientBridge::OnReceivedError(
   AwWebResourceRequest::AwJavaWebResourceRequest java_web_resource_request;
   AwWebResourceRequest::ConvertToJava(env, request, &java_web_resource_request);
   Java_AwContentsClientBridge_onReceivedError(
-      env, obj, java_web_resource_request.jurl, request.is_main_frame,
+      env, obj, java_web_resource_request.jurl, request.is_outermost_main_frame,
       request.has_user_gesture, *request.is_renderer_initiated,
       java_web_resource_request.jmethod,
       java_web_resource_request.jheader_names,
@@ -472,7 +473,7 @@ void AwContentsClientBridge::OnSafeBrowsingHit(
   AwWebResourceRequest::AwJavaWebResourceRequest java_web_resource_request;
   AwWebResourceRequest::ConvertToJava(env, request, &java_web_resource_request);
   Java_AwContentsClientBridge_onSafeBrowsingHit(
-      env, obj, java_web_resource_request.jurl, request.is_main_frame,
+      env, obj, java_web_resource_request.jurl, request.is_outermost_main_frame,
       request.has_user_gesture, java_web_resource_request.jmethod,
       java_web_resource_request.jheader_names,
       java_web_resource_request.jheader_values, static_cast<int>(threat_type),
@@ -503,7 +504,7 @@ void AwContentsClientBridge::OnReceivedHttpError(
       ToJavaArrayOfStrings(env, http_error_info->response_header_values);
 
   Java_AwContentsClientBridge_onReceivedHttpError(
-      env, obj, java_web_resource_request.jurl, request.is_main_frame,
+      env, obj, java_web_resource_request.jurl, request.is_outermost_main_frame,
       request.has_user_gesture, java_web_resource_request.jmethod,
       java_web_resource_request.jheader_names,
       java_web_resource_request.jheader_values, jstring_mime_type,

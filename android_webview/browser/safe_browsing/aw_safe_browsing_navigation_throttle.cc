@@ -53,7 +53,7 @@ AwSafeBrowsingNavigationThrottle::WillFailRequest() {
       std::unique_ptr<AwWebResourceRequest> request =
           std::make_unique<AwWebResourceRequest>(
               handle->GetURL().spec(), handle->IsPost() ? "POST" : "GET",
-              /*is_in_main_frame=*/true, handle->HasUserGesture(),
+              /*is_in_outermost_main_frame=*/true, handle->HasUserGesture(),
               handle->GetRequestHeaders());
       request->is_renderer_initiated = handle->IsRendererInitiated();
       AwSafeBrowsingBlockingPage* blocking_page =

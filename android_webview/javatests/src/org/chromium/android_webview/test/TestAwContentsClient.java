@@ -549,7 +549,7 @@ public class TestAwContentsClient extends NullContentsClient {
         private boolean mShouldOverrideUrlLoadingReturnValue;
         private boolean mIsRedirect;
         private boolean mHasUserGesture;
-        private boolean mIsMainFrame;
+        private boolean mIsOutermostMainFrame;
         void setShouldOverrideUrlLoadingUrl(String url) {
             mShouldOverrideUrlLoadingUrl = url;
         }
@@ -569,15 +569,15 @@ public class TestAwContentsClient extends NullContentsClient {
         public boolean hasUserGesture() {
             return mHasUserGesture;
         }
-        public boolean isMainFrame() {
-            return mIsMainFrame;
+        public boolean isOutermostMainFrame() {
+            return mIsOutermostMainFrame;
         }
-        public void notifyCalled(
-                String url, boolean isRedirect, boolean hasUserGesture, boolean isMainFrame) {
+        public void notifyCalled(String url, boolean isRedirect, boolean hasUserGesture,
+                boolean isOutermostMainFrame) {
             mShouldOverrideUrlLoadingUrl = url;
             mIsRedirect = isRedirect;
             mHasUserGesture = hasUserGesture;
-            mIsMainFrame = isMainFrame;
+            mIsOutermostMainFrame = isOutermostMainFrame;
             notifyCalled();
         }
     }
@@ -588,8 +588,8 @@ public class TestAwContentsClient extends NullContentsClient {
         super.shouldOverrideUrlLoading(request);
         boolean returnValue =
                 mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingReturnValue();
-        mShouldOverrideUrlLoadingHelper.notifyCalled(
-                request.url, request.isRedirect, request.hasUserGesture, request.isMainFrame);
+        mShouldOverrideUrlLoadingHelper.notifyCalled(request.url, request.isRedirect,
+                request.hasUserGesture, request.isOutermostMainFrame);
         return returnValue;
     }
 

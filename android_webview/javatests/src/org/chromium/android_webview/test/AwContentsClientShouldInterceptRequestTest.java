@@ -141,10 +141,11 @@ public class AwContentsClientShouldInterceptRequestTest {
         mActivityTestRule.loadUrlAsync(mAwContents, pageWithIframeUrl);
         mShouldInterceptRequestHelper.waitForCallback(callCount, 2);
         Assert.assertEquals(2, mShouldInterceptRequestHelper.getUrls().size());
-        Assert.assertEquals(
-                false, mShouldInterceptRequestHelper.getRequestsForUrl(subframeUrl).isMainFrame);
+        Assert.assertEquals(false,
+                mShouldInterceptRequestHelper.getRequestsForUrl(subframeUrl).isOutermostMainFrame);
         Assert.assertEquals(true,
-                mShouldInterceptRequestHelper.getRequestsForUrl(pageWithIframeUrl).isMainFrame);
+                mShouldInterceptRequestHelper.getRequestsForUrl(pageWithIframeUrl)
+                        .isOutermostMainFrame);
     }
 
     @Test

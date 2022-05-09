@@ -312,9 +312,10 @@ void AwRenderFrameExt::SetTextZoomFactor(float zoom_factor) {
 void AwRenderFrameExt::DocumentHasImage(DocumentHasImageCallback callback) {
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
 
-  // DocumentHasImages Mojo message should only be sent to the main frame.
+  // DocumentHasImages Mojo message should only be sent to the outermost main
+  // frame.
   DCHECK(frame);
-  DCHECK(!frame->Parent());
+  DCHECK(frame->IsOutermostMainFrame());
 
   const blink::WebElement child_img = GetImgChild(frame->GetDocument());
   bool has_images = !child_img.IsNull();

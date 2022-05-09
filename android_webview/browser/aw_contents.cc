@@ -1582,7 +1582,7 @@ void AwContents::DidFinishNavigation(
 
   AwWebResourceRequest request(navigation_handle->GetURL().spec(),
                                navigation_handle->IsPost() ? "POST" : "GET",
-                               navigation_handle->IsInMainFrame(),
+                               navigation_handle->IsInPrimaryMainFrame(),
                                navigation_handle->HasUserGesture(),
                                net::HttpRequestHeaders());
   request.is_renderer_initiated = navigation_handle->IsRendererInitiated();

@@ -122,7 +122,7 @@ public class ClientOnReceivedError2Test {
         Assert.assertNotNull(request.requestHeaders);
         // request headers may or may not be empty, this is an implementation detail,
         // in the network service code path they may e.g. contain user agent, crbug.com/893573.
-        Assert.assertTrue(request.isMainFrame);
+        Assert.assertTrue(request.isOutermostMainFrame);
         Assert.assertFalse(request.hasUserGesture);
         AwWebResourceError error = onReceivedErrorHelper.getError();
         // The particular error code that is returned depends on the configuration of the device
@@ -154,7 +154,7 @@ public class ClientOnReceivedError2Test {
         Assert.assertNotNull(request.requestHeaders);
         // request headers may or may not be empty, this is an implementation detail,
         // in the network service code path they may e.g. contain user agent, crbug.com/893573.
-        Assert.assertTrue(request.isMainFrame);
+        Assert.assertTrue(request.isOutermostMainFrame);
         Assert.assertTrue(request.hasUserGesture);
         AwWebResourceError error = onReceivedErrorHelper.getError();
         // The particular error code that is returned depends on the configuration of the device
@@ -181,7 +181,7 @@ public class ClientOnReceivedError2Test {
         Assert.assertNotNull(request.requestHeaders);
         // request headers may or may not be empty, this is an implementation detail,
         // in the network service code path they may e.g. contain user agent, crbug.com/893573.
-        Assert.assertFalse(request.isMainFrame);
+        Assert.assertFalse(request.isOutermostMainFrame);
         Assert.assertFalse(request.hasUserGesture);
         AwWebResourceError error = onReceivedErrorHelper.getError();
         // The particular error code that is returned depends on the configuration of the device
@@ -217,7 +217,7 @@ public class ClientOnReceivedError2Test {
         Assert.assertNotNull(request.requestHeaders);
         // request headers may or may not be empty, this is an implementation detail,
         // in the network service code path they may e.g. contain user agent, crbug.com/893573.
-        Assert.assertFalse(request.isMainFrame);
+        Assert.assertFalse(request.isOutermostMainFrame);
         Assert.assertTrue(request.hasUserGesture);
         AwWebResourceError error = onReceivedErrorHelper.getError();
         // The particular error code that is returned depends on the configuration of the device
@@ -244,7 +244,7 @@ public class ClientOnReceivedError2Test {
         Assert.assertNotNull(request.requestHeaders);
         // request headers may or may not be empty, this is an implementation detail,
         // in the network service code path they may e.g. contain user agent, crbug.com/893573.
-        Assert.assertFalse(request.isMainFrame);
+        Assert.assertFalse(request.isOutermostMainFrame);
         Assert.assertFalse(request.hasUserGesture);
         AwWebResourceError error = onReceivedErrorHelper.getError();
         // The particular error code that is returned depends on the configuration of the device
@@ -271,7 +271,7 @@ public class ClientOnReceivedError2Test {
         Assert.assertEquals("GET", request.method);
         Assert.assertNotNull(request.requestHeaders);
         Assert.assertFalse(request.requestHeaders.isEmpty());
-        Assert.assertFalse(request.isMainFrame);
+        Assert.assertFalse(request.isOutermostMainFrame);
         Assert.assertFalse(request.hasUserGesture);
         AwWebResourceError error = onReceivedErrorHelper.getError();
         Assert.assertEquals(WebviewErrorCode.ERROR_UNSUPPORTED_SCHEME, error.errorCode);
@@ -298,7 +298,7 @@ public class ClientOnReceivedError2Test {
         Assert.assertEquals("GET", request.method);
         Assert.assertNotNull(request.requestHeaders);
         Assert.assertFalse(request.requestHeaders.isEmpty());
-        Assert.assertFalse(request.isMainFrame);
+        Assert.assertFalse(request.isOutermostMainFrame);
         Assert.assertFalse(request.hasUserGesture);
         AwWebResourceError error = onReceivedErrorHelper.getError();
         Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
@@ -325,7 +325,7 @@ public class ClientOnReceivedError2Test {
         Assert.assertEquals("GET", request.method);
         Assert.assertNotNull(request.requestHeaders);
         Assert.assertFalse(request.requestHeaders.isEmpty());
-        Assert.assertFalse(request.isMainFrame);
+        Assert.assertFalse(request.isOutermostMainFrame);
         Assert.assertFalse(request.hasUserGesture);
         AwWebResourceError error = onReceivedErrorHelper.getError();
         Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
@@ -352,7 +352,7 @@ public class ClientOnReceivedError2Test {
         Assert.assertEquals("GET", request.method);
         Assert.assertNotNull(request.requestHeaders);
         Assert.assertFalse(request.requestHeaders.isEmpty());
-        Assert.assertFalse(request.isMainFrame);
+        Assert.assertFalse(request.isOutermostMainFrame);
         Assert.assertFalse(request.hasUserGesture);
         AwWebResourceError error = onReceivedErrorHelper.getError();
         Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);

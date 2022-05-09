@@ -38,8 +38,8 @@ AwWebResourceRequest::AwWebResourceRequest(
     const network::ResourceRequest& request)
     : url(request.url.spec()),
       method(request.method),
-      is_main_frame(request.destination ==
-                    network::mojom::RequestDestination::kDocument),
+      is_outermost_main_frame(request.destination ==
+                              network::mojom::RequestDestination::kDocument),
       has_user_gesture(request.has_user_gesture),
       is_renderer_initiated(ui::PageTransitionIsWebTriggerable(
           static_cast<ui::PageTransition>(request.transition_type))) {
@@ -50,12 +50,12 @@ AwWebResourceRequest::AwWebResourceRequest(
 AwWebResourceRequest::AwWebResourceRequest(
     const std::string& in_url,
     const std::string& in_method,
-    bool in_is_main_frame,
+    bool in_is_outermost_main_frame,
     bool in_has_user_gesture,
     const net::HttpRequestHeaders& in_headers)
     : url(in_url),
       method(in_method),
-      is_main_frame(in_is_main_frame),
+      is_outermost_main_frame(in_is_outermost_main_frame),
       has_user_gesture(in_has_user_gesture) {
   ConvertRequestHeadersToVectors(in_headers, &header_names, &header_values);
 }

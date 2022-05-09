@@ -97,7 +97,7 @@ class AwContentsClientBridge {
   bool ShouldOverrideUrlLoading(const std::u16string& url,
                                 bool has_user_gesture,
                                 bool is_redirect,
-                                bool is_main_frame,
+                                bool is_outermost_main_frame,
                                 bool* ignore_navigation);
 
   bool SendBrowseIntent(const std::u16string& url);

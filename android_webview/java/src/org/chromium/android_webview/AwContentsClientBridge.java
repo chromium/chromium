@@ -304,13 +304,15 @@ public class AwContentsClientBridge {
     @CalledByNative
     private void onReceivedError(
             // WebResourceRequest
-            String url, boolean isMainFrame, boolean hasUserGesture, boolean isRendererInitiated,
-            String method, String[] requestHeaderNames, String[] requestHeaderValues,
+            String url, boolean isOutermostMainFrame, boolean hasUserGesture,
+            boolean isRendererInitiated, String method, String[] requestHeaderNames,
+            String[] requestHeaderValues,
             // WebResourceError
             @NetError int errorCode, String description, boolean safebrowsingHit,
             boolean shouldOmitNotificationsForSafeBrowsingHit) {
-        AwContentsClient.AwWebResourceRequest request = new AwContentsClient.AwWebResourceRequest(
-                url, isMainFrame, hasUserGesture, method, requestHeaderNames, requestHeaderValues);
+        AwContentsClient.AwWebResourceRequest request =
+                new AwContentsClient.AwWebResourceRequest(url, isOutermostMainFrame, hasUserGesture,
+                        method, requestHeaderNames, requestHeaderValues);
         AwContentsClient.AwWebResourceError error = new AwContentsClient.AwWebResourceError();
         error.errorCode = ErrorCodeConversionHelper.convertErrorCode(errorCode);
         error.description = description;
@@ -337,12 +339,12 @@ public class AwContentsClientBridge {
                     error.errorCode = WebviewErrorCode.ERROR_UNSAFE_RESOURCE;
                 }
             }
-            if (request.isMainFrame
+            if (request.isOutermostMainFrame
                     && AwFeatureList.pageStartedOnCommitEnabled(isRendererInitiated)) {
                 mClient.getCallbackHelper().postOnPageStarted(request.url);
             }
             mClient.getCallbackHelper().postOnReceivedError(request, error);
-            if (request.isMainFrame) {
+            if (request.isOutermostMainFrame) {
                 // Need to call onPageFinished after onReceivedError for backwards compatibility
                 // with the classic webview. See also AwWebContentsObserver.didFailLoad which is
                 // used when we want to send onPageFinished alone.
@@ -354,11 +356,12 @@ public class AwContentsClientBridge {
     @CalledByNative
     public void onSafeBrowsingHit(
             // WebResourceRequest
-            String url, boolean isMainFrame, boolean hasUserGesture, String method,
+            String url, boolean isOutermostMainFrame, boolean hasUserGesture, String method,
             String[] requestHeaderNames, String[] requestHeaderValues, int threatType,
             final int requestId) {
-        AwContentsClient.AwWebResourceRequest request = new AwContentsClient.AwWebResourceRequest(
-                url, isMainFrame, hasUserGesture, method, requestHeaderNames, requestHeaderValues);
+        AwContentsClient.AwWebResourceRequest request =
+                new AwContentsClient.AwWebResourceRequest(url, isOutermostMainFrame, hasUserGesture,
+                        method, requestHeaderNames, requestHeaderValues);
 
         // TODO(ntfschr): remove clang-format directives once crbug/764582 is resolved
         // clang-format off
@@ -376,13 +379,14 @@ public class AwContentsClientBridge {
     @CalledByNative
     private void onReceivedHttpError(
             // WebResourceRequest
-            String url, boolean isMainFrame, boolean hasUserGesture, String method,
+            String url, boolean isOutermostMainFrame, boolean hasUserGesture, String method,
             String[] requestHeaderNames, String[] requestHeaderValues,
             // WebResourceResponse
             String mimeType, String encoding, int statusCode, String reasonPhrase,
             String[] responseHeaderNames, String[] responseHeaderValues) {
-        AwContentsClient.AwWebResourceRequest request = new AwContentsClient.AwWebResourceRequest(
-                url, isMainFrame, hasUserGesture, method, requestHeaderNames, requestHeaderValues);
+        AwContentsClient.AwWebResourceRequest request =
+                new AwContentsClient.AwWebResourceRequest(url, isOutermostMainFrame, hasUserGesture,
+                        method, requestHeaderNames, requestHeaderValues);
         Map<String, String> responseHeaders =
                 new HashMap<String, String>(responseHeaderNames.length);
         // Note that we receive un-coalesced response header lines, thus we need to combine
@@ -409,9 +413,9 @@ public class AwContentsClientBridge {
 
     @CalledByNativeUnchecked
     private boolean shouldOverrideUrlLoading(
-            String url, boolean hasUserGesture, boolean isRedirect, boolean isMainFrame) {
+            String url, boolean hasUserGesture, boolean isRedirect, boolean isOutermostMainFrame) {
         return mClient.shouldIgnoreNavigation(
-                mContext, url, isMainFrame, hasUserGesture, isRedirect);
+                mContext, url, isOutermostMainFrame, hasUserGesture, isRedirect);
     }
 
     @CalledByNative

@@ -926,7 +926,7 @@ public class SafeBrowsingTest {
         mActivityTestRule.pollUiThread(() -> aboutBlank.equals(mAwContents.getUrl()));
 
         // Check onSafeBrowsingHit arguments
-        Assert.assertFalse(mContentsClient.getLastRequest().isMainFrame);
+        Assert.assertFalse(mContentsClient.getLastRequest().isOutermostMainFrame);
         Assert.assertEquals(subresourceUrl, mContentsClient.getLastRequest().url);
         Assert.assertEquals(AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_MALWARE,
                 mContentsClient.getLastThreatType());
@@ -954,7 +954,7 @@ public class SafeBrowsingTest {
         // clang-format on
 
         // Check onSafeBrowsingHit arguments
-        Assert.assertFalse(mContentsClient.getLastRequest().isMainFrame);
+        Assert.assertFalse(mContentsClient.getLastRequest().isOutermostMainFrame);
         Assert.assertEquals(subresourceUrl, mContentsClient.getLastRequest().url);
         Assert.assertEquals(AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_MALWARE,
                 mContentsClient.getLastThreatType());
@@ -966,7 +966,7 @@ public class SafeBrowsingTest {
         mActivityTestRule.waitForVisualStateCallback(mAwContents);
         assertTargetPageHasLoaded(IFRAME_EMBEDDER_BACKGROUND_COLOR);
 
-        Assert.assertFalse(mContentsClient.getLastRequest().isMainFrame);
+        Assert.assertFalse(mContentsClient.getLastRequest().isOutermostMainFrame);
         Assert.assertEquals(subresourceUrl, mContentsClient.getLastRequest().url);
         Assert.assertEquals(AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_MALWARE,
                 mContentsClient.getLastThreatType());
@@ -1176,7 +1176,7 @@ public class SafeBrowsingTest {
         AwContentsClient.AwWebResourceRequest requestsForUrl =
                 mContentsClient.getShouldInterceptRequestHelper().getRequestsForUrl(linkUrl);
         // Make sure the URL was seen for a main frame navigation.
-        Assert.assertTrue(requestsForUrl.isMainFrame);
+        Assert.assertTrue(requestsForUrl.isOutermostMainFrame);
     }
 
     @Test

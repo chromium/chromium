@@ -115,10 +115,11 @@ public abstract class AwContentsClient {
         // Prefer using other constructors over this one.
         public AwWebResourceRequest() {}
 
-        public AwWebResourceRequest(String url, boolean isMainFrame, boolean hasUserGesture,
-                String method, @Nullable HashMap<String, String> requestHeaders) {
+        public AwWebResourceRequest(String url, boolean isOutermostMainFrame,
+                boolean hasUserGesture, String method,
+                @Nullable HashMap<String, String> requestHeaders) {
             this.url = url;
-            this.isMainFrame = isMainFrame;
+            this.isOutermostMainFrame = isOutermostMainFrame;
             this.hasUserGesture = hasUserGesture;
             // Note: we intentionally let isRedirect default initialize to false. This is because we
             // don't always know if this request is associated with a redirect or not.
@@ -126,10 +127,10 @@ public abstract class AwContentsClient {
             this.requestHeaders = requestHeaders;
         }
 
-        public AwWebResourceRequest(String url, boolean isMainFrame, boolean hasUserGesture,
-                String method, @NonNull String[] requestHeaderNames,
+        public AwWebResourceRequest(String url, boolean isOutermostMainFrame,
+                boolean hasUserGesture, String method, @NonNull String[] requestHeaderNames,
                 @NonNull String[] requestHeaderValues) {
-            this(url, isMainFrame, hasUserGesture, method,
+            this(url, isOutermostMainFrame, hasUserGesture, method,
                     new HashMap<String, String>(requestHeaderValues.length));
             for (int i = 0; i < requestHeaderNames.length; ++i) {
                 this.requestHeaders.put(requestHeaderNames[i], requestHeaderValues[i]);
@@ -138,8 +139,8 @@ public abstract class AwContentsClient {
 
         // Url of the request.
         public String url;
-        // Is this for the main frame or a child iframe?
-        public boolean isMainFrame;
+        // Is this for the outermost main frame or a subframe?
+        public boolean isOutermostMainFrame;
         // Was a gesture associated with the request? Don't trust can easily be spoofed.
         public boolean hasUserGesture;
         // Was it a result of a server-side redirect?
@@ -198,16 +199,16 @@ public abstract class AwContentsClient {
     public abstract void onDownloadStart(String url, String userAgent, String contentDisposition,
             String mimeType, long contentLength);
 
-    public final boolean shouldIgnoreNavigation(Context context, String url, boolean isMainFrame,
-            boolean hasUserGesture, boolean isRedirect) {
+    public final boolean shouldIgnoreNavigation(Context context, String url,
+            boolean isOutermostMainFrame, boolean hasUserGesture, boolean isRedirect) {
         AwContentsClientCallbackHelper.CancelCallbackPoller poller =
                 mCallbackHelper.getCancelCallbackPoller();
         if (poller != null && poller.shouldCancelAllCallbacks()) return false;
 
         if (hasWebViewClient()) {
             // Note: only GET requests can be overridden, so we hardcode the method.
-            AwWebResourceRequest request =
-                    new AwWebResourceRequest(url, isMainFrame, hasUserGesture, "GET", null);
+            AwWebResourceRequest request = new AwWebResourceRequest(
+                    url, isOutermostMainFrame, hasUserGesture, "GET", null);
             request.isRedirect = isRedirect;
             return shouldOverrideUrlLoading(request);
         } else {

@@ -149,7 +149,7 @@ void AwSafeBrowsingBlockingPage::CreatedPostCommitErrorPageNavigation(
   resource_request_ = std::make_unique<AwWebResourceRequest>(
       error_page_navigation_handle->GetURL().spec(),
       error_page_navigation_handle->IsPost() ? "POST" : "GET",
-      error_page_navigation_handle->IsInMainFrame(),
+      error_page_navigation_handle->IsInPrimaryMainFrame(),
       error_page_navigation_handle->HasUserGesture(),
       error_page_navigation_handle->GetRequestHeaders());
   resource_request_->is_renderer_initiated =

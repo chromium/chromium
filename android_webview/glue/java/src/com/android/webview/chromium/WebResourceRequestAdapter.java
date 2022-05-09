@@ -32,7 +32,7 @@ public class WebResourceRequestAdapter implements WebResourceRequest {
 
     @Override
     public boolean isForMainFrame() {
-        return mRequest.isMainFrame;
+        return mRequest.isOutermostMainFrame;
     }
 
     @Override

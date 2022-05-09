@@ -29,7 +29,7 @@ struct AwWebResourceRequest final {
   explicit AwWebResourceRequest(const network::ResourceRequest& request);
   AwWebResourceRequest(const std::string& in_url,
                        const std::string& in_method,
-                       bool in_is_main_frame,
+                       bool in_is_outermost_main_frame,
                        bool in_has_user_gesture,
                        const net::HttpRequestHeaders& in_headers);
 
@@ -58,7 +58,7 @@ struct AwWebResourceRequest final {
 
   std::string url;
   std::string method;
-  bool is_main_frame;
+  bool is_outermost_main_frame;
   bool has_user_gesture;
   std::vector<std::string> header_names;
   std::vector<std::string> header_values;
