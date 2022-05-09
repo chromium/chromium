@@ -40,25 +40,12 @@ constexpr int kAutoDisableAccessibilityEventCount = 3;
 // good for perf. Instead, delay the update task.
 constexpr int kOnAccessibilityUsageUpdateDelaySecs = 1;
 
-// IMPORTANT!
-// These values are written to logs.  Do not renumber or delete
-// existing items; add new entries to the end of the list.
-enum ModeFlagHistogramValue {
-  UMA_AX_MODE_NATIVE_APIS = 0,
-  UMA_AX_MODE_WEB_CONTENTS = 1,
-  UMA_AX_MODE_INLINE_TEXT_BOXES = 2,
-  UMA_AX_MODE_SCREEN_READER = 3,
-  UMA_AX_MODE_HTML = 4,
-
-  // This must always be the last enum. It's okay for its value to
-  // increase, but none of the other enum values may change.
-  UMA_AX_MODE_MAX
-};
-
 // Record a histograms for an accessibility mode when it's enabled.
-void RecordNewAccessibilityModeFlags(ModeFlagHistogramValue mode_flag) {
-  UMA_HISTOGRAM_ENUMERATION("Accessibility.ModeFlag", mode_flag,
-                            UMA_AX_MODE_MAX);
+void RecordNewAccessibilityModeFlags(
+    ui::AXMode::ModeFlagHistogramValue mode_flag) {
+  UMA_HISTOGRAM_ENUMERATION(
+      "Accessibility.ModeFlag", mode_flag,
+      ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_MAX);
 }
 
 // Update the accessibility histogram 45 seconds after initialization.
@@ -350,15 +337,20 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
   // Retrieve only newly added modes for the purposes of logging.
   int new_mode_flags = mode.mode() & (~previous_mode.mode());
   if (new_mode_flags & ui::AXMode::kNativeAPIs)
-    RecordNewAccessibilityModeFlags(UMA_AX_MODE_NATIVE_APIS);
+    RecordNewAccessibilityModeFlags(
+        ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_NATIVE_APIS);
   if (new_mode_flags & ui::AXMode::kWebContents)
-    RecordNewAccessibilityModeFlags(UMA_AX_MODE_WEB_CONTENTS);
+    RecordNewAccessibilityModeFlags(
+        ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_WEB_CONTENTS);
   if (new_mode_flags & ui::AXMode::kInlineTextBoxes)
-    RecordNewAccessibilityModeFlags(UMA_AX_MODE_INLINE_TEXT_BOXES);
+    RecordNewAccessibilityModeFlags(
+        ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_INLINE_TEXT_BOXES);
   if (new_mode_flags & ui::AXMode::kScreenReader)
-    RecordNewAccessibilityModeFlags(UMA_AX_MODE_SCREEN_READER);
+    RecordNewAccessibilityModeFlags(
+        ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER);
   if (new_mode_flags & ui::AXMode::kHTML)
-    RecordNewAccessibilityModeFlags(UMA_AX_MODE_HTML);
+    RecordNewAccessibilityModeFlags(
+        ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML);
 
   std::vector<WebContentsImpl*> web_contents_vector =
       WebContentsImpl::GetAllWebContents();

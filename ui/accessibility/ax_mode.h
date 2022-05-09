@@ -98,6 +98,21 @@ class AX_BASE_EXPORT AXMode {
 
   std::string ToString() const;
 
+  // IMPORTANT!
+  // These values are written to logs.  Do not renumber or delete
+  // existing items; add new entries to the end of the list.
+  enum class ModeFlagHistogramValue {
+    UMA_AX_MODE_NATIVE_APIS = 0,
+    UMA_AX_MODE_WEB_CONTENTS = 1,
+    UMA_AX_MODE_INLINE_TEXT_BOXES = 2,
+    UMA_AX_MODE_SCREEN_READER = 3,
+    UMA_AX_MODE_HTML = 4,
+
+    // This must always be the last enum. It's okay for its value to
+    // increase, but none of the other enum values may change.
+    UMA_AX_MODE_MAX
+  };
+
  private:
   uint32_t flags_;
 };
