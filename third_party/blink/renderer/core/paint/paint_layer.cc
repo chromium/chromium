@@ -1195,6 +1195,7 @@ void PaintLayer::AppendSingleFragmentForHitTesting(
       if (const auto* layout_box = GetLayoutBox())
         fragment.physical_fragment = layout_box->GetPhysicalFragment(0);
     }
+    fragment.fragment_idx = 0;
   }
 
   ClipRectsContext clip_rects_context(this, fragment.fragment_data,
