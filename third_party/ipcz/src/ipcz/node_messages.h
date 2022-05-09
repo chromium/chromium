@@ -11,9 +11,14 @@
 #include "ipcz/driver_object.h"
 #include "ipcz/driver_transport.h"
 #include "ipcz/message_internal.h"
+#include "ipcz/node_name.h"
 #include "ipcz/sublink_id.h"
 
 namespace ipcz::msg {
+
+// Bump this version number up by 1 when adding new protocol features so that
+// they can be detected during NodeLink establishment.
+constexpr uint32_t kProtocolVersion = 0;
 
 #pragma pack(push, 1)
 

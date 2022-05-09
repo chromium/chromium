@@ -90,7 +90,7 @@ class Ref : public GenericRef {
   T& operator*() const { return *get(); }
 
   bool operator==(const T* ptr) const { return ptr_ == ptr; }
-  bool operator!=(const T* ptr) const { return ptr_ == ptr; }
+  bool operator!=(const T* ptr) const { return ptr_ != ptr; }
   bool operator==(const Ref<T>& other) const { return ptr_ == other.ptr_; }
   bool operator!=(const Ref<T>& other) const { return ptr_ != other.ptr_; }
 

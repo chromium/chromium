@@ -23,7 +23,8 @@ namespace ipcz::reference_drivers {
 namespace {
 
 // Provides shared ownership of a transport object given to the driver by ipcz
-// during driver transport activation.
+// during driver transport activation. Within ipcz this corresponds to a
+// DriverTransport object.
 class TransportWrapper : public RefCounted {
  public:
   TransportWrapper(IpczHandle transport,
@@ -61,12 +62,15 @@ struct SavedMessage {
   std::vector<IpczDriverHandle> handles;
 };
 
-// The driver transport implementation for the single-process driver. Each
-// InProcessTransport holds a direct reference to the other endpoint, and
-// transmitting from one endpoint directly notifies the peer endpoint.
+// The driver transport implementation for the single-process reference driver.
 //
-// As a result, cross-node communications through this driver function as
-// synchronous calls from one node into another.
+// Each InProcessTransport holds a direct reference to the other endpoint, and
+// transmitting from one endpoint directly notifies the peer endpoint, calling
+// directly into its ipcz-side DriverTransport's Listener.
+//
+// This means that cross-node communications through this driver function as
+// synchronous calls from one node into another, and as such the implementation
+// must be safe for arbitrary reentrancy.
 class InProcessTransport
     : public ObjectImpl<InProcessTransport, Object::kTransport> {
  public:
@@ -75,13 +79,26 @@ class InProcessTransport
 
   // Object:
   IpczResult Close() override {
-    SetPeer(nullptr);
+    Deactivate();
+
+    Ref<InProcessTransport> peer;
+    {
+      absl::MutexLock lock(&mutex_);
+      peer = std::move(peer_);
+    }
+
+    if (peer) {
+      // NOTE: Although nothing should ever call back into `this` after Close(),
+      // for consistency with other methods we still take precaution not to call
+      // into the peer while holding `mutex_`.
+      peer->OnPeerClosed();
+    }
     return IPCZ_RESULT_OK;
   }
 
   void SetPeer(Ref<InProcessTransport> peer) {
     absl::MutexLock lock(&mutex_);
-    ABSL_ASSERT(!peer ^ !peer_);
+    ABSL_ASSERT(peer && !peer_);
     peer_ = std::move(peer);
   }
 
@@ -97,10 +114,11 @@ class InProcessTransport
     }
 
     // Let the peer know that it can now call into us directly. This may
-    // re-enter this InProcessTransport arbitrarily, as the peer will
-    // synchronously flush any queued transmissions before returning, and the
-    // logic handling the receipt of those transmissions may perform additional
-    // operations on this transport; all before OnPeerActivated() returns.
+    // re-enter this InProcessTransport, as the peer will synchronously flush
+    // any queued transmissions before returning, and the logic handling the
+    // receipt of those transmissions may perform additional operations on this
+    // transport; all before OnPeerActivated() returns. We must therefore ensure
+    // `mutex_` is not held while calling this.
     peer->OnPeerActivated();
     return IPCZ_RESULT_OK;
   }
@@ -109,7 +127,10 @@ class InProcessTransport
     Ref<TransportWrapper> transport;
     {
       absl::MutexLock lock(&mutex_);
-      ABSL_ASSERT(transport_);
+
+      // NOTE: Dropping this reference may in turn lead to ipcz dropping its own
+      // last reference to `this`, so we must be careful not hold `mutex_` when
+      // that happens.
       transport = std::move(transport_);
     }
   }
@@ -139,6 +160,8 @@ class InProcessTransport
     }
 
     if (peer_transport) {
+      // NOTE: Notifying the peer of anything may re-enter `this`, so we must be
+      // careful not hold `mutex_` while doing that.
       peer_transport->Notify(data, handles);
     }
     return IPCZ_RESULT_OK;
@@ -181,6 +204,21 @@ class InProcessTransport
       for (SavedMessage& m : saved_messages) {
         peer_transport->Notify(m.data, m.handles);
       }
+    }
+  }
+
+  void OnPeerClosed() {
+    Ref<TransportWrapper> transport;
+    {
+      absl::MutexLock lock(&mutex_);
+      transport = std::move(transport_);
+    }
+
+    if (transport) {
+      // NOTE: Notifying ipcz of an error here may re-enter this
+      // InProcessTransport (e.g. to close it), so we must be careful not to
+      // hold `mutex_` while doing that.
+      transport->NotifyError();
     }
   }
 

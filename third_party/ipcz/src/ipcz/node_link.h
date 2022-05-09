@@ -125,6 +125,8 @@ class NodeLink : public RefCounted, private DriverTransport::Listener {
   // All of these methods correspond directly to remote calls from another node,
   // either through NodeLink (for OnIntroduceNode) or via RemoteRouterLink (for
   // everything else).
+  bool OnConnectFromBrokerToNonBroker(const msg::ConnectFromBrokerToNonBroker&);
+  bool OnConnectFromNonBrokerToBroker(const msg::ConnectFromNonBrokerToBroker&);
   bool OnRouteClosed(const msg::RouteClosed& route_closed);
 
   IpczResult DispatchMessage(const DriverTransport::Message& message);

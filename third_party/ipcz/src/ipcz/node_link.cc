@@ -150,6 +150,18 @@ void NodeLink::OnTransportError() {
   // TODO: Notify all routers attached to sublinks here that this link is dead.
 }
 
+bool NodeLink::OnConnectFromBrokerToNonBroker(
+    const msg::ConnectFromBrokerToNonBroker&) {
+  // This message is never valid to receive once a NodeLink is established.
+  return false;
+}
+
+bool NodeLink::OnConnectFromNonBrokerToBroker(
+    const msg::ConnectFromNonBrokerToBroker&) {
+  // This message is never valid to receive once a NodeLink is established.
+  return false;
+}
+
 bool NodeLink::OnRouteClosed(const msg::RouteClosed& route_closed) {
   absl::optional<Sublink> sublink = GetSublink(route_closed.params().sublink);
   if (!sublink) {

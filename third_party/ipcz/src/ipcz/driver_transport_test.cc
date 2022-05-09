@@ -15,6 +15,7 @@
 #include "ipcz/driver_object.h"
 #include "ipcz/node.h"
 #include "test/mock_driver.h"
+#include "test/test_transport_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "util/ref_counted.h"
@@ -28,11 +29,6 @@ using ::testing::Return;
 DriverTransport::Message MakeMessage(std::string_view s) {
   return DriverTransport::Message(
       absl::MakeSpan(reinterpret_cast<const uint8_t*>(s.data()), s.size()));
-}
-
-std::string_view MessageAsString(const DriverTransport::Message& message) {
-  return std::string_view(reinterpret_cast<const char*>(message.data.data()),
-                          message.data.size());
 }
 
 class DriverTransportTest : public testing::Test {
@@ -56,34 +52,6 @@ class DriverTransportTest : public testing::Test {
                                        IPCZ_INVALID_DRIVER_HANDLE)};
 };
 
-class TestListener : public DriverTransport::Listener {
- public:
-  using MessageHandler =
-      std::function<IpczResult(const DriverTransport::Message&)>;
-  using ErrorHandler = std::function<void()>;
-
-  explicit TestListener(MessageHandler message_handler,
-                        ErrorHandler error_handler = nullptr)
-      : message_handler_(std::move(message_handler)),
-        error_handler_(std::move(error_handler)) {}
-  ~TestListener() override = default;
-
-  IpczResult OnTransportMessage(
-      const DriverTransport::Message& message) override {
-    return message_handler_(message);
-  }
-
-  void OnTransportError() override {
-    if (error_handler_) {
-      error_handler_();
-    }
-  }
-
- private:
-  MessageHandler message_handler_;
-  ErrorHandler error_handler_;
-};
-
 TEST_F(DriverTransportTest, Activation) {
   constexpr IpczDriverHandle kTransport0 = 5;
   constexpr IpczDriverHandle kTransport1 = 42;
@@ -101,24 +69,23 @@ TEST_F(DriverTransportTest, Activation) {
       })
       .RetiresOnSaturation();
 
-  // Verify that activation of a DriverTransport feeds the driver an activity
-  // handler and valid ipcz handle to use when notifying ipcz of incoming
-  // communications.
-  b->Activate();
-  EXPECT_NE(IPCZ_INVALID_HANDLE, ipcz_transport);
-  EXPECT_TRUE(activity_handler);
-
   // And verify that the activity handler actually invokes the transport's
   // Listener.
 
   const std::string kTestMessage = "hihihihi";
   bool received = false;
-  TestListener listener([&](const DriverTransport::Message& message) {
-    EXPECT_EQ(kTestMessage, MessageAsString(message));
+  test::TestTransportListener listener(b);
+  listener.OnStringMessage([&](std::string_view message) {
+    EXPECT_EQ(kTestMessage, message);
     received = true;
     return IPCZ_RESULT_OK;
   });
-  b->set_listener(&listener);
+
+  // Verify that activation of a DriverTransport feeds the driver an activity
+  // handler and valid ipcz handle to use when notifying ipcz of incoming
+  // communications.
+  EXPECT_NE(IPCZ_INVALID_HANDLE, ipcz_transport);
+  EXPECT_TRUE(activity_handler);
 
   EXPECT_FALSE(received);
   EXPECT_EQ(
@@ -135,7 +102,6 @@ TEST_F(DriverTransportTest, Activation) {
 
   EXPECT_CALL(driver(), Close(kTransport1, _, _));
   EXPECT_CALL(driver(), Close(kTransport0, _, _));
-  b->Deactivate();
 
   // The driver must also release its handle to ipcz' DriverTransport, which it
   // does by an invocation of the activity handler like this. Without this, we'd
@@ -162,17 +128,9 @@ TEST_F(DriverTransportTest, Error) {
       })
       .RetiresOnSaturation();
 
-  b->Activate();
-
   bool observed_error = false;
-  TestListener listener(
-      [&](const DriverTransport::Message& message) {
-        ABSL_ASSERT(false);
-        return IPCZ_RESULT_INVALID_ARGUMENT;
-      },
-      [&] { observed_error = true; });
-
-  b->set_listener(&listener);
+  test::TestTransportListener listener(b);
+  listener.OnError([&] { observed_error = true; });
 
   // Verify that a driver invoking the activity handler with
   // IPCZ_TRANSPORT_ACTIVITY_ERROR results in an error notification on the
@@ -191,6 +149,7 @@ TEST_F(DriverTransportTest, Error) {
             activity_handler(ipcz_transport, nullptr, 0, nullptr, 0,
                              IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED, nullptr));
 
+  EXPECT_CALL(driver(), DeactivateTransport(kTransport1, _, _));
   EXPECT_CALL(driver(), Close(kTransport1, _, _));
   EXPECT_CALL(driver(), Close(kTransport0, _, _));
 }
