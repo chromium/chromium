@@ -914,7 +914,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'Z0dpz6ioZwh1ZUWtGx7SsGHJMmDwTZNAqQPu2b9hxmgC',
+          'version': '48HadkCKkokYMFcxC-_3ZrScczT4OtasjYbvpfV08W8C',
       },
     ],
     'condition': 'checkout_android',
