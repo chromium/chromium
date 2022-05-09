@@ -16,6 +16,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -58,6 +60,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
     @Override
     public boolean onBackPressed() {
         return false;
+    }
+
+    @Override
+    public void handleBackPress() {}
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return new ObservableSupplierImpl<>();
     }
 
     @Override

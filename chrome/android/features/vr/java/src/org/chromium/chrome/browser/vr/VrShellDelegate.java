@@ -44,6 +44,8 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
@@ -127,6 +129,8 @@ public class VrShellDelegate
     private static boolean sRegisteredDaydreamHook;
     private static boolean sRegisteredVrAssetsComponent;
     private static boolean sTestVrShellDelegateOnStartup;
+    private static final ObservableSupplierImpl<Boolean> sVrModeEnabledSupplier =
+            new ObservableSupplierImpl<>();
 
     private ChromeActivity mActivity;
 
@@ -594,10 +598,12 @@ public class VrShellDelegate
             if (sVrModeEnabledActivitys.contains(activity)) return;
             AndroidCompat.setVrModeEnabled(activity, true);
             sVrModeEnabledActivitys.add(activity);
+            sVrModeEnabledSupplier.set(true);
         } else {
             if (!sVrModeEnabledActivitys.contains(activity)) return;
             AndroidCompat.setVrModeEnabled(activity, false);
             sVrModeEnabledActivitys.remove(activity);
+            sVrModeEnabledSupplier.set(false);
         }
     }
 
@@ -1038,6 +1044,10 @@ public class VrShellDelegate
     public boolean canRequestRecordAudioPermission() {
         return mActivity.getWindowAndroid().canRequestPermission(
                 android.Manifest.permission.RECORD_AUDIO);
+    }
+
+    public static ObservableSupplier<Boolean> getVrModeEnabledSupplier() {
+        return sVrModeEnabledSupplier;
     }
 
     private boolean isWindowModeCorrectForVr() {

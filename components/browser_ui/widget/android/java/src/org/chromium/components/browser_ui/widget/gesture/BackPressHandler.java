@@ -20,15 +20,16 @@ import java.lang.annotation.RetentionPolicy;
  */
 public interface BackPressHandler {
     // The smaller the value is, the higher the priority is.
-    @IntDef({Type.TEXT_BUBBLE, Type.AR_DELEGATE, Type.LAYOUT_MANAGER, Type.MANUAL_FILLING,
-            Type.TAB_MODAL_HANDLER})
+    @IntDef({Type.TEXT_BUBBLE, Type.VR_DELEGATE, Type.AR_DELEGATE, Type.LAYOUT_MANAGER,
+            Type.MANUAL_FILLING, Type.TAB_MODAL_HANDLER})
     @Retention(RetentionPolicy.SOURCE)
     @interface Type {
         int TEXT_BUBBLE = 0;
-        int AR_DELEGATE = 1;
-        int LAYOUT_MANAGER = 2;
-        int MANUAL_FILLING = 3;
-        int TAB_MODAL_HANDLER = 4;
+        int VR_DELEGATE = 1;
+        int AR_DELEGATE = 2;
+        int LAYOUT_MANAGER = 3;
+        int MANUAL_FILLING = 4;
+        int TAB_MODAL_HANDLER = 5;
         int NUM_TYPES = TAB_MODAL_HANDLER + 1;
     }
 
