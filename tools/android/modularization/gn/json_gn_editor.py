@@ -57,9 +57,10 @@ def _build_targets_output(out_dir: str,
                           targets: List[str],
                           should_print: bool = False) -> Optional[str]:
     env = os.environ.copy()
-    # This is needed for detecting based on autoninja output whether just the
-    # about_credits.html target was built.
-    env['NINJA_SUMMARIZE_BUILD'] = '1'
+    # Ensuring ninja does not attempt to summarize the build results in slightly
+    # faster builds. This script does many builds so this time can add up.
+    if 'NINJA_SUMMARIZE_BUILD' in env:
+        del env['NINJA_SUMMARIZE_BUILD']
     proc = subprocess.Popen([_AUTONINJA_PATH, '-C', out_dir] + targets,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT,
