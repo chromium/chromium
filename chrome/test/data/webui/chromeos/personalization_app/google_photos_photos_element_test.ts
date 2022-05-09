@@ -18,6 +18,31 @@ suite('GooglePhotosPhotosTest', function() {
   let personalizationStore: TestPersonalizationStore;
   let wallpaperProvider: TestWallpaperProvider;
 
+  /** Dispatches a keydown event to |element| for the specified |key|. */
+  function dispatchKeydown(element: HTMLElement, key: string) {
+    const init: KeyboardEventInit = {bubbles: true, key};
+    switch (key) {
+      case 'ArrowDown':
+        init.keyCode = 40;
+        break;
+      case 'ArrowRight':
+        init.keyCode = 39;
+        break;
+      case 'ArrowLeft':
+        init.keyCode = 37;
+        break;
+      case 'ArrowUp':
+        init.keyCode = 38;
+        break;
+    }
+    element.dispatchEvent(new KeyboardEvent('keydown', init));
+  }
+
+  /** Returns the active element in |googlePhotosPhotosElement|'s shadow DOM. */
+  function getActiveElement(): Element|null {
+    return googlePhotosPhotosElement!.shadowRoot!.activeElement;
+  }
+
   /**
    * Returns the match for |selector| in |googlePhotosPhotosElement|'s shadow
    * DOM.
@@ -91,6 +116,16 @@ suite('GooglePhotosPhotosTest', function() {
     return {data};
   }
 
+  /**
+   * Waits for the specified |element| to be the active element in
+   * |googlePhotosPhotosElement|'s shadow DOM.
+   */
+  async function waitForActiveElement(element: Element) {
+    while (googlePhotosPhotosElement!.shadowRoot!.activeElement !== element) {
+      await waitAfterNextRender(googlePhotosPhotosElement!);
+    }
+  }
+
   setup(() => {
     const mocks = baseSetup();
     personalizationStore = mocks.personalizationStore;
@@ -101,6 +136,113 @@ suite('GooglePhotosPhotosTest', function() {
   teardown(async () => {
     await teardownElement(googlePhotosPhotosElement);
     googlePhotosPhotosElement = null;
+  });
+
+  test('advances focus', async () => {
+    // Initialize |photos| to result in the following formation:
+    //   First row
+    //   [1]
+    //   Second row
+    //   [2] [3]
+    //   Third row
+    //   [4]
+    const photos: GooglePhotosPhoto[] = [
+      // First row.
+      {
+        id: '1',
+        name: '1',
+        date: toString16('First row'),
+        url: {url: '1'},
+        location: '1'
+      },
+      // Second row.
+      {
+        id: '2',
+        name: '2',
+        date: toString16('Second row'),
+        url: {url: '2'},
+        location: '2'
+      },
+      {
+        id: '3',
+        name: '3',
+        date: toString16('Second row'),
+        url: {url: '3'},
+        location: '3'
+      },
+      // Third row.
+      {
+        id: '4',
+        name: '4',
+        date: toString16('Third row'),
+        url: {url: '4'},
+        location: '4'
+      }
+    ];
+
+    // Set values returned by |wallpaperProvider|.
+    wallpaperProvider.setGooglePhotosPhotos(photos);
+
+    // Initialize Google Photos data in the |personalizationStore|.
+    await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
+
+    // Initialize |googlePhotosPhotosElement|.
+    googlePhotosPhotosElement =
+        initElement(GooglePhotosPhotos, {hidden: false});
+    await waitAfterNextRender(googlePhotosPhotosElement);
+
+    // Focus the first photo.
+    const photoSelector =
+        'wallpaper-grid-item:not([hidden]).photo:not([placeholder])';
+    const photoEls = querySelectorAll(photoSelector);
+    assertEquals(photoEls?.length, 4);
+    (photoEls?.[0] as HTMLElement).focus();
+    await waitForActiveElement(photoEls?.[0]!);
+
+    // Use the right arrow key to traverse to the last photo. Focus should pass
+    // through all the photos in between.
+    for (let i = 1; i <= 3; ++i) {
+      dispatchKeydown(getActiveElement()?.closest('.row')!, 'ArrowRight');
+      await waitForActiveElement(photoEls?.[i]!);
+    }
+
+    // Use the left arrow key to traverse to the first photo. Focus should pass
+    // through all the photos in between.
+    for (let i = 2; i >= 0; --i) {
+      dispatchKeydown(getActiveElement()?.closest('.row')!, 'ArrowLeft');
+      await waitForActiveElement(photoEls?.[i]!);
+    }
+
+    // Use the down arrow key to traverse to the last photo. Focus should only
+    // pass through the photos in between which are in the same column.
+    for (let i = 1; i <= 3; i = i + 2) {
+      dispatchKeydown(getActiveElement()?.closest('.row')!, 'ArrowDown');
+      await waitForActiveElement(photoEls?.[i]!);
+    }
+
+    // Use the up arrow key to traverse to the first photo. Focus should only
+    // pass through the photos in between which are in the same column.
+    for (let i = 1; i >= 0; --i) {
+      dispatchKeydown(getActiveElement()?.closest('.row')!, 'ArrowUp');
+      await waitForActiveElement(photoEls?.[i]!);
+    }
+
+    // Focus the third photo.
+    dispatchKeydown(getActiveElement()?.closest('.row')!, 'ArrowRight');
+    dispatchKeydown(getActiveElement()?.closest('.row')!, 'ArrowRight');
+    await waitForActiveElement(photoEls?.[2]!);
+
+    // Because no photo exists directly below the third photo, the down arrow
+    // key should do nothing.
+    dispatchKeydown(getActiveElement()?.closest('.row')!, 'ArrowDown');
+    await new Promise<void>(resolve => setTimeout(resolve, 100));
+    assertEquals(getActiveElement(), photoEls?.[2]);
+
+    // Because no photo exists directly above the third photo, the up arrow key
+    // should do nothing.
+    dispatchKeydown(getActiveElement()?.closest('.row')!, 'ArrowUp');
+    await new Promise<void>(resolve => setTimeout(resolve, 100));
+    assertEquals(getActiveElement(), photoEls?.[2]);
   });
 
   [true, false].forEach(

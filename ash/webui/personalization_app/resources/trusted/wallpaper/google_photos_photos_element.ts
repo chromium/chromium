@@ -218,6 +218,18 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     model: {index: number, row: GooglePhotosPhoto[]},
   }) {
     switch (normalizeKeyForRTL(e.key, this.i18n('textdirection') === 'rtl')) {
+      case 'ArrowDown':
+        if (e.model.index < this.photosByRow_!.length - 1) {
+          // To be consistent with default iron-list grid behavior, the down
+          // arrow should only advance focus to the succeeding grid row if an
+          // item at the same column index as is currently focused exists.
+          const nextGridRow = this.photosByRow_[e.model.index + 1];
+          if (this.focusedColIndex_ >= nextGridRow.length) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }
+        return;
       case 'ArrowLeft':
         if (this.focusedColIndex_ > 0) {
           // Left arrow moves focus to the preceding grid item.
@@ -226,7 +238,8 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
         } else if (e.model.index > 0) {
           // Left arrow moves focus to the preceding grid item, wrapping to the
           // preceding grid row.
-          this.focusedColIndex_ = e.model.row.length - 1;
+          const previousGridRow = this.photosByRow_[e.model.index - 1];
+          this.focusedColIndex_ = previousGridRow.length - 1;
           this.$.grid.focusItem(e.model.index - 1);
         }
         return;
@@ -240,6 +253,18 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
           // the succeeding grid row.
           this.focusedColIndex_ = 0;
           this.$.grid.focusItem(e.model.index + 1);
+        }
+        return;
+      case 'ArrowUp':
+        if (e.model.index > 0) {
+          // To be consistent with default iron-list grid behavior, the up arrow
+          // should only advance focus to the preceding grid row if an item at
+          // the same column index as is currently focused exists.
+          const previousGridRow = this.photosByRow_[e.model.index - 1];
+          if (this.focusedColIndex_ >= previousGridRow.length) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
         }
         return;
       case 'Tab':
