@@ -78,10 +78,10 @@ class PerFrameContentTranslateDriver : public ContentTranslateDriver {
     void Report();
 
     int pending_request_count = 0;
-    bool main_frame_success = false;
+    bool outermost_main_frame_success = false;
     int frame_request_count = 0;
     int frame_success_count = 0;
-    TranslateErrors::Type main_frame_error = TranslateErrors::NONE;
+    TranslateErrors::Type outermost_main_frame_error = TranslateErrors::NONE;
     std::vector<TranslateErrors::Type> frame_errors;
   };
 
