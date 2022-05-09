@@ -10,59 +10,43 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/screens/demo_setup_screen.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId DemoSetupScreenView::kScreenId;
-
 DemoSetupScreenView::~DemoSetupScreenView() = default;
 
 DemoSetupScreenHandler::DemoSetupScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated("login.DemoSetupScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
-DemoSetupScreenHandler::~DemoSetupScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+DemoSetupScreenHandler::~DemoSetupScreenHandler() = default;
 
 void DemoSetupScreenHandler::Show() {
   ShowInWebUI();
 }
 
-void DemoSetupScreenHandler::Hide() {}
-
-void DemoSetupScreenHandler::Bind(DemoSetupScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen);
-}
-
 void DemoSetupScreenHandler::OnSetupFailed(
     const DemoSetupController::DemoSetupError& error) {
   // TODO(wzang): Consider customization for RecoveryMethod::kReboot as well.
-  CallJS("login.DemoSetupScreen.onSetupFailed",
-         base::JoinString({error.GetLocalizedErrorMessage(),
-                           error.GetLocalizedRecoveryMessage()},
-                          u" "),
-         error.recovery_method() ==
-             DemoSetupController::DemoSetupError::RecoveryMethod::kPowerwash);
+  CallExternalAPI(
+      "onSetupFailed",
+      base::JoinString({error.GetLocalizedErrorMessage(),
+                        error.GetLocalizedRecoveryMessage()},
+                       u" "),
+      error.recovery_method() ==
+          DemoSetupController::DemoSetupError::RecoveryMethod::kPowerwash);
 }
 
 void DemoSetupScreenHandler::SetCurrentSetupStep(
     DemoSetupController::DemoSetupStep current_step) {
-  CallJS("login.DemoSetupScreen.setCurrentSetupStep",
-         DemoSetupController::GetDemoSetupStepString(current_step));
+  CallExternalAPI("setCurrentSetupStep",
+                  DemoSetupController::GetDemoSetupStepString(current_step));
 }
 
 void DemoSetupScreenHandler::OnSetupSucceeded() {
-  CallJS("login.DemoSetupScreen.onSetupSucceeded");
+  CallExternalAPI("onSetupSucceeded");
 }
-
-void DemoSetupScreenHandler::InitializeDeprecated() {}
 
 void DemoSetupScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {

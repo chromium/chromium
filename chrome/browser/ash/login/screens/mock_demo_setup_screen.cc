@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/mock_demo_setup_screen.h"
+#include "base/memory/weak_ptr.h"
 
 namespace ash {
 
 MockDemoSetupScreen::MockDemoSetupScreen(
-    DemoSetupScreenView* view,
+    base::WeakPtr<DemoSetupScreenView> view,
     const ScreenExitCallback& exit_callback)
     : DemoSetupScreen(view, exit_callback) {}
 
@@ -19,14 +20,6 @@ void MockDemoSetupScreen::ExitScreen(Result result) {
 
 MockDemoSetupScreenView::MockDemoSetupScreenView() = default;
 
-MockDemoSetupScreenView::~MockDemoSetupScreenView() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
-
-void MockDemoSetupScreenView::Bind(DemoSetupScreen* screen) {
-  screen_ = screen;
-  MockBind(screen);
-}
+MockDemoSetupScreenView::~MockDemoSetupScreenView() = default;
 
 }  // namespace ash

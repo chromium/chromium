@@ -5,31 +5,23 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_DEMO_SETUP_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_DEMO_SETUP_SCREEN_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace ash {
-class DemoSetupScreen;
-}
-
 namespace chromeos {
 
 // Interface of the demo mode setup screen view.
-class DemoSetupScreenView {
+class DemoSetupScreenView : public base::SupportsWeakPtr<DemoSetupScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"demo-setup"};
+  inline constexpr static StaticOobeScreenId kScreenId{"demo-setup",
+                                                       "DemoSetupScreen"};
 
   virtual ~DemoSetupScreenView();
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
-
-  // Hides the contents of the screen.
-  virtual void Hide() = 0;
-
-  // Sets view and screen.
-  virtual void Bind(ash::DemoSetupScreen* screen) = 0;
 
   // Updates current setup step.
   virtual void SetCurrentSetupStep(
@@ -59,23 +51,17 @@ class DemoSetupScreenHandler : public BaseScreenHandler,
 
   // DemoSetupScreenView:
   void Show() override;
-  void Hide() override;
-  void Bind(ash::DemoSetupScreen* screen) override;
   void SetCurrentSetupStep(
       DemoSetupController::DemoSetupStep current_step) override;
   void OnSetupFailed(const DemoSetupController::DemoSetupError& error) override;
   void OnSetupSucceeded() override;
 
   // BaseScreenHandler:
-  void InitializeDeprecated() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
 
   // BaseWebUIHandler:
   void GetAdditionalParameters(base::Value::Dict* parameters) override;
-
- private:
-  ash::DemoSetupScreen* screen_ = nullptr;
 };
 
 }  // namespace chromeos

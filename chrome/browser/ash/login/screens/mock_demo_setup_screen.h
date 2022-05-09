@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_DEMO_SETUP_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_DEMO_SETUP_SCREEN_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/screens/demo_setup_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/demo_setup_screen_handler.h"
@@ -14,7 +15,7 @@ namespace ash {
 
 class MockDemoSetupScreen : public DemoSetupScreen {
  public:
-  MockDemoSetupScreen(DemoSetupScreenView* view,
+  MockDemoSetupScreen(base::WeakPtr<DemoSetupScreenView> view,
                       const ScreenExitCallback& exit_callback);
   ~MockDemoSetupScreen() override;
 
@@ -30,8 +31,6 @@ class MockDemoSetupScreenView : public DemoSetupScreenView {
   ~MockDemoSetupScreenView() override;
 
   MOCK_METHOD(void, Show, ());
-  MOCK_METHOD(void, Hide, ());
-  MOCK_METHOD(void, MockBind, (DemoSetupScreen * screen));
   MOCK_METHOD(void, OnSetupSucceeded, ());
   MOCK_METHOD(void,
               OnSetupFailed,
@@ -39,11 +38,6 @@ class MockDemoSetupScreenView : public DemoSetupScreenView {
   MOCK_METHOD(void,
               SetCurrentSetupStep,
               (const DemoSetupController::DemoSetupStep current_step));
-
-  void Bind(DemoSetupScreen* screen) override;
-
- private:
-  DemoSetupScreen* screen_ = nullptr;
 };
 
 }  // namespace ash

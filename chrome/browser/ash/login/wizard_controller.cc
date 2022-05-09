@@ -579,7 +579,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnResetScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<DemoSetupScreen>(
-      oobe_ui->GetView<DemoSetupScreenHandler>(),
+      oobe_ui->GetView<DemoSetupScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnDemoSetupScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<EnableAdbSideloadingScreen>(

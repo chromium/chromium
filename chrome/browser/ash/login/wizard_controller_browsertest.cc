@@ -622,10 +622,9 @@ class WizardControllerFlowTest : public WizardControllerTest {
                                 base::Unretained(wizard_controller))));
 
     mock_demo_setup_screen_view_ = std::make_unique<MockDemoSetupScreenView>();
-    ExpectBind(mock_demo_setup_screen_view_.get());
     mock_demo_setup_screen_ =
         MockScreenExpectLifecycle(std::make_unique<MockDemoSetupScreen>(
-            mock_demo_setup_screen_view_.get(),
+            mock_demo_setup_screen_view_->AsWeakPtr(),
             base::BindRepeating(&WizardController::OnDemoSetupScreenExit,
                                 base::Unretained(wizard_controller))));
 
