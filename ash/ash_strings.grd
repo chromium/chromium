@@ -1829,6 +1829,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_TEMPLATES_MAX_TEMPLATES_TOOLTIP" desc="The disabled Save Desk as Template button tooltip text when maximum number of templates has been reached.">
         Only 6 templates allowed. Remove a template to save a new one.
       </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_MAX_SAVED_DESKS_TOOLTIP" desc="The disabled Save Desk for later button tooltip text when maximum number of saved desks has been reached.">
+        Only 6 saved desks allowed. Remove a desk to save a new one.
+      </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON" desc="The text of the desks templates button in the overview desks bar.">
         Templates
       </message>

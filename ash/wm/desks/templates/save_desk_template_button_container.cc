@@ -28,7 +28,6 @@ enum class TooltipStatus {
   kNumberOfTooltipStatus,
 };
 
-// TODO(yongshun): Update when specs are ready.
 constexpr std::array<int,
                      static_cast<int>(TooltipStatus::kNumberOfTooltipStatus)>
     kSaveAsTemplateButtonTooltipIDs = {
@@ -39,12 +38,11 @@ constexpr std::array<int,
         IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_AND_INCOGNITO_TOOLTIP,
 };
 
-// TODO(yongshun): Update when specs are ready.
 constexpr std::array<int,
                      static_cast<int>(TooltipStatus::kNumberOfTooltipStatus)>
     kSaveForLaterButtonTooltipIDs = {
         IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_FOR_LATER_BUTTON,
-        IDS_ASH_DESKS_TEMPLATES_MAX_TEMPLATES_TOOLTIP,
+        IDS_ASH_DESKS_TEMPLATES_MAX_SAVED_DESKS_TOOLTIP,
         IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_INCOGNITO_TOOLTIP,
         IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_TOOLTIP,
         IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_AND_INCOGNITO_TOOLTIP,
