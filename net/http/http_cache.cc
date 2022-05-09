@@ -1382,8 +1382,7 @@ void HttpCache::OnIOComplete(int result, PendingOp* pending_op) {
   // to move the callback used to be a CancelableOnceCallback. By the way, for
   // this to happen the action (to cancel B) has to be synchronous to the
   // notification for request A.
-  WorkItemList pending_items;
-  pending_items.swap(pending_op->pending_queue);
+  WorkItemList pending_items = std::move(pending_op->pending_queue);
   DeletePendingOp(pending_op);
 
   item->NotifyTransaction(result, entry);
