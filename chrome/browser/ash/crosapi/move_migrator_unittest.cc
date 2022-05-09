@@ -54,7 +54,11 @@ constexpr int kDataSize = sizeof(kDataContent);
 // included in `kExtensionsAshOnly`.
 constexpr char kMoveExtensionId[] = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
-constexpr syncer::ModelType kAshSyncDataType = syncer::ModelType::UNSPECIFIED;
+constexpr syncer::ModelType kAshSyncDataType =
+    browser_data_migrator_util::kAshOnlySyncDataTypes[0];
+constexpr syncer::ModelType kLacrosSyncDataType = syncer::ModelType::WEB_APPS;
+static_assert(!base::Contains(browser_data_migrator_util::kAshOnlySyncDataTypes,
+                              kLacrosSyncDataType));
 
 constexpr int64_t kRequiredDiskSpaceForBot =
     browser_data_migrator_util::kBuffer * 2;
@@ -264,9 +268,6 @@ void SetUpSyncData(const base::FilePath& profile_path,
   ASSERT_TRUE(status.ok());
 
   leveldb::WriteBatch batch;
-  const syncer::ModelType lacros_dt =
-      browser_data_migrator_util::kLacrosSyncDataTypes[0];
-
   if (ash) {
     batch.Put(syncer::FormatDataPrefix(kAshSyncDataType) + kMoveExtensionId,
               "ash_data");
@@ -276,11 +277,11 @@ void SetUpSyncData(const base::FilePath& profile_path,
               "ash_globalmetadata");
   }
   if (lacros) {
-    batch.Put(syncer::FormatDataPrefix(lacros_dt) + kMoveExtensionId,
+    batch.Put(syncer::FormatDataPrefix(kLacrosSyncDataType) + kMoveExtensionId,
               "lacros_data");
-    batch.Put(syncer::FormatMetaPrefix(lacros_dt) + kMoveExtensionId,
+    batch.Put(syncer::FormatMetaPrefix(kLacrosSyncDataType) + kMoveExtensionId,
               "lacros_metadata");
-    batch.Put(syncer::FormatGlobalMetadataKey(lacros_dt),
+    batch.Put(syncer::FormatGlobalMetadataKey(kLacrosSyncDataType),
               "lacros_globalmetadata");
   }
 

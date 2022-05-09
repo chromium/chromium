@@ -8,6 +8,7 @@
 
 #include <map>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -38,7 +39,12 @@ constexpr char kCodeCacheUMAName[] = "CodeCache";
 constexpr char kTextFileContent[] = "Hello, World!";
 constexpr int kTextFileSize = sizeof(kTextFileContent);
 constexpr char kMoveExtensionId[] = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-constexpr syncer::ModelType kAshSyncDataType = syncer::ModelType::UNSPECIFIED;
+
+constexpr syncer::ModelType kAshSyncDataType =
+    browser_data_migrator_util::kAshOnlySyncDataTypes[0];
+constexpr syncer::ModelType kLacrosSyncDataType = syncer::ModelType::WEB_APPS;
+static_assert(!base::Contains(browser_data_migrator_util::kAshOnlySyncDataTypes,
+                              kLacrosSyncDataType));
 
 struct TargetItemComparator {
   bool operator()(const TargetItem& t1, const TargetItem& t2) const {
@@ -142,22 +148,19 @@ void SetUpSyncData(const base::FilePath& path,
   ASSERT_TRUE(status.ok());
 
   leveldb::WriteBatch batch;
-  const syncer::ModelType lacros_dt =
-      browser_data_migrator_util::kLacrosSyncDataTypes[0];
-
-  batch.Put(syncer::FormatDataPrefix(lacros_dt) + kMoveExtensionId,
-            "lacros_data");
-  batch.Put(syncer::FormatMetaPrefix(lacros_dt) + kMoveExtensionId,
-            "lacros_metadata");
-  batch.Put(syncer::FormatGlobalMetadataKey(lacros_dt),
-            "lacros_globalmetadata");
-
   batch.Put(syncer::FormatDataPrefix(kAshSyncDataType) + kMoveExtensionId,
             "ash_data");
   batch.Put(syncer::FormatMetaPrefix(kAshSyncDataType) + kMoveExtensionId,
             "ash_metadata");
   batch.Put(syncer::FormatGlobalMetadataKey(kAshSyncDataType),
             "ash_globalmetadata");
+
+  batch.Put(syncer::FormatDataPrefix(kLacrosSyncDataType) + kMoveExtensionId,
+            "lacros_data");
+  batch.Put(syncer::FormatMetaPrefix(kLacrosSyncDataType) + kMoveExtensionId,
+            "lacros_metadata");
+  batch.Put(syncer::FormatGlobalMetadataKey(kLacrosSyncDataType),
+            "lacros_globalmetadata");
 
   leveldb::WriteOptions write_options;
   write_options.sync = true;
@@ -447,13 +450,13 @@ TEST(BrowserDataMigratorUtilTest, MigrateSyncData) {
 
   // Check resulting Lacros database.
   auto lacros_db_map = ReadLevelDB(lacros_db_path);
-  const syncer::ModelType lacros_dt =
-      browser_data_migrator_util::kLacrosSyncDataTypes[0];
   std::map<std::string, std::string> expected_lacros_db_map = {
-      {syncer::FormatDataPrefix(lacros_dt) + kMoveExtensionId, "lacros_data"},
-      {syncer::FormatMetaPrefix(lacros_dt) + kMoveExtensionId,
+      {syncer::FormatDataPrefix(kLacrosSyncDataType) + kMoveExtensionId,
+       "lacros_data"},
+      {syncer::FormatMetaPrefix(kLacrosSyncDataType) + kMoveExtensionId,
        "lacros_metadata"},
-      {syncer::FormatGlobalMetadataKey(lacros_dt), "lacros_globalmetadata"},
+      {syncer::FormatGlobalMetadataKey(kLacrosSyncDataType),
+       "lacros_globalmetadata"},
   };
   EXPECT_EQ(expected_lacros_db_map, lacros_db_map);
 }

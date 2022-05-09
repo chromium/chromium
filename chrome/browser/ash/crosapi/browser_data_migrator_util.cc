@@ -627,9 +627,9 @@ leveldb::Status GetExtensionKeys(leveldb::DB* db,
 }
 
 // Given a key in Sync Data's leveldb, return true if (based on its prefix) its
-// data type is to be migrated to Lacros, false otherwise.
-bool IsLacrosSyncDataType(base::StringPiece key) {
-  for (auto type : kLacrosSyncDataTypes) {
+// data type has to stay in Ash and Ash only, false otherwise.
+bool IsAshOnlySyncDataType(base::StringPiece key) {
+  for (auto type : kAshOnlySyncDataTypes) {
     if ((base::StartsWith(key, FormatDataPrefix(type)) ||
          base::StartsWith(key, FormatMetaPrefix(type)) ||
          key == FormatGlobalMetadataKey(type))) {
@@ -775,12 +775,10 @@ bool MigrateSyncData(const base::FilePath& original_path,
       return false;
     }
 
-    // TODO(andreaorru): decide whether copy is better in some cases (e.g. user
-    // consents).
-    if (IsLacrosSyncDataType(key))
-      lacros_write_batch.Put(key, value);
-    else
+    if (IsAshOnlySyncDataType(key))
       ash_write_batch.Put(key, value);
+    else
+      lacros_write_batch.Put(key, value);
   }
 
   // Write everything in bulk.

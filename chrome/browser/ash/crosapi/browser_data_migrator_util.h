@@ -289,13 +289,18 @@ constexpr const char* kLacrosOnlyPreferencesKeys[] = {
     "sync.cache_guid",
 };
 
-// List of data types in Sync Data that have to be migrated to Lacros.
-// TODO(andreaorru): fill this in with the complete list.
+// List of data types in Sync Data that have to stay in Ash and Ash only.
 static_assert(38 == syncer::GetNumModelTypes(),
-              "If adding a new sync data type, update the list below below if"
-              " you want to migrate the new data type to Lacros.");
-constexpr syncer::ModelType kLacrosSyncDataTypes[] = {
-    syncer::ModelType::WEB_APPS,
+              "If adding a new sync data type, update the lists below if"
+              " you want to keep the new data type in Ash only.");
+constexpr syncer::ModelType kAshOnlySyncDataTypes[] = {
+    syncer::ModelType::APP_LIST,
+    syncer::ModelType::ARC_PACKAGE,
+    syncer::ModelType::OS_PREFERENCES,
+    syncer::ModelType::OS_PRIORITY_PREFERENCES,
+    syncer::ModelType::PRINTERS,
+    syncer::ModelType::WIFI_CONFIGURATIONS,
+    syncer::ModelType::WORKSPACE_DESK,
 };
 
 constexpr char kTotalSize[] = "Ash.UserDataStatsRecorder.DataSize.TotalSize";
