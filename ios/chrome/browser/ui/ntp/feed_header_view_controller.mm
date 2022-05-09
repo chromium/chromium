@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
@@ -22,6 +23,7 @@
 #endif
 
 namespace {
+
 // Leading margin for title label. Its used to align with the Card leading
 // margin.
 const CGFloat kTitleHorizontalMargin = 19;
@@ -62,12 +64,17 @@ const CGFloat kFollowingSegmentDotMargin = 8;
 // Duration of the fade animation for elements that toggle when switching feeds.
 const CGFloat kSegmentAnimationDuration = 0.3;
 
-// Image names for feed header icons.
-NSString* kMenuIcon = @"ellipsis";
-NSString* kSortIcon = @"arrow.up.arrow.down";
 // TODO(crbug.com/1277974): Remove this when Web Channels is launched.
 NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
-}
+
+// Specific symbols used in the feed header.
+NSString* kSortArrowFeedSymbol = @"arrow.up.arrow.down";
+NSString* kEllipsisFeedSymbol = @"ellipsis";
+
+// The size of feed symbol images.
+NSInteger kFeedSymbolPointSize = 17;
+
+}  // namespace
 
 @interface FeedHeaderViewController ()
 
@@ -311,16 +318,20 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
   menuButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_MENU_ACCESSIBILITY_LABEL);
   if (IsWebChannelsEnabled()) {
-    [menuButton setImage:[UIImage systemImageNamed:kMenuIcon]
+    [menuButton setImage:DefaultSymbolTemplateWithPointSize(
+                             kEllipsisFeedSymbol, kFeedSymbolPointSize)
                 forState:UIControlStateNormal];
     menuButton.backgroundColor = [UIColor colorNamed:kGrey100Color];
-    menuButton.clipsToBounds = YES;
     menuButton.layer.cornerRadius = kButtonSize / 2;
+    menuButton.clipsToBounds = YES;
   } else {
-    [menuButton
-        setImage:[[UIImage imageNamed:kDiscoverMenuIcon]
-                     imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-        forState:UIControlStateNormal];
+    UIImage* menuIcon =
+        UseSymbols()
+            ? DefaultSymbolTemplateWithPointSize(kGearShapeSymbol,
+                                                 kFeedSymbolPointSize)
+            : [[UIImage imageNamed:kDiscoverMenuIcon]
+                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [menuButton setImage:menuIcon forState:UIControlStateNormal];
     menuButton.tintColor = [UIColor colorNamed:kGrey600Color];
     menuButton.imageEdgeInsets = UIEdgeInsetsMake(
         kHeaderMenuButtonInsetTopAndBottom, kHeaderMenuButtonInsetSides,
@@ -338,7 +349,8 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
   sortButton.accessibilityIdentifier = kNTPFeedHeaderSortButtonIdentifier;
   sortButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_FEED_SORT_ACCESSIBILITY_LABEL);
-  [sortButton setImage:[UIImage systemImageNamed:kSortIcon]
+  [sortButton setImage:DefaultSymbolTemplateWithPointSize(kSortArrowFeedSymbol,
+                                                          kFeedSymbolPointSize)
               forState:UIControlStateNormal];
   sortButton.showsMenuAsPrimaryAction = YES;
 
