@@ -548,7 +548,7 @@ union BluetoothResult {
 
 // Information related to one of a device's Bluetooth adapters.
 //
-// NextMinVersion: 2, NextIndex: 9
+// NextMinVersion: 3, NextIndex: 11
 struct BluetoothAdapterInfo {
   // The name of the adapter.
   string name@0;
@@ -568,12 +568,16 @@ struct BluetoothAdapterInfo {
   [MinVersion=1] array<string>? uuids@7;
   // Local Device ID information.
   [MinVersion=1] string? modalias@8;
+  // List of allowed system devices.
+  [MinVersion=2] array<string>? service_allow_list@9;
+  // A dictionary of supported capabilities.
+  [MinVersion=2] SupportedCapabilities? supported_capabilities@10;
 };
 
 
 // Information related to one of a adapter's Bluetooth connected devices.
 //
-// NextMinVersion: 1, NextIndex: 8
+// NextMinVersion: 2, NextIndex: 9
 struct BluetoothDeviceInfo {
   // The MAC address of the device.
   string address@0;
@@ -591,6 +595,8 @@ struct BluetoothDeviceInfo {
   NullableUint16 mtu@6;
   // The list of the available remote services.
   array<string>? uuids@7;
+  // The battery percentage of the device.
+  [MinVersion=1] NullableUint8? battery_percentage@8;
 };
 
 // An enumeration of type in Bluetooth device info.
@@ -608,6 +614,20 @@ enum BluetoothDeviceType {
   kLe = 3,
   // DUAL.
   kDual = 4,
+};
+
+// Supported Capabilities related information.
+//
+// NextMinVersion: 1, NextIndex: 4
+struct SupportedCapabilities {
+  // Max advertising data length.
+  uint8 max_adv_len@0;
+  // Max advertising scan response length.
+  uint8 max_scn_rsp_len@1;
+  // Min advertising tx power (dBm).
+  int16 min_tx_power@2;
+  // Max advertising tx power (dBm).
+  int16 max_tx_power@3;
 };
 
 // System probe result. Can either be populated with the SystemInfo or an error
