@@ -413,7 +413,8 @@ void WebResourceRequestSender::OnUploadProgress(int64_t position,
 }
 
 void WebResourceRequestSender::OnReceivedResponse(
-    network::mojom::URLResponseHeadPtr response_head) {
+    network::mojom::URLResponseHeadPtr response_head,
+    base::TimeTicks response_arrival) {
   TRACE_EVENT0("loading", "WebResourceRequestSender::OnReceivedResponse");
   if (!request_info_)
     return;
@@ -439,7 +440,8 @@ void WebResourceRequestSender::OnReceivedResponse(
     request_info_->peer = std::move(new_peer);
   }
 
-  request_info_->peer->OnReceivedResponse(response_head.Clone());
+  request_info_->peer->OnReceivedResponse(response_head.Clone(),
+                                          response_arrival);
   if (!request_info_)
     return;
 

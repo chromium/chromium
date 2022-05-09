@@ -1748,6 +1748,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Loading.CachedResponseArrivalAtRenderer"
+    units="Milliseconds" expires_after="2022-11-01">
+  <owner>yhirano@chromium.org</owner>
+  <owner>loadingg-dev@chromium.org</owner>
+  <summary>
+    The amount of time taken to get a cached response. Recorded when the
+    response arrives, and recorded only when both of the response and the code
+    cache were cached.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Loading.CodeCacheArrivalAtRenderer" units="Milliseconds"
+    expires_after="2022-11-01">
+  <owner>yhirano@chromium.org</owner>
+  <owner>loading-dev@chromium.org</owner>
+  <summary>
+    The amount of time taken to get a code cache. Recorded when the response
+    arrives, and recorded only when both of the response and the code cache were
+    cached.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Blink.MainFrame.UpdateTime" units="microseconds"
     expires_after="2022-09-11">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->

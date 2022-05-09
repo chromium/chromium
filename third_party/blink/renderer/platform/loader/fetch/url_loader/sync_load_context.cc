@@ -199,7 +199,8 @@ void SyncLoadContext::CancelRedirect() {
 }
 
 void SyncLoadContext::OnReceivedResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    base::TimeTicks response_arrival_at_renderer) {
   DCHECK(!Completed());
   response_->head = std::move(head);
 }

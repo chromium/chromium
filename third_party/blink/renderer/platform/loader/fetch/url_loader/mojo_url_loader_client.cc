@@ -53,17 +53,21 @@ class MojoURLLoaderClient::DeferredOnReceiveResponse final
     : public DeferredMessage {
  public:
   explicit DeferredOnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head)
-      : response_head_(std::move(response_head)) {}
+      network::mojom::URLResponseHeadPtr response_head,
+      base::TimeTicks response_arrival)
+      : response_head_(std::move(response_head)),
+        response_arrival_(response_arrival) {}
 
   void HandleMessage(
       WebResourceRequestSender* resource_request_sender) override {
-    resource_request_sender->OnReceivedResponse(std::move(response_head_));
+    resource_request_sender->OnReceivedResponse(std::move(response_head_),
+                                                response_arrival_);
   }
   bool IsCompletionMessage() const override { return false; }
 
  private:
   network::mojom::URLResponseHeadPtr response_head_;
+  const base::TimeTicks response_arrival_;
 };
 
 class MojoURLLoaderClient::DeferredOnReceiveRedirect final
@@ -326,13 +330,15 @@ void MojoURLLoaderClient::OnReceiveResponse(
                last_loaded_url_.GetString().Utf8());
 
   has_received_response_head_ = true;
+  base::TimeTicks response_arrival_timing = base::TimeTicks::Now();
 
   base::WeakPtr<MojoURLLoaderClient> weak_this = weak_factory_.GetWeakPtr();
   if (NeedsStoringMessage()) {
-    StoreAndDispatch(
-        std::make_unique<DeferredOnReceiveResponse>(std::move(response_head)));
+    StoreAndDispatch(std::make_unique<DeferredOnReceiveResponse>(
+        std::move(response_head), response_arrival_timing));
   } else {
-    resource_request_sender_->OnReceivedResponse(std::move(response_head));
+    resource_request_sender_->OnReceivedResponse(std::move(response_head),
+                                                 response_arrival_timing);
   }
 
   if (!weak_this)

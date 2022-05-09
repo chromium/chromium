@@ -66,7 +66,8 @@ bool ExtensionLocalizationPeer::OnReceivedRedirect(
 }
 
 void ExtensionLocalizationPeer::OnReceivedResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    base::TimeTicks response_arrival_at_renderer) {
   response_head_ = std::move(head);
 }
 

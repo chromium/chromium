@@ -57,7 +57,8 @@ class MockWebResourceRequestSender : public WebResourceRequestSender {
     }
   }
 
-  void OnReceivedResponse(network::mojom::URLResponseHeadPtr head) override {
+  void OnReceivedResponse(network::mojom::URLResponseHeadPtr head,
+                          base::TimeTicks response_arrival_time) override {
     EXPECT_FALSE(context_->cancelled);
     EXPECT_FALSE(context_->received_response);
     EXPECT_FALSE(context_->complete);

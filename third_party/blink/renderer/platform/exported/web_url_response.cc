@@ -265,6 +265,10 @@ void WebURLResponse::SetWasFetchedViaServiceWorker(bool value) {
   resource_response_->SetWasFetchedViaServiceWorker(value);
 }
 
+void WebURLResponse::SetArrivalTimeAtRenderer(base::TimeTicks value) {
+  resource_response_->SetArrivalTimeAtRenderer(value);
+}
+
 network::mojom::FetchResponseSource
 WebURLResponse::GetServiceWorkerResponseSource() const {
   return resource_response_->GetServiceWorkerResponseSource();

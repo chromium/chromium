@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -51,8 +52,11 @@ class BLINK_PLATFORM_EXPORT WebRequestPeer
       std::vector<std::string>* removed_headers) = 0;
 
   // Called when response headers are available (after all redirects have
-  // been followed).
-  virtual void OnReceivedResponse(network::mojom::URLResponseHeadPtr head) = 0;
+  // been followed). `response_arrival` represents the timing at which the
+  // response arrived at the renderer.
+  virtual void OnReceivedResponse(
+      network::mojom::URLResponseHeadPtr head,
+      base::TimeTicks response_arrival_at_renderer = base::TimeTicks()) = 0;
 
   // Called when the response body becomes available.
   virtual void OnStartLoadingResponseBody(

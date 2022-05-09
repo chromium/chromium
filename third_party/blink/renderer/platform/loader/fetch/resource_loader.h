@@ -282,6 +282,9 @@ class PLATFORM_EXPORT ResourceLoader final
       feature_handle_for_scheduler_;
 
   base::TimeTicks response_end_time_for_error_cases_;
+
+  base::TimeTicks request_start_time_;
+  base::TimeTicks code_cache_arrival_time_;
 };
 
 }  // namespace blink

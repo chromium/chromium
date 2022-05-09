@@ -261,7 +261,9 @@ class WebURLLoader::Context : public WebRequestPeer {
   bool OnReceivedRedirect(const net::RedirectInfo& redirect_info,
                           network::mojom::URLResponseHeadPtr head,
                           std::vector<std::string>* removed_headers) override;
-  void OnReceivedResponse(network::mojom::URLResponseHeadPtr head) override;
+  void OnReceivedResponse(
+      network::mojom::URLResponseHeadPtr head,
+      base::TimeTicks response_arrival_at_renderer) override;
   void OnStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body) override;
   void OnTransferSizeUpdated(int transfer_size_diff) override;
@@ -547,7 +549,8 @@ bool WebURLLoader::Context::OnReceivedRedirect(
 }
 
 void WebURLLoader::Context::OnReceivedResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    base::TimeTicks response_arrival_at_renderer) {
   if (!client_)
     return;
 
@@ -564,6 +567,7 @@ void WebURLLoader::Context::OnReceivedResponse(
   WebURLResponse response;
   PopulateURLResponse(url_, *head, &response, has_devtools_request_id_,
                       request_id_);
+  response.SetArrivalTimeAtRenderer(response_arrival_at_renderer);
 
   client_->DidReceiveResponse(response);
 

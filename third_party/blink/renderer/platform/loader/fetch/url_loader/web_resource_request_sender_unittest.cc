@@ -105,7 +105,8 @@ class TestResourceRequestSenderDelegate
                             std::vector<std::string>*) override {
       return false;
     }
-    void OnReceivedResponse(network::mojom::URLResponseHeadPtr head) override {
+    void OnReceivedResponse(network::mojom::URLResponseHeadPtr head,
+                            base::TimeTicks response_arrival) override {
       response_head_ = std::move(head);
     }
     void OnStartLoadingResponseBody(
@@ -141,7 +142,8 @@ class MockRequestPeer : public WebRequestPeer {
     last_load_timing_ = head->load_timing;
     return true;
   }
-  void OnReceivedResponse(network::mojom::URLResponseHeadPtr head) override {
+  void OnReceivedResponse(network::mojom::URLResponseHeadPtr head,
+                          base::TimeTicks response_arrival) override {
     last_load_timing_ = head->load_timing;
     received_response_ = true;
     if (cancel_on_receive_response_) {

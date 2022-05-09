@@ -75,8 +75,8 @@ class MockRequestPeer : public blink::WebRequestPeer {
                bool(const net::RedirectInfo& redirect_info,
                     network::mojom::URLResponseHeadPtr head,
                     std::vector<std::string>*));
-  MOCK_METHOD1(OnReceivedResponse,
-               void(network::mojom::URLResponseHeadPtr head));
+  MOCK_METHOD2(OnReceivedResponse,
+               void(network::mojom::URLResponseHeadPtr head, base::TimeTicks));
   void OnStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body) override {
     body_handle_ = std::move(body);
@@ -214,7 +214,7 @@ TEST_F(ExtensionLocalizationPeerTest, OnCompletedRequestEmptyData) {
   EXPECT_CALL(*original_peer_, OnReceivedDataInternal(std::string()));
   EXPECT_CALL(*sender_, Send(_)).Times(0);
 
-  EXPECT_CALL(*original_peer_, OnReceivedResponse(_));
+  EXPECT_CALL(*original_peer_, OnReceivedResponse(_, _));
   network::URLLoaderCompletionStatus status(net::OK);
   EXPECT_CALL(*original_peer_, OnCompletedRequest(status));
 
@@ -229,7 +229,7 @@ TEST_F(ExtensionLocalizationPeerTest, OnCompletedRequestNoCatalogs) {
   const std::string kExpectedData = "some text";
   EXPECT_CALL(*sender_, Send(_));
 
-  EXPECT_CALL(*original_peer_, OnReceivedResponse(_)).Times(1);
+  EXPECT_CALL(*original_peer_, OnReceivedResponse(_, _)).Times(1);
   EXPECT_CALL(*original_peer_, OnReceivedDataInternal(kExpectedData)).Times(1);
   network::URLLoaderCompletionStatus status(net::OK);
   EXPECT_CALL(*original_peer_, OnCompletedRequest(status)).Times(1);
@@ -241,7 +241,7 @@ TEST_F(ExtensionLocalizationPeerTest, OnCompletedRequestNoCatalogs) {
   // Test if Send gets called again (it shouldn't be) when first call returned
   // an empty dictionary.
   SetUpExtensionLocalizationPeer("text/css", GURL(kExtensionUrl_1));
-  EXPECT_CALL(*original_peer_, OnReceivedResponse(_)).Times(1);
+  EXPECT_CALL(*original_peer_, OnReceivedResponse(_, _)).Times(1);
   EXPECT_CALL(*original_peer_, OnReceivedDataInternal(kExpectedData)).Times(1);
   EXPECT_CALL(*original_peer_, OnCompletedRequest(status)).Times(1);
   SetData(kExpectedData);
@@ -264,7 +264,7 @@ TEST_F(ExtensionLocalizationPeerTest, OnCompletedRequestWithCatalogs) {
 
   // __MSG_text__ gets replaced with "new text".
   std::string data("some new text");
-  EXPECT_CALL(*original_peer_, OnReceivedResponse(_));
+  EXPECT_CALL(*original_peer_, OnReceivedResponse(_, _));
   EXPECT_CALL(*original_peer_, OnReceivedDataInternal(data));
 
   network::URLLoaderCompletionStatus status(net::OK);
@@ -291,7 +291,7 @@ TEST_F(ExtensionLocalizationPeerTest, OnCompletedRequestReplaceMessagesFails) {
   EXPECT_CALL(*sender_, Send(_)).Times(0);
 
   // __MSG_missing_message__ is missing, so message stays the same.
-  EXPECT_CALL(*original_peer_, OnReceivedResponse(_));
+  EXPECT_CALL(*original_peer_, OnReceivedResponse(_, _));
   EXPECT_CALL(*original_peer_, OnReceivedDataInternal(message));
 
   network::URLLoaderCompletionStatus status(net::OK);

@@ -226,6 +226,13 @@ class PLATFORM_EXPORT ResourceResponse final {
     was_fetched_via_service_worker_ = value;
   }
 
+  base::TimeTicks ArrivalTimeAtRenderer() const {
+    return arrival_time_at_renderer_;
+  }
+  void SetArrivalTimeAtRenderer(base::TimeTicks value) {
+    arrival_time_at_renderer_ = value;
+  }
+
   network::mojom::FetchResponseSource GetServiceWorkerResponseSource() const {
     return service_worker_response_source_;
   }
@@ -597,6 +604,9 @@ class PLATFORM_EXPORT ResourceResponse final {
   // Sizes of the response body in bytes after any content-encoding is
   // removed.
   int64_t decoded_body_length_ = 0;
+
+  // Represents when the response arrives at the renderer.
+  base::TimeTicks arrival_time_at_renderer_;
 
   // This is propagated from the browser process's PrefetchURLLoader on
   // cross-origin prefetch responses. It is used to pass the token along to
