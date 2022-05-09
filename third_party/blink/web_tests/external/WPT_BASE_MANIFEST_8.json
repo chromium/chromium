@@ -1794,6 +1794,13 @@
         {}
        ]
       ],
+      "nested-multicol-fieldset-tall-trailing-padding.html": [
+       "b155a4d7f42283c18e6ea113dc2000393752c72a",
+       [
+        null,
+        {}
+       ]
+      ],
       "nested-multicol-with-float-between.html": [
        "3a583ed0dafa947165f514d00c1dc3e327876632",
        [
@@ -148226,7 +148233,7 @@
       ]
      ],
      "backdrop-animate-002.html": [
-      "4d897a0637b3b38bc3679792c81fbde492ca8ece",
+      "1facc170fccf1a200b0c0c30ba6491cd4c411a93",
       [
        null,
        [
@@ -278072,7 +278079,7 @@
       []
      ],
      "backdrop-animate-002-ref.html": [
-      "b4f0ebd4b8072368a336942fe9cf24c6d56c6c4a",
+      "b020f0d17af22ac579c46e5360adc2ac80995dd3",
       []
      ],
      "before-after-dynamic-custom-property-001-ref.html": [
@@ -330800,7 +330807,7 @@
       []
      ],
      "usb-helpers.js": [
-      "8b8365093cd073d95e51a365e3a1552d592f1726",
+      "1197c43e44e6727b9f3c8fe709bc0fc7c6dd6b6f",
       []
      ]
     },
@@ -337053,7 +337060,7 @@
      ]
     ],
     "idbfactory-open-opaque-origin.html": [
-     "f69c47d31ad0baf1e91cdb40ab59a330a71a889f",
+     "2c2889fbf7d11515afe088f59db878478b24bb66",
      [
       null,
       {}
@@ -365551,6 +365558,20 @@
       ],
       "block-in-inline-hittest-float-002.html": [
        "91f8e447d90c09f4b0c6dbaf09e2ec782d9da674",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-in-inline-hittest-margin.html": [
+       "053630706a109aaca8821a2a04509e51c5842898",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-in-inline-hittest-relpos-zindex.html": [
+       "221b70d44b30ebe0bb32d0949706f5b06afaa633",
        [
         null,
         {}
@@ -395937,6 +395958,13 @@
      ],
      "not-specificity.html": [
       "d9a2a4ddffad5de8c0896dc23d710f4eb9931ef1",
+      [
+       null,
+       {}
+      ]
+     ],
+     "only-child.html": [
+      "590c07ba2b519ee61127be68774de94f6d39031c",
       [
        null,
        {}
@@ -466013,7 +466041,7 @@
         ]
        ],
        "selection-not-application-textarea.html": [
-        "e8e82791880e163f513cf64d5df3049e6c7c3b15",
+        "48c6313f3241ff7f7afd2e188e90257860a2f355",
         [
          null,
          {}
@@ -559221,7 +559249,7 @@
      ]
     ],
     "protected-interface-classes.https.any.js": [
-     "cfc6f6925667aaa53870734ca72ab25f6a0cc599",
+     "027c2c418c81a5e8a301217fd0c88b3d605821c3",
      [
       "webusb/protected-interface-classes.https.any.html",
       {
@@ -559574,7 +559602,7 @@
      ]
     ],
     "usbDevice.https.any.js": [
-     "527d238d69b703b1fcf5d8a001d02e9f87b5689a",
+     "b1b0c133ce160a314ea392514ac5b38e4cac136d",
      [
       "webusb/usbDevice.https.any.html",
       {
