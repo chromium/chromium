@@ -318,15 +318,13 @@ void ContextMenuController::CustomContextMenuAction(uint32_t action) {
 }
 
 void ContextMenuController::ContextMenuClosed(const KURL& link_followed) {
-  if (!link_followed.IsValid())
-    return;
-
-  WebLocalFrameImpl* selected_web_frame =
-      WebLocalFrameImpl::FromFrame(hit_test_result_.InnerNodeFrame());
-  if (!selected_web_frame)
-    return;
-
-  selected_web_frame->SendPings(link_followed);
+  if (link_followed.IsValid()) {
+    WebLocalFrameImpl* selected_web_frame =
+        WebLocalFrameImpl::FromFrame(hit_test_result_.InnerNodeFrame());
+    if (selected_web_frame)
+      selected_web_frame->SendPings(link_followed);
+  }
+  ClearContextMenu();
 }
 
 static int ComputeEditFlags(Document& selected_document, Editor& editor) {
