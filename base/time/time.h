@@ -442,13 +442,8 @@ class TimeBase {
   // the other subclasses can vary each time the application is restarted.
   constexpr TimeDelta since_origin() const;
 
-  constexpr TimeClass& operator=(TimeClass other) {
-    us_ = other.us_;
-    return *(static_cast<TimeClass*>(this));
-  }
-
   // Compute the difference between two times.
-  constexpr TimeDelta operator-(TimeClass other) const;
+  constexpr TimeDelta operator-(const TimeBase<TimeClass>& other) const;
 
   // Return a new time modified by some delta.
   constexpr TimeClass operator+(TimeDelta delta) const;
@@ -463,12 +458,24 @@ class TimeBase {
   }
 
   // Comparison operators
-  constexpr bool operator==(TimeClass other) const { return us_ == other.us_; }
-  constexpr bool operator!=(TimeClass other) const { return us_ != other.us_; }
-  constexpr bool operator<(TimeClass other) const { return us_ < other.us_; }
-  constexpr bool operator<=(TimeClass other) const { return us_ <= other.us_; }
-  constexpr bool operator>(TimeClass other) const { return us_ > other.us_; }
-  constexpr bool operator>=(TimeClass other) const { return us_ >= other.us_; }
+  constexpr bool operator==(const TimeBase<TimeClass>& other) const {
+    return us_ == other.us_;
+  }
+  constexpr bool operator!=(const TimeBase<TimeClass>& other) const {
+    return us_ != other.us_;
+  }
+  constexpr bool operator<(const TimeBase<TimeClass>& other) const {
+    return us_ < other.us_;
+  }
+  constexpr bool operator<=(const TimeBase<TimeClass>& other) const {
+    return us_ <= other.us_;
+  }
+  constexpr bool operator>(const TimeBase<TimeClass>& other) const {
+    return us_ > other.us_;
+  }
+  constexpr bool operator>=(const TimeBase<TimeClass>& other) const {
+    return us_ >= other.us_;
+  }
 
  protected:
   constexpr explicit TimeBase(int64_t us) : us_(us) {}
@@ -947,7 +954,8 @@ constexpr TimeDelta TimeBase<TimeClass>::since_origin() const {
 }
 
 template <class TimeClass>
-constexpr TimeDelta TimeBase<TimeClass>::operator-(TimeClass other) const {
+constexpr TimeDelta TimeBase<TimeClass>::operator-(
+    const TimeBase<TimeClass>& other) const {
   return Microseconds(us_ - other.us_);
 }
 
