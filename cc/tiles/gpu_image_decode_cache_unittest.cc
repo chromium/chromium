@@ -3132,7 +3132,7 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     // If `draw_image` is tone mapped, then it will be converted to RGBA
     // during tone mapping.
     bool color_converted_to_rgba = use_transfer_cache_ &&
-                                   decoded_cs.IsPQOrHLG() &&
+                                   decoded_cs.IsToneMappedByDefault() &&
                                    cache->SupportsColorSpaceConversion();
 
     if (decodes_to_yuv && !color_converted_to_rgba) {

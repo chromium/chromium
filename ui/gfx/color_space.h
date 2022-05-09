@@ -290,8 +290,15 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // Returns true if the transfer function is an HDR one (SMPTE 2084, HLG, etc).
   bool IsHDR() const;
 
-  // Returns true if the transfer function is PQ or HLG.
-  bool IsPQOrHLG() const;
+  // Returns true if there exists a default tone mapping that should be applied
+  // when drawing content with this color space. This is true for spaces with
+  // the PQ and HLG transfer functions.
+  bool IsToneMappedByDefault() const;
+
+  // Returns true if the color space's interpretation is affected by the SDR
+  // white level parameter. This is true for spaces with the PQ, HLG, and
+  // SCRGB_LINEAR_80_NITS transfer functions.
+  bool IsAffectedBySDRWhiteLevel() const;
 
   // Returns true if the encoded values can be outside of the 0.0-1.0 range.
   bool FullRangeEncodedValues() const;

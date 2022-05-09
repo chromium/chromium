@@ -71,14 +71,15 @@ sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
     float dst_max_luminance_relative) {
   // Set unused parameters to bogus values, so that they do not result in
   // different keys for the same conversion.
-  if (!src.IsPQOrHLG()) {
-    // If the source is not HLG or PQ, then `dst_max_luminance_relative` will
-    // not be used, so set it to a nonsense value.
+  if (!src.IsToneMappedByDefault()) {
+    // If the source is not going to be tone mapped, then
+    // `dst_max_luminance_relative` will not be used, so set it to a nonsense
+    // value.
     dst_max_luminance_relative = 0;
 
-    // If neither source nor destination are HLG or PQ, then
-    // `sdr_max_luminance_nits` will not be used, so set it to a nonsense value.
-    if (!dst.IsPQOrHLG()) {
+    // If neither source nor destination will use `sdr_max_luminance_nits`, then
+    // set it to a nonsense value.
+    if (!dst.IsAffectedBySDRWhiteLevel() && !src.IsAffectedBySDRWhiteLevel()) {
       sdr_max_luminance_nits = 0;
     }
   }

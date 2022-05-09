@@ -377,8 +377,25 @@ bool ColorSpace::IsHDR() const {
          transfer_ == TransferID::SCRGB_LINEAR_80_NITS;
 }
 
-bool ColorSpace::IsPQOrHLG() const {
-  return transfer_ == TransferID::PQ || transfer_ == TransferID::HLG;
+bool ColorSpace::IsToneMappedByDefault() const {
+  switch (transfer_) {
+    case TransferID::PQ:
+    case TransferID::HLG:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool ColorSpace::IsAffectedBySDRWhiteLevel() const {
+  switch (transfer_) {
+    case TransferID::PQ:
+    case TransferID::HLG:
+    case TransferID::SCRGB_LINEAR_80_NITS:
+      return true;
+    default:
+      return false;
+  }
 }
 
 bool ColorSpace::FullRangeEncodedValues() const {
