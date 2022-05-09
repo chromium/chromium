@@ -159,12 +159,14 @@ void FakeScriptExecutorUiDelegate::SetShowFeedbackChip(
     bool show_feedback_chip) {}
 
 bool FakeScriptExecutorUiDelegate::SupportsExternalActions() {
-  return false;
+  return true;
 }
 
 void FakeScriptExecutorUiDelegate::ExecuteExternalAction(
     const external::Action& external_action,
     base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-        callback) {}
+        callback) {
+  std::move(callback).Run({true});
+}
 
 }  // namespace autofill_assistant

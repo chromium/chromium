@@ -464,6 +464,7 @@ source_set("unit_tests") {
     "actions/edit_password_action_unittest.cc",
     "actions/execute_js_action_unittest.cc",
     "actions/expect_navigation_action_unittest.cc",
+    "actions/external_action_unittest.cc",
     "actions/fallback_handler/required_field_unittest.cc",
     "actions/fallback_handler/required_fields_fallback_handler_unittest.cc",
     "actions/generate_password_for_form_field_action_unittest.cc",
