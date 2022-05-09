@@ -1,4 +1,0 @@
-file://components/feedback/OWNERS
-# This UI has been forked into chrome/browser/resources/feedback_webui/ as part
-# of migrating it to a proper WebUI page, and not a Chrome App. Probably best to
-# avoid making any changes during this migration.
