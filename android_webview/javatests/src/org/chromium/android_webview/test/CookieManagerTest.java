@@ -30,6 +30,7 @@ import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -681,6 +682,7 @@ public class CookieManagerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1323719")
     @Feature({"AndroidWebView", "Privacy"})
     public void testCookieStoreListener() throws Throwable {
         TestWebServer webServer = TestWebServer.startSsl();
