@@ -108,6 +108,7 @@ UnacceleratedStaticBitmapImage::ConvertToColorSpace(
     skia_image =
         skia_image->makeColorTypeAndColorSpace(color_type, color_space);
   }
+  CHECK(skia_image) << "Skia failed to convert image.";
   return UnacceleratedStaticBitmapImage::Create(skia_image, orientation_);
 }
 
