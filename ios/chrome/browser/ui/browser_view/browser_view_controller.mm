@@ -1248,6 +1248,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  DCHECK(self.browser);
+
   CGRect initialViewsRect = self.view.bounds;
   UIViewAutoresizing initialViewAutoresizing =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -1275,13 +1277,24 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // Install fake status bar for iPad iOS7
   [self installFakeStatusBar];
+
+  // TODO(crbug.com/1272534): Move BubblePresenter to BrowserCoordinator.
+  self.bubblePresenter =
+      [[BubblePresenter alloc] initWithBrowserState:self.browserState
+                                           delegate:self
+                                 rootViewController:self];
+  self.bubblePresenter.toolbarHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), ToolbarCommands);
+  [self.browser->GetCommandDispatcher()
+      startDispatchingToTarget:self.bubblePresenter
+                   forProtocol:@protocol(HelpCommands)];
+
   [self buildToolbarAndTabStrip];
   [self setUpViewLayout:YES];
   [self addConstraintsToToolbar];
 
-  // If the browser and browser state are valid, finish initialization.
-  if (self.browser && self.browserState)
-    [self addUIFunctionalityForBrowserAndBrowserState];
+  // Finish initialization.
+  [self addUIFunctionalityForBrowserAndBrowserState];
 
   // Add a tap gesture recognizer to save the last tap location for the source
   // location of the new tab animation.
@@ -1791,6 +1804,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       _locationBarModelDelegate.get(), kMaxURLDisplayChars);
   self.helper = [_dependencyFactory newBrowserViewControllerHelper];
 
+  self.popupMenuCoordinator =
+      [[PopupMenuCoordinator alloc] initWithBaseViewController:self
+                                                       browser:self.browser];
+  self.popupMenuCoordinator.bubblePresenter = self.bubblePresenter;
+  self.popupMenuCoordinator.UIUpdater = _toolbarCoordinatorAdaptor;
+  [self.popupMenuCoordinator start];
+
   PrimaryToolbarCoordinator* topToolbarCoordinator =
       [[PrimaryToolbarCoordinator alloc] initWithBrowser:self.browser];
   self.primaryToolbarCoordinator = topToolbarCoordinator;
@@ -2029,25 +2049,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       [NamedGuide guideWithName:kSecondaryToolbarGuide view:self.contentArea]
           .heightAnchor;
 
-  // TODO(crbug.com/1272534): Move BubblePresenter to BrowserCoordinator.
-  self.bubblePresenter =
-      [[BubblePresenter alloc] initWithBrowserState:self.browserState
-                                           delegate:self
-                                 rootViewController:self];
-  self.bubblePresenter.toolbarHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), ToolbarCommands);
-  [self.browser->GetCommandDispatcher()
-      startDispatchingToTarget:self.bubblePresenter
-                   forProtocol:@protocol(HelpCommands)];
   self.helpHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
-
-  self.popupMenuCoordinator =
-      [[PopupMenuCoordinator alloc] initWithBaseViewController:self
-                                                       browser:self.browser];
-  self.popupMenuCoordinator.bubblePresenter = self.bubblePresenter;
-  self.popupMenuCoordinator.UIUpdater = _toolbarCoordinatorAdaptor;
-  [self.popupMenuCoordinator start];
 
   self.primaryToolbarCoordinator.longPressDelegate = self.popupMenuCoordinator;
   self.secondaryToolbarCoordinator.longPressDelegate =

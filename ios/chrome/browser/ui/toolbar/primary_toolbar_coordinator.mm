@@ -73,7 +73,6 @@
   self.viewController = [[PrimaryToolbarViewController alloc] init];
   self.viewController.shouldHideOmniboxOnNTP =
       !self.browser->GetBrowserState()->IsOffTheRecord();
-  self.viewController.buttonFactory = [self buttonFactoryWithType:PRIMARY];
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
   self.viewController.dispatcher =
@@ -85,6 +84,11 @@
   self.orchestrator.toolbarAnimatee = self.viewController;
 
   [self setUpLocationBar];
+
+  // Button factory requires that the omnibox commands are set up, which is
+  // done by the location bar.
+  self.viewController.buttonFactory = [self buttonFactoryWithType:PRIMARY];
+
   self.viewController.locationBarViewController =
       self.locationBarCoordinator.locationBarViewController;
   self.orchestrator.locationBarAnimatee =

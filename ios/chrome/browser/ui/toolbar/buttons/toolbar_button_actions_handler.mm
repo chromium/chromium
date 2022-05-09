@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
@@ -31,19 +32,19 @@
 }
 
 - (void)tabGridTouchDown {
-  [self.dispatcher prepareTabSwitcher];
+  [self.applicationHandler prepareTabSwitcher];
 }
 
 - (void)tabGridTouchUp {
-  [self.dispatcher displayTabSwitcherInGridLayout];
+  [self.applicationHandler displayTabSwitcherInGridLayout];
 }
 
 - (void)toolsMenuAction {
-  [self.dispatcher showToolsMenuPopup];
+  [self.menuHandler showToolsMenuPopup];
 }
 
 - (void)shareAction {
-  [self.dispatcher sharePage];
+  [self.activityHandler sharePage];
 }
 
 - (void)reloadAction {
@@ -55,18 +56,18 @@
 }
 
 - (void)searchAction:(id)sender {
-  [self.dispatcher closeFindInPage];
+  [self.findHandler closeFindInPage];
   UIView* senderView = base::mac::ObjCCastStrict<UIView>(sender);
   CGPoint center = [senderView.superview convertPoint:senderView.center
                                                toView:nil];
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithIncognito:self.incognito
                                   originPoint:center];
-  [self.dispatcher openURLInNewTab:command];
+  [self.applicationHandler openURLInNewTab:command];
 }
 
 - (void)cancelOmniboxFocusAction {
-  [self.dispatcher cancelOmniboxEdit];
+  [self.omniboxHandler cancelOmniboxEdit];
 }
 
 @end

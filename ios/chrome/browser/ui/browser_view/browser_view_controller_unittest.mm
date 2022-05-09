@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_dependency_factory.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_helper.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
+#import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
@@ -125,6 +126,11 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
+    id mockActivityServiceCommandHandler =
+        OCMProtocolMock(@protocol(ActivityServiceCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mockActivityServiceCommandHandler
+                     forProtocol:@protocol(ActivityServiceCommands)];
     id mockFindInPageCommandHandler =
         OCMProtocolMock(@protocol(FindInPageCommands));
     [browser_->GetCommandDispatcher()

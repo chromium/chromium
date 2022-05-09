@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/lens_commands.h"
 #import "ios/chrome/browser/ui/commands/new_tab_page_commands.h"
@@ -26,7 +25,6 @@ class GURL;
 // TODO(crbug.com/906662) : Extract BrowserCoordinatorCommands from
 // BrowserCommands.
 @protocol BrowserCommands <NSObject,
-                           ActivityServiceCommands,
                            BrowserCoordinatorCommands,
                            NewTabPageCommands,
                            PageInfoCommands,
