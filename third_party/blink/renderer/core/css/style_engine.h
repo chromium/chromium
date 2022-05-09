@@ -341,6 +341,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void UpdateStyleRecalcRoot(ContainerNode* ancestor, Node* dirty_node);
   void UpdateLayoutTreeRebuildRoot(ContainerNode* ancestor, Node* dirty_node);
 
+  bool MarkReattachAllowed() const;
+
   CSSFontSelector* GetFontSelector() { return font_selector_; }
 
   void RemoveFontFaceRules(const HeapVector<Member<const StyleRuleFontFace>>&);

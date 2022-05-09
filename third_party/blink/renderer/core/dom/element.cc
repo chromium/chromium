@@ -3176,12 +3176,23 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 void Element::AttachLayoutTree(AttachContext& context) {
   DCHECK(GetDocument().InStyleRecalc());
 
+  StyleEngine& style_engine = GetDocument().GetStyleEngine();
+
   const ComputedStyle* style = GetComputedStyle();
   bool being_rendered =
       context.parent && style && !style->IsEnsuredInDisplayNone();
+
   if (!being_rendered && !ChildNeedsReattachLayoutTree()) {
-    Node::AttachLayoutTree(context);
-    return;
+    // We may have skipped recalc for this Element if it's a container query
+    // container. This recalc must be resumed now, since we're not going to
+    // create a LayoutObject for the Element after all.
+    style_engine.RecalcStyleForNonLayoutNGContainerDescendants(*this);
+    // The above recalc may have marked some descendant for reattach, which
+    // would set the child-needs flag.
+    if (!ChildNeedsReattachLayoutTree()) {
+      Node::AttachLayoutTree(context);
+      return;
+    }
   }
 
   AttachContext children_context(context);
@@ -3227,9 +3238,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
     // instance because the parent LayoutObject returns false for
     // IsChildAllowed, we need to complete the skipped style recalc for size
     // query containers as we would not have an NGBlockNode to resume from.
-    GetDocument()
-        .GetStyleEngine()
-        .RecalcStyleForNonLayoutNGContainerDescendants(*this);
+    style_engine.RecalcStyleForNonLayoutNGContainerDescendants(*this);
   }
 
   bool skip_container_descendants = SkippedContainerStyleRecalc();

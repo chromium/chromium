@@ -2635,6 +2635,8 @@ void StyleEngine::RecalcStyleForContainer(Element& container,
 
 void StyleEngine::RecalcStyleForNonLayoutNGContainerDescendants(
     Element& container) {
+  DCHECK(InRebuildLayoutTree());
+
   if (!RuntimeEnabledFeatures::CSSContainerQueriesEnabled())
     return;
 
@@ -2654,6 +2656,7 @@ void StyleEngine::RecalcStyleForNonLayoutNGContainerDescendants(
 
   if (cq_data->SkippedStyleRecalc()) {
     DecrementSkippedContainerRecalc();
+    AllowMarkForReattachFromRebuildLayoutTreeScope allow_reattach(*this);
     RecalcStyleForContainer(container, {});
   }
 }
@@ -2988,6 +2991,11 @@ void StyleEngine::UpdateLayoutTreeRebuildRoot(ContainerNode* ancestor,
   DCHECK(DisplayLockUtilities::AssertStyleAllowed(*dirty_node));
 #endif
   layout_tree_rebuild_root_.Update(ancestor, dirty_node);
+}
+
+bool StyleEngine::MarkReattachAllowed() const {
+  return !InRebuildLayoutTree() ||
+         allow_mark_for_reattach_from_rebuild_layout_tree_;
 }
 
 bool StyleEngine::SupportsDarkColorScheme() {
