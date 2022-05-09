@@ -16,10 +16,14 @@ using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
 
 CredentialLeakDialogControllerImpl::CredentialLeakDialogControllerImpl(
     PasswordsLeakDialogDelegate* delegate,
-    CredentialLeakType leak_type)
+    CredentialLeakType leak_type,
+    const GURL& url,
+    const std::u16string& username)
     : delegate_(delegate),
       leak_type_(leak_type),
-      leak_dialog_traits_(CreateDialogTraits(leak_type)) {}
+      leak_dialog_traits_(CreateDialogTraits(leak_type)),
+      url_(url),
+      username_(username) {}
 
 CredentialLeakDialogControllerImpl::~CredentialLeakDialogControllerImpl() {
   ResetDialog();
@@ -45,7 +49,7 @@ void CredentialLeakDialogControllerImpl::OnCancelDialog() {
 
 void CredentialLeakDialogControllerImpl::OnAcceptDialog() {
   if (ShouldOfferAutomatedPasswordChange()) {
-    delegate_->StartAutomatedPasswordChange();
+    delegate_->StartAutomatedPasswordChange(url_, username_);
     LogLeakDialogTypeAndDismissalReason(
         password_manager::GetLeakDialogType(leak_type_),
         LeakDialogDismissalReason::kClickedChangePasswordAutomatically);

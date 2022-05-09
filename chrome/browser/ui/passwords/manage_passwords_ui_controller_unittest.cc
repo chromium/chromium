@@ -81,6 +81,7 @@ MATCHER_P3(MatchesLoginAndURL,
 
 // A random URL.
 constexpr char kExampleUrl[] = "http://example.com";
+constexpr char16_t kExampleUsername[] = u"Bob";
 
 // Number of dismissals that for sure suppresses the bubble.
 constexpr int kGreatDissmisalCount = 10;
@@ -1405,7 +1406,7 @@ TEST_F(ManagePasswordsUIControllerTest, SaveBubbleAfterLeakCheck) {
           password_manager::IsSaved(false), password_manager::IsReused(false),
           password_manager::IsSyncing(false),
           password_manager::HasChangeScript(false)),
-      GURL(kExampleUrl));
+      GURL(kExampleUrl), kExampleUsername);
   // The bubble is gone.
   EXPECT_FALSE(controller()->opened_bubble());
 
@@ -1437,7 +1438,7 @@ TEST_F(ManagePasswordsUIControllerTest, UpdateBubbleAfterLeakCheck) {
           password_manager::IsSaved(true), password_manager::IsReused(false),
           password_manager::IsSyncing(false),
           password_manager::HasChangeScript(false)),
-      GURL(kExampleUrl));
+      GURL(kExampleUrl), kExampleUsername);
   // The bubble is gone.
   EXPECT_FALSE(controller()->opened_bubble());
 

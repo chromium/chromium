@@ -408,6 +408,6 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, LeakPromptHidesBubble) {
 
   GetController()->OnCredentialLeak(
       password_manager::CredentialLeakFlags::kPasswordSaved,
-      GURL("https://example.com"));
+      GURL("https://example.com"), std::u16string(u"Eve"));
   EXPECT_FALSE(IsBubbleShowing());
 }

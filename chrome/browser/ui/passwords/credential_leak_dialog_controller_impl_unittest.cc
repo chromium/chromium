@@ -14,6 +14,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -24,6 +25,9 @@ using password_manager::IsSaved;
 using password_manager::IsSyncing;
 using password_manager::metrics_util::LeakDialogDismissalReason;
 using testing::StrictMock;
+
+constexpr char kUrl[] = "https://www.example.co.uk";
+constexpr char16_t kUsername[] = u"Jane";
 
 class MockCredentialLeakPrompt : public CredentialLeakPrompt {
  public:
@@ -40,7 +44,7 @@ class CredentialLeakDialogControllerTest : public testing::Test {
  public:
   void SetUpController(password_manager::CredentialLeakType leak_type) {
     controller_ = std::make_unique<CredentialLeakDialogControllerImpl>(
-        &ui_controller_mock_, leak_type);
+        &ui_controller_mock_, leak_type, GURL(kUrl), kUsername);
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -159,7 +163,8 @@ TEST_F(CredentialLeakDialogControllerTest,
   EXPECT_CALL(leak_prompt(), ShowCredentialLeakPrompt());
   controller().ShowCredentialLeakPrompt(&leak_prompt());
 
-  EXPECT_CALL(ui_controller_mock(), StartAutomatedPasswordChange);
+  EXPECT_CALL(ui_controller_mock(), StartAutomatedPasswordChange(
+                                        GURL(kUrl), std::u16string(kUsername)));
   EXPECT_CALL(ui_controller_mock(), OnLeakDialogHidden());
   controller().OnAcceptDialog();
 

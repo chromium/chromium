@@ -98,7 +98,8 @@ class PasswordsClientUIDelegate {
   // Called when user credentials were leaked. This triggers the UI to prompt
   // the user whether they would like to check their passwords.
   virtual void OnCredentialLeak(password_manager::CredentialLeakType leak_type,
-                                const GURL& origin) = 0;
+                                const GURL& url,
+                                const std::u16string& username) = 0;
 
   // Called after a form was submitted. This triggers a bubble that allows to
   // move the just used profile credential in |form| to the user's account.

@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_LEAK_DIALOG_DELEGATE_H_
 #define CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_LEAK_DIALOG_DELEGATE_H_
 
+#include <string>
+
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
+
+class GURL;
 
 // An interface for leak detection dialog implemented by
 // ManagePasswordsUIController. Allows to retrieve the current state of the tab
@@ -20,7 +24,8 @@ class PasswordsLeakDialogDelegate {
       password_manager::PasswordCheckReferrer referrer) = 0;
 
   // Initiate an automated password change flow in the current tab.
-  virtual void StartAutomatedPasswordChange() = 0;
+  virtual void StartAutomatedPasswordChange(const GURL& origin,
+                                            const std::u16string& username) = 0;
 
  protected:
   virtual ~PasswordsLeakDialogDelegate() = default;

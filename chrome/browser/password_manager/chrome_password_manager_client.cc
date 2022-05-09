@@ -616,7 +616,7 @@ void ChromePasswordManagerClient::AutofillHttpAuth(
 
 void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::CredentialLeakType leak_type,
-    const GURL& origin,
+    const GURL& url,
     const std::u16string& username) {
   if (GetPasswordFeatureManager()->IsGenerationEnabled() &&
       password_manager::features::IsPasswordScriptsFetchingEnabled()) {
@@ -634,13 +634,13 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
   }
 
   (new CredentialLeakControllerAndroid(
-       leak_type, origin, username, GetPasswordChangeSuccessTracker(),
+       leak_type, url, username, GetPasswordChangeSuccessTracker(),
        web_contents()->GetTopLevelNativeWindow()))
       ->ShowDialog();
 #else   // !BUILDFLAG(IS_ANDROID)
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
       PasswordsClientUIDelegateFromWebContents(web_contents());
-  manage_passwords_ui_controller->OnCredentialLeak(leak_type, origin);
+  manage_passwords_ui_controller->OnCredentialLeak(leak_type, url, username);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
