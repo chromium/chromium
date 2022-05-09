@@ -97377,6 +97377,16 @@ Called by update_scheduler_enums.py.-->
   <int value="5" label="Load failed in preload and tab was never opened"/>
 </enum>
 
+<enum name="WhatsNewStartupType">
+  <int value="0" label="Called What's New ShouldShowForState"/>
+  <int value="1" label="Page is disabled by promotional tabs policy"/>
+  <int value="2" label="Page disabled due to invalid/unreadable local state"/>
+  <int value="3" label="Page is disabled by feature or command line flag"/>
+  <int value="4" label="Page has already been shown for this milestone"/>
+  <int value="5" label="User is ineligible for page"/>
+  <int value="6" label="Page is overridden by a different first run page"/>
+</enum>
+
 <enum name="WhitelistedDownloadType">
   <int value="0" label="Does not match any whitelists"/>
   <int value="1" label="URL whitelist"/>

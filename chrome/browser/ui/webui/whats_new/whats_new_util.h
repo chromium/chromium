@@ -27,6 +27,26 @@ enum class LoadEvent {
   kMaxValue = kLoadFailAndDoNotShow,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// The first value indicates that the logic for showing What's New is running.
+// At most one of the remaining values will be logged for each run. If none of
+// these values are logged, the page should try to load.
+enum class StartupType {
+  kCalledShouldShow = 0,
+  kPromotionalTabsDisabled = 1,
+  kInvalidState = 2,
+  kFeatureDisabled = 3,
+  kAlreadyShown = 4,
+  kIneligible = 5,
+  kOverridden = 6,
+  kMaxValue = kOverridden,
+};
+
+// Logs the type of startup (e.g. whether a user is eligible for What's New, and
+// whether we try to show the page).
+void LogStartupType(StartupType type);
+
 // Disables loading remote content for tests, because this can lead to a
 // redirect if it fails. Most tests don't expect redirects to occur.
 void DisableRemoteContentForTests();
@@ -47,7 +67,8 @@ bool IsRemoteContentDisabled();
 // and possibly miss some users instead of repeatedly triggering a network
 // request at startup and/or showing the same What's New page many times for a
 // given user.
-bool ShouldShowForState(PrefService* local_state);
+bool ShouldShowForState(PrefService* local_state,
+                        bool promotional_tabs_enabled);
 
 // Gets the server side URL for the What's New page for the current version of
 // Chrome. If |may_redirect| is true, return a server URL that will redirect to

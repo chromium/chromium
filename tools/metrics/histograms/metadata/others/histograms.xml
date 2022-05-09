@@ -14500,6 +14500,18 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WhatsNew.StartupType" enum="WhatsNewStartupType"
+    expires_after="2022-08-07">
+  <owner>rbpotter@chromium.org</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <summary>
+    Records whether the What's New page should try to show, whether it is
+    overridden (e.g. by welcome) and whether the user is ineligible (e.g. due to
+    being in incognito mode). Recorded when startup tabs are being determined at
+    initialization. Desktop only.
+  </summary>
+</histogram>
+
 <histogram name="WheelScrolling.WasLatched" enum="BooleanLatched"
     expires_after="M77">
   <owner>flackr@chromium.org</owner>
