@@ -554,8 +554,7 @@ absl::optional<AudioParameters> AudioProcessor::ComputeInputFormat(
   }
 
   AudioParameters params(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout,
-      device_format.sample_rate(),
+      device_format.format(), channel_layout, device_format.sample_rate(),
       GetCaptureBufferSize(
           audio_processing_settings.NeedWebrtcAudioProcessing(),
           device_format));
@@ -625,9 +624,9 @@ AudioParameters AudioProcessor::GetDefaultOutputFormat(
     output_frames = input_format.frames_per_buffer();
   }
 
-  media::AudioParameters output_format = media::AudioParameters(
-      media::AudioParameters::AUDIO_PCM_LOW_LATENCY, output_channel_layout,
-      output_sample_rate, output_frames);
+  media::AudioParameters output_format =
+      media::AudioParameters(input_format.format(), output_channel_layout,
+                             output_sample_rate, output_frames);
   if (output_channel_layout == media::CHANNEL_LAYOUT_DISCRETE) {
     // Explicitly set number of channels for discrete channel layouts.
     output_format.set_channels_for_discrete(input_format.channels());

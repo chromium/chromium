@@ -2110,6 +2110,26 @@
             ]
         }
     ],
+    "ChromeWideEchoCancellation": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220412",
+                    "params": {
+                        "processing_fifo_size": "110"
+                    },
+                    "enable_features": [
+                        "ChromeWideEchoCancellation"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClankAppFlowsLoggingStudy": [
         {
             "platforms": [

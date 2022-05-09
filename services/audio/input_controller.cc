@@ -243,6 +243,9 @@ void InputController::MaybeSetUpAudioProcessing(
     return;
   }
 
+  // In case fake audio input is requested.
+  processing_input_params->set_format(processing_output_params.format());
+
   // Unretained() is safe, since |this| and |event_handler_| outlive
   // |audio_processor_handler_|.
   audio_processor_handler_ = std::make_unique<AudioProcessorHandler>(

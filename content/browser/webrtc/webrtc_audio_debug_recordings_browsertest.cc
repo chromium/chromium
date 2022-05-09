@@ -33,9 +33,15 @@ constexpr char kBaseFilename[] = "audio_debug";
 // "/tmp/.com.google.Chrome.Z6UC3P.12345.aec_dump.1".
 base::FilePath GetExpectedAecDumpFileName(const base::FilePath& base_file_path,
                                           int renderer_pid) {
-  return base_file_path.AddExtensionASCII(base::NumberToString(renderer_pid))
-      .AddExtensionASCII("aec_dump")
-      .AddExtensionASCII(base::NumberToString(kExpectedConsumerId));
+  return media::IsChromeWideEchoCancellationEnabled()
+             ? base_file_path
+                   .AddExtensionASCII(base::NumberToString(kExpectedConsumerId))
+                   .AddExtensionASCII("aecdump")
+             : base_file_path
+                   .AddExtensionASCII(base::NumberToString(renderer_pid))
+                   .AddExtensionASCII("aec_dump")
+                   .AddExtensionASCII(
+                       base::NumberToString(kExpectedConsumerId));
 }
 
 // Get the file names of the recordings. The name will be
@@ -155,7 +161,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   // Two files are expected, one for each peer in the call.
   std::vector<base::FilePath> output_files =
       GetRecordingFileNames(FILE_PATH_LITERAL("output"), base_file_path);
-  EXPECT_EQ(output_files.size(), 2u);
+  EXPECT_EQ(output_files.size(),
+            media::IsChromeWideEchoCancellationEnabled() ? 1u : 2u);
   for (const base::FilePath& file_path : output_files) {
     file_size = 0;
     EXPECT_TRUE(base::GetFileSize(file_path, &file_size));
