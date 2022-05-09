@@ -150,6 +150,10 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 @property(nonatomic, strong, readonly)
     PrefBackedBoolean* safeBrowsingPreference;
 
+// Preference value for Enhanced Safe Browsing.
+@property(nonatomic, strong, readonly)
+    PrefBackedBoolean* enhancedSafeBrowsingPreference;
+
 // If the Safe Browsing preference is managed.
 @property(nonatomic, assign) BOOL safeBrowsingPreferenceManaged;
 
@@ -168,6 +172,9 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 
 // Service to check if passwords are synced.
 @property(nonatomic, assign) SyncSetupService* syncService;
+
+// Service used to check user preference values.
+@property(nonatomic, assign, readonly) PrefService* userPrefService;
 
 // Whether or not a safety check just ran.
 @property(nonatomic, assign) BOOL checkDidRun;
@@ -194,6 +201,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
     DCHECK(authService);
     DCHECK(syncService);
 
+    _userPrefService = userPrefService;
     _authService = authService;
     _syncService = syncService;
 
@@ -209,6 +217,10 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
     _safeBrowsingPreference.observer = self;
     _safeBrowsingPreferenceManaged =
         userPrefService->IsManagedPreference(prefs::kSafeBrowsingEnabled);
+    _enhancedSafeBrowsingPreference = [[PrefBackedBoolean alloc]
+        initWithPrefService:userPrefService
+                   prefName:prefs::kSafeBrowsingEnhanced];
+    _enhancedSafeBrowsingPreference.observer = self;
 
     _headerItem =
         [[TableViewLinkHeaderFooterItem alloc] initWithType:HeaderItem];
@@ -478,8 +490,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 #pragma mark - BooleanObserver
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  // TODO(crbug.com/1078782): Handle safe browsing state changes to reward user
-  // for fixing state.
+  [self checkAndReconfigureSafeBrowsingState];
 }
 
 #pragma mark - Private methods
@@ -1159,8 +1170,13 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
       self.safeBrowsingCheckItem.trailingImage = safeIconImage;
       self.safeBrowsingCheckItem.trailingImageTintColor =
           [UIColor colorNamed:kGreenColor];
-      self.safeBrowsingCheckItem.detailText =
-          GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENABLED_DESC);
+      if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+        self.safeBrowsingCheckItem.detailText =
+            [self safeBrowsingCheckItemDetailText];
+      } else {
+        self.safeBrowsingCheckItem.detailText = GetNSString(
+            IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENABLED_DESC);
+      }
       break;
     }
     case SafeBrowsingCheckRowStateUnsafe: {
@@ -1172,6 +1188,24 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
   }
 
   [self.consumer reconfigureCellsForItems:@[ self.safeBrowsingCheckItem ]];
+}
+
+// Chooses the Safe Browsing detail text string that should be used based on the
+// Safe Browsing preference chosen.
+- (NSString*)safeBrowsingCheckItemDetailText {
+  safe_browsing::SafeBrowsingState safeBrowsingState =
+      safe_browsing::GetSafeBrowsingState(*self.userPrefService);
+  switch (safeBrowsingState) {
+    case safe_browsing::SafeBrowsingState::STANDARD_PROTECTION:
+      return GetNSString(
+          IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC);
+    case safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION:
+      return GetNSString(
+          IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED_DESC);
+    default:
+      NOTREACHED();
+      return nil;
+  }
 }
 
 // Updates the display of checkStartItem based on its current state.

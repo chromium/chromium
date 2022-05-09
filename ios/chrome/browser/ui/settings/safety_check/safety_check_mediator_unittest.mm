@@ -12,6 +12,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -85,6 +86,8 @@
 @property(nonatomic, assign) PasswordCheckState currentPasswordCheckState;
 @property(nonatomic, strong, readonly)
     PrefBackedBoolean* safeBrowsingPreference;
+@property(nonatomic, strong, readonly)
+    PrefBackedBoolean* enhancedSafeBrowsingPreference;
 
 @end
 
@@ -123,6 +126,7 @@ PrefService* SetPrefService() {
   TestingPrefServiceSimple* prefs = new TestingPrefServiceSimple();
   PrefRegistrySimple* registry = prefs->registry();
   registry->RegisterBooleanPref(prefs::kSafeBrowsingEnabled, true);
+  registry->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, true);
   return prefs;
 }
 
@@ -317,6 +321,31 @@ TEST_F(SafetyCheckMediatorTest, SafeBrowsingSafeUI) {
   EXPECT_NSEQ(
       mediator_.safeBrowsingCheckItem.detailText,
       GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENABLED_DESC));
+  EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage,
+            [[UIImage imageNamed:@"settings_safe_state"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
+}
+
+TEST_F(SafetyCheckMediatorTest,
+       SafeBrowsingSafeUIStandardAndEnhancedProtection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(safe_browsing::kEnhancedProtection);
+  mediator_.safeBrowsingCheckRowState = SafeBrowsingCheckRowStateSafe;
+  [mediator_ reconfigureSafeBrowsingCheckItem];
+  EXPECT_NSEQ(
+      mediator_.safeBrowsingCheckItem.detailText,
+      GetNSString(
+          IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED_DESC));
+  EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage,
+            [[UIImage imageNamed:@"settings_safe_state"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
+
+  mediator_.enhancedSafeBrowsingPreference.value = false;
+  [mediator_ reconfigureSafeBrowsingCheckItem];
+  EXPECT_NSEQ(
+      mediator_.safeBrowsingCheckItem.detailText,
+      GetNSString(
+          IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC));
   EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage,
             [[UIImage imageNamed:@"settings_safe_state"]
                 imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
