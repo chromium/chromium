@@ -48,6 +48,23 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
       public ClipboardHistory::Observer,
       public ClipboardHistoryResourceManager::Observer {
  public:
+  // Source and plain vs. rich text info for each paste. These values are used
+  // in the Ash.ClipboardHistory.PasteType histogram and therefore cannot be
+  // reordered. New types may be appended to the end of this enumeration.
+  enum class ClipboardHistoryPasteType {
+    kPlainTextAccelerator = 0,      // Plain text paste triggered by accelerator
+    kRichTextAccelerator = 1,       // Rich text paste triggered by accelerator
+    kPlainTextKeystroke = 2,        // Plain text paste triggered by keystroke
+    kRichTextKeystroke = 3,         // Rich text paste triggered by keystroke
+    kPlainTextMouse = 4,            // Plain text paste triggered by mouse click
+    kRichTextMouse = 5,             // Rich text paste triggered by mouse click
+    kPlainTextTouch = 6,            // Plain text paste triggered by gesture tap
+    kRichTextTouch = 7,             // Rich text paste triggered by gesture tap
+    kPlainTextVirtualKeyboard = 8,  // Plain text paste triggered by VK request
+    kRichTextVirtualKeyboard = 9,   // Rich text paste triggered by VK request
+    kMaxValue = 9
+  };
+
   ClipboardHistoryControllerImpl();
   ClipboardHistoryControllerImpl(const ClipboardHistoryControllerImpl&) =
       delete;
@@ -165,19 +182,20 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
       std::unique_ptr<std::map<base::UnguessableToken, std::vector<uint8_t>>>
           encoded_pngs);
 
-  // Executes the command specified by `command_id` with the given event flags.
+  // Executes the command specified by `command_id` with the given
+  // `event_flags`.
   void ExecuteCommand(int command_id, int event_flags);
 
   // Paste the clipboard data of the menu item specified by `command_id`.
-  // `paste_plain_text` indicates whether the plain text instead of the
-  // clipboard data should be pasted.
-  void PasteMenuItemData(int command_id, bool paste_plain_text);
+  void PasteMenuItemData(int command_id, ClipboardHistoryPasteType paste_type);
 
   // Pastes the specified clipboard history item, if |intended_window| matches
-  // the active window.
+  // the active window. `paste_type` indicates the source of the paste for
+  // metrics tracking as well as whether plain text should be pasted instead of
+  // the full, rich-text clipboard data.
   void PasteClipboardHistoryItem(aura::Window* intended_window,
                                  ClipboardHistoryItem item,
-                                 bool paste_plain_text);
+                                 ClipboardHistoryPasteType paste_type);
 
   // Delete the menu item being selected and its corresponding data. If no item
   // is selected, do nothing.

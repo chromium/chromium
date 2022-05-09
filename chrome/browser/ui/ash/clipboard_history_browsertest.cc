@@ -681,6 +681,9 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest, DeleteItemViaBackspaceKey) {
 
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
                        ShouldPasteHistoryAsPlainText) {
+  using ClipboardHistoryPasteType =
+      ash::ClipboardHistoryControllerImpl::ClipboardHistoryPasteType;
+
   // Increase delay interval before restoring the clipboard buffer following
   // a paste event as this test has exhibited flakiness due to the amount of
   // time it takes a paste event to reach the web contents under test. Remove
@@ -740,6 +743,9 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   };
 
   // Confirm initial state.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.PasteType",
+                                    /*count=*/0);
   ASSERT_TRUE(GetLastPaste().empty());
 
   // Write some things to the clipboard.
@@ -771,10 +777,47 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   ASSERT_EQ(last_paste.size(), 2u);
   EXPECT_EQ(last_paste[0].GetString(), "text/plain: A");
   EXPECT_EQ(last_paste[1].GetString(), "text/html: <span>A</span>");
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.PasteType",
+      ClipboardHistoryPasteType::kRichTextKeystroke,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.PasteType",
+                                    /*count=*/1);
 
   // Wait for the clipboard buffer to be restored before performing another
   // paste. In production, this should happen faster than a user is able to
   // relaunch clipboard history UI (knock on wood).
+  ClipboardDataWaiter().WaitFor(&clipboard_data);
+
+  // Open clipboard history and paste the last history item while holding down
+  // a non-shift key (arbitrarily, the alt key). The item should not paste as
+  // plain text.
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_RETURN, ui::EF_ALT_DOWN);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Wait for the paste event to propagate to the web contents.
+  // The web contents will notify us a paste occurred by updating page title.
+  std::ignore =
+      content::TitleWatcher(web_contents, u"Paste 2").WaitAndGetTitle();
+
+  // Confirm the expected paste data.
+  last_paste = GetLastPaste();
+  ASSERT_EQ(last_paste.size(), 2u);
+  EXPECT_EQ(last_paste[0].GetString(), "text/plain: A");
+  EXPECT_EQ(last_paste[1].GetString(), "text/html: <span>A</span>");
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.PasteType",
+      ClipboardHistoryPasteType::kRichTextKeystroke,
+      /*expected_count=*/2);
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.PasteType",
+                                    /*count=*/2);
+
+  // Wait for the clipboard buffer to be restored before performing another
+  // paste.
   ClipboardDataWaiter().WaitFor(&clipboard_data);
 
   // Open clipboard history and paste the last history item while holding down
@@ -789,12 +832,18 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   // Wait for the paste event to propagate to the web contents.
   // The web contents will notify us a paste occurred by updating page title.
   std::ignore =
-      content::TitleWatcher(web_contents, u"Paste 2").WaitAndGetTitle();
+      content::TitleWatcher(web_contents, u"Paste 3").WaitAndGetTitle();
 
   // Confirm the expected paste data.
   last_paste = GetLastPaste();
   ASSERT_EQ(last_paste.size(), 1u);
   EXPECT_EQ(last_paste[0].GetString(), "text/plain: A");
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.PasteType",
+      ClipboardHistoryPasteType::kPlainTextKeystroke,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.PasteType",
+                                    /*count=*/3);
 
   // Wait for the clipboard buffer to be restored before performing another
   // paste.
@@ -812,31 +861,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   // Wait for the paste event to propagate to the web contents.
   // The web contents will notify us a paste occurred by updating page title.
   std::ignore =
-      content::TitleWatcher(web_contents, u"Paste 3").WaitAndGetTitle();
-
-  // Confirm the expected paste data.
-  last_paste = GetLastPaste();
-  ASSERT_EQ(last_paste.size(), 2u);
-  EXPECT_EQ(last_paste[0].GetString(), "text/plain: A");
-  EXPECT_EQ(last_paste[1].GetString(), "text/html: <span>A</span>");
-
-  // Wait for the clipboard buffer to be restored before performing another
-  // paste.
-  ClipboardDataWaiter().WaitFor(&clipboard_data);
-
-  // Open clipboard history and paste the last history item while holding down
-  // a non-shift key (arbitrarily, the ALT key). The item should not paste as
-  // plain text.
-  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
-  PressAndRelease(ui::KeyboardCode::VKEY_RETURN, ui::EF_ALT_DOWN);
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-
-  // Wait for the paste event to propagate to the web contents.
-  // The web contents will notify us a paste occurred by updating page title.
-  std::ignore =
       content::TitleWatcher(web_contents, u"Paste 4").WaitAndGetTitle();
 
   // Confirm the expected paste data.
@@ -844,6 +868,76 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   ASSERT_EQ(last_paste.size(), 2u);
   EXPECT_EQ(last_paste[0].GetString(), "text/plain: A");
   EXPECT_EQ(last_paste[1].GetString(), "text/html: <span>A</span>");
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.PasteType",
+      ClipboardHistoryPasteType::kRichTextAccelerator,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.PasteType",
+                                    /*count=*/4);
+
+  // Wait for the clipboard buffer to be restored before performing another
+  // paste.
+  ClipboardDataWaiter().WaitFor(&clipboard_data);
+
+  // Open clipboard history and paste the last history item via mouse click. The
+  // item should not paste as plain text.
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  const auto* menu_item_view =
+      GetContextMenu()->GetMenuItemViewAtForTest(/*index=*/2);
+  GetEventGenerator()->MoveMouseTo(
+      menu_item_view->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(menu_item_view->IsSelected());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Wait for the paste event to propagate to the web contents.
+  // The web contents will notify us a paste occurred by updating page title.
+  std::ignore =
+      content::TitleWatcher(web_contents, u"Paste 5").WaitAndGetTitle();
+
+  // Confirm the expected paste data.
+  last_paste = GetLastPaste();
+  ASSERT_EQ(last_paste.size(), 2u);
+  EXPECT_EQ(last_paste[0].GetString(), "text/plain: A");
+  EXPECT_EQ(last_paste[1].GetString(), "text/html: <span>A</span>");
+  histogram_tester.ExpectBucketCount("Ash.ClipboardHistory.PasteType",
+                                     ClipboardHistoryPasteType::kRichTextMouse,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.PasteType",
+                                    /*count=*/5);
+
+  // Wait for the clipboard buffer to be restored before performing another
+  // paste.
+  ClipboardDataWaiter().WaitFor(&clipboard_data);
+
+  // Open clipboard history and paste the last history item via mouse click
+  // while holding down the shift key. The item should paste as plain text.
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  menu_item_view = GetContextMenu()->GetMenuItemViewAtForTest(/*index=*/2);
+  GetEventGenerator()->MoveMouseTo(
+      menu_item_view->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(menu_item_view->IsSelected());
+  GetEventGenerator()->set_flags(ui::EF_SHIFT_DOWN);
+  GetEventGenerator()->ClickLeftButton();
+  GetEventGenerator()->set_flags(ui::EF_NONE);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Wait for the paste event to propagate to the web contents.
+  // The web contents will notify us a paste occurred by updating page title.
+  std::ignore =
+      content::TitleWatcher(web_contents, u"Paste 6").WaitAndGetTitle();
+
+  // Confirm the expected paste data.
+  last_paste = GetLastPaste();
+  ASSERT_EQ(last_paste.size(), 1u);
+  EXPECT_EQ(last_paste[0].GetString(), "text/plain: A");
+  histogram_tester.ExpectBucketCount("Ash.ClipboardHistory.PasteType",
+                                     ClipboardHistoryPasteType::kPlainTextMouse,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.PasteType",
+                                    /*count=*/6);
 
   // Verify the clipboard buffer is restored to initial state.
   ClipboardDataWaiter().WaitFor(&clipboard_data);
@@ -1082,12 +1176,16 @@ class ClipboardHistoryTextfieldBrowserTest
 // correctly (https://crbug.com/1142088).
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
                        VerifyResponseToGestures) {
+  base::HistogramTester histogram_tester;
+
   SetClipboardText("A");
   SetClipboardText("B");
   ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
   ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
 
   // Tap at the second menu item view. Verify that "A" is pasted.
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.PasteType",
+                                    /*count=*/0);
   const views::MenuItemView* second_menu_item_view =
       GetMenuItemViewForIndex(/*index=*/1);
   GetEventGenerator()->GestureTapAt(
@@ -1095,6 +1193,11 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
   WaitForOperationConfirmed(/*success_expected=*/true);
   EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
+  histogram_tester.ExpectUniqueSample(
+      "Ash.ClipboardHistory.PasteType",
+      ash::ClipboardHistoryControllerImpl::ClipboardHistoryPasteType::
+          kRichTextTouch,
+      /*expected_bucket_count=*/1);
 }
 
 // Verifies that the metric to record the count of the consecutive pastes from

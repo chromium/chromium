@@ -16738,6 +16738,19 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="1" label="Paste (from clipboard and clipboard history)"/>
 </enum>
 
+<enum name="ClipboardHistoryPasteType">
+  <int value="0" label="PlainTextAccelerator"/>
+  <int value="1" label="RichTextAccelerator"/>
+  <int value="2" label="PlainTextKeystroke"/>
+  <int value="3" label="RichTextKeystroke"/>
+  <int value="4" label="PlainTextMouse"/>
+  <int value="5" label="RichTextMouse"/>
+  <int value="6" label="PlainTextTouch"/>
+  <int value="7" label="RichTextTouch"/>
+  <int value="8" label="PlainTextVirtualKeyboard"/>
+  <int value="9" label="RichTextVirtualKeyboard"/>
+</enum>
+
 <enum name="ClipboardHistoryPlaceholderStringType">
   <int value="0" label="Bitmap"/>
   <int value="1" label="Html"/>
