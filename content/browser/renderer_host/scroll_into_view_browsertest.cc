@@ -625,8 +625,16 @@ class InsetScrollIntoViewBrowserTest
 
 // Ensure that insetting the viewport causes the visual viewport to be resized
 // and focused editable scrolled into view. (https://crbug.com/927483)
+// TODO(bokan): Failing flakily on Windows. https://crbug.com/1323876.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InsetsCauseScrollToFocusedEditable \
+  DISABLED_InsetsCauseScrollToFocusedEditable
+#else
+#define MAYBE_InsetsCauseScrollToFocusedEditable \
+  InsetsCauseScrollToFocusedEditable
+#endif
 IN_PROC_BROWSER_TEST_P(InsetScrollIntoViewBrowserTest,
-                       InsetsCauseScrollToFocusedEditable) {
+                       MAYBE_InsetsCauseScrollToFocusedEditable) {
   ASSERT_TRUE(SetupTest("siteA(siteB(siteC))"));
 
   // Allow some fuzziness due to scrollbar.
