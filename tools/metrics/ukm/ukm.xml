@@ -13076,8 +13076,7 @@ be describing additional metrics about the same event.
       occurred on the page (including all subframes) until the first time the
       page moves from the foreground to the background. This metric's integral
       value is 100x the fractional cumulative layout shift score described in
-      the explainer. Stable since M79; previous versions are expermental and
-      subject to fluctuation between releases. Log of major changes:
+      the explainer. Stable since M98. Log of major changes:
       http://bit.ly/chrome-speed-metrics-changelog. This metric is trying to
       record the layout shift values which are not able to be recorded in
       LayoutInstability.CumulativeShiftScore for some reasons.
