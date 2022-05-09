@@ -21,6 +21,7 @@ const char kMediaDocumentsProviderAuthority[] =
 const char kImagesRootDocumentId[] = "images_root";
 const char kVideosRootDocumentId[] = "videos_root";
 const char kAudioRootDocumentId[] = "audio_root";
+const char kDocumentsRootDocumentId[] = "documents_root";
 
 std::string GetMediaViewVolumeId(const std::string& root_document_id) {
   return std::string(kMediaViewVolumeIdPrefix) + root_document_id;

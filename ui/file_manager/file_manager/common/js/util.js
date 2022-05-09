@@ -1077,6 +1077,8 @@ util.getRootTypeLabel = locationInfo => {
           return str('MEDIA_VIEW_VIDEOS_ROOT_LABEL');
         case VolumeManagerCommon.MediaViewRootType.AUDIO:
           return str('MEDIA_VIEW_AUDIO_ROOT_LABEL');
+        case VolumeManagerCommon.MediaViewRootType.DOCUMENTS:
+          return str('MEDIA_VIEW_DOCUMENTS_ROOT_LABEL');
       }
       console.error('Unsupported media view root type: ' + mediaViewRootType);
       return locationInfo.volumeInfo.label;

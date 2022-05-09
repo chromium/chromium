@@ -1122,6 +1122,7 @@ TEST_F(FileManagerPathUtilTest, GetDisplayablePathTest) {
   volume_manager->RegisterMediaViewForTesting(arc::kAudioRootDocumentId);
   volume_manager->RegisterMediaViewForTesting(arc::kImagesRootDocumentId);
   volume_manager->RegisterMediaViewForTesting(arc::kVideosRootDocumentId);
+  volume_manager->RegisterMediaViewForTesting(arc::kDocumentsRootDocumentId);
 
   volume_manager->AddVolumeForTesting(
       Volume::CreateForDrive(base::FilePath("/mount_path/drive")));
@@ -1238,6 +1239,11 @@ TEST_F(FileManagerPathUtilTest, GetDisplayablePathTest) {
            .Append("foo/bar")
            .value(),
        "Videos/foo/bar"},
+      {arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
+                                          arc::kDocumentsRootDocumentId)
+           .Append("bar")
+           .value(),
+       "Documents/bar"},
       {
           "/mount_path/android",
           "My files/Play files",

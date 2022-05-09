@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map_factory.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
+#include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -30,11 +31,14 @@ struct DocumentsProviderSpec {
 
 // List of documents providers for media views.
 constexpr DocumentsProviderSpec kDocumentsProviderAllowlist[] = {
-    {"com.android.providers.media.documents", "images_root", "images_root",
-     true},
-    {"com.android.providers.media.documents", "videos_root", "videos_root",
-     true},
-    {"com.android.providers.media.documents", "audio_root", "audio_root", true},
+    {kMediaDocumentsProviderAuthority, kImagesRootDocumentId,
+     kImagesRootDocumentId, true},
+    {kMediaDocumentsProviderAuthority, kVideosRootDocumentId,
+     kVideosRootDocumentId, true},
+    {kMediaDocumentsProviderAuthority, kAudioRootDocumentId,
+     kAudioRootDocumentId, true},
+    {kMediaDocumentsProviderAuthority, kDocumentsRootDocumentId,
+     kDocumentsRootDocumentId, true},
 };
 
 }  // namespace

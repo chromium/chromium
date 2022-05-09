@@ -400,6 +400,7 @@ VolumeManagerCommon.MediaViewRootType = {
   IMAGES: 'images_root',
   VIDEOS: 'videos_root',
   AUDIO: 'audio_root',
+  DOCUMENTS: 'documents_root',
 };
 Object.freeze(VolumeManagerCommon.MediaViewRootType);
 
