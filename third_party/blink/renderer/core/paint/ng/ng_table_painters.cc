@@ -310,6 +310,47 @@ void ComputeEdgeJoints(const NGTableBorders& collapsed_borders,
   }
 }
 
+// Computes the stitched columns-rect relative to the current fragment.
+// The columns-rect is the union of all the sections in the table.
+PhysicalRect ComputeColumnsRect(const NGPhysicalBoxFragment& fragment) {
+  const auto writing_direction = fragment.Style().GetWritingDirection();
+  LogicalRect columns_rect;
+  LayoutUnit stitched_block_size;
+  LayoutUnit fragment_block_offset;
+
+  bool is_first_section = true;
+  for (const NGPhysicalBoxFragment& walker :
+       To<LayoutBox>(fragment.GetLayoutObject())->PhysicalFragments()) {
+    if (&walker == &fragment)
+      fragment_block_offset = stitched_block_size;
+
+    WritingModeConverter converter(writing_direction, walker.Size());
+    for (const auto& child : walker.Children()) {
+      if (!child->IsTableNGSection())
+        continue;
+
+      LogicalRect section_rect =
+          converter.ToLogical({child.offset, child->Size()});
+      section_rect.offset.block_offset += stitched_block_size;
+
+      if (is_first_section) {
+        columns_rect = section_rect;
+        is_first_section = false;
+      } else {
+        columns_rect.UniteEvenIfEmpty(section_rect);
+      }
+    }
+
+    stitched_block_size += NGFragment(writing_direction, walker).BlockSize();
+  }
+
+  // Make the rect relative to the fragment we are currently painting.
+  columns_rect.offset.block_offset -= fragment_block_offset;
+
+  WritingModeConverter converter(writing_direction, fragment.Size());
+  return converter.ToPhysical(columns_rect);
+}
+
 // When painting background in a cell (for the cell or its ancestor table part),
 // if any ancestor table part has a layer and the table collapses borders, the
 // background is painted after the collapsed borders. We need to clip the
@@ -380,17 +421,9 @@ void NGTablePainter::PaintBoxDecorationBackground(
   if (column_geometries_with_background.IsEmpty())
     return;
 
-  const auto& style = fragment_.Style();
-  LogicalSize spacing = style.TableBorderSpacing();
-  NGBoxStrut spacing_strut(spacing.inline_size, spacing.inline_size,
-                           spacing.block_size, spacing.block_size);
-
-  PhysicalRect columns_paint_rect = grid_paint_rect;
-  columns_paint_rect.Contract(
-      fragment_.Borders() + fragment_.Padding() +
-      spacing_strut.ConvertToPhysical(style.GetWritingDirection()));
-
   // Paint <colgroup>/<col> backgrounds.
+  PhysicalRect columns_paint_rect = ComputeColumnsRect(fragment_);
+  columns_paint_rect.offset += paint_rect.offset;
   for (const NGLink& child : fragment_.Children()) {
     if (!child.fragment->IsTableNGSection())
       continue;
