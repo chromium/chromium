@@ -10,11 +10,17 @@
 // Feature to enable the new overflow menu.
 extern const base::Feature kNewOverflowMenu;
 
+// Feature to add a Settings action to the new overflow menu.
+extern const base::Feature kNewOverflowMenuSettingsAction;
+
 // Feature to enable smart sorting the new overflow menu.
 extern const base::Feature kSmartSortingNewOverflowMenu;
 
 // Whether the NewOverflowMenu feature is enabled.
 bool IsNewOverflowMenuEnabled();
+
+// Whether or not the NewOverflowMenuSettingsAction feature is enabled.
+bool IsNewOverflowMenuSettingsActionEnabled();
 
 // Whether the new Google Password Manager branding is enabled.
 bool IsPasswordManagerBrandingUpdateEnabled();

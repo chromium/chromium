@@ -17797,6 +17797,13 @@ should be able to be added at any place in this file.
   <description>User pressed 'Settings' in the app menu.</description>
 </action>
 
+<action name="MobileMenuSettingsAction">
+  <owner>rkgibson@chromium.org</owner>
+  <description>
+    User pressed the 'Settings' action in the app menu (iOS).
+  </description>
+</action>
+
 <action name="MobileMenuShare">
   <owner>aurimas@chromium.org</owner>
   <description>User pressed 'Share' in the app menu.</description>

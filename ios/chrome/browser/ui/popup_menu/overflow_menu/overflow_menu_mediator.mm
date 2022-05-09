@@ -229,6 +229,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 @property(nonatomic, strong) OverflowMenuAction* findInPageAction;
 @property(nonatomic, strong) OverflowMenuAction* textZoomAction;
 
+@property(nonatomic, strong) OverflowMenuAction* settingsAction;
 @property(nonatomic, strong) OverflowMenuAction* reportIssueAction;
 @property(nonatomic, strong) OverflowMenuAction* helpAction;
 
@@ -533,6 +534,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                                  actions:@[]
                                                   footer:nil];
 
+  self.settingsAction = CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_SETTINGS, @"overflow_menu_action_settings",
+      kToolsMenuSettingsId, ^{
+        [weakSelf openSettingsFromAction];
+      });
   self.reportIssueAction = CreateOverflowMenuAction(
       IDS_IOS_OPTIONS_REPORT_AN_ISSUE, @"overflow_menu_action_report_issue",
       kToolsMenuReportAnIssueId, ^{
@@ -668,6 +674,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
   NSMutableArray<OverflowMenuAction*>* helpActions =
       [[NSMutableArray alloc] init];
+
+  if (IsNewOverflowMenuSettingsActionEnabled()) {
+    [helpActions addObject:self.settingsAction];
+  }
 
   if (ios::GetChromeBrowserProvider()
           .GetUserFeedbackProvider()
@@ -1165,6 +1175,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 - (void)openSiteInformation {
   [self.dispatcher dismissPopupMenuAnimated:YES];
   [self.dispatcher showPageInfo];
+}
+
+// Dismisses the menu and opens settings, firing metrics for the settings
+// action row.
+- (void)openSettingsFromAction {
+  RecordAction(UserMetricsAction("MobileMenuSettingsAction"));
+  [self openSettings];
 }
 
 // Dismisses the menu and opens settings.
