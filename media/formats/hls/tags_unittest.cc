@@ -224,7 +224,7 @@ TEST(HlsTagsTest, ParseXIndependentSegmentsTag) {
 }
 
 TEST(HlsTagsTest, ParseXEndListTag) {
-  RunTagIdenficationTest<XEndListTag>("#EXT-X-END-LIST\n", absl::nullopt);
+  RunTagIdenficationTest<XEndListTag>("#EXT-X-ENDLIST\n", absl::nullopt);
   RunEmptyTagTest<XEndListTag>();
 }
 

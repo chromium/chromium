@@ -119,6 +119,13 @@ inline void IsGap(bool value,
   EXPECT_EQ(segment.IsGap(), value) << from.ToString();
 }
 
+// Checks the value of `IsEndList` against the given value.
+inline void IsEndList(bool value,
+                      const base::Location& from,
+                      const MediaPlaylist& playlist) {
+  EXPECT_EQ(playlist.IsEndList(), value) << from.ToString();
+}
+
 }  // namespace media::hls
 
 #endif

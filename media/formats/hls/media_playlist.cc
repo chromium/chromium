@@ -57,6 +57,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
   absl::optional<XGapTag> gap_tag;
   absl::optional<XDiscontinuityTag> discontinuity_tag;
   absl::optional<XPlaylistTypeTag> playlist_type_tag;
+  absl::optional<XEndListTag> end_list_tag;
   std::vector<MediaSegment> segments;
 
   // If this media playlist was found through a multivariant playlist, it may
@@ -132,9 +133,13 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
           }
           break;
         }
-        case MediaPlaylistTagName::kXEndList:
-          // TODO(crbug.com/1266991): Implement the #EXT-X-END-LIST Tag
+        case MediaPlaylistTagName::kXEndList: {
+          auto error = ParseUniqueTag(*tag, end_list_tag);
+          if (error.has_value()) {
+            return std::move(error).value();
+          }
           break;
+        }
         case MediaPlaylistTagName::kXIFramesOnly:
           // TODO(crbug.com/1266991): Implement the #EXT-X-I-FRAMES-ONLY tag
           break;
@@ -203,10 +208,10 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
     playlist_type = playlist_type_tag->type;
   }
 
-  return MediaPlaylist(std::move(uri), common_state.GetVersion(),
-                       independent_segments,
-                       base::Seconds(target_duration_tag->duration),
-                       std::move(segments), playlist_type);
+  return MediaPlaylist(
+      std::move(uri), common_state.GetVersion(), independent_segments,
+      base::Seconds(target_duration_tag->duration), std::move(segments),
+      playlist_type, end_list_tag.has_value());
 }
 
 MediaPlaylist::MediaPlaylist(GURL uri,
@@ -214,11 +219,13 @@ MediaPlaylist::MediaPlaylist(GURL uri,
                              bool independent_segments,
                              base::TimeDelta target_duration,
                              std::vector<MediaSegment> segments,
-                             absl::optional<PlaylistType> playlist_type)
+                             absl::optional<PlaylistType> playlist_type,
+                             bool end_list)
     : Playlist(std::move(uri), version, independent_segments),
       target_duration_(target_duration),
       segments_(std::move(segments)),
-      playlist_type_(playlist_type) {
+      playlist_type_(playlist_type),
+      end_list_(end_list) {
   base::TimeDelta duration;
   for (const auto& segment : segments_) {
     duration += base::Seconds(segment.GetDuration());

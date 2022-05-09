@@ -52,6 +52,11 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
     return playlist_type_;
   }
 
+  // Returns whether this playlist contained the 'EXT-X-ENDLIST' tag. This
+  // indicates, in the cause of EVENT or live playlists, that no further
+  // segments will be appended in future updates.
+  bool IsEndList() const { return end_list_; }
+
   // Attempts to parse the media playlist represented by `source`. `uri` must be
   // a valid, non-empty GURL referring to the URI of this playlist. If this
   // playlist was found through a multivariant playlist, `parent_playlist` must
@@ -69,12 +74,14 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
                 bool independent_segments,
                 base::TimeDelta target_duration,
                 std::vector<MediaSegment> segments,
-                absl::optional<PlaylistType> playlist_type);
+                absl::optional<PlaylistType> playlist_type,
+                bool end_list);
 
   base::TimeDelta target_duration_;
   std::vector<MediaSegment> segments_;
   base::TimeDelta computed_duration_;
   absl::optional<PlaylistType> playlist_type_;
+  bool end_list_;
 };
 
 }  // namespace media::hls

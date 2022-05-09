@@ -447,4 +447,49 @@ TEST(HlsMediaPlaylistTest, XTargetDurationTag) {
   }
 }
 
+TEST(HlsMediaPlaylistTest, XEndListTag) {
+  MediaPlaylistTestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-TARGETDURATION:10");
+
+  // Without the 'EXT-X-ENDLIST' tag, the default value is false, regardless of
+  // the playlist type.
+  {
+    for (const base::StringPiece type : {"", "EVENT", "VOD"}) {
+      auto fork = builder;
+      if (!type.empty()) {
+        fork.AppendLine("#EXT-X-PLAYLIST-TYPE:", type);
+      }
+      fork.ExpectPlaylist(IsEndList, false);
+      fork.ExpectOk();
+    }
+  }
+
+  // The 'EXT-X-ENDLIST' tag may not have any content
+  {
+    for (const base::StringPiece x : {"", "FOO=BAR", "1"}) {
+      auto fork = builder;
+      fork.AppendLine("#EXT-X-ENDLIST:", x);
+      fork.ExpectError(ParseStatusCode::kMalformedTag);
+    }
+  }
+
+  // The EXT-X-ENDLIST tag can appear anywhere in the playlist
+  builder.AppendLine("#EXTINF:9.2,\t");
+  builder.AppendLine("segment0.ts");
+  builder.ExpectAdditionalSegment();
+
+  builder.AppendLine("#EXT-X-ENDLIST");
+  builder.ExpectPlaylist(IsEndList, true);
+
+  builder.AppendLine("#EXTINF:9.2,\n");
+  builder.AppendLine("segment1.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectOk();
+
+  // The EXT-X-ENDLIST tag may not appear twice
+  builder.AppendLine("#EXT-X-ENDLIST");
+  builder.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
+}
+
 }  // namespace media::hls
