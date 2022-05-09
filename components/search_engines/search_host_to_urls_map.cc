@@ -4,6 +4,7 @@
 
 #include "components/search_engines/search_host_to_urls_map.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "components/search_engines/template_url.h"
@@ -59,7 +60,15 @@ TemplateURL* SearchHostToURLsMap::GetTemplateURLForHost(
   HostToURLsMap::const_iterator iter = host_to_urls_map_.find(host);
   if (iter == host_to_urls_map_.end() || iter->second.empty())
     return nullptr;
-  return *(iter->second.begin());  // Return the 1st element.
+
+  // Because we have to happily tolerate duplicates in TemplateURLService now,
+  /// return the best TemplateURL for `host`, just like
+  // `GetTemplateURLForKeyword` returns the best TemplateURL for a keyword.
+  return *std::min_element(
+      iter->second.begin(), iter->second.end(),
+      [](const auto& a, const auto& b) {
+        return a->IsBetterThanEngineWithConflictingKeyword(b);
+      });
 }
 
 SearchHostToURLsMap::TemplateURLSet* SearchHostToURLsMap::GetURLsForHost(

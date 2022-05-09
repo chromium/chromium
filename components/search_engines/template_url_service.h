@@ -171,10 +171,9 @@ class TemplateURLService : public WebDataServiceConsumer,
                            bool supports_replacement_only,
                            TURLsAndMeaningfulLengths* matches);
 
-  // Looks up |keyword| and returns the element it maps to.  Returns NULL if
-  // the keyword was not found.
-  // The caller should not try to delete the returned pointer; the data store
-  // retains ownership of it.
+  // Looks up |keyword| and returns the best TemplateURL for it.  Returns
+  // nullptr if the keyword was not found. The caller should not try to delete
+  // the returned pointer; the data store retains ownership of it.
   TemplateURL* GetTemplateURLForKeyword(const std::u16string& keyword);
   const TemplateURL* GetTemplateURLForKeyword(
       const std::u16string& keyword) const;
@@ -185,8 +184,8 @@ class TemplateURLService : public WebDataServiceConsumer,
   TemplateURL* GetTemplateURLForGUID(const std::string& sync_guid);
   const TemplateURL* GetTemplateURLForGUID(const std::string& sync_guid) const;
 
-  // Returns the first TemplateURL found with a URL using the specified |host|,
-  // or NULL if there are no such TemplateURLs
+  // Returns the best TemplateURL found with a URL using the specified |host|,
+  // or nullptr if there are no such TemplateURLs.
   TemplateURL* GetTemplateURLForHost(const std::string& host);
   const TemplateURL* GetTemplateURLForHost(const std::string& host) const;
 

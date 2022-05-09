@@ -445,8 +445,10 @@ TemplateURL* TemplateURLService::GetTemplateURLForHost(
 
 const TemplateURL* TemplateURLService::GetTemplateURLForHost(
     const std::string& host) const {
-  if (loaded_)
+  if (loaded_) {
+    // `provider_map_` takes care of finding the best TemplateURL for `host`.
     return provider_map_->GetTemplateURLForHost(host);
+  }
   TemplateURL* initial_dsp = initial_default_search_provider_.get();
   return (initial_dsp &&
           (initial_dsp->GenerateSearchURL(search_terms_data()).host_piece() ==
