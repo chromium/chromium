@@ -91,6 +91,8 @@ DEFAULT_DELETER(zcr_gaming_input_v2, zcr_gaming_input_v2_destroy)
 DEFAULT_DELETER(zcr_keyboard_configuration_v1,
                 zcr_keyboard_configuration_v1_destroy)
 DEFAULT_DELETER(zcr_keyboard_extension_v1, zcr_keyboard_extension_v1_destroy)
+DEFAULT_DELETER(zwp_keyboard_shortcuts_inhibit_manager_v1,
+                zwp_keyboard_shortcuts_inhibit_manager_v1_destroy)
 DEFAULT_DELETER(zcr_notification_shell_v1, zcr_notification_shell_v1_destroy)
 DEFAULT_DELETER(zcr_remote_shell_v1, zcr_remote_shell_v1_destroy)
 DEFAULT_DELETER(zcr_remote_shell_v2, zcr_remote_shell_v2_destroy)

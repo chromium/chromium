@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/window_properties.h"
 #include "base/callback_helpers.h"
 #include "base/containers/adapters.h"
 #include "base/logging.h"
@@ -1624,6 +1625,19 @@ void Surface::Unpin() {
 void Surface::ThrottleFrameRate(bool on) {
   for (SurfaceObserver& observer : observers_)
     observer.ThrottleFrameRate(on);
+}
+
+void Surface::SetKeyboardShortcutsInhibited(bool inhibited) {
+  if (keyboard_shortcuts_inhibited_ == inhibited)
+    return;
+
+  keyboard_shortcuts_inhibited_ = inhibited;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Also set kCanConsumeSystemKeysKey property, so that the key event
+  // is also forwarded to exo::Keyboard.
+  // TODO(hidehiko): Support capability on migrating ARC/Crostini.
+  window_->SetProperty(ash::kCanConsumeSystemKeysKey, inhibited);
+#endif
 }
 
 }  // namespace exo

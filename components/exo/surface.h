@@ -411,6 +411,16 @@ class Surface final : public ui::PropertyHandler {
   // Starts or ends throttling on the surface.
   void ThrottleFrameRate(bool on);
 
+  // If true is set, if this window has a focus, key events should be sent to
+  // the app, even if it is an ash shortcut (with some exceptions).
+  // See exo::Keyboard for more details.
+  void SetKeyboardShortcutsInhibited(bool inhibited);
+
+  // Returns whether keyboard shortcuts are inhibited.
+  bool is_keyboard_shortcuts_inhibited() const {
+    return keyboard_shortcuts_inhibited_;
+  }
+
  private:
   struct State {
     State();
@@ -616,6 +626,8 @@ class Surface final : public ui::PropertyHandler {
   gfx::Size embedded_surface_size_;
 
   LeaveEnterCallback leave_enter_callback_;
+
+  bool keyboard_shortcuts_inhibited_ = false;
 };
 
 class ScopedSurface {

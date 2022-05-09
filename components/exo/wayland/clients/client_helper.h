@@ -16,6 +16,7 @@
 #include <input-timestamps-unstable-v1-client-protocol.h>
 #include <keyboard-configuration-unstable-v1-client-protocol.h>
 #include <keyboard-extension-unstable-v1-client-protocol.h>
+#include <keyboard-shortcuts-inhibit-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <notification-shell-unstable-v1-client-protocol.h>
@@ -112,6 +113,7 @@ DEFAULT_DELETER_FDECL(zcr_cursor_shapes_v1)
 DEFAULT_DELETER_FDECL(zcr_gaming_input_v2)
 DEFAULT_DELETER_FDECL(zcr_keyboard_configuration_v1)
 DEFAULT_DELETER_FDECL(zcr_keyboard_extension_v1)
+DEFAULT_DELETER_FDECL(zwp_keyboard_shortcuts_inhibit_manager_v1)
 DEFAULT_DELETER_FDECL(zcr_notification_shell_v1)
 DEFAULT_DELETER_FDECL(zcr_remote_shell_v1)
 DEFAULT_DELETER_FDECL(zcr_remote_shell_v2)

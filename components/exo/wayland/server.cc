@@ -13,6 +13,7 @@
 #include <input-timestamps-unstable-v1-server-protocol.h>
 #include <keyboard-configuration-unstable-v1-server-protocol.h>
 #include <keyboard-extension-unstable-v1-server-protocol.h>
+#include <keyboard-shortcuts-inhibit-unstable-v1-server-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-server-protocol.h>
 #include <notification-shell-unstable-v1-server-protocol.h>
 #include <overlay-prioritizer-server-protocol.h>
@@ -98,6 +99,7 @@
 #include "components/exo/wayland/zcr_touchpad_haptics.h"
 #include "components/exo/wayland/zwp_idle_inhibit_manager.h"
 #include "components/exo/wayland/zwp_input_timestamps_manager.h"
+#include "components/exo/wayland/zwp_keyboard_shortcuts_inhibit_manager.h"
 #include "components/exo/wayland/zwp_pointer_constraints.h"
 #include "components/exo/wayland/zwp_pointer_gestures.h"
 #include "components/exo/wayland/zwp_relative_pointer_manager.h"
@@ -375,6 +377,10 @@ void Server::Initialize() {
       std::make_unique<WaylandKeyboardExtension>(serial_tracker_.get());
   wl_global_create(wl_display_.get(), &zcr_keyboard_extension_v1_interface, 2,
                    zcr_keyboard_extension_data_.get(), bind_keyboard_extension);
+
+  wl_global_create(wl_display_.get(),
+                   &zwp_keyboard_shortcuts_inhibit_manager_v1_interface, 1,
+                   display_, bind_keyboard_shortcuts_inhibit_manager);
 
   zwp_text_manager_data_ = std::make_unique<WaylandTextInputManager>(
       display_->seat()->xkb_tracker(), serial_tracker_.get());

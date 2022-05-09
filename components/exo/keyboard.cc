@@ -129,14 +129,10 @@ bool CanConsumeAshAccelerators(Surface* surface) {
   for (; window; window = window->parent()) {
     const auto app_type =
         static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
-    // TODO(fukino): Always returning false for Lacros window is a short-term
-    // solution. In reality, Lacros can consume ash accelerator's key
-    // combination when it is a deprecated ash accelerator or the window is
-    // running PWA. We need to let the wayland client dynamically decrlare
-    // whether it want to consume ash accelerators' key combinations.
-    // crbug.com/1174025.
+    // TOOD(hidehiko): get rid of this if check, after introducing capability,
+    // followed by ARC/Crostini migration.
     if (app_type == ash::AppType::LACROS)
-      return false;
+      return surface->is_keyboard_shortcuts_inhibited();
   }
   return true;
 }
