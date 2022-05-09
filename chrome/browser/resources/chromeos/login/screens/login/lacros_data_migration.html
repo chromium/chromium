@@ -43,7 +43,7 @@
           value="[[progressValue_]]">
       </paper-progress>
       <div slot="subtitle">
-        <p>
+        <p role="status" aria-live="polite">
           [[i18nDynamic(locale, 'lacrosDataMigrationSubtitle', progressValue_)]]
         </p>
         <p hidden="[[!canSkip_]]">
