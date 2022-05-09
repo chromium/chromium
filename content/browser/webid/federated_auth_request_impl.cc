@@ -1127,6 +1127,9 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
 void FederatedAuthRequestImpl::OnTokenResponseReceived(
     IdpNetworkRequestManager::FetchStatus status,
     const std::string& id_token) {
+  if (!auth_request_callback_)
+    return;
+
   // When fetching id tokens we show a "Verify" sheet to users in case fetching
   // takes a long time due to latency etc.. In case that the fetching process is
   // fast, we still want to show the "Verify" sheet for at least

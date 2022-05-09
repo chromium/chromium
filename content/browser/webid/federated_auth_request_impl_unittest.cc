@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -155,6 +156,7 @@ struct MockConfiguration {
   FetchStatus accounts_response;
   AccountList accounts;
   FetchStatus token_response;
+  bool delay_token_response;
   RevokeResponse revoke_response;
   bool customized_dialog;
   bool wait_for_callback;
@@ -180,6 +182,7 @@ static const MockConfiguration kConfigurationValid{
     FetchStatus::kSuccess,
     kAccounts,
     FetchStatus::kSuccess,
+    false /* delay_token_response */,
     RevokeResponse::kSuccess,
     false /* customized_dialog */,
     true /* wait_for_callback */};
@@ -227,6 +230,7 @@ class AuthRequestCallbackHelper {
  private:
   void ReceiverMethod(RequestIdTokenStatus status,
                       const absl::optional<std::string>& token) {
+    CHECK(!was_called_);
     status_ = status;
     token_ = token;
     was_called_ = true;
@@ -388,6 +392,13 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     config_ = configuration;
   }
 
+  void RunDelayedCallbacks() {
+    for (base::OnceClosure& delayed_callback : delayed_callbacks_) {
+      std::move(delayed_callback).Run();
+    }
+    delayed_callbacks_.clear();
+  }
+
   void FetchManifestList(FetchManifestListCallback callback) override {
     fetched_endpoints_ |= FetchedEndpoint::MANIFEST_LIST;
     std::set<GURL> url_set(config_.manifest_list.provider_urls.begin(),
@@ -434,7 +445,12 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     std::string delivered_token =
         config_.token_response == FetchStatus::kSuccess ? config_.token
                                                         : std::string();
-    std::move(callback).Run(config_.token_response, delivered_token);
+    base::OnceCallback bound_callback = base::BindOnce(
+        std::move(callback), config_.token_response, delivered_token);
+    if (config_.delay_token_response)
+      delayed_callbacks_.push_back(std::move(bound_callback));
+    else
+      std::move(bound_callback).Run();
   }
 
   void SendRevokeRequest(const GURL& revoke_url,
@@ -450,6 +466,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
  protected:
   MockConfiguration config_{kConfigurationValid};
   int fetched_endpoints_{0};
+  std::vector<base::OnceClosure> delayed_callbacks_;
 };
 
 class TestLogoutIdpNetworkRequestManager : public TestIdpNetworkRequestManager {
@@ -1726,6 +1743,24 @@ TEST_F(BasicFederatedAuthRequestImplTest, ApiBlockedForUnrelatedOrigin) {
   ASSERT_NE(main_test_rfh()->GetLastCommittedOrigin(), kUnrelatedOrigin);
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
+}
+
+// Test that the request completes eventually in the case that the token request
+// times out.
+TEST_F(BasicFederatedAuthRequestImplTest, TokenRequestTimesOut) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.delay_token_response = true;
+  RequestExpectations expectations = {RequestIdTokenStatus::kError,
+                                      FederatedAuthRequestResult::kError,
+                                      FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN};
+  // RunAuthTest() fast forwards time by a sufficient amount to cause the
+  // request to timeout. `MockConfiguration::delay_token_response` disables
+  // the auto-run logic for the token request response and enables emulating
+  // the server being very slow to return a token request response.
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  // Resolve token request. The callback should not be called.
+  test_network_request_manager_->RunDelayedCallbacks();
 }
 
 class FederatedAuthRequestImplTestCancelConsistency
