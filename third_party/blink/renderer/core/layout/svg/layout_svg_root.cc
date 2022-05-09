@@ -286,7 +286,8 @@ bool LayoutSVGRoot::ShouldApplyViewportClip() const {
   // scrollbars should be hidden if overflow=hidden.
   return StyleRef().OverflowX() == EOverflow::kHidden ||
          StyleRef().OverflowX() == EOverflow::kAuto ||
-         StyleRef().OverflowX() == EOverflow::kScroll || IsDocumentElement();
+         StyleRef().OverflowX() == EOverflow::kScroll ||
+         StyleRef().OverflowX() == EOverflow::kClip || IsDocumentElement();
 }
 
 void LayoutSVGRoot::RecalcVisualOverflow() {

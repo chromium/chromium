@@ -239,6 +239,7 @@ bool SVGLayoutSupport::IsOverflowHidden(const LayoutObject& object) {
 
 bool SVGLayoutSupport::IsOverflowHidden(const ComputedStyle& style) {
   return style.OverflowX() == EOverflow::kHidden ||
+         style.OverflowX() == EOverflow::kClip ||
          style.OverflowX() == EOverflow::kScroll;
 }
 
