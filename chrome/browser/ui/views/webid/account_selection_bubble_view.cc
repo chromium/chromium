@@ -40,7 +40,7 @@ constexpr int kButtonRadius = 16;
 // The fixed, total width of the bubble.
 constexpr int kBubbleWidth = 375;
 // The desired size of the avatars of user accounts.
-constexpr int kDesiredAvatarSize = 40;
+constexpr int kDesiredAvatarSize = 30;
 // The desired size of the icon of the identity provider.
 constexpr int kDesiredIconSize = 20;
 // The size of the padding used at the top and bottom of the bubble.
@@ -49,7 +49,7 @@ constexpr int kTopBottomPadding = 4;
 // the bubble, as well as the horizontal padding between icons and text.
 constexpr int kLeftRightPadding = 12;
 // The size of the vertical padding for most elements in the bubble.
-constexpr int kBetweenChildSpacing = 8;
+constexpr int kVerticalSpacing = 8;
 // The height of the progress bar shown when showing "Verifying...".
 constexpr int kProgressBarHeight = 2;
 
@@ -123,8 +123,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
       std::make_unique<ImageDecoderImpl>(), url_loader_factory);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_fixed_width(kBubbleWidth);
-  set_margins(
-      gfx::Insets().set_top_bottom(kTopBottomPadding, kTopBottomPadding));
+  set_margins(gfx::Insets::VH(kTopBottomPadding, 0));
   // TODO(crbug.com/1323298): we are currently using a custom header because the
   // icon, title, and close buttons from a bubble are not customizable enough to
   // satisfy the UI requirements. However, this adds complexity to the code and
@@ -135,7 +134,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   set_close_on_deactivate(false);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      kBetweenChildSpacing));
+      kTopBottomPadding));
   title_ = l10n_util::GetStringFUTF16(
       IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
       base::UTF8ToUTF16(rp_etld_plus_one), idp_etld_plus_one_);
@@ -153,7 +152,7 @@ AccountSelectionBubbleView::~AccountSelectionBubbleView() = default;
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView() {
   auto header = std::make_unique<views::View>();
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetInteriorMargin(gfx::Insets().set_top(8));
+      ->SetInteriorMargin(gfx::Insets::VH(kVerticalSpacing, 0));
 
   // Add the icon.
   auto image_view = std::make_unique<views::ImageView>();
@@ -210,7 +209,10 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
     const content::IdentityRequestAccount& account) {
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets::TLBR(0, kLeftRightPadding, kTopBottomPadding,
+                        kLeftRightPadding),
+      kVerticalSpacing));
   row->AddChildView(CreateAccountRow(account, /*should_hover=*/false));
 
   // Prefer using the given name if it is provided, otherwise fallback to name.
@@ -231,9 +233,8 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   row->AddChildView(std::move(button));
 
   // Do not add disclosure text if this is a sign in.
-  if (account.login_state == Account::LoginState::kSignIn) {
+  if (account.login_state == Account::LoginState::kSignIn)
     return row;
-  }
 
   // Add disclosure text. It requires a StyledLabel so that we can add the links
   // to the privacy policy and terms of service URLs.
@@ -242,10 +243,11 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   disclosure_label->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
 
-  // Set custom top margin for `disclosure_label` in order to take
+  // Set custom top and bottom margins for `disclosure_label` in order to take
   // (line_height - font_height) into account.
   disclosure_label->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(14, 0, 0, 0)));
+      views::CreateEmptyBorder(gfx::Insets::TLBR(5, 0, 3, 0)));
+  disclosure_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
 
   std::vector<size_t> offsets;
   if (client_data_.terms_of_service_url.is_empty()) {
@@ -324,30 +326,31 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
         base::UTF8ToUTF16(account.email));
     row->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kLeftRightPadding)));
-    row->SetImageModel(views::Button::STATE_NORMAL, ui::ImageModel());
     return row;
   }
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kLeftRightPadding),
+      gfx::Insets::VH(/*vertical=*/kVerticalSpacing, /*horizontal=*/0),
       kLeftRightPadding));
   row->AddChildView(std::move(image_view));
   views::View* text_column = row->AddChildView(std::make_unique<views::View>());
   text_column->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  text_column
-      ->AddChildView(
-          std::make_unique<views::Label>(base::UTF8ToUTF16(account.name)))
-      ->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  text_column
-      ->AddChildView(
-          std::make_unique<views::Label>(base::UTF8ToUTF16(account.email)))
-      ->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  const views::LayoutProvider* provider = views::LayoutProvider::Get();
-  text_column->SetBorder(
-      views::CreateEmptyBorder(provider->GetDialogInsetsForContentType(
-          views::DialogContentType::kText, views::DialogContentType::kText)));
+
+  // Add account name.
+  views::Label* account_name =
+      text_column->AddChildView(std::make_unique<views::Label>(
+          base::UTF8ToUTF16(account.name),
+          views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
+  account_name->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+
+  // Add account email.
+  views::Label* account_email = text_column->AddChildView(
+      std::make_unique<views::Label>(base::UTF8ToUTF16(account.email),
+                                     views::style::CONTEXT_DIALOG_BODY_TEXT,
+                                     views::style::STYLE_SECONDARY));
+  account_email->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   return row;
 }
@@ -410,7 +413,12 @@ void AccountSelectionBubbleView::ShowVerifySheet(
   // Use an infinite animation: SetValue(-1).
   progress_bar->SetValue(-1);
   progress_bar->SetBackgroundColor(SK_ColorLTGRAY);
-  AddChildView(CreateAccountRow(account, /*should_hover=*/false));
+  auto row = std::make_unique<views::View>();
+  row->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets::VH(kTopBottomPadding, kLeftRightPadding)));
+  row->AddChildView(CreateAccountRow(account, /*should_hover=*/false));
+  AddChildView(row.release());
   SizeToContents();
   PreferredSizeChanged();
 }

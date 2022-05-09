@@ -353,7 +353,10 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleAccountsFlow) {
   ASSERT_EQ(children.size(), 3u);
   PerformHeaderChecks(children[0], kTitleSigningIn);
 
-  CheckAccountRow(dialog()->children()[2], u"name1", u"email1");
+  views::View* row_container = dialog()->children()[2];
+  ASSERT_TRUE(row_container);
+  ASSERT_EQ(row_container->children().size(), 1u);
+  CheckAccountRow(row_container->children()[0], u"name1", u"email1");
 }
 
 TEST_F(AccountSelectionBubbleViewTest, ReturningAccount) {
@@ -402,5 +405,8 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleReturningAccounts) {
   ASSERT_EQ(children.size(), 3u);
   PerformHeaderChecks(children[0], kTitleSigningIn);
 
-  CheckAccountRow(dialog()->children()[2], u"name1", u"email1");
+  views::View* row_container = dialog()->children()[2];
+  ASSERT_TRUE(row_container);
+  ASSERT_EQ(row_container->children().size(), 1u);
+  CheckAccountRow(row_container->children()[0], u"name1", u"email1");
 }
