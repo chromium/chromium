@@ -43,6 +43,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
+#endif
+
 namespace {
 using browsing_topics::Topic;
 using privacy_sandbox::CanonicalTopic;
@@ -662,12 +666,19 @@ class PrivacySandboxServiceTest : public testing::Test {
         std::make_unique<privacy_sandbox::PrivacySandboxSettings>(
             std::move(mock_delegate), host_content_settings_map(),
             cookie_settings(), prefs(), /*incognito_profile=*/false);
-
+#if !BUILDFLAG(IS_ANDROID)
+    mock_sentiment_service_ =
+        std::make_unique<::testing::NiceMock<MockTrustSafetySentimentService>>(
+            profile());
+#endif
     privacy_sandbox_service_ = std::make_unique<PrivacySandboxService>(
         privacy_sandbox_settings(), cookie_settings(), profile()->GetPrefs(),
         policy_service(), sync_service(),
         identity_test_env()->identity_manager(), test_interest_group_manager(),
         GetProfileType(), browsing_data_remover(),
+#if !BUILDFLAG(IS_ANDROID)
+        mock_sentiment_service(),
+#endif
         mock_browsing_topics_service());
   }
 
@@ -722,6 +733,11 @@ class PrivacySandboxServiceTest : public testing::Test {
   browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service() {
     return &mock_browsing_topics_service_;
   }
+#if !BUILDFLAG(IS_ANDROID)
+  MockTrustSafetySentimentService* mock_sentiment_service() {
+    return mock_sentiment_service_.get();
+  }
+#endif
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
@@ -734,6 +750,9 @@ class PrivacySandboxServiceTest : public testing::Test {
   TestInterestGroupManager test_interest_group_manager_;
   privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate* mock_delegate_;
   browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
+#endif
   std::unique_ptr<privacy_sandbox::PrivacySandboxSettings>
       privacy_sandbox_settings_;
 
@@ -1437,6 +1456,161 @@ TEST_F(PrivacySandboxServiceTest, DialogActionsUMAActions) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Consent.ClosedNoInteraction"));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(PrivacySandboxServiceTest, DialogActionsSentimentService) {
+  {
+    EXPECT_CALL(*mock_sentiment_service(),
+                InteractedWithPrivacySandbox3(testing::_))
+        .Times(0);
+    SetupDialogTestState(feature_list(), prefs(),
+                         {/*consent_required=*/false,
+                          /*old_api_pref=*/true,
+                          /*new_api_pref=*/false,
+                          /*notice_displayed=*/false,
+                          /*consent_decision_made=*/false,
+                          /*confirmation_not_shown=*/false});
+    privacy_sandbox_service()->DialogActionOccurred(
+        PrivacySandboxService::DialogAction::kNoticeShown);
+  }
+  {
+    EXPECT_CALL(
+        *mock_sentiment_service(),
+        InteractedWithPrivacySandbox3(TrustSafetySentimentService::FeatureArea::
+                                          kPrivacySandbox3NoticeSettings))
+        .Times(1);
+    SetupDialogTestState(feature_list(), prefs(),
+                         {/*consent_required=*/false,
+                          /*old_api_pref=*/true,
+                          /*new_api_pref=*/false,
+                          /*notice_displayed=*/false,
+                          /*consent_decision_made=*/false,
+                          /*confirmation_not_shown=*/false});
+    privacy_sandbox_service()->DialogActionOccurred(
+        PrivacySandboxService::DialogAction::kNoticeOpenSettings);
+  }
+  {
+    EXPECT_CALL(
+        *mock_sentiment_service(),
+        InteractedWithPrivacySandbox3(
+            TrustSafetySentimentService::FeatureArea::kPrivacySandbox3NoticeOk))
+        .Times(1);
+    SetupDialogTestState(feature_list(), prefs(),
+                         {/*consent_required=*/false,
+                          /*old_api_pref=*/true,
+                          /*new_api_pref=*/false,
+                          /*notice_displayed=*/false,
+                          /*consent_decision_made=*/false,
+                          /*confirmation_not_shown=*/false});
+    privacy_sandbox_service()->DialogActionOccurred(
+        PrivacySandboxService::DialogAction::kNoticeAcknowledge);
+  }
+  {
+    EXPECT_CALL(
+        *mock_sentiment_service(),
+        InteractedWithPrivacySandbox3(TrustSafetySentimentService::FeatureArea::
+                                          kPrivacySandbox3NoticeDismiss))
+        .Times(1);
+    SetupDialogTestState(feature_list(), prefs(),
+                         {/*consent_required=*/false,
+                          /*old_api_pref=*/true,
+                          /*new_api_pref=*/false,
+                          /*notice_displayed=*/false,
+                          /*consent_decision_made=*/false,
+                          /*confirmation_not_shown=*/false});
+    privacy_sandbox_service()->DialogActionOccurred(
+        PrivacySandboxService::DialogAction::kNoticeDismiss);
+  }
+  {
+    EXPECT_CALL(*mock_sentiment_service(),
+                InteractedWithPrivacySandbox3(testing::_))
+        .Times(0);
+    SetupDialogTestState(feature_list(), prefs(),
+                         {/*consent_required=*/false,
+                          /*old_api_pref=*/true,
+                          /*new_api_pref=*/false,
+                          /*notice_displayed=*/false,
+                          /*consent_decision_made=*/false,
+                          /*confirmation_not_shown=*/false});
+    privacy_sandbox_service()->DialogActionOccurred(
+        PrivacySandboxService::DialogAction::kNoticeClosedNoInteraction);
+  }
+  {
+    EXPECT_CALL(*mock_sentiment_service(),
+                InteractedWithPrivacySandbox3(testing::_))
+        .Times(0);
+    SetupDialogTestState(feature_list(), prefs(),
+                         {/*consent_required=*/true,
+                          /*old_api_pref=*/true,
+                          /*new_api_pref=*/false,
+                          /*notice_displayed=*/false,
+                          /*consent_decision_made=*/false,
+                          /*confirmation_not_shown=*/false});
+    privacy_sandbox_service()->DialogActionOccurred(
+        PrivacySandboxService::DialogAction::kConsentShown);
+  }
+  {
+    EXPECT_CALL(
+        *mock_sentiment_service(),
+        InteractedWithPrivacySandbox3(TrustSafetySentimentService::FeatureArea::
+                                          kPrivacySandbox3ConsentAccept))
+        .Times(1);
+    SetupDialogTestState(feature_list(), prefs(),
+                         {/*consent_required=*/true,
+                          /*old_api_pref=*/true,
+                          /*new_api_pref=*/false,
+                          /*notice_displayed=*/false,
+                          /*consent_decision_made=*/false,
+                          /*confirmation_not_shown=*/false});
+    privacy_sandbox_service()->DialogActionOccurred(
+        PrivacySandboxService::DialogAction::kConsentAccepted);
+  }
+  {
+    EXPECT_CALL(
+        *mock_sentiment_service(),
+        InteractedWithPrivacySandbox3(TrustSafetySentimentService::FeatureArea::
+                                          kPrivacySandbox3ConsentDecline))
+        .Times(1);
+    SetupDialogTestState(feature_list(), prefs(),
+                         {/*consent_required=*/true,
+                          /*old_api_pref=*/true,
+                          /*new_api_pref=*/false,
+                          /*notice_displayed=*/false,
+                          /*consent_decision_made=*/false,
+                          /*confirmation_not_shown=*/false});
+    privacy_sandbox_service()->DialogActionOccurred(
+        PrivacySandboxService::DialogAction::kConsentDeclined);
+  }
+  {
+    EXPECT_CALL(*mock_sentiment_service(),
+                InteractedWithPrivacySandbox3(testing::_))
+        .Times(0);
+    SetupDialogTestState(feature_list(), prefs(),
+                         {/*consent_required=*/true,
+                          /*old_api_pref=*/true,
+                          /*new_api_pref=*/false,
+                          /*notice_displayed=*/false,
+                          /*consent_decision_made=*/false,
+                          /*confirmation_not_shown=*/false});
+    privacy_sandbox_service()->DialogActionOccurred(
+        PrivacySandboxService::DialogAction::kConsentMoreInfoOpened);
+  }
+  {
+    EXPECT_CALL(*mock_sentiment_service(),
+                InteractedWithPrivacySandbox3(testing::_))
+        .Times(0);
+    SetupDialogTestState(feature_list(), prefs(),
+                         {/*consent_required=*/true,
+                          /*old_api_pref=*/true,
+                          /*new_api_pref=*/false,
+                          /*notice_displayed=*/false,
+                          /*consent_decision_made=*/false,
+                          /*confirmation_not_shown=*/false});
+    privacy_sandbox_service()->DialogActionOccurred(
+        PrivacySandboxService::DialogAction::kConsentClosedNoDecision);
+  }
+}
+#endif
 
 TEST_F(PrivacySandboxServiceTest, Block3PCookieNoDialog) {
   // Confirm that when 3P cookies are blocked, that no dialog is shown.

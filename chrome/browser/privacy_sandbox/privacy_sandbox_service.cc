@@ -35,6 +35,10 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
+#endif
+
 namespace {
 
 constexpr char kBlockedTopicsTopicKey[] = "topic";
@@ -149,6 +153,9 @@ PrivacySandboxService::PrivacySandboxService(
     content::InterestGroupManager* interest_group_manager,
     profile_metrics::BrowserProfileType profile_type,
     content::BrowsingDataRemover* browsing_data_remover,
+#if !BUILDFLAG(IS_ANDROID)
+    TrustSafetySentimentService* sentiment_service,
+#endif
     browsing_topics::BrowsingTopicsService* browsing_topics_service)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
       cookie_settings_(cookie_settings),
@@ -159,6 +166,9 @@ PrivacySandboxService::PrivacySandboxService(
       interest_group_manager_(interest_group_manager),
       profile_type_(profile_type),
       browsing_data_remover_(browsing_data_remover),
+#if !BUILDFLAG(IS_ANDROID)
+      sentiment_service_(sentiment_service),
+#endif
       browsing_topics_service_(browsing_topics_service) {
   DCHECK(privacy_sandbox_settings_);
   DCHECK(pref_service_);
@@ -213,6 +223,7 @@ PrivacySandboxService::GetRequiredDialogType() {
 
 void PrivacySandboxService::DialogActionOccurred(
     PrivacySandboxService::DialogAction action) {
+  InformSentimentService(action);
   switch (action) {
     case (DialogAction::kNoticeShown): {
       DCHECK_EQ(DialogType::kNotice, GetRequiredDialogType());
@@ -1080,4 +1091,39 @@ PrivacySandboxService::GetRequiredDialogTypeInternal(
   // Finally a notice is required.
   DCHECK(privacy_sandbox::kPrivacySandboxSettings3NoticeRequired.Get());
   return DialogType::kNotice;
+}
+
+void PrivacySandboxService::InformSentimentService(
+    PrivacySandboxService::DialogAction action) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!sentiment_service_)
+    return;
+
+  TrustSafetySentimentService::FeatureArea area;
+  switch (action) {
+    case (DialogAction::kNoticeOpenSettings):
+      area = TrustSafetySentimentService::FeatureArea::
+          kPrivacySandbox3NoticeSettings;
+      break;
+    case (DialogAction::kNoticeAcknowledge):
+      area = TrustSafetySentimentService::FeatureArea::kPrivacySandbox3NoticeOk;
+      break;
+    case (DialogAction::kNoticeDismiss):
+      area = TrustSafetySentimentService::FeatureArea::
+          kPrivacySandbox3NoticeDismiss;
+      break;
+    case (DialogAction::kConsentAccepted):
+      area = TrustSafetySentimentService::FeatureArea::
+          kPrivacySandbox3ConsentAccept;
+      break;
+    case (DialogAction::kConsentDeclined):
+      area = TrustSafetySentimentService::FeatureArea::
+          kPrivacySandbox3ConsentDecline;
+      break;
+    default:
+      return;
+  }
+
+  sentiment_service_->InteractedWithPrivacySandbox3(area);
+#endif
 }

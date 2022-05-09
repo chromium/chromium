@@ -20,6 +20,10 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/browser/storage_partition.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
+#endif
+
 PrivacySandboxServiceFactory* PrivacySandboxServiceFactory::GetInstance() {
   return base::Singleton<PrivacySandboxServiceFactory>::get();
 }
@@ -39,6 +43,9 @@ PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(browsing_topics::BrowsingTopicsServiceFactory::GetInstance());
+#if !BUILDFLAG(IS_ANDROID)
+  DependsOn(TrustSafetySentimentServiceFactory::GetInstance());
+#endif
 }
 
 KeyedService* PrivacySandboxServiceFactory::BuildServiceInstanceFor(
@@ -55,6 +62,9 @@ KeyedService* PrivacySandboxServiceFactory::BuildServiceInstanceFor(
       (!profile->IsGuestSession() || profile->IsOffTheRecord())
           ? profile->GetBrowsingDataRemover()
           : nullptr,
+#if !BUILDFLAG(IS_ANDROID)
+      TrustSafetySentimentServiceFactory::GetForProfile(profile),
+#endif
       browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(profile));
 }
 

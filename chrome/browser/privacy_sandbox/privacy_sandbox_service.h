@@ -22,6 +22,9 @@
 
 class Browser;
 class PrefService;
+#if !BUILDFLAG(IS_ANDROID)
+class TrustSafetySentimentService;
+#endif
 
 namespace content {
 class BrowsingDataRemover;
@@ -100,7 +103,11 @@ class PrivacySandboxService : public KeyedService,
       content::InterestGroupManager* interest_group_manager,
       profile_metrics::BrowserProfileType profile_type,
       content::BrowsingDataRemover* browsing_data_remover,
-      browsing_topics::BrowsingTopicsService* browsing_topics_service_);
+#if !BUILDFLAG(IS_ANDROID)
+      TrustSafetySentimentService* sentiment_service,
+#endif
+      browsing_topics::BrowsingTopicsService* browsing_topics_service);
+
   ~PrivacySandboxService() override;
 
   // Returns the dialog type that should be shown to the user. This consults
@@ -451,6 +458,9 @@ class PrivacySandboxService : public KeyedService,
   raw_ptr<content::InterestGroupManager> interest_group_manager_;
   profile_metrics::BrowserProfileType profile_type_;
   raw_ptr<content::BrowsingDataRemover> browsing_data_remover_;
+#if !BUILDFLAG(IS_ANDROID)
+  raw_ptr<TrustSafetySentimentService> sentiment_service_;
+#endif
   raw_ptr<browsing_topics::BrowsingTopicsService> browsing_topics_service_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
@@ -479,6 +489,11 @@ class PrivacySandboxService : public KeyedService,
        privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY},
       {browsing_topics::Topic(4),
        privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY}};
+
+  // Informs the TrustSafetySentimentService, if it exists, that a
+  // Privacy Sandbox 3 interaction for an area has occurred The area is
+  // determined by |action|. Only a subset of actions has a corresponding area.
+  void InformSentimentService(PrivacySandboxService::DialogAction action);
 
   base::WeakPtrFactory<PrivacySandboxService> weak_factory_{this};
 };
