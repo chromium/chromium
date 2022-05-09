@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/form_processing/name_processing_util.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/rationalization_util.h"
 #include "components/autofill/core/browser/validation.h"
@@ -1294,8 +1295,7 @@ void FormStructure::LogQualityMetrics(
       observed_submission ? AutofillMetrics::TYPE_SUBMISSION
                           : AutofillMetrics::TYPE_NO_SUBMISSION;
 
-  for (size_t i = 0; i < field_count(); ++i) {
-    auto* const field = this->field(i);
+  for (auto& field : *this) {
     AutofillType type = field->Type();
 
     if (IsUPIVirtualPaymentAddress(field->value)) {
@@ -1315,6 +1315,7 @@ void FormStructure::LogQualityMetrics(
         form_interactions_ukm_logger, *this, *field, metric_type);
     AutofillMetrics::LogOverallPredictionQualityMetrics(
         form_interactions_ukm_logger, *this, *field, metric_type);
+    autofill::metrics::LogShadowPredictionComparison(*field);
     // We count fields that were autofilled but later modified, regardless of
     // whether the data now in the field is recognized.
     if (field->previously_autofilled())

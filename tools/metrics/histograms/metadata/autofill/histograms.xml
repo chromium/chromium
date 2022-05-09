@@ -117,6 +117,13 @@ chromium-metrics-reviews@google.com.
       summary="the virtual card unenrollment dialog"/>
 </variants>
 
+<variants name="Autofill.ShadowPredictions.SourcePair">
+  <variant name="ExperimentalToDefaultHeuristics"
+      summary="the heuristics being rolled out, the default heuristics"/>
+  <variant name="NextGenToDefaultHeuristics"
+      summary="the next-gen heuristics, the default heuristics"/>
+</variants>
+
 <variants name="Autofill.Snackbar.Type">
   <variant name="VirtualCard"
       summary="Snackbar shown after virtual card is autofilled."/>
@@ -2960,6 +2967,17 @@ chromium-metrics-reviews@google.com.
     <variant name="Enroll" summary="the enroll button"/>
     <variant name="Unenroll" summary="the unenroll button"/>
   </token>
+</histogram>
+
+<histogram name="Autofill.ShadowPredictions.{SourcePair}"
+    enum="AutofillPredictionsComparisonResult" expires_after="2023-04-01">
+  <owner>cfroussios@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    3-way comparison between {SourcePair} and the value that was in a field on
+    submission. This is emitted after an autofillable form has been submitted.
+  </summary>
+  <token key="SourcePair" variants="Autofill.ShadowPredictions.SourcePair"/>
 </histogram>
 
 <histogram name="Autofill.Snackbar.{SnackbarType}.ActionClicked"

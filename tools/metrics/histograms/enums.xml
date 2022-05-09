@@ -7256,6 +7256,1684 @@ others/histograms.xml -->
              popup."/>
 </enum>
 
+<enum name="AutofillPredictionsComparisonResult">
+  <int value="0" label="None"/>
+  <int value="1" label="Predictions equal - Value agrees"/>
+  <int value="2" label="Predictions equal - Value disagrees"/>
+  <int value="3"
+      label="Predictions different - Value agrees with old prediction"/>
+  <int value="4"
+      label="Predictions different - Value agrees with new prediction"/>
+  <int value="5"
+      label="Predictions different - Value agrees with neither prediction"/>
+  <int value="6"
+      label="Predictions different - Value agrees with both predictions"/>
+  <int value="7" label="UNKNOWN_TYPE - Predictions equal - Value agrees"/>
+  <int value="8" label="UNKNOWN_TYPE - Predictions equal - Value disagrees"/>
+  <int value="9"
+      label="UNKNOWN_TYPE - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="10"
+      label="UNKNOWN_TYPE - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="11"
+      label="UNKNOWN_TYPE - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="12"
+      label="UNKNOWN_TYPE - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="13" label="EMPTY_TYPE - Predictions equal - Value agrees"/>
+  <int value="14" label="EMPTY_TYPE - Predictions equal - Value disagrees"/>
+  <int value="15"
+      label="EMPTY_TYPE - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="16"
+      label="EMPTY_TYPE - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="17"
+      label="EMPTY_TYPE - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="18"
+      label="EMPTY_TYPE - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="19" label="NAME_FIRST - Predictions equal - Value agrees"/>
+  <int value="20" label="NAME_FIRST - Predictions equal - Value disagrees"/>
+  <int value="21"
+      label="NAME_FIRST - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="22"
+      label="NAME_FIRST - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="23"
+      label="NAME_FIRST - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="24"
+      label="NAME_FIRST - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="25" label="NAME_MIDDLE - Predictions equal - Value agrees"/>
+  <int value="26" label="NAME_MIDDLE - Predictions equal - Value disagrees"/>
+  <int value="27"
+      label="NAME_MIDDLE - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="28"
+      label="NAME_MIDDLE - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="29"
+      label="NAME_MIDDLE - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="30"
+      label="NAME_MIDDLE - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="31" label="NAME_LAST - Predictions equal - Value agrees"/>
+  <int value="32" label="NAME_LAST - Predictions equal - Value disagrees"/>
+  <int value="33"
+      label="NAME_LAST - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="34"
+      label="NAME_LAST - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="35"
+      label="NAME_LAST - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="36"
+      label="NAME_LAST - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="37"
+      label="NAME_MIDDLE_INITIAL - Predictions equal - Value agrees"/>
+  <int value="38"
+      label="NAME_MIDDLE_INITIAL - Predictions equal - Value disagrees"/>
+  <int value="39"
+      label="NAME_MIDDLE_INITIAL - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="40"
+      label="NAME_MIDDLE_INITIAL - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="41"
+      label="NAME_MIDDLE_INITIAL - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="42"
+      label="NAME_MIDDLE_INITIAL - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="43" label="NAME_FULL - Predictions equal - Value agrees"/>
+  <int value="44" label="NAME_FULL - Predictions equal - Value disagrees"/>
+  <int value="45"
+      label="NAME_FULL - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="46"
+      label="NAME_FULL - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="47"
+      label="NAME_FULL - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="48"
+      label="NAME_FULL - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="49" label="NAME_SUFFIX - Predictions equal - Value agrees"/>
+  <int value="50" label="NAME_SUFFIX - Predictions equal - Value disagrees"/>
+  <int value="51"
+      label="NAME_SUFFIX - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="52"
+      label="NAME_SUFFIX - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="53"
+      label="NAME_SUFFIX - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="54"
+      label="NAME_SUFFIX - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="55" label="EMAIL_ADDRESS - Predictions equal - Value agrees"/>
+  <int value="56" label="EMAIL_ADDRESS - Predictions equal - Value disagrees"/>
+  <int value="57"
+      label="EMAIL_ADDRESS - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="58"
+      label="EMAIL_ADDRESS - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="59"
+      label="EMAIL_ADDRESS - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="60"
+      label="EMAIL_ADDRESS - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="61" label="PHONE_HOME_NUMBER - Predictions equal - Value agrees"/>
+  <int value="62"
+      label="PHONE_HOME_NUMBER - Predictions equal - Value disagrees"/>
+  <int value="63"
+      label="PHONE_HOME_NUMBER - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="64"
+      label="PHONE_HOME_NUMBER - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="65"
+      label="PHONE_HOME_NUMBER - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="66"
+      label="PHONE_HOME_NUMBER - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="67"
+      label="PHONE_HOME_CITY_CODE - Predictions equal - Value agrees"/>
+  <int value="68"
+      label="PHONE_HOME_CITY_CODE - Predictions equal - Value disagrees"/>
+  <int value="69"
+      label="PHONE_HOME_CITY_CODE - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="70"
+      label="PHONE_HOME_CITY_CODE - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="71"
+      label="PHONE_HOME_CITY_CODE - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="72"
+      label="PHONE_HOME_CITY_CODE - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="73"
+      label="PHONE_HOME_COUNTRY_CODE - Predictions equal - Value agrees"/>
+  <int value="74"
+      label="PHONE_HOME_COUNTRY_CODE - Predictions equal - Value disagrees"/>
+  <int value="75"
+      label="PHONE_HOME_COUNTRY_CODE - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="76"
+      label="PHONE_HOME_COUNTRY_CODE - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="77"
+      label="PHONE_HOME_COUNTRY_CODE - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="78"
+      label="PHONE_HOME_COUNTRY_CODE - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="79"
+      label="PHONE_HOME_CITY_AND_NUMBER - Predictions equal - Value agrees"/>
+  <int value="80"
+      label="PHONE_HOME_CITY_AND_NUMBER - Predictions equal - Value disagrees"/>
+  <int value="81"
+      label="PHONE_HOME_CITY_AND_NUMBER - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="82"
+      label="PHONE_HOME_CITY_AND_NUMBER - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="83"
+      label="PHONE_HOME_CITY_AND_NUMBER - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="84"
+      label="PHONE_HOME_CITY_AND_NUMBER - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="85"
+      label="PHONE_HOME_WHOLE_NUMBER - Predictions equal - Value agrees"/>
+  <int value="86"
+      label="PHONE_HOME_WHOLE_NUMBER - Predictions equal - Value disagrees"/>
+  <int value="87"
+      label="PHONE_HOME_WHOLE_NUMBER - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="88"
+      label="PHONE_HOME_WHOLE_NUMBER - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="89"
+      label="PHONE_HOME_WHOLE_NUMBER - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="90"
+      label="PHONE_HOME_WHOLE_NUMBER - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="121" label="PHONE_FAX_NUMBER - Predictions equal - Value agrees"/>
+  <int value="122"
+      label="PHONE_FAX_NUMBER - Predictions equal - Value disagrees"/>
+  <int value="123"
+      label="PHONE_FAX_NUMBER - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="124"
+      label="PHONE_FAX_NUMBER - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="125"
+      label="PHONE_FAX_NUMBER - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="126"
+      label="PHONE_FAX_NUMBER - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="127"
+      label="PHONE_FAX_CITY_CODE - Predictions equal - Value agrees"/>
+  <int value="128"
+      label="PHONE_FAX_CITY_CODE - Predictions equal - Value disagrees"/>
+  <int value="129"
+      label="PHONE_FAX_CITY_CODE - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="130"
+      label="PHONE_FAX_CITY_CODE - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="131"
+      label="PHONE_FAX_CITY_CODE - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="132"
+      label="PHONE_FAX_CITY_CODE - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="133"
+      label="PHONE_FAX_COUNTRY_CODE - Predictions equal - Value agrees"/>
+  <int value="134"
+      label="PHONE_FAX_COUNTRY_CODE - Predictions equal - Value disagrees"/>
+  <int value="135"
+      label="PHONE_FAX_COUNTRY_CODE - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="136"
+      label="PHONE_FAX_COUNTRY_CODE - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="137"
+      label="PHONE_FAX_COUNTRY_CODE - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="138"
+      label="PHONE_FAX_COUNTRY_CODE - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="139"
+      label="PHONE_FAX_CITY_AND_NUMBER - Predictions equal - Value agrees"/>
+  <int value="140"
+      label="PHONE_FAX_CITY_AND_NUMBER - Predictions equal - Value disagrees"/>
+  <int value="141"
+      label="PHONE_FAX_CITY_AND_NUMBER - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="142"
+      label="PHONE_FAX_CITY_AND_NUMBER - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="143"
+      label="PHONE_FAX_CITY_AND_NUMBER - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="144"
+      label="PHONE_FAX_CITY_AND_NUMBER - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="145"
+      label="PHONE_FAX_WHOLE_NUMBER - Predictions equal - Value agrees"/>
+  <int value="146"
+      label="PHONE_FAX_WHOLE_NUMBER - Predictions equal - Value disagrees"/>
+  <int value="147"
+      label="PHONE_FAX_WHOLE_NUMBER - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="148"
+      label="PHONE_FAX_WHOLE_NUMBER - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="149"
+      label="PHONE_FAX_WHOLE_NUMBER - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="150"
+      label="PHONE_FAX_WHOLE_NUMBER - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="181"
+      label="ADDRESS_HOME_LINE1 - Predictions equal - Value agrees"/>
+  <int value="182"
+      label="ADDRESS_HOME_LINE1 - Predictions equal - Value disagrees"/>
+  <int value="183"
+      label="ADDRESS_HOME_LINE1 - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="184"
+      label="ADDRESS_HOME_LINE1 - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="185"
+      label="ADDRESS_HOME_LINE1 - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="186"
+      label="ADDRESS_HOME_LINE1 - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="187"
+      label="ADDRESS_HOME_LINE2 - Predictions equal - Value agrees"/>
+  <int value="188"
+      label="ADDRESS_HOME_LINE2 - Predictions equal - Value disagrees"/>
+  <int value="189"
+      label="ADDRESS_HOME_LINE2 - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="190"
+      label="ADDRESS_HOME_LINE2 - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="191"
+      label="ADDRESS_HOME_LINE2 - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="192"
+      label="ADDRESS_HOME_LINE2 - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="193"
+      label="ADDRESS_HOME_APPT_NUM - Predictions equal - Value agrees"/>
+  <int value="194"
+      label="ADDRESS_HOME_APPT_NUM - Predictions equal - Value disagrees"/>
+  <int value="195"
+      label="ADDRESS_HOME_APPT_NUM - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="196"
+      label="ADDRESS_HOME_APPT_NUM - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="197"
+      label="ADDRESS_HOME_APPT_NUM - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="198"
+      label="ADDRESS_HOME_APPT_NUM - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="199"
+      label="ADDRESS_HOME_CITY - Predictions equal - Value agrees"/>
+  <int value="200"
+      label="ADDRESS_HOME_CITY - Predictions equal - Value disagrees"/>
+  <int value="201"
+      label="ADDRESS_HOME_CITY - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="202"
+      label="ADDRESS_HOME_CITY - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="203"
+      label="ADDRESS_HOME_CITY - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="204"
+      label="ADDRESS_HOME_CITY - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="205"
+      label="ADDRESS_HOME_STATE - Predictions equal - Value agrees"/>
+  <int value="206"
+      label="ADDRESS_HOME_STATE - Predictions equal - Value disagrees"/>
+  <int value="207"
+      label="ADDRESS_HOME_STATE - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="208"
+      label="ADDRESS_HOME_STATE - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="209"
+      label="ADDRESS_HOME_STATE - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="210"
+      label="ADDRESS_HOME_STATE - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="211" label="ADDRESS_HOME_ZIP - Predictions equal - Value agrees"/>
+  <int value="212"
+      label="ADDRESS_HOME_ZIP - Predictions equal - Value disagrees"/>
+  <int value="213"
+      label="ADDRESS_HOME_ZIP - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="214"
+      label="ADDRESS_HOME_ZIP - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="215"
+      label="ADDRESS_HOME_ZIP - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="216"
+      label="ADDRESS_HOME_ZIP - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="217"
+      label="ADDRESS_HOME_COUNTRY - Predictions equal - Value agrees"/>
+  <int value="218"
+      label="ADDRESS_HOME_COUNTRY - Predictions equal - Value disagrees"/>
+  <int value="219"
+      label="ADDRESS_HOME_COUNTRY - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="220"
+      label="ADDRESS_HOME_COUNTRY - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="221"
+      label="ADDRESS_HOME_COUNTRY - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="222"
+      label="ADDRESS_HOME_COUNTRY - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="223"
+      label="ADDRESS_BILLING_LINE1 - Predictions equal - Value agrees"/>
+  <int value="224"
+      label="ADDRESS_BILLING_LINE1 - Predictions equal - Value disagrees"/>
+  <int value="225"
+      label="ADDRESS_BILLING_LINE1 - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="226"
+      label="ADDRESS_BILLING_LINE1 - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="227"
+      label="ADDRESS_BILLING_LINE1 - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="228"
+      label="ADDRESS_BILLING_LINE1 - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="229"
+      label="ADDRESS_BILLING_LINE2 - Predictions equal - Value agrees"/>
+  <int value="230"
+      label="ADDRESS_BILLING_LINE2 - Predictions equal - Value disagrees"/>
+  <int value="231"
+      label="ADDRESS_BILLING_LINE2 - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="232"
+      label="ADDRESS_BILLING_LINE2 - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="233"
+      label="ADDRESS_BILLING_LINE2 - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="234"
+      label="ADDRESS_BILLING_LINE2 - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="235"
+      label="ADDRESS_BILLING_APPT_NUM - Predictions equal - Value agrees"/>
+  <int value="236"
+      label="ADDRESS_BILLING_APPT_NUM - Predictions equal - Value disagrees"/>
+  <int value="237"
+      label="ADDRESS_BILLING_APPT_NUM - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="238"
+      label="ADDRESS_BILLING_APPT_NUM - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="239"
+      label="ADDRESS_BILLING_APPT_NUM - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="240"
+      label="ADDRESS_BILLING_APPT_NUM - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="241"
+      label="ADDRESS_BILLING_CITY - Predictions equal - Value agrees"/>
+  <int value="242"
+      label="ADDRESS_BILLING_CITY - Predictions equal - Value disagrees"/>
+  <int value="243"
+      label="ADDRESS_BILLING_CITY - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="244"
+      label="ADDRESS_BILLING_CITY - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="245"
+      label="ADDRESS_BILLING_CITY - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="246"
+      label="ADDRESS_BILLING_CITY - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="247"
+      label="ADDRESS_BILLING_STATE - Predictions equal - Value agrees"/>
+  <int value="248"
+      label="ADDRESS_BILLING_STATE - Predictions equal - Value disagrees"/>
+  <int value="249"
+      label="ADDRESS_BILLING_STATE - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="250"
+      label="ADDRESS_BILLING_STATE - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="251"
+      label="ADDRESS_BILLING_STATE - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="252"
+      label="ADDRESS_BILLING_STATE - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="253"
+      label="ADDRESS_BILLING_ZIP - Predictions equal - Value agrees"/>
+  <int value="254"
+      label="ADDRESS_BILLING_ZIP - Predictions equal - Value disagrees"/>
+  <int value="255"
+      label="ADDRESS_BILLING_ZIP - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="256"
+      label="ADDRESS_BILLING_ZIP - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="257"
+      label="ADDRESS_BILLING_ZIP - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="258"
+      label="ADDRESS_BILLING_ZIP - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="259"
+      label="ADDRESS_BILLING_COUNTRY - Predictions equal - Value agrees"/>
+  <int value="260"
+      label="ADDRESS_BILLING_COUNTRY - Predictions equal - Value disagrees"/>
+  <int value="261"
+      label="ADDRESS_BILLING_COUNTRY - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="262"
+      label="ADDRESS_BILLING_COUNTRY - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="263"
+      label="ADDRESS_BILLING_COUNTRY - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="264"
+      label="ADDRESS_BILLING_COUNTRY - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="307"
+      label="CREDIT_CARD_NAME_FULL - Predictions equal - Value agrees"/>
+  <int value="308"
+      label="CREDIT_CARD_NAME_FULL - Predictions equal - Value disagrees"/>
+  <int value="309"
+      label="CREDIT_CARD_NAME_FULL - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="310"
+      label="CREDIT_CARD_NAME_FULL - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="311"
+      label="CREDIT_CARD_NAME_FULL - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="312"
+      label="CREDIT_CARD_NAME_FULL - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="313"
+      label="CREDIT_CARD_NUMBER - Predictions equal - Value agrees"/>
+  <int value="314"
+      label="CREDIT_CARD_NUMBER - Predictions equal - Value disagrees"/>
+  <int value="315"
+      label="CREDIT_CARD_NUMBER - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="316"
+      label="CREDIT_CARD_NUMBER - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="317"
+      label="CREDIT_CARD_NUMBER - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="318"
+      label="CREDIT_CARD_NUMBER - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="319"
+      label="CREDIT_CARD_EXP_MONTH - Predictions equal - Value agrees"/>
+  <int value="320"
+      label="CREDIT_CARD_EXP_MONTH - Predictions equal - Value disagrees"/>
+  <int value="321"
+      label="CREDIT_CARD_EXP_MONTH - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="322"
+      label="CREDIT_CARD_EXP_MONTH - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="323"
+      label="CREDIT_CARD_EXP_MONTH - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="324"
+      label="CREDIT_CARD_EXP_MONTH - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="325"
+      label="CREDIT_CARD_EXP_2_DIGIT_YEAR - Predictions equal - Value agrees"/>
+  <int value="326"
+      label="CREDIT_CARD_EXP_2_DIGIT_YEAR - Predictions equal - Value
+             disagrees"/>
+  <int value="327"
+      label="CREDIT_CARD_EXP_2_DIGIT_YEAR - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="328"
+      label="CREDIT_CARD_EXP_2_DIGIT_YEAR - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="329"
+      label="CREDIT_CARD_EXP_2_DIGIT_YEAR - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="330"
+      label="CREDIT_CARD_EXP_2_DIGIT_YEAR - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="331"
+      label="CREDIT_CARD_EXP_4_DIGIT_YEAR - Predictions equal - Value agrees"/>
+  <int value="332"
+      label="CREDIT_CARD_EXP_4_DIGIT_YEAR - Predictions equal - Value
+             disagrees"/>
+  <int value="333"
+      label="CREDIT_CARD_EXP_4_DIGIT_YEAR - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="334"
+      label="CREDIT_CARD_EXP_4_DIGIT_YEAR - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="335"
+      label="CREDIT_CARD_EXP_4_DIGIT_YEAR - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="336"
+      label="CREDIT_CARD_EXP_4_DIGIT_YEAR - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="337"
+      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR - Predictions equal - Value
+             agrees"/>
+  <int value="338"
+      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR - Predictions equal - Value
+             disagrees"/>
+  <int value="339"
+      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR - Predictions different -
+             Value agrees with old prediction"/>
+  <int value="340"
+      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR - Predictions different -
+             Value agrees with new prediction"/>
+  <int value="341"
+      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR - Predictions different -
+             Value agrees with neither prediction"/>
+  <int value="342"
+      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR - Predictions different -
+             Value agrees with both predictions"/>
+  <int value="343"
+      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR - Predictions equal - Value
+             agrees"/>
+  <int value="344"
+      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR - Predictions equal - Value
+             disagrees"/>
+  <int value="345"
+      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR - Predictions different -
+             Value agrees with old prediction"/>
+  <int value="346"
+      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR - Predictions different -
+             Value agrees with new prediction"/>
+  <int value="347"
+      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR - Predictions different -
+             Value agrees with neither prediction"/>
+  <int value="348"
+      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR - Predictions different -
+             Value agrees with both predictions"/>
+  <int value="349" label="CREDIT_CARD_TYPE - Predictions equal - Value agrees"/>
+  <int value="350"
+      label="CREDIT_CARD_TYPE - Predictions equal - Value disagrees"/>
+  <int value="351"
+      label="CREDIT_CARD_TYPE - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="352"
+      label="CREDIT_CARD_TYPE - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="353"
+      label="CREDIT_CARD_TYPE - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="354"
+      label="CREDIT_CARD_TYPE - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="355"
+      label="CREDIT_CARD_VERIFICATION_CODE - Predictions equal - Value agrees"/>
+  <int value="356"
+      label="CREDIT_CARD_VERIFICATION_CODE - Predictions equal - Value
+             disagrees"/>
+  <int value="357"
+      label="CREDIT_CARD_VERIFICATION_CODE - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="358"
+      label="CREDIT_CARD_VERIFICATION_CODE - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="359"
+      label="CREDIT_CARD_VERIFICATION_CODE - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="360"
+      label="CREDIT_CARD_VERIFICATION_CODE - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="361" label="COMPANY_NAME - Predictions equal - Value agrees"/>
+  <int value="362" label="COMPANY_NAME - Predictions equal - Value disagrees"/>
+  <int value="363"
+      label="COMPANY_NAME - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="364"
+      label="COMPANY_NAME - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="365"
+      label="COMPANY_NAME - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="366"
+      label="COMPANY_NAME - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="367"
+      label="FIELD_WITH_DEFAULT_VALUE - Predictions equal - Value agrees"/>
+  <int value="368"
+      label="FIELD_WITH_DEFAULT_VALUE - Predictions equal - Value disagrees"/>
+  <int value="369"
+      label="FIELD_WITH_DEFAULT_VALUE - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="370"
+      label="FIELD_WITH_DEFAULT_VALUE - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="371"
+      label="FIELD_WITH_DEFAULT_VALUE - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="372"
+      label="FIELD_WITH_DEFAULT_VALUE - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="373"
+      label="PHONE_BILLING_NUMBER - Predictions equal - Value agrees"/>
+  <int value="374"
+      label="PHONE_BILLING_NUMBER - Predictions equal - Value disagrees"/>
+  <int value="375"
+      label="PHONE_BILLING_NUMBER - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="376"
+      label="PHONE_BILLING_NUMBER - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="377"
+      label="PHONE_BILLING_NUMBER - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="378"
+      label="PHONE_BILLING_NUMBER - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="379"
+      label="PHONE_BILLING_CITY_CODE - Predictions equal - Value agrees"/>
+  <int value="380"
+      label="PHONE_BILLING_CITY_CODE - Predictions equal - Value disagrees"/>
+  <int value="381"
+      label="PHONE_BILLING_CITY_CODE - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="382"
+      label="PHONE_BILLING_CITY_CODE - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="383"
+      label="PHONE_BILLING_CITY_CODE - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="384"
+      label="PHONE_BILLING_CITY_CODE - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="385"
+      label="PHONE_BILLING_COUNTRY_CODE - Predictions equal - Value agrees"/>
+  <int value="386"
+      label="PHONE_BILLING_COUNTRY_CODE - Predictions equal - Value disagrees"/>
+  <int value="387"
+      label="PHONE_BILLING_COUNTRY_CODE - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="388"
+      label="PHONE_BILLING_COUNTRY_CODE - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="389"
+      label="PHONE_BILLING_COUNTRY_CODE - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="390"
+      label="PHONE_BILLING_COUNTRY_CODE - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="391"
+      label="PHONE_BILLING_CITY_AND_NUMBER - Predictions equal - Value agrees"/>
+  <int value="392"
+      label="PHONE_BILLING_CITY_AND_NUMBER - Predictions equal - Value
+             disagrees"/>
+  <int value="393"
+      label="PHONE_BILLING_CITY_AND_NUMBER - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="394"
+      label="PHONE_BILLING_CITY_AND_NUMBER - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="395"
+      label="PHONE_BILLING_CITY_AND_NUMBER - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="396"
+      label="PHONE_BILLING_CITY_AND_NUMBER - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="397"
+      label="PHONE_BILLING_WHOLE_NUMBER - Predictions equal - Value agrees"/>
+  <int value="398"
+      label="PHONE_BILLING_WHOLE_NUMBER - Predictions equal - Value disagrees"/>
+  <int value="399"
+      label="PHONE_BILLING_WHOLE_NUMBER - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="400"
+      label="PHONE_BILLING_WHOLE_NUMBER - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="401"
+      label="PHONE_BILLING_WHOLE_NUMBER - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="402"
+      label="PHONE_BILLING_WHOLE_NUMBER - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="403"
+      label="NAME_BILLING_FIRST - Predictions equal - Value agrees"/>
+  <int value="404"
+      label="NAME_BILLING_FIRST - Predictions equal - Value disagrees"/>
+  <int value="405"
+      label="NAME_BILLING_FIRST - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="406"
+      label="NAME_BILLING_FIRST - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="407"
+      label="NAME_BILLING_FIRST - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="408"
+      label="NAME_BILLING_FIRST - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="409"
+      label="NAME_BILLING_MIDDLE - Predictions equal - Value agrees"/>
+  <int value="410"
+      label="NAME_BILLING_MIDDLE - Predictions equal - Value disagrees"/>
+  <int value="411"
+      label="NAME_BILLING_MIDDLE - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="412"
+      label="NAME_BILLING_MIDDLE - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="413"
+      label="NAME_BILLING_MIDDLE - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="414"
+      label="NAME_BILLING_MIDDLE - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="415"
+      label="NAME_BILLING_LAST - Predictions equal - Value agrees"/>
+  <int value="416"
+      label="NAME_BILLING_LAST - Predictions equal - Value disagrees"/>
+  <int value="417"
+      label="NAME_BILLING_LAST - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="418"
+      label="NAME_BILLING_LAST - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="419"
+      label="NAME_BILLING_LAST - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="420"
+      label="NAME_BILLING_LAST - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="421"
+      label="NAME_BILLING_MIDDLE_INITIAL - Predictions equal - Value agrees"/>
+  <int value="422"
+      label="NAME_BILLING_MIDDLE_INITIAL - Predictions equal - Value
+             disagrees"/>
+  <int value="423"
+      label="NAME_BILLING_MIDDLE_INITIAL - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="424"
+      label="NAME_BILLING_MIDDLE_INITIAL - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="425"
+      label="NAME_BILLING_MIDDLE_INITIAL - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="426"
+      label="NAME_BILLING_MIDDLE_INITIAL - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="427"
+      label="NAME_BILLING_FULL - Predictions equal - Value agrees"/>
+  <int value="428"
+      label="NAME_BILLING_FULL - Predictions equal - Value disagrees"/>
+  <int value="429"
+      label="NAME_BILLING_FULL - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="430"
+      label="NAME_BILLING_FULL - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="431"
+      label="NAME_BILLING_FULL - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="432"
+      label="NAME_BILLING_FULL - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="433"
+      label="NAME_BILLING_SUFFIX - Predictions equal - Value agrees"/>
+  <int value="434"
+      label="NAME_BILLING_SUFFIX - Predictions equal - Value disagrees"/>
+  <int value="435"
+      label="NAME_BILLING_SUFFIX - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="436"
+      label="NAME_BILLING_SUFFIX - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="437"
+      label="NAME_BILLING_SUFFIX - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="438"
+      label="NAME_BILLING_SUFFIX - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="439"
+      label="MERCHANT_EMAIL_SIGNUP - Predictions equal - Value agrees"/>
+  <int value="440"
+      label="MERCHANT_EMAIL_SIGNUP - Predictions equal - Value disagrees"/>
+  <int value="441"
+      label="MERCHANT_EMAIL_SIGNUP - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="442"
+      label="MERCHANT_EMAIL_SIGNUP - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="443"
+      label="MERCHANT_EMAIL_SIGNUP - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="444"
+      label="MERCHANT_EMAIL_SIGNUP - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="445"
+      label="MERCHANT_PROMO_CODE - Predictions equal - Value agrees"/>
+  <int value="446"
+      label="MERCHANT_PROMO_CODE - Predictions equal - Value disagrees"/>
+  <int value="447"
+      label="MERCHANT_PROMO_CODE - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="448"
+      label="MERCHANT_PROMO_CODE - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="449"
+      label="MERCHANT_PROMO_CODE - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="450"
+      label="MERCHANT_PROMO_CODE - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="451" label="PASSWORD - Predictions equal - Value agrees"/>
+  <int value="452" label="PASSWORD - Predictions equal - Value disagrees"/>
+  <int value="453"
+      label="PASSWORD - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="454"
+      label="PASSWORD - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="455"
+      label="PASSWORD - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="456"
+      label="PASSWORD - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="457"
+      label="ACCOUNT_CREATION_PASSWORD - Predictions equal - Value agrees"/>
+  <int value="458"
+      label="ACCOUNT_CREATION_PASSWORD - Predictions equal - Value disagrees"/>
+  <int value="459"
+      label="ACCOUNT_CREATION_PASSWORD - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="460"
+      label="ACCOUNT_CREATION_PASSWORD - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="461"
+      label="ACCOUNT_CREATION_PASSWORD - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="462"
+      label="ACCOUNT_CREATION_PASSWORD - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="463"
+      label="ADDRESS_HOME_STREET_ADDRESS - Predictions equal - Value agrees"/>
+  <int value="464"
+      label="ADDRESS_HOME_STREET_ADDRESS - Predictions equal - Value
+             disagrees"/>
+  <int value="465"
+      label="ADDRESS_HOME_STREET_ADDRESS - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="466"
+      label="ADDRESS_HOME_STREET_ADDRESS - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="467"
+      label="ADDRESS_HOME_STREET_ADDRESS - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="468"
+      label="ADDRESS_HOME_STREET_ADDRESS - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="469"
+      label="ADDRESS_BILLING_STREET_ADDRESS - Predictions equal - Value
+             agrees"/>
+  <int value="470"
+      label="ADDRESS_BILLING_STREET_ADDRESS - Predictions equal - Value
+             disagrees"/>
+  <int value="471"
+      label="ADDRESS_BILLING_STREET_ADDRESS - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="472"
+      label="ADDRESS_BILLING_STREET_ADDRESS - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="473"
+      label="ADDRESS_BILLING_STREET_ADDRESS - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="474"
+      label="ADDRESS_BILLING_STREET_ADDRESS - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="475"
+      label="ADDRESS_HOME_SORTING_CODE - Predictions equal - Value agrees"/>
+  <int value="476"
+      label="ADDRESS_HOME_SORTING_CODE - Predictions equal - Value disagrees"/>
+  <int value="477"
+      label="ADDRESS_HOME_SORTING_CODE - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="478"
+      label="ADDRESS_HOME_SORTING_CODE - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="479"
+      label="ADDRESS_HOME_SORTING_CODE - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="480"
+      label="ADDRESS_HOME_SORTING_CODE - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="481"
+      label="ADDRESS_BILLING_SORTING_CODE - Predictions equal - Value agrees"/>
+  <int value="482"
+      label="ADDRESS_BILLING_SORTING_CODE - Predictions equal - Value
+             disagrees"/>
+  <int value="483"
+      label="ADDRESS_BILLING_SORTING_CODE - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="484"
+      label="ADDRESS_BILLING_SORTING_CODE - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="485"
+      label="ADDRESS_BILLING_SORTING_CODE - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="486"
+      label="ADDRESS_BILLING_SORTING_CODE - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="487"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY - Predictions equal - Value
+             agrees"/>
+  <int value="488"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY - Predictions equal - Value
+             disagrees"/>
+  <int value="489"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="490"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="491"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="492"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="493"
+      label="ADDRESS_BILLING_DEPENDENT_LOCALITY - Predictions equal - Value
+             agrees"/>
+  <int value="494"
+      label="ADDRESS_BILLING_DEPENDENT_LOCALITY - Predictions equal - Value
+             disagrees"/>
+  <int value="495"
+      label="ADDRESS_BILLING_DEPENDENT_LOCALITY - Predictions different -
+             Value agrees with old prediction"/>
+  <int value="496"
+      label="ADDRESS_BILLING_DEPENDENT_LOCALITY - Predictions different -
+             Value agrees with new prediction"/>
+  <int value="497"
+      label="ADDRESS_BILLING_DEPENDENT_LOCALITY - Predictions different -
+             Value agrees with neither prediction"/>
+  <int value="498"
+      label="ADDRESS_BILLING_DEPENDENT_LOCALITY - Predictions different -
+             Value agrees with both predictions"/>
+  <int value="499"
+      label="ADDRESS_HOME_LINE3 - Predictions equal - Value agrees"/>
+  <int value="500"
+      label="ADDRESS_HOME_LINE3 - Predictions equal - Value disagrees"/>
+  <int value="501"
+      label="ADDRESS_HOME_LINE3 - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="502"
+      label="ADDRESS_HOME_LINE3 - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="503"
+      label="ADDRESS_HOME_LINE3 - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="504"
+      label="ADDRESS_HOME_LINE3 - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="505"
+      label="ADDRESS_BILLING_LINE3 - Predictions equal - Value agrees"/>
+  <int value="506"
+      label="ADDRESS_BILLING_LINE3 - Predictions equal - Value disagrees"/>
+  <int value="507"
+      label="ADDRESS_BILLING_LINE3 - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="508"
+      label="ADDRESS_BILLING_LINE3 - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="509"
+      label="ADDRESS_BILLING_LINE3 - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="510"
+      label="ADDRESS_BILLING_LINE3 - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="511"
+      label="NOT_ACCOUNT_CREATION_PASSWORD - Predictions equal - Value agrees"/>
+  <int value="512"
+      label="NOT_ACCOUNT_CREATION_PASSWORD - Predictions equal - Value
+             disagrees"/>
+  <int value="513"
+      label="NOT_ACCOUNT_CREATION_PASSWORD - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="514"
+      label="NOT_ACCOUNT_CREATION_PASSWORD - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="515"
+      label="NOT_ACCOUNT_CREATION_PASSWORD - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="516"
+      label="NOT_ACCOUNT_CREATION_PASSWORD - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="517" label="USERNAME - Predictions equal - Value agrees"/>
+  <int value="518" label="USERNAME - Predictions equal - Value disagrees"/>
+  <int value="519"
+      label="USERNAME - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="520"
+      label="USERNAME - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="521"
+      label="USERNAME - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="522"
+      label="USERNAME - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="523"
+      label="USERNAME_AND_EMAIL_ADDRESS - Predictions equal - Value agrees"/>
+  <int value="524"
+      label="USERNAME_AND_EMAIL_ADDRESS - Predictions equal - Value disagrees"/>
+  <int value="525"
+      label="USERNAME_AND_EMAIL_ADDRESS - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="526"
+      label="USERNAME_AND_EMAIL_ADDRESS - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="527"
+      label="USERNAME_AND_EMAIL_ADDRESS - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="528"
+      label="USERNAME_AND_EMAIL_ADDRESS - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="529" label="NEW_PASSWORD - Predictions equal - Value agrees"/>
+  <int value="530" label="NEW_PASSWORD - Predictions equal - Value disagrees"/>
+  <int value="531"
+      label="NEW_PASSWORD - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="532"
+      label="NEW_PASSWORD - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="533"
+      label="NEW_PASSWORD - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="534"
+      label="NEW_PASSWORD - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="535"
+      label="PROBABLY_NEW_PASSWORD - Predictions equal - Value agrees"/>
+  <int value="536"
+      label="PROBABLY_NEW_PASSWORD - Predictions equal - Value disagrees"/>
+  <int value="537"
+      label="PROBABLY_NEW_PASSWORD - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="538"
+      label="PROBABLY_NEW_PASSWORD - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="539"
+      label="PROBABLY_NEW_PASSWORD - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="540"
+      label="PROBABLY_NEW_PASSWORD - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="541" label="NOT_NEW_PASSWORD - Predictions equal - Value agrees"/>
+  <int value="542"
+      label="NOT_NEW_PASSWORD - Predictions equal - Value disagrees"/>
+  <int value="543"
+      label="NOT_NEW_PASSWORD - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="544"
+      label="NOT_NEW_PASSWORD - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="545"
+      label="NOT_NEW_PASSWORD - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="546"
+      label="NOT_NEW_PASSWORD - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="547"
+      label="CREDIT_CARD_NAME_FIRST - Predictions equal - Value agrees"/>
+  <int value="548"
+      label="CREDIT_CARD_NAME_FIRST - Predictions equal - Value disagrees"/>
+  <int value="549"
+      label="CREDIT_CARD_NAME_FIRST - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="550"
+      label="CREDIT_CARD_NAME_FIRST - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="551"
+      label="CREDIT_CARD_NAME_FIRST - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="552"
+      label="CREDIT_CARD_NAME_FIRST - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="553"
+      label="CREDIT_CARD_NAME_LAST - Predictions equal - Value agrees"/>
+  <int value="554"
+      label="CREDIT_CARD_NAME_LAST - Predictions equal - Value disagrees"/>
+  <int value="555"
+      label="CREDIT_CARD_NAME_LAST - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="556"
+      label="CREDIT_CARD_NAME_LAST - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="557"
+      label="CREDIT_CARD_NAME_LAST - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="558"
+      label="CREDIT_CARD_NAME_LAST - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="559"
+      label="PHONE_HOME_EXTENSION - Predictions equal - Value agrees"/>
+  <int value="560"
+      label="PHONE_HOME_EXTENSION - Predictions equal - Value disagrees"/>
+  <int value="561"
+      label="PHONE_HOME_EXTENSION - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="562"
+      label="PHONE_HOME_EXTENSION - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="563"
+      label="PHONE_HOME_EXTENSION - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="564"
+      label="PHONE_HOME_EXTENSION - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="565"
+      label="PROBABLY_ACCOUNT_CREATION_PASSWORD - Predictions equal - Value
+             agrees"/>
+  <int value="566"
+      label="PROBABLY_ACCOUNT_CREATION_PASSWORD - Predictions equal - Value
+             disagrees"/>
+  <int value="567"
+      label="PROBABLY_ACCOUNT_CREATION_PASSWORD - Predictions different -
+             Value agrees with old prediction"/>
+  <int value="568"
+      label="PROBABLY_ACCOUNT_CREATION_PASSWORD - Predictions different -
+             Value agrees with new prediction"/>
+  <int value="569"
+      label="PROBABLY_ACCOUNT_CREATION_PASSWORD - Predictions different -
+             Value agrees with neither prediction"/>
+  <int value="570"
+      label="PROBABLY_ACCOUNT_CREATION_PASSWORD - Predictions different -
+             Value agrees with both predictions"/>
+  <int value="571"
+      label="CONFIRMATION_PASSWORD - Predictions equal - Value agrees"/>
+  <int value="572"
+      label="CONFIRMATION_PASSWORD - Predictions equal - Value disagrees"/>
+  <int value="573"
+      label="CONFIRMATION_PASSWORD - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="574"
+      label="CONFIRMATION_PASSWORD - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="575"
+      label="CONFIRMATION_PASSWORD - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="576"
+      label="CONFIRMATION_PASSWORD - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="577" label="AMBIGUOUS_TYPE - Predictions equal - Value agrees"/>
+  <int value="578"
+      label="AMBIGUOUS_TYPE - Predictions equal - Value disagrees"/>
+  <int value="579"
+      label="AMBIGUOUS_TYPE - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="580"
+      label="AMBIGUOUS_TYPE - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="581"
+      label="AMBIGUOUS_TYPE - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="582"
+      label="AMBIGUOUS_TYPE - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="583" label="SEARCH_TERM - Predictions equal - Value agrees"/>
+  <int value="584" label="SEARCH_TERM - Predictions equal - Value disagrees"/>
+  <int value="585"
+      label="SEARCH_TERM - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="586"
+      label="SEARCH_TERM - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="587"
+      label="SEARCH_TERM - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="588"
+      label="SEARCH_TERM - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="589" label="PRICE - Predictions equal - Value agrees"/>
+  <int value="590" label="PRICE - Predictions equal - Value disagrees"/>
+  <int value="591"
+      label="PRICE - Predictions different - Value agrees with old prediction"/>
+  <int value="592"
+      label="PRICE - Predictions different - Value agrees with new prediction"/>
+  <int value="593"
+      label="PRICE - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="594"
+      label="PRICE - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="595" label="NOT_PASSWORD - Predictions equal - Value agrees"/>
+  <int value="596" label="NOT_PASSWORD - Predictions equal - Value disagrees"/>
+  <int value="597"
+      label="NOT_PASSWORD - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="598"
+      label="NOT_PASSWORD - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="599"
+      label="NOT_PASSWORD - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="600"
+      label="NOT_PASSWORD - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="601" label="SINGLE_USERNAME - Predictions equal - Value agrees"/>
+  <int value="602"
+      label="SINGLE_USERNAME - Predictions equal - Value disagrees"/>
+  <int value="603"
+      label="SINGLE_USERNAME - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="604"
+      label="SINGLE_USERNAME - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="605"
+      label="SINGLE_USERNAME - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="606"
+      label="SINGLE_USERNAME - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="607" label="NOT_USERNAME - Predictions equal - Value agrees"/>
+  <int value="608" label="NOT_USERNAME - Predictions equal - Value disagrees"/>
+  <int value="609"
+      label="NOT_USERNAME - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="610"
+      label="NOT_USERNAME - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="611"
+      label="NOT_USERNAME - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="612"
+      label="NOT_USERNAME - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="613" label="UPI_VPA - Predictions equal - Value agrees"/>
+  <int value="614" label="UPI_VPA - Predictions equal - Value disagrees"/>
+  <int value="615"
+      label="UPI_VPA - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="616"
+      label="UPI_VPA - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="617"
+      label="UPI_VPA - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="618"
+      label="UPI_VPA - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="619"
+      label="ADDRESS_HOME_STREET - Predictions equal - Value agrees"/>
+  <int value="620"
+      label="ADDRESS_HOME_STREET - Predictions equal - Value disagrees"/>
+  <int value="621"
+      label="ADDRESS_HOME_STREET - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="622"
+      label="ADDRESS_HOME_STREET - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="623"
+      label="ADDRESS_HOME_STREET - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="624"
+      label="ADDRESS_HOME_STREET - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="625"
+      label="ADDRESS_HOME_HOUSE_NUMBER - Predictions equal - Value agrees"/>
+  <int value="626"
+      label="ADDRESS_HOME_HOUSE_NUMBER - Predictions equal - Value disagrees"/>
+  <int value="627"
+      label="ADDRESS_HOME_HOUSE_NUMBER - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="628"
+      label="ADDRESS_HOME_HOUSE_NUMBER - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="629"
+      label="ADDRESS_HOME_HOUSE_NUMBER - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="630"
+      label="ADDRESS_HOME_HOUSE_NUMBER - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="631"
+      label="ADDRESS_HOME_SUBPREMISE - Predictions equal - Value agrees"/>
+  <int value="632"
+      label="ADDRESS_HOME_SUBPREMISE - Predictions equal - Value disagrees"/>
+  <int value="633"
+      label="ADDRESS_HOME_SUBPREMISE - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="634"
+      label="ADDRESS_HOME_SUBPREMISE - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="635"
+      label="ADDRESS_HOME_SUBPREMISE - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="636"
+      label="ADDRESS_HOME_SUBPREMISE - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="637"
+      label="ADDRESS_HOME_OTHER_SUBUNIT - Predictions equal - Value agrees"/>
+  <int value="638"
+      label="ADDRESS_HOME_OTHER_SUBUNIT - Predictions equal - Value disagrees"/>
+  <int value="639"
+      label="ADDRESS_HOME_OTHER_SUBUNIT - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="640"
+      label="ADDRESS_HOME_OTHER_SUBUNIT - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="641"
+      label="ADDRESS_HOME_OTHER_SUBUNIT - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="642"
+      label="ADDRESS_HOME_OTHER_SUBUNIT - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="643" label="NAME_LAST_FIRST - Predictions equal - Value agrees"/>
+  <int value="644"
+      label="NAME_LAST_FIRST - Predictions equal - Value disagrees"/>
+  <int value="645"
+      label="NAME_LAST_FIRST - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="646"
+      label="NAME_LAST_FIRST - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="647"
+      label="NAME_LAST_FIRST - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="648"
+      label="NAME_LAST_FIRST - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="649"
+      label="NAME_LAST_CONJUNCTION - Predictions equal - Value agrees"/>
+  <int value="650"
+      label="NAME_LAST_CONJUNCTION - Predictions equal - Value disagrees"/>
+  <int value="651"
+      label="NAME_LAST_CONJUNCTION - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="652"
+      label="NAME_LAST_CONJUNCTION - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="653"
+      label="NAME_LAST_CONJUNCTION - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="654"
+      label="NAME_LAST_CONJUNCTION - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="655" label="NAME_LAST_SECOND - Predictions equal - Value agrees"/>
+  <int value="656"
+      label="NAME_LAST_SECOND - Predictions equal - Value disagrees"/>
+  <int value="657"
+      label="NAME_LAST_SECOND - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="658"
+      label="NAME_LAST_SECOND - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="659"
+      label="NAME_LAST_SECOND - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="660"
+      label="NAME_LAST_SECOND - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="661"
+      label="NAME_HONORIFIC_PREFIX - Predictions equal - Value agrees"/>
+  <int value="662"
+      label="NAME_HONORIFIC_PREFIX - Predictions equal - Value disagrees"/>
+  <int value="663"
+      label="NAME_HONORIFIC_PREFIX - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="664"
+      label="NAME_HONORIFIC_PREFIX - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="665"
+      label="NAME_HONORIFIC_PREFIX - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="666"
+      label="NAME_HONORIFIC_PREFIX - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="667"
+      label="ADDRESS_HOME_PREMISE_NAME - Predictions equal - Value agrees"/>
+  <int value="668"
+      label="ADDRESS_HOME_PREMISE_NAME - Predictions equal - Value disagrees"/>
+  <int value="669"
+      label="ADDRESS_HOME_PREMISE_NAME - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="670"
+      label="ADDRESS_HOME_PREMISE_NAME - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="671"
+      label="ADDRESS_HOME_PREMISE_NAME - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="672"
+      label="ADDRESS_HOME_PREMISE_NAME - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="673"
+      label="ADDRESS_HOME_DEPENDENT_STREET_NAME - Predictions equal - Value
+             agrees"/>
+  <int value="674"
+      label="ADDRESS_HOME_DEPENDENT_STREET_NAME - Predictions equal - Value
+             disagrees"/>
+  <int value="675"
+      label="ADDRESS_HOME_DEPENDENT_STREET_NAME - Predictions different -
+             Value agrees with old prediction"/>
+  <int value="676"
+      label="ADDRESS_HOME_DEPENDENT_STREET_NAME - Predictions different -
+             Value agrees with new prediction"/>
+  <int value="677"
+      label="ADDRESS_HOME_DEPENDENT_STREET_NAME - Predictions different -
+             Value agrees with neither prediction"/>
+  <int value="678"
+      label="ADDRESS_HOME_DEPENDENT_STREET_NAME - Predictions different -
+             Value agrees with both predictions"/>
+  <int value="679"
+      label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME - Predictions
+             equal - Value agrees"/>
+  <int value="680"
+      label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME - Predictions
+             equal - Value disagrees"/>
+  <int value="681"
+      label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME - Predictions
+             different - Value agrees with old prediction"/>
+  <int value="682"
+      label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME - Predictions
+             different - Value agrees with new prediction"/>
+  <int value="683"
+      label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME - Predictions
+             different - Value agrees with neither prediction"/>
+  <int value="684"
+      label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME - Predictions
+             different - Value agrees with both predictions"/>
+  <int value="685"
+      label="ADDRESS_HOME_ADDRESS - Predictions equal - Value agrees"/>
+  <int value="686"
+      label="ADDRESS_HOME_ADDRESS - Predictions equal - Value disagrees"/>
+  <int value="687"
+      label="ADDRESS_HOME_ADDRESS - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="688"
+      label="ADDRESS_HOME_ADDRESS - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="689"
+      label="ADDRESS_HOME_ADDRESS - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="690"
+      label="ADDRESS_HOME_ADDRESS - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="691"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME - Predictions equal - Value
+             agrees"/>
+  <int value="692"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME - Predictions equal - Value
+             disagrees"/>
+  <int value="693"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="694"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="695"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="696"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="697"
+      label="ADDRESS_HOME_FLOOR - Predictions equal - Value agrees"/>
+  <int value="698"
+      label="ADDRESS_HOME_FLOOR - Predictions equal - Value disagrees"/>
+  <int value="699"
+      label="ADDRESS_HOME_FLOOR - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="700"
+      label="ADDRESS_HOME_FLOOR - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="701"
+      label="ADDRESS_HOME_FLOOR - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="702"
+      label="ADDRESS_HOME_FLOOR - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="703"
+      label="NAME_FULL_WITH_HONORIFIC_PREFIX - Predictions equal - Value
+             agrees"/>
+  <int value="704"
+      label="NAME_FULL_WITH_HONORIFIC_PREFIX - Predictions equal - Value
+             disagrees"/>
+  <int value="705"
+      label="NAME_FULL_WITH_HONORIFIC_PREFIX - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="706"
+      label="NAME_FULL_WITH_HONORIFIC_PREFIX - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="707"
+      label="NAME_FULL_WITH_HONORIFIC_PREFIX - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="708"
+      label="NAME_FULL_WITH_HONORIFIC_PREFIX - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="709" label="BIRTHDATE_DAY - Predictions equal - Value agrees"/>
+  <int value="710" label="BIRTHDATE_DAY - Predictions equal - Value disagrees"/>
+  <int value="711"
+      label="BIRTHDATE_DAY - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="712"
+      label="BIRTHDATE_DAY - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="713"
+      label="BIRTHDATE_DAY - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="714"
+      label="BIRTHDATE_DAY - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="715" label="BIRTHDATE_MONTH - Predictions equal - Value agrees"/>
+  <int value="716"
+      label="BIRTHDATE_MONTH - Predictions equal - Value disagrees"/>
+  <int value="717"
+      label="BIRTHDATE_MONTH - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="718"
+      label="BIRTHDATE_MONTH - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="719"
+      label="BIRTHDATE_MONTH - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="720"
+      label="BIRTHDATE_MONTH - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="721"
+      label="BIRTHDATE_YEAR_4_DIGITS - Predictions equal - Value agrees"/>
+  <int value="722"
+      label="BIRTHDATE_YEAR_4_DIGITS - Predictions equal - Value disagrees"/>
+  <int value="723"
+      label="BIRTHDATE_YEAR_4_DIGITS - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="724"
+      label="BIRTHDATE_YEAR_4_DIGITS - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="725"
+      label="BIRTHDATE_YEAR_4_DIGITS - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="726"
+      label="BIRTHDATE_YEAR_4_DIGITS - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="727"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX - Predictions equal -
+             Value agrees"/>
+  <int value="728"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX - Predictions equal -
+             Value disagrees"/>
+  <int value="729"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX - Predictions different -
+             Value agrees with old prediction"/>
+  <int value="730"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX - Predictions different -
+             Value agrees with new prediction"/>
+  <int value="731"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX - Predictions different -
+             Value agrees with neither prediction"/>
+  <int value="732"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX - Predictions different -
+             Value agrees with both predictions"/>
+  <int value="733"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX - Predictions
+             equal - Value agrees"/>
+  <int value="734"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX - Predictions
+             equal - Value disagrees"/>
+  <int value="735"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX - Predictions
+             different - Value agrees with old prediction"/>
+  <int value="736"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX - Predictions
+             different - Value agrees with new prediction"/>
+  <int value="737"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX - Predictions
+             different - Value agrees with neither prediction"/>
+  <int value="738"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX - Predictions
+             different - Value agrees with both predictions"/>
+</enum>
+
 <enum name="AutofillPredictionSource">
   <int value="0" label="PREDICTION_SOURCE_UNKNOWN"/>
   <int value="1" label="PREDICTION_SOURCE_HEURISTIC"/>

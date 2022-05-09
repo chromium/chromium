@@ -49,7 +49,9 @@ ServerFieldType AutofillField::heuristic_type(PatternSource s) const {
   ServerFieldType type = local_type_predictions_[static_cast<size_t>(s)];
   // `NO_SERVER_DATA` would mean that there is no heuristic type. Client code
   // presumes there is a prediction, therefore we coalesce to `UNKNOWN_TYPE`.
-  return type > 0 ? type : UNKNOWN_TYPE;
+  // Shadow predictions however are not used and we care whether the type is
+  // `UNKNOWN_TYPE` or whether we never ran the heuristics.
+  return (type > 0 || s != GetActivePatternSource()) ? type : UNKNOWN_TYPE;
 }
 
 ServerFieldType AutofillField::server_type() const {
