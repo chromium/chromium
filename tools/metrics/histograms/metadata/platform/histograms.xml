@@ -735,6 +735,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Missive.StorageUsage" units="MiB"
+    expires_after="2023-05-03">
+  <owner>xuhong@chromium.org</owner>
+  <owner>lbaraz@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    The amount of disk storage that the Missive daemon has been using for
+    storing encrypted records. This is reported once every 10 minutes.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Modemfwd.DlcInstallResult"
     enum="ModemfwdDlcInstallResult" expires_after="2023-04-15">
   <owner>andrewlassalle@google.com</owner>
