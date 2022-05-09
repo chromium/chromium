@@ -62,6 +62,7 @@ class PositionIteratorAlgorithm {
   void Decrement();
 
   Node* GetNode() const { return anchor_node_; }
+  // TODO(crbug.com/1323777): Rename or refactor this method.
   int OffsetInLeafNode() const { return offset_in_anchor_; }
 
   bool AtStart() const;

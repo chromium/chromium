@@ -53,8 +53,8 @@ TEST_F(InsertParagraphSeparatorCommandTest,
   command->Apply();
   EXPECT_EQ(
       "<table contenteditable>"
-      "|    <colgroup style=\"-webkit-appearance:radio;\">"
-      "        <col>"
+      "    <colgroup style=\"-webkit-appearance:radio;\">"
+      "        <col>|"
       "    </colgroup>"
       "</table>",
       GetSelectionTextFromBody());

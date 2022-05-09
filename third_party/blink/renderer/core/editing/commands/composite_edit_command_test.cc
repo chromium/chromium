@@ -287,4 +287,31 @@ TEST_F(CompositeEditCommandTest, MoveParagraphsWithInlineBlocks) {
             GetDocument().body()->innerHTML());
 }
 
+TEST_F(CompositeEditCommandTest, MoveParagraphsWithTableAndCaption) {
+  Document& document = GetDocument();
+  document.setDesignMode("on");
+  InsertStyleElement(
+      "table { writing-mode: vertical-lr; }"
+      "caption { appearance: radio; }");
+  SetBodyInnerHTML("<table><caption><div><br></div><input></caption></table>");
+
+  EditingState editing_state;
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+  Element* br = document.QuerySelector("br");
+  Element* input = document.QuerySelector("input");
+
+  const VisiblePosition& start = VisiblePosition::FirstPositionInNode(*input);
+  const VisiblePosition& end = VisiblePosition::AfterNode(*input);
+  const VisiblePosition& destination = VisiblePosition::BeforeNode(*br);
+  EXPECT_EQ(start.DeepEquivalent(), Position(input, 0));
+  EXPECT_EQ(end.DeepEquivalent(), Position::AfterNode(*input));
+  EXPECT_EQ(destination.DeepEquivalent(), Position::BeforeNode(*br));
+
+  // Should not crash. See http://crbug.com/1310613
+  sample.MoveParagraphs(start, end, destination, &editing_state);
+  EXPECT_FALSE(editing_state.IsAborted());
+  EXPECT_EQ("<table><caption><div><input></div></caption></table>",
+            GetDocument().body()->innerHTML());
+}
+
 }  // namespace blink
