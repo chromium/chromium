@@ -199,6 +199,13 @@
        {}
       ]
      ],
+     "svg-mouse-listener.html": [
+      "e52909f0f687707d419577c07b596ad67d822804",
+      [
+       null,
+       {}
+      ]
+     ],
      "table-ignored-child.html": [
       "99f385f6eaf3ebdbc5b8c4517c9a7ec7fce50117",
       [
@@ -848,6 +855,13 @@
        ],
        "columns-in-table-002-crash.html": [
         "8062c91d5c80dd1f7325b0e3761934e3b39d4391",
+        [
+         null,
+         {}
+        ]
+       ],
+       "container-in-canvas-crash.html": [
+        "215c6a04db7ce591fc7df9be6bfdf7da4edc8302",
         [
          null,
          {}
@@ -1691,6 +1705,20 @@
       ],
       "float-becomes-spanner.html": [
        "90a4c9079c4fa6c64c094c56e36efbfe413b850c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "forced-break-in-oof-in-column-balancing-nested.html": [
+       "02b3295444aed8cd00fbedd14b648b86b87c5f77",
+       [
+        null,
+        {}
+       ]
+      ],
+      "forced-break-in-oof-in-column-balancing.html": [
+       "31cafba9a21b03de3ab45bc31a85158fc7b6aa8f",
        [
         null,
         {}
@@ -72176,19 +72204,6 @@
         {}
        ]
       ],
-      "background-color-animation-will-change-contents.html": [
-       "a218098721c175064fcb988f31da2ed92fda67bc",
-       [
-        null,
-        [
-         [
-          "/css/css-backgrounds/animations/background-color-animation-will-change-contents-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
       "background-color-animation-with-images.html": [
        "0ea29b8f1cfd65fb4c2a4f9c570443f582403e9e",
        [
@@ -72313,19 +72328,6 @@
         [
          [
           "/css/css-backgrounds/animations/background-color-animation-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "background-color-scroll-into-viewport.html": [
-       "24b22b43e4d629e9644a2a6b47094aeb46ac8230",
-       [
-        null,
-        [
-         [
-          "/css/css-backgrounds/animations/background-color-scroll-into-viewport-ref.html",
           "=="
          ]
         ],
@@ -86641,6 +86643,45 @@
         [
          [
           "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-col-paint-htb-ltr.html": [
+       "ea066d13544b308de72b2fc6b9d75ceecc0a60f8",
+       [
+        null,
+        [
+         [
+          "/css/css-break/table/table-col-paint-htb-ltr-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-col-paint-vlr-rtl.html": [
+       "ab45d314042e9e780856afa1c39b5d5ef0f00a3f",
+       [
+        null,
+        [
+         [
+          "/css/css-break/table/table-col-paint-vlr-rtl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-col-paint-vrl-rtl.html": [
+       "e31d1d4dc60275c6f757cb56b9c990000b0716a8",
+       [
+        null,
+        [
+         [
+          "/css/css-break/table/table-col-paint-vrl-rtl-ref.html",
           "=="
          ]
         ],
@@ -241040,6 +241081,32 @@
         {}
        ]
       ],
+      "nested-svg-overflow-clip.html": [
+       "b6f7e6d5eda03b976e7fde709f0d7735ea4c405d",
+       [
+        null,
+        [
+         [
+          "/svg/render/reftests/rect-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "overflow-clip.html": [
+       "24e5ef5637527c60a218a51064a4502b6758d8e6",
+       [
+        null,
+        [
+         [
+          "/svg/render/reftests/rect-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "render-sync-with-font-size.html": [
        "e78ba1f3cdc0763822a6a2d9ef8f3b406ec3bd66",
        [
@@ -257905,10 +257972,6 @@
        "823d8ac3821638dd92cdccbc39497d1cc1dc797a",
        []
       ],
-      "background-color-animation-will-change-contents-ref.html": [
-       "d980a29ff7fa4f1bfd25be504f9bf6390014f58d",
-       []
-      ],
       "background-color-animation-with-images-ref.html": [
        "ba414f7b349d6a3de8b10eb539de48b408365f2a",
        []
@@ -257931,10 +257994,6 @@
       ],
       "background-color-animation-zero-size-element-ref.html": [
        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
-       []
-      ],
-      "background-color-scroll-into-viewport-ref.html": [
-       "e5bbf67dfeb63ad91469612b2584857bc204300c",
        []
       ],
       "background-color-transition-currentcolor-ref.html": [
@@ -259905,6 +259964,18 @@
       ],
       "table-caption-with-block-ref.html": [
        "ca210636a94ccddfc86a01dc99f2f8db7b81d0f4",
+       []
+      ],
+      "table-col-paint-htb-ltr-ref.html": [
+       "df7b50c84e6f0399cf7a890f860ffadcdad45e68",
+       []
+      ],
+      "table-col-paint-vlr-rtl-ref.html": [
+       "4c0050724988778a509b2928d8a2e7b6c1850cd0",
+       []
+      ],
+      "table-col-paint-vrl-rtl-ref.html": [
+       "0fde8bacc51d23a2065246727daf90fef8885f0c",
        []
       ]
      },
@@ -317602,6 +317673,10 @@
      []
     ],
     "support": {
+     "iframe-MediaStreamTrack-transfer-video.html": [
+      "9f37ba0ffa5a259fdb998a7ab55ccae13d9dc8f9",
+      []
+     ],
      "iframe-MediaStreamTrack-transfer.html": [
       "e8d6aac647de880283dca1cd6993f05787acf289",
       []
@@ -326657,6 +326732,10 @@
       ],
       "filter-effects-on-pattern-ref.html": [
        "a61f17bf199374af3b6d106d3f5a72bc532449b8",
+       []
+      ],
+      "rect-ref.html": [
+       "a6e6f37d4eb59927932d6dd40e02473fd0f5c4e4",
        []
       ],
       "render-sync-with-font-size-ref.html": [
@@ -386684,6 +386763,13 @@
        {}
       ]
      ],
+     "inline-with-filter-and-hidden-backface.html": [
+      "dda788537cf17d6670a3624b80c8280edd6e0366",
+      [
+       null,
+       {}
+      ]
+     ],
      "parsing": {
       "backface-visibility-computed.html": [
        "470424f8d3a40eeedd4ae230753dc5d0a17d20dc",
@@ -424048,7 +424134,7 @@
       ]
      ],
      "script.window.js": [
-      "88584ce9c21be273745d5774a13e25bbdc2e74ab",
+      "31598957ef281cf91987a9c6b4c3c17768330790",
       [
        "fetch/content-type/script.window.html",
        {}
@@ -484867,6 +484953,13 @@
       }
      ]
     ],
+    "MediaStreamTrack-transfer-video.https.html": [
+     "f38768a47213b942ebb749f8298e5add9d07b30e",
+     [
+      null,
+      {}
+     ]
+    ],
     "MediaStreamTrack-transfer.https.html": [
      "0024aea0978103e47f5637111ab2a87333072ebb",
      [
@@ -545333,6 +545426,13 @@
       {
        "timeout": "long"
       }
+     ]
+    ],
+    "RTCPeerConnection-transport-stats.https.html": [
+     "2240bc40e92119c478700c024c0f9b64fcf1aa65",
+     [
+      null,
+      {}
      ]
     ],
     "RTCPeerConnection-videoDetectorTest.html": [
