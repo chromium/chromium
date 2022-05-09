@@ -189,6 +189,23 @@ void AddStrings(content::WebUIDataSource* source) {
       // Keyboard backlight strings
       {"keyboardBacklightTitle",
        IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_TITLE},
+      {"wallpaperColor",
+       IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_LABEL},
+      {"whiteColor",
+       IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WHITE_COLOR_LABEL},
+      {"redColor", IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_RED_COLOR_LABEL},
+      {"yellowColor",
+       IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_YELLOW_COLOR_LABEL},
+      {"greenColor",
+       IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_GREEN_COLOR_LABEL},
+      {"blueColor",
+       IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_BLUE_COLOR_LABEL},
+      {"indigoColor",
+       IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_INDIGO_COLOR_LABEL},
+      {"purpleColor",
+       IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_PURPLE_COLOR_LABEL},
+      {"rainbowColor",
+       IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_RAINBOW_COLOR_LABEL},
 
       // Google Photos strings
       // TODO(b/229149314): Finalize error and retry strings.

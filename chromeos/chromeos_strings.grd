@@ -2340,6 +2340,33 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_TITLE" desc="Title for the keyboard backlight section of personalization hub.">
         Keyboard backlight
       </message>
+      <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_LABEL" desc="Label for the wallpaper extracted color in the keyboard backlight section of personalization hub.">
+        Wallpaper color
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WHITE_COLOR_LABEL" desc="Label for the white color in the keyboard backlight section of personalization hub.">
+        White
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_RED_COLOR_LABEL" desc="Label for the red color in the keyboard backlight section of personalization hub.">
+        Red
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_YELLOW_COLOR_LABEL" desc="Label for the yellow color in the keyboard backlight section of personalization hub.">
+        Yellow
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_GREEN_COLOR_LABEL" desc="Label for the green color in the keyboard backlight section of personalization hub.">
+        Green
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_BLUE_COLOR_LABEL" desc="Label for the blue color in the keyboard backlight section of personalization hub.">
+        Blue
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_INDIGO_COLOR_LABEL" desc="Label for the indigo color in the keyboard backlight section of personalization hub.">
+        Indigo
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_PURPLE_COLOR_LABEL" desc="Label for the purple color in the keyboard backlight section of personalization hub.">
+        Purple
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_RAINBOW_COLOR_LABEL" desc="Label for the rainbow color in the keyboard backlight section of personalization hub.">
+        Rainbow
+      </message>
 
       <!-- Personalization App Search Results -->
       <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE" desc="Text for search result item which, when clicked, navigates the user to personalization app.">

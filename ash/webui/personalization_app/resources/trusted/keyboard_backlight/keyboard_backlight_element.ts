@@ -98,13 +98,13 @@ export class KeyboardBacklight extends WithPersonalizationStore {
 
   private computePresetColors_(): Record<string, ColorInfo> {
     return {
-      'white': {hexVal: '#FFFFFF', enumVal: BacklightColor.kWhite},
-      'red': {hexVal: '#F28B82', enumVal: BacklightColor.kRed},
-      'yellow': {hexVal: '#FDD663', enumVal: BacklightColor.kYellow},
-      'green': {hexVal: '#81C995', enumVal: BacklightColor.kGreen},
-      'blue': {hexVal: '#78D9EC', enumVal: BacklightColor.kBlue},
-      'indigo': {hexVal: '#8AB4F8', enumVal: BacklightColor.kIndigo},
-      'purple': {hexVal: '#C58AF9', enumVal: BacklightColor.kPurple},
+      'whiteColor': {hexVal: '#FFFFFF', enumVal: BacklightColor.kWhite},
+      'redColor': {hexVal: '#F28B82', enumVal: BacklightColor.kRed},
+      'yellowColor': {hexVal: '#FDD663', enumVal: BacklightColor.kYellow},
+      'greenColor': {hexVal: '#81C995', enumVal: BacklightColor.kGreen},
+      'blueColor': {hexVal: '#78D9EC', enumVal: BacklightColor.kBlue},
+      'indigoColor': {hexVal: '#8AB4F8', enumVal: BacklightColor.kIndigo},
+      'purpleColor': {hexVal: '#C58AF9', enumVal: BacklightColor.kPurple},
     };
   }
 
@@ -181,7 +181,7 @@ export class KeyboardBacklight extends WithPersonalizationStore {
         return `background-image: linear-gradient(${hexColors})`;
       case this.wallpaperColorId_:
         return `background-color: #8AB4F8`;
-      case 'white':
+      case 'whiteColor':
         // Add the border for the white background.
         return `background-color: ${
             colors[colorId]
@@ -189,6 +189,10 @@ export class KeyboardBacklight extends WithPersonalizationStore {
       default:
         return `background-color: ${colors[colorId].hexVal}`;
     }
+  }
+
+  private getPresetColorAriaLabel_(presetColorId: string): string {
+    return this.i18n(presetColorId);
   }
 }
 
