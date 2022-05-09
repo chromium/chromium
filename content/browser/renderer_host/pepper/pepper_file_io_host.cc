@@ -8,6 +8,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -84,18 +86,17 @@ bool FileOpenForWrite(int32_t open_flags) {
 void FileCloser(base::File auto_close) {
 }
 
-void DidCloseFile(base::OnceClosure on_close_callback) {
-  if (!on_close_callback.is_null())
-    std::move(on_close_callback).Run();
+void DidCloseFile(base::ScopedClosureRunner on_close_callback) {
+  on_close_callback.RunAndReset();
 }
 
 void DidOpenFile(base::WeakPtr<PepperFileIOHost> file_host,
                  scoped_refptr<base::SequencedTaskRunner> task_runner,
                  storage::FileSystemOperation::OpenFileCallback callback,
                  base::File file,
-                 base::OnceClosure on_close_callback) {
+                 base::ScopedClosureRunner on_close_callback) {
   if (file_host) {
-    std::move(callback).Run(std::move(file), std::move(on_close_callback));
+    std::move(callback).Run(std::move(file), on_close_callback.Release());
   } else {
     task_runner->PostTaskAndReply(
         FROM_HERE, base::BindOnce(&FileCloser, std::move(file)),
@@ -106,7 +107,7 @@ void DidOpenFile(base::WeakPtr<PepperFileIOHost> file_host,
 void OpenFileCallbackWrapperIO(
     storage::FileSystemOperationRunner::OpenFileCallback callback,
     base::File file,
-    base::OnceClosure on_close_callback) {
+    base::ScopedClosureRunner on_close_callback) {
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(file),
                                 std::move(on_close_callback)));
@@ -285,7 +286,8 @@ void PepperFileIOHost::DidOpenInternalFile(
     base::File file,
     base::OnceClosure on_close_callback) {
   if (file.IsValid()) {
-    on_close_callback_ = std::move(on_close_callback);
+    base::ScopedClosureRunner scoped_runner(std::move(on_close_callback));
+    on_close_callback_ = std::move(scoped_runner);
 
     if (FileOpenForWrite(open_flags_) && file_system_host_->ChecksQuota()) {
       check_quota_ = true;
@@ -405,9 +407,7 @@ void PepperFileIOHost::DidOpenQuotaFile(
 
 void PepperFileIOHost::DidCloseFile(base::File::Error /*error*/) {
   // Silently ignore if we fail to close the file.
-  if (!on_close_callback_.is_null()) {
-    std::move(on_close_callback_).Run();
-  }
+  on_close_callback_.RunAndReset();
 }
 
 int32_t PepperFileIOHost::OnHostMsgRequestOSFileHandle(

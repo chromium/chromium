@@ -12,6 +12,7 @@
 #include <set>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/component_export.h"
 #include "base/containers/id_map.h"
 #include "base/memory/raw_ptr.h"
@@ -41,7 +42,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
   using SnapshotFileCallback = FileSystemOperation::SnapshotFileCallback;
   using StatusCallback = FileSystemOperation::StatusCallback;
   using WriteCallback = FileSystemOperation::WriteCallback;
-  using OpenFileCallback = FileSystemOperation::OpenFileCallback;
+  // Implementers of FileSystemOperation::OpenFile() pass `on_close_callback` as
+  // a OnceClosure, but pass consumers a ScopedClosureRunner to ensure the
+  // callback is always run, and on the correct sequence (the I/O thread).
+  using OpenFileCallback =
+      base::OnceCallback<void(base::File file,
+                              base::ScopedClosureRunner on_close_callback)>;
   using ErrorBehavior = FileSystemOperation::ErrorBehavior;
   using CopyFileProgressCallback =
       FileSystemOperation::CopyFileProgressCallback;

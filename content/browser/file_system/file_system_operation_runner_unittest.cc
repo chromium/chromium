@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
@@ -59,7 +60,8 @@ void GetCancelStatus(bool* operation_done,
   *status_out = status;
 }
 
-void DidOpenFile(base::File file, base::OnceClosure on_close_callback) {}
+void DidOpenFile(base::File file, base::ScopedClosureRunner on_close_callback) {
+}
 
 }  // namespace
 

@@ -13,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
@@ -306,11 +307,8 @@ void ReplyToStat(scoped_refptr<storage::FileSystemContext> fs_context,
 }  // namespace
 
 FuseBoxServiceProvider::OnCloseCallbackTracker::OnCloseCallbackTracker(
-    base::OnceClosure on_close_callback)
-    : base::RefCountedDeleteOnSequence<
-          FuseBoxServiceProvider::OnCloseCallbackTracker>(
-          content::GetIOThreadTaskRunner({})),
-      on_close_callback_runner(std::move(on_close_callback)) {}
+    base::ScopedClosureRunner on_close_callback)
+    : on_close_callback_runner(std::move(on_close_callback)) {}
 
 FuseBoxServiceProvider::OnCloseCallbackTracker::~OnCloseCallbackTracker() =
     default;
@@ -428,7 +426,7 @@ void FuseBoxServiceProvider::ReplyToOpenTypical(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender sender,
     base::File file,
-    base::OnceClosure on_close_callback) {
+    base::ScopedClosureRunner on_close_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   uint64_t cookie = next_tracker_key_++;

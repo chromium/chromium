@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_FILE_HANDLE_IMPL_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_FILE_HANDLE_IMPL_H_
 
+#include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/memory/weak_ptr.h"
@@ -112,7 +113,7 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
       OpenAccessHandleCallback callback,
       scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       base::File file,
-      base::OnceClosure on_close_callback);
+      base::ScopedClosureRunner on_close_callback);
   void DidOpenFileAndGetLength(
       OpenAccessHandleCallback callback,
       scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,

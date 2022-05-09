@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/files/file_proxy.h"
 #include "base/memory/raw_ptr.h"
@@ -146,7 +147,7 @@ class PepperFileIOHost : public ppapi::host::ResourceHost,
   base::WeakPtr<PepperFileSystemBrowserHost> file_system_host_;
 
   storage::FileSystemURL file_system_url_;
-  base::OnceClosure on_close_callback_;
+  base::ScopedClosureRunner on_close_callback_;
   int64_t max_written_offset_;
   bool check_quota_;
 

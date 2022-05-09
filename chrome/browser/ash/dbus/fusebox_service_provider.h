@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_DBUS_FUSEBOX_SERVICE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_DBUS_FUSEBOX_SERVICE_PROVIDER_H_
 
+#include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
@@ -36,20 +37,19 @@ class FuseBoxServiceProvider
   // which we are the fusebox::kFuseBoxServiceInterface server.
   //
   // This struct tracks when the underlying FD is closed in both client and
-  // server. When its ref-count hits zero, the on_close_callback_runner
-  // destructor will run the on_close_calback and the "Sequence" in
-  // "RefCountedDeleteOnSequence" means that this happens on the IO thread.
+  // server. When its ref-count hits zero, on_close_callback_runner will run.
   class OnCloseCallbackTracker
-      : public base::RefCountedDeleteOnSequence<OnCloseCallbackTracker> {
+      : public base::RefCounted<OnCloseCallbackTracker> {
    public:
-    explicit OnCloseCallbackTracker(base::OnceClosure on_close_callback);
+    explicit OnCloseCallbackTracker(
+        base::ScopedClosureRunner on_close_callback);
     OnCloseCallbackTracker(const OnCloseCallbackTracker&) = delete;
     OnCloseCallbackTracker& operator=(const OnCloseCallbackTracker&) = delete;
 
    private:
     ~OnCloseCallbackTracker();
     friend class base::DeleteHelper<OnCloseCallbackTracker>;
-    friend class base::RefCountedDeleteOnSequence<OnCloseCallbackTracker>;
+    friend class base::RefCounted<OnCloseCallbackTracker>;
 
     base::ScopedClosureRunner on_close_callback_runner;
   };
@@ -78,7 +78,7 @@ class FuseBoxServiceProvider
                           dbus::MethodCall* method_call,
                           dbus::ExportedObject::ResponseSender sender,
                           base::File file,
-                          base::OnceClosure on_close_callback);
+                          base::ScopedClosureRunner on_close_callback);
 
   // base::WeakPtr{this} factory.
   base::WeakPtrFactory<FuseBoxServiceProvider> weak_ptr_factory_{this};
