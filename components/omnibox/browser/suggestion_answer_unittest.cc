@@ -322,6 +322,23 @@ TEST(SuggestionAnswerTest, AddImageURLsTo) {
   EXPECT_EQ(GURL("https://gstatic.com/bar.jpg"), urls[0]);
 }
 
+TEST(SuggestionAnswerTest, ParseAccessibilityLabel) {
+  SuggestionAnswer answer;
+  std::string json =
+      "{ \"l\": ["
+      "  { \"il\": { \"t\": [{ \"t\": \"text\", \"tt\": 8 }] } }, "
+      "  { \"il\": { \"al\": \"accessibility label\", "
+      "              \"at\": { \"t\": \"additional text\", \"tt\": 12 }, "
+      "              \"t\": [{ \"t\": \"other text\", \"tt\": 5 }] } }] }";
+  ASSERT_TRUE(ParseAnswer(json, &answer));
+
+  EXPECT_FALSE(answer.first_line().accessibility_label());
+
+  const std::u16string* label = answer.second_line().accessibility_label();
+  ASSERT_NE(label, nullptr);
+  EXPECT_EQ(*label, u"accessibility label");
+}
+
 TEST(SuggestionAnswerTest, LogAnswerUsed) {
   {
     base::HistogramTester histograms;

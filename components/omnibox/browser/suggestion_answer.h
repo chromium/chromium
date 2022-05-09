@@ -24,8 +24,9 @@
 // An answer has exactly two image lines, so called because they are a
 // combination of text and an optional image URL.  Each image line has 1 or more
 // text fields, each of which is required to contain a string and an integer
-// type.  The text fields are contained in a non-empty vector and two optional
-// named properties, referred to as "additional text" and "status text".
+// type.  The text fields are contained in a non-empty vector and three optional
+// named properties, referred to as `additional text`, `status text`, and
+// `accessibility label`.
 //
 // When represented in the UI, these elements should be styled and laid out
 // according to the specification at https://goto.google.com/ais_api.
@@ -188,6 +189,12 @@ class SuggestionAnswer {
       else
         return nullptr;
     }
+    const std::u16string* accessibility_label() const {
+      if (accessibility_label_)
+        return &accessibility_label_.value();
+      else
+        return nullptr;
+    }
     const GURL& image_url() const { return image_url_; }
 
     bool Equals(const ImageLine& line) const;
@@ -209,6 +216,7 @@ class SuggestionAnswer {
     int num_text_lines_;
     absl::optional<TextField> additional_text_;
     absl::optional<TextField> status_text_;
+    absl::optional<std::u16string> accessibility_label_;
     GURL image_url_;
 
     FRIEND_TEST_ALL_PREFIXES(SuggestionAnswerTest, DifferentValuesAreUnequal);
