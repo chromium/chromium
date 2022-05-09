@@ -215,6 +215,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                          blink::mojom::StorageType type,
                          base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
 
+  // Retrieves the BucketInfo of the bucket with `bucket_id` and returns it to
+  // the callback. Will return a QuotaError if the bucket does not exist or on
+  // operation failure. This method is declared as virtual to allow test code
+  // to override it.
+  virtual void GetBucketById(
+      const BucketId& bucket_id,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
+
   // Retrieves all storage keys for `type` that are in the buckets table.
   // Used for listing storage keys when showing storage key quota usage.
   void GetStorageKeysForType(blink::mojom::StorageType type,

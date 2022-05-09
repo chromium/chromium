@@ -257,6 +257,34 @@ void QuotaManagerProxy::GetBucket(
                                  std::move(respond));
 }
 
+void QuotaManagerProxy::GetBucketById(
+    const BucketId& bucket_id,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  DCHECK(callback_task_runner);
+  DCHECK(callback);
+
+  if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
+    quota_manager_impl_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&QuotaManagerProxy::GetBucketById, this, bucket_id,
+                       std::move(callback_task_runner), std::move(callback)));
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
+
+  auto respond =
+      base::BindOnce(&RunCallbackOnCorrectSequence<QuotaErrorOr<BucketInfo>>,
+                     std::move(callback_task_runner), std::move(callback));
+  if (!quota_manager_impl_) {
+    std::move(respond).Run(QuotaError::kUnknownError);
+    return;
+  }
+
+  quota_manager_impl_->GetBucketById(bucket_id, std::move(respond));
+}
+
 void QuotaManagerProxy::DeleteBucket(
     const StorageKey& storage_key,
     const std::string& bucket_name,

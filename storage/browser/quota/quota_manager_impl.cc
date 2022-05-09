@@ -1130,6 +1130,28 @@ void QuotaManagerImpl::GetBucket(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void QuotaManagerImpl::GetBucketById(
+    const BucketId& bucket_id,
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(callback);
+  EnsureDatabaseOpened();
+
+  if (db_disabled_) {
+    std::move(callback).Run(QuotaError::kDatabaseError);
+    return;
+  }
+  PostTaskAndReplyWithResultForDBThread(
+      base::BindOnce(
+          [](const BucketId bucket_id, QuotaDatabase* database) {
+            DCHECK(database);
+            return database->GetBucketById(bucket_id);
+          },
+          bucket_id),
+      base::BindOnce(&QuotaManagerImpl::DidGetBucket,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void QuotaManagerImpl::GetStorageKeysForType(blink::mojom::StorageType type,
                                              GetStorageKeysCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

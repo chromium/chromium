@@ -239,6 +239,12 @@ class QuotaManagerImplTest : public testing::Test {
     return future.Take();
   }
 
+  QuotaErrorOr<BucketInfo> GetBucketById(const BucketId& bucket_id) {
+    base::test::TestFuture<QuotaErrorOr<BucketInfo>> future;
+    quota_manager_impl_->GetBucketById(bucket_id, future.GetCallback());
+    return future.Take();
+  }
+
   std::set<StorageKey> GetStorageKeysForType(
       blink::mojom::StorageType storage_type) {
     base::test::TestFuture<std::set<StorageKey>> future;
@@ -829,6 +835,25 @@ TEST_F(QuotaManagerImplTest, GetBucket) {
   EXPECT_EQ(created_bucket.id, retrieved_bucket.id);
 
   bucket = GetBucket(storage_key, "bucket_b", kTemp);
+  ASSERT_FALSE(bucket.ok());
+  EXPECT_EQ(bucket.error(), QuotaError::kNotFound);
+  ASSERT_FALSE(is_db_disabled());
+}
+
+TEST_F(QuotaManagerImplTest, GetBucketById) {
+  StorageKey storage_key = ToStorageKey("http://a.com/");
+  std::string bucket_name = "bucket_a";
+
+  auto bucket = CreateBucketForTesting(storage_key, bucket_name, kTemp);
+  ASSERT_TRUE(bucket.ok());
+  BucketInfo created_bucket = bucket.value();
+
+  bucket = GetBucketById(created_bucket.id);
+  ASSERT_TRUE(bucket.ok());
+  BucketInfo retrieved_bucket = bucket.value();
+  EXPECT_EQ(created_bucket.id, retrieved_bucket.id);
+
+  bucket = GetBucketById(BucketId::FromUnsafeValue(0));
   ASSERT_FALSE(bucket.ok());
   EXPECT_EQ(bucket.error(), QuotaError::kNotFound);
   ASSERT_FALSE(is_db_disabled());

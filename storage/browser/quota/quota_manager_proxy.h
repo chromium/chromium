@@ -125,6 +125,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
+  // Retrieves the BucketInfo of the bucket with `bucket_id` and returns it to
+  // the callback. Will return a QuotaError if a bucket does not exist or on
+  // operation failure.
+  virtual void GetBucketById(
+      const BucketId& bucket_id,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
+
   // Retrieves the BucketInfo of the bucket with `bucket_name` for
   // `storage_key` and returns it to the callback. Will return a QuotaError if a
   // bucket does not exist or on operation failure.
