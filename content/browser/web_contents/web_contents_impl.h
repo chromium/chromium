@@ -1250,10 +1250,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // WebContentsDelegate.
   void SystemDragEnded(RenderWidgetHost* source_rwh);
 
-  // This is similar to SendToAllFrames() in WebContents interface, but also
-  // include pendings frames. See bug: http://crbug.com/1087806
-  int SendToAllFramesIncludingPending(IPC::Message* message);
-
   // These are the content internal equivalents of
   // |WebContents::ForEachRenderFrameHost| whose comment can be referred to
   // for details. Content internals can also access speculative
