@@ -576,11 +576,6 @@ Browser::~Browser() {
   ThemeServiceFactory::GetForProfile(profile_)->RemoveObserver(this);
   extension_browser_window_helper_.reset();
 
-  // Like above, cancel delayed method calls into |this| to avoid re-entrancy.
-  // This is necessary because ~TestingProfile (called below for incognito
-  // |profile_|) spins a RunLoop.
-  weak_factory_.InvalidateWeakPtrs();
-
   // The tab strip should not have any tabs at this point.
   DCHECK(tab_strip_model_->empty());
 
