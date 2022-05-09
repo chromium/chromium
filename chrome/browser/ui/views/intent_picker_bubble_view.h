@@ -152,16 +152,6 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
                            StayInChromeARCAndPWA);
 
-  static std::unique_ptr<IntentPickerBubbleView> CreateBubbleViewForTesting(
-      views::View* anchor_view,
-      BubbleType bubble_type,
-      std::vector<AppInfo> app_info,
-      bool show_stay_in_chrome,
-      bool show_remember_selection,
-      const absl::optional<url::Origin>& initiating_origin,
-      IntentPickerResponse intent_picker_cb,
-      content::WebContents* web_contents);
-
   const std::vector<AppInfo>& app_info_for_testing() const { return app_info_; }
 
   // views::BubbleDialogDelegateView overrides:

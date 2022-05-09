@@ -160,25 +160,6 @@ views::Widget* IntentPickerBubbleView::ShowBubble(
 }
 
 // static
-std::unique_ptr<IntentPickerBubbleView>
-IntentPickerBubbleView::CreateBubbleViewForTesting(
-    views::View* anchor_view,
-    BubbleType bubble_type,
-    std::vector<AppInfo> app_info,
-    bool show_stay_in_chrome,
-    bool show_remember_selection,
-    const absl::optional<url::Origin>& initiating_origin,
-    IntentPickerResponse intent_picker_cb,
-    content::WebContents* web_contents) {
-  auto bubble = std::make_unique<IntentPickerBubbleView>(
-      anchor_view, bubble_type, std::move(app_info),
-      std::move(intent_picker_cb), web_contents, show_stay_in_chrome,
-      show_remember_selection, initiating_origin);
-  bubble->Initialize();
-  return bubble;
-}
-
-// static
 void IntentPickerBubbleView::CloseCurrentBubble() {
   if (intent_picker_bubble_)
     intent_picker_bubble_->CloseBubble();

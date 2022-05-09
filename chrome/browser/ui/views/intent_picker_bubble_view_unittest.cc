@@ -28,6 +28,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -118,14 +119,13 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
                             app.display_name);
     }
 
-    auto bubble = IntentPickerBubbleView::CreateBubbleViewForTesting(
-        anchor_view_, bubble_type, std::move(app_info), show_stay_in_chrome,
+    IntentPickerBubbleView::ShowBubble(
+        anchor_view_, /*highlighted_button=*/nullptr, bubble_type, web_contents,
+        std::move(app_info), show_stay_in_chrome,
         /*show_remember_selection=*/true, initiating_origin,
         base::BindOnce(&IntentPickerBubbleViewTest::OnBubbleClosed,
-                       base::Unretained(this)),
-        web_contents);
-    bubble_ = bubble.get();
-    views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));
+                       base::Unretained(this)));
+    bubble_ = IntentPickerBubbleView::intent_picker_bubble();
   }
 
   // Add an app to the bubble opened by CreateBubbleView. Manually added apps
@@ -197,13 +197,16 @@ TEST_F(IntentPickerBubbleViewTest, LabelsPtrVectorSize) {
   EXPECT_EQ(size, bubble_->GetScrollViewSize() + chrome_package_repetitions);
 }
 
-// Verifies the InkDrop state when creating a new bubble.
+// Verifies that the first item is activated by default when creating a new
+// bubble.
 TEST_F(IntentPickerBubbleViewTest, VerifyStartingInkDrop) {
   CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
   size_t size = bubble_->GetScrollViewSize();
-  for (size_t i = 0; i < size; ++i) {
+  EXPECT_EQ(bubble_->GetInkDropStateForTesting(0),
+            views::InkDropState::ACTIVATED);
+  for (size_t i = 1; i < size; ++i) {
     EXPECT_EQ(bubble_->GetInkDropStateForTesting(i),
               views::InkDropState::HIDDEN);
   }
@@ -227,20 +230,19 @@ TEST_F(IntentPickerBubbleViewTest, InkDropStateTransition) {
   }
 }
 
-// Arbitrary press the first button twice, check that the InkDropState remains
-// the same.
+// Arbitrary press a button twice, check that the InkDropState remains the same.
 TEST_F(IntentPickerBubbleViewTest, PressButtonTwice) {
   CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
   const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              ui::EventTimeForNow(), 0, 0);
-  EXPECT_EQ(bubble_->GetInkDropStateForTesting(0), views::InkDropState::HIDDEN);
-  bubble_->PressButtonForTesting(0, event);
-  EXPECT_EQ(bubble_->GetInkDropStateForTesting(0),
+  EXPECT_EQ(bubble_->GetInkDropStateForTesting(1), views::InkDropState::HIDDEN);
+  bubble_->PressButtonForTesting(1, event);
+  EXPECT_EQ(bubble_->GetInkDropStateForTesting(1),
             views::InkDropState::ACTIVATED);
-  bubble_->PressButtonForTesting(0, event);
-  EXPECT_EQ(bubble_->GetInkDropStateForTesting(0),
+  bubble_->PressButtonForTesting(1, event);
+  EXPECT_EQ(bubble_->GetInkDropStateForTesting(1),
             views::InkDropState::ACTIVATED);
 }
 
