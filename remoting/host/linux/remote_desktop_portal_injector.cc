@@ -125,12 +125,14 @@ void RemoteDesktopPortalInjector::InjectKeyPress(int code,
   g_variant_builder_init(&builder, G_VARIANT_TYPE_VARDICT);
   Scoped<GError> error;
   VLOG(6) << "session handle: " << session_handle_;
-  g_dbus_proxy_call(proxy_,
-                    is_code ? "NotifyKeyboardKeycode" : "NotifyKeyboardKeysym",
-                    g_variant_new("(oa{sv}iu)", session_handle_.c_str(),
-                                  &builder, code, pressed),
-                    G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_,
-                    NotifyKeyboardDone, this);
+  g_dbus_proxy_call_sync(
+      proxy_, is_code ? "NotifyKeyboardKeycode" : "NotifyKeyboardKeysym",
+      g_variant_new("(oa{sv}iu)", session_handle_.c_str(), &builder, code,
+                    pressed),
+      G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_, error.receive());
+  if (error.get()) {
+    LOG(ERROR) << "Failed to inject key press";
+  }
 }
 
 void RemoteDesktopPortalInjector::SetSessionDetails(
@@ -145,25 +147,6 @@ void RemoteDesktopPortalInjector::SetSessionDetails(
   cancellable_ = session_details.cancellable;
   session_handle_ = session_details.session_handle;
   pipewire_stream_node_id_ = session_details.pipewire_stream_node_id;
-}
-
-// static
-void RemoteDesktopPortalInjector::NotifyKeyboardDone(GObject* gobject,
-                                                     GAsyncResult* result,
-                                                     gpointer user_data) {
-  RemoteDesktopPortalInjector* that =
-      static_cast<RemoteDesktopPortalInjector*>(user_data);
-  DCHECK(that);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(that->sequence_checker_);
-  Scoped<GError> error;
-  Scoped<GVariant> variant(
-      g_dbus_proxy_call_finish(that->proxy_, result, error.receive()));
-  if (!variant) {
-    LOG(ERROR) << "Failed to notify keyboard";
-    if (error.get()) {
-      LOG(ERROR) << "Failed to press/release a key, error: " << error->message;
-    }
-  }
 }
 
 }  // namespace xdg_portal

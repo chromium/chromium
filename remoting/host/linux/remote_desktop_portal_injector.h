@@ -49,10 +49,6 @@ class RemoteDesktopPortalInjector {
   void InjectKeyPress(int code, bool pressed, bool is_code = true);
 
  private:
-  static void NotifyKeyboardDone(GObject* gobject,
-                                 GAsyncResult* result,
-                                 gpointer user_data);
-
   SEQUENCE_CHECKER(sequence_checker_);
   raw_ptr<GDBusConnection> connection_ GUARDED_BY_CONTEXT(sequence_checker_) =
       nullptr;
