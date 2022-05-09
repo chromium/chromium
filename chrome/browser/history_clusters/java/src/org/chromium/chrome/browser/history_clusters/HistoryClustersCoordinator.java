@@ -116,6 +116,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
                 R.layout.history_clusters_activity_content, null);
 
         mSelectableListLayout = mActivityContentView.findViewById(R.id.selectable_list);
+        mSelectableListLayout.setEmptyViewText(R.string.history_manager_empty);
         RecyclerView recyclerView = mSelectableListLayout.initializeRecyclerView(mAdapter);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(
