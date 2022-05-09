@@ -14,10 +14,7 @@ export class BrailleTranslatorManager {
    *     for testing.
    */
   constructor(opt_liblouisForTest) {
-    /**
-     * @type {!LibLouis}
-     * @private
-     */
+    /** @private {!LibLouis} */
     this.liblouis_ =
         opt_liblouisForTest ||
         new LibLouis(
@@ -26,40 +23,19 @@ export class BrailleTranslatorManager {
             chrome.extension.getURL('chromevox/background/braille/tables'),
             this.loadLiblouis_.bind(this));
 
-    /**
-     * @type {!Array<function()>}
-     * @private
-     */
+    /** @private {!Array<function()>} */
     this.changeListeners_ = [];
-    /**
-     * @type {!Array<BrailleTable.Table>}
-     * @private
-     */
+    /** @private {!Array<BrailleTable.Table>} */
     this.tables_ = [];
-    /**
-     * @type {?ExpandingBrailleTranslator}
-     * @private
-     */
+    /** @private {?ExpandingBrailleTranslator} */
     this.expandingTranslator_ = null;
-    /**
-     * @type {?LibLouis.Translator}
-     * @private
-     */
+    /** @private {?LibLouis.Translator} */
     this.defaultTranslator_ = null;
-    /**
-     * @type {?string}
-     * @private
-     */
+    /** @private {?string} */
     this.defaultTableId_ = null;
-    /**
-     * @type {?LibLouis.Translator}
-     * @private
-     */
+    /** @private {?LibLouis.Translator} */
     this.uncontractedTranslator_ = null;
-    /**
-     * @type {?string}
-     * @private
-     */
+    /** @private {?string} */
     this.uncontractedTableId_ = null;
   }
 
@@ -81,7 +57,7 @@ export class BrailleTranslatorManager {
    * table.
    * @param {function()=} opt_finishCallback Called when the refresh finishes.
    */
-  refresh(brailleTable, opt_brailleTable8, opt_finishCallback) {
+  async refresh(brailleTable, opt_brailleTable8, opt_finishCallback) {
     if (brailleTable && brailleTable === this.defaultTableId_) {
       return;
     }
@@ -133,32 +109,29 @@ export class BrailleTranslatorManager {
       return;
     }
 
-    const finishRefresh = function(defaultTranslator, uncontractedTranslator) {
+    const finishRefresh = (defaultTranslator, uncontractedTranslator) => {
       this.defaultTableId_ = newDefaultTableId;
       this.uncontractedTableId_ = newUncontractedTableId;
       this.expandingTranslator_ = new ExpandingBrailleTranslator(
           defaultTranslator, uncontractedTranslator);
       this.defaultTranslator_ = defaultTranslator;
       this.uncontractedTranslator_ = uncontractedTranslator;
-      this.changeListeners_.forEach(function(listener) {
-        listener();
-      });
-    }.bind(this);
+      this.changeListeners_.forEach(listener => listener());
+    };
 
-    this.liblouis_.getTranslator(table.fileNames, function(translator) {
-      if (!newUncontractedTableId) {
-        finishRefresh(translator, null);
-      } else {
-        this.liblouis_.getTranslator(
-            uncontractedTable.fileNames, function(uncontractedTranslator) {
-              finishRefresh(translator, uncontractedTranslator);
-
-              if (opt_finishCallback) {
-                opt_finishCallback();
-              }
-            });
+    const translator = await new Promise(
+        resolve => this.liblouis_.getTranslator(table.fileNames, resolve));
+    if (!newUncontractedTableId) {
+      finishRefresh(translator, null);
+    } else {
+      const uncontractedTranslator = await new Promise(
+          resolve => this.liblouis_.getTranslator(
+              uncontractedTable.fileNames, resolve));
+      finishRefresh(translator, uncontractedTranslator);
+      if (opt_finishCallback) {
+        opt_finishCallback();
       }
-    }.bind(this));
+    }
   }
 
   /**
