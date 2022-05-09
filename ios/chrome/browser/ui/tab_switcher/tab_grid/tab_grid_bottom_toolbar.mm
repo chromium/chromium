@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_bottom_toolbar.h"
 
 #include "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_new_tab_button.h"
@@ -247,10 +248,15 @@
                            target:nil
                            action:nil];
 
-  _smallNewTabButton = [[TabGridNewTabButton alloc]
-      initWithRegularImage:[UIImage imageNamed:@"new_tab_toolbar_button"]
-            incognitoImage:[UIImage
-                               imageNamed:@"new_tab_toolbar_button_incognito"]];
+  if (UseSymbols()) {
+    _smallNewTabButton = [[TabGridNewTabButton alloc] init];
+  } else {
+    _smallNewTabButton = [[TabGridNewTabButton alloc]
+        initWithRegularImage:[UIImage imageNamed:@"new_tab_toolbar_button"]
+              incognitoImage:
+                  [UIImage imageNamed:@"new_tab_toolbar_button_incognito"]];
+  }
+
   _smallNewTabButton.translatesAutoresizingMaskIntoConstraints = NO;
   _smallNewTabButton.page = self.page;
 
@@ -288,11 +294,22 @@
   ];
 
   // For other layout, display a floating new tab button.
-  UIImage* incognitoImage =
-      [UIImage imageNamed:@"new_tab_floating_button_incognito"];
-  _largeNewTabButton = [[TabGridNewTabButton alloc]
-      initWithRegularImage:[UIImage imageNamed:@"new_tab_floating_button"]
-            incognitoImage:incognitoImage];
+  if (UseSymbols()) {
+    _largeNewTabButton = [[TabGridNewTabButton alloc] init];
+  } else {
+    UIImage* incognitoImage =
+        [UIImage imageNamed:@"new_tab_floating_button_incognito"];
+    _largeNewTabButton = [[TabGridNewTabButton alloc]
+        initWithRegularImage:[UIImage imageNamed:@"new_tab_floating_button"]
+              incognitoImage:incognitoImage];
+
+    // When a11y font size is used, long press on UIBarButtonItem will show a
+    // built-in a11y modal panel with image and title if set. The image will be
+    // normalized into a bi-color image, so the incognito image is suitable
+    // because it has a transparent "+". Use the larger image for higher
+    // resolution.
+    _newTabButtonItem.image = incognitoImage;
+  }
   _largeNewTabButton.translatesAutoresizingMaskIntoConstraints = NO;
   _largeNewTabButton.page = self.page;
 
@@ -310,12 +327,6 @@
                        constant:-kTabGridFloatingButtonHorizontalInset],
   ];
 
-  // When a11y font size is used, long press on UIBarButtonItem will show a
-  // built-in a11y modal panel with image and title if set. The image will be
-  // normalized into a bi-color image, so the incognito image is suitable
-  // because it has a transparent "+". Use the larger image for higher
-  // resolution.
-  _newTabButtonItem.image = incognitoImage;
   _newTabButtonItem.title = _largeNewTabButton.accessibilityLabel;
 }
 

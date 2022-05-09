@@ -15,9 +15,7 @@
 
 // Init with image for regular/incognito page.
 - (instancetype)initWithRegularImage:(UIImage*)regularImage
-                      incognitoImage:(UIImage*)incognitoImage
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
+                      incognitoImage:(UIImage*)incognitoImage;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
