@@ -1846,7 +1846,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.FileDescriptorTracking.TimeToCompute" units="microseconds"
-    expires_after="2022-07-09">
+    expires_after="2023-01-09">
   <owner>petermcneeley@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
   <summary>
@@ -1860,7 +1860,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.FileDescriptorTracking.{FdStat}" units="units"
-    expires_after="2022-07-09">
+    expires_after="2023-01-09">
   <owner>petermcneeley@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
   <summary>
