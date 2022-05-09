@@ -37,6 +37,9 @@
 #include "content/public/test/network_service_test_helper.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/service_factory.h"
+#include "services/test/echo/echo_service.h"
 #include "ui/base/test/ui_controls.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -126,6 +129,14 @@ class ChromeTestLauncherDelegate::ScopedFirewallRules {
 
 #endif  // BUILDFLAG(IS_WIN)
 
+namespace {
+
+auto RunEchoService(mojo::PendingReceiver<echo::mojom::EchoService> receiver) {
+  return std::make_unique<echo::EchoService>(std::move(receiver));
+}
+
+}  // namespace
+
 ChromeTestLauncherDelegate::ChromeTestLauncherDelegate(
     ChromeTestSuiteRunner* runner)
     : runner_(runner) {}
@@ -152,11 +163,30 @@ class BrowserTestChromeContentBrowserClient
   }
 };
 
+// A replacement ChromeContentUtilityClient that binds the
+// echo::mojom::EchoService within the Utility process. For use with testing
+// only.
+class BrowserTestChromeContentUtilityClient
+    : public ChromeContentUtilityClient {
+ public:
+  void RegisterIOThreadServices(mojo::ServiceFactory& services) override {
+    ChromeContentUtilityClient::RegisterIOThreadServices(services);
+    services.Add(RunEchoService);
+  }
+};
+
 content::ContentBrowserClient*
 ChromeTestChromeMainDelegate::CreateContentBrowserClient() {
   chrome_content_browser_client_ =
       std::make_unique<BrowserTestChromeContentBrowserClient>();
   return chrome_content_browser_client_.get();
+}
+
+content::ContentUtilityClient*
+ChromeTestChromeMainDelegate::CreateContentUtilityClient() {
+  chrome_content_utility_client_ =
+      std::make_unique<BrowserTestChromeContentUtilityClient>();
+  return chrome_content_utility_client_.get();
 }
 
 #if BUILDFLAG(IS_WIN)

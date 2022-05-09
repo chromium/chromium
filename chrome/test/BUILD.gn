@@ -292,6 +292,7 @@ static_library("test_support") {
     "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/cpp:test_support",
     "//services/device/public/cpp/geolocation",
+    "//services/test/echo:lib",
     "//skia",
     "//sql",
     "//sql:test_support",
@@ -2431,6 +2432,7 @@ if (!is_android) {
         "../browser/ui/views/settings_reset_prompt_dialog_browsertest.cc",
         "../browser/ui/views/try_chrome_dialog_win/try_chrome_dialog_browsertest.cc",
         "../browser/ui/views/uninstall_view_browsertest.cc",
+        "../test/delayload/delayload_hook_browsertest.cc",
       ]
 
       configs += [ "//build/config/win:delayloads" ]
@@ -2448,6 +2450,7 @@ if (!is_android) {
         "//components/chrome_cleaner/public/constants",
         "//components/onc",
         "//sandbox/win:sandbox",
+        "//services/test/echo/public/mojom",
         "//third_party/wtl",
         "//ui/resources",
       ]

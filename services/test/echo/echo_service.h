@@ -5,6 +5,7 @@
 #ifndef SERVICES_TEST_ECHO_ECHO_SERVICE_H_
 #define SERVICES_TEST_ECHO_ECHO_SERVICE_H_
 
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/test/echo/public/mojom/echo.mojom.h"
@@ -28,6 +29,9 @@ class EchoService : public mojom::EchoService {
                                 base::UnsafeSharedMemoryRegion region) override;
   void Quit() override;
   void Crash() override;
+#if BUILDFLAG(IS_WIN)
+  void DelayLoad() override;
+#endif
 
   mojo::Receiver<mojom::EchoService> receiver_;
 };

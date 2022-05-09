@@ -200,8 +200,6 @@ base::LazyInstance<ChromeContentGpuClient>::DestructorAtExit
     g_chrome_content_gpu_client = LAZY_INSTANCE_INITIALIZER;
 base::LazyInstance<ChromeContentRendererClient>::DestructorAtExit
     g_chrome_content_renderer_client = LAZY_INSTANCE_INITIALIZER;
-base::LazyInstance<ChromeContentUtilityClient>::DestructorAtExit
-    g_chrome_content_utility_client = LAZY_INSTANCE_INITIALIZER;
 
 extern int NaClMain(content::MainFunctionParams);
 
@@ -1324,7 +1322,9 @@ ChromeMainDelegate::CreateContentRendererClient() {
 
 content::ContentUtilityClient*
 ChromeMainDelegate::CreateContentUtilityClient() {
-  return g_chrome_content_utility_client.Pointer();
+  chrome_content_utility_client_ =
+      std::make_unique<ChromeContentUtilityClient>();
+  return chrome_content_utility_client_.get();
 }
 
 void ChromeMainDelegate::PreBrowserMain() {

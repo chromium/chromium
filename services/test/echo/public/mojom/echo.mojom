@@ -22,4 +22,8 @@ interface EchoService {
 
   // Forcibly crashes the service.
   Crash();
+
+  // Delay Load a DLL.
+  [EnableIf=is_win]
+  DelayLoad();
 };

@@ -4,10 +4,16 @@
 
 #include "services/test/echo/echo_service.h"
 
-#include <string.h>
-
 #include "base/immediate_crash.h"
 #include "base/memory/shared_memory_mapping.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#include <winevt.h>
+#endif
+
+#include <string>
 
 namespace echo {
 
@@ -35,5 +41,14 @@ void EchoService::Quit() {
 void EchoService::Crash() {
   IMMEDIATE_CRASH();
 }
+
+#if BUILDFLAG(IS_WIN)
+void EchoService::DelayLoad() {
+  // This causes wevtapi.dll to be delay loaded. It should not work from inside
+  // a sandboxed process.
+  EVT_HANDLE handle = ::EvtCreateRenderContext(0, nullptr, 0);
+  ::EvtClose(handle);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace echo

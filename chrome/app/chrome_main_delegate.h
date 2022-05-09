@@ -28,6 +28,7 @@ class TracingSamplerProfiler;
 }
 
 class ChromeContentBrowserClient;
+class ChromeContentUtilityClient;
 class HeapProfilerController;
 
 // Chrome implementation of ContentMainDelegate.
@@ -84,6 +85,7 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   ChromeContentClient chrome_content_client_;
 
   std::unique_ptr<ChromeContentBrowserClient> chrome_content_browser_client_;
+  std::unique_ptr<ChromeContentUtilityClient> chrome_content_utility_client_;
 
   std::unique_ptr<tracing::TracingSamplerProfiler> tracing_sampler_profiler_;
 
