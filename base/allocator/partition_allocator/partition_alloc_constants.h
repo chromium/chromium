@@ -23,7 +23,7 @@
 
 namespace partition_alloc {
 
-// Bit flag constants used at `flag` argument of PartitionRoot::AllocWithFlags,
+// Bit flag constants used as `flag` argument of PartitionRoot::AllocWithFlags,
 // AlignedAllocWithFlags, etc.
 struct AllocFlags {
   // In order to support bit operations like `flag_a | flag_b`, the old-
@@ -31,12 +31,16 @@ struct AllocFlags {
   enum : int {
     kReturnNull = 1 << 0,
     kZeroFill = 1 << 1,
-    kNoHooks = 1 << 2,  // Internal only.
+    // Don't allow allocation override hooks. Override hooks are expected to
+    // check for the presence of this flag and return false if it is active.
+    kNoOverrideHooks = 1 << 2,
+    // Don't allow any hooks (override or observers).
+    kNoHooks = 1 << 3,  // Internal only.
     // If the allocation requires a "slow path" (such as allocating/committing a
     // new slot span), return nullptr instead. Note this makes all large
     // allocations return nullptr, such as direct-mapped ones, and even for
     // smaller ones, a nullptr value is common.
-    kFastPathOrReturnNull = 1 << 3,  // Internal only.
+    kFastPathOrReturnNull = 1 << 4,  // Internal only.
 
     kLastFlag = kFastPathOrReturnNull
   };

@@ -159,6 +159,13 @@ void* ArrayBufferContents::AllocateMemoryWithFlags(size_t size,
     }
   }
 
+  // The V8 sandbox requires all ArrayBuffer backing stores to be allocated
+  // inside the sandbox address space. This isn't guaranteed if allocation
+  // override hooks (which are e.g. used by GWP-ASan) are enabled for those
+  // allocations. However, allocation observer hooks (which are e.g. used by
+  // the heap profiler) should still be invoked. Using the kNoOverrideHooks
+  // flag with AllocWithFlags accomplishes this.
+  flags |= partition_alloc::AllocFlags::kNoOverrideHooks;
   if (policy == kZeroInitialize) {
     flags |= partition_alloc::AllocFlags::kZeroFill;
   }
