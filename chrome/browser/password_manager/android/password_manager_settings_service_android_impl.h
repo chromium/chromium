@@ -17,7 +17,9 @@
 class PrefService;
 
 // Service implementation responsible with requesting and updating settings
-// prefs based on settings changes in Google Mobile Services.
+// prefs based on settings changes in Google Mobile Services. It also answers
+// password manager prefs queries, taking into account managed prefs and
+// the possibility of communicating with GMS.
 class PasswordManagerSettingsServiceAndroidImpl
     : public PasswordManagerSettingsService,
       public password_manager::PasswordSettingsUpdaterAndroidBridge::Consumer {
@@ -43,14 +45,17 @@ class PasswordManagerSettingsServiceAndroidImpl
 
   ~PasswordManagerSettingsServiceAndroidImpl() override;
 
+  bool IsSettingEnabled(
+      password_manager::PasswordManagerSetting setting) override;
+
  private:
+  void OnChromeForegrounded();
+
   // PasswordSettingsUpdaterAndroidBridge::Consumer implementation
   void OnSettingValueFetched(password_manager::PasswordManagerSetting setting,
                              bool value) override;
   void OnSettingValueAbsent(
       password_manager::PasswordManagerSetting setting) override;
-
-  void OnChromeForegrounded();
 
   // Pref service used to read and write password manager user prefs.
   raw_ptr<PrefService> pref_service_ = nullptr;
@@ -71,4 +76,4 @@ class PasswordManagerSettingsServiceAndroidImpl
       weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_SETTINGS_SERVICE_ANDROID_IMPL_H_
+#endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_SETTINGS_SERVICE_ANDROID_IMPL_H_

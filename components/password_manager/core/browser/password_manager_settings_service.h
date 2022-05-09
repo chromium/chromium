@@ -9,7 +9,14 @@
 
 // Service used to access the password manager settings.
 class PasswordManagerSettingsService : public KeyedService {
+ public:
+  // Checks if `setting` is enabled. It ensures that the correct pref is checked
+  // on Android, which depends on the unified password manager status.
+  virtual bool IsSettingEnabled(
+      password_manager::PasswordManagerSetting setting) = 0;
+
  protected:
   ~PasswordManagerSettingsService() override = default;
 };
+
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_SETTINGS_SERVICE_H_

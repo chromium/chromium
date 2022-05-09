@@ -9,8 +9,9 @@
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_bridge.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_bridge_impl.h"
-#include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -20,6 +21,7 @@
 
 using password_manager::PasswordManagerSetting;
 using password_manager::PasswordSettingsUpdaterAndroidBridge;
+using password_manager::sync_util::IsPasswordSyncEnabled;
 
 namespace {
 
@@ -65,19 +67,21 @@ bool HasChosenToSyncPreferences(syncer::SyncService* sync_service) {
 PasswordManagerSettingsServiceAndroidImpl::
     PasswordManagerSettingsServiceAndroidImpl(PrefService* pref_service,
                                               syncer::SyncService* sync_service)
-    : pref_service_(pref_service),
-      sync_service_(sync_service),
-      bridge_(PasswordSettingsUpdaterAndroidBridge::Create()),
-      lifecycle_helper_(
-          std::make_unique<PasswordManagerLifecycleHelperImpl>()) {
+    : pref_service_(pref_service), sync_service_(sync_service) {
   DCHECK(pref_service_);
   DCHECK(sync_service_);
-  bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
-  lifecycle_helper_->RegisterObserver(base::BindRepeating(
-      &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
-      weak_ptr_factory_.GetWeakPtr()));
+  DCHECK(password_manager::features::UsesUnifiedPasswordManagerUi());
+  if (PasswordSettingsUpdaterAndroidBridge::CanCreateAccessor()) {
+    bridge_ = PasswordSettingsUpdaterAndroidBridge::Create();
+    bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
+    lifecycle_helper_ = std::make_unique<PasswordManagerLifecycleHelperImpl>();
+    lifecycle_helper_->RegisterObserver(base::BindRepeating(
+        &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
+        weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
+// Constructor for tests
 PasswordManagerSettingsServiceAndroidImpl::
     PasswordManagerSettingsServiceAndroidImpl(
         base::PassKey<class PasswordManagerSettingsServiceAndroidImplTest>,
@@ -91,30 +95,54 @@ PasswordManagerSettingsServiceAndroidImpl::
       lifecycle_helper_(std::move(lifecycle_helper)) {
   DCHECK(pref_service_);
   DCHECK(sync_service_);
-  DCHECK(bridge_);
-  DCHECK(lifecycle_helper_);
-  bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
-  lifecycle_helper_->RegisterObserver(base::BindRepeating(
-      &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
-      weak_ptr_factory_.GetWeakPtr()));
+  if (bridge_) {
+    bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
+    lifecycle_helper_->RegisterObserver(base::BindRepeating(
+        &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
+        weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 PasswordManagerSettingsServiceAndroidImpl::
     ~PasswordManagerSettingsServiceAndroidImpl() {
-  lifecycle_helper_->UnregisterObserver();
+  if (lifecycle_helper_) {
+    lifecycle_helper_->UnregisterObserver();
+  }
+}
+
+bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
+    PasswordManagerSetting setting) {
+  const PrefService::Preference* regular_pref =
+      GetRegularPrefFromSetting(pref_service_, setting);
+  DCHECK(regular_pref);
+  if (!IsPasswordSyncEnabled(sync_service_)) {
+    return regular_pref->GetValue()->GetBool();
+  }
+
+  if (!bridge_) {
+    return regular_pref->GetValue()->GetBool();
+  }
+
+  if (regular_pref->IsManaged()) {
+    return regular_pref->GetValue()->GetBool();
+  }
+
+  const PrefService::Preference* android_pref =
+      GetGMSPrefFromSetting(pref_service_, setting);
+  DCHECK(android_pref);
+  return android_pref->GetValue()->GetBool();
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded() {
-  if (!password_bubble_experiment::HasChosenToSyncPasswords(sync_service_))
+  if (!IsPasswordSyncEnabled(sync_service_))
     return;
-
   // TODO(crbug.com/1289700): Request the settings from the backend.
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueFetched(
     password_manager::PasswordManagerSetting setting,
     bool value) {
-  if (!password_bubble_experiment::HasChosenToSyncPasswords(sync_service_))
+  if (!IsPasswordSyncEnabled(sync_service_))
     return;
   const PrefService::Preference* android_pref =
       GetGMSPrefFromSetting(pref_service_, setting);
@@ -134,7 +162,8 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueFetched(
 
 void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueAbsent(
     password_manager::PasswordManagerSetting setting) {
-  if (!password_bubble_experiment::HasChosenToSyncPasswords(sync_service_))
+  DCHECK(bridge_);
+  if (!IsPasswordSyncEnabled(sync_service_))
     return;
   const PrefService::Preference* pref =
       GetGMSPrefFromSetting(pref_service_, setting);
