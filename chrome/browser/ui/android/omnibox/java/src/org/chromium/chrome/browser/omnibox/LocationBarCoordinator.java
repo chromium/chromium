@@ -315,6 +315,11 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
     }
 
     @Override
+    public void requestUrlBarAccessibilityFocus() {
+        mUrlCoordinator.requestAccessibilityFocus();
+    }
+
+    @Override
     public void showUrlBarCursorWithoutFocusAnimations() {
         mLocationBarMediator.showUrlBarCursorWithoutFocusAnimations();
     }
