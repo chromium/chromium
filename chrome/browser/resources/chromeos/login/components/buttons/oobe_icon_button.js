@@ -36,10 +36,6 @@ Polymer({
       this.$.icon.hidden = (this.icon1x === undefined || this.icon1x.length == 0);
     },
 
-    click() {
-      this.$.button.click();
-    },
-
     ariaLabel_(labelForAria, locale, textKey) {
       if ((typeof labelForAria !== 'undefined') && (labelForAria !== '')) {
         return labelForAria;
