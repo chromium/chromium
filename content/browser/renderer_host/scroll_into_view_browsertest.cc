@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"
@@ -565,11 +566,21 @@ IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInSingleNestedFrame) {
 }
 
 IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInLocalRoot) {
+// Flaky on Mac ARM64. https://crbug.com/1323606
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+  if (!IsForceLocalFrames())
+    return;
+#endif
   ASSERT_TRUE(SetupTest("siteA(siteB(siteA))"));
   RunTest();
 }
 
 IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInDoublyNestedFrame) {
+// Flaky on Mac ARM64. https://crbug.com/1323606
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+  if (!IsForceLocalFrames())
+    return;
+#endif
   ASSERT_TRUE(SetupTest("siteA(siteB(siteC))"));
   RunTest();
 }
@@ -577,6 +588,11 @@ IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInDoublyNestedFrame) {
 IN_PROC_BROWSER_TEST_P(
     ScrollIntoViewBrowserTest,
     CrossesEditableInDoublyNestedFrameLocalAndRemoteBoundaries) {
+// Flaky on Mac ARM64. https://crbug.com/1323606
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+  if (!IsForceLocalFrames())
+    return;
+#endif
   ASSERT_TRUE(SetupTest("siteA(siteA(siteB(siteB)))"));
   RunTest();
 }
