@@ -13,6 +13,7 @@
 #include <idle-client-protocol.h>
 #include <idle-inhibit-unstable-v1-client-protocol.h>
 #include <keyboard-extension-unstable-v1-client-protocol.h>
+#include <keyboard-shortcuts-inhibit-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <overlay-prioritizer-client-protocol.h>
@@ -182,6 +183,8 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_blending_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_alpha_compositing_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_idle_inhibit_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_idle_inhibitor_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_keyboard_shortcuts_inhibit_manager_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_keyboard_shortcuts_inhibitor_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_linux_buffer_release_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_linux_buffer_params_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_linux_dmabuf_v1)

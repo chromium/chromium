@@ -100,6 +100,11 @@ void BrowserFrame::InitBrowserFrame() {
     params.z_order = ui::ZOrderLevel::kFloatingWindow;
   }
 
+#if defined(USE_OZONE)
+  params.inhibit_keyboard_shortcuts =
+      browser->is_type_app() || browser->is_type_app_popup();
+#endif
+
   if (native_browser_frame_->ShouldRestorePreviousBrowserWidgetState()) {
     if (browser->is_type_normal() || browser->is_type_devtools() ||
         browser->is_type_app()) {

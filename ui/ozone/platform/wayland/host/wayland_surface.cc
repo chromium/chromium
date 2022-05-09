@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
+#include <keyboard-shortcuts-inhibit-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <overlay-prioritizer-client-protocol.h>
 #include <surface-augmenter-client-protocol.h>
@@ -27,6 +28,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
@@ -661,6 +663,17 @@ void WaylandSurface::ApplyPendingState() {
 
 void WaylandSurface::SetApplyStateImmediately() {
   apply_state_immediately_ = true;
+}
+
+void WaylandSurface::InhibitKeyboardShortcuts() {
+  if (auto* keyboard_shortcuts_inhibit_manager =
+          connection_->keyboard_shortcuts_inhibit_manager_v1()) {
+    keyboard_shortcuts_inhibitor_ =
+        wl::Object<zwp_keyboard_shortcuts_inhibitor_v1>(
+            zwp_keyboard_shortcuts_inhibit_manager_v1_inhibit_shortcuts(
+                keyboard_shortcuts_inhibit_manager, surface_.get(),
+                connection_->seat()->wl_object()));
+  }
 }
 
 void WaylandSurface::ExplicitRelease(

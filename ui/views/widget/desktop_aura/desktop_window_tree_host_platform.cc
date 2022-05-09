@@ -154,6 +154,7 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
         properties.parent_widget = host->GetAcceleratedWidget();
     }
   }
+  properties.inhibit_keyboard_shortcuts = params.inhibit_keyboard_shortcuts;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

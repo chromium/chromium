@@ -137,6 +137,12 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   int32_t restore_window_id;
 #endif
 
+#if defined(USE_OZONE)
+  // Specifies whether the current window requests key-events that matches
+  // system shortcuts.
+  bool inhibit_keyboard_shortcuts = false;
+#endif
+
   bool enable_compositing_based_throttling = false;
 
   size_t compositor_memory_limit_mb = 0;

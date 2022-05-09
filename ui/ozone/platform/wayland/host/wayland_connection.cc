@@ -86,6 +86,7 @@ constexpr uint32_t kMaxAlphaCompositingVersion = 1;
 constexpr uint32_t kMaxXdgDecorationVersion = 1;
 constexpr uint32_t kMaxExtendedDragVersion = 1;
 constexpr uint32_t kMaxXdgOutputManagerVersion = 3;
+constexpr uint32_t kMaxKeyboardShortcutsInhibitManagerVersion = 1;
 
 int64_t ConvertTimespecToMicros(const struct timespec& ts) {
   // On 32-bit systems, the calculation cannot overflow int64_t.
@@ -517,6 +518,17 @@ void WaylandConnection::Global(void* data,
     // We will create the keyboard when get them in that case.
     if (connection->seat_)
       connection->seat_->RefreshKeyboard();
+  } else if (!connection->keyboard_shortcuts_inhibit_manager_v1_ &&
+             strcmp(interface, "zwp_keyboard_shortcuts_inhibit_manager_v1") ==
+                 0) {
+    connection->keyboard_shortcuts_inhibit_manager_v1_ =
+        wl::Bind<zwp_keyboard_shortcuts_inhibit_manager_v1>(
+            registry, name,
+            std::min(version, kMaxKeyboardShortcutsInhibitManagerVersion));
+    if (!connection->keyboard_shortcuts_inhibit_manager_v1_) {
+      LOG(ERROR) << "Failed to bind zwp_keyboard_shortcuts_inhibit_manager_v1";
+      return;
+    }
   } else if (!connection->text_input_manager_v1_ &&
              strcmp(interface, "zwp_text_input_manager_v1") == 0) {
     connection->text_input_manager_v1_ = wl::Bind<zwp_text_input_manager_v1>(

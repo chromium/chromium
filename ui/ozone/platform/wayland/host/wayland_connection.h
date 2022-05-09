@@ -125,6 +125,10 @@ class WaylandConnection {
   xdg_wm_base* shell() const { return shell_.get(); }
   zxdg_shell_v6* shell_v6() const { return shell_v6_.get(); }
   wp_presentation* presentation() const { return presentation_.get(); }
+  zwp_keyboard_shortcuts_inhibit_manager_v1*
+  keyboard_shortcuts_inhibit_manager_v1() const {
+    return keyboard_shortcuts_inhibit_manager_v1_.get();
+  }
   zwp_text_input_manager_v1* text_input_manager_v1() const {
     return text_input_manager_v1_.get();
   }
@@ -359,6 +363,8 @@ class WaylandConnection {
   wl::Object<wp_viewporter> viewporter_;
   wl::Object<zcr_alpha_compositing_v1> alpha_compositing_;
   wl::Object<zcr_keyboard_extension_v1> keyboard_extension_v1_;
+  wl::Object<zwp_keyboard_shortcuts_inhibit_manager_v1>
+      keyboard_shortcuts_inhibit_manager_v1_;
   wl::Object<zwp_text_input_manager_v1> text_input_manager_v1_;
   wl::Object<zcr_text_input_extension_v1> text_input_extension_v1_;
   wl::Object<zwp_linux_explicit_synchronization_v1>

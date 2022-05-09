@@ -579,6 +579,9 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
     return false;
   }
 
+  if (properties.inhibit_keyboard_shortcuts)
+    root_surface_->InhibitKeyboardShortcuts();
+
   // Update visual size in tests immediately if the test config is set.
   // Otherwise, such tests as interactive_ui_tests fail.
   if (!update_visual_size_immediately_)

@@ -404,6 +404,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // properties in |init_properties_container| will be moved to the native
     // widget.
     ui::PropertyHandler init_properties_container;
+
+#if defined(USE_OZONE)
+    // Only used by Wayland for root level windows. Specifies whether this
+    // window should request the wayland compositor to send key events,
+    // even if it matches with the compositor's keyboard shortcuts.
+    bool inhibit_keyboard_shortcuts = false;
+#endif
   };
 
   // Represents a lock held on the widget's ShouldPaintAsActive() state. As

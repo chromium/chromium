@@ -22,6 +22,7 @@
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
+struct zwp_keyboard_shortcuts_inhibitor_v1;
 struct zwp_linux_buffer_release_v1;
 struct zcr_blending_v1;
 
@@ -172,6 +173,10 @@ class WaylandSurface {
   // effect immediately.
   void SetApplyStateImmediately();
 
+  // Requests to wayland compositor to send key events even if it matches
+  // with the compositor's accelerator keys.
+  void InhibitKeyboardShortcuts();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest,
                            DoesNotCreateSurfaceSyncOnCommitWithoutBuffers);
@@ -282,6 +287,7 @@ class WaylandSurface {
   wl::Object<wl_surface> surface_;
   wl::Object<wp_viewport> viewport_;
   wl::Object<zcr_blending_v1> blending_;
+  wl::Object<zwp_keyboard_shortcuts_inhibitor_v1> keyboard_shortcuts_inhibitor_;
   wl::Object<zwp_linux_surface_synchronization_v1> surface_sync_;
   wl::Object<overlay_prioritized_surface> overlay_priority_surface_;
   wl::Object<augmented_surface> augmented_surface_;
