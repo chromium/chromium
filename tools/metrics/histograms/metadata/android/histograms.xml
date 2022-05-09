@@ -792,7 +792,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DeviceSize.LargestDisplaySize" units="dp"
-    expires_after="2022-10-16">
+    expires_after="2022-05-14">
+  <obsolete>
+    Removed May 2022.
+  </obsolete>
   <owner>twellington@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -803,8 +806,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.DeviceSize.SmallestDisplaySize" units="dp"
+<histogram name="Android.DeviceSize.LargestDisplaySize2" units="dp"
     expires_after="2022-10-16">
+  <owner>twellington@chromium.org</owner>
+  <owner>shuyng@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the largest display dimension in dp during deferred startup. The
+    display size is not affected by Android N multi-window mode. Clamped at
+    200dp to 2000dp. 20dp granularity.
+  </summary>
+</histogram>
+
+<histogram name="Android.DeviceSize.SmallestDisplaySize" units="dp"
+    expires_after="2022-05-14">
+  <obsolete>
+    Removed May 2022.
+  </obsolete>
   <owner>twellington@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -812,6 +830,18 @@ chromium-metrics-reviews@google.com.
     Records the smallest display dimension in dp during deferred startup. The
     display size is not affected by Android N multi-window mode. Clamped at 0 to
     1000dp.
+  </summary>
+</histogram>
+
+<histogram name="Android.DeviceSize.SmallestDisplaySize2" units="dp"
+    expires_after="2022-10-16">
+  <owner>twellington@chromium.org</owner>
+  <owner>shuyng@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the smallest display dimension in dp during deferred startup. The
+    display size is not affected by Android N multi-window mode. Clamped at 100
+    to 1000dp. 10dp granularity.
   </summary>
 </histogram>
 

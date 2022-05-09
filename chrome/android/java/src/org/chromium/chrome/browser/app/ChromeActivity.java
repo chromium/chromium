@@ -43,7 +43,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.MathUtils;
 import org.chromium.base.PowerMonitor;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.SysUtils;
@@ -2774,13 +2773,15 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(this);
         int displayWidth = DisplayUtil.pxToDp(display, display.getDisplayWidth());
         int displayHeight = DisplayUtil.pxToDp(display, display.getDisplayHeight());
-        int largestDisplaySize = displayWidth > displayHeight ? displayWidth : displayHeight;
-        int smallestDisplaySize = displayWidth < displayHeight ? displayWidth : displayHeight;
+        int smallestDisplaySize = Math.min(displayWidth, displayHeight);
+        int largestDisplaySize = Math.max(displayWidth, displayHeight);
 
-        RecordHistogram.recordSparseHistogram("Android.DeviceSize.SmallestDisplaySize",
-                MathUtils.clamp(smallestDisplaySize, 0, 1000));
-        RecordHistogram.recordSparseHistogram("Android.DeviceSize.LargestDisplaySize",
-                MathUtils.clamp(largestDisplaySize, 200, 1200));
+        // 10dp granularity.
+        RecordHistogram.recordLinearCountHistogram(
+                "Android.DeviceSize.SmallestDisplaySize2", smallestDisplaySize, 100, 1000, 92);
+        // 20dp granularity.
+        RecordHistogram.recordLinearCountHistogram(
+                "Android.DeviceSize.LargestDisplaySize2", largestDisplaySize, 200, 2000, 92);
     }
 
     @Override
