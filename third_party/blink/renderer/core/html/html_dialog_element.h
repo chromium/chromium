@@ -65,6 +65,10 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   void SetIsModal(bool is_modal);
   void ScheduleCloseEvent();
 
+  // https://html.spec.whatwg.org/C/#the-dialog-element
+  // Chooses the focused element when show() or showModal() is invoked.
+  static void SetFocusForDialog(HTMLDialogElement* dialog);
+
   bool is_modal_;
   String return_value_;
   WeakMember<Element> previously_focused_element_;

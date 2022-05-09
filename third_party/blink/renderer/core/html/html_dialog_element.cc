@@ -43,12 +43,16 @@
 
 namespace blink {
 
-// https://html.spec.whatwg.org/C/#the-dialog-element
-// This function chooses the focused element when show() or showModal() is
-// invoked, as described in their spec.
-static void SetFocusForDialog(HTMLDialogElement* dialog) {
+// static
+void HTMLDialogElement::SetFocusForDialog(HTMLDialogElement* dialog) {
   Element* control = nullptr;
   Node* next = nullptr;
+
+  if (!dialog->isConnected())
+    return;
+
+  auto& document = dialog->GetDocument();
+  dialog->previously_focused_element_ = document.FocusedElement();
 
   // TODO(kochi): How to find focusable element inside Shadow DOM is not
   // currently specified.  This may change at any time.
@@ -75,7 +79,7 @@ static void SetFocusForDialog(HTMLDialogElement* dialog) {
   if (control->IsFocusable())
     control->Focus();
   else
-    dialog->GetDocument().ClearFocusedElement();
+    document.ClearFocusedElement();
 
   // 4. Let topDocument be the active document of control's node document's
   // browsing context's top-level browsing context.
@@ -188,8 +192,6 @@ void HTMLDialogElement::show() {
   // Element::isFocusable, which requires an up-to-date layout.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
-  previously_focused_element_ = GetDocument().FocusedElement();
-
   SetFocusForDialog(this);
 }
 
@@ -254,8 +256,6 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   // of queuing up AX events on objects that would be invalidated when the cache
   // is thrown away.
   InertSubtreesChanged(document, old_modal_dialog);
-
-  previously_focused_element_ = document.FocusedElement();
 
   if (RuntimeEnabledFeatures::CloseWatcherEnabled()) {
     if (LocalDOMWindow* window = GetDocument().domWindow()) {
