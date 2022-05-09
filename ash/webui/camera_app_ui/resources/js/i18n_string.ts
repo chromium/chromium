@@ -52,6 +52,7 @@ export enum I18nString {
   ERROR_MSG_VIDEO_TOO_SHORT = 'error_msg_video_too_short',
   EXPERT_CUSTOM_VIDEO_PARAMETERS = 'expert_custom_video_parameters',
   EXPERT_ENABLE_EXPERT_MODE = 'expert_enable_expert_mode',
+  EXPERT_ENABLE_FPS_PICKER_FOR_BUILTIN = 'expert_enable_fps_picker_for_builtin',
   EXPERT_ENABLE_FULL_SIZED_VIDEO_SNAPSHOT =
       'expert_enable_full_sized_video_snapshot',
   EXPERT_MODE_BUTTON = 'expert_mode_button',

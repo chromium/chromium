@@ -49,6 +49,11 @@ export class VideoResolutionSettings extends BaseSettings {
 
     this.cameraManager.addVideoResolutionOptionListener(
         (groups) => this.onOptionsUpdate(groups));
+
+    for (const s of [state.State.EXPERT,
+      state.State.ENABLE_FPS_PICKER_FOR_BUILTIN]) {
+      state.addObserver(s, () => this.toggleFPSPickerVisiblity());
+    }
   }
 
   private onOptionsUpdate(groups: VideoResolutionOptionGroup[]): void {
@@ -99,11 +104,17 @@ export class VideoResolutionSettings extends BaseSettings {
             SUPPORTED_CONSTANT_FPS.some((fps) => fps === fpsOption.constFps));
     const showFpsButton =
         constFpsOptions.length > 1 && facing === Facing.EXTERNAL;
+    const isFPSEnabled = state.get(state.State.EXPERT) &&
+      state.get(state.State.ENABLE_FPS_PICKER_FOR_BUILTIN);
     let resolution = new Resolution();
     for (const fps of SUPPORTED_CONSTANT_FPS) {
       const fpsButton =
           dom.getFrom(optionElement, `.fps-${fps}`, HTMLButtonElement);
-      fpsButton.hidden = !showFpsButton;
+      if (!isFPSEnabled) {
+        fpsButton.hidden = true;
+      } else if (!showFpsButton) {
+        fpsButton.classList.add('invisible');
+      }
 
       const fpsOption =
           option.fpsOptions.find((fpsOption) => fpsOption.constFps === fps);
@@ -149,6 +160,16 @@ export class VideoResolutionSettings extends BaseSettings {
 
     if (input.checked && this.focusedDeviceId === deviceId) {
       input.focus();
+    }
+  }
+
+  private toggleFPSPickerVisiblity(): void {
+    const isFPSEnabled = state.get(state.State.EXPERT) &&
+      state.get(state.State.ENABLE_FPS_PICKER_FOR_BUILTIN);
+    const fpsButtons = dom.getAllFrom(
+      this.menu, '.fps-buttons button', HTMLButtonElement);
+    for (const fpsButton of fpsButtons) {
+      fpsButton.hidden = !isFPSEnabled;
     }
   }
 }

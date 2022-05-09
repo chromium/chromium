@@ -351,6 +351,9 @@
       <message desc="Label for expert mode option: Multi-stream video recording." name="IDS_EXPERT_MULTISTREAM_RECORDING">
         Multistream video recording
       </message>
+      <message desc="Label for expert mode option: enable video FPS picker for builtin camera." name="IDS_EXPERT_ENABLE_FPS_PICKER_FOR_BUILTIN">
+        Enable video FPS picker
+      </message>
       <message desc="Label for expert mode option: enable expert mode." name="IDS_EXPERT_ENABLE_EXPERT_MODE">
         Enable expert mode
       </message>

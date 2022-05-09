@@ -14,6 +14,7 @@ export enum State {
   CAMERA_CONFIGURING = 'camera-configuring',
   CAMERA_SWITCHING = 'camera-switching',
   CUSTOM_VIDEO_PARAMETERS = 'custom-video-parameters',
+  ENABLE_FPS_PICKER_FOR_BUILTIN = 'enable-fps-picker-for-builtin',
   ENABLE_FULL_SIZED_VIDEO_SNAPSHOT = 'enable-full-sized-video-snapshot',
   ENABLE_GIF_RECORDING = 'enable-gif-recording',
   ENABLE_MULTISTREAM_RECORDING = 'enable-multistream-recording',
