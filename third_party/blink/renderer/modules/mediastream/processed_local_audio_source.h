@@ -49,7 +49,7 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
       bool disable_local_echo,
       const AudioProcessingProperties& audio_processing_properties,
       int num_requested_channels,
-      ConstraintsOnceCallback started_callback,
+      ConstraintsRepeatingCallback started_callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   ProcessedLocalAudioSource(const ProcessedLocalAudioSource&) = delete;
@@ -57,6 +57,9 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
       delete;
 
   ~ProcessedLocalAudioSource() final;
+
+  // MediaStreamAudioSource implementation.
+  void ChangeSourceImpl(const MediaStreamDevice& new_device) final;
 
   // If |source| is an instance of ProcessedLocalAudioSource, return a
   // type-casted pointer to it. Otherwise, return null.
@@ -138,7 +141,7 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   int num_requested_channels_;
 
   // Callback that's called when the audio source has been initialized.
-  ConstraintsOnceCallback started_callback_;
+  ConstraintsRepeatingCallback started_callback_;
 
   // At most one of |audio_processor_| and |audio_processor_proxy_| can be set.
 
