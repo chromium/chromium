@@ -4372,7 +4372,10 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
   // 4) Navigate to |url_2| on a new subframe that has started a navigation to
   // a URL that never committed.
-  {
+  // TODO(https://crbug.com/1311616): The browser-initiated case is flaky so we
+  // only test this for the renderer-initiated case. Figure out how to test the
+  // browser-initiated case in a non-flaky way.
+  if (renderer_initiated()) {
     SCOPED_TRACE(testing::Message() << " Testing case 4.");
 
     // Create the "child4" subframe with src set to a URL that never commits.
