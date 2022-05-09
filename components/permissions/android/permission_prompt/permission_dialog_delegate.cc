@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/permissions/android/permission_dialog_delegate.h"
+#include "components/permissions/android/permission_prompt/permission_dialog_delegate.h"
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/permissions/android/jni_headers/PermissionDialogController_jni.h"
 #include "components/permissions/android/jni_headers/PermissionDialogDelegate_jni.h"
-#include "components/permissions/android/permission_prompt_android.h"
+#include "components/permissions/android/permission_prompt/permission_prompt_android.h"
 #include "components/permissions/permissions_client.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"

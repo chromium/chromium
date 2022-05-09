@@ -145,10 +145,17 @@ source_set("permissions") {
       "android/bluetooth_scanning_prompt_android.cc",
       "android/bluetooth_scanning_prompt_android.h",
       "android/bluetooth_scanning_prompt_android_delegate.h",
-      "android/permission_dialog_delegate.cc",
-      "android/permission_dialog_delegate.h",
-      "android/permission_prompt_android.cc",
-      "android/permission_prompt_android.h",
+      "android/permission_prompt/permission_dialog.cc",
+      "android/permission_prompt/permission_dialog.h",
+      "android/permission_prompt/permission_dialog_delegate.cc",
+      "android/permission_prompt/permission_dialog_delegate.h",
+      "android/permission_prompt/permission_infobar.cc",
+      "android/permission_prompt/permission_infobar.h",
+      "android/permission_prompt/permission_message.cc",
+      "android/permission_prompt/permission_message.h",
+      "android/permission_prompt/permission_prompt_android.cc",
+      "android/permission_prompt/permission_prompt_android.h",
+      "android/permission_prompt/permission_prompt_android_factory.cc",
       "android/permissions_android_feature_list.cc",
       "android/permissions_android_feature_list.h",
       "contexts/geolocation_permission_context_android.cc",
@@ -260,7 +267,8 @@ source_set("unit_tests") {
     ]
   }
   if (is_android) {
-    sources += [ "android/permission_dialog_delegate_unittest.cc" ]
+    sources +=
+        [ "android/permission_prompt/permission_dialog_delegate_unittest.cc" ]
   }
   deps = [
     ":permissions",

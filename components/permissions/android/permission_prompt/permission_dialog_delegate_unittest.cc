@@ -4,7 +4,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#include "components/permissions/android/permission_dialog_delegate.h"
+#include "components/permissions/android/permission_prompt/permission_dialog_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
