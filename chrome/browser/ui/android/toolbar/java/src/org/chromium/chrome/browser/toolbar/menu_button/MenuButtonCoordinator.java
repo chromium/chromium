@@ -117,13 +117,17 @@ public class MenuButtonCoordinator {
 
     /**
      * Set the underlying MenuButton view. Use only if the MenuButton instance isn't available at
-     * construction time, e.g. if it's lazily inflated. This should only be called once.
+     * construction time, e.g. if it's lazily inflated. This should only be called once, unless
+     * switching the active toolbar.
      * @param menuButton The underlying MenuButton view.
      */
     public void setMenuButton(MenuButton menuButton) {
-        assert mMenuButton == null;
         assert menuButton != null;
         mMenuButton = menuButton;
+
+        if (mChangeProcessor != null) {
+            mChangeProcessor.destroy();
+        }
         mChangeProcessor = PropertyModelChangeProcessor.create(
                 mPropertyModel, menuButton, new MenuButtonViewBinder());
     }

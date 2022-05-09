@@ -101,6 +101,8 @@ public class TopToolbarCoordinator implements Toolbar {
     /**
      * Creates a new {@link TopToolbarCoordinator}.
      * @param controlContainer The {@link ToolbarControlContainer} for the containing activity.
+     * @param toolbarStub The stub for the tab switcher mode toolbar.
+     * @param fullscreenToolbarStub The stub for the fullscreen tab switcher mode toolbar.
      * @param toolbarLayout The {@link ToolbarLayout}.
      * @param userEducationHelper Helper class for showing in-product help text bubbles.
      * @param buttonDataProviders List of classes that wish to display an optional button in the
@@ -133,9 +135,9 @@ public class TopToolbarCoordinator implements Toolbar {
      *         will only be called on Start surface.
      */
     public TopToolbarCoordinator(ToolbarControlContainer controlContainer, ViewStub toolbarStub,
-            ToolbarLayout toolbarLayout, ToolbarDataProvider toolbarDataProvider,
-            ToolbarTabController tabController, UserEducationHelper userEducationHelper,
-            List<ButtonDataProvider> buttonDataProviders,
+            ViewStub fullscreenToolbarStub, ToolbarLayout toolbarLayout,
+            ToolbarDataProvider toolbarDataProvider, ToolbarTabController tabController,
+            UserEducationHelper userEducationHelper, List<ButtonDataProvider> buttonDataProviders,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             ThemeColorProvider normalThemeColorProvider,
             ThemeColorProvider overviewThemeColorProvider,
@@ -181,10 +183,10 @@ public class TopToolbarCoordinator implements Toolbar {
                     isIncognitoModeEnabledSupplier, profileSupplier,
                     startSurfaceLogoClickedCallback);
         } else if (mToolbarLayout instanceof ToolbarPhone || isTabletGridTabSwitcherEnabled()) {
-            mTabSwitcherModeCoordinator =
-                    new TabSwitcherModeTTCoordinator(toolbarStub, overviewModeMenuButtonCoordinator,
-                            isGridTabSwitcherEnabled, isTabletGtsPolishEnabled,
-                            isTabToGtsAnimationEnabled, isIncognitoModeEnabledSupplier);
+            mTabSwitcherModeCoordinator = new TabSwitcherModeTTCoordinator(toolbarStub,
+                    fullscreenToolbarStub, overviewModeMenuButtonCoordinator,
+                    isGridTabSwitcherEnabled, isTabletGtsPolishEnabled, isTabToGtsAnimationEnabled,
+                    isIncognitoModeEnabledSupplier);
         }
         mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
         controlContainer.setToolbar(this, initializeWithIncognitoColors);

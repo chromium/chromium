@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaGestureEventFilter;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.GestureHandler;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
+import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
@@ -87,6 +88,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
     private int mOrientation;
     private final CompositorButton mModelSelectorButton;
 
+    private Context mContext;
     private final StripScrim mStripScrim;
     private boolean mBrowserScrimShowing;
     private ValueAnimator mScrimFadeAnimation;
@@ -191,7 +193,9 @@ public class StripLayoutHelperManager implements SceneOverlay {
         private void updateScrimVisibility(boolean visibility) {
             // Handled by separate scrim over entire browser in the polished version.
             if (isGridTabSwitcherPolishEnabled()) {
-                mBrowserScrimShowing = visibility;
+                // Scrim doesn't actually show if the a11y list switcher is showing.
+                mBrowserScrimShowing =
+                        visibility && !DeviceClassManager.enableAccessibilityLayout(mContext);
                 return;
             }
 
@@ -643,6 +647,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
      * @param context The current Android {@link Context}.
      */
     public void onContextChanged(Context context) {
+        mContext = context;
         mNormalHelper.onContextChanged(context);
         mIncognitoHelper.onContextChanged(context);
     }
