@@ -363,9 +363,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Share.EntryPoints" enum="IOSActivityScenario"
-    expires_after="2022-10-16">
-  <owner>seblalancette@chromium.org</owner>
-  <owner>chrome-sharing-core@google.com</owner>
+    expires_after="2023-05-06">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <owner>chrome-with-friends-robots@google.com</owner>
   <summary>
     Tracks which sharing entry point was triggered. To view the outcome of these
     sharing scenarios, take a look at their actions' histogram (the format is
@@ -374,9 +375,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Share.{EntryPoint}.Actions" enum="IOSShareAction"
-    expires_after="2022-06-01">
-  <owner>seblalancette@chromium.org</owner>
-  <owner>chrome-sharing-core@google.com</owner>
+    expires_after="2023-05-06">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <owner>chrome-with-friends-robots@google.com</owner>
   <summary>
     Tracks the sharing actions executed when the sharing scenario was initiated
     for a {EntryPoint}. To view how often this sharing scenario was triggered,
