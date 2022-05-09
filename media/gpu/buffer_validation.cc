@@ -4,6 +4,9 @@
 
 #include "media/gpu/buffer_validation.h"
 
+#include <algorithm>
+#include <cstdint>
+
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
@@ -49,11 +52,18 @@ bool GetFileSize(const int fd, size_t* size) {
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 }
 
-bool VerifyGpuMemoryBufferHandle(media::VideoPixelFormat pixel_format,
-                                 const gfx::Size& coded_size,
-                                 const gfx::GpuMemoryBufferHandle& gmb_handle) {
+bool VerifyGpuMemoryBufferHandle(
+    media::VideoPixelFormat pixel_format,
+    const gfx::Size& coded_size,
+    const gfx::GpuMemoryBufferHandle& gmb_handle,
+    GetFileSizeCBForTesting file_size_cb_for_testing) {
   if (gmb_handle.type != gfx::NATIVE_PIXMAP) {
     VLOGF(1) << "Unexpected GpuMemoryBufferType: " << gmb_handle.type;
+    return false;
+  }
+  if (!media::VideoFrame::IsValidCodedSize(coded_size)) {
+    VLOGF(1) << "Coded size is beyond allowed dimensions: "
+             << coded_size.ToString();
     return false;
   }
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -80,15 +90,21 @@ bool VerifyGpuMemoryBufferHandle(media::VideoPixelFormat pixel_format,
               << ", stride: " << plane.stride;
 
     size_t file_size_in_bytes;
-    if (!plane.fd.is_valid() ||
-        !GetFileSize(plane.fd.get(), &file_size_in_bytes))
+    if (file_size_cb_for_testing) {
+      file_size_in_bytes = file_size_cb_for_testing.Run();
+    } else if (!plane.fd.is_valid() ||
+               !GetFileSize(plane.fd.get(), &file_size_in_bytes)) {
       return false;
-
+    }
     size_t plane_height =
         media::VideoFrame::Rows(i, pixel_format, coded_size.height());
     base::CheckedNumeric<size_t> min_plane_size =
-        base::CheckMul(plane.stride, plane_height);
-    if (!min_plane_size.IsValid() || min_plane_size.ValueOrDie() > plane.size) {
+        base::CheckMul(base::strict_cast<size_t>(plane.stride), plane_height);
+    size_t plane_pixel_width =
+        media::VideoFrame::RowBytes(i, pixel_format, coded_size.width());
+    if (!min_plane_size.IsValid<uint64_t>() ||
+        min_plane_size.ValueOrDie<uint64_t>() > plane.size ||
+        base::strict_cast<size_t>(plane.stride) < plane_pixel_width) {
       VLOGF(1) << "Invalid strides/sizes";
       return false;
     }
@@ -96,10 +112,11 @@ bool VerifyGpuMemoryBufferHandle(media::VideoPixelFormat pixel_format,
     // Check |offset| + (the size of a plane) on each plane is not larger than
     // |file_size_in_bytes|. This ensures we don't access out of a buffer
     // referred by |fd|.
-    base::CheckedNumeric<size_t> min_buffer_size =
+    base::CheckedNumeric<uint64_t> min_buffer_size =
         base::CheckAdd(plane.offset, plane.size);
     if (!min_buffer_size.IsValid() ||
-        min_buffer_size.ValueOrDie() > file_size_in_bytes) {
+        min_buffer_size.ValueOrDie() >
+            base::strict_cast<uint64_t>(file_size_in_bytes)) {
       VLOGF(1) << "Invalid strides/offsets";
       return false;
     }

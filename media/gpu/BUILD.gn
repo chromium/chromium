@@ -487,6 +487,10 @@ source_set("unit_tests") {
   if (enable_platform_hevc_decoding) {
     sources += [ "h265_decoder_unittest.cc" ]
   }
+  if (is_linux || is_chromeos) {
+    sources += [ "buffer_validation_unittest.cc" ]
+  }
+
   if (is_chromeos_ash && (use_v4l2_codec || use_vaapi)) {
     deps += [ "//media/gpu/chromeos:unit_tests" ]
   }
