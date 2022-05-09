@@ -29,6 +29,7 @@
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
 #include "components/history_clusters/core/ranking_cluster_finalizer.h"
+#include "components/history_clusters/core/related_searches_cluster_finalizer.h"
 #include "components/history_clusters/core/similar_visit_deduper_cluster_finalizer.h"
 #include "components/history_clusters/core/single_visit_cluster_finalizer.h"
 #include "components/history_clusters/core/url_deduper_cluster_finalizer.h"
@@ -443,6 +444,8 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
   if (GetConfig().should_label_clusters) {
     cluster_finalizers.push_back(std::make_unique<LabelClusterFinalizer>());
   }
+  cluster_finalizers.push_back(
+      std::make_unique<RelatedSearchesClusterFinalizer>());
 
   // Group visits into clusters.
   std::vector<history::Cluster> clusters =

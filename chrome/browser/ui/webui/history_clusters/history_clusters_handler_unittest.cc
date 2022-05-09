@@ -129,20 +129,7 @@ TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_RelatedSearches) {
 
   history::Cluster cluster;
   cluster.cluster_id = 4;
-  // Should include the top visit's related searches.
-  cluster.visits.push_back(
-      CreateVisit("https://high-score-1", 0, {"one", "two"}));
-  // Should exclude duplicates (i.e. "one").
-  cluster.visits.push_back(CreateVisit(
-      "https://high-score-2", 0, {"one", "three", "four", "five", "six"}));
-  // Visits without related searches shouldn't interrupt the coalescing.
-  cluster.visits.push_back(CreateVisit("https://high-score-3", 0));
-  // Should not include more related searches once the max related searches has
-  // been met (5).
-  cluster.visits.push_back(
-      CreateVisit("https://high-score-4", 0, {"seven", "eight", "nine"}));
-  cluster.visits.push_back(CreateVisit("https://high-score-5", 0, {"ten"}));
-
+  cluster.related_searches = {"one", "two", "three", "four", "five"};
   clusters.push_back(cluster);
 
   mojom::QueryResultPtr mojom_result =
