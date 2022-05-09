@@ -44,11 +44,18 @@ AppListBubbleSearchPage::AppListBubbleSearchPage(
 AppListBubbleSearchPage::~AppListBubbleSearchPage() = default;
 
 void AppListBubbleSearchPage::AnimateShowPage() {
-  SetVisible(true);
-
   // If skipping animations, just update visibility.
-  if (ui::ScopedAnimationDurationScaleMode::is_zero())
+  if (ui::ScopedAnimationDurationScaleMode::is_zero()) {
+    SetVisible(true);
     return;
+  }
+
+  // Ensure any in-progress animations have their cleanup callbacks called.
+  // Note that this might call SetVisible(false) from the hide animation.
+  AbortAllAnimations();
+
+  // Ensure the view is visible.
+  SetVisible(true);
 
   ui::Layer* layer = search_view_->GetPageAnimationLayer();
   DCHECK_EQ(layer->type(), ui::LAYER_TEXTURED);

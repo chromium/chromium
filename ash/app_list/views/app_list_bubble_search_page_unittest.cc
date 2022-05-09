@@ -63,7 +63,13 @@ TEST_F(AppListBubbleSearchPageTest, AnimateHidePage) {
   helper->AddAppItems(5);
   helper->ShowAppList();
 
-  // Type a key to switch to the search page.
+  auto* apps_page = helper->GetBubbleAppsPage();
+  ASSERT_TRUE(apps_page->GetVisible());
+
+  // Type a key to switch to the search page. This should also be done without
+  // animations.
+  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   PressAndReleaseKey(ui::VKEY_A);
   auto* search_page = helper->GetBubbleSearchPage();
   ASSERT_TRUE(search_page->GetVisible());
@@ -86,6 +92,44 @@ TEST_F(AppListBubbleSearchPageTest, AnimateHidePage) {
   // Search page visibility updates at the end of the animation.
   LayerAnimationStoppedWaiter().Wait(layer);
   EXPECT_FALSE(search_page->GetVisible());
+}
+
+// Regression test for https://crbug.com/1323035
+TEST_F(AppListBubbleSearchPageTest,
+       SearchPageVisibleAfterQuicklyClearingAndRepopulatingSearch) {
+  // Open the app list without animation.
+  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  auto* apps_page = helper->GetBubbleAppsPage();
+  ASSERT_TRUE(apps_page->GetVisible());
+  auto* search_page = helper->GetBubbleSearchPage();
+  ASSERT_FALSE(search_page->GetVisible());
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Type a key to trigger the animation to transition to the search page.
+  ui::Layer* layer = apps_page->GetPageAnimationLayerForTest();
+  PressAndReleaseKey(ui::VKEY_A);
+  ASSERT_TRUE(layer->GetAnimator()->is_animating());
+
+  // Before the animation completes, delete the search then quickly re-enter it.
+  // This should abort animations, animate back to the apps page, abort
+  // animations again, then animate back to the search page.
+  PressAndReleaseKey(ui::VKEY_BACK);
+  ASSERT_TRUE(layer->GetAnimator()->is_animating());
+  PressAndReleaseKey(ui::VKEY_A);
+  ASSERT_TRUE(layer->GetAnimator()->is_animating());
+
+  LayerAnimationStoppedWaiter().Wait(layer);
+
+  EXPECT_FALSE(apps_page->GetVisible());
+  EXPECT_TRUE(search_page->GetVisible());
 }
 
 }  // namespace
