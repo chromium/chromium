@@ -29,7 +29,7 @@ public interface ContextualSearchPanelInterface {
 
     /** {@link ContextualSearchPanel} methods */
     boolean didTouchContent();
-    void setIsPromoActive(boolean show, boolean isMandatory);
+    void setIsPromoActive(boolean show);
     boolean wasPromoInteractive();
     void destroyContent();
     void setSearchTerm(String searchTerm);

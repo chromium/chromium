@@ -18542,15 +18542,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Fully Loaded"/>
 </enum>
 
-<enum name="ContextualSearchOutcomeByGesture">
-  <int value="0" label="Enabled, from Tap"/>
-  <int value="1" label="Disabled, from Tap"/>
-  <int value="2" label="Undecided from Tap"/>
-  <int value="3" label="Enabled, from Long-press"/>
-  <int value="4" label="Disabled, from Long-press"/>
-  <int value="5" label="Undecided from Long-press"/>
-</enum>
-
 <enum name="ContextualSearchPeekPromoOutcome">
   <obsolete>
     Removed because the feature no longer exists.

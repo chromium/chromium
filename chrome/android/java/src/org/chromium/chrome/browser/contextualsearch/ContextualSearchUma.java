@@ -253,22 +253,6 @@ public class ContextualSearchUma {
         int NUM_ENTRIES = 4;
     }
 
-    // Constants used to log UMA "enum" histograms with details about whether search results
-    // were seen, and what the original triggering gesture was.
-    @IntDef({Promo.ENABLED_FROM_TAP, Promo.DISABLED_FROM_TAP, Promo.UNDECIDED_FROM_TAP,
-            Promo.ENABLED_FROM_LONG_PRESS, Promo.DISABLED_FROM_LONG_PRESS,
-            Promo.UNDECIDED_FROM_LONG_PRESS})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface Promo {
-        int ENABLED_FROM_TAP = 0;
-        int DISABLED_FROM_TAP = 1;
-        int UNDECIDED_FROM_TAP = 2;
-        int ENABLED_FROM_LONG_PRESS = 3;
-        int DISABLED_FROM_LONG_PRESS = 4;
-        int UNDECIDED_FROM_LONG_PRESS = 5;
-        int NUM_ENTRIES = 6;
-    }
-
     // Constants used to log UMA "enum" histograms for Quick Answers.
     @IntDef({QuickAnswerSeen.ACTIVATED_WAS_AN_ANSWER_SEEN,
             QuickAnswerSeen.ACTIVATED_WAS_AN_ANSWER_NOT_SEEN,
@@ -531,26 +515,6 @@ public class ContextualSearchUma {
         SEEN_BY_GESTURE_CODES = Collections.unmodifiableMap(codes);
     }
 
-    // "Promo outcome by gesture" code map: logged on exit from promo, broken down by gesture.
-    private static final Map<Pair<Integer, Boolean>, Integer> PROMO_BY_GESTURE_CODES;
-    static {
-        Map<Pair<Integer, Boolean>, Integer> codes =
-                new HashMap<Pair<Integer, Boolean>, Integer>();
-        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.ENABLED, TAP),
-                Promo.ENABLED_FROM_TAP);
-        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.DISABLED, TAP),
-                Promo.DISABLED_FROM_TAP);
-        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.UNINITIALIZED, TAP),
-                Promo.UNDECIDED_FROM_TAP);
-        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.ENABLED, LONG_PRESS),
-                Promo.ENABLED_FROM_LONG_PRESS);
-        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.DISABLED, LONG_PRESS),
-                Promo.DISABLED_FROM_LONG_PRESS);
-        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.UNINITIALIZED, LONG_PRESS),
-                Promo.UNDECIDED_FROM_LONG_PRESS);
-        PROMO_BY_GESTURE_CODES = Collections.unmodifiableMap(codes);
-    }
-
     /**
      * Logs the state of the Contextual Search preference. This function should be called if the
      * Contextual Search feature is active, and will track the different preference settings
@@ -661,29 +625,6 @@ public class ContextualSearchUma {
      */
     public static void logPromoCardChoice(boolean enabled) {
         RecordHistogram.recordBooleanHistogram("Search.ContextualSearchPromoCardChoice", enabled);
-    }
-
-    /**
-     * Logs the outcome of the Promo.
-     * Logs multiple histograms; with and without the originating gesture.
-     * @param wasTap Whether the gesture that originally caused the panel to show was a Tap.
-     * @param wasMandatory Whether the Promo was mandatory.
-     */
-    public static void logPromoOutcome(boolean wasTap, boolean wasMandatory) {
-        int preferenceCode = getPreferenceValue();
-        RecordHistogram.recordEnumeratedHistogram("Search.ContextualSearchFirstRunFlowOutcome",
-                preferenceCode, ContextualSearchPreference.NUM_ENTRIES);
-
-        int preferenceByGestureCode = getPromoByGestureStateCode(preferenceCode, wasTap);
-        if (wasMandatory) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Search.ContextualSearchMandatoryPromoOutcomeByGesture",
-                    preferenceByGestureCode, Promo.NUM_ENTRIES);
-        } else {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Search.ContextualSearchPromoOutcomeByGesture", preferenceByGestureCode,
-                    Promo.NUM_ENTRIES);
-        }
     }
 
     /**
@@ -1518,17 +1459,6 @@ public class ContextualSearchUma {
      */
     private static int getPanelSeenByGestureStateCode(boolean wasPanelSeen, boolean wasTap) {
         return SEEN_BY_GESTURE_CODES.get(new Pair<Boolean, Boolean>(wasPanelSeen, wasTap));
-    }
-
-    /**
-     * Gets the promo-outcome code for the given parameter by doing a lookup in the
-     * promo-by-gesture map.
-     * @param preferenceValue The code for the current preference value.
-     * @param wasTap Whether the gesture that originally caused the panel to show was a Tap.
-     * @return The code to write into a promo-outcome histogram.
-     */
-    private static int getPromoByGestureStateCode(int preferenceValue, boolean wasTap) {
-        return PROMO_BY_GESTURE_CODES.get(new Pair<Integer, Boolean>(preferenceValue, wasTap));
     }
 
     /**

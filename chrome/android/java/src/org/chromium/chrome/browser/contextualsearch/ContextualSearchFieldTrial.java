@@ -43,9 +43,6 @@ public class ContextualSearchFieldTrial {
     static final String CONTEXTUAL_SEARCH_PROMO_CARD_MAX_SHOWN_PARAM_NAME = "promo_card_max_shown";
     private static final int PROMO_DEFAULT_LIMIT = 3;
 
-    // Deprecated.
-    private static final int MANDATORY_PROMO_DEFAULT_LIMIT = 10;
-
     // Cached values to avoid repeated and redundant JNI operations.
     private static Boolean sEnabled;
     private static Boolean[] sSwitches = new Boolean[ContextualSearchSwitch.NUM_ENTRIES];
@@ -96,6 +93,7 @@ public class ContextualSearchFieldTrial {
         int IS_ONLINE_DETECTION_DISABLED = 1;
 
         int IS_SEARCH_TERM_RESOLUTION_DISABLED = 2;
+        /** @deprecated */
         int IS_MANDATORY_PROMO_ENABLED = 3;
 
         /**
@@ -204,7 +202,10 @@ public class ContextualSearchFieldTrial {
      * have gaps.
      */
     @interface ContextualSearchSetting {
-        /** The number of times the Promo should be seen before it becomes mandatory. */
+        /**
+         * @deprecated
+         * The number of times the Promo should be seen before it becomes mandatory.
+         */
         int MANDATORY_PROMO_LIMIT = 0;
         /**
          * A Y value limit that will suppress a Tap near the top of the screen.
@@ -279,10 +280,7 @@ public class ContextualSearchFieldTrial {
 
     static int getValue(@ContextualSearchSetting int value) {
         if (sSettings[value] == null) {
-            sSettings[value] = getIntParamValueOrDefault(ContextualSearchSettingNames[value],
-                    value == ContextualSearchSetting.MANDATORY_PROMO_LIMIT
-                            ? MANDATORY_PROMO_DEFAULT_LIMIT
-                            : 0);
+            sSettings[value] = getIntParamValueOrDefault(ContextualSearchSettingNames[value], 0);
         }
         return sSettings[value].intValue();
     }

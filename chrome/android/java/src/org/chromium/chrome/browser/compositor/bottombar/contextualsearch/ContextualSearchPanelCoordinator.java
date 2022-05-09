@@ -141,7 +141,7 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
     }
 
     @Override
-    public void setIsPromoActive(boolean show, boolean isMandatory) {}
+    public void setIsPromoActive(boolean show) {}
 
     @Override
     public boolean wasPromoInteractive() {

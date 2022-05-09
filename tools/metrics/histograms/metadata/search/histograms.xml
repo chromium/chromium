@@ -560,16 +560,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearchFirstRunFlowOutcome"
-    enum="ContextualSearchPreferenceState" expires_after="M72">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The state of the Contextual Search Preference after the first run flow.
-    Implemented for Android.
-  </summary>
-</histogram>
-
 <histogram name="Search.ContextualSearchFirstRunPanelSeen"
     enum="ContextualSearchFirstRunPanelSeen" expires_after="M72">
   <owner>donnd@chromium.org</owner>
@@ -611,16 +601,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The status of the Contextual Search low priority Search request. Implemented
     for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchMandatoryPromoOutcomeByGesture"
-    enum="ContextualSearchOutcomeByGesture" expires_after="M85">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The outcome of the mandatory Promo broken down by original triggering
-    gesture. Logged for each view of the promo. Implemented for Android.
   </summary>
 </histogram>
 
@@ -721,16 +701,6 @@ chromium-metrics-reviews@google.com.
     The total count of times that the revised promo has been shown. Once the
     user decides, this counter is no longer updated. Logged for each show of the
     promo card. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchPromoOutcomeByGesture"
-    enum="ContextualSearchOutcomeByGesture" expires_after="M72">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The outcome of the promo broken down by original triggering gesture. Logged
-    for each view of the promo. Implemented for Android.
   </summary>
 </histogram>
 

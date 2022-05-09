@@ -202,8 +202,6 @@ public class ContextualSearchManager
     private boolean mShouldLoadDelayedSearch;
 
     private boolean mIsShowingPromo;
-    private boolean mIsMandatoryPromo;
-    private boolean mDidLogPromoOutcome;
 
     /**
      * Whether contextual search manager is currently promoting a tab. We should be ignoring hide
@@ -370,7 +368,6 @@ public class ContextualSearchManager
         mRedirectHandler = RedirectHandler.create();
 
         mIsShowingPromo = false;
-        mDidLogPromoOutcome = false;
         mDidStartLoadingResolvedSearchRequest = false;
         mWereSearchResultsSeen = false;
         mIsInitialized = true;
@@ -500,13 +497,8 @@ public class ContextualSearchManager
         mRelatedSearches = null;
         mIsRelatedSearchesSerp = false;
 
-        if (mIsShowingPromo && !mDidLogPromoOutcome && mSearchPanel.wasPromoInteractive()) {
-            ContextualSearchUma.logPromoOutcome(mWasActivatedByTap, mIsMandatoryPromo);
-            mDidLogPromoOutcome = true;
-        }
-
         mIsShowingPromo = false;
-        mSearchPanel.setIsPromoActive(false, false);
+        mSearchPanel.setIsPromoActive(false);
         mSearchPanel.clearRelatedSearches();
         notifyHideContextualSearch();
     }
@@ -580,9 +572,7 @@ public class ContextualSearchManager
         // Note: now that the contextual search has properly started, set the promo involvement.
         if (mPolicy.isPromoAvailable()) {
             mIsShowingPromo = true;
-            mIsMandatoryPromo = mPolicy.isMandatoryPromoAvailable();
-            mDidLogPromoOutcome = false;
-            mSearchPanel.setIsPromoActive(true, mIsMandatoryPromo);
+            mSearchPanel.setIsPromoActive(true);
             mSearchPanel.setDidSearchInvolvePromo();
         }
 

@@ -17,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelInterface;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSetting;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController.SelectionType;
@@ -134,8 +133,7 @@ class ContextualSearchPolicy {
      *         explicitly interacts with the feature.
      */
     boolean shouldPrefetchSearchResult() {
-        if (isMandatoryPromoAvailable()
-                || PreloadPagesSettingsBridge.getState() == PreloadPagesState.NO_PRELOADING) {
+        if (PreloadPagesSettingsBridge.getState() == PreloadPagesState.NO_PRELOADING) {
             return false;
         }
 
@@ -159,9 +157,8 @@ class ContextualSearchPolicy {
      * @return Whether the previous gesture should resolve.
      */
     boolean shouldPreviousGestureResolve() {
-        if (isMandatoryPromoAvailable()
-                || ContextualSearchFieldTrial.getSwitch(
-                        ContextualSearchSwitch.IS_SEARCH_TERM_RESOLUTION_DISABLED)) {
+        if (ContextualSearchFieldTrial.getSwitch(
+                    ContextualSearchSwitch.IS_SEARCH_TERM_RESOLUTION_DISABLED)) {
             return false;
         }
 
@@ -196,20 +193,6 @@ class ContextualSearchPolicy {
     boolean canSendSurroundings() {
         // The user must have decided on privacy to send page content on HTTPS.
         return isContextualSearchFullyEnabled();
-    }
-
-    /**
-     * @return Whether the Mandatory Promo is enabled.
-     */
-    boolean isMandatoryPromoAvailable() {
-        if (!isUserUndecided()
-                || !ContextualSearchFieldTrial.getSwitch(
-                        ContextualSearchSwitch.IS_MANDATORY_PROMO_ENABLED)) {
-            return false;
-        }
-
-        return getPromoOpenCount() >= ContextualSearchFieldTrial.getValue(
-                       ContextualSearchSetting.MANDATORY_PROMO_LIMIT);
     }
 
     /**

@@ -55,9 +55,6 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
     /** Whether the Promo is visible. */
     private boolean mIsVisible;
 
-    /** Whether the Promo is mandatory. */
-    private boolean mIsMandatory;
-
     /** The opacity of the Promo. */
     private float mOpacity;
 
@@ -106,9 +103,8 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
 
     /**
      * Shows the Promo. This includes inflating the View and setting its initial state.
-     * @param isMandatory Whether the Promo is mandatory.
      */
-    void show(boolean isMandatory) {
+    void show() {
         if (mIsVisible) return;
 
         // Invalidates the View in order to generate a snapshot, but do not show the View yet.
@@ -116,7 +112,6 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         invalidate();
 
         mIsVisible = true;
-        mIsMandatory = isMandatory;
         mWasInteractive = false;
 
         mHeightPx = mContentHeightPx;
@@ -131,7 +126,6 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         hidePromoView();
 
         mIsVisible = false;
-        mIsMandatory = false;
 
         mHeightPx = 0.f;
         mOpacity = 0.f;
@@ -145,13 +139,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         if (!mIsVisible || !mOverlayPanel.isShowing()) return;
 
         if (isEnabled) {
-            boolean wasMandatory = mIsMandatory;
-            // Set mandatory state to false right now because it controls whether the Content
-            // can be displayed. See {@link ContextualSearchPanel#canDisplayContentInPanel}.
-            // Now that the feature is enabled, the host will try to show the Contents.
-            // See {@link ContextualSearchPanel#getContextualSearchPromoHost}.
-            mIsMandatory = false;
-            mHost.onPromoOptIn(wasMandatory);
+            mHost.onPromoOptIn();
         } else {
             mHost.onPromoOptOut();
         }
@@ -164,13 +152,6 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
      */
     public boolean isVisible() {
         return mIsVisible;
-    }
-
-    /**
-     * @return Whether the Promo is mandatory.
-     */
-    public boolean isMandatory() {
-        return mIsMandatory;
     }
 
     /**
