@@ -4020,13 +4020,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Crypto.TPMSupport" enum="TPMSupport"
-    expires_after="2021-07-01">
-  <obsolete>
-    Measured on stable M91 but ongoing measurement was not worthwhile.
-  </obsolete>
+<histogram name="Crypto.TPMSupport2" enum="TPMSupport"
+    expires_after="2022-12-01">
   <owner>agl@chromium.org</owner>
   <owner>davidben@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
   <summary>
     Collected on Windows at startup. Records whether a TPM is present and, if
     so, what the best supported algorithm is.

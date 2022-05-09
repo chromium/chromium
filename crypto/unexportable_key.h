@@ -94,6 +94,11 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
 CRYPTO_EXPORT std::unique_ptr<UnexportableKeyProvider>
 GetUnexportableKeyProvider();
 
+#if BUILDFLAG(IS_WIN)
+// MeasureTPMAvailability records UMA metrics of TPM availability.
+CRYPTO_EXPORT void MeasureTPMAvailabilityWin();
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace internal {
 
 CRYPTO_EXPORT void SetUnexportableKeyProviderForTesting(

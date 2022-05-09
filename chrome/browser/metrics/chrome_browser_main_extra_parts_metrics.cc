@@ -43,6 +43,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
+#include "crypto/unexportable_key.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/browser_metrics.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "ui/base/ui_base_switches.h"
@@ -219,6 +220,7 @@ void RecordStartupMetrics() {
   // Determine if Applocker is enabled and running. This does not check if
   // Applocker rules are being enforced.
   base::UmaHistogramBoolean("Windows.ApplockerRunning", IsApplockerRunning());
+  crypto::MeasureTPMAvailabilityWin();
 #endif  // BUILDFLAG(IS_WIN)
 
   bluetooth_utility::ReportBluetoothAvailability();
