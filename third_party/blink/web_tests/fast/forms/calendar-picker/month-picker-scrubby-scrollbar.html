@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://bugs.chromium.org/p/chromium/issues/detail?id=1321616">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="resources/calendar-picker-common.js"></script>
+
+<input type=month id=picker>
+
+<script>
+promise_test(async () => {
+  await openPicker(picker);
+
+  async function rAF() {
+    return new Promise(resolve => internals.pagePopupWindow.requestAnimationFrame(resolve));
+  }
+
+  const scrubby = internals.pagePopupWindow.global.picker.yearListView_.scrubbyScrollBar;
+  const thumb = scrubby.element.querySelector('.scrubby-scroll-thumb');
+  const originalTop = thumb.style.top;
+  const thumbOffset = cumulativeOffset(thumb);
+
+  eventSender.mouseMoveTo(thumbOffset[0] + 1, thumbOffset[1] + 1);
+  eventSender.mouseDown();
+  eventSender.mouseMoveTo(thumbOffset[0] + 1, thumbOffset[1] - 15);
+  skipAnimation();
+  eventSender.mouseUp();
+  skipAnimation();
+  assert_equals(thumb.style.top, originalTop);
+}, `Verifies that the date picker's scrubby scrollbar returns to its initial state after being clicked and dragged.`);
+</script>
