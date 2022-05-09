@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 
 #include "build/build_config.h"
@@ -1898,7 +1900,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       GetTreeResult()->GetDocumentResult(),
       MatchesDocumentResult(
           NotRestoredReasons(NotRestoredReason::kBlocklistedFeatures,
-                           NotRestoredReason::kBrowsingInstanceNotSwapped),
+                             NotRestoredReason::kBrowsingInstanceNotSwapped),
           BlockListedFeatures(
               blink::scheduler::WebSchedulerTrackedFeature::kDummy)));
 }
@@ -3378,7 +3380,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, VideoSuspendAndResume) {
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
-  // 1) Navigate to A.
+  // Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* rfh_a = current_frame_host();
   EXPECT_TRUE(ExecJs(rfh_a, R"(
@@ -3405,9 +3407,18 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, VideoSuspendAndResume) {
 
     video.src = 'media/bear.webm';
 
-    var timeOnFrozen = 0.0;
-    video.addEventListener('pause', () => {
-      timeOnFrozen = video.currentTime;
+    // Android bots can be very slow and the video is only 1s long.
+    // This gives the first part of the test time to run before reaching
+    // the end of the video.
+    video.playbackRate = 0.1;
+
+    var timeOnPagehide;
+    window.addEventListener('pagehide', () => {
+      timeOnPagehide = video.currentTime;
+    });
+    var timeOnPageshow;
+    window.addEventListener('pageshow', () => {
+      timeOnPageshow = video.currentTime;
     });
   )"));
 
@@ -3427,19 +3438,31 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, VideoSuspendAndResume) {
     });
   )"));
 
-  // 2) Navigate to B.
+  // Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
-  // 3) Navigate back to A.
+  // Sleep for 1s so that playing in BFCache can be detected.
+  base::PlatformThread::Sleep(base::Seconds(1));
+
+  // Navigate back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(rfh_a, current_frame_host());
 
-  // Check that the media position is not changed when the page is in cache.
-  double duration1 = EvalJs(rfh_a, "timeOnFrozen;").ExtractDouble();
-  double duration2 = EvalJs(rfh_a, "video.currentTime;").ExtractDouble();
-  EXPECT_LE(0.0, duration2 - duration1);
-  EXPECT_GT(0.02, duration2 - duration1);
+  const double timeOnPagehide =
+      EvalJs(rfh_a, "timeOnPagehide;").ExtractDouble();
+  const double timeOnPageshow = EvalJs(rfh_a, "timeOnPageshow").ExtractDouble();
+
+  // Make sure the video did not reach the end. If it did, our test is not
+  // reliable.
+  ASSERT_GT(1.0, timeOnPageshow);
+
+  // Check that the duration of video played between pagehide and pageshow is
+  // small. We waited for 1s so if it didn't stop in BFCache, it should be much
+  // longer than this.
+  const double playedDuration = timeOnPageshow - timeOnPagehide;
+  EXPECT_LE(0.0, playedDuration);
+  EXPECT_GT(0.02, playedDuration);
 
   // Resume the media.
   EXPECT_TRUE(ExecJs(rfh_a, R"(
