@@ -1631,7 +1631,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     protected Drawable getBackgroundDrawable() {
-        return new ColorDrawable(getColor(R.color.light_background_color));
+        return new ColorDrawable(getColor(R.color.window_background_color));
     }
 
     /**
@@ -1642,7 +1642,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      */
     protected void changeBackgroundColorForResizing() {
         getWindow().setBackgroundDrawable(
-                new ColorDrawable(getColor(R.color.resizing_background_color)));
+                new ColorDrawable(getColor(R.color.window_background_color)));
     }
 
     private void maybeRemoveWindowBackground() {

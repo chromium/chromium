@@ -265,7 +265,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             return false;
         }
 
-        final int color = mActivity.getColor(R.color.resizing_background_color);
+        final int color = mActivity.getColor(R.color.window_background_color);
         ((GradientDrawable) background.mutate()).setColor(color);
         return true;
     }
