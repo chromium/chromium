@@ -106,11 +106,18 @@ export async function fetchGooglePhotosAlbum(
 export async function fetchGooglePhotosAlbums(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
-  // Albums should only be fetched after confirming access is allowed.
+  // Albums should only be fetched after determining whether access is allowed.
   const enabled = store.data.wallpaper.googlePhotos.enabled;
-  assert(enabled === GooglePhotosEnablementState.kEnabled);
+  assert(enabled !== undefined);
 
   store.dispatch(action.beginLoadGooglePhotosAlbumsAction());
+
+  // If access is *not* allowed, short-circuit the request.
+  if (enabled !== GooglePhotosEnablementState.kEnabled) {
+    store.dispatch(action.appendGooglePhotosAlbumsAction(
+        /*albums=*/ null, /*resumeToken=*/ null));
+    return;
+  }
 
   let albums: Array<GooglePhotosAlbum>|null = [];
   let resumeToken = store.data.wallpaper.googlePhotos.resumeTokens.albums;
@@ -417,17 +424,12 @@ export async function initializeGooglePhotosData(
   // Only proceed to fetch Google Photos data if the user is allowed.
   const enabled = store.data.wallpaper.googlePhotos.enabled;
   if (enabled === GooglePhotosEnablementState.kEnabled) {
-    await Promise.all([
-      fetchGooglePhotosAlbums(provider, store),
-      fetchGooglePhotosPhotos(provider, store),
-    ]);
+    await fetchGooglePhotosPhotos(provider, store);
   } else {
     const result = null;
     const resumeToken = null;
     store.beginBatchUpdate();
-    store.dispatch(action.beginLoadGooglePhotosAlbumsAction());
     store.dispatch(action.beginLoadGooglePhotosPhotosAction());
-    store.dispatch(action.appendGooglePhotosAlbumsAction(result, resumeToken));
     store.dispatch(action.appendGooglePhotosPhotosAction(result, resumeToken));
     store.endBatchUpdate();
   }

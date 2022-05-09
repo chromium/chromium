@@ -13,13 +13,13 @@ import '../../common/styles.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {isEmptyArray, isNonEmptyArray} from '../../common/utils.js';
+import {createExternallyResolvablePromise, ExternallyResolvablePromise, isEmptyArray, isNonEmptyArray} from '../../common/utils.js';
 import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getTemplate} from './google_photos_collection_element.html.js';
-import {initializeGooglePhotosData} from './wallpaper_controller.js';
+import {fetchGooglePhotosAlbums, initializeGooglePhotosData} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 /** Enumeration of supported tabs. */
@@ -59,6 +59,7 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
       path: String,
 
       albums_: Array,
+      albumsLoading_: Boolean,
       enabled_: Number,
       photos_: Array,
       photosByAlbumId_: Object,
@@ -86,8 +87,20 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   /** The list of albums. */
   private albums_: GooglePhotosAlbum[]|null|undefined;
 
+  /** Whether the list of albums is currently loading. */
+  private albumsLoading_: boolean|undefined;
+
   /** Whether the user is allowed to access Google Photos. */
   private enabled_: GooglePhotosEnablementState|undefined;
+
+  /**
+   * Promise which is resolved after initializing Google Photos data. Note that
+   * this promise is created early (instead of at data initialization request
+   * time) so that it can be waited on prior to the request.
+   */
+  private initializeGooglePhotosDataPromise_:
+      ExternallyResolvablePromise<void> =
+          createExternallyResolvablePromise<void>();
 
   /** The list of photos. */
   private photos_: GooglePhotosPhoto[]|null|undefined;
@@ -108,6 +121,8 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
 
     this.watch<GooglePhotosCollection['albums_']>(
         'albums_', state => state.wallpaper.googlePhotos.albums);
+    this.watch<GooglePhotosCollection['albumsLoading_']>(
+        'albumsLoading_', state => state.wallpaper.loading.googlePhotos.albums);
     this.watch<GooglePhotosCollection['enabled_']>(
         'enabled_', state => state.wallpaper.googlePhotos.enabled);
     this.watch<GooglePhotosCollection['photos_']>(
@@ -118,7 +133,8 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
 
     this.updateFromStore();
 
-    initializeGooglePhotosData(this.wallpaperProvider_, this.getStore());
+    initializeGooglePhotosData(this.wallpaperProvider_, this.getStore())
+        .then(() => this.initializeGooglePhotosDataPromise_.resolve());
   }
 
   /** Invoked on changes to the currently selected |albumId|. */
@@ -134,6 +150,14 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
 
     document.title = this.i18n('googlePhotosLabel');
     this.$.main.focus();
+
+    // When the user first selects the Google Photos collection it should result
+    // in a data fetch for the user's albums.
+    if (this.albums_ === undefined && !this.albumsLoading_) {
+      this.initializeGooglePhotosDataPromise_.then(() => {
+        fetchGooglePhotosAlbums(this.wallpaperProvider_, this.getStore());
+      });
+    }
   }
 
   /** Invoked on changes to either |path| or |enabled_|. */

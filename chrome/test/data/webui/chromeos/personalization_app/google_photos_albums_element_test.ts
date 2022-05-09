@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {getCountText, GooglePhotosAlbum, GooglePhotosAlbums, initializeGooglePhotosData, PersonalizationActionName, PersonalizationRouter, SetErrorAction, WallpaperGridItem} from 'chrome://personalization/trusted/personalization_app.js';
+import {fetchGooglePhotosAlbums, getCountText, GooglePhotosAlbum, GooglePhotosAlbums, initializeGooglePhotosData, PersonalizationActionName, PersonalizationRouter, SetErrorAction, WallpaperGridItem} from 'chrome://personalization/trusted/personalization_app.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -85,6 +85,7 @@ suite('GooglePhotosAlbumsTest', function() {
 
     // Initialize Google Photos data in the |personalizationStore|.
     await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
+    await fetchGooglePhotosAlbums(wallpaperProvider, personalizationStore);
     await waitAfterNextRender(googlePhotosAlbumsElement);
 
     // The wallpaper controller is expected to impose max resolution.
@@ -117,6 +118,8 @@ suite('GooglePhotosAlbumsTest', function() {
             personalizationStore.expectAction(
                 PersonalizationActionName.SET_ERROR);
             await initializeGooglePhotosData(
+                wallpaperProvider, personalizationStore);
+            await fetchGooglePhotosAlbums(
                 wallpaperProvider, personalizationStore);
             const {error} =
                 await personalizationStore.waitForAction(
@@ -236,6 +239,7 @@ suite('GooglePhotosAlbumsTest', function() {
 
     // Initialize Google Photos data in |personalizationStore|.
     await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
+    await fetchGooglePhotosAlbums(wallpaperProvider, personalizationStore);
     assertEquals(
         await wallpaperProvider.whenCalled('fetchGooglePhotosAlbums'),
         /*resumeToken=*/ null);

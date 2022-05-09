@@ -312,15 +312,48 @@ suite('GooglePhotosCollectionTest', function() {
     assertFalse(zeroState.hidden);
   });
 
-  test('sets google photos aria label', async () => {
+  [true, false].forEach(
+      hidden => test('fetches albums on first show', async () => {
+        // Initialize |googlePhotosCollectionElement| in |hidden| state.
+        googlePhotosCollectionElement =
+            initElement(GooglePhotosCollection, {hidden});
+        await waitAfterNextRender(googlePhotosCollectionElement);
+
+        if (hidden) {
+          // Albums should *not* be fetched when hidden.
+          await new Promise<void>(resolve => setTimeout(resolve, 100));
+          assertEquals(
+              wallpaperProvider.getCallCount('fetchGooglePhotosAlbums'), 0);
+
+          // Show |googlePhotosCollectionElement|.
+          googlePhotosCollectionElement.hidden = false;
+          await waitAfterNextRender(googlePhotosCollectionElement);
+        }
+
+        // Albums *should* be fetched when shown.
+        await wallpaperProvider.whenCalled('fetchGooglePhotosAlbums');
+        wallpaperProvider.reset();
+
+        // Hide and re-show |googlePhotosCollectionElement|.
+        googlePhotosCollectionElement.hidden = true;
+        await waitAfterNextRender(googlePhotosCollectionElement);
+        googlePhotosCollectionElement.hidden = false;
+        await waitAfterNextRender(googlePhotosCollectionElement);
+
+        // Albums should *not* be fetched when re-shown.
+        await new Promise<void>(resolve => setTimeout(resolve, 100));
+        assertEquals(
+            wallpaperProvider.getCallCount('fetchGooglePhotosAlbums'), 0);
+      }));
+
+  test('sets aria label', async () => {
     googlePhotosCollectionElement =
         initElement(GooglePhotosCollection, {hidden: false});
     await waitAfterNextRender(googlePhotosCollectionElement);
 
     assertEquals(
         loadTimeData.getString('googlePhotosLabel'),
-        googlePhotosCollectionElement.$.main.getAttribute('aria-label'),
-        'google photos main aria label is set');
+        googlePhotosCollectionElement.$.main.getAttribute('aria-label'));
   });
 
   [GooglePhotosEnablementState.kDisabled, GooglePhotosEnablementState.kEnabled,

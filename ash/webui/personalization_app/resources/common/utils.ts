@@ -9,6 +9,21 @@
 
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 
+/** A Promise<T> which can be externally |resolve()|-ed. */
+export type ExternallyResolvablePromise<T> =
+    Promise<T>&{resolve: (result: T) => void};
+
+/** Creates a Promise<T> which can be externally |resolve()|-ed. */
+export function createExternallyResolvablePromise<T>():
+    ExternallyResolvablePromise<T> {
+  let externalResolver: (result: T) => void;
+  const promise = new Promise<T>(resolve => {
+                    externalResolver = resolve;
+                  }) as ExternallyResolvablePromise<T>;
+  promise.resolve = externalResolver!;
+  return promise;
+}
+
 /**
  * Checks if argument is an array with zero length.
  */

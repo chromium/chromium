@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {cancelPreviewWallpaper, DefaultImageSymbol, fetchCollections, fetchGooglePhotosAlbum, fetchLocalData, getDefaultImageThumbnail, getImageKey, getLocalImages, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, isFilePath, kDefaultImageSymbol, selectWallpaper, WallpaperImage} from 'chrome://personalization/trusted/personalization_app.js';
+import {cancelPreviewWallpaper, DefaultImageSymbol, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchLocalData, getDefaultImageThumbnail, getImageKey, getLocalImages, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, isFilePath, kDefaultImageSymbol, selectWallpaper, WallpaperImage} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -53,14 +53,12 @@ suite('Personalization app controller', () => {
 
       await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
 
-      let expectedEnabled, expectedAlbums, expectedPhotos;
+      let expectedEnabled, expectedPhotos;
       if (isGooglePhotosIntegrationEnabled) {
         expectedEnabled = GooglePhotosEnablementState.kEnabled;
-        expectedAlbums = [];
         expectedPhotos = [];
       } else {
         expectedEnabled = GooglePhotosEnablementState.kError;
-        expectedAlbums = null;
         expectedPhotos = null;
       }
 
@@ -74,15 +72,7 @@ suite('Personalization app controller', () => {
               enabled: expectedEnabled,
             },
             {
-              name: 'begin_load_google_photos_albums',
-            },
-            {
               name: 'begin_load_google_photos_photos',
-            },
-            {
-              name: 'append_google_photos_albums',
-              albums: expectedAlbums,
-              resumeToken: null,
             },
             {
               name: 'append_google_photos_photos',
@@ -126,39 +116,7 @@ suite('Personalization app controller', () => {
                 resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
               },
             },
-            // BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS.
-            {
-              'wallpaper.loading.googlePhotos': {
-                enabled: false,
-                albums: true,
-                photos: false,
-                photosByAlbumId: {},
-              },
-              'wallpaper.googlePhotos': {
-                enabled: expectedEnabled,
-                albums: undefined,
-                photos: undefined,
-                photosByAlbumId: {},
-                resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
-              },
-            },
             // BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS.
-            {
-              'wallpaper.loading.googlePhotos': {
-                enabled: false,
-                albums: true,
-                photos: true,
-                photosByAlbumId: {},
-              },
-              'wallpaper.googlePhotos': {
-                enabled: expectedEnabled,
-                albums: undefined,
-                photos: undefined,
-                photosByAlbumId: {},
-                resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
-              },
-            },
-            // APPEND_GOOGLE_PHOTOS_ALBUMS.
             {
               'wallpaper.loading.googlePhotos': {
                 enabled: false,
@@ -168,7 +126,7 @@ suite('Personalization app controller', () => {
               },
               'wallpaper.googlePhotos': {
                 enabled: expectedEnabled,
-                albums: expectedAlbums,
+                albums: undefined,
                 photos: undefined,
                 photosByAlbumId: {},
                 resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
@@ -184,7 +142,7 @@ suite('Personalization app controller', () => {
               },
               'wallpaper.googlePhotos': {
                 enabled: expectedEnabled,
-                albums: expectedAlbums,
+                albums: undefined,
                 photos: expectedPhotos,
                 photosByAlbumId: {},
                 resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
@@ -218,6 +176,7 @@ suite('Personalization app controller', () => {
     // Attempts to `fetchGooglePhotosAlbum()` will fail unless the entire list
     // of Google Photos albums has already been fetched and saved to the store.
     await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
+    await fetchGooglePhotosAlbums(wallpaperProvider, personalizationStore);
     personalizationStore.reset(personalizationStore.data);
 
     await fetchGooglePhotosAlbum(
