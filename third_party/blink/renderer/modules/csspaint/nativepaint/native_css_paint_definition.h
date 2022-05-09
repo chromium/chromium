@@ -19,27 +19,11 @@ class MODULES_EXPORT NativeCssPaintDefinition : public NativePaintDefinition {
  public:
   ~NativeCssPaintDefinition() override = default;
 
-  // Validation function for determining if a value / interpolable_value is
-  // supported on the compositor.
-  using ValueFilter = bool (*)(const Element* element,
-                               const CSSValue* value,
-                               const InterpolableValue* interpolable_value);
+  static Animation* GetAnimationForProperty(const Element* element,
+                                            const CSSProperty& property);
 
-  static Animation* GetAnimationForProperty(
-      const Element* element,
-      const CSSProperty& property,
-      ValueFilter filter = DefaultValueFilter);
-
-  static bool CanGetValueFromKeyframe(const Element* element,
-                                      const PropertySpecificKeyframe* frame,
-                                      const KeyframeEffectModelBase* model,
-                                      ValueFilter filter);
-
-  // Default validator for a keyframe value, which accepts any non-null value
-  // as being supported. Replace with a property specific validator as needed.
-  static bool DefaultValueFilter(const Element* element,
-                                 const CSSValue* value,
-                                 const InterpolableValue* interpolable_value);
+  static bool CanGetValueFromKeyframe(const PropertySpecificKeyframe* frame,
+                                      const KeyframeEffectModelBase* model);
 
  protected:
   NativeCssPaintDefinition(LocalFrame*,

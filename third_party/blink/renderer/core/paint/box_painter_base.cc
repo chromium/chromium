@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -34,8 +33,6 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
-
-using CompositedPaintStatus = ElementAnimations::CompositedPaintStatus;
 
 void BoxPainterBase::PaintFillLayers(const PaintInfo& paint_info,
                                      const Color& c,
@@ -78,58 +75,6 @@ void ApplySpreadToShadowShape(FloatRoundedRect& shadow_shape, float spread) {
 Node* GeneratingNode(Node* node) {
   return node && node->IsPseudoElement() ? node->ParentOrShadowHostNode()
                                          : node;
-}
-
-BackgroundColorPaintImageGenerator* GetBackgroundColorPaintImageGenerator(
-    const Document& document) {
-  if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled())
-    return nullptr;
-
-  return document.GetFrame()->GetBackgroundColorPaintImageGenerator();
-}
-
-void SetHasNativeBackgroundPainter(Node* node, bool state) {
-  if (!node || !node->IsElementNode())
-    return;
-
-  ElementAnimations* element_animations =
-      static_cast<Element*>(node)->GetElementAnimations();
-  DCHECK(element_animations || !state);
-  if (element_animations) {
-    element_animations->SetCompositedBackgroundColorStatus(
-        state ? CompositedPaintStatus::kComposited
-              : CompositedPaintStatus::kNotComposited);
-  }
-}
-
-bool CanCompositeBackgroundColorAnimation(Node* node) {
-  if (!node || !node->IsElementNode())
-    return false;
-
-  BackgroundColorPaintImageGenerator* generator =
-      GetBackgroundColorPaintImageGenerator(node->GetDocument());
-  // The generator can be null in testing environment.
-  if (!generator)
-    return false;
-
-  Animation* animation =
-      generator->GetAnimationIfCompositable(static_cast<Element*>(node));
-  if (!animation)
-    return false;
-
-  return animation->CheckCanStartAnimationOnCompositor(nullptr) ==
-         CompositorAnimations::kNoFailure;
-}
-
-CompositedPaintStatus CompositedBackgroundColorStatus(Node* node) {
-  if (!node || !node->IsElementNode())
-    return CompositedPaintStatus::kNotComposited;
-
-  ElementAnimations* element_animations =
-      static_cast<Element*>(node)->GetElementAnimations();
-  DCHECK(element_animations);
-
-  return element_animations->CompositedBackgroundColorStatus();
 }
 
 }  // namespace
@@ -650,8 +595,11 @@ void DrawTiledBackground(LocalFrame* frame,
 scoped_refptr<Image> GetBGColorPaintWorkletImage(const Document* document,
                                                  Node* node,
                                                  const gfx::SizeF& image_size) {
+  LocalFrame* frame = document->GetFrame();
+  if (!frame)
+    return nullptr;
   BackgroundColorPaintImageGenerator* generator =
-      GetBackgroundColorPaintImageGenerator(*document);
+      frame->GetBackgroundColorPaintImageGenerator();
   // The generator can be null in testing environment.
   if (!generator)
     return nullptr;
@@ -674,30 +622,10 @@ bool PaintBGColorWithPaintWorklet(const Document* document,
                                   GraphicsContext& context) {
   if (!info.should_paint_color_with_paint_worklet_image)
     return false;
-
-  CompositedPaintStatus status = CompositedBackgroundColorStatus(node);
-
-  switch (status) {
-    case CompositedPaintStatus::kNotComposited:
-      DCHECK(!CanCompositeBackgroundColorAnimation(node));
-      return false;
-
-    case CompositedPaintStatus::kNeedsRepaintOrNoAnimation:
-      if (CanCompositeBackgroundColorAnimation(node)) {
-        SetHasNativeBackgroundPainter(node, true);
-      } else {
-        SetHasNativeBackgroundPainter(node, false);
-        return false;
-      }
-      break;
-
-    case CompositedPaintStatus::kComposited:
-      DCHECK(CanCompositeBackgroundColorAnimation(node));
-  }
-
   scoped_refptr<Image> paint_worklet_image =
       GetBGColorPaintWorkletImage(document, node, dest_rect.Rect().size());
-  DCHECK(paint_worklet_image);
+  if (!paint_worklet_image)
+    return false;
   gfx::RectF src_rect(dest_rect.Rect().size());
   context.DrawImageRRect(paint_worklet_image.get(), Image::kSyncDecode,
                          ImageAutoDarkMode::Disabled(), dest_rect, src_rect);
