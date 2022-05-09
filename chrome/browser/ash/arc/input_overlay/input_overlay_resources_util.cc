@@ -26,6 +26,13 @@ absl::optional<int> GetInputOverlayResourceId(const std::string& package_name) {
        IDR_IO_COM_LOONGCHEER_NEVERLATE_WIZARDLEGEND_FIGHTMASTER},
       {"com.direlight.grimvalor", IDR_IO_COM_DIRELIGHT_GRIMVALOR},
       {"com.pixelstar.pbr", IDR_IO_COM_PIXELSTAR_PBR},
+      {"com.halfbrick.dantheman", IDR_IO_COM_HALFBRICK_DANTHEMAN},
+      {"com.gabrielecirulli.app2048", IDR_IO_COM_GABRIELECIRULLI_APP2048},
+      {"com.androbaby.original2048", IDR_IO_COM_ANDROBABY_ORIGINAL2048},
+      {"com.estoty.game2048", IDR_IO_COM_ESTOTY_GAME2048},
+      {"com.s2apps.game2048", IDR_IO_COM_S2APPS_GAME2048},
+      {"com.storms.azrun", IDR_IO_COM_STORMS_AZRUN},
+      {"io.shenron.lnr", IDR_IO_IO_SHENRON_LNR},
   };
 
   auto it = resource_id_map.find(package_name);

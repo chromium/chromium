@@ -1,0 +1,166 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{
+  "tap": [
+    {
+      "id": 0,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "left",
+      "key": "KeyA",
+      "location": [
+        {
+          "type": "position",
+          "anchor": [
+            0,
+            1
+          ],
+          "anchor_to_target": [
+            0.10520833,
+            -0.17222223
+          ]
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "right",
+      "key": "KeyD",
+      "location": [
+        {
+          "type": "position",
+          "anchor": [
+            0,
+            1
+          ],
+          "anchor_to_target": [
+            0.28125,
+            -0.17222223
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "attack",
+      "key": "KeyO",
+      "location": [
+        {
+          "type": "position",
+          "anchor": [
+            1,
+            1
+          ],
+          "anchor_to_target": [
+            -0.30885416,
+            -0.12962963
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "jump",
+      "key": "Space",
+      "location": [
+        {
+          "type": "position",
+          "anchor": [
+            1,
+            1
+          ],
+          "anchor_to_target": [
+            -0.10572917,
+            -0.12962963
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "shoot",
+      "key": "KeyU",
+      "location": [
+        {
+          "type": "position",
+          "anchor": [
+            1,
+            1
+          ],
+          "anchor_to_target": [
+            -0.209375,
+            -0.36018518
+          ]
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "swap",
+      "key": "KeyI",
+      "location": [
+        {
+          "type": "position",
+          "anchor": [
+            1,
+            1
+          ],
+          "anchor_to_target": [
+            -0.0703125,
+            -0.36018518
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "pause",
+      "key": "Backspace",
+      "location": [
+        {
+          "type": "position",
+          "anchor": [
+            1,
+            0
+          ],
+          "anchor_to_target": [
+            -0.0421875,
+            0.08055556
+          ]
+        },
+        {
+          "type": "position",
+          "anchor": [
+            0,
+            0
+          ],
+          "anchor_to_target": [
+            0.5,
+            0.47407407
+          ]
+        }
+      ]
+    }
+  ]
+}
