@@ -61,8 +61,9 @@ public abstract class Struct {
         // UnsupportedOperationException.
         Message message = serialize(null);
 
-        if (!message.getHandles().isEmpty())
+        if (!message.getHandles().isEmpty()) {
             throw new UnsupportedOperationException("Handles are discarded.");
+        }
 
         return message.getData();
     }

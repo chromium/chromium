@@ -39,7 +39,7 @@ public class ParameterizedRunnerDelegateCommonTest {
         public BadTestClassWithTwoArgumentConstructor(int a, int b) {}
     }
 
-    static abstract class BadTestClassAbstract {
+    abstract static class BadTestClassAbstract {
         public BadTestClassAbstract() {}
     }
 

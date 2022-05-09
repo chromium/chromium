@@ -7,7 +7,7 @@ package org.chromium.device.geolocation;
 /**
  * Set the MockLocationProvider to LocationProviderFactory. Used for test only.
  */
-final public class LocationProviderOverrider {
+public final class LocationProviderOverrider {
     public static void setLocationProviderImpl(LocationProvider provider) {
         LocationProviderFactory.setLocationProviderImpl(provider);
     }
