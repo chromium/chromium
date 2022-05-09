@@ -101,6 +101,9 @@ try_.builder(
 
 try_.builder(
     name = "lacros-arm-generic-rel",
+    mirrors = [
+        "ci/lacros-arm-generic-rel",
+    ],
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
     main_list_view = "try",
