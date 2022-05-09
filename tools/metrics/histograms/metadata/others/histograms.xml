@@ -9655,7 +9655,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Process.Sandbox.Launch.Warning" enum="WinGetLastError"
-    expires_after="2021-01-02">
+    expires_after="never">
+<!-- expires-never: metric needed for diagnosing sandbox issues. -->
+
   <owner>forshaw@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -9663,26 +9665,40 @@ chromium-metrics-reviews@google.com.
     error code please refer to http://goo.gl/fJJiAv. This will only be logged
     when SpawnTarget succeeds with SBOX_ALL_OK but the last warning result does
     not equal SBOX_ALL_OK.
+
+    Warning: this histogram expired in M87, and was revived in M103; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Process.Sandbox.Launch.WarningResultCode"
-    units="LaunchErrorCodes" expires_after="2021-01-02">
+    units="LaunchErrorCodes" expires_after="never">
+<!-- expires-never: metric needed for diagnosing sandbox issues. -->
+
   <owner>forshaw@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
     The warning launch error returned while launching sandboxed process on
     Windows. This will only be logged when SpawnTarget succeeds with SBOX_ALL_OK
     but the last warning result does not equal SBOX_ALL_OK.
+
+    Warning: this histogram expired in M87, and was revived in M103; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Process.Sandbox.Lowbox.Launch.Error" enum="WinGetLastError"
-    expires_after="M85">
-  <owner>shrikant@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: metric needed for diagnosing sandbox issues. -->
+
+  <owner>wfh@chromium.org</owner>
+  <owner>forshaw@chromium.org</owner>
   <summary>
     Errors returned while launching lowbox enabled sandboxed process on Windows.
     For decoding error code please refer to http://goo.gl/fJJiAv.
+
+    Warning: this histogram expired in M87, and was revived in M103; data may be
+    missing.
   </summary>
 </histogram>
 
