@@ -367,7 +367,7 @@ void CrostiniManager::CrostiniRestarter::Restart() {
   if (!CrostiniFeatures::Get()->IsAllowedNow(profile_)) {
     LOG(ERROR) << "Crostini UI not allowed for profile "
                << profile_->GetProfileUserName();
-    std::move(completed_callback_).Run(CrostiniResult::NOT_ALLOWED);
+    FinishRestart(CrostiniResult::NOT_ALLOWED);
     return;
   }
 

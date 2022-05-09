@@ -835,6 +835,21 @@ TEST_F(CrostiniManagerRestartTest, RestartSuccess) {
       "Crostini.SetUpLxdContainerUser.UnknownResult", false, 1);
 }
 
+TEST_F(CrostiniManagerRestartTest, CrostiniNotAllowed) {
+  FakeCrostiniFeatures crostini_features;
+  crostini_features.set_is_allowed_now(false);
+  restart_id_ = crostini_manager()->RestartCrostini(
+      container_id(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  run_loop()->Run();
+  ExpectCrostiniRestartResult(CrostiniResult::NOT_ALLOWED);
+  EXPECT_FALSE(crostini_manager()->IsRestartPending(restart_id_));
+  histogram_tester_.ExpectBucketCount("Crostini.RestarterResult",
+                                      CrostiniResult::NOT_ALLOWED, 1);
+}
+
 TEST_F(CrostiniManagerRestartTest, UncleanRestartReportsMetricToUncleanBucket) {
   crostini_manager()->SetUncleanStartupForTesting(true);
   restart_id_ = crostini_manager()->RestartCrostini(
