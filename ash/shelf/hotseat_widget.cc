@@ -593,8 +593,9 @@ void HotseatWidget::DelegateView::SetTranslucentBackground(
     }
   }
 
-  if (translucent_background_->layer()->GetTargetBounds() != background_bounds)
-    translucent_background_->SetBoundsRect(background_bounds);
+  const gfx::Rect mirrored_bounds = GetMirroredRect(background_bounds);
+  if (translucent_background_->layer()->GetTargetBounds() != mirrored_bounds)
+    translucent_background_->SetBoundsRect(mirrored_bounds);
 }
 
 void HotseatWidget::DelegateView::SetBackgroundBlur(bool enable_blur) {
