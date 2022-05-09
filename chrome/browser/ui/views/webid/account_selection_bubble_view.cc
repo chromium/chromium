@@ -326,6 +326,8 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
         base::UTF8ToUTF16(account.email));
     row->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kLeftRightPadding)));
+    row->SetSubtitleTextStyle(views::style::CONTEXT_LABEL,
+                              views::style::STYLE_SECONDARY);
     return row;
   }
   auto row = std::make_unique<views::View>();
