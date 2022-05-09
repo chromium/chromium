@@ -1,0 +1,14 @@
+Tests DOMStorage functionality with storageKey
+
+Set item
+storageId.storageKey: string
+not empty
+
+Get storage key by frame
+storageKey obtained: true
+storageKey in event  equal to storage key by frame
+
+Get DOM storage items
+items array not empty
+key: testKey, value: testItem
+
