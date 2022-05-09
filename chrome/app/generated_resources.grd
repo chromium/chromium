@@ -13007,8 +13007,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_TITLE" desc="CONTEXT: there are updates to the Chrome browser each month. Just after the user accepts the latest update, this message will appear. The user must make a choice, and this page can’t be dismissed until they do. The title of the page. * The title needs to be framed so that clicking the accept button makes sense * “Help us” is intended to convey a sense of collaboration. Privacy Sandbox is an ongoing multi-year effort. There are sites participating to help us and we also need users to agree to these trials so that we can measure the effectiveness of the features we're building. * “build” is intended to convey that this is a process. The user is agreeing to an effort rather than a stable set of features. Something like “make” doesn't have the same nuance.* “private web” is the promise of privacy sandbox.">
       Help us build a more private web
     </message>
+    <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_TITLE" translateable="false">
+      Help us build a better web
+    </message>
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_BODY_HEADER_1"  desc="1 of 2 subtitles on the page. We want to write for users who skim the page. That means that the page title, the sub titles, and the button label all work well together as a mini story: 1) Help us build a more private web How? 2) Limit sharing between sites 3) More control over the ads you see 4) Yes, I’ll try it">
       Limited sharing between sites
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION" translateable="false">
+      During trials, Chrome is exploring ways to limit spam, fraud, and sharing between sites. Chrome also <ph name="ESTIMATE_INTERESTS_LINK">$1<ex>estimates your interests</ex></ph> that sites can use to show you ads. You can manage your interests in settings.
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION_ESTIMATES_INTERESTS_LINK" translateable="false">
+      estimates your interests
     </message>
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_BODY_DESCRIPTION_1" desc="* “restrict” means to lessen. We don’t want to suggest that we’re “eliminating” cross-site tracking. * “cross-site tracking”: An example: a user visits site A and then site B. Based on how third-party cookies work today, when that user later visits site C, site C can be aware that the user visited sites A and B, and can even have some sense for what they did on those sites. * “stop ad spam and fraud”:  This feature isn’t really related to restricting cross-site tracking but we combined these features in the same sentence / section for structural reasons.">
       We’re exploring ways to restrict cross-site tracking while enabling sites to stop ad spam and fraud.

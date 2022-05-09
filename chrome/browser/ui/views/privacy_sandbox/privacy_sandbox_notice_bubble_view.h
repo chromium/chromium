@@ -18,6 +18,8 @@ class PrivacySandboxNoticeBubbleView : public views::View {
   explicit PrivacySandboxNoticeBubbleView(Browser* browser);
 
  private:
+  void OpenAboutAdPersonalizationSettings();
+
   raw_ptr<Browser> browser_;
 };
 
