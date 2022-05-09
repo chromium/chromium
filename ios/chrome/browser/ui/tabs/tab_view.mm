@@ -12,6 +12,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/elements/fade_truncating_label.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -31,6 +32,9 @@
 #endif
 
 namespace {
+
+// The size of the xmark symbol image.
+NSInteger kXmarkSymbolPointSize = 17;
 
 // Tab close button insets.
 const CGFloat kTabCloseTopInset = 1.0;
@@ -56,7 +60,8 @@ UIImage* DefaultFaviconImage() {
   return [[UIImage imageNamed:@"default_world_favicon"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }
-}
+
+}  // namespace
 
 @interface TabView () <UIPointerInteractionDelegate> {
   __weak id<TabViewDelegate> _delegate;
@@ -271,10 +276,13 @@ UIImage* DefaultFaviconImage() {
                                                       kTabCloseLeftInset,
                                                       kTabCloseBottomInset,
                                                       kTabCloseRightInset)];
-  [_closeButton
-      setImage:[[UIImage imageNamed:@"grid_cell_close_button"]
-                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-      forState:UIControlStateNormal];
+  UIImage* closeButton =
+      UseSymbols()
+          ? DefaultSymbolTemplateWithPointSize(kXMarkSymbol,
+                                               kXmarkSymbolPointSize)
+          : [[UIImage imageNamed:@"grid_cell_close_button"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  [_closeButton setImage:closeButton forState:UIControlStateNormal];
   [_closeButton setAccessibilityLabel:l10n_util::GetNSString(
                                           IDS_IOS_TOOLS_MENU_CLOSE_TAB)];
   [_closeButton addTarget:self

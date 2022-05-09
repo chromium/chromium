@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_cell.h"
 
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
@@ -12,11 +13,16 @@
 #endif
 
 namespace {
+
+// The size of the xmark symbol image.
+NSInteger kXmarkSymbolPointSize = 13;
+
 // Tab close button insets.
 const CGFloat kTabBackgroundLeftCapInset = 34.0;
 const CGFloat kFaviconInset = 28;
 const CGFloat kTitleInset = 10.0;
 const CGFloat kFontSize = 14.0;
+
 }  // namespace
 
 @implementation TabStripCell
@@ -38,8 +44,12 @@ const CGFloat kFontSize = 14.0;
           constraintEqualToAnchor:self.contentView.centerYAnchor],
     ]];
 
-    UIImage* close = [[UIImage imageNamed:@"grid_cell_close_button"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage* close =
+        UseSymbols()
+            ? DefaultSymbolTemplateWithPointSize(kXMarkSymbol,
+                                                 kXmarkSymbolPointSize)
+            : [[UIImage imageNamed:@"grid_cell_close_button"]
+                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_closeButton setImage:close forState:UIControlStateNormal];
     [self.contentView addSubview:_closeButton];

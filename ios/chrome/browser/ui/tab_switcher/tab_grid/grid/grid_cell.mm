@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/ui/elements/top_aligned_image_view.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -24,6 +25,9 @@
 #endif
 
 namespace {
+
+// The size of the xmark symbol image.
+NSInteger kXmarkSymbolPointSize = 13;
 
 // Size of activity indicator replacing fav icon when active.
 const CGFloat kIndicatorSize = 16.0;
@@ -49,6 +53,7 @@ void PositionView(UIView* view, CGPoint point) {
   frame.origin = point;
   view.frame = frame;
 }
+
 }  // namespace
 
 @interface GridCell ()
@@ -373,8 +378,12 @@ void PositionView(UIView* view, CGPoint point) {
   closeIconView.translatesAutoresizingMaskIntoConstraints = NO;
   closeIconView.contentMode = UIViewContentModeCenter;
   closeIconView.hidden = self.isInSelectionMode;
-  closeIconView.image = [[UIImage imageNamed:@"grid_cell_close_button"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  closeIconView.image =
+      UseSymbols()
+          ? DefaultSymbolTemplateWithPointSize(kXMarkSymbol,
+                                               kXmarkSymbolPointSize)
+          : [[UIImage imageNamed:@"grid_cell_close_button"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
   UIImageView* selectIconView = [[UIImageView alloc] init];
   selectIconView.translatesAutoresizingMaskIntoConstraints = NO;

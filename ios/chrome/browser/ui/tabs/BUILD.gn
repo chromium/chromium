@@ -53,6 +53,7 @@ source_set("tabs") {
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/browser/ui/gestures",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/ntp:logo",

@@ -64,6 +64,7 @@ source_set("grid_ui") {
     "//ios/chrome/browser/ui/commerce:price_card",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/gestures",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_commands",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_ui",
     "//ios/chrome/browser/ui/menu",
