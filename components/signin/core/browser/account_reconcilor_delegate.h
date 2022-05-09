@@ -22,17 +22,6 @@ namespace signin {
 // Base class for AccountReconcilorDelegate.
 class AccountReconcilorDelegate {
  public:
-  // Options for revoking refresh tokens.
-  enum class RevokeTokenOption {
-    // Do not revoke the token.
-    kDoNotRevoke,
-    // Revoke the token if it is in auth error state.
-    kRevokeIfInError,
-    // Revoke the token.
-    // TODO(droger): remove this when Dice is launched.
-    kRevoke
-  };
-
   AccountReconcilorDelegate();
   virtual ~AccountReconcilorDelegate();
 
@@ -59,28 +48,23 @@ class AccountReconcilorDelegate {
       bool first_execution,
       bool primary_has_error) const;
 
-  // Returns whether secondary accounts should be revoked for doing full logout.
-  // Used only for the Multilogin codepath.
-  virtual bool ShouldRevokeTokensBeforeMultilogin(
+  // Revokes secondary tokens if needed based on the platform.
+  // Returns whether tokens has been revoked.
+  virtual bool RevokeSecondaryTokensBeforeMultiloginIfNeeded(
       const std::vector<CoreAccountId>& chrome_accounts,
-      const CoreAccountId& primary_account,
       const std::vector<gaia::ListedAccount>& gaia_accounts,
-      bool first_execution,
-      bool primary_has_error) const;
+      bool first_execution);
 
-  // Returns whether secondary accounts should be revoked at the beginning of
-  // the reconcile.
-  virtual RevokeTokenOption ShouldRevokeSecondaryTokensBeforeReconcile(
-      const std::vector<gaia::ListedAccount>& gaia_accounts);
+  // Revokes secondary accounts if needed.
+  virtual void RevokeSecondaryTokensBeforeReconcileIfNeeded();
 
-  // Returns whether tokens should be revoked when the Gaia cookie has been
-  // explicitly deleted by the user.
-  // If this returns false, tokens will not be revoked. If this returns true,
-  // secondary tokens will be deleted ; and the primary token will be
-  // invalidated unless it has to be kept for critical Sync operations.
-  virtual bool ShouldRevokeTokensOnCookieDeleted();
+  // Called when cookies are deleted by user action.
+  // This might be a no-op or signout the profile or lead to a sync paused state
+  // based on different platforms conditions.
+  virtual void OnAccountsCookieDeletedByUserAction(
+      bool synced_data_deletion_in_progress);
 
-  // Returns whether tokens should be revoked when the primary account is empty
+  // Returns whether tokens should be revoked when the primary account is empty.
   virtual bool ShouldRevokeTokensIfNoPrimaryAccount() const;
 
   // Called when reconcile is finished.

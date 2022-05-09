@@ -212,7 +212,8 @@ AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {
 
     case signin::AccountConsistencyMethod::kDice:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-      return std::make_unique<signin::DiceAccountReconcilorDelegate>();
+      return std::make_unique<signin::DiceAccountReconcilorDelegate>(
+          IdentityManagerFactory::GetForProfile(profile));
 #else
       NOTREACHED();
       return nullptr;

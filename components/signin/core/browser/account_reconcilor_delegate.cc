@@ -51,12 +51,10 @@ AccountReconcilorDelegate::CalculateParametersForMultilogin(
   return {mode, accounts_to_send};
 }
 
-bool AccountReconcilorDelegate::ShouldRevokeTokensBeforeMultilogin(
+bool AccountReconcilorDelegate::RevokeSecondaryTokensBeforeMultiloginIfNeeded(
     const std::vector<CoreAccountId>& chrome_accounts,
-    const CoreAccountId& primary_account,
     const std::vector<gaia::ListedAccount>& gaia_accounts,
-    bool first_execution,
-    bool primary_has_error) const {
+    bool first_execution) {
   return false;
 }
 
@@ -177,15 +175,11 @@ AccountReconcilorDelegate::GetChromeAccountsForReconcile(
   return std::vector<CoreAccountId>();
 }
 
-AccountReconcilorDelegate::RevokeTokenOption
-AccountReconcilorDelegate::ShouldRevokeSecondaryTokensBeforeReconcile(
-    const std::vector<gaia::ListedAccount>& gaia_accounts) {
-  return RevokeTokenOption::kDoNotRevoke;
+void AccountReconcilorDelegate::RevokeSecondaryTokensBeforeReconcileIfNeeded() {
 }
 
-bool AccountReconcilorDelegate::ShouldRevokeTokensOnCookieDeleted() {
-  return false;
-}
+void AccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction(
+    bool synced_data_deletion_in_progress) {}
 
 bool AccountReconcilorDelegate::ShouldRevokeTokensIfNoPrimaryAccount() const {
   return true;

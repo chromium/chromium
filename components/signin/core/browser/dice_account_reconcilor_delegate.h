@@ -10,10 +10,12 @@
 
 namespace signin {
 
+class IdentityManager;
+
 // AccountReconcilorDelegate specialized for Dice.
 class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
  public:
-  DiceAccountReconcilorDelegate();
+  explicit DiceAccountReconcilorDelegate(IdentityManager* identity_manager);
 
   DiceAccountReconcilorDelegate(const DiceAccountReconcilorDelegate&) = delete;
   DiceAccountReconcilorDelegate& operator=(
@@ -24,16 +26,14 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
   // AccountReconcilorDelegate:
   bool IsReconcileEnabled() const override;
   gaia::GaiaSource GetGaiaApiSource() const override;
-  RevokeTokenOption ShouldRevokeSecondaryTokensBeforeReconcile(
-      const std::vector<gaia::ListedAccount>& gaia_accounts) override;
+  void RevokeSecondaryTokensBeforeReconcileIfNeeded() override;
   void OnReconcileFinished(const CoreAccountId& first_account) override;
-  bool ShouldRevokeTokensOnCookieDeleted() override;
-  bool ShouldRevokeTokensBeforeMultilogin(
+  void OnAccountsCookieDeletedByUserAction(
+      bool synced_data_deletion_in_progress) override;
+  bool RevokeSecondaryTokensBeforeMultiloginIfNeeded(
       const std::vector<CoreAccountId>& chrome_accounts,
-      const CoreAccountId& primary_account,
       const std::vector<gaia::ListedAccount>& gaia_accounts,
-      bool first_execution,
-      bool primary_has_error) const override;
+      bool first_execution) override;
 
  private:
   // Possible inconsistency reasons between tokens and gaia cookies.
@@ -101,6 +101,15 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
       const std::vector<gaia::ListedAccount>& gaia_accounts,
       bool first_execution,
       bool primary_has_error) const;
+
+  // Returns whether secondary accounts should be revoked for doing full logout.
+  // Used only for the Multilogin codepath.
+  bool ShouldRevokeTokensBeforeMultilogin(
+      const std::vector<CoreAccountId>& chrome_accounts,
+      const std::vector<gaia::ListedAccount>& gaia_accounts,
+      bool first_execution) const;
+
+  const raw_ptr<IdentityManager> identity_manager_;
 
   // Last known "first account". Used when cookies are lost as a best guess.
   CoreAccountId last_known_first_account_;

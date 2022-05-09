@@ -114,7 +114,6 @@ source_set("unit_tests") {
     "account_investigator_unittest.cc",
     "account_reconcilor_delegate_unittest.cc",
     "account_reconcilor_unittest.cc",
-    "dice_account_reconcilor_delegate_unittest.cc",
     "signin_error_controller_unittest.cc",
     "signin_header_helper_unittest.cc",
     "signin_investigator_unittest.cc",
@@ -164,10 +163,6 @@ source_set("unit_tests") {
       "consistency_cookie_manager_unittest.cc",
       "mirror_landing_account_reconcilor_delegate_unittest.cc",
     ]
-  }
-
-  if (!enable_dice_support) {
-    sources -= [ "dice_account_reconcilor_delegate_unittest.cc" ]
   }
 }
 

@@ -60,49 +60,6 @@ std::vector<gaia::ListedAccount> FilterUnverifiedAccounts(
   return verified_gaia_accounts;
 }
 
-// Revokes tokens for all accounts in chrome_accounts but the primary account.
-// Returns true if tokens were revoked, and false if the function did nothing.
-bool RevokeAllSecondaryTokens(
-    signin::IdentityManager* identity_manager,
-    signin::AccountReconcilorDelegate::RevokeTokenOption revoke_option,
-    const CoreAccountId& primary_account,
-    signin_metrics::SourceForRefreshTokenOperation source) {
-  bool token_revoked = false;
-  if (revoke_option ==
-      AccountReconcilorDelegate::RevokeTokenOption::kDoNotRevoke)
-    return false;
-  for (const CoreAccountInfo& account_info :
-       identity_manager->GetAccountsWithRefreshTokens()) {
-    CoreAccountId account = account_info.account_id;
-    if (account == primary_account)
-      continue;
-    bool should_revoke = false;
-    switch (revoke_option) {
-      case AccountReconcilorDelegate::RevokeTokenOption::kRevokeIfInError:
-        if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-                account)) {
-          VLOG(1) << "Revoke token for " << account;
-          should_revoke = true;
-        }
-        break;
-      case AccountReconcilorDelegate::RevokeTokenOption::kRevoke:
-        VLOG(1) << "Revoke token for " << account;
-        should_revoke = true;
-        break;
-      case AccountReconcilorDelegate::RevokeTokenOption::kDoNotRevoke:
-        NOTREACHED();
-        break;
-    }
-    if (should_revoke) {
-      token_revoked = true;
-      VLOG(1) << "Revoke token for " << account;
-      auto* accounts_mutator = identity_manager->GetAccountsMutator();
-      accounts_mutator->RemoveAccount(account, source);
-    }
-  }
-  return token_revoked;
-}
-
 // Pick the account will become first after this reconcile is finished.
 CoreAccountId PickFirstGaiaAccount(
     const signin::MultiloginParameters& parameters,
@@ -461,30 +418,23 @@ void AccountReconcilor::FinishReconcileWithMultiloginEndpoint(
   DCHECK(!log_out_in_progress_);
   DCHECK_EQ(AccountReconcilorState::ACCOUNT_RECONCILOR_RUNNING, state_);
 
-  bool primary_has_error =
-      identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
-          primary_account);
-
   const signin::MultiloginParameters kLogoutParameters(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       std::vector<CoreAccountId>());
 
-  const bool should_revoke_tokens =
-      delegate_->ShouldRevokeTokensBeforeMultilogin(
-          chrome_accounts, primary_account, gaia_accounts, first_execution_,
-          primary_has_error);
+  const bool tokens_revoked =
+      delegate_->RevokeSecondaryTokensBeforeMultiloginIfNeeded(
+          chrome_accounts, gaia_accounts, first_execution_);
 
   DCHECK(is_reconcile_started_);
   signin::MultiloginParameters parameters_for_multilogin;
-  if (should_revoke_tokens) {
+  if (tokens_revoked) {
     // Set parameters for logout for deleting cookies.
     parameters_for_multilogin = kLogoutParameters;
-    RevokeAllSecondaryTokens(
-        identity_manager_,
-        AccountReconcilorDelegate::RevokeTokenOption::kRevoke, primary_account,
-        signin_metrics::SourceForRefreshTokenOperation::
-            kAccountReconcilor_Reconcile);
   } else {
+    bool primary_has_error =
+        identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+            primary_account);
     parameters_for_multilogin = delegate_->CalculateParametersForMultilogin(
         chrome_accounts, primary_account, gaia_accounts, first_execution_,
         primary_has_error);
@@ -593,13 +543,7 @@ void AccountReconcilor::OnAccountsInCookieUpdated(
   // completely remove them from Chrome.
   // Revoking the token for the primary account is not supported (it should be
   // signed out or put to auth error state instead).
-  // TODO(https://crbug.com/1122551): Move to |DiceAccountReconcilorDelegate|.
-  AccountReconcilorDelegate::RevokeTokenOption revoke_option =
-      delegate_->ShouldRevokeSecondaryTokensBeforeReconcile(
-          verified_gaia_accounts);
-  RevokeAllSecondaryTokens(identity_manager_, revoke_option, primary_account,
-                           signin_metrics::SourceForRefreshTokenOperation::
-                               kAccountReconcilor_GaiaCookiesUpdated);
+  delegate_->RevokeSecondaryTokensBeforeReconcileIfNeeded();
 
   std::vector<CoreAccountId> chrome_accounts =
       LoadValidAccountsFromTokenService();
@@ -619,33 +563,8 @@ void AccountReconcilor::OnAccountsInCookieUpdated(
 }
 
 void AccountReconcilor::OnAccountsCookieDeletedByUserAction() {
-  if (!delegate_->ShouldRevokeTokensOnCookieDeleted())
-    return;
-
-  // This code is only used with DiceAccountReconcilorDelegate and should thus
-  // use sync account.
-  // TODO(https://crbug.com/1122551): Move to |DiceAccountReconcilorDelegate|.
-  DCHECK_EQ(delegate_->GetConsentLevelForPrimaryAccount(), ConsentLevel::kSync);
-
-  CoreAccountId primary_account =
-      identity_manager_->GetPrimaryAccountId(ConsentLevel::kSync);
-  // Revoke secondary tokens.
-  RevokeAllSecondaryTokens(
-      identity_manager_, AccountReconcilorDelegate::RevokeTokenOption::kRevoke,
-      primary_account,
-      signin_metrics::SourceForRefreshTokenOperation::
-          kAccountReconcilor_GaiaCookiesDeletedByUser);
-  if (primary_account.empty())
-    return;
-  if (identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
-          primary_account) ||
-      synced_data_deletion_in_progress_count_ == 0) {
-    // Invalidate the primary token, but do not revoke it.
-    auto* accounts_mutator = identity_manager_->GetAccountsMutator();
-    accounts_mutator->InvalidateRefreshTokenForPrimaryAccount(
-        signin_metrics::SourceForRefreshTokenOperation::
-            kAccountReconcilor_GaiaCookiesDeletedByUser);
-  }
+  delegate_->OnAccountsCookieDeletedByUserAction(
+      synced_data_deletion_in_progress_count_ != 0);
 }
 
 std::vector<CoreAccountId>
@@ -877,7 +796,6 @@ bool AccountReconcilor::CookieNeedsUpdate(
               gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER);
     return true;
   }
-
   if (parameters.mode ==
           gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER &&
       !existing_accounts.empty() && !parameters.accounts_to_send.empty() &&
