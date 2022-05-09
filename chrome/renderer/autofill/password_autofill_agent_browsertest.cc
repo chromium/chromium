@@ -1777,13 +1777,10 @@ TEST_F(PasswordAutofillAgentTest, TryToShowTouchToFillUsername) {
   EXPECT_EQ(WebAutofillState::kPreviewed, username_element_.GetAutofillState());
   EXPECT_EQ(WebAutofillState::kPreviewed, password_element_.GetAutofillState());
 
-// TODO(crbug.com/1299430): Consider to disable |ShowTouchToFill| on Desktop.
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(
       fake_driver_,
       ShowTouchToFill(autofill::mojom::SubmissionReadinessState::kEmptyFields));
-#else
-  EXPECT_CALL(fake_driver_, ShowTouchToFill);
 #endif
   base::RunLoop().RunUntilIdle();
 }
@@ -1796,13 +1793,10 @@ TEST_F(PasswordAutofillAgentTest, TryToShowTouchToFillPassword) {
   EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
   EXPECT_EQ(WebAutofillState::kPreviewed, password_element_.GetAutofillState());
 
-// TODO(crbug.com/1299430): Consider to disable |ShowTouchToFill| on Desktop.
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(
       fake_driver_,
       ShowTouchToFill(autofill::mojom::SubmissionReadinessState::kEmptyFields));
-#else
-  EXPECT_CALL(fake_driver_, ShowTouchToFill);
 #endif
   base::RunLoop().RunUntilIdle();
 }

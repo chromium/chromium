@@ -36,10 +36,12 @@ class FakeMojoPasswordManagerDriver
               (const autofill::FormData&),
               (override));
 
+#if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,
               ShowTouchToFill,
               (autofill::mojom::SubmissionReadinessState),
               (override));
+#endif
 
   MOCK_METHOD(void,
               ShowPasswordSuggestions,

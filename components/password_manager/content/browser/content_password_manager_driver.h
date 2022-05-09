@@ -139,8 +139,10 @@ class ContentPasswordManagerDriver
                                const std::u16string& typed_username,
                                int options,
                                const gfx::RectF& bounds) override;
+#if BUILDFLAG(IS_ANDROID)
   void ShowTouchToFill(
       autofill::mojom::SubmissionReadinessState submission_readiness) override;
+#endif
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override;
   void FocusedInputChanged(

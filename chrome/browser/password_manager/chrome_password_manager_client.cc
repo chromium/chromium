@@ -427,10 +427,10 @@ bool ChromePasswordManagerClient::PromptUserToChooseCredentials(
 #endif
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void ChromePasswordManagerClient::ShowTouchToFill(
     PasswordManagerDriver* driver,
     autofill::mojom::SubmissionReadinessState submission_readiness) {
-#if BUILDFLAG(IS_ANDROID)
   std::vector<TouchToFillWebAuthnCredential> webauthn_credentials;
   if (GetWebAuthnCredentialsDelegate() &&
       GetWebAuthnCredentialsDelegate()->IsWebAuthnAutofillEnabled()) {
@@ -450,10 +450,8 @@ void ChromePasswordManagerClient::ShowTouchToFill(
               driver->GetLastCommittedURL().DeprecatedGetOriginAsURL()))
           .GetCredentials(),
       webauthn_credentials, driver->AsWeakPtr(), submission_readiness);
-#endif
 }
 
-#if BUILDFLAG(IS_ANDROID)
 void ChromePasswordManagerClient::OnPasswordSelected(
     const std::u16string& text) {
   password_reuse_detection_manager_.OnPaste(text);

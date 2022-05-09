@@ -186,6 +186,7 @@ class PasswordManagerClient {
       const url::Origin& origin,
       CredentialsCallback callback) = 0;
 
+#if BUILDFLAG(IS_ANDROID)
   // Instructs the client to show the Touch To Fill UI.
   virtual void ShowTouchToFill(
       PasswordManagerDriver* driver,
@@ -194,6 +195,7 @@ class PasswordManagerClient {
   // Informs `PasswordReuseDetectionManager` about reused passwords selected
   // from the AllPasswordsBottomSheet.
   virtual void OnPasswordSelected(const std::u16string& text);
+#endif
 
   // Returns a pointer to a BiometricAuthenticator. Might be null if
   // BiometricAuthentication is not available for a given platform.

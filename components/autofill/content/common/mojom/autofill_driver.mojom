@@ -139,6 +139,7 @@ interface PasswordManagerDriver {
 
   // Instructs the browser to show the Touch To Fill UI and whether the form is
   // ready for submission after filling.
+  [EnableIf=is_android]
   ShowTouchToFill(SubmissionReadinessState submission_readiness);
 
   // Checks the safe browsing reputation of the website where the focused

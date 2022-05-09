@@ -4324,10 +4324,12 @@ class MockPrerenderPasswordManagerDriver
                int options,
                const gfx::RectF& bounds),
               (override));
+#if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,
               ShowTouchToFill,
               (autofill::mojom::SubmissionReadinessState),
               (override));
+#endif
   MOCK_METHOD(void,
               CheckSafeBrowsingReputation,
               (const GURL& form_action, const GURL& frame_url),
@@ -4393,11 +4395,13 @@ class MockPrerenderPasswordManagerDriver
           impl_->ShowPasswordSuggestions(text_direction, typed_username,
                                          options, bounds);
         });
+#if BUILDFLAG(IS_ANDROID)
     ON_CALL(*this, ShowTouchToFill)
         .WillByDefault([this](autofill::mojom::SubmissionReadinessState
                                   submission_readiness) {
           impl_->ShowTouchToFill(submission_readiness);
         });
+#endif
     ON_CALL(*this, CheckSafeBrowsingReputation)
         .WillByDefault([this](const GURL& form_action, const GURL& frame_url) {
           impl_->CheckSafeBrowsingReputation(form_action, frame_url);

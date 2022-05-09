@@ -401,6 +401,7 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
       TransformToRootCoordinates(render_frame_host_, bounds));
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void ContentPasswordManagerDriver::ShowTouchToFill(
     autofill::mojom::SubmissionReadinessState submission_readiness) {
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
@@ -408,6 +409,7 @@ void ContentPasswordManagerDriver::ShowTouchToFill(
     return;
   client_->ShowTouchToFill(this, submission_readiness);
 }
+#endif
 
 void ContentPasswordManagerDriver::CheckSafeBrowsingReputation(
     const GURL& form_action,
