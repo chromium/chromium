@@ -47,7 +47,6 @@ static void JNI_LanguageBridge_GetULPModelLanguages(
 
   std::vector<language::LanguageModel::LanguageDetails> languageDetails =
       language_model->GetLanguages();
-  DCHECK(!languageDetails.empty());
 
   std::vector<std::string> languages;
   for (const auto& details : languageDetails) {
