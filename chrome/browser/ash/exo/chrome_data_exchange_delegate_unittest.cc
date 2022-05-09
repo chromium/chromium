@@ -74,7 +74,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ConciergeClient::InitializeFake();
     SeneschalClient::InitializeFake();
 
     profile_ = std::make_unique<TestingProfile>();
@@ -118,7 +118,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
     test_helper_.reset();
     profile_.reset();
     SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }

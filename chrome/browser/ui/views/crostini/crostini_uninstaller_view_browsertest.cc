@@ -26,16 +26,16 @@
 
 class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
  public:
-  class WaitingFakeConciergeClient : public chromeos::FakeConciergeClient {
+  class WaitingFakeConciergeClient : public ash::FakeConciergeClient {
    public:
     explicit WaitingFakeConciergeClient(chromeos::FakeCiceroneClient* client)
-        : chromeos::FakeConciergeClient(client) {}
+        : ash::FakeConciergeClient(client) {}
 
     void StopVm(
         const vm_tools::concierge::StopVmRequest& request,
         chromeos::DBusMethodCallback<vm_tools::concierge::StopVmResponse>
             callback) override {
-      chromeos::FakeConciergeClient::StopVm(request, std::move(callback));
+      ash::FakeConciergeClient::StopVm(request, std::move(callback));
       if (closure_) {
         base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                       std::move(closure_));
@@ -58,7 +58,7 @@ class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
 
   explicit CrostiniUninstallerViewBrowserTest(bool register_termina)
       : CrostiniDialogBrowserTest(register_termina) {
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     // After the browser's mainloop is terminated. chromeos::ShutdownDBus() will
     // delete the object.
     waiting_fake_concierge_client_ = new WaitingFakeConciergeClient(nullptr);

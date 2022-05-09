@@ -107,8 +107,8 @@ absl::optional<base::TimeDelta> g_connect_timeout_limit_for_testing;
 absl::optional<base::TimeDelta> g_connect_sleep_duration_initial_for_testing;
 absl::optional<int> g_boot_notification_server_fd;
 
-chromeos::ConciergeClient* GetConciergeClient() {
-  return chromeos::ConciergeClient::Get();
+ash::ConciergeClient* GetConciergeClient() {
+  return ash::ConciergeClient::Get();
 }
 
 chromeos::DebugDaemonClient* GetDebugDaemonClient() {
@@ -623,8 +623,8 @@ bool ArcVmClientAdapterDelegate::IsCrosvm32bit() {
 }
 
 class ArcVmClientAdapter : public ArcClientAdapter,
-                           public chromeos::ConciergeClient::VmObserver,
-                           public chromeos::ConciergeClient::Observer,
+                           public ash::ConciergeClient::VmObserver,
+                           public ash::ConciergeClient::Observer,
                            public ConnectionObserver<arc::mojom::AppInstance> {
  public:
   // Initializing |is_host_on_vm_| and |is_dev_mode_| is not always very fast.
@@ -660,7 +660,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     client->RemoveVmObserver(this);
   }
 
-  // chromeos::ConciergeClient::VmObserver overrides:
+  // ash::ConciergeClient::VmObserver overrides:
   void OnVmStarted(
       const vm_tools::concierge::VmStartedSignal& signal) override {
     if (signal.name() == kArcVmName)
@@ -784,7 +784,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  // chromeos::ConciergeClient::Observer overrides:
+  // ash::ConciergeClient::Observer overrides:
   void ConciergeServiceStopped() override {
     VLOG(1) << "vm_concierge stopped";
     // At this point, all crosvm processes are gone. Notify the observer of the

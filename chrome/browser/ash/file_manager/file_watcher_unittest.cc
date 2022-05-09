@@ -37,13 +37,13 @@ class FileManagerFileWatcherTest : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
   }
 
   ~FileManagerFileWatcherTest() override {
     ash::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }

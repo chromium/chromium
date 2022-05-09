@@ -35,11 +35,11 @@ class PluginVmUtilTest : public testing::Test {
   struct ScopedDBusThreadManager {
     ScopedDBusThreadManager() {
       chromeos::DBusThreadManager::Initialize();
-      chromeos::ConciergeClient::InitializeFake(
+      ash::ConciergeClient::InitializeFake(
           /*fake_cicerone_client=*/nullptr);
     }
     ~ScopedDBusThreadManager() {
-      chromeos::ConciergeClient::Shutdown();
+      ash::ConciergeClient::Shutdown();
       chromeos::DBusThreadManager::Shutdown();
     }
   } dbus_thread_manager_;

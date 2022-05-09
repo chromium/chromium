@@ -11,7 +11,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -467,4 +467,4 @@ void FakeConciergeClient::InitializeProtoResponses() {
   set_vm_id_response_->set_success(true);
 }
 
-}  // namespace chromeos
+}  // namespace ash

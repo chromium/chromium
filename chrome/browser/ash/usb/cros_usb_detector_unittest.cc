@@ -135,10 +135,10 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
   CrosUsbDetectorTest() {
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ConciergeClient::InitializeFake();
     SeneschalClient::InitializeFake();
     fake_cicerone_client_ = chromeos::FakeCiceroneClient::Get();
-    fake_concierge_client_ = chromeos::FakeConciergeClient::Get();
+    fake_concierge_client_ = FakeConciergeClient::Get();
     fake_vm_plugin_dispatcher_client_ =
         static_cast<chromeos::FakeVmPluginDispatcherClient*>(
             chromeos::DBusThreadManager::Get()->GetVmPluginDispatcherClient());
@@ -154,7 +154,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
   ~CrosUsbDetectorTest() override {
     disks::DiskMountManager::Shutdown();
     SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
@@ -286,7 +286,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
   disks::DiskMountManager::DiskMap disks_;
 
   chromeos::FakeCiceroneClient* fake_cicerone_client_;
-  chromeos::FakeConciergeClient* fake_concierge_client_;
+  FakeConciergeClient* fake_concierge_client_;
   // Owned by chromeos::DBusThreadManager
   chromeos::FakeVmPluginDispatcherClient* fake_vm_plugin_dispatcher_client_;
 

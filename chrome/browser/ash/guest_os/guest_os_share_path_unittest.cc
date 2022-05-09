@@ -225,10 +225,10 @@ class GuestOsSharePathTest : public testing::Test {
         browser_part_(g_browser_process->platform_part()) {
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
 
-    fake_concierge_client_ = chromeos::FakeConciergeClient::Get();
+    fake_concierge_client_ = ash::FakeConciergeClient::Get();
     fake_seneschal_client_ = ash::FakeSeneschalClient::Get();
   }
 
@@ -237,7 +237,7 @@ class GuestOsSharePathTest : public testing::Test {
 
   ~GuestOsSharePathTest() override {
     ash::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
@@ -343,7 +343,7 @@ class GuestOsSharePathTest : public testing::Test {
   std::unique_ptr<file_manager::Volume> volume_downloads_;
 
   ash::FakeSeneschalClient* fake_seneschal_client_;
-  chromeos::FakeConciergeClient* fake_concierge_client_;
+  ash::FakeConciergeClient* fake_concierge_client_;
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;

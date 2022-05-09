@@ -107,7 +107,7 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
 
     ChromeAshTestBase::SetUp();
@@ -209,7 +209,7 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
     ChromeAshTestBase::TearDown();
 
     ash::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }

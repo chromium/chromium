@@ -195,10 +195,10 @@ class CrostiniManagerTest : public testing::Test {
         browser_part_(g_browser_process->platform_part()) {
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     fake_cicerone_client_ = chromeos::FakeCiceroneClient::Get();
-    fake_concierge_client_ = chromeos::FakeConciergeClient::Get();
+    fake_concierge_client_ = ash::FakeConciergeClient::Get();
     fake_anomaly_detector_client_ =
         static_cast<chromeos::FakeAnomalyDetectorClient*>(
             chromeos::DBusThreadManager::Get()->GetAnomalyDetectorClient());
@@ -209,7 +209,7 @@ class CrostiniManagerTest : public testing::Test {
 
   ~CrostiniManagerTest() override {
     ash::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
@@ -289,7 +289,7 @@ class CrostiniManagerTest : public testing::Test {
   }
 
   chromeos::FakeCiceroneClient* fake_cicerone_client_;
-  chromeos::FakeConciergeClient* fake_concierge_client_;
+  ash::FakeConciergeClient* fake_concierge_client_;
   // Owned by chromeos::DBusThreadManager
   chromeos::FakeAnomalyDetectorClient* fake_anomaly_detector_client_;
 

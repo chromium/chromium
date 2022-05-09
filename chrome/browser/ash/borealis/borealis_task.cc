@@ -135,7 +135,7 @@ void CreateDiskImage::RunInternal(BorealisContext* context) {
   request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
   request.set_disk_size(0);
 
-  chromeos::ConciergeClient::Get()->CreateDiskImage(
+  ash::ConciergeClient::Get()->CreateDiskImage(
       std::move(request), base::BindOnce(&CreateDiskImage::OnCreateDiskImage,
                                          weak_factory_.GetWeakPtr(), context));
 }
@@ -251,13 +251,13 @@ void StartBorealisVm::StartBorealisWithExternalDisk(
   if (external_disk) {
     base::ScopedFD fd(external_disk->TakePlatformFile());
     request.add_fds(vm_tools::concierge::StartVmRequest::STORAGE);
-    chromeos::ConciergeClient::Get()->StartTerminaVmWithFd(
+    ash::ConciergeClient::Get()->StartTerminaVmWithFd(
         std::move(fd), std::move(request),
         base::BindOnce(&StartBorealisVm::OnStartBorealisVm,
                        weak_factory_.GetWeakPtr(), context));
     return;
   }
-  chromeos::ConciergeClient::Get()->StartTerminaVm(
+  ash::ConciergeClient::Get()->StartTerminaVm(
       std::move(request), base::BindOnce(&StartBorealisVm::OnStartBorealisVm,
                                          weak_factory_.GetWeakPtr(), context));
 }

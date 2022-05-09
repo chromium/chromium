@@ -62,15 +62,15 @@ chromeos::FakeDlcserviceClient* FakeDlcserviceHelper::FakeDlcserviceClient() {
 
 FakeConciergeHelper::FakeConciergeHelper(FakeCiceroneHelper* cicerone_helper) {
   DCHECK(cicerone_helper);
-  chromeos::ConciergeClient::InitializeFake();
+  ash::ConciergeClient::InitializeFake();
 }
 
 FakeConciergeHelper::~FakeConciergeHelper() {
-  chromeos::ConciergeClient::Shutdown();
+  ash::ConciergeClient::Shutdown();
 }
 
-chromeos::FakeConciergeClient* FakeConciergeHelper::FakeConciergeClient() {
-  return chromeos::FakeConciergeClient::Get();
+ash::FakeConciergeClient* FakeConciergeHelper::FakeConciergeClient() {
+  return ash::FakeConciergeClient::Get();
 }
 
 FakeVmServicesHelper::FakeVmServicesHelper()

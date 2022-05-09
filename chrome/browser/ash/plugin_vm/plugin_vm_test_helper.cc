@@ -50,7 +50,7 @@ class FakeShelfItemDelegate : public ash::ShelfItemDelegate {
 }  // namespace
 
 void SetupConciergeForSuccessfulDiskImageImport(
-    chromeos::FakeConciergeClient* fake_concierge_client_) {
+    ash::FakeConciergeClient* fake_concierge_client_) {
   // Set immediate response for the ImportDiskImage call: will be that "image is
   // in progress":
   vm_tools::concierge::ImportDiskImageResponse import_disk_image_response;
@@ -84,7 +84,7 @@ void SetupConciergeForSuccessfulDiskImageImport(
 }
 
 void SetupConciergeForFailedDiskImageImport(
-    chromeos::FakeConciergeClient* fake_concierge_client_,
+    ash::FakeConciergeClient* fake_concierge_client_,
     vm_tools::concierge::DiskImageStatus status) {
   // Set immediate response for the ImportDiskImage call: will be that "image is
   // in progress":
@@ -118,7 +118,7 @@ void SetupConciergeForFailedDiskImageImport(
 }
 
 void SetupConciergeForCancelDiskImageOperation(
-    chromeos::FakeConciergeClient* fake_concierge_client_,
+    ash::FakeConciergeClient* fake_concierge_client_,
     bool success) {
   vm_tools::concierge::CancelDiskImageResponse cancel_disk_image_response;
   cancel_disk_image_response.set_success(success);

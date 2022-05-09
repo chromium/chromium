@@ -117,7 +117,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::CdmFactoryDaemonClient>(bus);
   InitializeDBusClient<chromeos::CiceroneClient>(bus);
   // ConciergeClient depends on CiceroneClient.
-  InitializeDBusClient<chromeos::ConciergeClient>(bus);
+  InitializeDBusClient<ConciergeClient>(bus);
   InitializeDBusClient<chromeos::CrasAudioClient>(bus);
   InitializeDBusClient<cros_healthd::CrosHealthdClient>(bus);
   InitializeDBusClient<chromeos::CryptohomeMiscClient>(bus);
@@ -249,7 +249,7 @@ void ShutdownDBus() {
   chromeos::CryptohomeMiscClient::Shutdown();
   cros_healthd::CrosHealthdClient::Shutdown();
   chromeos::CrasAudioClient::Shutdown();
-  chromeos::ConciergeClient::Shutdown();
+  ConciergeClient::Shutdown();
   chromeos::CiceroneClient::Shutdown();
   chromeos::CdmFactoryDaemonClient::Shutdown();
   BiodClient::Shutdown();

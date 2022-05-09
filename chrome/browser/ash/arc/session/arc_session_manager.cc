@@ -569,7 +569,7 @@ ArcSessionManager::ArcSessionManager(
   if (chromeos::SessionManagerClient::Get())
     chromeos::SessionManagerClient::Get()->AddObserver(this);
   ResetStabilityMetrics();
-  chromeos::ConciergeClient::Get()->AddVmObserver(this);
+  ash::ConciergeClient::Get()->AddVmObserver(this);
   arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
 }
 
@@ -577,7 +577,7 @@ ArcSessionManager::~ArcSessionManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   arc_dlc_installer_.reset();
 
-  chromeos::ConciergeClient::Get()->RemoveVmObserver(this);
+  ash::ConciergeClient::Get()->RemoveVmObserver(this);
 
   if (chromeos::SessionManagerClient::Get())
     chromeos::SessionManagerClient::Get()->RemoveObserver(this);

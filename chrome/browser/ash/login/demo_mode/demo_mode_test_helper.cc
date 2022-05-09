@@ -28,7 +28,7 @@ DemoModeTestHelper::DemoModeTestHelper()
   if (!DBusThreadManager::IsInitialized()) {
     DBusThreadManager::Initialize();
     dbus_thread_manager_initialized_ = true;
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
   }
 
   DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kNone);
@@ -43,7 +43,7 @@ DemoModeTestHelper::DemoModeTestHelper()
 
 DemoModeTestHelper::~DemoModeTestHelper() {
   if (dbus_thread_manager_initialized_) {
-    chromeos::ConciergeClient::Shutdown();
+    ConciergeClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
   DemoSession::ShutDownIfInitialized();

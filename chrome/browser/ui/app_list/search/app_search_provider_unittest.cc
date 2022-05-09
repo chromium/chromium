@@ -564,7 +564,7 @@ class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     AppSearchProviderTest::SetUp();
   }
@@ -579,7 +579,7 @@ class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
     // clients are destroyed.
     profile_.reset();
     ash::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }

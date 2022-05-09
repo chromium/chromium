@@ -27,7 +27,7 @@ class GnubbyNotificationTest : public BrowserWithTestWindowTest {
     DBusThreadManager::GetSetterForTesting()->SetGnubbyClient(
         std::unique_ptr<chromeos::GnubbyClient>(
             new chromeos::FakeGnubbyClient));
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     BrowserWithTestWindowTest::SetUp();
 
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
@@ -48,7 +48,7 @@ class GnubbyNotificationTest : public BrowserWithTestWindowTest {
     gnubby_notification_.reset();
     tester_.reset();
     BrowserWithTestWindowTest::TearDown();
-    chromeos::ConciergeClient::Shutdown();
+    ConciergeClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
 

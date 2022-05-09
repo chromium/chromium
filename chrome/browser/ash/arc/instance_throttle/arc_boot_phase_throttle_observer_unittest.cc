@@ -42,7 +42,7 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
     // Need to initialize DBusThreadManager before ArcSessionManager's
     // constructor calls DBusThreadManager::Get().
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     arc_session_manager_ =
         CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)));
@@ -82,7 +82,7 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
     observer()->StopObserving();
     testing_profile_.reset();
     arc_session_manager_.reset();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

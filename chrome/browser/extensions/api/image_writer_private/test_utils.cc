@@ -246,7 +246,7 @@ void ImageWriterTestUtils::SetUp(bool is_browser_test) {
       // For browser tests, chromeos::InitializeDBus() automatically does the
       // same.
       chromeos::DBusThreadManager::Initialize();
-      chromeos::ConciergeClient::InitializeFake(
+      ash::ConciergeClient::InitializeFake(
           /*fake_cicerone_client=*/nullptr);
     }
     chromeos::DBusThreadManager::GetSetterForTesting()->SetImageBurnerClient(
@@ -275,7 +275,7 @@ void ImageWriterTestUtils::TearDown() {
   if (chromeos::DBusThreadManager::IsInitialized()) {
     // When in browser_tests, this path is not taken. These clients have already
     // been shut down by chromeos::ShutdownDBus().
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
   ash::disks::DiskMountManager::Shutdown();

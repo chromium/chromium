@@ -165,7 +165,7 @@ class PluginVmInstallerTestBase : public testing::Test {
  protected:
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     ASSERT_TRUE(profiles_dir_.CreateUniqueTempDir());
     CreateProfile();
@@ -184,7 +184,7 @@ class PluginVmInstallerTestBase : public testing::Test {
 
     SetDefaultExpectations();
 
-    fake_concierge_client_ = chromeos::FakeConciergeClient::Get();
+    fake_concierge_client_ = ash::FakeConciergeClient::Get();
 
     chromeos::DlcserviceClient::InitializeFake();
     fake_dlcservice_client_ = static_cast<chromeos::FakeDlcserviceClient*>(
@@ -197,7 +197,7 @@ class PluginVmInstallerTestBase : public testing::Test {
     profile_.reset();
     observer_.reset();
 
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     chromeos::DlcserviceClient::Shutdown();
   }
@@ -274,7 +274,7 @@ class PluginVmInstallerTestBase : public testing::Test {
 
   // A pointer to a singleton object which is valid until
   // ConciergeClient::Shutdown() is called.
-  chromeos::FakeConciergeClient* fake_concierge_client_;
+  ash::FakeConciergeClient* fake_concierge_client_;
   // Owned by chromeos::DBusThreadManager
   chromeos::FakeDlcserviceClient* fake_dlcservice_client_;
 

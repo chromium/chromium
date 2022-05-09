@@ -325,7 +325,7 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
   // Initialize DBUS and running container.
   chromeos::DBusThreadManager::Initialize();
   chromeos::CiceroneClient::InitializeFake();
-  chromeos::ConciergeClient::InitializeFake();
+  ash::ConciergeClient::InitializeFake();
   ash::SeneschalClient::InitializeFake();
 
   crostini::CrostiniManager* crostini_manager =
@@ -499,7 +499,7 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
 
   profile_.reset();
   ash::SeneschalClient::Shutdown();
-  chromeos::ConciergeClient::Shutdown();
+  ash::ConciergeClient::Shutdown();
   chromeos::DBusThreadManager::Shutdown();
 }
 
@@ -808,7 +808,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveLegacy) {
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveArcvm) {
   chromeos::DBusThreadManager::Initialize();
   chromeos::CiceroneClient::InitializeFake();
-  chromeos::ConciergeClient::InitializeFake();
+  ash::ConciergeClient::InitializeFake();
   ash::SeneschalClient::InitializeFake();
 
   auto* command_line = base::CommandLine::ForCurrentProcess();

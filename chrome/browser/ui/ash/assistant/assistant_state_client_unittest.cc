@@ -33,7 +33,7 @@ class AssistantStateClientTest : public ChromeAshTestBase {
     // Need to initialize DBusThreadManager before ArcSessionManager's
     // constructor calls DBusThreadManager::Get().
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ChromeAshTestBase::SetUp();
 
     // Setup test profile.
@@ -62,7 +62,7 @@ class AssistantStateClientTest : public ChromeAshTestBase {
     arc_session_manager_->Shutdown();
     arc_session_manager_.reset();
     ChromeAshTestBase::TearDown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

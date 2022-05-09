@@ -103,7 +103,7 @@ class UserManagerTest : public testing::Test {
         std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
 
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     ResetUserManager();
 
@@ -123,7 +123,7 @@ class UserManagerTest : public testing::Test {
     local_state_.reset();
 
     base::RunLoop().RunUntilIdle();
-    chromeos::ConciergeClient::Shutdown();
+    ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

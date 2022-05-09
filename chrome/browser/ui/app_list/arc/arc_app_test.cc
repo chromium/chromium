@@ -87,7 +87,7 @@ void ArcAppTest::SetUp(Profile* profile) {
   if (!chromeos::DBusThreadManager::IsInitialized()) {
     chromeos::DBusThreadManager::Initialize();
     dbus_thread_manager_initialized_ = true;
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
   }
   arc::SetArcAvailableCommandLineForTesting(
       base::CommandLine::ForCurrentProcess());
@@ -259,7 +259,7 @@ void ArcAppTest::TearDown() {
   // ash::AshTestHelper::SetUp(), so Shutdown() only when it is initialized in
   // ArcAppTest::SetUp().
   if (dbus_thread_manager_initialized_) {
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     dbus_thread_manager_initialized_ = false;
   }

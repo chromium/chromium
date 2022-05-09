@@ -56,9 +56,9 @@ class CrostiniDiskTestDbus : public CrostiniDiskTest {
   CrostiniDiskTestDbus() {
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
-    fake_concierge_client_ = chromeos::FakeConciergeClient::Get();
+    fake_concierge_client_ = ash::FakeConciergeClient::Get();
   }
 
   void SetUp() override {
@@ -72,7 +72,7 @@ class CrostiniDiskTestDbus : public CrostiniDiskTest {
     test_helper_.reset();
     profile_.reset();
     ash::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
@@ -98,7 +98,7 @@ class CrostiniDiskTestDbus : public CrostiniDiskTest {
   Profile* profile() { return profile_.get(); }
 
   content::BrowserTaskEnvironment task_environment_;
-  chromeos::FakeConciergeClient* fake_concierge_client_;
+  ash::FakeConciergeClient* fake_concierge_client_;
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> test_helper_;

@@ -40,7 +40,7 @@ class CrostiniLowDiskNotificationTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
 
     GetCrosSettingsHelper()->ReplaceDeviceSettingsProviderWithStub();
@@ -70,7 +70,7 @@ class CrostiniLowDiskNotificationTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     low_disk_notification_.reset();
     ash::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     BrowserWithTestWindowTest::TearDown();

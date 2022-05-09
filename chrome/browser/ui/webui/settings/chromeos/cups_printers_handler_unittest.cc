@@ -211,7 +211,7 @@ class CupsPrintersHandlerTest : public testing::Test {
 
 TEST_F(CupsPrintersHandlerTest, RemoveCorrectPrinter) {
   DBusThreadManager::Initialize();
-  chromeos::ConciergeClient::InitializeFake(
+  ConciergeClient::InitializeFake(
       /*fake_cicerone_client=*/nullptr);
 
   DebugDaemonClient* client = DBusThreadManager::Get()->GetDebugDaemonClient();
@@ -240,7 +240,7 @@ TEST_F(CupsPrintersHandlerTest, RemoveCorrectPrinter) {
   EXPECT_FALSE(expected);
 
   profile_.reset();
-  chromeos::ConciergeClient::Shutdown();
+  ConciergeClient::Shutdown();
   DBusThreadManager::Shutdown();
 }
 

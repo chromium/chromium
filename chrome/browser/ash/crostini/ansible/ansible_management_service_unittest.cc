@@ -36,7 +36,7 @@ class AnsibleManagementServiceTest : public testing::Test,
   AnsibleManagementServiceTest() {
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
 
     profile_ = std::make_unique<TestingProfile>();
@@ -66,7 +66,7 @@ class AnsibleManagementServiceTest : public testing::Test,
     profile_.reset();
 
     ash::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }

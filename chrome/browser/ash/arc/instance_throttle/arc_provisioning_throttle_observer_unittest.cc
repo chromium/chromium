@@ -29,7 +29,7 @@ class ArcProvisioningThrottleObserverTest : public testing::Test {
  public:
   ArcProvisioningThrottleObserverTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
 

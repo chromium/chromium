@@ -57,7 +57,7 @@ enum class ArcStopReason;
 class ArcSessionManager : public ArcSessionRunner::Observer,
                           public ArcSupportHost::ErrorDelegate,
                           public chromeos::SessionManagerClient::Observer,
-                          public chromeos::ConciergeClient::VmObserver,
+                          public ash::ConciergeClient::VmObserver,
                           public policy::PolicyService::Observer {
  public:
   // Represents each State of ARC session.
@@ -314,7 +314,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
     property_files_expansion_result_.reset();
   }
 
-  // chromeos::ConciergeClient::VmObserver overrides.
+  // ash::ConciergeClient::VmObserver overrides.
   void OnVmStarted(
       const vm_tools::concierge::VmStartedSignal& vm_signal) override;
   void OnVmStopped(

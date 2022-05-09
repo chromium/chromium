@@ -38,7 +38,7 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
     // Need to initialize DBusThreadManager before ArcSessionManager's
     // constructor calls DBusThreadManager::Get().
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     chromeos::SessionManagerClient::InitializeFakeInMemory();
 
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
@@ -72,7 +72,7 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
     arc_session_manager_.reset();
     arc_service_manager_.reset();
     chromeos::SessionManagerClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

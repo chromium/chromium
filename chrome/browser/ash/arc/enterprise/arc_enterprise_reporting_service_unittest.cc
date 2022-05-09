@@ -56,7 +56,7 @@ class ArcEnterpriseReportingServiceTest : public testing::Test {
     GetFakeUserManager()->LoginUser(account_id);
 
     // Set up ArcSessionManager for ReportManagementState tests
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
     ArcSessionManager::SetUiEnabledForTesting(false);

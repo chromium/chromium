@@ -21,7 +21,7 @@
 
 namespace concierge = vm_tools::concierge;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -521,4 +521,4 @@ ConciergeClient* ConciergeClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

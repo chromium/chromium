@@ -499,7 +499,7 @@ class FileManagerFileTasksCrostiniTest
       : crostini_test_helper_(std::make_unique<crostini::CrostiniTestHelper>(
             test_profile_.get())),
         crostini_folder_(util::GetCrostiniMountDirectory(test_profile_.get())) {
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     vm_tools::apps::App text_app =
         crostini::CrostiniTestHelper::BasicApp("text_app");
@@ -542,7 +542,7 @@ class FileManagerFileTasksCrostiniTest
   ~FileManagerFileTasksCrostiniTest() override {
     crostini_test_helper_.reset();
     test_profile_.reset();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
   }
 
   void SetUp() override {

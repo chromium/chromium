@@ -153,7 +153,7 @@ class LockScreenAppManagerImplTest
     // Need to initialize DBusThreadManager before ArcSessionManager's
     // constructor calls DBusThreadManager::Get().
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     // Initialize command line so `ash::NoteTakingHelper` thinks note taking
     // on lock screen is enabled.
@@ -195,7 +195,7 @@ class LockScreenAppManagerImplTest
     arc_session_manager_.reset();
     extensions::ExtensionSystem::Get(profile())->Shutdown();
 
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

@@ -173,7 +173,7 @@ class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
 
 // A concierge that remembers the parameter passed to StartArcVm.
 // TODO(yusukes): Merge the feature to FakeConciergeClient.
-class TestConciergeClient : public chromeos::FakeConciergeClient {
+class TestConciergeClient : public ash::FakeConciergeClient {
  public:
   static void Initialize() { new TestConciergeClient(); }
 
@@ -187,7 +187,7 @@ class TestConciergeClient : public chromeos::FakeConciergeClient {
                   callback) override {
     ++stop_vm_call_count_;
     stop_vm_request_ = request;
-    chromeos::FakeConciergeClient::StopVm(request, std::move(callback));
+    ash::FakeConciergeClient::StopVm(request, std::move(callback));
     if (on_stop_vm_callback_ && (stop_vm_call_count_ == callback_count_))
       std::move(on_stop_vm_callback_).Run();
   }
@@ -197,7 +197,7 @@ class TestConciergeClient : public chromeos::FakeConciergeClient {
       chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
           callback) override {
     start_arc_vm_request_ = request;
-    chromeos::FakeConciergeClient::StartArcVm(request, std::move(callback));
+    ash::FakeConciergeClient::StartArcVm(request, std::move(callback));
   }
 
   void ReclaimVmMemory(
@@ -206,8 +206,7 @@ class TestConciergeClient : public chromeos::FakeConciergeClient {
           callback) override {
     ++reclaim_vm_count_;
     reclaim_vm_request_ = request;
-    chromeos::FakeConciergeClient::ReclaimVmMemory(request,
-                                                   std::move(callback));
+    ash::FakeConciergeClient::ReclaimVmMemory(request, std::move(callback));
   }
 
   int stop_vm_call_count() const { return stop_vm_call_count_; }
@@ -236,7 +235,7 @@ class TestConciergeClient : public chromeos::FakeConciergeClient {
 
  private:
   TestConciergeClient()
-      : chromeos::FakeConciergeClient(/*fake_cicerone_client=*/nullptr) {}
+      : ash::FakeConciergeClient(/*fake_cicerone_client=*/nullptr) {}
 
   int stop_vm_call_count_ = 0;
   // When callback_count_ == 0, the on_stop_vm_callback_ is not run.
@@ -361,7 +360,7 @@ class ArcVmClientAdapterTest : public testing::Test,
   ArcVmClientAdapterTest& operator=(const ArcVmClientAdapterTest&) = delete;
 
   ~ArcVmClientAdapterTest() override {
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -639,7 +638,7 @@ class ArcVmClientAdapterTest : public testing::Test,
     return upstart_operations_;
   }
   TestConciergeClient* GetTestConciergeClient() {
-    return static_cast<TestConciergeClient*>(chromeos::ConciergeClient::Get());
+    return static_cast<TestConciergeClient*>(ash::ConciergeClient::Get());
   }
 
   TestDebugDaemonClient* GetTestDebugDaemonClient() {

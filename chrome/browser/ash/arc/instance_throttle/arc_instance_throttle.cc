@@ -88,7 +88,7 @@ void SetArcVmCpuRestrictionImpl(
     return;
   }
 
-  auto* const client = chromeos::ConciergeClient::Get();
+  auto* const client = ash::ConciergeClient::Get();
   if (!client) {
     LOG(ERROR) << "ConciergeClient is not available";
     return;
@@ -100,7 +100,7 @@ void SetArcVmCpuRestrictionImpl(
 
 void SetArcVmCpuRestriction(CpuRestrictionState cpu_restriction_state,
                             bool use_quota) {
-  auto* const client = chromeos::ConciergeClient::Get();
+  auto* const client = ash::ConciergeClient::Get();
   if (!client) {
     LOG(ERROR) << "ConciergeClient is not available";
     return;

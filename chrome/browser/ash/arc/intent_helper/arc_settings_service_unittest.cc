@@ -61,7 +61,7 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
         base::CommandLine::ForCurrentProcess());
     ArcSessionManager::SetUiEnabledForTesting(false);
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     network_handler_test_helper_ =
         std::make_unique<chromeos::NetworkHandlerTestHelper>();
     network_config_helper_ = std::make_unique<
@@ -125,7 +125,7 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
 
     ash::StatsReportingController::Shutdown();
     network_handler_test_helper_.reset();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

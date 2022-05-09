@@ -23,9 +23,8 @@ class BorealisTask;
 
 // The Borealis Context Manager is a keyed service responsible for managing
 // the Borealis VM startup flow and guaranteeing its state to other processes.
-class BorealisContextManagerImpl
-    : public BorealisContextManager,
-      public chromeos::ConciergeClient::VmObserver {
+class BorealisContextManagerImpl : public BorealisContextManager,
+                                   public ash::ConciergeClient::VmObserver {
  public:
   explicit BorealisContextManagerImpl(Profile* profile);
   BorealisContextManagerImpl(const BorealisContextManagerImpl&) = delete;
@@ -87,7 +86,7 @@ class BorealisContextManagerImpl
   BorealisContextManager::ContextOrFailure GetResult(
       const Startup::Result& completion_result);
 
-  // chromeos::ConciergeClient::VmObserver:
+  // ash::ConciergeClient::VmObserver:
   void OnVmStarted(const vm_tools::concierge::VmStartedSignal& signal) override;
   void OnVmStopped(const vm_tools::concierge::VmStoppedSignal& signal) override;
 

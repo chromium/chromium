@@ -919,7 +919,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     ash::cros_healthd::FakeCrosHealthd::Initialize();
 
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
   }
 
@@ -931,7 +931,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     ash::SeneschalClient::Shutdown();
     // |testing_profile_| must be destroyed while ConciergeClient is alive.
     testing_profile_.reset();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::LoginState::Shutdown();
     chromeos::TpmManagerClient::Shutdown();

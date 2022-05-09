@@ -235,7 +235,7 @@ class DlpFilesExternalDestinationTest
 
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
 
     crostini::CrostiniManager* crostini_manager =
@@ -270,7 +270,7 @@ class DlpFilesExternalDestinationTest
 
     chromeos::DBusThreadManager::Shutdown();
     chromeos::CiceroneClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     ash::SeneschalClient::Shutdown();
 
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();

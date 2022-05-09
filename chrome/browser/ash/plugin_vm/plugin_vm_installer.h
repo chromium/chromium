@@ -43,7 +43,7 @@ class PluginVmDriveImageDownloadService;
 // depending on whether an .iso (new VM) or archive (prepared VM) is
 // downloaded.
 class PluginVmInstaller : public KeyedService,
-                          public chromeos::ConciergeClient::DiskImageObserver {
+                          public ash::ConciergeClient::DiskImageObserver {
  public:
   // FailureReasons values are logged to UMA and shown to users. Do not change
   // or re-use enum values.

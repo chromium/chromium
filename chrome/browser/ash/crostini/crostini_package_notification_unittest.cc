@@ -36,7 +36,7 @@ class CrostiniPackageNotificationTest : public testing::Test {
   void SetUp() override {
     DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     task_environment_ = std::make_unique<content::BrowserTaskEnvironment>(
         base::test::TaskEnvironment::MainThreadType::UI,
@@ -55,7 +55,7 @@ class CrostiniPackageNotificationTest : public testing::Test {
     profile_.reset();
     task_environment_.reset();
     ash::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     DBusThreadManager::Shutdown();
   }

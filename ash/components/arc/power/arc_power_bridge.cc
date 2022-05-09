@@ -208,7 +208,7 @@ void ArcPowerBridge::OnAndroidSuspendReady(base::UnguessableToken token) {
     vm_tools::concierge::SuspendVmRequest request;
     request.set_name(kArcVmName);
     request.set_owner_id(user_id_hash_);
-    chromeos::ConciergeClient::Get()->SuspendVm(
+    ash::ConciergeClient::Get()->SuspendVm(
         request, base::BindOnce(&ArcPowerBridge::OnConciergeSuspendVmResponse,
                                 weak_ptr_factory_.GetWeakPtr(), token));
     return;
@@ -233,7 +233,7 @@ void ArcPowerBridge::SuspendDone(base::TimeDelta sleep_duration) {
     vm_tools::concierge::ResumeVmRequest request;
     request.set_name(kArcVmName);
     request.set_owner_id(user_id_hash_);
-    chromeos::ConciergeClient::Get()->ResumeVm(
+    ash::ConciergeClient::Get()->ResumeVm(
         request, base::BindOnce(&ArcPowerBridge::OnConciergeResumeVmResponse,
                                 weak_ptr_factory_.GetWeakPtr()));
     return;

@@ -53,7 +53,7 @@ class CrostiniUpgradeAvailableNotificationTest
     BrowserWithTestWindowTest::SetUp();
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
 
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
@@ -67,7 +67,7 @@ class CrostiniUpgradeAvailableNotificationTest
     display_service_.reset();
     BrowserWithTestWindowTest::TearDown();
     ash::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }

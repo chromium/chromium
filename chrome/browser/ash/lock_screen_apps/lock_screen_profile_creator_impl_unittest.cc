@@ -225,7 +225,7 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
     // Need to initialize DBusThreadManager before ArcSessionManager's
     // constructor calls DBusThreadManager::Get().
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         extensions::switches::kAllowlistedExtensionID,
@@ -257,7 +257,7 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
     ash::NoteTakingHelper::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
 
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

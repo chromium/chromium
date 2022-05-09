@@ -50,7 +50,7 @@ class PluginVmManagerImplTest : public testing::Test {
   PluginVmManagerImplTest() {
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     testing_profile_ = std::make_unique<TestingProfile>();
     test_helper_ = std::make_unique<PluginVmTestHelper>(testing_profile_.get());
@@ -90,7 +90,7 @@ class PluginVmManagerImplTest : public testing::Test {
     test_helper_.reset();
     testing_profile_.reset();
     ash::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
@@ -100,8 +100,8 @@ class PluginVmManagerImplTest : public testing::Test {
     return *static_cast<chromeos::FakeVmPluginDispatcherClient*>(
         chromeos::DBusThreadManager::Get()->GetVmPluginDispatcherClient());
   }
-  chromeos::FakeConciergeClient& ConciergeClient() {
-    return *chromeos::FakeConciergeClient::Get();
+  ash::FakeConciergeClient& ConciergeClient() {
+    return *ash::FakeConciergeClient::Get();
   }
   ash::FakeSeneschalClient& SeneschalClient() {
     return *ash::FakeSeneschalClient::Get();

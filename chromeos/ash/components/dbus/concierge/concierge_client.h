@@ -9,13 +9,13 @@
 #include "base/files/scoped_file.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "dbus/object_proxy.h"
 
-namespace chromeos {
-
-class FakeCiceroneClient;
+namespace ash {
 
 // ConciergeClient is used to communicate with Concierge, which is used to
 // start and stop VMs, as well as for disk image management.
@@ -316,12 +316,11 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient : public DBusClient {
   ConciergeClient();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ConciergeClient;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::ConciergeClient;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CONCIERGE_CONCIERGE_CLIENT_H_

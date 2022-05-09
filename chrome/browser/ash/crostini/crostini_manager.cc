@@ -90,8 +90,8 @@ chromeos::CiceroneClient* GetCiceroneClient() {
   return chromeos::CiceroneClient::Get();
 }
 
-chromeos::ConciergeClient* GetConciergeClient() {
-  return chromeos::ConciergeClient::Get();
+ash::ConciergeClient* GetConciergeClient() {
+  return ash::ConciergeClient::Get();
 }
 
 chromeos::AnomalyDetectorClient* GetAnomalyDetectorClient() {

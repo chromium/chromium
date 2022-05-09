@@ -30,8 +30,8 @@ namespace policy {
 
 namespace {
 
-chromeos::ConciergeClient* GetConciergeClient() {
-  return chromeos::ConciergeClient::Get();
+ash::ConciergeClient* GetConciergeClient() {
+  return ash::ConciergeClient::Get();
 }
 
 LockToSingleUserManager* g_lock_to_single_user_manager_instance;

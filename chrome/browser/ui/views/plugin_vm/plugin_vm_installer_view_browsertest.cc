@@ -68,7 +68,7 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
-    fake_concierge_client_ = chromeos::FakeConciergeClient::Get();
+    fake_concierge_client_ = ash::FakeConciergeClient::Get();
     fake_concierge_client_->set_disk_image_progress_signal_connected(true);
     fake_vm_plugin_dispatcher_client_ =
         static_cast<chromeos::FakeVmPluginDispatcherClient*>(
@@ -154,7 +154,7 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
       network_connection_tracker_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   PluginVmInstallerView* view_;
-  chromeos::FakeConciergeClient* fake_concierge_client_;
+  ash::FakeConciergeClient* fake_concierge_client_;
   chromeos::FakeVmPluginDispatcherClient* fake_vm_plugin_dispatcher_client_;
 
  private:

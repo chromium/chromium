@@ -22,7 +22,7 @@ namespace policy {
 class LockToSingleUserManager final
     : public user_manager::UserManager::UserSessionStateObserver,
       public arc::ArcSessionManagerObserver,
-      public chromeos::ConciergeClient::VmObserver,
+      public ash::ConciergeClient::VmObserver,
       public ash::VmStartingObserver {
  public:
   static LockToSingleUserManager* GetLockToSingleUserManagerInstance();

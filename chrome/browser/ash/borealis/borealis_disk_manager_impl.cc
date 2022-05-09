@@ -140,7 +140,7 @@ class BorealisDiskManagerImpl::BuildDiskInfo
         ash::ProfileHelper::GetUserIdHashFromProfile(context_->profile()));
     request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
     request.set_vm_name(context_->vm_name());
-    chromeos::ConciergeClient::Get()->ListVmDisks(
+    ash::ConciergeClient::Get()->ListVmDisks(
         std::move(request),
         base::BindOnce(&BuildDiskInfo::HandleListVmDisksResult,
                        weak_factory_.GetWeakPtr()));
@@ -191,7 +191,7 @@ class BorealisDiskManagerImpl::ResizeDisk
     : public Transition<BorealisDiskInfo,
                         std::pair<BorealisDiskInfo, BorealisDiskInfo>,
                         Described<BorealisResizeDiskResult>>,
-      public chromeos::ConciergeClient::DiskImageObserver {
+      public ash::ConciergeClient::DiskImageObserver {
  public:
   explicit ResizeDisk(
       int64_t space_delta,
@@ -205,7 +205,7 @@ class BorealisDiskManagerImpl::ResizeDisk
         weak_factory_(this) {}
 
   ~ResizeDisk() override {
-    chromeos::ConciergeClient::Get()->RemoveDiskImageObserver(this);
+    ash::ConciergeClient::Get()->RemoveDiskImageObserver(this);
   }
 
   void Start(std::unique_ptr<BorealisDiskManagerImpl::BorealisDiskInfo>
@@ -314,7 +314,7 @@ class BorealisDiskManagerImpl::ResizeDisk
         ash::ProfileHelper::GetUserIdHashFromProfile(context_->profile()));
     request.set_vm_name(context_->vm_name());
     request.set_disk_size(space_delta_ + original_disk_info_.disk_size);
-    chromeos::ConciergeClient::Get()->ResizeDiskImage(
+    ash::ConciergeClient::Get()->ResizeDiskImage(
         std::move(request), base::BindOnce(&ResizeDisk::HandleResizeResponse,
                                            weak_factory_.GetWeakPtr()));
   }
@@ -330,7 +330,7 @@ class BorealisDiskManagerImpl::ResizeDisk
     } else if (response->status() ==
                vm_tools::concierge::DiskImageStatus::DISK_STATUS_IN_PROGRESS) {
       uuid_ = response->command_uuid();
-      chromeos::ConciergeClient::Get()->AddDiskImageObserver(this);
+      ash::ConciergeClient::Get()->AddDiskImageObserver(this);
     } else {
       GetUpdatedDiskInfo(
           "got an unexpected or error status from concierge when resizing: " +
@@ -339,7 +339,7 @@ class BorealisDiskManagerImpl::ResizeDisk
     }
   }
 
-  // chromeos::ConciergeClient::DiskImageObserver
+  // ash::ConciergeClient::DiskImageObserver
   void OnDiskImageProgress(
       const vm_tools::concierge::DiskImageStatusResponse& signal) override {
     if (signal.command_uuid() != uuid_) {

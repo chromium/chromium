@@ -97,7 +97,7 @@ class BorealisContextTest : public testing::Test,
 };
 
 TEST_F(BorealisContextTest, ConciergeFailure) {
-  auto* concierge_client = chromeos::FakeConciergeClient::Get();
+  auto* concierge_client = ash::FakeConciergeClient::Get();
 
   concierge_client->NotifyConciergeStopped();
   histogram_tester_.ExpectUniqueSample(

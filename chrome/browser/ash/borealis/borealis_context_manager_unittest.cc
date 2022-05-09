@@ -109,7 +109,7 @@ class BorealisContextManagerTest : public testing::Test,
   }
 
   void SendVmStartedSignal() {
-    auto* concierge_client = chromeos::FakeConciergeClient::Get();
+    auto* concierge_client = ash::FakeConciergeClient::Get();
 
     vm_tools::concierge::VmStartedSignal signal;
     signal.set_name("test_vm_name");
@@ -119,7 +119,7 @@ class BorealisContextManagerTest : public testing::Test,
   }
 
   void SendVmStoppedSignal() {
-    auto* concierge_client = chromeos::FakeConciergeClient::Get();
+    auto* concierge_client = ash::FakeConciergeClient::Get();
 
     vm_tools::concierge::VmStoppedSignal signal;
     signal.set_name("test_vm_name");
@@ -294,8 +294,8 @@ TEST_F(BorealisContextManagerTest, ShutDownCancelsRequestsAndTerminatesVm) {
   context_manager.ShutDownBorealis(shutdown_callback_handler.BindOnce());
   task_environment_.RunUntilIdle();
 
-  chromeos::FakeConciergeClient* fake_concierge_client =
-      chromeos::FakeConciergeClient::Get();
+  ash::FakeConciergeClient* fake_concierge_client =
+      ash::FakeConciergeClient::Get();
   EXPECT_GE(fake_concierge_client->stop_vm_call_count(), 1);
   histogram_tester_->ExpectTotalCount(kBorealisShutdownNumAttemptsHistogram, 1);
   histogram_tester_->ExpectUniqueSample(kBorealisShutdownResultHistogram,
@@ -321,8 +321,8 @@ TEST_F(BorealisContextManagerTest, FailureToShutdownReportsError) {
   vm_tools::concierge::StopVmResponse response;
   response.set_success(false);
   response.set_failure_reason("expected failure");
-  chromeos::FakeConciergeClient* fake_concierge_client =
-      chromeos::FakeConciergeClient::Get();
+  ash::FakeConciergeClient* fake_concierge_client =
+      ash::FakeConciergeClient::Get();
   fake_concierge_client->set_stop_vm_response(std::move(response));
 
   ShutdownCallbackFactory shutdown_callback_handler;
@@ -426,8 +426,8 @@ TEST_F(BorealisContextManagerTest, LogVmStoppedWhenUnexpected) {
 }
 
 TEST_F(BorealisContextManagerTest, VmShutsDownAfterChromeCrashes) {
-  chromeos::FakeConciergeClient* fake_concierge_client =
-      chromeos::FakeConciergeClient::Get();
+  ash::FakeConciergeClient* fake_concierge_client =
+      ash::FakeConciergeClient::Get();
 
   // Ensure that GetVmInfo returns success - a VM "still running".
   SendVmStartedSignal();

@@ -32,7 +32,7 @@ class GuestOsStabilityMonitorTest : public testing::Test {
   GuestOsStabilityMonitorTest() : task_env_() {
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
 
     // CrostiniManager will create a GuestOsStabilityMonitor for us.
@@ -56,7 +56,7 @@ class GuestOsStabilityMonitorTest : public testing::Test {
     crostini_manager_.reset();
     profile_.reset();
     ash::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
@@ -73,7 +73,7 @@ class GuestOsStabilityMonitorTest : public testing::Test {
   }
 
   void SendVmStoppedSignal() {
-    auto* concierge_client = chromeos::FakeConciergeClient::Get();
+    auto* concierge_client = ash::FakeConciergeClient::Get();
 
     vm_tools::concierge::VmStoppedSignal signal;
     signal.set_name("termina");
@@ -90,7 +90,7 @@ class GuestOsStabilityMonitorTest : public testing::Test {
 };
 
 TEST_F(GuestOsStabilityMonitorTest, ConciergeFailure) {
-  auto* concierge_client = chromeos::FakeConciergeClient::Get();
+  auto* concierge_client = ash::FakeConciergeClient::Get();
 
   concierge_client->NotifyConciergeStopped();
   histogram_tester_.ExpectUniqueSample(crostini::kCrostiniStabilityHistogram,

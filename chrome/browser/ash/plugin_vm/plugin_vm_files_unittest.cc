@@ -99,12 +99,12 @@ class PluginVmFilesTest : public testing::Test {
     ScopedDBusThreadManager() {
       chromeos::DBusThreadManager::Initialize();
       chromeos::CiceroneClient::InitializeFake();
-      chromeos::ConciergeClient::InitializeFake();
+      ash::ConciergeClient::InitializeFake();
       ash::SeneschalClient::InitializeFake();
     }
     ~ScopedDBusThreadManager() {
       ash::SeneschalClient::Shutdown();
-      chromeos::ConciergeClient::Shutdown();
+      ash::ConciergeClient::Shutdown();
       chromeos::CiceroneClient::Shutdown();
       chromeos::DBusThreadManager::Shutdown();
     }

@@ -154,8 +154,8 @@ class CrostiniFileChangeObserver : public base::CheckedObserver {
 // only the Concierge name is exposed outside of here.
 class CrostiniManager : public KeyedService,
                         public chromeos::AnomalyDetectorClient::Observer,
-                        public chromeos::ConciergeClient::VmObserver,
-                        public chromeos::ConciergeClient::ContainerObserver,
+                        public ash::ConciergeClient::VmObserver,
+                        public ash::ConciergeClient::ContainerObserver,
                         public chromeos::CiceroneClient::Observer,
                         public chromeos::NetworkStateHandlerObserver,
                         public chromeos::PowerManagerClient::Observer {

@@ -71,7 +71,7 @@ class CrosUsbDeviceObserver : public base::CheckedObserver {
 // Detects USB Devices for Chrome OS and manages UI for controlling their use
 // with CrOS, Web or GuestOSs.
 class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
-                        public chromeos::ConciergeClient::VmObserver,
+                        public ConciergeClient::VmObserver,
                         public chromeos::VmPluginDispatcherClient::Observer,
                         public disks::DiskMountManager::Observer {
  public:
@@ -154,7 +154,7 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
     // TODO(nverne): Add current state and errors etc.
   };
 
-  // chromeos::ConciergeClient::VmObserver:
+  // ConciergeClient::VmObserver:
   void OnVmStarted(const vm_tools::concierge::VmStartedSignal& signal) override;
   void OnVmStopped(const vm_tools::concierge::VmStoppedSignal& signal) override;
 

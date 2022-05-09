@@ -67,7 +67,7 @@ class StorageHandlerTest : public testing::Test {
     chromeos::DBusThreadManager::Initialize();
 
     // Initialize fake DBus clients.
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     chromeos::SpacedClient::InitializeFake();
 
     // The storage handler requires an instance of DiskMountManager,
@@ -139,7 +139,7 @@ class StorageHandlerTest : public testing::Test {
     ash::disks::DiskMountManager::Shutdown();
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
     chromeos::SpacedClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

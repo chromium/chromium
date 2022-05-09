@@ -34,11 +34,11 @@ class ArcClientAdapterTest : public testing::Test,
     chromeos::DBusThreadManager::Initialize();
     chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
         std::make_unique<chromeos::FakeDebugDaemonClient>());
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ash::UpstartClient::InitializeFake();
   }
   void TearDown() override {
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

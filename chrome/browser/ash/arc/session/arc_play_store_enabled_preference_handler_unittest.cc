@@ -67,7 +67,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
     // Need to initialize DBusThreadManager before ArcSessionManager's
     // constructor calls DBusThreadManager::Get().
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     chromeos::SessionManagerClient::InitializeFakeInMemory();
     ash::UpstartClient::InitializeFake();
 
@@ -114,7 +114,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
     ash::UpstartClient::Shutdown();
     chromeos::SessionManagerClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

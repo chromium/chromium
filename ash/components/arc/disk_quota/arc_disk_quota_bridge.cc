@@ -302,7 +302,7 @@ void ArcDiskQuotaBridge::OnHostFreeSpace(
           << " current_disk_size=" << guest_total_space
           << " new_disk_size=" << new_disk_size;
 
-  chromeos::ConciergeClient::Get()->ResizeDiskImage(
+  ash::ConciergeClient::Get()->ResizeDiskImage(
       resize_request, base::BindOnce(&ArcDiskQuotaBridge::OnResizeDiskResponse,
                                      weak_factory_.GetWeakPtr(), new_disk_size,
                                      std::move(callback)));

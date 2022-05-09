@@ -59,7 +59,7 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
     // Need to initialize DBusThreadManager before ArcSessionManager's
     // constructor calls DBusThreadManager::Get().
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
@@ -106,7 +106,7 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
     arc_session_manager_.reset();
     arc_service_manager_.reset();
 
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

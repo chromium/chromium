@@ -48,15 +48,15 @@ class CrostiniUtilTest : public testing::Test {
         browser_part_(g_browser_process->platform_part()) {
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
 
-    fake_concierge_client_ = chromeos::FakeConciergeClient::Get();
+    fake_concierge_client_ = ash::FakeConciergeClient::Get();
   }
 
   ~CrostiniUtilTest() override {
     ash::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
@@ -96,7 +96,7 @@ class CrostiniUtilTest : public testing::Test {
   }
 
  protected:
-  chromeos::FakeConciergeClient* fake_concierge_client_;
+  ash::FakeConciergeClient* fake_concierge_client_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<TestingProfile> profile_;

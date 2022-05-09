@@ -746,7 +746,7 @@ TEST_F(ChromeArcUtilTest, ArcUnmanagedToManagedTransition_FeatureOff) {
 class ArcOobeTest : public ChromeArcUtilTest {
  public:
   ArcOobeTest() {
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     oobe_configuration_ = std::make_unique<ash::OobeConfiguration>();
   }
 
@@ -758,7 +758,7 @@ class ArcOobeTest : public ChromeArcUtilTest {
     // configuration.
     fake_login_display_host_.reset();
     oobe_configuration_.reset();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
   }
 
  protected:

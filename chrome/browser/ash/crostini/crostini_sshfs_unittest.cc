@@ -72,7 +72,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
   CrostiniSshfsHelperTest() {
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     profile_ = std::make_unique<TestingProfile>();
     crostini_test_helper_ =
@@ -92,7 +92,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
     base::Base64Encode("privkey", &identity);
     default_mount_options_ = {"UserKnownHostsBase64=" + known_hosts,
                               "IdentityBase64=" + identity, "Port=2222"};
-    fake_concierge_client_ = chromeos::FakeConciergeClient::Get();
+    fake_concierge_client_ = ash::FakeConciergeClient::Get();
   }
 
   CrostiniSshfsHelperTest(const CrostiniSshfsHelperTest&) = delete;
@@ -108,7 +108,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
     crostini_test_helper_.reset();
     profile_.reset();
     ash::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
@@ -164,7 +164,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
   std::unique_ptr<CrostiniTestHelper> crostini_test_helper_;
   const std::string kMountName = "crostini_test_termina_penguin";
   std::vector<std::string> default_mount_options_;
-  chromeos::FakeConciergeClient* fake_concierge_client_;
+  ash::FakeConciergeClient* fake_concierge_client_;
   std::unique_ptr<file_manager::VolumeManager> volume_manager_;
   std::unique_ptr<CrostiniSshfs> crostini_sshfs_;
   CrostiniManager* crostini_manager_;

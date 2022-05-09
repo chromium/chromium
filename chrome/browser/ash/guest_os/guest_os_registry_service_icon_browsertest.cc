@@ -31,7 +31,7 @@ class GuestOsRegistryServiceIconTest : public InProcessBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
     chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     fake_cicerone_client_ = chromeos::FakeCiceroneClient::Get();
   }
@@ -39,7 +39,7 @@ class GuestOsRegistryServiceIconTest : public InProcessBrowserTest {
   void TearDownInProcessBrowserTestFixture() override {
     service_.reset();
     ash::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
   }

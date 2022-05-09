@@ -789,7 +789,7 @@ TEST_F(ArcPolicyBridgeTest, DisableAppsInSnapshot) {
   constexpr char kTrue[] = "true";
 
   chromeos::DBusThreadManager::Initialize();
-  chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+  ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
   auto upstart_client = std::make_unique<ash::FakeUpstartClient>();
   arc::prefs::RegisterLocalStatePrefs(
@@ -823,7 +823,7 @@ TEST_F(ArcPolicyBridgeTest, DisableAppsInSnapshot) {
   manager.reset();
   upstart_client.reset();
   arc_session_manager.reset();
-  chromeos::ConciergeClient::Shutdown();
+  ash::ConciergeClient::Shutdown();
   chromeos::DBusThreadManager::Shutdown();
 }
 

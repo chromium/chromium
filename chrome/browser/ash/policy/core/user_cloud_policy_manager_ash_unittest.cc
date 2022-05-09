@@ -156,7 +156,7 @@ class UserCloudPolicyManagerAshTest
 
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     scoped_feature_list_.InitWithFeatures(
         GetParam() /* enabled_features */,
@@ -239,7 +239,7 @@ class UserCloudPolicyManagerAshTest
     test_system_shared_loader_factory_->Detach();
     test_signin_shared_loader_factory_->Detach();
 
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

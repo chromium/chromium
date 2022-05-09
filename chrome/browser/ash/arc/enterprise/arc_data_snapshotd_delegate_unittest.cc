@@ -69,7 +69,7 @@ class ArcDataSnapshotdDelegateTest : public testing::Test {
     ArcSessionManager::EnableCheckAndroidManagementForTesting(false);
 
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     chromeos::SessionManagerClient::InitializeFakeInMemory();
 
     TestingProfile::Builder profile_builder;
@@ -88,7 +88,7 @@ class ArcDataSnapshotdDelegateTest : public testing::Test {
 
   ~ArcDataSnapshotdDelegateTest() override {
     chromeos::SessionManagerClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

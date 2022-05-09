@@ -162,7 +162,7 @@ class ArcSessionManagerInLoginScreenTest : public testing::Test {
     // Need to initialize DBusThreadManager before ArcSessionManager's
     // constructor calls DBusThreadManager::Get().
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     chromeos::SessionManagerClient::InitializeFakeInMemory();
 
     ArcSessionManager::SetUiEnabledForTesting(false);
@@ -184,7 +184,7 @@ class ArcSessionManagerInLoginScreenTest : public testing::Test {
     arc_session_manager_.reset();
     arc_service_manager_.reset();
     chromeos::SessionManagerClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -276,7 +276,7 @@ class ArcSessionManagerTestBase : public testing::Test {
 
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::SessionManagerClient::InitializeFakeInMemory();
     ash::UpstartClient::InitializeFake();
@@ -310,7 +310,7 @@ class ArcSessionManagerTestBase : public testing::Test {
     ash::UpstartClient::Shutdown();
     chromeos::SessionManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
