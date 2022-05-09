@@ -122,6 +122,7 @@ public class CompositorViewHolder extends FrameLayout
 
     private EventOffsetHandler mEventOffsetHandler;
     private boolean mIsKeyboardShowing;
+    private boolean mNativeInitialized;
 
     private final Invalidator mInvalidator = new Invalidator();
     private LayoutManagerImpl mLayoutManager;
@@ -1350,6 +1351,7 @@ public class CompositorViewHolder extends FrameLayout
         });
 
         onContentChanged();
+        mNativeInitialized = true;
     }
 
     private void updateContentOverlayVisibility(boolean show) {
@@ -1549,7 +1551,37 @@ public class CompositorViewHolder extends FrameLayout
         // that may have been added elsewhere.
         assert mLayoutManager != null;
         if (enabled && (mNodeProvider == null)) {
-            mAccessibilityView = new View(getContext());
+            mAccessibilityView = new View(getContext()) {
+                boolean mIsCheckingForVirtualViews;
+                List<VirtualView> mVirtualViews = new ArrayList<>();
+
+                /**
+                 * Checks if there are any a11y focusable VirtualViews. If there are, set the view
+                 * to be View.IMPORTANT_FOR_ACCESSIBILITY_AUTO (and therefore return true). If there
+                 * are not, set the view to be View.IMPORTANT_FOR_ACCESSIBILITY_NO (and therefore
+                 * return false).
+                 *
+                 * @return Whether or not the view should be a11y focusable.
+                 */
+                @Override
+                public boolean isImportantForAccessibility() {
+                    if (mNativeInitialized && !mIsCheckingForVirtualViews) {
+                        mIsCheckingForVirtualViews = true;
+                        mVirtualViews.clear();
+                        mLayoutManager.getVirtualViews(mVirtualViews);
+                        int importantForAccessibility = mVirtualViews.size() == 0
+                                ? View.IMPORTANT_FOR_ACCESSIBILITY_NO
+                                : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+                        if (getImportantForAccessibility() != importantForAccessibility) {
+                            setImportantForAccessibility(importantForAccessibility);
+                            sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+                        }
+                        mIsCheckingForVirtualViews = false;
+                    }
+
+                    return super.isImportantForAccessibility();
+                }
+            };
             addView(mAccessibilityView);
             mNodeProvider = new CompositorAccessibilityProvider(mAccessibilityView);
             ViewCompat.setAccessibilityDelegate(mAccessibilityView, mNodeProvider);
