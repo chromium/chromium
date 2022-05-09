@@ -30,6 +30,10 @@ base::FilePath GetProcessImagePath(base::ProcessId pid) {
 #elif BUILDFLAG(IS_WIN)
   base::win::ScopedHandle process_handle(
       OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, pid));
+  if (!process_handle.is_valid()) {
+    PLOG(ERROR) << "OpenProcess failed";
+    return base::FilePath();
+  }
   std::array<wchar_t, MAX_PATH + 1> buffer;
   DWORD size = buffer.size();
   if (!QueryFullProcessImageName(process_handle.Get(), 0, buffer.data(),

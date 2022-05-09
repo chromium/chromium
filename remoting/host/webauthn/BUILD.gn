@@ -29,6 +29,10 @@ source_set("webauthn") {
     "//remoting/proto",
     "//remoting/protocol",
   ]
+
+  if (is_win) {
+    deps += [ "//remoting/host/win:trust_util" ]
+  }
 }
 
 source_set("remote_webauthn_main_headers") {
