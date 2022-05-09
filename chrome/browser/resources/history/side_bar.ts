@@ -16,14 +16,14 @@ import './shared_icons.js';
 import './shared_style.js';
 import './strings.m.js';
 
+import {BrowserProxyImpl} from 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
+import {MetricsProxyImpl} from 'chrome://resources/cr_components/history_clusters/metrics_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
-import {BrowserProxyImpl} from './history_clusters/browser_proxy.js';
-import {MetricsProxyImpl} from './history_clusters/metrics_proxy.js';
 import {Page, TABBED_PAGES} from './router.js';
 import {getTemplate} from './side_bar.html.js';
 

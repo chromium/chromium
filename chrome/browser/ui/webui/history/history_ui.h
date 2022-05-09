@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "chrome/browser/ui/webui/history_clusters/history_clusters.mojom-forward.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/layout.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom-forward.h"
 
 namespace base {
 class RefCountedMemory;

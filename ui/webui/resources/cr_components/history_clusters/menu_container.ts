@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 import './shared_style.js';
-import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import '../../cr_elements/cr_action_menu/cr_action_menu.js';
+import '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {CrActionMenuElement} from '../../cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrLazyRenderElement} from '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 
 import {URLVisit} from './history_clusters.mojom-webui.js';
 import {getTemplate} from './menu_container.html.js';

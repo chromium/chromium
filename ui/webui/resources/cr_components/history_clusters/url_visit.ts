@@ -5,11 +5,12 @@
 import './menu_container.js';
 import './page_favicon.js';
 import './shared_style.js';
-import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import '../../cr_elements/cr_action_menu/cr_action_menu.js';
+import '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../js/load_time_data.m.js';
 
 import {Annotation, URLVisit} from './history_clusters.mojom-webui.js';
 import {OpenWindowProxyImpl} from './open_window_proxy.js';

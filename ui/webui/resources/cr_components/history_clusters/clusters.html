@@ -14,7 +14,14 @@
   }
 
   #placeholder {
+    align-items: center;
+    color: var(--md-loading-message-color);
+    display: flex;
+    flex: 1;
     font-size: inherit;
+    font-weight: 500;
+    height: 100%;
+    justify-content: center;
   }
 
   #footer {
@@ -24,7 +31,7 @@
         0 var(--cluster-padding-horizontal) var(--cluster-padding-vertical);
   }
 </style>
-<div id="placeholder" class="centered-message" hidden="[[!placeholderText_]]">
+<div id="placeholder" hidden="[[!placeholderText_]]">
   [[placeholderText_]]
 </div>
 <iron-list id="clusters" items="[[result_.clusters]]"

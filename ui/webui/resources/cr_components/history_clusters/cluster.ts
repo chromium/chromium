@@ -7,12 +7,13 @@ import './search_query.js';
 import './shared_style.js';
 import './shared_vars.js';
 import './url_visit.js';
-import 'chrome://resources/cr_elements/cr_icons_css.m.js';
+import '../../cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assert} from '../../js/assert_ts.js';
+import {loadTimeData} from '../../js/load_time_data.m.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './cluster.html.js';

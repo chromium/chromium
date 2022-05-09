@@ -82,6 +82,11 @@ generate_grd("build_grd") {
         "$root_gen_dir/third_party/polymer/v1_0/polymer_1_0_resources.grdp",
       ]
     }
+
+    if (!is_android) {
+      deps += [ "cr_components/history_clusters:build_grdp" ]
+      grdp_files += [ "$root_gen_dir/ui/webui/resources/cr_components/history_clusters/resources.grdp" ]
+    }
   }
 
   if (is_chromeos_ash) {

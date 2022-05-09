@@ -4,16 +4,15 @@
 
 import './app.js';
 
+export {BrowserProxyImpl} from 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
+export {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
+export {ClusterAction, MetricsProxy, MetricsProxyImpl, RelatedSearchAction, VisitAction, VisitType} from 'chrome://resources/cr_components/history_clusters/metrics_proxy.js';
 export {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 export {ensureLazyLoaded, HistoryAppElement, listenForPrivilegedLinkClicks} from './app.js';
 export {BrowserService, BrowserServiceImpl, QueryResult, RemoveVisitsRequest} from './browser_service.js';
 export {HistoryPageViewHistogram, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
 export {ForeignSession, ForeignSessionTab, ForeignSessionWindow, HistoryEntry, HistoryQuery} from './externs.js';
-export {BrowserProxyImpl} from './history_clusters/browser_proxy.js';
-export {PageCallbackRouter, PageHandlerRemote} from './history_clusters/history_clusters.mojom-webui.js';
-export {ClusterAction, RelatedSearchAction, VisitAction, VisitType} from './history_clusters/metrics_proxy.js';
-export {MetricsProxy, MetricsProxyImpl} from './history_clusters/metrics_proxy.js';
 export {HistoryItemElement} from './history_item.js';
 export {ActionMenuModel, HistoryListElement} from './history_list.js';
 export {HistoryToolbarElement} from './history_toolbar.js';

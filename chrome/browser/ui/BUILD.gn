@@ -420,7 +420,6 @@ static_library("ui") {
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/ui/webui/download_shelf:mojo_bindings",
     "//chrome/browser/ui/webui/downloads:mojo_bindings",
-    "//chrome/browser/ui/webui/history_clusters:mojo_bindings",
     "//chrome/browser/ui/webui/omnibox:mojo_bindings",
     "//chrome/browser/ui/webui/realbox:mojo_bindings",
     "//chrome/browser/ui/webui/segmentation_internals:mojo_bindings",
@@ -1825,6 +1824,7 @@ static_library("ui") {
       "//ui/base/dragdrop/mojom",
       "//ui/events",
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
+      "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
       "//ui/webui/resources/js/browser_command:mojo_bindings",
       "//ui/webui/resources/js/metrics_reporter:mojo_bindings",
     ]

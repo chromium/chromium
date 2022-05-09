@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "chrome/browser/ui/webui/history_clusters/history_clusters.mojom.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/query_clusters_state.h"
@@ -21,6 +20,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 
 class Profile;
 

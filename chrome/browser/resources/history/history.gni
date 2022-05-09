@@ -5,12 +5,6 @@
 # Files holding a Polymer element definition AND have an equivalent .html file.
 web_component_files = [
   "app.ts",
-  "history_clusters/cluster.ts",
-  "history_clusters/clusters.ts",
-  "history_clusters/menu_container.ts",
-  "history_clusters/page_favicon.ts",
-  "history_clusters/search_query.ts",
-  "history_clusters/url_visit.ts",
   "history_item.ts",
   "history_list.ts",
   "history_toolbar.ts",
@@ -36,10 +30,6 @@ ts_files = [
              "browser_service.ts",
              "constants.ts",
              "externs.ts",
-             "history_clusters/browser_proxy.ts",
-             "history_clusters/metrics_proxy.ts",
-             "history_clusters/open_window_proxy.ts",
-             "history_clusters/utils.ts",
              "history.ts",
              "lazy_load.ts",
              "query_manager.ts",
@@ -47,8 +37,6 @@ ts_files = [
            ] + web_component_files
 
 css_wrapper_files = [
-  "history_clusters/shared_style.ts",
-  "history_clusters/shared_vars.ts",
   "shared_icons.ts",
   "shared_style.ts",
   "shared_vars.ts",

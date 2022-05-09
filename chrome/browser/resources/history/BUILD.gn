@@ -113,11 +113,11 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = ts_files + css_wrapper_files + html_wrapper_files +
-             [ "history_clusters/history_clusters.mojom-webui.js" ]
+  in_files = ts_files + css_wrapper_files + html_wrapper_files
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/history_clusters:build_ts",
     "//ui/webui/resources/mojo:library",
   ]
   definitions = [
@@ -125,16 +125,7 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/metrics_private.d.ts",
   ]
   extra_deps = [
-    ":copy_history_clusters_mojom",
     ":preprocess",
     ":preprocess_generated",
   ]
-}
-
-copy("copy_history_clusters_mojom") {
-  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js" ]
-  outputs = [
-    "$target_gen_dir/$preprocess_folder/history_clusters/{{source_file_part}}",
-  ]
-  deps = [ "//chrome/browser/ui/webui/history_clusters:mojo_bindings_webui_js" ]
 }
