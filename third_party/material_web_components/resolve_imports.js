@@ -12,40 +12,61 @@ const path = require('path');
 const resolve = require('resolve');
 const fs = require('fs');
 const { ArgumentParser } = require('argparse');
+const acorn = require('acorn')
 
 const parser = new ArgumentParser();
 parser.add_argument('--basedir');
 parser.add_argument('files', { nargs: '+' })
 const args = parser.parse_args();
 const inputFiles = args.files;
+
 for (const inputFile of inputFiles) {
   const inputDir = path.dirname(inputFile);
-  const data =
-      fs.readFileSync(inputFile, {encoding: 'utf8'}).split('\n');
+  const data = fs.readFileSync(inputFile, {encoding: 'utf8'})
+  const ast = acorn.parse(data, {sourceType: 'module'});
 
-  // Investigate JS parsing if this is insufficient.
-  const importRegex = /^((?:export [*{]|import ).*["'])(.*)(["'];)$/;
-  const output = [];
+  const NODE_TYPES_TO_RESOLVE = [
+    'ImportDeclaration',
+    'ExportAllDeclaration',
+    'ExportNamedDeclaration',
+  ];
 
-  for (let line of data) {
-    const match = line.match(importRegex);
-    if (match) {
-      const importPath = match[2];
-      let resolved = resolve.sync(importPath, {basedir: args.basedir || inputDir});
-      resolved = path.relative(inputDir, resolved);
-
-      // Resolves to the module version of tslib since resolve.sync only
-      // parses to the "main" field in the package.json.
-      resolved = resolved.replace('tslib.js', 'tslib.es6.js');
-
-      if (!resolved.startsWith('.')) {
-        resolved = './' + resolved;
-      }
-
-      line = line.replace(importRegex, `$1${resolved}$3`);
+  const resolveNodes =
+      ast.body.filter(n => NODE_TYPES_TO_RESOLVE.includes(n.type));
+  const replacements = [];
+  for (let i of resolveNodes) {
+    const source = i.source;
+    if (!source) {
+      continue;
     }
-    output.push(line);
+
+    let resolved =
+        resolve.sync(source.value, {basedir: args.basedir || inputDir});
+    resolved = path.relative(inputDir, resolved);
+
+    // Special handling for tslib since resolve.sync only resolves to the "main"
+    // field in the package.json, and we need the ES6 version.
+    resolved = resolved.replace('tslib.js', 'tslib.es6.js');
+
+    if (!resolved.startsWith('.')) {
+      resolved = './' + resolved;
+    }
+
+    replacements.push({
+      start: source.start,
+      end: source.end,
+      original: source.raw,
+      replacement: `'${resolved}'`,
+    });
   }
 
-  fs.writeFileSync(inputFile, output.join('\n'));
+  const output = [];
+  let curr = 0;
+  for (const r of replacements) {
+    output.push(data.substring(curr, r.start));
+    output.push(r.replacement);
+    curr = r.end;
+  }
+  output.push(data.substring(curr, data.length));
+  fs.writeFileSync(inputFile, output.join(''));
 }
