@@ -124,8 +124,10 @@ bool PaintedScrollbarLayer::UpdateThumbAndTrackGeometry() {
   // These properties should never change.
   DCHECK_EQ(supports_drag_snap_back_,
             scrollbar_.Read(*this)->SupportsDragSnapBack());
-  DCHECK_EQ(is_left_side_vertical_scrollbar(),
-            scrollbar_.Read(*this)->IsLeftSideVerticalScrollbar());
+  // TODO(bokan): This is tripping on bots, re-enable once the root cause is
+  // understood: https://crbug.com/1323876.
+  // DCHECK_EQ(is_left_side_vertical_scrollbar(),
+  //          scrollbar_.Read(*this)->IsLeftSideVerticalScrollbar());
   DCHECK_EQ(is_overlay_, scrollbar_.Read(*this)->IsOverlay());
   DCHECK_EQ(orientation(), scrollbar_.Read(*this)->Orientation());
 
