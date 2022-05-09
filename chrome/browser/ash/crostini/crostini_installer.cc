@@ -274,8 +274,8 @@ void CrostiniInstaller::Cancel(base::OnceClosure callback) {
 
   // Abort the long-running flow, and RestartObserver methods will not be called
   // again until next installation.
-  crostini::CrostiniManager::GetForProfile(profile_)->AbortRestartCrostini(
-      restart_id_, base::DoNothing());
+  auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
+  crostini_manager->AbortRestartCrostini(restart_id_, base::DoNothing());
   restart_id_ = CrostiniManager::kUninitializedRestartId;
   RecordSetupResult(InstallStateToCancelledSetupResult(installing_state_));
 
@@ -284,8 +284,7 @@ void CrostiniInstaller::Cancel(base::OnceClosure callback) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&crostini::CrostiniManager::RemoveCrostini,
-                       base::Unretained(
-                           crostini::CrostiniManager::GetForProfile(profile_)),
+                       crostini_manager->GetWeakPtr(),
                        crostini::kCrostiniDefaultVmName,
                        base::BindOnce(&CrostiniInstaller::FinishCleanup,
                                       weak_ptr_factory_.GetWeakPtr())));
