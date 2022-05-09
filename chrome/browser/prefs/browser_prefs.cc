@@ -474,47 +474,6 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 04/2021.
-const char kSessionStatisticFCPMean[] =
-    "optimization_guide.session_statistic.fcp_mean";
-const char kSessionStatisticFCPStdDev[] =
-    "optimization_guide.session_statistic.fcp_std_dev";
-#if !BUILDFLAG(IS_ANDROID)
-const char kWebAuthnLastTransportUsedPrefName[] =
-    "webauthn.last_transport_used";
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// Deprecated 04/2021
-const char kToolbarIconSurfacingBubbleAcknowledged[] =
-    "toolbar_icon_surfacing_bubble_acknowledged";
-const char kToolbarIconSurfacingBubbleLastShowTime[] =
-    "toolbar_icon_surfacing_bubble_show_time";
-#endif
-
-// Deprecated 04/2021
-const char kTranslateLastDeniedTimeForLanguage[] =
-    "translate_last_denied_time_for_language";
-const char kTranslateTooOftenDeniedForLanguage[] =
-    "translate_too_often_denied_for_language";
-
-// Deprecated 05/2021.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-const char kToolbarSize[] = "extensions.toolbarsize";
-#endif
-const char kSessionExitedCleanly[] = "profile.exited_cleanly";
-
-// Deprecated 05/2021
-const char kSpellCheckBlacklistedDictionaries[] =
-    "spellcheck.blacklisted_dictionaries";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 05/2021
-const char kFeatureUsageDailySampleESim[] = "feature_usage.daily_sample.ESim";
-const char kFeatureUsageDailySampleFingerprint[] =
-    "feature_usage.daily_sample.Fingerprint";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Deprecated 06/2021.
 const char kDataReductionProxy[] = "auth.spdyproxy.origin";
 
@@ -785,7 +744,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kTabStripStackedLayout, false);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterInt64Pref(kFeatureUsageDailySampleESim, 0);
   registry->RegisterIntegerPref(kTimesHIDDialogShown, 0);
   registry->RegisterStringPref(kSplitSettingsSyncTrialGroup, std::string());
   // Deprecated 10/2021.
@@ -853,31 +811,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(prefs::kMediaFeedsBackgroundFetching, false);
   registry->RegisterBooleanPref(prefs::kMediaFeedsSafeSearchEnabled, false);
   registry->RegisterBooleanPref(prefs::kMediaFeedsAutoSelectEnabled, false);
-  registry->RegisterStringPref(kWebAuthnLastTransportUsedPrefName,
-                               std::string());
+
 #endif
-
-  registry->RegisterDoublePref(kSessionStatisticFCPStdDev, -1.0f);
-  registry->RegisterDoublePref(kSessionStatisticFCPMean, -1.0f);
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  registry->RegisterBooleanPref(kToolbarIconSurfacingBubbleAcknowledged, false);
-  registry->RegisterInt64Pref(kToolbarIconSurfacingBubbleLastShowTime, 0);
-#endif
-
-  registry->RegisterDictionaryPref(kTranslateLastDeniedTimeForLanguage);
-  registry->RegisterDictionaryPref(kTranslateTooOftenDeniedForLanguage);
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  registry->RegisterIntegerPref(kToolbarSize, -1);
-#endif
-  registry->RegisterBooleanPref(kSessionExitedCleanly, true);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterInt64Pref(kFeatureUsageDailySampleFingerprint, 0);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  registry->RegisterListPref(kSpellCheckBlacklistedDictionaries);
 
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterListPref(
@@ -1635,11 +1570,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 5/2021
-  local_state->ClearPref(kFeatureUsageDailySampleESim);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   // Added 07/2021
   local_state->ClearPref(kUserAgentClientHintsEnabled);
 
@@ -1731,49 +1661,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // is fully launched.
   chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
       profile_prefs);
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Added 04/2021
-  profile_prefs->ClearPref(prefs::kMediaFeedsBackgroundFetching);
-  profile_prefs->ClearPref(prefs::kMediaFeedsSafeSearchEnabled);
-  profile_prefs->ClearPref(prefs::kMediaFeedsAutoSelectEnabled);
-  profile_prefs->ClearPref(kWebAuthnLastTransportUsedPrefName);
-#endif
-  // Added 04/2021.
-  profile_prefs->ClearPref(kSessionStatisticFCPMean);
-  profile_prefs->ClearPref(kSessionStatisticFCPStdDev);
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Added 04/2021
-  profile_prefs->ClearPref(kToolbarIconSurfacingBubbleAcknowledged);
-  profile_prefs->ClearPref(kToolbarIconSurfacingBubbleLastShowTime);
-#endif
-
-  // Added 04/2021
-  profile_prefs->ClearPref(kTranslateLastDeniedTimeForLanguage);
-  profile_prefs->ClearPref(kTranslateTooOftenDeniedForLanguage);
-
-  // Added 05/2021.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  profile_prefs->ClearPref(kToolbarSize);
-#endif
-  profile_prefs->ClearPref(kSessionExitedCleanly);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 05/2021
-  profile_prefs->ClearPref(kFeatureUsageDailySampleFingerprint);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Added 05/2021
-  profile_prefs->ClearPref(kSpellCheckBlacklistedDictionaries);
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Added 05/2021
-  profile_prefs->ClearPref(
-      prefs::kManagedProfileSerialAllowAllPortsForUrlsDeprecated);
-  profile_prefs->ClearPref(
-      prefs::kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated);
-#endif
 
   // Added 06/2021
   profile_prefs->ClearPref(kDataReductionProxy);
