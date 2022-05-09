@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -30,6 +31,7 @@
 #include "fuchsia/runners/cast/cast_streaming.h"
 #include "fuchsia/runners/cast/pending_cast_component.h"
 #include "fuchsia/runners/common/web_content_runner.h"
+#include "media/base/media_switches.h"
 #include "url/gurl.h"
 
 namespace {
@@ -316,7 +318,7 @@ CastRunner::CastRunner(cr_fuchsia::WebInstanceHost* web_instance_host,
           base::ComponentContextForProcess()->svc())),
       main_context_(std::make_unique<WebContentRunner>(
           web_instance_host_,
-          base::BindRepeating(&CastRunner::GetMainContextParams,
+          base::BindRepeating(&CastRunner::GetMainWebInstanceConfig,
                               base::Unretained(this)))),
       isolated_services_(std::make_unique<base::FilteredServiceDirectory>(
           base::ComponentContextForProcess()->svc())) {
@@ -477,13 +479,13 @@ void CastRunner::LaunchPendingComponent(PendingCastComponent* pending_component,
   if (IsAppConfigForCastStreaming(params.application_config))
     web_content_url = GURL(kCastStreamingWebUrl);
 
-  absl::optional<fuchsia::web::CreateContextParams> create_context_params =
-      GetContextParamsForAppConfig(&params.application_config);
+  auto web_instance_config =
+      GetWebInstanceConfigForAppConfig(&params.application_config);
 
   WebContentRunner* component_owner = main_context_.get();
-  if (create_context_params) {
-    component_owner = CreateIsolatedContextForParams(
-        std::move(create_context_params.value()));
+  if (web_instance_config) {
+    component_owner =
+        CreateIsolatedRunner(std::move(web_instance_config.value()));
   }
 
   auto cast_component = std::make_unique<CastComponent>(
@@ -559,24 +561,30 @@ void CastRunner::OnComponentDestroyed(CastComponent* component) {
   video_capturer_components_.erase(component);
 }
 
-fuchsia::web::CreateContextParams CastRunner::GetCommonContextParams() {
+WebContentRunner::WebInstanceConfig CastRunner::GetCommonWebInstanceConfig() {
   DCHECK(cors_exempt_headers_);
 
-  fuchsia::web::CreateContextParams params;
-  params.set_features(fuchsia::web::ContextFeatureFlags::AUDIO);
+  WebContentRunner::WebInstanceConfig config;
+
+  // Pass all arguments from `cast_runner` to the `web_instance`.
+  // TODO(crbug.com/1323372): Remove this.
+  config.extra_args = *base::CommandLine::ForCurrentProcess();
+
+  config.params.set_features(fuchsia::web::ContextFeatureFlags::AUDIO);
 
   if (is_headless_) {
     LOG(WARNING) << "Running in headless mode.";
-    *params.mutable_features() |= fuchsia::web::ContextFeatureFlags::HEADLESS;
+    *config.params.mutable_features() |=
+        fuchsia::web::ContextFeatureFlags::HEADLESS;
   } else {
-    *params.mutable_features() |=
+    *config.params.mutable_features() |=
         fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER |
         fuchsia::web::ContextFeatureFlags::VULKAN;
   }
 
   // When tests require that VULKAN be disabled, DRM must also be disabled.
   if (disable_vulkan_for_test_) {
-    *params.mutable_features() &=
+    *config.params.mutable_features() &=
         ~(fuchsia::web::ContextFeatureFlags::VULKAN |
           fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER);
   }
@@ -584,33 +592,41 @@ fuchsia::web::CreateContextParams CastRunner::GetCommonContextParams() {
   // If there is a list of headers to exempt from CORS checks, pass the list
   // along to the Context.
   if (!cors_exempt_headers_->empty())
-    params.set_cors_exempt_headers(*cors_exempt_headers_);
+    config.params.set_cors_exempt_headers(*cors_exempt_headers_);
 
-  return params;
+  return config;
 }
 
-fuchsia::web::CreateContextParams CastRunner::GetMainContextParams() {
-  fuchsia::web::CreateContextParams params = GetCommonContextParams();
-  *params.mutable_features() |=
+WebContentRunner::WebInstanceConfig CastRunner::GetMainWebInstanceConfig() {
+  auto config = GetCommonWebInstanceConfig();
+
+  // AudioCapturer is redirected to the agent (see `OnAudioServiceRequest()`).
+  // The implementation provided by the agent supports echo cancellation.
+  //
+  // TODO(crbug.com/852834): Remove once AudioManagerFuchsia is updated to
+  // get this information from AudioCapturerFactory.
+  config.extra_args.AppendSwitch(switches::kAudioCapturerWithEchoCancellation);
+
+  *config.params.mutable_features() |=
       fuchsia::web::ContextFeatureFlags::NETWORK |
       fuchsia::web::ContextFeatureFlags::LEGACYMETRICS |
       fuchsia::web::ContextFeatureFlags::KEYBOARD |
       fuchsia::web::ContextFeatureFlags::VIRTUAL_KEYBOARD;
-  EnsureSoftwareVideoDecodersAreDisabled(params.mutable_features());
-  params.set_remote_debugging_port(CastRunner::kRemoteDebuggingPort);
+  EnsureSoftwareVideoDecodersAreDisabled(config.params.mutable_features());
+  config.params.set_remote_debugging_port(CastRunner::kRemoteDebuggingPort);
 
-  params.set_user_agent_product("CrKey");
-  params.set_user_agent_version(chromecast::kFrozenCrKeyValue);
+  config.params.set_user_agent_product("CrKey");
+  config.params.set_user_agent_version(chromecast::kFrozenCrKeyValue);
 
   zx_status_t status = main_services_->ConnectClient(
-      params.mutable_service_directory()->NewRequest());
+      config.params.mutable_service_directory()->NewRequest());
   ZX_CHECK(status == ZX_OK, status) << "ConnectClient failed";
 
   if (!disable_vulkan_for_test_) {
-    SetCdmParamsForMainContext(&params);
+    SetCdmParamsForMainContext(&config.params);
   }
 
-  SetDataParamsForMainContext(&params);
+  SetDataParamsForMainContext(&config.params);
 
   // Create a sentinel file to detect if the cache is erased.
   // TODO(crbug.com/1188780): Remove once an explicit cache flush signal exists.
@@ -618,59 +634,60 @@ fuchsia::web::CreateContextParams CastRunner::GetMainContextParams() {
 
   // TODO(crbug.com/1023514): Remove this switch when it is no longer
   // necessary.
-  params.set_unsafely_treat_insecure_origins_as_secure(
+  config.params.set_unsafely_treat_insecure_origins_as_secure(
       {"allow-running-insecure-content", "disable-mixed-content-autoupgrade"});
 
-  return params;
+  return config;
 }
 
-fuchsia::web::CreateContextParams
-CastRunner::GetIsolatedContextParamsWithFuchsiaDirs(
+WebContentRunner::WebInstanceConfig
+CastRunner::GetIsolatedWebInstanceConfigWithFuchsiaDirs(
     std::vector<fuchsia::web::ContentDirectoryProvider> content_directories) {
-  fuchsia::web::CreateContextParams params = GetCommonContextParams();
+  auto config = GetCommonWebInstanceConfig();
 
-  EnsureSoftwareVideoDecodersAreDisabled(params.mutable_features());
-  *params.mutable_features() |= fuchsia::web::ContextFeatureFlags::NETWORK;
-  params.set_remote_debugging_port(kEphemeralRemoteDebuggingPort);
-  params.set_content_directories(std::move(content_directories));
+  EnsureSoftwareVideoDecodersAreDisabled(config.params.mutable_features());
+  *config.params.mutable_features() |=
+      fuchsia::web::ContextFeatureFlags::NETWORK;
+  config.params.set_remote_debugging_port(kEphemeralRemoteDebuggingPort);
+  config.params.set_content_directories(std::move(content_directories));
 
   zx_status_t status = isolated_services_->ConnectClient(
-      params.mutable_service_directory()->NewRequest());
+      config.params.mutable_service_directory()->NewRequest());
   ZX_CHECK(status == ZX_OK, status) << "ConnectClient failed";
 
-  return params;
+  return config;
 }
 
-fuchsia::web::CreateContextParams
-CastRunner::GetIsolatedContextParamsForCastStreaming() {
-  fuchsia::web::CreateContextParams params = GetCommonContextParams();
+WebContentRunner::WebInstanceConfig
+CastRunner::GetIsolatedWebInstanceConfigForCastStreaming() {
+  auto config = GetCommonWebInstanceConfig();
 
-  ApplyCastStreamingContextParams(&params);
-  params.set_remote_debugging_port(kEphemeralRemoteDebuggingPort);
+  ApplyCastStreamingContextParams(&config.params);
+  config.params.set_remote_debugging_port(kEphemeralRemoteDebuggingPort);
 
   // TODO(crbug.com/1069746): Use a different FilteredServiceDirectory for Cast
   // Streaming Contexts.
   zx_status_t status = main_services_->ConnectClient(
-      params.mutable_service_directory()->NewRequest());
+      config.params.mutable_service_directory()->NewRequest());
   ZX_CHECK(status == ZX_OK, status) << "ConnectClient failed";
 
-  return params;
+  return config;
 }
 
-absl::optional<fuchsia::web::CreateContextParams>
-CastRunner::GetContextParamsForAppConfig(
+absl::optional<WebContentRunner::WebInstanceConfig>
+CastRunner::GetWebInstanceConfigForAppConfig(
     chromium::cast::ApplicationConfig* app_config) {
   if (IsAppConfigForCastStreaming(*app_config)) {
     // TODO(crbug.com/1082821): Remove this once the CastStreamingReceiver
     // Component has been implemented.
-    return absl::make_optional(GetIsolatedContextParamsForCastStreaming());
+    return absl::make_optional(GetIsolatedWebInstanceConfigForCastStreaming());
   }
 
   const bool is_isolated_app =
       app_config->has_content_directories_for_isolated_application();
   if (is_isolated_app) {
     return absl::make_optional(
-        GetIsolatedContextParamsWithFuchsiaDirs(std::move(
+        GetIsolatedWebInstanceConfigWithFuchsiaDirs(std::move(
             *app_config
                  ->mutable_content_directories_for_isolated_application())));
   }
@@ -679,11 +696,11 @@ CastRunner::GetContextParamsForAppConfig(
   return absl::nullopt;
 }
 
-WebContentRunner* CastRunner::CreateIsolatedContextForParams(
-    fuchsia::web::CreateContextParams create_context_params) {
+WebContentRunner* CastRunner::CreateIsolatedRunner(
+    WebContentRunner::WebInstanceConfig config) {
   // Create an isolated context which will own the CastComponent.
-  auto context = std::make_unique<WebContentRunner>(
-      web_instance_host_, std::move(create_context_params));
+  auto context =
+      std::make_unique<WebContentRunner>(web_instance_host_, std::move(config));
   context->SetOnEmptyCallback(
       base::BindOnce(&CastRunner::OnIsolatedContextEmpty,
                      base::Unretained(this), base::Unretained(context.get())));

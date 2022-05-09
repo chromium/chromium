@@ -88,6 +88,13 @@ const char kDisableAudioInput[] = "disable-audio-input";
 
 // Present video content as overlays.
 const char kUseOverlaysForVideo[] = "use-overlays-for-video";
+
+// Forces AudioManagerFuchsia to assume that the AudioCapturer implements echo
+// cancellation.
+// TODO(crbug.com/852834): Remove this once AudioManagerFuchsia is updated to
+// get this information from AudioCapturerFactory.
+const char kAudioCapturerWithEchoCancellation[] =
+    "audio-capturer-with-echo-cancellation";
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
 #if defined(USE_CRAS)

@@ -22,22 +22,23 @@
 
 namespace {
 
-fuchsia::web::CreateContextParams GetContextParams() {
-  fuchsia::web::CreateContextParams create_context_params;
-  create_context_params.set_features(
+WebContentRunner::WebInstanceConfig GetWebInstanceConfig() {
+  WebContentRunner::WebInstanceConfig config;
+
+  config.params.set_features(
       fuchsia::web::ContextFeatureFlags::NETWORK |
       fuchsia::web::ContextFeatureFlags::AUDIO |
       fuchsia::web::ContextFeatureFlags::VULKAN |
       fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER |
       fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM);
 
-  create_context_params.set_service_directory(
+  config.params.set_service_directory(
       base::OpenDirectoryHandle(base::FilePath(base::kServiceDirectoryPath)));
-  CHECK(create_context_params.service_directory());
+  CHECK(config.params.service_directory());
 
-  create_context_params.set_data_directory(base::OpenDirectoryHandle(
+  config.params.set_data_directory(base::OpenDirectoryHandle(
       base::FilePath(base::kPersistedDataDirectoryPath)));
-  CHECK(create_context_params.data_directory());
+  CHECK(config.params.data_directory());
 
   // DRM services require cdm_data_directory to be populated, so create a
   // directory under /data and use that as the cdm_data_directory.
@@ -45,15 +46,15 @@ fuchsia::web::CreateContextParams GetContextParams() {
       base::FilePath(base::kPersistedDataDirectoryPath).Append("cdm_data");
   base::File::Error error;
   CHECK(base::CreateDirectoryAndGetError(cdm_data_path, &error)) << error;
-  create_context_params.set_cdm_data_directory(
+  config.params.set_cdm_data_directory(
       base::OpenDirectoryHandle(cdm_data_path));
-  CHECK(create_context_params.cdm_data_directory());
+  CHECK(config.params.cdm_data_directory());
 
 #if BUILDFLAG(WEB_RUNNER_REMOTE_DEBUGGING_PORT) != 0
-  create_context_params.set_remote_debugging_port(
+  config.params.set_remote_debugging_port(
       BUILDFLAG(WEB_RUNNER_REMOTE_DEBUGGING_PORT));
 #endif
-  return create_context_params;
+  return config;
 }
 
 }  // namespace
@@ -71,12 +72,9 @@ int main(int argc, char** argv) {
 
   cr_fuchsia::RegisterFuchsiaDirScheme();
 
-  WebContentRunner::GetContextParamsCallback get_context_params_callback =
-      base::BindRepeating(&GetContextParams);
-
   cr_fuchsia::WebInstanceHost web_instance_host;
   WebContentRunner runner(&web_instance_host,
-                          std::move(get_context_params_callback));
+                          base::BindRepeating(&GetWebInstanceConfig));
   base::ScopedServiceBinding<fuchsia::sys::Runner> binding(
       base::ComponentContextForProcess()->outgoing().get(), &runner);
 

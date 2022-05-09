@@ -43,20 +43,30 @@ std::string CreateUniqueComponentName() {
 
 }  // namespace
 
+WebContentRunner::WebInstanceConfig::WebInstanceConfig()
+    : extra_args(base::CommandLine::NO_PROGRAM) {}
+WebContentRunner::WebInstanceConfig::~WebInstanceConfig() = default;
+
+WebContentRunner::WebInstanceConfig::WebInstanceConfig(WebInstanceConfig&&) =
+    default;
+WebContentRunner::WebInstanceConfig&
+WebContentRunner::WebInstanceConfig::operator=(WebInstanceConfig&&) = default;
+
 WebContentRunner::WebContentRunner(
     cr_fuchsia::WebInstanceHost* web_instance_host,
-    GetContextParamsCallback get_context_params_callback)
+    GetWebInstanceConfigCallback get_web_instance_config_callback)
     : web_instance_host_(web_instance_host),
-      get_context_params_callback_(std::move(get_context_params_callback)) {
+      get_web_instance_config_callback_(
+          std::move(get_web_instance_config_callback)) {
   DCHECK(web_instance_host_);
-  DCHECK(get_context_params_callback_);
+  DCHECK(get_web_instance_config_callback_);
 }
 
 WebContentRunner::WebContentRunner(
     cr_fuchsia::WebInstanceHost* web_instance_host,
-    fuchsia::web::CreateContextParams context_params)
+    WebInstanceConfig web_instance_config)
     : web_instance_host_(web_instance_host) {
-  CreateWebInstanceAndContext(std::move(context_params));
+  CreateWebInstanceAndContext(std::move(web_instance_config));
 }
 
 WebContentRunner::~WebContentRunner() = default;
@@ -125,7 +135,7 @@ void WebContentRunner::SetOnEmptyCallback(base::OnceClosure on_empty) {
 }
 
 void WebContentRunner::DestroyWebContext() {
-  DCHECK(get_context_params_callback_);
+  DCHECK(get_web_instance_config_callback_);
   context_ = nullptr;
 }
 
@@ -137,16 +147,15 @@ void WebContentRunner::EnsureWebInstanceAndContext() {
     context_.Unbind();
 
   if (!context_) {
-    DCHECK(get_context_params_callback_);
-    CreateWebInstanceAndContext(get_context_params_callback_.Run());
+    DCHECK(get_web_instance_config_callback_);
+    CreateWebInstanceAndContext(get_web_instance_config_callback_.Run());
   }
 }
 
-void WebContentRunner::CreateWebInstanceAndContext(
-    fuchsia::web::CreateContextParams params) {
+void WebContentRunner::CreateWebInstanceAndContext(WebInstanceConfig config) {
   web_instance_host_->CreateInstanceForContextWithCopiedArgs(
-      std::move(params), web_instance_services_.NewRequest(),
-      *base::CommandLine::ForCurrentProcess());
+      std::move(config.params), web_instance_services_.NewRequest(),
+      config.extra_args);
   zx_status_t result = fdio_service_connect_at(
       web_instance_services_.channel().get(), fuchsia::web::Context::Name_,
       context_.NewRequest().TakeChannel().release());

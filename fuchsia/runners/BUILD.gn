@@ -84,6 +84,10 @@ source_set("cast_runner_core") {
     "//components/cast/named_message_port_connector:named_message_port_connector",
     "//fuchsia/base",
     "//fuchsia/base:modular",
+
+    # TODO(crbug.com/852834): Remove this dependency when
+    # kAudioCapturerWithEchoCancellation is removed.
+    "//media",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.diagnostics",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular",

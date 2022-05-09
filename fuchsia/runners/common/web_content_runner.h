@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/containers/unique_ptr_adapters.h"
 
 namespace cr_fuchsia {
@@ -24,22 +25,34 @@ class WebComponent;
 // sys::Runner that instantiates components hosting standard web content.
 class WebContentRunner : public fuchsia::sys::Runner {
  public:
-  using GetContextParamsCallback =
-      base::RepeatingCallback<fuchsia::web::CreateContextParams()>;
+  struct WebInstanceConfig {
+    WebInstanceConfig();
+    ~WebInstanceConfig();
+
+    WebInstanceConfig(WebInstanceConfig&&);
+    WebInstanceConfig& operator=(WebInstanceConfig&&);
+
+    fuchsia::web::CreateContextParams params;
+    base::CommandLine extra_args;
+  };
+
+  using GetWebInstanceConfigCallback =
+      base::RepeatingCallback<WebInstanceConfig()>;
 
   // Creates a Runner which will (re-)create the Context, if not already
   // running, when StartComponent() is called.
   // |web_instance_host|: Used to create a web_instance Component in which to
   //     host the fuchsia.web.Context.
-  // |get_context_params_callback|: Returns parameters for the Runner's
+  // |get_web_instance_config_callback|: Returns parameters for the Runner's
   //     fuchsia.web.Context.
-  WebContentRunner(cr_fuchsia::WebInstanceHost* web_instance_host,
-                   GetContextParamsCallback get_context_params_callback);
+  WebContentRunner(
+      cr_fuchsia::WebInstanceHost* web_instance_host,
+      GetWebInstanceConfigCallback get_web_instance_config_callback);
 
-  // Creates a Runner using a Context configured with |context_params|.
+  // Creates a Runner using a Context configured with `web_instance_config`.
   // The Runner becomes non-functional if the Context terminates.
   WebContentRunner(cr_fuchsia::WebInstanceHost* web_instance_host,
-                   fuchsia::web::CreateContextParams context_params);
+                   WebInstanceConfig web_instance_config);
 
   ~WebContentRunner() override;
 
@@ -49,14 +62,15 @@ class WebContentRunner : public fuchsia::sys::Runner {
   // Returns a request handler for fuchsia.web.FrameHost protocol requests.
   // FrameHost instances will be run in the same web_instance as the Context
   // used to host WebComponent's Frames.
-  // If no web_instance is currently running then |get_context_params_callback_|
-  // will be used to create one with the specified parameters.
+  // If no web_instance is currently running then
+  // |get_web_instance_config_callback_| will be used to create one with the
+  // specified parameters.
   fidl::InterfaceRequestHandler<fuchsia::web::FrameHost>
   GetFrameHostRequestHandler();
 
   // Used by WebComponent to create a Frame in this Runner's web_instance.
-  // If no web_instance is active then |get_context_params_callback_| will be
-  // used to create one, if set (see class constructors).
+  // If no web_instance is active then |get_web_instance_config_callback_| will
+  // be used to create one, if set (see class constructors).
   void CreateFrameWithParams(
       fuchsia::web::CreateFrameParams params,
       fidl::InterfaceRequest<fuchsia::web::Frame> request);
@@ -93,10 +107,10 @@ class WebContentRunner : public fuchsia::sys::Runner {
   void EnsureWebInstanceAndContext();
 
   // Starts the web_instance and connects |context_| to it.
-  void CreateWebInstanceAndContext(fuchsia::web::CreateContextParams params);
+  void CreateWebInstanceAndContext(WebInstanceConfig web_instance_config);
 
   cr_fuchsia::WebInstanceHost* const web_instance_host_;
-  const GetContextParamsCallback get_context_params_callback_;
+  const GetWebInstanceConfigCallback get_web_instance_config_callback_;
 
   // If set, invoked whenever a WebComponent is created.
   base::RepeatingCallback<void(WebComponent*)>

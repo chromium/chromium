@@ -18,9 +18,10 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/fuchsia/startup_context.h"
-#include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 #include "fuchsia/runners/cast/cast_component.h"
+#include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 #include "fuchsia/runners/cast/pending_cast_component.h"
+#include "fuchsia/runners/common/web_content_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -30,8 +31,6 @@ class FilteredServiceDirectory;
 namespace cr_fuchsia {
 class WebInstanceHost;
 }  // namespace cr_fuchsia
-
-class WebContentRunner;
 
 // sys::Runner which instantiates Cast activities specified via cast/casts URIs.
 class CastRunner final : public fuchsia::sys::Runner,
@@ -76,23 +75,26 @@ class CastRunner final : public fuchsia::sys::Runner,
   void OnComponentDestroyed(CastComponent* component);
 
   // Handlers used to provide parameters for main & isolated Contexts.
-  fuchsia::web::CreateContextParams GetCommonContextParams();
-  fuchsia::web::CreateContextParams GetMainContextParams();
-  fuchsia::web::CreateContextParams GetIsolatedContextParamsWithFuchsiaDirs(
+  WebContentRunner::WebInstanceConfig GetCommonWebInstanceConfig();
+  WebContentRunner::WebInstanceConfig GetMainWebInstanceConfig();
+  WebContentRunner::WebInstanceConfig
+  GetIsolatedWebInstanceConfigWithFuchsiaDirs(
       std::vector<fuchsia::web::ContentDirectoryProvider> content_directories);
   // TODO(crbug.com/1082821): Remove this once the CastStreamingReceiver
   // Component has been implemented.
-  fuchsia::web::CreateContextParams GetIsolatedContextParamsForCastStreaming();
+  WebContentRunner::WebInstanceConfig
+  GetIsolatedWebInstanceConfigForCastStreaming();
 
   // Returns CreateContextParams for |app_config|. Returns nullopt if there is
   // no need to create an isolated context.
-  absl::optional<fuchsia::web::CreateContextParams>
-  GetContextParamsForAppConfig(chromium::cast::ApplicationConfig* app_config);
+  absl::optional<WebContentRunner::WebInstanceConfig>
+  GetWebInstanceConfigForAppConfig(
+      chromium::cast::ApplicationConfig* app_config);
 
-  // Launches an isolated Context with the given |create_context_params| and
-  // returns the newly created WebContentRunner.
-  WebContentRunner* CreateIsolatedContextForParams(
-      fuchsia::web::CreateContextParams create_context_params);
+  // Launches an isolated Context with the given `config` and returns the newly
+  // created WebContentRunner.
+  WebContentRunner* CreateIsolatedRunner(
+      WebContentRunner::WebInstanceConfig config);
 
   // Called when an isolated component terminates, to allow the Context hosting
   // it to be torn down.
