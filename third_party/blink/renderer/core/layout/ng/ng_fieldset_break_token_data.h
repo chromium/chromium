@@ -13,10 +13,6 @@ struct NGFieldsetBreakTokenData final : NGBlockBreakTokenData {
   explicit NGFieldsetBreakTokenData(const NGBlockBreakTokenData* other_data)
       : NGBlockBreakTokenData(kFieldsetBreakTokenData, other_data) {}
 
-  void Trace(Visitor* visitor) const override {
-    NGBlockBreakTokenData::Trace(visitor);
-  }
-
   LayoutUnit legend_block_size_contribution;
 };
 
