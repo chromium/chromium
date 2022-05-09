@@ -22,7 +22,7 @@
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
-#include "components/viz/test/fake_output_surface.h"
+#include "components/viz/test/fake_skia_output_surface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
@@ -68,8 +68,8 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
     auto scheduler = std::make_unique<DisplayScheduler>(
         &begin_frame_source_, task_runner_.get(), PendingSwapParams(1));
 
-    std::unique_ptr<FakeOutputSurface> output_surface =
-        FakeOutputSurface::Create3d();
+    std::unique_ptr<FakeSkiaOutputSurface> output_surface =
+        FakeSkiaOutputSurface::Create3d();
 
     auto overlay_processor = std::make_unique<OverlayProcessorStub>();
     // Normally display will need to take ownership of a

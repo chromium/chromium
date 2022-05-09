@@ -198,13 +198,10 @@ class LayerTreeTest : public testing::Test, public TestHooks {
       scoped_refptr<viz::RasterContextProvider> worker_context_provider);
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
   CreateDisplayControllerOnThread() override;
-  std::unique_ptr<viz::SkiaOutputSurface>
-  CreateDisplaySkiaOutputSurfaceOnThread(
+  std::unique_ptr<viz::SkiaOutputSurface> CreateSkiaOutputSurfaceOnThread(
       viz::DisplayCompositorMemoryAndTaskController*) override;
-  // TODO(crbug.com/1247756): This should only ever return SoftwareOutputSurface
-  // after GLRenderer is deleted and can be refactored.
-  std::unique_ptr<viz::OutputSurface> CreateDisplayOutputSurfaceOnThread(
-      scoped_refptr<viz::ContextProvider> compositor_context_provider) override;
+  std::unique_ptr<viz::OutputSurface> CreateSoftwareOutputSurfaceOnThread()
+      override;
 
   base::SingleThreadTaskRunner* image_worker_task_runner() const {
     return image_worker_->task_runner().get();

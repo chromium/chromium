@@ -11659,17 +11659,15 @@ class FrameSinkClient : public TestLayerTreeFrameSinkClient {
     // there is no overlay support.
     return nullptr;
   }
-  std::unique_ptr<viz::SkiaOutputSurface> CreateDisplaySkiaOutputSurface(
+  std::unique_ptr<viz::SkiaOutputSurface> CreateSkiaOutputSurface(
       viz::DisplayCompositorMemoryAndTaskController*) override {
     return viz::FakeSkiaOutputSurface::Create3d(
         std::move(display_context_provider_));
   }
 
-  std::unique_ptr<viz::OutputSurface> CreateDisplayOutputSurface(
-      scoped_refptr<viz::ContextProvider> compositor_context_provider)
-      override {
-    return viz::FakeOutputSurface::Create3d(
-        std::move(display_context_provider_));
+  std::unique_ptr<viz::OutputSurface> CreateSoftwareOutputSurface() override {
+    NOTREACHED();
+    return nullptr;
   }
 
   void DisplayReceivedLocalSurfaceId(

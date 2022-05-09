@@ -46,8 +46,8 @@ class SoftwareRendererTest : public testing::Test {
  public:
   void InitializeRenderer(
       std::unique_ptr<SoftwareOutputDevice> software_output_device) {
-    output_surface_ =
-        FakeOutputSurface::CreateSoftware(std::move(software_output_device));
+    output_surface_ = std::make_unique<FakeSoftwareOutputSurface>(
+        std::move(software_output_device));
     output_surface_->BindToClient(&output_surface_client_);
 
     shared_bitmap_manager_ = std::make_unique<TestSharedBitmapManager>();
@@ -134,7 +134,7 @@ class SoftwareRendererTest : public testing::Test {
   RendererSettings settings_;
   DebugRendererSettings debug_settings_;
   cc::FakeOutputSurfaceClient output_surface_client_;
-  std::unique_ptr<FakeOutputSurface> output_surface_;
+  std::unique_ptr<FakeSoftwareOutputSurface> output_surface_;
   std::unique_ptr<SharedBitmapManager> shared_bitmap_manager_;
   std::unique_ptr<DisplayResourceProviderSoftware> resource_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;

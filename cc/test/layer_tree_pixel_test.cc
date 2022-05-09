@@ -148,7 +148,7 @@ LayerTreePixelTest::CreateDisplayControllerOnThread() {
 }
 
 std::unique_ptr<viz::SkiaOutputSurface>
-LayerTreePixelTest::CreateDisplaySkiaOutputSurfaceOnThread(
+LayerTreePixelTest::CreateSkiaOutputSurfaceOnThread(
     viz::DisplayCompositorMemoryAndTaskController* display_controller) {
   // Set up the SkiaOutputSurfaceImpl.
   auto output_surface = viz::SkiaOutputSurfaceImpl::Create(
@@ -157,8 +157,7 @@ LayerTreePixelTest::CreateDisplaySkiaOutputSurfaceOnThread(
 }
 
 std::unique_ptr<viz::OutputSurface>
-LayerTreePixelTest::CreateDisplayOutputSurfaceOnThread(
-    scoped_refptr<viz::ContextProvider> compositor_context_provider) {
+LayerTreePixelTest::CreateSoftwareOutputSurfaceOnThread() {
   EXPECT_EQ(viz::RendererType::kSoftware, renderer_type_);
   return std::make_unique<PixelTestOutputSurface>(
       std::make_unique<viz::SoftwareOutputDevice>());

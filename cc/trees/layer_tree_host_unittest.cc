@@ -79,6 +79,7 @@
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/service/display/output_surface.h"
+#include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/fake_output_surface.h"
 #include "components/viz/test/test_gles2_interface.h"
@@ -7386,30 +7387,6 @@ class LayerTreeHostTestCrispUpAfterPinchEnds : public LayerTreeHostTest {
 // This test does pinching on the impl side which is not supported in single
 // thread.
 MULTI_THREAD_TEST_F(LayerTreeHostTestCrispUpAfterPinchEnds);
-
-class LayerTreeHostTestCrispUpAfterPinchEndsWithOneCopy
-    : public LayerTreeHostTestCrispUpAfterPinchEnds {
- protected:
-  std::unique_ptr<viz::OutputSurface> CreateDisplayOutputSurfaceOnThread(
-      scoped_refptr<viz::ContextProvider> compositor_context_provider)
-      override {
-    scoped_refptr<viz::TestContextProvider> display_context_provider =
-        viz::TestContextProvider::Create();
-    viz::TestGLES2Interface* gl =
-        display_context_provider->UnboundTestContextGL();
-    gl->set_support_sync_query(true);
-#if BUILDFLAG(IS_MAC)
-    gl->set_support_texture_rectangle(true);
-#endif
-    display_context_provider->BindToCurrentThread();
-    return LayerTreeTest::CreateDisplayOutputSurfaceOnThread(
-        std::move(display_context_provider));
-  }
-};
-
-// This test does pinching on the impl side which is not supported in single
-// thread.
-MULTI_THREAD_TEST_F(LayerTreeHostTestCrispUpAfterPinchEndsWithOneCopy);
 
 class RasterizeWithGpuRasterizationCreatesResources : public LayerTreeHostTest {
  protected:

@@ -169,10 +169,11 @@ class DisplayTest : public testing::Test {
   ~DisplayTest() override {}
 
   void SetUpSoftwareDisplay(const RendererSettings& settings) {
-    std::unique_ptr<FakeOutputSurface> output_surface;
+    std::unique_ptr<FakeSoftwareOutputSurface> output_surface;
     auto device = std::make_unique<TestSoftwareOutputDevice>();
     software_output_device_ = device.get();
-    output_surface = FakeOutputSurface::CreateSoftware(std::move(device));
+    output_surface =
+        std::make_unique<FakeSoftwareOutputSurface>(std::move(device));
     output_surface_ = output_surface.get();
 
     CreateDisplaySchedulerAndDisplay(settings, kArbitraryFrameSinkId,
@@ -272,7 +273,7 @@ class DisplayTest : public testing::Test {
   std::unique_ptr<BeginFrameSource> begin_frame_source_;
   std::unique_ptr<Display> display_;
   raw_ptr<TestSoftwareOutputDevice> software_output_device_ = nullptr;
-  raw_ptr<FakeOutputSurface> output_surface_ = nullptr;
+  raw_ptr<FakeSoftwareOutputSurface> output_surface_ = nullptr;
   raw_ptr<FakeSkiaOutputSurface> skia_output_surface_ = nullptr;
   raw_ptr<TestDisplayScheduler> scheduler_ = nullptr;
 };
@@ -862,7 +863,7 @@ TEST_F(DisplayTest, CompositorFrameDamagesCorrectDisplay) {
   TestDisplayScheduler* scheduler2 = scheduler_for_display2.get();
   auto display2 = CreateDisplay(
       settings, kAnotherFrameSinkId, std::move(scheduler_for_display2),
-      FakeOutputSurface::CreateSoftware(
+      std::make_unique<FakeSoftwareOutputSurface>(
           std::make_unique<TestSoftwareOutputDevice>()));
   manager_.RegisterBeginFrameSource(begin_frame_source2.get(),
                                     kAnotherFrameSinkId);

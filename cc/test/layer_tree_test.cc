@@ -609,19 +609,16 @@ class LayerTreeTestLayerTreeFrameSinkClient
     DCHECK(task_runner_provider_->IsImplThread());
     return hooks_->CreateDisplayControllerOnThread();
   }
-  std::unique_ptr<viz::SkiaOutputSurface> CreateDisplaySkiaOutputSurface(
+  std::unique_ptr<viz::SkiaOutputSurface> CreateSkiaOutputSurface(
       viz::DisplayCompositorMemoryAndTaskController* display_controller)
       override {
     DCHECK(task_runner_provider_->IsImplThread());
-    return hooks_->CreateDisplaySkiaOutputSurfaceOnThread(display_controller);
+    return hooks_->CreateSkiaOutputSurfaceOnThread(display_controller);
   }
 
-  std::unique_ptr<viz::OutputSurface> CreateDisplayOutputSurface(
-      scoped_refptr<viz::ContextProvider> compositor_context_provider)
-      override {
+  std::unique_ptr<viz::OutputSurface> CreateSoftwareOutputSurface() override {
     DCHECK(task_runner_provider_->IsImplThread());
-    return hooks_->CreateDisplayOutputSurfaceOnThread(
-        std::move(compositor_context_provider));
+    return hooks_->CreateSoftwareOutputSurfaceOnThread();
   }
   void DisplayReceivedLocalSurfaceId(
       const viz::LocalSurfaceId& local_surface_id) override {
@@ -1213,21 +1210,15 @@ LayerTreeTest::CreateDisplayControllerOnThread() {
 }
 
 std::unique_ptr<viz::SkiaOutputSurface>
-LayerTreeTest::CreateDisplaySkiaOutputSurfaceOnThread(
+LayerTreeTest::CreateSkiaOutputSurfaceOnThread(
     viz::DisplayCompositorMemoryAndTaskController*) {
   return viz::FakeSkiaOutputSurface::Create3d();
 }
 
 std::unique_ptr<viz::OutputSurface>
-LayerTreeTest::CreateDisplayOutputSurfaceOnThread(
-    scoped_refptr<viz::ContextProvider> compositor_context_provider) {
-  // By default the Display shares a context with the LayerTreeHostImpl.
-  if (use_software_renderer()) {
-    return viz::FakeOutputSurface::CreateSoftware(
-        std::make_unique<viz::SoftwareOutputDevice>());
-  }
-  return viz::FakeOutputSurface::Create3d(
-      std::move(compositor_context_provider));
+LayerTreeTest::CreateSoftwareOutputSurfaceOnThread() {
+  return std::make_unique<viz::FakeSoftwareOutputSurface>(
+      std::make_unique<viz::SoftwareOutputDevice>());
 }
 
 void LayerTreeTest::DestroyLayerTreeHost() {

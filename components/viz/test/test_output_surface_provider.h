@@ -11,7 +11,7 @@
 
 namespace viz {
 
-// Test implementation that creates a FakeOutputSurface.
+// Test implementation that creates a fake OutputSurface.
 class TestOutputSurfaceProvider : public OutputSurfaceProvider {
  public:
   TestOutputSurfaceProvider();

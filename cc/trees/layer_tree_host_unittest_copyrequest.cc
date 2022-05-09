@@ -204,25 +204,11 @@ class LayerTreeHostCopyRequestTestMultipleRequestsOutOfOrder
     return nullptr;
   }
 
-  std::unique_ptr<viz::SkiaOutputSurface>
-  CreateDisplaySkiaOutputSurfaceOnThread(
+  std::unique_ptr<viz::SkiaOutputSurface> CreateSkiaOutputSurfaceOnThread(
       viz::DisplayCompositorMemoryAndTaskController*) override {
     auto skia_output_surface = viz::FakeSkiaOutputSurface::Create3d();
     skia_output_surface->SetOutOfOrderCallbacks(true);
     return skia_output_surface;
-  }
-
-  std::unique_ptr<viz::OutputSurface> CreateDisplayOutputSurfaceOnThread(
-      scoped_refptr<viz::ContextProvider> compositor_context_provider)
-      override {
-    // Since this test does not override CreateLayerTreeFrameSink, the
-    // |compositor_context_provider| will be a viz::TestContextProvider.
-    auto* context_support = static_cast<viz::TestContextSupport*>(
-        compositor_context_provider->ContextSupport());
-    context_support->set_out_of_order_callbacks(true);
-
-    return viz::FakeOutputSurface::Create3d(
-        std::move(compositor_context_provider));
   }
 };
 
@@ -888,23 +874,11 @@ class LayerTreeHostCopyRequestTestDeleteSharedImage
     // and there is no overlay support.
     return nullptr;
   }
-  std::unique_ptr<viz::SkiaOutputSurface>
-  CreateDisplaySkiaOutputSurfaceOnThread(
+  std::unique_ptr<viz::SkiaOutputSurface> CreateSkiaOutputSurfaceOnThread(
       viz::DisplayCompositorMemoryAndTaskController*) override {
     display_context_provider_ = viz::TestContextProvider::Create();
     display_context_provider_->BindToCurrentThread();
     return viz::FakeSkiaOutputSurface::Create3d(display_context_provider_);
-  }
-
-  std::unique_ptr<viz::OutputSurface> CreateDisplayOutputSurfaceOnThread(
-      scoped_refptr<viz::ContextProvider> compositor_context_provider)
-      override {
-    // Since this test does not override CreateLayerTreeFrameSink, the
-    // |compositor_context_provider| will be a viz::TestContextProvider.
-    display_context_provider_ = static_cast<viz::TestContextProvider*>(
-        compositor_context_provider.get());
-    return viz::FakeOutputSurface::Create3d(
-        std::move(compositor_context_provider));
   }
 
   void SetupTree() override {
@@ -1045,23 +1019,11 @@ class LayerTreeHostCopyRequestTestCountSharedImages
     // and there is no overlay support.
     return nullptr;
   }
-  std::unique_ptr<viz::SkiaOutputSurface>
-  CreateDisplaySkiaOutputSurfaceOnThread(
+  std::unique_ptr<viz::SkiaOutputSurface> CreateSkiaOutputSurfaceOnThread(
       viz::DisplayCompositorMemoryAndTaskController*) override {
     display_context_provider_ = viz::TestContextProvider::Create();
     display_context_provider_->BindToCurrentThread();
     return viz::FakeSkiaOutputSurface::Create3d(display_context_provider_);
-  }
-
-  std::unique_ptr<viz::OutputSurface> CreateDisplayOutputSurfaceOnThread(
-      scoped_refptr<viz::ContextProvider> compositor_context_provider)
-      override {
-    // Since this test does not override CreateLayerTreeFrameSink, the
-    // |compositor_context_provider| will be a viz::TestContextProvider.
-    display_context_provider_ = static_cast<viz::TestContextProvider*>(
-        compositor_context_provider.get());
-    return viz::FakeOutputSurface::Create3d(
-        std::move(compositor_context_provider));
   }
 
   void SetupTree() override {

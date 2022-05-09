@@ -35,7 +35,7 @@ std::unique_ptr<OutputSurface> TestOutputSurfaceProvider::CreateOutputSurface(
   if (gpu_compositing) {
     return FakeSkiaOutputSurface::Create3d();
   } else {
-    return FakeOutputSurface::CreateSoftware(
+    return std::make_unique<FakeSoftwareOutputSurface>(
         std::make_unique<SoftwareOutputDevice>());
   }
 }
