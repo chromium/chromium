@@ -263,9 +263,14 @@ SkRRect FocusRing::GetRingRoundRect() const {
 }
 
 void FocusRing::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // Mark the focus ring in the accessibility tree as invisible so that it will
-  // not be accessed by assistive technologies.
-  node_data->AddState(ax::mojom::State::kInvisible);
+  // Mark the focus ring in the accessibility tree as ignored.
+  // Marking it as invisible keeps it in the accessibility tree with a "hidden"
+  // attribute where assistive technologies can still find it. Marking it as
+  // ignored causes it to be removed from the accessibility tree. This also
+  // ensures that when a non-used control, such as the minimize button in a
+  // JavaScript alert, is marked as ignored, that control's parent will not
+  // have any "invisible" FocusRing children.
+  node_data->AddState(ax::mojom::State::kIgnored);
 }
 
 void FocusRing::OnViewFocused(View* view) {

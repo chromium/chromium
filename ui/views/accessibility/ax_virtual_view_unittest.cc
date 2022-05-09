@@ -449,8 +449,7 @@ TEST_F(AXVirtualViewTest, OverrideFocus) {
   // return nullptr.
   button_->SetFocusBehavior(View::FocusBehavior::NEVER);
   button_->RequestFocus();
-  ExpectReceivedAccessibilityEvents({std::make_pair(
-      GetButtonAccessibility(), ax::mojom::Event::kChildrenChanged)});
+  ExpectReceivedAccessibilityEvents({});
   EXPECT_EQ(nullptr, virtual_label_->GetFocus());
   EXPECT_EQ(nullptr, virtual_child_1->GetFocus());
   EXPECT_EQ(nullptr, virtual_child_2->GetFocus());
