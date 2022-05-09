@@ -41,10 +41,9 @@ class DlpDataTransferNotifier : public views::WidgetObserver {
                            views::Widget::ClosedReason reason);
 
   // views::WidgetObserver
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
-  // TODO(ayaelattar): Change to std::unique_ptr.
   views::UniqueWidgetPtr widget_;
 
  private:

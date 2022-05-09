@@ -85,7 +85,7 @@ class FakeDlpController : public DataTransferDlpController,
     DCHECK(helper);
   }
 
-  ~FakeDlpController() {
+  ~FakeDlpController() override {
     if (widget_ && widget_->HasObserver(this)) {
       widget_->RemoveObserver(this);
     }
@@ -132,7 +132,6 @@ class FakeDlpController : public DataTransferDlpController,
     return false;
   }
 
-  MOCK_METHOD1(OnWidgetClosing, void(views::Widget* widget));
   views::Widget* widget_ = nullptr;
   FakeClipboardNotifier* helper_ = nullptr;
   absl::optional<ui::DataTransferEndpoint> blink_data_dst_;
@@ -393,81 +392,89 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
   SkipToLoginScreen();
   LogIn();
 
-  FakeClipboardNotifier helper;
-  FakeDlpController dlp_controller(
-      *DlpRulesManagerFactory::GetForPrimaryProfile(), &helper);
-
+  base::WeakPtr<views::Widget> widget;
   {
-    ListPrefUpdate update(g_browser_process->local_state(),
-                          policy_prefs::kDlpRulesList);
-    base::Value rule(base::Value::Type::DICTIONARY);
-    base::Value src_urls(base::Value::Type::DICTIONARY);
-    base::Value src_urls_list(base::Value::Type::LIST);
-    src_urls_list.Append(base::Value(kMailUrl));
-    src_urls.SetKey("urls", std::move(src_urls_list));
-    rule.SetKey("sources", std::move(src_urls));
+    FakeClipboardNotifier helper;
+    FakeDlpController dlp_controller(
+        *DlpRulesManagerFactory::GetForPrimaryProfile(), &helper);
 
-    base::Value dst_urls(base::Value::Type::DICTIONARY);
-    base::Value dst_urls_list(base::Value::Type::LIST);
-    dst_urls_list.Append(base::Value("*"));
-    dst_urls.SetKey("urls", std::move(dst_urls_list));
-    rule.SetKey("destinations", std::move(dst_urls));
+    {
+      ListPrefUpdate update(g_browser_process->local_state(),
+                            policy_prefs::kDlpRulesList);
+      base::Value rule(base::Value::Type::DICTIONARY);
+      base::Value src_urls(base::Value::Type::DICTIONARY);
+      base::Value src_urls_list(base::Value::Type::LIST);
+      src_urls_list.Append(base::Value(kMailUrl));
+      src_urls.SetKey("urls", std::move(src_urls_list));
+      rule.SetKey("sources", std::move(src_urls));
 
-    base::Value restrictions(base::Value::Type::DICTIONARY);
-    base::Value restrictions_list(base::Value::Type::LIST);
-    base::Value class_level_dict(base::Value::Type::DICTIONARY);
-    class_level_dict.SetKey("class", base::Value("CLIPBOARD"));
-    class_level_dict.SetKey("level", base::Value("WARN"));
-    restrictions_list.Append(std::move(class_level_dict));
-    rule.SetKey("restrictions", std::move(restrictions_list));
+      base::Value dst_urls(base::Value::Type::DICTIONARY);
+      base::Value dst_urls_list(base::Value::Type::LIST);
+      dst_urls_list.Append(base::Value("*"));
+      dst_urls.SetKey("urls", std::move(dst_urls_list));
+      rule.SetKey("destinations", std::move(dst_urls));
 
-    update->Append(std::move(rule));
+      base::Value restrictions(base::Value::Type::DICTIONARY);
+      base::Value restrictions_list(base::Value::Type::LIST);
+      base::Value class_level_dict(base::Value::Type::DICTIONARY);
+      class_level_dict.SetKey("class", base::Value("CLIPBOARD"));
+      class_level_dict.SetKey("level", base::Value("WARN"));
+      restrictions_list.Append(std::move(class_level_dict));
+      rule.SetKey("restrictions", std::move(restrictions_list));
+
+      update->Append(std::move(rule));
+    }
+
+    SetClipboardText(
+        kClipboardText116,
+        std::make_unique<ui::DataTransferEndpoint>((GURL(kMailUrl))));
+
+    SetupTextfield();
+    // Initiate a paste on textfield_.
+    event_generator_->PressKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
+    event_generator_->ReleaseKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
+
+    EXPECT_EQ("", base::UTF16ToUTF8(textfield_->GetText()));
+    ASSERT_TRUE(dlp_controller.ObserveWidget());
+    widget = helper.GetWidget()->GetWeakPtr();
+    EXPECT_FALSE(widget->IsClosed());
+
+    // Accept warning.
+    ui::DataTransferEndpoint default_endpoint(ui::EndpointType::kDefault);
+    helper.ProceedPressed(default_endpoint);
+    EXPECT_TRUE(!widget || widget->IsClosed());
+
+    EXPECT_EQ(kClipboardText116, textfield_->GetText());
+
+    SetClipboardText(
+        kClipboardText2,
+        std::make_unique<ui::DataTransferEndpoint>((GURL(kMailUrl))));
+
+    // Initiate a paste on textfield_.
+    textfield_->SetText(std::u16string());
+    textfield_->RequestFocus();
+    event_generator_->PressKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
+    event_generator_->ReleaseKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
+
+    EXPECT_EQ("", base::UTF16ToUTF8(textfield_->GetText()));
+    ASSERT_TRUE(dlp_controller.ObserveWidget());
+    widget = helper.GetWidget()->GetWeakPtr();
+    EXPECT_FALSE(widget->IsClosed());
+
+    // Initiate a paste on nullptr data_dst.
+    std::u16string result;
+    ui::Clipboard::GetForCurrentThread()->ReadText(
+        ui::ClipboardBuffer::kCopyPaste, nullptr, &result);
+    EXPECT_TRUE(!widget || widget->IsClosed());
+
+    EXPECT_EQ(std::u16string(), result);
+    ASSERT_TRUE(dlp_controller.ObserveWidget());
+    widget = helper.GetWidget()->GetWeakPtr();
+    EXPECT_FALSE(widget->IsClosed());
+
+    FlushMessageLoop();
   }
-
-  SetClipboardText(
-      kClipboardText116,
-      std::make_unique<ui::DataTransferEndpoint>((GURL(kMailUrl))));
-
-  SetupTextfield();
-  // Initiate a paste on textfield_.
-  event_generator_->PressKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
-  event_generator_->ReleaseKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
-
-  EXPECT_EQ("", base::UTF16ToUTF8(textfield_->GetText()));
-  ASSERT_TRUE(dlp_controller.ObserveWidget());
-
-  // Accept warning.
-  EXPECT_CALL(dlp_controller, OnWidgetClosing);
-  ui::DataTransferEndpoint default_endpoint(ui::EndpointType::kDefault);
-  helper.ProceedPressed(default_endpoint);
-  testing::Mock::VerifyAndClearExpectations(&dlp_controller);
-
-  EXPECT_EQ(kClipboardText116, textfield_->GetText());
-
-  SetClipboardText(kClipboardText2, std::make_unique<ui::DataTransferEndpoint>(
-                                        (GURL(kMailUrl))));
-
-  // Initiate a paste on textfield_.
-  textfield_->SetText(std::u16string());
-  textfield_->RequestFocus();
-  event_generator_->PressKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
-  event_generator_->ReleaseKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
-  testing::Mock::VerifyAndClearExpectations(&dlp_controller);
-
-  EXPECT_EQ("", base::UTF16ToUTF8(textfield_->GetText()));
-  ASSERT_TRUE(dlp_controller.ObserveWidget());
-
-  // Initiate a paste on nullptr data_dst.
-  std::u16string result;
-  EXPECT_CALL(dlp_controller, OnWidgetClosing);
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, nullptr, &result);
-  testing::Mock::VerifyAndClearExpectations(&dlp_controller);
-
-  EXPECT_EQ(std::u16string(), result);
-  ASSERT_TRUE(dlp_controller.ObserveWidget());
-
-  FlushMessageLoop();
+  EXPECT_TRUE(!widget || widget->IsClosed());
 }
 
 // Flaky on MSan bots: http://crbug.com/1178328
@@ -663,13 +670,14 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_ProceedOnWarn) {
   run_loop.Run();
 
   ASSERT_TRUE(dlp_controller_->ObserveWidget());
+  base::WeakPtr<views::Widget> widget = helper.GetWidget()->GetWeakPtr();
+  EXPECT_FALSE(widget->IsClosed());
   EXPECT_EQ(events.size(), 1u);
   EXPECT_THAT(events[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kMailUrl, "*", DlpRulesManager::Restriction::kClipboard,
                   DlpRulesManager::Level::kWarn)));
 
-  EXPECT_CALL(*dlp_controller_, OnWidgetClosing);
   ASSERT_TRUE(dlp_controller_->blink_data_dst_.has_value());
   helper.BlinkProceedPressed(dlp_controller_->blink_data_dst_.value());
 
@@ -679,7 +687,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_ProceedOnWarn) {
               IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
                   kMailUrl, "*", DlpRulesManager::Restriction::kClipboard)));
 
-  testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+  EXPECT_TRUE(!widget || widget->IsClosed());
 }
 
 // Flaky on MSan bots: crbug.com/1230617
@@ -757,6 +765,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_CancelWarn) {
   run_loop.Run();
 
   ASSERT_TRUE(dlp_controller_->ObserveWidget());
+  base::WeakPtr<views::Widget> widget = helper.GetWidget()->GetWeakPtr();
+  EXPECT_FALSE(widget->IsClosed());
   ASSERT_TRUE(dlp_controller_->blink_data_dst_.has_value());
   EXPECT_EQ(events.size(), 1u);
   EXPECT_THAT(events[0],
@@ -764,13 +774,12 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_CancelWarn) {
                   kMailUrl, "*", DlpRulesManager::Restriction::kClipboard,
                   DlpRulesManager::Level::kWarn)));
 
-  EXPECT_CALL(*dlp_controller_, OnWidgetClosing);
   helper.CancelWarningPressed(dlp_controller_->blink_data_dst_.value());
 
   EXPECT_EQ("", EvalJs(GetActiveWebContents(), "p"));
   EXPECT_EQ(events.size(), 1u);
 
-  testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+  EXPECT_TRUE(!widget || widget->IsClosed());
 }
 
 #if defined(MEMORY_SANITIZER)
@@ -844,14 +853,13 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
   dlp_controller_->force_paste_on_warn_ = true;
   GetActiveWebContents()->Paste();
   EXPECT_FALSE(dlp_controller_->ObserveWidget());
+  EXPECT_FALSE(helper.GetWidget());
   EXPECT_EQ(kClipboardText1, EvalJs(GetActiveWebContents(), "p"));
 
   EXPECT_EQ(events.size(), 1u);
   EXPECT_THAT(events[0],
               IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
                   kMailUrl, "*", DlpRulesManager::Restriction::kClipboard)));
-
-  testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 }
 
 // Test case for crbug.com/1213143

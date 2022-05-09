@@ -35,7 +35,7 @@ class DlpDragDropNotifier : public DlpDataTransferNotifier {
   void CancelPressed(views::Widget* widget);
 
   // views::WidgetObserver
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   // Drop callback.

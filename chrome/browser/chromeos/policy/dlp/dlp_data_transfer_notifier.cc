@@ -158,12 +158,10 @@ void DlpDataTransferNotifier::CloseWidget(views::Widget* widget,
   }
 }
 
-void DlpDataTransferNotifier::OnWidgetClosing(views::Widget* widget) {
+void DlpDataTransferNotifier::OnWidgetDestroying(views::Widget* widget) {
   if (widget != widget_.get())
     return;
-
   widget_->RemoveObserver(this);
-  widget_.reset();
   widget_closing_timer_.Stop();
 }
 
@@ -174,6 +172,8 @@ void DlpDataTransferNotifier::OnWidgetActivationChanged(views::Widget* widget,
 }
 
 void DlpDataTransferNotifier::InitWidget() {
+  if (widget_)
+    widget_->RemoveObserver(this);
   widget_ = std::make_unique<views::Widget>();
   widget_->Init(GetWidgetInitParams());
   widget_->AddObserver(this);

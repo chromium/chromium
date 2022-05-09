@@ -294,12 +294,12 @@ void DlpClipboardNotifier::OnClipboardDataChanged() {
   ResetUserWarnSelection();
 }
 
-void DlpClipboardNotifier::OnWidgetClosing(views::Widget* widget) {
+void DlpClipboardNotifier::OnWidgetDestroying(views::Widget* widget) {
   if (!blink_paste_cb_.is_null()) {
     std::move(blink_paste_cb_).Run(false);
     Observe(nullptr);
   }
-  DlpDataTransferNotifier::OnWidgetClosing(widget);
+  DlpDataTransferNotifier::OnWidgetDestroying(widget);
 }
 
 void DlpClipboardNotifier::WebContentsDestroyed() {

@@ -82,7 +82,7 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
   void OnClipboardDataChanged() override;
 
   // views::WidgetObserver
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;

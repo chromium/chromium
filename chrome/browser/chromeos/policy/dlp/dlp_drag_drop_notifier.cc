@@ -65,10 +65,10 @@ void DlpDragDropNotifier::CancelPressed(views::Widget* widget) {
   CloseWidget(widget, views::Widget::ClosedReason::kCancelButtonClicked);
 }
 
-void DlpDragDropNotifier::OnWidgetClosing(views::Widget* widget) {
+void DlpDragDropNotifier::OnWidgetDestroying(views::Widget* widget) {
   drop_cb_.Reset();
 
-  DlpDataTransferNotifier::OnWidgetClosing(widget);
+  DlpDataTransferNotifier::OnWidgetDestroying(widget);
 }
 
 }  // namespace policy

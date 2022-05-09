@@ -7,6 +7,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
 // TODO(crbug.com/1262948): Enable and modify for lacros.
@@ -53,11 +54,14 @@ TEST_F(DlpDataTransferNotifierTest, ShowBlockBubble) {
   notifier_.ShowBlockBubble(std::u16string());
 
   EXPECT_TRUE(notifier_.widget_.get());
+  views::test::WidgetDestroyedWaiter waiter(notifier_.widget_.get());
   EXPECT_TRUE(notifier_.widget_->IsVisible());
   EXPECT_TRUE(notifier_.widget_->IsActive());
 
   notifier_.CloseWidget(notifier_.widget_.get(),
                         views::Widget::ClosedReason::kCloseButtonClicked);
+
+  waiter.Wait();
 
   EXPECT_FALSE(notifier_.widget_.get());
 }
@@ -69,11 +73,14 @@ TEST_F(DlpDataTransferNotifierTest, ShowWarningBubble) {
                               base::DoNothing());
 
   EXPECT_TRUE(notifier_.widget_.get());
+  views::test::WidgetDestroyedWaiter waiter(notifier_.widget_.get());
   EXPECT_TRUE(notifier_.widget_->IsVisible());
   EXPECT_TRUE(notifier_.widget_->IsActive());
 
   notifier_.CloseWidget(notifier_.widget_.get(),
                         views::Widget::ClosedReason::kAcceptButtonClicked);
+
+  waiter.Wait();
 
   EXPECT_FALSE(notifier_.widget_.get());
 }
