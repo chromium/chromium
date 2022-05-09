@@ -1529,14 +1529,10 @@ const FeatureEntry::FeatureVariation kDiscountConsentV2Variations[] = {
 
 const FeatureEntry::FeatureParam kNtpRecipeTasksModuleFakeData[] = {
     {ntp_features::kNtpRecipeTasksModuleDataParam, "fake"}};
-const FeatureEntry::FeatureParam kNtpRecipeTasksModuleHistorical3Days[] = {
-    {ntp_features::kNtpRecipeTasksModuleExperimentGroupParam, "historical-3"}};
 const FeatureEntry::FeatureParam kNtpRecipeTasksModuleHistorical7Days[] = {
     {ntp_features::kNtpRecipeTasksModuleExperimentGroupParam, "historical-7"}};
 const FeatureEntry::FeatureParam kNtpRecipeTasksModuleHistorical14Days[] = {
     {ntp_features::kNtpRecipeTasksModuleExperimentGroupParam, "historical-14"}};
-const FeatureEntry::FeatureParam kNtpRecipeTasksModuleMix3Days[] = {
-    {ntp_features::kNtpRecipeTasksModuleExperimentGroupParam, "mix-3"}};
 const FeatureEntry::FeatureParam kNtpRecipeTasksModuleMix7Days[] = {
     {ntp_features::kNtpRecipeTasksModuleExperimentGroupParam, "mix-7"}};
 const FeatureEntry::FeatureParam kNtpRecipeTasksModuleMix14Days[] = {
@@ -1544,14 +1540,10 @@ const FeatureEntry::FeatureParam kNtpRecipeTasksModuleMix14Days[] = {
 const FeatureEntry::FeatureVariation kNtpRecipeTasksModuleVariations[] = {
     {"- Fake Data", kNtpRecipeTasksModuleFakeData,
      std::size(kNtpRecipeTasksModuleFakeData), nullptr},
-    {"- Historical Arm (3 days)", kNtpRecipeTasksModuleHistorical3Days,
-     std::size(kNtpRecipeTasksModuleHistorical3Days), nullptr},
     {"- Historical Arm (7 days)", kNtpRecipeTasksModuleHistorical7Days,
      std::size(kNtpRecipeTasksModuleHistorical7Days), nullptr},
     {"- Historical Arm (14 days)", kNtpRecipeTasksModuleHistorical14Days,
      std::size(kNtpRecipeTasksModuleHistorical14Days), nullptr},
-    {"- Recommended Mix Arm (3 days)", kNtpRecipeTasksModuleMix3Days,
-     std::size(kNtpRecipeTasksModuleMix3Days), nullptr},
     {"- Recommended Mix Arm (7 days)", kNtpRecipeTasksModuleMix7Days,
      std::size(kNtpRecipeTasksModuleMix7Days), nullptr},
     {"- Recommended Mix Arm (14 days)", kNtpRecipeTasksModuleMix14Days,
