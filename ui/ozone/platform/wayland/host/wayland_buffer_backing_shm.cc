@@ -25,6 +25,7 @@ WaylandBufferBackingShm::~WaylandBufferBackingShm() = default;
 void WaylandBufferBackingShm::RequestBufferHandle(
     base::OnceCallback<void(wl::Object<wl_buffer>)> callback) {
   DCHECK(!callback.is_null());
+  DCHECK(fd_.is_valid());
 
 // Given that buffers for canvas surfaces are submitted with alpha disabled,
 // using a format with alpha channel results in popup surfaces that have black
@@ -40,6 +41,8 @@ void WaylandBufferBackingShm::RequestBufferHandle(
 #endif
   std::move(callback).Run(connection_->shm()->CreateBuffer(fd_, length_, size(),
                                                            with_alpha_channel));
+  if (UseExplicitSyncRelease())
+    auto close = std::move(fd_);
 }
 
 }  // namespace ui
