@@ -14,6 +14,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "media/base/media_switches.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace content {
 namespace {
@@ -26,6 +27,9 @@ WebUIDataSource* CreateMediaInternalsHTMLSource() {
   source->AddResourcePaths(
       base::make_span(kMediaInternalsResources, kMediaInternalsResourcesSize));
   source->SetDefaultResource(IDR_MEDIA_INTERNALS_MEDIA_INTERNALS_HTML);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types static-types;");
   return source;
 }
 

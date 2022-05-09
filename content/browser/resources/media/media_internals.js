@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
+import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
 import {ClientRenderer} from './client_renderer.js';
 import {initialize} from './main.js';
 import {Manager} from './manager.js';
 
 initialize(new Manager(new ClientRenderer()));
-decorate('tabbox', TabBox);
+const tabBox = document.querySelector('cr-tab-box');
+tabBox.hidden = false;

@@ -12,19 +12,19 @@ body,
   width: 100%;
 }
 
-tabbox {
+cr-tab-box {
   padding-top: 10px;
 }
 
-tab {
+div[slot='tab'] {
   -webkit-user-select: none;
 }
 
-body tabpanels {
+body div[slot='panel'] {
   box-shadow: none;
 }
 
-tabpanel {
+div[slot='panel'] {
   padding: 10px;
 }
 
