@@ -154,15 +154,15 @@ class PreferencesTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    auto* user_manager = new FakeChromeUserManager();
+    user_manager_ = new FakeChromeUserManager();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager));
+        base::WrapUnique(user_manager_));
 
     const char test_user_email[] = "test_user@example.com";
     const AccountId test_account_id(AccountId::FromUserEmail(test_user_email));
-    test_user_ = user_manager->AddUser(test_account_id);
-    user_manager->LoginUser(test_account_id);
-    user_manager->SwitchActiveUser(test_account_id);
+    test_user_ = user_manager_->AddUser(test_account_id);
+    user_manager_->LoginUser(test_account_id);
+    user_manager_->SwitchActiveUser(test_account_id);
 
     test_profile_ = profile_manager_->CreateTestingProfile(
         chrome::kInitialProfile);
@@ -214,8 +214,10 @@ class PreferencesTest : public testing::Test {
   StringPrefMember previous_input_method_;
   StringPrefMember current_input_method_;
   BooleanPrefMember consumer_auto_update_toggle_;
+  base::test::ScopedFeatureList feature_list_;
 
   // Not owned.
+  FakeChromeUserManager* user_manager_;
   const user_manager::User* test_user_;
   TestingProfile* test_profile_;
   sync_preferences::TestingPrefServiceSyncable* pref_service_;
@@ -252,6 +254,30 @@ TEST_F(PreferencesTest, TestConsumerAutoUpdateToggleOnSignals) {
   fake_update_engine_client_->NotifyObserversThatStatusChanged(
       CreateCAUFeatureStatus(true));
   EXPECT_TRUE(consumer_auto_update_toggle_.GetValue());
+}
+
+TEST_F(PreferencesTest, TestDeviceOwnerInitCAUFeatureEnabled) {
+  feature_list_.InitAndEnableFeature(
+      features::kConsumerAutoUpdateToggleAllowed);
+  user_manager_->SetOwnerId(test_user_->GetAccountId());
+  InitPreferences();
+  EXPECT_EQ(0, fake_update_engine_client_->toggle_feature_count());
+  EXPECT_EQ(1, fake_update_engine_client_->is_feature_enabled_count());
+}
+
+TEST_F(PreferencesTest, TestDeviceOwnerInitCAUFeatureDisabled) {
+  feature_list_.InitAndDisableFeature(
+      features::kConsumerAutoUpdateToggleAllowed);
+  user_manager_->SetOwnerId(test_user_->GetAccountId());
+  InitPreferences();
+  EXPECT_EQ(1, fake_update_engine_client_->toggle_feature_count());
+  EXPECT_EQ(0, fake_update_engine_client_->is_feature_enabled_count());
+}
+
+TEST_F(PreferencesTest, TestNonDeviceOwnerInitCAUCheck) {
+  InitPreferences();
+  EXPECT_EQ(0, fake_update_engine_client_->toggle_feature_count());
+  EXPECT_EQ(1, fake_update_engine_client_->is_feature_enabled_count());
 }
 
 class InputMethodPreferencesTest : public PreferencesTest,
@@ -439,8 +465,6 @@ class InputMethodPreferencesTest : public PreferencesTest,
   StringPrefMember preload_engines_syncable_;
   StringPrefMember enabled_imes_;
   StringPrefMember enabled_imes_syncable_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that the server values are added to the values chosen at OOBE.
