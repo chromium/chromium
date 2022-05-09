@@ -245,7 +245,7 @@ class OzonePlatformWayland : public OzonePlatform,
 #endif
 
     menu_utils_ = std::make_unique<WaylandMenuUtils>(connection_.get());
-    wayland_utils_ = std::make_unique<WaylandUtils>();
+    wayland_utils_ = std::make_unique<WaylandUtils>(connection_.get());
 
     return true;
   }

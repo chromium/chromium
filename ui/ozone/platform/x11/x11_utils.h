@@ -20,6 +20,7 @@ class X11Utils : public PlatformUtils {
   std::string GetWmWindowClass(const std::string& desktop_base_name) override;
   std::unique_ptr<PlatformUtils::ScopedDisableClientSideDecorationsForTest>
   DisableClientSideDecorationsForTest() override;
+  void OnUnhandledKeyEvent(const KeyEvent& key_event) override;
 };
 
 }  // namespace ui

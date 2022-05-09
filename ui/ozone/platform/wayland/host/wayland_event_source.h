@@ -92,6 +92,7 @@ class WaylandEventSource : public PlatformEventSource,
   uint32_t OnKeyboardKeyEvent(EventType type,
                               DomCode dom_code,
                               bool repeat,
+                              absl::optional<uint32_t> serial,
                               base::TimeTicks timestamp,
                               int device_id,
                               WaylandKeyboard::KeyEventKind kind) override;

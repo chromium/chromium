@@ -44,6 +44,11 @@ bool HasAnyPointerButtonFlag(int flags) {
                    EF_FORWARD_MOUSE_BUTTON)) != 0;
 }
 
+std::vector<uint8_t> ToLittleEndianByteVector(uint32_t value) {
+  return {static_cast<uint8_t>(value), static_cast<uint8_t>(value >> 8),
+          static_cast<uint8_t>(value >> 16), static_cast<uint8_t>(value >> 24)};
+}
+
 // Number of fingers for scroll gestures.
 constexpr int kGestureScrollFingerCount = 2;
 
@@ -121,6 +126,7 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
     EventType type,
     DomCode dom_code,
     bool repeat,
+    absl::optional<uint32_t> serial,
     base::TimeTicks timestamp,
     int device_id,
     WaylandKeyboard::KeyEventKind kind) {
@@ -164,13 +170,13 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
   // expects, but GtkUiPlatformWayland::GetGdkKeyEventState() takes care of the
   // conversion.
   properties.emplace(kPropertyKeyboardState,
-                     std::vector<uint8_t>{
-                         static_cast<uint8_t>(state_before_event),
-                         static_cast<uint8_t>(state_before_event >> 8),
-                         static_cast<uint8_t>(state_before_event >> 16),
-                         static_cast<uint8_t>(state_before_event >> 24),
-                     });
+                     ToLittleEndianByteVector(state_before_event));
 #endif
+
+  if (serial.has_value()) {
+    properties.emplace(WaylandKeyboard::kPropertyWaylandSerial,
+                       ToLittleEndianByteVector(serial.value()));
+  }
 
   if (kind == WaylandKeyboard::KeyEventKind::kKey) {
     // Mark that this is the key event which IME did not consume.

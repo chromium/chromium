@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/buildflags.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -18,6 +19,7 @@
 namespace ui {
 
 class KeyboardLayoutEngine;
+class KeyEvent;
 class WaylandConnection;
 class WaylandWindow;
 #if BUILDFLAG(USE_XKBCOMMON)
@@ -34,6 +36,9 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
     kKey,      // Originated by wl_keyboard::key.
   };
 
+  // Property key to annotate wayland serial to a KeyEvent.
+  static constexpr char kPropertyWaylandSerial[] = "_keyevent_wayland_serial_";
+
   WaylandKeyboard(wl_keyboard* keyboard,
                   zcr_keyboard_extension_v1* keyboard_extension_v1,
                   WaylandConnection* connection,
@@ -43,6 +48,9 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
 
   uint32_t id() const { return obj_.id(); }
   int device_id() const { return obj_.id(); }
+
+  // Called when it turns out that KeyEvent is not handled.
+  void OnUnhandledKeyEvent(const KeyEvent& key_event);
 
  private:
   using LayoutEngine =
@@ -100,6 +108,7 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
                    unsigned int scan_code,
                    bool down,
                    bool repeat,
+                   absl::optional<uint32_t> serial,
                    base::TimeTicks timestamp,
                    int device_id,
                    int flags,
@@ -138,6 +147,7 @@ class WaylandKeyboard::Delegate {
   virtual uint32_t OnKeyboardKeyEvent(EventType type,
                                       DomCode dom_code,
                                       bool repeat,
+                                      absl::optional<uint32_t> serial,
                                       base::TimeTicks timestamp,
                                       int device_id,
                                       WaylandKeyboard::KeyEventKind kind) = 0;

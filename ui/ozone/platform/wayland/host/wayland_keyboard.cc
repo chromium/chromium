@@ -113,6 +113,25 @@ WaylandKeyboard::~WaylandKeyboard() {
   delegate_->OnKeyboardModifiersChanged(0);
 }
 
+void WaylandKeyboard::OnUnhandledKeyEvent(const KeyEvent& key_event) {
+  // No way to send ack_key.
+  if (!extended_keyboard_)
+    return;
+
+  // Obtain the serial from properties. See WaylandEventSource how to annotate.
+  const auto* properties = key_event.properties();
+  if (!properties)
+    return;
+  auto it = properties->find(kPropertyWaylandSerial);
+  if (it == properties->end())
+    return;
+  DCHECK_EQ(it->second.size(), 4u);
+  uint32_t serial = it->second[0] | (it->second[1] << 8) |
+                    (it->second[2] << 16) | (it->second[3] << 24);
+
+  extended_keyboard_->AckKey(serial, false);
+}
+
 void WaylandKeyboard::Keymap(void* data,
                              wl_keyboard* obj,
                              uint32_t format,
@@ -238,8 +257,8 @@ void WaylandKeyboard::DispatchKey(unsigned int key,
                                   int flags) {
   // Key repeat is only triggered by wl_keyboard::key event,
   // but not by extended_keyboard::peek_key.
-  DispatchKey(key, scan_code, down, repeat, timestamp, device_id, flags,
-              KeyEventKind::kKey);
+  DispatchKey(key, scan_code, down, repeat, absl::nullopt, timestamp, device_id,
+              flags, KeyEventKind::kKey);
 }
 
 void WaylandKeyboard::OnKey(uint32_t serial,
@@ -268,14 +287,16 @@ void WaylandKeyboard::OnKey(uint32_t serial,
     return;
   }
 
-  DispatchKey(key, 0 /*scan_code*/, down, false /*repeat*/, EventTimeForNow(),
-              device_id(), EF_NONE, kind);
+  DispatchKey(key, 0 /*scan_code*/, down, false /*repeat*/,
+              down ? absl::make_optional(serial) : absl::nullopt,
+              EventTimeForNow(), device_id(), EF_NONE, kind);
 }
 
 void WaylandKeyboard::DispatchKey(unsigned int key,
                                   unsigned int scan_code,
                                   bool down,
                                   bool repeat,
+                                  absl::optional<uint32_t> serial,
                                   base::TimeTicks timestamp,
                                   int device_id,
                                   int flags,
@@ -287,15 +308,16 @@ void WaylandKeyboard::DispatchKey(unsigned int key,
   // Pass empty DomKey and KeyboardCode here so the delegate can pre-process
   // and decode it when needed.
   uint32_t result = delegate_->OnKeyboardKeyEvent(
-      down ? ET_KEY_PRESSED : ET_KEY_RELEASED, dom_code, repeat, timestamp,
-      device_id, kind);
+      down ? ET_KEY_PRESSED : ET_KEY_RELEASED, dom_code, repeat, serial,
+      timestamp, device_id, kind);
 
-  if (extended_keyboard_) {
-    if (auto keypress_serial = connection_->serial_tracker().GetSerial(
-            wl::SerialType::kKeyPress)) {
-      bool handled = result & POST_DISPATCH_STOP_PROPAGATION;
-      extended_keyboard_->AckKey(keypress_serial->value, handled);
-    }
+  if (extended_keyboard_ && !(result & POST_DISPATCH_STOP_PROPAGATION) &&
+      serial.has_value()) {
+    // Not handled, so send ack_key event immediately.
+    // If handled, we do not, because the event is at least sent to the client,
+    // but later on, it may be returned as unhandled. If we send ack_key to the
+    // compositor, there's no way to cancel it.
+    extended_keyboard_->AckKey(serial.value(), false);
   }
 }
 

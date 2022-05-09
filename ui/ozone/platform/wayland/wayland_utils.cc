@@ -5,6 +5,9 @@
 #include "ui/ozone/platform/wayland/wayland_utils.h"
 
 #include "ui/gfx/image/image_skia.h"
+#include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 
 namespace ui {
@@ -25,7 +28,8 @@ class WaylandScopedDisableClientSideDecorationsForTest
 
 }  // namespace
 
-WaylandUtils::WaylandUtils() = default;
+WaylandUtils::WaylandUtils(WaylandConnection* connection)
+    : connection_(connection) {}
 
 WaylandUtils::~WaylandUtils() = default;
 
@@ -41,6 +45,16 @@ std::string WaylandUtils::GetWmWindowClass(
 std::unique_ptr<PlatformUtils::ScopedDisableClientSideDecorationsForTest>
 WaylandUtils::DisableClientSideDecorationsForTest() {
   return std::make_unique<WaylandScopedDisableClientSideDecorationsForTest>();
+}
+
+void WaylandUtils::OnUnhandledKeyEvent(const KeyEvent& key_event) {
+  auto* seat = connection_->seat();
+  if (!seat)
+    return;
+  auto* keyboard = seat->keyboard();
+  if (!keyboard)
+    return;
+  keyboard->OnUnhandledKeyEvent(key_event);
 }
 
 }  // namespace ui

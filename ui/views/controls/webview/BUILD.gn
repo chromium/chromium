@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ozone.gni")
+
 component("webview") {
   sources = [
     "unhandled_keyboard_event_handler.cc",
@@ -52,7 +54,12 @@ component("webview") {
   ]
 
   if (is_linux || is_chromeos || is_android || is_fuchsia) {
-    sources += [ "unhandled_keyboard_event_handler_default.cc" ]
+    if (use_ozone) {
+      sources += [ "unhandled_keyboard_event_handler_ozone.cc" ]
+      deps += [ "//ui/ozone" ]
+    } else {
+      sources += [ "unhandled_keyboard_event_handler_default.cc" ]
+    }
   }
 }
 

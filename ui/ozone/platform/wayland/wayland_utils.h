@@ -9,9 +9,11 @@
 
 namespace ui {
 
+class WaylandConnection;
+
 class WaylandUtils : public PlatformUtils {
  public:
-  WaylandUtils();
+  explicit WaylandUtils(WaylandConnection* connection);
   WaylandUtils(const WaylandUtils&) = delete;
   WaylandUtils& operator=(const WaylandUtils&) = delete;
   ~WaylandUtils() override;
@@ -20,6 +22,10 @@ class WaylandUtils : public PlatformUtils {
   std::string GetWmWindowClass(const std::string& desktop_base_name) override;
   std::unique_ptr<PlatformUtils::ScopedDisableClientSideDecorationsForTest>
   DisableClientSideDecorationsForTest() override;
+  void OnUnhandledKeyEvent(const KeyEvent& key_event) override;
+
+ private:
+  WaylandConnection* const connection_;
 };
 
 }  // namespace ui

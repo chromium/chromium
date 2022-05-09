@@ -17,6 +17,8 @@ class ImageSkia;
 
 namespace ui {
 
+class KeyEvent;
+
 // Platform-specific general util functions that didn't find their way to any
 // other existing utilities, but they are required to be accessed outside
 // Ozone.
@@ -46,6 +48,9 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformUtils {
   // affect tests.
   virtual std::unique_ptr<ScopedDisableClientSideDecorationsForTest>
   DisableClientSideDecorationsForTest() = 0;
+
+  // Called when it is found that a KeyEvent is not consumed.
+  virtual void OnUnhandledKeyEvent(const KeyEvent& key_event) = 0;
 };
 
 }  // namespace ui

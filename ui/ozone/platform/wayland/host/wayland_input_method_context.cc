@@ -492,7 +492,7 @@ void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
   EventType type =
       state == WL_KEYBOARD_KEY_STATE_PRESSED ? ET_KEY_PRESSED : ET_KEY_RELEASED;
   key_delegate_->OnKeyboardKeyEvent(type, dom_code, /*repeat=*/false,
-                                    EventTimeForNow(), device_id,
+                                    absl::nullopt, EventTimeForNow(), device_id,
                                     WaylandKeyboard::KeyEventKind::kKey);
 #else
   NOTIMPLEMENTED();

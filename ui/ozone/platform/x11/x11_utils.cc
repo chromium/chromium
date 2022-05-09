@@ -31,4 +31,8 @@ X11Utils::DisableClientSideDecorationsForTest() {
   return {};
 }
 
+void X11Utils::OnUnhandledKeyEvent(const KeyEvent& key_event) {
+  // Do nothing.
+}
+
 }  // namespace ui
