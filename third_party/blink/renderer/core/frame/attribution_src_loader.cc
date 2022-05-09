@@ -11,7 +11,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -40,7 +39,6 @@
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -251,12 +249,12 @@ AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
   if (!local_frame_->IsAttached())
     return nullptr;
 
+  // TODO(apaseltiner): Respect the referrerpolicy attribute of the
+  // originating <a> or <img> tag, if present.
   ResourceRequest request(src_url);
   request.SetHttpMethod(http_names::kGET);
 
   request.SetKeepalive(true);
-  request.SetReferrerString(Referrer::NoReferrer());
-  request.SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
   request.SetRequestContext(mojom::blink::RequestContextType::ATTRIBUTION_SRC);
   FetchParameters params(std::move(request),
                          local_frame_->DomWindow()->GetCurrentWorld());

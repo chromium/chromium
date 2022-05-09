@@ -130,7 +130,7 @@ TEST_F(AttributionSrcLoaderTest, TooManyConcurrentRequests_NewRequestDropped) {
             AttributionSrcLoader::RegisterResult::kSuccess);
 }
 
-TEST_F(AttributionSrcLoaderTest, NoReferrer) {
+TEST_F(AttributionSrcLoaderTest, Referrer) {
   KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
@@ -140,8 +140,8 @@ TEST_F(AttributionSrcLoaderTest, NoReferrer) {
   url_test_helpers::ServeAsynchronousRequests();
 
   EXPECT_EQ(client_->request_head().GetReferrerPolicy(),
-            network::mojom::ReferrerPolicy::kNever);
-  EXPECT_EQ(client_->request_head().ReferrerString(), Referrer::NoReferrer());
+            network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin);
+  EXPECT_EQ(client_->request_head().ReferrerString(), String());
 }
 
 }  // namespace
