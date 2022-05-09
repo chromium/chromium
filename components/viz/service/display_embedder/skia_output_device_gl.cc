@@ -269,7 +269,7 @@ bool SkiaOutputDeviceGL::Reshape(
                     : kBottomLeft_GrSurfaceOrigin;
   sk_surface_ = SkSurface::MakeFromBackendRenderTarget(
       context_state_->gr_context(), render_target, origin, color_type,
-      color_space.ToSkColorSpace(), &surface_props);
+      characterization.refColorSpace(), &surface_props);
   if (!sk_surface_) {
     LOG(ERROR) << "Couldn't create surface:"
                << "\n  abandoned()="

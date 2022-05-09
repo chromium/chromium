@@ -209,14 +209,16 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     gfx::Size size;
     float device_scale_factor = 1.f;
     gfx::ColorSpace color_space;
+    float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel;
     gfx::BufferFormat format = gfx::BufferFormat::RGBX_8888;
     bool use_stencil = false;
 
     bool operator==(const ReshapeParams& other) const {
       return size == other.size &&
              device_scale_factor == other.device_scale_factor &&
-             color_space == other.color_space && format == other.format &&
-             use_stencil == other.use_stencil;
+             color_space == other.color_space &&
+             sdr_white_level == other.sdr_white_level &&
+             format == other.format && use_stencil == other.use_stencil;
     }
     bool operator!=(const ReshapeParams& other) const {
       return !(*this == other);

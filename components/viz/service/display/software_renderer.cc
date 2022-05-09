@@ -604,8 +604,7 @@ void SoftwareRenderer::DrawUnsupportedQuad(const DrawQuad* quad) {
 void SoftwareRenderer::CopyDrawnRenderPass(
     const copy_output::RenderPassGeometry& geometry,
     std::unique_ptr<CopyOutputRequest> request) {
-  sk_sp<SkColorSpace> color_space =
-      CurrentRenderPassColorSpace().ToSkColorSpace();
+  sk_sp<SkColorSpace> color_space = CurrentRenderPassSkColorSpace();
   DCHECK(color_space);
 
   SkBitmap bitmap;

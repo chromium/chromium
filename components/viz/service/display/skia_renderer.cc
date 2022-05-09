@@ -575,8 +575,7 @@ class SkiaRenderer::ScopedSkImageBuilder {
                        bool maybe_concurrent_reads,
                        SkAlphaType alpha_type = kPremul_SkAlphaType,
                        GrSurfaceOrigin origin = kTopLeft_GrSurfaceOrigin,
-                       const absl::optional<gfx::ColorSpace>&
-                           override_colorspace = absl::nullopt,
+                       sk_sp<SkColorSpace> override_color_space = nullptr,
                        bool raw_draw_if_possible = false);
 
   ScopedSkImageBuilder(const ScopedSkImageBuilder&) = delete;
@@ -600,7 +599,7 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
     bool maybe_concurrent_reads,
     SkAlphaType alpha_type,
     GrSurfaceOrigin origin,
-    const absl::optional<gfx::ColorSpace>& override_color_space,
+    sk_sp<SkColorSpace> override_color_space,
     bool raw_draw_if_possible) {
   if (!resource_id)
     return;
@@ -946,7 +945,7 @@ void SkiaRenderer::BindFramebufferToTexture(
   RenderPassBacking& backing = iter->second;
   current_canvas_ = skia_output_surface_->BeginPaintRenderPass(
       render_pass_id, backing.size, backing.format, backing.generate_mipmap,
-      backing.color_space.ToSkColorSpace(), /*is_overlay=*/false,
+      RenderPassBackingSkColorSpace(backing), /*is_overlay=*/false,
       backing.mailbox);
 }
 
@@ -2065,13 +2064,12 @@ void SkiaRenderer::DrawStreamVideoQuad(const StreamVideoDrawQuad* quad,
   TRACE_EVENT0("viz", "SkiaRenderer::DrawStreamVideoQuad");
   DCHECK(!MustFlushBatchedQuads(quad, rpdq_params, *params));
 
-  absl::optional<gfx::ColorSpace> override_color_space;
+  sk_sp<SkColorSpace> override_color_space;
 
   // Force SRGB color space if we don't want real color space from media
   // decoder.
-  if (!use_real_color_space_for_stream_video_) {
-    override_color_space = gfx::ColorSpace::CreateSRGB();
-  }
+  if (!use_real_color_space_for_stream_video_)
+    override_color_space = SkColorSpace::MakeSRGB();
 
   ScopedSkImageBuilder builder(this, quad->resource_id(),
                                /*maybe_concurrent_reads=*/true,
@@ -2111,17 +2109,17 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   const bool needs_color_conversion_filter =
       quad->is_video_frame && src_color_space.IsHDR();
 
-  absl::optional<gfx::ColorSpace> override_color_space;
+  sk_sp<SkColorSpace> override_color_space;
   if (needs_color_conversion_filter)
-    override_color_space = CurrentRenderPassColorSpace();
+    override_color_space = CurrentRenderPassSkColorSpace();
 
-  // TODO(b/221643955): Some Chrome OS tests rely on the old GLRenderer
-  // behavior of skipping color space conversions if the quad's color space is
-  // invalid. Once these tests are migrated, we can remove the override here
-  // and revert to Skia's default behavior of assuming sRGB on invalid.
+    // TODO(b/221643955): Some Chrome OS tests rely on the old GLRenderer
+    // behavior of skipping color space conversions if the quad's color space is
+    // invalid. Once these tests are migrated, we can remove the override here
+    // and revert to Skia's default behavior of assuming sRGB on invalid.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!src_color_space.IsValid())
-    override_color_space = CurrentRenderPassColorSpace();
+    override_color_space = CurrentRenderPassSkColorSpace();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ScopedSkImageBuilder builder(
@@ -2252,7 +2250,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
     // Skia won't perform color conversion.
     const gfx::ColorSpace dst_color_space = CurrentRenderPassColorSpace();
     DCHECK(SkColorSpace::Equals(image->colorSpace(),
-                                dst_color_space.ToSkColorSpace().get()));
+                                CurrentRenderPassSkColorSpace().get()));
     sk_sp<SkColorFilter> color_filter =
         GetColorSpaceConversionFilter(src_color_space, dst_color_space);
     paint.setColorFilter(color_filter->makeComposed(paint.refColorFilter()));
@@ -2286,7 +2284,7 @@ void SkiaRenderer::DrawTileDrawQuad(const TileDrawQuad* quad,
       this, quad->resource_id(), /*maybe_concurrent_reads=*/false,
       quad->is_premultiplied ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
       /*origin=*/kTopLeft_GrSurfaceOrigin,
-      /*override_colorspace=*/absl::nullopt, raw_draw_if_possible);
+      /*override_color_space=*/nullptr, raw_draw_if_possible);
 
   params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(
       quad->tex_coord_rect, gfx::RectF(quad->rect), params->visible_rect);
@@ -2354,8 +2352,7 @@ void SkiaRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
   // color space we lie and say the SkImage destination color space is always
   // the same as the rest of the frame. Otherwise the two color space
   // adjustments combined will produce the wrong result.
-  const gfx::ColorSpace& frame_color_space = CurrentRenderPassColorSpace();
-  gfx::ColorSpace dst_color_space = frame_color_space;
+  gfx::ColorSpace dst_color_space = CurrentRenderPassColorSpace();
 
 #if BUILDFLAG(IS_WIN)
   // Force sRGB output on Windows for overlay candidate video quads to match
@@ -2376,12 +2373,11 @@ void SkiaRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
 #endif
 
   DCHECK(resource_provider());
-  // Pass in |frame_color_space| here instead of |dst_color_space| so the color
-  // space transform going from SkImage to SkSurface is identity. The
-  // SkColorFilter already handles color space conversion so this avoids
+  // Pass in |CurrentRenderPassSkColorSpace()| here instead of |dst_color_space|
+  // so the color space transform going from SkImage to SkSurface is identity.
+  // The SkColorFilter already handles color space conversion so this avoids
   // applying the conversion twice.
-  ScopedYUVSkImageBuilder builder(this, quad,
-                                  frame_color_space.ToSkColorSpace());
+  ScopedYUVSkImageBuilder builder(this, quad, CurrentRenderPassSkColorSpace());
   const SkImage* image = builder.sk_image();
   if (!image)
     return;
@@ -2794,7 +2790,7 @@ void SkiaRenderer::DrawRenderPassQuad(const AggregatedRenderPassDrawQuad* quad,
   sk_sp<SkImage> content_image =
       skia_output_surface_->MakePromiseSkImageFromRenderPass(
           quad->render_pass_id, backing.size, backing.format,
-          backing.generate_mipmap, backing.color_space.ToSkColorSpace(),
+          backing.generate_mipmap, RenderPassBackingSkColorSpace(backing),
           backing.mailbox);
   DLOG_IF(ERROR, !content_image)
       << "MakePromiseSkImageFromRenderPass() failed for render pass";
@@ -3084,7 +3080,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   ResourceFormat buffer_format{};
   gfx::ColorSpace color_space;
 
-  RenderPassBacking* backing = nullptr;
+  RenderPassBacking* src_quad_backing = nullptr;
   auto bypass = render_pass_bypass_quads_.find(quad->render_pass_id);
   BypassMode bypass_mode = BypassMode::kSkip;
   // When Render Pass has a single quad inside we would draw that directly.
@@ -3103,9 +3099,9 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     DCHECK(render_pass_backings_.end() != it);
     // This function is called after AllocateRenderPassResourceIfNeeded, so
     // there should be backing ready.
-    backing = &it->second;
-    buffer_format = backing->format;
-    color_space = backing->color_space;
+    src_quad_backing = &it->second;
+    buffer_format = src_quad_backing->format;
+    color_space = src_quad_backing->color_space;
   }
 
   // Adjust the overlay |buffer_size| to reduce memory fragmentation. It also
@@ -3149,10 +3145,14 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     in_flight_render_pass_overlay_backings_.push_back(std::move(*it));
     available_render_pass_overlay_backings_.erase(it);
   }
+  const RenderPassBacking& dst_overlay_backing =
+      in_flight_render_pass_overlay_backings_.back();
 
   current_canvas_ = skia_output_surface_->BeginPaintRenderPass(
-      quad->render_pass_id, buffer_size, buffer_format, /*mipmap=*/false,
-      color_space.ToSkColorSpace(), /*is_overlay=*/true, overlay->mailbox);
+      quad->render_pass_id, dst_overlay_backing.size,
+      dst_overlay_backing.format, /*mipmap=*/false,
+      RenderPassBackingSkColorSpace(dst_overlay_backing), /*is_overlay=*/true,
+      overlay->mailbox);
   if (!current_canvas_) {
     DLOG(ERROR)
         << "BeginPaintRenderPass() in PrepareRenderPassOverlay() failed.";
@@ -3182,11 +3182,12 @@ void SkiaRenderer::PrepareRenderPassOverlay(
       NOTREACHED();
     }
   } else {
-    DCHECK(backing);
+    DCHECK(src_quad_backing);
     auto content_image = skia_output_surface_->MakePromiseSkImageFromRenderPass(
-        quad->render_pass_id, backing->size, backing->format,
-        backing->generate_mipmap, backing->color_space.ToSkColorSpace(),
-        backing->mailbox);
+        quad->render_pass_id, src_quad_backing->size, src_quad_backing->format,
+        src_quad_backing->generate_mipmap,
+        RenderPassBackingSkColorSpace(*src_quad_backing),
+        src_quad_backing->mailbox);
     if (!content_image) {
       DLOG(ERROR) << "MakePromiseSkImageFromRenderPass() in "
                      "PrepareRenderPassOverlay() failed.";
@@ -3194,7 +3195,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
       return;
     }
 
-    if (backing->generate_mipmap)
+    if (src_quad_backing->generate_mipmap)
       params.sampling =
           SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear);
 

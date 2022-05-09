@@ -279,6 +279,10 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   };
   base::flat_map<AggregatedRenderPassId, RenderPassBacking>
       render_pass_backings_;
+  sk_sp<SkColorSpace> RenderPassBackingSkColorSpace(
+      const RenderPassBacking& backing) {
+    return backing.color_space.ToSkColorSpace(CurrentFrameSDRWhiteLevel());
+  }
 
   // Interface used for drawing. Common among different draw modes.
   sk_sp<SkSurface> root_surface_;

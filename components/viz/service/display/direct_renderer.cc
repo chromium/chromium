@@ -373,6 +373,7 @@ void DirectRenderer::DrawFrame(
   reshape_params.size = surface_resource_size;
   reshape_params.device_scale_factor = device_scale_factor;
   reshape_params.color_space = frame_color_space;
+  reshape_params.sdr_white_level = CurrentFrameSDRWhiteLevel();
   reshape_params.format = frame_buffer_format;
   reshape_params.use_stencil = use_stencil;
   if (next_frame_needs_full_frame_redraw_ ||
@@ -1001,6 +1002,10 @@ bool DirectRenderer::ShouldApplyRoundedCorner(const DrawQuad* quad) const {
     }
   }
   return false;
+}
+
+float DirectRenderer::CurrentFrameSDRWhiteLevel() const {
+  return current_frame()->display_color_spaces.GetSDRMaxLuminanceNits();
 }
 
 gfx::ColorSpace DirectRenderer::RootRenderPassColorSpace() const {

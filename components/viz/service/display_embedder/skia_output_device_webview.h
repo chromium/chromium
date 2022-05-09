@@ -54,7 +54,7 @@ class SkiaOutputDeviceWebView : public SkiaOutputDevice {
   sk_sp<SkSurface> sk_surface_;
 
   gfx::Size size_;
-  gfx::ColorSpace color_space_;
+  sk_sp<SkColorSpace> sk_color_space_;
   unsigned int last_frame_buffer_object_ = -1;
 
   base::WeakPtrFactory<SkiaOutputDeviceWebView> weak_ptr_factory_{this};

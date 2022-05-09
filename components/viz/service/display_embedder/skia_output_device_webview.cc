@@ -65,7 +65,7 @@ bool SkiaOutputDeviceWebView::Reshape(
   }
 
   size_ = size;
-  color_space_ = color_space;
+  sk_color_space_ = characterization.refColorSpace();
   InitSkiaSurface(gl_surface_->GetBackingFramebufferObject());
   return !!sk_surface_;
 }
@@ -115,14 +115,13 @@ void SkiaOutputDeviceWebView::InitSkiaSurface(unsigned int fbo) {
   SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
   sk_surface_ = SkSurface::MakeFromBackendRenderTarget(
       context_state_->gr_context(), render_target, origin, color_type,
-      color_space_.ToSkColorSpace(), &surface_props);
+      sk_color_space_, &surface_props);
 
   if (!sk_surface_) {
     LOG(ERROR) << "Couldn't create surface: "
                << context_state_->gr_context()->abandoned() << " " << color_type
                << " " << framebuffer_info.fFBOID << " "
-               << framebuffer_info.fFormat << " " << color_space_.ToString()
-               << " " << size_.ToString();
+               << framebuffer_info.fFormat << " " << size_.ToString();
   }
 }
 

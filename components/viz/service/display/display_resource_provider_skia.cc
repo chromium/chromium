@@ -130,7 +130,7 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
     ResourceId id,
     bool maybe_concurrent_reads,
     bool is_video_plane,
-    const absl::optional<gfx::ColorSpace>& override_color_space,
+    sk_sp<SkColorSpace> override_color_space,
     bool raw_draw_is_possible) {
   auto it = resource_provider_->resources_.find(id);
   DCHECK(it != resource_provider_->resources_.end());
@@ -154,8 +154,9 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
         // is very subtle.
         image_color_space =
             override_color_space
-                .value_or(resource.transferable.color_space.GetAsFullRangeRGB())
-                .ToSkColorSpace();
+                ? override_color_space
+                : resource.transferable.color_space.GetAsFullRangeRGB()
+                      .ToSkColorSpace();
       }
       resource.image_context =
           resource_provider_->external_use_client_->CreateImageContext(
