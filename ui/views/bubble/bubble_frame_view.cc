@@ -285,8 +285,18 @@ void BubbleFrameView::GetWindowMask(const gfx::Size& size,
 }
 
 void BubbleFrameView::ResetWindowControls() {
-  close_->SetVisible(GetWidget()->widget_delegate()->ShouldShowCloseButton());
-  minimize_->SetVisible(GetWidget()->widget_delegate()->CanMinimize());
+  // If the close button is not visible, marking it as "ignored" will cause it
+  // to be removed from the accessibility tree.
+  bool close_is_visible =
+      GetWidget()->widget_delegate()->ShouldShowCloseButton();
+  close_->SetVisible(close_is_visible);
+  close_->GetViewAccessibility().OverrideIsIgnored(!close_is_visible);
+
+  // If the minimize button is not visible, marking it as "ignored" will cause
+  // it to be removed from the accessibility tree.
+  bool minimize_is_visible = GetWidget()->widget_delegate()->CanMinimize();
+  minimize_->SetVisible(minimize_is_visible);
+  minimize_->GetViewAccessibility().OverrideIsIgnored(!minimize_is_visible);
 }
 
 void BubbleFrameView::UpdateWindowIcon() {
