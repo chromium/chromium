@@ -128,21 +128,9 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
       return DeprecationInfo::WithTranslation(
           feature,
           DeprecationIssueType::kInsecurePrivateNetworkSubresourceRequest);
-    case WebFeature::kLegacyConstraintGoogCpuOveruseDetection:
-      return DeprecationInfo::WithTranslation(
-          feature,
-          DeprecationIssueType::kLegacyConstraintGoogCpuOveruseDetection);
     case WebFeature::kLegacyConstraintGoogIPv6:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kLegacyConstraintGoogIPv6);
-    case WebFeature::kLegacyConstraintGoogScreencastMinBitrate:
-      return DeprecationInfo::WithTranslation(
-          feature,
-          DeprecationIssueType::kLegacyConstraintGoogScreencastMinBitrate);
-    case WebFeature::kLegacyConstraintGoogSuspendBelowMinBitrate:
-      return DeprecationInfo::WithTranslation(
-          feature,
-          DeprecationIssueType::kLegacyConstraintGoogSuspendBelowMinBitrate);
     case WebFeature::kLocalCSSFileExtensionRejected:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kLocalCSSFileExtensionRejected);

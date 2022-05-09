@@ -498,21 +498,9 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       type = protocol::Audits::DeprecationIssueTypeEnum::
           InsecurePrivateNetworkSubresourceRequest;
       break;
-    case DeprecationIssueType::kLegacyConstraintGoogCpuOveruseDetection:
-      type = protocol::Audits::DeprecationIssueTypeEnum::
-          LegacyConstraintGoogCpuOveruseDetection;
-      break;
     case DeprecationIssueType::kLegacyConstraintGoogIPv6:
       type =
           protocol::Audits::DeprecationIssueTypeEnum::LegacyConstraintGoogIPv6;
-      break;
-    case DeprecationIssueType::kLegacyConstraintGoogScreencastMinBitrate:
-      type = protocol::Audits::DeprecationIssueTypeEnum::
-          LegacyConstraintGoogScreencastMinBitrate;
-      break;
-    case DeprecationIssueType::kLegacyConstraintGoogSuspendBelowMinBitrate:
-      type = protocol::Audits::DeprecationIssueTypeEnum::
-          LegacyConstraintGoogSuspendBelowMinBitrate;
       break;
     case DeprecationIssueType::kLocalCSSFileExtensionRejected:
       type = protocol::Audits::DeprecationIssueTypeEnum::

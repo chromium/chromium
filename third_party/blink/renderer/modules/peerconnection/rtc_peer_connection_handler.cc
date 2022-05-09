@@ -186,28 +186,6 @@ void CopyConstraintsIntoRtcConfiguration(
     configuration->disable_ipv6 = false;
   }
 
-  if (GetConstraintValueAsBoolean(
-          constraints,
-          &MediaTrackConstraintSetPlatform::goog_cpu_overuse_detection,
-          &the_value)) {
-    configuration->set_cpu_adaptation(the_value);
-  }
-
-  if (GetConstraintValueAsBoolean(
-          constraints,
-          &MediaTrackConstraintSetPlatform::
-              goog_enable_video_suspend_below_min_bitrate,
-          &the_value)) {
-    configuration->set_suspend_below_min_bitrate(the_value);
-  }
-
-  int rate;
-  if (GetConstraintValueAsInteger(
-          constraints,
-          &MediaTrackConstraintSetPlatform::goog_screencast_min_bitrate,
-          &rate)) {
-    configuration->screencast_min_bitrate = rate;
-  }
 #if BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
   configuration->enable_dtls_srtp = ConstraintToOptional(

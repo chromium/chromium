@@ -272,9 +272,6 @@ struct MediaTrackConstraintSetPlatform {
 #endif
   BooleanConstraint enable_rtp_data_channels;
   BooleanConstraint enable_i_pv6;
-  BooleanConstraint goog_enable_video_suspend_below_min_bitrate;
-  LongConstraint goog_screencast_min_bitrate;
-  BooleanConstraint goog_cpu_overuse_detection;
 
   PLATFORM_EXPORT bool IsUnconstrained() const;
   PLATFORM_EXPORT bool HasMandatory() const;

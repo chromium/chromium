@@ -38341,12 +38341,13 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4202"
       label="ExplicitOverflowVisibleOnReplacedElementWithObjectProp"/>
   <int value="4203" label="PrivateNetworkAccessNullIpAddress"/>
-  <int value="4204" label="LegacyConstraintGoogScreencastMinBitrate"/>
+  <int value="4204" label="OBSOLETE_LegacyConstraintGoogScreencastMinBitrate"/>
   <int value="4205" label="RTCPeerConnectionLegacyCreateWithMediaConstraints"/>
   <int value="4206" label="ClientHintsSaveData"/>
   <int value="4207" label="LegacyConstraintGoogIPv6"/>
-  <int value="4208" label="LegacyConstraintGoogSuspendBelowMinBitrate"/>
-  <int value="4209" label="LegacyConstraintGoogCpuOveruseDetection"/>
+  <int value="4208"
+      label="OBSOLETE_LegacyConstraintGoogSuspendBelowMinBitrate"/>
+  <int value="4209" label="OBSOLETE_LegacyConstraintGoogCpuOveruseDetection"/>
   <int value="4210" label="AudioContextOutputLatency"/>
   <int value="4211" label="V8Window_QueryLocalFonts_Method"/>
   <int value="4212" label="CSSAtRuleScope"/>

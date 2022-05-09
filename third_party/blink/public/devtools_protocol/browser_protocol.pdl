@@ -762,10 +762,7 @@ experimental domain Audits
       GetUserMediaInsecureOrigin
       HostCandidateAttributeGetter
       InsecurePrivateNetworkSubresourceRequest
-      LegacyConstraintGoogCpuOveruseDetection
       LegacyConstraintGoogIPv6
-      LegacyConstraintGoogScreencastMinBitrate
-      LegacyConstraintGoogSuspendBelowMinBitrate
       LocalCSSFileExtensionRejected
       MediaElementAudioSourceNode
       MediaSourceAbortRemove
