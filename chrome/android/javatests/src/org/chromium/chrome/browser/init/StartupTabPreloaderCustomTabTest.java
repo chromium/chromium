@@ -49,7 +49,7 @@ public class StartupTabPreloaderCustomTabTest {
     @LargeTest
     @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1323858")
-    @DisableIf.Build(supported_abis_includes = "x64", message = "https://crbug.com/1323858")
+    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/1323858")
     public void testStartupTabPreloaderWithCustomTab() throws Exception {
         Uri uri = Uri.parse(mServerRule.getServer().getURL(TEST_PAGE));
         Intent customTabActivityIntent = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
