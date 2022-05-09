@@ -492,4 +492,47 @@ TEST(HlsMediaPlaylistTest, XEndListTag) {
   builder.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
 }
 
+TEST(HlsMediaPlaylistTest, XIFramesOnlyTag) {
+  MediaPlaylistTestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-TARGETDURATION:10");
+
+  // Without the 'EXT-X-I-FRAMES-ONLY' tag, the default value is false.
+  {
+    auto fork = builder;
+    fork.ExpectPlaylist(IsIFramesOnly, false);
+    fork.ExpectOk();
+  }
+
+  // The 'EXT-X-I-FRAMES-ONLY' tag may not have any content
+  {
+    for (const base::StringPiece x : {"", "FOO=BAR", "1"}) {
+      auto fork = builder;
+      fork.AppendLine("#EXT-X-I-FRAMES-ONLY:", x);
+      fork.ExpectError(ParseStatusCode::kMalformedTag);
+    }
+  }
+
+  builder.AppendLine("#EXT-X-I-FRAMES-ONLY");
+  builder.ExpectPlaylist(IsIFramesOnly, true);
+
+  // This should not affect the calculation of the playlist's duration
+  builder.AppendLine("#EXTINF:10,\t");
+  builder.AppendLine("segment0.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasDuration, 10);
+
+  builder.AppendLine("#EXTINF:10,\t");
+  builder.AppendLine("segment1.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasDuration, 10);
+
+  builder.ExpectPlaylist(HasComputedDuration, base::Seconds(20));
+  builder.ExpectOk();
+
+  // The 'EXT-X-I-FRAMES-ONLY' tag should not appear twice
+  builder.AppendLine("#EXT-X-I-FRAMES-ONLY");
+  builder.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
+}
+
 }  // namespace media::hls

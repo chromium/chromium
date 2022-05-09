@@ -57,6 +57,14 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   // segments will be appended in future updates.
   bool IsEndList() const { return end_list_; }
 
+  // Indicates that this playlist contained the 'EXT-X-I-FRAMES-ONLY tag.
+  // This means that each media segment in this playlist contains a single
+  // I-frame, and that the media segment duration should be interpreted as the
+  // time between that I-frame and the following one, or the end of the
+  // presentation.
+  // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.3.6
+  bool IsIFramesOnly() const { return i_frames_only_; }
+
   // Attempts to parse the media playlist represented by `source`. `uri` must be
   // a valid, non-empty GURL referring to the URI of this playlist. If this
   // playlist was found through a multivariant playlist, `parent_playlist` must
@@ -75,13 +83,15 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
                 base::TimeDelta target_duration,
                 std::vector<MediaSegment> segments,
                 absl::optional<PlaylistType> playlist_type,
-                bool end_list);
+                bool end_list,
+                bool i_frames_only);
 
   base::TimeDelta target_duration_;
   std::vector<MediaSegment> segments_;
   base::TimeDelta computed_duration_;
   absl::optional<PlaylistType> playlist_type_;
   bool end_list_;
+  bool i_frames_only_;
 };
 
 }  // namespace media::hls

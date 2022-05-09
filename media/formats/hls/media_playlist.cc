@@ -58,6 +58,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
   absl::optional<XDiscontinuityTag> discontinuity_tag;
   absl::optional<XPlaylistTypeTag> playlist_type_tag;
   absl::optional<XEndListTag> end_list_tag;
+  absl::optional<XIFramesOnlyTag> i_frames_only_tag;
   std::vector<MediaSegment> segments;
 
   // If this media playlist was found through a multivariant playlist, it may
@@ -140,9 +141,13 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
           }
           break;
         }
-        case MediaPlaylistTagName::kXIFramesOnly:
-          // TODO(crbug.com/1266991): Implement the #EXT-X-I-FRAMES-ONLY tag
+        case MediaPlaylistTagName::kXIFramesOnly: {
+          auto error = ParseUniqueTag(*tag, i_frames_only_tag);
+          if (error.has_value()) {
+            return std::move(error).value();
+          }
           break;
+        }
         case MediaPlaylistTagName::kXPlaylistType: {
           auto error = ParseUniqueTag(*tag, playlist_type_tag);
           if (error.has_value()) {
@@ -211,7 +216,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
   return MediaPlaylist(
       std::move(uri), common_state.GetVersion(), independent_segments,
       base::Seconds(target_duration_tag->duration), std::move(segments),
-      playlist_type, end_list_tag.has_value());
+      playlist_type, end_list_tag.has_value(), i_frames_only_tag.has_value());
 }
 
 MediaPlaylist::MediaPlaylist(GURL uri,
@@ -220,12 +225,14 @@ MediaPlaylist::MediaPlaylist(GURL uri,
                              base::TimeDelta target_duration,
                              std::vector<MediaSegment> segments,
                              absl::optional<PlaylistType> playlist_type,
-                             bool end_list)
+                             bool end_list,
+                             bool i_frames_only)
     : Playlist(std::move(uri), version, independent_segments),
       target_duration_(target_duration),
       segments_(std::move(segments)),
       playlist_type_(playlist_type),
-      end_list_(end_list) {
+      end_list_(end_list),
+      i_frames_only_(i_frames_only) {
   base::TimeDelta duration;
   for (const auto& segment : segments_) {
     duration += base::Seconds(segment.GetDuration());

@@ -90,6 +90,13 @@ inline void HasTargetDuration(base::TimeDelta value,
   EXPECT_EQ(playlist.GetTargetDuration(), value) << from.ToString();
 }
 
+// Checks that the value of `GetComputedDuration()` matches the given value.
+inline void HasComputedDuration(base::TimeDelta value,
+                                const base::Location& from,
+                                const MediaPlaylist& playlist) {
+  EXPECT_EQ(playlist.GetComputedDuration(), value) << from.ToString();
+}
+
 // Checks that the latest media segment has the given duration.
 inline void HasDuration(types::DecimalFloatingPoint duration,
                         const base::Location& from,
@@ -124,6 +131,13 @@ inline void IsEndList(bool value,
                       const base::Location& from,
                       const MediaPlaylist& playlist) {
   EXPECT_EQ(playlist.IsEndList(), value) << from.ToString();
+}
+
+// Checks the value of `IsIFramesOnly` against the given value.
+inline void IsIFramesOnly(bool value,
+                          const base::Location& from,
+                          const MediaPlaylist& playlist) {
+  EXPECT_EQ(playlist.IsIFramesOnly(), value) << from.ToString();
 }
 
 }  // namespace media::hls
