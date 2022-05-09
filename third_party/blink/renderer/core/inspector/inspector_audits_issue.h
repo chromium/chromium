@@ -91,7 +91,6 @@ enum class DeprecationIssueType {
   kRTCPeerConnectionSdpSemanticsPlanB,
   kRtcpMuxPolicyNegotiate,
   kRTPDataChannel,
-  kSelectionAddRangeIntersect,
   kSharedArrayBufferConstructedWithoutIsolation,
   kTextToSpeech_DisallowedByAutoplay,
   kV8SharedArrayBufferConstructedInExtensionWithoutIsolation,

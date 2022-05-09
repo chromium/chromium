@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/set_selection_options.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
-#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -634,20 +633,6 @@ void DOMSelection::addRange(Range* new_range) {
       new_range->startContainer()->GetTreeScope()) {
     return;
   }
-
-  if (original_range->compareBoundaryPoints(Range::kStartToEnd, new_range,
-                                            ASSERT_NO_EXCEPTION) < 0 ||
-      new_range->compareBoundaryPoints(Range::kStartToEnd, original_range,
-                                       ASSERT_NO_EXCEPTION) < 0) {
-    return;
-  }
-
-  // TODO(tkent): "Merge the ranges if they intersect" was removed. We show a
-  // warning message for a while, and continue to collect the usage data.
-  // <https://code.google.com/p/chromium/issues/detail?id=353069>.
-  Deprecation::CountDeprecation(
-      tree_scope_->GetDocument().GetExecutionContext(),
-      WebFeature::kSelectionAddRangeIntersect);
 }
 
 // https://www.w3.org/TR/selection-api/#dom-selection-deletefromdocument

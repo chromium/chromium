@@ -1256,7 +1256,7 @@ enum WebFeature {
   kHTMLTableCellElementColspan = 1783,
   kHTMLTableCellElementColspanGreaterThan1000 = 1784,
   kHTMLTableCellElementColspanGreaterThan8190 = 1785,
-  kSelectionAddRangeIntersect = 1786,
+  kOBSOLETE_SelectionAddRangeIntersect = 1786,
   kPostMessageFromInsecureToSecureToplevel = 1787,
   // The above items are available in M57 branch.
 

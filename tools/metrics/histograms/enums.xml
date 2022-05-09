@@ -35792,7 +35792,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1783" label="HTMLTableCellElementColspan"/>
   <int value="1784" label="HTMLTableCellElementColspanGreaterThan1000"/>
   <int value="1785" label="HTMLTableCellElementColspanGreaterThan8190"/>
-  <int value="1786" label="SelectionAddRangeIntersect"/>
+  <int value="1786" label="OBSOLETE_SelectionAddRangeIntersect"/>
   <int value="1787" label="PostMessageFromInsecureToSecureToplevel"/>
   <int value="1788" label="V8MediaSession_Metadata_AttributeGetter"/>
   <int value="1789" label="V8MediaSession_Metadata_AttributeSetter"/>

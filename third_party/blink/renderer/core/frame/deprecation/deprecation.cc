@@ -241,9 +241,6 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kRTCConstraintEnableRtpDataChannelsTrue:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kRTPDataChannel);
-    case WebFeature::kSelectionAddRangeIntersect:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kSelectionAddRangeIntersect);
     case WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation:
       return DeprecationInfo::WithTranslation(
           feature,

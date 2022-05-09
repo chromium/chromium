@@ -795,7 +795,6 @@ experimental domain Audits
       RTCPeerConnectionSdpSemanticsPlanB
       RtcpMuxPolicyNegotiate
       RTPDataChannel
-      SelectionAddRangeIntersect
       SharedArrayBufferConstructedWithoutIsolation
       TextToSpeech_DisallowedByAutoplay
       V8SharedArrayBufferConstructedInExtensionWithoutIsolation
