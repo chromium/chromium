@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.TimingMetric;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.metrics.BrowserServicesTimingMetrics;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
@@ -115,8 +116,8 @@ public class ClientAppBroadcastReceiver extends BroadcastReceiver {
             }
         }
 
-        try (BrowserServicesTimingMetrics.TimingMetric unused =
-                        BrowserServicesTimingMetrics.getClientAppDataLoadTimingContext()) {
+        try (TimingMetric unused = TimingMetric.mediumWallTime(
+                     BrowserServicesTimingMetrics.CLIENT_APP_DATA_LOAD_TIME)) {
             // The ClientAppDataRegister (because it uses Preferences) is loaded lazily, so to time
             // opening the file we must include the first read as well.
             if (!mRegister.chromeHoldsDataForPackage(uid)) {
