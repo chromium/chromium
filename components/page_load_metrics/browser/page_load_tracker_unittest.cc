@@ -5,13 +5,11 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 
 #include "base/containers/flat_map.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace page_load_metrics {
 
@@ -82,20 +80,8 @@ class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
 
 class PageLoadTrackerTest : public PageLoadMetricsObserverContentTestHarness {
  public:
-  PageLoadTrackerTest() : observer_(new TestPageLoadMetricsObserver(&events_)) {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {blink::features::kPrerender2, {}},
-            {blink::features::kFencedFrames,
-             {{"implementation_type", "mparch"}}},
-            {blink::features::kInitialNavigationEntry, {}},
-        },
-        {
-            // Disable the memory requirement of Prerender2
-            // so the test can run on any bot.
-            {blink::features::kPrerender2MemoryControls},
-        });
-  }
+  PageLoadTrackerTest()
+      : observer_(new TestPageLoadMetricsObserver(&events_)) {}
 
  protected:
   void SetTargetUrl(const std::string& url) { target_url_ = GURL(url); }
@@ -128,7 +114,6 @@ class PageLoadTrackerTest : public PageLoadMetricsObserverContentTestHarness {
   raw_ptr<TestPageLoadMetricsObserver> observer_;
   bool is_observer_passed_ = false;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   GURL target_url_;
 };
 

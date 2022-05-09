@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
@@ -49,6 +50,7 @@ class PageLoadMetricsObserverContentTestHarness
   std::unique_ptr<PageLoadMetricsObserverTester> tester_;
   PageLoadMetricsTestContentBrowserClient browser_client_;
   raw_ptr<content::ContentBrowserClient> original_browser_client_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace page_load_metrics
