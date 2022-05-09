@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -47,6 +48,8 @@ public class StartupTabPreloaderCustomTabTest {
     @Test
     @LargeTest
     @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1323858")
+    @DisableIf.Build(supported_abis_includes = "x64", message = "https://crbug.com/1323858")
     public void testStartupTabPreloaderWithCustomTab() throws Exception {
         Uri uri = Uri.parse(mServerRule.getServer().getURL(TEST_PAGE));
         Intent customTabActivityIntent = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
