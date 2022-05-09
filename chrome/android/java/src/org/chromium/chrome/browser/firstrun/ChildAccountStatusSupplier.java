@@ -6,44 +6,51 @@ package org.chromium.chrome.browser.firstrun;
 
 import android.os.SystemClock;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.components.signin.AccountManagerFacade;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 
 /**
  * Fetches the child account status to be used by other FRE components.
  *
- * TODO(https://crbug.com/1320374): Check app restrictions to speed up this listener.
+ * This class checks app restrictions for Chrome to obtain the child account status faster. This
+ * optimisation leverages the fact that FamilyLink always pushes some policies for Chrome on
+ * supervised devices. So, if there are no app restrictions specified for Chrome -
+ * {@link ChildAccountStatusSupplier} will consider that the child account status is false.
+ * Note: this optimisation creates a potential conflict if there are no app restrictions on
+ * a supervised device. However, this should never happen on real devices.
  */
 public class ChildAccountStatusSupplier implements OneshotSupplier<Boolean> {
     private final OneshotSupplierImpl<Boolean> mValue = new OneshotSupplierImpl<>();
+    private final long mChildAccountStatusStartTime;
+
+    private Boolean mHasRestriction;
+    private Boolean mChildAccountStatusFromAccountManagerFacade;
 
     /**
-     * Creates ChildAccountStatusSupplier. This doesn't actually start fetching the child account
-     * status until {@link #startFetchingChildAccountStatus()} is invoked.
+     * Creates ChildAccountStatusSupplier and starts fetching the child account status.
+     * @param accountManagerFacade {@link AccountManagerFacade} instance to use for getting accounts
+     * @param appRestrictionInfo Optional instance of {@link FirstRunAppRestrictionInfo} that can
+     *         be used to check app restrictions (see class-level JavaDoc). If null is passed - this
+     *         {@link ChildAccountStatusSupplier} will ignore app restrictions and rely solely on
+     *         {@link AccountManagerFacade}.
      */
-    public ChildAccountStatusSupplier() {}
+    public ChildAccountStatusSupplier(AccountManagerFacade accountManagerFacade,
+            @Nullable FirstRunAppRestrictionInfo appRestrictionInfo) {
+        mChildAccountStatusStartTime = SystemClock.elapsedRealtime();
 
-    /**
-     * Starts the process to obtain the child account status from {@link AccountManagerFacade}.
-     * Should be invoked after AccountManagerFacade instance has been already set.
-     *
-     * TODO(https://crbug.com/1320487): Add Supplier to AccountManagerFacadeProvider and remove this
-     *                                  method.
-     */
-    public void startFetchingChildAccountStatus() {
-        long childAccountStatusStart = SystemClock.elapsedRealtime();
-        AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
-            AccountUtils.checkChildAccountStatus(
-                    AccountManagerFacadeProvider.getInstance(), accounts, (isChild, account) -> {
-                        RecordHistogram.recordTimesHistogram("MobileFre.ChildAccountStatusDuration",
-                                SystemClock.elapsedRealtime() - childAccountStatusStart);
-                        mValue.set(isChild);
-                    });
+        if (appRestrictionInfo != null) {
+            appRestrictionInfo.getHasAppRestriction(this::onAppRestrictionDetected);
+        }
+
+        accountManagerFacade.getAccounts().then(accounts -> {
+            AccountUtils.checkChildAccountStatus(accountManagerFacade, accounts,
+                    (isChild, account) -> onChildAccountStatusReady(isChild));
         });
     }
 
@@ -55,5 +62,44 @@ public class ChildAccountStatusSupplier implements OneshotSupplier<Boolean> {
     @Override
     public Boolean get() {
         return mValue.get();
+    }
+
+    private void onAppRestrictionDetected(boolean hasAppRestriction) {
+        mHasRestriction = hasAppRestriction;
+        setSupplierIfDecidable();
+    }
+
+    private void onChildAccountStatusReady(boolean isChild) {
+        mChildAccountStatusFromAccountManagerFacade = isChild;
+        setSupplierIfDecidable();
+    }
+
+    private void setSupplierIfDecidable() {
+        // Early return if the value has been set.
+        if (mValue.get() != null) return;
+
+        Boolean value = tryCalculateSupplierValue();
+        if (value == null) return;
+
+        RecordHistogram.recordTimesHistogram("MobileFre.ChildAccountStatusDuration",
+                SystemClock.elapsedRealtime() - mChildAccountStatusStartTime);
+        mValue.set(value);
+    }
+
+    private @Nullable Boolean tryCalculateSupplierValue() {
+        if (mChildAccountStatusFromAccountManagerFacade != null) {
+            // Child account status from AccountManagerFacade is more reliable than app
+            // restrictions, so use it if available.
+            return mChildAccountStatusFromAccountManagerFacade;
+        }
+
+        boolean confirmedNoAppRestriction = mHasRestriction != null && !mHasRestriction;
+        if (confirmedNoAppRestriction) {
+            // No app restriction is found. On real devices this means that there are no child
+            // accounts on the device, as FamilyLink pushes some policies for supervised devices.
+            return false;
+        }
+        // Otherwise, we can't determine the supplier value yet.
+        return null;
     }
 }

@@ -913,6 +913,9 @@ public class FirstRunIntegrationTest {
     @CommandLineFlags.Remove({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
     @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
     public void testSigninFirstRunPageShownBeforeChildStatusFetch() throws Exception {
+        // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
+        // so pretend there are AppRestrictions set by FamilyLink.
+        setHasAppRestrictionForMock(true);
         blockOnFlowIsKnown();
         initializePreferences(new FirstRunPagesTestCase());
 

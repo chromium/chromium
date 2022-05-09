@@ -23,7 +23,10 @@ import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
+import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.components.policy.PolicyService;
+import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 
 /** Base class for First Run Experience. */
 public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
@@ -52,17 +55,17 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
     private final FirstRunAppRestrictionInfo mFirstRunAppRestrictionInfo;
     private final OneshotSupplierImpl<PolicyService> mPolicyServiceSupplier;
     private final PolicyLoadListener mPolicyLoadListener;
-    private final ChildAccountStatusSupplier mChildAccountStatusSupplier;
 
     private final long mStartTime;
     private long mNativeInitializedTime;
+
+    private ChildAccountStatusSupplier mChildAccountStatusSupplier;
 
     public FirstRunActivityBase() {
         mFirstRunAppRestrictionInfo = FirstRunAppRestrictionInfo.takeMaybeInitialized();
         mPolicyServiceSupplier = new OneshotSupplierImpl<>();
         mPolicyLoadListener =
                 new PolicyLoadListener(mFirstRunAppRestrictionInfo, mPolicyServiceSupplier);
-        mChildAccountStatusSupplier = new ChildAccountStatusSupplier();
         mStartTime = SystemClock.elapsedRealtime();
         mPolicyLoadListener.onAvailable(this::onPolicyLoadListenerAvailable);
     }
@@ -81,9 +84,14 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
     @Override
     @CallSuper
     public void triggerLayoutInflation() {
-        // ChildAccountStatusSupplier can't be created in the constructor, as AccountManagerFacade
-        // instance is not set yet there.
-        mChildAccountStatusSupplier.startFetchingChildAccountStatus();
+        AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
+        if (FREMobileIdentityConsistencyFieldTrial.isEnabled()) {
+            mChildAccountStatusSupplier = new ChildAccountStatusSupplier(
+                    accountManagerFacade, mFirstRunAppRestrictionInfo);
+        } else {
+            mChildAccountStatusSupplier =
+                    new ChildAccountStatusSupplier(accountManagerFacade, null);
+        }
     }
 
     // Activity:
