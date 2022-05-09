@@ -134,15 +134,6 @@ class WebMediaPlayer {
     base::TimeDelta average_frame_duration;
   };
 
-  // Describes when we use SurfaceLayer for video instead of VideoLayer.
-  enum class SurfaceLayerMode {
-    // Always use VideoLayer
-    kNever,
-
-    // Always use SurfaceLayer for video.
-    kAlways,
-  };
-
   virtual ~WebMediaPlayer() = default;
 
   virtual LoadTiming Load(LoadType,

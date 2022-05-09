@@ -54,7 +54,7 @@ WebMediaPlayer* WebMediaPlayerBuilder::Build(
     mojo::PendingRemote<media::mojom::MediaMetricsProvider> metrics_provider,
     CreateSurfaceLayerBridgeCB create_bridge_callback,
     scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-    WebMediaPlayer::SurfaceLayerMode surface_layer_mode,
+    bool use_surface_layer,
     bool is_background_suspend_enabled,
     bool is_background_video_playback_enabled,
     bool is_background_video_track_optimization_supported,
@@ -71,7 +71,7 @@ WebMediaPlayer* WebMediaPlayerBuilder::Build(
       std::move(request_routing_token_cb), std::move(media_observer),
       enable_instant_source_buffer_gc, embedded_media_experience_enabled,
       std::move(metrics_provider), std::move(create_bridge_callback),
-      std::move(raster_context_provider), surface_layer_mode,
+      std::move(raster_context_provider), use_surface_layer,
       is_background_suspend_enabled, is_background_video_playback_enabled,
       is_background_video_track_optimization_supported,
       std::move(demuxer_override), std::move(remote_interfaces));

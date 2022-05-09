@@ -42,6 +42,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/layers/picture_layer.h"
+#include "components/viz/common/features.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
@@ -179,10 +180,6 @@
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "components/viz/common/features.h"
-#endif
 
 #if !BUILDFLAG(IS_MAC)
 #include "skia/ext/legacy_display_globals.h"
@@ -374,14 +371,6 @@ void ApplyCommandLineToSettings(WebSettings* settings) {
           WebString(pos == kNotFound ? "" : setting.Substring(pos + 1)));
     }
   }
-}
-
-WebMediaPlayer::SurfaceLayerMode GetVideoSurfaceLayerMode() {
-#if BUILDFLAG(IS_ANDROID)
-  if (!::features::UseSurfaceLayerForVideo())
-    return blink::WebMediaPlayer::SurfaceLayerMode::kNever;
-#endif
-  return WebMediaPlayer::SurfaceLayerMode::kAlways;
 }
 
 ui::mojom::blink::WindowOpenDisposition NavigationPolicyToDisposition(
@@ -1707,10 +1696,8 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       static_cast<blink::WebEffectiveConnectionType>(
           prefs.low_priority_iframes_threshold));
 
-  settings->SetPictureInPictureEnabled(
-      prefs.picture_in_picture_enabled &&
-      GetVideoSurfaceLayerMode() !=
-          blink::WebMediaPlayer::SurfaceLayerMode::kNever);
+  settings->SetPictureInPictureEnabled(prefs.picture_in_picture_enabled &&
+                                       ::features::UseSurfaceLayerForVideo());
 
   settings->SetLazyLoadEnabled(prefs.lazy_load_enabled);
   settings->SetPreferredColorScheme(prefs.preferred_color_scheme);

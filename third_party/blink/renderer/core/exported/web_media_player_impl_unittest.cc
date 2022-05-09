@@ -441,9 +441,9 @@ class WebMediaPlayerImplTest
         base::BindOnce(&WebMediaPlayerImplTest::CreateMockSurfaceLayerBridge,
                        base::Unretained(this)),
         viz::TestContextProvider::Create(),
-        WebMediaPlayer::SurfaceLayerMode::kAlways,
-        is_background_suspend_enabled_, is_background_video_playback_enabled_,
-        true, std::move(demuxer_override), nullptr);
+        /*use_surface_layer=*/true, is_background_suspend_enabled_,
+        is_background_video_playback_enabled_, true,
+        std::move(demuxer_override), nullptr);
   }
 
   std::unique_ptr<WebSurfaceLayerBridge> CreateMockSurfaceLayerBridge(

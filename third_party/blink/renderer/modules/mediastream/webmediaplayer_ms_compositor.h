@@ -74,7 +74,7 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       MediaStreamDescriptor* media_stream_descriptor,
       std::unique_ptr<WebVideoFrameSubmitter> submitter,
-      WebMediaPlayer::SurfaceLayerMode surface_layer_mode,
+      bool use_surface_layer,
       const base::WeakPtr<WebMediaPlayerMS>& player);
 
   WebMediaPlayerMSCompositor(const WebMediaPlayerMSCompositor&) = delete;

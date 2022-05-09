@@ -497,8 +497,7 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
                      parent_frame_sink_id,
                      blink::WebSurfaceLayerBridge::ContainsVideo::kYes),
       RenderThreadImpl::current()->SharedMainThreadContextProvider(),
-      use_surface_layer ? blink::WebMediaPlayer::SurfaceLayerMode::kAlways
-                        : blink::WebMediaPlayer::SurfaceLayerMode::kNever,
+      use_surface_layer,
       render_frame_->GetRenderFrameMediaPlaybackOptions()
           .is_background_suspend_enabled,
       render_frame_->GetRenderFrameMediaPlaybackOptions()
@@ -769,9 +768,7 @@ blink::WebMediaPlayer* MediaFactory::CreateWebMediaPlayerForMediaStream(
       base::BindOnce(&blink::WebSurfaceLayerBridge::Create,
                      parent_frame_sink_id,
                      blink::WebSurfaceLayerBridge::ContainsVideo::kYes),
-      std::move(submitter),
-      use_surface_layer ? blink::WebMediaPlayer::SurfaceLayerMode::kAlways
-                        : blink::WebMediaPlayer::SurfaceLayerMode::kNever);
+      std::move(submitter), use_surface_layer);
 }
 
 media::RendererWebMediaPlayerDelegate*

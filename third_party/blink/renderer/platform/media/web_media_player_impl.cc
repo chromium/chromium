@@ -421,7 +421,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
     mojo::PendingRemote<media::mojom::MediaMetricsProvider> metrics_provider,
     CreateSurfaceLayerBridgeCB create_bridge_callback,
     scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-    WebMediaPlayer::SurfaceLayerMode surface_layer_mode,
+    bool use_surface_layer,
     bool is_background_suspend_enabled,
     bool is_background_video_playback_enabled,
     bool is_background_video_track_optimization_supported,
@@ -447,7 +447,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
       observer_(std::move(media_observer)),
       enable_instant_source_buffer_gc_(enable_instant_source_buffer_gc),
       embedded_media_experience_enabled_(embedded_media_experience_enabled),
-      surface_layer_mode_(surface_layer_mode),
+      use_surface_layer_(use_surface_layer),
       create_bridge_callback_(std::move(create_bridge_callback)),
       request_routing_token_cb_(std::move(request_routing_token_cb)),
       media_metrics_provider_(std::move(metrics_provider)),
@@ -2035,7 +2035,7 @@ void WebMediaPlayerImpl::OnMetadata(const media::PipelineMetadata& metadata) {
         DisableOverlay();
     }
 
-    if (surface_layer_mode_ == WebMediaPlayer::SurfaceLayerMode::kAlways) {
+    if (use_surface_layer_) {
       ActivateSurfaceLayerForVideo();
     } else {
       DCHECK(!video_layer_);

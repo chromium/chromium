@@ -182,7 +182,7 @@ WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     MediaStreamDescriptor* media_stream_descriptor,
     std::unique_ptr<WebVideoFrameSubmitter> submitter,
-    WebMediaPlayer::SurfaceLayerMode surface_layer_mode,
+    bool use_surface_layer,
     const base::WeakPtr<WebMediaPlayerMS>& player)
     : video_frame_compositor_task_runner_(video_frame_compositor_task_runner),
       io_task_runner_(io_task_runner),
@@ -195,7 +195,7 @@ WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
       dropped_frame_count_(0),
       stopped_(true),
       render_started_(!stopped_) {
-  if (surface_layer_mode != WebMediaPlayer::SurfaceLayerMode::kNever) {
+  if (use_surface_layer) {
     submitter_ = std::move(submitter);
 
     PostCrossThreadTask(
