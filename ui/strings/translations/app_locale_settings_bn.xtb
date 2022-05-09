@@ -3,17 +3,17 @@
 <translationbundle lang="bn">
 <if expr="is_win">
   <translation id="IDS_UI_FONT_FAMILY">Vrinda</translation>
-  <translation id="IDS_UI_FONT_FAMILY_XP">Vrinda</translation> 
+  <translation id="IDS_UI_FONT_FAMILY_XP">Vrinda</translation>
   <translation id="IDS_UI_FONT_SIZE_SCALER_XP">160</translation>
   <translation id="IDS_UI_FONT_SIZE_SCALER">120</translation>
   <translation id="IDS_WEB_FONT_SIZE_XP">110%</translation>
   <translation id="IDS_WEB_FONT_FAMILY">Vrinda</translation>
   <translation id="IDS_WEB_FONT_FAMILY_XP">Vrinda</translation>
 </if>
-<if expr="is_linux and not chromeos_ash or chromeos_lacros">
+<if expr="is_linux and not chromeos_ash and not chromeos_lacros">
   <translation id="IDS_WEB_FONT_FAMILY">Lohit Bengali</translation>
 </if>
-<if expr="chromeos_ash">
+<if expr="chromeos_ash or chromeos_lacros">
   <translation id="IDS_UI_FONT_FAMILY_CROS">Roboto, Noto Sans Bengali UI, 13px</translation>
   <translation id="IDS_WEB_FONT_FAMILY">Roboto, Noto Sans Bengali UI, sans-serif</translation>
 </if>

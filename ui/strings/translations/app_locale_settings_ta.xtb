@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
-<if expr="chromeos_ash">
+<if expr="chromeos_ash or chromeos_lacros">
   <translation id="IDS_UI_FONT_FAMILY_CROS">Roboto, Noto Sans Tamil UI, 13px</translation>
   <translation id="IDS_WEB_FONT_FAMILY">Roboto, Noto Sans Tamil UI,sans-serif</translation>
 </if>
