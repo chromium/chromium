@@ -86687,6 +86687,84 @@
         ],
         {}
        ]
+      ],
+      "table-row-paint-htb-ltr.html": [
+       "ecc156bd38bcc414b8d66abf84d355c040f0782d",
+       [
+        null,
+        [
+         [
+          "/css/css-break/table/table-row-paint-htb-ltr-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-row-paint-vlr-rtl.html": [
+       "f3d32c9df664c75350ee8b029267be13b0894eee",
+       [
+        null,
+        [
+         [
+          "/css/css-break/table/table-row-paint-vlr-rtl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-row-paint-vrl-rtl.html": [
+       "a74a952b4b9e9f96cd6be5878011eaf34f4632ba",
+       [
+        null,
+        [
+         [
+          "/css/css-break/table/table-row-paint-vrl-rtl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-section-paint-htb-ltr.html": [
+       "ff0eda1be83c900c256fe3ac994e16408f10f8f9",
+       [
+        null,
+        [
+         [
+          "/css/css-break/table/table-section-paint-htb-ltr-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-section-paint-vlr-rtl.html": [
+       "1dbdb212ace7aee3afffa21d01863912ae62cdd2",
+       [
+        null,
+        [
+         [
+          "/css/css-break/table/table-section-paint-vlr-rtl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-section-paint-vrl-rtl.html": [
+       "d079c35818e1a920b2a07375114388876d2e880a",
+       [
+        null,
+        [
+         [
+          "/css/css-break/table/table-section-paint-vrl-rtl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "tall-break-inside-avoid-at-start.html": [
@@ -259977,6 +260055,30 @@
       "table-col-paint-vrl-rtl-ref.html": [
        "0fde8bacc51d23a2065246727daf90fef8885f0c",
        []
+      ],
+      "table-row-paint-htb-ltr-ref.html": [
+       "74e99b0143aa89b641b06297a282b2d46c868e06",
+       []
+      ],
+      "table-row-paint-vlr-rtl-ref.html": [
+       "587b6c1ee44f200c6e40888f841ca69da69b82d7",
+       []
+      ],
+      "table-row-paint-vrl-rtl-ref.html": [
+       "ea81d9bcff8e2a2af1f8aff39484a1f2d79edde7",
+       []
+      ],
+      "table-section-paint-htb-ltr-ref.html": [
+       "75b2078c146fe2e895d67526d8b52d39071783e6",
+       []
+      ],
+      "table-section-paint-vlr-rtl-ref.html": [
+       "a2e65520ec6dc22e0bc811dd6164785333893d65",
+       []
+      ],
+      "table-section-paint-vrl-rtl-ref.html": [
+       "bc860a560ff99d8c7dfdc536beccef5070b42dd3",
+       []
       ]
      },
      "transform-006-ref.html": [
@@ -337111,14 +337213,14 @@
      ]
     ],
     "idbfactory-databases-opaque-origin.html": [
-     "5f1b3070c638ddf36b7d2d30717c24d324a38f06",
+     "ff5b668664a4499e89700eaf0c30be91d701366e",
      [
       null,
       {}
      ]
     ],
     "idbfactory-deleteDatabase-opaque-origin.html": [
-     "058116fac515ab372450808d43a9e86123d336dc",
+     "071438953747ee16ad8edefb7601b9431c7aec6a",
      [
       null,
       {}
@@ -337139,7 +337241,7 @@
      ]
     ],
     "idbfactory-open-opaque-origin.html": [
-     "2c2889fbf7d11515afe088f59db878478b24bb66",
+     "a71da9afb3a4c50ec6dfe53198df9e02a0396941",
      [
       null,
       {}
@@ -395880,6 +395982,13 @@
       ],
       "location-pseudo-classes-in-has.html": [
        "697fc70ae67eb3638536f6fbfc530987e2aa62a7",
+       [
+        null,
+        {}
+       ]
+      ],
+      "modal-pseudo-class-in-has.html": [
+       "9c487fba16fdad7d07dfc1b867dfddf7a4a021cb",
        [
         null,
         {}
@@ -467997,7 +468106,7 @@
         ]
        ],
        "dialog-focusing-steps-disconnected.html": [
-        "0171ee287fad27c9ee3ffe83a5bac7d2c9ba4a47",
+        "bf621b640b7058d90542ed80dbe86d7c5cf99337",
         [
          null,
          {}
@@ -468064,7 +468173,7 @@
         ]
        ],
        "dialog-show-modal.html": [
-        "ed643756508ce3939f0636ef5ac9d0991fc39c17",
+        "610e66d20112fd217ec91154245debd9a2693600",
         [
          null,
          {}
