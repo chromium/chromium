@@ -498,6 +498,24 @@ TEST_F(BookmarkBarViewTest, ManagedShowAppsShortcutInBookmarksBar) {
 }
 #endif
 
+// Verifies the SavedTabGroupBar's page navigator is set when the
+// bookmarkbarview's page navigator is set.
+TEST_F(BookmarkBarViewTest, PageNavigatorSet) {
+  // Expect SavedTabGroupBar to have a page navigator when BookmarkBarView
+  // does.
+  EXPECT_FALSE(test_helper_->saved_tab_group_bar()->page_navigator());
+  bookmark_bar_view()->SetPageNavigator(browser());
+  EXPECT_TRUE(test_helper_->saved_tab_group_bar()->page_navigator());
+
+  // Reset both page navigators.
+  bookmark_bar_view()->SetPageNavigator(nullptr);
+
+  // Expect we can set the SaveTabGroupBar's page navigator without affecting
+  // BookmarkBarView.
+  test_helper_->saved_tab_group_bar()->SetPageNavigator(browser());
+  EXPECT_TRUE(test_helper_->saved_tab_group_bar()->page_navigator());
+}
+
 TEST_F(BookmarkBarViewInWidgetTest, UpdateTooltipText) {
   widget()->Show();
 

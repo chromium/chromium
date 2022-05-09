@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_observer.h"
+#include "content/public/browser/page.h"
 #include "ui/views/accessible_pane_view.h"
 
 class Browser;
@@ -35,6 +36,8 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   void SetPageNavigator(content::PageNavigator* page_navigator) {
     page_navigator_ = page_navigator;
   }
+
+  content::PageNavigator* page_navigator() { return page_navigator_; }
 
   // views::AccessiblePaneView
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;

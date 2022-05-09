@@ -512,6 +512,7 @@ void BookmarkBarView::RemoveObserver(BookmarkBarViewObserver* observer) {
 
 void BookmarkBarView::SetPageNavigator(content::PageNavigator* navigator) {
   page_navigator_ = navigator;
+  saved_tab_group_bar_->SetPageNavigator(navigator);
 }
 
 void BookmarkBarView::SetInfoBarVisible(bool infobar_visible) {
