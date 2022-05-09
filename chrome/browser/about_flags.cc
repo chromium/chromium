@@ -7283,6 +7283,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(syncer::kSyncAndroidPromosWithSingleButton)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"sync-android-promos-with-title",
+     flag_descriptions::kSyncAndroidPromosWithTitleName,
+     flag_descriptions::kSyncAndroidPromosWithTitleDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(syncer::kSyncAndroidPromosWithTitle)},
+#endif
+
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     {"enable-oop-print-drivers", flag_descriptions::kEnableOopPrintDriversName,
      flag_descriptions::kEnableOopPrintDriversDescription, kOsDesktop,

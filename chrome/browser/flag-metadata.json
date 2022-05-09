@@ -5564,7 +5564,12 @@
   {
     "name": "sync-android-promos-with-single-button",
     "owners": ["mmrashad@google.com", "chrome-sync-dev@google.com"],
-    "expiry_milestone": 103
+    "expiry_milestone": 105
+  },
+  {
+    "name": "sync-android-promos-with-title",
+    "owners": ["mmrashad@google.com", "chrome-sync-dev@google.com"],
+    "expiry_milestone": 105
   },
   {
     "name": "sync-chromeos-explicit-passphrase-sharing",

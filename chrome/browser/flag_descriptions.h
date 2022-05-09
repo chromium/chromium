@@ -2010,6 +2010,9 @@ extern const char kStrictSiteIsolationDescription[];
 extern const char kSyncAndroidPromosWithSingleButtonName[];
 extern const char kSyncAndroidPromosWithSingleButtonDescription[];
 
+extern const char kSyncAndroidPromosWithTitleName[];
+extern const char kSyncAndroidPromosWithTitleDescription[];
+
 extern const char kTabGroupsForTabletsName[];
 extern const char kTabGroupsForTabletsDescription[];
 

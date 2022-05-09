@@ -21,6 +21,8 @@ public class PersonalizedSigninPromoView extends LinearLayout {
     private ImageView mImage;
     private ImageButton mDismissButton;
     private TextView mStatus;
+    private TextView mTitle;
+    private TextView mNewDescription;
     private TextView mDescription;
     private ButtonCompat mPrimaryButton;
     private Button mSecondaryButton;
@@ -36,6 +38,8 @@ public class PersonalizedSigninPromoView extends LinearLayout {
         mImage = findViewById(R.id.signin_promo_image);
         mDismissButton = findViewById(R.id.signin_promo_close_button);
         mStatus = findViewById(R.id.signin_promo_status_message);
+        mTitle = findViewById(R.id.signin_promo_title);
+        mNewDescription = findViewById(R.id.new_signin_promo_description);
         mDescription = findViewById(R.id.signin_promo_description);
         mPrimaryButton = findViewById(R.id.signin_promo_signin_button);
         mSecondaryButton = findViewById(R.id.signin_promo_choose_account_button);
@@ -60,6 +64,20 @@ public class PersonalizedSigninPromoView extends LinearLayout {
      */
     public TextView getStatusMessage() {
         return mStatus;
+    }
+
+    /**
+     * @return A reference to the title of the sync promo.
+     */
+    public TextView getTitle() {
+        return mTitle;
+    }
+
+    /**
+     * @return A reference to the description of the promo.
+     */
+    public TextView getNewDescription() {
+        return mNewDescription;
     }
 
     /**

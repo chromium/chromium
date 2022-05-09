@@ -20,6 +20,31 @@
         android:visibility="gone"/>
 
     <TextView
+        android:id="@+id/signin_promo_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="12dp"
+        android:gravity="center"
+        android:lineSpacingMultiplier="1.25"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:visibility="gone"
+        tools:text="@string/sync_promo_title_settings"/>
+
+    <TextView
+        android:id="@+id/new_signin_promo_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="12dp"
+        android:gravity="center"
+        android:lineSpacingMultiplier="1.25"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        tools:text="@string/sync_promo_description_settings"/>
+
+    <TextView
         android:id="@+id/signin_promo_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -120,6 +120,8 @@ public class SigninPromoController {
     // TODO(https://crbug.com/1254399): Remove these fields related to impressions.
     private final @Nullable String mImpressionsTilDismissHistogramName;
     private final @Nullable String mImpressionsTilSigninButtonsHistogramName;
+    private final @Nullable String mImpressionsTilXButtonHistogramName;
+    private final @StringRes int mTitleStringId;
     private final @StringRes int mDescriptionStringId;
     private final @StringRes int mDescriptionStringIdNoAccount;
     private final SyncConsentActivityLauncher mSyncConsentActivityLauncher;
@@ -299,9 +301,19 @@ public class SigninPromoController {
                         "MobileSignInPromo.BookmarkManager.ImpressionsTilDismiss";
                 mImpressionsTilSigninButtonsHistogramName =
                         "MobileSignInPromo.BookmarkManager.ImpressionsTilSigninButtons";
-                mDescriptionStringId = R.string.signin_promo_description_bookmarks;
-                mDescriptionStringIdNoAccount =
-                        R.string.signin_promo_description_bookmarks_no_account;
+                mImpressionsTilXButtonHistogramName =
+                        "MobileSignInPromo.BookmarkManager.ImpressionsTilXButton";
+                mTitleStringId = R.string.sync_promo_title_bookmarks;
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
+                    // TODO(crbug.com/1323197): mDescriptionStringIdNoAccount should be deleted if
+                    // the SYNC_ANDROID_PROMOS_WITH_TITLE flag is enabled by default.
+                    mDescriptionStringId = R.string.sync_promo_description_bookmarks;
+                    mDescriptionStringIdNoAccount = R.string.sync_promo_description_bookmarks;
+                } else {
+                    mDescriptionStringId = R.string.signin_promo_description_bookmarks;
+                    mDescriptionStringIdNoAccount =
+                            R.string.signin_promo_description_bookmarks_no_account;
+                }
                 break;
             case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
                 mImpressionCountName = ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP;
@@ -322,9 +334,19 @@ public class SigninPromoController {
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED;
                 mImpressionsTilDismissHistogramName = null;
                 mImpressionsTilSigninButtonsHistogramName = null;
-                mDescriptionStringId = R.string.signin_promo_description_ntp_content_suggestions;
-                mDescriptionStringIdNoAccount =
-                        R.string.signin_promo_description_ntp_content_suggestions_no_account;
+                mImpressionsTilXButtonHistogramName =
+                        "MobileSignInPromo.NTPContentSuggestions.ImpressionsTilXButton";
+                mTitleStringId = R.string.sync_promo_title_ntp_content_suggestions;
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
+                    mDescriptionStringId = R.string.sync_promo_description_ntp_content_suggestions;
+                    mDescriptionStringIdNoAccount =
+                            R.string.sync_promo_description_ntp_content_suggestions;
+                } else {
+                    mDescriptionStringId =
+                            R.string.signin_promo_description_ntp_content_suggestions;
+                    mDescriptionStringIdNoAccount =
+                            R.string.signin_promo_description_ntp_content_suggestions_no_account;
+                }
                 break;
             case SigninAccessPoint.RECENT_TABS:
                 // There is no impression limit for Recent Tabs.
@@ -343,9 +365,16 @@ public class SigninPromoController {
                 mSyncPromoDismissedPreferenceTracker = null;
                 mImpressionsTilDismissHistogramName = null;
                 mImpressionsTilSigninButtonsHistogramName = null;
-                mDescriptionStringId = R.string.signin_promo_description_recent_tabs;
-                mDescriptionStringIdNoAccount =
-                        R.string.signin_promo_description_recent_tabs_no_account;
+                mImpressionsTilXButtonHistogramName = null;
+                mTitleStringId = R.string.sync_promo_title_recent_tabs;
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
+                    mDescriptionStringId = R.string.sync_promo_description_recent_tabs;
+                    mDescriptionStringIdNoAccount = R.string.sync_promo_description_recent_tabs;
+                } else {
+                    mDescriptionStringId = R.string.signin_promo_description_recent_tabs;
+                    mDescriptionStringIdNoAccount =
+                            R.string.signin_promo_description_recent_tabs_no_account;
+                }
                 break;
             case SigninAccessPoint.SETTINGS:
                 mImpressionCountName = ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_SETTINGS;
@@ -365,9 +394,17 @@ public class SigninPromoController {
                         "MobileSignInPromo.SettingsManager.ImpressionsTilDismiss";
                 mImpressionsTilSigninButtonsHistogramName =
                         "MobileSignInPromo.SettingsManager.ImpressionsTilSigninButtons";
-                mDescriptionStringId = R.string.signin_promo_description_settings;
-                mDescriptionStringIdNoAccount =
-                        R.string.signin_promo_description_settings_no_account;
+                mImpressionsTilXButtonHistogramName =
+                        "MobileSignInPromo.SettingsManager.ImpressionsTilXButton";
+                mTitleStringId = R.string.sync_promo_title_settings;
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
+                    mDescriptionStringId = R.string.sync_promo_description_settings;
+                    mDescriptionStringIdNoAccount = R.string.sync_promo_description_settings;
+                } else {
+                    mDescriptionStringId = R.string.signin_promo_description_settings;
+                    mDescriptionStringIdNoAccount =
+                            R.string.signin_promo_description_settings_no_account;
+                }
                 break;
             default:
                 throw new IllegalArgumentException(
@@ -443,8 +480,11 @@ public class SigninPromoController {
             assert mAccessPoint != SigninAccessPoint.RECENT_TABS;
             view.getDismissButton().setVisibility(View.VISIBLE);
             view.getDismissButton().setOnClickListener(promoView -> {
+                assert mImpressionsTilXButtonHistogramName != null;
                 assert mSyncPromoDismissedPreferenceTracker != null;
                 mWasUsed = true;
+                RecordHistogram.recordCount100Histogram(
+                        mImpressionsTilXButtonHistogramName, getNumImpressions());
                 SharedPreferencesManager.getInstance().writeBoolean(
                         mSyncPromoDismissedPreferenceTracker, true);
                 recordShowCountHistogram(UserAction.DISMISSED);
@@ -493,7 +533,17 @@ public class SigninPromoController {
         view.getImage().setImageResource(R.drawable.chrome_sync_logo);
         setImageSize(context, view, R.dimen.signin_promo_cold_state_image_size);
 
-        view.getDescription().setText(mDescriptionStringIdNoAccount);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
+            // TODO(crbug.com/1323197): remove getDescription() or getNewDescription if the feature
+            // enabled or disabled by default.
+            view.getDescription().setVisibility(View.GONE);
+            view.getNewDescription().setText(mDescriptionStringIdNoAccount);
+            view.getTitle().setVisibility(View.VISIBLE);
+            view.getTitle().setText(mTitleStringId);
+        } else {
+            view.getNewDescription().setVisibility(View.GONE);
+            view.getDescription().setText(mDescriptionStringIdNoAccount);
+        }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON)) {
             view.getPrimaryButton().setText(R.string.sync_promo_continue);
@@ -511,7 +561,15 @@ public class SigninPromoController {
         view.getImage().setImageDrawable(accountImage);
         setImageSize(context, view, R.dimen.signin_promo_account_image_size);
 
-        view.getDescription().setText(mDescriptionStringId);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
+            view.getDescription().setVisibility(View.GONE);
+            view.getNewDescription().setText(mDescriptionStringId);
+            view.getTitle().setVisibility(View.VISIBLE);
+            view.getTitle().setText(mTitleStringId);
+        } else {
+            view.getNewDescription().setVisibility(View.GONE);
+            view.getDescription().setText(mDescriptionStringId);
+        }
 
         view.getPrimaryButton().setOnClickListener(v -> signinWithDefaultAccount(context));
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON)) {

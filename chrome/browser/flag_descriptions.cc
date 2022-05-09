@@ -3544,6 +3544,11 @@ const char kSyncAndroidPromosWithSingleButtonName[] =
 const char kSyncAndroidPromosWithSingleButtonDescription[] =
     "Hides the \"Choose another account\" button on sync promos.";
 
+const char kSyncAndroidPromosWithTitleName[] =
+    "Enable the title sync promos on Android";
+const char kSyncAndroidPromosWithTitleDescription[] =
+    "Adds a title above the description on sync promos.";
+
 const char kTabGroupsForTabletsName[] = "Tab groups on tablets";
 const char kTabGroupsForTabletsDescription[] = "Enable tab groups on tablets.";
 
