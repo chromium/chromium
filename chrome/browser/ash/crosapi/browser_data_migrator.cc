@@ -220,6 +220,20 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
   // Check if lacros is enabled. If not immediately return.
   if (!crosapi::browser_util::IsLacrosEnabledForMigration(user,
                                                           policy_init_state)) {
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kSafeMode)) {
+      // Skip clearing of flags if in safe mode to make sure
+      // that the migrator does not wipe Lacros user data dir due to unexpected
+      // Ash crashes. Specifically this avoids the following scenario: Ash
+      // experiences a crash loop due to some experimental flag -> experimental
+      // flags get dropped including ones to enable Lacros -> Lacros is
+      // disabled and migration completion flags gets cleared -> on next login
+      // migration is run and wipes existing user data.
+      LOG(WARNING) << "Lacros is disabled but safe mode is enabled so skipping "
+                      "clearing of prefs.";
+      return false;
+    }
+
     // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
     // this log message.
     LOG(WARNING)

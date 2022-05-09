@@ -123,12 +123,16 @@ bool CheckInstalledAndMaybeRemoveUserDirectory(
     return false;
 
   // Since we're already on a background thread, delete the user-data-dir
-  // associated with lacros.
+  // associated with lacros. Skip if Chrome is in safe mode to avoid deleting of
+  // user data when Lacros is disabled only temporarily.
   // TODO(hidehiko): This approach has timing issue. Specifically, if Chrome
   // shuts down during the directory remove, some partially-removed directory
   // may be kept, and if the user flips the flag in the next time, that
   // partially-removed directory could be used. Fix this.
-  base::DeletePathRecursively(browser_util::GetUserDataDir());
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kSafeMode)) {
+    base::DeletePathRecursively(browser_util::GetUserDataDir());
+  }
   return true;
 }
 
