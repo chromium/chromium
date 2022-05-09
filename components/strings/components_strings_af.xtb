@@ -1102,6 +1102,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> is geblokkeer</translation>
 <translation id="3978338123949022456">Soekmodus; tik ’n navraag in en druk Enter om met <ph name="KEYWORD_SUFFIX" /> te soek</translation>
 <translation id="398470910934384994">Voëls</translation>
+<translation id="3985750352229496475">Bestuur adresse …</translation>
 <translation id="3986705137476756801">Skakel Intydse Onderskrifte af vir nou</translation>
 <translation id="3987940399970879459">Minder as 1 MB</translation>
 <translation id="3990250421422698716">Gelykskudafwyking</translation>
@@ -1229,6 +1230,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4305666528087210886">Kon nie toegang tot jou lêer kry nie</translation>
 <translation id="4306529830550717874">Stoor adres?</translation>
 <translation id="4306812610847412719">knipbord</translation>
+<translation id="4310070645992025887">Deursoek jou Reise</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokkeer (verstek)</translation>
 <translation id="4314815835985389558">Bestuur sinkronisering</translation>
@@ -2113,6 +2115,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6839929833149231406">Area</translation>
 <translation id="6846340164947227603">Gebruik 'n virtuele kaartnommer …</translation>
 <translation id="6852204201400771460">Herlaai program?</translation>
+<translation id="6857776781123259569">Bestuur wagwoorde …</translation>
 <translation id="686485648936420384">Vebruikerhulpbronne</translation>
 <translation id="6865412394715372076">Hierdie kaart kan nie op die oomblik geverifieer word nie</translation>
 <translation id="6869334554832814367">Persoonlike lenings</translation>
@@ -2439,6 +2442,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7669271284792375604">Aanvallers op hierdie werf kan probeer om jou te mislei om programme te installeer wat jou blaai-ervaring sal skaad (byvoorbeeld deur jou tuisblad te verander of ekstra advertensies te wys op werwe wat jy besoek).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Handelinge uitgevoer met data wat as vertroulik gevlag is (1 handeling sedert aanmelding). <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" />}other{Handelinge uitgevoer met data wat as vertroulik gevlag is (# handelinge sedert aanmelding). <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Posbus 6</translation>
+<translation id="7675325315208090829">Bestuur betaalmetodes …</translation>
 <translation id="7676643023259824263">Soek vir knipbordteks, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Bekyk en bestuur jou blaaigeskiedenis in Chrome-instellings</translation>
 <translation id="7679947978757153706">Bofbal</translation>

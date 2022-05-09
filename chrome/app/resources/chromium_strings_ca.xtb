@@ -200,7 +200,6 @@
 <translation id="6063093106622310249">&amp;Obre a Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> s'ha afegit a Chromium</translation>
 <translation id="608006075545470555">Afegeix un perfil de treball a aquest navegador</translation>
-<translation id="608189560609172163">Chromium no ha pogut sincronitzar les teves dades a causa d'un error amb l'inici de sessió.</translation>
 <translation id="6096348254544841612">Personalitza i controla Chromium. Hi ha una actualització disponible.</translation>
 <translation id="6120345080069858279">Chromium desarà aquesta contrasenya al Compte de Google. No caldrà que la recordis.</translation>
 <translation id="6129621093834146363">Chromium ha bloquejat <ph name="FILE_NAME" /> perquè és perillós.</translation>
@@ -296,7 +295,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7682601070171973634">Chromium està explorant noves funcions que permetin als llocs web oferir la mateixa experiència de navegació utilitzant menys dades</translation>
 <translation id="7686590090926151193">Chromium no és el navegador predeterminat</translation>
 <translation id="7689606757190482937">Sincronitza i personalitza Chromium en tots els teus dispositius</translation>
-<translation id="7729447699958282447">Chromium no ha pogut sincronitzar les teves dades perquè l'opció de sincronització no està disponible per al teu domini.</translation>
 <translation id="7745317241717453663">Amb aquesta acció, se suprimiran les teves dades de navegació d'aquest dispositiu. Per recuperar les teves dades més endavant, inicia la sessió a Chromium com a <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">L'instal·lador no ha pogut crear un directori temporal. Comprova que hi ha espai lliure al disc i que tens permís per instal·lar el programari.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -341,7 +339,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8713679423359107094">Quan tanques totes les finestres de Chromium, les galetes i les dades de llocs web s'esborren automàticament.</translation>
 <translation id="8796443464227412154">Quan tanquis Chromium, se't <ph name="BEGIN_BOLD" />tancarà la sessió de la majoria de llocs web<ph name="END_BOLD" />. Si la sincronització està desactivada, també se't <ph name="BEGIN_BOLD" />tancarà la sessió de Chromium i dels serveis de Google<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Per visitar aquest lloc web, Chromium necessita permís per accedir a la càmera i al micròfon</translation>
-<translation id="8821041990367117597">Chromium no ha pogut sincronitzar les teves dades perquè la informació d'inici de sessió del teu compte no està actualitzada.</translation>
 <translation id="8833697763442816810">Sistema Chromium OS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Quines dades s'utilitzen<ph name="END_BOLD" />: el teu historial de navegació, que és un registre dels llocs web que has visitat amb Chromium en aquest dispositiu.</translation>
 <translation id="8862326446509486874">No disposeu dels drets necessaris per instal·lar aplicacions al sistema. Proveu de tornar a executar l'instal·lador com a administrador.</translation>

@@ -2852,7 +2852,6 @@
 <translation id="3748706263662799310">报告错误</translation>
 <translation id="3750562496035670393">Chrome 已将您的密码保存到此设备，但您可改为将其保存到自己的 Google 帐号。这样一来，在登录后，您也能获取您 Google 帐号中保存的所有密码。</translation>
 <translation id="3752253558646317685">让您的孩子不时地移开手指，以便保存指纹</translation>
-<translation id="3752582316358263300">确定...</translation>
 <translation id="3753033997400164841">一次储存，随时随地使用</translation>
 <translation id="3755411799582650620">您的“<ph name="PHONE_NAME" />”现在也可用来为此 <ph name="DEVICE_TYPE" /> 解锁。</translation>
 <translation id="375636864092143889">该网站正在使用您的麦克风</translation>
@@ -3747,7 +3746,6 @@
 <translation id="4633003931260532286">此扩展程序要求“<ph name="IMPORT_NAME" />”的版本不得低于“<ph name="IMPORT_VERSION" />”，但目前安装的版本只是“<ph name="INSTALLED_VERSION" />”</translation>
 <translation id="4633757335284074492">备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。此类备份内容包含应用数据。备份内容将上传到 Google 并使用您孩子的 Google 帐号密码进行加密。</translation>
 <translation id="4634575639321169635">设置此设备以供个人或工作使用</translation>
-<translation id="4634771451598206121">重新登录...</translation>
 <translation id="4635072447747973225">卸载 Crostini</translation>
 <translation id="4635398712689569051">访客用户无法使用“<ph name="PAGE_NAME" />”页面。</translation>
 <translation id="4636682061478263818">云端硬盘文件</translation>
@@ -5276,7 +5274,6 @@
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6196854373336333322">“<ph name="EXTENSION_NAME" />”扩展程序控制了您的代理设置，也就是说，它可以更改、中断或窃听您在网上执行的任何操作。如果您不确定出现这种变化的原因，那么这种变化可能并不是您所希望的。</translation>
 <translation id="6197128521826316819">为此页面创建二维码</translation>
-<translation id="6198102561359457428">退出后重新登录...</translation>
 <translation id="6198252989419008588">更改 PIN</translation>
 <translation id="6200047250927636406">舍弃文件</translation>
 <translation id="6200151268994853226">管理扩展程序</translation>
@@ -6222,7 +6219,6 @@
 <translation id="7114648273807173152">要使用 Smart Lock 登录您的 Google 帐号，请依次转到“设置”&gt;“已连接的设备”&gt;“您的手机”&gt;“Smart Lock”。</translation>
 <translation id="7115361495406486998">没有可设为分享对象的联系人</translation>
 <translation id="7117228822971127758">请稍后重试</translation>
-<translation id="7117247127439884114">重新登录...</translation>
 <translation id="711840821796638741">显示受管理的书签</translation>
 <translation id="711902386174337313">读取您登录过的设备的列表</translation>
 <translation id="711985611146095797">您可在此页面中管理您已登录的 Google 帐号。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>

@@ -40,7 +40,6 @@
 <translation id="1698376642261615901">Google Chrome on veebibrauser, mis käitab veebilehti ja rakendusi välgukiirusel. See on kiire, töökindel ja lihtsalt kasutatav. Veebi sirvimine on turvalisem tänu Google Chrome'i sisseehitatud pahavara- ja andmepüügivastasele kaitsele.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome käivitatakse uuesti tunni aja pärast}other{Chrome käivitatakse uuesti # tunni pärast}}</translation>
 <translation id="1734234790201236882">Chrome salvestab selle parooli teie Google'i kontole. Te ei pea seda meeles pidama.</translation>
-<translation id="174539241580958092">Google Chrome ei saanud sisselogimisvea tõttu teie andmeid sünkroonida.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Veenduge, et oleksite seadmes <ph name="TARGET_DEVICE_NAME" /> Chrome'i sisse logitud, ja proovige siis uuesti saata.</translation>
 <translation id="1812689907177901597">Kui selle välja lülitate, saate Google'i saitidele (nt Gmaili) sisse logida ilma Chrome'i sisse logimata</translation>
@@ -71,7 +70,6 @@
 <translation id="235650106824528204">Kõik Chrome'i andmed, mis luuakse selle profiili kasutamise ajal (nt järjehoidjad, ajalugu, paroolid ja muud seaded), saab tööprofiili administraator eemaldada. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2401189691232800402">Chrome OS-i süsteem</translation>
-<translation id="2429317896000329049">Google Chrome ei saa teie andmeid sünkroonida, sest sünkroonimine pole teie domeenil saadaval.</translation>
 <translation id="2467438592969358367">Google Chrome soovib teie paroole eksportida. Selle lubamiseks sisestage oma Windowsi parool.</translation>
 <translation id="2485422356828889247">Desinstalli</translation>
 <translation id="2534507159460261402">Google Pay (kopeeritud Chrome'i)</translation>
@@ -290,7 +288,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="7481213027396403996">Hankige Chrome'i parimad turbefunktsioonid</translation>
 <translation id="7486227612705979895">Chrome pääseb teie Drive'ile juurde, et aadressiribal soovitusi anda</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">Google Chrome ei saanud andmeid sünkroonida, sest teie konto sisselogimisandmed on aegunud.</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626032353295482388">Tere tulemast Chrome'i</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> nõuab, et loeksite enne selle seadme kasutamist läbi järgmised teenusetingimused ja nõustuksite nendega. Need tingimused ei laienda, muuda ega piira Google Chrome OS-i tingimusi.</translation>

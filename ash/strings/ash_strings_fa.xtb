@@ -820,7 +820,6 @@
 <translation id="602472752137106327">نمایش پنجره‌ها از همه میزکارها، دکمه رادیو انتخاب شد</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>
 <translation id="6027518778343897451">‏رویدادی برای <ph name="CURRENT_MONTH_DAY" /> ثبت نشده است. روی «ورود» ضربه بزنید تا «تقویم Google» در مرورگر باز شود.</translation>
-<translation id="6027952026115023659">در <ph name="DEVICE_TYPE" /> به برنامه‌های پیام‌رسانی تلفنتان دسترسی داشته باشید</translation>
 <translation id="6030495522958826102">منو به گوشه راست پایین صفحه منتقل شد.</translation>
 <translation id="6032620807120418574">برای ضبط تمام‌صفحه، روی هرجایی از صفحه کلیک کنید</translation>
 <translation id="6040071906258664830">ضبط میکروفون <ph name="STATE" /></translation>
@@ -970,7 +969,6 @@
 <translation id="6961121602502368900">«بی‌صدا کردن تلفن» در نمایه کاری دردسترس نیست</translation>
 <translation id="6961840794482373852">میان‌بر صفحه‌کلید «دگرساز + جهت‌نمای بالا» تغییر کرده است. برای استفاده از کلید «صفحه قبلی»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + جهت‌نمای بالا» را فشار دهید.</translation>
 <translation id="6965382102122355670">قبول</translation>
-<translation id="6967933908874208731">برنامه‌های پیام‌رسانی، اعلان‌ها، رسانه، و عکس‌های جدید تلفنتان را در <ph name="DEVICE_TYPE" /> مشاهده کنید</translation>
 <translation id="6972754398087986839">شروع به کار</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">دسترس‌پذیری</translation>

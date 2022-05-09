@@ -2862,7 +2862,6 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3748706263662799310">Een fout melden</translation>
 <translation id="3750562496035670393">Chrome heeft je wachtwoord opgeslagen op dit apparaat, maar in plaats daarvan kun je het wachtwoord ook opslaan in je Google-account. Dan zijn alle wachtwoorden in je Google-account ook beschikbaar als je bent ingelogd.</translation>
 <translation id="3752253558646317685">Laat je kind de vinger steeds optillen om de vingerafdruk te bewaren</translation>
-<translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Eén keer opslaan, Overal gebruiken</translation>
 <translation id="3755411799582650620">Je <ph name="PHONE_NAME" /> kan deze <ph name="DEVICE_TYPE" /> nu ook ontgrendelen.</translation>
 <translation id="375636864092143889">Site gebruikt je microfoon</translation>
@@ -3760,7 +3759,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4633003931260532286">Voor deze extensie is minimaal versie '<ph name="IMPORT_VERSION" />' van '<ph name="IMPORT_NAME" />' vereist, maar alleen versie '<ph name="INSTALLED_VERSION" />' is geïnstalleerd</translation>
 <translation id="4633757335284074492">Maak een back-up op Google Drive. Zet gegevens eenvoudig terug of schakel wanneer je wilt tussen apparaten. Deze back-up omvat app-gegevens. Back-ups worden geüpload naar Google en versleuteld met het wachtwoord van het Google-account van je kind.</translation>
 <translation id="4634575639321169635">Stel dit apparaat in voor zakelijk of persoonlijk gebruik</translation>
-<translation id="4634771451598206121">Opnieuw inloggen...</translation>
 <translation id="4635072447747973225">Crostini verwijderen</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> is niet beschikbaar voor gastgebruikers.</translation>
 <translation id="4636682061478263818">Drive-bestanden</translation>
@@ -5290,7 +5288,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6196640612572343990">Cookies van derden blokkeren</translation>
 <translation id="6196854373336333322">De extensie '<ph name="EXTENSION_NAME" />' heeft het beheer van je proxyinstellingen overgenomen. Dit betekent dat de extensie alles wat je online doet, kan wijzigen, beschadigen of bekijken. Als je niet zeker weet waarom deze wijziging heeft plaatsgevonden, is het waarschijnlijk een ongewenste wijziging.</translation>
 <translation id="6197128521826316819">QR-code maken voor deze pagina</translation>
-<translation id="6198102561359457428">Log uit en log daarna weer in...</translation>
 <translation id="6198252989419008588">Pincode wijzigen</translation>
 <translation id="6200047250927636406">Bestand weggooien</translation>
 <translation id="6200151268994853226">Extensie beheren</translation>
@@ -6237,7 +6234,6 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7114648273807173152">Als je Smart Lock wilt gebruiken om in te loggen op je Google-account, ga je naar Instellingen &gt; Verbonden apparaten &gt; Je telefoon &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Geen bereikbare contacten</translation>
 <translation id="7117228822971127758">Probeer het later opnieuw</translation>
-<translation id="7117247127439884114">Opnieuw inloggen...</translation>
 <translation id="711840821796638741">Beheerde bookmarks bekijken</translation>
 <translation id="711902386174337313">De lijst met je ingelogde apparaten lezen</translation>
 <translation id="711985611146095797">Via deze pagina kun je je ingelogde Google-accounts beheren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>

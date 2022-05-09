@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">برای کاوش دستگاه‌های همین اطراف، بلوتوث را روشن کنید</translation>
 <translation id="2346474577291266260">عالی (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">ادامه</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />قطعات غیرمجاز<ph name="LINK_END" /> شناسایی شد. اگر می‌خواهید تأیید کنید این قطعات نصب شده‌اند، لطفاً اکنون این کار را انجام دهید.</translation>
 <translation id="2363636958541445404">برای انتخاب گزینه‌های محافظ صفحه‌نمایش، این ویژگی را روشن کنید</translation>
 <translation id="2364498172489649528">موفق</translation>
@@ -156,6 +157,7 @@
 <translation id="2446553403094072641">دقت نقطه شناور</translation>
 <translation id="2448312741937722512">نوع</translation>
 <translation id="2461822463642141190">فعلی</translation>
+<translation id="2480034874476596812">خاموش کردن به‌صورت دستی</translation>
 <translation id="2491955442992294626">وقتی درحال استفاده از پنجره دیگری هستید، کلیدها آزمایش نمی‌شوند</translation>
 <translation id="2493126929778606526">بهترین عکس‌هایتان که به‌طور خودکار انتخاب شده‌اند</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -171,7 +173,6 @@
 <translation id="2620436844016719705">سیستم</translation>
 <translation id="2638662041295312666">تصویر ورود به سیستم</translation>
 <translation id="2640549051766135490">آلبوم <ph name="TITLE" /> <ph name="DESC" /> انتخاب شد</translation>
-<translation id="2695514675076754339">کد قفل‌گشایی ۸ رقمی را وارد کنید</translation>
 <translation id="2712812801627182647">کلید اصالت‌سنجی «امنیت لایه انتقال»</translation>
 <translation id="2717139507051041123">فعال کردن حالت رنگ تیره</translation>
 <translation id="2740531572673183784">تأیید</translation>
@@ -251,6 +252,7 @@
 <translation id="3606583719724308068">‏تأخیر بالا در وب‌سایت‌های HTTPS</translation>
 <translation id="3621202678540785336">ورودی</translation>
 <translation id="3632579075709132555">پنهان/ نمایان کردن صفحه حریم‌خصوصی</translation>
+<translation id="3678765385266369662">‏روش مدنظرتان برای خاموش کردن Write Protect را انتخاب کنید</translation>
 <translation id="3689839747745352263">آزمایش <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">در حال بارکردن…</translation>
 <translation id="3708186454126126312">قبلاً متصل‌شده</translation>
@@ -305,6 +307,7 @@
 <translation id="4244962993387259361">برای اجرای «آزمایش حافظه»، حداقل به ۵۰۰ مگابایت فضای آزاد نیاز دارید. برای آزاد کردن فضا، به «تنظیمات &gt; مدیریت فضای ذخیره‌سازی» بروید.</translation>
 <translation id="4250229828105606438">نماگرفت</translation>
 <translation id="4258281355379922695">‏تأخیر HTTP</translation>
+<translation id="4258561075226177474">دستگاه به همان کاربر برمی‌گردد. داده‌های کاربر پاک شود؟</translation>
 <translation id="4271957103967917607">مشاهده در حالت تمام صفحه</translation>
 <translation id="4275799948641988986">بعداز تعمیر، چه کسی از دستگاه استفاده خواهد کرد؟</translation>
 <translation id="4289540628985791613">نمای کلی</translation>
@@ -353,6 +356,7 @@
 <translation id="473775607612524610">به‌روزرسانی</translation>
 <translation id="4744944742468440486">اطلاعات مرتبط با انتخاب شما</translation>
 <translation id="4773299976671772492">متوقف شد</translation>
+<translation id="4774530504324923332">‏به کلید امنیتی سازگار با RSU، کدخوان پاسخ‌سریع، و دستگاه دیگری با اتصال اینترنت نیاز خواهید داشت</translation>
 <translation id="4782311465517282004">وقتی روی نوشتار کلیک راست می‌کنید یا آن را لمس می‌کنید و نگه می‌دارید، تعاریف، ترجمه‌ها، یا تبدیل واحدها را دریافت می‌کنید</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> عکس</translation>
 <translation id="4793710386569335688">برای دریافت راهنمایی بیشتر، به <ph name="BEGIN_LINK" />مرکز راهنمایی<ph name="END_LINK" /> بروید.</translation>
@@ -432,6 +436,7 @@
 <translation id="5372659122375744710">‏شبکه Wi-Fi ایمن نیست</translation>
 <translation id="5376354385557966694">حالت روشن خودکار</translation>
 <translation id="537872351913703572">دستگاه به کاربر یا سازمان دیگری منتقل خواهد شد</translation>
+<translation id="5395600419410242651">پاک کردن همه داده‌ها</translation>
 <translation id="5400907029458559844">دستگاه درحال برقراری اتصال است.</translation>
 <translation id="5401938042319910061">اجرای همه روال‌ها</translation>
 <translation id="5423849171846380976">فعال شد</translation>
@@ -642,6 +647,7 @@
 <translation id="7570674786725311828">‏صفحه لمسی USB</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> باقی مانده است</translation>
 <translation id="7620771111601174153">اطلاعات بیشتر در «مرکز راهنمایی»</translation>
+<translation id="7626501172915339021">‏اجرای «باز کردن قفل سرور RMA»‏ (RSU)</translation>
 <translation id="763165478673169849">آخرین زمان بازنشانی</translation>
 <translation id="7648838807254605802">‏تأخیر بالا در HTTPS</translation>
 <translation id="7656388927906093505">دستگاه موش‌واره است.</translation>
@@ -785,6 +791,8 @@
 <translation id="9087578468327036362">گزارش کردن این پرسمان</translation>
 <translation id="9088306295921699330">مصرف فعلی</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">باید دستگاه را جداسازی کنید</translation>
+<translation id="9098156406873149060">حفظ داده‌های کاربر</translation>
 <translation id="910415269708673980">بازخوانی بلیت برای <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">درحال اسکن کردن صفحه <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">باز کردن قفل</translation>

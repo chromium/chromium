@@ -39,7 +39,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="1698376642261615901">O Google Chrome é um navegador de internet que executa páginas Web e aplicações de forma extremamente rápida. É rápido, estável e fácil de utilizar. Navegue na Web com mais segurança com proteção contra phishing e programas maliciosos incorporada no Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{O Chrome será reiniciado dentro de uma hora}other{O Chrome será reiniciado dentro de # horas}}</translation>
 <translation id="1734234790201236882">O Chrome vai guardar esta palavra-passe na sua Conta Google. Não tem de a memorizar.</translation>
-<translation id="174539241580958092">O Google Chrome não conseguiu sincronizar os dados devido a um erro no início de sessão.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Certifique-se de que tem sessão iniciada no Chrome no seu <ph name="TARGET_DEVICE_NAME" /> e, em seguida, tente enviar novamente.</translation>
 <translation id="1812689907177901597">Ao desativar esta opção, pode iniciar sessão nos sites da Google como o Gmail sem iniciar sessão no Chrome.</translation>
@@ -70,7 +69,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="235650106824528204">Os dados do Chromium gerados durante a utilização deste perfil (como a criação de marcadores, histórico, palavras-passe e outras definições) podem ser removidos pelo administrador do perfil de trabalho. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2401189691232800402">Sistema ChromeOS</translation>
-<translation id="2429317896000329049">O Google Chrome não conseguiu sincronizar os dados porque a Sincronização não está disponível para o seu domínio.</translation>
 <translation id="2467438592969358367">O Google Chrome pretende exportar as suas palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2534507159460261402">Google Pay (copiado para o Chrome)</translation>
@@ -287,7 +285,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="7481213027396403996">Obtenha a segurança mais avançada do Chrome</translation>
 <translation id="7486227612705979895">O Chrome vai aceder ao Drive para fornecer sugestões na barra de endereço.</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">O Google Chrome não conseguiu sincronizar os dados porque os detalhes de início de sessão da sua conta estão desatualizados.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Bem-vindo ao Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> requer a leitura e a aceitação dos seguintes Termos de Utilização antes de usar este dispositivo. Estes termos não ampliam, não modificam nem limitam os Termos do Google ChromeOS.</translation>

@@ -820,7 +820,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="602472752137106327">Afficher les fenêtres de tous les bureaux, bouton radio sélectionné</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="6027518778343897451">Aucun événement le <ph name="CURRENT_MONTH_DAY" />. Appuyez sur Entrée pour ouvrir Google Agenda dans le navigateur.</translation>
-<translation id="6027952026115023659">Accédez aux applications de messagerie de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Le menu a été déplacé vers le coin inférieur gauche de l'écran.</translation>
 <translation id="6032620807120418574">Cliquez n'importe où pour capturer la totalité de l'écran</translation>
 <translation id="6040071906258664830">Enregistrement avec le microphone <ph name="STATE" /></translation>
@@ -970,7 +969,6 @@ Nouvelle installation</translation>
 <translation id="6961121602502368900">Le mode silencieux du téléphone n'est pas accessible dans le profil professionnel</translation>
 <translation id="6961840794482373852">Le raccourci-clavier Alt+flèche vers le haut a changé. Pour utiliser la touche Page précédente, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+flèche vers le haut.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967933908874208731">Affichez les photos, les notifications, les applications de messagerie et les fichiers multimédias récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Démarrer</translation>
 <translation id="6979158407327259162">Google Disque</translation>
 <translation id="6981982820502123353">Accessibilité</translation>

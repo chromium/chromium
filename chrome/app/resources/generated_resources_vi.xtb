@@ -1014,6 +1014,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1942600407708803723">Tắt máy khi đóng nắp màn hình</translation>
 <translation id="1944528062465413897">Mã ghép nối Bluetooth:</translation>
 <translation id="1944921356641260203">Đã tìm thấy bản cập nhật</translation>
+<translation id="1947136734041527201">Cho phép bạn đăng nhập vào các trang web bằng tài khoản có dịch vụ nhận dạng</translation>
 <translation id="1949584741547056205">Trả lời nhanh</translation>
 <translation id="1951012854035635156">Trợ lý</translation>
 <translation id="1954597385941141174">Các trang web có thể yêu cầu kết nối với thiết bị USB</translation>
@@ -2414,6 +2415,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="32939749466444286">Vùng chứa Linux không khởi động. Vui lòng thử lại.</translation>
 <translation id="3294437725009624529">Khách</translation>
 <translation id="3294686910656423119">Thống kê mức sử dụng và báo cáo sự cố</translation>
+<translation id="3297105622164376095">Được phép đưa ra lời nhắc đăng nhập qua bên thứ ba</translation>
 <translation id="3297536526040732495">Tạm thời liên kết dữ liệu này với Tài khoản Google của bạn sau khi bạn đăng nhập để bảo vệ bạn trên các ứng dụng Google</translation>
 <translation id="329838636886466101">Sửa</translation>
 <translation id="3298789223962368867">URL không hợp lệ được nhập.</translation>
@@ -2876,7 +2878,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3748706263662799310">Báo cáo lỗi</translation>
 <translation id="3750562496035670393">Chrome đã lưu mật khẩu của bạn trên thiết bị này, nhưng bạn cũng có thể chuyển sang lưu mật khẩu đó vào Tài khoản Google. Sau đó, tất cả mật khẩu trong Tài khoản Google của bạn đều sẽ có sẵn hiện khi bạn đăng nhập.</translation>
 <translation id="3752253558646317685">Yêu cầu con bạn liên tục nhấc ngón tay lên để lưu dấu vân tay</translation>
-<translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Lưu trữ một lần. Dùng ở mọi nơi</translation>
 <translation id="3755411799582650620">Giờ đây, <ph name="PHONE_NAME" /> của bạn cũng có thể mở khóa <ph name="DEVICE_TYPE" /> này.</translation>
 <translation id="375636864092143889">Trang web đang sử dụng micrô của bạn</translation>
@@ -3670,6 +3671,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="452750746583162491">Xem lại các dữ liệu đã đồng bộ hóa của bạn</translation>
 <translation id="4527929807707405172">Bật chế độ cuộn ngược. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Bản dịch đề xuất</translation>
+<translation id="4529455689802245339">Tính năng Phụ đề trực tiếp trên Chrome có thể không hoạt động</translation>
 <translation id="4530494379350999373">Nguồn gốc</translation>
 <translation id="4531924570968473143">Bạn muốn thêm ai vào chiếc <ph name="DEVICE_TYPE" /> này?</translation>
 <translation id="4532625150642446981">Thiết bị "<ph name="USB_DEVICE_NAME" />" đang được sử dụng. Thao tác chỉ định lại thiết bị trong khi đang sử dụng có thể gây ra lỗi. Bạn có chắc chắn muốn tiếp tục không?</translation>
@@ -3775,7 +3777,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4633003931260532286">Tiện ích yêu cầu "<ph name="IMPORT_NAME" />" có phiên bản tối thiểu "<ph name="IMPORT_VERSION" />" nhưng mới chỉ cài đặt được phiên bản "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4633757335284074492">Sao lưu vào Google Drive. Dễ dàng khôi phục dữ liệu hoặc chuyển đổi thiết bị bất cứ lúc nào. Bản sao lưu này bao gồm cả dữ liệu ứng dụng. Các bản sao lưu được tải lên Google và mã hóa bằng mật khẩu Tài khoản Google của con bạn.</translation>
 <translation id="4634575639321169635">Thiết lập thiết bị này cho mục đích cá nhân hoặc công việc</translation>
-<translation id="4634771451598206121">Đăng nhập lại...</translation>
 <translation id="4635072447747973225">Gỡ cài đặt Crostini</translation>
 <translation id="4635398712689569051">Người dùng khách không thể sử dụng <ph name="PAGE_NAME" />.</translation>
 <translation id="4636682061478263818">Tệp trên Drive</translation>
@@ -3868,6 +3869,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="471880041731876836">Bạn không có quyền để truy cập trang web này</translation>
 <translation id="4722735765955348426">Mật khẩu của <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> đang chia sẻ màn hình của bạn.</translation>
+<translation id="4722989931633062466">Không được phép đưa ra lời nhắc đăng nhập qua bên thứ ba</translation>
 <translation id="4723140812774948886">Hoán đổi với mục tiếp theo</translation>
 <translation id="4724450788351008910">Đã thay đổi Liên kết</translation>
 <translation id="4725511304875193254">Chó Corgi</translation>
@@ -4838,6 +4840,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5711010025974903573">Nhật ký dịch vụ</translation>
 <translation id="5711983031544731014">Không mở khóa được. Hãy nhập mật khẩu của bạn.</translation>
 <translation id="5712153969432126546">Đôi khi, trang web sẽ xuất bản các tệp PDF, như tài liệu, hợp đồng và biểu mẫu</translation>
+<translation id="571222594670061844">Các trang web có thể đưa ra lời nhắc đăng nhập qua các dịch vụ nhận dạng.</translation>
 <translation id="5713158217420111469">Đã kết nối với <ph name="DEVICE" /></translation>
 <translation id="5715711091495208045">Trình môi giới plugin: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Công cụ tìm kiếm mặc định</translation>
@@ -4996,6 +4999,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5876851302954717356">Thẻ mới ở bên phải</translation>
 <translation id="5877064549588274448">Kênh đã thay đổi. Hãy khởi động lại thiết bị để áp dụng thay đổi.</translation>
 <translation id="5877584842898320529">Máy in đã chọn không sử dụng được hoặc không được cài đặt chính xác. <ph name="BR" /> Hãy kiểm tra máy in hoặc thử chọn một máy in khác.</translation>
+<translation id="5878945009165002849">Chặn lời nhắc đăng nhập qua dịch vụ nhận dạng</translation>
 <translation id="5882919346125742463">Mạng đã biết</translation>
 <translation id="5883356647197510494">Đã tự động chặn <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Thẻ này được kết nối với một thiết bị USB.</translation>
@@ -5307,7 +5311,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6196640612572343990">Chặn cookie của bên thứ ba</translation>
 <translation id="6196854373336333322">Tiện ích "<ph name="EXTENSION_NAME" />" đã chiếm quyền kiểm soát cài đặt proxy của bạn, điều đó có nghĩa là tiện ích này có thể thay đổi, làm gián đoạn hoặc nghe trộm bất kỳ điều gì bạn thực hiện trực tuyến. Nếu bạn không chắc chắn về lý do thay đổi này diễn ra, bạn có thể không cần tiện ích này.</translation>
 <translation id="6197128521826316819">Tạo mã QR cho Trang này</translation>
-<translation id="6198102561359457428">Đăng xuất rồi đăng nhập lại...</translation>
 <translation id="6198252989419008588">Thay đổi mã PIN</translation>
 <translation id="6200047250927636406">Loại bỏ tệp</translation>
 <translation id="6200151268994853226">Quản lý tiện ích</translation>
@@ -5633,6 +5636,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6513247462497316522">Google Chrome sẽ sử dụng dữ liệu di động nếu bạn không được kết nối với mạng khác.</translation>
 <translation id="6514010653036109809">Thiết bị có sẵn:</translation>
 <translation id="6514565641373682518">Trang này đã tắt con trỏ chuột của bạn.</translation>
+<translation id="6517709704288360414">Thiết bị của bạn có thể sẽ không còn hoạt động bình thường và bạn có thể gặp phải các vấn đề về hiệu suất và bảo mật. Việc tắt tính năng cập nhật có thể ảnh hưởng đến quyền đưa ra khiếu nại pháp lý nếu bạn gặp phải vấn đề phát sinh.</translation>
 <translation id="6518014396551869914">Sao ché&amp;p hình ảnh</translation>
 <translation id="6518133107902771759">Xác minh</translation>
 <translation id="651942933739530207">Bạn có muốn <ph name="APP_NAME" /> chia sẻ màn hình và dữ liệu đầu ra âm thanh của bạn không?</translation>
@@ -6253,7 +6257,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7114648273807173152">Để đăng nhập vào Tài khoản Google bằng Smart Lock, hãy chuyển đến mục Cài đặt &gt; Thiết bị đã kết nối &gt; Điện thoại của bạn &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Không có người liên hệ nào có thể chia sẻ</translation>
 <translation id="7117228822971127758">Vui lòng thử lại sau</translation>
-<translation id="7117247127439884114">Đăng nhập lại...</translation>
 <translation id="711840821796638741">Hiển thị dấu trang được quản lý</translation>
 <translation id="711902386174337313">Đọc danh sách các thiết bị đã đăng nhập của bạn</translation>
 <translation id="711985611146095797">Trang này cho phép bạn quản lý các Tài khoản Google mà bạn đã đăng nhập. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>

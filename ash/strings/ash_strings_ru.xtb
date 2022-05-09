@@ -820,7 +820,6 @@
 <translation id="602472752137106327">Показ окон всех рабочих столов. Выбран переключатель.</translation>
 <translation id="6025324406281560198">Статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="6027518778343897451">Мероприятий <ph name="CURRENT_MONTH_DAY" /> нет. Нажмите Ввод, чтобы открыть Google Календарь в браузере.</translation>
-<translation id="6027952026115023659">Доступ к приложениям для обмена сообщениями на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6030495522958826102">Меню перемещено в левый нижний угол экрана.</translation>
 <translation id="6032620807120418574">Нажмите в любом месте, чтобы включить запись видео со всего экрана.</translation>
 <translation id="6040071906258664830">Запись микрофона <ph name="STATE" /></translation>
@@ -970,7 +969,6 @@
 <translation id="6961121602502368900">Отключение звука на телефоне недоступно в рабочем профиле</translation>
 <translation id="6961840794482373852">Функция сочетания клавиш Alt + Стрелка вверх изменилась. Чтобы выполнить действие клавиши Page Up, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вверх.</translation>
 <translation id="6965382102122355670">ОК</translation>
-<translation id="6967933908874208731">Просмотр недавно добавленных на телефон фотографий, медиафайлов, уведомлений и приложений для обмена сообщениями на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6972754398087986839">Начать</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6981982820502123353">Спец. возможности</translation>

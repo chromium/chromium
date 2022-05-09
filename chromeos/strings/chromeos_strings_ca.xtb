@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Activa el Bluetooth per detectar dispositius propers</translation>
 <translation id="2346474577291266260">Excel·lent (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Continua</translation>
 <translation id="2360257214555822463">S'han detectat <ph name="LINK_BEGIN" />components no qualificats<ph name="LINK_END" />. Si vols confirmar que s'han instal·lat, fes-ho ara.</translation>
 <translation id="2363636958541445404">Activa la funció per seleccionar les opcions d'estalvi de pantalla</translation>
 <translation id="2364498172489649528">Comprovació superada</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2638662041295312666">Imatge d'inici de sessió</translation>
 <translation id="2640549051766135490">S'ha seleccionat l'àlbum <ph name="TITLE" /> <ph name="DESC" /></translation>
-<translation id="2695514675076754339">Introdueix el codi de desbloqueig de 8 caràcters</translation>
 <translation id="2712812801627182647">Clau d'autenticació TLS</translation>
 <translation id="2717139507051041123">Activa el mode de color fosc</translation>
 <translation id="2740531572673183784">D'acord</translation>

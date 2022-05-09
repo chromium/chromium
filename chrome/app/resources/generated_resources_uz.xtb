@@ -959,6 +959,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1892341345406963517">Salom, <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Boshqa tillar</translation>
 <translation id="1895658205118569222">Ishni tamomlash</translation>
+<translation id="1897120393475391208">Kuchli parol ishlatish</translation>
 <translation id="1900305421498694955">Google Play ilovalari fayllar bilan ishlash maqsadida tashqi xotira qurilmalariga oʻqish va yozish uchun toʻliq ruxsatni talab qilishi mumkin. Shuningdek, tashqi xotira qurilmasini ishlatuvchi barcha foydalanuvchilarda qurilmada yaratilgan fayllar va jildlarga ruxsat boʻladi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Hammasini belgilash</translation>
 <translation id="1901396183631570154">Chrome bu parollarni Google hisobingizga saqlay olmadi. Lekin ularni shu qurilmaga saqlash mumkin.</translation>
@@ -2865,7 +2866,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3748706263662799310">Xatolik haqida xabar berish</translation>
 <translation id="3750562496035670393">Chrome parolni bu qurilmaga saqlagan, lekin uni Google hisobingizga saqlashingiz ham mumkin. Keyin hisobingizga kirgan qurilmalarda Google hisobingizda saqlangan barcha parollardan foydalana olasiz.</translation>
 <translation id="3752253558646317685">Barmoq izini saqlash uchun farzandingiz barmoqlarini koʻtarib, qayta bosib kiritsin</translation>
-<translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Bir marta saqlash. Doim ishlatish</translation>
 <translation id="3755411799582650620">Endi <ph name="PHONE_NAME" /> telefonni <ph name="DEVICE_TYPE" /> qulfdan yechishi mumkin.</translation>
 <translation id="375636864092143889">Sayt mikrofondan foydalanmoqda</translation>
@@ -3765,7 +3765,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4633003931260532286">Kengaytmaga kamida “<ph name="IMPORT_VERSION" />” versiyadagi “<ph name="IMPORT_NAME" />” kerak, lekin hozir “<ph name="INSTALLED_VERSION" />” versiyasi o‘rnatilgan</translation>
 <translation id="4633757335284074492">Google Drive omboriga zaxiralash. Axborotlaringizni osongina tiklashingiz yoki qurilmangizni xohlagan vaqtda almashtirishingiz mumkin. Zaxira ichida ilova maʼlumotlari ham bor. Zaxiralar Google serverlariga yuklanadi va farzandingizning Google hisobingiz paroli bilan shifrlanadi.</translation>
 <translation id="4634575639321169635">Bu qurilmada ish va shaxsiy profillarni sozlash</translation>
-<translation id="4634771451598206121">Qaytadan kirish...</translation>
 <translation id="4635072447747973225">Crostini tizimini oʻchirib tashlash</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> sahifasi mehmon foydalanuvchilarga ko‘rinmaydi.</translation>
 <translation id="4636682061478263818">Drive fayllari</translation>
@@ -5300,7 +5299,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6196640612572343990">Tashqi cookie-fayllarni bloklash.</translation>
 <translation id="6196854373336333322">“<ph name="EXTENSION_NAME" />” kengaytmasi proksi-server sozlamalarini nazorat qiladi. U internetda bajargan ishlaringizni o‘zgartirishi, buzishi yoki bildirmasdan eshitishi mumkin. Agar bu haqda eshitmagan bo‘lsangiz, uni o‘chirib qo‘yganingiz yaxshi.</translation>
 <translation id="6197128521826316819">Bu sahifa uchun QR kod yaratish</translation>
-<translation id="6198102561359457428">Chiqish va qaytadan kirish...</translation>
 <translation id="6198252989419008588">PIN-kodni o‘zgartirish</translation>
 <translation id="6200047250927636406">Faylni yopish</translation>
 <translation id="6200151268994853226">Kengaytmalar boshqaruvi</translation>
@@ -6247,7 +6245,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7114648273807173152">Google hisobingizda Smart Lock himoyasini yoqish uchun Sozlamalar &gt; Ulangan qurilmalar &gt; Telefoningiz &gt; Smart Lock sahifasini oching.</translation>
 <translation id="7115361495406486998">Hech qanday kontakt atrofda emas</translation>
 <translation id="7117228822971127758">Keyinroq qaytadan urining</translation>
-<translation id="7117247127439884114">Tizimga qayta kiring...</translation>
 <translation id="711840821796638741">Boshqariladigan xatcho‘plarni ko‘rsatish</translation>
 <translation id="711902386174337313">Tizimga kirish amali bajarilgan qurilmalar ro‘yxati</translation>
 <translation id="711985611146095797">Bu sahifa kirgan Google hisoblaringizni boshqarishga ruxsat beradi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
@@ -6552,6 +6549,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7444970023873202833">Google Photos xizmatida koʻproq xotiralarni eslang</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> qurilmasini o‘chirib qo‘yish</translation>
 <translation id="7448430327655618736">Ilovalarni avtomatik ravishda oʻrnatish</translation>
+<translation id="7449381494541372002">ishga tushirilmoqda…</translation>
 <translation id="7449752890690775568">Parol olib tashlansinmi?</translation>
 <translation id="7450761244949417357"><ph name="ALTERNATIVE_BROWSER_NAME" /> orqali ochilmoqda</translation>
 <translation id="7452166281927983300">Yopilgan ogohlantirishlar (<ph name="MUTED_PASSWORDS" />)</translation>

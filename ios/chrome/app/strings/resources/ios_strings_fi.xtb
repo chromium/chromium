@@ -222,7 +222,6 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2883151425485251736">Katso ja muokkaa aiheita, jotka olet piilottanut tililtäsi</translation>
 <translation id="288655811176831528">Sulje välilehti</translation>
 <translation id="2890171748217283516">Seuraamasi sivustot tallennetaan Google-tilillesi. Voit ylläpitää niitä Discoverin asetuksissa.</translation>
-<translation id="2893180576842394309">Google voi muokata Hakua ja muita Googlen palveluita historiasi perusteella</translation>
 <translation id="2898963176829412617">Uusi kansio…</translation>
 <translation id="2916171785467530738">Hakujen ja URL-osoitteiden automaattinen täydennys</translation>
 <translation id="291754862089661335">Aseta QR- tai viivakoodi tämän kehyksen sisälle.</translation>
@@ -902,7 +901,6 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8654802032646794042">Peru</translation>
 <translation id="8668210798914567634">Sivu on tallennettu lukulistallesi.</translation>
 <translation id="8680787084697685621">Tilin kirjautumistiedot ovat vanhentuneet.</translation>
-<translation id="8691262314411702087">Valitse synkronoitavat kohteet</translation>
 <translation id="8693663554456874301">{count,plural, =1{Sulje välilehti}other{Sulje välilehdet}}</translation>
 <translation id="8706588385081740091">Salasanat</translation>
 <translation id="8717864919010420084">Kopioi linkki</translation>

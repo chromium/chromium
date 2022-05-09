@@ -2875,7 +2875,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3748706263662799310">Ilmoita virheestä</translation>
 <translation id="3750562496035670393">Chrome tallensi salasanasi tälle laitteelle, mutta voit halutessasi tallentaa sen Google-tilillesi. Kaikki Google-tilillä olevat salasanat ovat käytettävissä, kun olet sisäänkirjautuneena.</translation>
 <translation id="3752253558646317685">Pyydä lasta nostamaan sormea toistuvasti, jotta sormenjälki tallennetaan</translation>
-<translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Tallenna kerran. Käytä kaikkialla.</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> voi nyt avata myös tämän <ph name="DEVICE_TYPE" />-laitteen.</translation>
 <translation id="375636864092143889">Sivusto käyttää mikrofoniasi</translation>
@@ -3771,7 +3770,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4633003931260532286">Laajennus edellyttää sovellusliittymän <ph name="IMPORT_NAME" /> vähimmäisversiota <ph name="IMPORT_VERSION" />, mutta asennettuna on vain versio <ph name="INSTALLED_VERSION" />.</translation>
 <translation id="4633757335284074492">Varmuuskopioi Google Driveen. Palauta dataa tai ota uusi laite käyttöön kätevästi milloin tahansa. Tämä varmuuskopio sisältää sovellusdatan. Varmuuskopiot ladataan Googleen ja salataan lapsesi Google-tilin salasanalla.</translation>
 <translation id="4634575639321169635">Määritä tämä laite töitä varten tai henkilökohtaiseen käyttöön</translation>
-<translation id="4634771451598206121">Kirjaudu uudelleen sisään...</translation>
 <translation id="4635072447747973225">Poista Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> ei ole vieraskäyttäjien saatavilla.</translation>
 <translation id="4636682061478263818">Drive-tiedostot</translation>
@@ -5303,7 +5301,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6196640612572343990">Estä kolmannen osapuolen evästeet</translation>
 <translation id="6196854373336333322">Välityspalvelimesi asetuksia hallinnoi tällä hetkellä tämä laajennus <ph name="EXTENSION_NAME" />, joka voi muokata, haitata tai salakuunnella kaikkia verkkotoimiasi. Jos et tiedä, miksi tämä muutos tehtiin, et luultavasti halua käyttää sitä.</translation>
 <translation id="6197128521826316819">Luo QR-koodi tälle sivulle</translation>
-<translation id="6198102561359457428">Kirjaudu ulos ja kirjaudu uudelleen sisään...</translation>
 <translation id="6198252989419008588">Vaihda PIN-koodi</translation>
 <translation id="6200047250927636406">Hylkää tiedosto</translation>
 <translation id="6200151268994853226">Muokkaa laajennusta</translation>
@@ -6249,7 +6246,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7114648273807173152">Jos haluat kirjautua Google-tilillesi Smart Lockin avulla, siirry kohtaan Asetukset &gt; Yhdistetyt laitteet &gt; Puhelimesi &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Ei kontakteja tavoitettavissa</translation>
 <translation id="7117228822971127758">Yritä myöhemmin uudelleen.</translation>
-<translation id="7117247127439884114">Kirjaudu uudelleen sisään...</translation>
 <translation id="711840821796638741">Näytä hallinnoidut kirjanmerkit</translation>
 <translation id="711902386174337313">Käyttää kirjautuneiden laitteidesi luetteloa</translation>
 <translation id="711985611146095797">Tällä sivulla voit ylläpitää sisäänkirjautuneita Google-tilejäsi. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>

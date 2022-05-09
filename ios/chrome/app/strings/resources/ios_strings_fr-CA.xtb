@@ -222,7 +222,6 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2883151425485251736">Affichez et modifiez les sujets que vous avez masqués dans votre compte</translation>
 <translation id="288655811176831528">Fermer l'onglet</translation>
 <translation id="2890171748217283516">Les sites que vous suivez sont enregistrés dans votre compte Google. Vous pouvez les gérer dans les paramètres de Découvertes.</translation>
-<translation id="2893180576842394309">Google peut utiliser votre historique pour personnaliser la recherche et d'autres services Google</translation>
 <translation id="2898963176829412617">Nouveau dossier...</translation>
 <translation id="2916171785467530738">Saisie semi-automatique des recherches et des URL</translation>
 <translation id="291754862089661335">Placer le code QR ou le code à barres dans ce cadre</translation>
@@ -902,7 +901,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8654802032646794042">Annuler</translation>
 <translation id="8668210798914567634">Cette page a été enregistrée dans votre liste de lecture.</translation>
 <translation id="8680787084697685621">L'information de connexion au compte n'est plus à jour.</translation>
-<translation id="8691262314411702087">Choisir les éléments à synchroniser</translation>
 <translation id="8693663554456874301">{count,plural, =1{Fermer l'onglet}one{Fermer l'onglet}other{Fermer les onglets}}</translation>
 <translation id="8706588385081740091">Mots de passe</translation>
 <translation id="8717864919010420084">Copier le lien</translation>

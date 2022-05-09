@@ -136,6 +136,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1719094688023114093">Automatski titlovi su uključeni.</translation>
 <translation id="1720011244392820496">Uključite sinhronizaciju putem WiFi mreže</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" je vidljiv Bluetooth uređajima.</translation>
+<translation id="174102739345480129">Marker je isključen.</translation>
 <translation id="1743570585616704562">Nije prepoznato</translation>
 <translation id="1746730358044914197">Načine unosa konfigurira vaš administrator.</translation>
 <translation id="1747827819627189109">Tastatura na ekranu je omogućena</translation>
@@ -564,6 +565,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4379531060876907730">Ovo su vaši alati za korištenje olovke</translation>
 <translation id="4389184120735010762">Pritisnuli ste prečicu na tastaturi za lupu priključne stanice. Želite li je uključiti?</translation>
 <translation id="439598569299422042">Pauzirano, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Spremanje zaslonske prezentacije nije uspjelo</translation>
 <translation id="4405151984121254935">Vrsta povezanog perifernog uređaja nije podržana</translation>
 <translation id="4406883609789734330">Automatski titlovi</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> je isključena.</translation>
@@ -670,6 +672,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Sljedeća rečenica</translation>
+<translation id="5016558321564993266">Prebacite marker. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Vrijeme je isteklo</translation>
 <translation id="5033299697334913360">Kliknite na bilo šta da snimite cijeli ekran</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> je povezan na novi telefon</translation>
@@ -699,6 +702,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="523505283826916779">Postavke pristupačnosti</translation>
+<translation id="5245201184978705914">Generiranje prijepisa nije uspjelo</translation>
 <translation id="5253783950165989294">Povezano je s uređajem pod nazivom <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterije</translation>
 <translation id="5260676007519551770">Radna površina 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> traži da reagirate.</translation>
@@ -733,6 +737,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5433020815079095860">Zvučni unos</translation>
 <translation id="544691375626129091">U ovu sesiju su već dodani svi dostupni korisnici.</translation>
 <translation id="54609108002486618">Upravljani</translation>
+<translation id="5460938382730614333">Marker je uključen.</translation>
 <translation id="5465662442746197494">Trebate pomoć?</translation>
 <translation id="547979256943495781">Polica je na desnoj strani</translation>
 <translation id="5491186829646618080">Dostupna su ažuriranja firmvera</translation>
@@ -774,6 +779,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5745612484876805746">Noćno svjetlo se uključuje automatski po zalasku sunca</translation>
 <translation id="5750765938512549687">Bluetooth je isključen</translation>
 <translation id="5760866832697883462">Povežite uređaj <ph name="NAME" /></translation>
+<translation id="5762420912707163638">Prebacite marker. <ph name="STATE_TEXT" /> Koristite dodirnu površinu, dodirni zaslon ili pisaljku da biste crtali na zaslonu.</translation>
 <translation id="576341972084747908">Preuzimanje opasnog fajla <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Shelf Party je isključen.</translation>
 <translation id="576453121877257266">Noćno svjetlo je uključeno.</translation>
@@ -820,7 +826,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="602472752137106327">Prikazivanje prozora sa svih radnih površina, odabrano je dugme za izbor</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja vaš administrator</translation>
 <translation id="6027518778343897451">Nema događaja na dan <ph name="CURRENT_MONTH_DAY" />. Pritisnite tipku Enter da otvorite Google Kalendar u pregledniku.</translation>
-<translation id="6027952026115023659">Pristupite aplikacijama za razmjenu poruka telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Meni je pomjeren u donji lijevi ugao ekrana.</translation>
 <translation id="6032620807120418574">Kliknite bilo gdje da snimate cijeli ekran</translation>
 <translation id="6040071906258664830">Snimanje zvuka putem mikrofona je <ph name="STATE" /></translation>
@@ -970,7 +975,6 @@ Nova instalacija</translation>
 <translation id="6961121602502368900">Utišavanje telefona nije dostupno na radnom profilu</translation>
 <translation id="6961840794482373852">Prečica na tastaturi Alt + strelica nagore je promijenjena. Da koristite tipku Page Up, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelicu nagore.</translation>
 <translation id="6965382102122355670">Uredu</translation>
-<translation id="6967933908874208731">Pregledajte nedavne fotografije, medijski sadržaj, obavještenja i aplikacije za razmjenu poruka na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Započnite</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>

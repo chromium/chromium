@@ -200,7 +200,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6063093106622310249">&amp;Åpne i Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> er lagt til i Chromium</translation>
 <translation id="608006075545470555">Legg til en jobbprofil i denne nettleseren</translation>
-<translation id="608189560609172163">Chromium kunne ikke synkronisere dataene dine på grunn av en feil under påloggingen.</translation>
 <translation id="6096348254544841612">Tilpass og kontrollér Chromium. Oppdatering er tilgjengelig.</translation>
 <translation id="6120345080069858279">Chromium lagrer dette passordet i Google-kontoen din, så du trenger ikke å huske det.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> er farlig, så Chromium har blokkert den.</translation>
@@ -295,7 +294,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7682601070171973634">Chromium utforsker nye funksjoner som gjør det mulig for nettsteder å bruke mindre av dataene dine og likevel gi deg den samme nettlesingsopplevelsen</translation>
 <translation id="7686590090926151193">Chromium er ikke standardnettleseren din</translation>
 <translation id="7689606757190482937">Synkroniser og gi Chromium et personlig preg på alle enhetene dine</translation>
-<translation id="7729447699958282447">Chromium kunne ikke synkronisere dataene dine. Dette skyldes at synkronisering ikke er tilgjengelig for domenet ditt.</translation>
 <translation id="7745317241717453663">Dette sletter nettlesingsdataene dine fra denne enheten. For å hente dataene dine igjen senere må du logge på Chromium som <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Installasjonsprogrammet kunne ikke opprette en midlertidig katalog. Kontroller at du har nok ledig diskplass og tillatelse til å installere programvare.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
@@ -340,7 +338,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8713679423359107094">Når du lukker alle Chromium-vinduer, blir informasjonskapsler og nettstedsdata slettet automatisk</translation>
 <translation id="8796443464227412154">Du blir <ph name="BEGIN_BOLD" />logget av de fleste nettsteder<ph name="END_BOLD" /> når du lukker Chromium. Hvis synkronisering er av, blir du også <ph name="BEGIN_BOLD" />logget av Google-tjenester og Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium trenger tilgang til kameraet ditt og mikrofonen din for dette nettstedet</translation>
-<translation id="8821041990367117597">Chromium kunne ikke synkronisere dataene dine. Dette skyldes at påloggingsopplysningene for kontoen din er foreldede.</translation>
 <translation id="8833697763442816810">ChromiumOS-systemet</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Disse dataene brukes:<ph name="END_BOLD" /> nettleserloggen din, som er en logg over nettsteder du har besøkt med Chromium på denne enheten.</translation>
 <translation id="8862326446509486874">Du har ikke de nødvendige rettighetene for å installere på systemnivå. Prøv å kjøre installasjonsprogrammet som administrator.</translation>

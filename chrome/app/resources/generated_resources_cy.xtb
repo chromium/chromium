@@ -2879,7 +2879,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3748706263662799310">Rhoi gwybod am nam</translation>
 <translation id="3750562496035670393">Gwnaeth Chrome gadw'ch cyfrinair i'r ddyfais hon, ond gallwch ei gadw i'ch Cyfrif Google yn lle hynny. Yna, bydd yr holl gyfrineiriau yn eich Cyfrif Google hefyd ar gael wrth i chi fewngofnodi.</translation>
 <translation id="3752253558646317685">Gofynnwch i'ch plentyn barhau i godi ei fys i gadw'r ôl bys</translation>
-<translation id="3752582316358263300">Iawn...</translation>
 <translation id="3753033997400164841">Storio unwaith. Defnyddio ym mhobman</translation>
 <translation id="3755411799582650620">Gall eich <ph name="PHONE_NAME" /> nawr ddatgloi'r <ph name="DEVICE_TYPE" /> hwn hefyd.</translation>
 <translation id="375636864092143889">Mae'r wefan yn defnyddio'ch meicroffon</translation>
@@ -3778,7 +3777,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4633003931260532286">Mae'r estyniad yn gofyn "<ph name="IMPORT_NAME" />" gydag o leiaf y fersiwn"<ph name="IMPORT_VERSION" />", ond yr unig fersiwn sydd wedi'i gosod yw "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4633757335284074492">Gwneud copi wrth gefn yn Google Drive. Adfer data neu newid dyfais yn hawdd ar unrhyw adeg. Mae hyn yn cynnwys data apiau. Mae copïau wrth gefn yn cael eu huwchlwytho i Google a'u hamgryptio gan ddefnyddio cyfrinair Cyfrif Google eich plentyn.</translation>
 <translation id="4634575639321169635">Gosod y ddyfais hon at ddibenion personol neu waith</translation>
-<translation id="4634771451598206121">Mewngofnodwch eto...</translation>
 <translation id="4635072447747973225">Dadosod Crostini</translation>
 <translation id="4635398712689569051">Nid yw <ph name="PAGE_NAME" /> ar gael i ddefnyddwyr yn y Modd Gwestai.</translation>
 <translation id="4636682061478263818">Ffeiliau Drive</translation>
@@ -5310,7 +5308,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6196640612572343990">Rhwystro cwcis trydydd parti</translation>
 <translation id="6196854373336333322">Mae'r estyniad "<ph name="EXTENSION_NAME" />" wedi cymryd rheolaeth o'ch gosodiadau dirprwyol, sy'n golygu y gall newid, torri neu glustfeinio ar unrhyw beth a wnewch ar-lein. Os nad ydych yn siŵr pam y digwyddodd y newid hwn, mae'n debyg nad ydych ei eisiau.</translation>
 <translation id="6197128521826316819">Creu Cod QR ar gyfer y Dudalen hon</translation>
-<translation id="6198102561359457428">Allgofnodwch ac yna mewngofnodwch eto…</translation>
 <translation id="6198252989419008588">Newid PIN</translation>
 <translation id="6200047250927636406">Gwaredu ffeil</translation>
 <translation id="6200151268994853226">Rheoli'r Estyniad</translation>
@@ -6264,7 +6261,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7114648273807173152">I ddefnyddio Smart Lock i fewngofnodi i'ch Cyfrif Google, ewch i Gosodiadau &gt; Dyfeisiau sydd wedi'u cysylltu &gt; Eich ffôn &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Dim cysylltiadau y gellir eu cyrraedd</translation>
 <translation id="7117228822971127758">Rhowch gynnig arall arni'n nes ymlaen</translation>
-<translation id="7117247127439884114">Mewngofnodwch eto...</translation>
 <translation id="711840821796638741">Dangos Nodau Tudalen a Reolir</translation>
 <translation id="711902386174337313">Darllen y rhestr o'r dyfeisiau rydych wedi'ch mewngofnodi arnynt</translation>
 <translation id="711985611146095797">Mae'r dudalen hon yn caniatáu i chi reoli eich Cyfrifon Google sydd wedi'u mewngofnodi. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>

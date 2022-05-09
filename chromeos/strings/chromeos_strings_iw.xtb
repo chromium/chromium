@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">שחזור הגדרות יצרן</translation>
 <translation id="2338501278241028356">‏יש להפעיל את Bluetooth כדי לאתר מכשירים קרובים</translation>
 <translation id="2346474577291266260">מצוין (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">המשך</translation>
 <translation id="2360257214555822463">זוהו <ph name="LINK_BEGIN" />רכיבים לא מתאימים<ph name="LINK_END" />. אם ברצונך לאשר את ההתקנה שלהם, עליך לעשות זאת עכשיו.</translation>
 <translation id="2363636958541445404">צריך להפעיל את התכונה כדי לבחור אפשרויות לשומר המסך</translation>
 <translation id="2364498172489649528">הילד או הילדה עברו את הבדיקה בהצלחה</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">מערכת</translation>
 <translation id="2638662041295312666">תמונת המשתמש</translation>
 <translation id="2640549051766135490">האלבום <ph name="TITLE" /> <ph name="DESC" /> נבחר</translation>
-<translation id="2695514675076754339">יש להזין את קוד ביטול הנעילה המורכב מ-8 תווים</translation>
 <translation id="2712812801627182647">‏מפתח האימות של TLS (אבטחת שכבת התעבורה)</translation>
 <translation id="2717139507051041123">הפעלה של מצב כהה</translation>
 <translation id="2740531572673183784">אישור</translation>

@@ -222,7 +222,6 @@
 <translation id="2883151425485251736">ඔබ ඔබගේ ගිණුමෙන් සඟවා ඇති මාතෘකා බලන්න සහ සංස්කරණය කරන්න</translation>
 <translation id="288655811176831528">පටිත්ත වසන්න</translation>
 <translation id="2890171748217283516">ඔබ අනුගමනය කරන අඩවි ඔබගේ Google ගිණුමේ සුරැකේ. ඔබට ඒවා Discover සැකසීම් තුළ කළමනාකරණය කළ හැකිය.</translation>
-<translation id="2893180576842394309">සෙවීම සහ අනෙකුත් Google සේවා පුද්ගලායන කිරීමට Google ඔබේ ඉතිහාසය භාවිත කළ හැක</translation>
 <translation id="2898963176829412617">නව ෆෝල්ඩරය...</translation>
 <translation id="2916171785467530738">සෙවීම් සහ URL ලිපින ස්වයංව සම්පූර්ණ කරන්න</translation>
 <translation id="291754862089661335">මෙම රාමුව තුළ QR කේතය හෝ තීරු කේතය ස්ථානගත කරන්න</translation>
@@ -451,6 +450,7 @@
 <translation id="4840495572919996524">ඔබේ පිටුසන්, ඉතිහාසය, මුරපද සහ තවත් දේ ඔබේ Google ගිණුමට තවදුරටත් සමමුහුර්ත නොවනු ඇත.</translation>
 <translation id="4844899002472726590">ඔබ ලැදිකමක් දක්වන මාතෘකා බලන්න සහ සංස්කරණය කරන්න</translation>
 <translation id="4854345657858711387">මුරකේතයක් සකසන්න</translation>
+<translation id="4858786880085262208">හැකි විට, HTTPS වෙත උත්ශ්‍රේණි කරන්න. ආරක්ෂිත අඩවි ආරක්ෂිත නොවන අන්තර්ගතය කාවැද්දීමට ඉඩ ඇත.</translation>
 <translation id="4860895144060829044">අමතන්න</translation>
 <translation id="4872323082491632254">මුරපද පරීක්ෂා කරන්න</translation>
 <translation id="4881695831933465202">විවෘත කරන්න</translation>
@@ -800,6 +800,7 @@
 <translation id="7781069478569868053">නව පටිති පිටුව</translation>
 <translation id="7781829728241885113">ඊයේ</translation>
 <translation id="778855399387580014">නව Chrome පටිත්තක් තුළ සෙවීම ආරම්භ කරන්න.</translation>
+<translation id="7790892308048519147">ආරක්ෂිත සම්බන්ධතා භාවිත කිරීමට උත්සාහ කරන්න</translation>
 <translation id="7791543448312431591">එක් කරන්න</translation>
 <translation id="7807060072011926525">Google විසින් සපයනු ලැබේ</translation>
 <translation id="7839985698273989086">නොබැඳි පිටුව</translation>
@@ -902,7 +903,6 @@
 <translation id="8654802032646794042">අවලංගු කරන්න</translation>
 <translation id="8668210798914567634">මෙම පිටුව ඔබගේ කියවීමේ ලැයිස්තුවට සුරකින ලදි.</translation>
 <translation id="8680787084697685621">ගිණුමේ සයින් ඉන් විස්තර යල් පැන ගොස් තිබේ.</translation>
-<translation id="8691262314411702087">කුමක් සමමුහුර්ත කරන්නේදැයි තෝරන්න</translation>
 <translation id="8693663554456874301">{count,plural, =1{ටැබය වසන්න}one{ටැබ වසන්න}other{ටැබ වසන්න}}</translation>
 <translation id="8706588385081740091">මුරපද</translation>
 <translation id="8717864919010420084">සබැඳිය පිටපත් කරන්න</translation>

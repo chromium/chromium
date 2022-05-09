@@ -40,7 +40,6 @@
 <translation id="1698376642261615901">Google Chrome – veb sahifalarni va ilovalarni bir necha soniyada ochadigan brauzer. U tez, barqaror va undan foydalanish oson. Google Chrome brauzerining firibgarlik va zararli dasturlardan saqlovchi ichki o‘rnatilgan himoya vositasi Internetdagi faoliyatni maksimal havfsizlik bilan ta’minlaydi.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome bir soatdan keyin qayta ishga tushadi}other{Chrome # soatdan keyin qayta ishga tushadi}}</translation>
 <translation id="1734234790201236882">Chrome bu parolni Google hisobingizga saqlaydi. Uni eslab qolishingiz shart emas.</translation>
-<translation id="174539241580958092">Hisobga kirishdagi xatolik sababli Google Chrome ma’lumotlarni sinxronlay olmadi.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" /> qurilmangizda Chrome hisobingizga kiring va keyin qaytadan yuborishga urining.</translation>
 <translation id="1812689907177901597">Agar bu faolsizlantirilsa, Gmail kabi Google saytlarida hisobingizga kirganingizda Chromium hisobingizga kirilmaydi</translation>
@@ -71,7 +70,6 @@
 <translation id="235650106824528204">Bu profil ishlatilganda yaratilgan har qanday Chrome maʼlumotlari (bukmarklar, tarix, parollar va boshqa sozlamalar kabi) ish profili administratori tomonidan tozalanishi mumkin. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2401189691232800402">ChromeOS tizimi</translation>
-<translation id="2429317896000329049">Google Chrome domeningizda Sync xizmati yo‘qligi sababli ma’lumotlaringizni sinxronlay olmadi.</translation>
 <translation id="2467438592969358367">Google Chrome parollaringizni eksport qilmoqchi. Ruxsat berish uchun Windows platformasidagi parolingizni kiriting.</translation>
 <translation id="2485422356828889247">O‘chirib tashlash</translation>
 <translation id="2534507159460261402">Google Pay (Chrome brauzeriga nusxalandi)</translation>
@@ -293,7 +291,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="7481213027396403996">Chrome brauzerining kuchli xavfsizligidan foydalaning</translation>
 <translation id="7486227612705979895">Manzil panelida tavsiyalarni namoyish qilish uchun Chrome sizning Drive omboringizdan foydalanadi</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">Hisob ma’lumotlaringiz eskirganligi tufayli sinxronlash amali bajarilmadi.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Chrome brauzeriga xush kelibsiz!</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> bu qurilmadan foydalanishdan oldin quyidagi Xizmat shartlarini oʻqib, qabul qilishingizni talab qiladi. Bu shartlar Google ChromeOS shartlarini kengaytirmaydi, oʻzgartirmaydi yoki cheklamaydi.</translation>

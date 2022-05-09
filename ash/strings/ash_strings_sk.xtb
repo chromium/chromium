@@ -136,6 +136,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1719094688023114093">Živý prepis je zapnutý.</translation>
 <translation id="1720011244392820496">Zapnite Synchronizáciu Wi‑Fi</translation>
 <translation id="1736898441010944794">Adaptér <ph name="NAME" /> je viditeľný pre zariadenia s rozhraním Bluetooth.</translation>
+<translation id="174102739345480129">Zvýrazňovač je vypnutý.</translation>
 <translation id="1743570585616704562">Nerozpoznané</translation>
 <translation id="1746730358044914197">Metódy vstupu sú nakonfigurované vaším správcom.</translation>
 <translation id="1747827819627189109">Klávesnica na obrazovke je povolená</translation>
@@ -564,6 +565,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4379531060876907730">Toto sú vaše nástroje pre dotykové pero</translation>
 <translation id="4389184120735010762">Stlačili ste klávesovú skratku ukotvenej lupy. Chcete ju zapnúť?</translation>
 <translation id="439598569299422042">Pozastavené, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Záznam z obrazovky sa nedá uložiť</translation>
 <translation id="4405151984121254935">Pripojený typ periférie nie je podporovaný</translation>
 <translation id="4406883609789734330">Živý prepis</translation>
 <translation id="4412944820643904175">Funkcia <ph name="FEATURE_NAME" /> je vypnutá.</translation>
@@ -670,6 +672,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Ďalšia veta</translation>
+<translation id="5016558321564993266">Prepnite zvýrazňovač. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Čas vypršal</translation>
 <translation id="5033299697334913360">Kliknutím na ľubovoľné miesto nahráte celú obrazovku</translation>
 <translation id="5035236842988137213">Zariadenie <ph name="DEVICE_NAME" /> bolo pripojené k novému telefónu</translation>
@@ -699,6 +702,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5222676887888702881">Odhlásiť sa</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
 <translation id="523505283826916779">Nastavenia zjednodušenia prístupu</translation>
+<translation id="5245201184978705914">Prepis sa nedá vygenerovať</translation>
 <translation id="5253783950165989294">Pripojené k zariadeniu <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % batéria</translation>
 <translation id="5260676007519551770">4. plocha</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> vyžaduje vašu pozornosť.</translation>
@@ -733,6 +737,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5433020815079095860">Zvukový vstup</translation>
 <translation id="544691375626129091">Do tejto relácie už boli pridaní všetci dostupní používatelia</translation>
 <translation id="54609108002486618">Spravovaný</translation>
+<translation id="5460938382730614333">Zvýrazňovač je zapnutý.</translation>
 <translation id="5465662442746197494">Potrebujete pomoc?</translation>
 <translation id="547979256943495781">Polička vpravo</translation>
 <translation id="5491186829646618080">K dispozícii sú aktualizácie firmvéru</translation>
@@ -774,6 +779,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5745612484876805746">Nočný režim sa automaticky zapína pri západe slnka</translation>
 <translation id="5750765938512549687">Rozhranie Bluetooth je vypnuté</translation>
 <translation id="5760866832697883462">Pripojte zariadenie <ph name="NAME" /></translation>
+<translation id="5762420912707163638">Prepnite zvýrazňovač. <ph name="STATE_TEXT" /> Na obrazovke môžete kresliť pomocou trackpadu, dotykovej obrazovky alebo dotykovým perom.</translation>
 <translation id="576341972084747908">Sťahovanie nebezpečného súboru <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Režim Shelf Party je vypnutý.</translation>
 <translation id="576453121877257266">Nočný režim je zapnutý.</translation>
@@ -820,7 +826,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="602472752137106327">Prepínač je prepnutý na možnosť zobrazenia okien zo všetkých plôch</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>
 <translation id="6027518778343897451">V termíne <ph name="CURRENT_MONTH_DAY" /> nemáte žiadnu udalosť. Stlačením klávesa Enter otvorte v prehliadači Kalendár Google.</translation>
-<translation id="6027952026115023659">Získajte prístup ku komunikátorom svojho telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Ponuka bola presunutá do ľavého dolného rohu obrazovky.</translation>
 <translation id="6032620807120418574">Kliknutím na ľubovoľné miesto nahráte celú obrazovku</translation>
 <translation id="6040071906258664830">Nahrávať zvuk z mikrofónu <ph name="STATE" /></translation>
@@ -970,7 +975,6 @@ Nová inštalácia</translation>
 <translation id="6961121602502368900">Stíšenie telefónu nie je v pracovnom profile k dispozícii</translation>
 <translation id="6961840794482373852">Klávesová skratka Alt + šípka nahor bola zmenená. Ak chcete použiť kláves Page Up, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + šípka nahor.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967933908874208731">Pozrite si nedávne fotky, médiá, upozornenia a komunikátory zo svojho telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Začať</translation>
 <translation id="6979158407327259162">Disk Google</translation>
 <translation id="6981982820502123353">Dostupnosť</translation>

@@ -91,6 +91,7 @@
 <translation id="1801418420130173017">Vypnúť tmavý motív</translation>
 <translation id="1807246157184219062">Svetlý režim</translation>
 <translation id="1827738518074806965">Umelecká galéria</translation>
+<translation id="1840835860961531162">Vypnutie projektu zapisovania</translation>
 <translation id="1851218745569890714">Videokonferencie</translation>
 <translation id="1852934301711881861">Nainštalovať Chrome OS Flex</translation>
 <translation id="1856388568474281774">Šípka nadol</translation>
@@ -144,6 +145,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Ak chcete nájsť zariadenia v okolí, zapnite Bluetooth</translation>
 <translation id="2346474577291266260">Vynikajúce (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2360257214555822463">Boli zistené <ph name="LINK_BEGIN" />nevhodné komponenty<ph name="LINK_END" />. Ak chcete potvrdiť, že boli nainštalované, urobte tak teraz.</translation>
 <translation id="2363636958541445404">Zapnite danú funkciu a vyberte možnosti šetriča obrazovky</translation>
 <translation id="2364498172489649528">Úspešné</translation>
@@ -171,7 +173,6 @@
 <translation id="2620436844016719705">Systém</translation>
 <translation id="2638662041295312666">Obrázok na prihlasovacej obrazovke</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> bol vybraný</translation>
-<translation id="2695514675076754339">Zadajte odomykací kód s ôsmimi znakmi</translation>
 <translation id="2712812801627182647">Overovací kľúč TLS</translation>
 <translation id="2717139507051041123">Povoliť tmavý farebný režim</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -272,6 +273,7 @@
 <translation id="3941014780699102620">Hostiteľa sa nepodarilo vybrať</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
 <translation id="3954678691475912818">Typ zariadenia nie je známy.</translation>
+<translation id="3958703339436883942">Pripravuje sa na reštart…</translation>
 <translation id="3966286471246132217">Ak chcete získať presnejšie výsledky, zavrite všetky aplikácie, dokým sa test nedokončí.</translation>
 <translation id="3967822245660637423">Sťahovanie dokončené</translation>
 <translation id="3969602104473960991">Heslo systému Chrome OS bolo aktualizované</translation>
@@ -418,6 +420,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5275828089655680674">Znova spustiť postupy</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">verzia <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">Ak chcete pokračovať na ďalšiu obrazovku, deaktivujte projekt zapisovania. Pokyny nájdete na stránke podpory výrobcu zariadenia.</translation>
 <translation id="5300814202279832142">Presunúť okno na plochu</translation>
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5308380583665731573">Pripojiť</translation>
@@ -468,6 +471,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="583281660410589416">Neznáme</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Kód poskytovateľa domácej siete</translation>
+<translation id="5856532218727053281">Po overení stavu projektu zapisovania sa systém reštartuje</translation>
 <translation id="5859603669299126575">Album umeleckej galérie</translation>
 <translation id="5860033963881614850">Vypnuté</translation>
 <translation id="5860491529813859533">Zapnúť</translation>

@@ -2877,7 +2877,6 @@
 <translation id="3748706263662799310">버그 신고</translation>
 <translation id="3750562496035670393">Chrome에서 비밀번호를 이 기기에 저장했으나, 대신 Google 계정에 저장해도 됩니다. 그렇게 하면 로그인한 상태에서 Google 계정에 저장된 모든 비밀번호를 사용할 수도 있습니다.</translation>
 <translation id="3752253558646317685">지문을 저장하려면 자녀가 손가락을 계속 들고 있게 하세요.</translation>
-<translation id="3752582316358263300">확인...</translation>
 <translation id="3753033997400164841">한 번만 저장하고 어디서나 사용하세요</translation>
 <translation id="3755411799582650620">이제 <ph name="PHONE_NAME" />에서도 이 <ph name="DEVICE_TYPE" />을(를) 잠금 해제할 수 있습니다.</translation>
 <translation id="375636864092143889">사이트에서 마이크를 사용하고 있습니다.</translation>
@@ -3774,7 +3773,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4633003931260532286">확장 프로그램은 최소 버전 '<ph name="IMPORT_VERSION" />'의 '<ph name="IMPORT_NAME" />'을(를) 요구하지만 '<ph name="INSTALLED_VERSION" />' 버전만 설치되었습니다</translation>
 <translation id="4633757335284074492">Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환할 수 있습니다. 앱 데이터도 백업에 포함됩니다. 백업 항목은 Google에 업로드되며 자녀의 Google 계정 비밀번호를 사용하여 암호화됩니다.</translation>
 <translation id="4634575639321169635">기기를 업무용 또는 개인용으로 설정합니다.</translation>
-<translation id="4634771451598206121">다시 로그인...</translation>
 <translation id="4635072447747973225">Crostini 제거</translation>
 <translation id="4635398712689569051">게스트 사용자는 <ph name="PAGE_NAME" />을(를) 사용할 수 없음</translation>
 <translation id="4636682061478263818">Drive 파일</translation>
@@ -5306,7 +5304,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6196640612572343990">타사 쿠키 차단</translation>
 <translation id="6196854373336333322">'<ph name="EXTENSION_NAME" />' 확장 프로그램이 프록시 설정을 제어할 수 있게 되었으며, 따라서 사용자가 온라인에서 수행하는 모든 작업을 변경, 중단하거나 엿볼 수 있게 되었습니다. 이와 같이 변경된 이유를 잘 모른다면 이 설정을 사용하지 않는 것이 좋습니다.</translation>
 <translation id="6197128521826316819">이 페이지의 QR 코드 생성</translation>
-<translation id="6198102561359457428">로그아웃한 후 다시 로그인...</translation>
 <translation id="6198252989419008588">PIN 변경</translation>
 <translation id="6200047250927636406">파일 삭제</translation>
 <translation id="6200151268994853226">확장 프로그램 관리</translation>
@@ -6252,7 +6249,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7114648273807173152">Smart Lock을 사용해 Google 계정에 로그인하려면 설정 &gt; 연결된 기기 &gt; 휴대전화 &gt; Smart Lock으로 이동하세요.</translation>
 <translation id="7115361495406486998">연락 가능한 연락처 없음</translation>
 <translation id="7117228822971127758">나중에 다시 시도해 주세요</translation>
-<translation id="7117247127439884114">다시 로그인...</translation>
 <translation id="711840821796638741">관리 북마크 표시</translation>
 <translation id="711902386174337313">로그인한 기기 목록 조회</translation>
 <translation id="711985611146095797">이 페이지에서는 로그인된 Google 계정을 관리할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>

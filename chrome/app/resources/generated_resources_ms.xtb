@@ -972,6 +972,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1892341345406963517">Hai <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Bahasa lain</translation>
 <translation id="1895658205118569222">Tutup</translation>
+<translation id="1897120393475391208">Gunakan kata laluan yang kukuh</translation>
 <translation id="1900305421498694955">Apl daripada Google Play mungkin memerlukan akses sistem fail penuh untuk membaca dan menulis fail pada peranti storan luaran. Fail dan folder yang dibuat pada peranti ini dapat dilihat oleh sesiapa yang menggunakan pemacu luaran itu. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Pilih &amp;semua</translation>
 <translation id="1901396183631570154">Chrome tidak dapat menyimpan kata laluan ini dalam Akaun Google anda. Anda masih boleh menyimpan kata laluan ini pada peranti ini.</translation>
@@ -1014,6 +1015,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1942600407708803723">Matikan apabila penutup ditutup</translation>
 <translation id="1944528062465413897">Kod gandingan Bluetooth:</translation>
 <translation id="1944921356641260203">Kemas kini ditemui</translation>
+<translation id="1947136734041527201">Membolehkan anda log masuk ke laman web menggunakan akaun anda yang mempunyai perkhidmatan identiti</translation>
 <translation id="1949584741547056205">Jawapan Pantas</translation>
 <translation id="1951012854035635156">Pembantu</translation>
 <translation id="1954597385941141174">Tapak boleh meminta untuk menyambung kepada peranti USB</translation>
@@ -2414,6 +2416,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="32939749466444286">Bekas Linux tidak dimulakan. Sila cuba lagi.</translation>
 <translation id="3294437725009624529">Tetamu</translation>
 <translation id="3294686910656423119">Perangkaan penggunaan dan laporan ranap sistem</translation>
+<translation id="3297105622164376095">Dibenarkan untuk memaparkan gesaan log masuk pihak ketiga</translation>
 <translation id="3297536526040732495">Memautkan data ini pada Akaun Google anda secara sementara apabila anda log masuk, untuk melindungi anda pada semua apl Google</translation>
 <translation id="329838636886466101">Baiki</translation>
 <translation id="3298789223962368867">URL tidak sah dimasukkan.</translation>
@@ -2876,7 +2879,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3748706263662799310">Laporkan pepijat</translation>
 <translation id="3750562496035670393">Chrome menyimpan kata laluan anda pada peranti ini, tetapi anda juga boleh menyimpan kata laluan pada Google Account anda. Kemudian, semua kata laluan dalam Google Account anda juga akan tersedia semasa anda log masuk.</translation>
 <translation id="3752253558646317685">Minta anak anda mengangkat jarinya beberapa kali untuk menyimpan cap jari</translation>
-<translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Simpan sekali. Gunakan di mana-mana</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> anda kini boleh membuka kunci <ph name="DEVICE_TYPE" /> ini juga.</translation>
 <translation id="375636864092143889">Tapak sedang menggunakan mikrofon anda</translation>
@@ -3670,6 +3672,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="452750746583162491">Semak data anda yang disegerak</translation>
 <translation id="4527929807707405172">Dayakan penatalan terbalik. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Cadangan terjemahan</translation>
+<translation id="4529455689802245339">Sari Kata Langsung Chrome mungkin tidak berfungsi</translation>
 <translation id="4530494379350999373">Asal</translation>
 <translation id="4531924570968473143">Siapakah yang ingin anda tambahkan pada <ph name="DEVICE_TYPE" /> ini?</translation>
 <translation id="4532625150642446981">"<ph name="USB_DEVICE_NAME" />" sedang digunakan. Tindakan menetapkan semula peranti semasa digunakan boleh menyebabkan ralat. Adakah anda pasti mahu meneruskan?</translation>
@@ -3775,7 +3778,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4633003931260532286">Sambungan memerlukan "<ph name="IMPORT_NAME" />" dengan versi minimum "<ph name="IMPORT_VERSION" />", tetapi hanya versi "<ph name="INSTALLED_VERSION" />" yang ada dipasang</translation>
 <translation id="4633757335284074492">Sandarkan pada Google Drive. Pulihkan data atau tukar peranti dengan mudah pada bila-bila masa. Sandaran ini merangkumi data apl. Sandaran dimuat naik pada Google dan disulitkan dengan menggunakan kata laluan Akaun Google anak anda.</translation>
 <translation id="4634575639321169635">Sediakan peranti ini untuk kegunaan kerja atau peribadi</translation>
-<translation id="4634771451598206121">Log masuk semula...</translation>
 <translation id="4635072447747973225">Nyahpasang Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> tidak tersedia untuk pengguna Tetamu.</translation>
 <translation id="4636682061478263818">Fail Drive</translation>
@@ -3868,6 +3870,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="471880041731876836">Anda tiada kebenaran untuk melawat tapak ini</translation>
 <translation id="4722735765955348426">Kata laluan untuk <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> berkongsi skrin anda.</translation>
+<translation id="4722989931633062466">Tidak dibenarkan untuk memaparkan gesaan log masuk pihak ketiga</translation>
 <translation id="4723140812774948886">Tukar dengan yang berikutnya</translation>
 <translation id="4724450788351008910">Penggabungan Ditukar</translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -4838,6 +4841,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5711010025974903573">Log perkhidmatan</translation>
 <translation id="5711983031544731014">Tidak dapat membuka kunci. Masukkan kata laluan anda.</translation>
 <translation id="5712153969432126546">Kadangkala laman menerbitkan PDF, seperti dokumen, kontrak dan borang</translation>
+<translation id="571222594670061844">Laman boleh menunjukkan gesaan log masuk daripada perkhidmatan identiti</translation>
 <translation id="5713158217420111469">Disambungkan kepada <ph name="DEVICE" /></translation>
 <translation id="5715711091495208045">Broker Pemalam: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Enjin carian lalai</translation>
@@ -4996,6 +5000,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5876851302954717356">Tab Baharu ke Kanan</translation>
 <translation id="5877064549588274448">Saluran berubah. Mulakan semula peranti anda untuk menggunakan perubahan.</translation>
 <translation id="5877584842898320529">Pencetak yang dipilih tidak tersedia atau tidak dipasang dengan betul. <ph name="BR" /> Periksa pencetak anda atau cuba pilih pencetak lain.</translation>
+<translation id="5878945009165002849">Sekat gesaan log masuk daripada perkhidmatan identiti</translation>
 <translation id="5882919346125742463">Rangkaian Yang Diketahui</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> disekat secara automatik</translation>
 <translation id="5884474295213649357">Tab ini disambungkan ke peranti USB.</translation>
@@ -5307,7 +5312,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6196640612572343990">Sekat kuki pihak ketiga</translation>
 <translation id="6196854373336333322">Sambungan "<ph name="EXTENSION_NAME" />" telah mengambil alih kawalan tetapan proksi anda, yang bermakna sambungan ini boleh mengubah, menghentikan atau mencuri dengar apa-apa sahaja yang anda lakukan dalam talian. Jika anda tidak pasti mengapa perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="6197128521826316819">Buat Kod QR untuk Halaman ini</translation>
-<translation id="6198102561359457428">Log keluar kemudian log masuk semula...</translation>
 <translation id="6198252989419008588">Tukar PIN</translation>
 <translation id="6200047250927636406">Buang fail</translation>
 <translation id="6200151268994853226">Urus Sambungan</translation>
@@ -5633,6 +5637,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6513247462497316522">Google Chrome akan menggunakan data mudah alih jika anda tidak disambungkan kepada rangkaian lain.</translation>
 <translation id="6514010653036109809">Peranti yang tersedia:</translation>
 <translation id="6514565641373682518">Halaman ini telah melumpuhkan kursor tetikus anda.</translation>
+<translation id="6517709704288360414">Peranti anda mungkin tidak lagi berfungsi dengan betul dan anda mungkin mengalami masalah keselamatan dan prestasi. Tindakan mematikan kemas kini boleh mempengaruhi hak anda untuk membuat tuntutan undang-undang jika anda mengalami sebarang isu.</translation>
 <translation id="6518014396551869914">Sal&amp;in imej</translation>
 <translation id="6518133107902771759">Sahkan</translation>
 <translation id="651942933739530207">Adakah anda mahu <ph name="APP_NAME" /> berkongsi skrin dan output audio anda?</translation>
@@ -6253,7 +6258,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7114648273807173152">Untuk menggunakan Smart Lock untuk log masuk ke Akaun Google anda, pergi ke Tetapan &gt; Peranti disambungkan &gt; Telefon anda &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Tiada kenalan yang dapat dihubungi</translation>
 <translation id="7117228822971127758">Sila cuba sebentar lagi</translation>
-<translation id="7117247127439884114">Log masuk Semula...</translation>
 <translation id="711840821796638741">Tunjukkan Penanda Halaman Terurus</translation>
 <translation id="711902386174337313">Baca senarai peranti anda yang dilog masuk</translation>
 <translation id="711985611146095797">Halaman ini membolehkan anda mengurus Google Account anda yang dilog masuk. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
@@ -6558,6 +6562,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7444970023873202833">Teroka lebih banyak kenangan anda dalam Google Photos</translation>
 <translation id="7444983668544353857">Lumpuhkan <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Memasang apl secara automatik</translation>
+<translation id="7449381494541372002">memulakan...</translation>
 <translation id="7449752890690775568">Alih keluar kata laluan?</translation>
 <translation id="7450761244949417357">Membuka dalam <ph name="ALTERNATIVE_BROWSER_NAME" /> sekarang</translation>
 <translation id="7452166281927983300">Amaran yang diketepikan (<ph name="MUTED_PASSWORDS" />)</translation>

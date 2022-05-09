@@ -899,6 +899,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3399952811970034796">Alamat Penghantaran</translation>
 <translation id="3402261774528610252">Sambungan yang digunakan untuk memuatkan tapak ini menggunakan TLS 1.0 atau TLS 1.1, yang telah ditamatkan dan akan dilumpuhkan pada masa hadapan. Apabila dilumpuhkan, pengguna akan dihalang daripada memuatkan tapak ini. Pelayan harus mendayakan TLS 1.2 atau yang lebih baharu.</translation>
 <translation id="3405664148539009465">Sesuaikan fon</translation>
+<translation id="3407789382767355356">log masuk pihak ketiga</translation>
 <translation id="3409896703495473338">Urus tetapan keselamatan</translation>
 <translation id="3414952576877147120">Saiz:</translation>
 <translation id="3417660076059365994">Fail yang anda muat naik atau lampirkan dihantar kepada Google Cloud atau pihak ketiga untuk dianalisis. Contohnya, fail itu mungkin diimbas untuk mencari data sensitif atau perisian hasad.</translation>
@@ -1102,6 +1103,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> disekat</translation>
 <translation id="3978338123949022456">Mod carian, taip pertanyaan dan tekan Enter untuk mencari <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Burung</translation>
+<translation id="3985750352229496475">Urus Alamat...</translation>
 <translation id="3986705137476756801">Matikan Sari Kata Langsung buat masa ini</translation>
 <translation id="3987940399970879459">Kurang daripada 1 MB</translation>
 <translation id="3990250421422698716">Ofset jog</translation>
@@ -1229,6 +1231,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4305666528087210886">Fail anda tidak dapat diakses</translation>
 <translation id="4306529830550717874">Simpan alamat?</translation>
 <translation id="4306812610847412719">papan keratan</translation>
+<translation id="4310070645992025887">Cari Perjalanan anda</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Sekat (lalai)</translation>
 <translation id="4314815835985389558">Urus penyegerakan</translation>
@@ -2113,6 +2116,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6839929833149231406">Kawasan</translation>
 <translation id="6846340164947227603">Gunakan nombor kad maya...</translation>
 <translation id="6852204201400771460">Muat semula apl?</translation>
+<translation id="6857776781123259569">Urus Kata Laluan...</translation>
 <translation id="686485648936420384">Sumber pengguna</translation>
 <translation id="6865412394715372076">Kad ini tidak dapat disahkan sekarang</translation>
 <translation id="6869334554832814367">Pinjaman peribadi</translation>
@@ -2439,6 +2443,7 @@ Butiran tambahan:
 <translation id="7669271284792375604">Penyerang pada tapak ini mungkin cuba menipu dengan meminta anda memasang atur cara yang membahayakan pengalaman penyemakan imbas anda (contohnya, dengan menukar halaman utama anda atau menunjukkan iklan tambahan pada laman yang anda lawati).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Tindakan yang diambil dengan data yang dibenderakan sebagai sulit (1 tindakan sejak log masuk). <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" />}other{Tindakan yang diambil dengan data yang dibenderakan sebagai sulit (# tindakan sejak log masuk). <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Peti mel 6</translation>
+<translation id="7675325315208090829">Urus Kaedah Pembayaran...</translation>
 <translation id="7676643023259824263">Cari teks papan keratan, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Lihat dan urus sejarah penyemakan imbas anda dalam tetapan Chrome</translation>
 <translation id="7679947978757153706">Besbol</translation>

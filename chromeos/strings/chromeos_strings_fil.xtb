@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">I-on ang Bluetooth upang tuklasin ang mga kalapit na device</translation>
 <translation id="2346474577291266260">Napakabilis (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2360257214555822463">May na-detect na <ph name="LINK_BEGIN" />mga hindi kwalipikadong bahagi<ph name="LINK_END" />. Kung pipiliin mong kumpirmahin na na-install na ito, pakigawa ito ngayon.</translation>
 <translation id="2363636958541445404">I-on ang feature para pumili ng mga opsyon sa screensaver</translation>
 <translation id="2364498172489649528">Nakapasa</translation>
@@ -172,7 +173,6 @@
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Larawan sa pag-sign in</translation>
 <translation id="2640549051766135490">Pinili ang album na <ph name="TITLE" /> <ph name="DESC" /></translation>
-<translation id="2695514675076754339">Ilagay ang 8-character na code sa pag-unlock</translation>
 <translation id="2712812801627182647">TLS authentication key</translation>
 <translation id="2717139507051041123">I-enable ang dark color mode</translation>
 <translation id="2740531572673183784">Ok</translation>

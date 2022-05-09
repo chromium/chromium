@@ -827,7 +827,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="602472752137106327">Erakutsi lan-eremu guztietan dauden leihoak, aukera-botoia hautatuta dago</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />. <ph name="CONNECTION_STATUS" />. Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua.</translation>
 <translation id="6027518778343897451">Egun honetan ez dago gertaerarik: <ph name="CURRENT_MONTH_DAY" />. Arakatzailean Google Calendar irekitzeko, sakatu Sartu.</translation>
-<translation id="6027952026115023659">Atzitu telefonoko mezularitza-aplikazioak <ph name="DEVICE_TYPE" /> gailuan</translation>
 <translation id="6030495522958826102">Pantailaren beheko ezkerreko izkinara eraman da menua.</translation>
 <translation id="6032620807120418574">Egin klik edonon pantaila osoko moduan grabatzeko</translation>
 <translation id="6040071906258664830">Mikrofonoaren grabaketa <ph name="STATE" /> dago</translation>
@@ -977,7 +976,6 @@ Berriki instalatu da</translation>
 <translation id="6961121602502368900">Telefonoa isilarazteko aukera ez dago erabilgarri laneko profilean</translation>
 <translation id="6961840794482373852">Alt + gora egiteko gezi-tekla lasterbidea aldatu egin da. Orrian gora egiteko tekla erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + gora egiteko gezi-tekla.</translation>
 <translation id="6965382102122355670">Ados</translation>
-<translation id="6967933908874208731">Ikusi telefonoko azken argazki, multimedia-elementu, jakinarazpen eta mezularitza-aplikazioak <ph name="DEVICE_TYPE" /> gailuan</translation>
 <translation id="6972754398087986839">Hasi erabiltzen</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Erabilerraztasuna</translation>

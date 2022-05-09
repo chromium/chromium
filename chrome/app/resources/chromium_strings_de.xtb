@@ -200,7 +200,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6063093106622310249">In Chr&amp;omium öffnen</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> wurde zu Chromium hinzugefügt</translation>
 <translation id="608006075545470555">Arbeitsprofil zu diesem Browser hinzufügen</translation>
-<translation id="608189560609172163">Chromium konnte deine Daten aufgrund eines Fehlers bei der Anmeldung nicht synchronisieren.</translation>
 <translation id="6096348254544841612">Chromium anpassen und Einstellungen festlegen. Ein Update ist verfügbar.</translation>
 <translation id="6120345080069858279">Chromium speichert dieses Passwort in deinem Google-Konto. Du musst es dir also nicht merken.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> ist schädlich und wurde daher von Chromium blockiert.</translation>
@@ -295,7 +294,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="7682601070171973634">In Chromium werden neue Funktionen ausprobiert, mit denen Websites bei gleichbleibender Nutzererfahrung beim Surfen weniger Nutzerdaten verwenden</translation>
 <translation id="7686590090926151193">Chromium ist nicht als dein Standardbrowser festgelegt</translation>
 <translation id="7689606757190482937">Chromium wird auf allen deinen Geräten synchronisiert und personalisiert</translation>
-<translation id="7729447699958282447">Chromium konnte deine Daten nicht synchronisieren, da die Synchronisierung für deine Domain nicht zur Verfügung steht.</translation>
 <translation id="7745317241717453663">Dadurch werden deine Browserdaten von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chromium an.</translation>
 <translation id="7747138024166251722">Das Installationsprogramm konnte kein temporäres Verzeichnis erstellen. Überprüfe, ob freier Speicherplatz und die Rechte zum Installieren von Software vorhanden sind.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
@@ -339,7 +337,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8713679423359107094">Wenn du alle Chromium-Fenster schließt, werden alle Cookies und Websitedaten automatisch gelöscht</translation>
 <translation id="8796443464227412154">Du wirst <ph name="BEGIN_BOLD" />auf den meisten Websites abgemeldet<ph name="END_BOLD" />, wenn du Chromium schließt. Wenn die Synchronisierung deaktiviert ist, wirst du auch <ph name="BEGIN_BOLD" />bei Google-Diensten und Chromium abgemeldet<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium benötigt für diese Website die Berechtigung, auf deine Kamera und dein Mikrofon zuzugreifen</translation>
-<translation id="8821041990367117597">Chromium konnte deine Daten nicht synchronisieren, da die Anmeldedaten deines Kontos nicht mehr aktuell sind.</translation>
 <translation id="8833697763442816810">Chromium OS-System</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Welche Daten werden verwendet?<ph name="END_BOLD" /> Dein Browserverlauf, das heißt eine Liste der von dir auf diesem Gerät in Chromium besuchten Websites.</translation>
 <translation id="8862326446509486874">Du verfügst nicht über die erforderlichen Rechte für eine systemweite Installation. Starte das Installationsprogramm als Administrator.</translation>

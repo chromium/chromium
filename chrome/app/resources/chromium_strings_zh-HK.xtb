@@ -202,7 +202,6 @@
 <translation id="6063093106622310249">在 Chromium 中開啟</translation>
 <translation id="6072279588547424923">已將 <ph name="EXTENSION_NAME" /> 加到 Chromium</translation>
 <translation id="608006075545470555">將工作設定檔新增至此瀏覽器</translation>
-<translation id="608189560609172163">登入時發生錯誤，因此 Chromium 無法同步處理您的數據。</translation>
 <translation id="6096348254544841612">自訂和管理 Chromium。有可用的更新。</translation>
 <translation id="6120345080069858279">Chromium 會將此密碼儲存在您的 Google 帳戶內，您無需記住。</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> 不安全，因此 Chromium 已封鎖此檔案。</translation>
@@ -297,7 +296,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7682601070171973634">Chromium 正在探索新功能，讓網站能在使用較少資料的情況下提供相同的瀏覽體驗</translation>
 <translation id="7686590090926151193">Chromium 不是您的預設瀏覽器</translation>
 <translation id="7689606757190482937">在不同裝置上同步和設定個人化的 Chromium</translation>
-<translation id="7729447699958282447">您的網域無法使用「同步功能」，因此 Chromium 無法同步處理您的數據。</translation>
 <translation id="7745317241717453663">這會刪除此裝置上的瀏覽資料。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chromium。</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟件。</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -342,7 +340,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8713679423359107094">關閉所有 Chromium 視窗時，系統將自動清除 Cookie 和網站資料</translation>
 <translation id="8796443464227412154">Chromium 關閉時，您將會<ph name="BEGIN_BOLD" />從大部分網站登出<ph name="END_BOLD" />。如果同步功能已關閉，您亦會<ph name="BEGIN_BOLD" />從 Google 服務和 Chromium 登出<ph name="END_BOLD" />。</translation>
 <translation id="8796602469536043152">Chromium 需要取得權限，才能讓這個網站存取您的相機和麥克風</translation>
-<translation id="8821041990367117597">您的帳戶登入詳細資料尚未更新，因此 Chromium 無法同步處理您的數據。</translation>
 <translation id="8833697763442816810">Chromium 作業系統</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />需要使用什麼資料：<ph name="END_BOLD" />您的瀏覽記錄，亦即您在此裝置上使用 Chromium 瀏覽過的網站記錄。</translation>
 <translation id="8862326446509486874">您沒有在系統層級進行安裝的權限，請以管理員的身分執行安裝程式。</translation>

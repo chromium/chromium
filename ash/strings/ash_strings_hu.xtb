@@ -136,6 +136,7 @@
 <translation id="1719094688023114093">Az Élő feliratozás be van kapcsolva.</translation>
 <translation id="1720011244392820496">Wi-Fi szinkronizálásának bekapcsolása</translation>
 <translation id="1736898441010944794">A(z) „<ph name="NAME" />” látható a Bluetooth-eszközök számára.</translation>
+<translation id="174102739345480129">Jelölő kikapcsolva.</translation>
 <translation id="1743570585616704562">Nem sikerült felismerni</translation>
 <translation id="1746730358044914197">A rendszergazda állította be a beviteli módszereket.</translation>
 <translation id="1747827819627189109">Képernyő-billentyűzet bekapcsolva</translation>
@@ -565,6 +566,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4379531060876907730">Ezek az érintőceruza-eszközök</translation>
 <translation id="4389184120735010762">Lenyomta a dokkolt nagyító billentyűparancsát. Bekapcsolja a funkciót?</translation>
 <translation id="439598569299422042">Szünetel, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Nem sikerült a képernyőfelvétel mentése</translation>
 <translation id="4405151984121254935">A csatlakoztatott perifériatípus nem támogatott</translation>
 <translation id="4406883609789734330">Élő feliratozás</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> kikapcsolva.</translation>
@@ -671,6 +673,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Következő mondat</translation>
+<translation id="5016558321564993266">Jelölő be- vagy kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Lejárt az idő</translation>
 <translation id="5033299697334913360">Kattintson bárhová a teljes képernyő rögzítéséhez</translation>
 <translation id="5035236842988137213">A(z) <ph name="DEVICE_NAME" /> új telefonhoz csatlakozott</translation>
@@ -700,6 +703,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5222676887888702881">Kijelentkezés</translation>
 <translation id="5234764350956374838">Elvetés</translation>
 <translation id="523505283826916779">Kisegítő beállítások</translation>
+<translation id="5245201184978705914">Nem sikerült az átirat létrehozása</translation>
 <translation id="5253783950165989294">Csatlakoztatva van a(z) <ph name="DEVICE_NAME" /> nevű eszközhöz, akkumulátor töltöttségi szintje: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">4. asztal</translation>
 <translation id="5283099933536931082">A(z) <ph name="APP_ITEM_TITLE" /> alkalmazás a figyelmét igényli.</translation>
@@ -734,6 +738,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5433020815079095860">Audiobemenet</translation>
 <translation id="544691375626129091">Minden elérhető felhasználót hozzáadott a munkamenethez.</translation>
 <translation id="54609108002486618">Kezelt</translation>
+<translation id="5460938382730614333">Jelölő bekapcsolva.</translation>
 <translation id="5465662442746197494">Segítségre van szüksége?</translation>
 <translation id="547979256943495781">A polc a jobb oldalon található</translation>
 <translation id="5491186829646618080">Firmware-frissítések állnak rendelkezésre</translation>
@@ -775,6 +780,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5745612484876805746">Az Éjszakai fény funkció automatikusan bekapcsol naplementekor</translation>
 <translation id="5750765938512549687">Kikapcsolt Bluetooth</translation>
 <translation id="5760866832697883462"><ph name="NAME" /> csatlakoztatása</translation>
+<translation id="5762420912707163638">Jelölő be- vagy kikapcsolása. <ph name="STATE_TEXT" /> Érintőpad, érintőképernyő vagy érintőceruza használatával rajzolhat a képernyőn.</translation>
 <translation id="576341972084747908">A veszélyes <ph name="FILENAME" /> fájl letöltése</translation>
 <translation id="5763928712329149804">A Shelf Party funkció ki van kapcsolva.</translation>
 <translation id="576453121877257266">Az éjszakai fény be van kapcsolva.</translation>
@@ -821,7 +827,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="602472752137106327">Az összes asztal ablakainak megjelenítésére vonatkozó kapcsológomb van kiválasztva</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>
 <translation id="6027518778343897451">Nincs esemény ezen a napon: <ph name="CURRENT_MONTH_DAY" /> Az Enter billentyűt lenyomva megnyithatja a Google Naptárt a böngészőben.</translation>
-<translation id="6027952026115023659">Hozzáférés a telefonján található üzenetküldő alkalmazásokhoz az Ön <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="6030495522958826102">A menü a képernyő bal alsó sarkába került.</translation>
 <translation id="6032620807120418574">Kattintson bárhova a teljes képernyőről való felvétel készítéséhez</translation>
 <translation id="6040071906258664830">Mikrofon általi hangrögzítés <ph name="STATE" /> állásban</translation>
@@ -971,7 +976,6 @@ Frissen telepítve</translation>
 <translation id="6961121602502368900">A Telefon némítása funkció nem használható munkaprofillal</translation>
 <translation id="6961840794482373852">Az Alt + Felfelé nyíl billentyűparancs módosult. A Felfelé nyíl billentyű használatához nyomja le a következő billentyűparancsot: <ph name="LAUNCHER_KEY_NAME" /> + Felfelé nyíl.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967933908874208731">A telefonján található friss fotók, médiatartalmak, értesítések és üzenetküldő alkalmazások megtekintése az Ön <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="6972754398087986839">Első lépések</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Kisegítő lehetőségek</translation>

@@ -222,7 +222,6 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2883151425485251736">Ver e editar temas que você ocultou da sua conta</translation>
 <translation id="288655811176831528">Fechar guia</translation>
 <translation id="2890171748217283516">Os sites que você segue são armazenados na sua Conta do Google. Eles podem ser gerenciados nas configurações do Discover.</translation>
-<translation id="2893180576842394309">O histórico será usado para personalizar a Pesquisa, anúncios e outros serviços Google.</translation>
 <translation id="2898963176829412617">Nova pasta...</translation>
 <translation id="2916171785467530738">Preencher automaticamente pesquisas e URLs</translation>
 <translation id="291754862089661335">Posicione o código QR ou o código de barras neste quadro</translation>
@@ -904,7 +903,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8668210798914567634">Esta página foi salva na sua lista de leitura.</translation>
 <translation id="8680787084697685621">Os detalhes de login da conta estão desatualizados.</translation>
-<translation id="8691262314411702087">Escolher o que sincronizar</translation>
 <translation id="8693663554456874301">{count,plural, =1{Fechar guia}one{Fechar guia}other{Fechar guias}}</translation>
 <translation id="8706588385081740091">Senhas</translation>
 <translation id="8717864919010420084">Copiar link</translation>

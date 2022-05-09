@@ -2860,7 +2860,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3748706263662799310">Programmfehler melden</translation>
 <translation id="3750562496035670393">Chrome hat dein Passwort auf diesem Gerät gespeichert, du kannst es aber stattdessen auch in deinem Google-Konto speichern lassen. Alle Passwörter in deinem Google-Konto sind verfügbar, solange du angemeldet bist.</translation>
 <translation id="3752253558646317685">Bitte dein Kind, den Finger zu heben und wieder abzulegen, um den Fingerabdruck zu speichern</translation>
-<translation id="3752582316358263300">Ok</translation>
 <translation id="3753033997400164841">Einmal speichern. Überall verwenden.</translation>
 <translation id="3755411799582650620">Du kannst mit deinem <ph name="PHONE_NAME" /> jetzt dein <ph name="DEVICE_TYPE" /> entsperren.</translation>
 <translation id="375636864092143889">Die Website verwendet dein Mikrofon</translation>
@@ -3759,7 +3758,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4633003931260532286">Die Erweiterung erfordert "<ph name="IMPORT_NAME" />" mit der Mindestversion "<ph name="IMPORT_VERSION" />", es ist jedoch nur Version "<ph name="INSTALLED_VERSION" />" installiert</translation>
 <translation id="4633757335284074492">In Google Drive sichern. Du kannst Daten jederzeit wiederherstellen – auch auf einem anderen Gerät. In dieser Sicherung sind auch App-Daten enthalten. Sicherungen werden an Google gesendet und mit dem Passwort des Google-Kontos deines Kindes verschlüsselt.</translation>
 <translation id="4634575639321169635">Dieses Gerät für die Arbeit oder den persönlichen Gebrauch einrichten</translation>
-<translation id="4634771451598206121">Erneut anmelden...</translation>
 <translation id="4635072447747973225">Crostini deinstallieren</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> ist für Gastnutzer nicht verfügbar.</translation>
 <translation id="4636682061478263818">Drive-Dateien</translation>
@@ -5291,7 +5289,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6196640612572343990">Drittanbieter-Cookies blockieren</translation>
 <translation id="6196854373336333322">Die Erweiterung <ph name="EXTENSION_NAME" /> hat die Kontrolle über deine Proxyeinstellungen übernommen. Das bedeutet, dass sie sämtliche Onlineaktivitäten ändern, abbrechen oder überwachen kann. Wenn du nicht sicher bist, wie es zu dieser Änderung gekommen ist, war sie wahrscheinlich nicht beabsichtigt.</translation>
 <translation id="6197128521826316819">QR-Code für diese Seite erstellen</translation>
-<translation id="6198102561359457428">Abmelden und dann erneut anmelden...</translation>
 <translation id="6198252989419008588">PIN ändern</translation>
 <translation id="6200047250927636406">Datei verwerfen</translation>
 <translation id="6200151268994853226">Erweiterung verwalten</translation>
@@ -6238,7 +6235,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7114648273807173152">Wenn du Smart Lock für die Anmeldung in deinem Google-Konto verwenden möchtest, gehe zu "Einstellungen" &gt; "Verbundene Geräte" &gt; "Mein Smartphone" &gt; "Smart Lock".</translation>
 <translation id="7115361495406486998">Keine erreichbaren Kontakte</translation>
 <translation id="7117228822971127758">Bitte versuche es später noch einmal</translation>
-<translation id="7117247127439884114">Erneut anmelden...</translation>
 <translation id="711840821796638741">Verwaltete Lesezeichen anzeigen</translation>
 <translation id="711902386174337313">Liste der angemeldeten Geräte lesen</translation>
 <translation id="711985611146095797">Auf dieser Seite kannst du deine angemeldeten Google-Konten verwalten. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>

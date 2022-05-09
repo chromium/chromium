@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Zet Bluetooth aan om apparaten in de buurt te vinden</translation>
 <translation id="2346474577291266260">Uitstekend (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Niet-gekwalificeerde componenten<ph name="LINK_END" /> gevonden. Als je wilt bevestigen dat dit is geïnstalleerd, doe je dat nu.</translation>
 <translation id="2363636958541445404">Zet de functie aan om screensaveropties te selecteren</translation>
 <translation id="2364498172489649528">Geslaagd</translation>
@@ -172,7 +173,6 @@
 <translation id="2620436844016719705">Systeem</translation>
 <translation id="2638662041295312666">Inlogafbeelding</translation>
 <translation id="2640549051766135490">Album geselecteerd: <ph name="TITLE" /> (<ph name="DESC" />)</translation>
-<translation id="2695514675076754339">Geef de ontgrendelingscode van 8 tekens op</translation>
 <translation id="2712812801627182647">TLS-verificatiesleutel</translation>
 <translation id="2717139507051041123">Modus voor donkere kleuren aanzetten</translation>
 <translation id="2740531572673183784">OK</translation>

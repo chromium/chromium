@@ -38,7 +38,6 @@
 <translation id="1698376642261615901">Google Chrome は、ウェブページやアプリケーションを高速に実行できるスピードと、高い安定性を兼ね備えた非常に使いやすいウェブブラウザです。不正なソフトウェアやフィッシングに対する保護機能が組み込まれており、ウェブを安全にブラウジングできます。</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome は 1 時間後に再起動されます}other{Chrome は # 時間後に再起動されます}}</translation>
 <translation id="1734234790201236882">このパスワードは Google アカウントに保存されるため、覚えておく必要はありません。</translation>
-<translation id="174539241580958092">ログイン時にエラーが発生したため、Google Chrome はデータを同期できませんでした。</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" /> で Chrome にログインしていることを確認してから、もう一度送信してください。</translation>
 <translation id="1812689907177901597">この設定を無効にすると、Chrome にログインすることなく Gmail などの Google サイトにログインできます</translation>
@@ -69,7 +68,6 @@
 <translation id="235650106824528204">このプロファイルの使用中に生成された Chrome データ（ブックマーク、履歴、パスワード、他の設定など）は、仕事用プロファイルの管理者によって削除される場合があります。<ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2401189691232800402">Chrome OS システム</translation>
-<translation id="2429317896000329049">お使いのドメインでは同期を利用できないため、Google Chrome はデータを同期できませんでした。</translation>
 <translation id="2467438592969358367">Google Chrome からパスワードをエクスポートするための許可を求められています。許可するには Windows のパスワードを入力してください。</translation>
 <translation id="2485422356828889247">アンインストール</translation>
 <translation id="2534507159460261402">Google Pay（Chrome にコピー）</translation>
@@ -285,7 +283,6 @@
 <translation id="7481213027396403996">Chrome の最高水準のセキュリティで保護</translation>
 <translation id="7486227612705979895">Chrome からお客様のドライブにアクセスして、アドレスバーに候補を表示します</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">アカウントのログイン情報が最新ではないため、Google Chrome はデータを同期できませんでした。</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Chrome へようこそ</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> では、このデバイスを使用する前に下記の利用規約を確認しこれに同意していただく必要があります。これらの規約は Google Chrome OS 利用規約を拡張、変更、制限するものではありません。</translation>

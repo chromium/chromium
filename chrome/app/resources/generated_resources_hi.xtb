@@ -2876,7 +2876,6 @@
 <translation id="3748706263662799310">बग की रिपोर्ट करें</translation>
 <translation id="3750562496035670393">Chrome ने आपके पासवर्ड को इस डिवाइस में सेव कर दिया है. हालांकि, इसे Google खाते में सेव किया जा सकता है. इसके बाद, आपके साइन इन रहने पर आपके Google खाते में मौजूद सभी पासवर्ड उपलब्ध होंगे.</translation>
 <translation id="3752253558646317685">फ़िंगरप्रिंट को सेव करने के लिए, अपने बच्चे से उंगली उठाते रहने को कहें</translation>
-<translation id="3752582316358263300">ठीक है...</translation>
 <translation id="3753033997400164841">एक बार सेव करें. हर जगह इस्तेमाल करें</translation>
 <translation id="3755411799582650620">आपका <ph name="PHONE_NAME" /> अब इस <ph name="DEVICE_TYPE" /> को भी अनलॉक कर सकता है.</translation>
 <translation id="375636864092143889">साइट आपका माइक्रोफ़ोन इस्तेमाल कर रही है</translation>
@@ -3774,7 +3773,6 @@
 <translation id="4633003931260532286">एक्‍सटेंशन के लिए "<ph name="IMPORT_NAME" />" को न्‍यूनतम "<ph name="IMPORT_VERSION" />" वर्शन का होना चाहिए, लेकिन केवल "<ph name="INSTALLED_VERSION" />" वर्शन ही इंस्‍टॉल किया गया है</translation>
 <translation id="4633757335284074492">'Google डिस्क' में बैक अप लें. आसानी से डेटा वापस पाएं या किसी भी समय डिवाइस बदलें. इस बैक अप में ऐप्लिकेशन का डेटा शामिल है. बैकअप आपके बच्चे के Google खाते के पासवर्ड से सुरक्षित करके Google पर अपलोड किए जाते हैं.</translation>
 <translation id="4634575639321169635">काम या निजी इस्तेमाल के लिए इस डिवाइस को सेट अप करें</translation>
-<translation id="4634771451598206121">फिर से साइन इन करें...</translation>
 <translation id="4635072447747973225">Crostini अनइंस्टॉल करें</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> मेहमान उपयोगकर्ताओं के लिए उपलब्ध नहीं है.</translation>
 <translation id="4636682061478263818">Drive फ़ाइलें</translation>
@@ -5306,7 +5304,6 @@
 <translation id="6196640612572343990">तीसरे पक्ष की कुकी ब्लॉक करें</translation>
 <translation id="6196854373336333322">एक्सटेंशन "<ph name="EXTENSION_NAME" />" ने आपकी प्रॉक्सी सेटिंग पर नियंत्रण कर लिया है, जिसका अर्थ है कि यह   ऑनलाइन किए जाने वाले काम को बदल सकता है, रोक सकता है या उसे छिप कर सुन सकता है. अगर आप पक्का नहीं हैं कि यह बदलाव क्यों हुआ है, तो संभवत: आप उसे नहीं चाहते हैं.</translation>
 <translation id="6197128521826316819">इस पेज के लिए क्यूआर कोड बनाएं</translation>
-<translation id="6198102561359457428">साइन आउट करें और फिर से साइन इन करें...</translation>
 <translation id="6198252989419008588">पिन बदलें</translation>
 <translation id="6200047250927636406">फ़ाइल खारिज करें</translation>
 <translation id="6200151268994853226">एक्सटेंशन मैनेज करें</translation>
@@ -6254,7 +6251,6 @@
 <translation id="7114648273807173152">Smart Lock का इस्तेमाल करके अपने Google खाते में साइन इन करने के लिए, सेटिंग &gt; कनेक्ट किए हुए डिवाइस &gt; आपका फ़ोन &gt; Smart Lock पर जाएं.</translation>
 <translation id="7115361495406486998">Google खाते वाला कोई भी संपर्क नहीं है</translation>
 <translation id="7117228822971127758">कृपया बाद में फिर से कोशिश करें</translation>
-<translation id="7117247127439884114">फिर से साइन इन करें...</translation>
 <translation id="711840821796638741">प्रबंधित बुकमार्क दिखाएं</translation>
 <translation id="711902386174337313">अपने प्रवेश किए गए डिवाइस की सूची ऐक्‍सेस करें</translation>
 <translation id="711985611146095797">इस पेज पर, आप अपने साइन इन किए गए Google खाते मैनेज कर सकते हैं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>

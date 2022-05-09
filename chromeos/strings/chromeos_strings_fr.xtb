@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Activer le Bluetooth pour découvrir les appareils à proximité</translation>
 <translation id="2346474577291266260">Excellente (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Continuer</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Composants non conformes<ph name="LINK_END" /> détectés. Si vous décidez de confirmer l'installation, veuillez le faire immédiatement.</translation>
 <translation id="2363636958541445404">Activez la fonctionnalité pour sélectionner les options de l'économiseur d'écran</translation>
 <translation id="2364498172489649528">Réussi</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">Système</translation>
 <translation id="2638662041295312666">Image de connexion</translation>
 <translation id="2640549051766135490">Album "<ph name="TITLE" />" (<ph name="DESC" />) sélectionné</translation>
-<translation id="2695514675076754339">Saisissez le code de déverrouillage à huit caractères</translation>
 <translation id="2712812801627182647">Clé d'authentification TLS</translation>
 <translation id="2717139507051041123">Activer le mode couleur sombre</translation>
 <translation id="2740531572673183784">OK</translation>

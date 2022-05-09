@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Մոտակա սարքերը գտնելու համար միացրեք Bluetooth-ը</translation>
 <translation id="2346474577291266260">Գերազանց (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Շարունակել</translation>
 <translation id="2360257214555822463">Հայտնաբերվել են <ph name="LINK_BEGIN" />անհամատեղելի բաղադրիչներ<ph name="LINK_END" />։ Եթե ձեզ հայտնի է, որ դրանք տեղադրվել են, հաստատեք հիմա։</translation>
 <translation id="2363636958541445404">Միացրեք գործառույթը՝ էկրանապահի պարամետրեր ընտրելու համար</translation>
 <translation id="2364498172489649528">Անցել է ստուգում</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">Համակարգ</translation>
 <translation id="2638662041295312666">Մուտքի պատկեր</translation>
 <translation id="2640549051766135490">Ընտրվել է «<ph name="TITLE" />» (<ph name="DESC" />) ալբոմը</translation>
-<translation id="2695514675076754339">Մուտքագրեք ապակողպման 8 նիշանոց կոդը</translation>
 <translation id="2712812801627182647">TLS իսկորոշման բանալի</translation>
 <translation id="2717139507051041123">Միացնել մուգ գույների ռեժիմը</translation>
 <translation id="2740531572673183784">Եղավ</translation>

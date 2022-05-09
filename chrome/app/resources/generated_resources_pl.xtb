@@ -2848,7 +2848,6 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3748706263662799310">Zgłoś błąd</translation>
 <translation id="3750562496035670393">Przeglądarka Chrome zapisała Twoje hasło na tym urządzeniu, ale jeśli wolisz, możesz je zamiast tego zapisać na swoim koncie Google. Jeśli to zrobisz, po zalogowaniu się będziesz mieć dostęp do wszystkich haseł z Twojego konta Google.</translation>
 <translation id="3752253558646317685">Twoje dziecko musi unosić i opuszczać palec, aby można było zapisać odcisk</translation>
-<translation id="3752582316358263300">OK</translation>
 <translation id="3753033997400164841">Zapisz raz – używaj w dowolnym miejscu</translation>
 <translation id="3755411799582650620">Telefon <ph name="PHONE_NAME" /> może teraz odblokowywać też urządzenie <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Strona używa mikrofonu</translation>
@@ -3746,7 +3745,6 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4633003931260532286">Rozszerzenie wymaga: „<ph name="IMPORT_NAME" />” przynajmniej w wersji „<ph name="IMPORT_VERSION" />”, ale zainstalowana jest tylko wersja „<ph name="INSTALLED_VERSION" />”</translation>
 <translation id="4633757335284074492">Twórz kopie zapasowe na Dysku Google. W dowolnej chwili możesz w prosty sposób przywrócić dane lub używać ich na innym urządzeniu. Kopia zapasowa zawiera dane aplikacji. Kopie zapasowe są szyfrowane za pomocą hasła do konta Google Twojego dziecka i przesyłane do Google.</translation>
 <translation id="4634575639321169635">Skonfiguruj to urządzenie pod kątem pracy lub użytku osobistego</translation>
-<translation id="4634771451598206121">Zaloguj się ponownie</translation>
 <translation id="4635072447747973225">Odinstaluj Crostini</translation>
 <translation id="4635398712689569051">Strona <ph name="PAGE_NAME" /> jest niedostępna dla gości.</translation>
 <translation id="4636682061478263818">Pliki na Dysku</translation>
@@ -5277,7 +5275,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="6196640612572343990">Blokuj pliki cookie innych firm</translation>
 <translation id="6196854373336333322">Rozszerzenie „<ph name="EXTENSION_NAME" />” przejęło kontrolę nad ustawieniami serwera proxy, co oznacza, że może zmieniać, przerywać lub podglądać wszystko, co robisz online. Jeśli nie masz pewności, skąd wzięła się ta zmiana, prawdopodobnie jej nie chcesz.</translation>
 <translation id="6197128521826316819">Utwórz kod QR powiązany z tą stroną</translation>
-<translation id="6198102561359457428">Wyloguj się i ponownie zaloguj</translation>
 <translation id="6198252989419008588">Zmień kod PIN</translation>
 <translation id="6200047250927636406">Odrzuć plik</translation>
 <translation id="6200151268994853226">Zarządzaj rozszerzeniem</translation>
@@ -6227,7 +6224,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7114648273807173152">Aby logować się na swoje konto Google przy użyciu funkcji Smart Lock, kliknij Ustawienia &gt; Połączone urządzenia &gt; Twój telefon &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Brak osiągalnych kontaktów</translation>
 <translation id="7117228822971127758">Spróbuj ponownie później</translation>
-<translation id="7117247127439884114">Zaloguj się ponownie</translation>
 <translation id="711840821796638741">Pokaż zakładki zarządzane</translation>
 <translation id="711902386174337313">Odczyt listy zalogowanych urządzeń</translation>
 <translation id="711985611146095797">Na tej stronie możesz zarządzać kontami Google, na które się logujesz. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>

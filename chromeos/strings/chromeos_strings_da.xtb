@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Slå Bluetooth til for at opdage enheder i nærheden</translation>
 <translation id="2346474577291266260">Meget godt (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2360257214555822463">Der blev registreret <ph name="LINK_BEGIN" />ikke-kvalificerede komponenter<ph name="LINK_END" />. Hvis du vil bekræfte, at disse komponenter er blevet installeret korrekt, kan du gøre det nu.</translation>
 <translation id="2363636958541445404">Aktivér funktionen for at vælge en pauseskærm</translation>
 <translation id="2364498172489649528">Bestået</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Loginbillede</translation>
 <translation id="2640549051766135490">Albummet <ph name="TITLE" /> <ph name="DESC" /> er valgt</translation>
-<translation id="2695514675076754339">Angiv den ottecifrede oplåsningskode</translation>
 <translation id="2712812801627182647">TLS-godkendelsesnøgle</translation>
 <translation id="2717139507051041123">Aktivér tilstanden med mørke farver</translation>
 <translation id="2740531572673183784">OK</translation>

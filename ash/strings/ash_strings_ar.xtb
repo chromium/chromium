@@ -821,7 +821,6 @@
 <translation id="602472752137106327">عرض النوافذ المفتوحة في جميع أسطح المكتب، تم النقر على زر الاختيار.</translation>
 <translation id="6025324406281560198">حالة الأمان <ph name="SECURITY_STATUS" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
 <translation id="6027518778343897451">‏ما مِن حدث مُحدَّد في <ph name="CURRENT_MONTH_DAY" />. اضغط على المفتاح Enter لفتح "تقويم Google" في المتصفِّح.</translation>
-<translation id="6027952026115023659">الوصول إلى تطبيقات المراسلة المتوفّرة على هاتفك من خلال الجهاز <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">تم نقل القائمة إلى أسفل يمين الشاشة.</translation>
 <translation id="6032620807120418574">انقر على أي مكان لالتقاط صورة في وضع ملء الشاشة.</translation>
 <translation id="6040071906258664830">التسجيل من الميكروفون <ph name="STATE" /></translation>
@@ -971,7 +970,6 @@
 <translation id="6961121602502368900">لا تتوفّر ميزة "كتم صوت الهاتف" على الملف الشخصي للعمل.</translation>
 <translation id="6961840794482373852">‏تم تغيير اختصارات لوحة المفاتيح "Alt + السهم المتّجه للأعلى". لاستخدام مفتاح Page Up، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه للأعلى".</translation>
 <translation id="6965382102122355670">حسنًا</translation>
-<translation id="6967933908874208731">عرض الصور والوسائط والإشعارات وتطبيقات المراسلة الحديثة في هاتفك على الجهاز <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">البدء</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">تسهيل الاستخدام</translation>

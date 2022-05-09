@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">تفعيل البلوتوث لاكتشاف الأجهزة القريبة</translation>
 <translation id="2346474577291266260">إشارة ممتازة (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">متابعة</translation>
 <translation id="2360257214555822463">تم رصد <ph name="LINK_BEGIN" />مكونات غير معتمَدة<ph name="LINK_END" />. إذا أردت التأكد من تثبيت المكوّنات، يُرجى إجراء ذلك الآن.</translation>
 <translation id="2363636958541445404">يجب تفعيل الميزة لتحديد خيارات شاشة الاستراحة.</translation>
 <translation id="2364498172489649528">تم الاجتياز.</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">النظام</translation>
 <translation id="2638662041295312666">صورة الملف الشخصي</translation>
 <translation id="2640549051766135490">تمّ اختيار ألبوم <ph name="TITLE" /> <ph name="DESC" /></translation>
-<translation id="2695514675076754339">إدخال رمز فتح القفل المكوّن من 8 أحرف</translation>
 <translation id="2712812801627182647">‏مفتاح مصادقة بروتوكول أمان طبقة النقل (TLS)</translation>
 <translation id="2717139507051041123">تفعيل وضع الألوان الداكنة</translation>
 <translation id="2740531572673183784">حسنًا</translation>

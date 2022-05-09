@@ -2858,7 +2858,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3748706263662799310">Hata bildir</translation>
 <translation id="3750562496035670393">Chrome, şifrenizi bu cihaza kaydetti ancak bunun yerine şifrenizi Google Hesabınıza kaydedebilirsiniz. Bu durumda Google Hesabınızdaki tüm şifreler oturumunuz açıkken de kullanılabilir.</translation>
 <translation id="3752253558646317685">Parmak izini kaydetmek için çocuğunuzun parmağını kaldırıp dokundurmaya devam etmesi gerekir</translation>
-<translation id="3752582316358263300">Tamam...</translation>
 <translation id="3753033997400164841">Bir kere depolayın. Her yerde kullanın</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> cihazınız bu <ph name="DEVICE_TYPE" /> cihazın kilidini de açabilir.</translation>
 <translation id="375636864092143889">Site, mikrofonunuzu kullanıyor</translation>
@@ -3756,7 +3755,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4633003931260532286">Uzantı en az "<ph name="IMPORT_NAME" />" "<ph name="IMPORT_VERSION" />" sürümünü gerektiriyor ancak sadece "<ph name="INSTALLED_VERSION" />" sürümü yüklü</translation>
 <translation id="4633757335284074492">Google Drive'a yedekle. Verileri istediğiniz zaman kolayca geri yükleyin veya cihazlar arasında geçiş yapın. Bu yedekleme, uygulama verilerini içerir. Yedek veriler Google'a yüklenir ve çocuğunuzun Google Hesabının şifresi kullanılarak şifrelenir.</translation>
 <translation id="4634575639321169635">Bu cihazı iş amaçlı veya kişisel kullanım için kurun</translation>
-<translation id="4634771451598206121">Tekrar oturum açın...</translation>
 <translation id="4635072447747973225">Crostini'yi kaldır</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" />, Davetli kullanıcılar için geçerli değildir.</translation>
 <translation id="4636682061478263818">Drive dosyaları</translation>
@@ -5289,7 +5287,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6196640612572343990">Üçüncü taraf çerezlerini engelle</translation>
 <translation id="6196854373336333322">"<ph name="EXTENSION_NAME" />" uzantısı proxy ayarlarınızın denetimini ele geçirdi. Bu, uzantının çevrimiçinde yaptıklarınızı değiştirebileceği, kesebileceği veya dinleyebileceği anlamına gelir. Bu değişikliğin neden gerçekleştiğinden emin değilseniz muhtemelen bu değişikliği yapmayı istememişsinizdir.</translation>
 <translation id="6197128521826316819">Bu Sayfa için QR Kodu oluştur</translation>
-<translation id="6198102561359457428">Oturumu kapatıp tekrar açın...</translation>
 <translation id="6198252989419008588">PIN'i değiştir</translation>
 <translation id="6200047250927636406">Dosyayı sil</translation>
 <translation id="6200151268994853226">Uzantıyı Yönet</translation>
@@ -6235,7 +6232,6 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7114648273807173152">Smart Lock'ı kullanarak Google Hesabınızda oturum açmak için Ayarlar &gt; Bağlı cihazlar &gt; Telefonunuz &gt; Smart Lock bölümüne gidin.</translation>
 <translation id="7115361495406486998">Ulaşılabilir kişi yok</translation>
 <translation id="7117228822971127758">Lütfen daha sonra tekrar deneyin</translation>
-<translation id="7117247127439884114">Tekrar Oturum Açın...</translation>
 <translation id="711840821796638741">Yönetilen Yer İşaretlerini Göster</translation>
 <translation id="711902386174337313">Oturum açmış cihazlarınızın listesini okuma</translation>
 <translation id="711985611146095797">Bu sayfa, oturum açtığınız Google Hesaplarınızı yönetmenize olanak sağlar. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>

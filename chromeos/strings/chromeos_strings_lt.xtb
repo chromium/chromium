@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Įjunkite „Bluetooth“, kad aptiktumėte įrenginius netoliese</translation>
 <translation id="2346474577291266260">Puikus (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Tęskite</translation>
 <translation id="2360257214555822463">Aptikta <ph name="LINK_BEGIN" />netinkamų komponentų<ph name="LINK_END" />. Jei pasirinksite patvirtinti, kad jie buvo įdiegti, padarykite tai dabar.</translation>
 <translation id="2363636958541445404">Įjunkite funkciją, kad pasirinktumėte ekrano užsklandos parinktis</translation>
 <translation id="2364498172489649528">Pavyko</translation>
@@ -156,6 +157,7 @@
 <translation id="2446553403094072641">Slankiojo kablelio tikslumas</translation>
 <translation id="2448312741937722512">Tipas</translation>
 <translation id="2461822463642141190">Dabartinė</translation>
+<translation id="2480034874476596812">Išjungti neautomatiškai</translation>
 <translation id="2491955442992294626">Klavišai nėra testuojami, kai naudojate kitą langą</translation>
 <translation id="2493126929778606526">Geriausios nuotraukos, parinktos automatiškai</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -171,7 +173,6 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2638662041295312666">Prisijungimo vaizdas</translation>
 <translation id="2640549051766135490">Pasirinktas albumas „<ph name="TITLE" />“ (<ph name="DESC" />)</translation>
-<translation id="2695514675076754339">Įveskite aštuonių simbolių atrakinimo kodą</translation>
 <translation id="2712812801627182647">TLS autentifikavimo raktas</translation>
 <translation id="2717139507051041123">Įgalinti tamsių spalvų režimą</translation>
 <translation id="2740531572673183784">Gerai</translation>
@@ -251,6 +252,7 @@
 <translation id="3606583719724308068">Didelė HTTPS svetainių delsa</translation>
 <translation id="3621202678540785336">Įvestis</translation>
 <translation id="3632579075709132555">Privatumo ekrano perjungimas</translation>
+<translation id="3678765385266369662">Pasirinkite, kaip norėtumėte išjungti įrašymo apsaugą</translation>
 <translation id="3689839747745352263">Bandymas „<ph name="TEST_NAME" />“</translation>
 <translation id="370665806235115550">Įkeliama...</translation>
 <translation id="3708186454126126312">Anksčiau susieti</translation>
@@ -305,6 +307,7 @@
 <translation id="4244962993387259361">Norint atlikti atminties bandymą, reikia bent 500 MB laisvos vietos. Kad atlaisvintumėte vietos, eikite į skiltį „Nustatymai“ &gt; „Saugyklos tvarkymas“.</translation>
 <translation id="4250229828105606438">Ekrano kopija</translation>
 <translation id="4258281355379922695">HTTP delsa</translation>
+<translation id="4258561075226177474">Įrenginys bus perduotas tam pačiam naudotojui. Ištrinti naudotojo duomenis?</translation>
 <translation id="4271957103967917607">Peržiūrėti per visą ekraną</translation>
 <translation id="4275799948641988986">Kas naudos sutaisytą įrenginį?</translation>
 <translation id="4289540628985791613">Apžvalga</translation>
@@ -353,6 +356,7 @@
 <translation id="473775607612524610">Atnaujinti</translation>
 <translation id="4744944742468440486">Informacija, susijusi su jūsų pasirinkimu</translation>
 <translation id="4773299976671772492">Sustabdyta</translation>
+<translation id="4774530504324923332">Reikės saugos rakto su įgalintu RSU, QR kodų skaitytuvo ir antro įrenginio su interneto ryšiu</translation>
 <translation id="4782311465517282004">Spustelėkite dešiniuoju klavišu arba palieskite ir palaikykite tekstą, kad būtų pateiktos apibrėžtys, vertimai ar vienetų konvertavimas.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> nuotrauk.</translation>
 <translation id="4793710386569335688">Daugiau pagalbos galite gauti <ph name="BEGIN_LINK" />pagalbos centre<ph name="END_LINK" />.</translation>
@@ -432,6 +436,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5372659122375744710">„Wi-Fi“ tinklas nesaugus</translation>
 <translation id="5376354385557966694">Automatinis šviesus režimas</translation>
 <translation id="537872351913703572">Įrenginys bus perduotas kitam naudotojui ar organizacijai</translation>
+<translation id="5395600419410242651">Trinti visus duomenis</translation>
 <translation id="5400907029458559844">Prijungiamas įrenginys.</translation>
 <translation id="5401938042319910061">Vykdyti visas veiksmų sekas</translation>
 <translation id="5423849171846380976">Suaktyvinta</translation>
@@ -642,6 +647,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7570674786725311828">USB jutiklinis ekranas</translation>
 <translation id="7595982850646262331">Liko <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Sužinokite daugiau pagalbos centre</translation>
+<translation id="7626501172915339021">RMA serverio atrakinimas (RSU)</translation>
 <translation id="763165478673169849">Paskutinio nustatymo iš naujo laikas</translation>
 <translation id="7648838807254605802">Didelė HTTPS delsa</translation>
 <translation id="7656388927906093505">Įrenginys yra pelė.</translation>
@@ -785,6 +791,8 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="9087578468327036362">Pranešti apie šią užklausą</translation>
 <translation id="9088306295921699330">Dabartinis naudojimas</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">Reikės išardyti įrenginį</translation>
+<translation id="9098156406873149060">Pasilikti naudotojo duomenis</translation>
 <translation id="910415269708673980">Atnaujinkite <ph name="PRINCIPAL_NAME" /> bilietą</translation>
 <translation id="9106415115617144481">Nuskaitomas <ph name="PAGE_NUMBER" /> psl.</translation>
 <translation id="9111102763498581341">Atrakinti</translation>

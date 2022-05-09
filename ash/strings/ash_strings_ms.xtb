@@ -136,6 +136,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1719094688023114093">Sari Kata Langsung dihidupkan.</translation>
 <translation id="1720011244392820496">Hidupkan Penyegerakan Wi-Fi</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" kelihatan kepada peranti Bluetooth.</translation>
+<translation id="174102739345480129">Penanda dimatikan.</translation>
 <translation id="1743570585616704562">Tidak dikenali</translation>
 <translation id="1746730358044914197">Kaedah masukan dikonfigurasi oleh pentadbir anda.</translation>
 <translation id="1747827819627189109">Papan kekunci pada skrin didayakan</translation>
@@ -565,6 +566,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4379531060876907730">Berikut ialah alatan stilus anda</translation>
 <translation id="4389184120735010762">Anda menekan pintasan papan kekunci untuk penggadang yang didok. Adakah anda ingin menghidupkannya?</translation>
 <translation id="439598569299422042">Dijeda, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Tidak dapat menyimpan rakaman skrin</translation>
 <translation id="4405151984121254935">Jenis peranti persisian yang disambungkan tidak disokong</translation>
 <translation id="4406883609789734330">Sari Kata Langsung</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> dimatikan.</translation>
@@ -671,6 +673,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Ayat seterusnya</translation>
+<translation id="5016558321564993266">Togol penanda. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Masa sudah tamat</translation>
 <translation id="5033299697334913360">Klik mana-mana bahagian untuk menangkap skrin penuh</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> disambungkan ke telefon baharu</translation>
@@ -700,6 +703,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5222676887888702881">Log keluar</translation>
 <translation id="5234764350956374838">Ketepikan</translation>
 <translation id="523505283826916779">Tetapan kebolehcapaian</translation>
+<translation id="5245201184978705914">Tidak dapat menjana transkrip</translation>
 <translation id="5253783950165989294">Disambungkan kepada peranti yang bernama <ph name="DEVICE_NAME" />, bateri <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">Meja 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> meminta perhatian anda.</translation>
@@ -734,6 +738,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5433020815079095860">Input audio</translation>
 <translation id="544691375626129091">Semua pengguna yang ada telah ditambahkan pada sesi ini.</translation>
 <translation id="54609108002486618">Diuruskan</translation>
+<translation id="5460938382730614333">Penanda dihidupkan.</translation>
 <translation id="5465662442746197494">Perlu bantuan?</translation>
 <translation id="547979256943495781">Rak di sebelah kanan</translation>
 <translation id="5491186829646618080">Kemaskinian perisian tegar tersedia</translation>
@@ -775,6 +780,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5745612484876805746">Cahaya Malam akan dihidupkan secara automatik pada waktu matahari terbenam</translation>
 <translation id="5750765938512549687">Bluetooth dimatikan</translation>
 <translation id="5760866832697883462">Sambungkan <ph name="NAME" /> anda</translation>
+<translation id="5762420912707163638">Togol penanda. <ph name="STATE_TEXT" /> Gunakan pad jejak, skrin sentuh atau stilus untuk melukis pada skrin.</translation>
 <translation id="576341972084747908">Muat turun berbahaya <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Mod Shelf Party dimatikan.</translation>
 <translation id="576453121877257266">Cahaya Malam dihidupkan.</translation>
@@ -821,7 +827,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="602472752137106327">Tunjukkan tetingkap daripada semua meja, butang radio dipilih</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />, Diurus oleh Pentadbir anda</translation>
 <translation id="6027518778343897451">Tiada acara pada <ph name="CURRENT_MONTH_DAY" />. Tekan enter untuk membuka Google Calendar dalam penyemak imbas.</translation>
-<translation id="6027952026115023659">Akses apl pemesejan telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="6030495522958826102">Menu dialihkan ke sudut bawah sebelah kiri skrin.</translation>
 <translation id="6032620807120418574">Klik mana-mana bahagian untuk merakam skrin penuh</translation>
 <translation id="6040071906258664830">Rakam mikrofon <ph name="STATE" /></translation>
@@ -971,7 +976,6 @@ Pemasangan baharu</translation>
 <translation id="6961121602502368900">Ciri Senyapkan telefon tidak tersedia pada profil kerja</translation>
 <translation id="6961840794482373852">Pintasan papan kekunci Alt + Anak Panah ke Atas telah berubah. Untuk menggunakan kekunci Page Up, tekan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Anak Panah ke Atas.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967933908874208731">Lihat foto, media, pemberitahuan dan apl pemesejan anda baru-baru ini pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="6972754398087986839">Bermula</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Kebolehcapaian</translation>

@@ -200,7 +200,6 @@
 <translation id="6063093106622310249">在 Chromium 中開啟(&amp;O)</translation>
 <translation id="6072279588547424923">已將「<ph name="EXTENSION_NAME" />」加到 Chromium</translation>
 <translation id="608006075545470555">在這個瀏覽器中新增工作資料夾</translation>
-<translation id="608189560609172163">登入時發生錯誤，因此 Chromium 無法同步處理你的資料。</translation>
 <translation id="6096348254544841612">有可用的更新，歡迎自訂及控制 Chromium。</translation>
 <translation id="6120345080069858279">Chromium 會將這組密碼儲存至你的 Google 帳戶，你不須記住密碼。</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> 並不安全，因此遭到 Chromium 封鎖。</translation>
@@ -295,7 +294,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="7682601070171973634">Chromium 正在探索新功能，讓網站能在使用較少資料的情況下提供相同的瀏覽體驗</translation>
 <translation id="7686590090926151193">Chromium 不是你的預設瀏覽器</translation>
 <translation id="7689606757190482937">進行同步處理即可在你的所有裝置上享有個人化的 Chromium 體驗</translation>
-<translation id="7729447699958282447">你的網域無法使用「同步功能」，因此 Chromium 無法同步處理你的資料。</translation>
 <translation id="7745317241717453663">登出後，系統會將你的瀏覽資料從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chromium。</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟體。</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary 版</translation>
@@ -340,7 +338,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8713679423359107094">當你關閉所有 Chromium 視窗時，系統會自動清除 Cookie 和網站資料</translation>
 <translation id="8796443464227412154">關閉 Chromium 會導致你<ph name="BEGIN_BOLD" />從大部分的網站登出<ph name="END_BOLD" />。如果關閉同步處理功能，你也會<ph name="BEGIN_BOLD" />從 Google 服務和 Chromium 登出<ph name="END_BOLD" />。</translation>
 <translation id="8796602469536043152">Chromium 需要相關權限，才能讓這個網站使用你的攝影機和麥克風</translation>
-<translation id="8821041990367117597">你的帳戶登入詳細資料尚未更新，因此 Chromium 無法同步處理你的資料。</translation>
 <translation id="8833697763442816810">Chromium OS 系統</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />我們會使用哪些資料：<ph name="END_BOLD" />你的瀏覽記錄，也就是在這部裝置上透過 Chromium 造訪網站的記錄。</translation>
 <translation id="8862326446509486874">你沒有在系統層級進行安裝的權限，請以管理員的身分執行安裝檔。</translation>

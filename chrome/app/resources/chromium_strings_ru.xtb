@@ -198,7 +198,6 @@
 <translation id="6063093106622310249">&amp;Открыть в Chromium</translation>
 <translation id="6072279588547424923">Расширение "<ph name="EXTENSION_NAME" />" добавлено в Chromium</translation>
 <translation id="608006075545470555">Добавление рабочего профиля в браузер</translation>
-<translation id="608189560609172163">Chromium не удалось синхронизировать данные из-за ошибки входа в систему.</translation>
 <translation id="6096348254544841612">Новая версия Chromium уже вышла!</translation>
 <translation id="6120345080069858279">Этот пароль будет сохранен в аккаунте Google. Вам не нужно его запоминать.</translation>
 <translation id="6129621093834146363">Chromium заблокировал файл <ph name="FILE_NAME" /> как опасный.</translation>
@@ -291,7 +290,6 @@
 <translation id="7682601070171973634">Chromium представляет новый взгляд на просмотр веб-страниц: сайты функционируют в обычном режиме, собирая меньше данных о вас.</translation>
 <translation id="7686590090926151193">Chromium не является браузером по умолчанию.</translation>
 <translation id="7689606757190482937">Синхронизируйте данные Chromium на всех устройствах</translation>
-<translation id="7729447699958282447">Chromium не удалось синхронизировать данные, поскольку служба Sync недоступна для вашего домена.</translation>
 <translation id="7745317241717453663">Данные о работе в браузере будут удалены с устройства. Чтобы восстановить их позже, войдите в Chromium как <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Программе установки не удалось создать временный каталог. Возможно, у вас нет прав на установку приложений или недостаточно места на диске.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
@@ -336,7 +334,6 @@
 <translation id="8713679423359107094">Когда вы закроете все окна браузера Chromium, файлы cookie и данные сайтов будут автоматически удалены.</translation>
 <translation id="8796443464227412154">Когда вы закроете Chromium, вы <ph name="BEGIN_BOLD" />выйдете с большинства сайтов<ph name="END_BOLD" />. Если синхронизация отключена, вы также <ph name="BEGIN_BOLD" />выйдете из сервисов Google и браузера Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Для этого сайта Chromium запрашивает доступ к камере и микрофону.</translation>
-<translation id="8821041990367117597">Chromium не удалось синхронизировать данные, поскольку ваши учетные сведения устарели.</translation>
 <translation id="8833697763442816810">Chromium OS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Какие данные используются.<ph name="END_BOLD" /> История вашего браузера – это список сайтов, которые вы открывали в Chromium на этом устройстве.</translation>
 <translation id="8862326446509486874">У вас нет прав, необходимых для установки на системном уровне. Запустите программу установки еще раз в качестве администратора.</translation>

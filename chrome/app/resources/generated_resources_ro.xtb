@@ -2862,7 +2862,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3748706263662799310">Raportați o eroare</translation>
 <translation id="3750562496035670393">Chrome a salvat parola pe acest dispozitiv, dar o poți salva în Contul tău Google. Apoi toate parolele din Contul Google vor fi disponibile după ce te conectezi.</translation>
 <translation id="3752253558646317685">Solicită-i copilului să ridice degetul și să atingă din nou pentru a salva amprenta</translation>
-<translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Stocheaz-o o singură dată. Folosește-o peste tot</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> poate debloca acum și acest <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Site-ul folosește microfonul</translation>
@@ -3760,7 +3759,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4633003931260532286">Extensia necesită „<ph name="IMPORT_NAME" />” cu versiunea minimă „<ph name="IMPORT_VERSION" />”, dar numai versiunea „<ph name="INSTALLED_VERSION" />” este instalată</translation>
 <translation id="4633757335284074492">Fă backup în Google Drive. Restabilește datele sau schimbă dispozitivul cu ușurință, în orice moment. Acest backup include datele aplicațiilor. Backupurile sunt încărcate pe serverele Google și sunt criptate folosind parola pentru Contul Google al copilului tău.</translation>
 <translation id="4634575639321169635">Configurează dispozitivul pentru serviciu sau pentru uz personal</translation>
-<translation id="4634771451598206121">Conectați-vă din nou...</translation>
 <translation id="4635072447747973225">Dezinstalează Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> nu este disponibilă pentru utilizatorii invitați.</translation>
 <translation id="4636682061478263818">Fișiere Drive</translation>
@@ -5292,7 +5290,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6196640612572343990">Blochează cookie-urile terță parte</translation>
 <translation id="6196854373336333322">Extensia „<ph name="EXTENSION_NAME" />” a preluat controlul asupra setărilor de proxy, ceea ce înseamnă că poate modifica, întrerupe sau intercepta tot ceea ce faci online. Dacă nu știi sigur de ce a apărut această modificare, probabil că nu ai aprobat-o.</translation>
 <translation id="6197128521826316819">Creează un cod QR pentru această pagină</translation>
-<translation id="6198102561359457428">Deconectați-vă, apoi conectați-vă din nou...</translation>
 <translation id="6198252989419008588">Schimbă codul PIN</translation>
 <translation id="6200047250927636406">Șterge fișierul</translation>
 <translation id="6200151268994853226">Gestionează extensia</translation>
@@ -6240,7 +6237,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7114648273807173152">Pentru a folosi Smart Lock ca să te conectezi la Contul Google, accesează Setări &gt; Dispozitive conectate &gt; Telefon &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Nu sunt disponibile persoane de contact</translation>
 <translation id="7117228822971127758">Încearcă din nou mai târziu</translation>
-<translation id="7117247127439884114">Conectați-vă din nou...</translation>
 <translation id="711840821796638741">Vezi marcajele gestionate</translation>
 <translation id="711902386174337313">Citește lista dispozitivelor conectate</translation>
 <translation id="711985611146095797">În această pagină poți să gestionezi Conturile Google la care te-ai conectat. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>

@@ -2880,7 +2880,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3748706263662799310">Informar um bug</translation>
 <translation id="3750562496035670393">O Chrome salvou sua senha neste dispositivo, mas ela pode ser salva na sua Conta do Google, se preferir. Assim, todas as senhas na sua conta ficarão disponíveis quando ela estiver conectada.</translation>
 <translation id="3752253558646317685">Peça para a criança levantar o dedo algumas vezes para salvar a impressão digital</translation>
-<translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Salve uma vez. Use em qualquer lugar</translation>
 <translation id="3755411799582650620">Seu <ph name="PHONE_NAME" /> agora pode desbloquear este <ph name="DEVICE_TYPE" /> também.</translation>
 <translation id="375636864092143889">O site está usando seu microfone</translation>
@@ -3780,7 +3779,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4633003931260532286">A extensão requer "<ph name="IMPORT_NAME" />" com a versão mínima "<ph name="IMPORT_VERSION" />", mas apenas a versão "<ph name="INSTALLED_VERSION" />" está instalada</translation>
 <translation id="4633757335284074492">Fazer backup no Google Drive Restaure dados ou troque de dispositivo a qualquer momento com facilidade. O backup inclui dados do app. Os backups são enviados ao Google e criptografados usando a senha da Conta do Google da criança.</translation>
 <translation id="4634575639321169635">Configurar este dispositivo para uso profissional ou pessoal</translation>
-<translation id="4634771451598206121">Fazer login novamente...</translation>
 <translation id="4635072447747973225">Desinstalar Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> não está disponível para usuários visitantes.</translation>
 <translation id="4636682061478263818">Arquivos do Google Drive</translation>
@@ -5316,7 +5314,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6196854373336333322">A extensão "<ph name="EXTENSION_NAME" />" assumiu o controle das suas configurações de proxy, o que significa que ela pode alterar, invadir ou escutar qualquer coisa que você fizer on-line. Se você não tiver certeza do motivo dessa alteração, provavelmente não a deseja.</translation>
 <translation id="6197128521826316819">Criar código QR para esta página</translation>
-<translation id="6198102561359457428">Saia e faça login novamente...</translation>
 <translation id="6198252989419008588">Alterar PIN</translation>
 <translation id="6200047250927636406">Descartar arquivo</translation>
 <translation id="6200151268994853226">Gerenciar extensão</translation>
@@ -6265,7 +6262,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7114648273807173152">Para usar o Smart Lock para fazer login na sua Conta do Google, acesse "Config." &gt; "Dispositivos conectados" &gt; "Seu smartphone" &gt; "Smart Lock".</translation>
 <translation id="7115361495406486998">Não há contatos acessíveis</translation>
 <translation id="7117228822971127758">Tente novamente mais tarde</translation>
-<translation id="7117247127439884114">Fazer login novamente...</translation>
 <translation id="711840821796638741">Mostrar favoritos gerenciados</translation>
 <translation id="711902386174337313">Ler a lista dos dispositivos nos quais você fez login</translation>
 <translation id="711985611146095797">Esta página permite gerenciar as Contas do Google conectadas. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>

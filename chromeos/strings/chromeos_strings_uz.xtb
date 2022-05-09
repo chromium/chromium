@@ -91,6 +91,7 @@
 <translation id="1801418420130173017">Tungi mavzuni faolsizlantirish</translation>
 <translation id="1807246157184219062">Yorqin</translation>
 <translation id="1827738518074806965">Fotogalereya</translation>
+<translation id="1840835860961531162">Yozishdan himoyani oʻchirish</translation>
 <translation id="1851218745569890714">Videokonferensiya</translation>
 <translation id="1852934301711881861">ChromeOS Flex tizimini oʻrnatish</translation>
 <translation id="1856388568474281774">Pastga strelka</translation>
@@ -144,6 +145,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Yaqin-atrofdagi qurilmalarni aniqlash uchun Bluetooth adapterini yoqing</translation>
 <translation id="2346474577291266260">Aʼlo (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Davom etish</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Mos boʻlmagan komponentlar<ph name="LINK_END" /> aniqlandi. Bu oʻrnatilganini tasdiqlashni tanlasangiz, buni hoziroq amalga oshiring.</translation>
 <translation id="2363636958541445404">Ekran lavhasi parametrlarini tanlash uchun funksiyani yoqing</translation>
 <translation id="2364498172489649528">Tugadi</translation>
@@ -172,7 +174,6 @@
 <translation id="2620436844016719705">Tizim</translation>
 <translation id="2638662041295312666">Kirish sahifasidagi rasm</translation>
 <translation id="2640549051766135490">Albom: <ph name="TITLE" /> <ph name="DESC" /> tanlandi</translation>
-<translation id="2695514675076754339">8 ta belgidan iborat kodni kiriting</translation>
 <translation id="2712812801627182647">TLS autentifikatsiya kaliti</translation>
 <translation id="2717139507051041123">Toʻq rangli rejimni yoqish</translation>
 <translation id="2740531572673183784">Ok</translation>
@@ -274,6 +275,7 @@
 <translation id="3941014780699102620">Host aniqlanmadi</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
 <translation id="3954678691475912818">Qurilma — noaniq.</translation>
+<translation id="3958703339436883942">Qayta ishga tushirish uchun tayyorlanmoqda...</translation>
 <translation id="3966286471246132217">Yanada aniq natijalar olish uchun test tugamaguncha barcha ilovalarni yopib turing.</translation>
 <translation id="3967822245660637423">Yuklab olindi</translation>
 <translation id="3969602104473960991">ChromeOS paroli yangilandi</translation>
@@ -422,6 +424,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5275828089655680674">Dasturlarni qayta bajarish</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">versiya: <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">Keyingi ekranga oʻtish uchun yozishdan himoyani oʻchiring. Koʻrsatmalar uchun qurilma ishlab chiqaruvchisining yordam sahifasini oching.</translation>
 <translation id="5300814202279832142">Oynani ish stoliga koʻchirish</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">Ulanish</translation>
@@ -473,6 +476,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="583281660410589416">Noma’lum</translation>
 <translation id="5843706793424741864">Farengeyt</translation>
 <translation id="5849570051105887917">Mahalliy ta’minotchi kodi</translation>
+<translation id="5856532218727053281">Yozishdan himoya holati tekshirilgandan soʻng tizim qayta ishga tushadi</translation>
 <translation id="5859603669299126575">Fotogalereya albomi</translation>
 <translation id="5860033963881614850">O‘chiq</translation>
 <translation id="5860491529813859533">Yoqish</translation>

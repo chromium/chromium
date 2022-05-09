@@ -39,7 +39,6 @@
 <translation id="1698376642261615901">Google Chrome adalah browser web yang menjalankan halaman dan aplikasi web secepat kilat. Cepat, stabil, dan mudah digunakan. Jelajahi web secara lebih aman dengan perlindungan terhadap software perusak dan phishing yang disertakan dalam Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome akan diluncurkan ulang dalam 1 jam}other{Chrome akan diluncurkan ulang dalam # jam}}</translation>
 <translation id="1734234790201236882">Chrome akan menyimpan sandi ini di Akun Google. Anda tidak perlu mengingatnya.</translation>
-<translation id="174539241580958092">Google Chrome tidak dapat menyinkronkan data Anda karena kesalahan saat masuk.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Pastikan Anda login ke Chrome di <ph name="TARGET_DEVICE_NAME" /> Anda, lalu coba kirimkan lagi.</translation>
 <translation id="1812689907177901597">Dengan menonaktifkan ini, Anda dapat login ke situs Google seperti Gmail tanpa harus login ke Chrome</translation>
@@ -70,7 +69,6 @@
 <translation id="235650106824528204">Data Chrome yang dibuat selama penggunaan profil ini (seperti pembuatan bookmark, histori, sandi, dan setelan lain) dapat dihapus oleh administrator profil kerja. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2401189691232800402">Sistem ChromeOS</translation>
-<translation id="2429317896000329049">Google Chrome tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>
 <translation id="2467438592969358367">Google Chrome ingin mengekspor sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="2485422356828889247">Uninstal</translation>
 <translation id="2534507159460261402">Google Pay (disalin ke Chrome)</translation>
@@ -287,7 +285,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="7481213027396403996">Dapatkan keamanan terkuat Chrome</translation>
 <translation id="7486227612705979895">Chrome akan mengakses Drive Anda untuk membuat saran di kolom URL</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">Google Chrome tidak dapat menyinkronkan data karena detail ID masuk akun Anda belum diperbarui.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Selamat Datang di Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> mewajibkan Anda membaca dan menyetujui Persyaratan Layanan berikut sebelum menggunakan perangkat ini. Persyaratan ini tidak memperluas, mengubah, atau membatasi Persyaratan Google ChromeOS.</translation>

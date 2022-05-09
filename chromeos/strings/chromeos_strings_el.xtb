@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Ενεργοποιήστε το Bluetooth, για να εντοπίσετε κοντινές συσκευές</translation>
 <translation id="2346474577291266260">Τέλειο (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2360257214555822463">Εντοπίστηκαν <ph name="LINK_BEGIN" />ακατάλληλα στοιχεία<ph name="LINK_END" />. Αν επιλέξετε να επιβεβαιώσετε την εγκατάσταση αυτών των στοιχείων, κάντε το τώρα.</translation>
 <translation id="2363636958541445404">Ενεργοποιήστε τη λειτουργία για να ορίσετε επιλογές για την προφύλαξη οθόνης</translation>
 <translation id="2364498172489649528">Επιτυχία</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">Σύστημα</translation>
 <translation id="2638662041295312666">Εικόνα σύνδεσης</translation>
 <translation id="2640549051766135490">Επιλέχθηκε το λεύκωμα <ph name="TITLE" /> <ph name="DESC" /></translation>
-<translation id="2695514675076754339">Εισαγάγετε τον κωδικό ξεκλειδώματος 8 χαρακτήρων</translation>
 <translation id="2712812801627182647">Κλειδί ελέγχου ταυτότητας TLS</translation>
 <translation id="2717139507051041123">Ενεργοποίηση λειτουργίας σκοτεινού χρώματος</translation>
 <translation id="2740531572673183784">ΟK</translation>

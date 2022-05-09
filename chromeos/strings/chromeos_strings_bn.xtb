@@ -145,6 +145,7 @@
 <translation id="2336381494582898602">পাওয়ারওয়াশ</translation>
 <translation id="2338501278241028356">আশেপাশের ডিভাইস খুঁজে পেতে ব্লুটুথ চালু করুন</translation>
 <translation id="2346474577291266260">গড় (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />উপযুক্ত নয় এমন কম্পোনেন্ট<ph name="LINK_END" /> পাওয়া গেছে। এটি ইনস্টল করা হয়েছে তা কনফার্ম করতে চাইলে, এখনই করুন।</translation>
 <translation id="2363636958541445404">স্ক্রিন সেভার বিকল্প বেছে নেওয়ার জন্য ফিচার চালু করুন</translation>
 <translation id="2364498172489649528">পাস করেছে</translation>
@@ -173,7 +174,6 @@
 <translation id="2620436844016719705">সিস্টেম</translation>
 <translation id="2638662041295312666">সাইন-ইন স্ক্রিনের ছবি</translation>
 <translation id="2640549051766135490">বেছে নেওয়া অ্যালবাম: <ph name="TITLE" /> <ph name="DESC" /></translation>
-<translation id="2695514675076754339">৮-অক্ষরের আনলক কোড লিখুন</translation>
 <translation id="2712812801627182647">TLS যাচাইকরণ কী</translation>
 <translation id="2717139507051041123">'ডার্ক কালার' মোড চালু করুন</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>

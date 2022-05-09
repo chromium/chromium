@@ -43,7 +43,6 @@
 <translation id="1698376642261615901">Google Chrome нь веб хуудсууд болон аппликейшнуудыг цахилгаан мэт хурдан ажиллуулдаг веб хөтөч юм. Энэ нь хурдан, найдвартай мөн хэрэглэхэд хялбар. Google Chrome-д бий болгосон хорт вирус болон хууль бус үйлдлээс хамгаалах хамгаалалтаар дамжуулан веб сайтуудад илүү аюулгүй хайлт хийгээрэй.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome-г 1 цагийн дотор дахин ажиллуулна}other{Chrome-г # цагийн дотор дахин ажиллуулна}}</translation>
 <translation id="1734234790201236882">Chrome энэ нууц үгийг таны Google Бүртгэлд хадгалах тул та үүнийг санах шаардлагагүй.</translation>
-<translation id="174539241580958092">Google Chrome нь нэвтрэх хэсэгт гарсан алдаатай холбоотойгоор таны өгөгдлийн тохиргоог хийж чадсангүй.</translation>
 <translation id="1759842336958782510">Хромэ</translation>
 <translation id="1786003790898721085">Та Chrome-д өөрийн <ph name="TARGET_DEVICE_NAME" />-с нэвтэрсэн эсэхээ шалгаад, дахин илгээхээр оролдоно уу.</translation>
 <translation id="1812689907177901597">Үүнийг унтрааснаар та Gmail зэрэг Google-н сайтуудад Chrome-д нэвтрэлгүйгээр нэвтэрч болно</translation>
@@ -74,7 +73,6 @@
 <translation id="235650106824528204">Энэ профайлыг ашиглах үед үүссэн Chrome-н аливаа өгөгдлийг (хавчуурга, түүх, нууц үг болон бусад тохиргоог үүсгэх зэрэг) ажлын профайлын админ хасах боломжтой. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2401189691232800402">ChromeOS систем</translation>
-<translation id="2429317896000329049">Таны домэйнд sync хийх боломжгүй учраас Google Chrome нь таны өгөгдлийг sync хийж чадсангүй.</translation>
 <translation id="2467438592969358367">Google Chrome таны нууц үгийг экспортлох хүсэлтэй байна. Үүнийг зөвшөөрч байгаа бол Windows-н нууц үгээ оруулна уу.</translation>
 <translation id="2485422356828889247">Устгах</translation>
 <translation id="2534507159460261402">Google Pay (Chrome-д хуулсан)</translation>
@@ -295,7 +293,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7481213027396403996">Chrome-н хамгийн хүчирхэг аюулгүй байдлыг аваарай</translation>
 <translation id="7486227612705979895">Chrome хаяг оруулах хэсэгт зөвлөмж харуулахын тулд таны Драйвт хандах болно</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">Таны дансандаа нэвтрэх мэдээлэл хуучирсан учраас Google Chrome таны өгөгдлийг синхрончилж чадахгүй.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Chrome-д тавтай морил</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> танаас энэ төхөөрөмжийг ашиглахаасаа өмнө дараах үйлчилгээний нөхцөлийг уншиж, зөвшөөрөхийг шаардаж байна. Эдгээр нөхцөл нь Google ChromeOS-н нөхцөлийг өргөтгөх, өөрчлөх эсвэл хязгаарлахгүй.</translation>

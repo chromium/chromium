@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Lülitage Bluetooth sisse, et läheduses olevaid seadmeid avastada</translation>
 <translation id="2346474577291266260">Suurepärane (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Jätka</translation>
 <translation id="2360257214555822463">Tuvastati <ph name="LINK_BEGIN" />sobimatud komponendid<ph name="LINK_END" />. Kui soovite kinnitada, et see on paigaldatud, tehke seda praegu.</translation>
 <translation id="2363636958541445404">Lülitage funktsioon sisse, et teha ekraanisäästja valikud</translation>
 <translation id="2364498172489649528">Läbitud</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">Süsteem</translation>
 <translation id="2638662041295312666">Sisselogimispilt</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> on valitud</translation>
-<translation id="2695514675076754339">Sisestage kaheksakohaline avamiskood</translation>
 <translation id="2712812801627182647">TLS-i autentimisvõti</translation>
 <translation id="2717139507051041123">Luba tume värvirežiim</translation>
 <translation id="2740531572673183784">Ok</translation>

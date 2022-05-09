@@ -43,7 +43,6 @@
 <translation id="1698376642261615901">Chrome은 웹페이지와 애플리케이션을 빠르게 실행하는 웹 브라우저입니다. 또한 빠르고 안정적이며 사용하기 쉽습니다. Chrome에 기본적으로 제공되는 악성코드 및 피싱 방지 기능으로 웹을 더 안전하게 탐색하세요.</translation>
 <translation id="1713301662689114961">{0,plural, =1{1시간 후 Chrome이 다시 시작됩니다}other{#시간 후 Chrome이 다시 시작됩니다}}</translation>
 <translation id="1734234790201236882">Chrome에서 내 Google 계정에 이 비밀번호를 저장하므로 기억하지 않아도 됩니다.</translation>
-<translation id="174539241580958092">로그인 중 오류가 발생하여 Chrome에서 데이터를 동기화하지 못했습니다.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" />에서 Chrome에 로그인되어 있는지 확인한 다음 다시 전송해 보세요.</translation>
 <translation id="1812689907177901597">이 기능을 사용 중지하면 Chrome에 로그인하지 않고도 Gmail 등의 Google 사이트에 로그인할 수 있습니다.</translation>
@@ -74,7 +73,6 @@
 <translation id="235650106824528204">북마크, 방문 기록, 비밀번호, 기타 설정 생성 등 이 프로필을 사용하는 동안 생성된 모든 Chrome 데이터는 직장 프로필 관리자가 삭제할 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2401189691232800402">ChromeOS 시스템</translation>
-<translation id="2429317896000329049">도메인에서 동기화를 사용할 수 없어 Chrome에서 데이터를 동기화하지 못했습니다.</translation>
 <translation id="2467438592969358367">Chrome에서 비밀번호를 내보내려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="2485422356828889247">제거</translation>
 <translation id="2534507159460261402">Google Pay(Chrome에 복사됨)</translation>
@@ -295,7 +293,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7481213027396403996">Chrome의 가장 강력한 보안 기능을 이용하세요</translation>
 <translation id="7486227612705979895">Chrome에서 내 드라이브에 액세스하여 주소 표시줄에 추천 검색어를 표시합니다.</translation>
 <translation id="7535429826459677826">Chrome 개발자</translation>
-<translation id="7592736734348559088">계정의 로그인 세부정보가 오래되어 Chrome에서 데이터를 동기화하지 못했습니다.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Chrome에 오신 것을 환영합니다</translation>
 <translation id="7626072681686626474">기기를 사용하기 전에 <ph name="MANAGER" />의 정책에 따라 다음 서비스 약관을 읽고 이에 동의해야 합니다. 이 약관은 ChromeOS 약관을 확대, 수정 또는 제한하지 않습니다</translation>

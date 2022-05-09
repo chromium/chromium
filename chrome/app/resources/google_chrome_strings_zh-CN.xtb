@@ -37,7 +37,6 @@
 <translation id="1698376642261615901">Google Chrome 浏览器是一款可高速运行网页和应用的网络浏览器。它快捷、稳定且易于使用。Google Chrome 浏览器内置的恶意软件和网上诱骗防护功能可让您更安全地浏览网页。</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome 将在 1 小时后重新启动}other{Chrome 将在 # 小时后重新启动}}</translation>
 <translation id="1734234790201236882">Chrome 会将此密码保存在您的 Google 帐号中，因此您不必记住它。</translation>
-<translation id="174539241580958092">由于在登录时出现错误，Google Chrome无法同步您的数据。</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">请确保您已在“<ph name="TARGET_DEVICE_NAME" />”上登录 Chrome，然后再次尝试发送。</translation>
 <translation id="1812689907177901597">关闭此功能后，您无需登录 Chrome 即可登录 Gmail 等 Google 网站</translation>
@@ -68,7 +67,6 @@
 <translation id="235650106824528204">在使用此工作资料（例如创建书签、历史记录、密码和其他设置）时生成的任何 Chrome 数据都可由工作资料管理员移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2401189691232800402">Chrome 操作系统系统</translation>
-<translation id="2429317896000329049">由于您的网域停用了同步功能，Google Chrome无法同步您的数据。</translation>
 <translation id="2467438592969358367">Google Chrome 想导出您的密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="2485422356828889247">卸载</translation>
 <translation id="2534507159460261402">Google Pay（已复制到 Chrome）</translation>
@@ -284,7 +282,6 @@
 <translation id="7481213027396403996">获享 Chrome 的最强安全保护</translation>
 <translation id="7486227612705979895">Chrome 将访问您的云端硬盘，以在地址栏提供建议</translation>
 <translation id="7535429826459677826">Google Chrome 开发者版</translation>
-<translation id="7592736734348559088">由于您的帐号登录详细信息已过期，Google Chrome无法同步您的数据。</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">欢迎使用 Chrome</translation>
 <translation id="7626072681686626474">根据 <ph name="MANAGER" /> 的要求，您必须先阅读并接受以下《服务条款》才能使用此设备。这些条款不会扩展、修改或限制 Google Chrome 操作系统条款。</translation>

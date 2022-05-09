@@ -2867,7 +2867,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3748706263662799310">Teatage veast</translation>
 <translation id="3750562496035670393">Chrome salvestas teie parooli sellesse seadmesse, kuid saate selle salvestada hoopis oma Google'i kontole. Nii on kõik teie Google'i kontol olevad paroolid saadaval, kui olete sisse logitud.</translation>
 <translation id="3752253558646317685">Sõrmejälje salvestamiseks paluge lapsel sõrm andurilt eemaldada ja siis seda uuesti puudutada</translation>
-<translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Salvestage üks kord. Kasutage kõikjal.</translation>
 <translation id="3755411799582650620">Teie telefon <ph name="PHONE_NAME" /> saab nüüd avada ka seadme <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Sait kasutab teie mikrofoni</translation>
@@ -3765,7 +3764,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4633003931260532286">Laiendus nõuab üksust „<ph name="IMPORT_NAME" />” minimaalse versiooniga „<ph name="IMPORT_VERSION" />”, kuid installitud on ainult versioon „<ph name="INSTALLED_VERSION" />”</translation>
 <translation id="4633757335284074492">Andmete varundamine Google Drive'i. Teil on alati võimalik andmed hõlpsalt taastada või seadet vahetada. Varukoopia hõlmab rakenduste andmeid. Varukoopiad laaditakse Google'isse üles ja krüpteeritakse teie lapse Google'i konto parooliga.</translation>
 <translation id="4634575639321169635">Seadistage see seade tööks või isiklikuks kasutuseks</translation>
-<translation id="4634771451598206121">Logi uuesti sisse ...</translation>
 <translation id="4635072447747973225">Crostini desinstallimine</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> ei ole külaliskasutajatele saadaval.</translation>
 <translation id="4636682061478263818">Drive’i failid</translation>
@@ -5297,7 +5295,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6196640612572343990">Blokeeri kolmanda osapoole küpsisefailid</translation>
 <translation id="6196854373336333322">Laiendus „<ph name="EXTENSION_NAME" />” on hõivanud puhverserveri seaded, mis tähendab, et see saab muuta, lõhkuda või kuulata pealt kogu teie veebitegevust. Kui te pole kindel, miks see muudatus toimus, siis te tõenäoliselt ei taha seda.</translation>
 <translation id="6197128521826316819">Loo selle lehe jaoks QR-kood</translation>
-<translation id="6198102561359457428">Logige välja ja uuesti sisse ...</translation>
 <translation id="6198252989419008588">Muuda PIN-koodi</translation>
 <translation id="6200047250927636406">Loobu failist</translation>
 <translation id="6200151268994853226">Laienduse haldamine</translation>
@@ -6243,7 +6240,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7114648273807173152">Oma Google’i kontole funktsiooni Smart Lock abil sisselogimiseks tehke valikud Seaded &gt; Ühendatud seaded &gt; Teie telefon &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Kättesaadavaid kontakte ei ole</translation>
 <translation id="7117228822971127758">Proovige hiljem uuesti</translation>
-<translation id="7117247127439884114">Logi uuesti sisse ...</translation>
 <translation id="711840821796638741">Kuva hallatud järjehoidjad</translation>
 <translation id="711902386174337313">Sisselogitud seadmete loendi lugemine</translation>
 <translation id="711985611146095797">See leht võimaldab teil hallata oma Google'i kontosid, millele olete sisse logitud. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>

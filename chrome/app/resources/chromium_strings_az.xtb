@@ -200,7 +200,6 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="6063093106622310249">Chromium'də açın</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> Chromium'a əlavə edildi</translation>
 <translation id="608006075545470555">Bu brauzerə İş Profili əlavə edin</translation>
-<translation id="608189560609172163">Giriş xətası səbəbindən Chromium datanızı sinxronizasiya edə bilmədi.</translation>
 <translation id="6096348254544841612">Chromium'u fərdiləşdirin və idarə edin. Güncəlləmə əlçatandır.</translation>
 <translation id="6120345080069858279">Chromium bu parolu Google Hesabında yadda saxlayacaq. Onu yadda saxlamalı olmayacaqsınız.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> təklükəli olduğu üçün Chromium onu blok etdi.</translation>
@@ -293,7 +292,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7682601070171973634">Chromium saytlara datanızdan daha az istifadə etməklə eyni baxış təcrübəsi təqdim etməyə imkan verən yeni funksiyaları araşdırır</translation>
 <translation id="7686590090926151193">Chromium defolt brauzeriniz deyil</translation>
 <translation id="7689606757190482937">Chromium'u cihazlarda sinxronizasiya edin və fərdiləşdirin</translation>
-<translation id="7729447699958282447">Chomium datanızı sinxronizasiya edə bilmədi, çünki sinxronizasiya domeniniz üçün əlçatan deyil.</translation>
 <translation id="7745317241717453663">Brauzinq datanız bu cihazdan silinəcək. Sonradan datanızı bərpa etmək üçün Chromiuma <ph name="USER_EMAIL" /> kimi daxil olun.</translation>
 <translation id="7747138024166251722">Quraşdırıcı müvəqqəti direktoriya yarada bilmədi. Proqramı quraşdırmaq üçün boş disk yeri və icazə tapın.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -338,7 +336,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8713679423359107094">Bütün Chromium pəncərələrini bağladığınız zaman kukilər və sayt datası avtomatik olaraq silinir</translation>
 <translation id="8796443464227412154">Chromium'u bağladıqda <ph name="BEGIN_BOLD" />əksər saytlardan<ph name="END_BOLD" /> çıxacaqsınız. Sinxronizasiya deaktivdirsə <ph name="BEGIN_BOLD" />Google xidmətlərindən və Chromium'dan da çıxacaqsınız<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium bu sayt üçün kamera və mikrofona giriş icazəsi tələb edir</translation>
-<translation id="8821041990367117597">Chromium datanızı sinxronizasiya edə bilmir, çünki hesaba giriş məlumatlarınız köhnədir.</translation>
 <translation id="8833697763442816810">ChromiumOS sistemi</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Hansı data istifadə olunur:<ph name="END_BOLD" /> Baxış tarixçəniz, bu cihazda Chromium istifadə edərək ziyarət etdiyiniz saytların qeydi.</translation>
 <translation id="8862326446509486874">Sistem səviyyəli quraşdırma üçün uyğun hüquqlarınız yoxdur. Quraşdırıcını yenidən Administrator olaraq işə salmağa cəhd edin.</translation>

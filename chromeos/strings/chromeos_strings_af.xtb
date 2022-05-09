@@ -91,6 +91,7 @@
 <translation id="1801418420130173017">Deaktiveer donkertema</translation>
 <translation id="1807246157184219062">Lig</translation>
 <translation id="1827738518074806965">Kunsgalery</translation>
+<translation id="1840835860961531162">Skakel Skryfbeskerming af</translation>
 <translation id="1851218745569890714">Videokonferensies</translation>
 <translation id="1852934301711881861">Installeer Chrome OS Flex</translation>
 <translation id="1856388568474281774">Afpyl</translation>
@@ -144,6 +145,7 @@
 <translation id="2336381494582898602">Kragwas</translation>
 <translation id="2338501278241028356">Skakel Bluetooth aan om toestelle in die omtrek te ontdek</translation>
 <translation id="2346474577291266260">Uitstekend (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Ongekwalifiseerde komponente<ph name="LINK_END" /> is bespeur. As jy kies om te bevestig dat dit geïnstalleer is, moet jy dit asseblief nou doen.</translation>
 <translation id="2363636958541445404">Skakel die kenmerk aan om sluimerskermopsies te kies</translation>
 <translation id="2364498172489649528">Geslaag</translation>
@@ -172,7 +174,6 @@
 <translation id="2620436844016719705">Stelsel</translation>
 <translation id="2638662041295312666">Aanmeldprent</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> is gekies</translation>
-<translation id="2695514675076754339">Voer die 8-karakterontsluitingkode in</translation>
 <translation id="2712812801627182647">TLS-stawingsleutel</translation>
 <translation id="2717139507051041123">Aktiveer donkerkleurmodus</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -274,6 +275,7 @@
 <translation id="3941014780699102620">Kon nie gasheer bepaal nie</translation>
 <translation id="3942420633017001071">Diagnostiese inligting</translation>
 <translation id="3954678691475912818">Toesteltipe is onbekend.</translation>
+<translation id="3958703339436883942">Berei tans voor om te herbegin …</translation>
 <translation id="3966286471246132217">Vir meer akkurate resultate moet jy alle programme toemaak totdat die toets voltooi is.</translation>
 <translation id="3967822245660637423">Aflaai is voltooi</translation>
 <translation id="3969602104473960991">Chrome-bedryfstelselwagwoord is opgedateer</translation>
@@ -422,6 +424,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5275828089655680674">Laat Roetines weer loop</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">weergawe <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">Deaktiveer skryfbeskerming om na die volgende skerm voort te gaan. Gaan na die toestelvervaardiger se steundienstebladsy vir instruksies.</translation>
 <translation id="5300814202279832142">Skuif venster na lessenaar</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">Koppel</translation>
@@ -473,6 +476,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Tuisverskafferkode</translation>
+<translation id="5856532218727053281">Stelsel sal herbegin nadat Skryfbeskermingstatus geverifieer is</translation>
 <translation id="5859603669299126575">Kunsgalery-album</translation>
 <translation id="5860033963881614850">Af</translation>
 <translation id="5860491529813859533">Skakel aan</translation>

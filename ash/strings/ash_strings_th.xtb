@@ -823,7 +823,6 @@
 <translation id="602472752137106327">แสดงหน้าต่างจากเดสก์ทุกตัว เลือกปุ่มตัวเลือกแล้ว</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="6027518778343897451">ไม่มีกิจกรรมในวันที่ <ph name="CURRENT_MONTH_DAY" /> กด Enter เพื่อเปิด Google ปฏิทินในเบราว์เซอร์</translation>
-<translation id="6027952026115023659">เข้าถึงแอปรับส่งข้อความของโทรศัพท์ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">เมนูได้ย้ายไปอยู่ที่มุมซ้ายล่างของหน้าจอ</translation>
 <translation id="6032620807120418574">คลิกที่ใดก็ได้เพื่อบันทึกแบบเต็มหน้าจอ</translation>
 <translation id="6040071906258664830">การบันทึกเสียงจากไมโครโฟน<ph name="STATE" /></translation>
@@ -973,7 +972,6 @@
 <translation id="6961121602502368900">ฟีเจอร์ปิดเสียงโทรศัพท์ใช้งานไม่ได้ในโปรไฟล์งาน</translation>
 <translation id="6961840794482373852">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Alt + ลูกศรขึ้น หากต้องการใช้แป้น Page Up ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรขึ้น</translation>
 <translation id="6965382102122355670">ตกลง</translation>
-<translation id="6967933908874208731">ดูรูปภาพ สื่อ การแจ้งเตือน และแอปรับส่งข้อความล่าสุดของโทรศัพท์ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">เริ่มต้นใช้งาน</translation>
 <translation id="6979158407327259162">Google ไดรฟ์</translation>
 <translation id="6981982820502123353">การช่วยเหลือพิเศษ</translation>

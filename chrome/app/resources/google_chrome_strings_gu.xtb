@@ -43,7 +43,6 @@
 <translation id="1698376642261615901">Google Chrome એ એક એવું વેબ બ્રાઉઝર છે જે પ્રકાશની ગતિએ વેબપૃષ્ઠો અને એપ્લિકેશંસને ચલાવે છે. તે ઝડપી, સ્થિર અને ઉપયોગમાં સરળ છે. Google Chrome માં નિર્મિત મૉલવેર અને ફિશીંગ સુરક્ષા સાથે વેબને વધુ સુરક્ષિત રૂપે બ્રાઉઝ કરો.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome એક કલાકમાં ફરીથી લૉન્ચ થશે}one{Chrome # કલાકમાં ફરીથી લૉન્ચ થશે}other{Chrome # કલાકમાં ફરીથી લૉન્ચ થશે}}</translation>
 <translation id="1734234790201236882">Chrome આ પાસવર્ડ તમારા Google એકાઉન્ટમાં સાચવશે. તમારે તેને યાદ રાખવો જરૂરી નથી.</translation>
-<translation id="174539241580958092">સાઇન ઇનમાં ભૂલ આવવાને કારણે Google Chrome તમારા ડેટાને સમન્વયિત કરી શક્યું નથી.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">ખાતરી કરો કે તમે તમારા <ph name="TARGET_DEVICE_NAME" /> પર Chromeમાં સાઇન ઇન કર્યું છે અને પછી ફરીથી મોકલવાનો પ્રયાસ કરો.</translation>
 <translation id="1812689907177901597">આને બંધ કરવાથી, તમે Chromeમાં સાઇન ઇન કર્યા સિવાય Gmail જેવી Googleની સાઇટમાં સાઇન ઇન કરી શકશો</translation>
@@ -74,7 +73,6 @@
 <translation id="235650106824528204">આ પ્રોફાઇલના ઉપયોગ (જેમકે બુકમાર્ક, ઇતિહાસ, પાસવર્ડ બનાવવા અને અન્ય સેટિંગ ગોઠવવા) દરમિયાન જનરેટ થયેલા કોઈપણ Chrome ડેટાને ઑફિસની પ્રોફાઇલના વ્યવસ્થાપક કાઢી નાખી શકે છે. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2401189691232800402">ChromeOS સિસ્ટમ</translation>
-<translation id="2429317896000329049">Google Chrome તમારા ડેટાને સમન્વયિત કરી શક્યું નથી કારણ કે તમારા ડોમેન માટે સમન્વયન ઉપલબ્ધ નથી.</translation>
 <translation id="2467438592969358367">Google Chrome તમારા પાસવર્ડની નિકાસ કરવા માગે છે. આને મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ ટાઇપ કરો.</translation>
 <translation id="2485422356828889247">અનઇન્સ્ટૉલ કરો</translation>
 <translation id="2534507159460261402">Google Pay (Chrome પર કૉપિ કરેલ છે)</translation>
@@ -295,7 +293,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7481213027396403996">Chromeની સૌથી વધુ મજબૂત સુરક્ષા મેળવો</translation>
 <translation id="7486227612705979895">ઍડ્રેસ બારમાં સૂચનો કરવા માટે, Chrome તમારી ડ્રાઇવને ઍક્સેસ કરશે</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">સાઇન ઇન વિગતો જૂની હોવાને કારણે Google Chrome તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Chrome પર આપનું સ્વાગત છે</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે આ ડિવાઇસનો ઉપયોગ કરતા પહેલાં નીચે આપેલી સેવાની શરતો વાંચો અને તેને સ્વીકારો. આ શરતો Google ChromeOSની શરતોમાં વધારો કરતી નથી, તેમાં ફેરફાર કરતી નથી અથવા તેને મર્યાદિત કરતી નથી.</translation>

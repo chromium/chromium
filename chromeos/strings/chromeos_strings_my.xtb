@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">ပါဝါဆေးကြောခြင်း</translation>
 <translation id="2338501278241028356">အနီးတဝိုက်ရှိ စက်ပစ္စည်းများကို ရှာဖွေရန် ဘလူးတုသ်ကို ဖွင့်ပါ</translation>
 <translation id="2346474577291266260">အလွန်ကောင်း (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />သတ်မှတ်ချက်မပြည့်မီသော ဆက်စပ်ပစ္စည်းများ<ph name="LINK_END" /> တွေ့ရှိထားသည်။ ၎င်းကိုထည့်သွင်းပြီးဖြစ်ကြောင်း အတည်ပြုရန် ရွေးလိုပါက ယခုရွေးပါ။</translation>
 <translation id="2363636958541445404">ဖန်သားပြင်နားချိန်ရွေးချယ်ရန် ဝန်ဆောင်မှု ဖွင့်ပါ</translation>
 <translation id="2364498172489649528">အောင်မြင်သည်</translation>
@@ -172,7 +173,6 @@
 <translation id="2620436844016719705">စနစ်</translation>
 <translation id="2638662041295312666">လက်မှတ်ထိုးဝင်ရန်ပုံ</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> အယ်လ်ဘမ်ကို ရွေးထားသည်</translation>
-<translation id="2695514675076754339">စာလုံး ၈ လုံးပါ လော့ခ်ဖွင့်ရန်ကုဒ် ထည့်ပါ</translation>
 <translation id="2712812801627182647">TLS အထောက်အထားစိစစ်ခြင်းကီး</translation>
 <translation id="2717139507051041123">အမှောင်မုဒ် ဖွင့်ရန်</translation>
 <translation id="2740531572673183784">OK</translation>

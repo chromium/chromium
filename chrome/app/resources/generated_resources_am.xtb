@@ -2872,7 +2872,6 @@
 <translation id="3748706263662799310">ስህተት ሪፖርት አድርግ</translation>
 <translation id="3750562496035670393">Chrome የይለፍ ቃልዎን በዚህ መሣሪያ ላይ አስቀምጦታል፣ ነገር ግን በምትኩ Google መለያዎ ላይ ማስቀመጥ ይችላሉ። ከዚያ በመለያ ገብተው ሳለ በGoogle መለያዎ ውስጥ ያሉት ሁሉም የይለፍ ቃላት ይገኛሉ።</translation>
 <translation id="3752253558646317685">ልጅዎ የጣት አሻራውን ለማስቀመት ጣታቸውን ማንሳት እንዲቀጥሉ ያድርጉ</translation>
-<translation id="3752582316358263300">እሺ...</translation>
 <translation id="3753033997400164841">አንድ ጊዜ አከማች። በሁሉም ቦታ ተጠቀም</translation>
 <translation id="3755411799582650620">የእርስዎ <ph name="PHONE_NAME" /> አሁን ይህን <ph name="DEVICE_TYPE" /> ጭምር መክፈት ይችላል።</translation>
 <translation id="375636864092143889">ጣቢያ የእርስዎን ማይክሮፎን እየተጠቀመ ነው</translation>
@@ -3769,7 +3768,6 @@
 <translation id="4633003931260532286">ቅጥያው ቢያንስ የ«<ph name="IMPORT_VERSION" />» ስሪት የሆነ «<ph name="IMPORT_NAME" />» ያስፈልገዋል፣ ነገር ግን «<ph name="INSTALLED_VERSION" />» ስሪት ብቻ ነው የተጫነው</translation>
 <translation id="4633757335284074492">ምትኬ ወደ Google Drive ያስቀምጡ። በማንኛውም ጊዜ ውሂብ በቀላሉ ወደነበሩበት ይመልሱ ወይም መሣሪያን ይቀይሩ። ይህ ምትኬ የመተግበሪያ ውሂብን ያካትታል። ምትኬዎች ወደ Google ተሰቅለዋል እና የልጅዎን የGoogle መለያ የይለፍ ቃል በመጠቀም ተመስጥረዋል።</translation>
 <translation id="4634575639321169635">ይህንን መሣሪያ ለስራ ወይም ለግል ጥቅም ያዋቅሩ</translation>
-<translation id="4634771451598206121">እንደገና ይግቡ...</translation>
 <translation id="4635072447747973225">Crostiniን አራግፍ</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> ለእንግዳ ተጠቃሚዎች አይገኝም።</translation>
 <translation id="4636682061478263818">የDrive ፋይሎች</translation>
@@ -5304,7 +5302,6 @@
 <translation id="6196640612572343990">የሦስተኛ ወገን ኩኪዎችን አግድ</translation>
 <translation id="6196854373336333322">ይህ «<ph name="EXTENSION_NAME" />» ቅጥያ የተኪ ቅንብሮችዎን ተቆጣጥሯል፣ ይሄ ማለት መስመር ላይ የሚያደርጉት ማንኛውም ነገር ሊቀይር፣ ሊሰብር ወይም በድብቅ ሊከታተል ይችላል። ይሄ ለውጥ ለምን እንደተከሰተ እርግጠኛ ካልሆኑ የማይፈልጉት ነገር ሳይሆን አይቀርም።</translation>
 <translation id="6197128521826316819">ለዚህ ገጽ የQR ኮድ ፍጠር</translation>
-<translation id="6198102561359457428">ዘግተው ይውጡና ከዚያ እንደገና ይግቡ...</translation>
 <translation id="6198252989419008588">ፒን ይቀይሩ</translation>
 <translation id="6200047250927636406">ፋይልን አስወግድ</translation>
 <translation id="6200151268994853226">ቅጥያ አቀናብር</translation>
@@ -6253,7 +6250,6 @@
 <translation id="7114648273807173152">Smart Lockን ተጠቅመው ወደ የGoogle መለያዎ ለመግባት ወደ ቅንብሮች &gt; የተገናኙ መሣሪያዎች &gt; የእርስዎ ስልክ &gt; Smart Lock ይሂዱ።</translation>
 <translation id="7115361495406486998">ሊደረስባቸው የሚችሉ እውቂያዎች የሉም</translation>
 <translation id="7117228822971127758">እባክዎ ቆይተው እንደገና ይሞክሩ</translation>
-<translation id="7117247127439884114">እንደገና ይግቡ...</translation>
 <translation id="711840821796638741">የሚቀናበሩ ዕልባቶችን አሳይ</translation>
 <translation id="711902386174337313">በመለያ የገቡ የእርስዎ መሣሪያዎች ዝርዝር ያነብባል</translation>
 <translation id="711985611146095797">ይህ ገጽ በመለያ የገቡትን የGoogle መለያዎችዎን እንዲያስተዳድሩ ያስችልዎታል። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>

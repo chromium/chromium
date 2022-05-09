@@ -2879,7 +2879,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3748706263662799310">Report a bug</translation>
 <translation id="3750562496035670393">Chrome saved your password to this device, but you can save it to your Google Account instead. Then, all passwords in your Google Account will also be available while you're signed in.</translation>
 <translation id="3752253558646317685">Get your child to keep lifting their finger to save the fingerprint</translation>
-<translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Store once. Use everywhere</translation>
 <translation id="3755411799582650620">Your <ph name="PHONE_NAME" /> can now unlock this <ph name="DEVICE_TYPE" /> too.</translation>
 <translation id="375636864092143889">Site is using your microphone</translation>
@@ -3779,7 +3778,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4633003931260532286">Extension requires '<ph name="IMPORT_NAME" />' with a minimum version '<ph name="IMPORT_VERSION" />', but only version '<ph name="INSTALLED_VERSION" />' is installed</translation>
 <translation id="4633757335284074492">Back up to Google Drive. Easily restore data or switch device at any time. This backup includes app data. Backups are uploaded to Google and encrypted using your child's Google Account password.</translation>
 <translation id="4634575639321169635">Set up this device for work or personal use</translation>
-<translation id="4634771451598206121">Sign in again...</translation>
 <translation id="4635072447747973225">Uninstall Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> is not available to Guest users.</translation>
 <translation id="4636682061478263818">Drive files</translation>
@@ -5314,7 +5312,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
 <translation id="6196854373336333322">The extension "<ph name="EXTENSION_NAME" />" has taken control of your proxy settings, which means it can change, break or eavesdrop on anything you do online. If you aren't sure why this change happened, you probably don't want it.</translation>
 <translation id="6197128521826316819">Create QR code for this page</translation>
-<translation id="6198102561359457428">Sign out then sign in again...</translation>
 <translation id="6198252989419008588">Change PIN</translation>
 <translation id="6200047250927636406">Discard file</translation>
 <translation id="6200151268994853226">Manage extension</translation>
@@ -6261,7 +6258,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7114648273807173152">To use Smart Lock to sign in to your Google Account, go to Settings &gt; Connected devices &gt; Your phone &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">No reachable contacts</translation>
 <translation id="7117228822971127758">Please try again later</translation>
-<translation id="7117247127439884114">Sign in Again...</translation>
 <translation id="711840821796638741">Show managed bookmarks</translation>
 <translation id="711902386174337313">Read the list of your signed-in devices</translation>
 <translation id="711985611146095797">This page allows you to manage your signed-in Google Accounts. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>

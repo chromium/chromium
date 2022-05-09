@@ -820,7 +820,6 @@
 <translation id="602472752137106327">Терезелерді барлық жұмыс үстелінен көрсету, ауыстырып қосқыш таңдалды</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />, әкімші басқарады</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> күні ешқандай іс-шара жоқ. Браузерде Google Calendar қолданбасын ашу үшін Enter пернесін басыңыз.</translation>
-<translation id="6027952026115023659">Телефондағы хабар алмасу қолданбаларына <ph name="DEVICE_TYPE" /> құрылғысынан кіріңіз.</translation>
 <translation id="6030495522958826102">Мәзір экранның төменгі сол жақ бұрышына жылжытылды.</translation>
 <translation id="6032620807120418574">Толық экранды жазу үшін кез келген жерді басыңыз.</translation>
 <translation id="6040071906258664830">Микрофон арқылы жазу <ph name="STATE" /></translation>
@@ -970,7 +969,6 @@
 <translation id="6961121602502368900">Жұмыс профилінде дыбыссыз телефон функциясы қолжетімді емес.</translation>
 <translation id="6961840794482373852">Alt + жоғарыға бағыттауыш перне тіркесімінің функциясы өзгерді. Page Up пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + жоғарыға бағыттауыш перне тіркесімін басыңыз.</translation>
 <translation id="6965382102122355670">Жарайды</translation>
-<translation id="6967933908874208731">Телефондағы соңғы фотосуреттерді, медиафайлдарды, хабарландыруларды және хабар алмасу қолданбаларын <ph name="DEVICE_TYPE" /> құрылғысында көріңіз.</translation>
 <translation id="6972754398087986839">Іске кірісу</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Арнайы мүмкіндіктер</translation>

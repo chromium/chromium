@@ -817,7 +817,6 @@
 <translation id="602472752137106327">显示所有桌面中的窗口，已选中单选按钮</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" />没有任何活动。按一下 Enter 键即可在浏览器中打开 Google 日历。</translation>
-<translation id="6027952026115023659">在 <ph name="DEVICE_TYPE" /> 上查看手机中用过的即时通讯应用</translation>
 <translation id="6030495522958826102">菜单已移至屏幕的左下角。</translation>
 <translation id="6032620807120418574">点击任意位置即可录制整个屏幕</translation>
 <translation id="6040071906258664830">麦克风录音功能已<ph name="STATE" /></translation>
@@ -967,7 +966,6 @@
 <translation id="6961121602502368900">工作资料不支持“将手机设为静音”功能</translation>
 <translation id="6961840794482373852">键盘快捷键“Alt + 向上键”已更改。若要使用 Page Up 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向上键。</translation>
 <translation id="6965382102122355670">确定</translation>
-<translation id="6967933908874208731">在 <ph name="DEVICE_TYPE" /> 上查看手机中近期拍摄的照片、播放的媒体、收到的通知和用过的即时通讯应用</translation>
 <translation id="6972754398087986839">开始使用</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6981982820502123353">无障碍</translation>

@@ -222,7 +222,6 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2883151425485251736">Lihat dan edit topik yang anda sembunyikan daripada akaun anda</translation>
 <translation id="288655811176831528">Tutup Tab</translation>
 <translation id="2890171748217283516">Laman yang anda ikuti disimpan pada Google Account anda. Anda boleh Urus laman tersebut dalam Tetapan Discover.</translation>
-<translation id="2893180576842394309">Google boleh menggunakan sejarah anda untuk memperibadikan Carian dan perkhidmatan Google yang lain</translation>
 <translation id="2898963176829412617">Folder Baharu…</translation>
 <translation id="2916171785467530738">Autolengkap Carian dan URL</translation>
 <translation id="291754862089661335">Letakkan kod QR atau kod bar dalam bingkai ini</translation>
@@ -451,6 +450,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="4840495572919996524">Penanda halaman, sejarah, kata laluan dan pelbagai lagi tidak akan disegerakkan ke Akaun Google anda.</translation>
 <translation id="4844899002472726590">Lihat dan edit topik yang anda minati</translation>
 <translation id="4854345657858711387">Tetapkan Kod Laluan</translation>
+<translation id="4858786880085262208">Tingkatkan kepada HTTPS, jika boleh. Laman selamat mungkin membenamkan kandungan yang tidak selamat.</translation>
 <translation id="4860895144060829044">Hubungi</translation>
 <translation id="4872323082491632254">Semak Kata Laluan</translation>
 <translation id="4881695831933465202">Buka</translation>
@@ -800,6 +800,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7781069478569868053">Halaman Tab Baharu</translation>
 <translation id="7781829728241885113">Semalam</translation>
 <translation id="778855399387580014">Mulakan carian dalam tab Chrome baharu.</translation>
+<translation id="7790892308048519147">Cuba gunakan sambungan selamat</translation>
 <translation id="7791543448312431591">Tambah</translation>
 <translation id="7807060072011926525">Disediakan oleh Google</translation>
 <translation id="7839985698273989086">Halaman Luar Talian</translation>
@@ -902,7 +903,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8654802032646794042">Batal</translation>
 <translation id="8668210798914567634">Halaman ini telah disimpan pada Senarai Bacaan anda.</translation>
 <translation id="8680787084697685621">Butiran log masuk akaun sudah lapuk.</translation>
-<translation id="8691262314411702087">Pilih Apa yang Hendak Disegerakkan</translation>
 <translation id="8693663554456874301">{count,plural, =1{Tutup Tab}other{Tutup Tab}}</translation>
 <translation id="8706588385081740091">Kata laluan</translation>
 <translation id="8717864919010420084">Salin Pautan</translation>

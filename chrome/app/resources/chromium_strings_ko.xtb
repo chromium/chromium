@@ -202,7 +202,6 @@
 <translation id="6063093106622310249">&amp;Chromium에서 열기</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" />이(가) Chromium에 추가됨</translation>
 <translation id="608006075545470555">이 브라우저에 직장 프로필 추가</translation>
-<translation id="608189560609172163">로그인 중 오류가 발생하여 Chromium에서 데이터를 동기화하지 못했습니다.</translation>
 <translation id="6096348254544841612">Chromium을 맞춤설정하고 제어하세요. 업데이트가 출시되었습니다.</translation>
 <translation id="6120345080069858279">Chromium에서 내 Google 계정에 이 비밀번호를 저장하므로 기억하지 않아도 됩니다.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" />은(는) 위험한 파일이므로 Chromium에서 차단했습니다.</translation>
@@ -298,7 +297,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7682601070171973634">Chromium은 사용자의 데이터를 더 적게 사용하면서도 사이트에서 동일한 탐색 환경을 제공할 수 있는 새로운 기능을 알아보고 있습니다.</translation>
 <translation id="7686590090926151193">Chromium이 기본 브라우저로 설정되어 있지 않습니다</translation>
 <translation id="7689606757190482937">모든 기기에서 Chromium을 동기화하고 맞춤설정하세요.</translation>
-<translation id="7729447699958282447">도메인에서 동기화를 사용할 수 없어 Chromium에서 데이터를 동기화하지 못했습니다.</translation>
 <translation id="7745317241717453663">인터넷 사용 기록이 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chromium에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -343,7 +341,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8713679423359107094">모든 Chromium 창을 닫으면 쿠키와 사이트 데이터가 자동으로 삭제됩니다.</translation>
 <translation id="8796443464227412154">Chromium을 종료하면 <ph name="BEGIN_BOLD" />대부분의 사이트에서 로그아웃<ph name="END_BOLD" />됩니다. 동기화를 사용 중지하면 <ph name="BEGIN_BOLD" />Google 서비스 및 Chromium에서도 로그아웃<ph name="END_BOLD" />됩니다.</translation>
 <translation id="8796602469536043152">이 사이트에서 카메라와 마이크에 액세스하려면 Chromium에 권한이 필요합니다</translation>
-<translation id="8821041990367117597">계정의 로그인 세부정보가 오래되어 Chromium에서 데이터를 동기화하지 못했습니다.</translation>
 <translation id="8833697763442816810">ChromiumOS 시스템</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />사용되는 데이터:<ph name="END_BOLD" /> 이 기기에서 Chromium을 사용해 방문한 사이트의 기록인 방문 기록이 사용됩니다.</translation>
 <translation id="8862326446509486874">시스템 수준의 설치 권한이 없습니다. 관리자 권한으로 설치 프로그램을 다시 실행해 보세요.</translation>

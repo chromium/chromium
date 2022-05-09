@@ -820,7 +820,6 @@
 <translation id="602472752137106327">すべてのデスクのウィンドウを表示する、ラジオボタンが選択されています</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> の予定はありません。ブラウザで Google カレンダーを開くには Enter キーを押します。</translation>
-<translation id="6027952026115023659"><ph name="DEVICE_TYPE" /> でスマートフォンのメッセージ アプリにアクセスします</translation>
 <translation id="6030495522958826102">メニューは画面左下に移動しました。</translation>
 <translation id="6032620807120418574">全画面を録画するには任意の場所をクリックしてください</translation>
 <translation id="6040071906258664830">マイク録音は <ph name="STATE" /> です</translation>
@@ -970,7 +969,6 @@
 <translation id="6961121602502368900">スマートフォンの消音は仕事用プロファイルでは使用できません</translation>
 <translation id="6961840794482373852">キーボード ショートカット「Alt+上矢印」が変更されました。PageUp キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+上矢印キーを押してください。</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967933908874208731"><ph name="DEVICE_TYPE" /> でスマートフォンの最近の写真、メディア、通知、メッセージ アプリを表示します</translation>
 <translation id="6972754398087986839">開始する</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
 <translation id="6981982820502123353">ユーザー補助機能</translation>

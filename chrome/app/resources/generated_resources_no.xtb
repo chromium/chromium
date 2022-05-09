@@ -2872,7 +2872,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3748706263662799310">Rapporter feil</translation>
 <translation id="3750562496035670393">Chrome har lagret passordet ditt på denne enheten, men du kan lagre det i Google-kontoen din i stedet. Da blir alle passordene på Google-kontoen din også tilgjengelige mens du er pålogget.</translation>
 <translation id="3752253558646317685">Få barnet ditt til å løfte fingeren gjentatte ganger for å lagre fingeravtrykket</translation>
-<translation id="3752582316358263300">OK</translation>
 <translation id="3753033997400164841">Lagre én gang. Bruk overalt</translation>
 <translation id="3755411799582650620">Du kan nå også låse opp <ph name="DEVICE_TYPE" /> med <ph name="PHONE_NAME" />.</translation>
 <translation id="375636864092143889">Nettstedet bruker mikrofonen din</translation>
@@ -3769,7 +3768,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4633003931260532286">Utvidelsen krever «<ph name="IMPORT_NAME" />» med «<ph name="IMPORT_VERSION" />» som minimumsversjon, men bare versjon «<ph name="INSTALLED_VERSION" />» er installert</translation>
 <translation id="4633757335284074492">Sikkerhetskopiér til Google Disk. Gjenopprett data enkelt eller bytt enhet når som helst. Denne sikkerhetskopien inkluderer appdata. Sikkerhetskopier lastes opp til Google og krypteres med passordet for Google-kontoen til barnet ditt.</translation>
 <translation id="4634575639321169635">Konfigurer denne enheten for arbeid eller personlig bruk</translation>
-<translation id="4634771451598206121">Logg på igjen</translation>
 <translation id="4635072447747973225">Avinstaller Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> er ikke tilgjengelig for gjestebrukere.</translation>
 <translation id="4636682061478263818">Disk-filer</translation>
@@ -5303,7 +5301,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="6196640612572343990">Blokkér informasjonskapsler fra tredjeparter</translation>
 <translation id="6196854373336333322">Utvidelsen «<ph name="EXTENSION_NAME" />» har tatt kontroll over proxy-tjenerinnstillingene dine, noe som betyr at den kan endre, ødelegge eller spionere på alt du foretar deg på nettet. Hvis du ikke er sikker på hvorfor denne endringen fant sted, vil du mest sannsynlig ikke ha den.</translation>
 <translation id="6197128521826316819">Opprett en QR-kode for denne siden</translation>
-<translation id="6198102561359457428">Logg deg av og på igjen</translation>
 <translation id="6198252989419008588">Endre personlig kode</translation>
 <translation id="6200047250927636406">Forkast filen</translation>
 <translation id="6200151268994853226">Administrer utvidelsen</translation>
@@ -6250,7 +6247,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7114648273807173152">For å bruke Smart Lock til å logge på Google-kontoen din, gå til Innstillinger &gt; Tilkoblede enheter &gt; Telefonen din &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Ingen kontakter kan nås</translation>
 <translation id="7117228822971127758">Prøv på nytt senere</translation>
-<translation id="7117247127439884114">Logg på igjen</translation>
 <translation id="711840821796638741">Vis administrerte bokmerker</translation>
 <translation id="711902386174337313">lese listen over de påloggede enhetene dine</translation>
 <translation id="711985611146095797">På denne siden kan du administrere de påloggede Google-kontoene dine. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>

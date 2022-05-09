@@ -198,7 +198,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6063093106622310249">&amp;Abrir no Chromium</translation>
 <translation id="6072279588547424923">A extensão <ph name="EXTENSION_NAME" /> foi adicionada ao Chromium</translation>
 <translation id="608006075545470555">Adicionar um perfil de trabalho a este navegador</translation>
-<translation id="608189560609172163">O Chromium não pôde sincronizar seus dados devido a um erro ao fazer login.</translation>
 <translation id="6096348254544841612">Personalize e controle o Chromium. Uma atualização está disponível.</translation>
 <translation id="6120345080069858279">O Chromium salvará essa senha na sua Conta do Google. Você não precisará se lembrar dela.</translation>
 <translation id="6129621093834146363">O arquivo <ph name="FILE_NAME" /> é perigoso. Por isso ele foi bloqueado pelo Chromium.</translation>
@@ -290,7 +289,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7682601070171973634">O Chromium está explorando novos recursos que permitem que os sites ofereçam a mesma experiência de navegação usando menos dados</translation>
 <translation id="7686590090926151193">O Chromium não é seu navegador padrão</translation>
 <translation id="7689606757190482937">Sincronize e personalize o Chromium em todos os seus dispositivos</translation>
-<translation id="7729447699958282447">O Chromium não pôde sincronizar seus dados porque a sincronização não está disponível para seu domínio.</translation>
 <translation id="7745317241717453663">Essa ação excluirá seus dados de navegação deste dispositivo. Para recuperá-los mais tarde, faça login no Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">O instalador não conseguiu criar um diretório temporário. Verifique se há espaço livre em disco e se há permissão para a instalação de software.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" />: Chromium Canary</translation>
@@ -335,7 +333,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8713679423359107094">Quando você fechar todas as janelas do Chromium, os cookies e os dados dos sites serão apagados automaticamente</translation>
 <translation id="8796443464227412154">Sua conta será <ph name="BEGIN_BOLD" />desconectada da maioria dos sites<ph name="END_BOLD" /> quando você fechar o Chromium. Se a sincronização estiver desativada, a conta também será <ph name="BEGIN_BOLD" />desconectada dos Serviços do Google e do navegador<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">O Chromium precisa de permissão para este site acessar sua câmera e seu microfone</translation>
-<translation id="8821041990367117597">O Chromium não pôde sincronizar seus dados, pois os detalhes de login da sua conta estão desatualizados.</translation>
 <translation id="8833697763442816810">Sistema ChromiumOS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Quais dados são usados<ph name="END_BOLD" />: seu histórico de navegação, um registro de sites visitados usando o Chromium neste dispositivo.</translation>
 <translation id="8862326446509486874">Você não tem os direitos adequados para instalação no nível do sistema. Tente executar o instalador novamente como administrador.</translation>

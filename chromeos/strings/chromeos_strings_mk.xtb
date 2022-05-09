@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Фабричко ресетирање</translation>
 <translation id="2338501278241028356">Вклучете Bluetooth за да откриете места во близина</translation>
 <translation id="2346474577291266260">Одличен (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Продолжи</translation>
 <translation id="2360257214555822463">Откриени се <ph name="LINK_BEGIN" />неквалификувани компоненти<ph name="LINK_END" />. Ако решите да потврдите дека се инсталирани, тогаш потврдете сега.</translation>
 <translation id="2363636958541445404">Вклучете ја функцијата за да одберете опции за заштитник на екран</translation>
 <translation id="2364498172489649528">Помина</translation>
@@ -172,7 +173,6 @@
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2638662041295312666">Слика при најавување</translation>
 <translation id="2640549051766135490">Избран е албумот <ph name="TITLE" /> <ph name="DESC" /></translation>
-<translation id="2695514675076754339">Внесете го 8-цифрениот код за отклучување</translation>
 <translation id="2712812801627182647">Клуч за TLS-проверка</translation>
 <translation id="2717139507051041123">Овозможете режим во темна боја</translation>
 <translation id="2740531572673183784">Во ред</translation>

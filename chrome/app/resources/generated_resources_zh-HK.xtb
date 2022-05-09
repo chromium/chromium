@@ -2876,7 +2876,6 @@
 <translation id="3748706263662799310">回報錯誤</translation>
 <translation id="3750562496035670393">Chrome 已將密碼儲存至此裝置，不過您亦可改為將密碼儲存至 Google 帳戶。然後，當您登入後，您亦可在查看所有儲存在 Google 帳戶中的密碼。</translation>
 <translation id="3752253558646317685">讓子女重覆按壓手指，以便儲存指紋</translation>
-<translation id="3752582316358263300">確定…</translation>
 <translation id="3753033997400164841">只需儲存一次，即可在所有裝置上使用</translation>
 <translation id="3755411799582650620">您的 <ph name="PHONE_NAME" /> 現在也可為這部 <ph name="DEVICE_TYPE" /> 解鎖。</translation>
 <translation id="375636864092143889">網站正在使用您的麥克風</translation>
@@ -3775,7 +3774,6 @@
 <translation id="4633003931260532286">此擴充程式要求 <ph name="IMPORT_NAME" /> <ph name="IMPORT_VERSION" /> 或以上，但現有版本僅為 <ph name="INSTALLED_VERSION" /></translation>
 <translation id="4633757335284074492">備份至「Google 雲端硬碟」。您可隨時輕鬆還原資料或改用其他裝置。備份包含應用程式資料。備份會上載至 Google，並使用您子女的 Google 帳戶密碼加密。</translation>
 <translation id="4634575639321169635">將此裝置設定為工作或個人使用</translation>
-<translation id="4634771451598206121">重新登入…</translation>
 <translation id="4635072447747973225">解除安裝 Crostini</translation>
 <translation id="4635398712689569051">訪客使用者無法瀏覽「<ph name="PAGE_NAME" />」。</translation>
 <translation id="4636682061478263818">「雲端硬碟」檔案</translation>
@@ -5305,7 +5303,6 @@
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6196854373336333322">您的 Proxy 設定已受到擴充功能「<ph name="EXTENSION_NAME" />」控制，該擴充功能可變更、中斷、或監視您在網上的行為。如果您不確定這項變更為何發生，建議您停用該擴充功能。</translation>
 <translation id="6197128521826316819">為此頁面建立 QR 碼</translation>
-<translation id="6198102561359457428">登出然後再次登入…</translation>
 <translation id="6198252989419008588">變更 PIN</translation>
 <translation id="6200047250927636406">捨棄檔案</translation>
 <translation id="6200151268994853226">管理擴充程式</translation>
@@ -6251,7 +6248,6 @@
 <translation id="7114648273807173152">如要使用 Smart Lock 登入 Google 帳戶，請前往 [設定] &gt; [已連接的裝置] &gt; [您的手機] &gt; [Smart Lock]。</translation>
 <translation id="7115361495406486998">沒有可用的聯絡人</translation>
 <translation id="7117228822971127758">請稍後再試</translation>
-<translation id="7117247127439884114">重新登入…</translation>
 <translation id="711840821796638741">顯示受管理書籤</translation>
 <translation id="711902386174337313">讀取已登入裝置清單</translation>
 <translation id="711985611146095797">您可在此頁面管理已登入的 Google 帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>

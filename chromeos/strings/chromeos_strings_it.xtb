@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Attiva il Bluetooth per trovare dispositivi nelle vicinanze</translation>
 <translation id="2346474577291266260">Eccellente (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Continua</translation>
 <translation id="2360257214555822463">Sono stati rilevati <ph name="LINK_BEGIN" />componenti non idonei<ph name="LINK_END" />. Se decidi di confermare che sono stati installati, fallo ora.</translation>
 <translation id="2363636958541445404">Attiva la funzionalità per selezionare le opzioni per il salvaschermo</translation>
 <translation id="2364498172489649528">Superato</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2638662041295312666">Immagine accesso</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> selezionato</translation>
-<translation id="2695514675076754339">Inserisci il codice di sblocco di 8 caratteri</translation>
 <translation id="2712812801627182647">Chiave di autenticazione TLS</translation>
 <translation id="2717139507051041123">Attiva la modalità Colore scuro</translation>
 <translation id="2740531572673183784">OK</translation>

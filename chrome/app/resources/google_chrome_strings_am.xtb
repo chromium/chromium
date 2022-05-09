@@ -41,7 +41,6 @@
 <translation id="1698376642261615901">Google Chrome ድረ-ገፆችን እና መተግበሪያዎችን በሚገርም ፍጥነት ማሄድ የሚችል የድር አሳሽ ነው። ፈጣን፣ የረጋ እና ለመጠቀም ቀላል ነው። Google Chrome ውስጥ አብሮት በተሰራ የአስጋሪና ተንኮል-አዘል ሶፍትዌር መከላከያ አማካኝነት ደህንነትዎ በበለጠ ሁኔታ ተጠብቆ ድሩን ያስሱ።</translation>
 <translation id="1713301662689114961">{0,plural, =1{በአንድ ሰዓት ውስጥ Chrome ዳግም ይጀመራል}one{በ# ሰዓቶች ውስጥ Chrome ዳግም ይጀመራል}other{በ# ሰዓቶች ውስጥ Chrome ዳግም ይጀመራል}}</translation>
 <translation id="1734234790201236882">Chrome ይህን የይለፍ ቃል በእርስዎ የGoogle መለያ ውስጥ ያስቀምጠዋል። ማስታወስ አይኖርብዎትም።</translation>
-<translation id="174539241580958092">በመለያ ሲገባ በነበረ ስህተት ምክንያት Google Chrome ውሂብዎን ማመሳሰል አልቻለም።</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">በእርስዎ <ph name="TARGET_DEVICE_NAME" /> ላይ በመለያ ወደ Chrome መግባትዎን ያረጋግጡ እና እንደገና ለመላክ ይሞክሩ።</translation>
 <translation id="1812689907177901597">ይህንን በማጥፋት፣ እንደ Gmail ወደ መሰሉ የGoogle ጣቢያዎች ወደ Chrome በመለያ ሳይገቡ መግባት ይችላሉ</translation>
@@ -72,7 +71,6 @@
 <translation id="235650106824528204">ይህን መገለጫ በሚጠቀሙበት ጊዜ የመነጨ ማንኛውም የChrome ውሂብ (እንደ የዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች መፈጠር ያለ) በስራ መገለጫ አስተዳዳሪው ሊወገድ ይችላል። <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2401189691232800402">የChromeOS ስርዓት</translation>
-<translation id="2429317896000329049">ማመሳሰል ለጎራዎ ስለማይገኝ Google Chrome ውሂብዎን ማመሳሰል አልቻለም።</translation>
 <translation id="2467438592969358367">Google Chrome የእርስዎን የይለፍ ቃላት ወደ ውጭ መላክ ይፈልጋል። ይህንን ለመፍቀድ የWindows የይለፍ ቃልዎን ይተይቡ።</translation>
 <translation id="2485422356828889247">አራግፍ</translation>
 <translation id="2534507159460261402">Google Pay (ወደ Chrome ተቀድቷል)</translation>
@@ -292,7 +290,6 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="7481213027396403996">በጣም ጠንካራውን የChrome ደህንነት ያግኙ</translation>
 <translation id="7486227612705979895">Chrome የእርስዎን Drive በአድራሻ አሞሌ ውስጥ ጥቆማ ሐሳቦችን ይደርሳል</translation>
 <translation id="7535429826459677826">Google Chrome ገንቢ</translation>
-<translation id="7592736734348559088">የመለያዎ መግቢያ ዝርዝሮች ጊዜያቸው ያለፈባቸው ስለሆኑ Google Chrome ውሂብዎን ማመሳሰል አልቻለም።</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">ወደ Chrome እንኳን ደህና መጡ</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> ይህን መሣሪያ ከመጠቀምዎ በፊት የሚከተለውን የአገልግሎት ውል እንዲያነብቡ እና እንዲቀበሉ ይፈለጋል። ይህ ውል የGoogle ChromeOS ውሉን አያስፋፋውም፣ አይቀይረውም ወይም አይገድበውም።</translation>

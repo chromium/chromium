@@ -38,7 +38,6 @@
 <translation id="1698376642261615901">Google Chrome ist ein Webbrowser, der Webseiten und Apps in Sekundenschnelle lädt und dabei äußerst stabil und nutzerfreundlich ist. Dank des integrierten Malware- und Phishing-Schutzes kannst du bedenkenlos im Internet surfen.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome wird in einer Stunde neu gestartet}other{Chrome wird in # Stunden neu gestartet}}</translation>
 <translation id="1734234790201236882">Chrome speichert dieses Passwort in deinem Google-Konto. Du musst es dir also nicht merken.</translation>
-<translation id="174539241580958092">Google Chrome konnte deine Daten aufgrund eines Fehlers bei der Anmeldung nicht synchronisieren.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Du musst auf deinem Gerät (<ph name="TARGET_DEVICE_NAME" />) in Chrome angemeldet sein. Versuche es dann noch einmal.</translation>
 <translation id="1812689907177901597">Wenn du diese Einstellung deaktivierst, kannst du dich auf Websites von Google wie beispielsweise Gmail anmelden, ohne auch in Chrome angemeldet zu werden</translation>
@@ -69,7 +68,6 @@
 <translation id="235650106824528204">Alle Chrome-Daten, die während der Nutzung dieses Profils erstellt werden, wie Lesezeichen, Verlauf, Passwörter und andere Einstellungen, können vom Administrator des Arbeitsprofils entfernt werden. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2401189691232800402">Chrome OS-System</translation>
-<translation id="2429317896000329049">Google Chrome konnte deine Daten nicht synchronisieren, da die Synchronisierung für deine Domain nicht zur Verfügung steht.</translation>
 <translation id="2467438592969358367">Google Chrome möchte deine Passwörter exportieren. Wenn du dies zulassen möchtest, gib dein Windows-Passwort ein.</translation>
 <translation id="2485422356828889247">Deinstallieren</translation>
 <translation id="2534507159460261402">Google Pay (in Chrome kopiert)</translation>
@@ -285,7 +283,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7481213027396403996">Höchste Sicherheit in Chrome erhalten</translation>
 <translation id="7486227612705979895">Chrome greift auf Google Drive zu, um in der Adressleiste Vorschläge zu machen</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">Google Chrome konnte deine Daten nicht synchronisieren, da die Anmeldedaten deines Kontos nicht mehr aktuell sind.</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626032353295482388">Willkommen bei Chrome</translation>
 <translation id="7626072681686626474">Für <ph name="MANAGER" /> ist es erforderlich, dass du vor der Verwendung dieses Geräts die folgenden Nutzungsbedingungen akzeptierst. Durch diese Nutzungsbedingungen werden die Google Chrome OS-Nutzungsbedingungen nicht erweitert, geändert oder eingeschränkt.</translation>

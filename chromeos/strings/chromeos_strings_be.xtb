@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Каб знайсці прылады паблізу, уключыце Bluetooth</translation>
 <translation id="2346474577291266260">Выдатны (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2360257214555822463">Выяўлены <ph name="LINK_BEGIN" />кампаненты, якія не адпавядаюць патрабаванням<ph name="LINK_END" />. Калі вы хочаце пацвердзіць, што яны ўсталяваны, зрабіце гэта зараз.</translation>
 <translation id="2363636958541445404">Уключыце гэту функцыю, каб выбраць параметры застаўкі</translation>
 <translation id="2364498172489649528">Пройдзена</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">Сістэма</translation>
 <translation id="2638662041295312666">Відарыс уліковага запісу</translation>
 <translation id="2640549051766135490">Выбраны альбом "<ph name="TITLE" />" (<ph name="DESC" />)</translation>
-<translation id="2695514675076754339">Увядзіце 8-значны код для разблакіроўкі</translation>
 <translation id="2712812801627182647">Ключ аўтэнтыфікацыі TLS</translation>
 <translation id="2717139507051041123">Уключыць рэжым цёмных колераў</translation>
 <translation id="2740531572673183784">OK</translation>

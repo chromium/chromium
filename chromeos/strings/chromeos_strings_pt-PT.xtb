@@ -145,6 +145,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Ativar o Bluetooth para detetar dispositivos próximos</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Continuar</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Componentes não qualificados<ph name="LINK_END" /> detetados. Se optar por confirmar que estes foram instalados, faça-o agora.</translation>
 <translation id="2363636958541445404">Ative a funcionalidade para selecionar opções de proteção de ecrã</translation>
 <translation id="2364498172489649528">Aprovado</translation>
@@ -172,7 +173,6 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2638662041295312666">Imagem do início de sessão</translation>
 <translation id="2640549051766135490">Álbum <ph name="TITLE" /> <ph name="DESC" /> selecionado</translation>
-<translation id="2695514675076754339">Introduzir o código de desbloqueio de 8 carateres</translation>
 <translation id="2712812801627182647">Chave de autenticação TLS</translation>
 <translation id="2717139507051041123">Ativar modo de cor escura</translation>
 <translation id="2740531572673183784">OK</translation>

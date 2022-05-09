@@ -222,7 +222,6 @@
 <translation id="2883151425485251736">Прегледајте и мењајте теме које сте сакрили са налога</translation>
 <translation id="288655811176831528">Затвори картицу</translation>
 <translation id="2890171748217283516">Сајтови које пратите се чувају на Google налогу. Њима можете да управљате у подешавањима Discover-а.</translation>
-<translation id="2893180576842394309">Google може да користи историју за персонализацију Претраге и других Google услуга</translation>
 <translation id="2898963176829412617">Нови директоријум...</translation>
 <translation id="2916171785467530738">Аутоматски довршавај претраге и URL-ове</translation>
 <translation id="291754862089661335">Поставите QR или бар-код у овај оквир</translation>
@@ -904,7 +903,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8654802032646794042">Откажи</translation>
 <translation id="8668210798914567634">Ова страница је сачувана на Листи за читање.</translation>
 <translation id="8680787084697685621">Детаљи за пријављивање на налог су застарели.</translation>
-<translation id="8691262314411702087">Изаберите ставке за синхронизацију</translation>
 <translation id="8693663554456874301">{count,plural, =1{Затвори картицу}one{Затвори картице}few{Затвори картице}other{Затвори картице}}</translation>
 <translation id="8706588385081740091">Лозинке</translation>
 <translation id="8717864919010420084">Копирај линк</translation>

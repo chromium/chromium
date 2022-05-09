@@ -222,7 +222,6 @@
 <translation id="2883151425485251736">مشاهده و ویرایش موضوع‌هایی که در حسابتان پنهان کرده‌اید</translation>
 <translation id="288655811176831528">بستن برگه</translation>
 <translation id="2890171748217283516">‏سایت‌هایی که دنبال می‌کنید در «حساب Google» شما ذخیره می‌شود. می‌توانید آن‌ها را در تنظیمات «یافته‌ها» مدیریت کنید.</translation>
-<translation id="2893180576842394309">‏Google ممکن است از سابقه مرور شما برای شخصی کردن جستجو و سایر سرویس‌های Google استفاده کند</translation>
 <translation id="2898963176829412617">پوشه جدید…</translation>
 <translation id="2916171785467530738">تکمیل خودکار جستجوها و نشانی‌های وب</translation>
 <translation id="291754862089661335">رمزینه پاسخ‌سریع یا بارکد را در این قاب قرار دهید</translation>
@@ -451,6 +450,7 @@
 <translation id="4840495572919996524">‏نشانک‌ها، سابقه، گذرواژه‌ها و سایر موارد، دیگر با حساب Google شما همگام‌سازی نمی‌شود.</translation>
 <translation id="4844899002472726590">دیدن و ویرایش موضوع‌های موردعلاقه</translation>
 <translation id="4854345657858711387">تنظیم گذرنویسه</translation>
+<translation id="4858786880085262208">‏هروقت ممکن باشد، به HTTPS ارتقا پیدا می‌کنید. سایت‌های امن ممکن است محتوای ناامن جاسازی کنند.</translation>
 <translation id="4860895144060829044">تماس</translation>
 <translation id="4872323082491632254">بررسی گذرواژه‌ها</translation>
 <translation id="4881695831933465202">باز کردن</translation>
@@ -800,6 +800,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7781069478569868053">صفحه برگه جدید</translation>
 <translation id="7781829728241885113">دیروز</translation>
 <translation id="778855399387580014">‏جستجویی در برگه Chrome جدیدی شروع کنید.</translation>
+<translation id="7790892308048519147">تلاش برای استفاده از اتصال‌های امن</translation>
 <translation id="7791543448312431591">افزودن</translation>
 <translation id="7807060072011926525">‏ارائه از Google</translation>
 <translation id="7839985698273989086">صفحه آفلاین</translation>
@@ -902,7 +903,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8654802032646794042">لغو</translation>
 <translation id="8668210798914567634">این صفحه در «فهرست خواندن» شما ذخیره شده است.</translation>
 <translation id="8680787084697685621">جزئیات ورود به سیستم حساب قدیمی است.</translation>
-<translation id="8691262314411702087">انتخاب آنچه که باید همگام‌سازی شود</translation>
 <translation id="8693663554456874301">{count,plural, =1{بستن برگه}one{بستن برگه}other{بستن برگه‌ها}}</translation>
 <translation id="8706588385081740091">گذرواژه‌ها</translation>
 <translation id="8717864919010420084">کپی پیوند</translation>

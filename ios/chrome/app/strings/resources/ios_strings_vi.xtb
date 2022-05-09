@@ -222,7 +222,6 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="2883151425485251736">Xem và chỉnh sửa những chủ đề bạn đã chọn ẩn khỏi tài khoản</translation>
 <translation id="288655811176831528">Đóng thẻ</translation>
 <translation id="2890171748217283516">Các trang web bạn theo dõi sẽ được lưu trong tài khoản Google của bạn. Bạn có thể quản lý các trang web đó trong phần cài đặt của trang Khám phá.</translation>
-<translation id="2893180576842394309">Google có thể sử dụng nhật ký hoạt động của bạn để điều chỉnh tính năng Tìm kiếm và các dịch vụ khác của Google cho phù hợp hơn với bạn</translation>
 <translation id="2898963176829412617">Thư mục mới…</translation>
 <translation id="2916171785467530738">Tự động hoàn thành cụm từ tìm kiếm và URL</translation>
 <translation id="291754862089661335">Đặt mã QR hoặc mã vạch vào khung này</translation>
@@ -451,6 +450,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="4840495572919996524">Dấu trang, lịch sử, mật khẩu và các dữ liệu khác sẽ không còn đồng bộ hóa với Tài khoản Google của bạn nữa.</translation>
 <translation id="4844899002472726590">Xem và chỉnh sửa những chủ đề bạn quan tâm</translation>
 <translation id="4854345657858711387">Đặt mật mã</translation>
+<translation id="4858786880085262208">Nâng cấp lên HTTPS (khi có thể). Các trang web an toàn có thể nhúng nội dung không an toàn.</translation>
 <translation id="4860895144060829044">Gọi</translation>
 <translation id="4872323082491632254">Kiểm tra mật khẩu</translation>
 <translation id="4881695831933465202">Mở</translation>
@@ -800,6 +800,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="7781069478569868053">Trang thẻ mới</translation>
 <translation id="7781829728241885113">Hôm qua</translation>
 <translation id="778855399387580014">Bắt đầu tìm kiếm trong thẻ Chrome mới.</translation>
+<translation id="7790892308048519147">Hãy sử dụng kết nối bảo mật</translation>
 <translation id="7791543448312431591">Thêm</translation>
 <translation id="7807060072011926525">Do Google cung cấp</translation>
 <translation id="7839985698273989086">Trang ngoại tuyến</translation>
@@ -902,7 +903,6 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8654802032646794042">Hủy</translation>
 <translation id="8668210798914567634">Trang này đã được lưu vào danh sách đọc của bạn.</translation>
 <translation id="8680787084697685621">Chi tiết đăng nhập tài khoản đã lỗi thời.</translation>
-<translation id="8691262314411702087">Chọn loại dữ liệu để đồng bộ hóa</translation>
 <translation id="8693663554456874301">{count,plural, =1{Đóng thẻ}other{Đóng các thẻ}}</translation>
 <translation id="8706588385081740091">Mật khẩu</translation>
 <translation id="8717864919010420084">Sao chép đường liên kết</translation>

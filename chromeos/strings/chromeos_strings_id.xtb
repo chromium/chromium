@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Aktifkan Bluetooth untuk menemukan perangkat di sekitar</translation>
 <translation id="2346474577291266260">Sangat baik (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Komponen yang tidak memenuhi syarat<ph name="LINK_END" /> terdeteksi. Jika Anda memilih untuk mengonfirmasi bahwa komponen tersebut telah diinstal, lakukan sekarang.</translation>
 <translation id="2363636958541445404">Aktifkan fitur untuk memilih opsi screensaver</translation>
 <translation id="2364498172489649528">Lulus</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2638662041295312666">Gambar login</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> dipilih</translation>
-<translation id="2695514675076754339">Masukkan kode buka kunci 8 karakter</translation>
 <translation id="2712812801627182647">Kunci autentikasi TLS</translation>
 <translation id="2717139507051041123">Aktifkan mode warna gelap</translation>
 <translation id="2740531572673183784">Oke</translation>

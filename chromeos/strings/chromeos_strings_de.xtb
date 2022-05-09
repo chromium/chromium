@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Aktiviere Bluetooth, damit Geräte in der Nähe gefunden werden</translation>
 <translation id="2346474577291266260">Sehr gut (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Weiter</translation>
 <translation id="2360257214555822463">Es wurden <ph name="LINK_BEGIN" />nicht qualifizierte Komponenten<ph name="LINK_END" /> erkannt. Wenn du deren Installation bestätigen möchtest, tu das bitte jetzt.</translation>
 <translation id="2363636958541445404">Aktiviere die Funktion, um die Bildschirmschoner-Optionen auszuwählen</translation>
 <translation id="2364498172489649528">Bestanden</translation>
@@ -172,7 +173,6 @@
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Log-in-Bild</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> ausgewählt</translation>
-<translation id="2695514675076754339">Achtstelligen Code zum Entsperren eingeben</translation>
 <translation id="2712812801627182647">TLS-Authentifizierungsschlüssel</translation>
 <translation id="2717139507051041123">Dunklen Farbmodus aktivieren</translation>
 <translation id="2740531572673183784">Ok</translation>

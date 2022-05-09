@@ -820,7 +820,6 @@
 <translation id="602472752137106327">Приказујте прозоре са свих радних површина, дугме за избор је изабрано</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />, управља администратор</translation>
 <translation id="6027518778343897451">Нема догађаја у: <ph name="CURRENT_MONTH_DAY" />. Притисните Enter да бисте отворили Google календар у прегледачу.</translation>
-<translation id="6027952026115023659">Приступите апликацијама за размену порука са телефона на <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Мени је премештен у доњи леви угао екрана.</translation>
 <translation id="6032620807120418574">Кликните било где да бисте снимили цео екран</translation>
 <translation id="6040071906258664830">Подешавање Снимај помоћу микрофона је <ph name="STATE" /></translation>
@@ -970,7 +969,6 @@
 <translation id="6961121602502368900">Искључивање звука телефона није доступно на пословном профилу</translation>
 <translation id="6961840794482373852">Тастерска пречица Ctrl + стрелица нагоре је промењена. Да бисте користили тастер Page Up, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + стрелица нагоре.</translation>
 <translation id="6965382102122355670">Потврди</translation>
-<translation id="6967933908874208731">Прегледајте недавне слике, медије, обавештења и апликације за размену порука са телефона на <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Започнимо</translation>
 <translation id="6979158407327259162">Google диск</translation>
 <translation id="6981982820502123353">Приступачност</translation>

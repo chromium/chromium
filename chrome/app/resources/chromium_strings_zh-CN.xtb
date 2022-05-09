@@ -200,7 +200,6 @@
 <translation id="6063093106622310249">在 Chromium 中打开(&amp;O)</translation>
 <translation id="6072279588547424923">“<ph name="EXTENSION_NAME" />”已添加到 Chromium</translation>
 <translation id="608006075545470555">向此浏览器添加工作资料</translation>
-<translation id="608189560609172163">由于在登录时出现错误，Chromium无法同步您的数据。</translation>
 <translation id="6096348254544841612">有可用的更新。欢迎自定义和控制 Chromium。</translation>
 <translation id="6120345080069858279">Chromium 会将此密码保存在您的 Google 帐号中，因此您不必记住它。</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> 存在危险，因此 Chromium 已将其拦截。</translation>
@@ -295,7 +294,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7682601070171973634">Chromium 团队正在探索新功能，以便网站只需使用您的较少数据就能提供同样的浏览体验</translation>
 <translation id="7686590090926151193">Chromium 不是您的默认浏览器</translation>
 <translation id="7689606757190482937">在您的所有设备上同步并个性化设置 Chromium</translation>
-<translation id="7729447699958282447">由于您的网域停用了同步功能，Chromium无法同步您的数据。</translation>
 <translation id="7745317241717453663">这会从这台设备上删除您的浏览数据。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -339,7 +337,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8713679423359107094">当您关闭所有 Chromium 窗口时，系统会自动清除 Cookie 和网站数据</translation>
 <translation id="8796443464227412154">关闭 Chromium 时，您会<ph name="BEGIN_BOLD" />自动退出大多数网站<ph name="END_BOLD" />。如果同步功能处于关闭状态，您还会<ph name="BEGIN_BOLD" />自动退出 Google 服务和 Chromium<ph name="END_BOLD" />。</translation>
 <translation id="8796602469536043152">Chromium 需要获得相应权限，才能允许此网站使用您的摄像头和麦克风</translation>
-<translation id="8821041990367117597">由于您的帐号登录详细信息已过期，Chromium无法同步您的数据。</translation>
 <translation id="8833697763442816810">Chromium 操作系统</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />我们会使用哪些数据<ph name="END_BOLD" />：您的浏览记录，即您在此设备上使用 Chromium 访问过的网站的记录。</translation>
 <translation id="8862326446509486874">您的权限不足，无法进行系统级安装。请尝试以管理员身份再次运行安装程序。</translation>

@@ -1017,6 +1017,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1942600407708803723">Išjungti, kai dangtelis uždarytas</translation>
 <translation id="1944528062465413897">„Bluetooth“ susiejimo kodas:</translation>
 <translation id="1944921356641260203">Naujinys rastas</translation>
+<translation id="1947136734041527201">Leidžiama prisijungti prie svetainių naudojant tapatybės nustatymo paslaugos paskyrą</translation>
 <translation id="1949584741547056205">Greiti atsakymai</translation>
 <translation id="1951012854035635156">Padėjėjas</translation>
 <translation id="1954597385941141174">Svetainėse gali būti prašoma prisijungti prie USB įrenginių</translation>
@@ -2417,6 +2418,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="32939749466444286">Nepavyko paleisti „Linux“ sudėtinio rodinio. Bandykite dar kartą.</translation>
 <translation id="3294437725009624529">Svečias</translation>
 <translation id="3294686910656423119">Naudojimo statistika ir strigčių ataskaitos</translation>
+<translation id="3297105622164376095">Leidžiama rodyti trečiosios šalies raginimus prisijungti</translation>
 <translation id="3297536526040732495">Laikinai susieja šiuos duomenis su „Google“ paskyra, kai esate prisijungę, kad apsaugotų jus „Google“ programose</translation>
 <translation id="329838636886466101">Pataisyti</translation>
 <translation id="3298789223962368867">Įvestas neteisingas URL.</translation>
@@ -2879,7 +2881,6 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3748706263662799310">Pateikti ataskaitą apie triktį</translation>
 <translation id="3750562496035670393">„Chrome“ išsaugojo jūsų slaptažodį šiame įrenginyje, bet galite jį išsaugoti savo „Google“ paskyroje. Tada visi slaptažodžiai „Google“ paskyroje taip pat bus pasiekiami, kol būsite prisijungę.</translation>
 <translation id="3752253558646317685">Paprašykite vaiko kelis kartus atitraukti ir vėl pridėti pirštą, kad būtų išsaugotas kontrolinis kodas</translation>
-<translation id="3752582316358263300">Gerai...</translation>
 <translation id="3753033997400164841">Išsaugokite vieną kartą. Naudokite visur</translation>
 <translation id="3755411799582650620">„<ph name="PHONE_NAME" />“ taip pat gali atrakinti šį „<ph name="DEVICE_TYPE" />“ įrenginį.</translation>
 <translation id="375636864092143889">Svetainė naudoja jūsų mikrofoną</translation>
@@ -3673,6 +3674,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="452750746583162491">Peržiūrėti sinchronizuotus duomenis</translation>
 <translation id="4527929807707405172">Įgalinkite atvirkštinį slinkimą. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Vertimo pasiūlymas</translation>
+<translation id="4529455689802245339">„Chrome“ subtitrai realiuoju laiku gali neveikti</translation>
 <translation id="4530494379350999373">Kilmė</translation>
 <translation id="4531924570968473143">Ką norite pridėti prie šio įrenginio (<ph name="DEVICE_TYPE" />)?</translation>
 <translation id="4532625150642446981">Įrenginys „<ph name="USB_DEVICE_NAME" />“ naudojamas. Iš naujo priskyrus įrenginį, kol jis naudojamas, gali atsirasti klaidų. Ar tikrai norite tęsti?</translation>
@@ -3778,7 +3780,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4633003931260532286">Norint naudoti plėtinį reikalinga bent <ph name="IMPORT_VERSION" /> versijos „<ph name="IMPORT_NAME" />“, bet įdiegta tik <ph name="INSTALLED_VERSION" /> versija</translation>
 <translation id="4633757335284074492">Sukurkite atsarginę kopiją „Google“ diske. Lengvai atkurkite duomenis arba perjunkite įrenginį bet kuriuo metu. Į šią atsarginę kopiją įtraukiami programų. Atsarginės kopijos įkeliamos į sistemą „Google“ ir šifruojamos naudojant vaiko „Google“ paskyros slaptažodį.</translation>
 <translation id="4634575639321169635">Nustatyti šį įrenginį naudoti darbo ar asmeniniais tikslais</translation>
-<translation id="4634771451598206121">Prisijungti dar kartą...</translation>
 <translation id="4635072447747973225">Pašalinti „Crostini“</translation>
 <translation id="4635398712689569051">„<ph name="PAGE_NAME" />“ nepasiekiamas svečiams.</translation>
 <translation id="4636682061478263818">Disko failai</translation>
@@ -3871,6 +3872,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="471880041731876836">Neturite leidimo, kad galėtumėte apsilankykite šioje svetainėje</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> slaptažodis</translation>
 <translation id="4722920479021006856">„<ph name="APP_NAME" />“ bendrina jūsų ekraną.</translation>
+<translation id="4722989931633062466">Neleidžiama rodyti trečiosios šalies raginimų prisijungti</translation>
 <translation id="4723140812774948886">Apkeisti su tolesniu</translation>
 <translation id="4724450788351008910">Ryšys pakeistas</translation>
 <translation id="4725511304875193254">Korgis</translation>
@@ -4842,6 +4844,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="5711010025974903573">Paslaugų žurnalai</translation>
 <translation id="5711983031544731014">Nepavyko atrakinti. Įveskite slaptažodį.</translation>
 <translation id="5712153969432126546">Svetainėse kartais skelbiami PDF failai, pvz., dokumentai, sutartys ir formos</translation>
+<translation id="571222594670061844">Svetainėse gali būti rodomi raginimai prisijungti iš tapatybės nustatymo paslaugų</translation>
 <translation id="5713158217420111469">Prisijungta prie „<ph name="DEVICE" />“</translation>
 <translation id="5715711091495208045">Papildinių tarpininkas: „<ph name="PLUGIN_NAME" />“</translation>
 <translation id="5719603411793408026">Numatytieji paieškos varikliai</translation>
@@ -5000,6 +5003,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="5876851302954717356">Naujas skirtukas dešinėje</translation>
 <translation id="5877064549588274448">Kanalas pakeistas. Kad pritaikytumėte pakeitimus, iš naujo paleiskite įrenginį.</translation>
 <translation id="5877584842898320529">Pasirinktas spausdintuvas nepasiekiamas arba netinkamai įdiegtas. <ph name="BR" /> Patikrinkite spausdintuvą arba pabandykite pasirinkti kitą spausdintuvą.</translation>
+<translation id="5878945009165002849">Blokuoti raginimus prisijungti iš tapatybės nustatymo paslaugų</translation>
 <translation id="5882919346125742463">Žinomi tinklai</translation>
 <translation id="5883356647197510494">Automatiškai užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Šis skirtukas susietas su USB įrenginiu.</translation>
@@ -5311,7 +5315,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="6196640612572343990">Blokuoti trečiosios šalies slapukus</translation>
 <translation id="6196854373336333322">Plėtinys „<ph name="EXTENSION_NAME" />“ perėmė tarpinio serverio valdymą. Tai reiškia, kad jis gali keisti, nutraukti ar stebėti visus prisijungus atliekamus veiksmus. Jei nesate tikri, kodėl įvyko šis pakeitimas, tikriausiai jūs jo nenorite.</translation>
 <translation id="6197128521826316819">Sukurti šio puslapio QR kodą</translation>
-<translation id="6198102561359457428">Atsijunkite, tada vėl prisijunkite...</translation>
 <translation id="6198252989419008588">Keisti PIN kodą</translation>
 <translation id="6200047250927636406">Atmesti failą</translation>
 <translation id="6200151268994853226">Valdyti plėtinį</translation>
@@ -5637,6 +5640,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="6513247462497316522">Jei nesate prisijungę prie kito tinklo, „Google Chrome“ naudos mobiliuosius duomenis.</translation>
 <translation id="6514010653036109809">Pasiekiami įrenginiai:</translation>
 <translation id="6514565641373682518">Šiame puslapyje neleidžiamas pelės žymeklis.</translation>
+<translation id="6517709704288360414">Jūsų įrenginys gali tinkamai nebeveikti ir galite susidurti su saugos bei našumo problemomis. Jei išjungsite atnaujinimus, taip pat galite prarasti teisę reikšti pretenzijas susidūrę su problemomis.</translation>
 <translation id="6518014396551869914">Kopijuot&amp;i paveikslėlį</translation>
 <translation id="6518133107902771759">Patvirtinti</translation>
 <translation id="651942933739530207">Ar norite, kad „<ph name="APP_NAME" />“ bendrintų jūsų ekraną ir garso išvestį?</translation>
@@ -6263,7 +6267,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7114648273807173152">Jei norite prisijungti prie „Google“ paskyros naudodami „Smart Lock“, eikite į skiltį „Nustatymai“ &gt; „Prijungti įrenginiai“ &gt; „Jūsų telefonas“ &gt; „Smart Lock“.</translation>
 <translation id="7115361495406486998">Pasiekiamų kontaktų nėra</translation>
 <translation id="7117228822971127758">Vėliau bandykite dar kartą</translation>
-<translation id="7117247127439884114">Prisijungti dar kartą...</translation>
 <translation id="711840821796638741">Rodyti tvarkomas žymes</translation>
 <translation id="711902386174337313">Skaityti įrenginių, prie kurių esate prisijungę, sąrašą</translation>
 <translation id="711985611146095797">Šiame puslapyje galite tvarkyti „Google“ paskyras, prie kurių prisijungiate. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>

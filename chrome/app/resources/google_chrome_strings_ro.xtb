@@ -37,7 +37,6 @@
 <translation id="1698376642261615901">Google Chrome este un browser web care rulează pagini web și aplicații cu o viteză extraordinară. Este rapid, stabil și ușor de utilizat. Navigați pe web beneficiind de mai multă siguranță datorită protecției împotriva programelor malware și a phishingului, care este încorporată în Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome se va relansa într-o oră}few{Chrome se va relansa în # ore}other{Chrome se va relansa în # de ore}}</translation>
 <translation id="1734234790201236882">Chrome va salva parola în Contul tău Google. Nu va trebui să o reții.</translation>
-<translation id="174539241580958092">Google Chrome nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Asigură-te că te-ai conectat la Chrome pe <ph name="TARGET_DEVICE_NAME" /> și încearcă din nou să trimiți.</translation>
 <translation id="1812689907177901597">Dacă dezactivezi, te poți conecta la site-uri Google ca Gmail fără a te conecta la Chrome</translation>
@@ -68,7 +67,6 @@
 <translation id="235650106824528204">Toate datele Chrome generate în timpul folosirii acestui profil (precum marcajele create, istoricul, parolele și alte setări) pot fi eliminate de administratorul profilului de serviciu. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2401189691232800402">Sistemul de operare Chrome</translation>
-<translation id="2429317896000329049">Google Chrome nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniul dvs.</translation>
 <translation id="2467438592969358367">Google Chrome vrea să îți exporte parolele. Pentru a permite asta, introdu parola pentru Windows.</translation>
 <translation id="2485422356828889247">Dezinstalează</translation>
 <translation id="2534507159460261402">Google Pay (copiat în Chrome)</translation>
@@ -284,7 +282,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="7481213027396403996">Beneficiază de cel mai înalt nivel de securitate de la Chrome</translation>
 <translation id="7486227612705979895">Chrome îți va accesa spațiul de stocare Drive pentru a face sugestii în bara de adrese</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">Google Chrome nu a putut sincroniza datele, deoarece detaliile de conectare pentru contul dvs. nu sunt actualizate.</translation>
 <translation id="7606334485649076285">Sistemul de operare Google Chrome Flex</translation>
 <translation id="7626032353295482388">Bun venit la Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> îți solicită să citești și să accepți Termenii și condițiile următoare înainte de a folosi acest dispozitiv. Aceste condiții nu extind, nu modifică și nu limitează Condițiile sistemului de operare Google Chrome.</translation>

@@ -202,7 +202,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="6063093106622310249">&amp;Odpri v Chromiumu</translation>
 <translation id="6072279588547424923">Razširitev <ph name="EXTENSION_NAME" /> je dodana v Chromium</translation>
 <translation id="608006075545470555">Dodajanje delovnega profila v ta brskalnik</translation>
-<translation id="608189560609172163">Chromium ni mogel sinhronizirati podatkov zaradi napake pri prijavi.</translation>
 <translation id="6096348254544841612">Prilagodite in nadzirajte Chromium. Posodobitev je na voljo.</translation>
 <translation id="6120345080069858279">Chromium bo shranil to geslo v Google Računu. Ni si vam ga treba zapomniti.</translation>
 <translation id="6129621093834146363">Datoteka <ph name="FILE_NAME" /> je nevarna, zato jo je Chromium blokiral.</translation>
@@ -298,7 +297,6 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="7682601070171973634">Chromium raziskuje nove funkcije, ki spletnim mestom omogočajo, da z manjšo količino prenesenih podatkov zagotavljajo isto izkušnjo pri brskanju.</translation>
 <translation id="7686590090926151193">Chromium ni privzeti brskalnik</translation>
 <translation id="7689606757190482937">V vseh svojih napravah sinhronizirajte in prilagodite Chromium</translation>
-<translation id="7729447699958282447">Chromium ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>
 <translation id="7745317241717453663">S tem bodo iz te naprave izbrisani podatki brskanja. Če želite pozneje prenesti podatke, se v Chromium prijavite kot <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Namestitvenemu programu ni uspelo ustvariti začasnega imenika. Preverite, ali je na disku dovolj prostora in ali imate dovoljenje za namestitev programske opreme.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – delovna različica Chromiuma</translation>
@@ -343,7 +341,6 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8713679423359107094">Ko zaprete vsa okna Chromiuma, so piškotki in podatki spletnih mest samodejno izbrisani.</translation>
 <translation id="8796443464227412154">Ko zaprete Chromium, boste <ph name="BEGIN_BOLD" />odjavljeni z večine spletnih mest<ph name="END_BOLD" />. Če je sinhronizacija izklopljena, boste prav tako <ph name="BEGIN_BOLD" />odjavljeni iz Googlovih storitev in Chromiuma<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium potrebuje dovoljenje za dostop do fotoaparata in mikrofona za to spletno mesto</translation>
-<translation id="8821041990367117597">Chromium ni mogel sinhronizirati podatkov, ker so podatki za prijavo v račun zastareli.</translation>
 <translation id="8833697763442816810">Sistem Chromium OS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Kateri podatki se uporabljajo:<ph name="END_BOLD" /> Zgodovina brskanja, evidenca spletnih mest, ki ste jih obiskali s Chromiumom v tej napravi.</translation>
 <translation id="8862326446509486874">Nimate ustreznih pravic za namestitev na ravni sistema. Poskusite znova zagnati namestitveni program kot skrbnik.</translation>

@@ -202,7 +202,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6063093106622310249">&amp;Otvori u Chromiumu</translation>
 <translation id="6072279588547424923">Ekstenzija <ph name="EXTENSION_NAME" /> je dodana u Chromium</translation>
 <translation id="608006075545470555">Dodajte radni profil na ovaj preglednik</translation>
-<translation id="608189560609172163">Chromium nije uspio sinhronizirati vaše podatke zbog greške prilikom prijave.</translation>
 <translation id="6096348254544841612">Prilagodite i kontrolirajte Chromium. Dostupno je ažuriranje.</translation>
 <translation id="6120345080069858279">Chromium će sačuvati ovu lozinku na vašem Google računu. Nećete je morati zapamtiti.</translation>
 <translation id="6129621093834146363">Fajl <ph name="FILE_NAME" /> je opasan pa ga je Chromium blokirao.</translation>
@@ -298,7 +297,6 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="7682601070171973634">Chromium istražuje nove funkcije koje dozvoljavaju web lokacijama da pružaju isto iskustvo pregledanja korištenjem manje količine vaših podataka</translation>
 <translation id="7686590090926151193">Chromium nije vaš zadani preglednik</translation>
 <translation id="7689606757190482937">Sinhronizirajte i personalizirajte Chromium na svim uređajima</translation>
-<translation id="7729447699958282447">Chromium nije mogao sinhronizirati podatke zato što sinhronizacija nije dostupna u vašoj domeni.</translation>
 <translation id="7745317241717453663">Na ovaj način će se podaci o pregledanju izbrisati s ovog uređaja. Za preuzimanje podataka kasnije prijavite se u Chromium kao korisnik <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Aplikacija za instaliranje nije uspjela kreirati privremeni direktorij. Provjerite imate li slobodnog prostora na disku kao i odobrenje da instalirate softver.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
@@ -343,7 +341,6 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="8713679423359107094">Kada zatvorite sve prozore Chromiuma, kolačići i podaci web lokacija se automatski brišu</translation>
 <translation id="8796443464227412154"><ph name="BEGIN_BOLD" />Odjavit ćete se s većine web lokacija<ph name="END_BOLD" /> kada zatvorite Chromium. Ako je sinhronizacija isključena, također ćete se <ph name="BEGIN_BOLD" />odjaviti s Googleovih usluga i Chromiuma<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium traži odobrenje za pristup vašoj kameri i mikrofonu na ovoj web lokaciji</translation>
-<translation id="8821041990367117597">Chromium nije mogao sinkronizirati podatke vašeg računa jer su pojedinosti prijave na račun zastarjele.</translation>
 <translation id="8833697763442816810">Sistem ChromiumOS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Koji podaci se koriste:<ph name="END_BOLD" /> vaša historija pregledanja, zapisi o web lokacijama koje ste posjetili koristeći Chromium na ovom uređaju.</translation>
 <translation id="8862326446509486874">Nemate odgovarajuća prava za instalaciju na nivou sistema. Pokušajte ponovo pokrenuti instalaciju kao administrator.</translation>

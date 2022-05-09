@@ -39,7 +39,6 @@
 <translation id="1698376642261615901">Google Chrome es un navegador web que ejecuta aplicaciones y páginas web a gran velocidad. Es rápido, estable y fácil de utilizar. Navega por la Web de forma más segura con protección contra suplantación de identidad y software malicioso integrada a Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Se reiniciará Chrome en una hora}other{Se reiniciará Chrome en # horas}}</translation>
 <translation id="1734234790201236882">Chrome guardará esta contraseña en tu cuenta de Google, por lo que no tendrás que recordarla.</translation>
-<translation id="174539241580958092">Google Chrome no pudo sincronizar los datos porque se produjo un error de acceso.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Asegúrate de haber accedido a Chrome en tu <ph name="TARGET_DEVICE_NAME" /> y, luego, intenta enviarlo de nuevo.</translation>
 <translation id="1812689907177901597">Si desactivas esta preferencia, podrás acceder a sitios de Google (como Gmail) sin tener que acceder a Chrome</translation>
@@ -70,7 +69,6 @@
 <translation id="235650106824528204">El administrador del perfil de trabajo puede quitar cualquier dato de Chrome que se genere durante el uso de este perfil (como la creación de favoritos, un historial, contraseñas y otras opciones de configuración). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2401189691232800402">Sistema de Chrome OS</translation>
-<translation id="2429317896000329049">Google Chrome no pudo sincronizar los datos porque la sincronización no está disponible para el dominio.</translation>
 <translation id="2467438592969358367">Google Chrome desea exportar tus contraseñas. Para permitirlo, ingresa tu contraseña de Windows.</translation>
 <translation id="2485422356828889247">Desinstalación</translation>
 <translation id="2534507159460261402">Google Pay (copiada en Chrome)</translation>
@@ -287,7 +285,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7481213027396403996">Obtén la seguridad más sólida de Chrome</translation>
 <translation id="7486227612705979895">Chrome accederá a tus datos de Drive para hacer sugerencias en la barra de direcciones</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">Google Chrome no pudo sincronizar los datos porque los datos de acceso de la cuenta están obsoletos.</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626032353295482388">Te damos la bienvenida a Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> requiere que leas y aceptes las siguientes Condiciones del Servicio antes de usar este dispositivo. Estas condiciones no amplían, modifican ni limitan las Condiciones de Google Chrome OS.</translation>

@@ -222,7 +222,6 @@
 <translation id="2883151425485251736">アカウントで非表示にしたトピックの表示と編集</translation>
 <translation id="288655811176831528">タブを閉じる</translation>
 <translation id="2890171748217283516">フォローしたサイトは Google アカウントに保存され、Discover の設定で管理できます。</translation>
-<translation id="2893180576842394309">検索やその他の Google サービスをカスタマイズするために、Google で履歴が使用されることがあります</translation>
 <translation id="2898963176829412617">新しいフォルダ...</translation>
 <translation id="2916171785467530738">検索語句や URL をオートコンプリートする</translation>
 <translation id="291754862089661335">QR コードまたはバーコードをこの枠に合わせてください</translation>
@@ -902,7 +901,6 @@
 <translation id="8654802032646794042">キャンセル</translation>
 <translation id="8668210798914567634">このページはリーディング リストに保存されています。</translation>
 <translation id="8680787084697685621">アカウントのログイン情報が古くなっています。</translation>
-<translation id="8691262314411702087">同期するデータ タイプを選択</translation>
 <translation id="8693663554456874301">{count,plural, =1{タブを閉じる}other{タブを閉じる}}</translation>
 <translation id="8706588385081740091">パスワード</translation>
 <translation id="8717864919010420084">リンクをコピー</translation>

@@ -222,7 +222,6 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2883151425485251736">Megtekintheti és szerkesztheti a fiókjában elrejtett témákat</translation>
 <translation id="288655811176831528">Lap bezárása</translation>
 <translation id="2890171748217283516">A követett webhelyeket a Google-fiókjába menti a rendszer. A Discover beállításaiban kezelheti őket.</translation>
-<translation id="2893180576842394309">A Google felhasználhatja az Ön előzményeit a Kereső és más Google-szolgáltatások személyre szabására</translation>
 <translation id="2898963176829412617">Új mappa...</translation>
 <translation id="2916171785467530738">Keresések és URL-címek automatikus kiegészítése</translation>
 <translation id="291754862089661335">Igazítsa a QR-kódot vagy vonalkódot ehhez a kerethez</translation>
@@ -904,7 +903,6 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8654802032646794042">Mégse</translation>
 <translation id="8668210798914567634">Ez az oldal az Ön olvasási listájára van mentve.</translation>
 <translation id="8680787084697685621">A fiók bejelentkezési részletei elavultak.</translation>
-<translation id="8691262314411702087">Válassza ki a szinkronizálandó adattípusokat</translation>
 <translation id="8693663554456874301">{count,plural, =1{Lap bezárása}other{Lapok bezárása}}</translation>
 <translation id="8706588385081740091">Jelszavak</translation>
 <translation id="8717864919010420084">Link másolása</translation>

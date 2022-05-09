@@ -202,7 +202,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6063093106622310249">&amp;Open in Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> has been added to Chromium</translation>
 <translation id="608006075545470555">Add work profile to this browser</translation>
-<translation id="608189560609172163">Chromium could not sync your data due to an error signing in.</translation>
 <translation id="6096348254544841612">Customise and control Chromium. Update is available.</translation>
 <translation id="6120345080069858279">Chromium will save this password in your Google Account. You won’t have to remember it.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> is dangerous, so Chromium has blocked it.</translation>
@@ -297,7 +296,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7682601070171973634">Chromium is exploring new features that allow sites to deliver the same browsing experience using less of your data</translation>
 <translation id="7686590090926151193">Chromium isn't your default browser</translation>
 <translation id="7689606757190482937">Sync and personalise Chromium across your devices</translation>
-<translation id="7729447699958282447">Chromium could not sync your data because Sync is not available for your domain.</translation>
 <translation id="7745317241717453663">This will delete your browsing data from this device. To retrieve your data later, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">The installer couldn't create a temporary directory. Please check for free disk space and permission to install software.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
@@ -342,7 +340,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8713679423359107094">When you close all Chromium windows, cookies and site data are automatically cleared</translation>
 <translation id="8796443464227412154">You will be <ph name="BEGIN_BOLD" />signed out of most sites<ph name="END_BOLD" /> when you close Chromium. If sync is off, you will also be <ph name="BEGIN_BOLD" />signed out of Google services and Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium needs permission to access your camera and microphone for this site</translation>
-<translation id="8821041990367117597">Chromium could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="8833697763442816810">Chromium OS system</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />What data is used:<ph name="END_BOLD" /> Your browsing history, a record of sites that you’ve visited using Chromium on this device.</translation>
 <translation id="8862326446509486874">You do not have appropriate rights for system-level installation. Try running the installer again as Administrator.</translation>

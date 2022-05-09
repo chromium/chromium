@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Ativar o Bluetooth para descobrir dispositivos nas proximidades</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Continuar</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Componentes não qualificados<ph name="LINK_END" /> detectados. Se quiser confirmar a instalação, faça isso agora.</translation>
 <translation id="2363636958541445404">Ative o recurso para selecionar opções de protetor de tela</translation>
 <translation id="2364498172489649528">Aprovado</translation>
@@ -172,7 +173,6 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2638662041295312666">Imagem de login</translation>
 <translation id="2640549051766135490">Álbum <ph name="TITLE" /> <ph name="DESC" /> selecionado</translation>
-<translation id="2695514675076754339">Digite o código de desbloqueio de oito caracteres</translation>
 <translation id="2712812801627182647">Chave de autenticação do TLS</translation>
 <translation id="2717139507051041123">Ativar o modo de cor escuro</translation>
 <translation id="2740531572673183784">Ok</translation>

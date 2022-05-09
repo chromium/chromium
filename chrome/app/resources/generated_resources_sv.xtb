@@ -2876,7 +2876,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3748706263662799310">Rapportera ett fel</translation>
 <translation id="3750562496035670393">Chrome har sparat lösenordet på enheten, men du kan spara det i Google-kontot i stället. Alla lösenord som finns i Google-kontot är tillgängliga när du är inloggad.</translation>
 <translation id="3752253558646317685">Låt ditt barn trycka och lyfta på fingret upprepade gånger så att fingeravtrycket sparas</translation>
-<translation id="3752582316358263300">OK ...</translation>
 <translation id="3753033997400164841">Spara dem en gång. Använd dem överallt</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> kan nu även låsa upp <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Webbplatsen använder din mikrofon</translation>
@@ -3775,7 +3774,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4633003931260532286">Tillägget kräver <ph name="IMPORT_NAME" /> med minst version <ph name="IMPORT_VERSION" />, men endast version <ph name="INSTALLED_VERSION" /> är installerad</translation>
 <translation id="4633757335284074492">Säkerhetskopiera på Google Drive. Återställ data eller byt enkelt enhet när du vill. Säkerhetskopian innehåller appdata. Säkerhetskopiorna krypteras med hjälp av lösenordet till barnets Google-konto och laddas upp på Google.</translation>
 <translation id="4634575639321169635">Konfigurera enheten för användning i jobbet eller privat</translation>
-<translation id="4634771451598206121">Logga in igen ...</translation>
 <translation id="4635072447747973225">Avinstallera Crostini</translation>
 <translation id="4635398712689569051">Sidan <ph name="PAGE_NAME" /> är inte tillgänglig för gästanvändare.</translation>
 <translation id="4636682061478263818">Drive-filer</translation>
@@ -5307,7 +5305,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6196640612572343990">Blockera cookies från tredje part</translation>
 <translation id="6196854373336333322">Tillägget <ph name="EXTENSION_NAME" /> har tagit kontroll över dina proxyinställningar, vilket innebär att det kan ändra, knäcka eller tjuvlyssna på allt du gör på webben. Om du inte vet varför den här ändringen inträffade är den troligen inte önskvärd.</translation>
 <translation id="6197128521826316819">Skapa QR-kod för den här sidan</translation>
-<translation id="6198102561359457428">Logga ut och sedan in igen ...</translation>
 <translation id="6198252989419008588">Byt pinkod</translation>
 <translation id="6200047250927636406">Släng filen</translation>
 <translation id="6200151268994853226">Hantera tillägg</translation>
@@ -6253,7 +6250,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7114648273807173152">Öppna Inställningar &gt; Anslutna enheter &gt; Din mobil &gt; Smart Lock om du vill kunna logga in på Google-kontot med Smart Lock.</translation>
 <translation id="7115361495406486998">Det finns inga kontakter inom räckhåll</translation>
 <translation id="7117228822971127758">Försök igen senare</translation>
-<translation id="7117247127439884114">Logga in igen ...</translation>
 <translation id="711840821796638741">Visa hanterade bokmärken</translation>
 <translation id="711902386174337313">Läsa listan med dina inloggade enheter</translation>
 <translation id="711985611146095797">På den här sidan kan du hantera alla Google-konton som du är inloggad på. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>

@@ -43,7 +43,6 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="1698376642261615901">Porwr gwe yw Google Chrome sy'n rhedeg tudalennau gwe a rhaglenni mewn chwinciad. Mae'n gyflym, sefydlog ac yn hawdd ei ddefnyddio. Porwch y we'n fwy diogel gyda diogelwch rhag maleiswedd a gwe-rwydo pwrpasol yn Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Bydd Chrome yn ail-lansio mewn awr}zero{Bydd Chrome yn ail-lansio mewn # awr}two{Bydd Chrome yn ail-lansio mewn # awr}few{Bydd Chrome yn ail-lansio mewn # awr}many{Bydd Chrome yn ail-lansio mewn # awr}other{Bydd Chrome yn ail-lansio mewn # awr}}</translation>
 <translation id="1734234790201236882">Bydd Chrome yn cadw'r cyfrinair hwn yn eich Cyfrif Google. Ni fydd yn rhaid i chi ei gofio.</translation>
-<translation id="174539241580958092">Doedd dim modd i Google Chrome gysoni eich data oherwydd gwall wrth fewngofnodi.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Gwnewch yn siŵr eich bod wedi mewngofnodi i Chrome ar eich <ph name="TARGET_DEVICE_NAME" /> a rhowch gynnig arall arni.</translation>
 <translation id="1812689907177901597">Drwy ddiffodd hyn, gallwch fewngofnodi i wefannau Google megis Gmail heb fewngofnodi i Chrome</translation>
@@ -74,7 +73,6 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="235650106824528204">Gall unrhyw ddata Chrome a gynhyrchir wrth ddefnyddio'r proffil hwn (megis creu nodau tudalen, hanes, cyfrineiriau, a gosodiadau eraill) gael eu tynnu gan weinyddwr y proffil gwaith. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2401189691232800402">System ChromeOS</translation>
-<translation id="2429317896000329049">Ni allai Google Chrome gysoni eich data oherwydd nad yw Cysoni ar gael ar gyfer eich parth.</translation>
 <translation id="2467438592969358367">Mae Google Chrome eisiau allforio'ch cyfrineiriau. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="2485422356828889247">Dadosod</translation>
 <translation id="2534507159460261402">Google Pay (copïwyd i Chrome)</translation>
@@ -295,7 +293,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="7481213027396403996">Cael diogelwch cryfaf Chrome</translation>
 <translation id="7486227612705979895">Bydd Chrome yn cyrchu eich Drive i wneud awgrymiadau yn y bar cyfeiriadau</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">Ni allai Google Chrome gysoni'ch data gan fod manylion mewngofnodi eich cyfrif yn hen.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Croeso i Chrome</translation>
 <translation id="7626072681686626474">Mae <ph name="MANAGER" /> yn gofyn i chi ddarllen a derbyn y Telerau Gwasanaeth canlynol cyn defnyddio'r ddyfais hon. Nid yw'r telerau hyn yn ehangu, addasu na chyfyngu ar Delerau Google ChromeOS.</translation>

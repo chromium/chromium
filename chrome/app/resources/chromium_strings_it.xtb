@@ -200,7 +200,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6063093106622310249">&amp;Apri in Chromium</translation>
 <translation id="6072279588547424923">L'estensione <ph name="EXTENSION_NAME" /> è stata aggiunta a Chromium</translation>
 <translation id="608006075545470555">Aggiungi profilo di lavoro a questo browser</translation>
-<translation id="608189560609172163">Impossibile sincronizzare i dati in Chromium a causa di un errore durante l'accesso.</translation>
 <translation id="6096348254544841612">È disponibile un nuovo aggiornamento.</translation>
 <translation id="6120345080069858279">Chromium salverà la password nel tuo Account Google affinché tu non debba memorizzarla.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> è pericoloso, pertanto è stato bloccato da Chromium.</translation>
@@ -295,7 +294,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7682601070171973634">Chromium sta esplorando nuove funzionalità che consentono ai siti di offrire la stessa esperienza di navigazione utilizzando meno dati di tua proprietà</translation>
 <translation id="7686590090926151193">Chromium non è il browser predefinito</translation>
 <translation id="7689606757190482937">Sincronizza e personalizza Chromium sui tuoi dispositivi</translation>
-<translation id="7729447699958282447">Impossibile sincronizzare i dati in Chromium perché la sincronizzazione non è disponibile per il tuo dominio.</translation>
 <translation id="7745317241717453663">Verranno eliminati i tuoi dati di navigazione da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chromium come <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Il programma di installazione non ha creato una directory temporanea. Verifica di disporre di spazio libero sul disco e dell'autorizzazione per l'installazione del software.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -340,7 +338,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8713679423359107094">Quando chiudi tutte le finestre di Chromium, i cookie e i dati dei siti vengono cancellati automaticamente</translation>
 <translation id="8796443464227412154">Quando chiudi Chromium, verrà <ph name="BEGIN_BOLD" />eseguita la disconnessione dalla maggior parte dei siti<ph name="END_BOLD" />. Se la sincronizzazione è disattivata, verrà anche <ph name="BEGIN_BOLD" />eseguita la disconnessione dai servizi Google e da Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Per questo sito Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera e al microfono</translation>
-<translation id="8821041990367117597">Impossibile sincronizzare i dati in Chromium perché i dati di accesso dell'account sono obsoleti.</translation>
 <translation id="8833697763442816810">Sistema Chromium OS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Quali dati vengono utilizzati:<ph name="END_BOLD" /> la cronologia di navigazione, ossia un record dei siti visitati da Chromium sul dispositivo in uso.</translation>
 <translation id="8862326446509486874">Non disponi dei diritti appropriati per l'installazione a livello di sistema. Prova a eseguire nuovamente il programma di installazione come Amministratore.</translation>

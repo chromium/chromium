@@ -821,7 +821,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="602472752137106327">Valitud on raadionupp Näita kõikide töölaudade aknaid</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> – sündmusi ei ole. Vajutage sisestusklahvi, et avada Google'i kalender brauseris.</translation>
-<translation id="6027952026115023659">Pääsege seadmes <ph name="DEVICE_TYPE" /> juurde oma telefoni sõnumsiderakendustele</translation>
 <translation id="6030495522958826102">Menüü teisaldati ekraanikuva vasakusse alanurka.</translation>
 <translation id="6032620807120418574">Täisekraani salvestamiseks klõpsake ekraanikuval kus tahes</translation>
 <translation id="6040071906258664830">Mikrofoni salvestamine: <ph name="STATE" /></translation>
@@ -971,7 +970,6 @@ Uus installimine</translation>
 <translation id="6961121602502368900">Telefoni vaigistamine pole tööprofiilil saadaval</translation>
 <translation id="6961840794482373852">Klaviatuuri otseteed Alt + ülesnool on muudetud. Lehe võrra üles klahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + ülesnoolt.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967933908874208731">Vaadake seadmes <ph name="DEVICE_TYPE" /> oma telefoni hiljutisi fotosid, meediat, märguandeid ja sõnumsiderakendusi</translation>
 <translation id="6972754398087986839">Alustamine</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Juurdepääsetavus</translation>

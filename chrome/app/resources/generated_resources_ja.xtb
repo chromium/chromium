@@ -2854,7 +2854,6 @@
 <translation id="3748706263662799310">バグを報告</translation>
 <translation id="3750562496035670393">パスワードが Chrome によってこのデバイスに保存されました。パスワードは、Google アカウントに保存することもできます。この場合、Google アカウントにログインしている間、アカウントに保存されたすべてのパスワードを使用できます。</translation>
 <translation id="3752253558646317685">指紋を保存するには、お子様に指をかざしてもらってください</translation>
-<translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">一度保存すればどこでも使用可能</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> でもこの <ph name="DEVICE_TYPE" /> のロックを解除できるようになりました。</translation>
 <translation id="375636864092143889">サイトでマイクが使用されています</translation>
@@ -3748,7 +3747,6 @@
 <translation id="4633003931260532286">拡張機能には「<ph name="IMPORT_NAME" />」のバージョン「<ph name="IMPORT_VERSION" />」以上が必要ですが、インストールされているのはバージョン「<ph name="INSTALLED_VERSION" />」のみです</translation>
 <translation id="4633757335284074492">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、お子様の Google アカウントのパスワードを使って暗号化されます。</translation>
 <translation id="4634575639321169635">このデバイスを仕事または個人で使用する</translation>
-<translation id="4634771451598206121">もう一度ログインする...</translation>
 <translation id="4635072447747973225">Crostini のアンインストール</translation>
 <translation id="4635398712689569051">ゲストユーザーは <ph name="PAGE_NAME" /> を利用できません。</translation>
 <translation id="4636682061478263818">ドライブのファイル</translation>
@@ -5274,7 +5272,6 @@
 <translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
 <translation id="6196854373336333322">拡張機能「<ph name="EXTENSION_NAME" />」によってプロキシ設定が制御されています。オンラインで行う操作は、この拡張機能によって変更、遮断、傍受される可能性があります。この変更が行われた理由に心当たりがない場合、これは不正な変更と考えられます。</translation>
 <translation id="6197128521826316819">このページの QR コードを作成</translation>
-<translation id="6198102561359457428">ログアウトしてから再度ログイン...</translation>
 <translation id="6198252989419008588">PIN を変更</translation>
 <translation id="6200047250927636406">ファイルを破棄</translation>
 <translation id="6200151268994853226">拡張機能を管理</translation>
@@ -6218,7 +6215,6 @@
 <translation id="7114648273807173152">Smart Lock を使用して Google アカウントにログインするには、[設定] &gt; [接続済みのデバイス] &gt; [スマートフォン] &gt; [Smart Lock] に移動します。</translation>
 <translation id="7115361495406486998">連絡先が見つかりませんでした</translation>
 <translation id="7117228822971127758">しばらくしてからもう一度お試しください</translation>
-<translation id="7117247127439884114">もう一度ログインする...</translation>
 <translation id="711840821796638741">管理対象のブックマークを表示</translation>
 <translation id="711902386174337313">ログインしたデバイスのリストの読み取り</translation>
 <translation id="711985611146095797">このページでは、ログインする Google アカウントを管理できます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>

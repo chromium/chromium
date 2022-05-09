@@ -145,6 +145,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">เปิดบลูทูธเพื่อค้นหาอุปกรณ์ใกล้เคียง</translation>
 <translation id="2346474577291266260">ดีมาก (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2360257214555822463">ตรวจพบ<ph name="LINK_BEGIN" />คอมโพเนนต์ที่ไม่ตรงตามข้อกำหนด<ph name="LINK_END" /> หากคุณเลือกที่จะยืนยันว่าได้ติดตั้งคอมโพเนนต์เหล่านี้ โปรดดำเนินการดังกล่าวตอนนี้เลย</translation>
 <translation id="2363636958541445404">เปิดฟีเจอร์นี้เพื่อเลือกตัวเลือกโปรแกรมรักษาหน้าจอ</translation>
 <translation id="2364498172489649528">ผ่าน</translation>
@@ -173,7 +174,6 @@
 <translation id="2620436844016719705">ระบบ</translation>
 <translation id="2638662041295312666">รูปภาพการลงชื่อเข้าใช้</translation>
 <translation id="2640549051766135490">เลือกอัลบั้ม <ph name="TITLE" /> <ph name="DESC" /> อยู่</translation>
-<translation id="2695514675076754339">ป้อนรหัสปลดล็อก 8 อักขระ</translation>
 <translation id="2712812801627182647">คีย์การตรวจสอบสิทธิ์ TLS</translation>
 <translation id="2717139507051041123">เปิดใช้โหมดสีมืด</translation>
 <translation id="2740531572673183784">ตกลง</translation>

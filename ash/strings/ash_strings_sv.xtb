@@ -820,7 +820,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="602472752137106327">Visa fönster från alla skrivbord, alternativknapp har markerats</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
 <translation id="6027518778343897451">Det finns inga händelser den <ph name="CURRENT_MONTH_DAY" />. Tryck på retur om du vill öppna Google Kalender i webbläsaren.</translation>
-<translation id="6027952026115023659">Öppna telefonens meddelandeappar på <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Menyn har flyttats till skärmens nedre vänstra hörn.</translation>
 <translation id="6032620807120418574">Klicka var som helst för att spela in hela skärmen</translation>
 <translation id="6040071906258664830">Spela in via mikrofon <ph name="STATE" /></translation>
@@ -970,7 +969,6 @@ Nyligen installerad</translation>
 <translation id="6961121602502368900">Funktionen Inga telefonljud är inte tillgänglig i jobbprofilen</translation>
 <translation id="6961840794482373852">Kortkommandot Alt + uppåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + uppåtpil för att använda Page Up-tangenten.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967933908874208731">Se de senaste bilderna, mediefilerna, aviseringarna och meddelandeapparna från telefonen på <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Komma igång</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>

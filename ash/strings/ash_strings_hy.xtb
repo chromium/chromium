@@ -820,7 +820,6 @@
 <translation id="602472752137106327">Բոլոր աշխատասեղանների պատուհանների ցուցադրում, ընտրված է կետակոճակը</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="6027518778343897451">Պլանավորված միջոցառումներ <ph name="CURRENT_MONTH_DAY" />-ի համար չկան։ Սեղմեք Enter՝ դիտարկիչում Google Օրացույցը բացելու համար։</translation>
-<translation id="6027952026115023659">Բացեք ձեր հեռախոսի հաղորդագրման հավելվածները <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="6030495522958826102">Ընտրացանկը տեղափոխվեց էկրանի ներքևի ձախ անկյուն։</translation>
 <translation id="6032620807120418574">Լիաէկրան ռեժիմում տեսագրելու համար սեղմեք էկրանի որևէ կետ</translation>
 <translation id="6040071906258664830">Ձայնագրումը <ph name="STATE" /></translation>
@@ -970,7 +969,6 @@
 <translation id="6961121602502368900">«Ծանուցումների անջատում հեռախոսում» գործառույթը հասանելի չէ աշխատանքային պրոֆիլում</translation>
 <translation id="6961840794482373852">«Alt + վեր սլաք» ստեղնային դյուրանցումը փոփոխվել է։ Page Up ստեղնի գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + վեր սլաք» ստեղնային դյուրանցումը։</translation>
 <translation id="6965382102122355670">Եղավ</translation>
-<translation id="6967933908874208731">Դիտեք վերջերս ձեր հեռախոսում ավելացված լուսանկարները, մեդիա ֆայլերը, ծանուցումներն ու հաղորդագրման հավելվածները ձեր <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="6972754398087986839">Սկսել աշխատանքը</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Մատչելիությունը</translation>

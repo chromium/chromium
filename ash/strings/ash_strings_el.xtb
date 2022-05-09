@@ -820,7 +820,6 @@
 <translation id="602472752137106327">Εμφάνιση παραθύρων από όλα τα γραφεία, επιλέχτηκε το κουμπί επιλογής.</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Διαχειριζόμενο από τον διαχειριστή σας</translation>
 <translation id="6027518778343897451">Δεν υπάρχει κάποιο συμβάν για τις <ph name="CURRENT_MONTH_DAY" />. Πατήστε enter για να ανοίξετε το Ημερολόγιο Google στο πρόγραμμα περιήγησης.</translation>
-<translation id="6027952026115023659">Αποκτήστε πρόσβαση στις εφαρμογές ανταλλαγής μηνυμάτων του τηλεφώνου σας στη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Το μενού μεταφέρθηκε στην κάτω αριστερή γωνία της οθόνης.</translation>
 <translation id="6032620807120418574">Κάντε κλικ οπουδήποτε για εγγραφή ολόκληρης της οθόνης</translation>
 <translation id="6040071906258664830">Εγγραφή μικροφώνου <ph name="STATE" /></translation>
@@ -970,7 +969,6 @@
 <translation id="6961121602502368900">Η Σίγαση τηλεφώνου δεν είναι διαθέσιμη στο προφίλ εργασίας</translation>
 <translation id="6961840794482373852">Η συντόμευση πληκτρολογίου Alt + Επάνω βέλος άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Page Up, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Επάνω βέλος.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967933908874208731">Δείτε τις πρόσφατες φωτογραφίες, τα μέσα, τις ειδοποιήσεις και τις εφαρμογές ανταλλαγής μηνυμάτων στη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Έναρξη</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Προσβασιμότητα</translation>

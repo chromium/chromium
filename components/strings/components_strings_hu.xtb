@@ -1100,6 +1100,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3973234410852337861">A(z) <ph name="HOST_NAME" /> le van tiltva</translation>
 <translation id="3978338123949022456">Keresési mód. Írja be a lekérdezést, majd nyomja le az Entert a következővel való kereséshez: <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Madarak</translation>
+<translation id="3985750352229496475">Címek kezelése…</translation>
 <translation id="3986705137476756801">Élő feliratozás átmeneti kikapcsolása</translation>
 <translation id="3987940399970879459">Kevesebb mint 1 MB</translation>
 <translation id="3990250421422698716">Példányok eltolása</translation>
@@ -1227,6 +1228,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4305666528087210886">A fájlhoz nem sikerült hozzáférni</translation>
 <translation id="4306529830550717874">Menti a címet?</translation>
 <translation id="4306812610847412719">vágólap</translation>
+<translation id="4310070645992025887">Utazások keresése</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Letiltás (alapértelmezett)</translation>
 <translation id="4314815835985389558">Szinkronizálás kezelése</translation>
@@ -2111,6 +2113,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6839929833149231406">Terület</translation>
 <translation id="6846340164947227603">Virtuális kártyaszám használata…</translation>
 <translation id="6852204201400771460">Újratölti az alkalmazást?</translation>
+<translation id="6857776781123259569">Jelszavak kezelése…</translation>
 <translation id="686485648936420384">Fogyasztói segédletek</translation>
 <translation id="6865412394715372076">Ez a kártya jelenleg nem ellenőrizhető</translation>
 <translation id="6869334554832814367">Személyi kölcsönök</translation>
@@ -2437,6 +2440,7 @@ További részletek:
 <translation id="7669271284792375604">A webhelyen lévő támadók megpróbálhatják csellel rávenni Önt olyan programok telepítésére, amelyek károsak a böngészési élmény szempontjából (például módosítják a kezdőlapot, vagy plusz hirdetéseket jelenítenek meg a felkeresett webhelyeken).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Bizalmasként megjelölt adatokkal végzett műveletek (1 művelet a bejelentkezés óta). <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.}other{Bizalmasként megjelölt adatokkal végzett műveletek (# művelet a bejelentkezés óta). <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.}}</translation>
 <translation id="7673278391011283842">6. postaláda</translation>
+<translation id="7675325315208090829">Fizetési módok kezelése…</translation>
 <translation id="7676643023259824263">Vágólapon lévő szöveg keresése, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Megtekintheti és kezelheti böngészési előzményeit a Chrome beállításaiban.</translation>
 <translation id="7679947978757153706">Baseball</translation>

@@ -136,6 +136,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1719094688023114093">Jonli izoh yoniq.</translation>
 <translation id="1720011244392820496">Wi-Fi Sync funksiyasini yoqish</translation>
 <translation id="1736898441010944794">“<ph name="NAME" />” Bluetooth qurilmalariga koʻrinadi.</translation>
+<translation id="174102739345480129">Marker oʻchiq.</translation>
 <translation id="1743570585616704562">Barmoq izi aniqlanmadi</translation>
 <translation id="1746730358044914197">Matn kiritish usuli administratoringiz tomonidan sozlangan.</translation>
 <translation id="1747827819627189109">Ekran klaviaturasi yoqildi</translation>
@@ -564,6 +565,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4379531060876907730">Bular – stilus vositalaringiz</translation>
 <translation id="4389184120735010762">Qadalgan lupa tezkor havolasini bosdingiz. Ishga tushirilsinmi?</translation>
 <translation id="439598569299422042">Pauzada, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Skrinkast saqlanmadi</translation>
 <translation id="4405151984121254935">Ulangan tashqi qurilma tizimda ishlamaydi</translation>
 <translation id="4406883609789734330">Jonli izoh</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> yoqilmagan</translation>
@@ -670,6 +672,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Keyingi gap</translation>
+<translation id="5016558321564993266">Marker holatini oʻzgartirish. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Vaqt tugadi</translation>
 <translation id="5033299697334913360">Butun ekranni tasvirga olish uchun istalgan joyga bosing</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> yangi telefonga ulandi</translation>
@@ -699,6 +702,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
 <translation id="5234764350956374838">Yopish</translation>
 <translation id="523505283826916779">Maxsus imkoniyatlar sozlamalari</translation>
+<translation id="5245201184978705914">Transkripsiya yaratilmadi</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> nomli qurilmaga ulandi, batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">Desk 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ilovasiga diqqat qaratishingiz zarur.</translation>
@@ -733,6 +737,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5433020815079095860">Audio kirish</translation>
 <translation id="544691375626129091">Bu seansga barcha mavjud foydalanuvchilar qo‘shildi.</translation>
 <translation id="54609108002486618">Boshqariladigan</translation>
+<translation id="5460938382730614333">Marker yoniq.</translation>
 <translation id="5465662442746197494">Yordam kerakmi?</translation>
 <translation id="547979256943495781">Javon oʻngda</translation>
 <translation id="5491186829646618080">Mikrodastur yangilanshi mavjud</translation>
@@ -774,6 +779,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5745612484876805746">Tungi rejim quyosh botishi bilan avtomatik yoqiladi</translation>
 <translation id="5750765938512549687">Bluetooth yoqilmagan</translation>
 <translation id="5760866832697883462"><ph name="NAME" /> bilan aloqa oʻrnating</translation>
+<translation id="5762420912707163638">Markerni yoqish/oʻchirish. <ph name="STATE_TEXT" /> Ekranda chizish uchun sensorli panel, sensorli ekran yoki stilusdan foydalaning.</translation>
 <translation id="576341972084747908">Xavfli <ph name="FILENAME" /> faylini yuklab olish</translation>
 <translation id="5763928712329149804">Shelf Party oʻchiq.</translation>
 <translation id="576453121877257266">Tungi rejim yoniq.</translation>
@@ -820,7 +826,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="602472752137106327">Barcha ish stollari oynalarini chiqarish, radio tugma tanlandi</translation>
 <translation id="6025324406281560198">Himoya: <ph name="SECURITY_STATUS" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> kuni hech qanday tadbir mavjud emas. Google Taqvimni brauzerda ochish uchun Enter tugmasini bosing.</translation>
-<translation id="6027952026115023659"><ph name="DEVICE_TYPE" /> qurilmasida xabar almashinuv ilovalariga ruxsat</translation>
 <translation id="6030495522958826102">Menyu ekranning quyi chap burchagiga surildi.</translation>
 <translation id="6032620807120418574">Butun ekranni yozib olish uchun istalgan joyga bosing</translation>
 <translation id="6040071906258664830">Mikrofon bilan yozib olish <ph name="STATE" /></translation>
@@ -970,7 +975,6 @@ yangi oʻrnatilgan</translation>
 <translation id="6961121602502368900">Telefon ish profilida sukut qilinmaydi</translation>
 <translation id="6961840794482373852">Alt + Tepaga strelka tezkor tugmasi oʻzgardi. Page Up tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Tepaga strelkani bosing.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967933908874208731">Telefonga yaqinda qoʻshilgan suratlar, mediafayllar, bildirishnomalar hamda <ph name="DEVICE_TYPE" /> qurilmasida xabar almashinuv ilovalarini ochish</translation>
 <translation id="6972754398087986839">Boshlash</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Qulayliklar</translation>

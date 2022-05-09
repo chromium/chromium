@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Включете Bluetooth, за да бъдат открити устройствата в близост</translation>
 <translation id="2346474577291266260">Отлична (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Напред</translation>
 <translation id="2360257214555822463">Открити са <ph name="LINK_BEGIN" />неотговарящи на изискванията компоненти<ph name="LINK_END" />. Ако искате да потвърдите, че са инсталирани, направете го сега.</translation>
 <translation id="2363636958541445404">Включете функцията, за да изберете опция за скрийнсейвър</translation>
 <translation id="2364498172489649528">Премината</translation>
@@ -156,6 +157,7 @@
 <translation id="2446553403094072641">Точност на плаващата точка</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Ток</translation>
+<translation id="2480034874476596812">Ръчно изключване</translation>
 <translation id="2491955442992294626">Клавишите не се тестват, когато използвате друг прозорец</translation>
 <translation id="2493126929778606526">Автоматично избиране на най-добрите ви снимки</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -171,7 +173,6 @@
 <translation id="2620436844016719705">Система</translation>
 <translation id="2638662041295312666">Изображение при вход</translation>
 <translation id="2640549051766135490">Избран албум <ph name="TITLE" />, <ph name="DESC" /></translation>
-<translation id="2695514675076754339">Въведете кода за отключване от 8 знака</translation>
 <translation id="2712812801627182647">Ключ за удостоверяване за TLS</translation>
 <translation id="2717139507051041123">Активиране на режима за тъмни цветове</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -251,6 +252,7 @@
 <translation id="3606583719724308068">Голямо закъснение на уебсайтове, работещи с HTTPS</translation>
 <translation id="3621202678540785336">Вход</translation>
 <translation id="3632579075709132555">Превключване на екрана за поверителност</translation>
+<translation id="3678765385266369662">Изберете как искате да изключите Write Protect</translation>
 <translation id="3689839747745352263">Тест: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Зарежда се...</translation>
 <translation id="3708186454126126312">Свързвани преди</translation>
@@ -305,6 +307,7 @@
 <translation id="4244962993387259361">За да извършите тест на паметта, трябва да имате поне 500 МБ свободно място. За да освободите място, отворете „Настройки &gt; Мениджър на хранилището”.</translation>
 <translation id="4250229828105606438">Eкранна снимка</translation>
 <translation id="4258281355379922695">Забавяне на HTTP</translation>
+<translation id="4258561075226177474">Устройството води до същия потребител. Да се изтрият ли потребителските данни?</translation>
 <translation id="4271957103967917607">Преглед на цял екран</translation>
 <translation id="4275799948641988986">След ремонта кой ще използва това устройство?</translation>
 <translation id="4289540628985791613">Общ преглед</translation>
@@ -353,6 +356,7 @@
 <translation id="473775607612524610">Актуализиране</translation>
 <translation id="4744944742468440486">Информация за избраното от вас</translation>
 <translation id="4773299976671772492">Спряно</translation>
+<translation id="4774530504324923332">Ще ви трябва ключ за сигурност с активирано отключване на сървъра за RMA, скенер за QR кодове и второ устройство с връзка с интернет.</translation>
 <translation id="4782311465517282004">Получавайте определения, преводи или преобразувани мерни единици, когато докоснете и задържите текст или кликнете върху него с десния бутон</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> снимка</translation>
 <translation id="4793710386569335688">За още помощ отворете <ph name="BEGIN_LINK" />Помощния център<ph name="END_LINK" />.</translation>
@@ -432,6 +436,7 @@
 <translation id="5372659122375744710">Wi-Fi мрежата не е сигурна</translation>
 <translation id="5376354385557966694">Автоматичен светъл режим</translation>
 <translation id="537872351913703572">Устройството преминава в друг потребител или организация</translation>
+<translation id="5395600419410242651">Изтриване на всички данни</translation>
 <translation id="5400907029458559844">Устройството установява връзка.</translation>
 <translation id="5401938042319910061">Стартиране на всички процедури</translation>
 <translation id="5423849171846380976">Активиран</translation>
@@ -642,6 +647,7 @@
 <translation id="7570674786725311828">Сензорен екран с USB</translation>
 <translation id="7595982850646262331">Оставащо време: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Научете повече в Помощния център</translation>
+<translation id="7626501172915339021">Отключване на сървъра за RMA</translation>
 <translation id="763165478673169849">Последен час на нулиране</translation>
 <translation id="7648838807254605802">Голямо забавяне на HTTPS</translation>
 <translation id="7656388927906093505">Устройството е мишка.</translation>
@@ -785,6 +791,8 @@
 <translation id="9087578468327036362">Подаване на сигнал за тази заявка</translation>
 <translation id="9088306295921699330">Текущо използване</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">Ще трябва да разглобите устройството</translation>
+<translation id="9098156406873149060">Запазване на потребителските данни</translation>
 <translation id="910415269708673980">Опресняване на пропуска за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканира се страница <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Отключване</translation>

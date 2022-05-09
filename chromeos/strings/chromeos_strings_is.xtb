@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Djúphreinsun</translation>
 <translation id="2338501278241028356">Kveiktu á Bluetooth til að uppgötva nálæg tæki</translation>
 <translation id="2346474577291266260">Frábær (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Ósamhæfir íhlutir<ph name="LINK_END" /> greindust. Ef þú velur að staðfesta uppsetningu á þeim skaltu gera það núna.</translation>
 <translation id="2363636958541445404">Kveiktu á eiginleikanum til að velja valkosti fyrir skjávara</translation>
 <translation id="2364498172489649528">Stóðst</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">Kerfi</translation>
 <translation id="2638662041295312666">Innskráningarmynd</translation>
 <translation id="2640549051766135490">Albúmið <ph name="TITLE" /> <ph name="DESC" /> valið</translation>
-<translation id="2695514675076754339">Sláðu inn átta stafa kóðann til að taka úr lás</translation>
 <translation id="2712812801627182647">TLS-auðkenningarlykill</translation>
 <translation id="2717139507051041123">Kveikja á dökkri litastillingu</translation>
 <translation id="2740531572673183784">Í lagi</translation>

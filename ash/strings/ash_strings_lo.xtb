@@ -820,7 +820,6 @@
 <translation id="602472752137106327">ສະແດງໜ້າຈໍຈາກໂຕະທັງໝົດ, ເລືອກປຸ່ມວິທະຍຸແລ້ວ</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ສັນຍານຄວາມແຮງ <ph name="SIGNAL_STRENGTH" />, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="6027518778343897451">ບໍ່ມີນັດໝາຍຢູ່ <ph name="CURRENT_MONTH_DAY" />. ກົດ enter ເພື່ອເປີດປະຕິທິນ Google ໃນໂປຣແກຣມທ່ອງເວັບ.</translation>
-<translation id="6027952026115023659">ເຂົ້າເຖິງແອັບຮັບສົ່ງຂໍ້ຄວາມຂອງໂທລະສັບທ່ານຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="6030495522958826102">ຍ້າຍເມນູໄປແຈລຸ່ມສຸດເບື້ອງຊ້າຍຂອງໜ້າຈໍ.</translation>
 <translation id="6032620807120418574">ຄລິກບ່ອນໃດກໍໄດ້ເພື່ອບັນທຶກພາບແບບເຕັມຈໍ</translation>
 <translation id="6040071906258664830">ບັນທຶກສຽງຈາກໄມໂຄຣໂຟນ <ph name="STATE" /></translation>
@@ -970,7 +969,6 @@
 <translation id="6961121602502368900">ປິດສຽງໂທລະສັບບໍ່ສາມາດໃຊ້ໄດ້ໃນໂປຣໄຟລ໌ບ່ອນເຮັດວຽກ</translation>
 <translation id="6961840794482373852">ຄີລັດ Alt + ລູກສອນຂຶ້ນຖືກປ່ຽນແປງແລ້ວ. ເພື່ອໃຊ້ປຸ່ມ Page Up, ໃຫ້ກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + ລູກສອນຂຶ້ນ.</translation>
 <translation id="6965382102122355670">ຕົກລົງ</translation>
-<translation id="6967933908874208731">ເບິ່ງຮູບພາບ, ມີເດຍ, ການແຈ້ງເຕືອນ ແລະ ແອັບຮັບສົ່ງຂໍ້ຄວາມຫຼ້າສຸດຂອງໂທລະສັບທ່ານຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="6972754398087986839">ເລີ່ມຕົ້ນ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">ການເຂົ້າ​​ເຖິງ​ໄດ້</translation>

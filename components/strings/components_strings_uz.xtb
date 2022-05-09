@@ -1097,6 +1097,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> saytiga kirish taqiqlangan</translation>
 <translation id="3978338123949022456">Qidiruv rejimi, soʻrovni kiriting va <ph name="KEYWORD_SUFFIX" /> orqali qidirish uchun Enter tugmasini bosing</translation>
 <translation id="398470910934384994">Qushlar</translation>
+<translation id="3985750352229496475">Manzillarni boshqarish...</translation>
 <translation id="3986705137476756801">Jonli izohni hozircha faolsizlantirish</translation>
 <translation id="3987940399970879459">1 MBdan kam</translation>
 <translation id="3990250421422698716">Qogʻozlarni ajratib toʻplash</translation>
@@ -1224,6 +1225,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4305666528087210886">Fayldan foydalanishga ruxsat berilmadi</translation>
 <translation id="4306529830550717874">Manzil saqlansinmi?</translation>
 <translation id="4306812610847412719">vaqtinchalik xotira</translation>
+<translation id="4310070645992025887">Sayohatlar xizmatidan qidirish</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloklansin (standart parametr)</translation>
 <translation id="4314815835985389558">Sinxronizatsiyani boshqarish</translation>
@@ -2107,6 +2109,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6839929833149231406">Tuman</translation>
 <translation id="6846340164947227603">Virtual karta raqamidan foydalanish</translation>
 <translation id="6852204201400771460">Ilova qayta yuklansinmi?</translation>
+<translation id="6857776781123259569">Parollarni boshqarish...</translation>
 <translation id="686485648936420384">Isteʼmolchilar uchun</translation>
 <translation id="6865412394715372076">Hozir bu kartani tekshirib bo‘lmaydi</translation>
 <translation id="6869334554832814367">Isteʼmol krediti</translation>
@@ -2433,6 +2436,7 @@ Batafsil axborot:
 <translation id="7669271284792375604">Bu sayt qurilmangizga brauzerning ishlashiga xalaqit qiluvchi (masalan, boshlang‘ich sahifani o‘zgartiruvchi yoki saytlarda qo‘shimcha reklamalarni ko‘rsatuvchi) xavfli dasturlarni o‘rnatishi mumkin.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Maʼlumotlar bilan bajariladigan amallar maxfiy hisoblanadi (oxirgi kirishdan keyin 1 ta amal xabar qilingan). <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" />}other{Maʼlumotlar bilan bajariladigan amallar maxfiy hisoblanadi (oxirgi kirishdan keyin # ta amal xabar qilingan). <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Pochta qutisi 6</translation>
+<translation id="7675325315208090829">Toʻlov usullarini boshqarish...</translation>
 <translation id="7676643023259824263">Klipborddagi matnni qidirish, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Chrome sozlamalari orqali brauzer tarixini koʻrish va boshqarish</translation>
 <translation id="7679947978757153706">Beysbol</translation>

@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">파워워시</translation>
 <translation id="2338501278241028356">블루투스를 사용 설정하여 근처 기기 탐색</translation>
 <translation id="2346474577291266260">우수(<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">계속</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />정규화되지 않은 구성요소<ph name="LINK_END" />가 감지되었습니다. 이 구성요소가 설치되었음을 확인하려면 지금 확인하세요.</translation>
 <translation id="2363636958541445404">화면 보호기 옵션을 선택하려면 기능을 사용 설정하세요.</translation>
 <translation id="2364498172489649528">통과</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">시스템</translation>
 <translation id="2638662041295312666">로그인 이미지</translation>
 <translation id="2640549051766135490">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택됨</translation>
-<translation id="2695514675076754339">8자리 잠금 해제 코드 입력</translation>
 <translation id="2712812801627182647">TLS 인증 키</translation>
 <translation id="2717139507051041123">어두운 색상 모드 사용</translation>
 <translation id="2740531572673183784">확인</translation>

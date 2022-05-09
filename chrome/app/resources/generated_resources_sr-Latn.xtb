@@ -2862,7 +2862,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3748706263662799310">Prijavite grešku</translation>
 <translation id="3750562496035670393">Chrome je sačuvao lozinku na ovaj uređaj, ali možete umesto toga da je sačuvate na Google nalog. Tada će sve lozinke na Google nalogu takođe biti dostupne dok ste prijavljeni.</translation>
 <translation id="3752253558646317685">Neka dete nastavi da podiže prst da bi otisak prsta bio sačuvan</translation>
-<translation id="3752582316358263300">Potvrdi...</translation>
 <translation id="3753033997400164841">Sačuvajte jednom. Koristite svuda</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> telefon sada može da otključava i ovaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Sajt koristi mikrofon</translation>
@@ -3761,7 +3760,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4633003931260532286">Dodatak zahteva „<ph name="IMPORT_NAME" />“ čija je najstarija verzija „<ph name="IMPORT_VERSION" />“, ali instalirana je samo verzija „<ph name="INSTALLED_VERSION" />“</translation>
 <translation id="4633757335284074492">Pravite rezervne kopije na Google disku. Lako vratite podatke ili pređite na drugi uređaj u bilo kom trenutku. Ova rezervna kopija uključuje podatke aplikacija. Rezervne kopije se otpremaju na Google i šifruju lozinkom za Google nalog deteta.</translation>
 <translation id="4634575639321169635">Podesite ovaj uređaj za poslovnu ili ličnu upotrebu</translation>
-<translation id="4634771451598206121">Prijavi me ponovo...</translation>
 <translation id="4635072447747973225">Deinstalirajte Crostini</translation>
 <translation id="4635398712689569051">Stranica <ph name="PAGE_NAME" /> nije dostupna korisnicima u režimu gosta.</translation>
 <translation id="4636682061478263818">Fajlovi na Disku</translation>
@@ -5296,7 +5294,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće treće strane</translation>
 <translation id="6196854373336333322">Dodatak „<ph name="EXTENSION_NAME" />“ je preuzeo kontrolu nad podešavanjima proksija, što znači da može da menja, prekida ili špijunira sve što radite onlajn. Ako niste sigurni zašto je došlo do ove promene, verovatno vam nije potrebna.</translation>
 <translation id="6197128521826316819">Napravi QR kôd za ovu stranicu</translation>
-<translation id="6198102561359457428">Odjavi me, pa me ponovo prijavi...</translation>
 <translation id="6198252989419008588">Promeni PIN</translation>
 <translation id="6200047250927636406">Odbaci fajl</translation>
 <translation id="6200151268994853226">Upravljajte dodatkom</translation>
@@ -6247,7 +6244,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7114648273807173152">Da biste koristili Smart Lock za prijavljivanje na Google nalog, idite na Podešavanja &gt; Povezani uređaji &gt; Telefon &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Nema dostupnih kontakata</translation>
 <translation id="7117228822971127758">Probajte ponovo kasnije</translation>
-<translation id="7117247127439884114">Prijavi me ponovo...</translation>
 <translation id="711840821796638741">Prikaži upravljane obeleživače</translation>
 <translation id="711902386174337313">Čitanje liste uređaja na kojima ste prijavljeni</translation>
 <translation id="711985611146095797">Ova stranica vam omogućava da upravljate Google nalozima na koje ste prijavljeni. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>

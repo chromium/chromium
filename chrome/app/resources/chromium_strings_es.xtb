@@ -202,7 +202,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="6063093106622310249">&amp;Abrir en Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> se ha añadido a Chromium</translation>
 <translation id="608006075545470555">Añadir perfil de trabajo a este navegador</translation>
-<translation id="608189560609172163">Chromium no ha podido sincronizar los datos debido a un error de inicio de sesión.</translation>
 <translation id="6096348254544841612">Personaliza y controla Chromium. Hay una actualización disponible.</translation>
 <translation id="6120345080069858279">Chromium guardará esta contraseña en tu cuenta de Google para que no tengas que recordarla.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> es peligroso, por lo que Chromium lo ha bloqueado.</translation>
@@ -298,7 +297,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="7682601070171973634">Chromium está explorando nuevas funciones que permitan que los sitios ofrezcan la misma experiencia de navegación usando menos datos</translation>
 <translation id="7686590090926151193">Chromium no es tu navegador predeterminado</translation>
 <translation id="7689606757190482937">Sincroniza y personaliza Chromium en todos tus dispositivos</translation>
-<translation id="7729447699958282447">Chromium no ha podido sincronizar los datos porque la función de sincronización no está disponible para tu dominio.</translation>
 <translation id="7745317241717453663">Se eliminarán tus datos de navegación de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">El programa de instalación no ha podido crear un directorio temporal. Comprueba si hay espacio libre en el disco y si tienes autorización para instalar el software.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> ‑ Chromium Canary</translation>
@@ -343,7 +341,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8713679423359107094">Cuando cierras todas las ventanas de Chromium, las cookies y los datos de sitios se borran automáticamente</translation>
 <translation id="8796443464227412154">Cuando cierres Chromium, <ph name="BEGIN_BOLD" />se cerrará tu sesión en la mayoría de los sitios<ph name="END_BOLD" />. Si la sincronización está desactivada, también <ph name="BEGIN_BOLD" />se cerrará tu sesión de los servicios de Google y de Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium necesita permiso para acceder a la cámara y al micrófono en este sitio web</translation>
-<translation id="8821041990367117597">Chromium no ha podido sincronizar los datos porque tu información de inicio de sesión está obsoleta.</translation>
 <translation id="8833697763442816810">Sistema ChromiumOS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Qué datos se usan:<ph name="END_BOLD" /> tu historial de navegación, un registro de los sitios que has visitado usando Chromium en este dispositivo.</translation>
 <translation id="8862326446509486874">No dispones de los derechos necesarios para la instalación en el sistema. Intenta ejecutar de nuevo el programa de instalación como administrador.</translation>

@@ -200,7 +200,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="6063093106622310249">&amp;Atvērt pārlūkā Chromium</translation>
 <translation id="6072279588547424923">Paplašinājums <ph name="EXTENSION_NAME" /> ir pievienots pārlūkam Chromium</translation>
 <translation id="608006075545470555">Darba profila pievienošana šai pārlūkprogrammai</translation>
-<translation id="608189560609172163">Chromium nevarēja sinhronizēt jūsu datus pierakstīšanās kļūdas dēļ.</translation>
 <translation id="6096348254544841612">Pielāgojiet un pārvaldiet pārlūku Chromium. Ir pieejams atjauninājums.</translation>
 <translation id="6120345080069858279">Pārlūks Chromium saglabās šo paroli jūsu Google kontā. To nav nepieciešams iegaumēt.</translation>
 <translation id="6129621093834146363">Fails <ph name="FILE_NAME" /> ir bīstams, tādēļ Chromium to bloķēja.</translation>
@@ -293,7 +292,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="7682601070171973634">Chromium pēta jaunas funkcijas, kas ļauj vietnēm nodrošināt tādas pašas pārlūkošanas iespējas, izmantojot mazāk datu.</translation>
 <translation id="7686590090926151193">Chromium nav jūsu noklusējuma pārlūks.</translation>
 <translation id="7689606757190482937">Chromium sinhronizēšana un personalizēšana visās savās ierīcēs</translation>
-<translation id="7729447699958282447">Chromium nevarēja sinhronizēt jūsu datus, jo jūsu domēnam nav pieejama sinhronizācija.</translation>
 <translation id="7745317241717453663">Veicot šo darbību, no šīs ierīces tiks dzēsti pārlūkošanas dati. Lai vēlāk izgūtu datus, pierakstieties pārlūkā Chromium kā <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Instalētājam neizdevās izveidot pagaidu katalogu. Lūdzu, pārbaudiet, vai diskā pietiek vietas un vai ir atļauja instalēt programmatūru.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> — Chromium Canary</translation>
@@ -338,7 +336,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8713679423359107094">Aizverot visus Chromium logus, sīkfaili un vietņu dati tiek automātiski notīrīti.</translation>
 <translation id="8796443464227412154">Aizverot pārlūku Chromium, jūs tiksiet <ph name="BEGIN_BOLD" />izrakstīts no lielākās daļas vietņu<ph name="END_BOLD" />. Ja sinhronizācija ir izslēgta, jūs tiksiet arī <ph name="BEGIN_BOLD" />izrakstīts no Google pakalpojumiem un pārlūka Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Pārlūkam Chromium ir nepieciešama atļauja piekļūt jūsu kamerai un mikrofonam šajā vietnē.</translation>
-<translation id="8821041990367117597">Chromium nevarēja sinhronizēt jūsu datus, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="8833697763442816810">Chromium OS sistēma</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Kādi dati tiek izmantoti:<ph name="END_BOLD" /> jūsu pārlūkošanas vēsture, kurā tiek reģistrētas vietnes, ko šajā ierīcē apmeklējat ar pārlūku Chromium.</translation>
 <translation id="8862326446509486874">Jums nav vajadzīgo tiesību, lai instalētu sistēmas līmenī. Mēģiniet vēlreiz palaist instalēšanas programmu kā administrators.</translation>

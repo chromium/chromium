@@ -304,6 +304,7 @@
 <translation id="2834813915651407382">Саяхан нээсэн</translation>
 <translation id="2841907151129139818">Таблетын горим руу сэлгэсэн</translation>
 <translation id="2844169650293029770">USB-C төхөөрөмж (урд талын портын зүүн тал)</translation>
+<translation id="2848120746144143659">Бүтэн дэлгэцийн агшин авахын тулд enter дээр дарна уу</translation>
 <translation id="2849936225196189499">Аюултай</translation>
 <translation id="2860184359326882502">Хамгийн сайн тохирол</translation>
 <translation id="2865888419503095837">Сүлжээний мэдээлэл</translation>
@@ -483,6 +484,7 @@
 <translation id="3846575436967432996">Сүлжээтэй холбоотой мэдээлэл байхгүй байна</translation>
 <translation id="385051799172605136">Буцах</translation>
 <translation id="385300504083504382">Эхлэл</translation>
+<translation id="3861651314799684201">Бүтэн дэлгэцийг бичихийн тулд enter дээр дарна уу</translation>
 <translation id="3886872229787704059">Өнөөдөр нээсэн</translation>
 <translation id="3891340733213178823">Гарахын тулд Ctrl+Shift+Q дээр хоёр удаа дарна уу.</translation>
 <translation id="3893630138897523026">ChromeVox (ярьдаг санал хүсэлт)</translation>
@@ -814,6 +816,7 @@
 <translation id="595202126637698455">Гүйцэтгэлийн ажиглалтыг идэвхжүүлсэн</translation>
 <translation id="5955304353782037793">аппликейшн</translation>
 <translation id="5958529069007801266">Хяналттай хэрэглэгч</translation>
+<translation id="5976112937189445008">Цонхыг бичихийн тулд enter дээр дарна уу</translation>
 <translation id="5977415296283489383">Чихэвч</translation>
 <translation id="5978382165065462689">Remote Assistance ашиглан өөрийн дэлгэцийн хяналтыг хуваалцах.</translation>
 <translation id="5980301590375426705">Зочноос гарах</translation>
@@ -827,7 +830,6 @@
 <translation id="602472752137106327">Бүх дэлгэцээс цонхыг харуулах, радио товчлуурыг сонгосон</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" />-д үйл явдал байхгүй байна. Google календарийг хөтчид нээхийн тулд enter дээр дарна уу.</translation>
-<translation id="6027952026115023659"><ph name="DEVICE_TYPE" /> дээрээ утасныхаа мессеж аппуудад хандана уу</translation>
 <translation id="6030495522958826102">Цэсийг дэлгэцийн зүүн доод булан руу зөөсөн.</translation>
 <translation id="6032620807120418574">Бүтэн дэлгэцийг бичихийн тулд дурын газар товшино уу</translation>
 <translation id="6040071906258664830">Микрофоныг бичих <ph name="STATE" /></translation>
@@ -977,7 +979,6 @@
 <translation id="6961121602502368900">Ажлын профайл дээр утсыг чимээгүй болгох боломжгүй</translation>
 <translation id="6961840794482373852">Alt + Дээш сумны товчлуурын шууд холбоосыг өөрчилсөн байна. Page Up товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Дээш сумыг дарна уу.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967933908874208731"><ph name="DEVICE_TYPE" /> дээрээ утасныхаа саяхны зураг, медиа, мэдэгдэл болон мессеж аппыг харна уу</translation>
 <translation id="6972754398087986839">Эхлүүлэх</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Хандалт</translation>
@@ -1202,6 +1203,7 @@
 <translation id="8364673525741149932">Shelf Party-г асаана уу/унтраана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Нэг үсгээр урагшлуулах</translation>
 <translation id="8371991222807690464">Зочны горимд дагалдах төхөөрөмжийн гүйцэтгэлийг хязгаарласан байж магадгүй</translation>
+<translation id="8374601332003098278">Хэсэгчилсэн дэлгэц бичихийн тулд enter дээр дарна уу</translation>
 <translation id="8375916635258623388">Энэ <ph name="DEVICE_NAME" /> болон таны утас автоматаар холбогдоно</translation>
 <translation id="8380784334203145311">Сайхан амраарай,</translation>
 <translation id="8382715499079447151">Үзэх хамгаалалт</translation>
@@ -1255,6 +1257,7 @@
 <translation id="8653151467777939995">Мэдэгдлийн тохиргоог харуулна уу. Мэдэгдлийг асаасан байна</translation>
 <translation id="8660331759611631213">71-ийн квадрат язгуур</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">Хэсэгчилсэн дэлгэцийн агшин авахын тулд enter дээр дарна уу</translation>
 <translation id="8664753092453405566">Сүлжээний жагсаалтыг харуулна уу. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Төхөөрөмжөө тохируулахын тулд <ph name="NAME" />-г нээнэ үү</translation>
 <translation id="8676770494376880701">Цэнэглэгчийг холбосон байна</translation>
@@ -1296,6 +1299,7 @@
 <translation id="8909138438987180327">Батарей <ph name="PERCENTAGE" /> хувьтай байна.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google туслах энэ хэлээр ярьдаггүй.</translation>
+<translation id="8924458948354692166">Цонхны дэлгэцийн агшин авахын тулд enter дээр дарна уу</translation>
 <translation id="8926951137623668982">Shelf-г тогтмол нууна</translation>
 <translation id="8936501819958976551">идэвхгүй болгосон</translation>
 <translation id="8938800817013097409">USB-C төхөөрөмж (ард талын баруун порт)</translation>

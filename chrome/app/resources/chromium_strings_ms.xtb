@@ -200,7 +200,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6063093106622310249">&amp;Buka dalam Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> telah ditambahkan pada Chromium</translation>
 <translation id="608006075545470555">Tambahkan Profil Kerja pada penyemak imbas ini</translation>
-<translation id="608189560609172163">Chromium tidak dapat menyegerakkan data anda disebabkan ralat melog masuk.</translation>
 <translation id="6096348254544841612">Sesuaikan dan kawal Chromium. Kemas kini tersedia.</translation>
 <translation id="6120345080069858279">Chromium akan menyimpan kata laluan ini dalam Akaun Google anda. Anda tidak perlu mengingati kata laluan tersebut.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> berbahaya, jadi Chromium telah menyekat fail itu.</translation>
@@ -296,7 +295,6 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="7682601070171973634">Chromium sedang meneroka ciri baharu yang membolehkan laman menyampaikan pengalaman penyemakan imbas yang sama menggunakan kurang data anda</translation>
 <translation id="7686590090926151193">Chromium bukan penyemak imbas lalai anda</translation>
 <translation id="7689606757190482937">Segerakkan dan peribadikan Chromium pada semua peranti anda</translation>
-<translation id="7729447699958282447">Chromium tidak dapat menyegerakkan data anda kerana Segerak tidak tersedia untuk domain anda.</translation>
 <translation id="7745317241717453663">Tindakan ini akan memadamkan data semakan imbas anda daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Pemasang tidak dapat mencipta direktori sementara. Sila semak ruang cakera kosong dan kebenaran untuk memasang perisian.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -341,7 +339,6 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8713679423359107094">Apabila anda menutup semua tetingkap Chromium, kuki dan data laman akan dikosongkan secara automatik</translation>
 <translation id="8796443464227412154">Anda akan <ph name="BEGIN_BOLD" />dilog keluar daripada kebanyakan laman<ph name="END_BOLD" /> apabila anda menutup Chromium. Jika penyegerakan dimatikan, anda juga akan <ph name="BEGIN_BOLD" />dilog keluar daripada perkhidmatan Google dan Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium memerlukan kebenaran untuk mengakses kamera dan mikrofon anda bagi tapak ini</translation>
-<translation id="8821041990367117597">Chromium tidak dapat menyegerakkan data anda kerana butiran log masuk akaun anda sudah lapuk.</translation>
 <translation id="8833697763442816810">Sistem Chromium OS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Jenis data yang digunakan:<ph name="END_BOLD" /> Sejarah penyemakan imbas anda, rekod laman yang anda lawati menggunakan Chromium pada peranti ini.</translation>
 <translation id="8862326446509486874">Anda tidak mempunyai hak wajar untuk pemasangan peringkat sistem. Cuba jalankan pemasang semula sebagai Pentadbir.</translation>

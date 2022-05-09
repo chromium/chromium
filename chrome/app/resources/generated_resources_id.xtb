@@ -2876,7 +2876,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3748706263662799310">Laporkan bug</translation>
 <translation id="3750562496035670393">Chrome menyimpan sandi Anda ke perangkat ini, tetapi Anda dapat menyimpannya ke Akun Google Anda. Dengan begitu, semua sandi dari Akun Google Anda juga akan tersedia saat Anda login.</translation>
 <translation id="3752253558646317685">Minta anak Anda mengangkat dan menyentuhkan jari secara berulang untuk menyimpan sidik jari</translation>
-<translation id="3752582316358263300">Oke...</translation>
 <translation id="3753033997400164841">Simpan sekali. Gunakan di mana saja</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> Anda sekarang dapat membuka kunci <ph name="DEVICE_TYPE" /> ini juga.</translation>
 <translation id="375636864092143889">Situs sedang menggunakan mikrofon</translation>
@@ -3775,7 +3774,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4633003931260532286">Ekstensi memerlukan "<ph name="IMPORT_NAME" />" dengan versi minimum "<ph name="IMPORT_VERSION" />", namun hanya versi "<ph name="INSTALLED_VERSION" />" yang terinstal</translation>
 <translation id="4633757335284074492">Cadangkan ke Google Drive. Pulihkan data atau beralih perangkat kapan saja dengan mudah. Cadangan ini mencakup data aplikasi. Cadangan diupload ke Google dan dienkripsi menggunakan sandi Akun Google anak Anda.</translation>
 <translation id="4634575639321169635">Siapkan perangkat ini untuk bekerja atau penggunaan pribadi</translation>
-<translation id="4634771451598206121">Login lagi...</translation>
 <translation id="4635072447747973225">Uninstal Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> tidak tersedia bagi pengguna Tamu.</translation>
 <translation id="4636682061478263818">File Drive</translation>
@@ -5307,7 +5305,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6196640612572343990">Blokir cookie pihak ketiga</translation>
 <translation id="6196854373336333322">Ekstensi "<ph name="EXTENSION_NAME" />" telah mengambil alih kontrol setelan proxy Anda, yang berarti ekstensi dapat mengubah, merusak, atau menyadap apa pun yang Anda lakukan secara online. Jika tidak yakin mengapa perubahan ini terjadi, mungkin Anda tidak menginginkannya.</translation>
 <translation id="6197128521826316819">Buat Kode QR untuk Halaman ini</translation>
-<translation id="6198102561359457428">Keluar kemudian masuk lagi...</translation>
 <translation id="6198252989419008588">Ubah PIN</translation>
 <translation id="6200047250927636406">Hapus file</translation>
 <translation id="6200151268994853226">Kelola Ekstensi</translation>
@@ -6253,7 +6250,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7114648273807173152">Agar dapat menggunakan Smart Lock untuk login ke akun Google Anda, buka Setelan &gt; Perangkat terhubung &gt; Ponsel Anda &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Tidak ada kontak yang dapat dihubungi</translation>
 <translation id="7117228822971127758">Coba lagi nanti</translation>
-<translation id="7117247127439884114">Login Lagi...</translation>
 <translation id="711840821796638741">Tampilkan Bookmark yang Dikelola</translation>
 <translation id="711902386174337313">Membaca daftar perangkat tempat Anda telah masuk</translation>
 <translation id="711985611146095797">Halaman ini memungkinkan Anda mengelola Akun Google yang Anda gunakan untuk login. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>

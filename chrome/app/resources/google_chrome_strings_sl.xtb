@@ -43,7 +43,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1698376642261615901">Google Chrome je spletni brskalnik, ki bliskovito odpira spletna mesta in izvaja programe. Je hiter, stabilen in preprost za uporabo. V Google Chrome je vgrajena zaščita pred zlonamerno programsko opremo in lažnim predstavljanjem, kar omogoča varnejše brskanje v spletu.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome se bo znova zagnal čez eno uro}one{Chrome se bo znova zagnal čez # uro}two{Chrome se bo znova zagnal čez # uri}few{Chrome se bo znova zagnal čez # ure}other{Chrome se bo znova zagnal čez # ur}}</translation>
 <translation id="1734234790201236882">Chrome bo shranil to geslo v Google Računu. Ni si vam ga treba zapomniti.</translation>
-<translation id="174539241580958092">Google Chrome ni mogel sinhronizirati podatkov zaradi napake pri prijavi.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Preverite, ali ste v napravi <ph name="TARGET_DEVICE_NAME" /> prijavljeni v Chrome, nato poskusite znova poslati.</translation>
 <translation id="1812689907177901597">Če to izklopite, se lahko prijavite na Googlovih spletnih mestih, kot je Gmail, ne da bi se morali prijaviti v Chrome</translation>
@@ -74,7 +73,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="235650106824528204">Podatke v Chromu, ki se ustvarijo med uporabo tega profila (na primer zaznamke, zgodovino, gesla in druge nastavitve), lahko odstrani skrbnik delovnega profila. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2401189691232800402">Sistem Chrome OS</translation>
-<translation id="2429317896000329049">Google Chrome ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>
 <translation id="2467438592969358367">Google Chrome želi izvoziti gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
 <translation id="2485422356828889247">Odmeščanje</translation>
 <translation id="2534507159460261402">Google Pay (kopirano v Chrome)</translation>
@@ -295,7 +293,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7481213027396403996">Izberite Chromovo najmočnejšo varnost</translation>
 <translation id="7486227612705979895">Chrome bo dostopal do Googla Drive zaradi ponujanja predlogov v naslovni vrstici</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">Google Chrome ni mogel sinhronizirati podatkov, ker so podatki za prijavo v račun zastareli.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Dobrodošli v Chromu</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> zahteva, da preberete in sprejmete pogoje storitve, preden začnete uporabljati napravo. Ti pogoji ne dopolnjujejo, spreminjajo ali omejujejo pogojev za Google Chrome OS.</translation>

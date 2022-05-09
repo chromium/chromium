@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Washa Bluetooth ili ugundue vifaa vilivyo karibu</translation>
 <translation id="2346474577291266260">Thabiti zaidi (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Endelea</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Vipengele ambavyo havijaidhinishwa<ph name="LINK_END" /> vimetambuliwa. Iwapo utachagua kuthibitisha kama kipengele hiki kimesakinishwa, tafadhali thibitisha sasa.</translation>
 <translation id="2363636958541445404">Washa kipengele hiki ili uteue chaguo za taswira ya skrini</translation>
 <translation id="2364498172489649528">Amefaulu</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">Mfumo</translation>
 <translation id="2638662041295312666">Picha ya akaunti kwenye kifaa</translation>
 <translation id="2640549051766135490">Albamu ya <ph name="TITLE" /> <ph name="DESC" /> imechaguliwa</translation>
-<translation id="2695514675076754339">Weka msimbo wa kufungua wenye herufi nane</translation>
 <translation id="2712812801627182647">Ufunguo wa uthibitishaji wa TLS</translation>
 <translation id="2717139507051041123">Washa hali ya rangi yenye giza</translation>
 <translation id="2740531572673183784">Sawa</translation>

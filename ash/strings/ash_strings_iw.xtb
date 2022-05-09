@@ -820,7 +820,6 @@
 <translation id="602472752137106327">הצגת חלונות מכל שולחנות העבודה הווירטואליים, לחצן הבחירה נבחר</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
 <translation id="6027518778343897451">‏אין אירועים בתאריך <ph name="CURRENT_MONTH_DAY" />. צריך להקיש על Enter כדי לפתוח את יומן Google בדפדפן.</translation>
-<translation id="6027952026115023659">גישה לאפליקציות של ההודעות שבטלפון שלך מ<ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">התפריט הועבר לפינה הימנית התחתונה של המסך.</translation>
 <translation id="6032620807120418574">יש ללחוץ על מקום כלשהו במסך כדי להקליט את המסך המלא.</translation>
 <translation id="6040071906258664830">הקלטת המיקרופון <ph name="STATE" /></translation>
@@ -970,7 +969,6 @@
 <translation id="6961121602502368900">השתקת הטלפון לא זמינה בפרופיל העבודה</translation>
 <translation id="6961840794482373852">‏מקשי הקיצור Alt + חץ למעלה הוחלפו. כדי לדמות את הפעולה של המקש Page Up, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + החץ למעלה.</translation>
 <translation id="6965382102122355670">אישור</translation>
-<translation id="6967933908874208731">הצגת התמונות, המדיה, ההתראות ואפליקציות ההודעות שבטלפון מהזמן האחרון ב<ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">תחילת העבודה</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">נגישות</translation>

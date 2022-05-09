@@ -200,7 +200,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="6063093106622310249">&amp;Ava Chromiumis</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> on Chromiumi lisatud</translation>
 <translation id="608006075545470555">Tööprofiili lisamine sellesse brauserisse</translation>
-<translation id="608189560609172163">Chromium ei saanud sisselogimisvea tõttu teie andmeid sünkroonida.</translation>
 <translation id="6096348254544841612">Kohandage ja juhtige Chromiumi. Saadaval on värskendus.</translation>
 <translation id="6120345080069858279">Chromium salvestab selle parooli teie Google'i kontole. Te ei pea seda meeles pidama.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> on ohtlik, mistõttu Chromium blokeeris selle.</translation>
@@ -295,7 +294,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7682601070171973634">Chromium katsetab uusi funktsioone, mis võimaldaksid saitidel pakkuda väiksema andmemahu juures samasugust sirvimiskogemust</translation>
 <translation id="7686590090926151193">Chromium ei ole teie vaikebrauser</translation>
 <translation id="7689606757190482937">Sünkroonige ja isikupärastage Chromium kõigis oma seadmetes</translation>
-<translation id="7729447699958282447">Chromium ei saa teie andmeid sünkroonida, sest teie domeenil pole sünkroonimine saadaval.</translation>
 <translation id="7745317241717453663">See kustutab sellest seadmest teie sirvimisandmed. Hiljem oma andmete toomiseks logige Chromiumi sisse kasutajana <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Installija ei suutnud luua ajutist kataloogi. Palun kontrollige vaba kettaruumi ja tarkvara installimise loa olemasolu.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
@@ -340,7 +338,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8713679423359107094">Kui sulgete kõik Chromiumi aknad, kustutatakse küpsised ja saidi andmed automaatselt</translation>
 <translation id="8796443464227412154">Kui Chromiumi sulgete, <ph name="BEGIN_BOLD" />logitakse teid enamikult saitidelt välja<ph name="END_BOLD" />. Kui sünkroonimine on välja lülitatud, <ph name="BEGIN_BOLD" />logitakse teid välja ka Google'i teenustest ja Chromiumist<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium vajab selle saidi puhul luba, et teie kaamerale ja mikrofonile juurde pääseda</translation>
-<translation id="8821041990367117597">Chromium ei saa andmeid sünkroonida, sest teie konto sisselogimisandmed on aegunud.</translation>
 <translation id="8833697763442816810">Chromium OS-i süsteem</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Milliseid andmeid kasutatakse?<ph name="END_BOLD" /> Teie sirvimisajalugu, selles seadmes Chromiumiga külastatud saitide andmed.</translation>
 <translation id="8862326446509486874">Teil ei ole süsteemi tasemel installimiseks sobivaid õigusi. Proovige installijat administraatorina uuesti käivitada.</translation>

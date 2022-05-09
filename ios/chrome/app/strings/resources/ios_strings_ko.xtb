@@ -222,7 +222,6 @@
 <translation id="2883151425485251736">계정에서 숨긴 주제를 보고 수정합니다.</translation>
 <translation id="288655811176831528">탭 닫기</translation>
 <translation id="2890171748217283516">내가 팔로우하는 사이트는 Google 계정에 저장되며 디스커버 설정에서 관리할 수 있습니다.</translation>
-<translation id="2893180576842394309">Google에서 내 방문 기록을 사용하여 Google 검색 및 다른 Google 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="2898963176829412617">새 폴더 만들기…</translation>
 <translation id="2916171785467530738">검색어 및 URL 자동 완성</translation>
 <translation id="291754862089661335">프레임 안에 QR 코드나 바코드를 위치시키세요.</translation>
@@ -902,7 +901,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8654802032646794042">취소</translation>
 <translation id="8668210798914567634">읽기 목록에 저장된 페이지입니다.</translation>
 <translation id="8680787084697685621">계정 로그인 세부정보의 유효기간이 만료되었습니다.</translation>
-<translation id="8691262314411702087">동기화할 대상 선택</translation>
 <translation id="8693663554456874301">{count,plural, =1{탭 닫기}other{탭 닫기}}</translation>
 <translation id="8706588385081740091">비밀번호</translation>
 <translation id="8717864919010420084">링크 복사</translation>

@@ -2861,7 +2861,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3748706263662799310">Eman akats baten berri</translation>
 <translation id="3750562496035670393">Chrome-k gailu honetan gorde du pasahitza, baina Google-ko kontuan gorde dezakezu, bestela. Horrela, Google-ko kontuko pasahitz guztiak ere erabilgarri egongo dira saioa hasita daukazunean.</translation>
 <translation id="3752253558646317685">Eskatu haurrari hatza behin eta berriro altxatzeko hatz-marka gorde dadin</translation>
-<translation id="3752582316358263300">Ados…</translation>
 <translation id="3753033997400164841">Gorde behin. Erabili edonon.</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> telefonoak <ph name="DEVICE_TYPE" /> ere desblokea dezake.</translation>
 <translation id="375636864092143889">Webgunea zure mikrofonoa erabiltzen ari da</translation>
@@ -3759,7 +3758,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4633003931260532286">Luzapenak "<ph name="IMPORT_NAME" />" eskatzen du, gutxienez "<ph name="IMPORT_VERSION" />" bertsiokoa, baina "<ph name="INSTALLED_VERSION" />" bertsioa baino ez dago instalatuta</translation>
 <translation id="4633757335284074492">Egin babeskopiak Google Drive-n. Leheneratu gailu honen datuak edo aldatu gailua edonoiz. Aplikazioetako datuak ere sartzen dira babeskopietan. Babeskopiak Google-ra kargatzen dira eta enkriptatu egiten dira haurraren Google-ko kontuko pasahitza erabilita.</translation>
 <translation id="4634575639321169635">Konfiguratu gailua lanerako edo erabilera pertsonalerako</translation>
-<translation id="4634771451598206121">Hasi saioa berriro…</translation>
 <translation id="4635072447747973225">Desinstalatu Crostini</translation>
 <translation id="4635398712689569051">Gonbidatuek ezin dute erabili <ph name="PAGE_NAME" /> orria.</translation>
 <translation id="4636682061478263818">Drive-ko fitxategiak</translation>
@@ -5288,7 +5286,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6196640612572343990">Blokeatu hirugarrenen cookieak</translation>
 <translation id="6196854373336333322"><ph name="EXTENSION_NAME" /> luzapenak zure proxy-ezarpenen kontrola hartu du; alegia, sarean egiten duzun edozer alda, honda edo zelata dezake. Aldaketa zergatik gertatu den ziur ez badakizu, baliteke aldaketa nahi ez izatea.</translation>
 <translation id="6197128521826316819">Sortu orri honen QR kodea</translation>
-<translation id="6198102561359457428">Amaitu saioa eta hasi berriro</translation>
 <translation id="6198252989419008588">Aldatu PINa</translation>
 <translation id="6200047250927636406">Baztertu fitxategia</translation>
 <translation id="6200151268994853226">Kudeatu luzapena</translation>
@@ -6234,7 +6231,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7114648273807173152">Smart Lock erabili nahi baduzu Google-ko kontuan saioa hasteko, joan Ezarpenak &gt; Konektatutako gailuak &gt; Zure telefonoa &gt; Smart Lock atalera.</translation>
 <translation id="7115361495406486998">Ez dago kontaktu eskuragarririk</translation>
 <translation id="7117228822971127758">Saiatu berriro geroago</translation>
-<translation id="7117247127439884114">Hasi saioa berriro…</translation>
 <translation id="711840821796638741">Erakutsi kudeatutako laster-markak</translation>
 <translation id="711902386174337313">Irakurri saioa hasita daukaten gailuen zerrenda</translation>
 <translation id="711985611146095797">Orri honen bitartez, saioa hasita daukaten Google-ko kontuak kudea ditzakezu. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>

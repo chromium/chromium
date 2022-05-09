@@ -2863,7 +2863,6 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3748706263662799310">Signaler un bogue</translation>
 <translation id="3750562496035670393">Chrome a enregistré votre mot de passe sur cet appareil, mais vous pouvez l'enregistrer dans votre compte Google à la place. Ensuite, tous les mots de passe stockés dans votre compte Google seront également accessibles lorsque vous serez connecté.</translation>
 <translation id="3752253558646317685">Demandez à votre enfant de continuer à lever et à déposer son doigt pour enregistrer l'empreinte digitale</translation>
-<translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Stocker une fois. Utiliser partout</translation>
 <translation id="3755411799582650620">Votre téléphone <ph name="PHONE_NAME" /> peut désormais aussi déverrouiller ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Le site utilise votre microphone</translation>
@@ -3761,7 +3760,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4633003931260532286">L'extension requiert « <ph name="IMPORT_NAME" /> » avec au moins une version « <ph name="IMPORT_VERSION" /> », mais seule la version « <ph name="INSTALLED_VERSION" /> » est installée</translation>
 <translation id="4633757335284074492">Sauvegarder sur Google Disque. Restaurez facilement vos données ou changez d'appareil à tout moment. Les données des applications sont également sauvegardées. Les sauvegardes sont téléversées dans les serveurs de Google et sont chiffrées en utilisant le mot de passe du compte Google de votre enfant.</translation>
 <translation id="4634575639321169635">Configurer cet appareil pour le travail ou pour un usage personnel</translation>
-<translation id="4634771451598206121">Connectez-vous de nouveau...</translation>
 <translation id="4635072447747973225">Désinstaller Crostini</translation>
 <translation id="4635398712689569051">Les utilisateurs invités n'ont pas accès à la page <ph name="PAGE_NAME" />.</translation>
 <translation id="4636682061478263818">Fichiers Disque</translation>
@@ -5293,7 +5291,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6196640612572343990">Bloquer les témoins de tiers</translation>
 <translation id="6196854373336333322">L'extension « <ph name="EXTENSION_NAME" /> » a pris le contrôle de vos paramètres de mandataire, ce qui signifie qu'elle peut modifier ou espionner tout ce que vous faites en ligne. Si vous ne savez pas pourquoi ce changement s'est produit, vous ne voulez probablement pas l'accepter.</translation>
 <translation id="6197128521826316819">Créer un code QR pour cette page</translation>
-<translation id="6198102561359457428">Déconnectez-vous, puis connectez-vous de nouveau...</translation>
 <translation id="6198252989419008588">Modifier le NIP</translation>
 <translation id="6200047250927636406">Supprimer le fichier</translation>
 <translation id="6200151268994853226">Gérer l'extension</translation>
@@ -6241,7 +6238,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7114648273807173152">Pour utiliser Smart Lock pour vous connecter à votre compte Google, accédez à Paramètres &gt; Appareils connectés &gt; Votre téléphone &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Aucun contact joignable</translation>
 <translation id="7117228822971127758">Veuillez réessayer plus tard</translation>
-<translation id="7117247127439884114">Connectez-vous de nouveau...</translation>
 <translation id="711840821796638741">Afficher les favoris gérés</translation>
 <translation id="711902386174337313">Consulter la liste de vos appareils sur lesquels vous êtes connectés</translation>
 <translation id="711985611146095797">Cette page vous permet de gérer les comptes Google auxquels vous êtes connecté. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>

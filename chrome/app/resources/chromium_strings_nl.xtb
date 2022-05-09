@@ -202,7 +202,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6063093106622310249">&amp;Openen in Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> is toegevoegd aan Chromium</translation>
 <translation id="608006075545470555">Werkprofiel toevoegen aan deze browser</translation>
-<translation id="608189560609172163">Chromium kan je gegevens niet synchroniseren door een fout tijdens het inloggen.</translation>
 <translation id="6096348254544841612">Chromium aanpassen en beheren. Update is beschikbaar</translation>
 <translation id="6120345080069858279">Chromium slaat dit wachtwoord op in je Google-account. Je hoeft het niet te onthouden.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> is gevaarlijk en is daarom door Chromium geblokkeerd.</translation>
@@ -297,7 +296,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7682601070171973634">Chromium bevat nieuwe experimentele functies waarmee sites dezelfde browsefunctionaliteit kunnen leveren terwijl er minder van je gegevens worden gebruikt</translation>
 <translation id="7686590090926151193">Chromium is niet je standaardbrowser</translation>
 <translation id="7689606757190482937">Chromium synchroniseren en personaliseren op al je apparaten</translation>
-<translation id="7729447699958282447">Chromium kan je gegevens niet synchroniseren, omdat synchronisatie niet beschikbaar is voor je domein.</translation>
 <translation id="7745317241717453663">Hiermee worden je browsegegevens verwijderd van dit apparaat. Als je je gegevens later wilt terughalen, log je in bij Chromium als <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Het installatieprogramma kan geen tijdelijke directory maken. Controleer of je nog schijfruimte hebt en of je rechten hebt om software te installeren.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -341,7 +339,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8713679423359107094">Als je alle Chromium-vensters sluit, worden de cookies en sitegegevens automatisch gewist</translation>
 <translation id="8796443464227412154">Je wordt <ph name="BEGIN_BOLD" />uitgelogd van de meeste sites<ph name="END_BOLD" /> als je Chromium sluit. Als synchronisatie uitstaat, word je ook <ph name="BEGIN_BOLD" />uitgelogd van Google-services en Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium heeft toegangsrechten voor je camera en microfoon nodig voor deze site</translation>
-<translation id="8821041990367117597">Chromium kan je gegevens niet synchroniseren, omdat de inloggegevens voor je account zijn verouderd.</translation>
 <translation id="8833697763442816810">Chromium OS-systeem</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Welke gegevens worden gebruikt:<ph name="END_BOLD" /> Je browsegeschiedenis, een lijst van de sites die je via Chromium op dit apparaat hebt bezocht.</translation>
 <translation id="8862326446509486874">Je hebt geen rechten om op systeemniveau te installeren. Meld je aan als beheerder en voer het installatieprogramma opnieuw uit.</translation>

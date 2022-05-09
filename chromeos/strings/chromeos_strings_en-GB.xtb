@@ -145,6 +145,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Turn on Bluetooth to discover nearby devices</translation>
 <translation id="2346474577291266260">Excellent (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Continue</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Unqualified components<ph name="LINK_END" /> detected. If you choose to confirm this has been installed, please do so now.</translation>
 <translation id="2363636958541445404">Turn the feature on to select screensaver options</translation>
 <translation id="2364498172489649528">Passed</translation>
@@ -173,7 +174,6 @@
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Sign-in image</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> selected</translation>
-<translation id="2695514675076754339">Enter the 8-character unlock code</translation>
 <translation id="2712812801627182647">TLS authentication key</translation>
 <translation id="2717139507051041123">Enable dark colour mode</translation>
 <translation id="2740531572673183784">OK</translation>

@@ -962,6 +962,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1892341345406963517">Pozdrav, <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Drugi jezici</translation>
 <translation id="1895658205118569222">Isključivanje</translation>
+<translation id="1897120393475391208">Koristite snažnu zaporku</translation>
 <translation id="1900305421498694955">Aplikacije s Google Playa mogu zatražiti potpuni pristup sustavu datoteka radi čitanja i zapisivanja datoteka na vanjskim uređajima za pohranu. Datoteke i mape izrađene na uređaju vidljive su svima koji upotrebljavaju vanjski disk. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Odaberi &amp;sve</translation>
 <translation id="1901396183631570154">Chrome nije mogao spremiti ove zaporke na vaš Google račun. I dalje ih možete spremiti na ovaj uređaj.</translation>
@@ -2864,7 +2865,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3748706263662799310">Prijava programske pogreške</translation>
 <translation id="3750562496035670393">Chrome je spremio vašu zaporku na ovaj uređaj, no možete je spremiti na svoj Google račun. Tada će i sve zaporke na vašem Google računu biti dostupne dok ste prijavljeni.</translation>
 <translation id="3752253558646317685">Neka dijete nastavi podizati prst kako bi se spremio otisak prsta</translation>
-<translation id="3752582316358263300">U redu...</translation>
 <translation id="3753033997400164841">Pohranite jedanput. Upotrebljavajte svugdje</translation>
 <translation id="3755411799582650620">Vaš <ph name="PHONE_NAME" /> sada može otključati i taj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Web-lokacija upotrebljava vaš mikrofon</translation>
@@ -3762,7 +3762,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4633003931260532286">Minimalna je verzija za "<ph name="IMPORT_NAME" />" koju proširenje zahtijeva "<ph name="IMPORT_VERSION" />", ali je instalirana samo verzija "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4633757335284074492">Sigurnosno kopiranje na Google disku. Lako vratite podatke ili promijenite uređaj u bilo kojem trenutku. Sigurnosna kopija uključuje podatke aplikacija. Sigurnosna kopija prenosi se na Google i kriptira pomoću zaporke Google računa vašeg djeteta.</translation>
 <translation id="4634575639321169635">Postavite ovaj uređaj za poslovnu ili osobnu upotrebu</translation>
-<translation id="4634771451598206121">Prijavite se ponovo...</translation>
 <translation id="4635072447747973225">Deinstaliranje Crostinija</translation>
 <translation id="4635398712689569051">Stranica <ph name="PAGE_NAME" /> nije dostupna gostujućim korisnicima.</translation>
 <translation id="4636682061478263818">Datoteke s Diska</translation>
@@ -5291,7 +5290,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće trećih strana</translation>
 <translation id="6196854373336333322">Proširenje "<ph name="EXTENSION_NAME" />" preuzelo je kontrolu nad vašim postavkama proxyja, a to znači da može promijeniti, prekinuti ili prisluškivati sve što radite na mreži. Ako niste sigurni kako je došlo do te promjene, vjerojatno je ne želite.</translation>
 <translation id="6197128521826316819">Izradi QR kôd za ovu stranicu</translation>
-<translation id="6198102561359457428">Odjavite se, a zatim ponovo prijavite...</translation>
 <translation id="6198252989419008588">Promijeni PIN</translation>
 <translation id="6200047250927636406">Odbaci datoteku</translation>
 <translation id="6200151268994853226">Upravljajte proširenjem</translation>
@@ -6241,7 +6239,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7114648273807173152">Da biste upotrebljavali Smart Lock za prijavu na Google račun, idite na Postavke &gt; Povezani uređaji &gt; Vaš telefon &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Nema dostupnih kontakata</translation>
 <translation id="7117228822971127758">Pokušajte ponovo kasnije</translation>
-<translation id="7117247127439884114">Prijavite se ponovo...</translation>
 <translation id="711840821796638741">Prikaži upravljane oznake</translation>
 <translation id="711902386174337313">pročitati popis uređaja na koje ste prijavljeni</translation>
 <translation id="711985611146095797">Na ovoj stranici možete upravljati Google računima na koje ste prijavljeni. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -6546,6 +6543,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7444970023873202833">Istražite još uspomena u Google fotografijama</translation>
 <translation id="7444983668544353857">Onemogući <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Automatsko instaliranje aplikacija</translation>
+<translation id="7449381494541372002">pokretanje…</translation>
 <translation id="7449752890690775568">Želite li ukloniti zaporku?</translation>
 <translation id="7450761244949417357">Otvara se u pregledniku <ph name="ALTERNATIVE_BROWSER_NAME" /> sad</translation>
 <translation id="7452166281927983300">Odbačena upozorenja (<ph name="MUTED_PASSWORDS" />)</translation>

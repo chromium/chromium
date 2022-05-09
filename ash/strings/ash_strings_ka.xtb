@@ -136,6 +136,7 @@
 <translation id="1719094688023114093">ავტოსუბტიტრები ჩართულია.</translation>
 <translation id="1720011244392820496">ჩართეთ Wi-Fi სინქრონიზაცია</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />“ ხილულია Bluetooth მოწყობილობებისთვის.</translation>
+<translation id="174102739345480129">მარკერი გამორთულია.</translation>
 <translation id="1743570585616704562">არ არის ამოცნობილი</translation>
 <translation id="1746730358044914197">შეყვანის მეთოდები კონფიგურირებულია თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="1747827819627189109">ეკრანული კლავიატურა ჩართულია</translation>
@@ -564,6 +565,7 @@
 <translation id="4379531060876907730">ეს არის თქვენი სტილუსის ხელსაწყოები</translation>
 <translation id="4389184120735010762">თქვენ დააჭირეთ ჩამაგრებული ლუპის კლავიატურის მალსახმობს. გსურთ მისი ჩართვა?</translation>
 <translation id="439598569299422042">დაპაუზებულია, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">სკრინკასტის შენახვა ვერ მოხერხდა</translation>
 <translation id="4405151984121254935">დაკავშირებული პერიფერიული მოწყობილობის ტიპი მხარდაუჭერელია</translation>
 <translation id="4406883609789734330">ავტოსუბტიტრები</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> გამორთულია.</translation>
@@ -670,6 +672,7 @@
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">შემდეგი წინადადება</translation>
+<translation id="5016558321564993266">მარკერის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">დრო ამოიწურა</translation>
 <translation id="5033299697334913360">სრული ეკრანის აღსაბეჭდად დააწკაპუნეთ ნებისმიერ ადგილზე</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> დაკავშირებულია ახალ ტელეფონთან</translation>
@@ -699,6 +702,7 @@
 <translation id="5222676887888702881">გამოსვლა</translation>
 <translation id="5234764350956374838">გაუქმება</translation>
 <translation id="523505283826916779">მარტივი წვდომის პარამეტრები</translation>
+<translation id="5245201184978705914">ტრანსკრიპტის შექმნა ვერ მოხერხდა</translation>
 <translation id="5253783950165989294">დაკავშირებულია მოწყობილობასთან, სახელად <ph name="DEVICE_NAME" />, ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">დესკტოპი 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> საჭიროებს ყურადღების მიქცევას.</translation>
@@ -733,6 +737,7 @@
 <translation id="5433020815079095860">შემავალი აუდიოსიგნალი</translation>
 <translation id="544691375626129091">ყველა ხელმისაწვდომი მომხმარებელი უკვე დამატებულია ამ სესიაში.</translation>
 <translation id="54609108002486618">მართული</translation>
+<translation id="5460938382730614333">მარკერი ჩართულია.</translation>
 <translation id="5465662442746197494">დახმარება გჭირდებათ?</translation>
 <translation id="547979256943495781">თარო მდებარეობს მარჯვენა ნაწილში</translation>
 <translation id="5491186829646618080">ხელმისაწვდომია ჩაშენებული პროგრამული უზრუნველყოფის განახლებები</translation>
@@ -774,6 +779,7 @@
 <translation id="5745612484876805746">ღამის განათება ავტომატურად ირთვება მზის ჩასვლისას</translation>
 <translation id="5750765938512549687">Bluetooth გამორთულია</translation>
 <translation id="5760866832697883462">დააკავშირეთ თქვენი <ph name="NAME" /></translation>
+<translation id="5762420912707163638">მარკერის გადართვა. <ph name="STATE_TEXT" /> ეკრანზე მოხაზვისთვის გამოიყენეთ ტრეკპედი, სენსორული ეკრანი ან სტილუსი.</translation>
 <translation id="576341972084747908">ჩამოიტვირთოს სახიფათო <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Shelf Party გამორთულია.</translation>
 <translation id="576453121877257266">ღამის განათება ჩართულია.</translation>
@@ -820,7 +826,6 @@
 <translation id="602472752137106327">ყველა სამუშაო მაგიდის ფანჯრების ჩვენება, არჩეულია არჩევანის ღილაკი</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="6027518778343897451">მოვლენა არ იძებნება თარიღისთვის: <ph name="CURRENT_MONTH_DAY" />. დააჭირეთ შეყვანის ღილაკს, რათა გახსნათ Google კალენდარი ბრაუზერში.</translation>
-<translation id="6027952026115023659">იქონიეთ წვდომა თქვენი ტელეფონის შეტყობინებების აპებზე თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="6030495522958826102">მენიუ გადატანილია ეკრანის ქვედა მარცხენა კუთხეში.</translation>
 <translation id="6032620807120418574">სრული ეკრანის ჩასაწერად დააწკაპუნეთ ნებისმიერ ადგილზე</translation>
 <translation id="6040071906258664830">მიკროფონის ჩაწერაა <ph name="STATE" /></translation>
@@ -970,7 +975,6 @@
 <translation id="6961121602502368900">ტელეფონის ჩაჩუმება მიუწვდომელია სამსახურის პროფილში</translation>
 <translation id="6961840794482373852">კლავიატურის მალსახმობი „Alt + ზემოთ მიმართული ისარი“ შეიცვალა. Page Up კლავიშით სარგებლობისთვის დააჭირეთ კლავიშს <ph name="LAUNCHER_KEY_NAME" /> + ზემოთ მიმართულ ისარს.</translation>
 <translation id="6965382102122355670">კარგი</translation>
-<translation id="6967933908874208731">ნახეთ თქვენი ტელეფონის ბოლოდროინდელი ფოტოები, მედიაფაილები, შეტყობინებები და შეტყობინებების აპები თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="6972754398087986839">დაწყება</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">სპეციალური შესაძლებლობები</translation>

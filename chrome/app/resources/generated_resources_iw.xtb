@@ -2876,7 +2876,6 @@
 <translation id="3748706263662799310">דיווח על באג</translation>
 <translation id="3750562496035670393">‏מערכת Chrome שמרה את הסיסמה שלך במכשיר הזה, אבל יש לך אפשרות לשמור אותה בחשבון Google במקום. לאחר מכן, כל הסיסמאות שבחשבון Google שלך יהיו זמינות גם כשיהיה לך חיבור לחשבון.</translation>
 <translation id="3752253558646317685">כדי לשמור את טביעת האצבע, על הילד או הילדה להרים ולהחזיר את האצבע כמה פעמים</translation>
-<translation id="3752582316358263300">אישור...</translation>
 <translation id="3753033997400164841">מאחסנים סיסמה פעם אחת. משתמשים בה בכל מקום.</translation>
 <translation id="3755411799582650620">ה-<ph name="PHONE_NAME" /> יכול כעת לבטל גם את הנעילה של <ph name="DEVICE_TYPE" /> זה.</translation>
 <translation id="375636864092143889">האתר משתמש במיקרופון</translation>
@@ -3775,7 +3774,6 @@
 <translation id="4633003931260532286">כדי להשתמש בתוסף יש צורך ב-"<ph name="IMPORT_NAME" />" בגרסה "<ph name="IMPORT_VERSION" />" לפחות, אך הגרסה המותקנת היא רק "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4633757335284074492">‏גיבוי ב-Google Drive. אפשר לשחזר נתונים או להחליף מכשיר בכל שלב. הגיבוי הזה כולל נתוני אפליקציות. הגיבויים מועלים ל-Google ומוצפנים באמצעות סיסמת חשבון Google של הילד/ה שלך.</translation>
 <translation id="4634575639321169635">אפשר להגדיר את המכשיר לעבודה או לשימוש אישי</translation>
-<translation id="4634771451598206121">כניסה מחדש...</translation>
 <translation id="4635072447747973225">‏הסרה של Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> לא זמין למשתמשים במצב אורח.</translation>
 <translation id="4636682061478263818">‏קובצי Drive</translation>
@@ -5307,7 +5305,6 @@
 <translation id="6196640612572343990">‏חסימת קובצי Cookie של צד שלישי</translation>
 <translation id="6196854373336333322">‏התוסף "<ph name="EXTENSION_NAME" />" השתלט על הגדרות שרת ה-Proxy. פירוש הדבר שהוא יכול לשנות ולקטוע לכל פעולה שביצעת באינטרנט או לצותת לה. אם לא ידוע לך בוודאות מדוע שינוי זה התרחש, סביר להניח שזהו שינוי לא רצוי.</translation>
 <translation id="6197128521826316819">‏יצירת קוד QR לדף הזה</translation>
-<translation id="6198102561359457428">יש לצאת ולהיכנס שוב...</translation>
 <translation id="6198252989419008588">שינוי קוד אימות</translation>
 <translation id="6200047250927636406">מחיקת הקובץ</translation>
 <translation id="6200151268994853226">ניהול התוספים</translation>
@@ -6257,7 +6254,6 @@
 <translation id="7114648273807173152">‏כדי להשתמש ב-Smart Lock על מנת להיכנס אל חשבון Google צריך לעבור אל 'הגדרות' &gt; 'מכשירים מחוברים' &gt; 'הטלפון שלך' &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">אין אנשי קשר זמינים</translation>
 <translation id="7117228822971127758">אפשר לנסות שוב מאוחר יותר</translation>
-<translation id="7117247127439884114">יש להיכנס שוב...</translation>
 <translation id="711840821796638741">הצגת סימניות מנוהלות</translation>
 <translation id="711902386174337313">קריאה של רשימת ההתקנים המחוברים שלך</translation>
 <translation id="711985611146095797">‏הדף הזה מאפשר לך לנהל את חשבונות Google שאליהם נכנסת. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>

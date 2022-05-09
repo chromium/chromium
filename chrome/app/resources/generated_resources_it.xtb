@@ -2861,7 +2861,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3748706263662799310">Segnala un bug</translation>
 <translation id="3750562496035670393">Chrome ha salvato la tua password su questo dispositivo, ma puoi salvarla sul tuo Account Google se preferisci. Se lo fai, saranno disponibili anche tutte le password sul tuo Account Google quando avrai eseguito l'accesso.</translation>
 <translation id="3752253558646317685">Chiedi a tuo figlio di continuare a sollevare il dito per salvare l'impronta</translation>
-<translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Memorizza una volta, usa ovunque</translation>
 <translation id="3755411799582650620">Ora con il tuo <ph name="PHONE_NAME" /> puoi sbloccare anche questo dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Il sito sta usando il microfono</translation>
@@ -3759,7 +3758,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4633003931260532286">L'estensione richiede "<ph name="IMPORT_NAME" />" con la versione minima "<ph name="IMPORT_VERSION" />", ma è installata soltanto la versione "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4633757335284074492">Effettua il backup su Google Drive. Ripristina i dati facilmente o cambia dispositivo in qualsiasi momento. Questa copia di backup include i dati delle app. Le copie di backup vengono caricate su Google e criptate mediante la password del tuo Account Google.</translation>
 <translation id="4634575639321169635">Configura questo dispositivo per il lavoro o per uso personale</translation>
-<translation id="4634771451598206121">Esegui di nuovo l'accesso...</translation>
 <translation id="4635072447747973225">Disinstallare Crostini</translation>
 <translation id="4635398712689569051">La pagina <ph name="PAGE_NAME" /> non è disponibile per gli utenti Ospite.</translation>
 <translation id="4636682061478263818">File di Drive</translation>
@@ -5288,7 +5286,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6196640612572343990">Blocca cookie di terze parti</translation>
 <translation id="6196854373336333322">L'estensione "<ph name="EXTENSION_NAME" />" ha assunto il controllo delle tue impostazioni proxy, il che significa che può cambiare, interrompere o intercettare tutto ciò che fai online. Se non sei sicuro del motivo per cui si sia verificato questo cambiamento, è probabile che sia indesiderato.</translation>
 <translation id="6197128521826316819">Crea codice QR per questa pagina</translation>
-<translation id="6198102561359457428">Esci e accedi di nuovo...</translation>
 <translation id="6198252989419008588">Modifica PIN</translation>
 <translation id="6200047250927636406">Ignora file</translation>
 <translation id="6200151268994853226">Gestisci estensione</translation>
@@ -6234,7 +6231,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7114648273807173152">Per utilizzare Smart Lock per accedere al tuo Account Google, apri Impostazioni &gt; Dispositivi connessi &gt; Il tuo telefono &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Nessun contatto raggiungibile</translation>
 <translation id="7117228822971127758">Riprova più tardi</translation>
-<translation id="7117247127439884114">Esegui di nuovo l'accesso...</translation>
 <translation id="711840821796638741">Mostra Preferiti gestiti</translation>
 <translation id="711902386174337313">Lettura dell'elenco di dispositivi su cui è stato eseguito l'accesso</translation>
 <translation id="711985611146095797">Questa pagina ti consente di gestire gli Account Google a cui hai eseguito l'accesso. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>

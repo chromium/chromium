@@ -202,7 +202,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6063093106622310249">&amp;Öppna i Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> har lagts till i Chromium</translation>
 <translation id="608006075545470555">Lägg till en jobbprofil i den här webbläsaren</translation>
-<translation id="608189560609172163">Chromium kunde inte synkronisera data på grund av ett fel vid inloggningen.</translation>
 <translation id="6096348254544841612">Anpassa och styr Chromium. En uppdatering är tillgänglig.</translation>
 <translation id="6120345080069858279">Det här lösenordet sparas i ditt Google-konto. Du behöver inte komma ihåg det.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> är skadlig och har blockerats av Chromium.</translation>
@@ -298,7 +297,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7682601070171973634">Chromium utforskar nya funktioner som gör att webbplatser kan leverera samma upplevelse av webbläsaren med mindre av din data</translation>
 <translation id="7686590090926151193">Chromium är inte din standardwebbläsare</translation>
 <translation id="7689606757190482937">Synkronisera och anpassa Chromium på alla enheter du använder</translation>
-<translation id="7729447699958282447">Chromium kunde inte synkronisera data eftersom synkronisering inte är tillgängligt för domänen.</translation>
 <translation id="7745317241717453663">Webbinformationen raderas från enheten. Logga in i Chromium som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
 <translation id="7747138024166251722">Det gick inte att skapa en tillfällig katalog för installationsfilen. Kontrollera diskutrymmet och att du har behörighet att installera program.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
@@ -343,7 +341,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8713679423359107094">När du stänger alla öppna fönster i Chromium rensas cookies och webbplatsdata automatiskt</translation>
 <translation id="8796443464227412154">Du <ph name="BEGIN_BOLD" />loggas ut från de flesta webbplatser<ph name="END_BOLD" /> när du stänger Chromium. Om synkronisering har inaktiverats <ph name="BEGIN_BOLD" />loggas du även ut från Googles tjänster och Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Du behöver ge Chromium behörighet att använda kameran och mikrofonen på webbplatsen</translation>
-<translation id="8821041990367117597">Chromium kunde inte synkronisera data eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
 <translation id="8833697763442816810">Chromium OS-system</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Vilken data används:<ph name="END_BOLD" /> Webbhistoriken, där webbplatser som du besökt i Chromium på den här enheten registreras.</translation>
 <translation id="8862326446509486874">Du har inte behörighet att göra en installation på systemnivå. Försök köra installationsprogrammet igen som administratör.</translation>

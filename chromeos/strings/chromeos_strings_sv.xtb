@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Aktivera Bluetooth så att det går att upptäcka enheter i närheten</translation>
 <translation id="2346474577291266260">Utmärkt (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Komponenter som inte är godkända<ph name="LINK_END" /> har upptäckts. Om du vill bekräfta att de har installerats ska du göra det nu.</translation>
 <translation id="2363636958541445404">Aktivera funktionen om du vill välja alternativ för skärmsläckaren</translation>
 <translation id="2364498172489649528">Godkänd</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Inloggningsbild</translation>
 <translation id="2640549051766135490">Detta album har markerats: <ph name="TITLE" /> <ph name="DESC" /></translation>
-<translation id="2695514675076754339">Ange koden för upplåsning som består av åtta tecken</translation>
 <translation id="2712812801627182647">TLS-autentiseringsnyckel</translation>
 <translation id="2717139507051041123">Aktivera mörkt färgläge</translation>
 <translation id="2740531572673183784">OK</translation>

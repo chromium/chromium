@@ -202,7 +202,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6063093106622310249">&amp;Opna í Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> hefur verið bætt við Chromium</translation>
 <translation id="608006075545470555">Bæta vinnusniði við þennan vafra</translation>
-<translation id="608189560609172163">Chromium gat ekki samstillt gögnin þín vegna innskráningarvillu.</translation>
 <translation id="6096348254544841612">Sérstilltu og stjórnaðu Chromium. Uppfærsla er í boði.</translation>
 <translation id="6120345080069858279">Chromium mun vista þetta aðgangsorð á Google reikningnum þínum. Þú þarft ekki að muna það.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> er skaðleg skrá og Chromium útilokaði hana.</translation>
@@ -298,7 +297,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7682601070171973634">Chromium er að kanna nýja eiginleika sem gera vefsvæðum kleift að skila sömu vafraupplifun án þess að nota jafn mikið af gögnum frá þér</translation>
 <translation id="7686590090926151193">Chromium er ekki sjálfgefinn vafri</translation>
 <translation id="7689606757190482937">Samstilltu Chromium á milli tækja og gerðu það að þínu</translation>
-<translation id="7729447699958282447">Chromium gat ekki samstillt gögnin þín vegna þess að samstilling er ekki í boði fyrir lénið þitt.</translation>
 <translation id="7745317241717453663">Þetta mun eyða vefskoðunargögnunum þínum úr þessu tæki. Skráðu þig inn í Chromium sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
 <translation id="7747138024166251722">Uppsetningarforritið gat ekki búið til tímabundna möppu. Athugaðu laust diskpláss og heimildir fyrir uppsetningu hugbúnaðar.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -343,7 +341,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8713679423359107094">Öll fótspor og vefsvæðagögn verða hreinsuð sjálfkrafa um leið og þú lokar öllum Chromium gluggum</translation>
 <translation id="8796443464227412154">Þú verður <ph name="BEGIN_BOLD" />skráð(ur) út af flestum vefsvæðum<ph name="END_BOLD" /> þegar þú lokar Chromium. Ef slökkt er á samstillingu verðurðu einnig <ph name="BEGIN_BOLD" />skráð(ur) út úr Google þjónustum og Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium þarf leyfi til að nota myndavélina og hljóðnemann á þessu vefsvæði</translation>
-<translation id="8821041990367117597">Chrome gat ekki samstillt gögnin þín vegna þess að innskráningarupplýsingar reikningsins þíns eru úreltar.</translation>
 <translation id="8833697763442816810">ChromiumOS kerfi</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Hvaða gögn eru notuð:<ph name="END_BOLD" /> Vafraferillinn þinn, skrá yfir vefsvæði sem þú hefur opnað með Chromium í þessu tæki.</translation>
 <translation id="8862326446509486874">Þú hefur ekki tilskilin réttindi til uppsetningar fyrir kerfið allt. Prófaðu að keyra uppsetningarforritið aftur sem stjórnandi.</translation>

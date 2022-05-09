@@ -222,7 +222,6 @@
 <translation id="2883151425485251736">查看及編輯你在帳戶中設為隱藏的主題</translation>
 <translation id="288655811176831528">關閉分頁</translation>
 <translation id="2890171748217283516">你追蹤的網站會儲存在 Google 帳戶中，你可以在「探索」設定中管理這些網站。</translation>
-<translation id="2893180576842394309">Google 可能會使用你的歷史記錄，為你提供個人化的搜尋服務和其他各項 Google 服務</translation>
 <translation id="2898963176829412617">新資料夾…</translation>
 <translation id="2916171785467530738">自動完成搜尋字詞與網址</translation>
 <translation id="291754862089661335">將這個方框對準 QR 圖碼或條碼</translation>
@@ -902,7 +901,6 @@
 <translation id="8654802032646794042">取消</translation>
 <translation id="8668210798914567634">此網頁內容已儲存至你的閱讀清單。</translation>
 <translation id="8680787084697685621">帳戶登入詳細資料已過期。</translation>
-<translation id="8691262314411702087">選擇要同步處理的資料類型</translation>
 <translation id="8693663554456874301">{count,plural, =1{關閉分頁}other{關閉多個分頁}}</translation>
 <translation id="8706588385081740091">密碼</translation>
 <translation id="8717864919010420084">複製連結</translation>

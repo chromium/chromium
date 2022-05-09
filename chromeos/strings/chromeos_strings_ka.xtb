@@ -91,6 +91,7 @@
 <translation id="1801418420130173017">მუქი თემის გათიშვა</translation>
 <translation id="1807246157184219062">ნათელი</translation>
 <translation id="1827738518074806965">ხელოვნების გალერეა</translation>
+<translation id="1840835860961531162">ჩაწერისგან დაცვის გამორთვა</translation>
 <translation id="1851218745569890714">ვიდეოკონფერენცია</translation>
 <translation id="1852934301711881861">ChromeOS Flex-ის ინსტალაცია</translation>
 <translation id="1856388568474281774">ისარი ქვემოთ</translation>
@@ -144,6 +145,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">ახლომდებარე მოწყობილობების საპოვნელად ჩართეთ Bluetooth</translation>
 <translation id="2346474577291266260">შესანიშნავი (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="2360257214555822463">აღმოჩენილია <ph name="LINK_BEGIN" />კრიტერიუმებთან შეუსაბამო კომპონენტები<ph name="LINK_END" />. თუ გსურთ, დაადასტუროთ, რომ ეს დაინსტალირდა, გთხოვთ, ახლავე გააკეთოთ.</translation>
 <translation id="2363636958541445404">ეკრანმზოგის ვარიანტების ასარჩევად ჩართეთ ეს ფუნქცია</translation>
 <translation id="2364498172489649528">გავლილია</translation>
@@ -172,7 +174,6 @@
 <translation id="2620436844016719705">სისტემა</translation>
 <translation id="2638662041295312666">შესვლის სურათი</translation>
 <translation id="2640549051766135490">არჩეულია ალბომი <ph name="TITLE" /> <ph name="DESC" /></translation>
-<translation id="2695514675076754339">შეიყვანეთ განბლოკვის 8-სიმბოლოიანი კოდი</translation>
 <translation id="2712812801627182647">TLS ავტორიზაციის გასაღები</translation>
 <translation id="2717139507051041123">მუქი ფერის რეჟიმის ჩართვა</translation>
 <translation id="2740531572673183784">კარგი</translation>
@@ -274,6 +275,7 @@
 <translation id="3941014780699102620">ჰოსტის გარდაქმნა ვერ მოხერხდა</translation>
 <translation id="3942420633017001071">დიაგნოსტიკა</translation>
 <translation id="3954678691475912818">მოწყობილობის ტიპი უცნობია.</translation>
+<translation id="3958703339436883942">მიმდინარეობს გადატვირთვისთვის მზადება...</translation>
 <translation id="3966286471246132217">მაქსიმალურად ზუსტი შედეგები რომ მიიღოთ, დახურეთ ყველა აპი, სანამ ტესტი არ დასრულდება.</translation>
 <translation id="3967822245660637423">ჩამოტვირთვა დასრულდა</translation>
 <translation id="3969602104473960991">ChromeOS-ის პაროლი განახლდა</translation>
@@ -422,6 +424,7 @@
 <translation id="5275828089655680674">რუტინების ხელახლა გაშვება</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">ვერსია <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">მომდევნო ეკრანზე გადასასვლელად გათიშეთ ჩაწერისგან დაცვა. ინსტრუქციას შეგიძლიათ გაეცნოთ მოწყობილობის მწარმოებლის მხარდაჭერის გვერდზე.</translation>
 <translation id="5300814202279832142">ფანჯრის გადატანა სამუშაო მაგიდაზე</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">დაკავშირება</translation>
@@ -473,6 +476,7 @@
 <translation id="583281660410589416">უცნობი</translation>
 <translation id="5843706793424741864">ფარენჰაიტი</translation>
 <translation id="5849570051105887917">ადგილობრივი პროვაიდერის კოდი</translation>
+<translation id="5856532218727053281">სისტემა გადაიტვირთება ჩაწერისგან დაცვის სტატუსის შემოწმების შემდეგ</translation>
 <translation id="5859603669299126575">ხელოვნების გალერეის ალბომი</translation>
 <translation id="5860033963881614850">გამორთვა</translation>
 <translation id="5860491529813859533">ჩართვა</translation>

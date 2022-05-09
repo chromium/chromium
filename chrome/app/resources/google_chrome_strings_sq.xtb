@@ -42,7 +42,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1698376642261615901">Google Chrome është një shfletues uebi që ekzekuton faqe uebi dhe aplikacione me një shpejtësi jashtëzakonisht të lartë. Është i shpejtë, i qëndrueshëm dhe i lehtë në përdorim. Shfleto në ueb në mënyrë më të sigurt, me mbrojtje të integruar në Google Chrome kundër mashtrimeve dhe softuerëve keqdashës.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome do të hapet përsëri për një orë}other{Chrome do të hapet përsëri për # orë}}</translation>
 <translation id="1734234790201236882">Chrome do ta ruajë këtë fjalëkalim në llogarinë tënde të Google. Nuk është nevoja që ta mbash mend.</translation>
-<translation id="174539241580958092">Google Chrome nuk mund t'i sinkronizonte të dhënat për shkak të një gabimi gjatë identifikimit.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Sigurohu që të jesh identifikuar në Chrome në pajisjen tënde <ph name="TARGET_DEVICE_NAME" /> dhe më pas provo ta dërgosh përsëri.</translation>
 <translation id="1812689907177901597">Duke çaktivizuar këtë, mund të identifikohesh në sajtet e Google si Gmail pa u identifikuar në Chrome</translation>
@@ -73,7 +72,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="235650106824528204">Çdo e dhënë e Chrome që krijohet gjatë përdorimit të këtij profili (si p.sh. krijimi i faqeshënuesve, historikut, fjalëkalimeve dhe cilësimeve të tjera) mund të hiqet nga administratori i profilit të punës. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2401189691232800402">Sistemi i ChromeOS</translation>
-<translation id="2429317896000329049">Google Chrome nuk mund t'i sinkronizonte të dhënat për shkak se sinkronizimi nuk ofrohet për domenin tënd.</translation>
 <translation id="2467438592969358367">Google Chrome dëshiron të eksportojë fjalëkalimet e tua. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="2485422356828889247">Çinstalo</translation>
 <translation id="2534507159460261402">Google Pay (kopjuar në Chrome)</translation>
@@ -294,7 +292,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="7481213027396403996">Merr sigurinë më të fortë të Chrome</translation>
 <translation id="7486227612705979895">Chrome do të ketë qasje te "Disku" yt për të dhënë sugjerime në shiritin e adresës</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">Google Chrome nuk mund të sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626032353295482388">Mirë se vjen në Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> kërkon që të lexosh dhe të pranosh "Kushtet e shërbimit" më poshtë para se të përdorësh këtë pajisje. Këto kushte nuk i zgjerojnë, modifikojnë ose kufizojnë "Kushtet e Google ChromeOS".</translation>

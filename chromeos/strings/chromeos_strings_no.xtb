@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Slå på Bluetooth for å finne enheter i nærheten</translation>
 <translation id="2346474577291266260">Utmerket (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Fortsett</translation>
 <translation id="2360257214555822463">Fant <ph name="LINK_BEGIN" />ikke-kvalifiserte komponenter<ph name="LINK_END" />. Hvis du velger å bekrefte at disse er installert, må du gjøre det nå.</translation>
 <translation id="2363636958541445404">Slå på funksjonen for å velge alternativer for skjermsparer</translation>
 <translation id="2364498172489649528">Bestått</translation>
@@ -172,7 +173,6 @@
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Påloggingsbilde</translation>
 <translation id="2640549051766135490">Albumet <ph name="TITLE" /> med <ph name="DESC" /> er valgt</translation>
-<translation id="2695514675076754339">Oppgi den 8-sifrede opplåsingskoden</translation>
 <translation id="2712812801627182647">TLS-autentiseringsnøkkel</translation>
 <translation id="2717139507051041123">Slå på modus for mørke farger</translation>
 <translation id="2740531572673183784">OK</translation>

@@ -202,7 +202,6 @@ Toestemmings wat jy reeds aan webwerwe en programme gegee het, kan op hierdie re
 <translation id="6063093106622310249">&amp;Maak in Chromium oop</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> is by Chromium gevoeg</translation>
 <translation id="608006075545470555">Voeg werkprofiel by hierdie blaaier</translation>
-<translation id="608189560609172163">Chromium kon nie jou data sinkroniseer nie weens 'n fout tydens aanmelding.</translation>
 <translation id="6096348254544841612">Pasmaak en beheer Chromium. Opdatering is beskikbaar.</translation>
 <translation id="6120345080069858279">Chromium sal hierdie wagwoord in jou Google-rekening stoor. Jy sal dit nie hoef te onthou nie.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> is gevaarlik en daarom het Chromium dit geblokkeer.</translation>
@@ -298,7 +297,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="7682601070171973634">Chromium verken tans nuwe kenmerke wat werwe in staat stel om minder van jou data te gebruik om dieselfde blaai-ervaring te lewer</translation>
 <translation id="7686590090926151193">Chromium is nie jou verstekblaaier nie</translation>
 <translation id="7689606757190482937">Sinkroniseer en personaliseer Chromium op al jou toestelle</translation>
-<translation id="7729447699958282447">Chromium kon nie jou data sinkroniseer nie, omdat Sinkronisering nie vir jou domein beskikbaar is nie.</translation>
 <translation id="7745317241717453663">Dit sal jou blaaierdata op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chromium aan om jou data later op te haal.</translation>
 <translation id="7747138024166251722">Die installeerder kon nie 'n tydelike gids skep nie. Gaan asseblief na vir beskikbare skyfspasie en toestemming om sagteware te installeer.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
@@ -343,7 +341,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8713679423359107094">Webkoekies en werfdata word outomaties uitgevee wanneer jy alle Chromium-vensters toemaak</translation>
 <translation id="8796443464227412154">Jy sal <ph name="BEGIN_BOLD" />by die meeste werwe afgemeld word<ph name="END_BOLD" /> wanneer jy Chromium toemaak. As sinkronisering af is, sal jy ook <ph name="BEGIN_BOLD" />by Google-dienste en Chromium afgemeld word<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium het toestemming nodig om toegang te kry tot jou kamera en mikrofoon vir hierdie werf</translation>
-<translation id="8821041990367117597">Chromium kon nie jou data sinkroniseer nie, want jou rekening se aanmeldbesonderhede is verouderd.</translation>
 <translation id="8833697763442816810">Chromium-bedryfstelsel</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Watter data gebruik word:<ph name="END_BOLD" /> Jou blaaigeskiedenis, ’n rekord van werwe wat jy besoek het deur Chromium op hierdie toestel te gebruik.</translation>
 <translation id="8862326446509486874">Jy het nie die gepaste regte vir stelselvlak-installering nie. Probeer om die installeerder weer te laat loop as Administrateur.</translation>

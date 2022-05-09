@@ -198,7 +198,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="6063093106622310249">&amp;Chromiumda ochish</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> kengaytmasi Chromiumga o‘rnatildi</translation>
 <translation id="608006075545470555">Bu brauzerga ish profilini kiritish</translation>
-<translation id="608189560609172163">Hisobga kirishdagi xatolik sababli Chromium ma’lumotlarni sinxronlay olmadi.</translation>
 <translation id="6096348254544841612">Chromium uchun yangilanish chiqdi.</translation>
 <translation id="6120345080069858279">Chromium bu parolni Google hisobingizga saqlaydi. Uni eslab qolishingiz shart emas.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> xavfli edi, shuning uchun u Chromium tomonidan bloklandi.</translation>
@@ -294,7 +293,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7682601070171973634">Chromium saytlarga kamroq maʼlumotlaringiz bilan bir xil brauzer xizmatlarini taqdim etishiga imkon beruvchi yangi funksiyalarni oʻrganib chiqmoqda</translation>
 <translation id="7686590090926151193">Chromium standart brauzer sifatida tayinlanmagan</translation>
 <translation id="7689606757190482937">Chromiumni barcha qurilmalaringizda sinxronlang va o‘zingizga moslab oling</translation>
-<translation id="7729447699958282447">Chromium domeningizda Sync xizmati yo‘qligi sababli ma’lumotlaringizni sinxronlay olmadi.</translation>
 <translation id="7745317241717453663">Bu qurilmadagi brauzer tarixini tozalaydi. Ma’lumotlaringizni keyinroq olish uchun Chromium brauzeriga <ph name="USER_EMAIL" /> sifatida kiring.</translation>
 <translation id="7747138024166251722">O‘rnatish dasturi vaqtinchalik katalog yarata olmadi. Sizda ilovalar o‘rnatish uchun yetarli vakolat yoki disk yetarli bo‘sh joy yo‘q bo‘lsa kerak.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -339,7 +337,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8713679423359107094">Barcha Chromium oynalari yopilganda, cookie fayllar va sayt maʼlumotlari avtomatik ravishda tozalanadi</translation>
 <translation id="8796443464227412154">Chromium yopilganda <ph name="BEGIN_BOLD" />aksar saytlardan chiqib ketasiz<ph name="END_BOLD" />. Agar sinxronizatsiya oʻchiq boʻlsa, <ph name="BEGIN_BOLD" />Google xizmatlari va Chromium hisobingizdan ham chiqib ketasiz<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Bu sayt kamera va mikrofoningizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>
-<translation id="8821041990367117597">Chromium ma’lumotlaringizni sinxronlay olmadi, chunki hisobingiz haqidagi ma’lumotlar eskirgan.</translation>
 <translation id="8833697763442816810">ChromiumOS tizimi</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Qanday maʼlumotlar ishlatilishi:<ph name="END_BOLD" /> Bu qurilmada Chromium orqali siz kirgan saytlar tarixidagi qaydlar.</translation>
 <translation id="8862326446509486874">Sizda tizim darajasida o‘rnatish uchun yetarli ruxsatlar yo‘q. O‘rnatish dasturini administrator nomidan qayta ishga tushiring.</translation>

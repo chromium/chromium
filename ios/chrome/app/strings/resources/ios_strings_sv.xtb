@@ -222,7 +222,6 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2883151425485251736">Se och redigera ämnen som har dolts i kontot</translation>
 <translation id="288655811176831528">Stäng fliken</translation>
 <translation id="2890171748217283516">Webbplatser som du följer sparas i Google-kontot. Du kan hantera dem i inställningarna för Förslag.</translation>
-<translation id="2893180576842394309">Google kan anpassa Sök och andra Google-tjänster utifrån historiken</translation>
 <translation id="2898963176829412617">Ny mapp ...</translation>
 <translation id="2916171785467530738">Autoslutför sökningar och webbadresser</translation>
 <translation id="291754862089661335">Passa in QR-koden eller streckkoden i den här rutan</translation>
@@ -902,7 +901,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8654802032646794042">Avbryt</translation>
 <translation id="8668210798914567634">Den här sidan har sparats i läslistan.</translation>
 <translation id="8680787084697685621">Inloggningsuppgifterna för kontot är inte aktuella.</translation>
-<translation id="8691262314411702087">Välj vad som ska synkroniseras</translation>
 <translation id="8693663554456874301">{count,plural, =1{Stäng fliken}other{Stäng flikar}}</translation>
 <translation id="8706588385081740091">Lösenord</translation>
 <translation id="8717864919010420084">Kopiera länk</translation>

@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Включите Bluetooth, чтобы найти устройства</translation>
 <translation id="2346474577291266260">Отличный (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Продолжить</translation>
 <translation id="2360257214555822463">Найдены <ph name="LINK_BEGIN" />не соответствующие требованиям компоненты<ph name="LINK_END" />. Если вам известно, что они установлены, подтвердите это сейчас.</translation>
 <translation id="2363636958541445404">Включите эту функцию, чтобы указать параметры заставки</translation>
 <translation id="2364498172489649528">Завершено</translation>
@@ -172,7 +173,6 @@
 <translation id="2620436844016719705">Система</translation>
 <translation id="2638662041295312666">Изображение на странице входа</translation>
 <translation id="2640549051766135490">Выбран альбом "<ph name="TITLE" />" с описанием "<ph name="DESC" />"</translation>
-<translation id="2695514675076754339">Введите 8-значный код разблокировки</translation>
 <translation id="2712812801627182647">Ключ аутентификации TLS</translation>
 <translation id="2717139507051041123">Включить режим темных цветов</translation>
 <translation id="2740531572673183784">ОК</translation>

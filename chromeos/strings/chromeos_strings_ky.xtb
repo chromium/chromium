@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Жууп салуу</translation>
 <translation id="2338501278241028356">Жакын жердеги түзмөктөрдү табуу үчүн Bluetooth'ду күйгүзүңүз</translation>
 <translation id="2346474577291266260">Эң жакшы (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Улантуу</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Такталбаган курамдык бөлүктөр<ph name="LINK_END" /> аныкталды. Эгер анын орнотулганын ырастагыңыз келсе, азыр ырастаңыз.</translation>
 <translation id="2363636958541445404">Көшөгөнүн параметрлерин тандоо үчүн функцияны күйгүзүңүз</translation>
 <translation id="2364498172489649528">Текшерүүдөн өттү</translation>
@@ -172,7 +173,6 @@
 <translation id="2620436844016719705">Тутум</translation>
 <translation id="2638662041295312666">Аккаунтка кирүү сүрөтү</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> альбому тандалды</translation>
-<translation id="2695514675076754339">8 символдон турган кодду киргизип, кулпусун ачыңыз</translation>
 <translation id="2712812801627182647">TLS аутентификация ачкычы</translation>
 <translation id="2717139507051041123">Караңгы түс режимин иштетүү</translation>
 <translation id="2740531572673183784">Ok</translation>

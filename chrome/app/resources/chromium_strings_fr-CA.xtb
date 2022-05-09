@@ -202,7 +202,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6063093106622310249">&amp;Ouvrir dans Chromium</translation>
 <translation id="6072279588547424923">L'extension « <ph name="EXTENSION_NAME" /> » a été ajoutée à Chromium</translation>
 <translation id="608006075545470555">Ajouter le profil professionnel à ce navigateur</translation>
-<translation id="608189560609172163">Chromium n'a pas pu synchroniser vos données, car une erreur s'est produite lors de la connexion.</translation>
 <translation id="6096348254544841612">Personnalisez et contrôlez Chromium. Une mise à jour est disponible.</translation>
 <translation id="6120345080069858279">Chromium enregistrera ce mot de passe dans votre compte Google. Vous n'aurez pas à le retenir.</translation>
 <translation id="6129621093834146363">Chromium a bloqué le fichier <ph name="FILE_NAME" />, car il est dangereux.</translation>
@@ -297,7 +296,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="7682601070171973634">Chromium explore de nouvelles fonctionnalités qui permettent aux sites d'offrir la même expérience de navigateur tout en utilisant moins de vos données</translation>
 <translation id="7686590090926151193">Chromium n'est pas votre navigateur par défaut</translation>
 <translation id="7689606757190482937">Synchroniser et personnaliser Chromium sur vos appareils</translation>
-<translation id="7729447699958282447">Chromium n'a pas pu synchroniser vos données, car la synchronisation n'est pas offerte pour votre nom de domaine.</translation>
 <translation id="7745317241717453663">Cette action entraînera la suppression de vos données de navigation sur cet appareil. Pour récupérer vos données plus tard, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Le programme d'installation n'a pas pu créer de répertoire temporaire. Vérifiez que le disque a suffisamment d'espace libre et que vous disposez des autorisations nécessaires pour installer le logiciel.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -342,7 +340,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8713679423359107094">Lorsque vous fermez toutes les fenêtres de Chromium, les témoins et les données relatives aux sites sont automatiquement effacés</translation>
 <translation id="8796443464227412154">Vous serez <ph name="BEGIN_BOLD" />déconnecté de la plupart des sites<ph name="END_BOLD" /> lorsque vous fermerez Chromium. Si la synchronisation est désactivée, vous serez également <ph name="BEGIN_BOLD" />déconnecté des services Google et de Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium a besoin de votre autorisation pour accéder à votre appareil photo et à votre micro pour ce site</translation>
-<translation id="8821041990367117597">Chromium n'a pas pu synchroniser vos données, car vos renseignements de connexion ne sont plus à jour.</translation>
 <translation id="8833697763442816810">Système Chromium OS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Quelles données sont utilisées :<ph name="END_BOLD" /> votre historique de navigation, soit un enregistrement des sites que vous avez visités à l'aide de Chromium sur cet appareil.</translation>
 <translation id="8862326446509486874">Vous ne disposez pas des droits requis pour faire une installation sur le système. Relancez l'installation une fois que vous serez connecté comme administrateur.</translation>

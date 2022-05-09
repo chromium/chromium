@@ -2876,7 +2876,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3748706263662799310">Tilkynna villu</translation>
 <translation id="3750562496035670393">Chrome vistaði aðgangsorðið þitt í þessu tæki en þú getur vistað það á Google reikningnum þínum í staðinn. Ef þú gerir það verða öll aðgangsorðin á Google reikningum einnig tiltæk þegar þú ert innskráð(ur).</translation>
 <translation id="3752253558646317685">Láttu barnið lyfta upp fingrinum til að vista fingrafarið</translation>
-<translation id="3752582316358263300">Í lagi...</translation>
 <translation id="3753033997400164841">Vista einu sinni. Nota hvar sem er</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> getur nú einnig tekið þetta <ph name="DEVICE_TYPE" /> tæki úr lás.</translation>
 <translation id="375636864092143889">Vefsvæði er að nota hljóðnemann þinn</translation>
@@ -3775,7 +3774,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4633003931260532286">Viðbótin krefst „<ph name="IMPORT_NAME" />“ með „<ph name="IMPORT_VERSION" />“ eða nýrri útgáfu en aðeins útgáfa „<ph name="INSTALLED_VERSION" />“ er uppsett</translation>
 <translation id="4633757335284074492">Vista öryggisafrit á Google Drive. Endurheimtu gögn eða skiptu um tæki hvenær sem er. Þetta öryggisafrit inniheldur forritsgögn. Öryggisafritunum þínum er hlaðið inn á Google og þau dulkóðuð með aðgangsorði Google reiknings barnsins þíns.</translation>
 <translation id="4634575639321169635">Settu þetta tæki upp fyrir notkun við vinnu eða til einkanota</translation>
-<translation id="4634771451598206121">Skráðu þig inn aftur...</translation>
 <translation id="4635072447747973225">Fjarlægja Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> er ekki í boði fyrir gestanotendur.</translation>
 <translation id="4636682061478263818">Drive skrár</translation>
@@ -5307,7 +5305,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í  <ph name="GOOGLE_PASSWORD_MANA
 <translation id="6196640612572343990">Loka á fótspor frá þriðja aðila</translation>
 <translation id="6196854373336333322">Viðbótin „<ph name="EXTENSION_NAME" />“ hefur tekið að sér stjórn yfir proxy-stillingunum þínum, sem þýðir að hún getur breytt, slitið eða hlerað allt sem þú gerir á netinu. Ef þú veist ekki hvernig þetta gerðist er þetta líklega eitthvað sem þú vilt ekki.</translation>
 <translation id="6197128521826316819">Búa til QR-kóða fyrir þessa síðu</translation>
-<translation id="6198102561359457428">Skráðu þig út og svo inn aftur...</translation>
 <translation id="6198252989419008588">Breyta PIN-númeri</translation>
 <translation id="6200047250927636406">Fleygja skrá</translation>
 <translation id="6200151268994853226">Stjórna viðbót</translation>
@@ -6255,7 +6252,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í  <ph name="GOOGLE_PASSWORD_MANA
 <translation id="7114648273807173152">Þú getur notað Smart Lock til að skrá þig inn á Google reikninginn þinn með því að fara í Stillingar &gt; Tengd tæki &gt; Síminn þinn &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Ekki næst í neina tengiliði</translation>
 <translation id="7117228822971127758">Reyndu aftur síðar</translation>
-<translation id="7117247127439884114">Skrá inn aftur...</translation>
 <translation id="711840821796638741">Sýna stýrð bókamerki</translation>
 <translation id="711902386174337313">Lesa lista yfir innskráð tæki sem þú átt</translation>
 <translation id="711985611146095797">Á þessari síðu geturðu stjórnað Google reikningunum sem þú ert skráð(ur) inn á. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>

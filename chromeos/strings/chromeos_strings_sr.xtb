@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Укључите Bluetooth да бисте открили уређаје у близини</translation>
 <translation id="2346474577291266260">Одличан (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Наставите</translation>
 <translation id="2360257214555822463">Откривене су <ph name="LINK_BEGIN" />неквалификоване компоненте<ph name="LINK_END" />. Ако желите да потврдите да су монтиране, урадите то одмах.</translation>
 <translation id="2363636958541445404">Укључите функцију да бисте изабрали опције чувара екрана</translation>
 <translation id="2364498172489649528">Прошло</translation>
@@ -172,7 +173,6 @@
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2638662041295312666">Слика за пријављивање</translation>
 <translation id="2640549051766135490">Изабран је албум <ph name="TITLE" /> <ph name="DESC" /></translation>
-<translation id="2695514675076754339">Унесите кôд за откључавање од 8 знакова</translation>
 <translation id="2712812801627182647">Кључ за TLS потврду идентитета</translation>
 <translation id="2717139507051041123">Омогућите режим тамне боје</translation>
 <translation id="2740531572673183784">Потврди</translation>

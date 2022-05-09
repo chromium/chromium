@@ -2859,7 +2859,6 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3748706263662799310">Informar dun erro</translation>
 <translation id="3750562496035670393">Chrome gardou o teu contrasinal neste dispositivo, pero, se o prefires, podes almacenalo na túa Conta de Google. Todos os contrasinais da túa Conta de Google estarán dispoñibles sempre que teñas a sesión iniciada.</translation>
 <translation id="3752253558646317685">Dille ao teu fillo ou filla que levante o dedo e o volva a poñer para gardar a impresión dixital</translation>
-<translation id="3752582316358263300">Aceptar...</translation>
 <translation id="3753033997400164841">Garda os contrasinais unha vez e utilízaos en todas partes</translation>
 <translation id="3755411799582650620">Agora o teu dispositivo <ph name="PHONE_NAME" /> tamén pode desbloquear este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">O sitio está usando o teu micrófono</translation>
@@ -3757,7 +3756,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4633003931260532286">A extensión necesita "<ph name="IMPORT_NAME" />" coa versión "<ph name="IMPORT_VERSION" />" como mínimo, pero só está instalada a versión "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4633757335284074492">Facer copia de seguranza en Drive. Restaura os datos facilmente ou cambia de dispositivo en calquera momento. Esta copia de seguranza inclúe os datos das aplicacións. As copias de seguranza cárganse en Google e encríptanse co contrasinal da Conta de Google do teu fillo.</translation>
 <translation id="4634575639321169635">Configura este dispositivo para uso laboral ou persoal</translation>
-<translation id="4634771451598206121">Inicia sesión de novo...</translation>
 <translation id="4635072447747973225">Desinstalar Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> non está dispoñible para usuarios invitados.</translation>
 <translation id="4636682061478263818">Ficheiros de Drive</translation>
@@ -5286,7 +5284,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6196854373336333322">A extensión "<ph name="EXTENSION_NAME" />" asumiu o control da túa configuración de proxy, o que significa que pode cambiar, anular ou espiar todo o que fagas en liña. Se non estás seguro de por que se produciu este cambio, é probable que non che interese conservalo.</translation>
 <translation id="6197128521826316819">Crear código QR para esta páxina</translation>
-<translation id="6198102561359457428">Pechar sesión e iniciala de novo...</translation>
 <translation id="6198252989419008588">Cambiar PIN</translation>
 <translation id="6200047250927636406">Descartar ficheiro</translation>
 <translation id="6200151268994853226">Xestionar extensión</translation>
@@ -6232,7 +6229,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7114648273807173152">Se queres usar Smart Lock para iniciar sesión na túa Conta de Google, vai a Configuración &gt; Dispositivos conectados &gt; O teu teléfono &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Non hai ningún contacto co que se poida establecer conexión</translation>
 <translation id="7117228822971127758">Téntao de novo máis tarde</translation>
-<translation id="7117247127439884114">Iniciar sesión de novo...</translation>
 <translation id="711840821796638741">Mostrar os marcadores xestionados</translation>
 <translation id="711902386174337313">Ler a lista de dispositivos en que iniciaches sesión</translation>
 <translation id="711985611146095797">Desde esta páxina podes xestionar as Contas de Google nas que teñas a sesión iniciada. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>

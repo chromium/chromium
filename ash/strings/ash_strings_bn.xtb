@@ -826,7 +826,6 @@
 <translation id="602472752137106327">সব ডেস্ক থেকে উইন্ডো দেখুন, রেডিও বোতাম বেছে নেওয়া হয়েছে</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" />-এ কোনও ইভেন্ট নেই। ব্রাউজারে Google Calendar খোলার জন্য Enter প্রেস করুন।</translation>
-<translation id="6027952026115023659"><ph name="DEVICE_TYPE" />-এ আপনার ফোনের মেসেজিং অ্যাপ অ্যাক্সেস করুন</translation>
 <translation id="6030495522958826102">স্ক্রিনের নিচে বাঁদিকের কোণায় মেনু সরে গেছে।</translation>
 <translation id="6032620807120418574">ফুল স্ক্রিন ছবি রেকর্ড করতে, যেকোনও জায়গায় ক্লিক করুন</translation>
 <translation id="6040071906258664830">মাইক্রোফোনে রেকর্ড করুন <ph name="STATE" /></translation>
@@ -976,7 +975,6 @@
 <translation id="6961121602502368900">অফিস প্রোফাইলে 'সাইলেন্স ফোন' ফিচার উপলভ্য নেই</translation>
 <translation id="6961840794482373852">Alt + Up Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Page Up কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Up Arrow কী প্রেস করুন।</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
-<translation id="6967933908874208731"><ph name="DEVICE_TYPE" />-এ আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া, বিজ্ঞপ্তি ও মেসেজিং অ্যাপ দেখুন</translation>
 <translation id="6972754398087986839">শুরু করুন</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">ব্যবহারযোগ্যতা</translation>

@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Ieslēdziet Bluetooth, lai atklātu tuvumā esošas ierīces</translation>
 <translation id="2346474577291266260">Izcils (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Turpināt</translation>
 <translation id="2360257214555822463">Konstatēti <ph name="LINK_BEGIN" />prasībām neatbilstoši komponenti<ph name="LINK_END" />. Ja zināt, ka tādi ir instalēti, aplieciniet to tagad.</translation>
 <translation id="2363636958541445404">Ieslēdziet funkciju, lai atlasītu ekrānsaudzētāja opcijas.</translation>
 <translation id="2364498172489649528">Pārbaude izpildīta</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">Sistēma</translation>
 <translation id="2638662041295312666">Pierakstīšanās attēls</translation>
 <translation id="2640549051766135490">Atlasīts albums <ph name="TITLE" />: <ph name="DESC" /></translation>
-<translation id="2695514675076754339">Ievadiet 8 rakstzīmju atbloķēšanas kodu</translation>
 <translation id="2712812801627182647">TLS autentifikācijas atslēga</translation>
 <translation id="2717139507051041123">Atspējot tumšo krāsu režīmu</translation>
 <translation id="2740531572673183784">Labi</translation>

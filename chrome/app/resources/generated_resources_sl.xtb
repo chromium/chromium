@@ -2879,7 +2879,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3748706263662799310">Obvestite nas o napaki</translation>
 <translation id="3750562496035670393">Chrome je vaše geslo shranil v to napravo, vendar ga lahko po želji shranite v svoj račun Google. Nato bodo vsa gesla v računu Google na voljo tudi, ko ste prijavljeni.</translation>
 <translation id="3752253558646317685">Naj otrok dviguje prst, da se bo prstni odtis shranil.</translation>
-<translation id="3752582316358263300">V redu ...</translation>
 <translation id="3753033997400164841">Shranite enkrat. Uporabite kjer koli</translation>
 <translation id="3755411799582650620">Vaš telefon <ph name="PHONE_NAME" /> lahko zdaj odklene tudi to napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Spletno mesto uporablja vaš mikrofon</translation>
@@ -3778,7 +3777,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4633003931260532286">Razširitev zahteva »<ph name="IMPORT_NAME" />« z najmanjšo številko različice »<ph name="IMPORT_VERSION" />«, vendar je nameščena samo različica »<ph name="INSTALLED_VERSION" />«</translation>
 <translation id="4633757335284074492">Varnostno kopiranje v Google Drive. Kadar koli lahko preprosto obnovite podatke v napravi ali zamenjate napravo z drugo. Te varnostne kopije vključujejo podatke aplikacij. Varnostne kopije so naložene v Google in šifrirane z geslom za račun Google otroka.</translation>
 <translation id="4634575639321169635">Nastavite to napravo za službeno ali osebno uporabo</translation>
-<translation id="4634771451598206121">Prijavite se znova ...</translation>
 <translation id="4635072447747973225">Odstranjevanje Crostinija</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> ni na voljo gostom.</translation>
 <translation id="4636682061478263818">Datoteke v Googlu Drive</translation>
@@ -5312,7 +5310,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6196640612572343990">Blokiraj piškotke drugih spletnih mest</translation>
 <translation id="6196854373336333322">Razširitev »<ph name="EXTENSION_NAME" />« je prevzela nadzor nad nastavitvami strežnika proxy, kar pomeni, da lahko spremeni, prekine ali nadzoruje vse, kar počnete v spletu. Če ne veste, zakaj je prišlo do te spremembe, je verjetno nezaželena.</translation>
 <translation id="6197128521826316819">Ustvari kodo QR za to stran</translation>
-<translation id="6198102561359457428">Odjavite se in znova prijavite ...</translation>
 <translation id="6198252989419008588">Spremeni PIN</translation>
 <translation id="6200047250927636406">Zavrzi datoteko</translation>
 <translation id="6200151268994853226">Upravljanje razširitve</translation>
@@ -6264,7 +6261,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7114648273807173152">Če se želite v račun za Google prijaviti s funkcijo Smart Lock, odprite »Nastavitve &gt; Povezane naprave &gt; Vaš telefon &gt; Smart Lock«.</translation>
 <translation id="7115361495406486998">Ni dosegljivih stikov</translation>
 <translation id="7117228822971127758">Poskusite znova pozneje</translation>
-<translation id="7117247127439884114">Prijavite se znova ...</translation>
 <translation id="711840821796638741">Prikaz upravljanih zaznamkov</translation>
 <translation id="711902386174337313">Branje seznama naprav, v katere ste prijavljeni</translation>
 <translation id="711985611146095797">Ta stran vam omogoča upravljanje računov Google, v katere ste prijavljeni. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>

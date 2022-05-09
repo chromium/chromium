@@ -2863,7 +2863,6 @@ Pretende pará-lo?</translation>
 <translation id="3748706263662799310">Comunicar um erro</translation>
 <translation id="3750562496035670393">O Chrome guardou a sua palavra-passe neste dispositivo, mas pode guardá-la na sua Conta Google em alternativa. Assim, todas as palavras-passe na sua Conta Google também estarão disponíveis enquanto tiver sessão iniciada.</translation>
 <translation id="3752253558646317685">Peça à criança para ir levantando o dedo para guardar a impressão digital</translation>
-<translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Armazene uma vez. Utilize em todas as plataformas.</translation>
 <translation id="3755411799582650620">O seu <ph name="PHONE_NAME" /> pode agora desbloquear também este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">O site está a utilizar o microfone.</translation>
@@ -3761,7 +3760,6 @@ Pretende pará-lo?</translation>
 <translation id="4633003931260532286">A extensão requer "<ph name="IMPORT_NAME" />" com, pelo menos, a versão "<ph name="IMPORT_VERSION" />", mas apenas está instalada a versão "<ph name="INSTALLED_VERSION" />".</translation>
 <translation id="4633757335284074492">Faça uma cópia no Google Drive. Restaure facilmente os dados ou troque de dispositivo em qualquer altura. Esta cópia de segurança inclui dados de apps. As cópias de segurança são carregadas para a Google e encriptadas com a palavra-passe da Conta Google da criança.</translation>
 <translation id="4634575639321169635">Configure este dispositivo para utilização profissional ou pessoal.</translation>
-<translation id="4634771451598206121">Iniciar sessão novamente...</translation>
 <translation id="4635072447747973225">Desinstalar Crostini</translation>
 <translation id="4635398712689569051">A página <ph name="PAGE_NAME" /> não está disponível para os utilizadores convidados.</translation>
 <translation id="4636682061478263818">Ficheiros do Drive</translation>
@@ -5294,7 +5292,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6196854373336333322">A extensão "<ph name="EXTENSION_NAME" />" apoderou-se das suas definições de proxy, o que significa que pode alterar, interromper ou intercetar qualquer coisa que esteja a fazer online. Se não tem a certeza do motivo pelo qual aconteceu esta alteração, é provável que não a queira.</translation>
 <translation id="6197128521826316819">Criar código QR para esta página</translation>
-<translation id="6198102561359457428">Terminar sessão e, em seguida, iniciar sessão novamente...</translation>
 <translation id="6198252989419008588">Alterar PIN</translation>
 <translation id="6200047250927636406">Rejeitar ficheiro</translation>
 <translation id="6200151268994853226">Gerir extensão</translation>
@@ -6240,7 +6237,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7114648273807173152">Para utilizar o Smart Lock para iniciar sessão na sua Conta Google, aceda a Definições &gt; Dispositivos ligados &gt; O seu telemóvel &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Nenhum contacto alcançável</translation>
 <translation id="7117228822971127758">Tente novamente mais tarde.</translation>
-<translation id="7117247127439884114">Iniciar Sessão Novamente...</translation>
 <translation id="711840821796638741">Mostrar marcadores geridos</translation>
 <translation id="711902386174337313">Ler a lista dos dispositivos com sessão iniciada</translation>
 <translation id="711985611146095797">Esta página permite-lhe gerir Contas Google com sessão iniciada. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>

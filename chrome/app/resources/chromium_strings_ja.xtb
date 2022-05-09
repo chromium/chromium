@@ -200,7 +200,6 @@
 <translation id="6063093106622310249">Chromium で開く(&amp;O)</translation>
 <translation id="6072279588547424923">「<ph name="EXTENSION_NAME" />」が Chromium に追加されました</translation>
 <translation id="608006075545470555">このブラウザに仕事用プロファイルを追加</translation>
-<translation id="608189560609172163">ログイン時にエラーが発生したため、Chromium はデータを同期できませんでした。</translation>
 <translation id="6096348254544841612">Chromium をカスタマイズしてご活用ください。アップデートが利用可能です。</translation>
 <translation id="6120345080069858279">このパスワードは Google アカウントに保存されるため、覚えておく必要はありません。</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> は危険なファイルであるため、Chromium でブロックしました。</translation>
@@ -295,7 +294,6 @@
 <translation id="7682601070171973634">Chromium では、使用されるユーザーデータの量を抑えつつ、同じようにサイトをブラウジングできる新機能をテストしています</translation>
 <translation id="7686590090926151193">Chromium はデフォルトのブラウザとして設定されていません</translation>
 <translation id="7689606757190482937">同期してカスタマイズした Chromium をどのデバイスでも使用できます</translation>
-<translation id="7729447699958282447">お使いのドメインでは同期を利用できないため、Chromium はデータを同期できませんでした。</translation>
 <translation id="7745317241717453663">このデバイスから閲覧データを削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chromium にログインしてください。</translation>
 <translation id="7747138024166251722">インストーラーの一時ディレクトリを作成できませんでした。ディスクの空き領域とソフトウェアのインストール許可があることを確認してください。</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -339,7 +337,6 @@
 <translation id="8713679423359107094">Chromium のウィンドウをすべて閉じると、Cookie とサイトデータは自動的に削除されます</translation>
 <translation id="8796443464227412154">Chromium を閉じると、<ph name="BEGIN_BOLD" />ほとんどのサイトからログアウト<ph name="END_BOLD" />します。同期がオフの場合は、<ph name="BEGIN_BOLD" />Google サービスと Chromium からもログアウト<ph name="END_BOLD" />します。</translation>
 <translation id="8796602469536043152">このサイトを利用するには、Chromium でカメラとマイクの使用を許可する必要があります</translation>
-<translation id="8821041990367117597">アカウントのログイン情報が最新ではないため、Chromium はデータを同期できませんでした。</translation>
 <translation id="8833697763442816810">Chromium OS システム</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />使用されるデータ:<ph name="END_BOLD" /> 閲覧履歴（このデバイスで Chromium を使用してアクセスしたサイトの記録）。</translation>
 <translation id="8862326446509486874">権限が不十分なためシステムレベルのインストールができません。管理者権限でインストールしてください。</translation>

@@ -43,7 +43,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1698376642261615901">Google Chrome är en webbläsare som kör webbsidor och program med ljusets hastighet. Den är snabb, stabil och lätt att använda. Surfa säkrare med Google Chrome, som har inbyggt skydd mot skadlig programvara och nätfiske.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Om en timme startas Chrome om}other{Om # timmar startas Chrome om}}</translation>
 <translation id="1734234790201236882">Det här lösenordet sparas i ditt Google-konto. Du behöver inte komma ihåg det.</translation>
-<translation id="174539241580958092">Google Chrome kunde inte synkronisera data på grund av ett fel vid inloggningen.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Se till att du är inloggad i Chrome på <ph name="TARGET_DEVICE_NAME" /> och försök skicka igen.</translation>
 <translation id="1812689907177901597">Om du inaktiverar detta kan du logga in på Googles webbplatser, till exempel Gmail, utan att logga in i Chrome</translation>
@@ -74,7 +73,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="235650106824528204">All data i Chrome som uppstår när den här profilen används (t.ex. bokmärken, historik, lösenord och andra inställningar) kan tas bort av jobbprofilens administratör. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2401189691232800402">Chrome OS-system</translation>
-<translation id="2429317896000329049">Google Chrome kunde inte synkronisera data eftersom synkronisering inte är tillgängligt för din domän.</translation>
 <translation id="2467438592969358367">Lösenorden exporteras från Google Chrome. Skriv ditt Windows-lösenord om du tillåter detta.</translation>
 <translation id="2485422356828889247">Avinstallera</translation>
 <translation id="2534507159460261402">Google Pay (har kopierats till Chrome)</translation>
@@ -295,7 +293,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="7481213027396403996">Få det bästa skyddet i Chrome</translation>
 <translation id="7486227612705979895">Chrome får åtkomst till din Drive så att du kan få förslag därifrån i adressfältet</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">Google Chrome kunde inte synkronisera data eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Välkommen till Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> kräver att du läser och godkänner följande användarvillkor innan du använder enheten. Villkoren varken utökar, ändrar eller begränsar villkoren för Google Chrome OS.</translation>

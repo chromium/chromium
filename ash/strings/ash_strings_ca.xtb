@@ -820,7 +820,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="602472752137106327">Mostra les finestres de tots els escriptoris amb el botó d'opció seleccionat</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, gestionada per l'administrador</translation>
 <translation id="6027518778343897451">El dia <ph name="CURRENT_MONTH_DAY" /> no hi ha cap esdeveniment. Prem Retorn per obrir Google Calendar al navegador.</translation>
-<translation id="6027952026115023659">Accedeix a les aplicacions de missatgeria del telèfon al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">El menú s'ha mogut a l'extrem inferior esquerre de la pantalla.</translation>
 <translation id="6032620807120418574">Fes clic en qualsevol lloc per gravar la pantalla completa</translation>
 <translation id="6040071906258664830">Grava el micròfon <ph name="STATE" /></translation>
@@ -970,7 +969,6 @@ Instal·lació nova</translation>
 <translation id="6961121602502368900">Silencia el telèfon no està disponible al perfil de treball</translation>
 <translation id="6961840794482373852">La tecla de drecera Alt+fletxa amunt ha canviat. Per fer servir la tecla de retrocedir pàgina, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa amunt.</translation>
 <translation id="6965382102122355670">D'acord</translation>
-<translation id="6967933908874208731">Consulta les aplicacions de missatgeria, les notificacions, els fitxers multimèdia i les fotos recents del telèfon al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Comença</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Accessibilitat</translation>

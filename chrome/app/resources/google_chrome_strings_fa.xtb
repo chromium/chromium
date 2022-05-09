@@ -39,7 +39,6 @@
 <translation id="1698376642261615901">‏Google Chrome یک مرورگر وب است که برنامه‌های کاربردی و صفحات وب را در یک چشم به هم زدن اجرا و باز می‌کند. استفاده از آن سریع و آسان است و همیشه در دسترس است. با برنامه‌های حفاظت در برابر رمزگیری و بدافزار تعبیه شده در Google Chrome، وب را با امنیت بیشتر مرور کنید.</translation>
 <translation id="1713301662689114961">{0,plural, =1{‏Chrome یک ساعت دیگر راه‌اندازی مجدد می‌شود}one{‏Chrome # ساعت دیگر راه‌اندازی مجدد می‌شود}other{‏Chrome # ساعت دیگر راه‌اندازی مجدد می‌شود}}</translation>
 <translation id="1734234790201236882">‏Chrome این گذرواژه را در حساب Google شما ذخیره می‌کند. لازم نیست آن را به خاطر بسپارید.</translation>
-<translation id="174539241580958092">‏به دلیل وجود خطا در ورود به سیستم، Google Chrome قادر به همگام‌سازی داده‌های شما نبود.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">‏مطمئن شوید در <ph name="TARGET_DEVICE_NAME" /> به سیستم Chrome وارد شده باشید و سپس دوباره ارسال کنید.</translation>
 <translation id="1812689907177901597">‏با خاموش کردن این گزینه، می‌توانید بدون ورود به سیستم Chrome به سیستم سایت‌های Google مانند Gmail وارد شوید</translation>
@@ -70,7 +69,6 @@
 <translation id="235650106824528204">‏سرپرست نمایه کاری می‌تواند داده‌های Chrome را که درطول استفاده از این نمایه ایجاد شده‌اند (مثل ایجاد سابقه نشانک‌ها، گذرواژه‌ها، و دیگر تنظیمات) بردارد. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2401189691232800402">‏سیستم ChromeOS</translation>
-<translation id="2429317896000329049">‏Google Chrome قادر به همگام‌سازی داده‌های شما نبود زیرا همگام‌سازی برای دامنه شما قابل دسترسی نیست.</translation>
 <translation id="2467438592969358367">‏Google Chrome می‌خواهد گذرواژه‌های شما را صادر کند. برای اجازه به این کار، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="2485422356828889247">حذف نصب</translation>
 <translation id="2534507159460261402">‏Google Pay (در Chrome کپی شد)</translation>
@@ -287,7 +285,6 @@
 <translation id="7481213027396403996">‏دریافت قوی‌ترین امنیت Chrome</translation>
 <translation id="7486227612705979895">‏Chrome برای ارائه پیشنهاد در نوار نشانی، به Drive شما دسترسی خواهد داشت</translation>
 <translation id="7535429826459677826">‏Google Chrome نسخه Dev</translation>
-<translation id="7592736734348559088">‏Google Chrome قادر به همگام‌سازی داده‌های شما نبود زیرا جزئیات ورود به حساب شما به‌روز نیست.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">‏به Chrome خوش آمدید</translation>
 <translation id="7626072681686626474">‏<ph name="MANAGER" /> لازم می‌داند که شما «شرایط خدمات» زیر را قبل‌از استفاده از دستگاه بخوانید و بپذیرید. این شرایط بسط داده نمی‌شود، اصلاح نمی‌شود، یا «شرایط Google ChromeOS» را محدود نمی‌کند.</translation>

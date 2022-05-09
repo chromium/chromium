@@ -37,7 +37,6 @@
 <translation id="1698376642261615901">Google Chrome คือเว็บเบราว์เซอร์ที่แสดงหน้าเว็บและแอปพลิเคชันต่างๆ ได้รวดเร็วในพริบตา โดยทำงานได้เร็ว มีเสถียรภาพ และใช้งานง่าย ช่วยให้คุณเรียกดูเว็บได้อย่างปลอดภัยมากขึ้นด้วยการป้องกันมัลแวร์และฟิชชิงซึ่งมีอยู่ใน Google Chrome</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome จะเปิดขึ้นมาใหม่ใน 1 ชั่วโมง}other{Chrome จะเปิดขึ้นมาใหม่ใน # ชั่วโมง}}</translation>
 <translation id="1734234790201236882">Chrome จะบันทึกรหัสผ่านนี้ในบัญชี Google คุณจะได้ไม่ต้องจำรหัสผ่านเอง</translation>
-<translation id="174539241580958092">Google Chrome ไม่สามารถซิงค์ข้อมูลของคุณเนื่องจากเกิดข้อผิดพลาดในการลงชื่อเข้าใช้</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">ตรวจสอบว่าคุณลงชื่อเข้าใช้ Chrome ใน <ph name="TARGET_DEVICE_NAME" /> แล้วลองส่งอีกครั้ง</translation>
 <translation id="1812689907177901597">เมื่อปิดการตั้งค่านี้ คุณจะลงชื่อเข้าใช้เว็บไซต์ของ Google อย่างเช่น Gmail ได้โดยไม่ต้องลงชื่อเข้าใช้ Chrome</translation>
@@ -68,7 +67,6 @@
 <translation id="235650106824528204">ผู้ดูแลโปรไฟล์งานนำข้อมูล Chrome ที่สร้างขึ้นในช่วงที่มีการใช้โปรไฟล์นี้ออกได้ (เช่น การสร้างบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ) <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2401189691232800402">ระบบ Chrome OS</translation>
-<translation id="2429317896000329049">Google Chrome ไม่สามารถซิงค์ข้อมูลของคุณเนื่องจากไม่สามารถใช้การซิงค์กับโดเมนของคุณ</translation>
 <translation id="2467438592969358367">Google Chrome ต้องการส่งออกรหัสผ่านของคุณ พิมพ์รหัสผ่าน Windows เพื่ออนุญาตให้ดำเนินการ</translation>
 <translation id="2485422356828889247">ถอนการติดตั้ง</translation>
 <translation id="2534507159460261402">Google Pay (คัดลอกไปยัง Chrome)</translation>
@@ -284,7 +282,6 @@
 <translation id="7481213027396403996">รับการรักษาความปลอดภัยที่เข้มงวดที่สุดของ Chrome</translation>
 <translation id="7486227612705979895">Chrome จะเข้าถึงไดรฟ์ของคุณเพื่อแสดงคำแนะนำในแถบที่อยู่</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">Google Chrome ไม่สามารถซิงค์ข้อมูลของคุณเนื่องจากรายละเอียดการลงชื่อเข้าใช้บัญชีของคุณล้าสมัย</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626032353295482388">ยินดีต้อนรับสู่ Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> กำหนดว่าคุณต้องอ่านและยอมรับข้อกำหนดในการให้บริการต่อไปนี้ก่อนใช้อุปกรณ์นี้ ข้อกำหนดเหล่านี้ไม่ได้ขยาย แก้ไข หรือจำกัดข้อกำหนดของ Google Chrome OS</translation>

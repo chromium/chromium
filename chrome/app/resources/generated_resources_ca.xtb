@@ -2861,7 +2861,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3748706263662799310">Informa d'un error</translation>
 <translation id="3750562496035670393">Chrome ha desat la teva contrasenya en aquest dispositiu, però també pots desar-la al teu Compte de Google. En aquest cas, totes les contrasenyes del teu Compte de Google també estaran disponibles mentre tinguis la sessió iniciada.</translation>
 <translation id="3752253558646317685">Demana al teu fill que continuï aixecant el dit perquè es desi l'empremta digital</translation>
-<translation id="3752582316358263300">D'acord...</translation>
 <translation id="3753033997400164841">Desa-la una vegada. Fes-la servir a tot arreu.</translation>
 <translation id="3755411799582650620">També podeu desbloquejar aquest <ph name="DEVICE_TYPE" /> mitjançant <ph name="PHONE_NAME" />.</translation>
 <translation id="375636864092143889">El lloc web està utilitzant el micròfon</translation>
@@ -3758,7 +3757,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4633003931260532286">L'extensió requereix <ph name="IMPORT_NAME" /> amb <ph name="IMPORT_VERSION" /> com a versió mínima, però només hi ha instal·lada la versió <ph name="INSTALLED_VERSION" /></translation>
 <translation id="4633757335284074492">Crea còpies de seguretat a Google Drive. Canvia de dispositiu o restaura'n les dades fàcilment en qualsevol moment. Aquesta còpia de seguretat inclou dades d'aplicacions. Les còpies de seguretat es pengen a Google i s'encripten amb la contrasenya del Compte de Google del teu fill.</translation>
 <translation id="4634575639321169635">Configura aquest dispositiu per a la feina o per a ús personal</translation>
-<translation id="4634771451598206121">Torna a iniciar la sessió...</translation>
 <translation id="4635072447747973225">Desinstal·la Crostini</translation>
 <translation id="4635398712689569051">La pàgina <ph name="PAGE_NAME" /> no està disponible per als usuaris convidats.</translation>
 <translation id="4636682061478263818">Fitxers de Drive</translation>
@@ -5289,7 +5287,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6196640612572343990">Bloqueja les galetes de tercers</translation>
 <translation id="6196854373336333322">L'extensió <ph name="EXTENSION_NAME" /> ha passat a controlar la configuració del servidor intermediari. Això vol dir que pot modificar, desfer o espiar qualsevol acció que feu en línia. Si no esteu segur del motiu d'aquest canvi, és possible que no el vulgueu aplicar.</translation>
 <translation id="6197128521826316819">Crea un codi QR d'aquesta pàgina</translation>
-<translation id="6198102561359457428">Tanca la sessió i torna-la a iniciar...</translation>
 <translation id="6198252989419008588">Canvia el PIN</translation>
 <translation id="6200047250927636406">Descarta el fitxer</translation>
 <translation id="6200151268994853226">Gestiona l'extensió</translation>
@@ -6235,7 +6232,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7114648273807173152">Per utilitzar Smart Lock per iniciar la sessió al Compte de Google, ves a Configuració &gt; Dispositius connectats &gt; El teu telèfon &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">No hi ha cap contacte a l'abast</translation>
 <translation id="7117228822971127758">Torna-ho a provar més tard</translation>
-<translation id="7117247127439884114">Torna a iniciar la sessió...</translation>
 <translation id="711840821796638741">Mostra les adreces d'interès gestionades</translation>
 <translation id="711902386174337313">Accedeix a la llista de dispositius en què tens la sessió iniciada</translation>
 <translation id="711985611146095797">En aquesta pàgina pots gestionar els Comptes de Google en què tinguis la sessió iniciada. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>

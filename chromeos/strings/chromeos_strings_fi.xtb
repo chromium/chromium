@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Löydä lähellä olevat laitteet ottamalla ensin Bluetooth käyttöön.</translation>
 <translation id="2346474577291266260">Erinomainen (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Jatka</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Sopimattomia komponentteja<ph name="LINK_END" /> havaittu. Jos päätät vahvistaa, että tällaisia on asennettu, tee se nyt.</translation>
 <translation id="2363636958541445404">Laita ominaisuus päälle, jotta voit valita näytönsäästäjän vaihtoehtoja</translation>
 <translation id="2364498172489649528">Onnistui</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">Järjestelmä</translation>
 <translation id="2638662041295312666">Kirjautumiskuva</translation>
 <translation id="2640549051766135490">Albumi <ph name="TITLE" /> <ph name="DESC" /> valittu</translation>
-<translation id="2695514675076754339">Lisää 8-numeroinen avauskoodi</translation>
 <translation id="2712812801627182647">TLS-todennusavain</translation>
 <translation id="2717139507051041123">Ota tumma väritila käyttöön</translation>
 <translation id="2740531572673183784">OK</translation>

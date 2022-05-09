@@ -39,7 +39,6 @@
 <translation id="1698376642261615901">Google Chrome – це веб-переглядач, який запускає веб-сторінки та програми з блискавичною швидкістю. Він швидкий, надійний і зручний у користуванні. Вбудований у Google Chrome захист від шкідливих програм і фішингу гарантує ще більшу безпеку під час перегляду веб-сторінок.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome перезапуститься через годину}one{Chrome перезапуститься через # годину}few{Chrome перезапуститься через # години}many{Chrome перезапуститься через # годин}other{Chrome перезапуститься через # години}}</translation>
 <translation id="1734234790201236882">Chrome збереже цей пароль в обліковому записі Google. Не потрібно його запам’ятовувати.</translation>
-<translation id="174539241580958092">Google Chrome не вдалося синхронізувати ваші дані через помилку входу.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Переконайтеся, що ви ввійшли в Chrome на пристрої <ph name="TARGET_DEVICE_NAME" />, і повторіть спробу.</translation>
 <translation id="1812689907177901597">Якщо вимкнути цей параметр, ви зможете входити на сайти Google, як-от Gmail, без входу в Chrome</translation>
@@ -70,7 +69,6 @@
 <translation id="235650106824528204">Будь-які дані Chrome, створені під час використання цього робочого профілю (наприклад, закладки, історію, паролі й інші налаштування), може видалити його адміністратор. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2401189691232800402">ОС Chrome</translation>
-<translation id="2429317896000329049">Google Chrome не вдалося синхронізувати ваші дані, оскільки синхронізація для вашого домену недоступна.</translation>
 <translation id="2467438592969358367">Google Chrome хоче експортувати ваші паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="2485422356828889247">Видалити</translation>
 <translation id="2534507159460261402">Google Pay (скопійовано в Chrome)</translation>
@@ -287,7 +285,6 @@
 <translation id="7481213027396403996">Отримайте найвищий рівень безпеки в Chrome</translation>
 <translation id="7486227612705979895">Chrome матиме доступ до Диска, щоб робити пропозиції в адресному рядку</translation>
 <translation id="7535429826459677826">Версія Google Chrome для розробників</translation>
-<translation id="7592736734348559088">Google Chrome не вдалося синхронізувати ваші дані, оскільки дані для входу в обліковий запис застаріли.</translation>
 <translation id="7606334485649076285">ОС Google Chrome Flex</translation>
 <translation id="7626032353295482388">Вітаємо у Chrome!</translation>
 <translation id="7626072681686626474">Перш ніж використовувати цей пристрій, потрібно прочитати й прийняти наведені нижче Умови використання <ph name="MANAGER" />. Вони не розширюють, не змінюють і не обмежують Умови використання ОС Google Chrome.</translation>

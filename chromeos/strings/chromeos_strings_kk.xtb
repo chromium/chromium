@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Маңайдағы құрылғыларды табу үшін Bluetooth функциясын қосыңыз</translation>
 <translation id="2346474577291266260">Өте жақсы (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Расталмаған құрамдастар<ph name="LINK_END" /> анықталды. Мұның орнатылуын таңдасаңыз, қазір растаңыз.</translation>
 <translation id="2363636958541445404">Скринсейвер опцияларын таңдау үшін функцияны қосыңыз.</translation>
 <translation id="2364498172489649528">Сынақтан өтті</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">Жүйе</translation>
 <translation id="2638662041295312666">Кіру суреті</translation>
 <translation id="2640549051766135490">"<ph name="TITLE" />" (<ph name="DESC" />) альбомы таңдалды.</translation>
-<translation id="2695514675076754339">8 таңбалы құлыпты ашу кодын енгізіңіз.</translation>
 <translation id="2712812801627182647">TLS аутентификация кілті</translation>
 <translation id="2717139507051041123">Қараңғы түс режимін қосу</translation>
 <translation id="2740531572673183784">Жарайды</translation>

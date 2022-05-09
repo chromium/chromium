@@ -2862,7 +2862,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3748706263662799310">Nahlásit chybu</translation>
 <translation id="3750562496035670393">Chrome heslo uložil do tohoto zařízení, ale můžete ho místo toho uložit do svého účtu Google. Když budete přihlášeni, budou pak k dispozici i všechna hesla ve vašem účtu Google.</translation>
 <translation id="3752253558646317685">Nechte dítě opakovaně přikládat a zvedat prst, aby se uložil celý otisk prstu</translation>
-<translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Uložte jednou. Používejte všude</translation>
 <translation id="3755411799582650620">Toto zařízení <ph name="DEVICE_TYPE" /> můžete odemknout také pomocí telefonu <ph name="PHONE_NAME" />.</translation>
 <translation id="375636864092143889">Web používá mikrofon</translation>
@@ -3759,7 +3758,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4633003931260532286">Rozšíření vyžaduje rozhraní <ph name="IMPORT_NAME" /> s minimální verzí <ph name="IMPORT_VERSION" />, máte však nainstalovanou pouze verzi <ph name="INSTALLED_VERSION" /></translation>
 <translation id="4633757335284074492">Zálohování na Disk Google. Snadno obnovte data nebo kdykoliv přejděte na jiné zařízení. Tato záloha obsahuje data aplikací. Zálohy se nahrávají do Googlu a šifrují pomocí hesla účtu Google dítěte.</translation>
 <translation id="4634575639321169635">Nastavte si toto zařízení jako pracovní nebo soukromé</translation>
-<translation id="4634771451598206121">Znovu přihlásit...</translation>
 <translation id="4635072447747973225">Odinstalovat Crostini</translation>
 <translation id="4635398712689569051">Stránka <ph name="PAGE_NAME" /> hostům není k dispozici.</translation>
 <translation id="4636682061478263818">Soubory na Disku</translation>
@@ -5288,7 +5286,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6196640612572343990">Blokovat soubory cookie třetích stran</translation>
 <translation id="6196854373336333322">Rozšíření <ph name="EXTENSION_NAME" /> převzalo kontrolu nad nastavením proxy serveru, což znamená, že může změnit, narušit nebo sledovat vše, co děláte na internetu. Pokud si nejste jisti, proč k tomu došlo, zřejmě se jedná o nežádoucí změnu.</translation>
 <translation id="6197128521826316819">Vytvořit QR kód pro tuto stránku</translation>
-<translation id="6198102561359457428">Odhlaste se a poté se znovu přihlaste...</translation>
 <translation id="6198252989419008588">Změnit kód PIN</translation>
 <translation id="6200047250927636406">Zahodit soubor</translation>
 <translation id="6200151268994853226">Správa rozšíření</translation>
@@ -6238,7 +6235,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7114648273807173152">Chcete-li se ke svému účtu Google přihlašovat pomocí funkce Smart Lock, přejděte na Nastavení &gt; Připojená zařízení &gt; Váš telefon &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Žádné dostupné kontakty</translation>
 <translation id="7117228822971127758">Zkuste to znovu později</translation>
-<translation id="7117247127439884114">Znovu přihlásit...</translation>
 <translation id="711840821796638741">Zobrazit spravované záložky</translation>
 <translation id="711902386174337313">Číst seznam zařízení, ve kterých jste přihlášeni</translation>
 <translation id="711985611146095797">Na této stránce můžete spravovat účty Google, ke kterým jste přihlášeni. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>

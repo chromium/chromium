@@ -43,7 +43,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1698376642261615901">„Google Chrome“ yra žiniatinklio naršyklė, kuri akimirksniu paleidžia tinklalapius ir programas. Ji greita, stabili ir lengvai naudojama. Naršykite žiniatinklį saugiau – „Google Chrome“ įdiegta apsauga nuo kenkėjiškų programų ir sukčiavimo.</translation>
 <translation id="1713301662689114961">{0,plural, =1{„Chrome“ bus paleista iš naujo po valandos}one{„Chrome“ bus paleista iš naujo po # valandos}few{„Chrome“ bus paleista iš naujo po # valandų}many{„Chrome“ bus paleista iš naujo po # valandos}other{„Chrome“ bus paleista iš naujo po # valandų}}</translation>
 <translation id="1734234790201236882">„Chrome“ išsaugos šį slaptažodį „Google“ paskyroje. Jums nereikia jo prisiminti.</translation>
-<translation id="174539241580958092">„Google Chrome“ negali sinchronizuoti duomenų, nes prisijungiant įvyko klaida.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Įsitikinkite, kad esate prisijungę prie „Chrome“ naudodami „<ph name="TARGET_DEVICE_NAME" />“, ir bandykite siųsti iš naujo.</translation>
 <translation id="1812689907177901597">Jei išjungsite šį nustatymą, prie „Google“ svetainių galėsite prisijungti kaip prie „Gmail“ neprisijungę prie „Chrome“</translation>
@@ -74,7 +73,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="235650106824528204">Visus „Chrome“ duomenis, sugeneruotus naudojant šį profilį (pvz., sukurtas žymes, istoriją, slaptažodžius ir kitus nustatymus), gali pašalinti darbo profilio administratorius. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2401189691232800402">„Chrome“ OS sistema</translation>
-<translation id="2429317896000329049">„Google Chrome“ negali sinchronizuoti duomenų, nes jūsų domene sinchronizavimas nepasiekiamas.</translation>
 <translation id="2467438592969358367">„Google Chrome“ nori eksportuoti jūsų slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="2485422356828889247">Pašalinti</translation>
 <translation id="2534507159460261402">„Google Pay“ (nukopijuota į „Chrome“)</translation>
@@ -295,7 +293,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="7481213027396403996">Patikimiausios „Chrome“ saugos užtikrinimas</translation>
 <translation id="7486227612705979895">„Chrome“ turės prieigą prie Disko, kad galėtų teikti pasiūlymus adreso juostoje</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">„Google Chrome“ negali sinchronizuoti duomenų, nes paskyros išsami prisijungimo informacija yra pasenusi.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Sveiki, tai „Chrome“</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> reikia, kad prieš naudodami šį įrenginį perskaitytumėte toliau pateiktas paslaugų teikimo sąlygas ir su jomis sutiktumėte. Šios sąlygos neišplečia, nepakeičia ir neapriboja „Google Chrome“ OS sąlygų.</translation>

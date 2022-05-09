@@ -1093,6 +1093,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3973234410852337861">Web <ph name="HOST_NAME" /> je zablokovaný</translation>
 <translation id="3978338123949022456">Režim vyhľadávania, po zadaní dopytu a stlačení klávesa Enter spustíte vyhľadávanie prostredníctvom služby <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Vtáky</translation>
+<translation id="3985750352229496475">Spravujte adresy…</translation>
 <translation id="3986705137476756801">Zapnúť zatiaľ živý prepis</translation>
 <translation id="3987940399970879459">Menej ako 1 MB</translation>
 <translation id="3990250421422698716">Odsadenie zarovnania okrajov</translation>
@@ -1215,6 +1216,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4305666528087210886">Súbor sa nepodarilo otvoriť</translation>
 <translation id="4306529830550717874">Chcete adresu uložiť?</translation>
 <translation id="4306812610847412719">schránka</translation>
+<translation id="4310070645992025887">Vyhľadávajte cesty</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokovať (predvolené)</translation>
 <translation id="4314815835985389558">Správa synchronizácie</translation>
@@ -2098,6 +2100,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6839929833149231406">Oblasť</translation>
 <translation id="6846340164947227603">Použiť číslo virtuálnej karty…</translation>
 <translation id="6852204201400771460">Načítať znova aplikáciu?</translation>
+<translation id="6857776781123259569">Spravujte heslá…</translation>
 <translation id="686485648936420384">Zdroje informácií pre spotrebiteľov</translation>
 <translation id="6865412394715372076">Táto karta sa momentálne nedá overiť</translation>
 <translation id="6869334554832814367">Osobné úvery</translation>
@@ -2424,6 +2427,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7669271284792375604">Útočníci na tomto webe sa vás môžu pokúsiť podvodom presvedčiť, aby ste si nainštalovali programy poškodzujúce vaše prostredie prehliadania (napríklad zmenou domovskej stránky alebo zobrazovaním ďalších reklám na weboch, ktoré navštevujete).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Akcie vykonané s údajmi označenými ako dôvernými (1 akcia od prihlásenia). <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" />}few{Akcie vykonané s údajmi označenými ako dôvernými (# akcie od prihlásenia). <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" />}many{Actions taken with data flagged as confidential (# actions since login). <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" />}other{Akcie vykonané s údajmi označenými ako dôvernými (# akcií od prihlásenia). <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Poštová schránka č. 6</translation>
+<translation id="7675325315208090829">Spravujte spôsoby platby…</translation>
 <translation id="7676643023259824263">Vyhľadať v schránke text <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Zobraziť a spravovať históriu prehliadania v nastaveniach Chromu</translation>
 <translation id="7679947978757153706">Bejzbal</translation>

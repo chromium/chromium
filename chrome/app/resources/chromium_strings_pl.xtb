@@ -198,7 +198,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6063093106622310249">&amp;Otwórz w Chromium</translation>
 <translation id="6072279588547424923">Rozszerzenie <ph name="EXTENSION_NAME" /> zostało dodane do Chromium</translation>
 <translation id="608006075545470555">Dodaj profil służbowy w tej przeglądarce</translation>
-<translation id="608189560609172163">Chromium nie może zsynchronizować Twoich danych w związku z błędem logowania.</translation>
 <translation id="6096348254544841612">Dostosowywanie i kontrolowanie Chromium. Dostępna jest aktualizacja.</translation>
 <translation id="6120345080069858279">Chromium zapisze to hasło na Twoim koncie Google. Nie musisz go pamiętać.</translation>
 <translation id="6129621093834146363">Plik <ph name="FILE_NAME" /> jest niebezpieczny, dlatego został zablokowany przez Chromium.</translation>
@@ -293,7 +292,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7682601070171973634">Testujemy nowe funkcje Chromium, dzięki którym witryny będą mogły zapewniać użytkownikom taką samą wygodę przeglądania treści przy wykorzystaniu mniejszej ilości danych</translation>
 <translation id="7686590090926151193">Chromium nie jest domyślną przeglądarką</translation>
 <translation id="7689606757190482937">Synchronizuj dane Chromium i korzystaj z własnych ustawień przeglądarki na wielu urządzeniach</translation>
-<translation id="7729447699958282447">Chromium nie może zsynchronizować danych, ponieważ synchronizacja jest niedostępna w Twojej domenie.</translation>
 <translation id="7745317241717453663">Spowoduje to usunięcie danych przeglądania z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Instalator nie mógł utworzyć katalogu tymczasowego. Sprawdź, czy na dysku jest dość wolnego miejsca oraz sprawdź, czy posiadasz uprawnienia do instalowania programów.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
@@ -337,7 +335,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8713679423359107094">Gdy zamkniesz wszystkie okna Chromium, zostaną automatycznie wyczyszczone pliki cookie i dane witryn</translation>
 <translation id="8796443464227412154">Gdy zamkniesz Chromium, nastąpi <ph name="BEGIN_BOLD" />wylogowanie z większości stron<ph name="END_BOLD" />. Jeśli wyłączona jest synchronizacja, dojdzie też do <ph name="BEGIN_BOLD" />wylogowania z usług Google i Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium potrzebuje uprawnień dostępu do aparatu i mikrofonu na tej stronie</translation>
-<translation id="8821041990367117597">Chromium nie może zsynchronizować danych, ponieważ dane logowania na Twoje konto są nieaktualne.</translation>
 <translation id="8833697763442816810">System operacyjny Chromium</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Jakich danych używamy:<ph name="END_BOLD" /> używamy Twojej historii przeglądania, czyli rejestru witryn, które odwiedzasz w Chromium na tym urządzeniu.</translation>
 <translation id="8862326446509486874">Nie masz odpowiednich uprawnień do przeprowadzenia instalacji na poziomie systemowym. Uruchom ponownie program instalacyjny jako administrator.</translation>

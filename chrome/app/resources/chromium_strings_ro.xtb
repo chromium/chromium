@@ -200,7 +200,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6063093106622310249">&amp;Deschide în Chromium</translation>
 <translation id="6072279588547424923">Extensia <ph name="EXTENSION_NAME" /> a fost adăugată la Chromium</translation>
 <translation id="608006075545470555">Adaugă un profil de serviciu în acest browser</translation>
-<translation id="608189560609172163">Chromium nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
 <translation id="6096348254544841612">Personalizează și controlează Chromium. Este disponibilă o actualizare.</translation>
 <translation id="6120345080069858279">Chromium va salva parola în Contul tău Google. Nu va trebui să o reții.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> este periculos, așadar Chromium l-a blocat.</translation>
@@ -295,7 +294,6 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7682601070171973634">Chromium explorează noi funcții care le dau site-urilor posibilitatea să ofere aceeași experiență de navigare, folosind mai puține date despre tine</translation>
 <translation id="7686590090926151193">Chromium nu este browserul prestabilit</translation>
 <translation id="7689606757190482937">Sincronizează și personalizează Chromium pe toate dispozitivele</translation>
-<translation id="7729447699958282447">Chromium nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniul dvs.</translation>
 <translation id="7745317241717453663">Astfel, se vor șterge datele de navigare de pe acest dispozitiv. Pentru a recupera datele mai târziu, conectează-te la Chromium ca <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Programul de instalare nu a putut crea un director temporar. Verifică dacă există suficient spațiu liber și dacă ai drepturile necesare pentru a instala software-ul.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
@@ -339,7 +337,6 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8713679423359107094">Când închizi toate ferestrele Chromium, cookie-urile și datele privind site-urile sunt șterse automat</translation>
 <translation id="8796443464227412154">Vei fi <ph name="BEGIN_BOLD" />deconectat(ă) de pe majoritatea site-urilor<ph name="END_BOLD" /> când închizi Chromium. Dacă sincronizarea este dezactivată, vei fi <ph name="BEGIN_BOLD" />deconectat(ă) și de la serviciile Google și de la Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium are nevoie de permisiune ca să acceseze camera foto și microfonul pentru acest site</translation>
-<translation id="8821041990367117597">Chromium nu a putut sincroniza datele, deoarece detaliile de conectare pentru contul dvs. nu sunt actualizate.</translation>
 <translation id="8833697763442816810">Sistemul de operare Chromium</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Ce date sunt folosite:<ph name="END_BOLD" /> istoricul tău de navigare, o evidență a site-urilor pe care le-ai accesat folosind Chromium pe acest dispozitiv.</translation>
 <translation id="8862326446509486874">Nu ai drepturile adecvate pentru instalarea la nivel de sistem. Încearcă să rulezi din nou programul de instalare ca Administrator.</translation>

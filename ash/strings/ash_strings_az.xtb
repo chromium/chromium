@@ -823,7 +823,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="602472752137106327">Bütün masalardan pəncərələri göstərin, radio düyməsi seçilib</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />, Administratorunuz tərəfindən idarə olunur</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> tarixində tədbir yoxdur. Brauzerdə Google Calendar'ı açmaq üçün enter düyməsinə basın.</translation>
-<translation id="6027952026115023659"><ph name="DEVICE_TYPE" /> cihazınızda telefonunuzun mesajlaşma tətbiqlərinə giriş edin</translation>
 <translation id="6030495522958826102">Menyu ekranın aşağı sol küncünə köçürülüb.</translation>
 <translation id="6032620807120418574">Tam ekranı çəkmək üçün istənilən yerə toxunun</translation>
 <translation id="6040071906258664830">Mikrofonun yazılması: <ph name="STATE" /></translation>
@@ -973,7 +972,6 @@ Yeni quraşdırma</translation>
 <translation id="6961121602502368900">İş profilində telefonun səssiz edilməsi əlçatan deyil</translation>
 <translation id="6961840794482373852">Alt + Yuxarı Ox klaviatura qısayolu dəyişib. Səhifənin Yuxarısına Keç düyməsindən istifadə etmək üçün <ph name="LAUNCHER_KEY_NAME" /> + Yuxarı Ox düyməsini basın.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967933908874208731"><ph name="DEVICE_TYPE" /> cihazında telefonunuzun son fotoları, mediası, bildirişləri və mesajlaşma tətbiqlərinə baxın</translation>
 <translation id="6972754398087986839">Başlayın</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6981982820502123353">Giriş İmkanı</translation>

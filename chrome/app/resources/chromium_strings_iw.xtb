@@ -198,7 +198,6 @@
 <translation id="6063093106622310249">‏&amp;פתיחה ב-Chromium</translation>
 <translation id="6072279588547424923">‏<ph name="EXTENSION_NAME" /> נוסף ל-‏Chromium‏</translation>
 <translation id="608006075545470555">הוספת פרופיל עבודה לדפדפן זה</translation>
-<translation id="608189560609172163">‏Chromium לא הצליח לסנכרן את הנתונים שלך בשל שגיאת כניסה.</translation>
 <translation id="6096348254544841612">‏כדי להתאים אישית את Google Chrome ולשלוט בו טוב יותר, כדאי להוריד את העדכון החדש.</translation>
 <translation id="6120345080069858279">‏הסיסמה הזאת תישמר על ידי Chromium בחשבון Google שלך. אין צורך לזכור אותה.</translation>
 <translation id="6129621093834146363">‏<ph name="FILE_NAME" /> מסוכן, ולכן Chromium חסם אותו.</translation>
@@ -294,7 +293,6 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="7682601070171973634">‏אנחנו בודקים תכונות חדשות ב-Chromium שמאפשרות לאתרים להציג את אותה חוויית הגלישה תוך שימוש בפחות נתונים.</translation>
 <translation id="7686590090926151193">‏Chromium אינו דפדפן ברירת המחדל שלך</translation>
 <translation id="7689606757190482937">‏סנכרון והתאמה אישית של Chromium בכל המכשירים שברשותך</translation>
-<translation id="7729447699958282447">‏Chromium לא הצליח לסנכרן את הנתונים שלך מפני שסנכרון אינו זמין עבור הדומיין שלך.</translation>
 <translation id="7745317241717453663">‏פעולה זו תמחק את נתוני הגלישה מהמכשיר. כדי לשחזר את הנתונים מאוחר יותר, יש להיכנס אל Chromium עם <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">המתקין לא הצליח ליצור ספרייה זמנית. יש לבדוק את המקום הפנוי בדיסק ואת האישור להתקנת תוכנה.</translation>
 <translation id="7790626492778995050">‏<ph name="PAGE_TITLE" /> – Chromium בגרסת Canary</translation>
@@ -339,7 +337,6 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8713679423359107094">‏אחרי שסוגרים את כל החלונות של Chromium, קובצי cookie ונתוני אתרים נמחקים אוטומטית</translation>
 <translation id="8796443464227412154">‏המערכת <ph name="BEGIN_BOLD" />תוציא אותך מהחשבון ברוב האתרים<ph name="END_BOLD" /> עם סגירת Chromium. אם הסנכרון כבוי, המערכת <ph name="BEGIN_BOLD" />תוציא אותך מהחשבון גם בשירותי Google וב-Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">‏Chromium זקוק להרשאת גישה אל המצלמה והמיקרופון בשביל האתר הזה</translation>
-<translation id="8821041990367117597">‏Chromium לא הצליח לסנכרן את הנתונים שלך מפני שפרטי הכניסה של חשבונך אינם מעודכנים.</translation>
 <translation id="8833697763442816810">‏מערכת ChromiumOS</translation>
 <translation id="8846118132221683440">‏<ph name="BEGIN_BOLD" />באילו נתונים נעשה שימוש:<ph name="END_BOLD" /> היסטוריית הגלישה – תיעוד האתרים שביקרת בהם באמצעות Chromium במכשיר הזה.</translation>
 <translation id="8862326446509486874">אין לך זכויות שמתאימות להתקנה ברמת המערכת. יש לנסות להפעיל שוב את המתקין כמנהל מערכת.</translation>

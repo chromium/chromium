@@ -222,7 +222,6 @@
 <translation id="2883151425485251736">ดูและแก้ไขหัวข้อที่คุณซ่อนไปจากบัญชี</translation>
 <translation id="288655811176831528">ปิดแท็บ</translation>
 <translation id="2890171748217283516">ระบบจะบันทึกเว็บไซต์ที่คุณติดตามไว้ในบัญชี Google โดยคุณจัดการเว็บไซต์เหล่านี้ได้ในการตั้งค่า Discover</translation>
-<translation id="2893180576842394309">Google อาจใช้ประวัติการเข้าชมเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ของ Google ให้เข้ากับคุณ</translation>
 <translation id="2898963176829412617">โฟลเดอร์ใหม่…</translation>
 <translation id="2916171785467530738">เติมข้อความค้นหาและ URL อัตโนมัติ</translation>
 <translation id="291754862089661335">จัดตำแหน่งโค้ด QR หรือบาร์โค้ดให้อยู่ในกรอบนี้</translation>
@@ -904,7 +903,6 @@
 <translation id="8654802032646794042">ยกเลิก</translation>
 <translation id="8668210798914567634">หน้านี้ได้รับการบันทึกลงในรายการที่จะอ่านแล้ว</translation>
 <translation id="8680787084697685621">รายละเอียดการลงชื่อเข้าใช้บัญชีเก่าเกินไป</translation>
-<translation id="8691262314411702087">เลือกสิ่งที่จะซิงค์</translation>
 <translation id="8693663554456874301">{count,plural, =1{ปิดแท็บ}other{ปิดแท็บ}}</translation>
 <translation id="8706588385081740091">รหัสผ่าน</translation>
 <translation id="8717864919010420084">คัดลอกลิงก์</translation>

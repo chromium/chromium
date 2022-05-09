@@ -820,7 +820,6 @@
 <translation id="602472752137106327">Бардык иш такталардагы терезелерди көрсөтүү, радио баскычы тандалды</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />, Администраторуңуз башкарат</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> эч кандай иш-чара жок. Google Жылнааманы серепчиде ачуу үчүн Enter баскычын басыңыз.</translation>
-<translation id="6027952026115023659">Телефонуңуздагы жазышуу колдонмолорун <ph name="DEVICE_TYPE" /> түзмөгүндө колдонуңуз</translation>
 <translation id="6030495522958826102">Меню экрандын төмөнкү сол бурчуна жылдырылды.</translation>
 <translation id="6032620807120418574">Толук экранды жаздыруу үчүн каалаган жерин басыңыз</translation>
 <translation id="6040071906258664830">Аудиону жаздыруу <ph name="STATE" /></translation>
@@ -970,7 +969,6 @@
 <translation id="6961121602502368900">Жумуш профилинде телефондун үнүн басууга болбойт</translation>
 <translation id="6961840794482373852">Alt + өйдө жебе ыкчам баскычы өзгөртүлдү. Барактын өйдө жагына жылдыруу баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + өйдө жебени басыңыз.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967933908874208731">Телефонуңуздагы акыркы сүрөттөрдү, медиа файлдарды, билдирмелерди жана жазышуу колдонмолорун <ph name="DEVICE_TYPE" /> түзмөгүндө көрүңүз</translation>
 <translation id="6972754398087986839">Баштоо</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Атайын мүмкүн-төр</translation>

@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Vklopite Bluetooth, če želite odkriti naprave v bližini</translation>
 <translation id="2346474577291266260">Odlična (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Naprej</translation>
 <translation id="2360257214555822463">Zaznane so bile <ph name="LINK_BEGIN" />neustrezne komponente<ph name="LINK_END" />. Če želite potrditi, da je to nameščeno, storite to zdaj.</translation>
 <translation id="2363636958541445404">Vklopite funkcijo, če želite izbrati možnosti ohranjevalnika zaslona.</translation>
 <translation id="2364498172489649528">Preverjanje je uspelo</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2638662041295312666">Slika za prijavo</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> je bil izbran</translation>
-<translation id="2695514675076754339">Vnesite 8-mestno kodo za odklepanje</translation>
 <translation id="2712812801627182647">Ključ za preverjanje pristnost TLS</translation>
 <translation id="2717139507051041123">Omogoči način temne barve</translation>
 <translation id="2740531572673183784">V redu</translation>

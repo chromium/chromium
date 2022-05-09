@@ -91,6 +91,7 @@
 <translation id="1801418420130173017">Onemogućivanje tamne teme</translation>
 <translation id="1807246157184219062">Svijetlo</translation>
 <translation id="1827738518074806965">Umjetnička galerija</translation>
+<translation id="1840835860961531162">Isključivanje zaštite od pisanja</translation>
 <translation id="1851218745569890714">Videokonferencije</translation>
 <translation id="1852934301711881861">Instaliraj ChromeOS Flex</translation>
 <translation id="1856388568474281774">Strelica prema dolje</translation>
@@ -144,6 +145,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da biste otkrili uređaje u blizini</translation>
 <translation id="2346474577291266260">Izvrstan (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Nastavi</translation>
 <translation id="2360257214555822463">Otkrivene su <ph name="LINK_BEGIN" />nekvalificirane komponente<ph name="LINK_END" />. Ako želite potvrditi da su instalirane, učinite to odmah.</translation>
 <translation id="2363636958541445404">Uključite tu značajku da biste odabrali opcije čuvara zaslona</translation>
 <translation id="2364498172489649528">Uspješno</translation>
@@ -171,7 +173,6 @@
 <translation id="2620436844016719705">Sustav</translation>
 <translation id="2638662041295312666">Slika za prijavu</translation>
 <translation id="2640549051766135490">Odabran je album <ph name="TITLE" /> <ph name="DESC" /></translation>
-<translation id="2695514675076754339">Unesite osmeroznamenkasti kôd za otključavanje.</translation>
 <translation id="2712812801627182647">Ključ za TLS autentifikaciju</translation>
 <translation id="2717139507051041123">Omogućite način tamne boje</translation>
 <translation id="2740531572673183784">U redu</translation>
@@ -272,6 +273,7 @@
 <translation id="3941014780699102620">Razrješavanje hosta nije uspjelo</translation>
 <translation id="3942420633017001071">Dijagnostika</translation>
 <translation id="3954678691475912818">Vrsta uređaja nije poznata.</translation>
+<translation id="3958703339436883942">Priprema za ponovno pokretanje...</translation>
 <translation id="3966286471246132217">Da biste dobili preciznije rezultate, zatvorite sve aplikacije dok test ne završi.</translation>
 <translation id="3967822245660637423">Preuzimanje dovršeno</translation>
 <translation id="3969602104473960991">Zaporka za Chrome OS je ažurirana</translation>
@@ -418,6 +420,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="5275828089655680674">Ponovo pokreni rutine</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">verzija <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">Onemogućite zaštitu od pisanja da biste prešli na sljedeći zaslon. Upute potražite na stranici korisničke podrške proizvođača uređaja.</translation>
 <translation id="5300814202279832142">Premjesti prozor na radnu površinu</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">Poveži</translation>
@@ -468,6 +471,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="583281660410589416">Nepoznato</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Kôd davatelja usluge kućne mreže</translation>
+<translation id="5856532218727053281">Sustav će se pokrenuti ponovo nakon potvrđivanja statusa zaštite od pisanja</translation>
 <translation id="5859603669299126575">Album umjetničke galerije</translation>
 <translation id="5860033963881614850">Isključeno</translation>
 <translation id="5860491529813859533">Uključi</translation>

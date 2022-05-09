@@ -146,6 +146,7 @@
 <translation id="2336381494582898602">Sıfırlama</translation>
 <translation id="2338501278241028356">Yaxınlıqdakı cihazları tapmaq üçün Bluetooth'u aktiv edin</translation>
 <translation id="2346474577291266260">Əla (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Davam edin</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Uyğunsuz komponentlər<ph name="LINK_END" /> aşkarlanıb. Bunun quraşdırıldığını təsdiqləməyi seçsəniz, indi bunu edin.</translation>
 <translation id="2363636958541445404">Ekran qoruyucu seçimlərini seçmək üçün funksiyanı aktiv edin</translation>
 <translation id="2364498172489649528">Keçdi</translation>
@@ -159,6 +160,7 @@
 <translation id="2446553403094072641">Dəyişən nöqtə dəqiqliyi</translation>
 <translation id="2448312741937722512">Növ</translation>
 <translation id="2461822463642141190">Cari</translation>
+<translation id="2480034874476596812">Manual olaraq deaktiv edin</translation>
 <translation id="2491955442992294626">Başqa pəncərədən istifadə etdiyiniz zaman açarlar sınaqdan keçirilmir</translation>
 <translation id="2493126929778606526">Avtomatik seçilmiş ən yaxşı fotolarınız</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -174,7 +176,6 @@
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2638662041295312666">Daxil olma şəkli</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> albomu seçildi</translation>
-<translation id="2695514675076754339">8 simvoldan ibarət kilid açma kodunu daxil edin</translation>
 <translation id="2712812801627182647">TLS doğrulama açarı</translation>
 <translation id="2717139507051041123">Tünd rəng rejimini aktiv edin</translation>
 <translation id="2740531572673183784">Ok</translation>
@@ -254,6 +255,7 @@
 <translation id="3606583719724308068">HTTPS veb saytlarında yüksək gecikmə</translation>
 <translation id="3621202678540785336">Daxiletmə</translation>
 <translation id="3632579075709132555">Məxfilik ekranı keçiricisi</translation>
+<translation id="3678765385266369662">Yazıdan Qorunmanı necə deaktiv etmək istədiyinizi seçin</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
 <translation id="370665806235115550">Yüklənir...</translation>
 <translation id="3708186454126126312">Öncə qoşulmuş cihazlar</translation>
@@ -309,6 +311,7 @@
 <translation id="4244962993387259361">Yaddaş testi etmək üçün minimum 500 MB boş yaddaşınız olmalıdır. Yaddaşda yer boşaltmaq üçün Ayarlar &gt; Yaddaş menecerinə daxil olun.</translation>
 <translation id="4250229828105606438">Skrinşot</translation>
 <translation id="4258281355379922695">HTTP Gecikməsi</translation>
+<translation id="4258561075226177474">Cihaz eyni istifadəçinin mülkiyyətinə keçəcək. İstifadəçi datası silinsin?</translation>
 <translation id="4271957103967917607">Tam Ekranda BAxın</translation>
 <translation id="4275799948641988986">Təmirdən sonra cihazdan kim istifadə edəcək?</translation>
 <translation id="4289540628985791613">Baxış</translation>
@@ -357,6 +360,7 @@
 <translation id="473775607612524610">Güncəlləşdirin</translation>
 <translation id="4744944742468440486">Seçiminizlə əlaqəli məlumat</translation>
 <translation id="4773299976671772492">Durmuş</translation>
+<translation id="4774530504324923332">RSU ilə işləyən təhlükəsizlik açarı, QR kod skaneri və internet bağlantısı olan ikinci cihaz lazımdır</translation>
 <translation id="4782311465517282004">Mətnə sağ düymə ilə toxunduqda və ya toxunub saxladıqda izahlar, tərcümələr və ya vahid çevirmələrini əldə edin</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Ətraflı məlumat üçün <ph name="BEGIN_LINK" />Yardım Mərkəzinə<ph name="END_LINK" /> keçin.</translation>
@@ -435,6 +439,7 @@
 <translation id="5372659122375744710">WiFi şəbəkəsi güvənli deyil</translation>
 <translation id="5376354385557966694">Avtomatik işıqlı rejim</translation>
 <translation id="537872351913703572">Cihaz başqa istifadəçinin və ya təşkilatın mülkiyyətinə keçəcək</translation>
+<translation id="5395600419410242651">Bütün məlumatlar silinsin</translation>
 <translation id="5400907029458559844">Cihaz qoşulur.</translation>
 <translation id="5401938042319910061">Bütün Rejimləri İşə Salın</translation>
 <translation id="5423849171846380976">Aktivləşdirildi</translation>
@@ -646,6 +651,7 @@
 <translation id="7570674786725311828">USB taçskrin</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> qalıb</translation>
 <translation id="7620771111601174153">Yardım Mərkəzində ətraflı məlumat əldə edin</translation>
+<translation id="7626501172915339021">RMA Server Kiliddən Çıxarmasını (RSU) icra edin</translation>
 <translation id="763165478673169849">Son Sıfırlama Vaxtı</translation>
 <translation id="7648838807254605802">Yüksək HTTPS gecikməsi</translation>
 <translation id="7656388927906093505">Cihaz mausdur.</translation>
@@ -793,6 +799,8 @@
 <translation id="9087578468327036362">Bu sorğunu bildirin</translation>
 <translation id="9088306295921699330">Cari istifadə</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">Cihaz; ayırmalısınız</translation>
+<translation id="9098156406873149060">İstifadəçi datasını saxlayın</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> üçün bileti yeniləyin</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> saylı səhifə skanlanır</translation>
 <translation id="9111102763498581341">Kiliddən çıxarın</translation>

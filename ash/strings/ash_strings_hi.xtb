@@ -821,7 +821,6 @@
 <translation id="602472752137106327">सभी डेस्क से विंडो देखें, रेडियो बटन चुना गया</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, आपका एडमिन प्रबंधित करता है</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> को कोई इवेंट नहीं है. ब्राउज़र में Google Calendar खोलने के लिए, Enter दबाएं.</translation>
-<translation id="6027952026115023659">अपने फ़ोन के मैसेजिंग ऐप्लिकेशन <ph name="DEVICE_TYPE" /> पर ऐक्सेस करें</translation>
 <translation id="6030495522958826102">मेन्यू, स्क्रीन के सबसे नीचे बाएं कोने में चला गया है.</translation>
 <translation id="6032620807120418574">फ़ुल स्क्रीन को रिकॉर्ड करने के लिए कहीं पर भी क्लिक करें</translation>
 <translation id="6040071906258664830">माइक्रोफ़ोन से ऑडियो रिकॉर्ड <ph name="STATE" /></translation>
@@ -971,7 +970,6 @@
 <translation id="6961121602502368900">वर्क प्रोफ़ाइल में, फ़ोन को साइलेंट रखने की सुविधा उपलब्ध नहीं है</translation>
 <translation id="6961840794482373852">Alt + अप ऐरो कीबोर्ड शॉर्टकट बदल गया है. Page Up बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + अप ऐरो दबाएं.</translation>
 <translation id="6965382102122355670">ठीक है</translation>
-<translation id="6967933908874208731">फ़ोन में मौजूद हाल ही की फ़ोटो, मीडिया, सूचनाएं, और मैसेजिंग ऐप्लिकेशन <ph name="DEVICE_TYPE" /> पर देखें</translation>
 <translation id="6972754398087986839">शुरू करें</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">सुलभता</translation>

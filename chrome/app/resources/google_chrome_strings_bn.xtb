@@ -41,7 +41,6 @@
 <translation id="1698376642261615901">Google Chrome হল একটি ওয়েব ব্রাউজার যা ওয়েব পৃষ্ঠাগুলি এবং অ্যাপগুলিকে বিদ্যুৎ গতিতে চালনা করে৷ এটি দ্রুত, সুস্থির এবং সহজেই ব্যবহারযোগ্য৷ Google Chrome-এ অন্তর্গঠিত ম্যালওয়ার এবং ফিশিং সুরক্ষার সাথে আরও নিরাপদে ওয়েব ব্রাউজ করুন৷</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome ১ ঘণ্টার মধ্যে আবার লঞ্চ হবে}one{Chrome # ঘণ্টার মধ্যে আবার লঞ্চ হবে}other{Chrome # ঘণ্টার মধ্যে আবার লঞ্চ হবে}}</translation>
 <translation id="1734234790201236882">Google অ্যাকাউন্টে এই পাসওয়ার্ডটি Chrome সেভ করবে। আপনার এটি মনে রাখার দরকার নেই।</translation>
-<translation id="174539241580958092">সাইন ইনে ত্রুটির কারণে Google Chrome আপনার ডেটা সিঙ্ক করতে পারেনি৷</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">আপনার <ph name="TARGET_DEVICE_NAME" />-এর Chrome-এ সাইন-ইন করেছেন কিনা তা দেখে নিন এবং তারপরে আবার পাঠানোর চেষ্টা করুন।</translation>
 <translation id="1812689907177901597">এটি বন্ধ করার মানে হল, আপনি Chrome-এ সাইন-ইন না করে Gmail এর মতো Google সাইটগুলিতে সাইন-ইন করতে পারেন</translation>
@@ -72,7 +71,6 @@
 <translation id="235650106824528204">এই প্রোফাইল ব্যবহার করার সময় জেনারেট হওয়া Chrome ডেটা (যেমন বুকমার্ক, ইতিহাস, পাসওয়ার্ড ও অন্যান্য সেটিংস) অফিস প্রোফাইল অ্যাডমিনিস্ট্রেটর মুছে দিতে পারেন। <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2401189691232800402">ChromeOS সিস্টেম</translation>
-<translation id="2429317896000329049">আপনার ডোমেনে সিঙ্ক উপলভ্য না থাকার কারণে Google Chrome সিঙ্ক করতে পারেনি৷</translation>
 <translation id="2467438592969358367">Google Chrome আপনার পাসওয়ার্ড এক্সপোর্ট করতে চাইছে। অনুমতি দিতে Windows এর পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="2485422356828889247">আনইনস্টল</translation>
 <translation id="2534507159460261402">Google Pay (Chrome এ কপি করা হয়েছে)</translation>
@@ -291,7 +289,6 @@
 <translation id="7481213027396403996">Chrome-এ সবচেয়ে বেশি সুরক্ষা পান</translation>
 <translation id="7486227612705979895">অ্যাড্রেস বারে সাজেশন দেওয়ার জন্য Chrome আপনার ড্রাইভ অ্যাক্সেস করবে</translation>
 <translation id="7535429826459677826">Google Chrome ডেভেলপার</translation>
-<translation id="7592736734348559088">Google Chrome আপনার অ্যাকাউন্ট সাইন-ইন বিশদ বিবরণটি পুরনো হওয়ার কারণে সিঙ্ক করতে পারেনি৷</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Chrome এ স্বাগতম</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" />-এ এই ডিভাইস ব্যবহার করার আগে আপনাকে নিম্নলিখিত পরিষেবার শর্তাবলী পড়ে নিতে হবে এবং তাতে সম্মতি দিতে হবে। এইসব শর্ত Google ChromeOS-এর শর্তাবলীকে সম্প্রসারণ, পরিবর্তন বা সীমাবদ্ধ করে না।</translation>

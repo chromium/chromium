@@ -2863,7 +2863,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3748706263662799310">Ziņot par blusu</translation>
 <translation id="3750562496035670393">Pārlūks Chrome paroli saglabāja šajā ierīcē, taču varat to saglabāt arī savā Google kontā. Tādējādi visas Google kontā saglabātās paroles būs pieejamas, kad būsiet pierakstījies.</translation>
 <translation id="3752253558646317685">Bērnam ir jāturpina pacelt pirksts, lai saglabātu pirksta nospiedumu.</translation>
-<translation id="3752582316358263300">Labi...</translation>
 <translation id="3753033997400164841">Saglabājiet vienreiz, izmantojiet it visur</translation>
 <translation id="3755411799582650620">Ar jūsu tālruni <ph name="PHONE_NAME" /> tagad var atbloķēt arī šo <ph name="DEVICE_TYPE" /> ierīci.</translation>
 <translation id="375636864092143889">Vietne izmanto jūsu mikrofonu.</translation>
@@ -3761,7 +3760,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4633003931260532286">Paplašinājumam ir nepieciešama “<ph name="IMPORT_NAME" />” versija <ph name="IMPORT_VERSION" /> (vismaz), taču ir instalēta tikai versija <ph name="INSTALLED_VERSION" />.</translation>
 <translation id="4633757335284074492">Datu dublēšana Google diskā. Varēsiet jebkurā laikā ērti atjaunot datus vai mainīt ierīci. Dublējumā ir ietverti arī lietotņu dati. Dublējumi tiek augšupielādēti Google serveros un tiek šifrēti, izmantojot jūsu bērna Google konta paroli.</translation>
 <translation id="4634575639321169635">Iestatīt šo ierīci darbam vai personīgai lietošanai</translation>
-<translation id="4634771451598206121">Pierakstīties vēlreiz...</translation>
 <translation id="4635072447747973225">Crostini atinstalēšana</translation>
 <translation id="4635398712689569051">Lapa “<ph name="PAGE_NAME" />” nav pieejama viesa režīma lietotājiem.</translation>
 <translation id="4636682061478263818">Diska faili</translation>
@@ -5290,7 +5288,6 @@ Jebkurā laikā varat pārbaudīt paroles šeit: <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="6196640612572343990">Bloķēt trešo pušu sīkfailus</translation>
 <translation id="6196854373336333322">Paplašinājums “<ph name="EXTENSION_NAME" />” pārvalda jūsu starpniekservera iestatījumus. Tas nozīmē, ka tas var mainīt, pārtraukt vai izsekot visas jūsu darbības tiešsaistē. Ja neesat pārliecināts, kāpēc notika šīs izmaiņas, visticamāk, jūs tās nevēlaties.</translation>
 <translation id="6197128521826316819">Izveidot kvadrātkodu šai lapai</translation>
-<translation id="6198102561359457428">Izrakstīties un tad pierakstīties vēlreiz</translation>
 <translation id="6198252989419008588">Mainīt PIN</translation>
 <translation id="6200047250927636406">Atmest failu</translation>
 <translation id="6200151268994853226">Pārvaldīt paplašinājumu</translation>
@@ -6240,7 +6237,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7114648273807173152">Lai pierakstītos Google kontā, izmantojot Smart Lock, atveriet sadaļu Iestatījumi &gt; Pievienotās ierīces &gt; Jūsu tālrunis &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Nav sasniedzamu kontaktpersonu</translation>
 <translation id="7117228822971127758">Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
-<translation id="7117247127439884114">Pierakstīties vēlreiz...</translation>
 <translation id="711840821796638741">Pārvaldīto grāmatzīmju rādīšana</translation>
 <translation id="711902386174337313">Lasīt to ierīču sarakstu, kurās esat pierakstījies</translation>
 <translation id="711985611146095797">Šajā lapā varat pārvaldīt Google kontus, kuros esat pierakstījies. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>

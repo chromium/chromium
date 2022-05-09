@@ -972,6 +972,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1892341345406963517">Hallo, <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Ander tale</translation>
 <translation id="1895658205118569222">Skakel af</translation>
+<translation id="1897120393475391208">Gebruik sterk wagwoord</translation>
 <translation id="1900305421498694955">Programme van Google Play af moet dalk volle toegang tot lêerstelsels hê om lêers op eksterne bergingtoestelle te lees en te skryf. Enigiemand wat die eksterne skyf gebruik, kan lêers en vouers sien wat op die toestel geskep is. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Kies almal</translation>
 <translation id="1901396183631570154">Chrome kon nie hierdie wagwoorde in jou Google-rekening stoor nie. Jy kan hulle steeds op hierdie toestel stoor.</translation>
@@ -2878,7 +2879,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3748706263662799310">Gee 'n fout aan</translation>
 <translation id="3750562496035670393">Chrome het jou wagwoord op hierdie toestel gestoor, maar jy kan pleks daarvan dit in jou Google-rekening stoor. Alle wagwoorde sal dan ook in jou Google-rekening beskikbaar wees terwyl jy aangemeld is</translation>
 <translation id="3752253558646317685">Laat jou kind hul vinger oplig om die vingerafdruk te stoor</translation>
-<translation id="3752582316358263300">OK …</translation>
 <translation id="3753033997400164841">Berg een keer. Gebruik oral</translation>
 <translation id="3755411799582650620">Jou <ph name="PHONE_NAME" /> kan nou ook hierdie <ph name="DEVICE_TYPE" /> ontsluit.</translation>
 <translation id="375636864092143889">Werf gebruik tans jou mikrofoon</translation>
@@ -3778,7 +3778,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4633003931260532286">Uitbreiding vereis "<ph name="IMPORT_NAME" />" met minstens weergawe "<ph name="IMPORT_VERSION" />", maar net weergawe "<ph name="INSTALLED_VERSION" />" is geïnstalleer</translation>
 <translation id="4633757335284074492">Rugsteun in Google Drive. Laai data maklik terug of wissel enige tyd jou toestel. Hierdie rugsteun sluit programdata in. Rugsteune word na Google toe opgelaai en met jou kind se Google-rekeningwagwoord geënkripteer.</translation>
 <translation id="4634575639321169635">Stel hierdie toestel op vir werk- of persoonlike gebruik</translation>
-<translation id="4634771451598206121">Meld weer aan …</translation>
 <translation id="4635072447747973225">Deïnstalleer Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> is nie vir gasgebruikers beskikbaar nie.</translation>
 <translation id="4636682061478263818">Drive-lêers</translation>
@@ -5314,7 +5313,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6196640612572343990">Blokkeer derdeparty-webkoekies</translation>
 <translation id="6196854373336333322">Die uitbreiding "<ph name="EXTENSION_NAME" />" het beheer oor jou instaanbedienerinstellings oorgeneem, wat beteken dat dit enigiets wat jy aanlyn doen, kan verander of breek of daarop kan inluister. As jy nie seker is hoekom hierdie verandering plaasgevind het nie, wil jy dit waarskynlik nie hê nie.</translation>
 <translation id="6197128521826316819">Skep QR-kode vir hierdie bladsy</translation>
-<translation id="6198102561359457428">Meld af en meld dan weer aan …</translation>
 <translation id="6198252989419008588">Verander PIN</translation>
 <translation id="6200047250927636406">Gooi lêer weg</translation>
 <translation id="6200151268994853226">Bestuur uitbreiding</translation>
@@ -6261,7 +6259,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7114648273807173152">Gaan na Instellings &gt; Gekoppelde toestelle &gt; Jou foon &gt; Smart Lock toe om Smart Lock te gebruik om by jou Google-rekening aan te meld.</translation>
 <translation id="7115361495406486998">Geen bereikbare kontakte nie</translation>
 <translation id="7117228822971127758">Probeer later weer</translation>
-<translation id="7117247127439884114">Meld weer aan …</translation>
 <translation id="711840821796638741">Wys bestuurde boekmerke</translation>
 <translation id="711902386174337313">Lees die lys van jou aangemelde toestelle</translation>
 <translation id="711985611146095797">Met hierdie bladsy kan jy jou aangemelde Google-rekeninge bestuur. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
@@ -6566,6 +6563,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7444970023873202833">Verken meer van jou herinneringe met Google Foto's</translation>
 <translation id="7444983668544353857">Deaktiveer <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Installeer programme outomaties</translation>
+<translation id="7449381494541372002">begin tans …</translation>
 <translation id="7449752890690775568">Verwyder wagwoord?</translation>
 <translation id="7450761244949417357">Maak tans <ph name="ALTERNATIVE_BROWSER_NAME" /> oop</translation>
 <translation id="7452166281927983300">Toegemaakte waarskuwings (<ph name="MUTED_PASSWORDS" />)</translation>

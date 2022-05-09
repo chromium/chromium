@@ -202,7 +202,6 @@
 <translation id="6063093106622310249">&amp;Chromiumত খোলক</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> Chromiumত যোগ কৰা হ’ল</translation>
 <translation id="608006075545470555">এই ব্ৰাউজাৰত কৰ্মস্থানৰ প্ৰ’ফাইল যোগ দিয়ক</translation>
-<translation id="608189560609172163">ছাইন ইন কৰোঁতে কিবা আসোঁৱাহ হোৱাৰ কাৰণে Chromiumএ আপোনাৰ ডেটা ছিংক কৰিব নোৱাৰিলে।</translation>
 <translation id="6096348254544841612">Chromium কাষ্টমাইজ আৰু নিয়ন্ত্ৰণ কৰক। আপডে'ট আছে।</translation>
 <translation id="6120345080069858279">Chromiumএ এই পাছৱৰ্ডটো আপোনাৰ Google একাউণ্টত ছেভ কৰিব৷ আপুনি ইয়াক মনত ৰাখিব নালাগে৷</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> ক্ষতিকাৰক বাবে Chromiumএ ইয়াক অৱৰোধ কৰিছে।</translation>
@@ -298,7 +297,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="7682601070171973634">Chromiumএ নতুন সুবিধাসমূহ অন্বেষণ কৰি আছে, যিবোৰে ছাইটসমূহক আপোনাৰ ডেটা কমকৈ ব্যৱহাৰ কৰি একেই ব্ৰাউজিঙৰ অভিজ্ঞতা প্ৰদান কৰিবলৈ দিয়ে</translation>
 <translation id="7686590090926151193">Chromium আপোনাৰ ডিফ'ল্ট ব্ৰাউজাৰ নহয়</translation>
 <translation id="7689606757190482937">আপোনাৰ সমগ্ৰ ডিভাইচতে Chromiumক ছিংক কৰি ব্যক্তিকৃত কৰক</translation>
-<translation id="7729447699958282447">আপোনাৰ ড‘মেইনত ছিংক কৰাৰ সুবিধা নথকাৰ বাবে Chromiumএ আপোনাৰ ডেটা ছিংক কৰিব নোৱাৰিলে।</translation>
 <translation id="7745317241717453663">এই কাৰ্যই এই ডিভাইচটোৰ পৰা আপোনাৰ ব্ৰাউজিং ডেটা মচি পেলাব। আপোনাৰ ডেটা পাছত পুনৰুদ্ধাৰ কৰিবলৈ Chromiumত <ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰক।</translation>
 <translation id="7747138024166251722">ইনষ্টলাৰটোৱে কোনো অস্থায়ী ডাইৰেক্ট'ৰী সৃষ্টি কৰিব নোৱাৰিলে। ছফ্টৱেৰ ইনষ্টল কৰিবলৈ অনুগ্ৰহ কৰি খালী ঠাই আৰু লগতে অনুমতি আছেনে নাই পৰীক্ষা কৰক।</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -343,7 +341,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8713679423359107094">আপুনি Chromiumৰ আটাইবোৰ ৱিণ্ড’ বন্ধ কৰিলে কুকি আৰু ছাইটৰ ডেটা স্বয়ংক্ৰিয়ভাৱে মচা হয়</translation>
 <translation id="8796443464227412154">আপুনি Chromium বন্ধ কৰিলে আপোনাক <ph name="BEGIN_BOLD" />বেছিভাগ ছাইটৰ পৰা ছাইন আউট কৰোৱা হ’ব<ph name="END_BOLD" />। যদি ছিংক অফ কৰা থাকে, আপোনাক লগতে <ph name="BEGIN_BOLD" />Googleৰ সেৱা আৰু Chromiumৰ পৰা ছাইন আউট কৰোৱা হ’ব<ph name="END_BOLD" />।</translation>
 <translation id="8796602469536043152">এই ছাইটটোত আপোনাৰ কেমেৰা আৰু মাইক্ৰ’ফ’ন এক্সেছ কৰিবলৈ Chromiumক অনুমতিৰ আৱশ্যক</translation>
-<translation id="8821041990367117597">আপোনাৰ একাউণ্টৰ ছাইন ইনৰ সবিশেষ তথ্যৰ ম্যাদ উকলি যোৱাৰ বাবে ক্ৰ’মিয়ামে আপোনাৰ ডেটা ছিংক কৰিব নোৱাৰিলে৷</translation>
 <translation id="8833697763442816810">ChromiumOS ছিষ্টেম</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />কি ডেটা ব্যৱহাৰ কৰা হয়:<ph name="END_BOLD" /> আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস, আপুনি এই ডিভাইচটোত Chromium ব্যৱহাৰ কৰি চোৱা ছাইটৰ ৰেকৰ্ড।</translation>
 <translation id="8862326446509486874">ছিষ্টেম-পৰ্যায়ৰ ইনষ্টলৰ বাবে আপোনাৰ সঠিক অধিকাৰ নাই। প্রশাসক হিচাপে ইনষ্টলাৰটো পুনৰ চলাই চাওক।</translation>

@@ -304,6 +304,7 @@
 <translation id="2834813915651407382">শেহতীয়াকৈ খোলা হৈছিল</translation>
 <translation id="2841907151129139818">টেবলেট ম’ডলৈ সলনি হ’ল</translation>
 <translation id="2844169650293029770">USB-C ডিভাইচ (বাওঁফালৰ সন্মুখৰ পর্ট)</translation>
+<translation id="2848120746144143659">সম্পূৰ্ণ স্ক্ৰীনৰ স্ক্ৰীনশ্বট ল’বলৈ এণ্টাৰ টিপক</translation>
 <translation id="2849936225196189499">জটিল</translation>
 <translation id="2860184359326882502">আটাইতকৈ ভালদৰে মিলা</translation>
 <translation id="2865888419503095837">নেটৱৰ্কৰ তথ্য</translation>
@@ -482,6 +483,7 @@
 <translation id="3846575436967432996">নেটৱৰ্কৰ বিষয়ে কোনো তথ্য নাই</translation>
 <translation id="385051799172605136">উভতি যাওক</translation>
 <translation id="385300504083504382">আৰম্ভণি</translation>
+<translation id="3861651314799684201">সম্পূৰ্ণ স্ক্ৰীন ৰেকৰ্ড কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="3886872229787704059">আজি খুলিছে</translation>
 <translation id="3891340733213178823">ছাইন আউট কৰিবলৈ দুবাৰ Ctrl+Shift+Q টিপক।</translation>
 <translation id="3893630138897523026">ChromeVox (কথিত মতামত)</translation>
@@ -813,6 +815,7 @@
 <translation id="595202126637698455">কার্যদক্ষতা ট্ৰে’চ কৰাটো সক্ষম কৰা হৈছে</translation>
 <translation id="5955304353782037793">এপ্</translation>
 <translation id="5958529069007801266">নিৰীক্ষণত থকা ব্যৱহাৰকাৰী</translation>
+<translation id="5976112937189445008">ৱিণ্ড’ ৰেকৰ্ড কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="5977415296283489383">হেডফ’ন</translation>
 <translation id="5978382165065462689">ৰিম’ট সহায়কৰ জৰিয়তে আপোনাৰ স্ক্রীণৰ নিয়ন্ত্ৰণ শ্বেয়াৰ কৰি থকা হৈছে।</translation>
 <translation id="5980301590375426705">অতিথিৰ পৰা প্ৰস্থান</translation>
@@ -826,7 +829,6 @@
 <translation id="602472752137106327">আটাইবোৰ ডেস্ক ম'ডটোৰ পৰা ৱিণ্ড' দেখুৱাওক, ৰেডিঅ’ বুটাম বাছনি কৰা হ'ল</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" />ত কোনো অনুষ্ঠান নাই। ব্ৰাউজাৰটোত Google কেলেণ্ডাৰ খুলিবলৈ এণ্টাৰ টিপক।</translation>
-<translation id="6027952026115023659">আপোনাৰ <ph name="DEVICE_TYPE" />ত আপোনাৰ ফ’নৰ বাৰ্তা আদান-প্ৰদান কৰা এপ্‌ এক্সেছ কৰক</translation>
 <translation id="6030495522958826102">স্ক্ৰীনখনৰ তলৰ বাওঁফালৰ কোণটোলৈ মেনুখন নিয়া হৈছে।</translation>
 <translation id="6032620807120418574">পূৰ্ণ স্ক্ৰীন ৰেকৰ্ড কৰিবলৈ যিকোনো ঠাইত ক্লিক কৰক</translation>
 <translation id="6040071906258664830">মাইক্ৰ'ফ'ন ৰেকৰ্ড কৰক <ph name="STATE" /></translation>
@@ -976,7 +978,6 @@
 <translation id="6961121602502368900">কৰ্মস্থানৰ প্ৰ’ফাইলত নীৰৱ ফ’ন উপলব্ধ নহয়</translation>
 <translation id="6961840794482373852">কীব’ৰ্ডৰ শ্বৰ্টকাট অল্ট + আপ এৰ'টো সলনি হৈছে। পেজ আপ কীটো ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + আপ এৰ' টিপক।</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
-<translation id="6967933908874208731">আপোনাৰ <ph name="DEVICE_TYPE" />ত নিজৰ ফ’নৰ শেহতীয়া ফট’, মিডিয়া, জাননী আৰু বাৰ্তা আদান-প্ৰদান কৰা এপ্‌ চাওক</translation>
 <translation id="6972754398087986839">আৰম্ভ কৰক</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">সাধ্য সুবিধাসমূহ</translation>
@@ -1201,6 +1202,7 @@
 <translation id="8364673525741149932">Shelf Party ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">এটা বৰ্ণ আগলৈ যাওক</translation>
 <translation id="8371991222807690464">অতিথি ম’ডত পৰিধীয় আহিলাৰ কাৰ্যক্ষমতা সীমিত হ’ব পাৰে</translation>
+<translation id="8374601332003098278">আংশিক স্ক্ৰীন ৰেকৰ্ড কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="8375916635258623388">এই <ph name="DEVICE_NAME" /> আৰু আপোনাৰ ফ’ন স্বয়ংক্ৰিয়ভাৱে সংযোগ হ’ব</translation>
 <translation id="8380784334203145311">শুভৰাত্ৰি,</translation>
 <translation id="8382715499079447151">চোৱাৰ সুৰক্ষা</translation>
@@ -1253,6 +1255,7 @@
 <translation id="8653151467777939995">জাননীৰ ছেটিংসমূহ দেখুৱাওক। জাননী অন কৰা আছে</translation>
 <translation id="8660331759611631213">৭১ৰ বৰ্গমূল</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">আংশিক স্ক্ৰীনশ্বট ল’বলৈ এণ্টাৰ টিপক</translation>
 <translation id="8664753092453405566">নেটৱর্ক সূচী দেখুওৱাক। <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">আপোনাৰ ডিভাইচটো ছেট আপ কৰিবলৈ <ph name="NAME" /> খোলক</translation>
 <translation id="8676770494376880701">কম শক্তিযুক্ত চ্চাৰ্জাৰ সংযোগ কৰা হৈছে</translation>
@@ -1294,6 +1297,7 @@
 <translation id="8909138438987180327">বেটাৰী <ph name="PERCENTAGE" /> শতাংশত আছে।</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistantএ এই ভাষাটো ব্যৱহাৰ নকৰে।</translation>
+<translation id="8924458948354692166">ৱিণ্ড’ৰ স্ক্ৰীনশ্বট ল’বলৈ এণ্টাৰ টিপক</translation>
 <translation id="8926951137623668982">শ্বেল্ফ সদায় লুকাই থাকে</translation>
 <translation id="8936501819958976551">অক্ষম কৰা হৈছে</translation>
 <translation id="8938800817013097409">USB-C ডিভাইচ (পিছফালৰ সোঁফালৰ প’র্ট)</translation>

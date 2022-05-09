@@ -2879,7 +2879,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3748706263662799310">Mag-ulat ng bug</translation>
 <translation id="3750562496035670393">Na-save ng Chrome ang iyong password sa device na ito, pero puwede mong i-save na lang ito sa iyong Google Account. Pagkatapos ay magiging available rin ang lahat ng iyong password sa Google Account mo habang naka-sign in ka.</translation>
 <translation id="3752253558646317685">Utusan ang iyong anak na panatilihing nakaangat ang kanyang daliri para ma-save ang fingerprint</translation>
-<translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">I-store nang isang beses. Gamitin kahit saan</translation>
 <translation id="3755411799582650620">Maaari na rin ngayong i-unlock ng iyong <ph name="PHONE_NAME" /> ang <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="375636864092143889">Ginagamit ng site ang iyong mikropono</translation>
@@ -3779,7 +3778,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4633003931260532286">Kinakailangan ng extension ang "<ph name="IMPORT_NAME" />" na may minimum na bersyon na "<ph name="IMPORT_VERSION" />," ngunit ang bersyon na "<ph name="INSTALLED_VERSION" />" lang ang naka-install</translation>
 <translation id="4633757335284074492">I-back up sa Google Drive. Walang hirap na mag-restore ng data o lumipat ng device anumang oras. Kasama sa backup na ito ang data ng app. Ang mga backup ay ina-upload sa Google at ine-encrypt gamit ang password sa Google Account ng iyong anak.</translation>
 <translation id="4634575639321169635">I-set up ang device na ito para sa trabaho o personal na paggamit</translation>
-<translation id="4634771451598206121">Muling mag-sign in...</translation>
 <translation id="4635072447747973225">I-uninstall ang Crostini</translation>
 <translation id="4635398712689569051">Hindi available ang <ph name="PAGE_NAME" /> sa mga Bisitang user.</translation>
 <translation id="4636682061478263818">Mga file sa Drive</translation>
@@ -5314,7 +5312,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6196640612572343990">I-block ang mga third-party na cookie</translation>
 <translation id="6196854373336333322">Kinokontrol na ng extension na "<ph name="EXTENSION_NAME" />" ang iyong mga setting ng proxy, na ang ibig sabihin ay maaari nitong baguhin, sirain o alamin ang anumang bagay na gagawin mo online. Kung hindi ka sigurado kung bakit naganap ang pagbabagong ito, malamang ay hindi mo ito ginustong mangyari.</translation>
 <translation id="6197128521826316819">Gumawa ng QR Code para sa Page na ito</translation>
-<translation id="6198102561359457428">Mag-sign out pagkatapos ay mag-sign in muli...</translation>
 <translation id="6198252989419008588">Palitan ang PIN</translation>
 <translation id="6200047250927636406">I-discard ang file</translation>
 <translation id="6200151268994853226">Pamahalaan ang Extension</translation>
@@ -6263,7 +6260,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7114648273807173152">Para gamitin ang Smart Lock para mag-sign in sa iyong Google Account, pumunta sa Mga Setting &gt; Mga nakakonektang device &gt; Iyong telepono &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Walang maabot na contact</translation>
 <translation id="7117228822971127758">Pakisubukang muli sa ibang pagkakataon</translation>
-<translation id="7117247127439884114">Muling Mag-sign in...</translation>
 <translation id="711840821796638741">Ipakita ang Mga Pinamamahalaang Bookmark</translation>
 <translation id="711902386174337313">Basahin ang listahan ng iyong mga naka-sign in na device</translation>
 <translation id="711985611146095797">Binibigyang-daan ka ng page na ito na pamahalaan ang iyong mga naka-sign in na Google Account. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>

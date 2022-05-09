@@ -2858,7 +2858,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3748706263662799310">Informar un error</translation>
 <translation id="3750562496035670393">Chrome guardó tu contraseña en este dispositivo, pero puedes guardarla en tu Cuenta de Google. Así, todas las contraseñas guardadas en tu Cuenta de Google estarán disponibles cuando accedas.</translation>
 <translation id="3752253558646317685">Haz que tu hijo siga levantando el dedo para guardar la huella dactilar.</translation>
-<translation id="3752582316358263300">Aceptar</translation>
 <translation id="3753033997400164841">Almacena las contraseñas una vez y úsalas en todas partes</translation>
 <translation id="3755411799582650620">El <ph name="PHONE_NAME" /> ahora también puede desbloquear este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">El sitio está usando el micrófono</translation>
@@ -3756,7 +3755,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4633003931260532286">La extensión requiere "<ph name="IMPORT_NAME" />" con la versión "<ph name="IMPORT_VERSION" />" como mínimo, pero solo está instalada la versión "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4633757335284074492">Crea una copia de seguridad en Google Drive. Restablece datos o cambia de dispositivo en cualquier momento con facilidad. Se incluyen datos de las apps. Las copias de seguridad se encriptan con la contraseña de la Cuenta de Google de tu hijo y se suben a Google.</translation>
 <translation id="4634575639321169635">Configura este dispositivo para uso personal o laboral</translation>
-<translation id="4634771451598206121">Volver a acceder...</translation>
 <translation id="4635072447747973225">Desinstalar Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> no está disponible para los usuarios invitados.</translation>
 <translation id="4636682061478263818">Archivos de Drive</translation>
@@ -5288,7 +5286,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6196854373336333322">La extensión "<ph name="EXTENSION_NAME" />" tomó el control de la configuración de proxy, lo que significa que puede modificar, dañar o espiar cualquier actividad que lleves a cabo en línea. Si no sabes con certeza por qué se produjo este cambio, probablemente no lo desees.</translation>
 <translation id="6197128521826316819">Crear un código QR para esta página</translation>
-<translation id="6198102561359457428">Salir y volver a acceder</translation>
 <translation id="6198252989419008588">Cambiar PIN</translation>
 <translation id="6200047250927636406">Descartar archivo</translation>
 <translation id="6200151268994853226">Administrar extensión</translation>
@@ -6234,7 +6231,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7114648273807173152">Si quieres usar Smart Lock para acceder a tu Cuenta de Google, ve a Configuración &gt; Dispositivos conectados &gt; Tu teléfono &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">No hay contactos disponibles</translation>
 <translation id="7117228822971127758">Vuelve a intentarlo más tarde</translation>
-<translation id="7117247127439884114">Volver a acceder</translation>
 <translation id="711840821796638741">Mostrar favoritos administrados</translation>
 <translation id="711902386174337313">Leer la lista de los dispositivos a los que accediste</translation>
 <translation id="711985611146095797">Esta página te permite administrar tus Cuentas de Google a las que accediste. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>

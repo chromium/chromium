@@ -820,7 +820,6 @@
 <translation id="602472752137106327">모든 데스크의 창 표시, 라디오 버튼 선택됨</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />, 관리자가 관리함</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" />에 일정이 없습니다. 브라우저에서 Google Calendar를 열려면 Enter를 누르세요.</translation>
-<translation id="6027952026115023659"><ph name="DEVICE_TYPE" />에서 휴대전화의 메시지 앱에 액세스합니다.</translation>
 <translation id="6030495522958826102">메뉴가 화면 왼쪽 하단으로 이동했습니다.</translation>
 <translation id="6032620807120418574">전체 화면을 녹화하려면 아무 곳이나 클릭하세요.</translation>
 <translation id="6040071906258664830">마이크 녹음 <ph name="STATE" /></translation>
@@ -970,7 +969,6 @@
 <translation id="6961121602502368900">직장 프로필에서는 휴대전화 무음 설정을 사용할 수 없음</translation>
 <translation id="6961840794482373852">Alt + 위쪽 화살표 단축키가 변경되었습니다. Page Up 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 위쪽 화살표 키를 누르세요.</translation>
 <translation id="6965382102122355670">확인</translation>
-<translation id="6967933908874208731">휴대전화의 최근 사진, 미디어, 알림, 메시지 앱을 <ph name="DEVICE_TYPE" />에서 봅니다.</translation>
 <translation id="6972754398087986839">시작하기</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">접근성</translation>

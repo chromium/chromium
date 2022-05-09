@@ -202,7 +202,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="6063093106622310249">&amp;Otvoriť v prehliadači Chromium</translation>
 <translation id="6072279588547424923">Rozšírenie <ph name="EXTENSION_NAME" /> bolo pridané do prehliadača Chromium</translation>
 <translation id="608006075545470555">Pridanie pracovného profilu do tohto prehliadača</translation>
-<translation id="608189560609172163">Prehliadaču Chromium sa nepodarilo synchronizovať vaše údaje pre chybu prihlásenia.</translation>
 <translation id="6096348254544841612">Prispôsobte si prehliadač Chromium a ovládajte ho. K dispozícii je aktualizácia.</translation>
 <translation id="6120345080069858279">Chromium toto heslo uloží do vášho účtu Google. Nebudete si ho musieť pamätať.</translation>
 <translation id="6129621093834146363">Súbor <ph name="FILE_NAME" /> je nebezpečný, a preto ho prehliadač Chromium zablokoval.</translation>
@@ -298,7 +297,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7682601070171973634">Chromium skúma nové funkcie, ktoré umožňujú webom zobraziť rovnaké prostredie prehliadania s využitím menšieho počtu dát</translation>
 <translation id="7686590090926151193">Chromium nie je váš predvolený prehliadač</translation>
 <translation id="7689606757190482937">Synchronizujte a prispôsobte si Chromium v rôznych zariadeniach</translation>
-<translation id="7729447699958282447">Prehliadaču Chromium sa nepodarilo synchronizovať vaše údaje, pretože možnosť synchronizácie nie je pre vašu doménu k dispozícii.</translation>
 <translation id="7745317241717453663">Táto akcia odstráni zo zariadenia údaje prehliadania. Ak budete chcieť svoje údaje neskôr opäť načítať, prihláste sa do prehliadača Chromium ako <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Inštalátor nemohol vytvoriť dočasný priečinok. Skontrolujte úroveň zaplnenia disku a povolenie na inštaláciu softvéru.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
@@ -342,7 +340,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8713679423359107094">Keď zavriete všetky okná prehliadača Chromium, súbory cookie a dáta webov budú automaticky vymazané</translation>
 <translation id="8796443464227412154">Keď zavriete Chromium, systém vás <ph name="BEGIN_BOLD" />odhlási z väčšiny webov<ph name="END_BOLD" />. Ak je synchronizácia vypnutá, <ph name="BEGIN_BOLD" />odhlási vás aj zo služieb Googlu a prehliadača Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium potrebuje povolenie pre tento web na prístup k fotoaparátu a mikrofónu</translation>
-<translation id="8821041990367117597">Prehliadaču Chromium sa nepodarilo synchronizovať vaše údaje, pretože vaše prihlasovacie údaje účtu sú zastarané.</translation>
 <translation id="8833697763442816810">Systém Chromium OS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Aké údaje sa používajú:<ph name="END_BOLD" /> vaša história prehliadania, teda záznam webov, ktoré ste navštívili pomocou prehliadača Chromium v tomto zariadení.</translation>
 <translation id="8862326446509486874">Nemáte potrebné práva na inštaláciu na úrovni systému. Skúste inštalátor spustiť znova ako správca.</translation>

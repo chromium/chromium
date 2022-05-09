@@ -42,7 +42,6 @@
 <translation id="1698376642261615901">Google Chrome एक वेब ब्राउझर आहे जे वेब पेज आणि अ‍ॅप्स विजेच्या गतीने चालविते. ते जलद, स्थिर आणि वापरण्यास सोपे आहे. Google Chrome मध्ये तयार केलेल्या मालवेअर आणि फिशिंग संरक्षणासह वेब अधिक सुरक्षितपणे ब्राउझ करा.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome एका तासामध्ये पुन्हा लाँच होईल}other{Chrome # तासांमध्ये पुन्हा लाँच होईल}}</translation>
 <translation id="1734234790201236882">Chrome हा पासवर्ड तुमच्या Google खात्यामध्ये सेव्ह करेल. तुम्हाला लक्षात ठेवावा लागणार नाही.</translation>
-<translation id="174539241580958092">साइन इन करण्यात एरर आल्यामुळे Google Chrome तुमचा डेटा सिंक करू शकले नाही.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">तुम्ही तुमच्या <ph name="TARGET_DEVICE_NAME" /> वर Chrome मध्ये साइन इन केले असल्याची खात्री करा आणि त्यानंतर पुन्हा पाठवून पहा.</translation>
 <translation id="1812689907177901597">हे बंद करून, तुम्ही Chrome वर साइन इन न करता Gmail सारख्या Google साइटवर साइन इन करू शकता</translation>
@@ -73,7 +72,6 @@
 <translation id="235650106824528204">या प्रोफाइलच्या वापरादरम्यान जनरेट केला गेलेला कोणताही Chrome डेटा (जसे की बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्जची निर्मिती) कार्य प्रोफाइल अ‍ॅडमिनिस्ट्रेटरला हटवता येतो. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="2401189691232800402">ChromeOS सिस्टीम</translation>
-<translation id="2429317896000329049">आपल्या डोमेनसाठी सिंक उपलब्ध नसल्यामुळे Google Chrome तुमचा डेटा संकालित करू शकले नाही.</translation>
 <translation id="2467438592969358367">Google Chrome ला तुमचे पासवर्ड निर्यात करायचे आहेत. हे करू देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
 <translation id="2485422356828889247">अनइंस्टॉल करा</translation>
 <translation id="2534507159460261402">Google Pay (Chrome वर कॉपी केले)</translation>
@@ -293,7 +291,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7481213027396403996">Chrome ची सर्वात मजबूत सुरक्षा मिळवा</translation>
 <translation id="7486227612705979895">ॲड्रेस बारमध्ये सूचना देण्यासाठी Chrome तुमची ड्राइव्ह ॲक्सेस करेल</translation>
 <translation id="7535429826459677826">Google Chrome डेव्हलपर</translation>
-<translation id="7592736734348559088">तुमचे खाते साइन इन तपशील कालबाह्य झाल्यामुळे Google Chrome तुमचा डेटा संकालित करू शकले नाही.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Chrome मध्ये स्वागत आहे</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> नुसार, तुम्ही हे डिव्हाइस वापरण्यापूर्वी खालील सेवा अटी वाचणे आणि स्वीकारणे आवश्यक आहे. या अटी Google ChromeOS अटी यांचा विस्तार करत नाहीत, त्यामध्ये सुधारणा करत नाहीत किंवा त्या मर्यादित करत नाहीत.</translation>

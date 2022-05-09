@@ -43,7 +43,6 @@
 <translation id="1698376642261615901">Google Chrome е веб-прелистувач кој отвора веб-локации и апликации со светлосна брзина. Тој е брз, стабилен и лесен за користење. Побезбедно прелистувајте на интернет со заштита од злонамерен софтвер и кражба на идентитетот која е вградена во Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome ќе се рестартира по еден час}one{Chrome ќе се рестартира по # час}other{Chrome ќе се рестартира по # часа}}</translation>
 <translation id="1734234790201236882">Chrome ќе ја зачува лозинкава во вашата сметка на Google. Не мора да ја запомните.</translation>
-<translation id="174539241580958092">Google Chrome не може да ги синхронизира вашите податоци поради грешка во пријавувањето.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Проверете дали сте најавени на Chrome на <ph name="TARGET_DEVICE_NAME" /> и обидете се да испратите повторно.</translation>
 <translation id="1812689907177901597">Ако го исклучите ова, може да се најавувате на сајтови на Google, како што е Gmail, без да се најавите на Chrome</translation>
@@ -74,7 +73,6 @@
 <translation id="235650106824528204">Податоците на Chrome што се генерирани при користењето на овој профил (како на пример, создавање обележувачи, историја, лозинки и други поставки) може да се отстранат од страна на администраторот на работниот профил. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2401189691232800402">Систем Chrome OS</translation>
-<translation id="2429317896000329049">Google Chrome не може да ги синхронизира вашите податоци затоа што Sync не е достапен за вашиот домен.</translation>
 <translation id="2467438592969358367">Google Chrome сака да ги извезе вашите лозинки. Внесете ја лозинката за Windows за да го дозволите ова.</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
 <translation id="2534507159460261402">Google Pay (копирана во Chrome)</translation>
@@ -295,7 +293,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7481213027396403996">Добијте ја најсилната безбедност на Chrome</translation>
 <translation id="7486227612705979895">Chrome ќе пристапува до Drive за да дава предлози во лентата за адреси</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">Google Chrome не може да ги синхронизира вашите податоци бидејќи вашите информации за пријавување на сметката се застарени.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Добре дојдовте на Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> бара да ги прочитате и да ги прифатите следните „Услови за користење“ пред да го користите уредов. Овие услови не ги прошируваат, менуваат или ограничуваат „Условите на Google Chrome OS“.</translation>

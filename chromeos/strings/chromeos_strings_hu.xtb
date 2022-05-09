@@ -91,6 +91,7 @@
 <translation id="1801418420130173017">Sötét téma kikapcsolása</translation>
 <translation id="1807246157184219062">Világos</translation>
 <translation id="1827738518074806965">Galéria</translation>
+<translation id="1840835860961531162">Írásvédelem kikapcsolása</translation>
 <translation id="1851218745569890714">Videokonferencia</translation>
 <translation id="1852934301711881861">ChromeOS Flex telepítése</translation>
 <translation id="1856388568474281774">Lefelé nyíl</translation>
@@ -144,6 +145,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Kapcsolja be a Bluetooth-t a közeli eszközök felfedezéséhez</translation>
 <translation id="2346474577291266260">Kiváló (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Tovább</translation>
 <translation id="2360257214555822463">A rendszer <ph name="LINK_BEGIN" />nem jóváhagyott összetevőket<ph name="LINK_END" /> észlelt. Ha meg szeretné erősíteni az összetevők telepítését, most tegye meg.</translation>
 <translation id="2363636958541445404">Kapcsolja be a funkciót a képernyőkímélő-beállítások kiválasztásához</translation>
 <translation id="2364498172489649528">Sikeres ellenőrzés</translation>
@@ -172,7 +174,6 @@
 <translation id="2620436844016719705">Rendszer</translation>
 <translation id="2638662041295312666">Bejelentkezési kép</translation>
 <translation id="2640549051766135490">A következő album kiválasztva: <ph name="TITLE" /> <ph name="DESC" /></translation>
-<translation id="2695514675076754339">Adja meg a nyolcjegyű feloldási kódot</translation>
 <translation id="2712812801627182647">TLS-hitelesítési kulcs</translation>
 <translation id="2717139507051041123">Sötét szín mód engedélyezése</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -274,6 +275,7 @@
 <translation id="3941014780699102620">Nem sikerült a gazdagép feloldása</translation>
 <translation id="3942420633017001071">Diagnosztika</translation>
 <translation id="3954678691475912818">Az eszköz típusa ismeretlen.</translation>
+<translation id="3958703339436883942">Felkészülés az újraindításra…</translation>
 <translation id="3966286471246132217">Pontosabb eredmény érdekében zárja be az összes alkalmazást, amíg a teszt befejeződik.</translation>
 <translation id="3967822245660637423">A letöltés sikeres</translation>
 <translation id="3969602104473960991">ChromeOS-jelszó módosítva</translation>
@@ -422,6 +424,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5275828089655680674">Rutinok újrafuttatása</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">verzió: <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">Kapcsolja ki az írásvédelmet a következő képernyőre lépéshez. Az eszközgyártó támogatási oldalán megtalálhatja a kapcsolódó utasításokat.</translation>
 <translation id="5300814202279832142">Ablak áthelyezése a kívánt asztalra</translation>
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5308380583665731573">Csatlakozás</translation>
@@ -473,6 +476,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="583281660410589416">Ismeretlen</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Otthoni szolgáltató kódja</translation>
+<translation id="5856532218727053281">A rendszer újraindul az írásvédelmi állapot ellenőrzését követően</translation>
 <translation id="5859603669299126575">Művészeti album</translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
 <translation id="5860491529813859533">Bekapcsolás</translation>

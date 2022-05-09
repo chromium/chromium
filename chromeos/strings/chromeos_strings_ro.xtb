@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Pentru a descoperi dispozitivele din apropiere, activează Bluetooth</translation>
 <translation id="2346474577291266260">Excelentă (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Continuă</translation>
 <translation id="2360257214555822463">S-au detectat <ph name="LINK_BEGIN" />componente necalificate<ph name="LINK_END" />. Dacă alegi să confirmi că s-au instalat, fă acest lucru acum.</translation>
 <translation id="2363636958541445404">Activează funcția ca să selectezi opțiuni pentru screensaver</translation>
 <translation id="2364498172489649528">Reușită</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2638662041295312666">Imagine de autentificare</translation>
 <translation id="2640549051766135490">S-a selectat albumul <ph name="TITLE" /> <ph name="DESC" /></translation>
-<translation id="2695514675076754339">Introdu codul de deblocare format din 8 caractere</translation>
 <translation id="2712812801627182647">Cheia de autentificare TLS</translation>
 <translation id="2717139507051041123">Activează modul de culoare închisă</translation>
 <translation id="2740531572673183784">OK</translation>

@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Очищення</translation>
 <translation id="2338501278241028356">Щоб знайти пристрої поблизу, увімкніть Bluetooth</translation>
 <translation id="2346474577291266260">Чудовий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Продовжити</translation>
 <translation id="2360257214555822463">Виявлено <ph name="LINK_BEGIN" />неналежні компоненти<ph name="LINK_END" />. Якщо ви знаєте, що їх встановлено, підтвердьте це зараз.</translation>
 <translation id="2363636958541445404">Увімкніть функцію, щоб вибрати параметри заставки</translation>
 <translation id="2364498172489649528">Виконано</translation>
@@ -172,7 +173,6 @@
 <translation id="2620436844016719705">Система</translation>
 <translation id="2638662041295312666">Зображення облікового запису</translation>
 <translation id="2640549051766135490">Вибрано альбом "<ph name="TITLE" />" з описом "<ph name="DESC" />"</translation>
-<translation id="2695514675076754339">Введіть 8-значний код розблокування</translation>
 <translation id="2712812801627182647">Ключ автентифікації TLS</translation>
 <translation id="2717139507051041123">Увімкнути режим темних кольорів</translation>
 <translation id="2740531572673183784">OK</translation>

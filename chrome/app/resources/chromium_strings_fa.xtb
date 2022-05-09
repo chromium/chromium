@@ -199,7 +199,6 @@
 <translation id="6063093106622310249">‏&amp;باز کردن در Chromium</translation>
 <translation id="6072279588547424923">‏<ph name="EXTENSION_NAME" /> به Chromium اضافه شد</translation>
 <translation id="608006075545470555">افزودن نمایه کاری به این مرورگر</translation>
-<translation id="608189560609172163">‏به دلیل وجود خطا در ورود به سیستم، Chromium قادر به همگام‌سازی داده‌های شما نبود.</translation>
 <translation id="6096348254544841612">‏سفارشی کردن و کنترل Chromium. به‌روزرسانی‌ در دسترس است.</translation>
 <translation id="6120345080069858279">‏Chromium این گذرواژه را در حساب Google شما ذخیره می‌کند. لازم نیست آن را به خاطر بسپارید.</translation>
 <translation id="6129621093834146363">‏<ph name="FILE_NAME" /> خطرناک است، بنابراین Chromium آن را مسدود کرده است.</translation>
@@ -294,7 +293,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="7682601070171973634">‏Chromium ویژگی‌های جدیدی را کاوش می‌کند که به سایت‌ها اجازه می‌دهد با مصرف داده کمتر، همان تجربه مرور را ارائه دهند</translation>
 <translation id="7686590090926151193">‏Chromium مرورگر پیش‌فرض شما نیست</translation>
 <translation id="7689606757190482937">‏Chromium را در همه دستگاه‌هایتان همگام‌سازی و شخصی‌سازی کنید</translation>
-<translation id="7729447699958282447">‏Chromium قادر به همگام‌سازی داده‌های شما نبود زیرا همگام‌سازی برای دامنه شما قابل دسترسی نیست.</translation>
 <translation id="7745317241717453663">‏این کار داده‌های محصول مرورتان را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> به سیستم Chromium وارد شوید.</translation>
 <translation id="7747138024166251722">نصب‌کننده نتوانست دایرکتوری موقت ایجاد کند. لطفاً فضای خالی دیسک و اجازه نصب نرم‌افزار را بررسی کنید.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -339,7 +337,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8713679423359107094">‏با بستن همه پنجره‌های Chromium، کوکی‌ها و داده‌های سایت به‌طور خودکار پاک می‌شوند.</translation>
 <translation id="8796443464227412154">‏وقتی Chromium را می‌بندید، <ph name="BEGIN_BOLD" />از سیستم اکثر سایت‌ها خارج می‌شوید<ph name="END_BOLD" />. اگر همگام‌سازی خاموش باشد، از <ph name="BEGIN_BOLD" />از سیستم Chromium و سرویس‌های Google نیز خارج می‌شوید<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">‏Chromium به مجوز دسترسی به دوربین و میکروفون برای این سایت نیاز دارد</translation>
-<translation id="8821041990367117597">‏Chromium قادر به همگام‌سازی داده‌های شما نبود زیرا جزئیات ورود به حساب شما به‌روز نیست.</translation>
 <translation id="8833697763442816810">‏سیستم ChromiumOS</translation>
 <translation id="8846118132221683440">‏<ph name="BEGIN_BOLD" />انواع داده‌هایی که استفاده می‌شود:<ph name="END_BOLD" /> سابقه مرور شما، سابقه سایت‌هایی که بااستفاده از Chromium در این دستگاه از آن‌ها بازدید کرده‌اید.</translation>
 <translation id="8862326446509486874">شما حقوق لازم برای نصب در سطح سیستم را ندارید. دوباره به‌عنوان سرپرست نصب‌کننده را اجرا کنید.</translation>

@@ -42,7 +42,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1698376642261615901">Google Chrome is a web browser that runs web pages and applications with lightning speed. It's fast, stable and easy to use. Browse the web more safely with malware and phishing protection built into Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome will relaunch in an hour}other{Chrome will relaunch in # hours}}</translation>
 <translation id="1734234790201236882">Chrome will save this password in your Google Account. You won’t have to remember it.</translation>
-<translation id="174539241580958092">Google Chrome could not sync your data due to an error signing in.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Make sure that you are signed in to Chrome on your <ph name="TARGET_DEVICE_NAME" /> and then try sending again.</translation>
 <translation id="1812689907177901597">By turning this off, you can sign in to Google sites such as Gmail, without signing in to Chrome</translation>
@@ -73,7 +72,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="235650106824528204">Any Chrome data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by the work profile administrator. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2401189691232800402">Chrome OS system</translation>
-<translation id="2429317896000329049">Google Chrome could not sync your data because Sync is not available for your domain.</translation>
 <translation id="2467438592969358367">Google Chrome wants to export your passwords. Type your Windows password to allow this.</translation>
 <translation id="2485422356828889247">Uninstall</translation>
 <translation id="2534507159460261402">Google Pay (copied to Chrome)</translation>
@@ -294,7 +292,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7481213027396403996">Get Chrome's strongest security</translation>
 <translation id="7486227612705979895">Chrome will access your Drive to make suggestions in the address bar</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">Google Chrome could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626032353295482388">Welcome to Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google Chrome OS terms.</translation>

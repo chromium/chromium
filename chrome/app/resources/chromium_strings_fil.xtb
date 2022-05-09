@@ -202,7 +202,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="6063093106622310249">&amp;Buksan sa Chromium</translation>
 <translation id="6072279588547424923">Naidagdag na ang <ph name="EXTENSION_NAME" /> sa Chromium</translation>
 <translation id="608006075545470555">Magdagdag ng Profile sa Trabaho sa browser na ito</translation>
-<translation id="608189560609172163">Hindi mai-sync ng Chromium ang iyong data dahil sa isang error sa pagsa-sign in.</translation>
 <translation id="6096348254544841612">I-customize at kontrolin ang Chromium. May available na update.</translation>
 <translation id="6120345080069858279">Ise-save ng Chromium ang password na ito sa iyong Google Account. Hindi mo na ito kailangang tandaan.</translation>
 <translation id="6129621093834146363">Mapanganib ang <ph name="FILE_NAME" />, kaya na-block ito ng Chromium.</translation>
@@ -298,7 +297,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="7682601070171973634">Nag-e-explore ang Chromium ng mga bagong feature na nagbibigay-daan sa mga site na ihatid ang parehong karanasan sa pag-browse nang hindi gaanong gumagamit ng iyong data</translation>
 <translation id="7686590090926151193">Hindi Chromium ang iyong default na browser</translation>
 <translation id="7689606757190482937">I-sync at i-personalize ang Chromium sa lahat ng iyong device</translation>
-<translation id="7729447699958282447">Hindi mai-sync ng Chromium ang iyong data dahil hindi available ang Pag-sync para sa iyong domain.</translation>
 <translation id="7745317241717453663">Ide-delete nito ang iyong data sa pag-browse sa device na ito. Upang makuha ang iyong data sa ibang pagkakataon, mag-sign in sa Chromium bilang <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Hindi makalikha ng pansamantalang direktoryo ang installer. Paki-suri para sa puwang sa disk na walang laman at pahintulot upang i-install ang software.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -343,7 +341,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8713679423359107094">Kapag isinara mo ang lahat ng window ng Chromium, awtomatikong maki-clear ang cookies at data ng site</translation>
 <translation id="8796443464227412154"><ph name="BEGIN_BOLD" />Masa-sign out ka sa karamihan ng mga site<ph name="END_BOLD" /> kapag isinara mo ang Chromium. Kung naka-off ang pag-sync, <ph name="BEGIN_BOLD" />masa-sign out ka sa mga serbisyo ng Google at Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Kailangan ng Chromium ng pahintulot na i-access ang iyong camera at mikropono para sa site na ito</translation>
-<translation id="8821041990367117597">Hindi mai-sync ng Chromium ang iyong data dahil hindi napapanahon ang mga detalye sa pag-sign in ng iyong account.</translation>
 <translation id="8833697763442816810">ChromiumOS System</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Anong data ang ginagamit:<ph name="END_BOLD" /> Iyong history ng pag-browse, record ng mga site na binisita mo gamit ang Chromium sa device na ito.</translation>
 <translation id="8862326446509486874">Wala kang naaangkop na mga karapatan para sa pag-install sa antas ng system. Subukan muling patakbuhin ang installer bilang Administrator.</translation>

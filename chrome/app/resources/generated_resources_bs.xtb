@@ -971,6 +971,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1892341345406963517">Zdravo, <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Drugi jezici</translation>
 <translation id="1895658205118569222">Isključivanje</translation>
+<translation id="1897120393475391208">Koristite snažnu zaporku</translation>
 <translation id="1900305421498694955">Aplikacije iz Google Playa mogu tražiti puni pristup sistemu fajlova za čitanje i zapisivanje fajlova na vašim vanjskim uređajima za pohranu. Fajlovi i folderi koji su kreirani na uređaju vidljivi su svakome ko koristi vanjski disk. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Odaberi &amp;sve</translation>
 <translation id="1901396183631570154">Chrome nije uspio sačuvati ove lozinke na vaš Google račun. I dalje ih možete sačuvati na ovom uređaju.</translation>
@@ -2874,7 +2875,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3748706263662799310">Prijava programske pogreške</translation>
 <translation id="3750562496035670393">Chrome je sačuvao vašu lozinku na ovaj uređaj, ali je umjesto toga možete sačuvati na svoj Google račun. Nakon toga će sve lozinke na vašem Google računu također biti dostupne dok ste prijavljeni.</translation>
 <translation id="3752253558646317685">Vaše dijete treba nastaviti podizati prst da sačuva otisak prsta</translation>
-<translation id="3752582316358263300">Uredu...</translation>
 <translation id="3753033997400164841">Pohranite jednom. Koristite svugdje</translation>
 <translation id="3755411799582650620">Vaš telefon <ph name="PHONE_NAME" /> sada može otključati i ovaj uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Web lokacija koristi vaš mikrofon</translation>
@@ -3773,7 +3773,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4633003931260532286">Minimalna verzija za "<ph name="IMPORT_NAME" />" koju zahtijeva ekstenzija je "<ph name="IMPORT_VERSION" />", ali je instalirana samo verzija "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4633757335284074492">Izradite sigurnosne kopije na Google disku. Jednostavno u svakom trenutku vratite podatke ili promijenite uređaj. Ova sigurnosna kopija obuhvata podatke aplikacija. Sigurnosne kopije se otpremaju na Google i šifriraju pomoću lozinke Google računa vašeg djeteta.</translation>
 <translation id="4634575639321169635">Postavite ovaj uređaj za rad ili ličnu upotrebu</translation>
-<translation id="4634771451598206121">Prijavite se ponovo...</translation>
 <translation id="4635072447747973225">Deinstalirajte Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> nije dostupan gostima.</translation>
 <translation id="4636682061478263818">Fajlovi Diska</translation>
@@ -5305,7 +5304,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće trećih strana</translation>
 <translation id="6196854373336333322">Ekstenzija "<ph name="EXTENSION_NAME" />" je preuzela kontrolu nad postavkama vašeg proksi servera, što znači da može promijeniti, prekinuti ili prisluškivati sve što radite na mreži. Ako niste sigurni zašto je došlo do ove promjene, vjerovatno je i ne želite.</translation>
 <translation id="6197128521826316819">Kreiraj QR kôd za ovu stranicu</translation>
-<translation id="6198102561359457428">Odjavite se i ponovo se prijavite…</translation>
 <translation id="6198252989419008588">Promijeni PIN</translation>
 <translation id="6200047250927636406">Odbaci fajl</translation>
 <translation id="6200151268994853226">Upravljajte ekstenzijom</translation>
@@ -6255,7 +6253,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7114648273807173152">Da koristite Pametno zaključavanja prilikom prijave na Google račun, idite na Postavke &gt; Povezani uređaji &gt; Vaš telefon &gt; Pametno zaključavanje.</translation>
 <translation id="7115361495406486998">Nema nijednog dostupnog kontakta</translation>
 <translation id="7117228822971127758">Pokušajte ponovo kasnije</translation>
-<translation id="7117247127439884114">Prijavi se ponovo...</translation>
 <translation id="711840821796638741">Prikaži upravljane oznake</translation>
 <translation id="711902386174337313">Čitanje liste prijavljenih uređaja</translation>
 <translation id="711985611146095797">Ova stranica vam omogućava da upravljate Google računima na koje ste prijavljeni. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -6560,6 +6557,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7444970023873202833">Istražite više uspomena na Google Fotografijama</translation>
 <translation id="7444983668544353857">Onemogući <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Instalirajte aplikacije automatski</translation>
+<translation id="7449381494541372002">pokretanje…</translation>
 <translation id="7449752890690775568">Ukloniti lozinku?</translation>
 <translation id="7450761244949417357">Otvaranje u pregledniku <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7452166281927983300">Odbačena upozorenja (<ph name="MUTED_PASSWORDS" />)</translation>

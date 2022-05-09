@@ -200,7 +200,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="6063093106622310249">Megnyitás Chromiumban</translation>
 <translation id="6072279588547424923">A(z) <ph name="EXTENSION_NAME" /> hozzá lett adva a Chromiumhoz</translation>
 <translation id="608006075545470555">Munkaprofil hozzáadása a böngészőhöz</translation>
-<translation id="608189560609172163">A Chromium egy bejelentkezési hiba miatt nem tudta szinkronizálni az adatokat.</translation>
 <translation id="6096348254544841612">A Chromium személyre szabása és vezérlése. Van rendelkezésre álló frissítés.</translation>
 <translation id="6120345080069858279">A Chromium ezt a jelszót Google-fiókjába menti. Nem kell megjegyeznie.</translation>
 <translation id="6129621093834146363">A(z) <ph name="FILE_NAME" /> veszélyes, ezért a Chromium letiltotta.</translation>
@@ -294,7 +293,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7682601070171973634">A Chromium olyan funkciók fejlesztésén dolgozik, amelyek ugyanazt a böngészési élményt nyújtják kevesebb adatfelhasználás mellett</translation>
 <translation id="7686590090926151193">A Chromium nem az alapértelmezett böngésző</translation>
 <translation id="7689606757190482937">Szinkronizálhatja és személyre szabhatja a Chromiumot minden eszközén</translation>
-<translation id="7729447699958282447">A Chromium nem tudta szinkronizálni az adatait, mert a szinkronizálás nem érhető el az Ön domainjénél.</translation>
 <translation id="7745317241717453663">Ezzel az eszközön lévő összes böngészési adat törlődik. Az adatok későbbi lekéréséhez jelentkezzen be a Chromiumba a következő e-mail-címmel: <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">A telepítőnek nem sikerült létrehoznia az ideiglenes könyvtárat. Kérjük ellenőrizze, hogy van-e elegendő hely a lemezen, és rendelkezik-e engedéllyel a szoftvertelepítésre.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
@@ -339,7 +337,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8713679423359107094">A Chromium ablakainak bezárásakor a cookie-kat és webhelyadatokat automatikusan törli a rendszer.</translation>
 <translation id="8796443464227412154">A <ph name="BEGIN_BOLD" />legtöbb webhelyről kijelentkezteti<ph name="END_BOLD" /> Önt a rendszer a Chromium bezárásakor. Ha pedig a szinkronizálás is ki van kapcsolva, akkor <ph name="BEGIN_BOLD" />a Google-szolgáltatásokból és a Chromiumból is megtörténik a kijelentkezés<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">A Chromiumnak engedélyre van szüksége ahhoz, hogy hozzáférjen a kamerához és a mikrofonhoz ennél a webhelynél</translation>
-<translation id="8821041990367117597">A Chromium nem tudta szinkronizálni az adatokat, mert a fiók bejelentkezési adatai elavultak.</translation>
 <translation id="8833697763442816810">ChromiumOS rendszer</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />A felhasznált adatok:<ph name="END_BOLD" /> Böngészési előzményei, az Ön által az ezen az eszközön használt Chromiumban felkeresett webhelyek jegyzéke.</translation>
 <translation id="8862326446509486874">Nincsenek meg a megfelelő jogai a rendszerszintű telepítéshez. Indítsa újra a telepítőt rendszergazdaként.</translation>

@@ -202,7 +202,6 @@
 <translation id="6063093106622310249">በChromium ውስጥ &amp;ክፈት</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> ወደ Chromium ታክሏል።</translation>
 <translation id="608006075545470555">የስራ መገለጫ ወደዚህ አሳሽ ያክሉ</translation>
-<translation id="608189560609172163">በመለያ ሲገባ በነበረ ስህተት ምክንያት Chromium ውሂብዎን ማመሳሰል አልቻለም።</translation>
 <translation id="6096348254544841612">Chromiumን ያብጁትና ይቆጣጠሩት። ዝማኔ ይገኛል።</translation>
 <translation id="6120345080069858279">Chromium ይህን የይለፍ ቃል በእርስዎ የGoogle መለያ ውስጥ ያስቀምጠዋል። ማስታወስ አይኖርብዎትም።</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> አደገኛ ነው፣ ስለዚህ Chromium አግዶታል።</translation>
@@ -297,7 +296,6 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="7682601070171973634">Chromium ጣቢያዎች ያነሰ ውሂብዎን ተጠቅመው ተመሳሳይ የአሰሳ ተሞክሮ እንዲያቀርቡ የሚያስችሏቸውን አዳዲስ ባህሪያትን እያሰሰ ነው።</translation>
 <translation id="7686590090926151193">Chromium ነባሪ አሳሽዎ አይደለም</translation>
 <translation id="7689606757190482937">በመላ መሣሪያዎችዎ ላይ Chromiumን ያሳምሩ እና ግላዊነት ያላብሱ</translation>
-<translation id="7729447699958282447">ማመሳሰል ለጎራዎ ስለማይገኝ Chromium ውሂብዎን ማመሳሰል አይችልም።</translation>
 <translation id="7745317241717453663">ይሄ የአሰሳ ውሂብዎን ከዚህ መሣሪያ ይሰርዘዋል። ውሂብዎን በኋላ ላይ ሰርስረው ለማውጣት እንደ <ph name="USER_EMAIL" /> ሆነው ወደ Chromium ይግቡ።</translation>
 <translation id="7747138024166251722">ጫኝው ጊዜያዊ ማውጫ መፍጠር አልቻለም። እባክዎ ነፃ የዲስክ ቦታ እና ሶፍትዌር የመጫን ፍቃድ እንዳለ ይፈትሹ።</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -341,7 +339,6 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8713679423359107094">ሁሉንም የChromium መስኮቶች ሲዘጉ፣ ኩኪዎች እና የጣቢያ ውሂብ በራስሰር ይጸዳሉ</translation>
 <translation id="8796443464227412154">Chromiumን ሲዘጉ <ph name="BEGIN_BOLD" />ከብዙ ጣቢያዎች ዘግተው እንዲወጡ<ph name="END_BOLD" /> ይደረጋሉ። ማስመር ጠፍቶ ከሆነ <ph name="BEGIN_BOLD" />ከGoogle አገልግሎቶች እና Chromium<ph name="END_BOLD" /> ዘግተው እንዲወጡ ይደረጋሉ።</translation>
 <translation id="8796602469536043152">Chromium ለዚህ ጣቢያ የእርስዎን ካሜራ እና ማይክሮፎን ለመድረስ ፈቃድ ያስፈልገዋል</translation>
-<translation id="8821041990367117597">የመለያ መግቢያ ዝርዝሮችዎ ጊዜ ያለፈባቸው ስለሆኑ Chromium ውሂብዎን ማመሳሰል አልቻለም።</translation>
 <translation id="8833697763442816810">የChromiumOS ስርዓት</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />ምን ውሂብ ጥቅም ላይ እንደሚውል፦<ph name="END_BOLD" /> የአሰሳ ታሪክዎ፣ በዚህ መሣሪያ ላይ Chromiumን ተጠቅመው የጎበኟቸው የጣቢያዎች መዝገብ።</translation>
 <translation id="8862326446509486874">ለስርዓተ-ደረጃ ጭነት ተገቢ መብቶች የሉዎትም። ጫኚውን እንደ አስተዳዳሪ በማሄድ እንደገና ይሞክሩ።</translation>

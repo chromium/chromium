@@ -202,7 +202,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6063093106622310249">&amp;Hape në Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> është shtuar te Chromium</translation>
 <translation id="608006075545470555">Shto profilin e punës në këtë shfletues</translation>
-<translation id="608189560609172163">Chromium nuk mund të sinkronizonte të dhënat e tua për shkak të një gabimi gjatë identifikimit.</translation>
 <translation id="6096348254544841612">Personalizo dhe kontrollo Chromium. Ofrohet përditësim.</translation>
 <translation id="6120345080069858279">Chromium do ta ruajë këtë fjalëkalim në llogarinë tënde të Google. Nuk është nevoja ta mbash mend.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> është i rrezikshëm, prandaj Chromium e ka bllokuar.</translation>
@@ -297,7 +296,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7682601070171973634">Chromium po eksploron veçori të reja që u lejojnë sajteve të ofrojnë të njëjtën përvojë shfletimi duke përdorur më pak nga të dhënat e tua</translation>
 <translation id="7686590090926151193">Chromium nuk është shfletuesi i parazgjedhur</translation>
 <translation id="7689606757190482937">Sinkronizo dhe personalizo Chromium nëpër pajisjet e tua</translation>
-<translation id="7729447699958282447">Chromium nuk mundi të sinkronizonte të dhënat e tua, sepse "Sinkronizimi" nuk ofrohet për domenin tënd.</translation>
 <translation id="7745317241717453663">Kjo do të fshijë të dhënat e shfletimit nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chromium si <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Instaluesi nuk mund të krijonte një direktori të përkohshme. Kontrollo për hapësirë të lirë në disk dhe për lejen për të instaluar softuerin.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -342,7 +340,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8713679423359107094">Kur të mbyllësh të gjitha dritaret e Chromium, kukit dhe të dhënat e sajtit do të pastrohen automatikisht</translation>
 <translation id="8796443464227412154">Do të <ph name="BEGIN_BOLD" />dalësh nga shumica e sajteve<ph name="END_BOLD" /> kur të mbyllësh Chromium. Nëse sinkronizimi është joaktiv, do të <ph name="BEGIN_BOLD" />dalësh gjithashtu nga shërbimet e Google dhe nga Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium ka nevojë për leje për t'u qasur te kamera dhe mikrofoni yt për këtë sajt</translation>
-<translation id="8821041990367117597">Chromium nuk mund të sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>
 <translation id="8833697763442816810">Sistemi ChromiumOS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Çfarë të dhënash përdoren:<ph name="END_BOLD" /> Historiku yt i shfletimit, regjistri i sajteve që ke vizituar duke përdorur Chromium në këtë pajisje.</translation>
 <translation id="8862326446509486874">Nuk ke të drejtat e duhura për instalimin në nivel sistemi. Provo ta ekzekutosh përsëri instaluesin si Administrator.</translation>

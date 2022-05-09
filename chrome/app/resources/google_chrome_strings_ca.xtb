@@ -38,7 +38,6 @@
 <translation id="1698376642261615901">Google Chrome és un navegador web que executa pàgines web i aplicacions a gran velocitat. És ràpid, estable i fàcil d'utilitzar. Navega d'una manera més segura pel web amb la protecció integrada contra programari maliciós i llocs de pesca de credencials a Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome es reiniciarà d'aquí a 1 hora}other{Chrome es reiniciarà d'aquí a # hores}}</translation>
 <translation id="1734234790201236882">Chrome desarà aquesta contrasenya al Compte de Google. No caldrà que la recordis.</translation>
-<translation id="174539241580958092">Google Chrome no ha pogut sincronitzar les teves dades a causa d'un error en iniciar la sessió.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Assegura't que tinguis la sessió iniciada a Chrome a <ph name="TARGET_DEVICE_NAME" /> i prova d'enviar-ho de nou.</translation>
 <translation id="1812689907177901597">En desactivar aquesta opció, pots iniciar la sessió en llocs web de Google, com ara Gmail, sense iniciar la sessió a Chrome</translation>
@@ -69,7 +68,6 @@
 <translation id="235650106824528204">L'administrador del perfil de treball pot suprimir qualsevol dada de Chrome que es generi durant l'ús d'aquest perfil, com ara les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2401189691232800402">Sistema Chrome OS</translation>
-<translation id="2429317896000329049">Google Chrome no ha pogut sincronitzar les teves dades perquè la sincronització no està disponible per al teu domini.</translation>
 <translation id="2467438592969358367">Google Chrome vol exportar les teves contrasenyes. Escriu la contrasenya de Windows per permetre-ho.</translation>
 <translation id="2485422356828889247">Desinstal·la</translation>
 <translation id="2534507159460261402">Google Pay (copiada a Chrome)</translation>
@@ -286,7 +284,6 @@
 <translation id="7481213027396403996">Obtén la seguretat més efectiva de Chrome</translation>
 <translation id="7486227612705979895">Chrome accedirà a Drive per fer suggeriments a la barra d'adreces</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">Google Chrome no ha pogut sincronitzar les teves dades perquè els detalls d'inici de sessió del compte no estan actualitzats.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Et donem la benvinguda a Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> requereix que llegeixis i acceptis les condicions del servei següents abans d'utilitzar el dispositiu. Aquestes condicions no amplien, modifiquen ni limiten les condicions de Google Chrome OS.</translation>

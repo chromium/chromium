@@ -820,7 +820,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="602472752137106327">Sýna glugga á öllum skrifborðum, hringhnappur valinn</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />, stjórnað af kerfisstjóra</translation>
 <translation id="6027518778343897451">Enginn viðburður er skráður <ph name="CURRENT_MONTH_DAY" />. Ýttu á Enter til að opna Google dagatal í vafranum.</translation>
-<translation id="6027952026115023659">Opnaðu skilaboðaforrit símans í <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Valmynd færð neðst í vinstra horn skjásins.</translation>
 <translation id="6032620807120418574">Smelltu hvar sem er til að taka upp á öllum skjánum</translation>
 <translation id="6040071906258664830">Upptaka hljóðnema <ph name="STATE" /></translation>
@@ -970,7 +969,6 @@ Ný uppsetning</translation>
 <translation id="6961121602502368900">Ekki er hægt að slökkva á hljóði símans í vinnusniði</translation>
 <translation id="6961840794482373852">Flýtilyklinum „Alt + ör upp“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + ör upp til að nota Page Up-lykilinn.</translation>
 <translation id="6965382102122355670">Í lagi</translation>
-<translation id="6967933908874208731">Skoðaðu nýlegar myndir, efni, tilkynningar og skilaboðaforrit símans á <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Byrja</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Aðgengi</translation>

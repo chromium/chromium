@@ -39,7 +39,6 @@
 <translation id="1698376642261615901">O Google Chrome é um navegador que executa páginas e aplicativos da web em alta velocidade. É rápido, estável e fácil de usar. Navegue pela web de forma segura com proteção contra malware e phishing integrada ao Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{O Chrome será reiniciado em 1 hora}one{O Chrome será reiniciado em # hora}other{O Chrome será reiniciado em # horas}}</translation>
 <translation id="1734234790201236882">O Chrome salvará essa senha na sua Conta do Google. Você não precisará se lembrar dela.</translation>
-<translation id="174539241580958092">O Google Chrome não pôde sincronizar seus dados devido a um erro no login.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Verifique se sua conta está conectada ao Chrome no <ph name="TARGET_DEVICE_NAME" /> e tente fazer o envio novamente.</translation>
 <translation id="1812689907177901597">Desative essa opção para fazer login em sites do Google, como o Gmail, sem fazer login no Chrome</translation>
@@ -70,7 +69,6 @@
 <translation id="235650106824528204">Quaisquer dados do Chrome gerados quando este perfil estiver sendo usado (como a criação de favoritos, histórico, senhas e outras configurações) podem ser removidos pelo administrador do perfil de trabalho. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2401189691232800402">Sistema ChromeOS</translation>
-<translation id="2429317896000329049">O Google Chrome não pôde sincronizar seus dados porque a sincronização não está disponível para seu domínio.</translation>
 <translation id="2467438592969358367">O Google Chrome quer exportar suas senhas. Digite sua senha do Windows para permitir isso.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2534507159460261402">Google Pay (copiado para o Chrome)</translation>
@@ -287,7 +285,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7481213027396403996">Use o nível mais alto de segurança do Chrome</translation>
 <translation id="7486227612705979895">O Chrome acessará seu Drive para fazer sugestões na barra de endereço</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">O Google Chrome não pôde sincronizar seus dados, pois os detalhes de login da sua conta estão desatualizados.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Bem-vindo ao Google Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> requer que você leia e aceite os Termos de Serviço a seguir antes de usar o dispositivo. Esses termos não ampliam, modificam nem limitam os Termos do Google ChromeOS.</translation>

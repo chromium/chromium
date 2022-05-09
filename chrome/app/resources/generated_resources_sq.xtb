@@ -2858,7 +2858,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3748706263662799310">Raporto një defekt në kod</translation>
 <translation id="3750562496035670393">Chrome ruajti fjalëkalimin tënd në këtë pajisje, por mund ta ruash ndryshe në "Llogarinë tënde të Google". Më pas, të gjitha fjalëkalimet në "Llogarinë tënde të Google" do të ofrohen gjithashtu ndërkohë që je identifikuar.</translation>
 <translation id="3752253558646317685">Vëre fëmijën ta mbajë ngritur gishtin për të ruajtur gjurmën e gishtit</translation>
-<translation id="3752582316358263300">Në rregull...</translation>
 <translation id="3753033997400164841">Ruaji një herë. Përdori kudo</translation>
 <translation id="3755411799582650620">Telefoni yt <ph name="PHONE_NAME" /> mund ta shkyçë tani edhe këtë <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Sajti po përdor mikrofonin tënd</translation>
@@ -3756,7 +3755,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4633003931260532286">Shtesa kërkon "<ph name="IMPORT_NAME" />" me një version minimal "<ph name="IMPORT_VERSION" />", por është instaluar vetëm versioni "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4633757335284074492">Rezervo në "Diskun e Google". Restauro të dhënat ose ndërro me lehtësi pajisjen në çdo kohë. Rezervimi yt përfshin të dhënat e aplikacioneve. Rezervimet ngarkohen në Google dhe enkriptohen duke përdorur fjalëkalimin e "Llogarisë së Google" të fëmijës tënd.</translation>
 <translation id="4634575639321169635">Konfiguroje këtë pajisje për përdorim pune ose personal</translation>
-<translation id="4634771451598206121">Identifikohu sërish...</translation>
 <translation id="4635072447747973225">Çinstalo Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> nuk ofrohet për përdoruesit vizitorë.</translation>
 <translation id="4636682061478263818">Skedarët e "Diskut"</translation>
@@ -5288,7 +5286,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6196640612572343990">Blloko kukit e palëve të treta</translation>
 <translation id="6196854373336333322">Shtesa <ph name="EXTENSION_NAME" /> ka marrë nën kontroll cilësimet e përfaqësuesit, që do të thotë se mund të ndryshojë, shkelë ose përgjojë çdo gjë që ti bën në linjë. Nëse s'je i sigurt se pse ndodhi ky ndryshim, ndoshta nuk e do.</translation>
 <translation id="6197128521826316819">Krijo kodin QR për këtë faqe</translation>
-<translation id="6198102561359457428">Dil dhe pastaj identifikohu sërish...</translation>
 <translation id="6198252989419008588">Ndrysho kodin PIN</translation>
 <translation id="6200047250927636406">Hiq skedarin</translation>
 <translation id="6200151268994853226">Menaxho shtesën</translation>
@@ -6234,7 +6231,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve"
 <translation id="7114648273807173152">Për të përdorur Smart Lock për t'u identifikuar në "Llogarinë tënde të Google", shko te Cilësimet &gt; Pajisjet e lidhura &gt; Telefoni yt &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Nuk ka asnjë kontakt të arritshëm</translation>
 <translation id="7117228822971127758">Provo përsëri më vonë</translation>
-<translation id="7117247127439884114">Identifikohu përsëri...</translation>
 <translation id="711840821796638741">Shfaq faqeshënuesit e menaxhuar</translation>
 <translation id="711902386174337313">Lexo listën e pajisjeve ku je identifikuar</translation>
 <translation id="711985611146095797">Kjo faqe të lejon të menaxhosh "Llogaritë e tua të Google" ku je identifikuar. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>

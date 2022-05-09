@@ -222,7 +222,6 @@
 <translation id="2883151425485251736">查看和修改您已在帐号中设为隐藏的主题</translation>
 <translation id="288655811176831528">关闭标签页</translation>
 <translation id="2890171748217283516">您关注的网站会保存在您的 Google 帐号中。您可在“探索”设置中管理它们。</translation>
-<translation id="2893180576842394309">Google 可能会利用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>
 <translation id="2898963176829412617">新建文件夹…</translation>
 <translation id="2916171785467530738">自动补全搜索字词和网址</translation>
 <translation id="291754862089661335">将 QR 码或条形码放到此框内</translation>
@@ -902,7 +901,6 @@
 <translation id="8654802032646794042">取消</translation>
 <translation id="8668210798914567634">此页面已保存到您的阅读列表。</translation>
 <translation id="8680787084697685621">帐号登录详细信息已过期。</translation>
-<translation id="8691262314411702087">选择要同步的数据类型</translation>
 <translation id="8693663554456874301">{count,plural, =1{关闭这个标签页}other{关闭这些标签页}}</translation>
 <translation id="8706588385081740091">密码</translation>
 <translation id="8717864919010420084">复制链接</translation>

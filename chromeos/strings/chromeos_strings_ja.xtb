@@ -144,6 +144,7 @@
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">近くのデバイスを検出するには Bluetooth をオンにしてください</translation>
 <translation id="2346474577291266260">非常に強い（<ph name="SIGNAL_STRENGTH" />）</translation>
+<translation id="2359808026110333948">続行</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />不適格なコンポーネント<ph name="LINK_END" />が検出されました。これらをインストールしたことを確認する場合は、ここで行ってください。</translation>
 <translation id="2363636958541445404">この機能をオンにするとスクリーンセーバー オプションを選択できます</translation>
 <translation id="2364498172489649528">成功</translation>
@@ -171,7 +172,6 @@
 <translation id="2620436844016719705">システム</translation>
 <translation id="2638662041295312666">サインイン画像</translation>
 <translation id="2640549051766135490">アルバム「<ph name="TITLE" />」の <ph name="DESC" />を選択中</translation>
-<translation id="2695514675076754339">8 文字の解除コードを入力</translation>
 <translation id="2712812801627182647">TLS 認証鍵</translation>
 <translation id="2717139507051041123">ダークカラー モードを有効にする</translation>
 <translation id="2740531572673183784">OK</translation>

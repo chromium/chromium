@@ -819,7 +819,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="602472752137106327">Näytä ikkunat kaikilta työpöydiltä, valintanappi valittu</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="6027518778343897451">Ei tapahtumia <ph name="CURRENT_MONTH_DAY" />. Avaa Google Kalenteri selaimessa painamalla Enter.</translation>
-<translation id="6027952026115023659">Käytä puhelimen viestisovelluksia tällä laitteella: <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Valikko siirretty näytön vasempaan alanurkkaan</translation>
 <translation id="6032620807120418574">Ota kuvakaappaus koko näytöstä klikkaamalla minne tahansa</translation>
 <translation id="6040071906258664830">Mikrofonin tallentaminen <ph name="STATE" /></translation>
@@ -969,7 +968,6 @@ Uusi asennus</translation>
 <translation id="6961121602502368900">Puhelimen hiljentäminen ei ole käytettävissä työprofiililla</translation>
 <translation id="6961840794482373852">Pikanäppäinyhdistelmä Alt + ylänuoli on muuttunut. Jos haluat käyttää Page Up ‑näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + ylänuoli.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967933908874208731">Katso puhelimesi viimeisimpiä kuvia, mediaa, ilmoituksia ja viestisovelluksia tällä laitteella: <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Aloitusopas</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Esteettömyys</translation>

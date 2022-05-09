@@ -42,7 +42,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1698376642261615901">Google Chrome est un navigateur Web qui exécute des pages Web et des applications à une vitesse fulgurante. Il est rapide, stable et facile à utiliser. Naviguez sur le Web en toute sécurité grâce à la protection intégrée de Google Chrome contre l'hameçonnage et les logiciels malveillants.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome redémarrera dans une heure}one{Chrome redémarrera dans # heure}other{Chrome redémarrera dans # heures}}</translation>
 <translation id="1734234790201236882">Chrome enregistrera ce mot de passe dans votre compte Google. Vous n'aurez pas à le retenir.</translation>
-<translation id="174539241580958092">Google Chrome n'a pas pu synchroniser vos données, car une erreur s'est produite lors de la connexion.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Assurez-vous d'être connecté à Chrome sur votre <ph name="TARGET_DEVICE_NAME" />, puis essayez de l'envoyer à nouveau.</translation>
 <translation id="1812689907177901597">En désactivant cette option, vous pouvez vous connecter aux sites Google tels que Gmail sans vous connecter à Google Chrome</translation>
@@ -73,7 +72,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="235650106824528204">L'administrateur du profil professionnel peut retirer toutes les données Chrome générées durant l'utilisation de ce profil (comme la création de favoris, l'historique, les mots de passe et d'autres paramètres). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2401189691232800402">Système Chrome OS</translation>
-<translation id="2429317896000329049">Google Chrome ne peut pas synchroniser vos données, car la synchronisation n'est pas offerte pour votre domaine.</translation>
 <translation id="2467438592969358367">Google Chrome veut exporter vos mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="2485422356828889247">Désinstaller</translation>
 <translation id="2534507159460261402">Google Pay (copiée dans Chrome)</translation>
@@ -294,7 +292,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7481213027396403996">Profitez de la sécurité la plus robuste de Chrome</translation>
 <translation id="7486227612705979895">Chrome accédera à votre Disque pour faire des suggestions dans la barre d'adresse</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">Google Chrome n'a pas pu synchroniser vos données, car vos renseignements de connexion ne sont plus à jour.</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626032353295482388">Bienvenue dans Google Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> exige que vous lisiez et acceptiez les conditions d'utilisation suivantes pour utiliser cet appareil. Ces dernières n'étendent pas, ne modifient pas, ni ne restreignent pas les conditions d'utilisation de Google Chrome OS.</translation>

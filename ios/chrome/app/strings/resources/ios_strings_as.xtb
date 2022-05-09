@@ -190,6 +190,7 @@
 <translation id="2690858294534178585">কেমেৰা ব্যৱহাৰ হৈ আছে</translation>
 <translation id="2691653761409724435">অফলাইন অৱস্থাত ব্যৱহাৰ কৰিব নোৱাৰি</translation>
 <translation id="2695507686909505111">পৃষ্ঠাখন অনুবাদ কৰা হ’ল</translation>
+<translation id="2697526135132990015">ছাইন আউট কৰক আৰু ডেটা মচক</translation>
 <translation id="2700241355396984822">অনুমতি ছেট কৰাৰ বিকল্প</translation>
 <translation id="2702801445560668637">পঢ়াৰ সূচী</translation>
 <translation id="2704491540504985681">ডাউনল’ডসমূহ</translation>
@@ -222,7 +223,6 @@
 <translation id="2883151425485251736">আপুনি আপোনাৰ একাউণ্টৰ পৰা লুকুৱাই ৰখা বিষয়বস্তু চাওক আৰু সম্পাদনা কৰক</translation>
 <translation id="288655811176831528">টেব বন্ধ কৰক</translation>
 <translation id="2890171748217283516">আপুনি ফ’ল’ কৰা ছাইটসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰা হয়। আপুনি সেয়া ছেটিং সন্ধান কৰকত পৰিচালনা কৰিব পাৰে।</translation>
-<translation id="2893180576842394309">Googleএ Search আৰু অন্য Google সেৱাসমূহ ব্যক্তিগতকৰণ কৰিবলৈ আপোনাৰ ইতিহাস ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="2898963176829412617">নতুন ফ’ল্ডাৰ…</translation>
 <translation id="2916171785467530738">স্বয়ংক্রিয়ভাৱে সম্পূৰ্ণ হোৱা সন্ধান আৰু URL</translation>
 <translation id="291754862089661335">কিউআৰ কড বা বাৰক’ডটো এই ফ্ৰেমলৈ আনক</translation>
@@ -365,6 +365,7 @@
 <translation id="4121993058175073134">মুঠ ৰপ্তানি ডেটা পঠিয়াবলৈ, অনুগ্ৰহ কৰি ছেটিংসমূহৰ এপত আপোনাৰ ইমেইল একাউণ্ট কনফিগাৰ কৰক৷</translation>
 <translation id="4124987746317609294">সময় অৱধি</translation>
 <translation id="4133265950310064865">বৰ্ধিত সুৰক্ষা</translation>
+<translation id="4148023517926189160">এই ৱেবছাইটটোৱে এটা ফাইল ডাউনল’ড কৰি সেইটো আপোনাৰ কেলেণ্ডাৰত যোগ দিবলৈ বিচাৰিছে।</translation>
 <translation id="4152011295694446843">ইয়াত আপুনি নিজৰ বুকমাৰ্কসমূহ বিচাৰি পাব</translation>
 <translation id="4172051516777682613">সদায় দেখুৱাওক</translation>
 <translation id="418156467088430727">নতুন টেবত অফলাইন সংস্কৰণটো চাওক</translation>
@@ -693,6 +694,7 @@
 <translation id="6760509555861141183">শেহতীয়া টেবলৈ উভতি যাওক</translation>
 <translation id="6762812039470893796">আটাইবোৰ টেব বাছনি কৰাৰ পৰা আঁতৰাওক</translation>
 <translation id="6780034285637185932">পিন ক’ড</translation>
+<translation id="6781260999953472352">ছিংক অন কৰিবনে?</translation>
 <translation id="6785453220513215166">ক্ৰেশ্ব প্ৰতিবেদন পঠিয়াই থকা হৈছে…</translation>
 <translation id="6797885426782475225">কণ্ঠধ্বনিৰদ্বাৰা সন্ধান</translation>
 <translation id="6801927553864092214">ব্যক্তিগতভাৱে ব্ৰাউজ কৰিবলৈ কোনো ইনক’গনিট’ টেব খোলক</translation>
@@ -806,6 +808,7 @@
 <translation id="7807060072011926525">Googleএ প্ৰদান কৰিছে</translation>
 <translation id="7839985698273989086">অফলাইন পৃষ্ঠা</translation>
 <translation id="7840771868269352570">আপুনি বাছনি কৰা বস্তুটো আঁতৰোৱা হ’ব।</translation>
+<translation id="784551991304901159">সমল চাবলৈ মেনুখনৰ পৰা অন কৰক বাছনি কৰক</translation>
 <translation id="7853202427316060426">কাৰ্যকলাপ</translation>
 <translation id="7856733331829174190">ডাউনল'ড কৰিব পৰা নগ'ল</translation>
 <translation id="7859704718976024901">ব্ৰাউজিঙৰ ইতিহাস</translation>
@@ -904,7 +907,6 @@
 <translation id="8654802032646794042">বাতিল কৰক</translation>
 <translation id="8668210798914567634">আপোনাৰ পঢ়াসূচীত এই পৃষ্ঠাটো ছেভ কৰা হৈছে।</translation>
 <translation id="8680787084697685621">একাউণ্টৰ ছাইন ইনৰ সবিশেষৰ ম্যাদ উকলিল।</translation>
-<translation id="8691262314411702087">কি ছিংক কৰিব লাগে বাছনি কৰক</translation>
 <translation id="8693663554456874301">{count,plural, =1{টেব বন্ধ কৰক}one{টেববোৰ বন্ধ কৰক}other{টেববোৰ বন্ধ কৰক}}</translation>
 <translation id="8706588385081740091">পাছৱৰ্ডসমূহ</translation>
 <translation id="8717864919010420084">লিংকটো প্ৰতিলিপি কৰক</translation>

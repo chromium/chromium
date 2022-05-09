@@ -43,7 +43,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1698376642261615901">Ang Google Chrome ay isang web browser na nagpapatakbo ng mga webpage at application nang kasingbilis ng kidlat. Mabilis ito, matatag, at madaling gamitin. I-browse ang web nang mas ligtas na may proteksyon sa malware at phishing na isinama sa Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Muling ilulunsad ang Chrome sa loob ng isang oras}one{Muling ilulunsad ang Chrome sa loob ng # oras}other{Muling ilulunsad ang Chrome sa loob ng # na oras}}</translation>
 <translation id="1734234790201236882">Ise-save ng Chrome ang password na ito sa iyong Google Account. Hindi mo na ito kailangang tandaan.</translation>
-<translation id="174539241580958092">Hindi mai-sync ng Google Chrome ang iyong data dahil sa isang error sa pagsa-sign in.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Tiyaking naka-sign in ka sa Chrome sa iyong <ph name="TARGET_DEVICE_NAME" /> at pagkatapos ay subukang ipadala ulit.</translation>
 <translation id="1812689907177901597">Kapag na-off ito, maaari kang mag-sign in sa mga site ng Google tulad ng Gmail nang hindi nagsa-sign in sa Chrome</translation>
@@ -74,7 +73,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="235650106824528204">Puwedeng alisin ng administrator ng profile sa trabaho ang anumang data ng Chrome na nabuo sa panahon ng paggamit sa profile na ito (gaya ng paggawa ng mga bookmark, history, mga password, at iba pang setting). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2401189691232800402">ChromeOS system</translation>
-<translation id="2429317896000329049">Hindi mai-sync ng Google Chrome ang iyong data dahil hindi available ang Pag-sync para sa iyong domain.</translation>
 <translation id="2467438592969358367">Gustong i-export ng Google Chrome ang iyong mga password. I-type ang password mo sa Windows para payagan ito.</translation>
 <translation id="2485422356828889247">I-uninstall</translation>
 <translation id="2534507159460261402">Google Pay (kinopya sa Chrome)</translation>
@@ -295,7 +293,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="7481213027396403996">Kunin ang pinakamahusay na seguridad ng Chrome</translation>
 <translation id="7486227612705979895">Ia-access ng Chrome ang iyong Drive para makapagmungkahi sa address bar</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7592736734348559088">Hindi mai-sync ng Google Chrome ang iyong data dahil hindi napapanahon ang mga detalye sa pag-sign in ng iyong account.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Welcome sa Chrome</translation>
 <translation id="7626072681686626474">Kinakailangan ng <ph name="MANAGER" /> na basahin mo at tanggapin ang sumusunod na Mga Tuntunin ng Serbisyo bago gamitin ang device na ito. Hindi pinapalawak, binabago o nililimitahan ng mga tuntuning ito ang Mga Tuntunin ng Google ChromeOS.</translation>

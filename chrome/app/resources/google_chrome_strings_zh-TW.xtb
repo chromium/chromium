@@ -38,7 +38,6 @@
 <translation id="1698376642261615901">Google Chrome 瀏覽器開啟網頁和執行應用程式的速度奇快無比！除了執行速度迅速、穩定且容易使用之外，內建防護機制還可讓你安心瀏覽網頁，無需擔心受到網路釣魚與惡意軟體的威脅。</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome 將在 1 小時後重新啟動}other{Chrome 將在 # 小時後重新啟動}}</translation>
 <translation id="1734234790201236882">Chrome 會將這組密碼儲存至你的 Google 帳戶，你不須記住密碼。</translation>
-<translation id="174539241580958092">登入時發生錯誤，因此 Google Chrome 無法同步處理你的資料。</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">請確認你已在「<ph name="TARGET_DEVICE_NAME" />」上登入 Chrome，然後再傳送一次。</translation>
 <translation id="1812689907177901597">關閉這項功能後，你可以單獨登入 Gmail 等這類 Google 網站，不必同時登入 Chrome</translation>
@@ -69,7 +68,6 @@
 <translation id="235650106824528204">凡是在使用這個資料夾期間產生的 Chrome 資料 (例如建立的書籤、歷史記錄、密碼和其他設定)，工作資料夾管理員皆可予以移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2401189691232800402">Chrome OS 系統</translation>
-<translation id="2429317896000329049">你的網域無法使用「同步功能」，因此 Google Chrome 無法同步處理你的資料。</translation>
 <translation id="2467438592969358367">Google Chrome 要求匯出你的密碼。如果允許，請輸入你的 Windows 密碼。</translation>
 <translation id="2485422356828889247">解除安裝</translation>
 <translation id="2534507159460261402">Google Pay (已複製到 Chrome)</translation>
@@ -287,7 +285,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7481213027396403996">獲得 Chrome 最強大的安全防護</translation>
 <translation id="7486227612705979895">Chrome 將存取你的雲端硬碟，並在網址列提供建議</translation>
 <translation id="7535429826459677826">Google Chrome 開發人員版</translation>
-<translation id="7592736734348559088">你的帳戶登入詳細資料尚未更新，因此 Google Chrome 無法同步處理你的資料。</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">歡迎使用 Chrome</translation>
 <translation id="7626072681686626474">根據 <ph name="MANAGER" /> 的規定，您必須先詳閱並接受下列《服務條款》，才能使用這部裝置。這些條款不會擴充、修改或限制《Google Chrome OS 條款》。</translation>
