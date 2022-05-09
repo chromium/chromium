@@ -11,6 +11,9 @@
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/frame/app_menu_button.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -32,14 +35,63 @@ void NotifyServiceAboutDialogAction(Profile* profile, DialogAction action) {
   }
 }
 
+AppMenuButton* GetAppMenuButton(Browser* browser) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  // The notice bubble is anchored to the browser. If the browser is destroyed,
+  // the bubble will be too. Because of that browser should always be present
+  // while bubble is active.
+  DCHECK(browser_view);
+  return browser_view->toolbar_button_provider()->GetAppMenuButton();
+}
+
+class PrivacySandboxNoticeBubbleDelegate : public views::BubbleDialogDelegate {
+ public:
+  explicit PrivacySandboxNoticeBubbleDelegate(
+      bubble_anchor_util::AnchorConfiguration configuration,
+      Browser* browser)
+      : BubbleDialogDelegate(configuration.anchor_view,
+                             configuration.bubble_arrow),
+        browser_(browser) {
+    if (auto* privacy_sandbox_serivce =
+            PrivacySandboxServiceFactory::GetForProfile(browser->profile())) {
+      privacy_sandbox_serivce->DialogOpenedForBrowser(browser);
+    }
+    SetCloseCallback(base::BindOnce(
+        &PrivacySandboxNoticeBubbleDelegate::OnClose, base::Unretained(this)));
+  }
+
+  void OnClose() {
+    if (auto* privacy_sandbox_serivce =
+            PrivacySandboxServiceFactory::GetForProfile(browser_->profile())) {
+      privacy_sandbox_serivce->DialogClosedForBrowser(browser_);
+    }
+  }
+
+  void WindowClosing() override {
+    switch (GetWidget()->closed_reason()) {
+      case views::Widget::ClosedReason::kEscKeyPressed:
+        NotifyServiceAboutDialogAction(browser_->profile(),
+                                       DialogAction::kNoticeDismiss);
+        break;
+      case views::Widget::ClosedReason::kUnspecified:
+        NotifyServiceAboutDialogAction(
+            browser_->profile(), DialogAction::kNoticeClosedNoInteraction);
+        break;
+      default:
+        break;
+    }
+  }
+
+ private:
+  Browser* browser_;
+};
+
 }  // namespace
 
 // static
 void ShowPrivacySandboxNoticeBubble(Browser* browser) {
-  bubble_anchor_util::AnchorConfiguration configuration =
-      bubble_anchor_util::GetAppMenuAnchorConfiguration(browser);
-  auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
-      configuration.anchor_view, configuration.bubble_arrow);
+  auto bubble_delegate = std::make_unique<PrivacySandboxNoticeBubbleDelegate>(
+      bubble_anchor_util::GetAppMenuAnchorConfiguration(browser), browser);
   bubble_delegate->SetShowTitle(false);
   bubble_delegate->SetShowCloseButton(false);
   bubble_delegate->set_close_on_deactivate(false);
@@ -66,18 +118,6 @@ void ShowPrivacySandboxNoticeBubble(Browser* browser) {
         chrome::ShowPrivacySandboxSettings(browser);
         NotifyServiceAboutDialogAction(browser->profile(),
                                        DialogAction::kNoticeOpenSettings);
-      },
-      base::Unretained(browser)));
-
-  bubble_delegate->SetCloseCallback(base::BindOnce(
-      [](Browser* browser) {
-        // TODO(crbug.com/1321587): Figure out where to check the reason to
-        // record closed on interaction and dismiss.
-        if (auto* privacy_sandbox_serivce =
-                PrivacySandboxServiceFactory::GetForProfile(
-                    browser->profile())) {
-          privacy_sandbox_serivce->DialogClosedForBrowser(browser);
-        }
       },
       base::Unretained(browser)));
 
@@ -132,8 +172,25 @@ PrivacySandboxNoticeBubbleView::PrivacySandboxNoticeBubbleView(Browser* browser)
           base::Unretained(this)));
   description_label->AddStyleRange(range, link_style);
 
+  // Observe app menu button to close the bubble when app menu is shown.
+  if (auto* app_menu_button = GetAppMenuButton(browser_)) {
+    app_menu_button->AddObserver(this);
+  }
+
   NotifyServiceAboutDialogAction(browser_->profile(),
                                  DialogAction::kNoticeShown);
+}
+
+PrivacySandboxNoticeBubbleView::~PrivacySandboxNoticeBubbleView() {
+  if (auto* app_menu_button = GetAppMenuButton(browser_)) {
+    app_menu_button->RemoveObserver(this);
+  }
+}
+
+void PrivacySandboxNoticeBubbleView::AppMenuShown() {
+  NotifyServiceAboutDialogAction(browser_->profile(),
+                                 DialogAction::kNoticeDismiss);
+  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
 }
 
 void PrivacySandboxNoticeBubbleView::OpenAboutAdPersonalizationSettings() {
@@ -141,7 +198,7 @@ void PrivacySandboxNoticeBubbleView::OpenAboutAdPersonalizationSettings() {
   // this.
   chrome::ShowPrivacySandboxSettings(browser_);
   GetWidget()->CloseWithReason(
-      views::Widget::ClosedReason::kAcceptButtonClicked);
+      views::Widget::ClosedReason::kCancelButtonClicked);
 }
 
 BEGIN_METADATA(PrivacySandboxNoticeBubbleView, views::View)
