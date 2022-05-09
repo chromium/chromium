@@ -50,9 +50,10 @@ window.onload = function() {
           })
         ],
         [
-          'A cached favicon doesn\'t exist for this site', false, new Favicon({
-            pageUrl:
-                `http://www.error.com:${port}/extensions/favicon/test_file.html`
+          'Get the default icon when a url hasn\'t been visited', true,
+          new Favicon({
+            pageUrl: `http://www.unvisited.com:${
+                port}/extensions/favicon/test_file.html`
           })
         ],
         [

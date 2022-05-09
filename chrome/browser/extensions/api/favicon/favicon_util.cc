@@ -15,7 +15,10 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "ui/base/layout.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/resources/grit/ui_resources.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -26,7 +29,14 @@ namespace favicon_util {
 namespace {
 void OnFaviconAvailable(FaviconCallback callback,
                         const favicon_base::FaviconRawBitmapResult& result) {
-  std::move(callback).Run(result.bitmap_data);
+  if (result.is_valid()) {
+    std::move(callback).Run(result.bitmap_data);
+  } else {
+    // TODO(solomonkinard): Use higher-res defaults for various sizes.
+    std::move(callback).Run(
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+            IDR_DEFAULT_FAVICON, ui::GetSupportedResourceScaleFactor(1)));
+  }
 }
 }  // namespace
 
