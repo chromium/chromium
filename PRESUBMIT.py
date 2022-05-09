@@ -2897,7 +2897,7 @@ def _AddOwnersFilesToCheckForFuchsiaSecurityOwners(input_api, to_check):
                 'files': [],
                 'rules': [
                     'per-file %s=set noparent' % pattern,
-                    'per-file %s=file://fuchsia/SECURITY_OWNERS' % pattern,
+                    'per-file %s=file://build/fuchsia/SECURITY_OWNERS' % pattern,
                 ]
             }
         to_check[owners_file][pattern]['files'].append(input_file)

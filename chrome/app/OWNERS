@@ -64,6 +64,6 @@ per-file main_dll_loader_win.cc=wfh@chromium.org
 
 # Security-review owners for Fuchsia Component Manifests.
 per-file *.cml=set noparent
-per-file *.cml=file://fuchsia/SECURITY_OWNERS
+per-file *.cml=file://build/fuchsia/SECURITY_OWNERS
 per-file *.cmx=set noparent
-per-file *.cmx=file://fuchsia/SECURITY_OWNERS
+per-file *.cmx=file://build/fuchsia/SECURITY_OWNERS

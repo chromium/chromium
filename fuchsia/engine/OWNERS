@@ -3,6 +3,6 @@ per-file *.mojom=file://ipc/SECURITY_OWNERS
 
 # For sandbox security review.
 per-file context_provider_impl.*=set noparent
-per-file context_provider_impl.*=file://fuchsia/SECURITY_OWNERS
+per-file context_provider_impl.*=file://build/fuchsia/SECURITY_OWNERS
 per-file *.cmx=set noparent
-per-file *.cmx=file://fuchsia/SECURITY_OWNERS
+per-file *.cmx=file://build/fuchsia/SECURITY_OWNERS

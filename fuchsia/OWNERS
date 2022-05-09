@@ -2,4 +2,4 @@ set noparent
 file://build/fuchsia/OWNERS
 
 per-file SECURITY_OWNERS=set noparent
-per-file SECURITY_OWNERS=file://fuchsia/SECURITY_OWNERS
+per-file SECURITY_OWNERS=file://build/fuchsia/SECURITY_OWNERS

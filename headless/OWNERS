@@ -13,4 +13,4 @@ altimin@chromium.org
 dvallet@chromium.org
 
 per-file *.cmx=set noparent
-per-file *.cmx=file://fuchsia/SECURITY_OWNERS
+per-file *.cmx=file://build/fuchsia/SECURITY_OWNERS
