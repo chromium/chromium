@@ -119,9 +119,9 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
     SetBorder(std::make_unique<views::HighlightBorder>(
         kBorderRadius, views::HighlightBorder::Type::kHighlightBorder2,
         /*use_light_colors=*/false));
-    shadow_.shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
-    shadow_.SetRoundedCornerRadius(kBorderRadius);
   }
+  shadow_.shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
+  shadow_.SetRoundedCornerRadius(kBorderRadius);
 }
 
 CaptureModeBarView::~CaptureModeBarView() = default;
