@@ -16,6 +16,8 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "net/base/sockaddr_storage.h"
+#include "net/base/sockaddr_util_posix.h"
 
 namespace mojo {
 
@@ -28,33 +30,30 @@ NamedPlatformChannel::ServerName GenerateRandomServerName(
       .value();
 }
 
-// This function fills in |unix_addr| with the appropriate data for the socket,
-// and sets |unix_addr_len| to the length of the data therein.
-// Returns true on success, or false on failure (typically because |server_name|
-// violated the naming rules).
+// This function fills in |addr_storage| with the appropriate data for the
+// socket as well as the data's length. Returns true on success, or false on
+// failure (typically because |server_name| violated the naming rules). On
+// Linux and Android, setting |use_abstract_namespace| to true will return a
+// socket address for an abstract non-filesystem socket.
 bool MakeUnixAddr(const NamedPlatformChannel::ServerName& server_name,
-                  struct sockaddr_un* unix_addr,
-                  size_t* unix_addr_len) {
-  DCHECK(unix_addr);
-  DCHECK(unix_addr_len);
+                  bool use_abstract_namespace,
+                  net::SockaddrStorage* addr_storage) {
+  DCHECK(addr_storage);
   DCHECK(!server_name.empty());
 
   constexpr size_t kMaxSocketNameLength = 104;
 
   // We reject server_name.length() == kMaxSocketNameLength to make room for the
-  // NUL terminator at the end of the string.
+  // NUL terminator at the end of the string. For the Linux abstract namespace,
+  // the path has a leading NUL character instead (with no NUL terminator
+  // required). In both cases N+1 bytes are needed to fill the server name.
   if (server_name.length() >= kMaxSocketNameLength) {
     LOG(ERROR) << "Socket name too long: " << server_name;
     return false;
   }
 
-  // Create unix_addr structure.
-  memset(unix_addr, 0, sizeof(struct sockaddr_un));
-  unix_addr->sun_family = AF_UNIX;
-  strncpy(unix_addr->sun_path, server_name.c_str(), kMaxSocketNameLength);
-  *unix_addr_len =
-      offsetof(struct sockaddr_un, sun_path) + server_name.length();
-  return true;
+  return net::FillUnixAddress(server_name, use_abstract_namespace,
+                              addr_storage);
 }
 
 // This function creates a unix domain socket, and set it as non-blocking.
@@ -99,9 +98,8 @@ PlatformChannelServerEndpoint NamedPlatformChannel::CreateServerEndpoint(
     return PlatformChannelServerEndpoint();
   }
 
-  struct sockaddr_un unix_addr;
-  size_t unix_addr_len;
-  if (!MakeUnixAddr(name, &unix_addr, &unix_addr_len))
+  net::SockaddrStorage storage;
+  if (!MakeUnixAddr(name, options.use_abstract_namespace, &storage))
     return PlatformChannelServerEndpoint();
 
   PlatformHandle handle = CreateUnixDomainSocket();
@@ -109,8 +107,7 @@ PlatformChannelServerEndpoint NamedPlatformChannel::CreateServerEndpoint(
     return PlatformChannelServerEndpoint();
 
   // Bind the socket.
-  if (bind(handle.GetFD().get(), reinterpret_cast<const sockaddr*>(&unix_addr),
-           unix_addr_len) < 0) {
+  if (bind(handle.GetFD().get(), storage.addr, storage.addr_len) < 0) {
     PLOG(ERROR) << "bind " << name;
     return PlatformChannelServerEndpoint();
   }
@@ -128,22 +125,21 @@ PlatformChannelServerEndpoint NamedPlatformChannel::CreateServerEndpoint(
 
 // static
 PlatformChannelEndpoint NamedPlatformChannel::CreateClientEndpoint(
-    const ServerName& server_name) {
-  DCHECK(!server_name.empty());
+    const Options& options) {
+  DCHECK(!options.server_name.empty());
 
-  struct sockaddr_un unix_addr;
-  size_t unix_addr_len;
-  if (!MakeUnixAddr(server_name, &unix_addr, &unix_addr_len))
+  net::SockaddrStorage storage;
+  if (!MakeUnixAddr(options.server_name, options.use_abstract_namespace,
+                    &storage))
     return PlatformChannelEndpoint();
 
   PlatformHandle handle = CreateUnixDomainSocket();
   if (!handle.is_valid())
     return PlatformChannelEndpoint();
 
-  if (HANDLE_EINTR(connect(handle.GetFD().get(),
-                           reinterpret_cast<sockaddr*>(&unix_addr),
-                           unix_addr_len)) < 0) {
-    PLOG(ERROR) << "connect " << server_name;
+  if (HANDLE_EINTR(
+          connect(handle.GetFD().get(), storage.addr, storage.addr_len)) < 0) {
+    PLOG(ERROR) << "connect " << options.server_name;
     return PlatformChannelEndpoint();
   }
   return PlatformChannelEndpoint(std::move(handle));

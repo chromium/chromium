@@ -60,13 +60,13 @@ PlatformChannelServerEndpoint NamedPlatformChannel::CreateServerEndpoint(
 
 // static
 PlatformChannelEndpoint NamedPlatformChannel::CreateClientEndpoint(
-    const NamedPlatformChannel::ServerName& server_name) {
+    const Options& options) {
   base::mac::ScopedMachSendRight send_right;
   kern_return_t kr = bootstrap_look_up(
-      bootstrap_port, server_name.c_str(),
+      bootstrap_port, options.server_name.c_str(),
       base::mac::ScopedMachSendRight::Receiver(send_right).get());
   if (kr != KERN_SUCCESS) {
-    BOOTSTRAP_LOG(ERROR, kr) << "bootstrap_look_up " << server_name;
+    BOOTSTRAP_LOG(ERROR, kr) << "bootstrap_look_up " << options.server_name;
     return PlatformChannelEndpoint();
   }
 

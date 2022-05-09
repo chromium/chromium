@@ -32,8 +32,11 @@ component("platform") {
     "//mojo/public/c/system:headers",
   ]
 
+  deps = []
+
   if (is_posix && !is_nacl && !is_mac) {
     sources += [ "named_platform_channel_posix.cc" ]
+    deps += [ "//net" ]
   }
 
   if (is_mac) {

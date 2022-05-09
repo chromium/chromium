@@ -89,8 +89,14 @@ class ExternalConnectorImpl::BrokerConnection
   }
 
   void AttemptBrokerConnection() {
+    mojo::NamedPlatformChannel::Options channel_options;
+    channel_options.server_name = broker_path_;
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, use the abstract namespace to avoid filesystem access.
+    channel_options.use_abstract_namespace = true;
+#endif
     mojo::PlatformChannelEndpoint endpoint =
-        mojo::NamedPlatformChannel::ConnectToServer(broker_path_);
+        mojo::NamedPlatformChannel::ConnectToServer(channel_options);
     if (!endpoint.is_valid()) {
       task_runner_->PostDelayedTask(
           FROM_HERE,

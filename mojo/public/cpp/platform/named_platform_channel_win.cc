@@ -82,8 +82,8 @@ PlatformChannelServerEndpoint NamedPlatformChannel::CreateServerEndpoint(
 
 // static
 PlatformChannelEndpoint NamedPlatformChannel::CreateClientEndpoint(
-    const ServerName& server_name) {
-  std::wstring pipe_name = GetPipeNameFromServerName(server_name);
+    const Options& options) {
+  std::wstring pipe_name = GetPipeNameFromServerName(options.server_name);
 
   // Note: This may block.
   if (!::WaitNamedPipeW(pipe_name.c_str(), NMPWAIT_USE_DEFAULT_WAIT))

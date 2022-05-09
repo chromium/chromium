@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "net/base/sockaddr_storage.h"
+#include "net/base/sockaddr_util_posix.h"
 #include "net/socket/socket_posix.h"
 #include "net/socket/unix_domain_client_socket_posix.h"
 
@@ -67,9 +68,7 @@ int UnixDomainServerSocket::BindAndListen(const std::string& socket_path,
   DCHECK(!listen_socket_);
 
   SockaddrStorage address;
-  if (!UnixDomainClientSocket::FillAddress(socket_path,
-                                           use_abstract_namespace_,
-                                           &address)) {
+  if (!FillUnixAddress(socket_path, use_abstract_namespace_, &address)) {
     return ERR_ADDRESS_INVALID;
   }
 

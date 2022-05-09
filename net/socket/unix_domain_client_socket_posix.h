@@ -20,7 +20,6 @@
 namespace net {
 
 class SocketPosix;
-struct SockaddrStorage;
 
 // A client socket that uses unix domain socket as the transport layer.
 class NET_EXPORT UnixDomainClientSocket : public StreamSocket {
@@ -37,12 +36,6 @@ class NET_EXPORT UnixDomainClientSocket : public StreamSocket {
   UnixDomainClientSocket& operator=(const UnixDomainClientSocket&) = delete;
 
   ~UnixDomainClientSocket() override;
-
-  // Fills |address| with |socket_path| and its length. For Android or Linux
-  // platform, this supports abstract namespaces.
-  static bool FillAddress(const std::string& socket_path,
-                          bool use_abstract_namespace,
-                          SockaddrStorage* address);
 
   // StreamSocket implementation.
   int Connect(CompletionOnceCallback callback) override;

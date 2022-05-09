@@ -17,6 +17,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/sockaddr_storage.h"
+#include "net/base/sockaddr_util_posix.h"
 #include "net/base/test_completion_callback.h"
 #include "net/socket/socket_posix.h"
 #include "net/socket/unix_domain_server_socket_posix.h"
@@ -192,7 +193,7 @@ TEST_F(UnixDomainClientSocketTest, ConnectWithSocketDescriptor) {
   // Now, re-wrap client_socket_fd in a UnixDomainClientSocket and try a read
   // to be sure it hasn't gotten accidentally closed.
   SockaddrStorage addr;
-  ASSERT_TRUE(UnixDomainClientSocket::FillAddress(socket_path_, false, &addr));
+  ASSERT_TRUE(FillUnixAddress(socket_path_, false, &addr));
   std::unique_ptr<SocketPosix> adopter(new SocketPosix);
   adopter->AdoptConnectedSocket(client_socket_fd, addr);
   UnixDomainClientSocket rewrapped_socket(std::move(adopter));

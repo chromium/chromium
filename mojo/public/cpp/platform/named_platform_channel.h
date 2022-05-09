@@ -60,6 +60,9 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
     // with a random name. This controls the directory where that happens.
     // Ignored if |server_name| was set explicitly.
     base::FilePath socket_dir;
+
+    // Use an abstract socket address instead of a filesystem path.
+    bool use_abstract_namespace = false;
 #endif
   };
 
@@ -103,6 +106,11 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
   [[nodiscard]] static PlatformChannelEndpoint ConnectToServer(
       const ServerName& server_name);
 
+  // Like above, but passing an Options struct instead. |options.server_name|
+  // must be a non-empty string.
+  [[nodiscard]] static PlatformChannelEndpoint ConnectToServer(
+      const Options& options);
+
   // Like above, but extracts the server name from |command_line| using the
   // common |kNamedHandleSwitch| flag.
   [[nodiscard]] static PlatformChannelEndpoint ConnectToServer(
@@ -112,8 +120,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
   static PlatformChannelServerEndpoint CreateServerEndpoint(
       const Options& options,
       ServerName* server_name);
-  static PlatformChannelEndpoint CreateClientEndpoint(
-      const ServerName& server_name);
+  static PlatformChannelEndpoint CreateClientEndpoint(const Options& options);
 
   ServerName server_name_;
   PlatformChannelServerEndpoint server_endpoint_;

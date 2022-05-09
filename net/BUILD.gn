@@ -1311,6 +1311,8 @@ component("net") {
       "base/file_stream_context_posix.cc",
       "base/network_interfaces_posix.cc",
       "base/network_interfaces_posix.h",
+      "base/sockaddr_util_posix.cc",
+      "base/sockaddr_util_posix.h",
       "disk_cache/cache_util_posix.cc",
       "disk_cache/simple/simple_util_posix.cc",
       "http/url_security_manager_posix.cc",
@@ -4445,6 +4447,10 @@ test("net_unittests") {
 
   if (enable_websockets) {
     deps += [ "//net/server:tests" ]
+  }
+
+  if (is_posix) {
+    sources += [ "base/sockaddr_util_posix_unittest.cc" ]
   }
 
   if (is_posix || is_fuchsia) {

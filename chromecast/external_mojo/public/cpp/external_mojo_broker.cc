@@ -422,6 +422,10 @@ ExternalMojoBroker::ExternalMojoBroker(const std::string& broker_path) {
 
   mojo::NamedPlatformChannel::Options channel_options;
   channel_options.server_name = broker_path;
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, use the abstract namespace to avoid filesystem access.
+  channel_options.use_abstract_namespace = true;
+#endif
   mojo::NamedPlatformChannel named_channel(channel_options);
 
   mojo::PlatformChannelServerEndpoint server_endpoint =

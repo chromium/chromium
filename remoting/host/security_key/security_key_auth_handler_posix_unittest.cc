@@ -19,6 +19,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/sockaddr_storage.h"
+#include "net/base/sockaddr_util_posix.h"
 #include "net/base/test_completion_callback.h"
 #include "net/socket/socket_posix.h"
 #include "net/socket/unix_domain_client_socket_posix.h"
@@ -242,8 +243,7 @@ TEST_F(SecurityKeyAuthHandlerPosixTest, HandleSingleRequestWithEof) {
 
   net::SocketPosix raw_socket;
   net::SockaddrStorage address;
-  ASSERT_TRUE(net::UnixDomainClientSocket::FillAddress(socket_path_.value(),
-                                                       false, &address));
+  ASSERT_TRUE(net::FillUnixAddress(socket_path_.value(), false, &address));
   raw_socket.AdoptConnectedSocket(client_socket.ReleaseConnectedSocket(),
                                   address);
 
