@@ -117,3 +117,7 @@ const CGFloat kPlusSignImageYCenterConstant =
 const CGFloat kPlusSignButtonWidth = 156;
 
 const CGFloat kGridExpectedTopContentInset = 20.0f;
+
+const CGFloat kThumbStripHeight =
+    kGridCellSizeSmall.height +
+    2 * kGridLayoutLineSpacingCompactCompactLimitedWidth;

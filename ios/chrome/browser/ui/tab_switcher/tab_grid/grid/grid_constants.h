@@ -125,5 +125,8 @@ extern const CGFloat kPlusSignButtonWidth;
 // Expected collection view top content inset. If mismatch, the extra space
 // is communicated to the plus sign button to align + sign correctly.
 extern const CGFloat kGridExpectedTopContentInset;
+// Height of the view that is revealed. The thumb strip has a height equal to a
+// small grid cell + edge insets (top and bottom) from thumb strip layout.
+extern const CGFloat kThumbStripHeight;
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_CONSTANTS_H_

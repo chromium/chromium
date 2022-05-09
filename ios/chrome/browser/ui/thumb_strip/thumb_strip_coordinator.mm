@@ -18,12 +18,6 @@
 #endif
 
 namespace {
-// Height of the view that is revealed. The thumb strip has a height equal to a
-// small grid cell + edge insets (top and bottom) from thumb strip layout.
-const CGFloat kThumbStripHeight =
-    kGridCellSizeSmall.height +
-    2 * kGridLayoutLineSpacingCompactCompactLimitedWidth;
-
 // Enum actions for the IOS.Thumbstrip.OpenBy UMA metrics. Entries should not be
 // renumbered and numeric values should never be reused.
 enum class ThumbstripOpenByAction {

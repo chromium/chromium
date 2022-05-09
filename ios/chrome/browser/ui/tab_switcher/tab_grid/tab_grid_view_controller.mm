@@ -174,6 +174,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Button with a plus sign that opens a new tab, located on the right side of
 // the thumb strip, shown when the plus sign cell isn't visible.
 @property(nonatomic, weak) ThumbStripPlusSignButton* plusSignButton;
+// Bottom constraint for |plusSignButton|.
+@property(nonatomic, weak) NSLayoutConstraint* plusSignButtonBottomConstraint;
 
 // The current state of the tab grid when using the thumb strip.
 @property(nonatomic, assign) ViewRevealState currentState;
@@ -797,6 +799,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       break;
     case ViewRevealState::Revealed:
       self.plusSignButton.alpha = 0;
+      break;
+  }
+  switch (nextViewRevealState) {
+    case ViewRevealState::Hidden:
+    case ViewRevealState::Peeked:
+      self.plusSignButtonBottomConstraint.constant = kThumbStripHeight;
+      break;
+    case ViewRevealState::Revealed:
+      // Increase height of button while hiding it, for a smooth animation.
+      self.plusSignButtonBottomConstraint.constant =
+          self.view.frame.size.height;
       break;
   }
 }
@@ -1435,10 +1448,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
            forControlEvents:UIControlEventTouchUpInside];
   DCHECK(self.bottomToolbar);
   [self.view insertSubview:plusSignButton aboveSubview:self.bottomToolbar];
+  self.plusSignButtonBottomConstraint =
+      [plusSignButton.bottomAnchor constraintEqualToAnchor:self.view.topAnchor
+                                                  constant:0];
   NSArray* constraints = @[
     [plusSignButton.topAnchor constraintEqualToAnchor:self.view.topAnchor],
-    [plusSignButton.bottomAnchor
-        constraintEqualToAnchor:self.view.bottomAnchor],
+    self.plusSignButtonBottomConstraint,
     [plusSignButton.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
     [plusSignButton.widthAnchor constraintEqualToConstant:kPlusSignButtonWidth],
