@@ -59,6 +59,7 @@ FileSystemAccessFileWriterImpl::FileSystemAccessFileWriterImpl(
 }
 
 FileSystemAccessFileWriterImpl::~FileSystemAccessFileWriterImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (should_purge_swap_file_on_destruction_) {
     manager()->DoFileSystemOperation(
         FROM_HERE, &FileSystemOperationRunner::RemoveFile,
@@ -137,6 +138,8 @@ void FileSystemAccessFileWriterImpl::Abort(AbortCallback callback) {
 // Do not call this method if `close_callback_` is not set.
 void FileSystemAccessFileWriterImpl::CallCloseCallbackAndDeleteThis(
     blink::mojom::FileSystemAccessErrorPtr result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   should_purge_swap_file_on_destruction_ =
       result->status != blink::mojom::FileSystemAccessStatus::kOk;
   std::move(close_callback_).Run(std::move(result));
@@ -297,6 +300,7 @@ void FileSystemAccessFileWriterImpl::DidReplaceSwapFile(
 
 base::WeakPtr<FileSystemAccessHandleBase>
 FileSystemAccessFileWriterImpl::AsWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
 }
 

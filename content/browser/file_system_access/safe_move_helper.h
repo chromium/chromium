@@ -7,6 +7,7 @@
 
 #include "base/files/file.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/common/content_export.h"
@@ -76,21 +77,26 @@ class CONTENT_EXPORT SafeMoveHelper {
     return dest_url().type() != storage::kFileSystemTypeTemporary;
   }
 
-  base::WeakPtr<FileSystemAccessManagerImpl> manager_;
-  FileSystemAccessManagerImpl::BindingContext context_;
+  base::WeakPtr<FileSystemAccessManagerImpl> manager_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  FileSystemAccessManagerImpl::BindingContext context_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   const storage::FileSystemURL source_url_;
   const storage::FileSystemURL dest_url_;
 
-  storage::FileSystemOperation::CopyOrMoveOptionSet options_;
+  const storage::FileSystemOperation::CopyOrMoveOptionSet options_;
 
-  download::QuarantineConnectionCallback quarantine_connection_callback_;
+  download::QuarantineConnectionCallback quarantine_connection_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  bool has_transient_user_activation_ = false;
+  bool has_transient_user_activation_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
-  SafeMoveHelperCallback callback_;
+  SafeMoveHelperCallback callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::WeakPtrFactory<SafeMoveHelper> weak_factory_{this};
+  base::WeakPtrFactory<SafeMoveHelper> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace content

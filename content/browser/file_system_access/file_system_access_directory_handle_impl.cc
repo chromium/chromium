@@ -49,12 +49,14 @@ FileSystemAccessDirectoryHandleImpl::~FileSystemAccessDirectoryHandleImpl() =
 void FileSystemAccessDirectoryHandleImpl::GetPermissionStatus(
     bool writable,
     GetPermissionStatusCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DoGetPermissionStatus(writable, std::move(callback));
 }
 
 void FileSystemAccessDirectoryHandleImpl::RequestPermission(
     bool writable,
     RequestPermissionCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DoRequestPermission(writable, std::move(callback));
 }
 
@@ -260,6 +262,8 @@ void FileSystemAccessDirectoryHandleImpl::Resolve(
 void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
     ResolveCallback callback,
     FileSystemAccessTransferTokenImpl* possible_child) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!possible_child) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(
@@ -519,6 +523,8 @@ blink::mojom::FileSystemAccessErrorPtr
 FileSystemAccessDirectoryHandleImpl::GetChildURL(
     const std::string& basename,
     storage::FileSystemURL* result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!IsSafePathComponent(basename)) {
     return file_system_access_error::FromStatus(
         FileSystemAccessStatus::kInvalidArgument, "Name is not allowed.");
@@ -539,6 +545,8 @@ FileSystemAccessEntryPtr FileSystemAccessDirectoryHandleImpl::CreateEntry(
     const std::string& basename,
     const storage::FileSystemURL& url,
     HandleType handle_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (handle_type == HandleType::kDirectory) {
     return FileSystemAccessEntry::New(
         FileSystemAccessHandle::NewDirectory(
@@ -553,6 +561,7 @@ FileSystemAccessEntryPtr FileSystemAccessDirectoryHandleImpl::CreateEntry(
 
 base::WeakPtr<FileSystemAccessHandleBase>
 FileSystemAccessDirectoryHandleImpl::AsWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
 }
 

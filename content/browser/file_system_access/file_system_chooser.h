@@ -9,6 +9,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/task/task_runner.h"
+#include "base/thread_annotations.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
 #include "storage/browser/file_system/isolated_context.h"
@@ -89,9 +90,12 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
       void* params) override;
   void FileSelectionCanceled(void* params) override;
 
-  ResultCallback callback_;
-  ui::SelectFileDialog::Type type_;
-  base::ScopedClosureRunner fullscreen_block_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  ResultCallback callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+  ui::SelectFileDialog::Type type_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::ScopedClosureRunner fullscreen_block_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   scoped_refptr<ui::SelectFileDialog> dialog_;
 };

@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/common/content_export.h"
@@ -92,8 +93,8 @@ class CONTENT_EXPORT FileSystemAccessCapacityAllocationHostImpl
   // URL of the file whose capacity is managed through this host.
   const storage::FileSystemURL url_;
 
-  mojo::Receiver<blink::mojom::FileSystemAccessCapacityAllocationHost>
-      receiver_;
+  mojo::Receiver<blink::mojom::FileSystemAccessCapacityAllocationHost> receiver_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Total capacity granted to the file managed through this host. Initially,
   // this is the file's size. Later, this value is modified through mojo calls

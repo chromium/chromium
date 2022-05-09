@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
@@ -136,15 +137,17 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
           callback);
 
   bool ShouldTrackUsage() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return url_.type() != storage::kFileSystemTypeTemporary &&
            url_.type() != storage::kFileSystemTypeTest;
   }
 
   // The FileSystemAccessManagerImpl that owns this instance.
   const raw_ptr<FileSystemAccessManagerImpl> manager_;
-  base::WeakPtr<WebContents> web_contents_;
+  base::WeakPtr<WebContents> web_contents_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   const BindingContext context_;
-  storage::FileSystemURL url_;
+  storage::FileSystemURL url_ GUARDED_BY_CONTEXT(sequence_checker_);
   const SharedHandleState handle_state_;
 };
 

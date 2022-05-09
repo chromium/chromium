@@ -7,6 +7,7 @@
 
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
+#include "base/thread_annotations.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
 #include "content/common/content_export.h"
@@ -115,7 +116,8 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
 
   base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override;
 
-  base::WeakPtrFactory<FileSystemAccessDirectoryHandleImpl> weak_factory_{this};
+  base::WeakPtrFactory<FileSystemAccessDirectoryHandleImpl> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace content

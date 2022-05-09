@@ -452,8 +452,9 @@ void FileSystemAccessManagerImpl::ResolveDefaultDirectory(
     blink::mojom::CommonFilePickerOptionsPtr common_options,
     ChooseEntriesCallback callback,
     FileSystemAccessTransferTokenImpl* resolved_starting_directory_token) {
-  PathInfo path_info;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  PathInfo path_info;
   if (resolved_starting_directory_token)
     HandleTransferTokenAsDefaultDirectory(resolved_starting_directory_token,
                                           path_info);
@@ -560,6 +561,8 @@ void FileSystemAccessManagerImpl::CreateFileSystemAccessDataTransferToken(
     int renderer_id,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessDataTransferToken>
         receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto data_transfer_token_impl =
       std::make_unique<FileSystemAccessDataTransferTokenImpl>(
           this, path_type, file_path, renderer_id, std::move(receiver));
@@ -570,6 +573,8 @@ void FileSystemAccessManagerImpl::CreateFileSystemAccessDataTransferToken(
 void FileSystemAccessManagerImpl::GetEntryFromDataTransferToken(
     mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken> token,
     GetEntryFromDataTransferTokenCallback token_resolved_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   mojo::Remote<blink::mojom::FileSystemAccessDataTransferToken>
       data_transfer_token_remote(std::move(token));
 
@@ -597,6 +602,8 @@ void FileSystemAccessManagerImpl::ResolveDataTransferToken(
     GetEntryFromDataTransferTokenCallback token_resolved_callback,
     mojo::ReportBadMessageCallback failed_token_redemption_callback,
     const base::UnguessableToken& token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto data_transfer_token_impl = data_transfer_tokens_.find(token);
 
   // Call `token_resolved_callback` with an error if the token isn't registered.
@@ -636,6 +643,8 @@ void FileSystemAccessManagerImpl::ResolveDataTransferTokenWithFileType(
     const storage::FileSystemURL& url,
     GetEntryFromDataTransferTokenCallback token_resolved_callback,
     HandleType file_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   SharedHandleState shared_handle_state =
       GetSharedHandleStateForPath(file_path, binding_context.storage_key,
                                   file_type, UserAction::kDragAndDrop);
@@ -687,6 +696,7 @@ void FileSystemAccessManagerImpl::GetDirectoryHandleFromToken(
 void FileSystemAccessManagerImpl::SerializeHandle(
     mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
     SerializeHandleCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ResolveTransferToken(
       std::move(token),
       base::BindOnce(&FileSystemAccessManagerImpl::DidResolveForSerializeHandle,
@@ -712,6 +722,8 @@ base::FilePath DeserializePath(const std::string& bytes) {
 void FileSystemAccessManagerImpl::DidResolveForSerializeHandle(
     SerializeHandleCallback callback,
     FileSystemAccessTransferTokenImpl* resolved_token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!resolved_token) {
     std::move(callback).Run({});
     return;
@@ -772,6 +784,7 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
     const blink::StorageKey& storage_key,
     const std::vector<uint8_t>& bits,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!bits.empty());
 
   std::string bits_as_string(bits.begin(), bits.end());
@@ -915,6 +928,7 @@ absl::optional<scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>>
 FileSystemAccessManagerImpl::TakeWriteLock(
     const storage::FileSystemURL& url,
     FileSystemAccessWriteLockManager::WriteLockType lock_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return write_lock_manager_->TakeLock(url, lock_type);
 }
 
@@ -998,6 +1012,7 @@ void FileSystemAccessManagerImpl::CreateTransferToken(
     const FileSystemAccessFileHandleImpl& file,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
         receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return CreateTransferTokenImpl(file.url(), file.context().storage_key,
                                  file.handle_state(), HandleType::kFile,
                                  std::move(receiver));
@@ -1007,6 +1022,7 @@ void FileSystemAccessManagerImpl::CreateTransferToken(
     const FileSystemAccessDirectoryHandleImpl& directory,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
         receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return CreateTransferTokenImpl(
       directory.url(), directory.context().storage_key,
       directory.handle_state(), HandleType::kDirectory, std::move(receiver));
@@ -1390,6 +1406,7 @@ FileSystemAccessManagerImpl::GetSharedHandleStateForPath(
     const blink::StorageKey& storage_key,
     HandleType handle_type,
     FileSystemAccessPermissionContext::UserAction user_action) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   scoped_refptr<FileSystemAccessPermissionGrant> read_grant, write_grant;
   if (permission_context_) {
     read_grant = permission_context_->GetReadPermissionGrant(
@@ -1477,6 +1494,7 @@ void FileSystemAccessManagerImpl::ResolveTransferToken(
     mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
         transfer_token,
     ResolveTransferTokenCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ResolveTransferToken(std::move(transfer_token),
                        base::BindOnce(
                            [](ResolveTransferTokenCallback callback,
@@ -1492,6 +1510,7 @@ void FileSystemAccessManagerImpl::ResolveTransferToken(
 
 base::WeakPtr<FileSystemAccessManagerImpl>
 FileSystemAccessManagerImpl::AsWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
 }
 

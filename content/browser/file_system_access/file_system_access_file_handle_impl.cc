@@ -483,6 +483,7 @@ void FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions(
     bool auto_close,
     CreateFileWriterCallback callback,
     bool can_write) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!can_write) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(
@@ -655,6 +656,7 @@ void FileSystemAccessFileHandleImpl::DidCopySwapFile(
 
 base::WeakPtr<FileSystemAccessHandleBase>
 FileSystemAccessFileHandleImpl::AsWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
 }
 

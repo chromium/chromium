@@ -10,6 +10,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -46,6 +47,7 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
                              SafeMoveHelper::HashCallback callback,
                              const storage::FileSystemURL& source_url,
                              storage::FileSystemOperationRunner*) {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
     auto calculator = base::MakeRefCounted<HashCalculator>(std::move(context),
                                                            std::move(callback));
     calculator->Start(source_url);
@@ -62,6 +64,7 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
   ~HashCalculator() = default;
 
   void Start(const storage::FileSystemURL& source_url) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     reader_ = context_->CreateFileStreamReader(
         source_url, 0, storage::kMaximumLength, base::Time());
     int64_t length =
@@ -72,6 +75,7 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
   }
 
   void GotLength(int64_t length) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (length < 0) {
       std::move(callback_).Run(storage::NetErrorToFileError(length),
                                std::string(), -1);
@@ -83,6 +87,7 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
   }
 
   void ReadMore() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_GE(file_size_, 0);
     int read_result =
         reader_->Read(buffer_.get(), buffer_->size(),
@@ -93,6 +98,7 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
   }
 
   void DidRead(int bytes_read) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_GE(file_size_, 0);
     if (bytes_read < 0) {
       std::move(callback_).Run(storage::NetErrorToFileError(bytes_read),
@@ -110,8 +116,10 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
     ReadMore();
   }
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   const scoped_refptr<storage::FileSystemContext> context_;
-  SafeMoveHelper::HashCallback callback_;
+  SafeMoveHelper::HashCallback callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   const scoped_refptr<net::IOBufferWithSize> buffer_{
       base::MakeRefCounted<net::IOBufferWithSize>(8 * 1024)};
@@ -119,8 +127,9 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
   const std::unique_ptr<crypto::SecureHash> hash_{
       crypto::SecureHash::Create(crypto::SecureHash::SHA256)};
 
-  std::unique_ptr<storage::FileStreamReader> reader_;
-  int64_t file_size_ = -1;
+  std::unique_ptr<storage::FileStreamReader> reader_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  int64_t file_size_ GUARDED_BY_CONTEXT(sequence_checker_) = -1;
 };
 
 }  // namespace

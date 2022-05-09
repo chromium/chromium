@@ -42,6 +42,7 @@ FileSystemAccessTransferTokenImpl::~FileSystemAccessTransferTokenImpl() =
 std::unique_ptr<FileSystemAccessFileHandleImpl>
 FileSystemAccessTransferTokenImpl::CreateFileHandle(
     const FileSystemAccessManagerImpl::BindingContext& binding_context) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(handle_type_, HandleType::kFile);
   return std::make_unique<FileSystemAccessFileHandleImpl>(
       manager_, binding_context, url_, handle_state_);
@@ -50,6 +51,7 @@ FileSystemAccessTransferTokenImpl::CreateFileHandle(
 std::unique_ptr<FileSystemAccessDirectoryHandleImpl>
 FileSystemAccessTransferTokenImpl::CreateDirectoryHandle(
     const FileSystemAccessManagerImpl::BindingContext& binding_context) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(handle_type_, HandleType::kDirectory);
   return std::make_unique<FileSystemAccessDirectoryHandleImpl>(
       manager_, binding_context, url_, handle_state_);
@@ -57,20 +59,24 @@ FileSystemAccessTransferTokenImpl::CreateDirectoryHandle(
 
 FileSystemAccessPermissionGrant*
 FileSystemAccessTransferTokenImpl::GetReadGrant() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return handle_state_.read_grant.get();
 }
 
 FileSystemAccessPermissionGrant*
 FileSystemAccessTransferTokenImpl::GetWriteGrant() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return handle_state_.write_grant.get();
 }
 
 void FileSystemAccessTransferTokenImpl::GetInternalID(
     GetInternalIDCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run(token_);
 }
 
 void FileSystemAccessTransferTokenImpl::OnMojoDisconnect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (receivers_.empty()) {
     manager_->RemoveToken(token_);
   }
@@ -79,6 +85,7 @@ void FileSystemAccessTransferTokenImpl::OnMojoDisconnect() {
 void FileSystemAccessTransferTokenImpl::Clone(
     mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
         clone_receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   receivers_.Add(this, std::move(clone_receiver));
 }
 

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/bind_post_task.h"
+#include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "components/download/public/common/quarantine_connection.h"
@@ -253,6 +254,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   operation_runner();
 
   FileSystemAccessPermissionContext* permission_context() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return permission_context_;
   }
 
@@ -260,11 +262,13 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
 
   void SetPermissionContextForTesting(
       FileSystemAccessPermissionContext* permission_context) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     permission_context_ = permission_context;
   }
 
   void SetFilePickerResultForTesting(
       absl::optional<FileSystemChooser::ResultEntry> result_entry) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     auto_file_picker_result_for_test_ = result_entry;
   }
 
@@ -491,45 +495,48 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
 
   const scoped_refptr<storage::FileSystemContext> context_;
   const scoped_refptr<ChromeBlobStorageContext> blob_context_;
-  base::SequenceBound<storage::FileSystemOperationRunner> operation_runner_;
-  raw_ptr<FileSystemAccessPermissionContext> permission_context_;
+  base::SequenceBound<storage::FileSystemOperationRunner> operation_runner_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  raw_ptr<FileSystemAccessPermissionContext> permission_context_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // All the mojo receivers for this FileSystemAccessManager itself. Keeps
   // track of associated origin and other state as well to not have to rely on
   // the renderer passing that in, and to be able to do security checks around
   // transferability etc.
   mojo::ReceiverSet<blink::mojom::FileSystemAccessManager, BindingContext>
-      receivers_;
+      receivers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   mojo::ReceiverSet<storage::mojom::FileSystemAccessContext>
-      internals_receivers_;
+      internals_receivers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The `write_lock_manager_` manager should be destroyed after
   // `writer_receivers_` and `access_handle_host_receivers_`. The write locks
   // held by file writers and access handles dereference the lock manager on
   // destruction, so it should outlive them.
-  std::unique_ptr<FileSystemAccessWriteLockManager> write_lock_manager_;
+  std::unique_ptr<FileSystemAccessWriteLockManager> write_lock_manager_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // All the receivers for file and directory handles that have references to
   // them.
   mojo::UniqueReceiverSet<blink::mojom::FileSystemAccessFileHandle>
-      file_receivers_;
+      file_receivers_ GUARDED_BY_CONTEXT(sequence_checker_);
   mojo::UniqueReceiverSet<blink::mojom::FileSystemAccessDirectoryHandle>
-      directory_receivers_;
+      directory_receivers_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::flat_set<std::unique_ptr<FileSystemAccessFileWriterImpl>,
                  base::UniquePtrComparator>
-      writer_receivers_;
+      writer_receivers_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::flat_set<std::unique_ptr<FileSystemAccessAccessHandleHostImpl>,
                  base::UniquePtrComparator>
-      access_handle_host_receivers_;
+      access_handle_host_receivers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  bool off_the_record_;
+  const bool off_the_record_;
 
   // FileSystemAccessTransferTokenImpl owns a Transfer token receiver set and is
   // removed from this map when all mojo connections are closed.
   std::map<base::UnguessableToken,
            std::unique_ptr<FileSystemAccessTransferTokenImpl>>
-      transfer_tokens_;
+      transfer_tokens_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // This map is used to associate FileSystemAccessDataTransferTokenImpl
   // instances with UnguessableTokens so that this class can find an associated
@@ -537,12 +544,13 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // mojo::PendingRemote<FileSystemAccessDataTransferToken>.
   std::map<base::UnguessableToken,
            std::unique_ptr<FileSystemAccessDataTransferTokenImpl>>
-      data_transfer_tokens_;
+      data_transfer_tokens_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   absl::optional<FileSystemChooser::ResultEntry>
-      auto_file_picker_result_for_test_;
+      auto_file_picker_result_for_test_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::WeakPtrFactory<FileSystemAccessManagerImpl> weak_factory_{this};
+  base::WeakPtrFactory<FileSystemAccessManagerImpl> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace content

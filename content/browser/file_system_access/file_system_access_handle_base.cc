@@ -282,6 +282,8 @@ void FileSystemAccessHandleBase::DidResolveTokenToMove(
     bool has_transient_user_activation,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
     FileSystemAccessTransferTokenImpl* resolved_destination_directory) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!resolved_destination_directory) {
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kInvalidArgument));
@@ -310,6 +312,8 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
     std::unique_ptr<FileSystemAccessDirectoryHandleImpl> dir_handle,
     bool has_transient_user_activation,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Must have write access to the target directory.
   if (dir_handle->GetWritePermissionStatus() !=
       blink::mojom::PermissionStatus::GRANTED) {
@@ -386,6 +390,7 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
              callback,
          blink::mojom::FileSystemAccessErrorPtr result) {
         if (handle) {
+          DCHECK_CALLED_ON_VALID_SEQUENCE(handle->sequence_checker_);
           if (result->status == blink::mojom::FileSystemAccessStatus::kOk)
             handle->url_ = std::move(new_url);
         }
@@ -441,6 +446,8 @@ void FileSystemAccessHandleBase::DoRemove(
 // Calculates the parent URL fom current context, propagating any
 // storage bucket overrides from the child.
 storage::FileSystemURL FileSystemAccessHandleBase::GetParentURL() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   const storage::FileSystemURL child = url();
   storage::FileSystemURL parent =
       file_system_context()->CreateCrackedFileSystemURL(
