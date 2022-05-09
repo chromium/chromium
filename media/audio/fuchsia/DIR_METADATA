@@ -7,4 +7,3 @@
 #   https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/tools/dirmd/proto/dir_metadata.proto
 
 mixins: "//build/fuchsia/COMMON_METADATA"
-os: FUCHSIA
