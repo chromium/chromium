@@ -35,6 +35,8 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -48,7 +50,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.url.GURL;
 
@@ -58,7 +62,7 @@ import java.util.List;
  * This class handles managing which {@link StripLayoutHelper} is currently active and dispatches
  * all input and model events to the proper destination.
  */
-public class StripLayoutHelperManager implements SceneOverlay {
+public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNativeObserver {
     private static final long FADE_SCRIM_DURATION_MS = 200;
     // Caching Variables
     private final RectF mStripFilterArea = new RectF();
@@ -109,6 +113,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
             };
 
     private TabModelObserver mTabModelObserver;
+    private final ActivityLifecycleDispatcher mLifecycleDispatcher;
 
     private final String mDefaultTitle;
     private final Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
@@ -232,16 +237,20 @@ public class StripLayoutHelperManager implements SceneOverlay {
      * @param context The current Android {@link Context}.
      * @param updateHost The parent {@link LayoutUpdateHost}.
      * @param renderHost The {@link LayoutRenderHost}.
-     * @param titleCacheSupplier A supplier of the title cache.
      * @param layerTitleCacheSupplier A supplier of the cache that holds the title textures.
+     * @param lifecycleDispatcher The {@link ActivityLifecycleDispatcher} for registering this class
+     *         to lifecycle events.
      */
     public StripLayoutHelperManager(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, Supplier<LayerTitleCache> layerTitleCacheSupplier) {
+            LayoutRenderHost renderHost, Supplier<LayerTitleCache> layerTitleCacheSupplier,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mUpdateHost = updateHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mTabStripTreeProvider = new TabStripSceneLayer(context);
         mTabStripEventHandler = new TabStripEventHandler();
         mTabSwitcherLayoutObserver = new TabSwitcherLayoutObserver();
+        mLifecycleDispatcher = lifecycleDispatcher;
+        mLifecycleDispatcher.register(this);
         mDefaultTitle = context.getString(R.string.tab_loading_default_title);
         mEventFilter =
                 new AreaGestureEventFilter(context, mTabStripEventHandler, null, false, false);
@@ -296,6 +305,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
         mTabStripTreeProvider = null;
         mIncognitoHelper.destroy();
         mNormalHelper.destroy();
+        mLifecycleDispatcher.unregister(this);
         if (mTabModelSelector != null) {
             mTabModelSelector.getTabModelFilterProvider().removeTabModelFilterObserver(
                     mTabModelObserver);
@@ -305,6 +315,17 @@ public class StripLayoutHelperManager implements SceneOverlay {
             mTabModelSelectorTabObserver.destroy();
         }
     }
+
+    @Override
+    public void onResumeWithNative() {
+        Tab currentTab = mTabModelSelector.getCurrentTab();
+        if (currentTab == null) return;
+        getStripLayoutHelper(currentTab.isIncognito())
+                .scrollTabToView(LayoutManagerImpl.time(), true);
+    }
+
+    @Override
+    public void onPauseWithNative() {}
 
     private void handleModelSelectorButtonClick() {
         if (mTabModelSelector == null) return;
@@ -578,6 +599,16 @@ public class StripLayoutHelperManager implements SceneOverlay {
         };
 
         mTabModelSelectorTabObserver = new TabModelSelectorTabObserver(modelSelector) {
+            @Override
+            public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                if (params.getTransitionType() == PageTransition.HOME_PAGE
+                        || (params.getTransitionType() & PageTransition.FROM_ADDRESS_BAR)
+                                == PageTransition.FROM_ADDRESS_BAR) {
+                    getStripLayoutHelper(tab.isIncognito())
+                            .scrollTabToView(LayoutManagerImpl.time(), false);
+                }
+            }
+
             @Override
             public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
                 getStripLayoutHelper(tab.isIncognito()).tabLoadStarted(tab.getId());

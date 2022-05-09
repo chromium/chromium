@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -52,14 +53,15 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker,
-            ViewGroup startSurfaceScrimAnchor, ScrimCoordinator scrimCoordinator) {
+            ViewGroup startSurfaceScrimAnchor, ScrimCoordinator scrimCoordinator,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         super(host, contentContainer,
                 TabUiFeatureUtilities.isGridTabSwitcherEnabled(host.getContext()), startSurface,
                 tabContentManagerSupplier, overviewModeBehaviorSupplier, topUiThemeColorProvider,
                 jankTracker, startSurfaceScrimAnchor, scrimCoordinator);
 
-        mTabStripLayoutHelperManager = new StripLayoutHelperManager(
-                host.getContext(), this, mHost.getLayoutRenderHost(), () -> mLayerTitleCache);
+        mTabStripLayoutHelperManager = new StripLayoutHelperManager(host.getContext(), this,
+                mHost.getLayoutRenderHost(), () -> mLayerTitleCache, lifecycleDispatcher);
         addSceneOverlay(mTabStripLayoutHelperManager);
 
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
