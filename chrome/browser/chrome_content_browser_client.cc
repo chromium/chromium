@@ -400,6 +400,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/webauthn/chrome_conditional_ui_delegate_android.h"
 #include "chrome/common/chrome_descriptors.h"
+#include "components/autofill_assistant/content/common/switches.h"
 #include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
 #include "components/cdm/browser/cdm_message_filter_android.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
@@ -2536,6 +2537,14 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                                     switches::kChangeStackGuardOnForkEnabled);
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
+  if (browser_command_line.HasSwitch(
+          autofill_assistant::switches::kAutofillAssistantDebugAnnotateDom)) {
+    command_line->AppendSwitch(
+        autofill_assistant::switches::kAutofillAssistantDebugAnnotateDom);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 std::string
