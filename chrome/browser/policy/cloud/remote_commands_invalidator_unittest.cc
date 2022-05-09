@@ -6,9 +6,9 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "components/invalidation/impl/fake_ack_handler.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/impl/invalidator_registrar_with_memory.h"
-#include "components/invalidation/impl/mock_ack_handler.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
@@ -82,12 +82,12 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
   }
 
   bool IsInvalidationSent(const invalidation::Invalidation& invalidation) {
-    return !invalidation_service_.GetMockAckHandler()->IsUnsent(invalidation);
+    return !invalidation_service_.GetFakeAckHandler()->IsUnsent(invalidation);
   }
 
   bool IsInvalidationAcknowledged(
       const invalidation::Invalidation& invalidation) {
-    return invalidation_service_.GetMockAckHandler()->IsAcknowledged(
+    return invalidation_service_.GetFakeAckHandler()->IsAcknowledged(
         invalidation);
   }
 
@@ -176,8 +176,8 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
     const invalidation::Invalidation invalidation = FireInvalidation(topic);
 
     EXPECT_TRUE(
-        invalidation_service_.GetMockAckHandler()->IsUnacked(invalidation));
-    EXPECT_FALSE(invalidation_service_.GetMockAckHandler()->IsAcknowledged(
+        invalidation_service_.GetFakeAckHandler()->IsUnacked(invalidation));
+    EXPECT_FALSE(invalidation_service_.GetFakeAckHandler()->IsAcknowledged(
         invalidation));
     VerifyExpectations();
   }

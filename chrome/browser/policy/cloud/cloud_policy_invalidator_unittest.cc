@@ -364,7 +364,7 @@ bool CloudPolicyInvalidatorTestBase::CheckPolicyRefreshed() {
 
 bool CloudPolicyInvalidatorTestBase::IsUnsent(
     const invalidation::Invalidation& invalidation) {
-  return invalidation_service_.GetMockAckHandler()->IsUnsent(invalidation);
+  return invalidation_service_.GetFakeAckHandler()->IsUnsent(invalidation);
 }
 
 bool CloudPolicyInvalidatorTestBase::CheckPolicyRefreshedWithUnknownVersion() {
@@ -384,7 +384,7 @@ bool CloudPolicyInvalidatorTestBase::IsInvalidationAcknowledged(
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(IsUnsent(invalidation));
-  return !invalidation_service_.GetMockAckHandler()->IsUnacked(invalidation);
+  return !invalidation_service_.GetFakeAckHandler()->IsUnacked(invalidation);
 }
 
 bool CloudPolicyInvalidatorTestBase::IsInvalidatorRegistered() {

@@ -19,6 +19,8 @@ static_library("impl") {
   sources = [
     "channels_states.cc",
     "channels_states.h",
+    "fake_ack_handler.cc",
+    "fake_ack_handler.h",
     "fcm_invalidation_listener.cc",
     "fcm_invalidation_listener.h",
     "fcm_invalidation_service.cc",
@@ -38,8 +40,6 @@ static_library("impl") {
     "invalidation_service_util.h",
     "invalidator_registrar_with_memory.cc",
     "invalidator_registrar_with_memory.h",
-    "mock_ack_handler.cc",
-    "mock_ack_handler.h",
     "per_user_topic_subscription_manager.cc",
     "per_user_topic_subscription_manager.h",
     "per_user_topic_subscription_request.cc",

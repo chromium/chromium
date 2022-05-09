@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/invalidation/impl/mock_ack_handler.h"
+#include "components/invalidation/impl/fake_ack_handler.h"
 
 #include <algorithm>
 
@@ -21,8 +21,7 @@ struct AckHandleMatcher {
   AckHandle handle_;
 };
 
-AckHandleMatcher::AckHandleMatcher(const AckHandle& handle)
-  : handle_(handle) {}
+AckHandleMatcher::AckHandleMatcher(const AckHandle& handle) : handle_(handle) {}
 
 bool AckHandleMatcher::operator()(const Invalidation& invalidation) const {
   return handle_.Equals(invalidation.ack_handle());
@@ -30,52 +29,52 @@ bool AckHandleMatcher::operator()(const Invalidation& invalidation) const {
 
 }  // namespace
 
-MockAckHandler::MockAckHandler() = default;
+FakeAckHandler::FakeAckHandler() = default;
 
-MockAckHandler::~MockAckHandler() = default;
+FakeAckHandler::~FakeAckHandler() = default;
 
-void MockAckHandler::RegisterInvalidation(Invalidation* invalidation) {
+void FakeAckHandler::RegisterInvalidation(Invalidation* invalidation) {
   unacked_invalidations_.push_back(*invalidation);
   invalidation->SetAckHandler(AsWeakPtr(), base::ThreadTaskRunnerHandle::Get());
 }
 
-void MockAckHandler::RegisterUnsentInvalidation(Invalidation* invalidation) {
+void FakeAckHandler::RegisterUnsentInvalidation(Invalidation* invalidation) {
   unsent_invalidations_.push_back(*invalidation);
 }
 
-bool MockAckHandler::IsUnacked(const Invalidation& invalidation) const {
+bool FakeAckHandler::IsUnacked(const Invalidation& invalidation) const {
   AckHandleMatcher matcher(invalidation.ack_handle());
   auto it = std::find_if(unacked_invalidations_.begin(),
                          unacked_invalidations_.end(), matcher);
   return it != unacked_invalidations_.end();
 }
 
-bool MockAckHandler::IsAcknowledged(const Invalidation& invalidation) const {
+bool FakeAckHandler::IsAcknowledged(const Invalidation& invalidation) const {
   AckHandleMatcher matcher(invalidation.ack_handle());
   auto it = std::find_if(acked_invalidations_.begin(),
                          acked_invalidations_.end(), matcher);
   return it != acked_invalidations_.end();
 }
 
-bool MockAckHandler::IsDropped(const Invalidation& invalidation) const {
+bool FakeAckHandler::IsDropped(const Invalidation& invalidation) const {
   AckHandleMatcher matcher(invalidation.ack_handle());
   auto it = std::find_if(dropped_invalidations_.begin(),
                          dropped_invalidations_.end(), matcher);
   return it != dropped_invalidations_.end();
 }
 
-bool MockAckHandler::IsUnsent(const Invalidation& invalidation) const {
+bool FakeAckHandler::IsUnsent(const Invalidation& invalidation) const {
   AckHandleMatcher matcher(invalidation.ack_handle());
   auto it1 = std::find_if(unsent_invalidations_.begin(),
                           unsent_invalidations_.end(), matcher);
   return it1 != unsent_invalidations_.end();
 }
 
-bool MockAckHandler::AllInvalidationsAccountedFor() const {
+bool FakeAckHandler::AllInvalidationsAccountedFor() const {
   return unacked_invalidations_.empty() && unrecovered_drop_events_.empty();
 }
 
-void MockAckHandler::Acknowledge(const Topic& topic, const AckHandle& handle) {
+void FakeAckHandler::Acknowledge(const Topic& topic, const AckHandle& handle) {
   AckHandleMatcher matcher(handle);
   auto it = std::find_if(unacked_invalidations_.begin(),
                          unacked_invalidations_.end(), matcher);
@@ -90,7 +89,7 @@ void MockAckHandler::Acknowledge(const Topic& topic, const AckHandle& handle) {
   }
 }
 
-void MockAckHandler::Drop(const Topic& topic, const AckHandle& handle) {
+void FakeAckHandler::Drop(const Topic& topic, const AckHandle& handle) {
   AckHandleMatcher matcher(handle);
   auto it = std::find_if(unacked_invalidations_.begin(),
                          unacked_invalidations_.end(), matcher);

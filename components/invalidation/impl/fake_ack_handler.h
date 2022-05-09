@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_INVALIDATION_IMPL_MOCK_ACK_HANDLER_H_
-#define COMPONENTS_INVALIDATION_IMPL_MOCK_ACK_HANDLER_H_
+#ifndef COMPONENTS_INVALIDATION_IMPL_FAKE_ACK_HANDLER_H_
+#define COMPONENTS_INVALIDATION_IMPL_FAKE_ACK_HANDLER_H_
 
 #include <map>
 #include <vector>
@@ -20,13 +20,12 @@ class Invalidation;
 
 // This AckHandler implementation colaborates with the FakeInvalidationService
 // to enable unit tests to assert that invalidations are being acked properly.
-// TODO(crbug.com/1105388): Rename to FakeAckHandler.
-class INVALIDATION_EXPORT MockAckHandler
-  : public AckHandler,
-    public base::SupportsWeakPtr<MockAckHandler> {
+class INVALIDATION_EXPORT FakeAckHandler
+    : public AckHandler,
+      public base::SupportsWeakPtr<FakeAckHandler> {
  public:
-  MockAckHandler();
-  ~MockAckHandler() override;
+  FakeAckHandler();
+  ~FakeAckHandler() override;
 
   // Sets up some internal state to track this invalidation, and modifies it so
   // that its Acknowledge() and Drop() methods will route back to us.
@@ -71,4 +70,4 @@ class INVALIDATION_EXPORT MockAckHandler
 
 }  // namespace invalidation
 
-#endif  // COMPONENTS_INVALIDATION_IMPL_MOCK_ACK_HANDLER_H_
+#endif  // COMPONENTS_INVALIDATION_IMPL_FAKE_ACK_HANDLER_H_

@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/callback_forward.h"
+#include "components/invalidation/impl/fake_ack_handler.h"
 #include "components/invalidation/impl/invalidator_registrar_with_memory.h"
-#include "components/invalidation/impl/mock_ack_handler.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/prefs/testing_pref_service.h"
 
@@ -52,14 +52,14 @@ class FakeInvalidationService : public InvalidationService {
 
   // Emitted invalidations will be hooked up to this AckHandler.  Clients can
   // query it to assert the invalidaitons are being acked properly.
-  MockAckHandler* GetMockAckHandler();
+  FakeAckHandler* GetFakeAckHandler();
 
  private:
   std::string client_id_;
   // |pref_service_| must outlive |invalidator_registrar_|.
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<InvalidatorRegistrarWithMemory> invalidator_registrar_;
-  MockAckHandler mock_ack_handler_;
+  FakeAckHandler fake_ack_handler_;
 };
 
 }  // namespace invalidation
