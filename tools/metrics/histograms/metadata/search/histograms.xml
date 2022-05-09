@@ -974,16 +974,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearchTapOnWordMiddleSeen"
-    enum="ContextualSearchResultsSeen" expires_after="M72">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether results were seen for a Tap that was on the middle part of a word.
-    Recorded when the UX is hidden. Implemented for Android.
-  </summary>
-</histogram>
-
 <histogram name="Search.ContextualSearchTapShortDurationSeen"
     enum="ContextualSearchResultsSeen" expires_after="M72">
   <owner>donnd@chromium.org</owner>

@@ -911,20 +911,6 @@ public class ContextualSearchUma {
     }
 
     /**
-     * Log whether results were seen due to a Tap that was on the middle of a word.
-     * @param wasSearchContentViewSeen If the panel was opened.
-     * @param isTapOnWordMiddle Whether this tap was on the middle of a word.
-     */
-    public static void logTapOnWordMiddleSeen(
-            boolean wasSearchContentViewSeen, boolean isTapOnWordMiddle) {
-        if (!isTapOnWordMiddle) return;
-
-        // We just record CTR of words tapped in the "middle".
-        RecordHistogram.recordEnumeratedHistogram("Search.ContextualSearchTapOnWordMiddleSeen",
-                wasSearchContentViewSeen ? Results.SEEN : Results.NOT_SEEN, Results.NUM_ENTRIES);
-    }
-
-    /**
      * Log whether results were seen due to a Tap on what we've recognized as a probable entity.
      * @param wasSearchContentViewSeen If the panel was opened.
      * @param isWordAnEntity Whether this tap was on a word that's an entity.

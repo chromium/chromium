@@ -112,7 +112,10 @@ public class ContextualSearchFieldTrial {
          * Bar peeking location.
          */
         int IS_BAR_OVERLAP_SUPPRESSION_ENABLED = 6;
-        /** Whether triggering is suppressed by a tap that's near the edge of a word. */
+        /**
+         * @deprecated
+         * Whether triggering is suppressed by a tap that's near the edge of a word.
+         */
         int IS_WORD_EDGE_SUPPRESSION_ENABLED = 7;
         /**
          * @deprecated
