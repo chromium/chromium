@@ -820,7 +820,6 @@ void ContentSecurityPolicy::UpgradeInsecureRequests() {
 // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
 static String StripURLForUseInReport(const SecurityOrigin* security_origin,
                                      const KURL& url,
-                                     RedirectStatus redirect_status,
                                      CSPDirectiveName effective_type) {
   if (!url.IsValid())
     return String();
@@ -837,8 +836,7 @@ static String StripURLForUseInReport(const SecurityOrigin* security_origin,
   // and 'object-src' violations down to an origin. https://crbug.com/633306
   bool can_safely_expose_url =
       security_origin->CanRequest(url) ||
-      (redirect_status == RedirectStatus::kNoRedirect &&
-       effective_type != CSPDirectiveName::FrameSrc &&
+      (effective_type != CSPDirectiveName::FrameSrc &&
        effective_type != CSPDirectiveName::ObjectSrc &&
        effective_type != CSPDirectiveName::FencedFrameSrc);
 
@@ -867,7 +865,6 @@ std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
     CSPDirectiveName effective_type,
     const KURL& blocked_url,
     const String& header,
-    RedirectStatus redirect_status,
     ContentSecurityPolicyType header_type,
     ContentSecurityPolicyViolationType violation_type,
     std::unique_ptr<SourceLocation> source_location,
@@ -877,15 +874,15 @@ std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
     // If this load was blocked via 'frame-ancestors', then the URL of
     // |document| has not yet been initialized. In this case, we'll set both
     // 'documentURI' and 'blockedURI' to the blocked document's URL.
-    String stripped_url = StripURLForUseInReport(
-        delegate->GetSecurityOrigin(), blocked_url, RedirectStatus::kNoRedirect,
-        CSPDirectiveName::DefaultSrc);
+    String stripped_url =
+        StripURLForUseInReport(delegate->GetSecurityOrigin(), blocked_url,
+                               CSPDirectiveName::DefaultSrc);
     init->setDocumentURI(stripped_url);
     init->setBlockedURI(stripped_url);
   } else {
-    String stripped_url = StripURLForUseInReport(
-        delegate->GetSecurityOrigin(), delegate->Url(),
-        RedirectStatus::kNoRedirect, CSPDirectiveName::DefaultSrc);
+    String stripped_url =
+        StripURLForUseInReport(delegate->GetSecurityOrigin(), delegate->Url(),
+                               CSPDirectiveName::DefaultSrc);
     init->setDocumentURI(stripped_url);
     switch (violation_type) {
       case ContentSecurityPolicyViolationType::kInlineViolation:
@@ -903,8 +900,7 @@ std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
         // blocked_url at this point is always the original url (before
         // redirects).
         init->setBlockedURI(StripURLForUseInReport(
-            delegate->GetSecurityOrigin(), blocked_url,
-            RedirectStatus::kNoRedirect, effective_type));
+            delegate->GetSecurityOrigin(), blocked_url, effective_type));
         break;
       case ContentSecurityPolicyViolationType::kTrustedTypesSinkViolation:
         init->setBlockedURI("trusted-types-sink");
@@ -963,9 +959,8 @@ std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
     // violation. It is the URL pre-redirect. So it is safe to expose it in
     // reports without leaking any new informations to the document. See
     // https://crrev.com/c/2187792.
-    String source_file =
-        StripURLForUseInReport(delegate->GetSecurityOrigin(), source_url,
-                               RedirectStatus::kNoRedirect, effective_type);
+    String source_file = StripURLForUseInReport(delegate->GetSecurityOrigin(),
+                                                source_url, effective_type);
 
     init->setSourceFile(source_file);
     init->setLineNumber(source_location->LineNumber());
@@ -1010,7 +1005,6 @@ void ContentSecurityPolicy::ReportViolation(
     ContentSecurityPolicyViolationType violation_type,
     std::unique_ptr<SourceLocation> source_location,
     LocalFrame* context_frame,
-    RedirectStatus redirect_status,
     Element* element,
     const String& source,
     const String& source_prefix,
@@ -1045,7 +1039,7 @@ void ContentSecurityPolicy::ReportViolation(
   // report.
   source_location = GatherSecurityPolicyViolationEventData(
       violation_data, relevant_delegate, directive_text, effective_type,
-      blocked_url, header, redirect_status, header_type, violation_type,
+      blocked_url, header, header_type, violation_type,
       std::move(source_location), source, source_prefix);
 
   // TODO(mkwst): Obviously, we shouldn't hit this check, as extension-loaded
@@ -1152,7 +1146,7 @@ void ContentSecurityPolicy::ReportMixedContent(const KURL& blocked_url,
                       policy->header->type,
                       ContentSecurityPolicyViolationType::kURLViolation,
                       std::unique_ptr<SourceLocation>(),
-                      /*contextFrame=*/nullptr, redirect_status);
+                      /*contextFrame=*/nullptr);
     }
   }
 }

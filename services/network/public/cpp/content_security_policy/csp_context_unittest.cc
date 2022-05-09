@@ -38,7 +38,6 @@ class CSPContextTest : public CSPContext {
   }
 
   void SanitizeDataForUseInCspViolation(
-      bool is_redirect,
       CSPDirectiveName directive,
       GURL* blocked_url,
       network::mojom::SourceLocation* source_location) const override {

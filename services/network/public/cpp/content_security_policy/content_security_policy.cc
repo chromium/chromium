@@ -190,7 +190,6 @@ void ReportViolation(CSPContext* context,
                      const CSPDirectiveName effective_directive_name,
                      const CSPDirectiveName directive_name,
                      const GURL& url,
-                     bool has_followed_redirect,
                      const mojom::SourceLocationPtr& source_location) {
   // For security reasons, some urls must not be disclosed. This includes the
   // blocked url and the source location of the error. Care must be taken to
@@ -203,8 +202,7 @@ void ReportViolation(CSPContext* context,
   auto safe_source_location =
       source_location ? source_location->Clone() : mojom::SourceLocation::New();
 
-  context->SanitizeDataForUseInCspViolation(has_followed_redirect,
-                                            directive_name, &blocked_url,
+  context->SanitizeDataForUseInCspViolation(directive_name, &blocked_url,
                                             safe_source_location.get());
 
   std::stringstream message;
@@ -243,8 +241,7 @@ void ReportViolation(CSPContext* context,
       ToString(effective_directive_name), ToString(directive_name),
       message.str(), blocked_url, policy->report_endpoints,
       policy->use_reporting_api, policy->header->header_value,
-      policy->header->type, has_followed_redirect,
-      std::move(safe_source_location)));
+      policy->header->type, std::move(safe_source_location)));
 }
 
 const GURL ExtractInnerURL(const GURL& url) {
@@ -1272,7 +1269,7 @@ bool CheckContentSecurityPolicy(const mojom::ContentSecurityPolicyPtr& policy,
                          directive_name == CSPDirectiveName::FencedFrameSrc
                      ? url
                      : url_before_redirects),
-          has_followed_redirect, source_location);
+          source_location);
     }
 
     return allowed ||

@@ -72,7 +72,6 @@ bool CSPContext::SchemeShouldBypassCSP(const base::StringPiece& scheme) {
 }
 
 void CSPContext::SanitizeDataForUseInCspViolation(
-    bool has_followed_redirect,
     mojom::CSPDirectiveName directive,
     GURL* blocked_url,
     network::mojom::SourceLocation* source_location) const {}

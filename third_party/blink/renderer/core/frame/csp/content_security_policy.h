@@ -320,7 +320,6 @@ class CORE_EXPORT ContentSecurityPolicy final
       ContentSecurityPolicyViolationType,
       std::unique_ptr<SourceLocation>,
       LocalFrame* = nullptr,
-      RedirectStatus = RedirectStatus::kFollowedRedirect,
       Element* = nullptr,
       const String& source = g_empty_string,
       const String& source_prefix = g_empty_string,

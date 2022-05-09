@@ -801,10 +801,7 @@ void LocalFrameMojoHandler::ReportContentSecurityPolicyViolation(
       violation->blocked_url, violation->report_endpoints,
       violation->use_reporting_api, violation->header, violation->type,
       ContentSecurityPolicyViolationType::kURLViolation,
-      std::move(source_location), context_frame,
-      violation->after_redirect ? RedirectStatus::kFollowedRedirect
-                                : RedirectStatus::kNoRedirect,
-      nullptr /* Element */);
+      std::move(source_location), context_frame, nullptr /* Element */);
 }
 
 void LocalFrameMojoHandler::DidUpdateFramePolicy(

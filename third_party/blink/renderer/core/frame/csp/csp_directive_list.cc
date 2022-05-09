@@ -171,7 +171,6 @@ void ReportViolation(
     CSPDirectiveName effective_type,
     const String& console_message,
     const KURL& blocked_url,
-    ResourceRequest::RedirectStatus redirect_status,
     ContentSecurityPolicyViolationType violation_type =
         ContentSecurityPolicyViolationType::kURLViolation,
     const String& sample = String(),
@@ -188,7 +187,6 @@ void ReportViolation(
                           csp.header->header_value, csp.header->type,
                           violation_type, std::unique_ptr<SourceLocation>(),
                           nullptr,  // localFrame
-                          redirect_status,
                           nullptr,  // Element*
                           sample, sample_prefix, issue_id);
 }
@@ -217,7 +215,7 @@ void ReportViolationWithLocation(
                           csp.header->header_value, csp.header->type,
                           ContentSecurityPolicyViolationType::kInlineViolation,
                           std::move(source_location), nullptr,  // localFrame
-                          RedirectStatus::kNoRedirect, element, source);
+                          element, source);
 }
 
 void ReportEvalViolation(
@@ -242,12 +240,11 @@ void ReportEvalViolation(
         mojom::ConsoleMessageLevel::kError, report_message);
     policy->LogToConsole(console_message);
   }
-  policy->ReportViolation(directive_text, effective_type, message, blocked_url,
-                          csp.report_endpoints, csp.use_reporting_api,
-                          csp.header->header_value, csp.header->type,
-                          ContentSecurityPolicyViolationType::kEvalViolation,
-                          std::unique_ptr<SourceLocation>(), nullptr,
-                          RedirectStatus::kNoRedirect, nullptr, content);
+  policy->ReportViolation(
+      directive_text, effective_type, message, blocked_url,
+      csp.report_endpoints, csp.use_reporting_api, csp.header->header_value,
+      csp.header->type, ContentSecurityPolicyViolationType::kEvalViolation,
+      std::unique_ptr<SourceLocation>(), nullptr, nullptr, content);
 }
 
 void ReportWasmEvalViolation(
@@ -275,8 +272,7 @@ void ReportWasmEvalViolation(
       directive_text, effective_type, message, blocked_url,
       csp.report_endpoints, csp.use_reporting_api, csp.header->header_value,
       csp.header->type, ContentSecurityPolicyViolationType::kWasmEvalViolation,
-      std::unique_ptr<SourceLocation>(), nullptr, RedirectStatus::kNoRedirect,
-      nullptr, content);
+      std::unique_ptr<SourceLocation>(), nullptr, nullptr, content);
 }
 
 bool CheckEval(const network::mojom::blink::CSPSourceList* directive) {
@@ -625,7 +621,7 @@ bool CheckSourceAndReportViolation(
                       "' because it violates the following Content Security "
                       "Policy directive: \"" +
                       raw_directive + "\"." + suffix + "\n",
-                  url_before_redirects, redirect_status);
+                  url_before_redirects);
   return CSPDirectiveListIsReportOnly(csp);
 }
 
@@ -658,7 +654,6 @@ bool CSPDirectiveListAllowTrustedTypeAssignmentFailure(
       ContentSecurityPolicy::GetDirectiveName(
           CSPDirectiveName::RequireTrustedTypesFor),
       CSPDirectiveName::RequireTrustedTypesFor, message, KURL(),
-      RedirectStatus::kNoRedirect,
       ContentSecurityPolicyViolationType::kTrustedTypesSinkViolation, sample,
       sample_prefix, issue_id);
   return CSPDirectiveListIsReportOnly(csp);
@@ -898,8 +893,7 @@ bool CSPDirectiveListAllowTrustedTypePolicy(
       csp, policy, "trusted-types", CSPDirectiveName::TrustedTypes,
       String::Format(message, policy_name.Utf8().c_str(),
                      raw_directive.Utf8().c_str()),
-      KURL(), RedirectStatus::kNoRedirect,
-      ContentSecurityPolicyViolationType::kTrustedTypesPolicyViolation,
+      KURL(), ContentSecurityPolicyViolationType::kTrustedTypesPolicyViolation,
       policy_name, String(), issue_id);
 
   return CSPDirectiveListIsReportOnly(csp);

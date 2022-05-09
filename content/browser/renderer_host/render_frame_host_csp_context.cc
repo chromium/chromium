@@ -22,7 +22,6 @@ void RenderFrameHostCSPContext::ReportContentSecurityPolicyViolation(
 }
 
 void RenderFrameHostCSPContext::SanitizeDataForUseInCspViolation(
-    bool is_redirect,
     network::mojom::CSPDirectiveName directive,
     GURL* blocked_url,
     network::mojom::SourceLocation* source_location) const {

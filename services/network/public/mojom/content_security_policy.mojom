@@ -235,9 +235,6 @@ struct CSPViolation {
   // "report".
   ContentSecurityPolicyType type;
 
-  // Whether or not the violation happens after a redirect.
-  bool after_redirect;
-
   // The source code location that triggered the blocked navigation.
   SourceLocation source_location;
 };
