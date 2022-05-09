@@ -763,6 +763,8 @@ source_set("test_support") {
     "api/idle/test_idle_provider.h",
     "api/sockets_udp/test_udp_echo_server.cc",
     "api/sockets_udp/test_udp_echo_server.h",
+    "background_script_executor.cc",
+    "background_script_executor.h",
     "browsertest_util.cc",
     "browsertest_util.h",
     "extension_host_test_helper.cc",

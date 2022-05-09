@@ -17,6 +17,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -391,10 +392,9 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, InjectImmediately) {
 
   // A helper function to run the script in the worker context.
   auto run_script_in_worker = [this, extension](const std::string& script) {
-    return browsertest_util::BackgroundScriptExecutor::ExecuteScript(
+    return BackgroundScriptExecutor::ExecuteScript(
         profile(), extension->id(), script,
-        browsertest_util::BackgroundScriptExecutor::ResultCapture::
-            kSendScriptResult);
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
   };
 
   auto get_default_result = [run_script_in_worker]() {
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, InjectImmediately) {
                                                   /*will_reply=*/false);
   ExtensionTestMessageListener default_listener("default complete",
                                                 /*will_reply=*/false);
-  browsertest_util::BackgroundScriptExecutor::ExecuteScriptAsync(
+  BackgroundScriptExecutor::ExecuteScriptAsync(
       profile(), extension->id(), base::StringPrintf(kInjectScripts, tab_id));
 
   // The script with immediate injection should finish (but it's still round

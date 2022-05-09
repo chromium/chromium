@@ -6,18 +6,16 @@
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 
 namespace extensions {
 
-using browsertest_util::BackgroundScriptExecutor;
-
-using BrowserTestUtilBrowserTest = ExtensionBrowserTest;
+using BackgroundScriptExecutorBrowserTest = ExtensionBrowserTest;
 
 // Tests the ability to run JS in an extension-registered service worker.
-IN_PROC_BROWSER_TEST_F(BrowserTestUtilBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackgroundScriptExecutorBrowserTest,
                        ExecuteScriptInServiceWorker) {
   constexpr char kManifest[] =
       R"({
@@ -60,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTestUtilBrowserTest,
 }
 
 // Tests the ability to run JS in an extension background page.
-IN_PROC_BROWSER_TEST_F(BrowserTestUtilBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackgroundScriptExecutorBrowserTest,
                        ExecuteScriptInBackgroundPage) {
   constexpr char kManifest[] =
       R"({
