@@ -30,7 +30,6 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | WML | install | apply_run_on_os_login_policy_blocked | check_user_cannot_set_run_on_os_login | 
-| WML | install | apply_run_on_os_login_policy_blocked | check_user_cannot_set_run_on_os_login | 
 | WML | install | enable_run_on_os_login | apply_run_on_os_login_policy_blocked | check_run_on_os_login_disabled |
 | WML | install | apply_run_on_os_login_policy_run_windowed | check_run_on_os_login_enabled | 
 | WML | install | apply_run_on_os_login_policy_run_windowed | check_user_cannot_set_run_on_os_login | 
