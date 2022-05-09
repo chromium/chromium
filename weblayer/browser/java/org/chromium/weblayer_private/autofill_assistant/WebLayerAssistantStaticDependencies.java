@@ -88,8 +88,8 @@ public class WebLayerAssistantStaticDependencies
 
     @Override
     public AssistantTabUtil createTabUtil() {
-        // TODO(b/222671580): Implement
-        return null;
+        // This method should do nothing under WebLayer as it is only used to close CCTs in Chrome.
+        return (activity) -> {};
     }
 
     @Override
