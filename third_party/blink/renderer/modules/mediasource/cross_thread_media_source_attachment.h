@@ -145,9 +145,6 @@ class CrossThreadMediaSourceAttachment final
   void SendUpdatedInfoToMainThreadCache() final
       EXCLUSIVE_LOCKS_REQUIRED(attachment_state_lock_);
 
-  void UpdateMainThreadInfoCache(WebTimeRanges new_buffered,
-                                 WebTimeRanges new_seekable);
-
  private:
   ~CrossThreadMediaSourceAttachment() override;
 
@@ -186,10 +183,19 @@ class CrossThreadMediaSourceAttachment final
   void HandleElementErrorOnWorkerThread()
       LOCKS_EXCLUDED(attachment_state_lock_);
 
+  void SendUpdatedInfoToMainThreadCacheInternal(bool has_new_duration,
+                                                double new_duration)
+      EXCLUSIVE_LOCKS_REQUIRED(attachment_state_lock_);
+
+  void UpdateMainThreadInfoCache(WebTimeRanges new_buffered,
+                                 WebTimeRanges new_seekable,
+                                 bool has_new_duration,
+                                 double new_duration)
+      LOCKS_EXCLUDED(attachment_state_lock_);
+
   // In this cross-thread implementation, this helper is used to verify
   // assumption of "liveness" of the attachment while the caller holds
-  // |attachment_state_lock_|
-  // for common operations.
+  // |attachment_state_lock_| for common operations.
   void VerifyCalledWhileContextsAliveForDebugging() const
       EXCLUSIVE_LOCKS_REQUIRED(attachment_state_lock_);
 

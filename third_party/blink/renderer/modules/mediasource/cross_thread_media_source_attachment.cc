@@ -58,8 +58,8 @@ CrossThreadMediaSourceAttachment::~CrossThreadMediaSourceAttachment() {
 
 void CrossThreadMediaSourceAttachment::NotifyDurationChanged(
     MediaSourceTracer* /* tracer */,
-    double /* duration */) {
-  DVLOG(1) << __func__ << " this=" << this << " (no-op)";
+    double new_duration) {
+  DVLOG(1) << __func__ << " this=" << this << ", new_duration=" << new_duration;
 
   attachment_state_lock_.AssertAcquired();
 
@@ -70,11 +70,17 @@ void CrossThreadMediaSourceAttachment::NotifyDurationChanged(
   DCHECK(!IsMainThread());
   DCHECK(worker_runner_->BelongsToCurrentThread());
 
-  // While the duration value of the attached media element is only updated upon
-  // a notification of the change hopping threads from the demuxer through the
-  // pipeline, a side effect of a duration change is a potentially new value for
-  // the buffered and seekable ranges, so we send updated values here, too.
-  SendUpdatedInfoToMainThreadCache();
+  // Changing the duration has side effect of potentially new values for the
+  // buffered and seekable ranges. Furthermore, duration-changed notification of
+  // the media element, when attached cross-thread, needs to be done in a posted
+  // task's dispatch (to both mitigate high-res timer creation by apps, and to
+  // not require locks in the media element itself.) Finally, when that task is
+  // executed on the main thread, the way of updating the media element's
+  // duration correctly depends upon the element's current readyState. In short,
+  // send updated values and indicate that the recipient on the main thread also
+  // needs to correctly update the element's duration.
+  SendUpdatedInfoToMainThreadCacheInternal(/* has_duration */ true,
+                                           new_duration);
 }
 
 base::TimeDelta CrossThreadMediaSourceAttachment::GetRecentMediaTime(
@@ -959,6 +965,13 @@ void CrossThreadMediaSourceAttachment::
 }
 
 void CrossThreadMediaSourceAttachment::SendUpdatedInfoToMainThreadCache() {
+  // No explicit duration update was done by application in this case.
+  SendUpdatedInfoToMainThreadCacheInternal(false, 0);
+}
+
+void CrossThreadMediaSourceAttachment::SendUpdatedInfoToMainThreadCacheInternal(
+    bool has_new_duration,
+    double new_duration) {
   attachment_state_lock_.AssertAcquired();
   VerifyCalledWhileContextsAliveForDebugging();
   DCHECK(main_runner_);
@@ -970,7 +983,7 @@ void CrossThreadMediaSourceAttachment::SendUpdatedInfoToMainThreadCache() {
   DCHECK(worker_runner_->BelongsToCurrentThread());
 
   // TODO(https://crbug.com/878133): Consider coalescing frequent calls to this
-  // using a timer.
+  // using a timer, except when |has_new_duration| is true.
 
   // Here, since we are in scope of |lock| holding |attachment_state_lock_|, we
   // can correctly acquire an ExclusiveKey to give to MediaSource so it can know
@@ -985,12 +998,14 @@ void CrossThreadMediaSourceAttachment::SendUpdatedInfoToMainThreadCache() {
       CrossThreadBindOnce(
           &CrossThreadMediaSourceAttachment::UpdateMainThreadInfoCache,
           WTF::RetainedRef(this), std::move(new_buffered),
-          std::move(new_seekable)));
+          std::move(new_seekable), has_new_duration, new_duration));
 }
 
 void CrossThreadMediaSourceAttachment::UpdateMainThreadInfoCache(
     WebTimeRanges new_buffered,
-    WebTimeRanges new_seekable) {
+    WebTimeRanges new_seekable,
+    bool has_new_duration,
+    double new_duration) {
   MutexLocker lock(attachment_state_lock_);
 
   DCHECK(IsMainThread());
@@ -1018,6 +1033,31 @@ void CrossThreadMediaSourceAttachment::UpdateMainThreadInfoCache(
 
   cached_buffered_ = std::move(new_buffered);
   cached_seekable_ = std::move(new_seekable);
+
+  if (has_new_duration) {
+    // We may need to let the media element know duration has changed. Whether
+    // we do this needs to be conditioned upon the media element's current
+    // readyState.
+    if (attached_element_->getReadyState() == HTMLMediaElement::kHaveNothing) {
+      DVLOG(1) << __func__ << " this=" << this
+               << ": new_duration=" << new_duration
+               << " and media element readyState is HAVE_NOTHING";
+      // Explicitly notify the media element of the updated duration. This
+      // happens when app sets MediaSource duration before the pipeline has
+      // reached HAVE_METADATA.
+      bool request_seek = attached_element_->currentTime() > new_duration;
+      attached_element_->DurationChanged(new_duration, request_seek);
+      return;
+    }
+
+    // The pipeline will deliver explicit duration changed notifications to the
+    // element at and after the transition to HAVE_METADATA, including when the
+    // app sets MediaSource duration in those cases, so don't deliver any extra
+    // notification to the element here.
+    DVLOG(1) << __func__ << " this=" << this
+             << ": new_duration=" << new_duration
+             << " and media element readyState is beyond HAVE_NOTHING (no-op)";
+  }
 }
 
 void CrossThreadMediaSourceAttachment::
