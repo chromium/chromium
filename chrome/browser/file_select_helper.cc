@@ -659,6 +659,7 @@ void FileSelectHelper::RunFileChooserOnUIThread(
     const base::FilePath& default_file_path,
     FileChooserParamsPtr params) {
   DCHECK(params);
+  DCHECK(!select_file_dialog_);
   if (AbortIfWebContentsDestroyed())
     return;
 
@@ -730,6 +731,7 @@ void FileSelectHelper::RunFileChooserEnd() {
     listener_->FileSelectionCanceled();
   render_frame_host_ = nullptr;
   web_contents_ = nullptr;
+  select_file_dialog_.reset();
   Release();
 }
 
