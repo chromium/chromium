@@ -8780,6 +8780,22 @@
             ]
         }
     ],
+    "WebViewSurfaceControl": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_PreRelease",
+                    "enable_features": [
+                        "WebViewSurfaceControl"
+                    ],
+                    "min_os_version": "13.0.0"
+                }
+            ]
+        }
+    ],
     "WebViewTempTrustTokens": [
         {
             "platforms": [
