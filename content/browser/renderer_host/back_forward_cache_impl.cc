@@ -960,9 +960,7 @@ BackForwardCacheImpl::NotRestoredReasonBuilder::PopulateReasonsAndReturnSubtree(
 void BackForwardCacheImpl::StoreEntry(
     std::unique_ptr<BackForwardCacheImpl::Entry> entry) {
   TRACE_EVENT("navigation", "BackForwardCache::StoreEntry", "entry", entry);
-  BackForwardCacheCanStoreDocumentResultWithTree result =
-      CanStorePageNow(entry->render_frame_host());
-  DCHECK(result);
+  DCHECK(CanStorePageNow(entry->render_frame_host()));
 
 #if BUILDFLAG(IS_ANDROID)
   if (!IsProcessBindingEnabled()) {
