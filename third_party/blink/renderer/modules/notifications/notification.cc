@@ -429,7 +429,7 @@ String Notification::permission(ExecutionContext* context) {
   if (status == mojom::blink::PermissionStatus::ASK) {
     auto* window = DynamicTo<LocalDOMWindow>(context);
     LocalFrame* frame = window ? window->GetFrame() : nullptr;
-    if (!frame || frame->IsCrossOriginToMainFrame())
+    if (!frame || frame->IsCrossOriginToOutermostMainFrame())
       status = mojom::blink::PermissionStatus::DENIED;
   }
 
@@ -455,7 +455,7 @@ ScriptPromise Notification::requestPermission(
 
     // Sites cannot request notification permission from cross-origin iframes,
     // but they can use notifications if permission had already been granted.
-    if (window->GetFrame()->IsCrossOriginToMainFrame()) {
+    if (window->GetFrame()->IsCrossOriginToOutermostMainFrame()) {
       Deprecation::CountDeprecation(
           context, WebFeature::kNotificationPermissionRequestedIframe);
     }

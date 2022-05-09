@@ -198,7 +198,7 @@ void NavigatorContentUtils::registerProtocolHandler(
   // Count usage; perhaps we can forbid this from cross-origin subframes as
   // proposed in https://crbug.com/977083.
   UseCounter::Count(
-      window, window->GetFrame()->IsCrossOriginToMainFrame()
+      window, window->GetFrame()->IsCrossOriginToOutermostMainFrame()
                   ? WebFeature::kRegisterProtocolHandlerCrossOriginSubframe
                   : WebFeature::kRegisterProtocolHandlerSameOriginAsTop);
   // Count usage. Context should now always be secure due to the same-origin

@@ -177,7 +177,8 @@ HeapVector<Member<Gamepad>> NavigatorGamepad::Gamepads() {
 
   ExecutionContext* context = DomWindow();
 
-  if (DomWindow() && DomWindow()->GetFrame()->IsCrossOriginToMainFrame()) {
+  if (DomWindow() &&
+      DomWindow()->GetFrame()->IsCrossOriginToOutermostMainFrame()) {
     UseCounter::Count(context, WebFeature::kGetGamepadsFromCrossOriginSubframe);
   }
 

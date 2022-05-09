@@ -20,7 +20,8 @@ promise_test(async () => {
       const dir = await window.showDirectoryPicker();
       return 'opened directory picker';
     } catch (e) {
-      if (e.name === 'NotAllowedError' && e.message === 'Fenced frames are not allowed to show a file picker.') {
+      if (e.name === 'SecurityError' &&
+          e.message === "Failed to execute 'showDirectoryPicker' on 'Window': Cross origin sub frames aren't allowed to show a file picker.") {
         return 'Access to the directory picker was disallowed';
       }
       return `showDirectoryPicker failed with unknown error ${e.name} ${e.message}`;

@@ -63,7 +63,7 @@ OffscreenCanvas::OffscreenCanvas(ExecutionContext* context,
       // If this OffscreenCanvas is being created in the context of a
       // cross-origin iframe, it should prefer to use the low-power GPU.
       LocalFrame* frame = window->GetFrame();
-      if (!(frame && frame->IsCrossOriginToMainFrame())) {
+      if (!(frame && frame->IsCrossOriginToOutermostMainFrame())) {
         AllowHighPerformancePowerPreference();
       }
     } else if (context->IsDedicatedWorkerGlobalScope()) {

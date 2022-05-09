@@ -20,7 +20,8 @@ promise_test(async () => {
       const dir = await window.showOpenFilePicker();
       return 'opened file picker';
     } catch (e) {
-      if (e.name === 'NotAllowedError' && e.message === 'Fenced frames are not allowed to show a file picker.') {
+      if (e.name === 'SecurityError' &&
+          e.message === "Failed to execute 'showOpenFilePicker' on 'Window': Cross origin sub frames aren't allowed to show a file picker.") {
         return 'Access to the open file picker was disallowed';
       }
       return `showOpenFilePicker failed with unknown error ${e.name} ${e.message}`;
