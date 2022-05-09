@@ -356,6 +356,7 @@ target(link_target_type, "renderer") {
 
     deps += [
       "//media/fuchsia/cdm/client",
+      "//media/fuchsia/video",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
   }

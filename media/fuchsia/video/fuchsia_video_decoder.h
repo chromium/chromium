@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FILTERS_FUCHSIA_FUCHSIA_VIDEO_DECODER_H_
-#define MEDIA_FILTERS_FUCHSIA_FUCHSIA_VIDEO_DECODER_H_
+#ifndef MEDIA_FUCHSIA_VIDEO_FUCHSIA_VIDEO_DECODER_H_
+#define MEDIA_FUCHSIA_VIDEO_FUCHSIA_VIDEO_DECODER_H_
 
 #include <deque>
 #include <memory>
@@ -29,25 +29,17 @@ class RasterContextProvider;
 
 namespace media {
 
+namespace mojom {
+class FuchsiaMediaResourceProvider;
+}  // namespace mojom
+
 class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
                                          public SysmemBufferStream::Sink,
                                          public StreamProcessorHelper::Client {
  public:
-  // Creates VideoDecoder that uses fuchsia.mediacodec API. The returned
-  // VideoDecoder instance will only try to use hardware video codecs.
-  MEDIA_EXPORT static std::unique_ptr<VideoDecoder> Create(
-      scoped_refptr<viz::RasterContextProvider> raster_context_provider);
-
-  // Same as above, but also allows to enable software codecs. This is useful
-  // for FuchsiaVideoDecoder tests that run on systems that don't have hardware
-  // decoder support.
-  MEDIA_EXPORT static std::unique_ptr<VideoDecoder> CreateForTests(
-      scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-      bool enable_sw_decoding);
-
   FuchsiaVideoDecoder(
       scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-      bool enable_sw_decoding);
+      media::mojom::FuchsiaMediaResourceProvider* media_resource_provider);
   ~FuchsiaVideoDecoder() override;
 
   FuchsiaVideoDecoder(const FuchsiaVideoDecoder&) = delete;
@@ -121,7 +113,8 @@ class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
   void ReleaseOutputBuffers();
 
   const scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
-  const bool enable_sw_decoding_;
+  media::mojom::FuchsiaMediaResourceProvider* media_resource_provider_;
+
   const bool use_overlays_for_video_;
 
   OutputCB output_cb_;
@@ -168,4 +161,4 @@ class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
 
 }  // namespace media
 
-#endif  // MEDIA_FILTERS_FUCHSIA_FUCHSIA_VIDEO_DECODER_H_
+#endif  // MEDIA_FUCHSIA_VIDEO_FUCHSIA_VIDEO_DECODER_H_

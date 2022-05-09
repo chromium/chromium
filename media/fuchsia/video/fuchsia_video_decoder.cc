@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/filters/fuchsia/fuchsia_video_decoder.h"
+#include "media/fuchsia/video/fuchsia_video_decoder.h"
 
-#include <fuchsia/mediacodec/cpp/fidl.h>
-#include <lib/sys/cpp/component_context.h>
 #include <vulkan/vulkan.h>
 
 #include "base/bind.h"
@@ -37,7 +35,8 @@
 #include "media/fuchsia/common/decrypting_sysmem_buffer_stream.h"
 #include "media/fuchsia/common/passthrough_sysmem_buffer_stream.h"
 #include "media/fuchsia/common/stream_processor_helper.h"
-#include "third_party/libyuv/include/libyuv/video_common.h"
+#include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
@@ -176,27 +175,11 @@ class FuchsiaVideoDecoder::OutputMailbox {
   base::WeakPtrFactory<OutputMailbox> weak_factory_;
 };
 
-// static
-std::unique_ptr<VideoDecoder> FuchsiaVideoDecoder::Create(
-    scoped_refptr<viz::RasterContextProvider> raster_context_provider) {
-  return std::make_unique<FuchsiaVideoDecoder>(
-      std::move(raster_context_provider),
-      /*enable_sw_decoding=*/false);
-}
-
-// static
-std::unique_ptr<VideoDecoder> FuchsiaVideoDecoder::CreateForTests(
-    scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-    bool enable_sw_decoding) {
-  return std::make_unique<FuchsiaVideoDecoder>(
-      std::move(raster_context_provider), enable_sw_decoding);
-}
-
 FuchsiaVideoDecoder::FuchsiaVideoDecoder(
     scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-    bool enable_sw_decoding)
+    media::mojom::FuchsiaMediaResourceProvider* media_resource_provider)
     : raster_context_provider_(raster_context_provider),
-      enable_sw_decoding_(enable_sw_decoding),
+      media_resource_provider_(media_resource_provider),
       use_overlays_for_video_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseOverlaysForVideo)),
       sysmem_allocator_("CrFuchsiaVideoDecoder"),
@@ -271,51 +254,9 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // Reset output buffers since we won't be able to re-use them.
   ReleaseOutputBuffers();
 
-  fuchsia::mediacodec::CreateDecoder_Params decoder_params;
-  decoder_params.mutable_input_details()->set_format_details_version_ordinal(0);
-
-  switch (config.codec()) {
-    case VideoCodec::kH264:
-      decoder_params.mutable_input_details()->set_mime_type("video/h264");
-      break;
-    case VideoCodec::kVP8:
-      decoder_params.mutable_input_details()->set_mime_type("video/vp8");
-      break;
-    case VideoCodec::kVP9:
-      decoder_params.mutable_input_details()->set_mime_type("video/vp9");
-      break;
-    case VideoCodec::kHEVC:
-      decoder_params.mutable_input_details()->set_mime_type("video/hevc");
-      break;
-    case VideoCodec::kAV1:
-      decoder_params.mutable_input_details()->set_mime_type("video/av1");
-      break;
-
-    default:
-      std::move(done_callback).Run(DecoderStatus::Codes::kUnsupportedCodec);
-      return;
-  }
-
-  if (secure_mode) {
-    decoder_params.set_secure_input_mode(
-        fuchsia::mediacodec::SecureMemoryMode::ON);
-  }
-
-  if (secure_mode || base::CommandLine::ForCurrentProcess()->HasSwitch(
-                         switches::kForceProtectedVideoOutputBuffers)) {
-    decoder_params.set_secure_output_mode(
-        fuchsia::mediacodec::SecureMemoryMode::ON);
-  }
-
-  decoder_params.set_promise_separate_access_units_on_input(true);
-  decoder_params.set_require_hw(!enable_sw_decoding_);
-
-  auto decoder_factory = base::ComponentContextForProcess()
-                             ->svc()
-                             ->Connect<fuchsia::mediacodec::CodecFactory>();
   fuchsia::media::StreamProcessorPtr decoder;
-  decoder_factory->CreateDecoder(std::move(decoder_params),
-                                 decoder.NewRequest());
+  media_resource_provider_->CreateVideoDecoder(config.codec(), secure_mode,
+                                               decoder.NewRequest());
   decoder_ = std::make_unique<StreamProcessorHelper>(std::move(decoder), this);
 
   current_config_ = config;
@@ -569,11 +510,9 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
       VK_SAMPLER_YCBCR_RANGE_ITU_NARROW, VK_CHROMA_LOCATION_COSITED_EVEN,
       VK_CHROMA_LOCATION_COSITED_EVEN, /*format_features=*/0));
 
-  // Mark the frame as power-efficient when software decoders are disabled. The
-  // codec may still decode on hardware even when |enable_sw_decoding_| is set
-  // (i.e. power_efficient flag would not be set correctly in that case). It
-  // doesn't matter because software decoders can be enabled only for tests.
-  frame->metadata().power_efficient = !enable_sw_decoding_;
+  // Mark the frame as power-efficient since (software decoders are used only in
+  // tests).
+  frame->metadata().power_efficient = true;
 
   // Allow this video frame to be promoted as an overlay, because it was
   // registered with an ImagePipe.

@@ -85,6 +85,7 @@
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include "media/fuchsia/cdm/client/fuchsia_cdm_util.h"
+#include "media/fuchsia/video/fuchsia_decoder_factory.h"
 #elif BUILDFLAG(ENABLE_MOJO_CDM)
 #include "media/mojo/clients/mojo_cdm_factory.h"  // nogncheck
 #else
@@ -788,6 +789,9 @@ base::WeakPtr<media::DecoderFactory> MediaFactory::GetDecoderFactory() {
         GetMediaInterfaceFactory();
     external_decoder_factory =
         std::make_unique<media::MojoDecoderFactory>(interface_factory);
+#elif BUILDFLAG(IS_FUCHSIA)
+    external_decoder_factory =
+        std::make_unique<media::FuchsiaDecoderFactory>(interface_broker_);
 #endif
     decoder_factory_ = std::make_unique<media::DefaultDecoderFactory>(
         std::move(external_decoder_factory));

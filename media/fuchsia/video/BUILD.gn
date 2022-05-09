@@ -1,0 +1,52 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("video") {
+  visibility = [
+    ":unittests",
+    "//content/renderer/*",
+  ]
+  sources = [
+    "fuchsia_decoder_factory.cc",
+    "fuchsia_decoder_factory.h",
+    "fuchsia_video_decoder.cc",
+    "fuchsia_video_decoder.h",
+  ]
+  public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media" ]
+  deps = [
+    "//components/viz/common",
+    "//gpu/command_buffer/client",
+    "//gpu/command_buffer/common",
+    "//gpu/ipc/common",
+    "//media/fuchsia/cdm",
+    "//media/fuchsia/common",
+    "//media/fuchsia/mojom:fuchsia_media_resource_provider",
+    "//third_party/blink/public/common",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//ui/ozone",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [ "fuchsia_video_decoder_unittest.cc" ]
+  deps = [
+    ":video",
+    "//base/test:test_support",
+    "//components/viz/common",
+    "//components/viz/test:test_support",
+    "//gpu/command_buffer/client",
+    "//gpu/config",
+    "//media:test_support",
+    "//media/fuchsia/mojom:fuchsia_media_resource_provider",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+  ]
+}

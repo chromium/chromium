@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/filters/fuchsia/fuchsia_video_decoder.h"
+#include "media/fuchsia/video/fuchsia_video_decoder.h"
 
+#include <fuchsia/mediacodec/cpp/fidl.h>
 #include <fuchsia/sysmem/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 
@@ -24,6 +25,7 @@
 #include "media/base/test_helpers.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_frame.h"
+#include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -286,6 +288,52 @@ class TestRasterContextProvider
   base::OnceClosure on_destroyed_;
 };
 
+class TestFuchsiaMediaResourceProvider
+    : public media::mojom::FuchsiaMediaResourceProvider {
+ public:
+  // media::mojom::FuchsiaMediaResourceProvider implementation.
+  void CreateCdm(
+      const std::string& key_system,
+      fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>
+          request) final {
+    ADD_FAILURE();
+  }
+  void CreateVideoDecoder(
+      media::VideoCodec codec,
+      bool secure_memory,
+      fidl::InterfaceRequest<fuchsia::media::StreamProcessor>
+          stream_processor_request) final {
+    EXPECT_FALSE(secure_memory);
+
+    fuchsia::mediacodec::CreateDecoder_Params decoder_params;
+    decoder_params.mutable_input_details()->set_format_details_version_ordinal(
+        0);
+
+    switch (codec) {
+      case VideoCodec::kH264:
+        decoder_params.mutable_input_details()->set_mime_type("video/h264");
+        break;
+      case VideoCodec::kVP9:
+        decoder_params.mutable_input_details()->set_mime_type("video/vp9");
+        break;
+
+      default:
+        ADD_FAILURE() << "CreateVideoDecoder() called with unexpected codec: "
+                      << static_cast<int>(codec);
+        return;
+    }
+
+    decoder_params.set_promise_separate_access_units_on_input(true);
+    decoder_params.set_require_hw(false);
+
+    auto decoder_factory = base::ComponentContextForProcess()
+                               ->svc()
+                               ->Connect<fuchsia::mediacodec::CodecFactory>();
+    decoder_factory->CreateDecoder(std::move(decoder_params),
+                                   std::move(stream_processor_request));
+  }
+};
+
 }  // namespace
 
 class FuchsiaVideoDecoderTest : public testing::Test {
@@ -293,9 +341,9 @@ class FuchsiaVideoDecoderTest : public testing::Test {
   FuchsiaVideoDecoderTest()
       : raster_context_provider_(
             base::MakeRefCounted<TestRasterContextProvider>()),
-        decoder_(
-            FuchsiaVideoDecoder::CreateForTests(raster_context_provider_.get(),
-                                                /*enable_sw_decoding=*/true)) {}
+        decoder_(std::make_unique<FuchsiaVideoDecoder>(
+            raster_context_provider_.get(),
+            &test_media_resource_provider_)) {}
 
   FuchsiaVideoDecoderTest(const FuchsiaVideoDecoderTest&) = delete;
   FuchsiaVideoDecoderTest& operator=(const FuchsiaVideoDecoderTest&) = delete;
@@ -375,6 +423,8 @@ class FuchsiaVideoDecoderTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
+
+  TestFuchsiaMediaResourceProvider test_media_resource_provider_;
 
   scoped_refptr<TestRasterContextProvider> raster_context_provider_;
 

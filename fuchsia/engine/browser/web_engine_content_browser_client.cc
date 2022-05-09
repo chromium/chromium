@@ -195,7 +195,6 @@ void WebEngineContentBrowserClient::AppendExtraCommandLineSwitches(
       switches::kEnableContentDirectories,
       switches::kEnableProtectedVideoBuffers,
       switches::kEnableWidevine,
-      switches::kForceProtectedVideoOutputBuffers,
       switches::kMaxDecodedImageSizeMb,
       switches::kPlayreadyKeySystem,
       network::switches::kUnsafelyTreatInsecureOriginAsSecure,

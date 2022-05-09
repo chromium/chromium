@@ -237,26 +237,6 @@ source_set("filters") {
       "h264_bitstream_buffer.h",
     ]
   }
-
-  if (is_fuchsia) {
-    sources += [
-      "fuchsia/fuchsia_video_decoder.cc",
-      "fuchsia/fuchsia_video_decoder.h",
-    ]
-    public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media" ]
-    deps += [
-      "//components/viz/common",
-      "//gpu/command_buffer/client",
-      "//gpu/command_buffer/common",
-      "//gpu/ipc/common",
-      "//media/fuchsia/cdm",
-      "//media/fuchsia/common",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
-      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-      "//ui/ozone",
-    ]
-  }
 }
 
 source_set("perftests") {
@@ -343,18 +323,6 @@ source_set("unit_tests") {
     ]
 
     deps += [ "//ui/gl" ]
-  }
-
-  if (is_fuchsia) {
-    sources += [ "fuchsia/fuchsia_video_decoder_unittest.cc" ]
-    deps += [
-      "//components/viz/common",
-      "//components/viz/test:test_support",
-      "//gpu/command_buffer/client",
-      "//gpu/config",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
-      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-    ]
   }
 
   # libvpx for running vpx test on chromecast doesn't support high bit depth.

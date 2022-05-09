@@ -209,6 +209,7 @@ test("media_unittests") {
     deps += [
       "//media/fuchsia/audio:unittests",
       "//media/fuchsia/cdm/service:unittests",
+      "//media/fuchsia/video:unittests",
     ]
 
     use_cfv2 = false
