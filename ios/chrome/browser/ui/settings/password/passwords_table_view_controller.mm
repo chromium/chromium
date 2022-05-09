@@ -86,16 +86,6 @@ namespace {
 using base::UmaHistogramEnumeration;
 using password_manager::metrics_util::PasswordCheckInteraction;
 
-typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierSavePasswordsSwitch = kSectionIdentifierEnumZero,
-  SectionIdentifierSavedPasswords,
-  SectionIdentifierPasswordsInOtherApps,
-  SectionIdentifierBlocked,
-  SectionIdentifierExportPasswordsButton,
-  SectionIdentifierPasswordCheck,
-  SectionIdentifierOnDeviceEncryption,
-};
-
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeHeader,
   // Section: SectionIdentifierSavePasswordsSwitch
@@ -1186,10 +1176,10 @@ bool IsFaviconEnabled() {
 
     // Hold in reverse order of section indexes (bottom up of section
     // displayed). If we don't we'll cause a crash.
-    SectionIdentifier sections[2] = {SectionIdentifierBlocked,
-                                     SectionIdentifierSavedPasswords};
+    PasswordSectionIdentifier sections[2] = {SectionIdentifierBlocked,
+                                             SectionIdentifierSavedPasswords};
     for (int i = 0; i < 2; i++) {
-      SectionIdentifier section = sections[i];
+      PasswordSectionIdentifier section = sections[i];
       bool hasSection = [model hasSectionForSectionIdentifier:section];
       bool needsSection = section == SectionIdentifierBlocked
                               ? !_blockedForms.empty()

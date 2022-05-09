@@ -123,7 +123,10 @@ source_set("password_constants") {
     "passwords_table_view_constants.h",
     "passwords_table_view_constants.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/list_model:list_model",
+  ]
 }
 
 source_set("test_support") {
@@ -145,6 +148,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":password",
+    ":password_constants",
     ":password_ui",
     ":test_support",
     "//base",
