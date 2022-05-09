@@ -69,6 +69,8 @@ EBreakBetween JoinFragmentainerBreakValues(EBreakBetween first_value,
 
 bool IsForcedBreakValue(const NGConstraintSpace& constraint_space,
                         EBreakBetween break_value) {
+  if (constraint_space.ShouldIgnoreForcedBreaks())
+    return false;
   if (break_value == EBreakBetween::kColumn)
     return constraint_space.BlockFragmentationType() == kFragmentColumn;
   // TODO(mstensho): The innermost fragmentation type doesn't tell us everything
@@ -268,6 +270,20 @@ void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
 
   if (parent_space.IsInsideBalancedColumns())
     builder->SetIsInsideBalancedColumns();
+
+  // We lack the required machinery to resume layout inside out-of-flow
+  // positioned elements during regular layout. OOFs are handled by regular
+  // layout during the initial column balacning pass, while it's handled
+  // specially during actual layout - at the outermost fragmentation context in
+  // NGOutOfFlowLayoutPart (so this is only an issue when calculating the
+  // initial column block-size). So just disallow breaks (we only need to worry
+  // about forced breaks, as soft breaks are impossible in the initial column
+  // balancing pass). This might result in over-stretched columns in some
+  // strange cases, but probably something we can live with.
+  if ((parent_space.IsInitialColumnBalancingPass() &&
+       child.IsOutOfFlowPositioned()) ||
+      parent_space.ShouldIgnoreForcedBreaks())
+    builder->SetShouldIgnoreForcedBreaks();
 
   if (parent_space.IsInColumnBfc() && !is_new_fc)
     builder->SetIsInColumnBfc();

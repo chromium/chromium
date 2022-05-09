@@ -523,6 +523,12 @@ class CORE_EXPORT NGConstraintSpace final {
     return HasRareData() && rare_data_->is_inside_balanced_columns;
   }
 
+  // Return true if forced breaks inside should be ignored. This is needed by
+  // out-of-flow positioned elements during column balancing.
+  bool ShouldIgnoreForcedBreaks() const {
+    return HasRareData() && rare_data_->should_ignore_forced_breaks;
+  }
+
   // Return true if we're participating in the same block formatting context as
   // the one established by the nearest ancestor multicol container.
   bool IsInColumnBfc() const {
@@ -829,6 +835,7 @@ class CORE_EXPORT NGConstraintSpace final {
               static_cast<unsigned>(kFragmentNone)),
           requires_content_before_breaking(false),
           is_inside_balanced_columns(false),
+          should_ignore_forced_breaks(false),
           is_in_column_bfc(false),
           min_block_size_should_encompass_intrinsic_size(false),
           min_break_appeal(kBreakAppealLastResort),
@@ -852,6 +859,7 @@ class CORE_EXPORT NGConstraintSpace final {
           requires_content_before_breaking(
               other.requires_content_before_breaking),
           is_inside_balanced_columns(other.is_inside_balanced_columns),
+          should_ignore_forced_breaks(other.should_ignore_forced_breaks),
           is_in_column_bfc(other.is_in_column_bfc),
           min_block_size_should_encompass_intrinsic_size(
               other.min_block_size_should_encompass_intrinsic_size),
@@ -928,6 +936,7 @@ class CORE_EXPORT NGConstraintSpace final {
           requires_content_before_breaking !=
               other.requires_content_before_breaking ||
           is_inside_balanced_columns != other.is_inside_balanced_columns ||
+          should_ignore_forced_breaks != other.should_ignore_forced_breaks ||
           is_in_column_bfc != other.is_in_column_bfc ||
           min_break_appeal != other.min_break_appeal ||
           propagate_child_break_values != other.propagate_child_break_values)
@@ -962,7 +971,8 @@ class CORE_EXPORT NGConstraintSpace final {
           is_restricted_block_size_table_cell || hide_table_cell_if_empty ||
           block_direction_fragmentation_type != kFragmentNone ||
           requires_content_before_breaking || is_inside_balanced_columns ||
-          is_in_column_bfc || min_break_appeal != kBreakAppealLastResort ||
+          should_ignore_forced_breaks || is_in_column_bfc ||
+          min_break_appeal != kBreakAppealLastResort ||
           propagate_child_break_values || is_at_fragmentainer_start)
         return false;
 
@@ -1209,6 +1219,7 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned block_direction_fragmentation_type : 2;
     unsigned requires_content_before_breaking : 1;
     unsigned is_inside_balanced_columns : 1;
+    unsigned should_ignore_forced_breaks : 1;
     unsigned is_in_column_bfc : 1;
     unsigned min_block_size_should_encompass_intrinsic_size : 1;
     unsigned min_break_appeal : kNGBreakAppealBitsNeeded;
