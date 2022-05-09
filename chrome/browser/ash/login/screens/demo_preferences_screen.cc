@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/demo_preferences_screen.h"
 
+#include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/browser_process.h"
@@ -18,6 +20,7 @@ namespace {
 
 constexpr char kUserActionContinue[] = "continue-setup";
 constexpr char kUserActionClose[] = "close-setup";
+constexpr char kUserActionSetDemoModeCountry[] = "set-demo-mode-country";
 
 }  // namespace
 
@@ -32,15 +35,12 @@ std::string DemoPreferencesScreen::GetResultString(Result result) {
 }
 
 DemoPreferencesScreen::DemoPreferencesScreen(
-    DemoPreferencesScreenView* view,
+    base::WeakPtr<DemoPreferencesScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(DemoPreferencesScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
-  DCHECK(view_);
-  view_->Bind(this);
-
   // TODO(agawronska): Add tests for locale and input changes.
   input_method::InputMethodManager* input_manager =
       input_method::InputMethodManager::Get();
@@ -50,14 +50,6 @@ DemoPreferencesScreen::DemoPreferencesScreen(
 
 DemoPreferencesScreen::~DemoPreferencesScreen() {
   input_method::InputMethodManager::Get()->RemoveObserver(this);
-
-  if (view_)
-    view_->Bind(nullptr);
-}
-
-void DemoPreferencesScreen::SetDemoModeCountry(const std::string& country_id) {
-  g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
-                                              country_id);
 }
 
 void DemoPreferencesScreen::ShowImpl() {
@@ -65,13 +57,10 @@ void DemoPreferencesScreen::ShowImpl() {
     view_->Show();
 }
 
-void DemoPreferencesScreen::HideImpl() {
-  if (view_)
-    view_->Hide();
-}
+void DemoPreferencesScreen::HideImpl() {}
 
-void DemoPreferencesScreen::OnUserActionDeprecated(
-    const std::string& action_id) {
+void DemoPreferencesScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionContinue) {
     std::string country(
         g_browser_process->local_state()->GetString(prefs::kDemoModeCountry));
@@ -81,14 +70,13 @@ void DemoPreferencesScreen::OnUserActionDeprecated(
     exit_callback_.Run(Result::COMPLETED);
   } else if (action_id == kUserActionClose) {
     exit_callback_.Run(Result::CANCELED);
+  } else if (action_id == kUserActionSetDemoModeCountry) {
+    CHECK_EQ(args.size(), 2);
+    g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
+                                                args[1].GetString());
   } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
   }
-}
-
-void DemoPreferencesScreen::OnViewDestroyed(DemoPreferencesScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
 }
 
 void DemoPreferencesScreen::InputMethodChanged(

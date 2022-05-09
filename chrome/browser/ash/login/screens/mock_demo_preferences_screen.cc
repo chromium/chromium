@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/mock_demo_preferences_screen.h"
+#include "base/memory/weak_ptr.h"
 
 namespace ash {
 
 MockDemoPreferencesScreen::MockDemoPreferencesScreen(
-    DemoPreferencesScreenView* view,
+    base::WeakPtr<DemoPreferencesScreenView> view,
     const ScreenExitCallback& exit_callback)
-    : DemoPreferencesScreen(view, exit_callback) {}
+    : DemoPreferencesScreen(std::move(view), exit_callback) {}
 
 MockDemoPreferencesScreen::~MockDemoPreferencesScreen() = default;
 
@@ -19,14 +20,6 @@ void MockDemoPreferencesScreen::ExitScreen(Result result) {
 
 MockDemoPreferencesScreenView::MockDemoPreferencesScreenView() = default;
 
-MockDemoPreferencesScreenView::~MockDemoPreferencesScreenView() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
-
-void MockDemoPreferencesScreenView::Bind(DemoPreferencesScreen* screen) {
-  screen_ = screen;
-  MockBind(screen);
-}
+MockDemoPreferencesScreenView::~MockDemoPreferencesScreenView() = default;
 
 }  // namespace ash

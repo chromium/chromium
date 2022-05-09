@@ -197,8 +197,7 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
    * @private
    */
   onCountrySelected_(event) {
-    chrome.send(
-        'DemoPreferencesScreen.setDemoModeCountry', [event.detail.value]);
+    this.userActed(['set-demo-mode-country', event.detail.value]);
     this.is_country_selected_ =
         event.detail.value !== this.country_not_selected_id_;
   }

@@ -1058,7 +1058,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupVirtualSetRegionCodeTest,
   // Expect inactive "OK" button when entering the preference screen.
   test::OobeJS().ExpectDisabledPath(kDemoPreferencesNext);
   test::OobeJS().ExpectElementValue("N/A", kDemoPreferencesCountrySelect);
-  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
+  // test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
   SelectFranceAndFinishSetup();
 }
@@ -1097,7 +1097,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupRegionCodeNotExistTest,
   // Expect inactive "OK" button when entering the preference screen.
   test::OobeJS().ExpectDisabledPath(kDemoPreferencesNext);
   test::OobeJS().ExpectElementValue("N/A", kDemoPreferencesCountrySelect);
-  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
+  // test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
   SelectFranceAndFinishSetup();
 }

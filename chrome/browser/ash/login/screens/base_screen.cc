@@ -19,7 +19,7 @@ BaseScreen::BaseScreen(OobeScreenId screen_id,
                        OobeScreenPriority screen_priority)
     : screen_id_(screen_id), screen_priority_(screen_priority) {}
 
-BaseScreen::~BaseScreen() {}
+BaseScreen::~BaseScreen() = default;
 
 void BaseScreen::Show(WizardContext* context) {
   wizard_context_ = context;

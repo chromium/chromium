@@ -546,7 +546,7 @@ WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
 
     append(std::make_unique<DemoPreferencesScreen>(
-        oobe_ui->GetView<DemoPreferencesScreenHandler>(),
+        oobe_ui->GetView<DemoPreferencesScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnDemoPreferencesScreenExit,
                             weak_factory_.GetWeakPtr())));
 

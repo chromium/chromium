@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -27,7 +28,7 @@ class DemoPreferencesScreen
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  DemoPreferencesScreen(DemoPreferencesScreenView* view,
+  DemoPreferencesScreen(base::WeakPtr<DemoPreferencesScreenView> view,
                         const ScreenExitCallback& exit_callback);
 
   DemoPreferencesScreen(const DemoPreferencesScreen&) = delete;
@@ -37,15 +38,11 @@ class DemoPreferencesScreen
 
   void SetDemoModeCountry(const std::string& country_id);
 
-  // Called when view is being destroyed. If Screen is destroyed earlier
-  // then it has to call Bind(nullptr).
-  void OnViewDestroyed(DemoPreferencesScreenView* view);
-
  protected:
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   ScreenExitCallback* exit_callback() { return &exit_callback_; }
 
@@ -62,7 +59,7 @@ class DemoPreferencesScreen
                           input_method::InputMethodManager::Observer>
       input_manager_observation_{this};
 
-  DemoPreferencesScreenView* view_;
+  base::WeakPtr<DemoPreferencesScreenView> view_;
   ScreenExitCallback exit_callback_;
 };
 

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/demo_preferences_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/demo_preferences_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -15,7 +16,7 @@ namespace ash {
 
 class MockDemoPreferencesScreen : public DemoPreferencesScreen {
  public:
-  MockDemoPreferencesScreen(DemoPreferencesScreenView* view,
+  MockDemoPreferencesScreen(base::WeakPtr<DemoPreferencesScreenView> view,
                             const ScreenExitCallback& exit_callback);
 
   MockDemoPreferencesScreen(const MockDemoPreferencesScreen&) = delete;
@@ -41,14 +42,7 @@ class MockDemoPreferencesScreenView : public DemoPreferencesScreenView {
   ~MockDemoPreferencesScreenView() override;
 
   MOCK_METHOD(void, Show, ());
-  MOCK_METHOD(void, Hide, ());
-  MOCK_METHOD(void, MockBind, (DemoPreferencesScreen * screen));
   MOCK_METHOD(void, SetInputMethodId, (const std::string& input_method));
-
-  void Bind(DemoPreferencesScreen* screen) override;
-
- private:
-  DemoPreferencesScreen* screen_ = nullptr;
 };
 
 }  // namespace ash

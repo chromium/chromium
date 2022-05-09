@@ -538,7 +538,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
         std::make_unique<MockDemoPreferencesScreenView>();
     mock_demo_preferences_screen_ =
         MockScreenExpectLifecycle(std::make_unique<MockDemoPreferencesScreen>(
-            mock_demo_preferences_screen_view_.get(),
+            mock_demo_preferences_screen_view_->AsWeakPtr(),
             base::BindRepeating(&WizardController::OnDemoPreferencesScreenExit,
                                 base::Unretained(wizard_controller))));
 
@@ -630,10 +630,9 @@ class WizardControllerFlowTest : public WizardControllerTest {
 
     mock_demo_preferences_screen_view_ =
         std::make_unique<MockDemoPreferencesScreenView>();
-    ExpectBind(mock_demo_preferences_screen_view_.get());
     mock_demo_preferences_screen_ =
         MockScreenExpectLifecycle(std::make_unique<MockDemoPreferencesScreen>(
-            mock_demo_preferences_screen_view_.get(),
+            mock_demo_preferences_screen_view_->AsWeakPtr(),
             base::BindRepeating(&WizardController::OnDemoPreferencesScreenExit,
                                 base::Unretained(wizard_controller))));
 
