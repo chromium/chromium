@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("constants") {
+static_library("common") {
   public = [ "signals_constants.h" ]
 
   sources = [ "signals_constants.cc" ]

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/browser/signals/signals_aggregator_impl.h"
+#include "components/device_signals/core/browser/signals_aggregator_impl.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "components/enterprise/browser/signals/signals_collector.h"
+#include "components/device_signals/core/browser/signals_collector.h"
 
-namespace enterprise_signals {
+namespace device_signals {
 
 SignalsAggregatorImpl::SignalsAggregatorImpl(
     std::vector<std::unique_ptr<SignalsCollector>> collectors)
@@ -61,4 +61,4 @@ void SignalsAggregatorImpl::OnSignalCollected(const std::string signal_name,
   std::move(callback).Run(std::move(return_value));
 }
 
-}  // namespace enterprise_signals
+}  // namespace device_signals

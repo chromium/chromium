@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ENTERPRISE_COMMON_SIGNALS_SIGNALS_CONSTANTS_H_
-#define COMPONENTS_ENTERPRISE_COMMON_SIGNALS_SIGNALS_CONSTANTS_H_
+#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_SIGNALS_CONSTANTS_H_
+#define COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_SIGNALS_CONSTANTS_H_
 
-namespace enterprise_signals {
+namespace device_signals {
 
 // Signal names can be used as keys to store/retrieve signal values from
 // dictionaries.
@@ -46,6 +46,6 @@ extern const char kWindowsDomain[];
 
 }  // namespace names
 
-}  // namespace enterprise_signals
+}  // namespace device_signals
 
-#endif  // COMPONENTS_ENTERPRISE_COMMON_SIGNALS_SIGNALS_CONSTANTS_H_
+#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_SIGNALS_CONSTANTS_H_

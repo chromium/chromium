@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/browser/signals/mock_signals_collector.h"
+#include "components/device_signals/core/browser/mock_signals_collector.h"
 
-namespace enterprise_signals {
+namespace device_signals {
 
 MockSignalsCollector::MockSignalsCollector() = default;
 MockSignalsCollector::~MockSignalsCollector() = default;
 
-}  // namespace enterprise_signals
+}  // namespace device_signals

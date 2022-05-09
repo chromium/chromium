@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ENTERPRISE_BROWSER_SIGNALS_SIGNALS_COLLECTOR_H_
-#define COMPONENTS_ENTERPRISE_BROWSER_SIGNALS_SIGNALS_COLLECTOR_H_
+#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_SIGNALS_COLLECTOR_H_
+#define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_SIGNALS_COLLECTOR_H_
 
 #include <string>
 #include <vector>
@@ -14,7 +14,7 @@ namespace base {
 class Value;
 }  // namespace base
 
-namespace enterprise_signals {
+namespace device_signals {
 
 class SignalsCollector {
  public:
@@ -32,6 +32,6 @@ class SignalsCollector {
                          GetSignalCallback callback) = 0;
 };
 
-}  // namespace enterprise_signals
+}  // namespace device_signals
 
-#endif  // COMPONENTS_ENTERPRISE_BROWSER_SIGNALS_SIGNALS_COLLECTOR_H_
+#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_SIGNALS_COLLECTOR_H_

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/browser/signals/signals_aggregator_impl.h"
+#include "components/device_signals/core/browser/signals_aggregator_impl.h"
 
 #include <memory>
 #include <vector>
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/enterprise/browser/signals/mock_signals_collector.h"
+#include "components/device_signals/core/browser/mock_signals_collector.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,7 +19,7 @@ using testing::Pointee;
 using testing::Ref;
 using testing::Return;
 
-namespace enterprise_signals {
+namespace device_signals {
 
 namespace {
 
@@ -166,4 +166,4 @@ TEST_F(SignalsAggregatorImplTest, GetSignals_SingleSignal_Unsupported) {
   EXPECT_EQ(future.Get(), base::Value::Dict());
 }
 
-}  // namespace enterprise_signals
+}  // namespace device_signals

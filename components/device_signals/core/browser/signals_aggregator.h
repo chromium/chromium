@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ENTERPRISE_BROWSER_SIGNALS_SIGNALS_AGGREGATOR_H_
-#define COMPONENTS_ENTERPRISE_BROWSER_SIGNALS_SIGNALS_AGGREGATOR_H_
+#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_SIGNALS_AGGREGATOR_H_
+#define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_SIGNALS_AGGREGATOR_H_
 
 #include "base/callback_forward.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace enterprise_signals {
+namespace device_signals {
 
 class SignalsAggregator : public KeyedService {
  public:
@@ -28,6 +28,6 @@ class SignalsAggregator : public KeyedService {
                           GetSignalsCallback callback) = 0;
 };
 
-}  // namespace enterprise_signals
+}  // namespace device_signals
 
-#endif  // COMPONENTS_ENTERPRISE_BROWSER_SIGNALS_SIGNALS_AGGREGATOR_H_
+#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_SIGNALS_AGGREGATOR_H_

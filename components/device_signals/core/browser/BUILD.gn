@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("signals") {
+static_library("browser") {
   public = [
     "signals_aggregator.h",
     "signals_aggregator_impl.h",
@@ -13,7 +13,7 @@ static_library("signals") {
 
   deps = [
     "//base",
-    "//components/enterprise/common/signals:constants",
+    "//components/device_signals/core/common",
     "//components/keyed_service/core",
   ]
 }
@@ -26,7 +26,7 @@ static_library("test_support") {
   ]
 
   deps = [
-    ":signals",
+    ":browser",
     "//base",
     "//testing/gmock",
   ]
@@ -37,10 +37,10 @@ source_set("unit_tests") {
   sources = [ "signals_aggregator_impl_unittest.cc" ]
 
   deps = [
-    ":signals",
+    ":browser",
     ":test_support",
     "//base/test:test_support",
-    "//components/enterprise/common/signals:constants",
+    "//components/device_signals/core/common",
     "//testing/gtest",
   ]
 }

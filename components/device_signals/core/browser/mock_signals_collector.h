@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ENTERPRISE_BROWSER_SIGNALS_MOCK_SIGNALS_COLLECTOR_H_
-#define COMPONENTS_ENTERPRISE_BROWSER_SIGNALS_MOCK_SIGNALS_COLLECTOR_H_
+#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_MOCK_SIGNALS_COLLECTOR_H_
+#define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_MOCK_SIGNALS_COLLECTOR_H_
 
 #include "base/callback.h"
 #include "base/values.h"
-#include "components/enterprise/browser/signals/signals_collector.h"
+#include "components/device_signals/core/browser/signals_collector.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace enterprise_signals {
+namespace device_signals {
 
 class MockSignalsCollector : public SignalsCollector {
  public:
@@ -29,6 +29,6 @@ class MockSignalsCollector : public SignalsCollector {
               (override));
 };
 
-}  // namespace enterprise_signals
+}  // namespace device_signals
 
-#endif  // COMPONENTS_ENTERPRISE_BROWSER_SIGNALS_MOCK_SIGNALS_COLLECTOR_H_
+#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_MOCK_SIGNALS_COLLECTOR_H_

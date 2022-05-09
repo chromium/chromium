@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/common/signals/signals_constants.h"
+#include "components/device_signals/core/common/signals_constants.h"
 
-namespace enterprise_signals {
+namespace device_signals {
 namespace names {
 
 // Name of the signal for getting information of the AllowScreenLock
@@ -136,4 +136,4 @@ const char kTpmHash[] = "tpmHash";
 const char kWindowsDomain[] = "windowsDomain";
 
 }  // namespace names
-}  // namespace enterprise_signals
+}  // namespace device_signals
