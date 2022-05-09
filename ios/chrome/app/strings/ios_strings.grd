@@ -982,7 +982,7 @@ See your search engine’s instructions for deleting your search history, if app
         No, Thanks
       </message>
       <message name="IDS_IOS_FIRST_RUN_SCREEN_READ_MORE" desc="The label on the primary button of some screens in the first run experience if the content requires scrolling to the end [iOS only]">
-        Read More
+        More
       </message>
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE" desc="In Title Case: Button on the very first screen of Chrome to continue into Chrome. [iOS only]">
         Continue

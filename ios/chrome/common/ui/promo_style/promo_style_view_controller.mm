@@ -46,6 +46,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 @property(nonatomic, strong) UIView* scrollContentView;
 @property(nonatomic, strong) UILabel* subtitleLabel;
 @property(nonatomic, strong) UITextView* disclaimerView;
+@property(nonatomic, strong) UIStackView* actionStackView;
 @property(nonatomic, strong) HighlightButton* primaryActionButton;
 @property(nonatomic, strong) UIButton* secondaryActionButton;
 @property(nonatomic, strong) UIButton* tertiaryActionButton;
@@ -62,6 +63,11 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 // Whether the image is currently being calculated; used to prevent infinite
 // recursions caused by |viewDidLayoutSubviews|.
 @property(nonatomic, assign) BOOL calculatingImageSize;
+
+// Vertical constraints for buttons; used to reset top anchors when the number
+// of buttons changes on scroll.
+@property(nonatomic, strong)
+    NSArray<NSLayoutConstraint*>* buttonsVerticalAnchorConstraints;
 @end
 
 @implementation PromoStyleViewController
@@ -107,33 +113,17 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
     [self.view insertSubview:self.learnMoreButton aboveSubview:self.scrollView];
   }
 
-  UIStackView* actionStackView = [[UIStackView alloc] init];
-  actionStackView.alignment = UIStackViewAlignmentFill;
-  actionStackView.axis = UILayoutConstraintAxisVertical;
-  actionStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  if (self.tertiaryActionString) {
-    [actionStackView addArrangedSubview:self.tertiaryActionButton];
-  }
-  [actionStackView addArrangedSubview:self.primaryActionButton];
-  if (self.secondaryActionString) {
-    [actionStackView addArrangedSubview:self.secondaryActionButton];
-  }
-  [self.view addSubview:actionStackView];
+  self.actionStackView = [[UIStackView alloc] init];
+  self.actionStackView.alignment = UIStackViewAlignmentFill;
+  self.actionStackView.axis = UILayoutConstraintAxisVertical;
+  self.actionStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.actionStackView addArrangedSubview:self.primaryActionButton];
+  [self.view addSubview:self.actionStackView];
 
   // Create a layout guide to constrain the width of the content, while still
   // allowing the scroll view to take the full screen width.
   UILayoutGuide* widthLayoutGuide = [[UILayoutGuide alloc] init];
   [self.view addLayoutGuide:widthLayoutGuide];
-
-  CGFloat actionStackViewTopMargin = 0.0;
-  if (!self.tertiaryActionString) {
-    actionStackViewTopMargin = -kDefaultMargin;
-  }
-
-  CGFloat extraBottomMargin =
-      (self.secondaryActionString || self.tertiaryActionString)
-          ? 0
-          : kActionsBottomMargin;
 
   NSLayoutYAxisAnchor* specificContentViewBottomAnchor =
       self.scrollContentView.bottomAnchor;
@@ -173,9 +163,6 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
         constraintEqualToAnchor:self.view.leadingAnchor],
     [self.scrollView.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
-    [self.scrollView.bottomAnchor
-        constraintEqualToAnchor:actionStackView.topAnchor
-                       constant:actionStackViewTopMargin],
 
     // Separator constraints.
     [self.separator.heightAnchor constraintEqualToConstant:kSeparatorHeight],
@@ -244,19 +231,26 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
     // Action stack view constraints. Constrain the bottom of the action stack
     // view to both the bottom of the screen and the bottom of the safe area, to
     // give a nice result whether the device has a physical home button or not.
-    [actionStackView.leadingAnchor
+    [self.actionStackView.leadingAnchor
         constraintEqualToAnchor:widthLayoutGuide.leadingAnchor],
-    [actionStackView.trailingAnchor
+    [self.actionStackView.trailingAnchor
         constraintEqualToAnchor:widthLayoutGuide.trailingAnchor],
-    [actionStackView.bottomAnchor
+    [self.actionStackView.bottomAnchor
         constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
-                                 constant:-kActionsBottomMargin -
-                                          extraBottomMargin],
-    [actionStackView.bottomAnchor
+                                 constant:-kActionsBottomMargin * 2],
+  ]];
+
+  self.buttonsVerticalAnchorConstraints = @[
+    [self.scrollView.bottomAnchor
+        constraintEqualToAnchor:self.actionStackView.topAnchor
+                       constant:-kDefaultMargin],
+    [self.actionStackView.bottomAnchor
         constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
                                               .bottomAnchor
-                                 constant:-extraBottomMargin],
-  ]];
+                                 constant:-kActionsBottomMargin],
+  ];
+  [NSLayoutConstraint
+      activateConstraints:self.buttonsVerticalAnchorConstraints];
 
   // This constraint is added to enforce that the content width should be as
   // close to the optimal width as possible, within the range already activated
@@ -273,8 +267,9 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   // Also constrain the bottom of the action stack view to the bottom of the
   // safe area, but with a lower priority, so that the action stack view is put
   // as close to the bottom as possible.
-  NSLayoutConstraint* actionBottomConstraint = [actionStackView.bottomAnchor
-      constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
+  NSLayoutConstraint* actionBottomConstraint =
+      [self.actionStackView.bottomAnchor
+          constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
   actionBottomConstraint.priority = UILayoutPriorityDefaultLow;
   actionBottomConstraint.active = YES;
 
@@ -326,6 +321,9 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
       self.didReachBottom = YES;
     } else if (!self.didReachBottom) {
       [self setReadMoreText];
+    }
+    if (self.didReachBottom) {
+      [self showSecondaryAndTertiaryButtons];
     }
   });
 }
@@ -752,6 +750,8 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
                               forState:UIControlStateNormal];
     // Reset the font to make sure it is properly scaled.
     [self setPrimaryActionButtonFont:self.primaryActionButton];
+    // Add other buttons with the correct margins.
+    [self showSecondaryAndTertiaryButtons];
   }
 }
 
@@ -839,6 +839,47 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
     index += 1;
   }
   return attributedText;
+}
+
+// Function to show secondary and tertiary action buttons in the view. Called
+// when |self.scrollToEndMandatory| is false or when the user has scrolled to
+// the end.
+- (void)showSecondaryAndTertiaryButtons {
+  if (self.secondaryActionString) {
+    [self.actionStackView insertArrangedSubview:self.secondaryActionButton
+                                        atIndex:1];
+  }
+  if (self.tertiaryActionString) {
+    [self.actionStackView insertArrangedSubview:self.tertiaryActionButton
+                                        atIndex:0];
+  }
+
+  if (self.secondaryActionString || self.tertiaryActionString) {
+    // Update constraints.
+    [NSLayoutConstraint
+        deactivateConstraints:self.buttonsVerticalAnchorConstraints];
+    self.buttonsVerticalAnchorConstraints = @[
+      [self.scrollView.bottomAnchor
+          constraintEqualToAnchor:self.actionStackView.topAnchor],
+      [self.actionStackView.bottomAnchor
+          constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
+                                   constant:-kActionsBottomMargin],
+    ];
+    [NSLayoutConstraint
+        activateConstraints:self.buttonsVerticalAnchorConstraints];
+
+    // Handles the edge case that when the new buttons hide the end of the
+    // content, keep scrolling until the end is visible.
+    dispatch_after(
+        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC)),
+        dispatch_get_main_queue(), ^{
+          CGPoint bottomOffset =
+              CGPointMake(0, self.scrollView.contentSize.height -
+                                 self.scrollView.bounds.size.height +
+                                 self.scrollView.contentInset.bottom + 1);
+          [self.scrollView setContentOffset:bottomOffset animated:YES];
+        });
+  }
 }
 
 #pragma mark - UIScrollViewDelegate
