@@ -155,35 +155,41 @@ HeapVector<Member<USBConfiguration>> USBDevice::configurations() const {
   return configurations_;
 }
 
-ScriptPromise USBDevice::open(ScriptState* script_state) {
+ScriptPromise USBDevice::open(ScriptState* script_state,
+                              ExceptionState& exception_state) {
+  EnsureNoDeviceOrInterfaceChangeInProgress(exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
+
+  if (opened_)
+    return ScriptPromise::CastUndefined(script_state);
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  if (EnsureNoDeviceOrInterfaceChangeInProgress(resolver)) {
-    if (opened_) {
-      resolver->Resolve();
-    } else {
-      device_state_change_in_progress_ = true;
-      device_requests_.insert(resolver);
-      device_->Open(WTF::Bind(&USBDevice::AsyncOpen, WrapPersistent(this),
-                              WrapPersistent(resolver)));
-    }
-  }
+
+  device_state_change_in_progress_ = true;
+  device_requests_.insert(resolver);
+  device_->Open(WTF::Bind(&USBDevice::AsyncOpen, WrapPersistent(this),
+                          WrapPersistent(resolver)));
   return promise;
 }
 
-ScriptPromise USBDevice::close(ScriptState* script_state) {
+ScriptPromise USBDevice::close(ScriptState* script_state,
+                               ExceptionState& exception_state) {
+  EnsureNoDeviceOrInterfaceChangeInProgress(exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
+
+  if (!opened_)
+    return ScriptPromise::CastUndefined(script_state);
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  if (EnsureNoDeviceOrInterfaceChangeInProgress(resolver)) {
-    if (!opened_) {
-      resolver->Resolve();
-    } else {
-      device_state_change_in_progress_ = true;
-      device_requests_.insert(resolver);
-      device_->Close(WTF::Bind(&USBDevice::AsyncClose, WrapPersistent(this),
-                               WrapPersistent(resolver)));
-    }
-  }
+
+  device_state_change_in_progress_ = true;
+  device_requests_.insert(resolver);
+  device_->Close(WTF::Bind(&USBDevice::AsyncClose, WrapPersistent(this),
+                           WrapPersistent(resolver)));
   return promise;
 }
 
@@ -205,149 +211,178 @@ ScriptPromise USBDevice::forget(ScriptState* script_state,
 }
 
 ScriptPromise USBDevice::selectConfiguration(ScriptState* script_state,
-                                             uint8_t configuration_value) {
+                                             uint8_t configuration_value,
+                                             ExceptionState& exception_state) {
+  EnsureNoDeviceOrInterfaceChangeInProgress(exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
+
+  if (!opened_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kOpenRequired);
+    return ScriptPromise();
+  }
+
+  wtf_size_t configuration_index = FindConfigurationIndex(configuration_value);
+  if (configuration_index == kNotFound) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotFoundError,
+        "The configuration value provided is not supported by the device.");
+    return ScriptPromise();
+  }
+
+  if (configuration_index_ == configuration_index)
+    return ScriptPromise::CastUndefined(script_state);
+
+  device_state_change_in_progress_ = true;
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  if (EnsureNoDeviceOrInterfaceChangeInProgress(resolver)) {
-    if (!opened_) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidStateError, kOpenRequired));
-    } else {
-      wtf_size_t configuration_index =
-          FindConfigurationIndex(configuration_value);
-      if (configuration_index == kNotFound) {
-        resolver->Reject(
-            MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotFoundError,
-                                               "The configuration value "
-                                               "provided is not supported by "
-                                               "the device."));
-      } else if (configuration_index_ == configuration_index) {
-        resolver->Resolve();
-      } else {
-        device_state_change_in_progress_ = true;
-        device_requests_.insert(resolver);
-        device_->SetConfiguration(
-            configuration_value,
-            WTF::Bind(&USBDevice::AsyncSelectConfiguration,
-                      WrapPersistent(this), configuration_index,
-                      WrapPersistent(resolver)));
-      }
-    }
-  }
+
+  device_requests_.insert(resolver);
+  device_->SetConfiguration(
+      configuration_value,
+      WTF::Bind(&USBDevice::AsyncSelectConfiguration, WrapPersistent(this),
+                configuration_index, WrapPersistent(resolver)));
   return promise;
 }
 
 ScriptPromise USBDevice::claimInterface(ScriptState* script_state,
-                                        uint8_t interface_number) {
+                                        uint8_t interface_number,
+                                        ExceptionState& exception_state) {
+  EnsureDeviceConfigured(exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
+
+  wtf_size_t interface_index = FindInterfaceIndex(interface_number);
+  if (interface_index == kNotFound) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotFoundError,
+                                      kInterfaceNotFound);
+    return ScriptPromise();
+  }
+
+  if (interface_state_change_in_progress_[interface_index]) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kInterfaceStateChangeInProgress);
+    return ScriptPromise();
+  }
+
+  if (claimed_interfaces_[interface_index])
+    return ScriptPromise::CastUndefined(script_state);
+
+  interface_state_change_in_progress_[interface_index] = true;
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  if (EnsureDeviceConfigured(resolver)) {
-    wtf_size_t interface_index = FindInterfaceIndex(interface_number);
-    if (interface_index == kNotFound) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotFoundError, kInterfaceNotFound));
-    } else if (interface_state_change_in_progress_[interface_index]) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidStateError,
-          kInterfaceStateChangeInProgress));
-    } else if (claimed_interfaces_[interface_index]) {
-      resolver->Resolve();
-    } else {
-      interface_state_change_in_progress_[interface_index] = true;
-      device_requests_.insert(resolver);
-      device_->ClaimInterface(
-          interface_number,
-          WTF::Bind(&USBDevice::AsyncClaimInterface, WrapPersistent(this),
-                    interface_index, WrapPersistent(resolver)));
-    }
-  }
+
+  device_requests_.insert(resolver);
+  device_->ClaimInterface(
+      interface_number,
+      WTF::Bind(&USBDevice::AsyncClaimInterface, WrapPersistent(this),
+                interface_index, WrapPersistent(resolver)));
   return promise;
 }
 
 ScriptPromise USBDevice::releaseInterface(ScriptState* script_state,
-                                          uint8_t interface_number) {
+                                          uint8_t interface_number,
+                                          ExceptionState& exception_state) {
+  EnsureDeviceConfigured(exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
+
+  wtf_size_t interface_index = FindInterfaceIndex(interface_number);
+  if (interface_index == kNotFound) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotFoundError,
+        "The interface number provided is not supported by the device in its "
+        "current configuration.");
+    return ScriptPromise();
+  }
+
+  if (interface_state_change_in_progress_[interface_index]) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kInterfaceStateChangeInProgress);
+    return ScriptPromise();
+  }
+
+  if (!claimed_interfaces_[interface_index])
+    return ScriptPromise::CastUndefined(script_state);
+
+  // Mark this interface's endpoints unavailable while its state is
+  // changing.
+  SetEndpointsForInterface(interface_index, false);
+  interface_state_change_in_progress_[interface_index] = true;
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  if (EnsureDeviceConfigured(resolver)) {
-    wtf_size_t interface_index = FindInterfaceIndex(interface_number);
-    if (interface_index == kNotFound) {
-      resolver->Reject(
-          MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotFoundError,
-                                             "The interface number provided is "
-                                             "not supported by the device in "
-                                             "its current configuration."));
-    } else if (interface_state_change_in_progress_[interface_index]) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidStateError,
-          kInterfaceStateChangeInProgress));
-    } else if (!claimed_interfaces_[interface_index]) {
-      resolver->Resolve();
-    } else {
-      // Mark this interface's endpoints unavailable while its state is
-      // changing.
-      SetEndpointsForInterface(interface_index, false);
-      interface_state_change_in_progress_[interface_index] = true;
-      device_requests_.insert(resolver);
-      device_->ReleaseInterface(
-          interface_number,
-          WTF::Bind(&USBDevice::AsyncReleaseInterface, WrapPersistent(this),
-                    interface_index, WrapPersistent(resolver)));
-    }
-  }
+
+  device_requests_.insert(resolver);
+  device_->ReleaseInterface(
+      interface_number,
+      WTF::Bind(&USBDevice::AsyncReleaseInterface, WrapPersistent(this),
+                interface_index, WrapPersistent(resolver)));
   return promise;
 }
 
-ScriptPromise USBDevice::selectAlternateInterface(ScriptState* script_state,
-                                                  uint8_t interface_number,
-                                                  uint8_t alternate_setting) {
+ScriptPromise USBDevice::selectAlternateInterface(
+    ScriptState* script_state,
+    uint8_t interface_number,
+    uint8_t alternate_setting,
+    ExceptionState& exception_state) {
+  EnsureInterfaceClaimed(interface_number, exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
+
+  // TODO(reillyg): This is duplicated work.
+  wtf_size_t interface_index = FindInterfaceIndex(interface_number);
+  DCHECK_NE(interface_index, kNotFound);
+  wtf_size_t alternate_index =
+      FindAlternateIndex(interface_index, alternate_setting);
+  if (alternate_index == kNotFound) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotFoundError,
+        "The alternate setting provided is not supported by the device in its "
+        "current configuration.");
+    return ScriptPromise();
+  }
+
+  // Mark this old alternate interface's endpoints unavailable while
+  // the change is in progress.
+  SetEndpointsForInterface(interface_index, false);
+  interface_state_change_in_progress_[interface_index] = true;
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  if (EnsureInterfaceClaimed(interface_number, resolver)) {
-    // TODO(reillyg): This is duplicated work.
-    wtf_size_t interface_index = FindInterfaceIndex(interface_number);
-    DCHECK_NE(interface_index, kNotFound);
-    wtf_size_t alternate_index =
-        FindAlternateIndex(interface_index, alternate_setting);
-    if (alternate_index == kNotFound) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotFoundError,
-          "The alternate setting provided is "
-          "not supported by the device in "
-          "its current configuration."));
-    } else {
-      // Mark this old alternate interface's endpoints unavailable while
-      // the change is in progress.
-      SetEndpointsForInterface(interface_index, false);
-      interface_state_change_in_progress_[interface_index] = true;
-      device_requests_.insert(resolver);
-      device_->SetInterfaceAlternateSetting(
-          interface_number, alternate_setting,
-          WTF::Bind(&USBDevice::AsyncSelectAlternateInterface,
-                    WrapPersistent(this), interface_index, alternate_index,
-                    WrapPersistent(resolver)));
-    }
-  }
+
+  device_requests_.insert(resolver);
+  device_->SetInterfaceAlternateSetting(
+      interface_number, alternate_setting,
+      WTF::Bind(&USBDevice::AsyncSelectAlternateInterface, WrapPersistent(this),
+                interface_index, alternate_index, WrapPersistent(resolver)));
   return promise;
 }
 
 ScriptPromise USBDevice::controlTransferIn(
     ScriptState* script_state,
     const USBControlTransferParameters* setup,
-    unsigned length) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-  if (!EnsureNoDeviceOrInterfaceChangeInProgress(resolver))
-    return promise;
+    unsigned length,
+    ExceptionState& exception_state) {
+  EnsureNoDeviceOrInterfaceChangeInProgress(exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
 
   if (!opened_) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, kOpenRequired));
-    return promise;
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kOpenRequired);
+    return ScriptPromise();
   }
 
-  auto parameters = ConvertControlTransferParameters(setup, resolver);
+  auto parameters = ConvertControlTransferParameters(setup, exception_state);
   if (!parameters)
-    return promise;
+    return ScriptPromise();
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
 
   device_requests_.insert(resolver);
   device_->ControlTransferIn(
@@ -359,21 +394,24 @@ ScriptPromise USBDevice::controlTransferIn(
 
 ScriptPromise USBDevice::controlTransferOut(
     ScriptState* script_state,
-    const USBControlTransferParameters* setup) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-  if (!EnsureNoDeviceOrInterfaceChangeInProgress(resolver))
-    return promise;
+    const USBControlTransferParameters* setup,
+    ExceptionState& exception_state) {
+  EnsureNoDeviceOrInterfaceChangeInProgress(exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
 
   if (!opened_) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, kOpenRequired));
-    return promise;
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kOpenRequired);
+    return ScriptPromise();
   }
 
-  auto parameters = ConvertControlTransferParameters(setup, resolver);
+  auto parameters = ConvertControlTransferParameters(setup, exception_state);
   if (!parameters)
-    return promise;
+    return ScriptPromise();
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
 
   device_requests_.insert(resolver);
   device_->ControlTransferOut(
@@ -386,35 +424,38 @@ ScriptPromise USBDevice::controlTransferOut(
 ScriptPromise USBDevice::controlTransferOut(
     ScriptState* script_state,
     const USBControlTransferParameters* setup,
-    const DOMArrayPiece& data) {
+    const DOMArrayPiece& data,
+    ExceptionState& exception_state) {
   DCHECK(!data.IsNull());
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-  if (!EnsureNoDeviceOrInterfaceChangeInProgress(resolver))
-    return promise;
+  EnsureNoDeviceOrInterfaceChangeInProgress(exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
 
   if (!opened_) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, kOpenRequired));
-    return promise;
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kOpenRequired);
+    return ScriptPromise();
   }
 
-  auto parameters = ConvertControlTransferParameters(setup, resolver);
+  auto parameters = ConvertControlTransferParameters(setup, exception_state);
   if (!parameters)
-    return promise;
+    return ScriptPromise();
 
   if (data.IsDetached()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, kDetachedBuffer));
-    return promise;
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kDetachedBuffer);
+    return ScriptPromise();
   }
 
   if (data.ByteLength() > std::numeric_limits<uint32_t>::max()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kDataError, kBufferTooBig));
-    return promise;
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      kBufferTooBig);
+    return ScriptPromise();
   }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
 
   auto transfer_length = static_cast<uint32_t>(data.ByteLength());
   device_requests_.insert(resolver);
@@ -428,59 +469,70 @@ ScriptPromise USBDevice::controlTransferOut(
 
 ScriptPromise USBDevice::clearHalt(ScriptState* script_state,
                                    String direction,
-                                   uint8_t endpoint_number) {
+                                   uint8_t endpoint_number,
+                                   ExceptionState& exception_state) {
   UsbTransferDirection mojo_direction = direction == "in"
                                             ? UsbTransferDirection::INBOUND
                                             : UsbTransferDirection::OUTBOUND;
+  EnsureEndpointAvailable(direction == "in", endpoint_number, exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  if (EnsureEndpointAvailable(direction == "in", endpoint_number, resolver)) {
-    device_requests_.insert(resolver);
-    device_->ClearHalt(
-        mojo_direction, endpoint_number,
-        WTF::Bind(&USBDevice::AsyncClearHalt, WrapPersistent(this),
-                  WrapPersistent(resolver)));
-  }
+
+  device_requests_.insert(resolver);
+  device_->ClearHalt(mojo_direction, endpoint_number,
+                     WTF::Bind(&USBDevice::AsyncClearHalt, WrapPersistent(this),
+                               WrapPersistent(resolver)));
   return promise;
 }
 
 ScriptPromise USBDevice::transferIn(ScriptState* script_state,
                                     uint8_t endpoint_number,
-                                    unsigned length) {
+                                    unsigned length,
+                                    ExceptionState& exception_state) {
+  EnsureEndpointAvailable(/*in_transfer=*/true, endpoint_number,
+                          exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  if (EnsureEndpointAvailable(true /* in */, endpoint_number, resolver)) {
-    device_requests_.insert(resolver);
-    device_->GenericTransferIn(
-        endpoint_number, length, 0,
-        WTF::Bind(&USBDevice::AsyncTransferIn, WrapPersistent(this),
-                  WrapPersistent(resolver)));
-  }
+
+  device_requests_.insert(resolver);
+  device_->GenericTransferIn(
+      endpoint_number, length, 0,
+      WTF::Bind(&USBDevice::AsyncTransferIn, WrapPersistent(this),
+                WrapPersistent(resolver)));
   return promise;
 }
 
 ScriptPromise USBDevice::transferOut(ScriptState* script_state,
                                      uint8_t endpoint_number,
-                                     const DOMArrayPiece& data) {
+                                     const DOMArrayPiece& data,
+                                     ExceptionState& exception_state) {
   DCHECK(!data.IsNull());
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-  if (!EnsureEndpointAvailable(false /* out */, endpoint_number, resolver))
-    return promise;
+  EnsureEndpointAvailable(/*in_transfer=*/false, endpoint_number,
+                          exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
 
   if (data.IsDetached()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, kDetachedBuffer));
-    return promise;
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kDetachedBuffer);
+    return ScriptPromise();
   }
 
   if (data.ByteLength() > std::numeric_limits<uint32_t>::max()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kDataError, kBufferTooBig));
-    return promise;
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      kBufferTooBig);
+    return ScriptPromise();
   }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
 
   auto transfer_length = static_cast<uint32_t>(data.ByteLength());
   device_requests_.insert(resolver);
@@ -494,16 +546,21 @@ ScriptPromise USBDevice::transferOut(ScriptState* script_state,
 ScriptPromise USBDevice::isochronousTransferIn(
     ScriptState* script_state,
     uint8_t endpoint_number,
-    Vector<unsigned> packet_lengths) {
+    Vector<unsigned> packet_lengths,
+    ExceptionState& exception_state) {
+  EnsureEndpointAvailable(/*in_transfer=*/true, endpoint_number,
+                          exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  if (EnsureEndpointAvailable(true /* in */, endpoint_number, resolver)) {
-    device_requests_.insert(resolver);
-    device_->IsochronousTransferIn(
-        endpoint_number, packet_lengths, 0,
-        WTF::Bind(&USBDevice::AsyncIsochronousTransferIn, WrapPersistent(this),
-                  WrapPersistent(resolver)));
-  }
+
+  device_requests_.insert(resolver);
+  device_->IsochronousTransferIn(
+      endpoint_number, packet_lengths, 0,
+      WTF::Bind(&USBDevice::AsyncIsochronousTransferIn, WrapPersistent(this),
+                WrapPersistent(resolver)));
   return promise;
 }
 
@@ -511,25 +568,29 @@ ScriptPromise USBDevice::isochronousTransferOut(
     ScriptState* script_state,
     uint8_t endpoint_number,
     const DOMArrayPiece& data,
-    Vector<unsigned> packet_lengths) {
+    Vector<unsigned> packet_lengths,
+    ExceptionState& exception_state) {
   DCHECK(!data.IsNull());
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-  if (!EnsureEndpointAvailable(false /* out */, endpoint_number, resolver))
-    return promise;
+  EnsureEndpointAvailable(/*in_transfer=*/false, endpoint_number,
+                          exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
 
   if (data.IsDetached()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, kDetachedBuffer));
-    return promise;
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kDetachedBuffer);
+    return ScriptPromise();
   }
 
   if (data.ByteLength() > std::numeric_limits<wtf_size_t>::max()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kDataError, kBufferTooBig));
-    return promise;
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      kBufferTooBig);
+    return ScriptPromise();
   }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
 
   device_requests_.insert(resolver);
   device_->IsochronousTransferOut(
@@ -540,19 +601,24 @@ ScriptPromise USBDevice::isochronousTransferOut(
   return promise;
 }
 
-ScriptPromise USBDevice::reset(ScriptState* script_state) {
+ScriptPromise USBDevice::reset(ScriptState* script_state,
+                               ExceptionState& exception_state) {
+  EnsureNoDeviceOrInterfaceChangeInProgress(exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
+
+  if (!opened_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kOpenRequired);
+    return ScriptPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  if (EnsureNoDeviceOrInterfaceChangeInProgress(resolver)) {
-    if (!opened_) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidStateError, kOpenRequired));
-    } else {
-      device_requests_.insert(resolver);
-      device_->Reset(WTF::Bind(&USBDevice::AsyncReset, WrapPersistent(this),
-                               WrapPersistent(resolver)));
-    }
-  }
+
+  device_requests_.insert(resolver);
+  device_->Reset(WTF::Bind(&USBDevice::AsyncReset, WrapPersistent(this),
+                           WrapPersistent(resolver)));
   return promise;
 }
 
@@ -604,109 +670,102 @@ wtf_size_t USBDevice::FindAlternateIndex(uint32_t interface_index,
   return kNotFound;
 }
 
-bool USBDevice::EnsureNoDeviceChangeInProgress(
-    ScriptPromiseResolver* resolver) const {
+void USBDevice::EnsureNoDeviceChangeInProgress(
+    ExceptionState& exception_state) const {
   if (!device_.is_bound()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotFoundError, kDeviceDisconnected));
-    return false;
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotFoundError,
+                                      kDeviceDisconnected);
+    return;
   }
 
   if (device_state_change_in_progress_) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, kDeviceStateChangeInProgress));
-    return false;
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kDeviceStateChangeInProgress);
+    return;
   }
-
-  return true;
 }
 
-bool USBDevice::EnsureNoDeviceOrInterfaceChangeInProgress(
-    ScriptPromiseResolver* resolver) const {
-  if (!EnsureNoDeviceChangeInProgress(resolver))
-    return false;
+void USBDevice::EnsureNoDeviceOrInterfaceChangeInProgress(
+    ExceptionState& exception_state) const {
+  EnsureNoDeviceChangeInProgress(exception_state);
+  if (exception_state.HadException())
+    return;
 
   if (AnyInterfaceChangeInProgress()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, kInterfaceStateChangeInProgress));
-    return false;
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kInterfaceStateChangeInProgress);
+    return;
   }
-
-  return true;
 }
 
-bool USBDevice::EnsureDeviceConfigured(ScriptPromiseResolver* resolver) const {
-  if (!EnsureNoDeviceChangeInProgress(resolver))
-    return false;
+void USBDevice::EnsureDeviceConfigured(ExceptionState& exception_state) const {
+  EnsureNoDeviceChangeInProgress(exception_state);
+  if (exception_state.HadException())
+    return;
 
   if (!opened_) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, kOpenRequired));
-    return false;
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kOpenRequired);
+    return;
   }
 
   if (configuration_index_ == kNotFound) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "The device must have a configuration selected."));
-    return false;
+        "The device must have a configuration selected.");
+    return;
   }
-
-  return true;
 }
 
-bool USBDevice::EnsureInterfaceClaimed(uint8_t interface_number,
-                                       ScriptPromiseResolver* resolver) const {
-  if (!EnsureDeviceConfigured(resolver))
-    return false;
+void USBDevice::EnsureInterfaceClaimed(uint8_t interface_number,
+                                       ExceptionState& exception_state) const {
+  EnsureDeviceConfigured(exception_state);
+  if (exception_state.HadException())
+    return;
 
   wtf_size_t interface_index = FindInterfaceIndex(interface_number);
   if (interface_index == kNotFound) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotFoundError, kInterfaceNotFound));
-    return false;
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotFoundError,
+                                      kInterfaceNotFound);
+    return;
   }
 
   if (interface_state_change_in_progress_[interface_index]) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, kInterfaceStateChangeInProgress));
-    return false;
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kInterfaceStateChangeInProgress);
+    return;
   }
 
   if (!claimed_interfaces_[interface_index]) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "The specified interface has not been claimed."));
-    return false;
+        "The specified interface has not been claimed.");
+    return;
   }
-
-  return true;
 }
 
-bool USBDevice::EnsureEndpointAvailable(bool in_transfer,
+void USBDevice::EnsureEndpointAvailable(bool in_transfer,
                                         uint8_t endpoint_number,
-                                        ScriptPromiseResolver* resolver) const {
-  if (!EnsureDeviceConfigured(resolver))
-    return false;
+                                        ExceptionState& exception_state) const {
+  EnsureDeviceConfigured(exception_state);
+  if (exception_state.HadException())
+    return;
 
   if (endpoint_number == 0 || endpoint_number >= kEndpointsBitsNumber) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The specified endpoint number is out of range."));
-    return false;
+        "The specified endpoint number is out of range.");
+    return;
   }
 
   auto& bit_vector = in_transfer ? in_endpoints_ : out_endpoints_;
   if (!bit_vector[endpoint_number - 1]) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    exception_state.ThrowDOMException(
         DOMExceptionCode::kNotFoundError,
-        "The specified endpoint is not part "
-        "of a claimed and selected alternate "
-        "interface."));
-    return false;
+        "The specified endpoint is not part of a claimed and selected "
+        "alternate interface.");
+    return;
   }
-
-  return true;
 }
 
 bool USBDevice::AnyInterfaceChangeInProgress() const {
@@ -719,7 +778,7 @@ bool USBDevice::AnyInterfaceChangeInProgress() const {
 
 UsbControlTransferParamsPtr USBDevice::ConvertControlTransferParameters(
     const USBControlTransferParameters* parameters,
-    ScriptPromiseResolver* resolver) const {
+    ExceptionState& exception_state) const {
   auto mojo_parameters = device::mojom::blink::UsbControlTransferParams::New();
 
   if (parameters->requestType() == "standard") {
@@ -729,9 +788,9 @@ UsbControlTransferParamsPtr USBDevice::ConvertControlTransferParameters(
   } else if (parameters->requestType() == "vendor") {
     mojo_parameters->type = UsbControlTransferType::VENDOR;
   } else {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    exception_state.ThrowDOMException(
         DOMExceptionCode::kTypeMismatchError,
-        "The control transfer requestType parameter is invalid."));
+        "The control transfer requestType parameter is invalid.");
     return nullptr;
   }
 
@@ -739,21 +798,25 @@ UsbControlTransferParamsPtr USBDevice::ConvertControlTransferParameters(
     mojo_parameters->recipient = UsbControlTransferRecipient::DEVICE;
   } else if (parameters->recipient() == "interface") {
     uint8_t interface_number = parameters->index() & 0xff;
-    if (!EnsureInterfaceClaimed(interface_number, resolver))
+    EnsureInterfaceClaimed(interface_number, exception_state);
+    if (exception_state.HadException())
       return nullptr;
+
     mojo_parameters->recipient = UsbControlTransferRecipient::INTERFACE;
   } else if (parameters->recipient() == "endpoint") {
     bool in_transfer = parameters->index() & 0x80;
     uint8_t endpoint_number = parameters->index() & 0x0f;
-    if (!EnsureEndpointAvailable(in_transfer, endpoint_number, resolver))
+    EnsureEndpointAvailable(in_transfer, endpoint_number, exception_state);
+    if (exception_state.HadException())
       return nullptr;
+
     mojo_parameters->recipient = UsbControlTransferRecipient::ENDPOINT;
   } else if (parameters->recipient() == "other") {
     mojo_parameters->recipient = UsbControlTransferRecipient::OTHER;
   } else {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    exception_state.ThrowDOMException(
         DOMExceptionCode::kTypeMismatchError,
-        "The control transfer recipient parameter is invalid."));
+        "The control transfer recipient parameter is invalid.");
     return nullptr;
   }
 
