@@ -23,7 +23,9 @@ MediaRouterActionController::MediaRouterActionController(Profile* profile)
           profile,
           media_router::MediaRouterFactory::GetApiForBrowserContext(profile)) {}
 
-MediaRouterActionController::~MediaRouterActionController() = default;
+MediaRouterActionController::~MediaRouterActionController() {
+  DCHECK_EQ(dialog_count_, 0u);
+}
 
 // static
 bool MediaRouterActionController::IsActionShownByPolicy(Profile* profile) {

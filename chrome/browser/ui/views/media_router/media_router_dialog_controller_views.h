@@ -46,7 +46,7 @@ class MediaRouterDialogControllerViews
   void Reset() override;
 
   // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
+  void OnWidgetClosing(views::Widget* widget) override;
 
   // Sets a callback to be called whenever a dialog is created.
   void SetDialogCreationCallbackForTesting(base::RepeatingClosure callback);
