@@ -145,7 +145,7 @@
       'linux-angle-chromium-builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
       'mac-angle-chromium-builder': 'gpu_tests_release_trybot_minimal_symbols',
       'win-angle-chromium-x64-builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
-      'win-angle-chromium-x86-builder': 'gpu_tests_release_bot_dcheck_always_on_x86',
+      'win-angle-chromium-x86-builder': 'gpu_tests_release_bot_dcheck_always_on_x86_reclient',
       'win-angle-x64-builder': 'angle_deqp_release_trybot_reclient',
     },
 
@@ -671,10 +671,10 @@
       'linux-swangle-x64': 'angle_deqp_release_trybot_reclient',
       'mac-swangle-chromium-x64': 'gpu_tests_release_trybot_minimal_symbols',
       'win-swangle-chromium-x86': 'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_reclient',
-      'win-swangle-tot-angle-x64': 'angle_deqp_release_trybot',
+      'win-swangle-tot-angle-x64': 'angle_deqp_release_trybot_reclient',
       'win-swangle-tot-angle-x86': 'angle_deqp_release_bot_dcheck_always_on_x86_reclient',
       'win-swangle-tot-swiftshader-x64': 'angle_deqp_release_trybot_reclient',
-      'win-swangle-tot-swiftshader-x86': 'angle_deqp_release_bot_dcheck_always_on_x86',
+      'win-swangle-tot-swiftshader-x86': 'angle_deqp_release_bot_dcheck_always_on_x86_reclient',
       'win-swangle-x64': 'angle_deqp_release_trybot_reclient',
       'win-swangle-x86': 'angle_deqp_release_bot_dcheck_always_on_x86_reclient',
     },
@@ -1745,10 +1745,6 @@
       'angle_deqp_tests', 'release_trybot_minimal_symbols', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation',
     ],
 
-    'angle_deqp_release_bot_dcheck_always_on_x86': [
-      'angle_deqp_tests', 'shared_release_bot_dcheck_always_on', 'x86',
-    ],
-
     'angle_deqp_release_bot_dcheck_always_on_x86_reclient': [
       'angle_deqp_tests', 'shared_release_bot_dcheck_always_on_reclient', 'x86',
     ],
@@ -2614,8 +2610,8 @@
       'gpu_tests', 'release_trybot_minimal_symbols_reclient', 'resource_allowlisting',
     ],
 
-    'gpu_tests_release_bot_dcheck_always_on_x86': [
-      'gpu_tests', 'release_trybot_minimal_symbols', 'x86',
+    'gpu_tests_release_bot_dcheck_always_on_x86_reclient': [
+      'gpu_tests', 'release_trybot_minimal_symbols_reclient', 'x86',
     ],
 
     'gpu_tests_release_bot_do_typecheck_reclient': [
