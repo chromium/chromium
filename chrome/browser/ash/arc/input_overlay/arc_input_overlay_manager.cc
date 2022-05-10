@@ -9,6 +9,7 @@
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -88,7 +89,8 @@ ArcInputOverlayManager::ArcInputOverlayManager(
 
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+       // Should not block shutdown.
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
   // For test. The unittest is based on ExoTestBase which must run on
   // Chrome_UIThread. While TestingProfileManager::CreateTestingProfile runs on
@@ -166,9 +168,9 @@ std::unique_ptr<input_overlay::AppDataProto> ArcInputOverlayManager::GetProto(
 void ArcInputOverlayManager::OnProtoDataAvailable(
     input_overlay::TouchInjector* touch_injector,
     std::unique_ptr<input_overlay::AppDataProto> proto) {
-  if (!proto)
-    return;
-  touch_injector->OnProtoDataAvailable(std::move(proto));
+  if (proto)
+    touch_injector->OnProtoDataAvailable(std::move(proto));
+  RegisterWindowIfFocused(touch_injector->target_window());
 }
 
 void ArcInputOverlayManager::OnSaveProtoFile(
@@ -246,6 +248,11 @@ void ArcInputOverlayManager::UnRegisterWindow(aura::Window* window) {
   RemoveDisplayOverlayController();
   RemoveObserverFromInputMethod();
   registered_top_level_window_ = nullptr;
+}
+
+void ArcInputOverlayManager::RegisterWindowIfFocused(aura::Window* window) {
+  if (ash::window_util::GetFocusedWindow() == window)
+    RegisterWindow(window);
 }
 
 void ArcInputOverlayManager::AddDisplayOverlayController() {

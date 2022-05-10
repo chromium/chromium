@@ -122,6 +122,7 @@ class ArcInputOverlayManager : public KeyedService,
   // Only top level window will be registered successfully.
   void RegisterWindow(aura::Window* window);
   void UnRegisterWindow(aura::Window* window);
+  void RegisterWindowIfFocused(aura::Window* window);
   void AddDisplayOverlayController();
   void RemoveDisplayOverlayController();
 

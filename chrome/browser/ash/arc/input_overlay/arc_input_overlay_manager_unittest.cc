@@ -110,7 +110,9 @@ TEST_F(ArcInputOverlayManagerTest, TestPropertyChangeAndWindowDestroy) {
   // I/O takes time here.
   task_environment()->FastForwardBy(kIORead);
   EXPECT_TRUE(IsInputOverlayEnabled(arc_window->GetWindow()));
-  EXPECT_FALSE(GetRegisteredWindow());
+  // Input overlay registers the window after reading the data when the window
+  // is still focused. In the test, the arc_window is considered as focused now.
+  EXPECT_TRUE(GetRegisteredWindow());
   WindowFocus(arc_window->GetWindow(), nullptr);
   EXPECT_TRUE(GetRegisteredWindow());
 
