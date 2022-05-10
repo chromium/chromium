@@ -14,7 +14,6 @@ extern NSInteger kSymbolActionPointSize;
 extern NSString* kLinkActionSymbol;
 extern NSString* kQRCodeFinderActionSymbol;
 extern NSString* kNewTabActionSymbol;
-extern NSString* kOpenInNewTabActionSymbol;
 extern NSString* kClipboardActionSymbol;
 extern NSString* kDeleteActionSymbol;
 extern NSString* kEditActionSymbol;

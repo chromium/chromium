@@ -13,7 +13,6 @@ NSInteger kSymbolActionPointSize = 18;
 NSString* kLinkActionSymbol = @"link";
 NSString* kQRCodeFinderActionSymbol = @"qrcode.viewfinder";
 NSString* kNewTabActionSymbol = @"plus.square";
-NSString* kOpenInNewTabActionSymbol = @"plus.square";
 NSString* kClipboardActionSymbol = @"doc.on.clipboard";
 NSString* kDeleteActionSymbol = @"trash";
 NSString* kEditActionSymbol = @"pencil";

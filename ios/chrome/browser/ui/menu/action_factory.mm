@@ -94,7 +94,7 @@ NSInteger kSymbolToolbarPointSize = 18;
 
 - (UIAction*)actionToOpenInNewTabWithBlock:(ProceduralBlock)block {
   UIImage* image = UseSymbols()
-                       ? DefaultSymbolWithPointSize(kOpenInNewTabActionSymbol,
+                       ? DefaultSymbolWithPointSize(kNewTabActionSymbol,
                                                     kSymbolActionPointSize)
                        : [UIImage imageNamed:@"open_in_new_tab"];
   return [self actionWithTitle:l10n_util::GetNSString(

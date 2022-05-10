@@ -109,8 +109,8 @@ TEST_F(BrowserActionFactoryTest, OpenInNewTabAction_URL) {
       [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                            scenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kOpenInNewTabActionSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      DefaultSymbolWithPointSize(kNewTabActionSymbol, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB);
 
