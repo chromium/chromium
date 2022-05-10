@@ -461,6 +461,11 @@ export class ShimlessRma extends ShimlessRmaBase {
     this.style.setProperty(
         '--container-horizontal-padding', `${containerHorizontalPadding}px`);
 
+    const contentContainerWidth =
+        screenWidth - (containerHorizontalPadding * 2);
+    this.style.setProperty(
+        '--content-container-width', `${contentContainerWidth}px`);
+
     const screenHeight = window.innerHeight;
     const containerVerticalPadding = screenHeight * .06;
     this.style.setProperty(
