@@ -6712,7 +6712,7 @@ void Document::FinishedParsing() {
     if (frame->GetFrameScheduler())
       frame->GetFrameScheduler()->OnDomContentLoaded();
 
-    if (frame->IsMainFrame() && ShouldMarkFontPerformance())
+    if (ShouldMarkFontPerformance())
       FontPerformance::MarkDomContentLoaded();
 
     DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
@@ -6987,7 +6987,7 @@ FontMatchingMetrics* Document::GetFontMatchingMetrics() {
   if (font_matching_metrics_)
     return font_matching_metrics_.get();
   font_matching_metrics_ = std::make_unique<FontMatchingMetrics>(
-      IsInMainFrame(), UkmRecorder(), UkmSourceID(),
+      IsInOutermostMainFrame(), UkmRecorder(), UkmSourceID(),
       GetTaskRunner(TaskType::kInternalDefault));
   return font_matching_metrics_.get();
 }

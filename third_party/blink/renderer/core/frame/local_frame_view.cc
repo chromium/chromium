@@ -4712,7 +4712,7 @@ void LocalFrameView::OnFirstContentfulPaint() {
   GetPage()->GetChromeClient().StopDeferringCommits(
       *frame_, cc::PaintHoldingCommitTrigger::kFirstContentfulPaint);
   const bool is_main_frame = frame_->IsMainFrame();
-  if (is_main_frame && frame_->GetDocument()->ShouldMarkFontPerformance())
+  if (frame_->GetDocument()->ShouldMarkFontPerformance())
     FontPerformance::MarkFirstContentfulPaint();
   EnsureUkmAggregator().DidReachFirstContentfulPaint(is_main_frame);
 }

@@ -1430,7 +1430,8 @@ class CORE_EXPORT Document : public ContainerNode,
   const DocumentTiming& GetTiming() const { return document_timing_; }
 
   bool ShouldMarkFontPerformance() const {
-    return !IsInitialEmptyDocument() && !IsXMLDocument();
+    return !IsInitialEmptyDocument() && !IsXMLDocument() &&
+           IsInOutermostMainFrame();
   }
 
   int RequestAnimationFrame(FrameCallback*);
