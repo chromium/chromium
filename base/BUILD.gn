@@ -3639,6 +3639,7 @@ test("base_unittests") {
       "allocator/partition_allocator/page_allocator_unittest.cc",
       "allocator/partition_allocator/partition_alloc_base/bits_pa_unittest.cc",
       "allocator/partition_allocator/partition_alloc_base/cpu_pa_unittest.cc",
+      "allocator/partition_allocator/partition_alloc_base/cxx17_backports_pa_unittest.cc",
       "allocator/partition_allocator/partition_alloc_base/logging_pa_unittest.cc",
       "allocator/partition_allocator/partition_alloc_base/rand_util_pa_unittest.cc",
       "allocator/partition_allocator/partition_alloc_base/scoped_clear_last_error_pa_unittest.cc",
