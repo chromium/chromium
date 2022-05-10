@@ -218,8 +218,8 @@ void VerifyPageContentDict(
   EXPECT_THAT(page_content_dict->FindBoolKey("isNearbyShareDisallowedByPolicy"),
               Optional(expected_is_nearby_share_disallowed_by_policy_));
 
-  EXPECT_THAT(page_content_dict->FindBoolKey("isPhoneHubAppsAccessGranted"),
-              Optional(expected_is_phone_hub_apps_access_granted_));
+  EXPECT_THAT(page_content_dict->FindIntKey("appsAccessStatus"),
+              Optional(expected_is_phone_hub_apps_access_granted_ ? 2 : 1));
 
   EXPECT_THAT(
       page_content_dict->FindBoolKey("isCameraRollFilePermissionGranted"),

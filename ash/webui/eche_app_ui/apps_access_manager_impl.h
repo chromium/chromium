@@ -59,6 +59,8 @@ class AppsAccessManagerImpl
   void OnSendAppsSetupResponseReceived(
       proto::SendAppsSetupResponse apps_setup_response) override;
   void OnStatusChange(proto::StatusChangeType status_change_type) override {}
+  void OnAppPolicyStateChange(
+      proto::AppStreamingPolicy app_policy_state) override;
 
   // FeatureStatusProvider::Observer:
   void OnFeatureStatusChanged() override;
@@ -74,7 +76,7 @@ class AppsAccessManagerImpl
   bool IsEligibleForOnboarding(FeatureStatus feature_status) const;
   void UpdateSetupOperationState();
 
-  AccessStatus ComputeAppsAccessState(proto::AppsAccessState apps_access_state);
+  AccessStatus ComputeAppsAccessState();
 
   FeatureStatus current_feature_status_;
   ConnectionStatus current_connection_status_;
@@ -85,6 +87,10 @@ class AppsAccessManagerImpl
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   secure_channel::ConnectionManager* connection_manager_;
   bool initialized_ = false;
+  proto::AppStreamingPolicy current_app_policy_state_ =
+      proto::AppStreamingPolicy::APP_POLICY_UNKNOWN;
+  proto::AppsAccessState current_apps_access_state_ =
+      proto::AppsAccessState::ACCESS_UNKNOWN;
 };
 
 }  // namespace eche_app

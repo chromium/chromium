@@ -426,6 +426,8 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_PROHIBITED_TOOLTIP},
       {"multideviceNotificationAccessProhibitedDisabledByAdminTooltip",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_PROHIBITED_DISABLED_BY_ADMIN_TOOLTIP},
+      {"multideviceAppsAccessProhibitedDisabledByAdminTooltip",
+       IDS_SETTINGS_MULTIDEVICE_APPS_ACCESS_PROHIBITED_DISABLED_BY_ADMIN_TOOLTIP},
       {"multideviceInstantTetheringItemTitle",
        IDS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING},
       {"multideviceInstantTetheringItemSummary",

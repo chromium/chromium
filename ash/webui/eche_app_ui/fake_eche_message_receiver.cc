@@ -35,5 +35,12 @@ void FakeEcheMessageReceiver::FakeStatusChange(
   NotifyStatusChange(status_change);
 }
 
+void FakeEcheMessageReceiver::FakeAppPolicyStateChange(
+    proto::AppStreamingPolicy app_policy_state) {
+  proto::PolicyStateChange policy_state_change;
+  policy_state_change.set_app_policy_state(app_policy_state);
+  NotifyAppPolicyStateChange(policy_state_change);
+}
+
 }  // namespace eche_app
 }  // namespace ash

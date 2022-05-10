@@ -27,6 +27,10 @@ class EcheMessageReceiver {
         proto::SendAppsSetupResponse apps_setup_response) = 0;
 
     virtual void OnStatusChange(proto::StatusChangeType status_change_type) = 0;
+
+    // Called when the app policy state changed sent by the remote phone.
+    virtual void OnAppPolicyStateChange(
+        proto::AppStreamingPolicy app_policy_state) = 0;
   };
 
   EcheMessageReceiver(const EcheMessageReceiver&) = delete;
@@ -43,6 +47,7 @@ class EcheMessageReceiver {
   void NotifySendAppsSetupResponse(
       proto::SendAppsSetupResponse apps_setup_response);
   void NotifyStatusChange(proto::StatusChange status_change);
+  void NotifyAppPolicyStateChange(proto::PolicyStateChange policy_state_change);
 
  private:
   friend class FakeEcheMessageReceiver;

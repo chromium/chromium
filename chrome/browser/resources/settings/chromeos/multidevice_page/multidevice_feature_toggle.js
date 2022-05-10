@@ -77,6 +77,13 @@ Polymer({
       return;
     }
 
+    // If Phone Hub apps access is prohibited, the toggle is always off.
+    if (this.feature === MultiDeviceFeature.ECHE &&
+        this.isPhoneHubAppsAccessProhibited()) {
+      this.checked_ = false;
+      return;
+    }
+
     this.checked_ = this.getFeatureState(this.feature) ===
         MultiDeviceFeatureState.ENABLED_BY_USER;
   },

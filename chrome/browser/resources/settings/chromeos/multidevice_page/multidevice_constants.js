@@ -186,10 +186,10 @@ export const PhoneHubPermissionsSetupFeatureCombination = {
  *   isAndroidSmsPairingComplete: boolean,
  *   cameraRollAccessStatus: !PhoneHubFeatureAccessStatus,
  *   notificationAccessStatus: !PhoneHubFeatureAccessStatus,
+ *   appsAccessStatus: !PhoneHubFeatureAccessStatus,
  *   notificationAccessProhibitedReason:
  *       !PhoneHubFeatureAccessProhibitedReason,
  *   isNearbyShareDisallowedByPolicy: boolean,
- *   isPhoneHubAppsAccessGranted: boolean,
  *   isPhoneHubPermissionsDialogSupported: boolean,
  *   isCameraRollFilePermissionGranted: boolean,
  *   isPhoneHubFeatureCombinedSetupSupported: boolean

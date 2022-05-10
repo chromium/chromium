@@ -26,6 +26,8 @@ void EcheMessageReceiverImpl::OnMessageReceived(const std::string& payload) {
     NotifySendAppsSetupResponse(message.apps_setup_response());
   } else if (message.has_status_change()) {
     NotifyStatusChange(message.status_change());
+  } else if (message.has_policy_state_change()) {
+    NotifyAppPolicyStateChange(message.policy_state_change());
   }
 }
 

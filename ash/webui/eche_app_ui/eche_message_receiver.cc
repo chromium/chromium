@@ -38,5 +38,11 @@ void EcheMessageReceiver::NotifyStatusChange(
     observer.OnStatusChange(status_change.type());
 }
 
+void EcheMessageReceiver::NotifyAppPolicyStateChange(
+    proto::PolicyStateChange policy_state_change) {
+  for (auto& observer : observer_list_)
+    observer.OnAppPolicyStateChange(policy_state_change.app_policy_state());
+}
+
 }  // namespace eche_app
 }  // namespace ash

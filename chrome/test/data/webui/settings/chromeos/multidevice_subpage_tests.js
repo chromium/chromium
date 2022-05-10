@@ -402,7 +402,7 @@ suite('Multidevice', function() {
             Object.assign({}, multideviceSubpage.pageContentData, {
               phoneHubNotificationsState:
                   MultiDeviceFeatureState.ENABLED_BY_USER,
-              isPhoneHubAppsAccessGranted: true,
+              appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.ACCESS_GRANTED
             });
@@ -419,7 +419,7 @@ suite('Multidevice', function() {
             Object.assign({}, multideviceSubpage.pageContentData, {
               phoneHubNotificationsState:
                   MultiDeviceFeatureState.ENABLED_BY_USER,
-              isPhoneHubAppsAccessGranted: true,
+              appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
             });
@@ -436,7 +436,8 @@ suite('Multidevice', function() {
             Object.assign({}, multideviceSubpage.pageContentData, {
               phoneHubNotificationsState:
                   MultiDeviceFeatureState.ENABLED_BY_USER,
-              isPhoneHubAppsAccessGranted: false,
+              appsAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.ACCESS_GRANTED
             });
@@ -453,7 +454,8 @@ suite('Multidevice', function() {
             Object.assign({}, multideviceSubpage.pageContentData, {
               phoneHubNotificationsState:
                   MultiDeviceFeatureState.ENABLED_BY_USER,
-              isPhoneHubAppsAccessGranted: false,
+              appsAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
             });
@@ -477,7 +479,7 @@ suite('Multidevice', function() {
               phoneHubNotificationsState:
                   MultiDeviceFeatureState.ENABLED_BY_USER,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
-              isPhoneHubAppsAccessGranted: true,
+              appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.ACCESS_GRANTED
             });
@@ -495,7 +497,7 @@ suite('Multidevice', function() {
               phoneHubNotificationsState:
                   MultiDeviceFeatureState.ENABLED_BY_USER,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
-              isPhoneHubAppsAccessGranted: true,
+              appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.ACCESS_GRANTED
             });
@@ -514,7 +516,8 @@ suite('Multidevice', function() {
                   MultiDeviceFeatureState.ENABLED_BY_USER,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
               isPhoneHubPermissionsDialogSupported: false,
-              isPhoneHubAppsAccessGranted: false,
+              appsAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.ACCESS_GRANTED
             });
@@ -532,7 +535,8 @@ suite('Multidevice', function() {
                   MultiDeviceFeatureState.ENABLED_BY_USER,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
               isPhoneHubPermissionsDialogSupported: false,
-              isPhoneHubAppsAccessGranted: false,
+              appsAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
             });
@@ -550,7 +554,8 @@ suite('Multidevice', function() {
                   MultiDeviceFeatureState.ENABLED_BY_USER,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
               isPhoneHubPermissionsDialogSupported: true,
-              isPhoneHubAppsAccessGranted: false,
+              appsAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.ACCESS_GRANTED
             });
@@ -573,7 +578,8 @@ suite('Multidevice', function() {
                   MultiDeviceFeatureState.ENABLED_BY_USER,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
               isPhoneHubPermissionsDialogSupported: true,
-              isPhoneHubAppsAccessGranted: false,
+              appsAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
             });
@@ -685,7 +691,7 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
-              isPhoneHubAppsAccessGranted: true
+              appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED
             });
 
         flush();
@@ -706,7 +712,7 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
-              isPhoneHubAppsAccessGranted: true
+              appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED
             });
 
         flush();
@@ -727,7 +733,7 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
-              isPhoneHubAppsAccessGranted: true
+              appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED
             });
 
         flush();
@@ -748,7 +754,8 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
-              isPhoneHubAppsAccessGranted: false
+              appsAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
             });
 
         flush();
@@ -769,7 +776,8 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
-              isPhoneHubAppsAccessGranted: false
+              appsAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
             });
 
         flush();
@@ -790,7 +798,8 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
-              isPhoneHubAppsAccessGranted: false
+              appsAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
             });
 
         flush();
@@ -811,7 +820,7 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
-              isPhoneHubAppsAccessGranted: true
+              appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED
             });
 
         flush();
@@ -832,7 +841,8 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
-              isPhoneHubAppsAccessGranted: false
+              appsAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
             });
 
         flush();
@@ -842,12 +852,24 @@ suite('Multidevice', function() {
         assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
         assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
         assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+      });
 
+  test(
+      'Enterprise policies should properly affect Phone Hub Camera Roll, Notifications, Apps, and Combined items.',
+      function() {
+        setSupportedFeatures([
+          MultiDeviceFeature.PHONE_HUB,
+          MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL,
+          MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
+          MultiDeviceFeature.ECHE,
+        ]);
+        // Test CrOS enterprise policy:
         // Notifications, CameraRoll and Apps features are not grant, but
         // Notifications is prohibited. Should show Notifications and combined
         // settings.
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
+              isPhoneHubPermissionsDialogSupported: true,
               phoneHubCameraRollState: MultiDeviceFeatureState.DISABLED_BY_USER,
               cameraRollAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
@@ -856,7 +878,8 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.DISABLED_BY_USER,
-              isPhoneHubAppsAccessGranted: false
+              appsAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
             });
 
         flush();
@@ -872,6 +895,7 @@ suite('Multidevice', function() {
         // settings.
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
+              isPhoneHubPermissionsDialogSupported: true,
               phoneHubCameraRollState:
                   MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
               cameraRollAccessStatus:
@@ -881,7 +905,8 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.DISABLED_BY_USER,
-              isPhoneHubAppsAccessGranted: false
+              appsAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
             });
 
         flush();
@@ -896,6 +921,7 @@ suite('Multidevice', function() {
         // is prohibited. Should show Apps and combined settings.
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
+              isPhoneHubPermissionsDialogSupported: true,
               phoneHubCameraRollState: MultiDeviceFeatureState.DISABLED_BY_USER,
               cameraRollAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
@@ -904,7 +930,8 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
-              isPhoneHubAppsAccessGranted: false
+              appsAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
             });
 
         flush();
@@ -920,6 +947,7 @@ suite('Multidevice', function() {
         // Notifications, CameraRoll and Apps and hide combined settings.
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
+              isPhoneHubPermissionsDialogSupported: true,
               phoneHubCameraRollState:
                   MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
               cameraRollAccessStatus:
@@ -929,7 +957,8 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.DISABLED_BY_USER,
-              isPhoneHubAppsAccessGranted: false
+              appsAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
             });
 
         flush();
@@ -940,12 +969,12 @@ suite('Multidevice', function() {
         assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
         assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
 
-
         // Notifications, CameraRoll and Apps features are not grant, but Phone
         // Hub (top feature) is prohibited. Should show Notifications,
         // CameraRoll and Apps and hide combined settings.
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
+              isPhoneHubPermissionsDialogSupported: true,
               phoneHubState: MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
               phoneHubCameraRollState:
                   MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
@@ -956,7 +985,86 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
-              isPhoneHubAppsAccessGranted: false
+              appsAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+            });
+
+        flush();
+
+        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+
+        // Test Phone's enterprise policy:
+        // Notifications, CameraRoll and Apps features are not grant, but
+        // phone's notifications policy is disabled. Should show Notifications
+        // and combined settings.
+        multideviceSubpage.pageContentData =
+            Object.assign({}, multideviceSubpage.pageContentData, {
+              isPhoneHubPermissionsDialogSupported: true,
+              phoneHubState: MultiDeviceFeatureState.ENABLED_BY_USER,
+              phoneHubCameraRollState: MultiDeviceFeatureState.DISABLED_BY_USER,
+              cameraRollAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
+              phoneHubNotificationsState:
+                  MultiDeviceFeatureState.DISABLED_BY_USER,
+              notificationAccessStatus: PhoneHubFeatureAccessStatus.PROHIBITED,
+              phoneHubAppsState: MultiDeviceFeatureState.DISABLED_BY_USER,
+              appsAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+            });
+
+        flush();
+
+        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+
+        // Notifications, CameraRoll and Apps features are not grant, but
+        // phone's apps streaming policy is disabled. Should show Apps and
+        // combined settings.
+        multideviceSubpage.pageContentData =
+            Object.assign({}, multideviceSubpage.pageContentData, {
+              isPhoneHubPermissionsDialogSupported: true,
+              phoneHubState: MultiDeviceFeatureState.ENABLED_BY_USER,
+              phoneHubCameraRollState: MultiDeviceFeatureState.DISABLED_BY_USER,
+              cameraRollAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
+              phoneHubNotificationsState:
+                  MultiDeviceFeatureState.DISABLED_BY_USER,
+              notificationAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
+              phoneHubAppsState: MultiDeviceFeatureState.DISABLED_BY_USER,
+              appsAccessStatus: PhoneHubFeatureAccessStatus.PROHIBITED
+            });
+
+        flush();
+
+        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+
+        // Notifications, CameraRoll and Apps features are not grant, but
+        // phone's notification and apps streaming policy are disabled. Should
+        // show Notifications, CameraRoll and Apps and hide combined settings.
+        multideviceSubpage.pageContentData =
+            Object.assign({}, multideviceSubpage.pageContentData, {
+              isPhoneHubPermissionsDialogSupported: true,
+              phoneHubState: MultiDeviceFeatureState.ENABLED_BY_USER,
+              phoneHubCameraRollState: MultiDeviceFeatureState.DISABLED_BY_USER,
+              cameraRollAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
+              phoneHubNotificationsState:
+                  MultiDeviceFeatureState.DISABLED_BY_USER,
+              notificationAccessStatus: PhoneHubFeatureAccessStatus.PROHIBITED,
+              phoneHubAppsState: MultiDeviceFeatureState.DISABLED_BY_USER,
+              appsAccessStatus: PhoneHubFeatureAccessStatus.PROHIBITED
             });
 
         flush();

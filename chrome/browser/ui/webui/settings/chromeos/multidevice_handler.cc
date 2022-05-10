@@ -67,7 +67,7 @@ const char kNotificationAccessProhibitedReason[] =
 const char kIsAndroidSmsPairingComplete[] = "isAndroidSmsPairingComplete";
 const char kIsNearbyShareDisallowedByPolicy[] =
     "isNearbyShareDisallowedByPolicy";
-const char kIsPhoneHubAppsAccessGranted[] = "isPhoneHubAppsAccessGranted";
+const char kAppsAccessStatus[] = "appsAccessStatus";
 const char kIsPhoneHubPermissionsDialogSupported[] =
     "isPhoneHubPermissionsDialogSupported";
 const char kIsCameraRollFilePermissionGranted[] =
@@ -753,12 +753,9 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
           kAvailableButNotGranted;
   if (apps_access_manager_)
     apps_access_status = apps_access_manager_->GetAccessStatus();
-  bool is_apps_access_granted =
-      apps_access_status ==
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted;
 
-  page_content_dictionary->SetBoolKey(kIsPhoneHubAppsAccessGranted,
-                                      is_apps_access_granted);
+  page_content_dictionary->SetInteger(kAppsAccessStatus,
+                                      static_cast<int32_t>(apps_access_status));
 
   bool is_camera_roll_file_permission_granted = false;
   if (camera_roll_manager_) {

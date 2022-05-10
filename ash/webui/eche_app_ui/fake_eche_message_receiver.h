@@ -21,7 +21,10 @@ class FakeEcheMessageReceiver : public EcheMessageReceiver {
                                  proto::AppsAccessState status);
   void FakeStatusChange(proto::StatusChangeType status_change_type);
 
+  void FakeAppPolicyStateChange(proto::AppStreamingPolicy app_policy_state);
+
  private:
+  using EcheMessageReceiver::NotifyAppPolicyStateChange;
   using EcheMessageReceiver::NotifyGetAppsAccessStateResponse;
   using EcheMessageReceiver::NotifySendAppsSetupResponse;
   using EcheMessageReceiver::NotifyStatusChange;

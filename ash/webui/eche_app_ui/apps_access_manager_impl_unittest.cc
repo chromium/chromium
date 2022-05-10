@@ -114,6 +114,11 @@ class AppsAccessManagerImplTest : public testing::Test {
     fake_eche_message_receiver_->FakeSendAppsSetupResponse(result, status);
   }
 
+  void FakeSendAppsPolicyStateChange(
+      eche_app::proto::AppStreamingPolicy app_policy_state) {
+    fake_eche_message_receiver_->FakeAppPolicyStateChange(app_policy_state);
+  }
+
   void SetFeatureStatus(FeatureStatus status) {
     fake_feature_status_provider_->SetStatus(status);
   }
@@ -593,6 +598,47 @@ TEST_F(AppsAccessManagerImplTest,
       /*expected_feature=*/Feature::kEche,
       /*expected_enabled=*/false, /*expected_auth_token=*/absl::nullopt,
       /*success=*/true);
+}
+
+TEST_F(AppsAccessManagerImplTest,
+       ShouleNotEnableEcheFeatureWhenAppsPolicyDisabled) {
+  // Explicitly disable Phone Hub, all sub feature should be disabled
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kDisabledByUser);
+  SetFeatureState(Feature::kEche, FeatureState::kDisabledByUser);
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+
+  // Simulate flipping the policy state is disabled.
+  FakeSendAppsPolicyStateChange(
+      eche_app::proto::AppStreamingPolicy::APP_POLICY_DISABLED);
+  // No action after access is granted.
+  // Simulate flipping the access state granted.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_GRANTED);
+
+  EXPECT_EQ(
+      0u,
+      fake_multidevice_setup_client()->NumPendingSetFeatureEnabledStateCalls());
+}
+
+TEST_F(AppsAccessManagerImplTest,
+       SimulateAppsPolicyDisabledShouleDisableEcheFeature) {
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  SetFeatureState(Feature::kEche, FeatureState::kEnabledByUser);
+  Initialize(AccessStatus::kAccessGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAccessGranted);
+
+  // Test that there is a call to disable kEche when apps polcy state has been
+  // changed. Simulate flipping the policy state is disabled.
+  FakeSendAppsPolicyStateChange(
+      eche_app::proto::AppStreamingPolicy::APP_POLICY_DISABLED);
+
+  fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
+      /*expected_feature=*/Feature::kEche,
+      /*expected_enabled=*/false, /*expected_auth_token=*/absl::nullopt,
+      /*success=*/true);
+  EXPECT_EQ(1u, GetNumObserverCalls());
 }
 
 }  // namespace eche_app

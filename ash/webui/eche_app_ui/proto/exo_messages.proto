@@ -15,6 +15,7 @@ message ExoMessage {
     GetAppsAccessStateRequest apps_access_state_request = 7;
     GetAppsAccessStateResponse apps_access_state_response = 8;
     StatusChange status_change = 9;
+    PolicyStateChange policy_state_change = 10;
   }
 }
 
@@ -71,4 +72,14 @@ enum StatusChangeType {
   TYPE_UNKNOWN = 0;
   TYPE_STREAM_START = 1;
   TYPE_STREAM_STOP = 2;
+}
+
+message PolicyStateChange {
+  AppStreamingPolicy app_policy_state = 1;
+}
+
+enum AppStreamingPolicy {
+  APP_POLICY_UNKNOWN = 0;
+  APP_POLICY_DISABLED = 1;
+  APP_POLICY_ENABLED = 2;
 }

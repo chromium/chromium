@@ -187,6 +187,10 @@ Polymer({
   },
 
   getPhoneHubNotificationsTooltip_() {
+    if (!this.isFeatureAllowedByPolicy(
+            MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS)) {
+      return '';
+    }
     if (!this.isPhoneHubNotificationAccessProhibited()) {
       return '';
     }
@@ -202,6 +206,16 @@ Polymer({
       default:
         return this.i18n('multideviceNotificationAccessProhibitedTooltip');
     }
+  },
+
+  getPhoneHubAppsTooltip_() {
+    if (!this.isFeatureAllowedByPolicy(MultiDeviceFeature.ECHE)) {
+      return '';
+    }
+    if (!this.isPhoneHubAppsAccessProhibited()) {
+      return '';
+    }
+    return this.i18n('multideviceAppsAccessProhibitedDisabledByAdminTooltip');
   },
 
   /**

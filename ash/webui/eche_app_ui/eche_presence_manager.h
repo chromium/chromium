@@ -56,6 +56,8 @@ class EchePresenceManager : public FeatureStatusProvider::Observer,
       proto::SendAppsSetupResponse apps_setup_response) override {}
   void OnGetAppsAccessStateResponseReceived(
       proto::GetAppsAccessStateResponse apps_access_state_response) override {}
+  void OnAppPolicyStateChange(
+      proto::AppStreamingPolicy app_policy_state) override {}
 
   void OnReady();
   void OnDeviceSeen();
