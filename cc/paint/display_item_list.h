@@ -183,7 +183,7 @@ class CC_PAINT_EXPORT DisplayItemList
   // indicates the maximum number of draw ops we consider when determining if a
   // rectangle is solid color.
   bool GetColorIfSolidInRect(const gfx::Rect& rect,
-                             SkColor* color,
+                             SkColor4f* color,
                              int max_ops_to_analyze = 1);
 
   std::string ToString() const;

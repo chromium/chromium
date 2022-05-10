@@ -322,7 +322,7 @@ sk_sp<PaintRecord> DisplayItemList::ReleaseAsRecord() {
 }
 
 bool DisplayItemList::GetColorIfSolidInRect(const gfx::Rect& rect,
-                                            SkColor* color,
+                                            SkColor4f* color,
                                             int max_ops_to_analyze) {
   DCHECK(usage_hint_ == kTopLevelDisplayItemList);
   std::vector<size_t>* offsets_to_use = nullptr;
@@ -336,7 +336,7 @@ bool DisplayItemList::GetColorIfSolidInRect(const gfx::Rect& rect,
       SolidColorAnalyzer::DetermineIfSolidColor(
           &paint_op_buffer_, rect, max_ops_to_analyze, offsets_to_use);
   if (solid_color) {
-    *color = solid_color->toSkColor();
+    *color = *solid_color;
     return true;
   }
   return false;

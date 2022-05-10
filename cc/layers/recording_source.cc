@@ -116,7 +116,7 @@ void RecordingSource::SetSlowdownRasterScaleFactor(int factor) {
 }
 
 void RecordingSource::SetBackgroundColor(SkColor background_color) {
-  background_color_ = background_color;
+  background_color_ = SkColor4f::FromColor(background_color);
 }
 
 void RecordingSource::SetRequiresClear(bool requires_clear) {
@@ -130,7 +130,7 @@ scoped_refptr<RasterSource> RecordingSource::CreateRasterSource() const {
 void RecordingSource::DetermineIfSolidColor() {
   DCHECK(display_list_);
   is_solid_color_ = false;
-  solid_color_ = SK_ColorTRANSPARENT;
+  solid_color_ = SkColors::kTransparent;
 
   if (display_list_->TotalOpCount() > kMaxOpsToAnalyzeForLayer)
     return;

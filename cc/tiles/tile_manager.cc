@@ -748,12 +748,12 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
       // We analyze for solid color here, to decide to continue
       // or drop the tile for scheduling and raster.
       tile->set_solid_color_analysis_performed(true);
-      SkColor color = SK_ColorTRANSPARENT;
+      SkColor4f color = SkColors::kTransparent;
       bool is_solid_color =
           prioritized_tile.raster_source()->PerformSolidColorAnalysis(
               tile->enclosing_layer_rect(), &color);
       if (is_solid_color) {
-        tile->draw_info().set_solid_color(color);
+        tile->draw_info().set_solid_color(color.toSkColor());
         client_->NotifyTileStateChanged(tile);
         continue;
       }

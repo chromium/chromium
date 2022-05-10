@@ -48,7 +48,7 @@ void RunBenchmark(RasterSource* raster_source,
     // quantization when the layer is very small.
     base::LapTimer timer(kWarmupRuns, base::Milliseconds(kTimeLimitMillis),
                          kTimeCheckInterval);
-    SkColor color = SK_ColorTRANSPARENT;
+    SkColor4f color = SkColors::kTransparent;
     gfx::Rect layer_rect = gfx::ScaleToEnclosingRect(
         content_rect, 1.f / contents_scale.x(), 1.f / contents_scale.y());
     *is_solid_color =

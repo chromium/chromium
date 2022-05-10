@@ -80,7 +80,8 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
 
   // Returns whether the given rect at given scale is of solid color in
   // this raster source, as well as the solid color value.
-  bool PerformSolidColorAnalysis(gfx::Rect content_rect, SkColor* color) const;
+  bool PerformSolidColorAnalysis(gfx::Rect content_rect,
+                                 SkColor4f* color) const;
 
   // Returns true iff the whole raster source is of solid color.
   bool IsSolidColor() const;
@@ -121,7 +122,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
 
   float recording_scale_factor() const { return recording_scale_factor_; }
 
-  SkColor background_color() const { return background_color_; }
+  SkColor background_color() const { return background_color_.toSkColor(); }
 
   bool requires_clear() const { return requires_clear_; }
 
@@ -163,10 +164,10 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   // These members are const as this raster source may be in use on another
   // thread and so should not be touched after construction.
   const scoped_refptr<DisplayItemList> display_list_;
-  const SkColor background_color_;
+  const SkColor4f background_color_;
   const bool requires_clear_;
   const bool is_solid_color_;
-  const SkColor solid_color_;
+  const SkColor4f solid_color_;
   const gfx::Rect recorded_viewport_;
   const gfx::Size size_;
   const int slow_down_raster_scale_factor_for_debug_;
