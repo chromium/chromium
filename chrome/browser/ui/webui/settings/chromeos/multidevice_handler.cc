@@ -683,11 +683,14 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
       kPageContentDataPhoneHubStateKey,
       static_cast<int32_t>(
           feature_states[multidevice_setup::mojom::Feature::kPhoneHub]));
+  auto cameraRoll_feature_state =
+      base::FeatureList::IsEnabled(chromeos::features::kPhoneHubCameraRoll)
+          ? feature_states
+                [multidevice_setup::mojom::Feature::kPhoneHubCameraRoll]
+          : multidevice_setup::mojom::FeatureState::kNotSupportedByChromebook;
   page_content_dictionary->SetIntKey(
       kPageContentDataPhoneHubCameraRollStateKey,
-      static_cast<int32_t>(
-          feature_states
-              [multidevice_setup::mojom::Feature::kPhoneHubCameraRoll]));
+      static_cast<int32_t>(cameraRoll_feature_state));
   page_content_dictionary->SetIntKey(
       kPageContentDataPhoneHubNotificationsStateKey,
       static_cast<int32_t>(
@@ -698,10 +701,12 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
       static_cast<int32_t>(
           feature_states
               [multidevice_setup::mojom::Feature::kPhoneHubTaskContinuation]));
-  page_content_dictionary->SetIntKey(
-      kPageContentDataPhoneHubAppsStateKey,
-      static_cast<int32_t>(
-          feature_states[multidevice_setup::mojom::Feature::kEche]));
+  auto eche_feature_state =
+      base::FeatureList::IsEnabled(chromeos::features::kEcheSWA)
+          ? feature_states[multidevice_setup::mojom::Feature::kEche]
+          : multidevice_setup::mojom::FeatureState::kNotSupportedByChromebook;
+  page_content_dictionary->SetIntKey(kPageContentDataPhoneHubAppsStateKey,
+                                     static_cast<int32_t>(eche_feature_state));
 
   page_content_dictionary->SetIntKey(
       kPageContentDataWifiSyncStateKey,

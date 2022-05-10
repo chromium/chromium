@@ -183,9 +183,16 @@ void VerifyPageContentDict(
   absl::optional<int> phone_hub_camera_roll_state =
       page_content_dict->FindIntKey("phoneHubCameraRollState");
   ASSERT_TRUE(phone_hub_camera_roll_state);
-  it = feature_states_map.find(
-      multidevice_setup::mojom::Feature::kPhoneHubCameraRoll);
-  EXPECT_EQ(static_cast<int>(it->second), *phone_hub_camera_roll_state);
+  if (base::FeatureList::IsEnabled(chromeos::features::kPhoneHubCameraRoll)) {
+    it = feature_states_map.find(
+        multidevice_setup::mojom::Feature::kPhoneHubCameraRoll);
+    EXPECT_EQ(static_cast<int>(it->second), *phone_hub_camera_roll_state);
+  } else {
+    EXPECT_EQ(
+        static_cast<int>(
+            multidevice_setup::mojom::FeatureState::kNotSupportedByChromebook),
+        *phone_hub_camera_roll_state);
+  }
 
   absl::optional<int> phone_hub_task_continuation_state =
       page_content_dict->FindIntKey("phoneHubTaskContinuationState");
@@ -197,8 +204,15 @@ void VerifyPageContentDict(
   absl::optional<int> phone_hub_apps_state =
       page_content_dict->FindIntKey("phoneHubAppsState");
   ASSERT_TRUE(phone_hub_apps_state);
-  it = feature_states_map.find(multidevice_setup::mojom::Feature::kEche);
-  EXPECT_EQ(static_cast<int>(it->second), *phone_hub_apps_state);
+  if (base::FeatureList::IsEnabled(chromeos::features::kEcheSWA)) {
+    it = feature_states_map.find(multidevice_setup::mojom::Feature::kEche);
+    EXPECT_EQ(static_cast<int>(it->second), *phone_hub_apps_state);
+  } else {
+    EXPECT_EQ(
+        static_cast<int>(
+            multidevice_setup::mojom::FeatureState::kNotSupportedByChromebook),
+        *phone_hub_apps_state);
+  }
 
   absl::optional<int> wifi_sync_state =
       page_content_dict->FindIntKey("wifiSyncState");
@@ -293,11 +307,11 @@ class MultideviceHandlerTest : public testing::Test {
 
     handler_->RegisterMessages();
     handler_->AllowJavascript();
+  }
 
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kPhoneHub, chromeos::features::kEcheSWA,
-         chromeos::features::kEchePhoneHubPermissionsOnboarding},
-        {});
+  void InitWithFeatures(const std::vector<base::Feature>& enabled_features,
+                        const std::vector<base::Feature>& disabled_features) {
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   void SetUpHandlerWithEmptyManagers() {
@@ -780,7 +794,6 @@ class MultideviceHandlerTest : public testing::Test {
       fake_android_sms_app_manager_;
 
   std::unique_ptr<TestMultideviceHandler> handler_;
-
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -843,6 +856,9 @@ TEST_F(MultideviceHandlerTest, NotificationSetupFlow) {
 }
 
 TEST_F(MultideviceHandlerTest, AppsSetupFlow) {
+  InitWithFeatures({chromeos::features::kPhoneHub, chromeos::features::kEcheSWA,
+                    chromeos::features::kEchePhoneHubPermissionsOnboarding},
+                   {});
   using Status = ash::eche_app::AppsAccessSetupOperation::Status;
 
   // Simulate success flow.
@@ -1061,6 +1077,9 @@ TEST_F(MultideviceHandlerTest, LogUmaMetricsForSetupFlow) {
 }
 
 TEST_F(MultideviceHandlerTest, PageContentData) {
+  InitWithFeatures({chromeos::features::kPhoneHub, chromeos::features::kEcheSWA,
+                    chromeos::features::kEchePhoneHubPermissionsOnboarding},
+                   {});
   CallGetPageContentData();
   CallGetPageContentData();
 
@@ -1139,6 +1158,9 @@ TEST_F(MultideviceHandlerTest, RemoveHostDevice) {
 }
 
 TEST_F(MultideviceHandlerTest, GetAndroidSmsInfo) {
+  InitWithFeatures({chromeos::features::kPhoneHub, chromeos::features::kEcheSWA,
+                    chromeos::features::kEchePhoneHubPermissionsOnboarding},
+                   {});
   // Check that getAndroidSmsInfo returns correct value.
   CallGetAndroidSmsInfo(false /* expected_enabled */,
                         android_sms::GetAndroidMessagesURL(
@@ -1175,6 +1197,36 @@ TEST_F(MultideviceHandlerTest, GetAndroidSmsInfo) {
       android_sms::GetAndroidMessagesURL(
           true /* use_install_url */,
           android_sms::PwaDomain::kStaging) /* expected_url */);
+}
+
+TEST_F(MultideviceHandlerTest, PageContentDataWhenEcheSWADisabled) {
+  InitWithFeatures(
+      /* enabled_features */ {chromeos::features::kPhoneHub},
+      /* disabled_features */ {
+          chromeos::features::kEcheSWA,
+          chromeos::features::kEchePhoneHubPermissionsOnboarding});
+
+  multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap
+      feature_states_map = GenerateDefaultFeatureStatesMap();
+
+  feature_states_map[multidevice_setup::mojom::Feature::kEche] =
+      multidevice_setup::mojom::FeatureState::kProhibitedByPolicy;
+  SimulateFeatureStatesUpdate(feature_states_map);
+}
+
+TEST_F(MultideviceHandlerTest, PageContentDataWhenPhoneHubCameraRollDisabled) {
+  InitWithFeatures(
+      /* enabled_features */ {chromeos::features::kPhoneHub,
+                              chromeos::features::
+                                  kEchePhoneHubPermissionsOnboarding},
+      /* disabled_features */ {chromeos::features::kPhoneHubCameraRoll});
+
+  multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap
+      feature_states_map = GenerateDefaultFeatureStatesMap();
+
+  feature_states_map[multidevice_setup::mojom::Feature::kPhoneHubCameraRoll] =
+      multidevice_setup::mojom::FeatureState::kProhibitedByPolicy;
+  SimulateFeatureStatesUpdate(feature_states_map);
 }
 
 }  // namespace settings
