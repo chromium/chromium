@@ -48,53 +48,6 @@ class ChromeAttributionBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
-                       ImpressionClicked_FeatureRecorded) {
-  base::HistogramTester histogram_tester;
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  page_load_metrics::PageLoadMetricsTestWaiter waiter(web_contents);
-  waiter.AddWebFeatureExpectation(blink::mojom::WebFeature::kConversionAPIAll);
-
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      server_.GetURL(
-          "a.test",
-          "/attribution_reporting/page_with_impression_creator.html")));
-
-  // Create an anchor tag with impression attributes which opens a link in a
-  // new window.
-  GURL link_url = server_.GetURL(
-      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
-  EXPECT_TRUE(ExecJs(web_contents, content::JsReplace(R"(
-    createImpressionTag({id: 'link',
-                        url: $1,
-                        data: '1',
-                        destination: 'https://b.test',
-                        target: '_blank'});)",
-                                                      link_url)));
-
-  // Click the impression, and wait for the new window to open. Then switch to
-  // the tab with the impression.
-  content::WebContentsAddedObserver window_observer;
-  EXPECT_TRUE(ExecJs(web_contents, "simulateClick('link');"));
-  content::WebContents* new_contents = window_observer.GetWebContents();
-  WaitForLoadStop(new_contents);
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  waiter.Wait();
-
-  // Navigate to a new page to flush metrics.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kImpressionRegistration, 1);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.Features", blink::mojom::WebFeature::kConversionAPIAll,
-      1);
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
                        WindowOpenWithOnlyAttributionFeatures_LinkOpenedInTab) {
   base::HistogramTester histogram_tester;
   content::WebContents* web_contents =
