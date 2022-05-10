@@ -12,6 +12,7 @@
 #include "chrome/browser/chromeos/app_mode/startup_app_launcher_update_checker.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "chrome/browser/extensions/install_tracker.h"
+#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 
 class Profile;
 
@@ -19,29 +20,13 @@ namespace ash {
 
 class ChromeKioskAppInstaller : private extensions::InstallObserver {
  public:
-  enum class InstallResult {
-    kSuccess,
-    kPrimaryAppNotCached,
-    kUnableToInstallPrimaryApp,
-    kUnableToInstallSecondaryApp,
-    kNotKioskEnabled,
-  };
+  using InstallResult = crosapi::mojom::ChromeKioskInstallResult;
+  using AppInstallParams = crosapi::mojom::AppInstallParams;
+  using InstallCallback =
+      crosapi::mojom::ChromeKioskLaunchController::InstallKioskAppCallback;
 
-  struct AppInstallData {
-    AppInstallData();
-    AppInstallData(const AppInstallData&);
-    AppInstallData& operator=(const AppInstallData&);
-    ~AppInstallData();
-
-    std::string id;
-    std::string crx_file_location;
-    std::string version;
-    bool is_store_app = false;
-  };
-
-  using InstallCallback = base::OnceCallback<void(InstallResult result)>;
-
-  ChromeKioskAppInstaller(Profile* profile, const AppInstallData& install_data);
+  ChromeKioskAppInstaller(Profile* profile,
+                          const AppInstallParams& install_data);
   ChromeKioskAppInstaller(const ChromeKioskAppInstaller&) = delete;
   ChromeKioskAppInstaller& operator=(const ChromeKioskAppInstaller&) = delete;
   ~ChromeKioskAppInstaller() override;
@@ -82,7 +67,7 @@ class ChromeKioskAppInstaller : private extensions::InstallObserver {
                                                const std::string& id) const;
 
   Profile* const profile_;
-  const AppInstallData primary_app_install_data_;
+  AppInstallParams primary_app_install_data_;
 
   InstallCallback on_ready_callback_;
 

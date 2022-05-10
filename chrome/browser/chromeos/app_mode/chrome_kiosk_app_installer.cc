@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
 #include "chrome/browser/chromeos/app_mode/startup_app_launcher_update_checker.h"
@@ -16,17 +17,9 @@
 
 namespace ash {
 
-ChromeKioskAppInstaller::AppInstallData::AppInstallData() = default;
-ChromeKioskAppInstaller::AppInstallData::AppInstallData(
-    const AppInstallData& other) = default;
-ChromeKioskAppInstaller::AppInstallData&
-ChromeKioskAppInstaller::AppInstallData::operator=(
-    const AppInstallData& other) = default;
-ChromeKioskAppInstaller::AppInstallData::~AppInstallData() = default;
-
 ChromeKioskAppInstaller::ChromeKioskAppInstaller(
     Profile* profile,
-    const AppInstallData& install_data)
+    const AppInstallParams& install_data)
     : profile_(profile), primary_app_install_data_(install_data) {}
 
 ChromeKioskAppInstaller::~ChromeKioskAppInstaller() {}
@@ -56,15 +49,13 @@ void ChromeKioskAppInstaller::BeginInstall(InstallCallback callback) {
   const extensions::Extension* primary_app = GetPrimaryAppExtension();
   if (!primary_app) {
     // The extension is skipped for installation due to some error.
-    ReportInstallFailure(
-        ChromeKioskAppInstaller::InstallResult::kUnableToInstallPrimaryApp);
+    ReportInstallFailure(InstallResult::kPrimaryAppInstallFailed);
     return;
   }
 
   if (!extensions::KioskModeInfo::IsKioskEnabled(primary_app)) {
     // The installed primary app is not kiosk enabled.
-    ReportInstallFailure(
-        ChromeKioskAppInstaller::InstallResult::kNotKioskEnabled);
+    ReportInstallFailure(InstallResult::kPrimaryAppNotKioskEnabled);
     return;
   }
 
@@ -95,8 +86,7 @@ void ChromeKioskAppInstaller::MaybeInstallSecondaryApps() {
     // Check extension update before launching the primary kiosk app.
     MaybeCheckExtensionUpdate();
   } else {
-    ReportInstallFailure(
-        ChromeKioskAppInstaller::InstallResult::kUnableToInstallSecondaryApp);
+    ReportInstallFailure(InstallResult::kSecondaryAppInstallFailed);
   }
 }
 
@@ -164,8 +154,8 @@ void ChromeKioskAppInstaller::OnFinishCrxInstall(
   if (DidPrimaryOrSecondaryAppFailedToInstall(success, extension_id)) {
     install_observation_.Reset();
     ReportInstallFailure((extension_id == primary_app_install_data_.id)
-                             ? InstallResult::kUnableToInstallPrimaryApp
-                             : InstallResult::kUnableToInstallSecondaryApp);
+                             ? InstallResult::kPrimaryAppInstallFailed
+                             : InstallResult::kSecondaryAppInstallFailed);
     return;
   }
 
@@ -181,14 +171,12 @@ void ChromeKioskAppInstaller::OnFinishCrxInstall(
 
   const extensions::Extension* primary_app = GetPrimaryAppExtension();
   if (!primary_app) {
-    ReportInstallFailure(
-        ChromeKioskAppInstaller::InstallResult::kUnableToInstallPrimaryApp);
+    ReportInstallFailure(InstallResult::kPrimaryAppInstallFailed);
     return;
   }
 
   if (!extensions::KioskModeInfo::IsKioskEnabled(primary_app)) {
-    ReportInstallFailure(
-        ChromeKioskAppInstaller::InstallResult::kNotKioskEnabled);
+    ReportInstallFailure(InstallResult::kPrimaryAppNotKioskEnabled);
     return;
   }
 

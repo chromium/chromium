@@ -7,19 +7,16 @@
 
 #include "base/callback.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "extensions/common/extension.h"
 
 namespace ash {
 
 class ChromeKioskAppLauncher {
  public:
-  enum class LaunchResult {
-    kSuccess,
-    kUnableToLaunch,
-    kNetworkMissing,
-  };
-
-  using LaunchCallback = base::OnceCallback<void(LaunchResult result)>;
+  using LaunchResult = crosapi::mojom::ChromeKioskLaunchResult;
+  using LaunchCallback =
+      crosapi::mojom::ChromeKioskLaunchController::LaunchKioskAppCallback;
 
   ChromeKioskAppLauncher(Profile* profile,
                          const std::string& app_id,

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
+#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -41,15 +42,14 @@ class ChromeKioskExternalLoaderBroker {
       InstallDataChangeCallback callback);
 
   void TriggerPrimaryAppInstall(
-      const ChromeKioskAppInstaller::AppInstallData& install_data);
+      const crosapi::mojom::AppInstallParams& install_data);
   void TriggerSecondaryAppInstall(std::vector<std::string> secondary_app_ids);
 
  private:
   base::DictionaryValue CreatePrimaryAppLoaderPrefs() const;
   base::DictionaryValue CreateSecondaryAppLoaderPrefs() const;
 
-  absl::optional<ChromeKioskAppInstaller::AppInstallData>
-      primary_app_install_data_;
+  absl::optional<crosapi::mojom::AppInstallParams> primary_app_install_data_;
   absl::optional<std::vector<std::string>> secondary_app_ids_;
 
   // Handle to the primary app external loader.

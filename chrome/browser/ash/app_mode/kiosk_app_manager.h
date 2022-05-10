@@ -20,6 +20,7 @@
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
 #include "chrome/browser/chromeos/extensions/external_cache.h"
 #include "chrome/browser/chromeos/extensions/external_cache_delegate.h"
+#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "components/account_id/account_id.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -177,7 +178,7 @@ class KioskAppManager : public KioskAppManagerBase,
                     base::FilePath* file_path,
                     std::string* version) const;
 
-  ChromeKioskAppInstaller::AppInstallData CreatePrimaryAppInstallData(
+  crosapi::mojom::AppInstallParams CreatePrimaryAppInstallData(
       const std::string& id) const;
 
   void UpdateExternalCache();

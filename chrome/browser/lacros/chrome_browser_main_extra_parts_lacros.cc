@@ -208,6 +208,6 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
   if (chromeos::LacrosService::Get()->init_params()->session_type ==
       crosapi::mojom::SessionType::kAppKioskSession) {
     chrome_kiosk_launch_controller_ =
-        std::make_unique<ChromeKioskLaunchControllerLacros>();
+        std::make_unique<ChromeKioskLaunchControllerLacros>(*profile);
   }
 }

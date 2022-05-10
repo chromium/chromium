@@ -49,8 +49,8 @@ void ChromeKioskExternalLoaderBroker::RegisterSecondaryAppInstallDataObserver(
 }
 
 void ChromeKioskExternalLoaderBroker::TriggerPrimaryAppInstall(
-    const ChromeKioskAppInstaller::AppInstallData& install_data) {
-  primary_app_install_data_ = install_data;
+    const crosapi::mojom::AppInstallParams& install_data) {
+  primary_app_install_data_.emplace(install_data);
 
   if (primary_app_changed_handler_)
     primary_app_changed_handler_.Run(CreatePrimaryAppLoaderPrefs());

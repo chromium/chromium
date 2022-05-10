@@ -45,6 +45,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -589,13 +590,12 @@ bool KioskAppManager::GetCachedCrx(const std::string& app_id,
   return external_cache_->GetExtension(app_id, file_path, version);
 }
 
-ChromeKioskAppInstaller::AppInstallData
-KioskAppManager::CreatePrimaryAppInstallData(const std::string& id) const {
+crosapi::mojom::AppInstallParams KioskAppManager::CreatePrimaryAppInstallData(
+    const std::string& id) const {
   const base::DictionaryValue* extension = nullptr;
   if (!external_cache_->GetCachedExtensions()->GetDictionary(id, &extension)) {
-    ChromeKioskAppInstaller::AppInstallData data;
-    data.id = id;
-    return data;
+    return crosapi::mojom::AppInstallParams(id, std::string(), std::string(),
+                                            false);
   }
 
   const absl::optional<bool> is_store_app_maybe =
@@ -613,12 +613,8 @@ KioskAppManager::CreatePrimaryAppInstallData(const std::string& id) const {
       extensions::ExternalProviderImpl::kExternalVersion);
   DCHECK(external_version);
 
-  ChromeKioskAppInstaller::AppInstallData data;
-  data.id = id;
-  data.is_store_app = is_store_app_bool;
-  data.crx_file_location = *crx_file_location;
-  data.version = *external_version;
-  return data;
+  return crosapi::mojom::AppInstallParams(id, *crx_file_location,
+                                          *external_version, is_store_app_bool);
 }
 
 void KioskAppManager::UpdateExternalCache() {

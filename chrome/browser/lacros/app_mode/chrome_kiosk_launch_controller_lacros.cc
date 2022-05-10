@@ -7,10 +7,14 @@
 
 #include "base/bind.h"
 #include "base/notreached.h"
+#include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
+#include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_launcher.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 
-ChromeKioskLaunchControllerLacros::ChromeKioskLaunchControllerLacros() {
+ChromeKioskLaunchControllerLacros::ChromeKioskLaunchControllerLacros(
+    Profile& profile)
+    : profile_(profile) {
   auto* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::ChromeAppKioskService>())
     return;
@@ -25,12 +29,16 @@ ChromeKioskLaunchControllerLacros::~ChromeKioskLaunchControllerLacros() {}
 void ChromeKioskLaunchControllerLacros::InstallKioskApp(
     AppInstallParamsPtr params,
     InstallKioskAppCallback callback) {
-  NOTIMPLEMENTED();
+  installer_ =
+      std::make_unique<ash::ChromeKioskAppInstaller>(&profile_, *params);
+  installer_->BeginInstall(std::move(callback));
 }
 
 void ChromeKioskLaunchControllerLacros::LaunchKioskApp(
     const std::string& app_id,
     bool is_network_ready,
     LaunchKioskAppCallback callback) {
-  NOTIMPLEMENTED();
+  launcher_ = std::make_unique<ash::ChromeKioskAppLauncher>(&profile_, app_id,
+                                                            is_network_ready);
+  launcher_->LaunchApp(std::move(callback));
 }
