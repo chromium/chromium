@@ -31,11 +31,11 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
-#include "third_party/blink/public/platform/web_impression.h"
 #include "third_party/blink/public/web/web_picture_in_picture_window_options.h"
 #include "third_party/blink/public/web/web_window_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
@@ -175,13 +175,11 @@ struct CORE_EXPORT FrameLoadRequest {
 
   // Impressions are set when a FrameLoadRequest is created for a click on an
   // anchor tag that has conversion measurement attributes.
-  void SetImpression(const absl::optional<WebImpression>& impression) {
+  void SetImpression(const absl::optional<Impression>& impression) {
     impression_ = impression;
   }
 
-  const absl::optional<WebImpression>& Impression() const {
-    return impression_;
-  }
+  const absl::optional<Impression>& Impression() const { return impression_; }
 
   bool CanDisplay(const KURL&) const;
 
@@ -215,7 +213,7 @@ struct CORE_EXPORT FrameLoadRequest {
   WebWindowFeatures window_features_;
   absl::optional<WebPictureInPictureWindowOptions>
       picture_in_picture_window_options_;
-  absl::optional<WebImpression> impression_;
+  absl::optional<blink::Impression> impression_;
   absl::optional<LocalFrameToken> initiator_frame_token_;
   mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
       initiator_policy_container_keep_alive_handle_;

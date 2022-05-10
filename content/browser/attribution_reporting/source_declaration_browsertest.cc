@@ -6,7 +6,6 @@
 
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -107,7 +106,6 @@ class AttributionSourceDeclarationBrowserTest
     // Sets up the blink runtime feature for ConversionMeasurement.
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
-    command_line->AppendSwitch(switches::kEnableBlinkTestFeatures);
   }
 };
 
@@ -130,7 +128,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   SourceObserver source_observer(web_contents());
   EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
 
-  // Wait for the impression to be seen by the observer.
   source_observer.Wait();
 }
 
@@ -155,8 +152,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   source_observer.StartWatchingNewWebContents();
   EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
 
-  // Wait for the impression to be seen by the observer.
-  blink::Impression last_impression = source_observer.Wait();
+  source_observer.Wait();
 }
 
 // Flaky: crbug.com/1077216
@@ -192,8 +188,7 @@ IN_PROC_BROWSER_TEST_F(
   SourceObserver source_observer(remote_web_contents);
   EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
 
-  // Wait for the impression to be seen by the observer.
-  blink::Impression last_impression = source_observer.Wait();
+  source_observer.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -251,7 +246,6 @@ IN_PROC_BROWSER_TEST_F(
   source_observer.StartWatchingNewWebContents();
   EXPECT_TRUE(ExecJs(subframe, "simulateMiddleClick(\'link\');"));
 
-  // Verify the navigation was annotated with an impression.
   source_observer.Wait();
 }
 
@@ -453,7 +447,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   blink::UntrustworthyContextMenuParams params =
       context_menu_interceptor->get_params();
   EXPECT_TRUE(params.impression);
-  EXPECT_TRUE(params.impression->attribution_src_token.has_value());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -572,9 +565,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
 
   // Wait for the impression to be seen by the observer.
   blink::Impression last_impression = source_observer.Wait();
-
-  // Verify the attributes of the impression are set as expected.
-  EXPECT_TRUE(last_impression.attribution_src_token.has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,

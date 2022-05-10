@@ -54,7 +54,6 @@
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
-#include "third_party/blink/public/platform/web_impression.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_history_commit_type.h"
@@ -110,6 +109,7 @@ class WebSpellCheckPanelHostClient;
 class WebTextCheckClient;
 class ResourceLoadInfoNotifierWrapper;
 enum class SyncCondition;
+struct Impression;
 struct MobileFriendliness;
 
 class CORE_EXPORT LocalFrameClient : public FrameClient {
@@ -172,7 +172,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       mojo::PendingRemote<mojom::blink::BlobURLToken>,
       base::TimeTicks input_start_time,
       const String& href_translate,
-      const absl::optional<WebImpression>& impression,
+      const absl::optional<Impression>& impression,
       const LocalFrameToken* initiator_frame_token,
       std::unique_ptr<SourceLocation> source_location,
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>

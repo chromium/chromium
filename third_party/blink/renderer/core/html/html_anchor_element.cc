@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
-#include "third_party/blink/renderer/core/html/conversion_measurement_parsing.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -362,11 +361,6 @@ bool HTMLAnchorElement::IsLiveLink() const {
   return IsLink() && !HasEditableStyle(*this);
 }
 
-bool HTMLAnchorElement::HasImpression() const {
-  return hasAttribute(html_names::kAttributionsourceeventidAttr) &&
-         hasAttribute(html_names::kAttributiondestinationAttr);
-}
-
 void HTMLAnchorElement::SendPings(const KURL& destination_url) const {
   const AtomicString& ping_value = FastGetAttribute(html_names::kPingAttr);
   if (ping_value.IsNull() || !GetDocument().GetSettings() ||
@@ -520,7 +514,8 @@ void HTMLAnchorElement::HandleClick(Event& event) {
 
   frame->MaybeLogAdClickNavigation();
 
-  if (request.HasUserGesture()) {
+  if (request.HasUserGesture() &&
+      FastHasAttribute(html_names::kAttributionsrcAttr)) {
     // An impression must be attached prior to the
     // FindOrCreateFrameForNavigation() call, as that call may result in
     // performing a navigation if the call results in creating a new window with
@@ -530,22 +525,14 @@ void HTMLAnchorElement::HandleClick(Event& event) {
     // set `target_frame` to `frame`, but end up targeting a new window.
     // Attach the impression regardless, the embedder will be able to drop
     // impressions for subframe navigations.
-    absl::optional<WebImpression> impression;
 
-    // Favor the attributionsrc API over the html attribute data API for
-    // Attribution Reporting.
-    if (FastHasAttribute(html_names::kAttributionsrcAttr)) {
-      const AtomicString& attribution_src_value =
-          FastGetAttribute(html_names::kAttributionsrcAttr);
-      if (!attribution_src_value.IsNull()) {
-        impression = frame->GetAttributionSrcLoader()->RegisterNavigation(
-            GetDocument().CompleteURL(attribution_src_value), this);
-      }
-    } else if (HasImpression()) {
-      impression = GetImpressionForAnchor(this);
+    const AtomicString& attribution_src_value =
+        FastGetAttribute(html_names::kAttributionsrcAttr);
+    if (!attribution_src_value.IsNull()) {
+      frame_request.SetImpression(
+          frame->GetAttributionSrcLoader()->RegisterNavigation(
+              GetDocument().CompleteURL(attribution_src_value), this));
     }
-    if (impression)
-      frame_request.SetImpression(*impression);
   }
 
   Frame* target_frame =

@@ -45,8 +45,6 @@ blink_core_sources_html = [
   "closewatcher/close_watcher.h",
   "collection_items_cache.h",
   "collection_type.h",
-  "conversion_measurement_parsing.cc",
-  "conversion_measurement_parsing.h",
   "cross_origin_attribute.cc",
   "cross_origin_attribute.h",
   "custom/ce_reactions_scope.cc",

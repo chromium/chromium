@@ -13,12 +13,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
-#include "third_party/blink/public/platform/web_impression.h"
 #include "third_party/blink/renderer/core/frame/attribution_response_parsing.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -177,7 +177,7 @@ AttributionSrcLoader::RegisterResult AttributionSrcLoader::RegisterSources(
   return result;
 }
 
-absl::optional<WebImpression> AttributionSrcLoader::RegisterNavigation(
+absl::optional<Impression> AttributionSrcLoader::RegisterNavigation(
     const KURL& src_url,
     HTMLElement* element) {
   // TODO(apaseltiner): Add tests to ensure that this method can't be used to
@@ -190,9 +190,8 @@ absl::optional<WebImpression> AttributionSrcLoader::RegisterNavigation(
     return absl::nullopt;
 
   DCHECK(client->attribution_src_token());
-  blink::WebImpression source;
-  source.attribution_src_token = client->attribution_src_token();
-  return source;
+  return blink::Impression{.attribution_src_token =
+                               *client->attribution_src_token()};
 }
 
 AttributionSrcLoader::ResourceClient*

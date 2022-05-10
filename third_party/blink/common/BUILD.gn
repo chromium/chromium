@@ -175,7 +175,6 @@ source_set("common") {
     "mime_util/mime_util.cc",
     "mobile_metrics/mobile_friendliness.cc",
     "native_io/native_io_utils.cc",
-    "navigation/impression.cc",
     "navigation/impression_mojom_traits.cc",
     "navigation/navigation_params.cc",
     "navigation/navigation_policy.cc",

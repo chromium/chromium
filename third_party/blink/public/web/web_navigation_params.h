@@ -17,6 +17,7 @@
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
@@ -29,7 +30,6 @@
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_fenced_frame_reporting.h"
 #include "third_party/blink/public/platform/web_http_body.h"
-#include "third_party/blink/public/platform/web_impression.h"
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
 #include "third_party/blink/public/platform/web_policy_container.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -157,7 +157,7 @@ struct BLINK_EXPORT WebNavigationInfo {
   // Optional impression associated with this navigation. This is attached when
   // a navigation results from a click on an anchor tag that has conversion
   // measurement attributes.
-  absl::optional<WebImpression> impression;
+  absl::optional<Impression> impression;
 
   // The frame policy specified by the frame owner element.
   // For top-level window with no opener, this is the default lax FramePolicy.

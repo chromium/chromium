@@ -40,7 +40,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
-#include "third_party/blink/public/platform/impression_conversions.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
@@ -742,14 +741,10 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       const AtomicString& attribution_src_value =
           anchor->FastGetAttribute(html_names::kAttributionsrcAttr);
       if (!attribution_src_value.IsNull()) {
-        absl::optional<WebImpression> web_impression =
+        data.impression =
             selected_frame->GetAttributionSrcLoader()->RegisterNavigation(
                 selected_frame->GetDocument()->CompleteURL(
                     attribution_src_value));
-        if (web_impression.has_value()) {
-          data.impression =
-              ConvertWebImpressionToImpression(web_impression.value());
-        }
       }
     }
   }

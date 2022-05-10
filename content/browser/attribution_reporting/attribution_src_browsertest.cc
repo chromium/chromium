@@ -183,8 +183,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   blink::Impression last_impression = source_observer.Wait();
 
   // Verify we received the correct token for this source.
-  EXPECT_TRUE(last_impression.attribution_src_token);
-  EXPECT_EQ(*last_impression.attribution_src_token, expected_token);
+  EXPECT_EQ(last_impression.attribution_src_token, expected_token);
 
   // Verify the attributionsrc data was registered with the browser process.
   EXPECT_TRUE(data_host);
@@ -222,8 +221,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   blink::Impression last_impression = source_observer.Wait();
 
   // Verify we received the correct token for this source.
-  EXPECT_TRUE(last_impression.attribution_src_token);
-  EXPECT_EQ(*last_impression.attribution_src_token, expected_token);
+  EXPECT_EQ(last_impression.attribution_src_token, expected_token);
 
   // Verify the attributionsrc data was registered with the browser process.
   EXPECT_TRUE(data_host);

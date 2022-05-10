@@ -10,7 +10,6 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
-#include "third_party/blink/public/platform/web_impression.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_touch_action.h"
 #include "third_party/blink/public/web/web_dom_message_event.h"

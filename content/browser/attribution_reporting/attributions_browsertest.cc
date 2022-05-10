@@ -154,7 +154,6 @@ class AttributionsBrowserTest : public ContentBrowserTest {
     // Sets up the blink runtime feature for ConversionMeasurement.
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
-    command_line->AppendSwitch(switches::kEnableBlinkTestFeatures);
   }
 
   void SetUpOnMainThread() override {

@@ -7,7 +7,6 @@
 
 #include "cc/paint/paint_canvas.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/platform/web_impression.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"

@@ -36,11 +36,6 @@
     [CEReactions, ImplementedAs=textContent] attribute DOMString text;
 
     // Attribution Reporting
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute DOMString attributionSourceEventId;
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute USVString attributionDestination;
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute USVString attributionReportTo;
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute DOMString attributionExpiry;
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute DOMString attributionSourcePriority;
     [RuntimeEnabled=AttributionReporting, CEReactions,Reflect] attribute USVString attributionSrc;
 
     // obsolete members

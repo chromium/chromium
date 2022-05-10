@@ -33,7 +33,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#include "third_party/blink/public/platform/web_impression.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 
 namespace blink {
 
@@ -67,7 +67,7 @@ struct WebWindowFeatures {
 
   // Represents the attribution source declared by Attribution Reporting related
   // window features, if any.
-  absl::optional<WebImpression> impression;
+  absl::optional<Impression> impression;
 };
 
 }  // namespace blink

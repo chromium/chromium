@@ -3824,7 +3824,7 @@ class ViewCreatingWebViewClient : public frame_test_helpers::TestWebViewClient {
                       network::mojom::blink::WebSandboxFlags,
                       const SessionStorageNamespaceId&,
                       bool& consumed_user_gesture,
-                      const absl::optional<WebImpression>&) override {
+                      const absl::optional<Impression>&) override {
     return web_view_helper_.InitializeWithOpener(opener);
   }
   void DidFocus() override { did_focus_called_ = true; }
@@ -3907,7 +3907,7 @@ class ViewReusingWebViewClient : public frame_test_helpers::TestWebViewClient {
                       network::mojom::blink::WebSandboxFlags,
                       const SessionStorageNamespaceId&,
                       bool& consumed_user_gesture,
-                      const absl::optional<WebImpression>&) override {
+                      const absl::optional<Impression>&) override {
     return web_view_;
   }
 

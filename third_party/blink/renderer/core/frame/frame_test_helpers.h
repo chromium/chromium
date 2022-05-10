@@ -299,7 +299,7 @@ class TestWebViewClient : public WebViewClient {
                       network::mojom::blink::WebSandboxFlags,
                       const SessionStorageNamespaceId&,
                       bool& consumed_user_gesture,
-                      const absl::optional<WebImpression>&) override;
+                      const absl::optional<Impression>&) override;
 
  private:
   WTF::Vector<std::unique_ptr<WebViewHelper>> child_web_views_;

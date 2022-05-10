@@ -170,7 +170,6 @@
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
-#include "third_party/blink/public/platform/impression_conversions.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -5546,10 +5545,7 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
   // navigations performed via OpenURL.
   params->source_location = network::mojom::SourceLocation::New();
 
-  if (info->impression) {
-    params->impression =
-        blink::ConvertWebImpressionToImpression(*info->impression);
-  }
+  params->impression = info->impression;
 
   if (GetContentClient()->renderer()->AllowPopup())
     params->user_gesture = true;
@@ -5864,12 +5860,8 @@ void RenderFrameImpl::BeginNavigationInternal(
           info->url_request.TrustTokenParams()
               ? info->url_request.TrustTokenParams()->Clone()
               : nullptr,
-          info->impression
-              ? absl::make_optional<blink::Impression>(
-                    blink::ConvertWebImpressionToImpression(*info->impression))
-              : absl::nullopt,
-          renderer_before_unload_start, renderer_before_unload_end,
-          web_bundle_token_params);
+          info->impression, renderer_before_unload_start,
+          renderer_before_unload_end, web_bundle_token_params);
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>
       navigation_client_remote;

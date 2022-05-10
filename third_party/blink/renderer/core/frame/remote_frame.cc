@@ -16,7 +16,6 @@
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
-#include "third_party/blink/public/platform/impression_conversions.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/url_conversion.h"
@@ -292,10 +291,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
     params->source_location->column = source_location->ColumnNumber();
   }
 
-  if (frame_request.Impression()) {
-    params->impression =
-        blink::ConvertWebImpressionToImpression(*frame_request.Impression());
-  }
+  params->impression = frame_request.Impression();
 
   // Note: For the AdFrame/Sandbox download policy here it only covers the case
   // where the navigation initiator frame is ad. The download_policy may be

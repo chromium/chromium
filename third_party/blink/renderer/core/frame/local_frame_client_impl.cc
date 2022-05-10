@@ -506,7 +506,7 @@ void LocalFrameClientImpl::BeginNavigation(
     mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token,
     base::TimeTicks input_start_time,
     const String& href_translate,
-    const absl::optional<WebImpression>& impression,
+    const absl::optional<Impression>& impression,
     const LocalFrameToken* initiator_frame_token,
     std::unique_ptr<SourceLocation> source_location,
     mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>

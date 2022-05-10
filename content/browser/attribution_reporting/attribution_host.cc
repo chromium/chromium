@@ -7,20 +7,13 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/time/time.h"
-#include "build/build_config.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_provider.h"
 #include "content/browser/attribution_reporting/attribution_metrics.h"
-#include "content/browser/attribution_reporting/attribution_page_metrics.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
-#include "content/browser/attribution_reporting/common_source_info.h"
-#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -31,7 +24,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/message.h"
-#include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "url/gurl.h"
@@ -117,18 +109,6 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
           ->current_origin();
   navigation_impression_origins_.emplace(navigation_handle->GetNavigationId(),
                                          initiator_root_frame_origin);
-
-  if (auto* initiator_web_contents =
-          WebContents::FromRenderFrameHost(initiator_frame_host)) {
-    if (auto* initiator_conversion_host =
-            AttributionHost::FromWebContents(initiator_web_contents)) {
-      // This doesn't necessarily mean that the browser will store the report,
-      // due to the additional logic in DidFinishNavigation(). This records
-      // that a page /attempted/ to register an impression for a navigation.
-      initiator_conversion_host->NotifyImpressionInitiatedByPage(
-          initiator_root_frame_origin, *(navigation_handle->GetImpression()));
-    }
-  }
 }
 
 void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
@@ -167,8 +147,6 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  conversion_page_metrics_ = std::make_unique<AttributionPageMetrics>();
-
   // If we were not able to access the impression origin, ignore the
   // navigation.
   if (!navigation_impression_origin_it) {
@@ -181,7 +159,6 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   DCHECK(navigation_handle->GetImpression());
   const blink::Impression& impression = *(navigation_handle->GetImpression());
 
-  if (impression.attribution_src_token) {
     auto* data_host_manager = attribution_manager->GetDataHostManager();
     if (!data_host_manager)
       return;
@@ -190,48 +167,8 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
         navigation_handle->GetRenderFrameHost()->GetLastCommittedOrigin();
 
     data_host_manager->NotifyNavigationForDataHost(
-        *impression.attribution_src_token, impression_origin,
+        impression.attribution_src_token, impression_origin,
         destination_origin);
-    return;
-  }
-
-  // If the impression's conversion destination does not match the final top
-  // frame origin of this new navigation ignore it.
-  if (net::SchemefulSite(impression.conversion_destination) !=
-      net::SchemefulSite(
-          navigation_handle->GetRenderFrameHost()->GetLastCommittedOrigin())) {
-    return;
-  }
-
-  // Convert |impression| into a StorableImpression that can be forwarded to
-  // storage. If a reporting origin was not provided, default to the impression
-  // origin for reporting.
-  const url::Origin& reporting_origin = !impression.reporting_origin
-                                            ? impression_origin
-                                            : *impression.reporting_origin;
-
-  // Conversion measurement is only allowed in secure contexts.
-  if (!network::IsOriginPotentiallyTrustworthy(impression_origin) ||
-      !network::IsOriginPotentiallyTrustworthy(reporting_origin) ||
-      !network::IsOriginPotentiallyTrustworthy(
-          impression.conversion_destination)) {
-    return;
-  }
-
-  const AttributionSourceType source_type = AttributionSourceType::kNavigation;
-  const base::Time impression_time = base::Time::Now();
-
-  StorableSource storable_impression(
-      // Impression data doesn't need to be sanitized.
-      CommonSourceInfo(
-          impression.impression_data, impression_origin,
-          impression.conversion_destination, reporting_origin, impression_time,
-          CommonSourceInfo::GetExpiryTime(impression.expiry, impression_time,
-                                          source_type),
-          source_type, impression.priority, AttributionFilterData(),
-          /*debug_key=*/absl::nullopt, AttributionAggregatableSource()));
-
-  attribution_manager->HandleSource(std::move(storable_impression));
 }
 
 void AttributionHost::MaybeNotifyFailedSourceNavigation(
@@ -247,24 +184,10 @@ void AttributionHost::MaybeNotifyFailedSourceNavigation(
 
   absl::optional<blink::Impression> impression =
       navigation_handle->GetImpression();
-  if (!impression || !impression->attribution_src_token) {
-    return;
-  }
-
-  data_host_manager->NotifyNavigationFailure(
-      *impression->attribution_src_token);
-}
-
-void AttributionHost::NotifyImpressionInitiatedByPage(
-    const url::Origin& impression_origin,
-    const blink::Impression& impression) {
-  if (!conversion_page_metrics_)
+  if (!impression)
     return;
 
-  const url::Origin& reporting_origin = !impression.reporting_origin
-                                            ? impression_origin
-                                            : *impression.reporting_origin;
-  conversion_page_metrics_->OnImpression(reporting_origin);
+  data_host_manager->NotifyNavigationFailure(impression->attribution_src_token);
 }
 
 void AttributionHost::RegisterDataHost(

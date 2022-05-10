@@ -59,15 +59,6 @@ using testing::Return;
 
 const char kConversionUrl[] = "https://b.com";
 
-blink::Impression CreateValidImpression() {
-  blink::Impression result;
-  result.conversion_destination = url::Origin::Create(GURL(kConversionUrl));
-  result.reporting_origin = url::Origin::Create(GURL("https://c.com"));
-  result.impression_data = 1UL;
-  result.priority = 10;
-  return result;
-}
-
 class AttributionHostTest : public RenderViewHostTestHarness {
  public:
   AttributionHostTest() = default;
@@ -103,63 +94,27 @@ class AttributionHostTest : public RenderViewHostTestHarness {
                                                              render_frame_host);
   }
 
- protected:
+ private:
   MockAttributionManager mock_manager_;
+
+ protected:
   MockDataHostManager* mock_data_host_manager_;
 };
 
-TEST_F(AttributionHostTest, NavigationWithImpression_PerPageImpressionMetrics) {
-  base::HistogramTester histograms;
-
-  contents()->NavigateAndCommit(GURL("https://www.example.com"));
-
-  // Initial document should not log metrics.
-  histograms.ExpectTotalCount(
-      "Conversions.UniqueReportingOriginsPerPage.Impressions", 0);
-
-  blink::Impression impression = CreateValidImpression();
-
-  for (size_t i = 0u; i < 2u; i++) {
-    auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
-        GURL(kConversionUrl), main_rfh());
-    navigation->SetInitiatorFrame(main_rfh());
-    navigation->set_impression(impression);
-    navigation->Commit();
-  }
-
-  // Navigate again to trigger histogram code.
-  contents()->NavigateAndCommit(GURL("https://www.example-next.com"));
-
-  histograms.ExpectBucketCount(
-      "Conversions.UniqueReportingOriginsPerPage.Impressions", 1, 2);
-}
-
 TEST_F(AttributionHostTest, NavigationWithNoImpression_Ignored) {
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+  EXPECT_CALL(*mock_data_host_manager_, NotifyNavigationForDataHost).Times(0);
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   NavigationSimulatorImpl::NavigateAndCommitFromDocument(GURL(kConversionUrl),
                                                          main_rfh());
 }
 
-TEST_F(AttributionHostTest, ValidImpression_ForwardedToManager) {
-  EXPECT_CALL(mock_manager_, HandleSource);
-
-  contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
-  auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
-      GURL(kConversionUrl), main_rfh());
-  navigation->SetInitiatorFrame(main_rfh());
-  navigation->set_impression(CreateValidImpression());
-  navigation->Commit();
-}
-
 TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
-  auto impression = CreateValidImpression();
-  impression.attribution_src_token = blink::AttributionSrcToken();
+  blink::Impression impression;
 
   EXPECT_CALL(*mock_data_host_manager_,
               NotifyNavigationForDataHost(
-                  *impression.attribution_src_token,
+                  impression.attribution_src_token,
                   url::Origin::Create(GURL("https://secure_impression.com")),
                   url::Origin::Create(GURL(kConversionUrl))));
 
@@ -178,12 +133,12 @@ TEST_F(AttributionHostTest, ImpressionWithNoManagerAvilable_NoCrash) {
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
       GURL(kConversionUrl), main_rfh());
   navigation->SetInitiatorFrame(main_rfh());
-  navigation->set_impression(CreateValidImpression());
+  navigation->set_impression(blink::Impression());
   navigation->Commit();
 }
 
 TEST_F(AttributionHostTest, ImpressionInSubframe_Ignored) {
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+  EXPECT_CALL(*mock_data_host_manager_, NotifyNavigationForDataHost).Times(0);
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
@@ -196,14 +151,14 @@ TEST_F(AttributionHostTest, ImpressionInSubframe_Ignored) {
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
       GURL(kConversionUrl), subframe);
   navigation->SetInitiatorFrame(main_rfh());
-  navigation->set_impression(CreateValidImpression());
+  navigation->set_impression(blink::Impression());
   navigation->Commit();
 }
 
 // Test that if we cannot access the initiator frame of the navigation, we
 // ignore the associated impression.
 TEST_F(AttributionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+  EXPECT_CALL(*mock_data_host_manager_, NotifyNavigationForDataHost).Times(0);
 
   base::HistogramTester histograms;
 
@@ -213,7 +168,7 @@ TEST_F(AttributionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
       GURL(kConversionUrl), main_rfh());
   // This test explicitly requires no initiator frame being set.
   navigation->SetInitiatorFrame(nullptr);
-  navigation->set_impression(CreateValidImpression());
+  navigation->set_impression(blink::Impression());
   navigation->Commit();
 
   histograms.ExpectUniqueSample(
@@ -221,26 +176,24 @@ TEST_F(AttributionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
 }
 
 TEST_F(AttributionHostTest, ImpressionNavigationCommitsToErrorPage_Ignored) {
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+  EXPECT_CALL(*mock_data_host_manager_, NotifyNavigationForDataHost).Times(0);
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
       GURL(kConversionUrl), main_rfh());
   navigation->SetInitiatorFrame(main_rfh());
-  navigation->set_impression(CreateValidImpression());
+  navigation->set_impression(blink::Impression());
   navigation->Fail(net::ERR_FAILED);
   navigation->CommitErrorPage();
 }
 
 TEST_F(AttributionHostTest,
        AttributionSrcNavigationCommitsToErrorPage_Ignored) {
-  auto impression = CreateValidImpression();
-  impression.attribution_src_token = blink::AttributionSrcToken();
+  blink::Impression impression;
 
-  EXPECT_CALL(
-      *mock_data_host_manager_,
-      NotifyNavigationFailure(impression.attribution_src_token.value()));
+  EXPECT_CALL(*mock_data_host_manager_,
+              NotifyNavigationFailure(impression.attribution_src_token));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
@@ -253,24 +206,22 @@ TEST_F(AttributionHostTest,
 }
 
 TEST_F(AttributionHostTest, ImpressionNavigationAborts_Ignored) {
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+  EXPECT_CALL(*mock_data_host_manager_, NotifyNavigationForDataHost).Times(0);
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
       GURL(kConversionUrl), main_rfh());
   navigation->SetInitiatorFrame(main_rfh());
-  navigation->set_impression(CreateValidImpression());
+  navigation->set_impression(blink::Impression());
   navigation->AbortCommit();
 }
 
 TEST_F(AttributionHostTest, AttributionSrcNavigationAborts_Ignored) {
-  auto impression = CreateValidImpression();
-  impression.attribution_src_token = blink::AttributionSrcToken();
+  blink::Impression impression;
 
-  EXPECT_CALL(
-      *mock_data_host_manager_,
-      NotifyNavigationFailure(impression.attribution_src_token.value()));
+  EXPECT_CALL(*mock_data_host_manager_,
+              NotifyNavigationFailure(impression.attribution_src_token));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
@@ -282,15 +233,15 @@ TEST_F(AttributionHostTest, AttributionSrcNavigationAborts_Ignored) {
 }
 
 TEST_F(AttributionHostTest,
-       CommittedOriginDiffersFromConversionDesintation_Ignored) {
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+       CommittedOriginDiffersFromConversionDesintation_Propagated) {
+  EXPECT_CALL(*mock_data_host_manager_, NotifyNavigationForDataHost);
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
       GURL("https://different.com"), main_rfh());
   navigation->SetInitiatorFrame(main_rfh());
-  navigation->set_impression(CreateValidImpression());
+  navigation->set_impression(blink::Impression());
   navigation->Commit();
 }
 
@@ -300,34 +251,24 @@ const char kLocalHost[] = "http://localhost";
 struct OriginTrustworthyChecksTestCase {
   const char* impression_origin;
   const char* conversion_origin;
-  const char* reporting_origin;
   bool impression_expected;
 };
 
 const OriginTrustworthyChecksTestCase kOriginTrustworthyChecksTestCases[] = {
     {.impression_origin = kLocalHost,
      .conversion_origin = kLocalHost,
-     .reporting_origin = kLocalHost,
      .impression_expected = true},
     {.impression_origin = "http://127.0.0.1",
      .conversion_origin = "http://127.0.0.1",
-     .reporting_origin = "http://127.0.0.1",
      .impression_expected = true},
     {.impression_origin = kLocalHost,
-     .conversion_origin = kLocalHost,
-     .reporting_origin = "http://insecure.com",
-     .impression_expected = false},
-    {.impression_origin = kLocalHost,
      .conversion_origin = "http://insecure.com",
-     .reporting_origin = kLocalHost,
-     .impression_expected = false},
+     .impression_expected = true},
     {.impression_origin = "http://insecure.com",
      .conversion_origin = kLocalHost,
-     .reporting_origin = kLocalHost,
-     .impression_expected = false},
+     .impression_expected = true},
     {.impression_origin = "https://secure.com",
      .conversion_origin = "https://secure.com",
-     .reporting_origin = "https://secure.com",
      .impression_expected = true},
 };
 
@@ -341,18 +282,14 @@ TEST_P(AttributionHostOriginTrustworthyChecksTest,
        ImpressionNavigation_OriginTrustworthyChecksPerformed) {
   const OriginTrustworthyChecksTestCase& test_case = GetParam();
 
-  EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.impression_expected);
+  EXPECT_CALL(*mock_data_host_manager_, NotifyNavigationForDataHost)
+      .Times(test_case.impression_expected);
 
   contents()->NavigateAndCommit(GURL(test_case.impression_origin));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
       GURL(test_case.conversion_origin), main_rfh());
 
-  blink::Impression impression;
-  impression.conversion_destination =
-      url::Origin::Create(GURL(test_case.conversion_origin));
-  impression.reporting_origin =
-      url::Origin::Create(GURL(test_case.reporting_origin));
-  navigation->set_impression(impression);
+  navigation->set_impression(blink::Impression());
   navigation->SetInitiatorFrame(main_rfh());
   navigation->Commit();
 }

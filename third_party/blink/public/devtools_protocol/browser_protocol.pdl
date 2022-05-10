@@ -697,11 +697,8 @@ experimental domain Audits
   type AttributionReportingIssueType extends string
     enum
       PermissionPolicyDisabled
-      InvalidAttributionSourceEventId
       AttributionSourceUntrustworthyOrigin
       AttributionUntrustworthyOrigin
-      InvalidAttributionSourceExpiry
-      InvalidAttributionSourcePriority
 
   # Details for issues around "Attribution Reporting API" usage.
   # Explainer: https://github.com/WICG/conversion-measurement-api

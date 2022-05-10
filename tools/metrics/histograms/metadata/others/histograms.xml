@@ -3522,6 +3522,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.RegisteredImpressionsPerPage" units="impressions"
     expires_after="2022-10-04">
+  <obsolete>
+    Only tracked in obsolete Attribution Reporting API surface. Removed 04/22.
+  </obsolete>
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -3787,6 +3790,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.UniqueReportingOriginsPerPage.Impressions"
     units="origins" expires_after="2022-10-09">
+  <obsolete>
+    Only tracked in obsolete Attribution Reporting API surface. Removed 04/22.
+  </obsolete>
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

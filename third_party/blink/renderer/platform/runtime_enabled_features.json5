@@ -462,10 +462,6 @@
       status: "experimental",
     },
     {
-      name: "ConversionMeasurement",
-      status: "test",
-    },
-    {
       name: "CooperativeScheduling"
     },
     {

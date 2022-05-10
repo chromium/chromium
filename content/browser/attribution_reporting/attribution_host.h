@@ -19,7 +19,6 @@
 namespace content {
 
 class AttributionManagerProvider;
-class AttributionPageMetrics;
 class WebContents;
 
 // Class responsible for listening to conversion events originating from blink,
@@ -56,10 +55,6 @@ class CONTENT_EXPORT AttributionHost
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
-  // Notifies an impression.
-  void NotifyImpressionInitiatedByPage(const url::Origin& impression_origin,
-                                       const blink::Impression& impression);
-
   // Notifies the `AttributionDataHostManager` that a navigation with an
   // associated `AttributionDataHost` failed, if necessary.
   void MaybeNotifyFailedSourceNavigation(NavigationHandle* navigation_handle);
@@ -82,11 +77,6 @@ class CONTENT_EXPORT AttributionHost
   // Gives access to a AttributionManager implementation to forward impressions
   // and conversion registrations to.
   std::unique_ptr<AttributionManagerProvider> attribution_manager_provider_;
-
-  // Logs metrics per top-level page load. Created for every top level
-  // navigation that commits, as long as there is a AttributionManager.
-  // Excludes the initial about:blank document.
-  std::unique_ptr<AttributionPageMetrics> conversion_page_metrics_;
 
   RenderFrameHostReceiverSet<blink::mojom::ConversionHost> receivers_;
 

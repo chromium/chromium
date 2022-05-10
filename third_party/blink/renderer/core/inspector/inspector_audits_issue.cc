@@ -143,21 +143,12 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
     case AttributionReportingIssueType::kPermissionPolicyDisabled:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           PermissionPolicyDisabled;
-    case AttributionReportingIssueType::kInvalidAttributionSourceEventId:
-      return protocol::Audits::AttributionReportingIssueTypeEnum::
-          InvalidAttributionSourceEventId;
     case AttributionReportingIssueType::kAttributionSourceUntrustworthyOrigin:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           AttributionSourceUntrustworthyOrigin;
     case AttributionReportingIssueType::kAttributionUntrustworthyOrigin:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           AttributionUntrustworthyOrigin;
-    case AttributionReportingIssueType::kInvalidAttributionSourceExpiry:
-      return protocol::Audits::AttributionReportingIssueTypeEnum::
-          InvalidAttributionSourceExpiry;
-    case AttributionReportingIssueType::kInvalidAttributionSourcePriority:
-      return protocol::Audits::AttributionReportingIssueTypeEnum::
-          InvalidAttributionSourcePriority;
   }
 }
 
