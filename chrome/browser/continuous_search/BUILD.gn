@@ -84,8 +84,6 @@ if (is_android) {
   }
 
   android_library("data_structures_java") {
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-
     sources = [
       "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousNavigationMetadata.java",
       "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousNavigationUserData.java",
@@ -97,7 +95,6 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//chrome/browser/tab:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//url:gurl_java",

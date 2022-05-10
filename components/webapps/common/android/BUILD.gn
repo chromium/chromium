@@ -13,7 +13,5 @@ android_aidl("webapk_install_aidl") {
 }
 
 android_library("webapk_install_java") {
-  deps = [ "//base:jni_java" ]
   srcjar_deps = [ ":webapk_install_aidl" ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
