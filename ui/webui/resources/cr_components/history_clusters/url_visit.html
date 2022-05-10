@@ -33,6 +33,9 @@
     user-select: none;
   }
 
+  /* TODO(crbug.com/1324343): This formula is subtly wrong after the latest UI
+     revisions. But we want to delete this code anyways. Delete the separate
+     top-visit and indented styling after M103 branch cut. */
   :host([indented]:not([is-top-visit])) #header {
     padding-inline-start: calc(var(--cluster-padding-horizontal) +
                                var(--top-visit-favicon-size) +

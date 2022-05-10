@@ -31,14 +31,14 @@
     display: flex;
     flex-grow: 1;
     justify-content: space-between;
-    min-height: 40px;
+    min-height: 48px;
     min-width: 0;
     padding-inline-start: var(--cluster-padding-horizontal);
     user-select: none;
   }
 
   #label {
-    color: var(--cr-secondary-text-color);
+    color: var(--cr-primary-text-color);
     font-size: 1rem;  /* 16px */
     font-weight: 500;
   }
@@ -47,7 +47,8 @@
     display: flex;
     flex-wrap: wrap;
     min-width: 0;
-    padding: var(--cluster-padding-vertical) var(--cluster-padding-horizontal);
+    /* Top is a special 8px value. */
+    padding: 8px var(--cluster-padding-horizontal) var(--cluster-padding-vertical);
   }
 
   search-query {
