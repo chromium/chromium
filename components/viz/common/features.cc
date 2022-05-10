@@ -177,7 +177,7 @@ const base::Feature kDynamicSchedulerForClients{
 
 #if BUILDFLAG(IS_MAC)
 const base::Feature kMacCAOverlayQuad{"MacCAOverlayQuads",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 // The maximum supported overlay quad number on Mac CALayerOverlay.
 // The default is set to -1. When MaxNum is < 0, the default in CALayerOverlay
 // will be used instead.
