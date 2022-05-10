@@ -612,10 +612,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Memory.ARC" units="MiB" expires_after="2022-04-03">
+<histogram name="Platform.Memory.ARC" units="MiB" expires_after="2022-11-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
 
-  <owner>sonnyrao@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>yusukes@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
     Memory usage of all ARC and ARCVM processes in Chrome OS, reported every 10
@@ -624,10 +625,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Memory.Browser" units="MiB"
-    expires_after="2022-04-10">
+    expires_after="2022-11-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
 
-  <owner>sonnyrao@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
     Memory usage of browser and helper processes (excluding GPU process and
@@ -636,20 +637,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Memory.Daemons" units="MiB"
-    expires_after="2022-04-24">
+    expires_after="2022-11-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
 
-  <owner>sonnyrao@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
     Memory usage of user-level daemons in Chrome OS, reported every 10 minutes.
   </summary>
 </histogram>
 
-<histogram name="Platform.Memory.Gpu" units="MiB" expires_after="2021-10-10">
+<histogram name="Platform.Memory.Gpu" units="MiB" expires_after="2022-11-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
 
-  <owner>sonnyrao@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
     Memory usage of the GPU process in Chrome OS, reported every 10 minutes.
@@ -657,20 +658,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Memory.Renderers" units="MiB"
-    expires_after="2022-04-17">
+    expires_after="2022-11-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
 
-  <owner>sonnyrao@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
     Memory usage of renderer processes in Chrome OS, reported every 10 minutes.
   </summary>
 </histogram>
 
-<histogram name="Platform.Memory.VMs" units="MiB" expires_after="2022-04-04">
+<histogram name="Platform.Memory.VMs" units="MiB" expires_after="2022-11-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
 
-  <owner>sonnyrao@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
     Memory usage of VMs (crostini and others, except for ARCVM) in Chrome OS,
