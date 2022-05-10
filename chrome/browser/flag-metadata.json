@@ -55,8 +55,8 @@
   },
   {
     "name": "adaptive-button-in-top-toolbar-customization",
-    "owners": [ "bttk", "chrome-segmentation-platform@google.com" ],
-    "expiry_milestone": 102
+    "owners": [ "shaktisahu", "chrome-segmentation-platform@google.com" ],
+    "expiry_milestone": 107
   },
   {
     "name": "add-passwords-in-settings",
