@@ -55,6 +55,10 @@ constexpr PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::JAVASCRIPT, CONTENT_SETTING_ALLOW},
         {prefs::kManagedJavaScriptBlockedForUrls,
          ContentSettingsType::JAVASCRIPT, CONTENT_SETTING_BLOCK},
+        {prefs::kManagedClipboardAllowedForUrls,
+         ContentSettingsType::CLIPBOARD_READ_WRITE, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedClipboardBlockedForUrls,
+         ContentSettingsType::CLIPBOARD_READ_WRITE, CONTENT_SETTING_BLOCK},
         {prefs::kManagedNotificationsAllowedForUrls,
          ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW},
         {prefs::kManagedNotificationsBlockedForUrls,
@@ -107,6 +111,8 @@ constexpr PrefsForManagedContentSettingsMapEntry
 
 constexpr const char* kManagedPrefs[] = {
     prefs::kManagedAutoSelectCertificateForUrls,
+    prefs::kManagedClipboardAllowedForUrls,
+    prefs::kManagedClipboardBlockedForUrls,
     prefs::kManagedCookiesAllowedForUrls,
     prefs::kManagedCookiesBlockedForUrls,
     prefs::kManagedCookiesSessionOnlyForUrls,
@@ -152,6 +158,7 @@ constexpr const char* kManagedPrefs[] = {
 // is managed any user defined exceptions (patterns) for this type are ignored.
 constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultAdsSetting,
+    prefs::kManagedDefaultClipboardSetting,
     prefs::kManagedDefaultCookiesSetting,
     prefs::kManagedDefaultFileSystemReadGuardSetting,
     prefs::kManagedDefaultFileSystemWriteGuardSetting,
@@ -188,6 +195,8 @@ struct PolicyProvider::PrefsForManagedDefaultMapEntry {
 const PolicyProvider::PrefsForManagedDefaultMapEntry
     PolicyProvider::kPrefsForManagedDefault[] = {
         {ContentSettingsType::ADS, prefs::kManagedDefaultAdsSetting},
+        {ContentSettingsType::CLIPBOARD_READ_WRITE,
+         prefs::kManagedDefaultClipboardSetting},
         {ContentSettingsType::COOKIES, prefs::kManagedDefaultCookiesSetting},
         {ContentSettingsType::IMAGES, prefs::kManagedDefaultImagesSetting},
         {ContentSettingsType::GEOLOCATION,

@@ -5335,6 +5335,79 @@
       }
     ]
   },
+  "DefaultClipboardSetting": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DefaultClipboardSetting": 2
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.clipboard": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "DefaultClipboardSetting": 3
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.clipboard": {
+            "value": 3
+          }
+        }
+      }
+    ]
+  },
+  "ClipboardAllowedForUrls": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ClipboardAllowedForUrls": [
+            "[*.]google.com"
+          ]
+        },
+        "prefs": {
+          "profile.managed_clipboard_allowed_for_urls": {}
+        }
+      }
+    ]
+  },
+  "ClipboardBlockedForUrls": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ClipboardBlockedForUrls": [
+            "[*.]google.com"
+          ]
+        },
+        "prefs": {
+          "profile.managed_clipboard_blocked_for_urls": {}
+        }
+      }
+    ]
+  },
   "JavaScriptJitAllowedForSites": {
     "os": [
       "win",

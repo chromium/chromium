@@ -25,6 +25,8 @@ const char kContentSettingsWindowLastTabIndex[] =
 // content settings.
 const char kManagedDefaultAdsSetting[] =
     "profile.managed_default_content_settings.ads";
+const char kManagedDefaultClipboardSetting[] =
+    "profile.managed_default_content_settings.clipboard";
 const char kManagedDefaultCookiesSetting[] =
     "profile.managed_default_content_settings.cookies";
 const char kManagedDefaultGeolocationSetting[] =
@@ -66,6 +68,10 @@ const char kManagedDefaultLocalFontsSetting[] =
 
 // Preferences that are exclusively used to store managed
 // content settings patterns.
+const char kManagedClipboardAllowedForUrls[] =
+    "profile.managed_clipboard_allowed_for_urls";
+const char kManagedClipboardBlockedForUrls[] =
+    "profile.managed_clipboard_blocked_for_urls";
 const char kManagedAutoSelectCertificateForUrls[] =
     "profile.managed_auto_select_certificate_for_urls";
 const char kManagedCookiesAllowedForUrls[] =

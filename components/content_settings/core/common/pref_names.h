@@ -19,6 +19,7 @@ extern const char kContentSettingsVersion[];
 extern const char kContentSettingsWindowLastTabIndex[];
 
 extern const char kManagedDefaultAdsSetting[];
+extern const char kManagedDefaultClipboardSetting[];
 extern const char kManagedDefaultCookiesSetting[];
 extern const char kManagedDefaultImagesSetting[];
 extern const char kManagedDefaultInsecureContentSetting[];
@@ -39,6 +40,8 @@ extern const char kManagedDefaultWebHidGuardSetting[];
 extern const char kManagedDefaultWindowPlacementSetting[];
 extern const char kManagedDefaultLocalFontsSetting[];
 
+extern const char kManagedClipboardAllowedForUrls[];
+extern const char kManagedClipboardBlockedForUrls[];
 extern const char kManagedCookiesAllowedForUrls[];
 extern const char kManagedCookiesBlockedForUrls[];
 extern const char kManagedCookiesSessionOnlyForUrls[];

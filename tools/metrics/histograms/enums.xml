@@ -31401,6 +31401,9 @@ Called by update_document_policy_enum.py.-->
   <int value="980" label="ProjectorDogfoodForFamilyLinkEnabled"/>
   <int value="981" label="UrlParamFilterEnabled"/>
   <int value="982" label="ScreenTimeEnabled"/>
+  <int value="983" label="DefaultClipboardSetting"/>
+  <int value="984" label="ClipboardAllowedForUrls"/>
+  <int value="985" label="ClipboardBlockedForUrls"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
