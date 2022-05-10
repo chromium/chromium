@@ -15,5 +15,5 @@ message Action {
 }
 
 message ActionInfo {
-  extensions 100 to 999;
+  extensions 100 to max;
 }
