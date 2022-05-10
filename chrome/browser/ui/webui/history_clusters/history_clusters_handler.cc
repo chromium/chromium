@@ -40,6 +40,8 @@ namespace history_clusters {
 
 namespace {
 
+constexpr size_t kMaxRelatedSearches = 5;
+
 // Creates a `mojom::VisitPtr` from a `history_clusters::Visit`.
 mojom::URLVisitPtr VisitToMojom(Profile* profile,
                                 const history::ClusterVisit& visit) {
@@ -182,14 +184,29 @@ mojom::QueryResultPtr QueryClustersResultToMojom(
 
         visit_mojom->hidden = true;
       }
-      cluster_mojom->visits.push_back(std::move(visit_mojom));
-    }
 
-    for (const auto& related_search : cluster.related_searches) {
-      auto search_query_mojom = SearchQueryToMojom(profile, related_search);
-      if (search_query_mojom) {
-        cluster_mojom->related_searches.emplace_back(
-            std::move(*search_query_mojom));
+      cluster_mojom->visits.push_back(std::move(visit_mojom));
+
+      // Coalesce the unique related searches of this visit into the cluster
+      // until the cap is reached.
+      for (const auto& search_query :
+           visit.annotated_visit.content_annotations.related_searches) {
+        if (cluster_mojom->related_searches.size() >= kMaxRelatedSearches) {
+          break;
+        }
+
+        if (base::Contains(cluster_mojom->related_searches, search_query,
+                           [](const mojom::SearchQueryPtr& search_query_mojom) {
+                             return search_query_mojom->query;
+                           })) {
+          continue;
+        }
+
+        auto search_query_mojom = SearchQueryToMojom(profile, search_query);
+        if (search_query_mojom) {
+          cluster_mojom->related_searches.emplace_back(
+              std::move(*search_query_mojom));
+        }
       }
     }
 
