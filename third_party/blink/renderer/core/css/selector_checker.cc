@@ -772,80 +772,106 @@ uint8_t SetHasScopeElementAsCheckedAndGetOldResult(
   return previous_result;
 }
 
-void SetAffectedByHasFlagsForHasScopeElementOrItsSiblings(
-    Element* has_scope_element,
-    CheckPseudoHasArgumentContext& argument_context) {
+void SetAffectedByHasFlagsForElementAtDepth(
+    CheckPseudoHasArgumentContext& argument_context,
+    Element* element,
+    int depth) {
+  if (depth > 0) {
+    element->SetAncestorsOrAncestorSiblingsAffectedByHas();
+  } else {
+    element->SetSiblingsAffectedByHasFlags(
+        argument_context.GetSiblingsAffectedByHasFlags());
+  }
+}
+
+void SetAffectedByHasFlagsForHasScopeElement(
+    CheckPseudoHasArgumentContext& argument_context,
+    Element* has_scope_element) {
   switch (argument_context.LeftmostRelation()) {
     case CSSSelector::kRelativeChild:
     case CSSSelector::kRelativeDescendant:
       has_scope_element->SetAncestorsOrAncestorSiblingsAffectedByHas();
       break;
     case CSSSelector::kRelativeDirectAdjacent:
-    case CSSSelector::kRelativeIndirectAdjacent: {
-      SiblingsAffectedByHasFlags flags =
-          argument_context.DepthLimit() > 0
-              ? SiblingsAffectedByHasFlags::
-                    kFlagForSiblingDescendantRelationship
-              : SiblingsAffectedByHasFlags::kFlagForSiblingRelationship;
-      has_scope_element->SetSiblingsAffectedByHasFlags(flags);
-
-      int distance = 1;
-      for (Element* sibling = ElementTraversal::NextSibling(*has_scope_element);
-           sibling && distance <= argument_context.AdjacentDistanceLimit();
-           sibling = ElementTraversal::NextSibling(*sibling), distance++) {
-        sibling->SetSiblingsAffectedByHasFlags(flags);
-      }
-    } break;
+    case CSSSelector::kRelativeIndirectAdjacent:
+      has_scope_element->SetSiblingsAffectedByHasFlags(
+          argument_context.GetSiblingsAffectedByHasFlags());
+      break;
     default:
       NOTREACHED();
       break;
   }
 }
 
-void SetAncestorsOrAncestorSiblingsAffectedByHasForArgumentMatchedElement(
+void SetAffectedByHasFlagsForHasScopeSiblings(
     CheckPseudoHasArgumentContext& argument_context,
+    Element* has_scope_element) {
+  if (argument_context.AdjacentDistanceLimit() == 0)
+    return;
+  int distance = 1;
+  for (Element* sibling = ElementTraversal::NextSibling(*has_scope_element);
+       sibling && distance <= argument_context.AdjacentDistanceLimit();
+       sibling = ElementTraversal::NextSibling(*sibling), distance++) {
+    sibling->SetSiblingsAffectedByHasFlags(
+        argument_context.GetSiblingsAffectedByHasFlags());
+  }
+}
+
+void SetAffectedByHasForArgumentMatchedElement(
+    CheckPseudoHasArgumentContext& argument_context,
+    Element* has_scope_element,
     Element* argument_matched_element,
-    int argument_matched_element_depth) {
+    int argument_matched_depth) {
   // Iterator class to traverse siblings, ancestors and ancestor siblings of the
   // CheckPseudoHasArgumentTraversalIterator's current element until reach to
-  // the scope or scope sibling element (element at depth 0) to set the
+  // the :has() scope element to set the SiblingsAffectedByHasFlags or
   // AncestorsOrAncestorSiblingsAffectedByHas flag.
-  class AncestorsOrAncestorSiblingsAffectedByHasIterator {
+  class AffectedByHasIterator {
     STACK_ALLOCATED();
 
    public:
-    AncestorsOrAncestorSiblingsAffectedByHasIterator(
-        CheckPseudoHasArgumentContext& argument_context,
-        Element* argument_matched_element,
-        int argument_matched_element_depth)
+    AffectedByHasIterator(CheckPseudoHasArgumentContext& argument_context,
+                          Element* has_scope_element,
+                          Element* argument_matched_element,
+                          int argument_matched_depth)
         : argument_context_(argument_context),
-          argument_matched_element_depth_(argument_matched_element_depth),
-          depth_(argument_matched_element_depth),
-          current_(argument_matched_element) {
-      DCHECK_GT(depth_, 0);
+          has_scope_element_(has_scope_element),
+          argument_matched_depth_(argument_matched_depth),
+          current_depth_(argument_matched_depth),
+          current_element_(argument_matched_element) {
+      DCHECK_GE(current_depth_, 0);
       // affected-by flags of the matched element were already set.
       // So, this iterator traverses from the next of the matched element.
       ++*this;
     }
 
-    Element* CurrentElement() const { return current_; }
-    bool AtEnd() const { return depth_ == 0; }
+    Element* CurrentElement() const { return current_element_; }
+    bool AtEnd() const {
+      DCHECK_GE(current_depth_, 0);
+      return current_element_ == has_scope_element_;
+    }
+    int CurrentDepth() const { return current_depth_; }
     void operator++() {
-      DCHECK(current_);
-      DCHECK_GT(depth_, 0);
+      DCHECK(current_element_);
 
-      Element* previous = nullptr;
-      if (NeedsTraverseSiblings() &&
-          (previous = Traversal<Element>::PreviousSibling(*current_))) {
-        current_ = previous;
-        DCHECK(current_);
+      if (current_depth_ == 0) {
+        current_element_ = ElementTraversal::PreviousSibling(*current_element_);
+        DCHECK(current_element_);
         return;
       }
 
-      DCHECK_GT(depth_, 0);
-      depth_--;
-      current_ = current_->parentElement();
-      DCHECK(current_);
+      Element* previous = nullptr;
+      if (NeedsTraverseSiblings() &&
+          (previous = ElementTraversal::PreviousSibling(*current_element_))) {
+        current_element_ = previous;
+        DCHECK(current_element_);
+        return;
+      }
+
+      DCHECK_GT(current_depth_, 0);
+      current_depth_--;
+      current_element_ = current_element_->parentElement();
+      DCHECK(current_element_);
     }
 
    private:
@@ -857,29 +883,49 @@ void SetAncestorsOrAncestorSiblingsAffectedByHasForArgumentMatchedElement(
       // of the argument selector matched element, we can determine whether the
       // sibling traversal is needed or not by checking whether an adjacent
       // combinator is between child or descendant combinator.
-      DCHECK_LE(depth_, argument_matched_element_depth_);
-      return argument_matched_element_depth_ == depth_
+      DCHECK_LE(current_depth_, argument_matched_depth_);
+      return argument_matched_depth_ == current_depth_
                  ? argument_context_.SiblingCombinatorAtRightmost()
                  : argument_context_
                        .SiblingCombinatorBetweenChildOrDescendantCombinator();
     }
 
     const CheckPseudoHasArgumentContext& argument_context_;
-    const int argument_matched_element_depth_;
-    int depth_;
-    Element* current_;
-  } ancestors_or_ancestor_siblings_affected_by_has_iterator(
-      argument_context, argument_matched_element,
-      argument_matched_element_depth);
+    Element* has_scope_element_;
+    const int argument_matched_depth_;
+    int current_depth_;
+    Element* current_element_;
+  } affected_by_has_iterator(argument_context, has_scope_element,
+                             argument_matched_element, argument_matched_depth);
 
   // Set AncestorsOrAncestorSiblingsAffectedByHas flag on the elements at
   // upward (previous siblings, ancestors, ancestors' previous siblings) of the
   // argument matched element.
-  for (; !ancestors_or_ancestor_siblings_affected_by_has_iterator.AtEnd();
-       ++ancestors_or_ancestor_siblings_affected_by_has_iterator) {
-    ancestors_or_ancestor_siblings_affected_by_has_iterator.CurrentElement()
-        ->SetAncestorsOrAncestorSiblingsAffectedByHas();
+  for (; !affected_by_has_iterator.AtEnd(); ++affected_by_has_iterator) {
+    SetAffectedByHasFlagsForElementAtDepth(
+        argument_context, affected_by_has_iterator.CurrentElement(),
+        affected_by_has_iterator.CurrentDepth());
   }
+}
+
+bool SkipCheckingHasArgument(
+    CheckPseudoHasArgumentContext& context,
+    CheckPseudoHasArgumentTraversalIterator& iterator) {
+  // Siblings of the :has() scope element cannot be a subject of :has() argument
+  // if the argument selector has child or descendant combinator.
+  if (context.DepthLimit() > 0 && iterator.CurrentDepth() == 0)
+    return true;
+
+  // The current element of the iterator cannot be a subject of :has() argument
+  // if the :has() argument selector only matches on the elements at a fixed
+  // depth and the current element of the iterator is not at the certain depth.
+  // (e.g. For the style rule '.a:has(> .b > .c) {}', a child of '.a' or a great
+  // grand child of '.a' cannot be a subject of the argument '> .b > .c'. Only
+  // the grand child of '.a' can be a subject of the argument)
+  if (context.DepthFixed() && (iterator.CurrentDepth() != context.DepthLimit()))
+    return true;
+
+  return false;
 }
 
 }  // namespace
@@ -910,8 +956,8 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
                                                           argument_context);
 
     if (mode_ == kResolvingStyle) {
-      SetAffectedByHasFlagsForHasScopeElementOrItsSiblings(has_scope_element,
-                                                           argument_context);
+      SetAffectedByHasFlagsForHasScopeElement(argument_context,
+                                              has_scope_element);
     }
 
     if (cache_scope_context.CacheAllowed()) {
@@ -923,6 +969,10 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
       uint8_t previous_result = SetHasScopeElementAsCheckedAndGetOldResult(
           context, cache_scope_context);
       if (previous_result & kChecked) {
+        if (mode_ == kResolvingStyle) {
+          SetAffectedByHasFlagsForHasScopeSiblings(argument_context,
+                                                   has_scope_element);
+        }
         if (previous_result & kMatched)
           return true;
         continue;
@@ -933,29 +983,18 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
     sub_context.relative_leftmost_element = has_scope_element;
 
     bool selector_matched = false;
-    Element* last_traversed_element = nullptr;
-    int last_traversed_depth = -1;
+    Element* last_argument_checked_element = nullptr;
+    int last_argument_checked_depth = -1;
     for (CheckPseudoHasArgumentTraversalIterator iterator(*has_scope_element,
                                                           argument_context);
          !iterator.AtEnd(); ++iterator) {
-      // Skip :has() argument selector checking on the siblings of the :has()
-      // scope element if the argument selector has child or descendant
-      // combinator.
-      if (argument_context.DepthLimit() > 0 && iterator.Depth() == 0)
-        continue;
-
-      if (mode_ == kResolvingStyle && iterator.Depth() > 0) {
-        iterator.CurrentElement()
-            ->SetAncestorsOrAncestorSiblingsAffectedByHas();
+      if (mode_ == kResolvingStyle) {
+        SetAffectedByHasFlagsForElementAtDepth(argument_context,
+                                               iterator.CurrentElement(),
+                                               iterator.CurrentDepth());
       }
 
-      // Skip :has() argument selector checking if the argument selector only
-      // matches on the elements at a fixed depth but the current element of
-      // the iterator is not at the certain depth. (e.g. For the style rule
-      // '.a:has(> .b > .c) {}', the subselector doesn't need to be checked on
-      // a child of '.a' or a great grand child of '.a' - it only matches on a
-      // grand child of '.a' )
-      if (argument_context.DepthFixed() && !iterator.AtFixedDepth())
+      if (SkipCheckingHasArgument(argument_context, iterator))
         continue;
 
       sub_context.element = iterator.CurrentElement();
@@ -966,8 +1005,8 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
 
       MatchSelector(sub_context, sub_result);
 
-      last_traversed_element = iterator.CurrentElement();
-      last_traversed_depth = iterator.Depth();
+      last_argument_checked_element = iterator.CurrentElement();
+      last_argument_checked_depth = iterator.CurrentDepth();
 
       switch (leftmost_relation) {
         case CSSSelector::kRelativeDescendant:
@@ -1003,15 +1042,16 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
         break;
     }
 
-    if (cache_scope_context.CacheAllowed() && last_traversed_element) {
+    if (cache_scope_context.CacheAllowed() && last_argument_checked_element) {
       cache_scope_context.SetAllTraversedElementsAsChecked(
-          last_traversed_element, last_traversed_depth);
+          last_argument_checked_element, last_argument_checked_depth);
     }
 
     if (selector_matched) {
-      if (mode_ == kResolvingStyle && last_traversed_depth > 0) {
-        SetAncestorsOrAncestorSiblingsAffectedByHasForArgumentMatchedElement(
-            argument_context, last_traversed_element, last_traversed_depth);
+      if (mode_ == kResolvingStyle) {
+        SetAffectedByHasForArgumentMatchedElement(
+            argument_context, has_scope_element, last_argument_checked_element,
+            last_argument_checked_depth);
       }
       return true;
     }

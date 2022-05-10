@@ -108,6 +108,8 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
         traversal_scope_ = kFixedDepthDescendants;
       else
         traversal_scope_ = kSubtree;
+      siblings_affected_by_has_flags_ =
+          SiblingsAffectedByHasFlags::kNoSiblingsAffectedByHasFlags;
       break;
     case CSSSelector::kRelativeIndirectAdjacent:
     case CSSSelector::kRelativeDirectAdjacent:
@@ -116,6 +118,8 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
           traversal_scope_ = kOneNextSibling;
         else
           traversal_scope_ = kAllNextSiblings;
+        siblings_affected_by_has_flags_ =
+            SiblingsAffectedByHasFlags::kFlagForSiblingRelationship;
       } else {
         if (AdjacentDistanceFixed()) {
           if (DepthFixed())
@@ -128,6 +132,8 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
           else
             traversal_scope_ = kAllNextSiblingSubtrees;
         }
+        siblings_affected_by_has_flags_ =
+            SiblingsAffectedByHasFlags::kFlagForSiblingDescendantRelationship;
       }
       break;
     default:
@@ -140,56 +146,66 @@ CheckPseudoHasArgumentTraversalIterator::
     CheckPseudoHasArgumentTraversalIterator(
         Element& has_scope_element,
         CheckPseudoHasArgumentContext& context)
-    : has_scope_element_(&has_scope_element), context_(context) {
-  if (!context_.AdjacentDistanceFixed()) {
-    // Set the traversal_end_ as the next sibling of the :has scope element,
+    : has_scope_element_(&has_scope_element),
+      depth_limit_(context.DepthLimit()) {
+  if (!context.AdjacentDistanceFixed()) {
+    // Set the last_element_ as the next sibling of the :has scope element,
     // and move to the last sibling of the :has scope element, and move again
     // to the last descendant of the last sibling.
-    traversal_end_ = ElementTraversal::NextSibling(*has_scope_element_);
-    if (!traversal_end_) {
-      current_ = nullptr;
+    last_element_ = ElementTraversal::NextSibling(*has_scope_element_);
+    if (!last_element_) {
+      DCHECK_EQ(current_element_, nullptr);
       return;
     }
     Element* last_sibling =
-        Traversal<Element>::LastChild(*has_scope_element_->parentNode());
-    current_ = LastWithin(last_sibling);
-    if (!current_)
-      current_ = last_sibling;
-  } else if (context_.AdjacentDistanceLimit() == 0) {
-    DCHECK_GT(context_.DepthLimit(), 0);
-    // Set the traversal_end_ as the first child of the :has scope element,
+        ElementTraversal::LastChild(*has_scope_element_->parentNode());
+    current_element_ = LastWithin(last_sibling);
+    if (!current_element_)
+      current_element_ = last_sibling;
+  } else if (context.AdjacentDistanceLimit() == 0) {
+    DCHECK_GT(context.DepthLimit(), 0);
+    // Set the last_element_ as the first child of the :has scope element,
     // and move to the last descendant of the :has scope element without
     // exceeding the depth limit.
-    traversal_end_ = ElementTraversal::FirstChild(*has_scope_element_);
-    if (!traversal_end_) {
-      current_ = nullptr;
+    last_element_ = ElementTraversal::FirstChild(*has_scope_element_);
+    if (!last_element_) {
+      DCHECK_EQ(current_element_, nullptr);
       return;
     }
-    current_ = LastWithin(has_scope_element_);
-    DCHECK(current_);
+    current_element_ = LastWithin(has_scope_element_);
+    DCHECK(current_element_);
   } else {
-    // Set the traversal_end_ as the element at the adjacent distance of the
-    // :has scope element, and move to the last descendant of the element
-    // without exceeding the depth limit.
+    // Set last_element_ as the next sibling of the :has() scope element, set
+    // the sibling_at_fixed_distance_ as the element at the adjacent distance
+    // of the :has scope element, and move to the last descendant of the sibling
+    // at fixed distance without exceeding the depth limit.
     int distance = 1;
-    for (traversal_end_ = ElementTraversal::NextSibling(*has_scope_element_);
-         distance < context_.AdjacentDistanceLimit() && traversal_end_;
-         distance++,
-        traversal_end_ = ElementTraversal::NextSibling(*traversal_end_)) {
+    Element* old_sibling = nullptr;
+    Element* sibling = ElementTraversal::NextSibling(*has_scope_element_);
+    for (; distance < context.AdjacentDistanceLimit() && sibling;
+         distance++, sibling = ElementTraversal::NextSibling(*sibling)) {
+      old_sibling = sibling;
     }
-    if (!traversal_end_) {
-      current_ = nullptr;
-      return;
+    if (sibling) {
+      sibling_at_fixed_distance_ = sibling;
+      current_element_ = LastWithin(sibling_at_fixed_distance_);
+      if (!current_element_)
+        current_element_ = sibling_at_fixed_distance_;
+    } else {
+      current_element_ = old_sibling;
+      if (!current_element_)
+        return;
+      // set the depth_limit_ to 0 so that the iterator only traverse to the
+      // siblings of the :has() scope element.
+      depth_limit_ = 0;
     }
-    if ((current_ = LastWithin(traversal_end_)))
-      return;
-    current_ = traversal_end_;
+    last_element_ = ElementTraversal::NextSibling(*has_scope_element_);
   }
 }
 
 Element* CheckPseudoHasArgumentTraversalIterator::LastWithin(Element* element) {
   // If the current depth is at the depth limit, return null.
-  if (depth_ == context_.DepthLimit())
+  if (current_depth_ == depth_limit_)
     return nullptr;
 
   // Return the last element of the pre-order traversal starting from the passed
@@ -198,30 +214,38 @@ Element* CheckPseudoHasArgumentTraversalIterator::LastWithin(Element* element) {
   for (Element* descendant = ElementTraversal::LastChild(*element); descendant;
        descendant = ElementTraversal::LastChild(*descendant)) {
     last_descendant = descendant;
-    if (++depth_ == context_.DepthLimit())
+    if (++current_depth_ == depth_limit_)
       break;
   }
   return last_descendant;
 }
 
 void CheckPseudoHasArgumentTraversalIterator::operator++() {
-  DCHECK(current_);
-  DCHECK_NE(current_, has_scope_element_);
-  if (current_ == traversal_end_) {
-    current_ = nullptr;
+  DCHECK(current_element_);
+  DCHECK_NE(current_element_, has_scope_element_);
+  if (current_element_ == last_element_) {
+    current_element_ = nullptr;
     return;
   }
 
-  // Move to the previous element in DOM tree order within the depth limit.
-  if (Element* next = Traversal<Element>::PreviousSibling(*current_)) {
-    Element* last_descendant = LastWithin(next);
-    current_ = last_descendant ? last_descendant : next;
-  } else {
-    DCHECK_GT(depth_, 0);
-    depth_--;
-    current_ = current_->parentElement();
+  // If current element is the sibling at fixed distance, set the depth_limit_
+  // to 0 so that the iterator only traverse to the siblings of the :has() scope
+  // element.
+  if (current_depth_ == 0 && sibling_at_fixed_distance_ == current_element_) {
+    sibling_at_fixed_distance_ = nullptr;
+    depth_limit_ = 0;
   }
-  DCHECK(current_);
+
+  // Move to the previous element in DOM tree order within the depth limit.
+  if (Element* next = ElementTraversal::PreviousSibling(*current_element_)) {
+    Element* last_descendant = LastWithin(next);
+    current_element_ = last_descendant ? last_descendant : next;
+  } else {
+    DCHECK_GT(current_depth_, 0);
+    current_depth_--;
+    current_element_ = current_element_->parentElement();
+  }
+  DCHECK(current_element_);
 }
 
 }  // namespace blink

@@ -88,6 +88,10 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
     return traversal_scope_;
   }
 
+  SiblingsAffectedByHasFlags GetSiblingsAffectedByHasFlags() const {
+    return siblings_affected_by_has_flags_;
+  }
+
   const CSSSelector* HasArgument() const { return has_argument_; }
 
  private:
@@ -220,6 +224,7 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
   bool sibling_combinator_at_rightmost_{false};
   bool sibling_combinator_between_child_or_descendant_combinator_{false};
   CheckPseudoHasArgumentTraversalScope traversal_scope_;
+  SiblingsAffectedByHasFlags siblings_affected_by_has_flags_;
   const CSSSelector* has_argument_;
 };
 
@@ -261,31 +266,27 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
 // adjacent sibling of the div element. To implement this, we need a
 // way to limit the traversal depth and a way to check whether the
 // iterator is currently at the fixed depth or not.
-class CheckPseudoHasArgumentTraversalIterator {
+class CORE_EXPORT CheckPseudoHasArgumentTraversalIterator {
   STACK_ALLOCATED();
 
  public:
   CheckPseudoHasArgumentTraversalIterator(Element&,
                                           CheckPseudoHasArgumentContext&);
   void operator++();
-  Element* CurrentElement() const { return current_; }
-  bool AtEnd() const { return !current_; }
-  bool AtFixedDepth() const { return depth_ == context_.DepthLimit(); }
-  bool UnderDepthLimit() const { return depth_ <= context_.DepthLimit(); }
-  inline int Depth() const { return depth_; }
+  Element* CurrentElement() const { return current_element_; }
+  bool AtEnd() const { return !current_element_; }
+  inline int CurrentDepth() const { return current_depth_; }
   inline Element* ScopeElement() const { return has_scope_element_; }
-  inline const CheckPseudoHasArgumentContext& Context() const {
-    return context_;
-  }
 
  private:
   inline Element* LastWithin(Element*);
 
   Element* const has_scope_element_;
-  const CheckPseudoHasArgumentContext& context_;
-  int depth_{0};
-  Element* current_{nullptr};
-  Element* traversal_end_{nullptr};
+  int depth_limit_;
+  Element* last_element_{nullptr};
+  Element* sibling_at_fixed_distance_{nullptr};
+  Element* current_element_{nullptr};
+  int current_depth_{0};
 };
 
 }  // namespace blink
