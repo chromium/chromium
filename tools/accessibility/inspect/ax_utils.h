@@ -7,6 +7,7 @@
 
 #include "base/command_line.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 
@@ -32,7 +33,8 @@ absl::optional<ui::AXTreeSelector> TreeSelectorFromCommandLine(
 // Returns inspect scenario from the command line arguments. Returns nullopt in
 // case of error.
 absl::optional<ui::AXInspectScenario> ScenarioFromCommandLine(
-    const base::CommandLine& command_line);
+    const base::CommandLine& command_line,
+    ui::AXApiType::Type api = ui::AXApiType::kNone);
 
 }  // namespace tools
 

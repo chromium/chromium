@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -123,21 +124,41 @@ absl::optional<AXTreeSelector> TreeSelectorFromCommandLine(
   return AXTreeSelector(selectors, pattern_str);
 }
 
+std::string DirectivePrefixFromAPIType(ui::AXApiType::Type api) {
+  switch (api) {
+    case ui::AXApiType::kMac:
+      return "@AXAPI-";
+    case ui::AXApiType::kLinux:
+      return "@ATSPI-";
+    case ui::AXApiType::kWinIA2:
+      return "@IA2-";
+    case ui::AXApiType::kWinUIA:
+      return "@UIA-";
+    // If no or unsupported API, use the generic prefix
+    default:
+      return "@";
+  }
+}
+
 absl::optional<ui::AXInspectScenario> ScenarioFromCommandLine(
-    const base::CommandLine& command_line) {
+    const base::CommandLine& command_line,
+    ui::AXApiType::Type api) {
   base::FilePath filters_path = command_line.GetSwitchValuePath(kFiltersSwitch);
   if (filters_path.empty() && command_line.HasSwitch(kFiltersSwitch)) {
     LOG(ERROR) << "Error: empty filter path given. Run with --help for help.";
     return absl::nullopt;
   }
 
+  std::string directive_prefix = DirectivePrefixFromAPIType(api);
+
   // Return with the default filter scenario if no file is provided.
   if (filters_path.empty()) {
-    return ui::AXInspectScenario::From("@", std::vector<std::string>());
+    return ui::AXInspectScenario::From(directive_prefix,
+                                       std::vector<std::string>());
   }
 
   absl::optional<ui::AXInspectScenario> scenario =
-      ui::AXInspectScenario::From("@", filters_path);
+      ui::AXInspectScenario::From(directive_prefix, filters_path);
   if (!scenario) {
     LOG(ERROR) << "Error: failed to open filters file " << filters_path
                << ". Note: path traversal components ('..') are not allowed "

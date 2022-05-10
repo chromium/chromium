@@ -79,12 +79,6 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-  absl::optional<ui::AXInspectScenario> scenario =
-      tools::ScenarioFromCommandLine(*command_line);
-  if (!scenario) {
-    return 1;
-  }
-
   absl::optional<ui::AXTreeSelector> selector =
       tools::TreeSelectorFromCommandLine(*command_line);
 
@@ -96,18 +90,27 @@ int main(int argc, char** argv) {
 
   std::string api_str = command_line->GetSwitchValueASCII(kApiSwitch);
   ui::AXApiType::Type api = ui::AXApiType::kNone;
+  std::vector<ui::AXApiType::Type> apis = SupportedApis();
   if (!api_str.empty()) {
     api = ui::AXApiType::From(api_str);
     if (api == ui::AXApiType::kNone) {
       LOG(ERROR) << "Unknown API type: " << api_str;
       return 1;
     }
-    auto apis = SupportedApis();
     if (std::find(apis.begin(), apis.end(), api) == apis.end()) {
       LOG(ERROR) << "Unsupported API for this platform: "
                  << static_cast<std::string>(api);
       return 1;
     }
+  }
+  // Choose the default API if one is not specified.
+  if (api == ui::AXApiType::kNone && !apis.empty())
+    api = apis[0];
+
+  absl::optional<ui::AXInspectScenario> scenario =
+      tools::ScenarioFromCommandLine(*command_line, api);
+  if (!scenario) {
+    return 1;
   }
 
   auto server =
