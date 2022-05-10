@@ -1826,6 +1826,30 @@
             ]
         }
     ],
+    "CacheInlineScriptCode": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Fixed_20220421",
+                    "params": {
+                        "fix_configuring": "true"
+                    },
+                    "enable_features": [
+                        "CacheInlineScriptCode"
+                    ]
+                }
+            ]
+        }
+    ],
     "CanvasOutOfProcessRasterization": [
         {
             "platforms": [
