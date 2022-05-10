@@ -183,6 +183,10 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   using OracleFrameNumber =
       decltype(std::declval<media::VideoCaptureOracle>().next_frame_number());
 
+  // If the refresh timer is not currently running, this schedules a call
+  // to RefreshInternal with kRefreshRequest as the event.
+  void MaybeScheduleRefreshFrame();
+
   // Sets the |dirty_rect_| to maximum size and updates the content version.
   void InvalidateEntireSource();
 
@@ -211,6 +215,11 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // method to be called again in the near future, once the target becomes known
   // to the frame sink manager.
   void ResolveTarget();
+
+  // If the target is resolved, returns true.
+  // Otherwise, makes one attempt to resolve the target, and returns
+  // true iff the attempt was successful.
+  bool TryResolveTarget();
 
   // Helper method that actually implements the refresh logic. |event| is used
   // to determine if the refresh is urgent for scheduling purposes.
