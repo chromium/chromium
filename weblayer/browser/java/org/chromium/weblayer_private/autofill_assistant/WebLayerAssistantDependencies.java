@@ -24,15 +24,9 @@ import org.chromium.ui.base.WindowAndroid;
  */
 public class WebLayerAssistantDependencies
         extends WebLayerAssistantStaticDependencies implements AssistantDependencies {
-    public WebLayerAssistantDependencies(Activity activity, WebContents webContents) {
+    public WebLayerAssistantDependencies(WebContents webContents) {
         super(webContents);
-        maybeUpdateDependencies(activity);
-    }
-
-    @Override
-    public boolean maybeUpdateDependencies(Activity activity) {
-        // TODO(b/222671580): Implement
-        return true;
+        maybeUpdateDependencies(webContents);
     }
 
     @Override

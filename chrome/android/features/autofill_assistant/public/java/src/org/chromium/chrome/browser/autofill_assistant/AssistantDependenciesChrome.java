@@ -48,7 +48,18 @@ public class AssistantDependenciesChrome
     }
 
     @Override
-    public boolean maybeUpdateDependencies(Activity activity) {
+    public boolean maybeUpdateDependencies(WebContents webContents) {
+        @Nullable
+        Activity activity = ActivityUtils.getActivityFromWebContents(webContents);
+        if (activity == null) return false;
+        return maybeUpdateDependencies(activity);
+    }
+
+    /**
+     * Updates dependencies that are tied to the activity.
+     * @return Whether a new activity could be found.
+     */
+    private boolean maybeUpdateDependencies(Activity activity) {
         if (activity == mActivity) return true;
         if (!(activity instanceof ChromeActivity)) return false;
         ChromeActivity chromeActivity = (ChromeActivity) activity;
@@ -66,14 +77,6 @@ public class AssistantDependenciesChrome
         mSnackbarFactory =
                 new AssistantSnackbarFactoryChrome(mActivity, chromeActivity.getSnackbarManager());
         return true;
-    }
-
-    @Override
-    public boolean maybeUpdateDependencies(WebContents webContents) {
-        @Nullable
-        Activity activity = ActivityUtils.getActivityFromWebContents(webContents);
-        if (activity == null) return false;
-        return maybeUpdateDependencies(activity);
     }
 
     @Override

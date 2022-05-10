@@ -59,7 +59,7 @@ public class WebLayerAssistantStaticDependencies
 
     @Override
     public AssistantDependencies createDependencies(Activity activity) {
-        return new WebLayerAssistantDependencies(activity, mWebContents);
+        return new WebLayerAssistantDependencies(mWebContents);
     }
 
     @Override
