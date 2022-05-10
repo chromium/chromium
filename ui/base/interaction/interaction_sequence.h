@@ -213,11 +213,6 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // Prefer to use Builder::SetContext() if possible.
     StepBuilder& SetContext(ElementContext context);
 
-    // Sets that the step can refer to an element in any context.
-    // Not compatible with named elements. Currently only supported for kShown
-    // step type.
-    StepBuilder& SetAnyContext();
-
     // Sets the type of step. Required. You must set `event_type` if and only
     // if `step_type` is kCustomEvent.
     StepBuilder& SetType(
