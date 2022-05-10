@@ -118,6 +118,42 @@ bool SubstringSetMatcher::Match(const std::string& text,
   return old_number_of_matches != matches->size();
 }
 
+bool SubstringSetMatcher::AnyMatch(const std::string& text) const {
+  // Handle patterns matching the empty string.
+  const AhoCorasickNode* const root = &tree_[kRootID];
+  if (root->has_outputs()) {
+    return true;
+  }
+
+  const AhoCorasickNode* current_node = root;
+  for (const char c : text) {
+    NodeID child = current_node->GetEdge(c);
+
+    // If the child not can't be found, progressively iterate over the longest
+    // proper suffix of the string represented by the current node. In a sense
+    // we are pruning prefixes from the text.
+    while (child == kInvalidNodeID && current_node != root) {
+      current_node = &tree_[current_node->failure()];
+      child = current_node->GetEdge(c);
+    }
+
+    if (child != kInvalidNodeID) {
+      // The string represented by |child| is the longest possible suffix of the
+      // current position of |text| in the trie.
+      current_node = &tree_[child];
+      if (current_node->has_outputs()) {
+        return true;
+      }
+    } else {
+      // The empty string is the longest possible suffix of the current position
+      // of |text| in the trie.
+      DCHECK_EQ(root, current_node);
+    }
+  }
+
+  return false;
+}
+
 size_t SubstringSetMatcher::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(tree_);
 }

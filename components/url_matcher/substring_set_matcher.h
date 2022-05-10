@@ -55,6 +55,12 @@ class URL_MATCHER_EXPORT SubstringSetMatcher {
   bool Match(const std::string& text,
              std::set<StringPattern::ID>* matches) const;
 
+  // As Match(), except it returns immediately on the first match.
+  // This allows true/false matching to be done without any dynamic
+  // memory allocation.
+  // Complexity = O(t * logk)
+  bool AnyMatch(const std::string& text) const;
+
   // Returns true if this object retains no allocated data.
   bool IsEmpty() const { return is_empty_; }
 
@@ -144,6 +150,10 @@ class URL_MATCHER_EXPORT SubstringSetMatcher {
     NodeID output_link() const { return output_link_; }
 
     size_t EstimateMemoryUsage() const;
+
+    bool has_outputs() const {
+      return IsEndOfPattern() || output_link() != kInvalidNodeID;
+    }
 
    private:
     // Outgoing edges of current node.
