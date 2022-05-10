@@ -306,7 +306,7 @@ void PartialTranslateBubbleView::ExecuteCommand(int command_id,
   }
 }
 
-void PartialTranslateBubbleView::OnWidgetClosing(views::Widget* widget) {
+void PartialTranslateBubbleView::OnWidgetDestroying(views::Widget* widget) {
   // Nothing to do. When partial translate metrics get added we may want to log
   // when and how the bubble is closed similar to TranslateBubbleView.
   return;
