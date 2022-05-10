@@ -209,14 +209,14 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
   /**
    * @param response The response to send for the destination whose ID is in the
    *     response.
-   * @param opt_reject Whether to reject the callback for this destination.
+   * @param reject Whether to reject the callback for this destination.
    *     Defaults to false (will resolve callback) if not provided.
    */
   setLocalDestinationCapabilities(
-      response: CapabilitiesResponse, opt_reject?: boolean) {
+      response: CapabilitiesResponse, reject?: boolean) {
     this.localDestinationCapabilities_.set(
         response.printer!.deviceName,
-        opt_reject ? Promise.reject() : Promise.resolve(response));
+        reject ? Promise.reject() : Promise.resolve(response));
   }
 
   /**

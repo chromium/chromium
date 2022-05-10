@@ -102,16 +102,16 @@ export class TestAmbientProvider extends TestBrowserProxy implements
     this.methodCalled('setAnimationTheme', animationTheme);
   }
 
-  setTopicSource(topic_source: TopicSource) {
-    this.methodCalled('setTopicSource', topic_source);
+  setTopicSource(topicSource: TopicSource) {
+    this.methodCalled('setTopicSource', topicSource);
   }
 
-  setTemperatureUnit(temperature_unit: TemperatureUnit) {
-    this.methodCalled('setTemperatureUnit', temperature_unit);
+  setTemperatureUnit(temperatureUnit: TemperatureUnit) {
+    this.methodCalled('setTemperatureUnit', temperatureUnit);
   }
 
-  setAlbumSelected(id: string, topic_source: TopicSource, selected: boolean) {
-    this.methodCalled('setAlbumSelected', id, topic_source, selected);
+  setAlbumSelected(id: string, topicSource: TopicSource, selected: boolean) {
+    this.methodCalled('setAlbumSelected', id, topicSource, selected);
   }
 
   setPageViewed() {

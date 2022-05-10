@@ -40,8 +40,8 @@ class TestSecurityKeysBrowserProxy extends TestBrowserProxy {
     this.promiseMap_.set(methodName, promise);
   }
 
-  protected handleMethod(methodName: string, opt_arg?: any): Promise<any> {
-    this.methodCalled(methodName, opt_arg);
+  protected handleMethod(methodName: string, arg?: any): Promise<any> {
+    this.methodCalled(methodName, arg);
     const promise = this.promiseMap_.get(methodName);
     if (promise !== undefined) {
       this.promiseMap_.delete(methodName);

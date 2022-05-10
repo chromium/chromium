@@ -9,7 +9,7 @@ import {InputPage} from './input_page.js';
 import {OutputPage} from './output_page.js';
 import {Page} from './page.js';
 
-interface feedbackObject {
+interface FeedbackObject {
   [key: string]: any;
 }
 
@@ -55,7 +55,7 @@ export class FeedbackPage extends Page {
   }
 
   updateAudioInfo() {
-    var audioInfoJson: feedbackObject = {};
+    var audioInfoJson: FeedbackObject = {};
 
     const inputFeedbackObject = this.mapToObject(this.inputFeedbackMap);
     const outputFeedbackObject = this.mapToObject(this.outputFeedbackMap);
@@ -74,7 +74,7 @@ export class FeedbackPage extends Page {
   }
 
   mapToObject(map: Map<string, any>) {
-    const tempObject: feedbackObject = {};
+    const tempObject: FeedbackObject = {};
     map.forEach((value: any, key: string) => {
       tempObject[key] = value;
     });

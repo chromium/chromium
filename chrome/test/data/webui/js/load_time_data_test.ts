@@ -13,14 +13,13 @@ suite('LoadTimeDataModuleTest', function() {
   test('getStringPieces', function() {
     function assertSubstitutedPieces(
         expected: {value: string, arg: (null|string)}[], label: string,
-        ...var_args: (string|number)[]) {
-      const pieces =
-          loadTimeData.getSubstitutedStringPieces(label, ...var_args);
+        ...args: (string|number)[]) {
+      const pieces = loadTimeData.getSubstitutedStringPieces(label, ...args);
       assertDeepEquals(expected, pieces);
 
       // Ensure output matches getStringF.
       assertEquals(
-          loadTimeData.substituteString(label, ...var_args),
+          loadTimeData.substituteString(label, ...args),
           pieces.map(p => p.value).join(''));
     }
 

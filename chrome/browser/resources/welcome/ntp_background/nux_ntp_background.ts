@@ -19,7 +19,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {navigateToNextStep, NavigationMixin} from '../navigation_mixin.js';
 import {ModuleMetricsManager} from '../shared/module_metrics_proxy.js';
-import {stepIndicatorModel} from '../shared/nux_types.js';
+import {StepIndicatorModel} from '../shared/nux_types.js';
 
 import {NtpBackgroundMetricsProxyImpl} from './ntp_background_metrics_proxy.js';
 import {NtpBackgroundData, NtpBackgroundProxy, NtpBackgroundProxyImpl} from './ntp_background_proxy.js';
@@ -68,7 +68,7 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
   private metricsManager_: ModuleMetricsManager;
   private ntpBackgroundProxy_: NtpBackgroundProxy;
   private selectedBackground_: NtpBackgroundData|undefined;
-  indicatorModel?: stepIndicatorModel;
+  indicatorModel?: StepIndicatorModel;
 
   constructor() {
     super();

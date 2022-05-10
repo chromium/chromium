@@ -74,12 +74,11 @@ export class NativeLayerCrosStub extends TestBrowserProxy implements
 
   /**
    * @param response The response to send when |setupPrinter| is called.
-   * @param opt_reject Whether printSetup requests should be
+   * @param reject Whether printSetup requests should be
    *     rejected. Defaults to false (will resolve callback) if not provided.
    */
-  setSetupPrinterResponse(
-      response: PrinterSetupResponse, opt_reject?: boolean) {
-    this.shouldRejectPrinterSetup_ = opt_reject || false;
+  setSetupPrinterResponse(response: PrinterSetupResponse, reject?: boolean) {
+    this.shouldRejectPrinterSetup_ = reject || false;
     this.setupPrinterResponse_ = response;
   }
 

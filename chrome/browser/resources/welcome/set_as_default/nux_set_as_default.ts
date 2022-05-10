@@ -17,7 +17,7 @@ import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigateToNextStep, NavigationMixin} from '../navigation_mixin.js';
-import {DefaultBrowserInfo, stepIndicatorModel} from '../shared/nux_types.js';
+import {DefaultBrowserInfo, StepIndicatorModel} from '../shared/nux_types.js';
 
 import {getTemplate} from './nux_set_as_default.html.js';
 import {NuxSetAsDefaultProxy, NuxSetAsDefaultProxyImpl} from './nux_set_as_default_proxy.js';
@@ -62,7 +62,7 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
   private browserProxy_: NuxSetAsDefaultProxy;
   private finalized_: boolean = false;
   navigateToNextStep: Function;
-  indicatorModel?: stepIndicatorModel;
+  indicatorModel?: StepIndicatorModel;
 
   constructor() {
     super();

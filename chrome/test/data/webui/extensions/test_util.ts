@@ -14,17 +14,17 @@ export class ClickMock {
    * Tests clicking on an element and expecting a call.
    * @param element The element to click on.
    * @param callName The function expected to be called.
-   * @param opt_expectedArgs The arguments the function is
+   * @param expectedArgs The arguments the function is
    *     expected to be called with.
-   * @param opt_returnValue The value to return from the function call.
+   * @param returnValue The value to return from the function call.
    */
   testClickingCalls(
-      element: HTMLElement, callName: string, opt_expectedArgs: any[],
-      opt_returnValue?: any) {
+      element: HTMLElement, callName: string, expectedArgs: any[],
+      returnValue?: any) {
     const mock = new MockController();
     const mockMethod = mock.createFunctionMock(this, callName);
-    mockMethod.returnValue = opt_returnValue;
-    MockMethod.prototype.addExpectation.apply(mockMethod, opt_expectedArgs);
+    mockMethod.returnValue = returnValue;
+    MockMethod.prototype.addExpectation.apply(mockMethod, expectedArgs);
     element.click();
     mock.verifyMocks();
   }
@@ -57,12 +57,12 @@ export class ListenerMock {
 
   /**
    * Adds an expected event.
-   * @param opt_eventArgs If omitted, will check that the details
+   * @param eventArgs If omitted, will check that the details
    *     are empty (i.e., {}).
    */
-  addListener(target: EventTarget, eventName: string, opt_eventArgs: any) {
+  addListener(target: EventTarget, eventName: string, eventArgs: any) {
     assertTrue(!this.listeners_.hasOwnProperty(eventName));
-    this.listeners_[eventName] = {args: opt_eventArgs || {}, satisfied: false};
+    this.listeners_[eventName] = {args: eventArgs || {}, satisfied: false};
     target.addEventListener(eventName, this.onEvent_.bind(this, eventName));
   }
 
@@ -143,16 +143,16 @@ export function isElementVisible(element: HTMLElement): boolean {
  * @param parentEl The parent element to query for the element.
  * @param selector The selector to find the element.
  * @param expectedVisible Whether the element should be visible.
- * @param opt_expectedText The expected textContent value.
+ * @param expectedText The expected textContent value.
  */
 export function testVisible(
     parentEl: HTMLElement, selector: string, expectedVisible: boolean,
-    opt_expectedText?: string) {
+    expectedText?: string) {
   const visible = isChildVisible(parentEl, selector);
   assertEquals(expectedVisible, visible, selector);
-  if (expectedVisible && visible && opt_expectedText) {
+  if (expectedVisible && visible && expectedText) {
     const element = parentEl.shadowRoot!.querySelector(selector)!;
-    assertEquals(opt_expectedText, element.textContent!.trim(), selector);
+    assertEquals(expectedText, element.textContent!.trim(), selector);
   }
 }
 

@@ -16,7 +16,7 @@ import {getTemplate} from './discards_tab.html.js';
 import {LifecycleUnitDiscardReason, LifecycleUnitLoadingState, LifecycleUnitState} from './lifecycle_unit_state.mojom-webui.js';
 import {SortedTableMixin} from './sorted_table_mixin.js';
 
-type dictType = {
+type DictType = {
   [key: string]: (boolean|number|string),
 };
 
@@ -30,7 +30,7 @@ type dictType = {
  *     number if a > b.
  */
 export function compareTabDiscardsInfos(
-    sortKey: string, a: dictType, b: dictType): number {
+    sortKey: string, a: DictType, b: DictType): number {
   let val1 = a[sortKey];
   let val2 = b[sortKey];
 
@@ -123,14 +123,14 @@ class DiscardsTabElement extends DiscardsTabElementBase {
    * @private
    */
   private computeSortFunction_(sortKey: string, sortReverse: boolean):
-      (a: dictType, b: dictType) => number {
+      (a: DictType, b: DictType) => number {
     // Polymer 2.0 may invoke multi-property observers before all properties
     // are defined.
     if (!sortKey) {
-      return (_a: dictType, _b: dictType) => 0;
+      return (_a: DictType, _b: DictType) => 0;
     }
 
-    return function(a: dictType, b: dictType) {
+    return function(a: DictType, b: DictType) {
       const comp = compareTabDiscardsInfos(sortKey, a, b);
       return sortReverse ? -comp : comp;
     };

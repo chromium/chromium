@@ -126,12 +126,12 @@ export class InputPage extends Page {
     }
   }
 
-  initAudio(audio_constraint: boolean|Object) {
+  initAudio(audioConstraint: boolean|Object) {
     this.audioContext = new window.AudioContext();
-    navigator.mediaDevices.getUserMedia({'audio': audio_constraint})
-        .then((stream_got) => {
+    navigator.mediaDevices.getUserMedia({'audio': audioConstraint})
+        .then((streamGot) => {
           if (this.audioContext) {
-            const stream = stream_got;
+            const stream = streamGot;
             const source = this.audioContext.createMediaStreamSource(stream);
             this.record(stream);
             this.buildAudioGraph(source);

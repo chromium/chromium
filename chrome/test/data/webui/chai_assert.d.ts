@@ -20,6 +20,6 @@ export function assertNotEquals(
     expected: any, actual: any, message?: string): void;
 export function assertNotReached(message?: string): void;
 export function assertThrows(
-    testFunction: () => any, expected_or_constructor?: (Function|string|RegExp),
+    testFunction: () => any, expectedOrConstructor?: (Function|string|RegExp),
     message?: string): void;
 export function assertArrayEquals(expected: any[], actual: any[]): void;

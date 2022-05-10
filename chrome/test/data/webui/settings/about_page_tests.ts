@@ -35,8 +35,7 @@ function setupRouter(): MinimumRoutes {
 
 // <if expr="not chromeos_ash">
 function fireStatusChanged(
-    status: UpdateStatus, opt_options?: {progress?: number, message?: string}) {
-  const options = opt_options || {};
+    status: UpdateStatus, options: {progress?: number, message?: string} = {}) {
   webUIListenerCallback('update-status-changed', {
     progress: options.progress === undefined ? 1 : options.progress,
     message: options.message,

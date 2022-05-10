@@ -32,6 +32,7 @@ function createResults(n: number): SpeechRecognitionEvent {
   } as unknown as SpeechRecognitionEvent;
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 type webkitSpeechRecognitionError = SpeechRecognitionErrorEvent;
 declare const webkitSpeechRecognitionError: typeof SpeechRecognitionErrorEvent;
 

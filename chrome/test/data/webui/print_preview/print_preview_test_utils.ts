@@ -34,11 +34,11 @@ export function getDefaultInitialSettings(isPdf: boolean = false):
 }
 
 export function getCddTemplate(
-    printerId: string, opt_printerName?: string): CapabilitiesResponse {
+    printerId: string, printerName?: string): CapabilitiesResponse {
   const template: CapabilitiesResponse = {
     printer: {
       deviceName: printerId,
-      printerName: opt_printerName || '',
+      printerName: printerName || '',
     },
     capabilities: {
       version: '1.0',
@@ -100,12 +100,12 @@ export function getCddTemplate(
  * capabilities, the values of these options are arbitrary. These values are
  * provided and read by the destination, so there are no fixed options like
  * there are for margins or color.
- * @param opt_printerName Defaults to an empty string.
+ * @param printerName Defaults to an empty string.
  */
 export function getCddTemplateWithAdvancedSettings(
     numSettings: number, printerId: string,
-    opt_printerName?: string): CapabilitiesResponse {
-  const template = getCddTemplate(printerId, opt_printerName);
+    printerName?: string): CapabilitiesResponse {
+  const template = getCddTemplate(printerId, printerName);
   if (numSettings < 1) {
     return template;
   }

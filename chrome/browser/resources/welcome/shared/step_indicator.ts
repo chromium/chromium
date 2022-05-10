@@ -12,7 +12,7 @@ import './navi_colors.css.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {stepIndicatorModel} from './nux_types.js';
+import {StepIndicatorModel} from './nux_types.js';
 import {getTemplate} from './step_indicator.html.js';
 
 const StepIndicatorElementBase = I18nMixin(PolymerElement);
@@ -38,7 +38,7 @@ export class StepIndicatorElement extends StepIndicatorElementBase {
     };
   }
 
-  model?: stepIndicatorModel;
+  model?: StepIndicatorModel;
   private dots_?: undefined[];
 
   private computeLabel_(active: number, total: number): string {

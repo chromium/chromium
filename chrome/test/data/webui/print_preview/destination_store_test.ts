@@ -78,13 +78,13 @@ suite(destination_store_test.suiteName, function() {
 
   /*
    * Sets the initial settings to the stored value and creates the page.
-   * @param opt_expectPrinterFailure Whether printer fetch is
+   * @param expectPrinterFailure Whether printer fetch is
    *     expected to fail
    * @return Promise that resolves when initial settings and,
    *     if printer failure is not expected, printer capabilities have
    *     been returned.
    */
-  function setInitialSettings(opt_expectPrinterFailure?: boolean):
+  function setInitialSettings(expectPrinterFailure?: boolean):
       Promise<{destinationId: string, printerType: PrinterType}> {
     // Set local print list.
     nativeLayer.setLocalDestinations(localDestinations);
@@ -109,7 +109,7 @@ suite(destination_store_test.suiteName, function() {
         initialSettings.printerName,
         initialSettings.serializedDefaultDestinationSelectionRulesStr,
         recentDestinations);
-    return opt_expectPrinterFailure ? Promise.resolve() : Promise.race([
+    return expectPrinterFailure ? Promise.resolve() : Promise.race([
       nativeLayer.whenCalled('getPrinterCapabilities'), whenCapabilitiesReady
     ]);
   }

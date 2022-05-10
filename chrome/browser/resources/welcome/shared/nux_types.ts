@@ -9,7 +9,7 @@ export type BookmarkListItem = {
   url: string,
 };
 
-export type stepIndicatorModel = {
+export type StepIndicatorModel = {
   total: number,
   active: number,
 };
