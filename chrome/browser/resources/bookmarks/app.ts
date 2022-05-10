@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
 import './folder_node.js';
 import './list.js';
 import './router.js';
-import './shared_vars.js';
+import './shared_vars.css.js';
 import './strings.m.js';
 import './command_manager.js';
 import './toolbar.js';

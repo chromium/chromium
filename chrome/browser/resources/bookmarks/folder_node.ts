@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_nav_menu_item_style.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
-import './shared_style.js';
+import './shared_style.css.js';
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
