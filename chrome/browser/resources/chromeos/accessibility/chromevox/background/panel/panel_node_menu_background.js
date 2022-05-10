@@ -16,10 +16,8 @@ export class PanelNodeMenuBackground {
    * @param {boolean} isActivated Whether the menu was explicitly activated.
    *     If false, the menu is populated asynchronously by posting a task
    *     after searching each chunk of nodes.
-   * @param {function(!PanelNodeMenuItemData)} addMenuItemFromData A callback
-   *     that adds an item to the corresponding menu in the panel.
    */
-  constructor(menuData, node, isActivated, addMenuItemFromData) {
+  constructor(menuData, node, isActivated) {
     /** @private {AutomationNode} */
     this.node_ = node;
     /** @private {AutomationPredicate.Unary} */
@@ -28,14 +26,22 @@ export class PanelNodeMenuBackground {
     this.menuId_ = menuData.menuId;
     /** @private {boolean} */
     this.isActivated_ = isActivated;
-    /** @private {function(!PanelNodeMenuItemData)} */
-    this.addMenuItemFromData_ = addMenuItemFromData;
     /** @private {AutomationTreeWalker|undefined} */
     this.walker_;
     /** @private {number} */
     this.nodeCount_ = 0;
     /** @private {boolean} */
     this.isEmpty_ = true;
+  }
+
+  /** @param {number} callbackNodeIndex */
+  static focusNodeCallback(callbackNodeIndex) {
+    if (callbackNodeIndex < 0 ||
+        callbackNodeIndex >= PanelNodeMenuBackground.callbackNodes_.length) {
+      return;
+    }
+    ChromeVoxState.instance.navigateToRange(cursors.Range.fromNode(
+        PanelNodeMenuBackground.callbackNodes_[callbackNodeIndex]));
   }
 
   /**
@@ -84,14 +90,11 @@ export class PanelNodeMenuBackground {
         output.withSpeech(range, range, OutputEventType.NAVIGATE);
         const title = output.toString();
 
-        const callback = (() => {
-          chrome.extension.getBackgroundPage()
-              .ChromeVoxState.instance.navigateToRange(
-                  cursors.Range.fromNode(node));
-        });
+        const callbackNodeIndex = PanelNodeMenuBackground.callbackNodes_.length;
+        PanelNodeMenuBackground.callbackNodes_.push(node);
         const isActive = node === this.node_ && this.isActivated_;
         const menuId = this.menuId_;
-        this.addMenuItemFromData_({title, callback, isActive, menuId});
+        this.addMenuItemFromData_({title, callbackNodeIndex, isActive, menuId});
       }
 
       if (!this.isActivated_) {
@@ -115,11 +118,19 @@ export class PanelNodeMenuBackground {
     if (this.isEmpty_) {
       this.addMenuItemFromData_({
         title: Msgs.getMsg('panel_menu_item_none'),
-        callback() {},
+        callbackNodeIndex: -1,
         isActive: false,
         menuId: this.menuId_,
       });
     }
+  }
+
+  /**
+   * @param {!PanelNodeMenuItemData} itemData
+   * @private
+   */
+  async addMenuItemFromData_(itemData) {
+    await PanelBridge.addMenuItem(itemData);
   }
 }
 
@@ -129,3 +140,10 @@ export class PanelNodeMenuBackground {
  * @const {number}
  */
 PanelNodeMenuBackground.MAX_NODES_BEFORE_ASYNC = 100;
+
+/**
+ * An array of nodes associated with a PanelNodeMenuItem, saved so we can
+ * set the current ChromeVox range when the user selects an item.
+ * @private {!Array<chrome.automation.AutomationNode>}
+ */
+PanelNodeMenuBackground.callbackNodes_ = [];

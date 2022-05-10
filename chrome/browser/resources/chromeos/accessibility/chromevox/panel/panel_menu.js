@@ -323,7 +323,10 @@ export class PanelNodeMenu extends PanelMenu {
 
   /** @param {!PanelNodeMenuItemData} data */
   addItemFromData(data) {
-    this.addMenuItem(data.title, '', '', '', data.callback);
+    this.addMenuItem(
+        data.title, '', '', '',
+        () => BackgroundBridge.PanelBackground.nodeMenuCallback(
+            data.callbackNodeIndex));
     if (data.isActive) {
       this.activeIndex_ = this.items_.length - 1;
     }

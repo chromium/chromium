@@ -35,6 +35,12 @@ export class PanelBackground {
     PanelBackground.stateObserver_ = new PanelStateObserver();
 
     BridgeHelper.registerHandler(
+        BridgeTarget.PANEL_BACKGROUND,
+        BridgeAction.CREATE_ALL_NODE_MENU_BACKGROUNDS,
+        (opt_activateMenuTitle) =>
+            PanelBackground.instance.createAllNodeMenuBackgrounds_(
+                opt_activateMenuTitle));
+    BridgeHelper.registerHandler(
         BridgeTarget.PANEL_BACKGROUND, BridgeAction.CREATE_NEW_I_SEARCH,
         () => PanelBackground.instance.createNewISearch_());
     BridgeHelper.registerHandler(
@@ -49,6 +55,10 @@ export class PanelBackground {
         ({searchStr, dir, opt_nextObject}) =>
             PanelBackground.instance.incrementalSearch_(
                 searchStr, dir, opt_nextObject));
+    BridgeHelper.registerHandler(
+        BridgeTarget.PANEL_BACKGROUND, BridgeAction.NODE_MENU_CALLBACK,
+        (callbackNodeIndex) =>
+            PanelNodeMenuBackground.focusNodeCallback(callbackNodeIndex));
     BridgeHelper.registerHandler(
         BridgeTarget.PANEL_BACKGROUND,
         BridgeAction.PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE,
@@ -70,17 +80,16 @@ export class PanelBackground {
   }
 
   /**
-   * @param {function(!PanelNodeMenuItemData)} addMenuItemFromData A callback
-   *     to add a menu item to the specified menu.
    * @param {string=} opt_activateMenuTitleId Optional string specifying the
    *     activated menu.
+   * @private
    */
-  createAllNodeMenuBackgrounds(addMenuItemFromData, opt_activateMenuTitleId) {
+  createAllNodeMenuBackgrounds_(opt_activateMenuTitleId) {
     const node = ChromeVoxState.instance.currentRange.start.node;
     for (const data of ALL_NODE_MENU_DATA) {
       const isActivatedMenu = opt_activateMenuTitleId === data.titleId;
-      const menuBackground = new PanelNodeMenuBackground(
-          data, node, isActivatedMenu, addMenuItemFromData);
+      const menuBackground =
+          new PanelNodeMenuBackground(data, node, isActivatedMenu);
       menuBackground.populate();
     }
   }

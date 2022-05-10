@@ -20,8 +20,8 @@ BridgeTarget = {
   COMMAND_HANDLER: 'CommandHandler',
   EVENT_SOURCE_STATE: 'EventSourceState',
   LOG_STORE: 'LogStore',
-  PANEL_BACKGROUND: 'PanelBackground',
   PANEL: 'Panel',
+  PANEL_BACKGROUND: 'PanelBackground',
 };
 
 /**
@@ -29,8 +29,10 @@ BridgeTarget = {
  * @enum {string}
  */
 BridgeAction = {
+  ADD_MENU_ITEM: 'addMenuItem',
   BACK_TRANSLATE: 'backTranslate',
   CLEAR_LOG: 'clearLog',
+  CREATE_ALL_NODE_MENU_BACKGROUNDS: 'createAllNodeMenuBackgrounds',
   CREATE_NEW_I_SEARCH: 'createNewISearch',
   DESTROY_I_SEARCH: 'destroyISearch',
   GET: 'get',
@@ -38,6 +40,7 @@ BridgeAction = {
   GET_LOGS: 'getLogs',
   GET_PREFS: 'getPrefs',
   INCREMENTAL_SEARCH: 'incrementalSearch',
+  NODE_MENU_CALLBACK: 'nodeMenuCallback',
   ON_COMMAND: 'onCommand',
   ON_CURRENT_RANGE_CHANGED: 'onCurrentRangeChanged',
   PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE: 'performCustomActionOnCurrentNode',

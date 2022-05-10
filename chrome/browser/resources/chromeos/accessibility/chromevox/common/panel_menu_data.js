@@ -35,7 +35,7 @@ let PanelNodeMenuData;
 /**
  * @typedef {{
  *     title: string,
- *     callback: function(),
+ *     callbackNodeIndex: number,
  *     isActive: boolean,
  *     menuId: !PanelNodeMenuId
  * }}

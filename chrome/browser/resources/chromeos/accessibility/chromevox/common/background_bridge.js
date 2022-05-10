@@ -152,6 +152,13 @@ BackgroundBridge.LogStore = {
 };
 
 BackgroundBridge.PanelBackground = {
+  /** @param {string=} opt_activatedMenuTitle */
+  async createAllNodeMenuBackgrounds(opt_activatedMenuTitle) {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.PANEL_BACKGROUND,
+        BridgeAction.CREATE_ALL_NODE_MENU_BACKGROUNDS, opt_activatedMenuTitle);
+  },
+
   /**
    * Creates a new ISearch object, ready to search starting from the current
    * ChromeVox focus.
@@ -193,6 +200,16 @@ BackgroundBridge.PanelBackground = {
     return BridgeHelper.sendMessage(
         BridgeTarget.PANEL_BACKGROUND, BridgeAction.INCREMENTAL_SEARCH,
         {searchStr, dir, opt_nextObject});
+  },
+
+  /**
+   * @param {number} callbackNodeIndex
+   * @return {!Promise}
+   */
+  async nodeMenuCallback(callbackNodeIndex) {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.PANEL_BACKGROUND, BridgeAction.NODE_MENU_CALLBACK,
+        callbackNodeIndex);
   },
 
   /**

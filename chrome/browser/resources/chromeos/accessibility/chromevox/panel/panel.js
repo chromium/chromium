@@ -498,9 +498,8 @@ export class Panel extends PanelInterface {
       for (const menuData of ALL_NODE_MENU_DATA) {
         Panel.addNodeMenu(menuData);
       }
-      chrome.extension.getBackgroundPage()
-          .panelBackground.createAllNodeMenuBackgrounds(
-              Panel.addNodeMenuItem, opt_activateMenuTitle);
+      await BackgroundBridge.PanelBackground.createAllNodeMenuBackgrounds(
+          opt_activateMenuTitle);
 
       const actions =
           await BackgroundBridge.PanelBackground.getActionsForCurrentNode();
@@ -1293,6 +1292,9 @@ function $(id) {
   return document.getElementById(id);
 }
 
+BridgeHelper.registerHandler(
+    BridgeTarget.PANEL, BridgeAction.ADD_MENU_ITEM,
+    (itemData) => Panel.addNodeMenuItem(itemData));
 BridgeHelper.registerHandler(
     BridgeTarget.PANEL, BridgeAction.ON_CURRENT_RANGE_CHANGED,
     () => Panel.onCurrentRangeChanged());
