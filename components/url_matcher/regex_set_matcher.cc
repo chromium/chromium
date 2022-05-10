@@ -102,8 +102,9 @@ void RegexSetMatcher::RebuildMatcher() {
   for (size_t i = 0; i < strings_to_match.size(); ++i)
     substring_patterns.emplace_back(std::move(strings_to_match[i]), i);
 
-  substring_matcher_ =
-      std::make_unique<SubstringSetMatcher>(substring_patterns);
+  substring_matcher_ = std::make_unique<SubstringSetMatcher>();
+  bool success = substring_matcher_->Build(substring_patterns);
+  CHECK(success);
 }
 
 }  // namespace url_matcher

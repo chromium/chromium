@@ -239,8 +239,12 @@ void RegexRulesMatcher::InitializeMatcher() {
   for (size_t i = 0; i < strings_to_match.size(); ++i)
     patterns.emplace_back(std::move(strings_to_match[i]), i);
 
-  substring_matcher_ =
-      std::make_unique<url_matcher::SubstringSetMatcher>(patterns);
+  substring_matcher_ = std::make_unique<url_matcher::SubstringSetMatcher>();
+
+  // This is only used for regex rules, which are limited to 1000,
+  // so hitting the 8MB limit should be all but impossible.
+  bool success = substring_matcher_->Build(patterns);
+  CHECK(success);
 }
 
 bool RegexRulesMatcher::IsEmpty() const {

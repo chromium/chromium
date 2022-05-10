@@ -37,12 +37,11 @@ std::vector<const StringPattern*> GetVectorOfPointers(
 
 }  // namespace
 
-SubstringSetMatcher::SubstringSetMatcher(
-    const std::vector<StringPattern>& patterns)
-    : SubstringSetMatcher(GetVectorOfPointers(patterns)) {}
+bool SubstringSetMatcher::Build(const std::vector<StringPattern>& patterns) {
+  return Build(GetVectorOfPointers(patterns));
+}
 
-SubstringSetMatcher::SubstringSetMatcher(
-    std::vector<const StringPattern*> patterns) {
+bool SubstringSetMatcher::Build(std::vector<const StringPattern*> patterns) {
   // Ensure there are no duplicate IDs and all pattern strings are distinct.
 #if DCHECK_IS_ON()
   {
@@ -57,8 +56,20 @@ SubstringSetMatcher::SubstringSetMatcher(
   }
 #endif
 
+  // Check that all the match labels fit into an edge.
+  for (const StringPattern* pattern : patterns) {
+    if (pattern->id() < 0 ||
+        base::checked_cast<NodeID>(pattern->id()) >= kInvalidNodeID) {
+      return false;
+    }
+  }
+
   // Compute the total number of tree nodes needed.
   std::sort(patterns.begin(), patterns.end(), ComparePatterns);
+  NodeID tree_size = GetTreeSize(patterns);
+  if (tree_size >= kInvalidNodeID) {
+    return false;
+  }
   tree_.reserve(GetTreeSize(patterns));
   BuildAhoCorasickTree(patterns);
 
@@ -67,6 +78,7 @@ SubstringSetMatcher::SubstringSetMatcher(
   DCHECK_EQ(tree_.size(), static_cast<size_t>(GetTreeSize(patterns)));
 
   is_empty_ = patterns.empty() && tree_.size() == 1u;
+  return true;
 }
 
 SubstringSetMatcher::~SubstringSetMatcher() = default;
@@ -290,8 +302,9 @@ SubstringSetMatcher::AhoCorasickNode::~AhoCorasickNode() = default;
 SubstringSetMatcher::AhoCorasickNode::AhoCorasickNode(AhoCorasickNode&& other) =
     default;
 
-SubstringSetMatcher::AhoCorasickNode& SubstringSetMatcher::AhoCorasickNode::
-operator=(AhoCorasickNode&& other) = default;
+SubstringSetMatcher::AhoCorasickNode&
+SubstringSetMatcher::AhoCorasickNode::operator=(AhoCorasickNode&& other) =
+    default;
 
 SubstringSetMatcher::NodeID SubstringSetMatcher::AhoCorasickNode::GetEdge(
     char c) const {

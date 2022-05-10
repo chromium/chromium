@@ -930,9 +930,10 @@ void URLMatcher::UpdateSubstringSetMatcher(bool full_url_conditions) {
   std::unique_ptr<SubstringSetMatcher>& url_matcher =
       full_url_conditions ? full_url_matcher_ : url_component_matcher_;
 
-  url_matcher =
-      std::make_unique<SubstringSetMatcher>(std::vector<const StringPattern*>(
-          new_patterns.begin(), new_patterns.end()));
+  url_matcher = std::make_unique<SubstringSetMatcher>();
+  bool success = url_matcher->Build(std::vector<const StringPattern*>(
+      new_patterns.begin(), new_patterns.end()));
+  CHECK(success);
 }
 
 void URLMatcher::UpdateRegexSetMatcher() {

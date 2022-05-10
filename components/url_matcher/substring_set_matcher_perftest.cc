@@ -54,7 +54,8 @@ TEST(SubstringSetMatcherPerfTest, RandomKeys) {
 
   // Allocate SubstringSetMatcher on the heap so that EstimateMemoryUsage below
   // also includes its stack allocated memory.
-  auto matcher = std::make_unique<SubstringSetMatcher>(patterns);
+  auto matcher = std::make_unique<SubstringSetMatcher>();
+  ASSERT_TRUE(matcher->Build(patterns));
   base::TimeDelta init_time = init_timer.Elapsed();
 
   // Match patterns against a random string of 500 characters.

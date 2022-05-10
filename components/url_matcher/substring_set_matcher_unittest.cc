@@ -20,12 +20,12 @@ namespace {
 void TestOnePattern(const std::string& test_string,
                     const std::string& pattern,
                     bool is_match) {
-  std::string test =
-      "TestOnePattern(" + test_string + ", " + pattern + ", " +
-      (is_match ? "1" : "0") + ")";
+  std::string test = "TestOnePattern(" + test_string + ", " + pattern + ", " +
+                     (is_match ? "1" : "0") + ")";
   std::vector<StringPattern> patterns;
   patterns.emplace_back(pattern, 1);
-  SubstringSetMatcher matcher(patterns);
+  SubstringSetMatcher matcher;
+  ASSERT_TRUE(matcher.Build(patterns));
   std::set<int> matches;
   matcher.Match(test_string, &matches);
 
@@ -39,9 +39,9 @@ void TestTwoPatterns(const std::string& test_string,
                      const std::string& pattern_2,
                      bool is_match_1,
                      bool is_match_2) {
-  std::string test =
-      "TestTwoPatterns(" + test_string + ", " + pattern_1 + ", " + pattern_2 +
-      ", " + (is_match_1 ? "1" : "0") + ", " + (is_match_2 ? "1" : "0") + ")";
+  std::string test = "TestTwoPatterns(" + test_string + ", " + pattern_1 +
+                     ", " + pattern_2 + ", " + (is_match_1 ? "1" : "0") + ", " +
+                     (is_match_2 ? "1" : "0") + ")";
   ASSERT_NE(pattern_1, pattern_2);
   StringPattern substring_pattern_1(pattern_1, 1);
   StringPattern substring_pattern_2(pattern_2, 2);
@@ -56,7 +56,8 @@ void TestTwoPatterns(const std::string& test_string,
       patterns.push_back(&substring_pattern_2);
       patterns.push_back(&substring_pattern_1);
     }
-    SubstringSetMatcher matcher(patterns);
+    SubstringSetMatcher matcher;
+    ASSERT_TRUE(matcher.Build(patterns));
     std::set<int> matches;
     matcher.Match(test_string, &matches);
 
@@ -75,45 +76,61 @@ TEST(SubstringSetMatcherTest, TestMatcher) {
   // Pattern 1  bc
   // Pattern 2   cd
   TestTwoPatterns("abcde", "bc", "cd", true, true);
+  if (HasFatalFailure())
+    return;
 
   // Test subpatterns - part 1
   // String    abcde
   // Pattern 1  bc
   // Pattern 2  b
   TestTwoPatterns("abcde", "bc", "b", true, true);
+  if (HasFatalFailure())
+    return;
 
   // Test subpatterns - part 2
   // String    abcde
   // Pattern 1  bc
   // Pattern 2   c
   TestTwoPatterns("abcde", "bc", "c", true, true);
+  if (HasFatalFailure())
+    return;
 
   // Test identical matches
   // String    abcde
   // Pattern 1 abcde
   TestOnePattern("abcde", "abcde", true);
+  if (HasFatalFailure())
+    return;
 
   // Test multiple matches
   // String    aaaaa
   // Pattern 1 a
   TestOnePattern("abcde", "a", true);
+  if (HasFatalFailure())
+    return;
 
   // Test matches at beginning and end
   // String    abcde
   // Pattern 1 ab
   // Pattern 2    de
   TestTwoPatterns("abcde", "ab", "de", true, true);
+  if (HasFatalFailure())
+    return;
 
   // Test non-match
   // String    abcde
   // Pattern 1        fg
   TestOnePattern("abcde", "fg", false);
+  if (HasFatalFailure())
+    return;
 
   // Test empty pattern and too long pattern
   // String    abcde
   // Pattern 1
   // Pattern 2 abcdef
   TestTwoPatterns("abcde", std::string(), "abcdef", true, false);
+  if (HasFatalFailure())
+    return;
 }
 
 TEST(SubstringSetMatcherTest, TestMatcher2) {
@@ -123,7 +140,8 @@ TEST(SubstringSetMatcherTest, TestMatcher2) {
 
   std::vector<const StringPattern*> patterns = {&pattern_1, &pattern_2,
                                                 &pattern_3};
-  auto matcher = std::make_unique<SubstringSetMatcher>(patterns);
+  auto matcher = std::make_unique<SubstringSetMatcher>();
+  ASSERT_TRUE(matcher->Build(patterns));
 
   std::set<int> matches;
   matcher->Match("abd", &matches);
@@ -132,7 +150,8 @@ TEST(SubstringSetMatcherTest, TestMatcher2) {
   EXPECT_TRUE(matches.end() != matches.find(2));
 
   patterns = {&pattern_1, &pattern_3};
-  matcher = std::make_unique<SubstringSetMatcher>(patterns);
+  matcher = std::make_unique<SubstringSetMatcher>();
+  ASSERT_TRUE(matcher->Build(patterns));
 
   matches.clear();
   matcher->Match("abd", &matches);
@@ -140,8 +159,8 @@ TEST(SubstringSetMatcherTest, TestMatcher2) {
   EXPECT_TRUE(matches.end() != matches.find(1));
   EXPECT_TRUE(matches.end() == matches.find(2));
 
-  matcher = std::make_unique<SubstringSetMatcher>(
-      std::vector<const StringPattern*>());
+  matcher = std::make_unique<SubstringSetMatcher>();
+  ASSERT_TRUE(matcher->Build(std::vector<const StringPattern*>()));
   EXPECT_TRUE(matcher->IsEmpty());
 }
 
@@ -158,7 +177,8 @@ TEST(SubstringSetMatcherTest, TestMatcher3) {
     }
   }
 
-  SubstringSetMatcher matcher(patterns);
+  SubstringSetMatcher matcher;
+  matcher.Build(patterns);
   std::set<int> matches;
   matcher.Match(text, &matches);
   EXPECT_EQ(patterns.size(), matches.size());
@@ -170,7 +190,8 @@ TEST(SubstringSetMatcherTest, TestMatcher3) {
 
 TEST(SubstringSetMatcherTest, TestEmptyMatcher) {
   std::vector<StringPattern> patterns;
-  SubstringSetMatcher matcher(patterns);
+  SubstringSetMatcher matcher;
+  matcher.Build(patterns);
   std::set<int> matches;
   matcher.Match("abd", &matches);
   EXPECT_TRUE(matches.empty());

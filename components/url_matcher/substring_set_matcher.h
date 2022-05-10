@@ -22,8 +22,16 @@ namespace url_matcher {
 // which string patterns occur in S.
 class URL_MATCHER_EXPORT SubstringSetMatcher {
  public:
+  SubstringSetMatcher() = default;
+  SubstringSetMatcher(const SubstringSetMatcher&) = delete;
+  SubstringSetMatcher& operator=(const SubstringSetMatcher&) = delete;
+
+  ~SubstringSetMatcher();
+
   // Registers all |patterns|. Each pattern needs to have a unique ID and all
-  // pattern strings must be unique.
+  // pattern strings must be unique. Build() should be called exactly once
+  // (before it is called, the tree is empty).
+  //
   // Complexity:
   //    Let n = number of patterns.
   //    Let S = sum of pattern lengths.
@@ -31,13 +39,10 @@ class URL_MATCHER_EXPORT SubstringSetMatcher {
   // Complexity = O(nlogn + S * logk)
   // nlogn comes from sorting the patterns.
   // log(k) comes from our usage of std::map to store edges.
-  SubstringSetMatcher(const std::vector<StringPattern>& patterns);
-  SubstringSetMatcher(std::vector<const StringPattern*> patterns);
-
-  SubstringSetMatcher(const SubstringSetMatcher&) = delete;
-  SubstringSetMatcher& operator=(const SubstringSetMatcher&) = delete;
-
-  ~SubstringSetMatcher();
+  //
+  // Returns true on success (may fail if e.g. if the tree gets too many nodes).
+  bool Build(const std::vector<StringPattern>& patterns);
+  bool Build(std::vector<const StringPattern*> patterns);
 
   // Matches |text| against all registered StringPatterns. Stores the IDs
   // of matching patterns in |matches|. |matches| is not cleared before adding
@@ -60,8 +65,8 @@ class URL_MATCHER_EXPORT SubstringSetMatcher {
  private:
   // Represents the index of the node within |tree_|. It is specifically
   // uint32_t so that we can be sure it takes up 4 bytes. If the computed size
-  // of |tree_| is larger than what can be stored within an uint32_t, there will
-  // be a CHECK failure.
+  // of |tree_| is larger than what can be stored within an uint32_t,
+  // Build() will fail.
   using NodeID = uint32_t;
 
   // This is the maximum possible size of |tree_| and hence can't be a valid ID.
