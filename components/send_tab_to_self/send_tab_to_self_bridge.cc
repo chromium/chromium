@@ -623,6 +623,13 @@ void SendTabToSelfBridge::DoGarbageCollection() {
   auto entry = entries_.begin();
   while (entry != entries_.end()) {
     DCHECK_EQ(entry->first, entry->second->GetGUID());
+    if (entry->second == nullptr) {
+      std::string to_delete = entry->first;
+      entry++;
+      DeleteEntry(to_delete);
+      removed.push_back(to_delete);
+      continue;
+    }
     std::string guid = entry->second->GetGUID();
     // In the case of an invalid entry remove it here.
     if (guid.empty()) {
