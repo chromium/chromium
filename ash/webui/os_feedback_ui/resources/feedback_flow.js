@@ -81,6 +81,24 @@ export class FeedbackFlowElement extends PolymerElement {
   }
 
   /**
+   * @private
+   */
+  fetchScreenshot_() {
+    const shareDataPage = this.shadowRoot.querySelector('share-data-page');
+    // Fetch screenshot if not fetched before.
+    if (!shareDataPage.screenshotUrl) {
+      this.feedbackServiceProvider_.getScreenshotPng().then((response) => {
+        if (response.pngData.length > 0) {
+          const blob = new Blob(
+              [Uint8Array.from(response.pngData)], {type: 'image/png'});
+          const imageUrl = URL.createObjectURL(blob);
+          shareDataPage.screenshotUrl = imageUrl;
+        }
+      });
+    }
+  }
+
+  /**
    * @param {!Event} event
    * @protected
    */
@@ -89,9 +107,7 @@ export class FeedbackFlowElement extends PolymerElement {
       case FeedbackFlowState.SEARCH:
         this.currentState_ = FeedbackFlowState.SHARE_DATA;
         this.description_ = event.detail.description;
-        // TODO(xiangdongkong): Fetch a real screenshot.
-        this.shadowRoot.querySelector('share-data-page').screenshotUrl =
-            './app_icon_192.png';
+        this.fetchScreenshot_();
         break;
       case FeedbackFlowState.SHARE_DATA:
         /** @type {!Report} */

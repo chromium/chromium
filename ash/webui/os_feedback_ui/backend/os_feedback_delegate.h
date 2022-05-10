@@ -14,6 +14,8 @@ class GURL;
 
 namespace ash {
 
+using GetScreenshotPngCallback =
+    base::OnceCallback<void(const std::vector<uint8_t>&)>;
 using SendReportCallback =
     base::OnceCallback<void(os_feedback_ui::mojom::SendReportStatus)>;
 
@@ -31,6 +33,9 @@ class OsFeedbackDelegate {
   // Returns the normalized email address of the signed-in user associated with
   // the browser context, if any.
   virtual absl::optional<std::string> GetSignedInUserEmail() const = 0;
+  // Return the screenshot of the primary display in PNG format. It was taken
+  // right before the feedback tool is launched.
+  virtual void GetScreenshotPng(GetScreenshotPngCallback callback) = 0;
   // Collect data and send the report to Google.
   virtual void SendReport(os_feedback_ui::mojom::ReportPtr report,
                           SendReportCallback callback) = 0;

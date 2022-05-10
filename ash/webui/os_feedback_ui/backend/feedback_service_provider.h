@@ -29,6 +29,7 @@ class FeedbackServiceProvider
 
   // os_feedback_ui::mojom::FeedbackServiceProvider:
   void GetFeedbackContext(GetFeedbackContextCallback callback) override;
+  void GetScreenshotPng(GetScreenshotPngCallback callback) override;
   void SendReport(os_feedback_ui::mojom::ReportPtr report,
                   SendReportCallback callback) override;
 

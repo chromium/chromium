@@ -23,6 +23,7 @@ namespace {
 
 constexpr char kPageUrl[] = "https://www.google.com/";
 constexpr char kSignedInUserEmail[] = "test_user_email@test.com";
+const std::vector<uint8_t> kFakePngData = {42, 22, 26, 13, 7, 16, 8, 2};
 
 }  // namespace
 
@@ -46,6 +47,10 @@ class TestOsFeedbackDelegate : public OsFeedbackDelegate {
 
   absl::optional<std::string> GetSignedInUserEmail() const override {
     return kSignedInUserEmail;
+  }
+
+  void GetScreenshotPng(GetScreenshotPngCallback callback) override {
+    std::move(callback).Run(kFakePngData);
   }
 
   void SendReport(os_feedback_ui::mojom::ReportPtr report,
@@ -75,6 +80,15 @@ class FeedbackServiceProviderTest : public testing::Test {
     return out_feedback_context;
   }
 
+  // Call the GetScreenshotPng of the remote provider async and return the
+  // response.
+  std::vector<uint8_t> GetScreenshotPngAndWait() {
+    std::vector<uint8_t> out_png_data;
+    FeedbackServiceProviderAsyncWaiter(provider_remote_.get())
+        .GetScreenshotPng(&out_png_data);
+    return out_png_data;
+  }
+
   // Call the SendReport of the remote provider async and return the
   // response.
   SendReportStatus SendReportAndWait(ReportPtr report) {
@@ -97,6 +111,12 @@ TEST_F(FeedbackServiceProviderTest, GetFeedbackContext) {
 
   EXPECT_EQ(kSignedInUserEmail, feedback_context->email.value());
   EXPECT_EQ(kPageUrl, feedback_context->page_url.value().spec());
+}
+
+// Test that GetScreenshotPng returns a response with correct status.
+TEST_F(FeedbackServiceProviderTest, GetScreenshotPng) {
+  auto png_data = GetScreenshotPngAndWait();
+  EXPECT_EQ(kFakePngData, png_data);
 }
 
 // Test that SendReport returns a response with correct status.

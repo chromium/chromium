@@ -36,6 +36,11 @@ void FeedbackServiceProvider::GetFeedbackContext(
   std::move(callback).Run(std::move(feedback_context));
 }
 
+void FeedbackServiceProvider::GetScreenshotPng(
+    GetScreenshotPngCallback callback) {
+  feedback_delegate_->GetScreenshotPng(std::move(callback));
+}
+
 void FeedbackServiceProvider::SendReport(ReportPtr report,
                                          SendReportCallback callback) {
   feedback_delegate_->SendReport(std::move(report), std::move(callback));

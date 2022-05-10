@@ -106,6 +106,9 @@ interface FeedbackServiceProvider {
   // Returns the feedback context info, e.g., the email of the currently active
   // or logged in user, the URL of the active page, etc.
   GetFeedbackContext() => (FeedbackContext feedback_context);
+  // Returns the screenshot of the primary display in PNG format taken before
+  // the feedback tool is launched.
+  GetScreenshotPng() => (array<uint8> png_data);
   // Sends a feedback report and returns its status.
   SendReport(Report report) => (SendReportStatus status);
 };
