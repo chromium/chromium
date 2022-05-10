@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_POLICY_ENROLLMENT_STATUS_H_
-#define CHROME_BROWSER_POLICY_ENROLLMENT_STATUS_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_STATUS_H_
+#define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_STATUS_H_
 
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -124,4 +124,4 @@ class EnrollmentStatus {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_POLICY_ENROLLMENT_STATUS_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_STATUS_H_

@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
-#include "chrome/browser/policy/enrollment_status.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

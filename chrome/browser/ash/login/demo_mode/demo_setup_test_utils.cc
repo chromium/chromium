@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace ash {

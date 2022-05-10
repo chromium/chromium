@@ -14,10 +14,13 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
-#include "chrome/browser/policy/enrollment_status.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
 class PrefRegistrySimple;
+
+namespace policy {
+class EnrollmentStatus;
+}
 
 namespace ash {
 class DemoResources;

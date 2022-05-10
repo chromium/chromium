@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/enrollment_status.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 
 #include "build/chromeos_buildflags.h"
 #include "net/http/http_status_code.h"
