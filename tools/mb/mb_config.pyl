@@ -819,7 +819,7 @@
       'mac11.0-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
       'mac11.0.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols',
       'win10.20h2-blink-rel': 'release_bot_blink_x86_minimal_symbols',
-      'win11-blink-rel': 'release_bot_blink_x86_minimal_symbols',
+      'win11-blink-rel': 'release_bot_blink_x64_minimal_symbols',
       'win7-blink-rel': 'release_bot_blink_x86_minimal_symbols',
     },
 
@@ -3175,6 +3175,10 @@
 
     'release_bot_blink_v8_debug': [
       'release_bot_blink', 'v8_enable_debugging_features',
+    ],
+
+    'release_bot_blink_x64_minimal_symbols': [
+      'release_bot_blink', 'x64', 'minimal_symbols',
     ],
 
     'release_bot_blink_x86_minimal_symbols': [

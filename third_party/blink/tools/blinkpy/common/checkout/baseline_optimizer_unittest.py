@@ -63,6 +63,10 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'port_name': 'win-win10.20h2',
                 'specifiers': ['Win10.20h2', 'Release']
             },
+            'Fake Test Win11': {
+                'port_name': 'win-win11',
+                'specifiers': ['Win11', 'Release']
+            },
             'Fake Test Linux': {
                 'port_name': 'linux-trusty',
                 'specifiers': ['Trusty', 'Release']
@@ -93,7 +97,7 @@ class BaselineOptimizerTest(unittest.TestCase):
         # tests need to be adjusted accordingly.
         self.assertEqual(sorted(self.host.port_factory.all_port_names()), [
             'linux-trusty', 'mac-mac10.12', 'mac-mac10.13', 'mac-mac10.14',
-            'mac-mac10.15', 'mac-mac11', 'win-win10.20h2'
+            'mac-mac10.15', 'mac-mac11', 'win-win10.20h2', 'win-win11'
         ])
 
     def _assert_optimization(self,

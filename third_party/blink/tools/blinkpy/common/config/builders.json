@@ -59,6 +59,11 @@
         "port_name": "win-win10.20h2",
         "specifiers": ["Win10.20h2", "Release"]
     },
+    "Win11 Tests x64": {
+        "main": "chromium.win",
+        "port_name": "win-win11",
+        "specifiers": ["Win11", "Release"]
+    },
     "fuchsia_x64": {
         "main": "tryserver.chromium.linux",
         "port_name": "fuchsia",
@@ -133,6 +138,12 @@
         "main": "tryserver.blink",
         "port_name": "win-win10.20h2",
         "specifiers": ["Win10.20h2", "Release"],
+        "is_try_builder": true
+    },
+    "win11-blink-rel": {
+        "main": "tryserver.blink",
+        "port_name": "win-win11",
+        "specifiers": ["Win11", "Release"],
         "is_try_builder": true
     },
     "linux-rel": {
