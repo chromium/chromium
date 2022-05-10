@@ -297,8 +297,9 @@ TEST_F(LauncherNudgeControllerTest, ShowNudgeOnDisplayWhereCursorIsOn) {
   EXPECT_EQ(1, waiter_secondary.GetShownCount());
 }
 
+// TODO(crbug.com/1324384): Disabled due to flakiness.
 TEST_F(LauncherNudgeControllerTest,
-       WaitUntilHomeButtonStaysLongEnoughToShowNudge) {
+       DISABLED_WaitUntilHomeButtonStaysLongEnoughToShowNudge) {
   // Set the animation duration mode to non-zero for the launcher nudge
   // animation to actually run in the tests.
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
