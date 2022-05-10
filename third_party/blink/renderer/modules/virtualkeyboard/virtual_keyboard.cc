@@ -61,7 +61,10 @@ DOMRect* VirtualKeyboard::boundingRect() const {
 
 void VirtualKeyboard::setOverlaysContent(bool overlays_content) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
-  if (window && window->GetFrame()->IsOutermostMainFrame()) {
+  if (!window)
+    return;
+
+  if (window->GetFrame()->IsOutermostMainFrame()) {
     if (overlays_content != overlays_content_) {
       auto& local_frame_host = window->GetFrame()->GetLocalFrameHostRemote();
       local_frame_host.SetVirtualKeyboardOverlayPolicy(overlays_content);
@@ -79,35 +82,35 @@ void VirtualKeyboard::setOverlaysContent(bool overlays_content) {
 
 void VirtualKeyboard::VirtualKeyboardOverlayChanged(
     const gfx::Rect& keyboard_rect) {
-  bounding_rect_ = DOMRect::FromRectF(gfx::RectF(keyboard_rect));
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
-  if (window) {
-    DocumentStyleEnvironmentVariables& vars =
-        window->document()->GetStyleEngine().EnsureEnvironmentVariables();
-    vars.SetVariable(UADefinedVariable::kKeyboardInsetTop,
-                     StyleEnvironmentVariables::FormatPx(keyboard_rect.y()));
-    vars.SetVariable(UADefinedVariable::kKeyboardInsetLeft,
-                     StyleEnvironmentVariables::FormatPx(keyboard_rect.x()));
-    vars.SetVariable(
-        UADefinedVariable::kKeyboardInsetBottom,
-        StyleEnvironmentVariables::FormatPx(keyboard_rect.bottom()));
-    vars.SetVariable(
-        UADefinedVariable::kKeyboardInsetRight,
-        StyleEnvironmentVariables::FormatPx(keyboard_rect.right()));
-    vars.SetVariable(
-        UADefinedVariable::kKeyboardInsetWidth,
-        StyleEnvironmentVariables::FormatPx(keyboard_rect.width()));
-    vars.SetVariable(
-        UADefinedVariable::kKeyboardInsetHeight,
-        StyleEnvironmentVariables::FormatPx(keyboard_rect.height()));
-  }
+  if (!window)
+    return;
+
+  bounding_rect_ = DOMRect::FromRectF(gfx::RectF(keyboard_rect));
+  DocumentStyleEnvironmentVariables& vars =
+      window->document()->GetStyleEngine().EnsureEnvironmentVariables();
+  vars.SetVariable(UADefinedVariable::kKeyboardInsetTop,
+                   StyleEnvironmentVariables::FormatPx(keyboard_rect.y()));
+  vars.SetVariable(UADefinedVariable::kKeyboardInsetLeft,
+                   StyleEnvironmentVariables::FormatPx(keyboard_rect.x()));
+  vars.SetVariable(UADefinedVariable::kKeyboardInsetBottom,
+                   StyleEnvironmentVariables::FormatPx(keyboard_rect.bottom()));
+  vars.SetVariable(UADefinedVariable::kKeyboardInsetRight,
+                   StyleEnvironmentVariables::FormatPx(keyboard_rect.right()));
+  vars.SetVariable(UADefinedVariable::kKeyboardInsetWidth,
+                   StyleEnvironmentVariables::FormatPx(keyboard_rect.width()));
+  vars.SetVariable(UADefinedVariable::kKeyboardInsetHeight,
+                   StyleEnvironmentVariables::FormatPx(keyboard_rect.height()));
   DispatchEvent(*(MakeGarbageCollected<VirtualKeyboardGeometryChangeEvent>(
       event_type_names::kGeometrychange)));
 }
 
 void VirtualKeyboard::show() {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
-  if (window && window->GetFrame()->HasStickyUserActivation()) {
+  if (!window)
+    return;
+
+  if (window->GetFrame()->HasStickyUserActivation()) {
     window->GetInputMethodController().SetVirtualKeyboardVisibilityRequest(
         ui::mojom::VirtualKeyboardVisibilityRequest::SHOW);
   } else {
@@ -121,10 +124,12 @@ void VirtualKeyboard::show() {
 }
 
 void VirtualKeyboard::hide() {
-  if (LocalDOMWindow* window = GetSupplementable()->DomWindow()) {
-    window->GetInputMethodController().SetVirtualKeyboardVisibilityRequest(
-        ui::mojom::VirtualKeyboardVisibilityRequest::HIDE);
-  }
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  if (!window)
+    return;
+
+  window->GetInputMethodController().SetVirtualKeyboardVisibilityRequest(
+      ui::mojom::VirtualKeyboardVisibilityRequest::HIDE);
 }
 
 void VirtualKeyboard::Trace(Visitor* visitor) const {
