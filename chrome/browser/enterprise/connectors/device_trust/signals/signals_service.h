@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
+#include "base/values.h"
 
 namespace enterprise_connectors {
 
@@ -16,7 +16,7 @@ namespace enterprise_connectors {
 class SignalsService {
  public:
   using CollectSignalsCallback =
-      base::OnceCallback<void(std::unique_ptr<SignalsType>)>;
+      base::OnceCallback<void(const base::Value::Dict)>;
 
   virtual ~SignalsService() = default;
 

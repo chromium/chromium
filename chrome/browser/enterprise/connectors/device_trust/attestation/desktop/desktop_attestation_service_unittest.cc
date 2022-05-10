@@ -17,6 +17,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/device_trust_key_manager_impl.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/mock_key_rotation_launcher.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
+#include "components/device_signals/core/common/signals_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -96,10 +97,11 @@ class DesktopAttestationServiceTest : public testing::Test {
         std::make_unique<DesktopAttestationService>(key_manager_.get());
   }
 
-  std::unique_ptr<DeviceTrustSignals> CreateSignals() {
-    auto signals = std::make_unique<DeviceTrustSignals>();
-    signals->set_device_id(kDeviceId);
-    signals->set_obfuscated_customer_id(kObfuscatedCustomerId);
+  base::Value::Dict CreateSignals() {
+    base::Value::Dict signals;
+    signals.Set(device_signals::names::kDeviceId, kDeviceId);
+    signals.Set(device_signals::names::kObfuscatedCustomerId,
+                kObfuscatedCustomerId);
     return signals;
   }
 
@@ -112,7 +114,6 @@ class DesktopAttestationServiceTest : public testing::Test {
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_Success) {
   // TODO(crbug.com/1208881): Add signals and validate they effectively get
   // added to the signed data.
-  auto signals = CreateSignals();
 
   base::RunLoop run_loop;
   auto callback = base::BindLambdaForTesting(
@@ -126,7 +127,7 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_Success) {
       });
 
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      GetSerializedSignedChallenge(), std::move(signals), std::move(callback));
+      GetSerializedSignedChallenge(), CreateSignals(), std::move(callback));
   run_loop.Run();
 }
 

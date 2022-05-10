@@ -16,6 +16,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/crypto_utility.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
+#include "components/device_signals/core/common/signals_constants.h"
 #include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
 #include "crypto/random.h"
 #include "crypto/unexportable_key.h"
@@ -102,16 +103,14 @@ DesktopAttestationService::~DesktopAttestationService() = default;
 // - Reply to callback.
 void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
     const std::string& serialized_signed_challenge,
-    std::unique_ptr<DeviceTrustSignals> signals,
+    base::Value::Dict signals,
     AttestationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(signals);
 
   // Signals have to at least have the non-empty device ID and obfuscated
   // customer ID.
-  if (!signals || !signals->has_device_id() || signals->device_id().empty() ||
-      !signals->has_obfuscated_customer_id() ||
-      signals->obfuscated_customer_id().empty()) {
+  if (!signals.FindString(device_signals::names::kDeviceId) ||
+      !signals.FindString(device_signals::names::kObfuscatedCustomerId)) {
     LogAttestationResult(DTAttestationResult::kMissingCoreSignals);
     std::move(callback).Run(std::string());
     return;
@@ -125,7 +124,7 @@ void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
 
 void DesktopAttestationService::OnPublicKeyExported(
     const std::string& serialized_signed_challenge,
-    std::unique_ptr<DeviceTrustSignals> signals,
+    base::Value::Dict signals,
     AttestationCallback callback,
     absl::optional<std::string> exported_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -160,7 +159,7 @@ void DesktopAttestationService::OnPublicKeyExported(
 void DesktopAttestationService::OnChallengeValidated(
     const SignedData& signed_data,
     const std::string& exported_public_key,
-    std::unique_ptr<DeviceTrustSignals> signals,
+    base::Value::Dict signals,
     AttestationCallback callback,
     bool is_va_challenge) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -177,9 +176,14 @@ void DesktopAttestationService::OnChallengeValidated(
   KeyInfo key_info;
   key_info.set_key_type(CBCM);
   key_info.set_browser_instance_public_key(exported_public_key);
-  key_info.set_device_id(signals->device_id());
-  key_info.set_customer_id(signals->obfuscated_customer_id());
-  key_info.set_allocated_device_trust_signals(signals.release());
+  key_info.set_device_id(*signals.FindString(device_signals::names::kDeviceId));
+  key_info.set_customer_id(
+      *signals.FindString(device_signals::names::kObfuscatedCustomerId));
+
+  // VA currently only accepts the signals in a protobuf format.
+  std::unique_ptr<DeviceTrustSignals> signals_proto =
+      DictionarySignalsToProtobufSignals(signals);
+  key_info.set_allocated_device_trust_signals(signals_proto.release());
 
   std::string serialized_key_info;
   if (!key_info.SerializeToString(&serialized_key_info)) {

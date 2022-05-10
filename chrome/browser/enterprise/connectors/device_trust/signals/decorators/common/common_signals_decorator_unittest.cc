@@ -8,10 +8,11 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
 #include "chrome/common/pref_names.h"
+#include "components/device_signals/core/common/signals_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -72,30 +73,34 @@ TEST_F(CommonSignalsDecoratorTest, Decorate_StaticValuesPresent) {
 
   base::RunLoop run_loop;
 
-  SignalsType signals;
+  base::Value::Dict signals;
   decorator_->Decorate(signals, run_loop.QuitClosure());
 
   run_loop.Run();
 
-  EXPECT_TRUE(signals.has_os());
-  EXPECT_TRUE(signals.has_os_version());
-  EXPECT_TRUE(signals.has_device_model());
-  EXPECT_TRUE(signals.has_device_manufacturer());
-  EXPECT_TRUE(signals.has_display_name());
-  EXPECT_TRUE(signals.has_browser_version());
-  EXPECT_TRUE(signals.has_built_in_dns_client_enabled());
-  EXPECT_TRUE(signals.has_safe_browsing_protection_level());
-  EXPECT_TRUE(signals.has_password_protection_warning_trigger());
+  EXPECT_TRUE(signals.contains(device_signals::names::kOsVersion));
+  EXPECT_TRUE(signals.contains(device_signals::names::kDeviceModel));
+  EXPECT_TRUE(signals.contains(device_signals::names::kDeviceManufacturer));
+  EXPECT_TRUE(signals.contains(device_signals::names::kDisplayName));
+  EXPECT_TRUE(signals.contains(device_signals::names::kBrowserVersion));
+  EXPECT_TRUE(
+      signals.contains(device_signals::names::kBuiltInDnsClientEnabled));
+  EXPECT_TRUE(
+      signals.contains(device_signals::names::kSafeBrowsingProtectionLevel));
+  EXPECT_TRUE(signals.contains(
+      device_signals::names::kPasswordProtectionWarningTrigger));
 
 #if BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(signals.has_chrome_cleanup_enabled());
+  EXPECT_TRUE(signals.contains(device_signals::names::kChromeCleanupEnabled));
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(signals.has_third_party_blocking_enabled());
+  EXPECT_TRUE(
+      signals.contains(device_signals::names::kThirdPartyBlockingEnabled));
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_FALSE(signals.has_third_party_blocking_enabled());
+  EXPECT_FALSE(
+      signals.contains(device_signals::names::kThirdPartyBlockingEnabled));
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #else   // BUILDFLAG(IS_WIN)
-  EXPECT_FALSE(signals.has_chrome_cleanup_enabled());
+  EXPECT_FALSE(signals.contains(device_signals::names::kChromeCleanupEnabled));
 #endif  // BUILDFLAG(IS_WIN)
 
   histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
@@ -103,13 +108,15 @@ TEST_F(CommonSignalsDecoratorTest, Decorate_StaticValuesPresent) {
 
   // Run a second time to exercise the caching code.
   base::RunLoop second_run_loop;
-  SignalsType second_signals;
+  base::Value::Dict second_signals;
   decorator_->Decorate(second_signals, second_run_loop.QuitClosure());
   second_run_loop.Run();
 
-  EXPECT_EQ(signals.device_model(), second_signals.device_model());
-  EXPECT_EQ(signals.device_manufacturer(),
-            second_signals.device_manufacturer());
+  EXPECT_EQ(*signals.FindString(device_signals::names::kDeviceModel),
+            *second_signals.FindString(device_signals::names::kDeviceModel));
+  EXPECT_EQ(
+      *signals.FindString(device_signals::names::kDeviceManufacturer),
+      *second_signals.FindString(device_signals::names::kDeviceManufacturer));
 
   histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
   histogram_tester_.ExpectTotalCount(kCachedLatencyHistogram, 1);

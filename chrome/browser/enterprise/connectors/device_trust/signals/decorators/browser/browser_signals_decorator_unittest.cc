@@ -8,7 +8,9 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
+#include "components/device_signals/core/common/signals_constants.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -51,10 +53,13 @@ class BrowserSignalsDecoratorTest : public testing::Test {
         std::move(policy_data));
   }
 
-  void ValidateStaticSignals(const DeviceTrustSignals& signals) {
-    EXPECT_EQ(signals.device_id(), kFakeDeviceId);
-    EXPECT_EQ(signals.serial_number(), "twirlchange");
-    EXPECT_EQ(signals.is_disk_encrypted(), false);
+  void ValidateStaticSignals(const base::Value::Dict& signals) {
+    EXPECT_EQ(*signals.FindString(device_signals::names::kDeviceId),
+              kFakeDeviceId);
+    EXPECT_EQ(*signals.FindString(device_signals::names::kSerialNumber),
+              "twirlchange");
+    EXPECT_EQ(*signals.FindBool(device_signals::names::kIsDiskEncrypted),
+              false);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -69,28 +74,32 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_WithPolicyData) {
 
   base::RunLoop run_loop;
 
-  DeviceTrustSignals signals;
+  base::Value::Dict signals;
   decorator_->Decorate(signals, run_loop.QuitClosure());
 
   run_loop.Run();
 
   ValidateStaticSignals(signals);
-  EXPECT_EQ(kFakeCustomerId, signals.obfuscated_customer_id());
-  EXPECT_EQ(kFakeEnrollmentDomain, signals.enrollment_domain());
+
+  EXPECT_EQ(kFakeCustomerId,
+            *signals.FindString(device_signals::names::kObfuscatedCustomerId));
+  EXPECT_EQ(kFakeEnrollmentDomain,
+            *signals.FindString(device_signals::names::kEnrollmentDomain));
 
   histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
   histogram_tester_.ExpectTotalCount(kCachedLatencyHistogram, 0);
 
   // Running a second time will exercise the caching code.
   base::RunLoop second_run_loop;
-  DeviceTrustSignals second_signals;
+  base::Value::Dict second_signals;
   decorator_->Decorate(second_signals, second_run_loop.QuitClosure());
 
   second_run_loop.Run();
 
-  EXPECT_EQ(signals.has_serial_number(), second_signals.has_serial_number());
-  EXPECT_EQ(signals.has_is_disk_encrypted(),
-            second_signals.has_is_disk_encrypted());
+  EXPECT_EQ(*signals.FindString(device_signals::names::kSerialNumber),
+            *second_signals.FindString(device_signals::names::kSerialNumber));
+  EXPECT_EQ(*signals.FindBool(device_signals::names::kIsDiskEncrypted),
+            *second_signals.FindBool(device_signals::names::kIsDiskEncrypted));
 
   histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
   histogram_tester_.ExpectTotalCount(kCachedLatencyHistogram, 1);
@@ -99,14 +108,14 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_WithPolicyData) {
 TEST_F(BrowserSignalsDecoratorTest, Decorate_WithoutPolicyData) {
   base::RunLoop run_loop;
 
-  DeviceTrustSignals signals;
+  base::Value::Dict signals;
   decorator_->Decorate(signals, run_loop.QuitClosure());
 
   run_loop.Run();
 
   ValidateStaticSignals(signals);
-  EXPECT_FALSE(signals.has_obfuscated_customer_id());
-  EXPECT_FALSE(signals.has_enrollment_domain());
+  EXPECT_FALSE(signals.contains(device_signals::names::kObfuscatedCustomerId));
+  EXPECT_FALSE(signals.contains(device_signals::names::kEnrollmentDomain));
 }
 
 }  // namespace enterprise_connectors

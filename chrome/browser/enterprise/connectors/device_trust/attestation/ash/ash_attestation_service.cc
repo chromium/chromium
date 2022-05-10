@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
@@ -46,9 +47,8 @@ AshAttestationService::~AshAttestationService() = default;
 
 void AshAttestationService::BuildChallengeResponseForVAChallenge(
     const std::string& serialized_signed_challenge,
-    std::unique_ptr<attestation::DeviceTrustSignals> signals,
+    base::Value::Dict signals,
     AttestationCallback callback) {
-  DCHECK(signals);
   auto tpm_key_challenger =
       std::make_unique<ash::attestation::TpmChallengeKeyWithTimeout>();
   auto* tpm_key_challenger_ptr = tpm_key_challenger.get();
@@ -58,7 +58,8 @@ void AshAttestationService::BuildChallengeResponseForVAChallenge(
                      weak_factory_.GetWeakPtr(), std::move(tpm_key_challenger),
                      std::move(callback)),
       serialized_signed_challenge, /*register_key=*/false,
-      /*key_name_for_spkac=*/std::string(), /*signals=*/*signals);
+      /*key_name_for_spkac=*/std::string(),
+      /*signals=*/*DictionarySignalsToProtobufSignals(signals));
 }
 
 void AshAttestationService::ReturnResult(

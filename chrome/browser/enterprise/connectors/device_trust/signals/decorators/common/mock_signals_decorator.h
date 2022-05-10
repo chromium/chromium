@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_DECORATORS_COMMON_MOCK_SIGNALS_DECORATOR_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_DECORATORS_COMMON_MOCK_SIGNALS_DECORATOR_H_
 
+#include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -16,7 +17,10 @@ class MockSignalsDecorator : public SignalsDecorator {
   MockSignalsDecorator();
   ~MockSignalsDecorator() override;
 
-  MOCK_METHOD(void, Decorate, (SignalsType&, base::OnceClosure), (override));
+  MOCK_METHOD(void,
+              Decorate,
+              (base::Value::Dict&, base::OnceClosure),
+              (override));
 };
 
 }  // namespace test

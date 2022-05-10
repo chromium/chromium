@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_DECORATORS_CONTENT_CONTENT_SIGNALS_DECORATOR_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_DECORATORS_CONTENT_CONTENT_SIGNALS_DECORATOR_H_
 
+#include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
 
 class PolicyBlocklistService;
@@ -20,7 +21,8 @@ class ContentSignalsDecorator : public SignalsDecorator {
   ~ContentSignalsDecorator() override;
 
   // SignalsDecorator:
-  void Decorate(SignalsType& signals, base::OnceClosure done_closure) override;
+  void Decorate(base::Value::Dict& signals,
+                base::OnceClosure done_closure) override;
 
  private:
   PolicyBlocklistService* policy_blocklist_service_;

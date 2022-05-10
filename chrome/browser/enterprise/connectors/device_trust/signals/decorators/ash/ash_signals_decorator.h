@@ -7,6 +7,8 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
 
+#include "base/values.h"
+
 namespace policy {
 class BrowserPolicyConnectorAsh;
 }  // namespace policy
@@ -21,7 +23,7 @@ class AshSignalsDecorator : public SignalsDecorator {
   ~AshSignalsDecorator() override;
 
   // SignalsDecorator:
-  void Decorate(attestation::DeviceTrustSignals& signals,
+  void Decorate(base::Value::Dict& signals,
                 base::OnceClosure done_closure) override;
 
  private:

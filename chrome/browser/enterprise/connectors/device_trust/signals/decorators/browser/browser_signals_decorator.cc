@@ -8,9 +8,11 @@
 
 #include "base/check.h"
 #include "base/task/thread_pool.h"
+#include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
+#include "components/device_signals/core/common/signals_constants.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -36,18 +38,20 @@ BrowserSignalsDecorator::BrowserSignalsDecorator(
 
 BrowserSignalsDecorator::~BrowserSignalsDecorator() = default;
 
-void BrowserSignalsDecorator::Decorate(DeviceTrustSignals& signals,
+void BrowserSignalsDecorator::Decorate(base::Value::Dict& signals,
                                        base::OnceClosure done_closure) {
   auto start_time = base::TimeTicks::Now();
 
-  signals.set_device_id(dm_token_storage_->RetrieveClientId());
+  signals.Set(device_signals::names::kDeviceId,
+              dm_token_storage_->RetrieveClientId());
 
   if (cloud_policy_store_->has_policy()) {
     const auto* policy = cloud_policy_store_->policy();
-    signals.set_obfuscated_customer_id(policy->obfuscated_customer_id());
-    signals.set_enrollment_domain(policy->has_managed_by()
-                                      ? policy->managed_by()
-                                      : policy->display_domain());
+    signals.Set(device_signals::names::kObfuscatedCustomerId,
+                policy->obfuscated_customer_id());
+    signals.Set(device_signals::names::kEnrollmentDomain,
+                policy->has_managed_by() ? policy->managed_by()
+                                         : policy->display_domain());
   }
 
   if (cache_initialized_) {
@@ -67,7 +71,7 @@ void BrowserSignalsDecorator::Decorate(DeviceTrustSignals& signals,
 }
 
 void BrowserSignalsDecorator::OnDeviceInfoFetched(
-    DeviceTrustSignals& signals,
+    base::Value::Dict& signals,
     base::TimeTicks start_time,
     base::OnceClosure done_closure,
     const enterprise_signals::DeviceInfo& device_info) {
@@ -83,14 +87,16 @@ void BrowserSignalsDecorator::OnDeviceInfoFetched(
   std::move(done_closure).Run();
 }
 
-void BrowserSignalsDecorator::UpdateFromCache(DeviceTrustSignals& signals) {
+void BrowserSignalsDecorator::UpdateFromCache(base::Value::Dict& signals) {
   DCHECK(cache_initialized_);
   if (cached_serial_number_) {
-    signals.set_serial_number(cached_serial_number_.value());
+    signals.Set(device_signals::names::kSerialNumber,
+                cached_serial_number_.value());
   }
 
   if (cached_is_disk_encrypted_.has_value()) {
-    signals.set_is_disk_encrypted(cached_is_disk_encrypted_.value());
+    signals.Set(device_signals::names::kIsDiskEncrypted,
+                cached_is_disk_encrypted_.value());
   }
 }
 

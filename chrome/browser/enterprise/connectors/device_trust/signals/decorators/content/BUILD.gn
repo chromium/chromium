@@ -17,6 +17,7 @@ source_set("content") {
   deps = [
     "//base",
     "//chrome/browser/enterprise/signals:utils",
+    "//components/device_signals/core/common",
     "//components/policy/content",
     "//content/public/browser",
   ]
@@ -31,6 +32,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
     "//components/component_updater",
+    "//components/device_signals/core/common",
     "//components/policy/content",
     "//components/policy/core/browser",
     "//components/policy/core/common:common_constants",

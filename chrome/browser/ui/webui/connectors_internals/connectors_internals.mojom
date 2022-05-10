@@ -47,8 +47,8 @@ struct ZeroTrustState {
   // Information around the state of the device trust signing key.
   KeyInfo key_info;
 
-  // Dictionary containing device signals.
-  map<string, string> signals_dictionary;
+  // Json string of the device signals.
+  string signals_json;
 };
 
 // Browser interface for the page. Consists of calls for data and hooks for

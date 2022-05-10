@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
 
 namespace enterprise_connectors {
@@ -27,7 +28,7 @@ class AttestationService {
   // `callback` with an empty string.
   virtual void BuildChallengeResponseForVAChallenge(
       const std::string& serialized_signed_challenge,
-      std::unique_ptr<SignalsType> signals,
+      base::Value::Dict signals,
       AttestationCallback callback) = 0;
 };
 

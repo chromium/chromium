@@ -10,7 +10,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
+#include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
 
@@ -30,7 +30,7 @@ SignalsServiceImpl::~SignalsServiceImpl() = default;
 
 void SignalsServiceImpl::CollectSignals(CollectSignalsCallback callback) {
   auto start_time = base::TimeTicks::Now();
-  auto signals = std::make_unique<SignalsType>();
+  auto signals = std::make_unique<base::Value::Dict>();
   auto* signals_ptr = signals.get();
 
   auto barrier_closure = base::BarrierClosure(
@@ -47,10 +47,15 @@ void SignalsServiceImpl::CollectSignals(CollectSignalsCallback callback) {
 void SignalsServiceImpl::OnSignalsDecorated(
     CollectSignalsCallback callback,
     base::TimeTicks start_time,
-    std::unique_ptr<SignalsType> signals) {
+    std::unique_ptr<base::Value::Dict> signals) {
   LogSignalsCollectionLatency(kLatencyHistogramVariant, start_time);
 
-  std::move(callback).Run(std::move(signals));
+  if (!signals) {
+    base::Value::Dict empty_dictionary;
+    std::move(callback).Run(std::move(empty_dictionary));
+  } else {
+    std::move(callback).Run(std::move(*signals));
+  }
 }
 
 }  // namespace enterprise_connectors

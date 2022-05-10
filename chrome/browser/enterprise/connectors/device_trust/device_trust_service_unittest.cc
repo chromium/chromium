@@ -20,6 +20,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/mock_signals_service.h"
+#include "components/device_signals/core/common/signals_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -152,22 +153,22 @@ TEST_P(DeviceTrustServiceTest, BuildChallengeResponse) {
 
   std::string fake_device_id = "fake_device_id";
   EXPECT_CALL(*mock_signals_service_, CollectSignals(_))
-      .WillOnce(
-          Invoke([&fake_device_id](
-                     base::OnceCallback<void(std::unique_ptr<SignalsType>)>
-                         signals_callback) {
-            auto fake_signals = std::make_unique<SignalsType>();
-            fake_signals->set_device_id(fake_device_id);
-            std::move(signals_callback).Run(std::move(fake_signals));
+      .WillOnce(Invoke(
+          [&fake_device_id](
+              base::OnceCallback<void(base::Value::Dict)> signals_callback) {
+            auto fake_signals = std::make_unique<base::Value::Dict>();
+            fake_signals->Set(device_signals::names::kDeviceId, fake_device_id);
+            std::move(signals_callback).Run(std::move(*fake_signals));
           }));
 
   EXPECT_CALL(*mock_attestation_service_,
               BuildChallengeResponseForVAChallenge(
-                  GetSerializedSignedChallenge(kJsonChallenge), NotNull(), _))
+                  GetSerializedSignedChallenge(kJsonChallenge), _, _))
       .WillOnce(Invoke([&fake_device_id](const std::string& challenge,
-                                         std::unique_ptr<SignalsType> signals,
+                                         const base::Value::Dict signals,
                                          AttestationCallback callback) {
-        EXPECT_EQ(signals->device_id(), fake_device_id);
+        EXPECT_EQ(signals.FindString(device_signals::names::kDeviceId)->c_str(),
+                  fake_device_id);
         std::move(callback).Run(challenge);
       }));
 

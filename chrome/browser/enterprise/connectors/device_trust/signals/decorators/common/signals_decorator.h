@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_DECORATORS_COMMON_SIGNALS_DECORATOR_H_
 
 #include "base/callback.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
+#include "base/values.h"
 
 namespace enterprise_connectors {
 
@@ -18,7 +18,7 @@ class SignalsDecorator {
 
   // Asynchronously sets signals data on the `signals` proto properties and
   // invoked `done_closure` when done.
-  virtual void Decorate(SignalsType& signals,
+  virtual void Decorate(base::Value::Dict& signals,
                         base::OnceClosure done_closure) = 0;
 };
 

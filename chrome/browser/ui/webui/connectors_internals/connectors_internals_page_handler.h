@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -37,7 +37,7 @@ class ConnectorsInternalsPageHandler
 
   void OnSignalsCollected(GetZeroTrustStateCallback callback,
                           bool is_device_trust_enabled,
-                          std::unique_ptr<SignalsType> signals);
+                          const base::Value::Dict signals);
 
   mojo::Receiver<connectors_internals::mojom::PageHandler> receiver_;
   raw_ptr<Profile> profile_;

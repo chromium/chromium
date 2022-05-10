@@ -113,8 +113,7 @@ export class ZeroTrustConnectorElement extends CustomElement {
 
     this.keyInfo = state.keyInfo;
 
-    // Pretty print the dictionary as a JSON string.
-    this.signalsString = JSON.stringify(state.signalsDictionary, null, 2);
+    this.signalsString = state.signalsJson;
   }
 
   private async fetchZeroTrustValues(): Promise<ZeroTrustState|undefined> {

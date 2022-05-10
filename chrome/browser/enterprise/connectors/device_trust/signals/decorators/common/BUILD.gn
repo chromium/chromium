@@ -23,6 +23,7 @@ source_set("common") {
 
   deps = [
     "//chrome/browser/enterprise/signals:utils",
+    "//components/device_signals/core/common",
     "//components/policy/core/common",
     "//components/version_info",
     "//third_party/abseil-cpp:absl",
@@ -55,6 +56,7 @@ source_set("unit_tests") {
     "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
     "//chrome/common:constants",
     "//components/component_updater",
+    "//components/device_signals/core/common",
     "//components/policy/content",
     "//components/policy/core/browser",
     "//components/prefs:test_support",

@@ -8,7 +8,8 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
+#include "base/values.h"
+#include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -49,11 +50,11 @@ TEST_F(ContentSignalsDecoratorTest, Decorate) {
   base::OnceClosure closure = base::BindLambdaForTesting(
       [&callback_invoked]() { callback_invoked = true; });
 
-  SignalsType signals;
+  base::Value::Dict signals;
   decorator_->Decorate(signals, std::move(closure));
 
-  EXPECT_TRUE(signals.has_remote_desktop_available());
-  EXPECT_TRUE(signals.has_site_isolation_enabled());
+  EXPECT_TRUE(signals.contains(device_signals::names::kRemoteDesktopAvailable));
+  EXPECT_TRUE(signals.contains(device_signals::names::kSiteIsolationEnabled));
 
   EXPECT_TRUE(callback_invoked);
 

@@ -23,6 +23,7 @@
 #include "chromeos/dbus/attestation/attestation_ca.pb.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
+#include "components/device_signals/core/common/signals_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -109,10 +110,11 @@ class AshAttestationServiceTest : public testing::Test {
         std::make_unique<AshAttestationService>(&test_profile_);
   }
 
-  std::unique_ptr<attestation::DeviceTrustSignals> CreateSignals() {
-    auto signals = std::make_unique<attestation::DeviceTrustSignals>();
-    signals->set_device_id(kDeviceId);
-    signals->set_obfuscated_customer_id(kObfuscatedCustomerId);
+  base::Value::Dict CreateSignals() {
+    base::Value::Dict signals;
+    signals.Set(device_signals::names::kDeviceId, kDeviceId);
+    signals.Set(device_signals::names::kObfuscatedCustomerId,
+                kObfuscatedCustomerId);
     return signals;
   }
 
@@ -124,8 +126,6 @@ class AshAttestationServiceTest : public testing::Test {
 };
 
 TEST_F(AshAttestationServiceTest, BuildChallengeResponse_Success) {
-  auto signals = CreateSignals();
-
   base::RunLoop run_loop;
   auto callback =
       base::BindLambdaForTesting([&](const std::string& challenge_response) {
@@ -150,7 +150,7 @@ TEST_F(AshAttestationServiceTest, BuildChallengeResponse_Success) {
               kFakeResponse)));
 
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      protoChallenge, std::move(signals), std::move(callback));
+      protoChallenge, CreateSignals(), std::move(callback));
   run_loop.Run();
 }
 

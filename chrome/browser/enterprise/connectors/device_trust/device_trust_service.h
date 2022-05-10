@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
+#include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -55,8 +55,7 @@ class DeviceTrustService : public KeyedService {
   virtual bool Watches(const GURL& url) const;
 
   // Collects device trust signals and returns them via `callback`.
-  void GetSignals(
-      base::OnceCallback<void(std::unique_ptr<SignalsType>)> callback);
+  void GetSignals(base::OnceCallback<void(const base::Value::Dict)> callback);
 
   // Parses the `challenge` response and returns it via a `callback`.
   void ParseJsonChallenge(const std::string& challenge,
@@ -71,7 +70,7 @@ class DeviceTrustService : public KeyedService {
                          const std::string& serialized_signed_challenge);
   void OnSignalsCollected(const std::string& challenge,
                           AttestationCallback callback,
-                          std::unique_ptr<SignalsType> signals);
+                          base::Value::Dict signals);
 
   std::unique_ptr<AttestationService> attestation_service_;
   std::unique_ptr<SignalsService> signals_service_;

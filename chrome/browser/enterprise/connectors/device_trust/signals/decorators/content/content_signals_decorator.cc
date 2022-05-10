@@ -6,9 +6,11 @@
 
 #include "base/callback.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
 #include "chrome/browser/enterprise/signals/signals_utils.h"
+#include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "content/public/browser/site_isolation_policy.h"
 
@@ -28,16 +30,14 @@ ContentSignalsDecorator::ContentSignalsDecorator(
 
 ContentSignalsDecorator::~ContentSignalsDecorator() = default;
 
-void ContentSignalsDecorator::Decorate(SignalsType& signals,
+void ContentSignalsDecorator::Decorate(base::Value::Dict& signals,
                                        base::OnceClosure done_closure) {
   auto start_time = base::TimeTicks::Now();
-
-  signals.set_remote_desktop_available(
-      enterprise_signals::utils::GetChromeRemoteDesktopAppBlocked(
-          policy_blocklist_service_));
-  signals.set_site_isolation_enabled(
-      content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
-
+  signals.Set(device_signals::names::kRemoteDesktopAvailable,
+              enterprise_signals::utils::GetChromeRemoteDesktopAppBlocked(
+                  policy_blocklist_service_));
+  signals.Set(device_signals::names::kSiteIsolationEnabled,
+              content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
   LogSignalsCollectionLatency(kLatencyHistogramVariant, start_time);
 
   std::move(done_closure).Run();

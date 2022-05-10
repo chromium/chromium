@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 
 #include "base/base64.h"
+#include "base/values.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
@@ -102,7 +103,7 @@ void DeviceTrustService::GetSignals(CollectSignalsCallback callback) {
 void DeviceTrustService::OnSignalsCollected(
     const std::string& serialized_signed_challenge,
     AttestationCallback callback,
-    std::unique_ptr<SignalsType> signals) {
+    base::Value::Dict signals) {
   LogAttestationFunnelStep(DTAttestationFunnelStep::kSignalsCollected);
 
   attestation_service_->BuildChallengeResponseForVAChallenge(

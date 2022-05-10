@@ -6,8 +6,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/signals/signals_utils.h"
+#include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/version_info/version_info.h"
 
@@ -29,33 +31,35 @@ CommonSignalsDecorator::CommonSignalsDecorator(PrefService* local_state,
 
 CommonSignalsDecorator::~CommonSignalsDecorator() = default;
 
-void CommonSignalsDecorator::Decorate(SignalsType& signals,
+void CommonSignalsDecorator::Decorate(base::Value::Dict& signals,
                                       base::OnceClosure done_closure) {
   auto start_time = base::TimeTicks::Now();
-
-  signals.set_os(policy::GetOSPlatform());
-  signals.set_os_version(policy::GetOSVersion());
-  signals.set_display_name(policy::GetDeviceName());
-  signals.set_browser_version(version_info::GetVersionNumber());
+  signals.Set(device_signals::names::kOs, policy::GetOSPlatform());
+  signals.Set(device_signals::names::kOsVersion, policy::GetOSVersion());
+  signals.Set(device_signals::names::kDisplayName, policy::GetDeviceName());
+  signals.Set(device_signals::names::kBrowserVersion,
+              version_info::GetVersionNumber());
 
   // Get signals from policy values.
-  signals.set_built_in_dns_client_enabled(
+  signals.Set(
+      device_signals::names::kBuiltInDnsClientEnabled,
       enterprise_signals::utils::GetBuiltInDnsClientEnabled(local_state_));
-  signals.set_safe_browsing_protection_level(static_cast<int32_t>(
-      enterprise_signals::utils::GetSafeBrowsingProtectionLevel(
-          profile_prefs_)));
-
+  signals.Set(device_signals::names::kSafeBrowsingProtectionLevel,
+              static_cast<int32_t>(
+                  enterprise_signals::utils::GetSafeBrowsingProtectionLevel(
+                      profile_prefs_)));
   absl::optional<bool> third_party_blocking_enabled =
       enterprise_signals::utils::GetThirdPartyBlockingEnabled(local_state_);
   if (third_party_blocking_enabled.has_value()) {
-    signals.set_third_party_blocking_enabled(
-        third_party_blocking_enabled.value());
+    signals.Set(device_signals::names::kThirdPartyBlockingEnabled,
+                third_party_blocking_enabled.value());
   }
 
   absl::optional<bool> chrome_cleanup_enabled =
       enterprise_signals::utils::GetChromeCleanupEnabled(local_state_);
   if (chrome_cleanup_enabled.has_value()) {
-    signals.set_chrome_cleanup_enabled(chrome_cleanup_enabled.value());
+    signals.Set(device_signals::names::kChromeCleanupEnabled,
+                chrome_cleanup_enabled.value());
   }
 
   absl::optional<safe_browsing::PasswordProtectionTrigger>
@@ -63,7 +67,8 @@ void CommonSignalsDecorator::Decorate(SignalsType& signals,
           enterprise_signals::utils::GetPasswordProtectionWarningTrigger(
               profile_prefs_);
   if (password_protection_warning_trigger.has_value()) {
-    signals.set_password_protection_warning_trigger(
+    signals.Set(
+        device_signals::names::kPasswordProtectionWarningTrigger,
         static_cast<int32_t>(password_protection_warning_trigger.value()));
   }
 
@@ -83,7 +88,7 @@ void CommonSignalsDecorator::Decorate(SignalsType& signals,
 }
 
 void CommonSignalsDecorator::OnHardwareInfoRetrieved(
-    SignalsType& signals,
+    base::Value::Dict& signals,
     base::TimeTicks start_time,
     base::OnceClosure done_closure,
     base::SysInfo::HardwareInfo hardware_info) {
@@ -97,9 +102,11 @@ void CommonSignalsDecorator::OnHardwareInfoRetrieved(
   std::move(done_closure).Run();
 }
 
-void CommonSignalsDecorator::UpdateFromCache(SignalsType& signals) {
-  signals.set_device_model(cached_device_model_.value());
-  signals.set_device_manufacturer(cached_device_manufacturer_.value());
+void CommonSignalsDecorator::UpdateFromCache(base::Value::Dict& signals) {
+  signals.Set(device_signals::names::kDeviceModel,
+              cached_device_model_.value());
+  signals.Set(device_signals::names::kDeviceManufacturer,
+              cached_device_manufacturer_.value());
 }
 
 }  // namespace enterprise_connectors
