@@ -202,11 +202,6 @@ export class TtsBackground extends ChromeTtsBase {
       mergedProperties['voiceName'] = this.currentVoice;
     }
 
-    if (queueMode === QueueMode.CATEGORY_FLUSH &&
-        !mergedProperties['category']) {
-      queueMode = QueueMode.FLUSH;
-    }
-
     const utterance = new Utterance(textString, mergedProperties, queueMode);
     this.speakUsingQueue_(utterance);
     // Attempt to queue phonetic speech with property['delay']. This ensures

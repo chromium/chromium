@@ -261,7 +261,9 @@ export class ChromeVoxEditableTextBase {
     if (opt_triggeredByUser === true) {
       queueMode = QueueMode.CATEGORY_FLUSH;
     }
-    this.tts.speak(str, queueMode, opt_personality || {});
+    const props = opt_personality || {};
+    props['category'] = TtsCategory.NAV;
+    this.tts.speak(str, queueMode, props);
   }
 
   /**
