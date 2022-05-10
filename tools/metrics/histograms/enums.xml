@@ -32448,7 +32448,7 @@ Called by update_extension_histograms.py.-->
   <int value="231" label="SERIAL_ON_RECEIVE_ERROR"/>
   <int value="232" label="SESSIONS_ON_CHANGED"/>
   <int value="233" label="SETTINGS_PRIVATE_ON_PREFS_CHANGED"/>
-  <int value="234" label="SIGNED_IN_DEVICES_ON_DEVICE_INFO_CHANGE"/>
+  <int value="234" label="DELETED_SIGNED_IN_DEVICES_ON_DEVICE_INFO_CHANGE"/>
   <int value="235" label="SOCKETS_TCP_ON_RECEIVE"/>
   <int value="236" label="SOCKETS_TCP_ON_RECEIVE_ERROR"/>
   <int value="237" label="SOCKETS_TCP_SERVER_ON_ACCEPT"/>
@@ -33306,7 +33306,7 @@ Called by update_extension_histograms.py.-->
   <int value="546" label="SOCKETS_UDP_SETMULTICASTTIMETOLIVE"/>
   <int value="547" label="SOCKETS_UDP_SETMULTICASTLOOPBACKMODE"/>
   <int value="548" label="SOCKETS_UDP_GETJOINEDGROUPS"/>
-  <int value="549" label="SIGNED_IN_DEVICES_GET"/>
+  <int value="549" label="DELETED_SIGNED_IN_DEVICES_GET"/>
   <int value="550" label="AUTOTESTPRIVATE_SIMULATEASANMEMORYBUG"/>
   <int value="551" label="DELETED_WEBVIEW_CLEARDATA"/>
   <int value="552" label="SESSIONS_GETRECENTLYCLOSED"/>
@@ -34811,7 +34811,7 @@ Called by update_extension_histograms.py.-->
   <int value="47" label="kDeclarativeWebRequest"/>
   <int value="48" label="kFileSystemDirectory"/>
   <int value="49" label="kFileSystemWriteDirectory"/>
-  <int value="50" label="kSignedInDevices"/>
+  <int value="50" label="kDeleted_SignedInDevices"/>
   <int value="51" label="kWallpaper"/>
   <int value="52" label="kNetworkState"/>
   <int value="53" label="kHomepage"/>
@@ -34982,7 +34982,7 @@ Called by update_extension_permission.py.-->
   <int value="127" label="kSerial"/>
   <int value="128" label="kSessions"/>
   <int value="129" label="kSettingsPrivate"/>
-  <int value="130" label="kSignedInDevices"/>
+  <int value="130" label="kDeleted_SignedInDevices"/>
   <int value="131" label="kSocket"/>
   <int value="132" label="kStartupPages"/>
   <int value="133" label="kStorage"/>

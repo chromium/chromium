@@ -2574,7 +2574,10 @@ void ExtensionPrefs::MigrateObsoleteExtensionPrefs() {
       kFakeObsoletePrefForTesting,
 
       // Added 2021-05, also used in unit test.
-      "settings.privacy.drm_enabled"};
+      "settings.privacy.drm_enabled",
+
+      // TODO(crbug.com/1015619): Remove 2023-05. Incorrect spelling from 2013.
+      "id_mapping_dictioanry"};
 
   for (auto key_value : extensions_dictionary->DictItems()) {
     if (!crx_file::id_util::IdIsValid(key_value.first))

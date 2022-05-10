@@ -763,10 +763,6 @@
       "chrome://settings/*"
     ]
   }],
-  "signedInDevices": {
-    "dependencies": ["permission:signedInDevices"],
-    "contexts": ["blessed_extension"]
-  },
   "speechRecognitionPrivate": {
     "dependencies": ["permission:speechRecognitionPrivate"],
     "contexts": ["blessed_extension"]

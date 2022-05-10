@@ -153,7 +153,7 @@ enum APIPermissionID {
   kSerial = 127,
   kSessions = 128,
   kSettingsPrivate = 129,
-  kSignedInDevices = 130,
+  kDeleted_SignedInDevices = 130,
   kSocket = 131,
   kStartupPages = 132,
   kStorage = 133,
