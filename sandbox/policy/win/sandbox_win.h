@@ -69,7 +69,7 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
 
   // Wrapper around TargetPolicy::SetJobLevel that checks if the
   // sandbox should be let to run without a job object assigned.
-  static ResultCode SetJobLevel(const base::CommandLine& cmd_line,
+  static ResultCode SetJobLevel(sandbox::mojom::Sandbox sandbox_type,
                                 JobLevel job_level,
                                 uint32_t ui_exceptions,
                                 TargetPolicy* policy);

@@ -221,7 +221,7 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     // Unprotected token/job.
     policy->SetTokenLevel(sandbox::USER_UNPROTECTED, sandbox::USER_UNPROTECTED);
     sandbox::policy::SandboxWin::SetJobLevel(
-        cmd_line_, sandbox::JobLevel::kUnprotected, 0, policy);
+        sandbox_type_, sandbox::JobLevel::kUnprotected, 0, policy);
   }
 
   if (sandbox_type_ == sandbox::mojom::Sandbox::kMediaFoundationCdm ||

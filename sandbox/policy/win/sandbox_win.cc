@@ -533,16 +533,12 @@ bool IsAppContainerEnabled() {
   return base::FeatureList::IsEnabled(features::kRendererAppContainer);
 }
 
-ResultCode SetJobMemoryLimit(const base::CommandLine& cmd_line,
-                             TargetPolicy* policy) {
+ResultCode SetJobMemoryLimit(Sandbox sandbox_type, TargetPolicy* policy) {
   DCHECK_NE(policy->GetJobLevel(), JobLevel::kNone);
 
 #ifdef _WIN64
   size_t memory_limit = static_cast<size_t>(kDataSizeLimit);
 
-  // Note that this command line flag hasn't been fetched by all
-  // callers of SetJobLevel, only those in this file.
-  Sandbox sandbox_type = SandboxTypeFromCommandLine(cmd_line);
   if (sandbox_type == Sandbox::kGpu || sandbox_type == Sandbox::kRenderer) {
     int64_t GB = 1024 * 1024 * 1024;
     // Allow the GPU/RENDERER process's sandbox to access more physical memory
@@ -804,7 +800,7 @@ bool IsUnsandboxedProcess(
 }  // namespace
 
 // static
-ResultCode SandboxWin::SetJobLevel(const base::CommandLine& cmd_line,
+ResultCode SandboxWin::SetJobLevel(Sandbox sandbox_type,
                                    JobLevel job_level,
                                    uint32_t ui_exceptions,
                                    TargetPolicy* policy) {
@@ -815,7 +811,7 @@ ResultCode SandboxWin::SetJobLevel(const base::CommandLine& cmd_line,
   if (ret != SBOX_ALL_OK)
     return ret;
 
-  return SetJobMemoryLimit(cmd_line, policy);
+  return SetJobMemoryLimit(sandbox_type, policy);
 }
 
 // TODO(jschuh): Need get these restrictions applied to NaCl and Pepper.
@@ -1048,7 +1044,7 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
   if (result != SBOX_ALL_OK)
     return result;
 
-  result = SetJobLevel(cmd_line, JobLevel::kLockdown, 0, policy);
+  result = SetJobLevel(sandbox_type, JobLevel::kLockdown, 0, policy);
   if (result != SBOX_ALL_OK)
     return result;
 
