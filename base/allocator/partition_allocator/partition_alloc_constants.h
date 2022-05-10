@@ -429,6 +429,10 @@ constexpr size_t kInvalidBucketSize = 1;
 
 }  // namespace internal
 
+// This function is used often enough to be worth publicizing outside the
+// `internal` namespace.
+using ::partition_alloc::internal::PartitionPageSize;
+
 }  // namespace partition_alloc
 
 namespace base {
@@ -486,7 +490,6 @@ using ::partition_alloc::internal::NumSystemPagesPerPartitionPage;
 using ::partition_alloc::internal::PartitionPageBaseMask;
 using ::partition_alloc::internal::PartitionPageOffsetMask;
 using ::partition_alloc::internal::PartitionPageShift;
-using ::partition_alloc::internal::PartitionPageSize;
 
 }  // namespace base
 
