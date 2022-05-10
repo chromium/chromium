@@ -23,6 +23,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "url/gurl.h"
@@ -39,7 +40,6 @@ class ClientSideDetectionService;
 // notifies the browser that a URL was classified as phishing.  This
 // class relays this information to the client-side detection service
 // class which sends a ping to a server to validate the verdict.
-// TODO(noelutz): move all client-side detection IPCs to this class.
 class ClientSideDetectionHost : public content::WebContentsObserver {
  public:
   // A callback via which the client of this component indicates whether the
@@ -82,8 +82,6 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   ClientSideDetectionHost(const ClientSideDetectionHost&) = delete;
   ClientSideDetectionHost& operator=(const ClientSideDetectionHost&) = delete;
 
-  // The caller keeps ownership of the tab object and is responsible for
-  // ensuring that it stays valid until WebContentsDestroyed is called.
   ~ClientSideDetectionHost() override;
 
   // From content::WebContentsObserver.  If we navigate away we cancel all
@@ -91,9 +89,6 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   // we should classify the new URL.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-
-  // Send the model to all the render frame hosts in this WebContents.
-  void SendModelToRenderFrame();
 
  protected:
   explicit ClientSideDetectionHost(
@@ -103,11 +98,6 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
       bool is_off_the_record,
       const PrimaryAccountSignedIn& account_signed_in_callback);
-
-  // From content::WebContentsObserver.
-  void WebContentsDestroyed() override;
-  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
   // Used for testing.
   void set_ui_manager(BaseUIManager* ui_manager);
@@ -172,10 +162,6 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   // users, who are signed in and not in incognito mode.
   bool CanGetAccessToken();
 
-  // Set phishing model in PhishingDetector in renderers.
-  void SetPhishingModel(
-      const mojo::Remote<mojom::PhishingDetector>& phishing_detector);
-
   // Send the client report to CSD server.
   void SendRequest(std::unique_ptr<ClientPhishingRequest> verdict,
                    const std::string& access_token);
@@ -183,11 +169,6 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   // Called when token_fetcher_ has fetched the token.
   void OnGotAccessToken(std::unique_ptr<ClientPhishingRequest> verdict,
                         const std::string& access_token);
-
-  // Setup a PhishingDetector Mojo connection for the given render frame.
-  void InitializePhishingDetector(content::RenderFrameHost* render_frame_host);
-
-  void ClearPhishingDetector(content::GlobalRenderFrameHostId rfh_id);
 
   // This pointer may be nullptr if client-side phishing detection is
   // disabled.
@@ -199,17 +180,12 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   scoped_refptr<BaseUIManager> ui_manager_;
   // Keep a handle to the latest classification request so that we can cancel
   // it if necessary.
+  // TODO(drubery): Make this a std::unique_ptr, for clearer lifetimes.
   scoped_refptr<ShouldClassifyUrlRequest> classification_request_;
   // The current URL
   GURL current_url_;
   // The current outermost main frame's id.
   content::GlobalRenderFrameHostId current_outermost_main_frame_id_;
-  // A map from the live RenderFrameHosts to their PhishingDetector. These
-  // correspond to the `phishing_detector_receiver_` in the
-  // PhishingClassifierDelegate.
-  base::flat_map<content::GlobalRenderFrameHostId,
-                 mojo::Remote<mojom::PhishingDetector>>
-      phishing_detectors_;
 
   // Records the start time of when phishing detection started.
   base::TimeTicks phishing_detection_start_time_;
@@ -230,6 +206,9 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   // Callback for checking if the user is signed in, before fetching
   // acces_token.
   PrimaryAccountSignedIn account_signed_in_callback_;
+
+  // The remote for the currently active phishing classification.
+  mojo::AssociatedRemote<mojom::PhishingDetector> phishing_detector_;
 
   base::WeakPtrFactory<ClientSideDetectionHost> weak_factory_{this};
 };

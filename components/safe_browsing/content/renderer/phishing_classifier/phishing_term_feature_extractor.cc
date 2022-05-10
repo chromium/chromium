@@ -96,10 +96,7 @@ PhishingTermFeatureExtractor::PhishingTermFeatureExtractor(
 }
 
 PhishingTermFeatureExtractor::~PhishingTermFeatureExtractor() {
-  // The RenderView should have called CancelPendingExtraction() before
-  // we are destroyed.
-  DCHECK(done_callback_.is_null());
-  DCHECK(!state_.get());
+  CancelPendingExtraction();
 }
 
 void PhishingTermFeatureExtractor::ExtractFeatures(

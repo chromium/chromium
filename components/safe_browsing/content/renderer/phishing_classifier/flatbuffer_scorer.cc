@@ -94,7 +94,7 @@ FlatBufferModelScorer::FlatBufferModelScorer() = default;
 FlatBufferModelScorer::~FlatBufferModelScorer() = default;
 
 /* static */
-FlatBufferModelScorer* FlatBufferModelScorer::Create(
+std::unique_ptr<FlatBufferModelScorer> FlatBufferModelScorer::Create(
     base::ReadOnlySharedMemoryRegion region,
     base::File visual_tflite_model) {
   std::unique_ptr<FlatBufferModelScorer> scorer(new FlatBufferModelScorer());
@@ -142,7 +142,7 @@ FlatBufferModelScorer* FlatBufferModelScorer::Create(
   RecordScorerCreationStatus(SCORER_SUCCESS);
   scorer->flatbuffer_mapping_ = std::move(mapping);
 
-  return scorer.release();
+  return scorer;
 }
 
 double FlatBufferModelScorer::ComputeRuleScore(

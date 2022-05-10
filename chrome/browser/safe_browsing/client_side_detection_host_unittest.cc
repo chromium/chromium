@@ -52,11 +52,12 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "ipc/ipc_test_sink.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -212,20 +213,10 @@ class FakePhishingDetector : public mojom::PhishingDetector {
 
   ~FakePhishingDetector() override = default;
 
-  void BindReceiver(mojo::ScopedMessagePipeHandle handle) {
-    receivers_.Add(this, mojo::PendingReceiver<mojom::PhishingDetector>(
-                             std::move(handle)));
-  }
-
-  // mojom::PhishingDetector
-  void SetPhishingModel(const std::string& model, base::File file) override {
-    model_ = model;
-  }
-
-  // mojom::PhishingDetector
-  void SetPhishingFlatBufferModel(base::ReadOnlySharedMemoryRegion region,
-                                  base::File file) override {
-    region_ = std::move(region);
+  void BindReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
+    receivers_.Add(this,
+                   mojo::PendingAssociatedReceiver<mojom::PhishingDetector>(
+                       std::move(handle)));
   }
 
   // mojom::PhishingDetector
@@ -254,25 +245,15 @@ class FakePhishingDetector : public mojom::PhishingDetector {
     }
   }
 
-  void CheckModel(const std::string& model) { EXPECT_EQ(model, model_); }
-
-  void CheckModel(base::ReadOnlySharedMemoryRegion region) {
-    EXPECT_EQ(region.GetGUID(), region_.GetGUID());
-  }
-
   void Reset() {
     phishing_detection_started_ = false;
     url_ = GURL();
-    model_ = "";
-    region_ = base::ReadOnlySharedMemoryRegion();
   }
 
  private:
-  mojo::ReceiverSet<mojom::PhishingDetector> receivers_;
+  mojo::AssociatedReceiverSet<mojom::PhishingDetector> receivers_;
   bool phishing_detection_started_ = false;
   GURL url_;
-  std::string model_ = "";
-  base::ReadOnlySharedMemoryRegion region_ = base::ReadOnlySharedMemoryRegion();
 };
 
 class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
@@ -299,12 +280,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
       : is_incognito_(is_incognito), model_str_("model_str") {}
 
   void InitTestApi(content::RenderFrameHost* rfh) {
-    service_manager::InterfaceProvider* remote_interfaces =
-        rfh->GetRemoteInterfaces();
-
-    service_manager::InterfaceProvider::TestApi test_api(remote_interfaces);
-
-    test_api.SetBinderForName(
+    rfh->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
         mojom::PhishingDetector::Name_,
         base::BindRepeating(&FakePhishingDetector::BindReceiver,
                             base::Unretained(&fake_phishing_detector_)));
@@ -359,6 +335,10 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     // SafeBrowsingService.
     content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
                                                    csd_host_.release());
+
+    // RenderProcessHostCreationObserver expects to be torn down on UI.
+    content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                                   csd_service_.release());
     database_manager_.reset();
     ui_manager_.reset();
     base::RunLoop().RunUntilIdle();
@@ -1199,29 +1179,6 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
                 .GetAllSamples("SBClientPhishing.PhishingDetectionDuration")
                 .front()
                 .min);
-}
-
-TEST_F(ClientSideDetectionHostTest, TestSendFlatBufferModelToRenderFrame) {
-  base::MappedReadOnlyRegion mapped_region =
-      base::ReadOnlySharedMemoryRegion::Create(10);
-  EXPECT_CALL(*csd_service_, GetModelType())
-      .WillRepeatedly(Return(CSDModelType::kFlatbuffer));
-  EXPECT_CALL(*csd_service_, GetModelSharedMemoryRegion())
-      .WillRepeatedly(
-          Return(testing::ByMove(mapped_region.region.Duplicate())));
-  csd_host_->SendModelToRenderFrame();
-  base::RunLoop().RunUntilIdle();
-  fake_phishing_detector_.CheckModel(mapped_region.region.Duplicate());
-  fake_phishing_detector_.Reset();
-}
-
-TEST_F(ClientSideDetectionHostTest, TestSendModelToRenderFrame) {
-  std::string stardard("standard");
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(ReturnRef(stardard));
-  csd_host_->SendModelToRenderFrame();
-  base::RunLoop().RunUntilIdle();
-  fake_phishing_detector_.CheckModel("standard");
-  fake_phishing_detector_.Reset();
 }
 
 class ClientSideDetectionHostDebugFeaturesTest

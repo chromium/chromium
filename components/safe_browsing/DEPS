@@ -30,6 +30,7 @@ include_rules = [
   "+third_party/tflite_support",
   "+third_party/tflite",
   "+third_party/protobuf",
+  "+third_party/blink/public/common/associated_interfaces",
   "+ui/base/resource/resource_bundle.h",
   "+ui/android/view_android.h",
 

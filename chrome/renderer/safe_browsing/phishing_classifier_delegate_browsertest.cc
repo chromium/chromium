@@ -13,7 +13,9 @@
 #include "chrome/test/base/chrome_unit_test_suite.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/flatbuffer_scorer.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/protobuf_scorer.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -154,6 +156,8 @@ class PhishingClassifierDelegateTest : public ChromeRenderViewTest {
 
     content::RenderFrame* render_frame = GetMainRenderFrame();
     classifier_ = new StrictMock<MockPhishingClassifier>(render_frame);
+    render_frame->GetAssociatedInterfaceRegistry()->RemoveInterface(
+        mojom::PhishingDetector::Name_);
     delegate_ = PhishingClassifierDelegate::Create(render_frame, classifier_);
   }
 
@@ -195,8 +199,8 @@ class PhishingClassifierDelegateTest : public ChromeRenderViewTest {
 };
 
 TEST_F(PhishingClassifierDelegateTest, Navigation) {
-  MockScorer scorer;
-  delegate_->SetPhishingScorer(&scorer);
+  auto scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   ASSERT_TRUE(classifier_->is_ready());
 
   // Test an initial load.  We expect classification to happen normally.
@@ -318,7 +322,7 @@ TEST_F(PhishingClassifierDelegateTest, Navigation) {
 
 TEST_F(PhishingClassifierDelegateTest, NoPhishingModel) {
   ASSERT_FALSE(classifier_->is_ready());
-  delegate_->SetPhishingModel("", base::File());
+  ScorerStorage::GetInstance()->SetScorer(nullptr);
   // The scorer is nullptr so the classifier should still not be ready.
   ASSERT_FALSE(classifier_->is_ready());
 }
@@ -328,7 +332,8 @@ TEST_F(PhishingClassifierDelegateTest, HasPhishingModel) {
 
   ClientSideModel model;
   model.set_max_words_per_term(1);
-  delegate_->SetPhishingModel(model.SerializeAsString(), base::File());
+  ScorerStorage::GetInstance()->SetScorer(
+      ProtobufModelScorer::Create(model.SerializeAsString(), base::File()));
   ASSERT_TRUE(classifier_->is_ready());
 
   // The delegate will cancel pending classification on destruction.
@@ -343,8 +348,8 @@ TEST_F(PhishingClassifierDelegateTest, HasFlatBufferModel) {
       base::ReadOnlySharedMemoryRegion::Create(model_str.length());
   memcpy(mapped_region.mapping.memory(), model_str.data(), model_str.length());
 
-  delegate_->SetPhishingFlatBufferModel(mapped_region.region.Duplicate(),
-                                        base::File());
+  ScorerStorage::GetInstance()->SetScorer(FlatBufferModelScorer::Create(
+      mapped_region.region.Duplicate(), base::File()));
   ASSERT_TRUE(classifier_->is_ready());
 
   // The delegate will cancel pending classification on destruction.
@@ -366,7 +371,8 @@ TEST_F(PhishingClassifierDelegateTest, HasVisualTfLiteModel) {
 
   ClientSideModel model;
   model.set_max_words_per_term(1);
-  delegate_->SetPhishingModel(model.SerializeAsString(), std::move(file));
+  ScorerStorage::GetInstance()->SetScorer(
+      ProtobufModelScorer::Create(model.SerializeAsString(), std::move(file)));
   ASSERT_TRUE(classifier_->is_ready());
 
   // The delegate will cancel pending classification on destruction.
@@ -393,8 +399,8 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer) {
   // Now set a scorer, which should cause a classifier to be created,
   // but no classification will start.
   page_text = u"dummy";
-  MockScorer scorer;
-  delegate_->SetPhishingScorer(&scorer);
+  auto scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   Mock::VerifyAndClearExpectations(classifier_);
 
   // Manually start a classification.
@@ -404,7 +410,8 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer) {
   // If we set a new scorer while a classification is going on the
   // classification should be cancelled.
   EXPECT_CALL(*classifier_, CancelPendingClassification());
-  delegate_->SetPhishingScorer(&scorer);
+  scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   Mock::VerifyAndClearExpectations(classifier_);
 
   // The delegate will cancel pending classification on destruction.
@@ -430,8 +437,8 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref) {
   // Now set a scorer, which should cause a classifier to be created,
   // but no classification will start.
   page_text = u"dummy";
-  MockScorer scorer;
-  delegate_->SetPhishingScorer(&scorer);
+  auto scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   Mock::VerifyAndClearExpectations(classifier_);
 
   // Manually start a classification.
@@ -441,7 +448,8 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref) {
   // If we set a new scorer while a classification is going on the
   // classification should be cancelled.
   EXPECT_CALL(*classifier_, CancelPendingClassification());
-  delegate_->SetPhishingScorer(&scorer);
+  scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   Mock::VerifyAndClearExpectations(classifier_);
 
   // The delegate will cancel pending classification on destruction.
@@ -451,8 +459,8 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref) {
 TEST_F(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
   // Tests the behavior when OnStartPhishingDetection has not yet been called
   // when the page load finishes.
-  MockScorer scorer;
-  delegate_->SetPhishingScorer(&scorer);
+  auto scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   ASSERT_TRUE(classifier_->is_ready());
 
   EXPECT_CALL(*classifier_, CancelPendingClassification());
@@ -525,8 +533,8 @@ TEST_F(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
 
 TEST_F(PhishingClassifierDelegateTest, IgnorePreliminaryCapture) {
   // Tests that preliminary PageCaptured notifications are ignored.
-  MockScorer scorer;
-  delegate_->SetPhishingScorer(&scorer);
+  auto scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   ASSERT_TRUE(classifier_->is_ready());
 
   EXPECT_CALL(*classifier_, CancelPendingClassification());
@@ -555,8 +563,8 @@ TEST_F(PhishingClassifierDelegateTest, IgnorePreliminaryCapture) {
 TEST_F(PhishingClassifierDelegateTest, DuplicatePageCapture) {
   // Tests that a second PageCaptured notification causes classification to
   // be cancelled.
-  MockScorer scorer;
-  delegate_->SetPhishingScorer(&scorer);
+  auto scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   ASSERT_TRUE(classifier_->is_ready());
 
   EXPECT_CALL(*classifier_, CancelPendingClassification());
@@ -586,8 +594,8 @@ TEST_F(PhishingClassifierDelegateTest, DuplicatePageCapture) {
 TEST_F(PhishingClassifierDelegateTest, PhishingDetectionDone) {
   // Tests that a SafeBrowsingHostMsg_PhishingDetectionDone IPC is
   // sent to the browser whenever we finish classification.
-  MockScorer scorer;
-  delegate_->SetPhishingScorer(&scorer);
+  auto scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   ASSERT_TRUE(classifier_->is_ready());
 
   // Start by loading a page to populate the delegate's state.

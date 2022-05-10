@@ -23,6 +23,8 @@ source_set("phishing_classifier") {
       "phishing_classifier_delegate.h",
       "phishing_dom_feature_extractor.cc",
       "phishing_dom_feature_extractor.h",
+      "phishing_model_setter_impl.cc",
+      "phishing_model_setter_impl.h",
       "phishing_term_feature_extractor.cc",
       "phishing_term_feature_extractor.h",
       "phishing_url_feature_extractor.cc",

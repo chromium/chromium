@@ -153,36 +153,36 @@ TEST_F(PhishingScorerTest, HasValidFlatBufferModel) {
   std::string flatbuffer = GetFlatBufferString();
   base::MappedReadOnlyRegion mapped_region =
       GetMappedReadOnlyRegionWithData(flatbuffer);
-  scorer.reset(FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
-                                             base::File()));
+  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
+                                         base::File());
   EXPECT_TRUE(scorer.get() != nullptr);
 
   // Invalid region.
-  scorer.reset(FlatBufferModelScorer::Create(base::ReadOnlySharedMemoryRegion(),
-                                             base::File()));
+  scorer = FlatBufferModelScorer::Create(base::ReadOnlySharedMemoryRegion(),
+                                         base::File());
   EXPECT_FALSE(scorer.get());
 
   // Invalid buffer in region.
   mapped_region = GetMappedReadOnlyRegionWithData("bogus string");
-  scorer.reset(FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
-                                             base::File()));
+  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
+                                         base::File());
   EXPECT_FALSE(scorer.get());
 }
 
 TEST_F(PhishingScorerTest, HasValidModel) {
   std::unique_ptr<Scorer> scorer;
-  scorer.reset(
-      ProtobufModelScorer::Create(model_.SerializeAsString(), base::File()));
+  scorer =
+      ProtobufModelScorer::Create(model_.SerializeAsString(), base::File());
   EXPECT_TRUE(scorer.get() != nullptr);
 
   // Invalid model string.
-  scorer.reset(ProtobufModelScorer::Create("bogus string", base::File()));
+  scorer = ProtobufModelScorer::Create("bogus string", base::File());
   EXPECT_FALSE(scorer.get());
 
   // Mode is missing a required field.
   model_.clear_max_words_per_term();
-  scorer.reset(ProtobufModelScorer::Create(model_.SerializePartialAsString(),
-                                           base::File()));
+  scorer = ProtobufModelScorer::Create(model_.SerializePartialAsString(),
+                                       base::File());
   EXPECT_FALSE(scorer.get());
 }
 
@@ -221,8 +221,8 @@ TEST_F(PhishingScorerTest, PageTermsFlat) {
   std::string flatbuffer = GetFlatBufferString();
   base::MappedReadOnlyRegion mapped_region =
       GetMappedReadOnlyRegionWithData(flatbuffer);
-  scorer.reset(FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
-                                             base::File()));
+  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
+                                         base::File());
   ASSERT_TRUE(scorer.get());
   base::RepeatingCallback<bool(const std::string&)> page_terms_callback(
       scorer->find_page_term_callback());
@@ -271,8 +271,8 @@ TEST_F(PhishingScorerTest, PageWordsFlat) {
   std::string flatbuffer = GetFlatBufferString();
   base::MappedReadOnlyRegion mapped_region =
       GetMappedReadOnlyRegionWithData(flatbuffer);
-  scorer.reset(FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
-                                             base::File()));
+  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
+                                         base::File());
   ASSERT_TRUE(scorer.get());
   base::RepeatingCallback<bool(uint32_t)> page_words_callback(
       scorer->find_page_word_callback());
@@ -321,8 +321,8 @@ TEST_F(PhishingScorerTest, ComputeScoreFlat) {
   std::string flatbuffer = GetFlatBufferString();
   base::MappedReadOnlyRegion mapped_region =
       GetMappedReadOnlyRegionWithData(flatbuffer);
-  scorer.reset(FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
-                                             base::File()));
+  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
+                                         base::File());
   EXPECT_TRUE(scorer.get() != nullptr);
 
   // An empty feature map should match the empty rule.

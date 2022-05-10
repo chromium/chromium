@@ -47,8 +47,6 @@ SafeBrowsingTabObserver::SafeBrowsingTabObserver(
         delegate_->DoesSafeBrowsingServiceExist() && csd_service) {
       safebrowsing_detection_host_ =
           delegate_->CreateClientSideDetectionHost(web_contents);
-      csd_service->AddClientSideDetectionHost(
-          safebrowsing_detection_host_.get());
     }
   }
 #endif
@@ -70,8 +68,6 @@ void SafeBrowsingTabObserver::UpdateSafebrowsingDetectionHost() {
     if (!safebrowsing_detection_host_.get()) {
       safebrowsing_detection_host_ =
           delegate_->CreateClientSideDetectionHost(&GetWebContents());
-      csd_service->AddClientSideDetectionHost(
-          safebrowsing_detection_host_.get());
     }
   } else {
     safebrowsing_detection_host_.reset();

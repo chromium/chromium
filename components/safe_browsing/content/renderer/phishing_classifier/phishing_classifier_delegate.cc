@@ -24,6 +24,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -41,14 +42,6 @@ GURL StripRef(const GURL& url) {
   return url.ReplaceComponents(replacements);
 }
 
-std::set<PhishingClassifierDelegate*>& PhishingClassifierDelegates() {
-  static base::NoDestructor<std::set<PhishingClassifierDelegate*>> s;
-  return *s;
-}
-
-base::LazyInstance<std::unique_ptr<const safe_browsing::Scorer>>::
-    DestructorAtExit g_phishing_scorer = LAZY_INSTANCE_INITIALIZER;
-
 }  // namespace
 
 PhishingClassifierDelegate::PhishingClassifierDelegate(
@@ -58,57 +51,21 @@ PhishingClassifierDelegate::PhishingClassifierDelegate(
       last_main_frame_transition_(ui::PAGE_TRANSITION_LINK),
       have_page_text_(false),
       is_classifying_(false) {
-  PhishingClassifierDelegates().insert(this);
   if (!classifier) {
     classifier = new PhishingClassifier(render_frame);
   }
 
   classifier_.reset(classifier);
 
-  if (g_phishing_scorer.Get().get())
-    SetPhishingScorer(g_phishing_scorer.Get().get());
-
-  registry_.AddInterface(
+  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
       base::BindRepeating(&PhishingClassifierDelegate::PhishingDetectorReceiver,
                           base::Unretained(this)));
+
+  model_change_observation_.Observe(ScorerStorage::GetInstance());
 }
 
 PhishingClassifierDelegate::~PhishingClassifierDelegate() {
   CancelPendingClassification(SHUTDOWN);
-  PhishingClassifierDelegates().erase(this);
-}
-
-void PhishingClassifierDelegate::SetPhishingModel(
-    const std::string& model,
-    base::File tflite_visual_model) {
-  safe_browsing::Scorer* scorer = nullptr;
-  // An empty model string means we should disable client-side phishing
-  // detection.
-  if (!model.empty()) {
-    scorer = safe_browsing::ProtobufModelScorer::Create(
-        model, std::move(tflite_visual_model));
-    if (!scorer)
-      return;
-  }
-  for (auto* delegate : PhishingClassifierDelegates())
-    delegate->SetPhishingScorer(scorer);
-  g_phishing_scorer.Get().reset(scorer);
-}
-
-void PhishingClassifierDelegate::SetPhishingFlatBufferModel(
-    base::ReadOnlySharedMemoryRegion flatbuffer_region,
-    base::File tflite_visual_model) {
-  safe_browsing::Scorer* scorer = nullptr;
-  // An invalid region means we should disable client-side phishing detection.
-  if (flatbuffer_region.IsValid()) {
-    scorer = safe_browsing::FlatBufferModelScorer::Create(
-        std::move(flatbuffer_region), std::move(tflite_visual_model));
-    if (!scorer)
-      return;
-  }
-  for (auto* delegate : PhishingClassifierDelegates())
-    delegate->SetPhishingScorer(scorer);
-  g_phishing_scorer.Get().reset(scorer);
 }
 
 // static
@@ -120,29 +77,10 @@ PhishingClassifierDelegate* PhishingClassifierDelegate::Create(
   return new PhishingClassifierDelegate(render_frame, classifier);
 }
 
-void PhishingClassifierDelegate::SetPhishingScorer(
-    const safe_browsing::Scorer* scorer) {
-  if (is_classifying_) {
-    // If there is a classification going on right now it means we're
-    // actually replacing an existing scorer with a new model.  In
-    // this case we simply cancel the current classification.
-    // TODO(noelutz): if this happens too frequently we could also
-    // replace the old scorer with the new one once classification is done
-    // but this would complicate the code somewhat.
-    CancelPendingClassification(NEW_PHISHING_SCORER);
-  }
-  classifier_->set_phishing_scorer(scorer);
-}
-
 void PhishingClassifierDelegate::PhishingDetectorReceiver(
-    mojo::PendingReceiver<mojom::PhishingDetector> receiver) {
-  phishing_detector_receivers_.Add(this, std::move(receiver));
-}
-
-void PhishingClassifierDelegate::OnInterfaceRequestForFrame(
-    const std::string& interface_name,
-    mojo::ScopedMessagePipeHandle* interface_pipe) {
-  registry_.TryBindInterface(interface_name, interface_pipe);
+    mojo::PendingAssociatedReceiver<mojom::PhishingDetector> receiver) {
+  phishing_detector_receiver_.reset();
+  phishing_detector_receiver_.Bind(std::move(receiver));
 }
 
 void PhishingClassifierDelegate::StartPhishingDetection(
@@ -305,6 +243,15 @@ void PhishingClassifierDelegate::OnDestruct() {
     RecordEvent(SBPhishingClassifierEvent::kDestructedBeforeClassificationDone);
   }
   delete this;
+}
+
+void PhishingClassifierDelegate::OnScorerChanged() {
+  if (is_classifying_) {
+    // If there is a classification going on right now it means we're
+    // actually replacing an existing scorer with a new model.  In
+    // this case we simply cancel the current classification.
+    CancelPendingClassification(NEW_PHISHING_SCORER);
+  }
 }
 
 }  // namespace safe_browsing

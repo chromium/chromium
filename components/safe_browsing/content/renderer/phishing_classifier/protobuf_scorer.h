@@ -41,8 +41,9 @@ class ProtobufModelScorer : public Scorer {
   // Factory method which creates a new Scorer object by parsing the given
   // model. If parsing fails this method returns NULL.
   // Can use this if model_str is empty.
-  static ProtobufModelScorer* Create(const base::StringPiece& model_str,
-                                     base::File visual_tflite_model);
+  static std::unique_ptr<ProtobufModelScorer> Create(
+      const base::StringPiece& model_str,
+      base::File visual_tflite_model);
 
   double ComputeScore(const FeatureMap& features) const override;
 

@@ -109,11 +109,7 @@ PhishingDOMFeatureExtractor::PhishingDOMFeatureExtractor()
 }
 
 PhishingDOMFeatureExtractor::~PhishingDOMFeatureExtractor() {
-  // The RenderView should have called CancelPendingExtraction() before
-  // we are destroyed.
-  DCHECK(done_callback_.is_null());
-  DCHECK(!cur_frame_data_.get());
-  DCHECK(cur_document_.IsNull());
+  CancelPendingExtraction();
 }
 
 void PhishingDOMFeatureExtractor::ExtractFeatures(blink::WebDocument document,

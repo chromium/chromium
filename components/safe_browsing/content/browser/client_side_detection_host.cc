@@ -45,6 +45,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_response_headers.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "url/gurl.h"
 
@@ -384,27 +385,12 @@ ClientSideDetectionHost::ClientSideDetectionHost(
   // be null if safe browsing service is not available in the embedder.
   ui_manager_ = delegate_->GetSafeBrowsingUIManager();
   database_manager_ = delegate_->GetSafeBrowsingDBManager();
-
-  // We want to accurately track all active RenderFrameHosts, so make sure we
-  // know about any pre-existings ones.
-  web_contents()->ForEachRenderFrameHost(base::BindRepeating(
-      [](ClientSideDetectionHost* csdh,
-         const content::WebContents* web_contents,
-         content::RenderFrameHost* rfh) {
-        // Don't cross into inner WebContents since we wouldn't be notified of
-        // its changes. See https://crbug.com/1308829
-        if (content::WebContents::FromRenderFrameHost(rfh) != web_contents) {
-          return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
-        }
-        csdh->InitializePhishingDetector(rfh);
-        return content::RenderFrameHost::FrameIterationAction::kContinue;
-      },
-      base::Unretained(this), web_contents()));
 }
 
 ClientSideDetectionHost::~ClientSideDetectionHost() {
-  if (csd_service_)
-    csd_service_->RemoveClientSideDetectionHost(this);
+  if (classification_request_.get()) {
+    classification_request_->Cancel();
+  }
 }
 
 void ClientSideDetectionHost::DidFinishNavigation(
@@ -452,71 +438,20 @@ void ClientSideDetectionHost::DidFinishNavigation(
   classification_request_->Start();
 }
 
-void ClientSideDetectionHost::SetPhishingModel(
-    const mojo::Remote<mojom::PhishingDetector>& phishing_detector) {
-  switch (csd_service_->GetModelType()) {
-    case CSDModelType::kNone:
-    case CSDModelType::kProtobuf:
-      phishing_detector->SetPhishingModel(
-          csd_service_->GetModelStr(),
-          csd_service_->GetVisualTfLiteModel().Duplicate());
-      return;
-    case CSDModelType::kFlatbuffer:
-      phishing_detector->SetPhishingFlatBufferModel(
-          csd_service_->GetModelSharedMemoryRegion(),
-          csd_service_->GetVisualTfLiteModel().Duplicate());
-      return;
-  }
-}
-
-void ClientSideDetectionHost::SendModelToRenderFrame() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!web_contents() || web_contents() != tab_ || !csd_service_)
-    return;
-
-  for (const auto& frame_and_remote : phishing_detectors_) {
-    SetPhishingModel(frame_and_remote.second);
-  }
-}
-
-void ClientSideDetectionHost::WebContentsDestroyed() {
-  // Tell any pending classification request that it is being canceled.
-  if (classification_request_.get()) {
-    classification_request_->Cancel();
-  }
-  if (csd_service_)
-    csd_service_->RemoveClientSideDetectionHost(this);
-}
-
-void ClientSideDetectionHost::RenderFrameCreated(
-    content::RenderFrameHost* render_frame_host) {
-  InitializePhishingDetector(render_frame_host);
-}
-
-void ClientSideDetectionHost::RenderFrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-  ClearPhishingDetector(render_frame_host->GetGlobalId());
-}
-
 void ClientSideDetectionHost::OnPhishingPreClassificationDone(
     bool should_classify) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (should_classify) {
     content::RenderFrameHost* rfh = web_contents()->GetMainFrame();
-    auto it = phishing_detectors_.find(rfh->GetGlobalId());
-    bool remote_valid =
-        (it != phishing_detectors_.end() && it->second.is_connected());
 
-    base::UmaHistogramBoolean("SBClientPhishing.MainFrameRemoteExists",
-                              it != phishing_detectors_.end());
-    if (it != phishing_detectors_.end()) {
-      base::UmaHistogramBoolean("SBClientPhishing.MainFrameRemoteConnected",
-                                it->second.is_connected());
-    }
+    phishing_detector_.reset();
+    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector_);
+    base::UmaHistogramBoolean("SBClientPhishing.MainFrameRemoteConnected",
+                              phishing_detector_.is_bound());
 
-    if (remote_valid) {
+    if (phishing_detector_.is_bound()) {
       phishing_detection_start_time_ = tick_clock_->NowTicks();
-      it->second->StartPhishingDetection(
+      phishing_detector_->StartPhishingDetection(
           current_url_,
           base::BindOnce(&ClientSideDetectionHost::PhishingDetectionDone,
                          weak_factory_.GetWeakPtr()));
@@ -532,6 +467,8 @@ void ClientSideDetectionHost::PhishingDetectionDone(
   // this method is called.  The renderer should not start phishing detection
   // if there isn't any service class in the browser.
   DCHECK(csd_service_);
+
+  phishing_detector_.reset();
 
   UmaHistogramMediumTimes(
       "SBClientPhishing.PhishingDetectionDuration",
@@ -674,27 +611,6 @@ void ClientSideDetectionHost::OnGotAccessToken(
     std::unique_ptr<ClientPhishingRequest> verdict,
     const std::string& access_token) {
   ClientSideDetectionHost::SendRequest(std::move(verdict), access_token);
-}
-
-void ClientSideDetectionHost::InitializePhishingDetector(
-    content::RenderFrameHost* render_frame_host) {
-  if (render_frame_host->IsRenderFrameCreated()) {
-    const content::GlobalRenderFrameHostId rfh_id =
-        render_frame_host->GetGlobalId();
-    mojo::Remote<mojom::PhishingDetector> new_detector;
-    render_frame_host->GetRemoteInterfaces()->GetInterface(
-        new_detector.BindNewPipeAndPassReceiver());
-    new_detector.set_disconnect_handler(
-        base::BindOnce(&ClientSideDetectionHost::ClearPhishingDetector,
-                       weak_factory_.GetWeakPtr(), rfh_id));
-    phishing_detectors_[rfh_id] = std::move(new_detector);
-    SetPhishingModel(phishing_detectors_[rfh_id]);
-  }
-}
-
-void ClientSideDetectionHost::ClearPhishingDetector(
-    content::GlobalRenderFrameHostId rfh_id) {
-  phishing_detectors_.erase(rfh_id);
 }
 
 bool ClientSideDetectionHost::CanGetAccessToken() {

@@ -621,6 +621,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientPhishing.MainFrameRemoteExists" enum="BooleanExists"
     expires_after="2022-08-29">
+  <obsolete>
+    Removed 04-2022 since the logic for how PhishingDetectors are managed
+    changed.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

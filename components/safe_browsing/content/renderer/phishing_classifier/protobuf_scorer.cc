@@ -41,7 +41,7 @@ ProtobufModelScorer::ProtobufModelScorer() = default;
 ProtobufModelScorer::~ProtobufModelScorer() = default;
 
 /* static */
-ProtobufModelScorer* ProtobufModelScorer::Create(
+std::unique_ptr<ProtobufModelScorer> ProtobufModelScorer::Create(
     const base::StringPiece& model_str,
     base::File visual_tflite_model) {
   std::unique_ptr<ProtobufModelScorer> scorer(new ProtobufModelScorer());
@@ -86,7 +86,7 @@ ProtobufModelScorer* ProtobufModelScorer::Create(
   }
 
   RecordScorerCreationStatus(SCORER_SUCCESS);
-  return scorer.release();
+  return scorer;
 }
 
 double ProtobufModelScorer::ComputeScore(const FeatureMap& features) const {

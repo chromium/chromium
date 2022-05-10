@@ -11,9 +11,12 @@
 #include <string>
 
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/scoped_observation.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_thread_observer.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
@@ -39,7 +42,8 @@ enum class SBPhishingClassifierEvent {
 };
 
 class PhishingClassifierDelegate : public content::RenderFrameObserver,
-                                   public mojom::PhishingDetector {
+                                   public mojom::PhishingDetector,
+                                   public ScorerStorage::Observer {
  public:
   // The RenderFrame owns us.  This object takes ownership of the classifier.
   // Note that if classifier is null, a default instance of PhishingClassifier
@@ -52,19 +56,6 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
       delete;
 
   ~PhishingClassifierDelegate() override;
-
-  // mojom::PhishingDetector
-  void SetPhishingModel(const std::string& model,
-                        base::File tflite_visual_model) override;
-
-  // mojom::PhishingDetector
-  void SetPhishingFlatBufferModel(
-      base::ReadOnlySharedMemoryRegion flatbuffer_region,
-      base::File tflite_visual_model) override;
-
-  // Called by the RenderFrame once there is a phishing scorer available.
-  // The scorer is passed on to the classifier.
-  void SetPhishingScorer(const safe_browsing::Scorer* scorer);
 
   // Called by the RenderFrame once a page has finished loading.  Updates the
   // last-loaded URL and page text, then starts classification if all other
@@ -99,7 +90,7 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   };
 
   void PhishingDetectorReceiver(
-      mojo::PendingReceiver<mojom::PhishingDetector> receiver);
+      mojo::PendingAssociatedReceiver<mojom::PhishingDetector> receiver);
 
   // Cancels any pending classification and frees the page text.
   void CancelPendingClassification(CancelClassificationReason reason);
@@ -108,10 +99,6 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   void RecordEvent(SBPhishingClassifierEvent event);
 
   void OnDestruct() override;
-
-  void OnInterfaceRequestForFrame(
-      const std::string& interface_name,
-      mojo::ScopedMessagePipeHandle* interface_pipe) override;
 
   // mojom::PhishingDetector
   // Called by the RenderFrame when it receives a StartPhishingDetection IPC
@@ -127,6 +114,9 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
 
   // Shared code to begin classification if all conditions are met.
   void MaybeStartClassification();
+
+  // ScorerStorage::Observer implementation:
+  void OnScorerChanged() override;
 
   // The PhishingClassifier to use for the RenderFrame.  This is created once
   // a scorer is made available via SetPhishingScorer().
@@ -173,9 +163,11 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   // The callback from the most recent call to StartPhishingDetection.
   StartPhishingDetectionCallback callback_;
 
-  mojo::ReceiverSet<mojom::PhishingDetector> phishing_detector_receivers_;
+  mojo::AssociatedReceiver<mojom::PhishingDetector> phishing_detector_receiver_{
+      this};
 
-  service_manager::BinderRegistry registry_;
+  base::ScopedObservation<ScorerStorage, ScorerStorage::Observer>
+      model_change_observation_{this};
 };
 
 }  // namespace safe_browsing

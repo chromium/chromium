@@ -16,6 +16,7 @@ include_rules = [
   "+content/public/test",
   "+crypto/sha2.h",
   "+ipc/ipc_message.h",
+  "+ipc/ipc_channel_proxy.h",
   "+net/cookies",
   "+net/extras",
   "+net/http",

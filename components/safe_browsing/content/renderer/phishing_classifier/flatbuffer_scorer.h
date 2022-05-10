@@ -43,8 +43,9 @@ class FlatBufferModelScorer : public Scorer {
   // Factory method which creates a new Scorer object by parsing the given
   // flatbuffer or tflite model. If parsing fails this method returns NULL.
   // Use this only if region is valid.
-  static FlatBufferModelScorer* Create(base::ReadOnlySharedMemoryRegion region,
-                                       base::File visual_tflite_model);
+  static std::unique_ptr<FlatBufferModelScorer> Create(
+      base::ReadOnlySharedMemoryRegion region,
+      base::File visual_tflite_model);
 
   double ComputeScore(const FeatureMap& features) const override;
 

@@ -424,8 +424,12 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   subresource_filter_ruleset_dealer_ =
       std::make_unique<subresource_filter::UnverifiedRulesetDealer>();
 
+  phishing_model_setter_ =
+      std::make_unique<safe_browsing::PhishingModelSetterImpl>();
+
   thread->AddObserver(chrome_observer_.get());
   thread->AddObserver(subresource_filter_ruleset_dealer_.get());
+  thread->AddObserver(phishing_model_setter_.get());
 
   thread->RegisterExtension(extensions_v8::LoadTimesExtension::Get());
 

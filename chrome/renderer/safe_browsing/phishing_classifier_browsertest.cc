@@ -155,9 +155,8 @@ class PhishingClassifierTest : public ChromeRenderViewTest,
     ASSERT_TRUE(mapped_region_.IsValid());
     memcpy(mapped_region_.mapping.memory(), model_str.data(),
            model_str.length());
-    scorer_.reset(FlatBufferModelScorer::Create(
+    ScorerStorage::GetInstance()->SetScorer(FlatBufferModelScorer::Create(
         mapped_region_.region.Duplicate(), base::File()));
-    ASSERT_TRUE(scorer_.get());
   }
 
   void PrepareModel() {
@@ -197,19 +196,12 @@ class PhishingClassifierTest : public ChromeRenderViewTest,
     model.set_max_shingles_per_page(100);
     model.set_shingle_size(3);
 
-    scorer_.reset(
+    ScorerStorage::GetInstance()->SetScorer(
         ProtobufModelScorer::Create(model.SerializeAsString(), base::File()));
-    ASSERT_TRUE(scorer_.get());
   }
 
   void SetUpClassifier() {
     classifier_ = std::make_unique<PhishingClassifier>(GetMainRenderFrame());
-    // No scorer yet, so the classifier is not ready.
-    ASSERT_FALSE(classifier_->is_ready());
-
-    // Now set the scorer.
-    classifier_->set_phishing_scorer(scorer_.get());
-    ASSERT_TRUE(classifier_->is_ready());
   }
 
   // Helper method to start phishing classification.
@@ -247,7 +239,6 @@ class PhishingClassifierTest : public ChromeRenderViewTest,
   }
 
   std::string response_content_;
-  std::unique_ptr<Scorer> scorer_;
   std::unique_ptr<PhishingClassifier> classifier_;
   base::RunLoop run_loop_;
   base::MappedReadOnlyRegion mapped_region_;
@@ -358,7 +349,7 @@ TEST_P(PhishingClassifierTest, TestClassificationWhenSchemeNotSupported) {
 TEST_P(PhishingClassifierTest, DisableDetection) {
   EXPECT_TRUE(classifier_->is_ready());
   // Set a NULL scorer, which turns detection back off.
-  classifier_->set_phishing_scorer(NULL);
+  ScorerStorage::GetInstance()->SetScorer(nullptr);
   EXPECT_FALSE(classifier_->is_ready());
 }
 
