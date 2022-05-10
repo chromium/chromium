@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -112,8 +113,15 @@ TEST(AutofillShadowPredictionComparisonTest, ComparisonContainsAllTypes) {
 class AutofillShadowPredictionMetricsTest
     : public autofill::metrics::AutofillMetricsBaseTest {
  public:
-  AutofillShadowPredictionMetricsTest() = default;
+  AutofillShadowPredictionMetricsTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillParsingPatternProvider);
+  }
+
   ~AutofillShadowPredictionMetricsTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // When shadow predictions are not calculated, the shadow prediction metrics
