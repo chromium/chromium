@@ -1496,6 +1496,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Desks.CloseAllUndo" enum="BooleanHit"
+    expires_after="2023-05-09">
+  <owner>aprilzhou@google.com</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emitted after a virtual desk being removed with close all option and undo
+    toast being clicked.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.CloseAllUndoAndExpired" enum="BooleanHit"
+    expires_after="2023-05-09">
+  <owner>aprilzhou@google.com</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emitted after a virtual desk being removed with close all option and undo
+    toast being showed. This metrics is a sum of user undo remove and ignore
+    undo.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Desks.ConsecutiveDailyVisits" units="days"
     expires_after="2022-10-24">
   <owner>afakhry@chromium.org</owner>
@@ -1595,6 +1616,16 @@ chromium-metrics-reviews@google.com.
     example if the user has moved from desk 1 to 2 to 1 to 2 to 3, the number
     recorded is 4. This only gets recorded if a traversal starts. A traversal
     means that the desk has changed onscreen.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.NumberOfWindowsClosed" units="units"
+    expires_after="2023-05-09">
+  <owner>aprilzhou@google.com</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emitted when a virtual desk is removed and all windows on the desk being
+    closed to record the total number of windows being closed by this operation.
   </summary>
 </histogram>
 
@@ -1714,6 +1745,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Emitted when a virtual desk is removed to specify the source of this remove
     operation, i.e. whether from the close-desk button, or keyboard shortcut.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.RemoveDeskType" enum="DeskCloseType"
+    expires_after="2023-05-09">
+  <owner>aprilzhou@google.com</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emitted when a virtual desk is removed to specify the category of this
+    remove operation among close all, combine desk, and close all and wait.
   </summary>
 </histogram>
 

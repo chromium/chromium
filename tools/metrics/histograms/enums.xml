@@ -24027,6 +24027,12 @@ Called by update_debug_scenarios.py.-->
   <int value="1" label="New key accelerator is used"/>
 </enum>
 
+<enum name="DeskCloseType">
+  <int value="0" label="Combine desks."/>
+  <int value="1" label="Close all windows"/>
+  <int value="2" label="Close all windows and wait"/>
+</enum>
+
 <enum name="DeskModelAddOrUpdateEntryStatus">
   <int value="0" label="Successfully added or updated"/>
   <int value="1" label="Generic error"/>

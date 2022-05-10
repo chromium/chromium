@@ -7615,6 +7615,68 @@ TEST_F(DesksCloseAllTest, CombineDesksTooltipIsUpdatedOnUserActions) {
               combine_desks_button_2->GetTooltipText());
   }
 }
+// Test metrics are being recorded in close all case.
+TEST_F(DesksCloseAllTest, TestMetricsRecordingWhenCloseAllWindows) {
+  struct {
+    const std::string scope_trace;
+    const bool restore_desk;
+  } kTestCases[] = {
+      {"Restore removed desk by undo", true},
+      {"Allow undo toast to expire", false},
+  };
+  base::HistogramTester histogram_tester;
+
+  // Set up a new desk with two windows
+  WindowHolder window(CreateAppWindow());
+  WindowHolder window1(CreateAppWindow());
+  NewDesk();
+  auto* controller = DesksController::Get();
+  controller->SendToDeskAtIndex(window.window(), 0);
+  controller->SendToDeskAtIndex(window1.window(), 0);
+  EnterOverview();
+
+  int remove_desk_type_count = 0;
+  int undo_toast_expired_count = 0;
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.scope_trace);
+    auto* menu_controller = DesksTestApi::GetContextMenuForDesk(0);
+    menu_controller->ExecuteCommand(
+        static_cast<int>(DeskActionContextMenu::CommandId::kCloseAll),
+        /*event_flags=*/0);
+    // Record RemoveDeskType: closeAll, combine and closeAllAndWait
+    histogram_tester.ExpectBucketCount("Ash.Desks.RemoveDeskType",
+                                       DeskCloseType::kCloseAllWindowsAndWait,
+                                       ++remove_desk_type_count);
+
+    if (test_case.restore_desk) {
+      // When `desk_1` is restored it should be back in its original position
+      // and should be active again.
+      views::LabelButton* dismiss_button =
+          DesksTestApi::GetCloseAllUndoToastDismissButton();
+      const gfx::Point button_center =
+          dismiss_button->GetBoundsInScreen().CenterPoint();
+      auto* event_generator = GetEventGenerator();
+      event_generator->MoveMouseTo(button_center);
+      event_generator->ClickLeftButton();
+      // Record click undo button in toast after remove all
+      histogram_tester.ExpectTotalCount("Ash.Desks.CloseAllUndo", 1);
+      // Record undo toast expired
+      histogram_tester.ExpectTotalCount("Ash.Desks.CloseAllUndoAndExpired",
+                                        ++undo_toast_expired_count);
+
+    } else {
+      // When we wait for the undo toast to expire, `desk_1` should be
+      // destroyed.
+      WaitForMilliseconds(ToastData::kDefaultToastDuration.InMilliseconds());
+      // Record undo toast expired
+      histogram_tester.ExpectTotalCount("Ash.Desks.CloseAllUndoAndExpired",
+                                        ++undo_toast_expired_count);
+      // Record number of windows being closed
+      histogram_tester.ExpectUniqueSample("Ash.Desks.NumberOfWindowsClosed", 2,
+                                          1);
+    }
+  }
+}
 
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.

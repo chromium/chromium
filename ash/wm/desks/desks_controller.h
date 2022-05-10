@@ -35,15 +35,19 @@ namespace ash {
 // functions to support a range of different close methods, such as combining
 // desks and closing desks with windows, as well as closing desks with windows
 // and providing an undo toast when done manually.
-enum DeskCloseType {
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// DeskCloseType in src/tools/metrics/histograms/enums.xml.
+enum class DeskCloseType {
   // Closes the target desk and moves its windows to another desk.
-  kCombineDesks,
+  kCombineDesks = 0,
   // Closes the target desk and all of its windows.
-  kCloseAllWindows,
+  kCloseAllWindows = 1,
   // Closes the target desk, saves its data to the `temporary_removed_desk_`
   // member variable, and creates a toast that will fully destroy the desk if
   // the user does not interact with it before it expires.
-  kCloseAllWindowsAndWait,
+  kCloseAllWindowsAndWait = 2,
+  kMaxValue = kCloseAllWindowsAndWait,
 };
 
 class Desk;

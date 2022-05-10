@@ -86,6 +86,11 @@ constexpr char kRemoveDeskHistogramName[] = "Ash.Desks.RemoveDesk";
 constexpr char kDeskSwitchHistogramName[] = "Ash.Desks.DesksSwitch";
 constexpr char kMoveWindowFromActiveDeskHistogramName[] =
     "Ash.Desks.MoveWindowFromActiveDesk";
+constexpr char kCloseAllUndoHistogramName[] = "Ash.Desks.CloseAllUndo";
+constexpr char kCloseAllUndoAndExpiredHistogramName[] =
+    "Ash.Desks.CloseAllUndoAndExpired";
+constexpr char kRemoveDeskTypeHistogramName[] = "Ash.Desks.RemoveDeskType";
+constexpr char kNumberOfWindowsClosed[] = "Ash.Desks.NumberOfWindowsClosed";
 constexpr char kNumberOfWindowsOnDesk_1_HistogramName[] =
     "Ash.Desks.NumberOfWindowsOnDesk_1";
 constexpr char kNumberOfWindowsOnDesk_2_HistogramName[] =
@@ -1522,6 +1527,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
     MaybeRestoreSplitView(/*refresh_snapped_windows=*/true);
 
   UMA_HISTOGRAM_ENUMERATION(kRemoveDeskHistogramName, source);
+  UMA_HISTOGRAM_ENUMERATION(kRemoveDeskTypeHistogramName, close_type);
 
   Shell::Get()
       ->accessibility_controller()
@@ -1537,6 +1543,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
 void DesksController::UndoDeskRemoval() {
   DCHECK(temporary_removed_desk_);
+  base::UmaHistogramBoolean(kCloseAllUndoHistogramName, true);
   Desk* readded_desk_ptr = temporary_removed_desk_->desk();
   auto readded_desk_data = std::move(temporary_removed_desk_);
   desks_.insert(desks_.begin() + readded_desk_data->index(),
@@ -1575,6 +1582,9 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
   non_const_desk->RecordLifetimeHistogram(removed_desk_data->index());
   non_const_desk->RecordAndResetConsecutiveDailyVisits(
       /*being_removed=*/true);
+  // Record number of windows being closed by desk removal.
+  UMA_HISTOGRAM_COUNTS_100(kNumberOfWindowsClosed,
+                           removed_desk->windows().size());
   ReportDesksCountHistogram();
   ReportNumberOfWindowsPerDeskHistogram();
 
@@ -1585,6 +1595,8 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
 }
 
 void DesksController::CommitPendingDeskRemoval() {
+  // This method will be invoked on both undo and expired toast.
+  base::UmaHistogramBoolean(kCloseAllUndoAndExpiredHistogramName, true);
   temporary_removed_desk_.reset();
 }
 
