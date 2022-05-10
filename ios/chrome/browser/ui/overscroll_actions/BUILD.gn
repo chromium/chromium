@@ -14,11 +14,8 @@ source_set("overscroll_actions") {
   ]
   deps = [
     "resources:ptr_close",
-    "resources:ptr_close_active",
     "resources:ptr_new_tab",
-    "resources:ptr_new_tab_active",
     "resources:ptr_reload",
-    "resources:ptr_reload_active",
     "//base",
     "//ios/chrome/app/strings:ios_chromium_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",
@@ -27,6 +24,7 @@ source_set("overscroll_actions") {
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/fullscreen:feature_flags",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/ui/page_info:constants",
     "//ios/chrome/browser/ui/side_swipe",

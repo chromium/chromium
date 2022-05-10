@@ -4,24 +4,6 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("ptr_reload_active") {
-  sources = [
-    "ptr_reload_active.imageset/Contents.json",
-    "ptr_reload_active.imageset/ptr_reload_active.png",
-    "ptr_reload_active.imageset/ptr_reload_active@2x.png",
-    "ptr_reload_active.imageset/ptr_reload_active@3x.png",
-  ]
-}
-
-imageset("ptr_close_active") {
-  sources = [
-    "ptr_close_active.imageset/Contents.json",
-    "ptr_close_active.imageset/ptr_close_active.png",
-    "ptr_close_active.imageset/ptr_close_active@2x.png",
-    "ptr_close_active.imageset/ptr_close_active@3x.png",
-  ]
-}
-
 imageset("ptr_close") {
   sources = [
     "ptr_close.imageset/Contents.json",
@@ -46,14 +28,5 @@ imageset("ptr_reload") {
     "ptr_reload.imageset/ptr_reload.png",
     "ptr_reload.imageset/ptr_reload@2x.png",
     "ptr_reload.imageset/ptr_reload@3x.png",
-  ]
-}
-
-imageset("ptr_new_tab_active") {
-  sources = [
-    "ptr_new_tab_active.imageset/Contents.json",
-    "ptr_new_tab_active.imageset/ptr_new_tab_active.png",
-    "ptr_new_tab_active.imageset/ptr_new_tab_active@2x.png",
-    "ptr_new_tab_active.imageset/ptr_new_tab_active@3x.png",
   ]
 }
