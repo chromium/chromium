@@ -3342,8 +3342,6 @@ source_set("chromeos") {
     "../ash/web_applications/personalization_app/personalization_app_manager_factory.h",
     "../ash/web_applications/personalization_app/personalization_app_metrics.cc",
     "../ash/web_applications/personalization_app/personalization_app_metrics.h",
-    "../ash/web_applications/personalization_app/personalization_app_prefs.cc",
-    "../ash/web_applications/personalization_app/personalization_app_prefs.h",
     "../ash/web_applications/personalization_app/personalization_app_theme_provider_impl.cc",
     "../ash/web_applications/personalization_app/personalization_app_theme_provider_impl.h",
     "../ash/web_applications/personalization_app/personalization_app_user_provider_impl.cc",

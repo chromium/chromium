@@ -136,11 +136,6 @@ TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest,
   keyboard_backlight_provider()->SetBacklightColor(
       mojom::BacklightColor::kBlue);
 
-  // Verify the backlight color pref is saved.
-  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
-                ash::prefs::kPersonalizationKeyboardBacklightColor),
-            static_cast<int>(mojom::BacklightColor::kBlue));
-
   // Verify JS side is notified.
   EXPECT_EQ(mojom::BacklightColor::kBlue, ObservedBacklightColor());
 }

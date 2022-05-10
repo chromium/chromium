@@ -138,6 +138,7 @@ class HumanPresenceOrientationController;
 class ImeControllerImpl;
 class WebAuthNDialogControllerImpl;
 class KeyAccessibilityEnabler;
+class KeyboardBacklightColorController;
 class KeyboardBrightnessControlDelegate;
 class KeyboardControllerImpl;
 class LaserPointerController;
@@ -459,6 +460,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   KeyAccessibilityEnabler* key_accessibility_enabler() {
     return key_accessibility_enabler_.get();
+  }
+  KeyboardBacklightColorController* keyboard_backlight_color_controller() {
+    return keyboard_backlight_color_controller_.get();
   }
   KeyboardBrightnessControlDelegate* keyboard_brightness_control_delegate() {
     return keyboard_brightness_control_delegate_.get();
@@ -796,6 +800,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<ImeControllerImpl> ime_controller_;
   std::unique_ptr<chromeos::ImmersiveContext> immersive_context_;
   std::unique_ptr<WebAuthNDialogControllerImpl> webauthn_dialog_controller_;
+  std::unique_ptr<KeyboardBacklightColorController>
+      keyboard_backlight_color_controller_;
   std::unique_ptr<KeyboardBrightnessControlDelegate>
       keyboard_brightness_control_delegate_;
   std::unique_ptr<LocaleUpdateControllerImpl> locale_update_controller_;

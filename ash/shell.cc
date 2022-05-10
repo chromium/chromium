@@ -119,6 +119,7 @@
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/human_presence/human_presence_orientation_controller.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
+#include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/locale/locale_update_controller_impl.h"
@@ -820,6 +821,7 @@ Shell::~Shell() {
   display_configuration_controller_.reset();
 
   // Needs to be destructed before `ime_controler_`.
+  keyboard_backlight_color_controller_.reset();
   rgb_keyboard_manager_.reset();
 
   // These members access Shell in their destructors.
@@ -1070,6 +1072,13 @@ void Shell::Init(
   views::FocusManagerFactory::Install(new AshFocusManagerFactory);
 
   wallpaper_controller_ = WallpaperControllerImpl::Create(local_state_);
+
+  if (features::IsRgbKeyboardEnabled()) {
+    // Initialized after |wallpaper_controller_| because we will need to observe
+    // when the extracted wallpaper color changes.
+    keyboard_backlight_color_controller_ =
+        std::make_unique<KeyboardBacklightColorController>();
+  }
 
   window_positioner_ = std::make_unique<WindowPositioner>();
 
