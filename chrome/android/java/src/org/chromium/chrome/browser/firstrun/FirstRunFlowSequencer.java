@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -285,13 +284,6 @@ public abstract class FirstRunFlowSequencer  {
                 freIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             }
 
-            boolean isVrIntent = VrModuleProvider.getIntentDelegate().isVrIntent(fromIntent);
-            if (isVrIntent) {
-                freIntent =
-                        VrModuleProvider.getIntentDelegate().setupVrFreIntent(caller, freIntent);
-                // We cannot access Chrome right now, e.g. because the VR module is not installed.
-                if (freIntent == null) return true;
-            }
             IntentUtils.safeStartActivity(caller, freIntent);
         } else {
             // First Run requires that the Intent contains NEW_TASK so that it doesn't sit on top

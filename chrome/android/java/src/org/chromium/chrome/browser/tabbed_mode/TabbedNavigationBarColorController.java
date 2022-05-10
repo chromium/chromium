@@ -31,17 +31,15 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.util.ColorUtils;
-import org.chromium.ui.vr.VrModeObserver;
 
 /**
  * Controls the bottom system navigation bar color for the provided {@link Window}.
  */
 @RequiresApi(Build.VERSION_CODES.O_MR1)
-class TabbedNavigationBarColorController implements VrModeObserver {
+class TabbedNavigationBarColorController {
     private final Window mWindow;
     private final ViewGroup mRootView;
     private final Context mContext;
@@ -114,8 +112,6 @@ class TabbedNavigationBarColorController implements VrModeObserver {
         // incognito NTP.
 
         updateNavigationBarColor();
-
-        VrModuleProvider.registerVrModeObserver(this);
     }
 
     /**
@@ -130,7 +126,6 @@ class TabbedNavigationBarColorController implements VrModeObserver {
             mCallbackController.destroy();
             mCallbackController = null;
         }
-        VrModuleProvider.unregisterVrModeObserver(this);
         mFullScreenManager.removeObserver(mFullscreenObserver);
     }
 
@@ -167,17 +162,6 @@ class TabbedNavigationBarColorController implements VrModeObserver {
         mLayoutManager.addObserver(mLayoutStateObserver);
         updateNavigationBarColor();
     }
-
-    @Override
-    public void onExitVr() {
-        // The platform ignores the light navigation bar system UI flag when launching an Activity
-        // in VR mode, so we need to restore it when VR is exited.
-        UiUtils.setNavigationBarIconColor(
-                mRootView, !mForceDarkNavigationBarColor && mLightNavigationBar);
-    }
-
-    @Override
-    public void onEnterVr() {}
 
     @SuppressLint("NewApi")
     private void updateNavigationBarColor() {

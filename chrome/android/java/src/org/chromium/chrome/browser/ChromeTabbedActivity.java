@@ -177,7 +177,6 @@ import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
@@ -2089,8 +2088,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             TabModel currentModel = mTabModelSelector.getCurrentModel();
             if (!currentModel.isIncognito()) currentModel.openMostRecentlyClosedEntry();
             RecordUserAction.record("MobileTabClosedUndoShortCut");
-        } else if (id == R.id.enter_vr_id) {
-            VrModuleProvider.getDelegate().enterVrIfNecessary();
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu);
         }

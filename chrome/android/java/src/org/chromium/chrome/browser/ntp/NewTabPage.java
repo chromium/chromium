@@ -63,7 +63,6 @@ import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -196,7 +195,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         @Override
         public void focusSearchBox(boolean beginVoiceSearch, String pastedText) {
             if (mIsDestroyed) return;
-            if (VrModuleProvider.getDelegate().isInVr()) return;
             if (mVoiceRecognitionHandler != null && beginVoiceSearch) {
                 mVoiceRecognitionHandler.startVoiceRecognition(
                         VoiceRecognitionHandler.VoiceInteractionSource.NTP);

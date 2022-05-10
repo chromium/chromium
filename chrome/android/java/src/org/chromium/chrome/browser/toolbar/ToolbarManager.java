@@ -135,7 +135,6 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
@@ -159,7 +158,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
-import org.chromium.ui.vr.VrModeObserver;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -286,7 +284,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
     private TabGroupUi mTabGroupUi;
 
-    private final VrModeObserver mVrModeObserver;
     private ObservableSupplierImpl<Boolean> mIsProgressBarVisibleSupplier =
             new ObservableSupplierImpl<>();
 
@@ -424,19 +421,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mSnackbarManager = snackbarManager;
         mTabReparentingControllerSupplier = tabReparentingControllerSupplier;
 
-        mIsProgressBarVisibleSupplier.set(!VrModuleProvider.getDelegate().isInVr());
-        mVrModeObserver = new VrModeObserver() {
-            @Override
-            public void onEnterVr() {
-                mIsProgressBarVisibleSupplier.set(false);
-            }
-
-            @Override
-            public void onExitVr() {
-                mIsProgressBarVisibleSupplier.set(true);
-            }
-        };
-        VrModuleProvider.registerVrModeObserver(mVrModeObserver);
+        mIsProgressBarVisibleSupplier.set(true);
 
         ToolbarLayout toolbarLayout = mActivity.findViewById(R.id.toolbar);
         NewTabPageDelegate ntpDelegate = createNewTabPageDelegate(toolbarLayout);
@@ -1414,8 +1399,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * Call to tear down all of the toolbar dependencies.
      */
     public void destroy() {
-        VrModuleProvider.unregisterVrModeObserver(mVrModeObserver);
-
         if (mInitializedWithNative) {
             mFindToolbarManager.removeObserver(mFindToolbarObserver);
         }

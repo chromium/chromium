@@ -18,8 +18,8 @@ public class HistoryClustersAction extends OmniboxPedal {
     private final String mQuery;
 
     public HistoryClustersAction(int id, @NonNull String hint, @NonNull String suggestionContents,
-            @NonNull String accessibilitySuffix, @NonNull String accessibilityHint,
-            @Nullable GURL url, @NonNull String query) {
+                                 @NonNull String accessibilitySuffix, @NonNull String accessibilityHint,
+                                 @Nullable GURL url, @NonNull String query) {
         super(id, hint, suggestionContents, accessibilitySuffix, accessibilityHint, url);
         mQuery = query;
     }
@@ -30,8 +30,8 @@ public class HistoryClustersAction extends OmniboxPedal {
 
     @CalledByNative
     private static HistoryClustersAction build(int id, @NonNull String hint,
-            @NonNull String suggestionContents, @NonNull String accessibilitySuffix,
-            @NonNull String accessibilityHint, @Nullable GURL url, @NonNull String query) {
+                                               @NonNull String suggestionContents, @NonNull String accessibilitySuffix,
+                                               @NonNull String accessibilityHint, @Nullable GURL url, @NonNull String query) {
         return new HistoryClustersAction(
                 id, hint, suggestionContents, accessibilitySuffix, accessibilityHint, url, query);
     }

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager.RecentTaskInfo;
-import android.app.Notification;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +28,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -39,13 +37,11 @@ import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.browser_ui.media.MediaNotificationUma;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -373,22 +369,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
     @SuppressLint("InlinedApi")
     @SuppressWarnings("checkstyle:SystemExitCheck") // Allowed due to https://crbug.com/847921#c17.
     private @Action int dispatchToTabbedActivity() {
-        boolean isVrIntent = VrModuleProvider.getIntentDelegate().isVrIntent(mIntent);
-        if (isVrIntent) {
-            for (Activity activity : ApplicationStatus.getRunningActivities()) {
-                if (activity instanceof ChromeTabbedActivity) {
-                    if (VrModuleProvider.getDelegate().willChangeDensityInVr(
-                                ((ChromeActivity) activity).getWindowAndroid())) {
-                        // In the rare case that entering VR will trigger a density change (and
-                        // hence an Activity recreation), just return to Daydream home and kill the
-                        // process, as there's no good way to recreate without showing 2D UI
-                        // in-headset.
-                        mActivity.finish();
-                        System.exit(0);
-                    }
-                }
-            }
-        }
 
         maybePrefetchDnsInBackground();
 
@@ -437,9 +417,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
 
         // This system call is often modified by OEMs and not actionable. http://crbug.com/619646.
         try {
-            Bundle options = isVrIntent
-                    ? VrModuleProvider.getIntentDelegate().getVrIntentOptions(mActivity)
-                    : null;
+            Bundle options = null;
             mActivity.startActivity(newIntent, options);
         } catch (SecurityException ex) {
             if (isContentScheme) {

@@ -2929,17 +2929,6 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 24 (current min is 23): `setVrModeEnabled`"
-        errorLine1="            ApiHelperForN.setVrModeEnabled(activity, enabled,"
-        errorLine2="                          ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrDelegateFallback.java"
-            line="230"
-            column="27"/>
-    </issue>
-
-    <issue
-        id="NewApi"
         message="Call requires API level 24 (current min is 23): `initializeNative`"
         errorLine1="        mVrShell.initializeNative(mRequestedWebVr, VrModuleProvider.getDelegate().bootsToVr());"
         errorLine2="                 ~~~~~~~~~~~~~~~~">

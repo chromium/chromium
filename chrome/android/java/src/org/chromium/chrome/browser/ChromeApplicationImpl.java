@@ -25,8 +25,6 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
-import org.chromium.chrome.browser.vr.OnExitVrRequestListener;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.embedder_support.browser_context.PartitionResolverSupplier;
 import org.chromium.components.module_installer.util.ModuleUtil;
@@ -97,24 +95,7 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
 
     @Override
     public void startActivity(Intent intent, Bundle options) {
-        if (VrModuleProvider.getDelegate().canLaunch2DIntents()
-                || VrModuleProvider.getIntentDelegate().isVrIntent(intent)) {
-            super.startActivity(intent, options);
-            return;
-        }
-
-        VrModuleProvider.getDelegate().requestToExitVr(new OnExitVrRequestListener() {
-            @Override
-            public void onSucceeded() {
-                if (!VrModuleProvider.getDelegate().canLaunch2DIntents()) {
-                    throw new IllegalStateException("Still in VR after having exited VR.");
-                }
-                startActivity(intent, options);
-            }
-
-            @Override
-            public void onDenied() {}
-        });
+        super.startActivity(intent, options);
     }
 
     /**

@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -1461,7 +1460,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      */
     private void updateInteractableState() {
         boolean currentState = !mIsHidden && !isFrozen()
-                && (mIsViewAttachedToWindow || VrModuleProvider.getDelegate().isInVr())
+                && mIsViewAttachedToWindow
                 && !isDetached(this);
 
         if (currentState == mInteractableState) return;

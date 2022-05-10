@@ -4,20 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.AUTOFILL_ENABLE_MANUAL_FALLBACK_FOR_VIRTUAL_CARDS;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KEYBOARD_EXTENSION_STATE;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.EXTENDING_KEYBOARD;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.FLOATING_BAR;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.FLOATING_SHEET;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.HIDDEN;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.REPLACING_KEYBOARD;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.WAITING_TO_REPLACE;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.PORTRAIT_ORIENTATION;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SHOW_WHEN_VISIBLE;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SUPPRESSED_BY_BOTTOM_SHEET;
-
 import android.util.SparseArray;
 import android.view.Surface;
 import android.view.View;
@@ -55,7 +41,6 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -72,6 +57,20 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
 
 import java.util.HashSet;
+
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.AUTOFILL_ENABLE_MANUAL_FALLBACK_FOR_VIRTUAL_CARDS;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KEYBOARD_EXTENSION_STATE;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.EXTENDING_KEYBOARD;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.FLOATING_BAR;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.FLOATING_SHEET;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.HIDDEN;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.REPLACING_KEYBOARD;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.WAITING_TO_REPLACE;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.PORTRAIT_ORIENTATION;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SHOW_WHEN_VISIBLE;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SUPPRESSED_BY_BOTTOM_SHEET;
 
 /**
  * This part of the manual filling component manages the state of the manual filling flow depending
@@ -482,9 +481,6 @@ class ManualFillingMediator extends EmptyTabObserver
      */
     private boolean canExtendKeyboard() {
         if (!mModel.get(SHOW_WHEN_VISIBLE)) return false;
-
-        // When in VR mode, don't extend the keyboard
-        if (VrModuleProvider.getDelegate().isInVr()) return false;
 
         // Don't open the accessory inside the contextual search panel.
         ObservableSupplier<ContextualSearchManager> contextualSearchSupplier =
