@@ -542,7 +542,13 @@ TEST_F(CloudPolicyRefreshSchedulerSteadyStateTest, OnRegistrationStateChanged) {
   EXPECT_FALSE(task_runner_->HasPendingTask());
 }
 
-TEST_F(CloudPolicyRefreshSchedulerSteadyStateTest, OnStoreLoaded) {
+// TODO(crbug.com/1322731): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_OnStoreLoaded DISABLED_OnStoreLoaded
+#else
+#define MAYBE_OnStoreLoaded OnStoreLoaded
+#endif
+TEST_F(CloudPolicyRefreshSchedulerSteadyStateTest, MAYBE_OnStoreLoaded) {
   store_.NotifyStoreLoaded();
   CheckTiming(refresh_scheduler_.get(), kPolicyRefreshRate);
 }
