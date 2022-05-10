@@ -9,7 +9,7 @@ var abort = false;
 // 500 ms is supposed to be 15 frames at 30 Hz. However, only ~7 frames or less
 // are recorded in OverlayModeTraceTest_DirectComposition tests.
 // Reducing this delay might cause flakes in some tests.
-var delayMs = 500;
+var delayMs = 1000;
 
 function logOutput(s) {
   if (window.domAutomationController)
@@ -31,7 +31,7 @@ const parsedString = (function (names) {
 })(window.location.search.substr(1).split('&'));
 
 function getTimeDelay() {
-  let delayString = parsedString['delay'];
+  let delayString = parsedString['delayMs'];
   if (delayString != undefined)
     delayMs = delayString;
 

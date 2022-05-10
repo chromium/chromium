@@ -430,20 +430,28 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if expected.no_overlay:
       return
 
+    # TODO(crbug.com/1278681): Remove this history after no more flaky tests.
+    logging.info(
+        'SwapChain Presentation Mode History %s',
+        TraceIntegrationTest._SwapChainPresentationModeListToStr(
+            presentation_mode_history))
+
     valid_entry_found = False
-    for index, mode in enumerate(presentation_mode_history):
+    for index, mode in enumerate(reversed(presentation_mode_history)):
+      # Be more tolerant for the beginning frames in non-overlay mode.
+      # Only check the last three entries.
+      if index >= 3:
+        break
       if mode in (_SWAP_CHAIN_PRESENTATION_MODE_NONE,
                   _SWAP_CHAIN_GET_FRAME_STATISTICS_MEDIA_FAILED):
         # Be more tolerant to avoid test flakiness
         continue
       if (TraceIntegrationTest._SwapChainPresentationModeToStr(mode) !=
           expected.presentation_mode):
-        if index >= len(presentation_mode_history) // 2:
-          # Be more tolerant for the first half frames in non-overlay mode.
-          self.fail('SwapChain presentation mode mismatch, expected %s got %s' %
-                    (expected.presentation_mode,
-                     TraceIntegrationTest._SwapChainPresentationModeListToStr(
-                         presentation_mode_history)))
+        self.fail('SwapChain presentation mode mismatch, expected %s got %s' %
+                  (expected.presentation_mode,
+                   TraceIntegrationTest._SwapChainPresentationModeListToStr(
+                       presentation_mode_history)))
       valid_entry_found = True
     if not valid_entry_found:
       self.fail(
