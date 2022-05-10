@@ -6,7 +6,9 @@
  * use.
  */
 import {assert} from '//resources/js/assert.m.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './iph_bubble.html.js';
 
 const ANCHOR_HIGHLIGHT_CLASS = 'iph-anchor-highlight';
 
@@ -29,7 +31,7 @@ export class IPHBubbleElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

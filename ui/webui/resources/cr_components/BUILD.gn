@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
@@ -79,6 +80,7 @@ group("preprocess") {
   public_deps = [
     ":preprocess_generated_ts",
     ":preprocess_src",
+    ":preprocess_src_ts",
   ]
 
   if (is_chromeos_ash) {
@@ -109,7 +111,7 @@ preprocess_if_expr("preprocess_src") {
 
 if (is_chromeos_ash) {
   preprocess_if_expr("preprocess_generated") {
-    deps = [ ":polymer3_elements" ]
+    deps = [ "chromeos:polymer3_elements" ]
     in_folder = target_gen_dir
     out_folder = preprocess_folder
     out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
@@ -208,15 +210,28 @@ if (is_chromeos_ash) {
 
 # TS files are passed to a separate target so that they are not listed in the
 # |out_manifest|.
-preprocess_if_expr("preprocess_generated_ts") {
-  deps = [ ":polymer3_elements" ]
-  in_folder = target_gen_dir
+preprocess_if_expr("preprocess_src_ts") {
+  in_folder = "."
   out_folder = preprocess_folder
   in_files = [
     "iph_bubble/iph_bubble.ts",
     "localized_link/localized_link.ts",
     "managed_dialog/managed_dialog.ts",
     "managed_footnote/managed_footnote.ts",
+  ]
+}
+
+# TS files are passed to a separate target so that they are not listed in the
+# |out_manifest|.
+preprocess_if_expr("preprocess_generated_ts") {
+  deps = [ ":html_wrapper_files" ]
+  in_folder = target_gen_dir
+  out_folder = preprocess_folder
+  in_files = [
+    "iph_bubble/iph_bubble.html.ts",
+    "localized_link/localized_link.html.ts",
+    "managed_dialog/managed_dialog.html.ts",
+    "managed_footnote/managed_footnote.html.ts",
   ]
 }
 
@@ -365,15 +380,11 @@ if (is_chromeos_ash) {
   }
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    "iph_bubble:web_components",
-    "localized_link:web_components",
-    "managed_dialog:web_components",
-    "managed_footnote:web_components",
+html_to_wrapper("html_wrapper_files") {
+  in_files = [
+    "iph_bubble/iph_bubble.html",
+    "localized_link/localized_link.html",
+    "managed_dialog/managed_dialog.html",
+    "managed_footnote/managed_footnote.html",
   ]
-
-  if (is_chromeos_ash) {
-    public_deps += [ "chromeos:polymer3_elements" ]
-  }
 }

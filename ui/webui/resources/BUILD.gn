@@ -150,19 +150,6 @@ group("closure_compile") {
   }
 }
 
-group("modulize") {
-  public_deps = [
-    "cr_elements:custom_elements",
-    "js:modulize",
-    "js/cr:modulize",
-    "js/cr/ui:modulize",
-  ]
-
-  if (include_polymer) {
-    public_deps += [ "cr_components:polymer3_elements" ]
-  }
-}
-
 # TypeScript targets
 
 preprocessed_folder = "$target_gen_dir/preprocessed"
@@ -326,9 +313,13 @@ ts_library("library") {
 
   if (include_polymer) {
     in_files += [
+      "cr_components/iph_bubble/iph_bubble.html.ts",
       "cr_components/iph_bubble/iph_bubble.ts",
+      "cr_components/localized_link/localized_link.html.ts",
       "cr_components/localized_link/localized_link.ts",
+      "cr_components/managed_footnote/managed_footnote.html.ts",
       "cr_components/managed_footnote/managed_footnote.ts",
+      "cr_components/managed_dialog/managed_dialog.html.ts",
       "cr_components/managed_dialog/managed_dialog.ts",
       "cr_elements/cr_auto_img/cr_auto_img.ts",
       "cr_elements/cr_grid/cr_grid.html.ts",

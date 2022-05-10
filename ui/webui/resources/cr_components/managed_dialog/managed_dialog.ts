@@ -12,10 +12,12 @@ import '../../cr_elements/icons.m.js';
 import '../../cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
+
+import {getTemplate} from './managed_dialog.html.js';
 
 export interface ManagedDialogElement {
   $: {
@@ -31,7 +33,7 @@ export class ManagedDialogElement extends ManagedDialogElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

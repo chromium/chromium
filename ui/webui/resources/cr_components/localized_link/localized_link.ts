@@ -24,7 +24,9 @@ import '../../cr_elements/shared_vars_css.m.js';
 import '../../cr_elements/shared_style_css.m.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './localized_link.html.js';
 
 interface LocalizedLinkElement {
   $: {
@@ -35,6 +37,10 @@ interface LocalizedLinkElement {
 class LocalizedLinkElement extends PolymerElement {
   static get is() {
     return 'localized-link';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -172,10 +178,6 @@ class LocalizedLinkElement extends PolymerElement {
       return;
     }
     anchorTag.tabIndex = this.linkDisabled ? -1 : 0;
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

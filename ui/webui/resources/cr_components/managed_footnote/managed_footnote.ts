@@ -16,11 +16,13 @@ import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../../cr_elements/icons.m.js';
 import '../../cr_elements/shared_vars_css.m.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nMixin} from '../../js/i18n_mixin.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 import {WebUIListenerMixin} from '../../js/web_ui_listener_mixin.js';
+
+import {getTemplate} from './managed_footnote.html.js';
 
 const ManagedFootnoteElementBase =
     I18nMixin(WebUIListenerMixin(PolymerElement));
@@ -31,7 +33,7 @@ export class ManagedFootnoteElement extends ManagedFootnoteElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
