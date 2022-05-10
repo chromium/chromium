@@ -25,6 +25,7 @@ from markdown.extensions import Extension
 DOCLAVA_DIR = os.path.join(REPOSITORY_ROOT, 'buildtools', 'android', 'doclava')
 SDK_DIR = os.path.join(REPOSITORY_ROOT, 'third_party', 'android_sdk', 'public')
 JAVADOC_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'javadoc')
+JAR_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'jar')
 
 JAVADOC_WARNING = """\
 javadoc: warning - The old Doclet and Taglet APIs in the packages
@@ -112,7 +113,8 @@ def main():
   # A temporary directory to put the output of cronet api source jar files.
   unzipped_jar_path = tempfile.mkdtemp(dir=args.output_dir)
   if os.path.exists(args.input_src_jar):
-    jar_cmd = ['jar', 'xf', os.path.abspath(args.input_src_jar)]
+    jar_cmd = [os.path.relpath(JAR_PATH, unzipped_jar_path), 'xf',
+               os.path.abspath(args.input_src_jar)]
     build_utils.CheckOutput(jar_cmd, cwd=unzipped_jar_path)
   else:
     raise Exception('Jar file does not exist: %s' % args.input_src_jar)
