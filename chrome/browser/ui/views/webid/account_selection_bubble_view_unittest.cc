@@ -294,6 +294,9 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleAccounts) {
     ASSERT_TRUE(account_row);
     EXPECT_EQ(account_row->title()->GetText(), expected[i].name);
     EXPECT_EQ(account_row->subtitle()->GetText(), expected[i].email);
+    // The subtitle has changed style, so AutoColorReadabilityEnabled should be
+    // set.
+    EXPECT_TRUE(account_row->subtitle()->GetAutoColorReadabilityEnabled());
   }
 }
 

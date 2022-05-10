@@ -245,6 +245,7 @@ void HoverButton::SetSubtitleTextStyle(int text_context,
                                        views::style::TextStyle text_style) {
   subtitle()->SetTextContext(text_context);
   subtitle()->SetTextStyle(text_style);
+  subtitle()->SetAutoColorReadabilityEnabled(true);
 }
 
 void HoverButton::SetTooltipAndAccessibleName() {
