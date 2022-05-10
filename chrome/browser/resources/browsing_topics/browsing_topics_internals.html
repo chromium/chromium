@@ -21,8 +21,9 @@
 
 <cr-tab-box>
   <div slot="tab">Topics State</div>
+  <div slot="tab">Classifier</div>
   <div slot="tab">Features and Parameters</div>
-  <div id="topics-state-slot" slot="panel">
+  <div id="topics-state-slot" slot="panel" class="panel">
     <div id="topics-state-override-status-message-div" class="topics-state-div"></div>
     <div id="topics-state-div" class="topics-state-div">
       <div id="next-scheduled-calculation-time-div">Next scheduled calculation time: </div>
@@ -31,7 +32,32 @@
       </div>
     </div>
   </div>
-  <div id="features-and-parameters-slot" slot="panel">
+  <div id="classifier-slot" slot="panel" class="panel">
+    <div id="model-info-loader" class="loader-div"></div>
+    <div id="model-info-override-status-message-div" class="model-info-div"></div>
+    <div id="model-info-div" class="model-info-div">
+      <div id="model-version-div">Model version: </div>
+      <div id="model-file-path-div">Model file path: </div>
+    </div>
+    <div id="hosts-classification-input-area-div" class="hosts-classification-input-area-div">
+      <textarea id="input-hosts-textarea" class="input-hosts-textarea" placeholder=
+"One host per line. For example:
+google.com
+youtube.com
+" spellcheck="false"></textarea>
+      <button type="button" id="hosts-classification-button">Classify</button>
+    </div>
+    <div id="hosts-classification-loader-div" class="loader-div"></div>
+    <div id="hosts-classification-result-table-wrapper" class="hosts-classification-result-div">
+      <table id="hosts-classification-result-table" class="hosts-classification-result-table">
+        <tr>
+          <th>Host</th>
+          <th>Topics</th>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div id="features-and-parameters-slot" slot="panel" class="panel">
     <div class="features-and-parameters-div">
       <div id="browsing-topics-enabled-div">BrowsingTopics: </div>
       <div id="privacy-sandbox-ads-apis-override-enabled-div">PrivacySandboxAdsAPIsOverride: </div>
@@ -51,6 +77,17 @@
     </div>
   </div>
 </cr-tab-box>
+
+<template id="classification-result-host-row-template">
+<tr>
+  <td></td>
+  <td></td>
+</tr>
+</template>
+
+<template id="classification-result-topic-entry-template">
+<span class="classification-result-topic-entry"></span>
+</template>
 
 <template id="epoch-div-template">
 <div class="epoch-div">

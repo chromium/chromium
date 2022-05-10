@@ -39,6 +39,72 @@ cr-tab-box {
   font-size: 1.3rem;
 }
 
+.input-hosts-textarea::placeholder {
+  color: silver;
+}
+
+.panel {
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+
+.input-hosts-textarea {
+  background-color: white;
+  border: 1px solid silver;
+  display: block;
+  line-height: 20px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  max-height: 300px;
+  min-height: 100px;
+  outline: none;
+  overflow: hidden;
+  overflow-y: scroll;
+  padding: 10px;
+  resize: vertical;
+  white-space: pre-wrap;
+  width: 100%;
+}
+
+.loader-div {
+  animation: spin 800ms linear infinite;
+  border: 16px solid rgb(230, 230, 230);
+  border-radius: 50%;
+  border-top: 16px solid silver;
+  height: 100px;
+  margin: auto;
+  margin-bottom: 30px;
+  margin-top: 30px;
+  width: 100px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+button {
+  background-color: gainsboro;
+  border: solid 2px transparent;
+  border-radius: 4px;
+  box-shadow: rgba(9, 30, 66, 0.25) 0 1px 1px, rgba(9, 30, 66, 0.13) 0 0 1px 1px;
+  color: rgb(60, 60, 60);
+  display: inline-block;
+  font-weight: bold;
+  margin: 2px 0;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+}
+
+button:hover {
+  background-color: silver;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
 .epochs-header {
   border-top: var(--common-border);
   color: var(--header-text-color);
@@ -48,19 +114,34 @@ cr-tab-box {
 
 .epoch-div,
 .topics-state-div,
-.features-and-parameters-div {
+.model-info-div,
+.hosts-classification-input-area-div,
+.hosts-classification-result-div,
+.features-and-parameters-div,
+.classification-input-div {
   font-size: 1rem;
   line-height: 1.5;
   padding: 10px;
 }
 
+.hosts-classification-input-area-div {
+  border-top: var(--common-border);
+  margin-top: 10px;
+  padding-top: 15px;
+}
+
+.classification-input-div {
+  margin-bottom: 30px;
+}
+
 .epoch-div {
-  border: 2px solid rgb(206, 206, 206);
+  border: 2px solid silver;
   border-radius: 3px;
   margin-top: 20px;
 }
 
-.epoch-topics-table {
+.epoch-topics-table,
+.hosts-classification-result-table {
   border: var(--common-border);
   border-collapse: collapse;
   margin-bottom: 10px;
@@ -77,9 +158,11 @@ tr {
   padding-inline-start: 10px;
 }
 
-.context-domain-entry {
+.context-domain-entry,
+.classification-result-topic-entry {
   border: var(--common-border);
   border-radius: 4px;
   padding-inline-end: 5px;
   padding-inline-start: 5px;
+  white-space: nowrap;
 }

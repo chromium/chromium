@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_BROWSING_TOPICS_BROWSING_TOPICS_INTERNALS_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_BROWSING_TOPICS_BROWSING_TOPICS_INTERNALS_PAGE_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
+#include "components/optimization_guide/core/page_content_annotations_common.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -34,11 +36,26 @@ class BrowsingTopicsInternalsPageHandler
   void GetBrowsingTopicsState(
       browsing_topics::mojom::PageHandler::GetBrowsingTopicsStateCallback
           callback) override;
+  void GetModelInfo(browsing_topics::mojom::PageHandler::GetModelInfoCallback
+                        callback) override;
+  void ClassifyHosts(const std::vector<std::string>& hosts,
+                     browsing_topics::mojom::PageHandler::ClassifyHostsCallback
+                         callback) override;
 
  private:
+  void OnGetModelInfoCompleted(
+      browsing_topics::mojom::PageHandler::GetModelInfoCallback callback,
+      bool successful);
+  void OnGetTopicsForHostsCompleted(
+      browsing_topics::mojom::PageHandler::ClassifyHostsCallback callback,
+      const std::vector<optimization_guide::BatchAnnotationResult>& results);
+
   Profile* const profile_;
 
   mojo::Receiver<browsing_topics::mojom::PageHandler> receiver_;
+
+  base::WeakPtrFactory<BrowsingTopicsInternalsPageHandler> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BROWSING_TOPICS_BROWSING_TOPICS_INTERNALS_PAGE_HANDLER_H_

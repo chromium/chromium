@@ -122,6 +122,18 @@ union WebUIGetBrowsingTopicsStateResult {
   WebUIBrowsingTopicsState browsing_topics_state;
 };
 
+// Struct representing the model metadata that will be displayed by WebUI.
+struct WebUIModelInfo {
+  string model_version;
+  string model_file_path;
+};
+
+// Contains either the model metadata, or an error/override message.
+union WebUIGetModelInfoResult {
+  string override_status_message;
+  WebUIModelInfo model_info;
+};
+
 // Browser interface for the page. Consists of calls for data and hooks for
 // interactivity. This is implemented in the browser and handling requests from
 // the WebUI renderer.
@@ -131,4 +143,23 @@ interface PageHandler {
 
   // Get the topics state.
   GetBrowsingTopicsState() => (WebUIGetBrowsingTopicsStateResult result);
+
+  // Get the model metadata.
+  GetModelInfo() => (WebUIGetModelInfoResult result);
+
+  // Classify `hosts` into topics using the same classification service that the
+  // Topics API (https://github.com/patcg-individual-drafts/topics) relies on,
+  // e.g. as if the Topics calculation happens now where `hosts` are the
+  // eligible hosts in the browsing history. Precondition: `hosts` is not empty.
+  // If the classification succeeds, each nested array in `topics_for_hosts`
+  // will contain the topics for the corresponding entry in `hosts`; if the
+  // classification fails, (e.g. model unavailable), `topics_for_hosts` will be
+  // an empty array.
+  //
+  // Note that the model or its availability status may have changed since the
+  // last call to `GetModelInfo()` (i.e. the WebUI implementation always happens
+  // to do in this order), but this is a minor issue so we won't expose the
+  // model info via this method again.
+  ClassifyHosts(array<string> hosts)
+    => (array<array<WebUITopic>> topics_for_hosts);
 };

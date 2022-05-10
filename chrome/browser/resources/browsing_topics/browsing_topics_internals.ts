@@ -8,7 +8,15 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Time, TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {PageHandler, WebUITopic} from './browsing_topics_internals.mojom-webui.js';
+import {PageHandler, PageHandlerRemote, WebUITopic} from './browsing_topics_internals.mojom-webui.js';
+
+let pageHandler = {} as PageHandlerRemote;
+let hostsClassificationSequenceNumber = 0;
+
+function setElementVisible(id: string, visible: boolean) {
+  const element = document.querySelector<HTMLDivElement>('#' + id);
+  element!.style.display = visible ? 'block' : 'none';
+}
 
 function decodeString16(arr: String16) {
   return arr.data.map(ch => String.fromCodePoint(ch)).join('');
@@ -105,8 +113,7 @@ function fieldNameFromId(id: string) {
 }
 
 async function asyncGetBrowsingTopicsConfiguration() {
-  const response =
-      await PageHandler.getRemote().getBrowsingTopicsConfiguration();
+  const response = await pageHandler.getBrowsingTopicsConfiguration();
 
   const config = response.config;
 
@@ -149,18 +156,18 @@ async function asyncGetBrowsingTopicsConfiguration() {
 }
 
 async function asyncGetBrowsingTopicsState() {
-  const response = await PageHandler.getRemote().getBrowsingTopicsState();
-
+  const response = await pageHandler.getBrowsingTopicsState();
   const result = response.result;
 
   if (result.overrideStatusMessage) {
     document.querySelector(
                 '#topics-state-override-status-message-div')!.textContent =
         result.overrideStatusMessage.toString();
-    document.querySelector<HTMLDivElement>('#topics-state-div')!.style.display =
-        'none';
+    setElementVisible('topics-state-override-status-message-div', true);
     return;
   }
+
+  setElementVisible('topics-state-div', true);
 
   document.querySelector('#next-scheduled-calculation-time-div')!.textContent +=
       formatMojoTime(result.browsingTopicsState!.nextScheduledCalculationTime);
@@ -185,7 +192,125 @@ async function asyncGetBrowsingTopicsState() {
   });
 }
 
+function createClassificationResultTopicEntry(topic: string) {
+  const entry = document
+                    .querySelector<HTMLTemplateElement>(
+                        '#classification-result-topic-entry-template')!.content
+                    .cloneNode(true);
+  (entry as HTMLElement).querySelectorAll('span')[0]!.textContent = topic;
+  return entry;
+}
+
+function createClassificationResultRow(host: string, topics: WebUITopic[]) {
+  const row = document
+                  .querySelector<HTMLTemplateElement>(
+                      '#classification-result-host-row-template')!.content
+                  .cloneNode(true) as HTMLElement;
+  const nestedCells = row.querySelectorAll('td');
+  nestedCells[0]!.textContent = host;
+
+  topics.forEach((topic) => {
+    const topicText =
+        String(topic.topicId) + '. ' + decodeString16(topic.topicName);
+    nestedCells[1]!.appendChild(
+        createClassificationResultTopicEntry(topicText));
+  });
+
+  return row;
+}
+
+async function asyncClassifyHosts(hosts: string[], sequenceNumber: Number) {
+  let topicsForHosts = [] as WebUITopic[][];
+
+  if (hosts.length > 0) {
+    const response = await pageHandler.classifyHosts(hosts);
+    topicsForHosts = response.topicsForHosts;
+  }
+
+  // Skip this result if a newer classification was initiated before this one
+  // finished.
+  if (sequenceNumber !== hostsClassificationSequenceNumber) {
+    return;
+  }
+
+  const table = document.querySelector('#hosts-classification-result-table')! as
+      HTMLTableElement;
+
+  while (table.rows[1]) {
+    table.deleteRow(1);
+  }
+
+  for (let i = 0; i < hosts.length; i++) {
+    const host = hosts[i] as string;
+    const topics = topicsForHosts![i] as WebUITopic[];
+
+    document.querySelector('#hosts-classification-result-table')!.appendChild(
+        createClassificationResultRow(host, topics));
+  }
+
+  setElementVisible('hosts-classification-loader-div', false);
+  setElementVisible('hosts-classification-result-table-wrapper', true);
+}
+
+async function asyncGetModelInfo() {
+  const response = await pageHandler.getModelInfo();
+
+  setElementVisible('model-info-loader', false);
+
+  const result = response.result;
+
+  if (result.overrideStatusMessage) {
+    document.querySelector(
+                '#model-info-override-status-message-div')!.textContent =
+        result.overrideStatusMessage.toString();
+    setElementVisible('model-info-override-status-message-div', true);
+    return;
+  }
+
+  document.querySelector('#model-version-div')!.textContent +=
+      result.modelInfo!.modelVersion;
+  document.querySelector('#model-file-path-div')!.textContent +=
+      result.modelInfo!.modelFilePath;
+
+  setElementVisible('model-info-div', true);
+  setElementVisible('hosts-classification-input-area-div', true);
+
+  document.querySelector(
+              '#hosts-classification-button')!.addEventListener('click', () => {
+    const input = (document.querySelector('#input-hosts-textarea')! as
+                   HTMLTextAreaElement)
+                      .value;
+    const hosts = input!.split('\n');
+
+    const preprocessedHosts = [] as string[];
+    hosts.forEach((host) => {
+      const trimmedHost = host.trim();
+      if (trimmedHost === '') {
+        return;
+      }
+
+      preprocessedHosts.push(trimmedHost);
+    });
+
+    setElementVisible('hosts-classification-loader-div', true);
+    setElementVisible('hosts-classification-result-table-wrapper', false);
+    asyncClassifyHosts(preprocessedHosts, ++hostsClassificationSequenceNumber);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+  // Setup the mojo interface.
+  pageHandler = PageHandler.getRemote();
+
+  setElementVisible('topics-state-override-status-message-div', false);
+  setElementVisible('topics-state-div', false);
+  setElementVisible('model-info-override-status-message-div', false);
+  setElementVisible('model-info-div', false);
+  setElementVisible('hosts-classification-input-area-div', false);
+  setElementVisible('hosts-classification-loader-div', false);
+  setElementVisible('hosts-classification-result-table-wrapper', false);
+
   asyncGetBrowsingTopicsConfiguration();
   asyncGetBrowsingTopicsState();
+  asyncGetModelInfo();
 });
