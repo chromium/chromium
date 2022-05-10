@@ -273,9 +273,9 @@ class WebView {
 
   virtual void SetFrame(const std::string& new_frame_id) = 0;
 
-  virtual Status GetNodeIdByElement(const std::string& frame,
-                                    const base::Value& element,
-                                    int* node_id) = 0;
+  virtual Status GetBackendNodeIdByElement(const std::string& frame,
+                                           const base::Value& element,
+                                           int* backend_node_id) = 0;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_WEB_VIEW_H_

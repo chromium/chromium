@@ -129,9 +129,9 @@ class StubWebView : public WebView {
   std::unique_ptr<base::Value> GetCastSinks() override;
   std::unique_ptr<base::Value> GetCastIssueMessage() override;
   void SetFrame(const std::string& new_frame_id) override;
-  Status GetNodeIdByElement(const std::string& frame,
-                            const base::Value& element,
-                            int* node_id) override;
+  Status GetBackendNodeIdByElement(const std::string& frame,
+                                   const base::Value& element,
+                                   int* node_id) override;
 
  private:
   std::string id_;

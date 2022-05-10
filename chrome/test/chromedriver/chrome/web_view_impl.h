@@ -21,7 +21,6 @@ class Value;
 struct BrowserInfo;
 struct DeviceMetrics;
 class DevToolsClient;
-class DomTracker;
 class DownloadDirectoryOverrideManager;
 class FrameTracker;
 class GeolocationOverrideManager;
@@ -171,10 +170,9 @@ class WebViewImpl : public WebView {
                                  int y,
                                  int xoffset,
                                  int yoffset) override;
-  Status GetNodeIdByElement(const std::string& frame,
-                            const base::Value& element,
-                            int* node_id) override;
-
+  Status GetBackendNodeIdByElement(const std::string& frame,
+                                   const base::Value& element,
+                                   int* backend_node_id) override;
   bool IsNonBlocking() const override;
   bool IsOOPIF(const std::string& frame_id) override;
   FrameTracker* GetFrameTracker() const override;
@@ -217,7 +215,6 @@ class WebViewImpl : public WebView {
   // Many trackers hold pointers to DevToolsClient, so client_ must be declared
   // before the trackers, to ensured trackers are destructed before client_.
   std::unique_ptr<DevToolsClient> client_;
-  std::unique_ptr<DomTracker> dom_tracker_;
   std::unique_ptr<FrameTracker> frame_tracker_;
   std::unique_ptr<JavaScriptDialogManager> dialog_manager_;
   std::unique_ptr<PageLoadStrategy> navigation_tracker_;
@@ -280,13 +277,20 @@ Status EvaluateScriptAndGetValue(DevToolsClient* client,
                                  std::unique_ptr<base::Value>* result);
 Status ParseCallFunctionResult(const base::Value& temp_result,
                                std::unique_ptr<base::Value>* result);
-Status GetNodeIdFromFunction(DevToolsClient* client,
-                             int context_id,
-                             const std::string& function,
-                             const base::ListValue& args,
-                             bool* found_node,
-                             int* node_id,
-                             bool w3c_compliant);
+Status GetBackendNodeIdFromFunction(DevToolsClient* client,
+                                    int context_id,
+                                    const std::string& function,
+                                    const base::ListValue& args,
+                                    bool* found_node,
+                                    int* backend_node_id,
+                                    bool w3c_compliant);
+Status GetFrameIdFromFunction(DevToolsClient* client,
+                              int context_id,
+                              const std::string& function,
+                              const base::ListValue& args,
+                              bool* found_node,
+                              std::string* frame_id,
+                              bool w3c_compliant);
 }  // namespace internal
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_WEB_VIEW_IMPL_H_
