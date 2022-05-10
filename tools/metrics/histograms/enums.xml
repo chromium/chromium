@@ -22436,7 +22436,13 @@ metrics consent we also won't be able to send UMA metrics. -->
 <enum name="CryptohomeFetchUssExperimentConfigStatus">
   <int value="0" label="Enabled"/>
   <int value="1" label="Disabled"/>
-  <int value="2" label="Error"/>
+  <int value="2" label="Error (Deprecated)"/>
+  <int value="3" label="Fetch Error"/>
+  <int value="4" label="Parse Error"/>
+  <int value="5" label="No Release Track">
+    Failed to parse the /etc/lsb-release file, so unable to determine the
+    current channel.
+  </int>
 </enum>
 
 <enum name="CryptohomeLECredError">

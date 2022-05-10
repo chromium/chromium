@@ -620,6 +620,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.UssExperiment.FetchUssExperimentConfigRetries"
+    units="retries" expires_after="2023-04-29">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The number of retries before successfully fetching the USS experiment config
+    file. This is not reported if the fetching failed (including reaching retry
+    limit) at last, and reports 0 when the fetching succeeds on the first
+    attempt. This is so that we can monitor how many retries before a success
+    are needed in average on a normal working device.
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.UssExperiment.FetchUssExperimentConfigStatus"
     enum="CryptohomeFetchUssExperimentConfigStatus" expires_after="2023-04-29">
   <owner>hcyang@google.com</owner>
@@ -628,8 +641,8 @@ chromium-metrics-reviews@google.com.
     cryptohomed fetchs the USS experiment config from gstatic when it starts.
     This metric tracks the fetch and parse result. If fetch and parse is
     successful, and it determines that the experiment should be
-    enabled/disabled, it reports Enabled/Disabled respectively. If fetch or
-    parse is not successful, it reports Error.
+    enabled/disabled, it reports Enabled/Disabled respectively. Otherwise it
+    reports the kind of error it encountered.
   </summary>
 </histogram>
 
