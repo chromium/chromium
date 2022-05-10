@@ -566,8 +566,8 @@ IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInSingleNestedFrame) {
 }
 
 IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInLocalRoot) {
-// Flaky on Mac ARM64. https://crbug.com/1323606
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+// TODO(crbug.com/1323876) Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
   if (!IsForceLocalFrames())
     return;
 #endif
@@ -576,8 +576,8 @@ IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInLocalRoot) {
 }
 
 IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInDoublyNestedFrame) {
-// Flaky on Mac ARM64. https://crbug.com/1323606
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+// TODO(crbug.com/1323876) Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
   if (!IsForceLocalFrames())
     return;
 #endif
@@ -588,8 +588,8 @@ IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInDoublyNestedFrame) {
 IN_PROC_BROWSER_TEST_P(
     ScrollIntoViewBrowserTest,
     CrossesEditableInDoublyNestedFrameLocalAndRemoteBoundaries) {
-// Flaky on Mac ARM64. https://crbug.com/1323606
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+// TODO(crbug.com/1323876) Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
   if (!IsForceLocalFrames())
     return;
 #endif
