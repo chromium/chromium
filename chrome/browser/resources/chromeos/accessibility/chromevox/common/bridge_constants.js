@@ -14,6 +14,7 @@ goog.provide('BridgeTarget');
  */
 BridgeTarget = {
   BRAILLE_BACKGROUND: 'BrailleBackground',
+  BRAILLE_COMMAND_HANDLER: 'BrailleCommandHandler',
   CHROMEVOX_PREFS: 'ChromeVoxPrefs',
   CHROMEVOX_STATE: 'ChromeVoxState',
   COMMAND_HANDLER: 'CommandHandler',
@@ -42,6 +43,7 @@ BridgeAction = {
   PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE: 'performCustomActionOnCurrentNode',
   PERFORM_STANDARD_ACTION_ON_CURRENT_NODE: 'performStandardActionOnCurrentNode',
   REFRESH_BRAILLE_TABLE: 'refreshBrailleTable',
+  SET_ENABLED: 'setEnabled',
   SET_LOGGING_PREFS: 'setLoggingPrefs',
   SET_PREF: 'setPref',
   SET_RANGE_TO_I_SEARCH_NODE: 'setRangeToISearchNode',

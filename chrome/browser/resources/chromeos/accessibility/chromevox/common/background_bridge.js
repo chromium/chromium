@@ -35,6 +35,18 @@ BackgroundBridge.BrailleBackground = {
   },
 };
 
+BackgroundBridge.BrailleCommandHandler = {
+  /**
+   * @param {boolean} enabled
+   * @return {!Promise}
+   */
+  async setEnabled(enabled) {
+    return BridgeHelper.sendMessage(
+        Bridgetarget.BRAILLE_COMMAND_HANDLER, BridgeAction.SET_ENABLED,
+        enabled);
+  },
+};
+
 BackgroundBridge.ChromeVoxBackground = {
   /**
    * Gets the voice currently used by ChromeVox when calling tts.
