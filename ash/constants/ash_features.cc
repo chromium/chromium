@@ -1157,7 +1157,7 @@ const base::Feature kProductivityLauncher{"ProductivityLauncher",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable Projector.
-const base::Feature kProjector{"Projector", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kProjector{"Projector", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable Projector for managed users.
 const base::Feature kProjectorManagedUser{"ProjectorManagedUser",
