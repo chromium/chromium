@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/chrome_content_browser_client_ash_part.h"
+#include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
 
 #include "base/feature_list.h"
 #include "chrome/browser/browser_features.h"
@@ -12,8 +12,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -22,10 +20,13 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
-#include "extensions/common/constants.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
-namespace ash {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+#include "chrome/common/webui_url_constants.h"
+#include "extensions/common/constants.h"
+#endif
 
 namespace {
 
@@ -51,24 +52,6 @@ bool IsInternalPage(content::WebContents* contents) {
     return true;
 
   return url.SchemeIs(content::kChromeUIScheme);
-}
-
-// Returns true if the WebUI at |url| is considered "system UI" and should use
-// the system font size (the default) instead of the browser font size.
-// Takes a URL because the WebContents may not yet be associated with a window,
-// SettingsWindowManager, etc.
-bool UseDefaultFontSize(const GURL& url) {
-  if (chromeos::SystemWebDialogDelegate::HasInstance(url))
-    return true;
-
-  if (url.SchemeIs(content::kChromeUIScheme))
-    return chrome::IsSystemWebUIHost(url.host_piece());
-
-  if (url.SchemeIs(extensions::kExtensionScheme)) {
-    base::StringPiece extension_id = url.host_piece();
-    return extension_misc::IsSystemUIApp(extension_id);
-  }
-  return false;
 }
 
 void OverrideWebkitPrefsForTabletMode(
@@ -98,6 +81,25 @@ void OverrideWebkitPrefsForTabletMode(
   web_prefs->default_maximum_page_scale_factor = 5.0;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Returns true if the WebUI at |url| is considered "system UI" and should use
+// the system font size (the default) instead of the browser font size.
+// Takes a URL because the WebContents may not yet be associated with a window,
+// SettingsWindowManager, etc.
+bool UseDefaultFontSize(const GURL& url) {
+  if (chromeos::SystemWebDialogDelegate::HasInstance(url))
+    return true;
+
+  if (url.SchemeIs(content::kChromeUIScheme))
+    return chrome::IsSystemWebUIHost(url.host_piece());
+
+  if (url.SchemeIs(extensions::kExtensionScheme)) {
+    base::StringPiece extension_id = url.host_piece();
+    return extension_misc::IsSystemUIApp(extension_id);
+  }
+  return false;
+}
+
 void OverrideFontSize(content::WebContents* contents,
                       blink::web_pref::WebPreferences* web_prefs) {
   DCHECK(contents);
@@ -112,16 +114,17 @@ void OverrideFontSize(content::WebContents* contents,
     web_prefs->default_fixed_font_size = base_prefs.default_fixed_font_size;
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
-ChromeContentBrowserClientAshPart::ChromeContentBrowserClientAshPart() =
-    default;
+ChromeContentBrowserClientTabletModePart::
+    ChromeContentBrowserClientTabletModePart() = default;
 
-ChromeContentBrowserClientAshPart::~ChromeContentBrowserClientAshPart() =
-    default;
+ChromeContentBrowserClientTabletModePart::
+    ~ChromeContentBrowserClientTabletModePart() = default;
 
-void ChromeContentBrowserClientAshPart::OverrideWebkitPrefs(
+void ChromeContentBrowserClientTabletModePart::OverrideWebkitPrefs(
     content::WebContents* web_contents,
     blink::web_pref::WebPreferences* web_prefs) {
   // A webcontents may not be the delegate of the render view host such as in
@@ -130,13 +133,15 @@ void ChromeContentBrowserClientAshPart::OverrideWebkitPrefs(
     return;
 
   OverrideWebkitPrefsForTabletMode(web_contents, web_prefs);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   OverrideFontSize(web_contents, web_prefs);
+#endif
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
-bool ChromeContentBrowserClientAshPart::UseDefaultFontSizeForTest(
+bool ChromeContentBrowserClientTabletModePart::UseDefaultFontSizeForTest(
     const GURL& url) {
   return UseDefaultFontSize(url);
 }
-
-}  // namespace ash
+#endif

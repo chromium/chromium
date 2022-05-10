@@ -25,6 +25,7 @@ class FieldTrialObserver;
 class QuickAnswersController;
 class StandaloneBrowserTestController;
 class SyncExplicitPassphraseClientLacros;
+class TabletModePageBehavior;
 class WebAuthnRequestRegistrarLacros;
 
 namespace arc {
@@ -141,6 +142,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Handles Quick answers requests from the Lacros browser.
   std::unique_ptr<QuickAnswersController> quick_answers_controller_;
+
+  // Updates Blink preferences on tablet mode state change.
+  std::unique_ptr<TabletModePageBehavior> tablet_mode_page_behavior_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_

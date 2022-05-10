@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
 #include "chrome/browser/lacros/app_mode/chrome_kiosk_launch_controller_lacros.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/arc/arc_icon_cache.h"
@@ -98,6 +99,7 @@ void ChromeBrowserMainExtraPartsLacros::PreProfileInit() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::SetCurrentFeatureSessionType(GetExtSessionType());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  tablet_mode_page_behavior_ = std::make_unique<TabletModePageBehavior>();
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {

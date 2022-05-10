@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/chrome_content_browser_client_ash_part.h"
+#include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
 
 #include <string>
 
@@ -10,11 +10,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace ash {
 namespace {
 
 bool UseDefaultFontSize(const std::string& url) {
-  return ChromeContentBrowserClientAshPart::UseDefaultFontSizeForTest(
+  return ChromeContentBrowserClientTabletModePart::UseDefaultFontSizeForTest(
       GURL(url));
 }
 
@@ -25,7 +24,7 @@ std::string GetExtensionURL(const std::string& extension_id) {
   return url;
 }
 
-TEST(ChromeContentBrowserClientAshPartTest, FontSizeForChromeUI) {
+TEST(ChromeContentBrowserClientTabletModePartTest, FontSizeForChromeUI) {
   struct TestCase {
     std::string url;
     bool is_system_ui;
@@ -42,7 +41,7 @@ TEST(ChromeContentBrowserClientAshPartTest, FontSizeForChromeUI) {
   }
 }
 
-TEST(ChromeContentBrowserClientAshPartTest, FontSizeForApps) {
+TEST(ChromeContentBrowserClientTabletModePartTest, FontSizeForApps) {
   struct TestCase {
     std::string extension_id;
     bool is_system_ui;
@@ -61,4 +60,3 @@ TEST(ChromeContentBrowserClientAshPartTest, FontSizeForApps) {
 }
 
 }  // namespace
-}  // namespace ash

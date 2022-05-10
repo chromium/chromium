@@ -7469,6 +7469,15 @@ static_library("browser") {
     ]
     deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]
   }
+
+  if (is_chromeos) {
+    sources += [
+      "chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.cc",
+      "chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h",
+      "chromeos/tablet_mode/tablet_mode_page_behavior.cc",
+      "chromeos/tablet_mode/tablet_mode_page_behavior.h",
+    ]
+  }
 }
 
 if (is_android) {

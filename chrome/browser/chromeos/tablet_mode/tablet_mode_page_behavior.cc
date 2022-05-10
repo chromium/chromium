@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/tablet_mode_page_behavior.h"
+#include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
 
 #include <utility>
 

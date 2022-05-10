@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_TABLET_MODE_PAGE_BEHAVIOR_H_
-#define CHROME_BROWSER_UI_ASH_TABLET_MODE_PAGE_BEHAVIOR_H_
+#ifndef CHROME_BROWSER_CHROMEOS_TABLET_MODE_TABLET_MODE_PAGE_BEHAVIOR_H_
+#define CHROME_BROWSER_CHROMEOS_TABLET_MODE_TABLET_MODE_PAGE_BEHAVIOR_H_
 
 #include <memory>
 
@@ -55,4 +55,4 @@ class TabletModePageBehavior : public display::DisplayObserver,
   std::unique_ptr<BrowserTabStripTracker> tab_strip_tracker_;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_TABLET_MODE_PAGE_BEHAVIOR_H_
+#endif  // CHROME_BROWSER_CHROMEOS_TABLET_MODE_TABLET_MODE_PAGE_BEHAVIOR_H_

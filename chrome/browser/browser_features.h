@@ -33,8 +33,11 @@ extern const char kBrowserCommandIdParam[];
 extern const base::Feature kUseManagementService;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const base::Feature kDoubleTapToZoomInTabletMode;
 extern const base::Feature kQuickSettingsPWANotifications;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+extern const base::Feature kDoubleTapToZoomInTabletMode;
 #endif
 
 #if BUILDFLAG(IS_MAC)

@@ -74,7 +74,9 @@ const base::Feature kEnableUniveralLinks{"EnableUniveralLinks",
 // menu.
 const base::Feature kQuickSettingsPWANotifications{
     "QuickSettingsPWA", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Enables being able to zoom a web page by double tapping in Chrome OS tablet
 // mode.
 const base::Feature kDoubleTapToZoomInTabletMode{
