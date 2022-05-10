@@ -25,8 +25,7 @@
 
 namespace {
 
-// Width of the identity control if nothing is contraining it.
-constexpr CGFloat kIdentityControlMaxWidth = 327;
+// Width of the identity control.
 constexpr CGFloat kIdentityControlMarginDefault = 16;
 
 // URL for the Settings link.
@@ -128,9 +127,8 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
       l10n_util::GetNSString([self secondaryActionStringID]);
 
   // Set constraints specific to the identity control button that don't change.
-  NSLayoutConstraint* areaWidthConstraint =
-      [self.identityControlArea.widthAnchor
-          constraintEqualToConstant:kIdentityControlMaxWidth];
+  NSLayoutConstraint* areaWidthConstraint = [self.identityControl.widthAnchor
+      constraintEqualToAnchor:self.specificContentView.widthAnchor];
   areaWidthConstraint.priority = UILayoutPriorityDefaultHigh;
   int topMargin = self.identityControlInTop ? 0 : kIdentityControlMarginDefault;
   [NSLayoutConstraint activateConstraints:@[

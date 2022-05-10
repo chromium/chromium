@@ -29,7 +29,7 @@ constexpr CGFloat kTitleHorizontalMargin = 18;
 constexpr CGFloat kActionsBottomMargin = 10;
 constexpr CGFloat kTallBannerMultiplier = 0.35;
 constexpr CGFloat kDefaultBannerMultiplier = 0.25;
-constexpr CGFloat kContentWidthMultiplier = 0.65;
+constexpr CGFloat kContentWidthMultiplier = 0.8;
 constexpr CGFloat kContentOptimalWidth = 327;
 constexpr CGFloat kMoreArrowMargin = 4;
 constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
@@ -610,11 +610,13 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 // Determines which font text style to use depending on the device size, the
 // size class and if dynamic type is enabled.
 - (UIFontTextStyle)titleLabelFontTextStyle {
+  UIViewController* presenter =
+      self.presentingViewController ? self.presentingViewController : self;
   BOOL dynamicTypeEnabled = UIContentSizeCategoryIsAccessibilityCategory(
-      self.traitCollection.preferredContentSizeCategory);
+      presenter.traitCollection.preferredContentSizeCategory);
 
   if (!dynamicTypeEnabled) {
-    if ([self isRegularXRegularSizeClass:self.traitCollection]) {
+    if ([self isRegularXRegularSizeClass:presenter.traitCollection]) {
       return UIFontTextStyleTitle1;
     } else if (!IsSmallDevice()) {
       return UIFontTextStyleLargeTitle;
@@ -860,7 +862,9 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
         deactivateConstraints:self.buttonsVerticalAnchorConstraints];
     self.buttonsVerticalAnchorConstraints = @[
       [self.scrollView.bottomAnchor
-          constraintEqualToAnchor:self.actionStackView.topAnchor],
+          constraintEqualToAnchor:self.actionStackView.topAnchor
+                         constant:self.tertiaryActionString ? 0
+                                                            : -kDefaultMargin],
       [self.actionStackView.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
                                    constant:-kActionsBottomMargin],

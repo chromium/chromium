@@ -25,8 +25,6 @@
 
 namespace {
 
-// Width of the identity control if nothing is contraining it.
-constexpr CGFloat kIdentityControlMaxWidth = 327.;
 // Margin above the identity button.
 constexpr CGFloat kTopMarginForBottomView = 16.;
 
@@ -105,18 +103,13 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
   if (self.signinStatus != SigninScreenConsumerSigninStatusDisabled) {
     [self.specificContentView addSubview:self.identityControl];
 
-    NSLayoutConstraint* widthConstraint = [self.identityControl.widthAnchor
-        constraintEqualToConstant:kIdentityControlMaxWidth];
-    widthConstraint.priority = UILayoutPriorityDefaultHigh;
     [NSLayoutConstraint activateConstraints:@[
       [self.identityControl.topAnchor
           constraintEqualToAnchor:self.specificContentView.topAnchor],
       [self.identityControl.centerXAnchor
           constraintEqualToAnchor:self.specificContentView.centerXAnchor],
       [self.identityControl.widthAnchor
-          constraintLessThanOrEqualToAnchor:self.specificContentView
-                                                .widthAnchor],
-      widthConstraint,
+          constraintEqualToAnchor:self.specificContentView.widthAnchor],
       [self.identityControl.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.specificContentView
                                                 .bottomAnchor],
