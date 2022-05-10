@@ -195,39 +195,54 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
   const struct {
     const char* origin;
     std::vector<device::CableDiscoveryData> extensions;
+    device::FidoRequestType request_type;
     Result expected_result;
   } kTests[] = {
       {
           "https://example.com",
           {},
+          device::FidoRequestType::kGetAssertion,
           Result::k3rdParty,
       },
       {
           // Extensions should be ignored on a 3rd-party site.
           "https://example.com",
           {v1_extension},
+          device::FidoRequestType::kGetAssertion,
           Result::k3rdParty,
       },
       {
           // Extensions should be ignored on a 3rd-party site.
           "https://example.com",
           {v2_extension},
+          device::FidoRequestType::kGetAssertion,
           Result::k3rdParty,
       },
       {
-          // a.g.c should not get caBLE without an extension
+          // a.g.c should still be able to get 3rd-party caBLE
+          // if it doesn't send an extension in an assertion request.
           "https://accounts.google.com",
           {},
+          device::FidoRequestType::kGetAssertion,
+          Result::k3rdParty,
+      },
+      {
+          // ... but not for registration.
+          "https://accounts.google.com",
+          {},
+          device::FidoRequestType::kMakeCredential,
           Result::kNone,
       },
       {
           "https://accounts.google.com",
           {v1_extension},
+          device::FidoRequestType::kGetAssertion,
           NONE_ON_LINUX(Result::kV1),
       },
       {
           "https://accounts.google.com",
           {v2_extension},
+          device::FidoRequestType::kGetAssertion,
           Result::kServerLink,
       },
   };
@@ -242,8 +257,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
     delegate.SetRelyingPartyId(/*rp_id=*/"example.com");
     delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
     delegate.ConfigureCable(url::Origin::Create(GURL(test.origin)),
-                            device::FidoRequestType::kGetAssertion,
-                            test.extensions, &discovery_factory);
+                            test.request_type, test.extensions,
+                            &discovery_factory);
 
     switch (test.expected_result) {
       case Result::kNone:

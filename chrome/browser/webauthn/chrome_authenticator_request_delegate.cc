@@ -648,6 +648,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
   phone_public_keys_.clear();
 
   const bool cable_extension_permitted = ShouldPermitCableExtension(origin);
+  const bool cable_extension_provided =
+      cable_extension_permitted && !pairings_from_extension.empty();
 
   auto experiments = GetServerLinkExperiments(pairings_from_extension);
   if (experiments.has_value()) {
@@ -683,7 +685,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
     pairings.insert(pairings.end(), pairings_from_extension.begin(),
                     pairings_from_extension.end());
   }
-  const bool cable_extension_provided = !pairings.empty();
+  const bool cable_extension_accepted = !pairings.empty();
   const bool cablev2_extension_provided =
       std::any_of(pairings.begin(), pairings.end(),
                   [](const device::CableDiscoveryData& v) -> bool {
@@ -732,6 +734,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
 
   const bool non_extension_cablev2_enabled =
       (!cable_extension_permitted ||
+       (!cable_extension_provided &&
+        request_type == device::FidoRequestType::kGetAssertion) ||
        base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere));
 
   absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>
@@ -768,7 +772,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
       std::move(usb_device_manager),
       l10n_util::GetStringUTF8(IDS_WEBAUTHN_CABLEV2_AOA_REQUEST_DESCRIPTION));
 
-  if (cable_extension_provided || non_extension_cablev2_enabled) {
+  if (cable_extension_accepted || non_extension_cablev2_enabled) {
     absl::optional<bool> extension_is_v2;
     if (cable_extension_provided) {
       extension_is_v2 = cablev2_extension_provided;
