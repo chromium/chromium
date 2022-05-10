@@ -45,6 +45,8 @@ class SafeBrowsingTabHelper
 
   // Sets delegate for safe browsing tab helper.
   void SetDelegate(id<SafeBrowsingTabHelperDelegate> delegate);
+  // Removes delegate. Sets delegate to nil.
+  void RemoveDelegate();
   // Tells delegate to open safe browsing settings.
   void OpenSafeBrowsingSettings();
 

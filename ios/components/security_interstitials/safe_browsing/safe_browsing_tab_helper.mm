@@ -89,6 +89,10 @@ void SafeBrowsingTabHelper::SetDelegate(
   delegate_ = delegate;
 }
 
+void SafeBrowsingTabHelper::RemoveDelegate() {
+  delegate_ = nil;
+}
+
 void SafeBrowsingTabHelper::OpenSafeBrowsingSettings() {
   if (delegate_) {
     [delegate_ openSafeBrowsingSettings];

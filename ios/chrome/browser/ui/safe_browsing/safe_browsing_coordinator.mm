@@ -68,11 +68,18 @@
 #pragma mark - WebStateListObserving
 
 - (void)webStateList:(WebStateList*)webStateList
-    didInsertWebState:(web::WebState*)webState
-              atIndex:(int)index
-           activating:(BOOL)activating {
+    didReplaceWebState:(web::WebState*)oldWebState
+          withWebState:(web::WebState*)newWebState
+               atIndex:(int)atIndex {
   DCHECK(base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection));
-  SafeBrowsingTabHelper::FromWebState(webState)->SetDelegate(self);
+  DCHECK(newWebState);
+  SafeBrowsingTabHelper::FromWebState(newWebState)->SetDelegate(self);
+}
+
+- (void)webStateList:(WebStateList*)webStateList
+    didDetachWebState:(web::WebState*)webState
+              atIndex:(int)atIndex {
+  SafeBrowsingTabHelper::FromWebState(webState)->RemoveDelegate();
 }
 
 @end
