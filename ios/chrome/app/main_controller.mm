@@ -69,11 +69,9 @@
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
 #import "ios/chrome/browser/crash_report/crash_restore_helper.h"
 #include "ios/chrome/browser/credential_provider/credential_provider_buildflags.h"
-#import "ios/chrome/browser/credential_provider/credential_provider_util.h"
 #include "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/external_files/external_file_remover_factory.h"
 #import "ios/chrome/browser/external_files/external_file_remover_impl.h"
-#include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
@@ -188,9 +186,6 @@ NSString* const kEnterpriseManagedDeviceCheck = @"EnterpriseManagedDeviceCheck";
 
 // Constants for deferred deletion of leftover session state files.
 NSString* const kPurgeWebSessionStates = @"PurgeWebSessionStates";
-
-// Constants for deferred favicons clean up.
-NSString* const kFaviconsCleanup = @"FaviconsCleanup";
 
 // Adapted from chrome/browser/ui/browser_init.cc.
 void RegisterComponentsForUpdate() {
@@ -1065,7 +1060,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [self initializeMailtoHandling];
   [self scheduleSaveFieldTrialValuesForExtensions];
   [self scheduleEnterpriseManagedDeviceCheck];
-  [self scheduleFaviconsCleanup];
 }
 
 - (void)scheduleTasksRequiringBVCWithBrowserState {
@@ -1110,16 +1104,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       enqueueBlockNamed:kStartSpotlightBookmarksIndexing
                   block:^{
                     [spotlightManager resyncIndex];
-                  }];
-}
-
-- (void)scheduleFaviconsCleanup {
-  [[DeferredInitializationRunner sharedInstance]
-      enqueueBlockNamed:kFaviconsCleanup
-                  block:^{
-                    UpdateFaviconsStorage(
-                        IOSChromeFaviconLoaderFactory::GetForBrowserState(
-                            self.currentBrowserState));
                   }];
 }
 
