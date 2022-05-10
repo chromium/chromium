@@ -36,7 +36,7 @@ void FakePrintRenderFrame::InitiatePrintPreview(
     mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer,
     bool has_selection) {}
 
-void FakePrintRenderFrame::PrintPreview(base::Value settings) {}
+void FakePrintRenderFrame::PrintPreview(base::Value::Dict settings) {}
 
 void FakePrintRenderFrame::OnPrintPreviewDialogClosed() {}
 

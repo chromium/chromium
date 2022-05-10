@@ -33,7 +33,7 @@ class FakePrintRenderFrame : public mojom::PrintRenderFrame {
   void InitiatePrintPreview(
       mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer,
       bool has_selection) override;
-  void PrintPreview(base::Value settings) override;
+  void PrintPreview(base::Value::Dict settings) override;
   void OnPrintPreviewDialogClosed() override;
   void PrintFrameContent(mojom::PrintFrameContentParamsPtr params,
                          PrintFrameContentCallback callback) override;

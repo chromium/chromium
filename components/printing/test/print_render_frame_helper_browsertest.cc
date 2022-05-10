@@ -1078,41 +1078,40 @@ class PrintRenderFrameHelperPreviewTest
   }
 
   void SetLetterMediaSize() {
-    base::Value* media_size_value = print_settings().SetKey(
-        kSettingMediaSize, base::Value(base::Value::Type::DICTIONARY));
-    media_size_value->SetIntKey(kSettingMediaSizeWidthMicrons, 215900);
-    media_size_value->SetIntKey(kSettingMediaSizeHeightMicrons, 279400);
+    base::Value::Dict media_size;
+    media_size.Set(kSettingMediaSizeWidthMicrons, 215900);
+    media_size.Set(kSettingMediaSizeHeightMicrons, 279400);
+    print_settings().Set(kSettingMediaSize, std::move(media_size));
   }
 
-  base::Value& print_settings() { return print_settings_; }
+  base::Value::Dict& print_settings() { return print_settings_; }
 
  private:
   void CreatePrintSettingsDictionary() {
-    print_settings_ = base::Value(base::Value::Type::DICTIONARY);
-    print_settings_.SetBoolKey(kSettingLandscape, false);
-    print_settings_.SetBoolKey(kSettingCollate, false);
-    print_settings_.SetIntKey(kSettingColor,
-                              static_cast<int>(mojom::ColorModel::kGray));
-    print_settings_.SetIntKey(kSettingPrinterType,
-                              static_cast<int>(mojom::PrinterType::kPdf));
-    print_settings_.SetIntKey(kSettingDuplexMode,
-                              static_cast<int>(mojom::DuplexMode::kSimplex));
-    print_settings_.SetIntKey(kSettingCopies, 1);
-    print_settings_.SetStringKey(kSettingDeviceName, "dummy");
-    print_settings_.SetIntKey(kPreviewUIID, 4);
-    print_settings_.SetIntKey(kPreviewRequestID, 12345);
-    print_settings_.SetBoolKey(kIsFirstRequest, true);
-    print_settings_.SetIntKey(
-        kSettingMarginsType,
-        static_cast<int>(mojom::MarginType::kDefaultMargins));
-    print_settings_.SetBoolKey(kSettingPreviewModifiable, true);
-    print_settings_.SetBoolKey(kSettingPreviewIsFromArc, false);
-    print_settings_.SetBoolKey(kSettingHeaderFooterEnabled, false);
-    print_settings_.SetBoolKey(kSettingShouldPrintBackgrounds, false);
-    print_settings_.SetBoolKey(kSettingShouldPrintSelectionOnly, false);
+    print_settings_ = base::Value::Dict();
+    print_settings_.Set(kSettingLandscape, false);
+    print_settings_.Set(kSettingCollate, false);
+    print_settings_.Set(kSettingColor,
+                        static_cast<int>(mojom::ColorModel::kGray));
+    print_settings_.Set(kSettingPrinterType,
+                        static_cast<int>(mojom::PrinterType::kPdf));
+    print_settings_.Set(kSettingDuplexMode,
+                        static_cast<int>(mojom::DuplexMode::kSimplex));
+    print_settings_.Set(kSettingCopies, 1);
+    print_settings_.Set(kSettingDeviceName, "dummy");
+    print_settings_.Set(kPreviewUIID, 4);
+    print_settings_.Set(kPreviewRequestID, 12345);
+    print_settings_.Set(kIsFirstRequest, true);
+    print_settings_.Set(kSettingMarginsType,
+                        static_cast<int>(mojom::MarginType::kDefaultMargins));
+    print_settings_.Set(kSettingPreviewModifiable, true);
+    print_settings_.Set(kSettingPreviewIsFromArc, false);
+    print_settings_.Set(kSettingHeaderFooterEnabled, false);
+    print_settings_.Set(kSettingShouldPrintBackgrounds, false);
+    print_settings_.Set(kSettingShouldPrintSelectionOnly, false);
   }
 
-  base::Value print_settings_;
+  base::Value::Dict print_settings_;
 };
 
 TEST_F(PrintRenderFrameHelperPreviewTest, BlockScriptInitiatedPrinting) {
@@ -1176,8 +1175,8 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewHTMLWithPageMarginsCss) {
       "</body></html>";
   LoadHTML(kHTMLWithPageMarginsCss);
 
-  print_settings().SetIntKey(kSettingPrinterType,
-                             static_cast<int>(mojom::PrinterType::kLocal));
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
@@ -1198,10 +1197,10 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
        NonDefaultMarginsSelectedIgnorePrintCss) {
   LoadHTML(kHTMLWithPageSizeCss);
 
-  print_settings().SetIntKey(kSettingPrinterType,
-                             static_cast<int>(mojom::PrinterType::kLocal));
-  print_settings().SetIntKey(kSettingMarginsType,
-                             static_cast<int>(mojom::MarginType::kNoMargins));
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  print_settings().Set(kSettingMarginsType,
+                       static_cast<int>(mojom::MarginType::kNoMargins));
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
@@ -1221,7 +1220,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
 TEST_F(PrintRenderFrameHelperPreviewTest, PrintToPDFSelectedHonorPrintCss) {
   LoadHTML(kHTMLWithPageSizeCss);
 
-  print_settings().SetIntKey(
+  print_settings().Set(
       kSettingMarginsType,
       static_cast<int>(mojom::MarginType::kPrintableAreaMargins));
   OnPrintPreview();
@@ -1345,8 +1344,8 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PreviewLayoutTriggeredByResize) {
       "</div>";
   LoadHTML(kHTMLWithPageCss);
 
-  print_settings().SetIntKey(kSettingPrinterType,
-                             static_cast<int>(mojom::PrinterType::kLocal));
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
@@ -1400,8 +1399,8 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
 TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewCenterToFitPage) {
   LoadHTML(kHTMLWithPageSizeCss);
 
-  print_settings().SetIntKey(kSettingPrinterType,
-                             static_cast<int>(mojom::PrinterType::kLocal));
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
@@ -1432,8 +1431,8 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewShrinkToFitPage) {
       "</body></html>";
   LoadHTML(kHTMLWithPageCss);
 
-  print_settings().SetIntKey(kSettingPrinterType,
-                             static_cast<int>(mojom::PrinterType::kLocal));
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
@@ -1453,10 +1452,10 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewShrinkToFitPage) {
 TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewHonorsOrientationCss) {
   LoadHTML(kHTMLWithLandscapePageCss);
 
-  print_settings().SetIntKey(kSettingPrinterType,
-                             static_cast<int>(mojom::PrinterType::kLocal));
-  print_settings().SetIntKey(kSettingMarginsType,
-                             static_cast<int>(mojom::MarginType::kNoMargins));
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  print_settings().Set(kSettingMarginsType,
+                       static_cast<int>(mojom::MarginType::kNoMargins));
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
@@ -1477,8 +1476,8 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
        PrintToPDFSelectedHonorOrientationCss) {
   LoadHTML(kHTMLWithLandscapePageCss);
 
-  print_settings().SetIntKey(
-      kSettingMarginsType, static_cast<int>(mojom::MarginType::kCustomMargins));
+  print_settings().Set(kSettingMarginsType,
+                       static_cast<int>(mojom::MarginType::kCustomMargins));
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
@@ -1517,12 +1516,12 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedPages) {
   // Set a page range and update the dictionary to generate only the complete
   // metafile with the selected pages. Page numbers used in the dictionary
   // are 1-based.
-  base::Value page_range(base::Value::Type::DICTIONARY);
-  page_range.SetKey(kSettingPageRangeFrom, base::Value(2));
-  page_range.SetKey(kSettingPageRangeTo, base::Value(3));
-  base::Value page_range_array(base::Value::Type::LIST);
+  base::Value::Dict page_range;
+  page_range.Set(kSettingPageRangeFrom, base::Value(2));
+  page_range.Set(kSettingPageRangeTo, base::Value(3));
+  base::Value::List page_range_array;
   page_range_array.Append(std::move(page_range));
-  print_settings().SetKey(kSettingPageRange, std::move(page_range_array));
+  print_settings().Set(kSettingPageRange, std::move(page_range_array));
 
   OnPrintPreview();
 
@@ -1551,7 +1550,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedText) {
                               blink::WebLocalFrame::kHideSelectionHandle,
                               blink::mojom::SelectionMenuBehavior::kHide);
 
-  print_settings().SetBoolKey(kSettingShouldPrintSelectionOnly, true);
+  print_settings().Set(kSettingShouldPrintSelectionOnly, true);
 
   OnPrintPreview();
 
@@ -1573,7 +1572,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedText2) {
                               blink::WebLocalFrame::kHideSelectionHandle,
                               blink::mojom::SelectionMenuBehavior::kHide);
 
-  print_settings().SetBoolKey(kSettingShouldPrintSelectionOnly, true);
+  print_settings().Set(kSettingShouldPrintSelectionOnly, true);
 
   OnPrintPreview();
 
@@ -1611,7 +1610,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   LoadHTML(kHTMLWithManyLinesOfText);
 
   SetLetterMediaSize();
-  print_settings().SetIntKey(kSettingScaleFactor, 200);
+  print_settings().Set(kSettingScaleFactor, 200);
 
   OnPrintPreview();
 
@@ -1634,7 +1633,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   GetMainFrame()->ExecuteCommand("SelectAll");
 
   SetLetterMediaSize();
-  print_settings().SetBoolKey(kSettingShouldPrintSelectionOnly, true);
+  print_settings().Set(kSettingShouldPrintSelectionOnly, true);
 
   OnPrintPreview();
 
@@ -1655,8 +1654,8 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   GetMainFrame()->ExecuteCommand("SelectAll");
 
   SetLetterMediaSize();
-  print_settings().SetBoolKey(kSettingShouldPrintSelectionOnly, true);
-  print_settings().SetIntKey(kSettingScaleFactor, 200);
+  print_settings().Set(kSettingShouldPrintSelectionOnly, true);
+  print_settings().Set(kSettingScaleFactor, 200);
 
   OnPrintPreview();
 
@@ -1830,7 +1829,7 @@ TEST_P(PrintRenderFrameHelperTaggedPreviewTest,
             print_manager()->accessibility_tree_set_count());
 #endif
 
-  print_settings().SetIntKey(kSettingScaleFactor, 200);
+  print_settings().Set(kSettingScaleFactor, 200);
   OnPrintPreviewRerender();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());

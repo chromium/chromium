@@ -1435,7 +1435,7 @@ void PrintRenderFrameHelper::InitiatePrintPreview(
                       /*already_notified_frame=*/false);
 }
 
-void PrintRenderFrameHelper::PrintPreview(base::Value settings) {
+void PrintRenderFrameHelper::PrintPreview(base::Value::Dict settings) {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
   if (ipc_nesting_level_ > kAllowedIpcDepthForPrint)
     return;
@@ -1455,8 +1455,7 @@ void PrintRenderFrameHelper::PrintPreview(base::Value settings) {
   }
 
   if (!UpdatePrintSettings(print_preview_context_.source_frame(),
-                           print_preview_context_.source_node(),
-                           settings.GetDict())) {
+                           print_preview_context_.source_node(), settings)) {
     DidFinishPrinting(INVALID_SETTINGS);
     return;
   }

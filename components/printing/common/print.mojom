@@ -209,7 +209,7 @@ interface PrintRenderer {
   // The returned |preview_document_region| contains the preview document data
   // as a flattened PDF. It will be invalid if errors occurred while rendering
   // the preview document.
-  CreatePreviewDocument(mojo_base.mojom.DeprecatedDictionaryValue job_settings)
+  CreatePreviewDocument(mojo_base.mojom.DictionaryValue job_settings)
       => (mojo_base.mojom.ReadOnlySharedMemoryRegion? preview_document_region);
 };
 
@@ -311,7 +311,7 @@ interface PrintRenderFrame {
   // every requested page for print preview using the given |settings|. This
   // gets called multiple times as the user updates settings.
   [EnableIf=enable_print_preview]
-  PrintPreview(mojo_base.mojom.DeprecatedDictionaryValue settings);
+  PrintPreview(mojo_base.mojom.DictionaryValue settings);
 
   // Tells the RenderFrame that the print preview dialog was closed.
   [EnableIf=enable_print_preview]

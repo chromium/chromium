@@ -718,7 +718,7 @@ void PrintPreviewHandler::HandleGetPreview(const base::Value::List& args) {
     print_render_frame_->SetPrintPreviewUI(
         print_preview_ui()->BindPrintPreviewUI());
   }
-  print_render_frame_->PrintPreview(base::Value(settings.Clone()));
+  print_render_frame_->PrintPreview(settings.Clone());
   last_preview_settings_ = std::move(settings);
 }
 
