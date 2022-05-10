@@ -13,7 +13,6 @@ import {KeyUtil} from '/chromevox/common/key_util.js';
 import {ISearchUI} from '/chromevox/panel/i_search_ui.js';
 import {PanelInterface} from '/chromevox/panel/panel_interface.js';
 import {PanelMenu, PanelNodeMenu, PanelSearchMenu} from '/chromevox/panel/panel_menu.js';
-import {PanelMenuItem} from '/chromevox/panel/panel_menu_item.js';
 import {PanelMode, PanelModeInfo} from '/chromevox/panel/panel_mode.js';
 import {EventGenerator} from '/common/event_generator.js';
 

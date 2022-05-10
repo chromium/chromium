@@ -14,7 +14,6 @@
  * or to provide other customizations.
  */
 import {AbstractTts} from '/chromevox/common/abstract_tts.js';
-import {ChromeVoxEvent} from '/chromevox/common/custom_automation_event.js';
 
 /**
  * A class containing the information needed to speak
