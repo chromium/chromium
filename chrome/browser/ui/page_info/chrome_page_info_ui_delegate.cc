@@ -17,7 +17,9 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/core/about_this_site_service.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
+#include "components/permissions/permissions_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -198,6 +200,13 @@ permissions::PermissionResult ChromePageInfoUiDelegate::GetPermissionStatus(
     ContentSettingsType type) {
   return PermissionManagerFactory::GetForProfile(GetProfile())
       ->GetPermissionStatusForDisplayOnSettingsUI(type, site_url_);
+}
+
+permissions::PermissionResult ChromePageInfoUiDelegate::GetEmbargoResult(
+    ContentSettingsType type) {
+  return permissions::PermissionsClient::Get()
+      ->GetPermissionDecisionAutoBlocker(GetProfile())
+      ->GetEmbargoResult(site_url_, type);
 }
 
 Profile* ChromePageInfoUiDelegate::GetProfile() const {

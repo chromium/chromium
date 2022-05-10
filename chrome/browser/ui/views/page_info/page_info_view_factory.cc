@@ -226,6 +226,9 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
     case ContentSettingsType::COOKIES:
       icon = &vector_icons::kCookieIcon;
       break;
+    case ContentSettingsType::FEDERATED_IDENTITY_API:
+      icon = &vector_icons::kAccountCircleIcon;
+      break;
     case ContentSettingsType::IMAGES:
       icon = &vector_icons::kPhotoIcon;
       break;

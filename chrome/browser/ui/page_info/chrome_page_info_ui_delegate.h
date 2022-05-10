@@ -67,6 +67,8 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
 #endif  // !BUILDFLAG(IS_ANDROID)
   permissions::PermissionResult GetPermissionStatus(
       ContentSettingsType type) override;
+  permissions::PermissionResult GetEmbargoResult(
+      ContentSettingsType type) override;
 
  private:
   Profile* GetProfile() const;

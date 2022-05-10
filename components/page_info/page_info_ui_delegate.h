@@ -18,6 +18,8 @@ class PageInfoUiDelegate {
 #endif
   virtual permissions::PermissionResult GetPermissionStatus(
       ContentSettingsType type) = 0;
+  virtual permissions::PermissionResult GetEmbargoResult(
+      ContentSettingsType type) = 0;
 };
 
 #endif  // COMPONENTS_PAGE_INFO_PAGE_INFO_UI_DELEGATE_H_

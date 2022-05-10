@@ -9,6 +9,7 @@ aggregate_vector_icons("components_vector_icons") {
   icon_directory = "."
 
   sources = [
+    "account_circle.icon",
     "ads.icon",
     "ads_click.icon",
     "arrow_back.icon",

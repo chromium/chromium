@@ -38,6 +38,7 @@
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/permissions_client.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "components/resources/android/theme_resources.h"
 #endif
@@ -119,6 +120,7 @@ ContentSettingsType kPermissionType[] = {
     ContentSettingsType::VR,
     ContentSettingsType::AR,
     ContentSettingsType::IDLE_DETECTION,
+    ContentSettingsType::FEDERATED_IDENTITY_API,
 };
 
 // Determines whether to show permission |type| in the Page Info UI. Only
@@ -1051,14 +1053,24 @@ void PageInfo::PresentSitePermissions() {
                                                      nullptr);
     }
 
-    // For permissions that are still prompting the user and haven't been
-    // explicitly set by another source, check its embargo status.
-    if (permissions::PermissionUtil::IsPermission(permission_info.type) &&
+    // Check embargo status if the content setting supports embargo.
+    if (permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
+            permission_info.type) &&
         permission_info.setting == CONTENT_SETTING_DEFAULT &&
         permission_info.source ==
             content_settings::SettingSource::SETTING_SOURCE_USER) {
-      permissions::PermissionResult permission_result =
-          delegate_->GetPermissionStatus(permission_info.type, site_url_);
+      permissions::PermissionResult permission_result(
+          CONTENT_SETTING_DEFAULT,
+          permissions::PermissionStatusSource::UNSPECIFIED);
+      if (permissions::PermissionUtil::IsPermission(permission_info.type)) {
+        permission_result =
+            delegate_->GetPermissionStatus(permission_info.type, site_url_);
+      } else if (permission_info.type ==
+                 ContentSettingsType::FEDERATED_IDENTITY_API) {
+        permission_result =
+            delegate_->GetPermissionDecisionAutoblocker()->GetEmbargoResult(
+                site_url_, permission_info.type);
+      }
 
       // If under embargo, update |permission_info| to reflect that.
       if (permission_result.content_setting == CONTENT_SETTING_BLOCK &&

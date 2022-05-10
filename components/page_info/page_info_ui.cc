@@ -16,6 +16,7 @@
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info_ui_delegate.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permission_util.h"
@@ -195,6 +196,9 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
      IDS_SITE_SETTINGS_TYPE_IDLE_DETECTION_MID_SENTENCE},
 #if !BUILDFLAG(IS_ANDROID)
     // Page Info Permissions that are not defined in Android.
+    {ContentSettingsType::FEDERATED_IDENTITY_API,
+     IDS_SITE_SETTINGS_TYPE_FEDERATED_IDENTITY_API,
+     IDS_SITE_SETTINGS_TYPE_FEDERATED_IDENTITY_API_MID_SENTENCE},
     {ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
      IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE,
      IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE_MID_SENTENCE},
@@ -746,9 +750,17 @@ std::u16string PageInfoUI::PermissionAutoBlockedToUIString(
   // TODO(crbug.com/1063023): PageInfo::PermissionInfo should be modified
   // to contain all needed information regarding Automatically Blocked flag.
   if (permission.setting == CONTENT_SETTING_BLOCK &&
-      permissions::PermissionUtil::IsPermission(permission.type)) {
-    permissions::PermissionResult permission_result =
-        delegate->GetPermissionStatus(permission.type);
+      permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
+          permission.type)) {
+    permissions::PermissionResult permission_result(
+        CONTENT_SETTING_DEFAULT,
+        permissions::PermissionStatusSource::UNSPECIFIED);
+    if (permissions::PermissionUtil::IsPermission(permission.type)) {
+      permission_result = delegate->GetPermissionStatus(permission.type);
+    } else if (permission.type == ContentSettingsType::FEDERATED_IDENTITY_API) {
+      permission_result = delegate->GetEmbargoResult(permission.type);
+    }
+
     switch (permission_result.source) {
       case permissions::PermissionStatusSource::MULTIPLE_DISMISSALS:
         message_id = IDS_PAGE_INFO_PERMISSION_AUTOMATICALLY_BLOCKED;
