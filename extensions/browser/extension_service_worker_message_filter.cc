@@ -15,6 +15,8 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/events/event_ack_data.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/process_map.h"
@@ -42,6 +44,7 @@ class ShutdownNotifierFactory
   ShutdownNotifierFactory()
       : BrowserContextKeyedServiceShutdownNotifierFactory(
             "ExtensionServiceWorkerMessageFilter") {
+    DependsOn(ExtensionRegistryFactory::GetInstance());
     DependsOn(EventRouterFactory::GetInstance());
     DependsOn(ProcessManagerFactory::GetInstance());
   }
@@ -206,11 +209,24 @@ void ExtensionServiceWorkerMessageFilter::OnDidInitializeServiceWorkerContext(
     int thread_id) {
   if (!browser_context_)
     return;
-  if (!ProcessMap::Get(browser_context_)
-           ->Contains(extension_id, render_process_id_)) {
-    // We can legitimately get here if the extension was already unloaded.
+
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
+  DCHECK(registry);
+  if (!registry->enabled_extensions().GetByID(extension_id)) {
+    // This can happen if the extension is unloaded at this point. Just
+    // checking the extension process (as below) is insufficient because
+    // tearing down processes is async and happens after extension unload.
     return;
   }
+
+  if (!ProcessMap::Get(browser_context_)
+           ->Contains(extension_id, render_process_id_)) {
+    // We check the process in addition to the registry to guard against
+    // situations in which an extension may still be enabled, but no longer
+    // running in a given process.
+    return;
+  }
+
   ServiceWorkerTaskQueue::Get(browser_context_)
       ->DidInitializeServiceWorkerContext(render_process_id_, extension_id,
                                           service_worker_version_id, thread_id);
