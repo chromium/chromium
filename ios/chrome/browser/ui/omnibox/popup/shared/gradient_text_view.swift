@@ -71,9 +71,11 @@ struct GradientTextView: View {
 
   }
 
+  @Environment(\.popupUIVariation) var uiVariation: PopupUIVariation
+
   var body: some View {
     // This is equivalent to left/right since the locale is ignored below.
-    let alignment: Alignment = isTextLTR ? .leading : .trailing
+    let variationTwoAlignment: Alignment = isTextLTR ? .leading : .trailing
 
     ZStack {
       // Render text at full size inside a fixed-size container.
@@ -99,7 +101,10 @@ struct GradientTextView: View {
         // Wrap the text in a container with a fixed frame. The `text` is rendered
         // at fixedSize inside of it, therefore this acts as a way to clip it.
         let contents = VStack { text }
-          .frame(width: geometry.size.width, alignment: alignment)
+          .frame(
+            width: geometry.size.width,
+            alignment: uiVariation == .one ? .leading : variationTwoAlignment
+          )
           // Force LTR layout direction to prevent incorrect behavior in RTL locales.
           // The goal is to deal with the text language, not the user's locale.
           .environment(\.layoutDirection, .leftToRight)

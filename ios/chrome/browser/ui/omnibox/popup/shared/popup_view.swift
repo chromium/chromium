@@ -68,7 +68,8 @@ struct PopupView: View {
 
       // Default list row insets. These are removed to inset the popup to the
       // width of the omnibox.
-      static let defaultInset: CGFloat = 16
+      static let defaultInsetWhenSelfSizing: CGFloat = 16
+      static let defaultInset: CGFloat = 20
 
       static let selfSizingListBottomMargin: CGFloat = 16
     }
@@ -188,6 +189,7 @@ struct PopupView: View {
                 model, didTapTrailingButtonForRow: UInt(matchIndex),
                 inSection: UInt(sectionIndex))
             },
+            uiConfiguration: uiConfiguration,
             shouldDisplayCustomSeparator: shouldDisplayCustomSeparator
           )
           .id(indexPath)
@@ -196,7 +198,9 @@ struct PopupView: View {
           .listRowBackground(Color.clear)
           .accessibilityElement(children: .combine)
           .accessibilityIdentifier(
-            OmniboxPopupAccessibilityIdentifierHelper.accessibilityIdentifierForRow(at: indexPath))
+            OmniboxPopupAccessibilityIdentifierHelper.accessibilityIdentifierForRow(at: indexPath)
+          )
+          .environment(\.layoutDirection, layoutDirection)
         }
         .onDelete { indexSet in
           for matchIndex in indexSet {
@@ -243,46 +247,48 @@ struct PopupView: View {
     .concat(ScrollOnChangeModifier(value: $model.sections, action: onNewSections))
     .concat(ListStyleModifier())
     .concat(EnvironmentValueModifier(\.defaultMinListHeaderHeight, 0))
+    .concat(omniboxPaddingModifier)
 
     GeometryReader { geometry in
-      if shouldSelfSize {
-        let selfSizingListModifier =
-          commonListModifier
-          .concat(omniboxPaddingModifier)
-        ZStack(alignment: .top) {
-          listBackground.frame(height: selfSizingListHeight)
-          SelfSizingList(
-            bottomMargin: selfSizingListBottomMargin,
-            listModifier: selfSizingListModifier,
-            content: {
-              listContent(geometry: geometry)
-            },
-            emptySpace: {
-              PopupEmptySpaceView()
+      ZStack(alignment: .top) {
+        listBackground.frame(height: selfSizingListHeight)
+        if shouldSelfSize {
+          ZStack(alignment: .top) {
+            SelfSizingList(
+              bottomMargin: selfSizingListBottomMargin,
+              listModifier: commonListModifier,
+              content: {
+                listContent(geometry: geometry)
+              },
+              emptySpace: {
+                PopupEmptySpaceView()
+              }
+            )
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .onPreferenceChange(SelfSizingListHeightPreferenceKey.self) { height in
+              selfSizingListHeight = height
             }
-          )
-          .frame(width: geometry.size.width, height: geometry.size.height)
-          .onPreferenceChange(SelfSizingListHeightPreferenceKey.self) { height in
-            selfSizingListHeight = height
+            bottomSeparator.offset(x: 0, y: selfSizingListHeight ?? 0)
           }
+        } else {
+          List {
+            listContent(geometry: geometry)
+          }
+          // This fixes list section header internal representation from overlapping safe areas.
+          .padding([.leading, .trailing], 0.2)
+          .modifier(commonListModifier)
+          .ignoresSafeArea(.keyboard)
+          .ignoresSafeArea(.container, edges: [.leading, .trailing])
+          .frame(width: geometry.size.width, height: geometry.size.height)
         }
-        bottomSeparator.offset(x: 0, y: selfSizingListHeight ?? 0)
-      } else {
-        List {
-          listContent(geometry: geometry)
-        }
-        // This fixes list section header internal representation from overlapping safe areas.
-        .padding([.leading, .trailing], 0.2)
-        .background(listBackground)
-        .modifier(commonListModifier)
-        .ignoresSafeArea(.keyboard)
-        .frame(width: geometry.size.width, height: geometry.size.height)
       }
     }
   }
 
   var body: some View {
-    listView.onAppear(perform: onAppear)
+    listView
+      .onAppear(perform: onAppear)
+      .environment(\.layoutDirection, .leftToRight)
   }
 
   @ViewBuilder
@@ -328,23 +334,38 @@ struct PopupView: View {
     }
   }
 
+  @Environment(\.layoutDirection) var layoutDirection: LayoutDirection
+
   /// Returns a `ViewModifier` to correctly space the sides of the list based
   /// on the current omnibox spacing
   var omniboxPaddingModifier: some ViewModifier {
     let leadingSpace: CGFloat
     let trailingSpace: CGFloat
-    if sizeClass == .compact {
+    let leadingHorizontalMargin: CGFloat
+    let trailingHorizontalMargin: CGFloat
+    switch popupUIVariation {
+    case .one:
       leadingSpace = 0
       trailingSpace = 0
-    } else {
-      leadingSpace = uiConfiguration.omniboxLeadingSpace
-      trailingSpace = uiConfiguration.omniboxTrailingSpace
+      leadingHorizontalMargin = 0
+      trailingHorizontalMargin = 0
+    case .two:
+      leadingSpace =
+        uiConfiguration.omniboxLeadingSpace
+        - (shouldSelfSize
+          ? Dimensions.VariationTwo.defaultInsetWhenSelfSizing
+          : Dimensions.VariationTwo.defaultInset)
+      trailingSpace =
+        (shouldSelfSize && sizeClass != .compact
+          ? uiConfiguration.omniboxTrailingSpace : uiConfiguration.safeAreaTrailingSpace)
+        - (shouldSelfSize
+          ? Dimensions.VariationTwo.defaultInsetWhenSelfSizing
+          : Dimensions.VariationTwo.defaultInset)
+      leadingHorizontalMargin = 0
+      trailingHorizontalMargin = sizeClass == .compact ? kContractedLocationBarHorizontalMargin : 0
     }
-    let inset: CGFloat =
-      (popupUIVariation == .one || sizeClass == .compact)
-      ? 0 : -Dimensions.VariationTwo.defaultInset
-    return PaddingModifier([.leading], leadingSpace + inset).concat(
-      PaddingModifier([.trailing], trailingSpace + inset))
+    return PaddingModifier([.leading], leadingSpace + leadingHorizontalMargin).concat(
+      PaddingModifier([.trailing], trailingSpace + trailingHorizontalMargin))
   }
 
   var listBackground: some View {

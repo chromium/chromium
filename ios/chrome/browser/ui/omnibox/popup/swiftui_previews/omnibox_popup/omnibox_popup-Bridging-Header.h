@@ -16,6 +16,7 @@
 #import "omnibox_suggestion_commands.h"
 #import "popup_mediator.h"
 #import "toolbar_configuration.h"
+#import "toolbar_constants.h"
 #import "toolbar_style.h"
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_SWIFTUI_PREVIEWS_OMNIBOX_POPUP_OMNIBOX_POPUP_BRIDGING_HEADER_H_

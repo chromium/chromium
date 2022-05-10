@@ -8,13 +8,15 @@ import SwiftUI
 struct PopupMatchTrailingButton: View {
   enum Dimensions {
     static let extendedTouchTargetDiameter: CGFloat = 44
-    static let trailingButtonSize: CGFloat = 17
+    static let trailingButtonIconSize: CGFloat = 17
+    static let trailingButtonSize: CGFloat = 24
   }
 
   let match: PopupMatch
   let action: () -> Void
 
   @Environment(\.popupUIVariation) var uiVariation: PopupUIVariation
+  @Environment(\.layoutDirection) var layoutDirection: LayoutDirection
 
   @ViewBuilder
   var image: some View {
@@ -27,9 +29,10 @@ struct PopupMatchTrailingButton: View {
           .renderingMode(.template)
           .flipsForRightToLeftLayoutDirection(true)
       } else {
-        let uiImage = NativeReversableImage(IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND, true)
+        let uiImage = NativeImage(IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND)
         Image(uiImage: uiImage!)
           .renderingMode(.template)
+          .flipsForRightToLeftLayoutDirection(true)
       }
     case .two:
       Image(systemName: match.isTabMatch ? "arrow.right.circle" : "arrow.up.backward")
@@ -40,7 +43,10 @@ struct PopupMatchTrailingButton: View {
   var body: some View {
     Button(action: action) {
       image
-        .font(.system(size: Dimensions.trailingButtonSize, weight: .medium))
+        // Make the image know about the environment layout direction as we
+        // override it on the body as a whole.
+        .environment(\.layoutDirection, layoutDirection)
+        .font(.system(size: Dimensions.trailingButtonIconSize, weight: .medium))
         .aspectRatio(contentMode: .fit)
         .frame(
           width: Dimensions.trailingButtonSize, height: Dimensions.trailingButtonSize,
@@ -49,7 +55,11 @@ struct PopupMatchTrailingButton: View {
         .contentShape(
           Circle().size(
             width: Dimensions.extendedTouchTargetDiameter,
-            height: Dimensions.extendedTouchTargetDiameter)
+            height: Dimensions.extendedTouchTargetDiameter
+          )
+          .offset(
+            x: (Dimensions.trailingButtonSize - Dimensions.extendedTouchTargetDiameter) / 2,
+            y: (Dimensions.trailingButtonSize - Dimensions.extendedTouchTargetDiameter) / 2)
         )
     }
     .buttonStyle(.plain)
@@ -59,6 +69,8 @@ struct PopupMatchTrailingButton: View {
     .accessibilityIdentifier(
       match.isTabMatch
         ? kOmniboxPopupRowSwitchTabAccessibilityIdentifier
-        : kOmniboxPopupRowAppendAccessibilityIdentifier)
+        : kOmniboxPopupRowAppendAccessibilityIdentifier
+    )
+    .environment(\.layoutDirection, .leftToRight)
   }
 }

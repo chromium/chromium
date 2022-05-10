@@ -60,15 +60,33 @@ where Content: View {
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
 
-    guard let guide = NamedGuide(name: kOmniboxGuide, view: view) else {
+    let safeAreaGuide = view.safeAreaLayoutGuide
+    guard let omniboxGuide = NamedGuide(name: kOmniboxGuide, view: view),
+      let omniboxLeadingImageGuide = NamedGuide(name: kOmniboxLeadingImageGuide, view: view),
+      let omniboxTextFieldGuide = NamedGuide(name: kOmniboxTextFieldGuide, view: view)
+    else {
       return
     }
 
     // Calculate the leading and trailing space here in UIKit world so SwiftUI
     // gets accurate spacing.
-    let frameInView = guide.constrainedView.convert(guide.constrainedView.bounds, to: view)
-    uiConfiguration.omniboxLeadingSpace = frameInView.minX
-    uiConfiguration.omniboxTrailingSpace = view.bounds.width - frameInView.width - frameInView.minX
+    let omniboxFrameInView = omniboxGuide.constrainedView.convert(
+      omniboxGuide.constrainedView.bounds, to: view)
+    uiConfiguration.omniboxLeadingSpace = omniboxFrameInView.minX
+    uiConfiguration.omniboxTrailingSpace = view.bounds.width - omniboxFrameInView.maxX
+
+    let safeAreaFrame = safeAreaGuide.layoutFrame
+    uiConfiguration.safeAreaTrailingSpace = view.bounds.width - safeAreaFrame.maxX
+
+    let omniboxLeadingImageFrameInView = omniboxLeadingImageGuide.constrainedView.convert(
+      omniboxLeadingImageGuide.constrainedView.bounds, to: view)
+    uiConfiguration.omniboxLeadingImageLeadingSpace =
+      omniboxLeadingImageFrameInView.midX - omniboxFrameInView.minX
+
+    let omniboxTextFieldFrameInView = omniboxTextFieldGuide.constrainedView.convert(
+      omniboxTextFieldGuide.constrainedView.bounds, to: view)
+    uiConfiguration.omniboxTextFieldLeadingSpace =
+      omniboxTextFieldFrameInView.minX - omniboxFrameInView.minX
   }
 
   var hasContent: Bool {

@@ -49,11 +49,11 @@ public class L10NUtils {
   }
 }
 
-public func NativeReversableImage(_ imageID: Int, _ reversable: Bool) -> UIImage? {
+public func NativeImage(_ imageID: Int) -> UIImage? {
   switch imageID {
   case IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND:
     let uiImage = UIImage(named: "IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND")
-    return uiImage!.imageFlippedForRightToLeftLayoutDirection()
+    return uiImage
   default:
     fatalError("This image ID is not available in the previews project")
   }

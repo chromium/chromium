@@ -17,18 +17,26 @@ struct PopupMatchRowView: View {
   enum Dimensions {
     static let actionButtonOffset = CGSize(width: -5, height: 0)
     static let actionButtonOuterPadding = EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0)
-    static let leadingSpacing: CGFloat = 60
     static let minHeight: CGFloat = 58
-    static let padding = EdgeInsets(top: 9, leading: 0, bottom: 9, trailing: 16)
+
+    enum VariationOne {
+      static let padding = EdgeInsets(top: 9, leading: 0, bottom: 9, trailing: 0)
+    }
+
+    enum VariationTwo {
+      static let padding = EdgeInsets(top: 9, leading: 0, bottom: 9, trailing: 10)
+    }
   }
 
   @Environment(\.popupUIVariation) var uiVariation: PopupUIVariation
+  @Environment(\.horizontalSizeClass) var sizeClass
 
   let match: PopupMatch
   let isHighlighted: Bool
   let toolbarConfiguration: ToolbarConfiguration
   let selectionHandler: () -> Void
   let trailingButtonHandler: () -> Void
+  let uiConfiguration: PopupUIConfiguration
 
   @State var isPressed = false
   @State var childView = CGSize.zero
@@ -71,8 +79,30 @@ struct PopupMatchRowView: View {
   @ViewBuilder
   var customSeparator: some View {
     HStack(spacing: 0) {
-      Spacer().frame(width: Dimensions.leadingSpacing)
+      Spacer().frame(width: uiConfiguration.omniboxTextFieldLeadingSpace + omniboxLeadingSpace)
       customSeparatorColor.frame(height: 0.5)
+    }.environment(\.layoutDirection, .leftToRight)
+  }
+
+  @Environment(\.layoutDirection) var layoutDirection: LayoutDirection
+
+  /// Leading spacing before the content of the row, within the row.
+  var omniboxLeadingSpace: CGFloat {
+    switch uiVariation {
+    case .one:
+      return uiConfiguration.omniboxLeadingSpace
+    case .two:
+      return 0
+    }
+  }
+
+  /// Traling spacing after the content of the row, within the row.
+  var omniboxTrailingSpace: CGFloat {
+    switch uiVariation {
+    case .one:
+      return uiConfiguration.safeAreaTrailingSpace + kExpandedLocationBarLeadingMarginRefreshedPopup
+    case .two:
+      return 0
     }
   }
 
@@ -100,8 +130,11 @@ struct PopupMatchRowView: View {
 
       // The content is in front of the button, for proper hit testing.
       HStack(alignment: .center, spacing: 0) {
+        Color.clear.frame(width: omniboxLeadingSpace)
         HStack(alignment: .center, spacing: 0) {
-          Spacer()
+          Color.clear.frame(
+            width: uiConfiguration.omniboxLeadingImageLeadingSpace
+              - PopupMatchImageView.Dimension.image / 2)
           match.image
             .map { image in
               PopupMatchImageView(
@@ -111,7 +144,7 @@ struct PopupMatchRowView: View {
               .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
             }
           Spacer()
-        }.frame(width: Dimensions.leadingSpacing)
+        }.frame(width: uiConfiguration.omniboxTextFieldLeadingSpace)
         VStack(alignment: .leading, spacing: 0) {
           VStack(alignment: .leading, spacing: 0) {
             GradientTextView(match.text, highlightColor: highlightColor)
@@ -138,13 +171,18 @@ struct PopupMatchRowView: View {
           }
           .allowsHitTesting(false)
         }
-        Spacer()
+        Spacer(minLength: 0)
         if match.isAppendable || match.isTabMatch {
           PopupMatchTrailingButton(match: match, action: trailingButtonHandler)
             .foregroundColor(isHighlighted ? foregroundColorPrimary : .chromeBlue)
+            .environment(\.layoutDirection, layoutDirection)
         }
+        Color.clear.frame(width: omniboxTrailingSpace)
       }
-      .padding(Dimensions.padding)
+      .padding(
+        uiVariation == .one ? Dimensions.VariationOne.padding : Dimensions.VariationTwo.padding
+      )
+      .environment(\.layoutDirection, .leftToRight)
     }
     .frame(maxWidth: .infinity, minHeight: Dimensions.minHeight)
   }

@@ -94,13 +94,13 @@ extern "C" {
 // |imageID|. If |reversable| is YES and RTL layout is in use, the image
 // will be flipped for RTL.
 UIImage* NativeReversableImage(int imageID, BOOL reversable);
-#ifdef __cplusplus
-}
-#endif  // __cplusplus
 
 // Convenience version of NativeReversableImage for images that are never
 // reversable; equivalent to NativeReversableImage(imageID, NO).
 UIImage* NativeImage(int imageID);
+#ifdef __cplusplus
+}
+#endif  // __cplusplus
 
 // Returns an output image where each pixel has RGB values equal to a color and
 // the alpha value sampled from the given image. The RGB values of the image are

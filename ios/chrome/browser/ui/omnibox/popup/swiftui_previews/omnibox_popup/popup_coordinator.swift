@@ -31,11 +31,18 @@ class PopupCoordinator {
     let mediator = PopupMediator()
     self.mediator = mediator
 
+    let uiConfiguration = PopupUIConfiguration(
+      toolbarConfiguration: ToolbarConfiguration(style: .NORMAL))
+    uiConfiguration.omniboxLeadingSpace = 10
+    uiConfiguration.omniboxTrailingSpace = 100
+    uiConfiguration.safeAreaTrailingSpace = 10
+    uiConfiguration.omniboxLeadingImageLeadingSpace = 22
+    uiConfiguration.omniboxTextFieldLeadingSpace = 51
+
     let viewController = UIHostingController(
       rootView: PopupView(
         model: mediator.model,
-        uiConfiguration: PopupUIConfiguration(
-          toolbarConfiguration: ToolbarConfiguration(style: .NORMAL))
+        uiConfiguration: uiConfiguration
       ).environment(\.popupUIVariation, .one))
     self.viewController = viewController
     viewController.view.translatesAutoresizingMaskIntoConstraints = false
