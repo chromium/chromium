@@ -126,7 +126,7 @@ export async function openNewWindow(initialRoot, appState = {}) {
  *     passed to chrome. fileSystem.chooseEntry() API.
  * @param {string} volumeName Volume name passed to the selectVolume remote
  *     function.
- * @param {Array<TestEntryInfo>} expectedSet Expected set of the entries.
+ * @param {!Array<!TestEntryInfo>} expectedSet Expected set of the entries.
  * @param {function(string):Promise} closeDialog Function to close the
  *     dialog.
  * @param {boolean} useBrowserOpen Whether to launch the select file dialog via

@@ -47,7 +47,7 @@ async function selectFirstFileListItem(appId) {
  * Creates a new folder in the file list.
  *
  * @param {string} appId The Files app windowId.
- * @param {Array<TestEntryInfo>} initialEntrySet Initial set of entries.
+ * @param {!Array<!TestEntryInfo>} initialEntrySet Initial set of entries.
  * @param {string} selector Downloads or Drive directory tree item selector.
  * @return {Promise} Promise to be fulfilled on success.
  */

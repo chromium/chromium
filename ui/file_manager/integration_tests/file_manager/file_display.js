@@ -13,7 +13,7 @@ import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, COMP
  * that files subsequently added are also displayed.
  *
  * @param {string} path Path to be tested, Downloads or Drive.
- * @param {Array<TestEntryInfo>} defaultEntries Default file entries.
+ * @param {!Array<!TestEntryInfo>} defaultEntries Default file entries.
  */
 async function fileDisplay(path, defaultEntries) {
   // Open Files app on the given |path| with default file entries.
@@ -445,7 +445,7 @@ testcase.fileDisplayPartitionFileTable = async () => {
  * are displayed.
  *
  * @param {string} searchTerm The string to search for.
- * @param {Array<Object>} expectedResults The results set.
+ * @param {!Array<!TestEntryInfo>} expectedResults The results set.
  *
  */
 async function searchDownloads(searchTerm, expectedResults) {

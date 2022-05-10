@@ -12,7 +12,7 @@ import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 /**
  * Expected files shown in the search results for 'hello'
  *
- * @type {Array<TestEntryInfo>}
+ * @type {!Array<!TestEntryInfo>}
  * @const
  */
 const SEARCH_RESULTS_ENTRY_SET = [

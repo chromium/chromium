@@ -439,8 +439,8 @@ export class TestEntryInfo {
 
   /**
    * Obtains the expected row contents for each file.
-   * @param {Array<TestEntryInfo>} entries
-   * @return {Array<!Array<string>>}
+   * @param {!Array<!TestEntryInfo>} entries
+   * @return {!Array<!Array<string>>}
    */
   static getExpectedRows(entries) {
     return entries.map(function(entry) {
@@ -462,7 +462,7 @@ export class TestEntryInfo {
    * constructing TestEntryInfo for Recents view.
    *
    * @param {string} newDate the new modified date time
-   * @return {TestEntryInfo}
+   * @return {!TestEntryInfo}
    */
   cloneWithModifiedDate(newDate) {
     const updatedOptions =
