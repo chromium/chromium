@@ -703,10 +703,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         for (int i = 0; i < count; i++) {
             final StripLayoutTab tab = mStripTabs[i];
             if (TabUiFeatureUtilities.getTabMinWidth() == TAB_WIDTH_MEDIUM) {
-                mStripTabs[i].setCanShowCloseButton(shouldShowCloseButton(tab));
+                mStripTabs[i].setCanShowCloseButton(shouldShowCloseButton(tab, i));
             } else if (TabUiFeatureUtilities.getTabMinWidth() == TAB_WIDTH_SMALL) {
                 mStripTabs[i].setCanShowCloseButton(tab.getWidth() >= TAB_WIDTH_MEDIUM
-                        || (tab.getId() == selectedTab.getId() && shouldShowCloseButton(tab)));
+                        || (tab.getId() == selectedTab.getId() && shouldShowCloseButton(tab, i)));
             }
         }
     }
@@ -715,19 +715,31 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * Checks whether a tab at the edge of the strip is partially hidden, in which case the
      * close button will be hidden to avoid accidental clicks.
      * @param tab The tab to check.
+     * @param index The index of the tab.
      * @return Whether the close button should be shown for this tab.
      */
-    private boolean shouldShowCloseButton(StripLayoutTab tab) {
+    private boolean shouldShowCloseButton(StripLayoutTab tab, int index) {
         boolean tabStartHidden;
         boolean tabEndHidden;
+        boolean isLastTab = index == mStripTabs.length - 1;
         if (LocalizationUtils.isLayoutRtl()) {
-            tabStartHidden =
-                    tab.getDrawX() + mTabOverlapWidth < getCloseBtnVisibilityThreshold(false);
+            if (isLastTab) {
+                tabStartHidden = tab.getDrawX() + mTabOverlapWidth
+                        < mNewTabButton.getX() + mNewTabButton.getWidth();
+            } else {
+                tabStartHidden =
+                        tab.getDrawX() + mTabOverlapWidth < getCloseBtnVisibilityThreshold(false);
+            }
             tabEndHidden = tab.getDrawX() > mWidth - getCloseBtnVisibilityThreshold(true);
         } else {
             tabStartHidden = tab.getDrawX() + tab.getWidth() < getCloseBtnVisibilityThreshold(true);
-            tabEndHidden = (tab.getDrawX() + tab.getWidth() - mTabOverlapWidth
-                    > mWidth - getCloseBtnVisibilityThreshold(false));
+            if (isLastTab) {
+                tabEndHidden =
+                        tab.getDrawX() + tab.getWidth() - mTabOverlapWidth > mNewTabButton.getX();
+            } else {
+                tabEndHidden = (tab.getDrawX() + tab.getWidth() - mTabOverlapWidth
+                        > mWidth - getCloseBtnVisibilityThreshold(false));
+            }
         }
         return !tabStartHidden && !tabEndHidden;
     }
