@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 312 tests; 305 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 311 tests; 304 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS accent-color
 PASS align-content
 PASS align-items
@@ -193,7 +193,6 @@ PASS min-inline-size
 PASS min-width
 PASS mix-blend-mode
 PASS object-fit
-PASS object-overflow
 PASS object-position
 PASS object-view-box
 PASS offset-anchor

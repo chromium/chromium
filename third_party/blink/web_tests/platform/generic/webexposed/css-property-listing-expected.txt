@@ -258,7 +258,6 @@ All changes to this list should go through Blink's feature review process: http:
     min-width
     mix-blend-mode
     object-fit
-    object-overflow
     object-position
     object-view-box
     offset-anchor

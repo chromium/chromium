@@ -3188,17 +3188,6 @@
       getter: "GetObjectFit",
     },
     {
-      name: "object-overflow",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
-      field_group: "*",
-      field_template: "keyword",
-      keywords: ["clip", "visible"],
-      typedom_types: ["Keyword"],
-      default_value: "clip",
-      getter: "GetObjectOverflow",
-      runtime_flag: "CSSObjectViewBoxAndOverflow",
-    },
-    {
       name: "object-position",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
@@ -3223,7 +3212,7 @@
       converter: "ConvertObjectViewBox",
       keywords: ["none"],
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSObjectViewBoxAndOverflow",
+      runtime_flag: "CSSObjectViewBox",
     },
     {
       name: "offset-anchor",

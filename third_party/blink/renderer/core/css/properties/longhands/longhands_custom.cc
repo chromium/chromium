@@ -4880,13 +4880,6 @@ const CSSValue* ObjectFit::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.GetObjectFit());
 }
 
-const CSSValue* ObjectOverflow::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(style.GetObjectOverflow());
-}
-
 const CSSValue* ObjectPosition::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -4912,7 +4905,7 @@ const CSSValue* ObjectViewBox::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  DCHECK(RuntimeEnabledFeatures::CSSObjectViewBoxAndOverflowEnabled());
+  DCHECK(RuntimeEnabledFeatures::CSSObjectViewBoxEnabled());
 
   if (range.Peek().Id() == CSSValueID::kNone)
     return css_parsing_utils::ConsumeIdent(range);
@@ -4927,7 +4920,7 @@ const CSSValue* ObjectViewBox::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (!RuntimeEnabledFeatures::CSSObjectViewBoxAndOverflowEnabled()) {
+  if (!RuntimeEnabledFeatures::CSSObjectViewBoxEnabled()) {
     DCHECK(!style.ObjectViewBox());
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }

@@ -670,7 +670,7 @@
       status: "stable",
     },
     {
-      name: "CSSObjectViewBoxAndOverflow",
+      name: "CSSObjectViewBox",
       status: "experimental",
       implied_by: ["DocumentTransition"],
     },

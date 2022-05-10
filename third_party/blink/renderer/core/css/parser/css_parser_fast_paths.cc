@@ -934,8 +934,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kContain ||
              value_id == CSSValueID::kCover || value_id == CSSValueID::kNone ||
              value_id == CSSValueID::kScaleDown;
-    case CSSPropertyID::kObjectOverflow:
-      return value_id == CSSValueID::kClip || value_id == CSSValueID::kVisible;
     case CSSPropertyID::kOutlineStyle:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
              (value_id >= CSSValueID::kInset &&
@@ -1315,7 +1313,6 @@ bool CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID property_id) {
     case CSSPropertyID::kMathShift:
     case CSSPropertyID::kMathStyle:
     case CSSPropertyID::kObjectFit:
-    case CSSPropertyID::kObjectOverflow:
     case CSSPropertyID::kOutlineStyle:
     case CSSPropertyID::kOverflowAnchor:
     case CSSPropertyID::kOverflowBlock:

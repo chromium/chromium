@@ -203,8 +203,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.MinHeight() == b.MinHeight();
     case CSSPropertyID::kMinWidth:
       return a.MinWidth() == b.MinWidth();
-    case CSSPropertyID::kObjectOverflow:
-      return a.GetObjectOverflow() == b.GetObjectOverflow();
     case CSSPropertyID::kObjectPosition:
       return a.ObjectPosition() == b.ObjectPosition();
     case CSSPropertyID::kObjectViewBox:

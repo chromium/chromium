@@ -279,7 +279,6 @@ minZoom
 mixBlendMode
 negative
 objectFit
-objectOverflow
 objectPosition
 objectViewBox
 offset
