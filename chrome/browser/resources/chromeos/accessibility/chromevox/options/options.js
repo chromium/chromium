@@ -439,9 +439,8 @@ export class OptionsPage {
    */
   static setEventStreamFilter(name, enabled) {
     BackgroundBridge.ChromeVoxPrefs.setPref(name, enabled);
-    chrome.extension.getBackgroundPage()
-        .EventStreamLogger.instance.notifyEventStreamFilterChanged(
-            name, enabled);
+    BackgroundBridge.EventStreamLogger.notifyEventStreamFilterChanged(
+        name, enabled);
   }
 
   /**

@@ -8,6 +8,9 @@
 
 goog.provide('EventStreamLogger');
 
+goog.require('BridgeAction');
+goog.require('BridgeHelper');
+goog.require('BridgeTarget');
 goog.require('LogStore');
 goog.require('EventLog');
 
@@ -102,4 +105,11 @@ EventStreamLogger.instance;
 
 
 EventStreamLogger.init_();
+
+BridgeHelper.registerHandler(
+    BridgeTarget.EVENT_STREAM_LOGGER,
+    BridgeAction.NOTIFY_EVENT_STREAM_FILTER_CHANGED,
+    ({name, enabled}) =>
+        EventStreamLogger.instance.notifyEventStreamFilterChanged(
+            name, enabled));
 });  // goog.scope

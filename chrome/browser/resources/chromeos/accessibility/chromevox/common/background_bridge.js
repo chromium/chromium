@@ -141,6 +141,19 @@ BackgroundBridge.GestureCommandHandler = {
   },
 };
 
+BackgroundBridge.EventStreamLogger = {
+  /**
+   * @param {chrome.automation.EventType} eventType
+   * @param {boolean} checked
+   * @return {!Promise}
+   */
+  async notifyEventStreamFilterChanged(name, enabled) {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.EVENT_STREAM_LOGGER,
+        BridgeAction.NOTIFY_EVENT_STREAM_FILTER_CHANGED, {name, enabled});
+  },
+};
+
 BackgroundBridge.LogStore = {
   /**
    * Clear the log buffer.
