@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/android/password_manager_settings_service_android_impl.h"

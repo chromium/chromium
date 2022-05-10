@@ -53,18 +53,6 @@ enum class GetLoginMatchType {
   kPSL,
 };
 
-// Checks if saving passwords is enabled. On Android, it ensures that the
-// correct pref is checked on Android, which depends on the unified password
-// manager status.
-bool IsSavingPasswordsEnabled(const PrefService* pref_service,
-                              const syncer::SyncService* sync_service);
-
-// Checks if auto sign in is enabled. On Android, it ensures that the
-// correct pref is checked on Android, which depends on the unified password
-// manager status.
-bool IsAutoSignInEnabled(const PrefService* pref_service,
-                         const syncer::SyncService* sync_service);
-
 // Update |credential| to reflect usage.
 void UpdateMetadataForUsage(password_manager::PasswordForm* credential);
 

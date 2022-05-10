@@ -86,8 +86,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
         account_store_(account_store),
         password_manager_(this) {
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
-    prefs_->registry()->RegisterBooleanPref(prefs::kCredentialsEnableAutosignin,
-                                            true);
     prefs_->registry()->RegisterBooleanPref(
         prefs::kWasAutoSignInFirstRunExperienceShown, true);
     prefs_->registry()->RegisterBooleanPref(
@@ -103,6 +101,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MockPasswordManagerClient& operator=(const MockPasswordManagerClient&) =
       delete;
   ~MockPasswordManagerClient() override = default;
+
+  bool IsAutoSignInEnabled() const override { return auto_sign_in_enabled_; }
 
   bool PromptUserToSaveOrUpdatePassword(
       std::unique_ptr<PasswordFormManagerForUI> manager,
@@ -161,7 +161,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   PasswordFormManagerForUI* pending_manager() const { return manager_.get(); }
 
   void set_zero_click_enabled(bool zero_click_enabled) {
-    prefs_->SetBoolean(prefs::kCredentialsEnableAutosignin, zero_click_enabled);
+    auto_sign_in_enabled_ = zero_click_enabled;
   }
 
   void set_first_run_seen(bool first_run_seen) {
@@ -180,6 +180,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   std::unique_ptr<PasswordFormManagerForUI> manager_;
   PasswordManager password_manager_;
   GURL last_committed_url_{kTestWebOrigin};
+  bool auto_sign_in_enabled_ = true;
 };
 
 // Callbacks from CredentialManagerImpl methods

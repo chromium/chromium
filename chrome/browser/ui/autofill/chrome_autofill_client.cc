@@ -23,6 +23,7 @@
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -61,6 +62,8 @@
 #include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_setting.h"
+#include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_requirements_service.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -867,8 +870,10 @@ bool ChromeAutofillClient::IsAutocompleteEnabled() {
 }
 
 bool ChromeAutofillClient::IsPasswordManagerEnabled() {
-  return password_manager_util::IsSavingPasswordsEnabled(GetPrefs(),
-                                                         GetSyncService());
+  PasswordManagerSettingsService* settings_service =
+      PasswordManagerSettingsServiceFactory::GetForProfile(GetProfile());
+  return settings_service->IsSettingEnabled(
+      password_manager::PasswordManagerSetting::kOfferToSavePasswords);
 }
 
 void ChromeAutofillClient::PropagateAutofillPredictions(

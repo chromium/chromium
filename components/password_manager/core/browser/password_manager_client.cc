@@ -27,6 +27,10 @@ bool PasswordManagerClient::IsFillingFallbackEnabled(const GURL& url) const {
   return true;
 }
 
+bool PasswordManagerClient::IsAutoSignInEnabled() const {
+  return false;
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void PasswordManagerClient::ShowTouchToFill(
     PasswordManagerDriver* driver,

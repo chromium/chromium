@@ -106,6 +106,7 @@ class ChromePasswordManagerClient
   bool IsSavingAndFillingEnabled(const GURL& url) const override;
   bool IsFillingEnabled(const GURL& url) const override;
   bool IsFillingFallbackEnabled(const GURL& url) const override;
+  bool IsAutoSignInEnabled() const override;
   bool PromptUserToSaveOrUpdatePassword(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
       bool is_update) override;

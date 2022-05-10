@@ -41,6 +41,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
   MockPasswordManagerClient() = default;
 
+  MOCK_METHOD(bool, IsAutoSignInEnabled, (), (const, override));
   MOCK_METHOD(void,
               PromptUserToMovePasswordToAccount,
               (std::unique_ptr<PasswordFormManagerForUI>),
@@ -79,10 +80,7 @@ class PasswordManagerClientHelperTest : public testing::Test {
   PasswordManagerClientHelperTest() : helper_(&client_) {
     prefs_.registry()->RegisterBooleanPref(
         prefs::kWasAutoSignInFirstRunExperienceShown, false);
-    prefs_.registry()->RegisterBooleanPref(prefs::kCredentialsEnableAutosignin,
-                                           true);
     prefs_.SetBoolean(prefs::kWasAutoSignInFirstRunExperienceShown, false);
-    prefs_.SetBoolean(prefs::kCredentialsEnableAutosignin, true);
     ON_CALL(client_, GetPrefs()).WillByDefault(Return(&prefs_));
 
     ON_CALL(*client(), GetIdentityManager)
@@ -107,6 +105,7 @@ class PasswordManagerClientHelperTest : public testing::Test {
 };
 
 TEST_F(PasswordManagerClientHelperTest, PromptAutosigninAfterSuccessfulLogin) {
+  EXPECT_CALL(*client(), IsAutoSignInEnabled).WillOnce(Return(true));
   EXPECT_CALL(*client(), PromptUserToEnableAutosignin);
   EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount).Times(0);
 

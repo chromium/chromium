@@ -163,9 +163,7 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
 }
 
 bool CredentialManagerImpl::IsZeroClickAllowed() const {
-  return password_manager_util::IsAutoSignInEnabled(
-             client_->GetPrefs(), client_->GetSyncService()) &&
-         !client_->IsIncognito();
+  return client_->IsAutoSignInEnabled() && !client_->IsIncognito();
 }
 
 PasswordFormDigest CredentialManagerImpl::GetSynthesizedFormForOrigin() const {

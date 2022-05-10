@@ -134,6 +134,9 @@ class PasswordManagerClient {
   // address.
   virtual bool IsFillingFallbackEnabled(const GURL& url) const;
 
+  // Checks if the auto sign-in functionality is enabled.
+  virtual bool IsAutoSignInEnabled() const;
+
   // Informs the embedder of a password form that can be saved or updated in
   // password store if the user allows it. The embedder is not required to
   // prompt the user if it decides that this form doesn't need to be saved or
