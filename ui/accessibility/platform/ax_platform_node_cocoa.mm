@@ -208,6 +208,10 @@ bool IsAXSetter(SEL selector) {
 
 // Returns the native wrapper for the given node id.
 - (AXPlatformNodeCocoa*)fromNodeID:(ui::AXNodeID)id;
+
+// Returns true if this object is an image.
+- (BOOL)isImage;
+
 @end
 
 @implementation AXPlatformNodeCocoa {
@@ -671,6 +675,19 @@ bool IsAXSetter(SEL selector) {
   if (cell)
     return cell->GetNativeViewAccessible();
   return nil;
+}
+
+- (BOOL)isImage {
+  bool isImage =
+      ui::IsImage(_node->GetRole()) &&
+      !_node->GetBoolAttribute(ax::mojom::BoolAttribute::kCanvasHasFallback);
+  DCHECK(!([[self accessibilityRole] isEqualToString:NSAccessibilityImageRole] ^
+           isImage))
+      << "Internal and native roles do not match when determining if this "
+         "object is an image. "
+      << "Chrome role: " << ui::ToString(_node->GetRole())
+      << ", NSAccessibility role: " << [self accessibilityRole];
+  return isImage;
 }
 
 - (NSString*)getName {
@@ -1770,7 +1787,7 @@ bool IsAXSetter(SEL selector) {
 
   // Given an image where there's no other title, return the base part
   // of the filename as the description.
-  if ([[self accessibilityRole] isEqualToString:NSAccessibilityImageRole]) {
+  if ([self isImage]) {
     std::string url;
     if (_node->GetStringAttribute(ax::mojom::StringAttribute::kUrl, &url)) {
       // Given a url like http://foo.com/bar/baz.png, just return the
