@@ -601,14 +601,20 @@ NSInteger kFeedSymbolPointSize = 17;
   ]];
 
   // Find the "Following" label within the segmented control, since it is not
-  // exposed by UISegmentedControl.
+  // exposed by UISegmentedControl. First loop iterates through UISegments, and
+  // next loop iterates to find their nested UISegmentLabels.
   UILabel* followingLabel;
   for (UIView* view in self.segmentedControl.subviews) {
-    if ([view isKindOfClass:[UILabel class]]) {
-      UILabel* currentLabel = static_cast<UILabel*>(view);
-      if (currentLabel.text ==
-          l10n_util::GetNSString(IDS_IOS_FOLLOWING_FEED_TITLE)) {
-        followingLabel = currentLabel;
+    for (UIView* subview in view.subviews) {
+      if ([NSStringFromClass([subview class])
+              isEqualToString:@"UISegmentLabel"]) {
+        UILabel* currentLabel = static_cast<UILabel*>(subview);
+        if ([currentLabel.text
+                isEqualToString:l10n_util::GetNSString(
+                                    IDS_IOS_FOLLOWING_FEED_TITLE)]) {
+          followingLabel = currentLabel;
+          break;
+        }
       }
     }
   }
