@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -328,6 +329,43 @@ TEST_F(ContainerQueryEvaluatorTest, EvaluatorDisplayNone) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(outer->GetContainerQueryEvaluator());
   EXPECT_TRUE(inner->GetContainerQueryEvaluator());
+}
+
+TEST_F(ContainerQueryEvaluatorTest, LegacyPrinting) {
+  ScopedLayoutNGPrintingForTest legacy_print(false);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container {
+        container-type: size;
+        width: 100px;
+        height: 100px;
+      }
+      @container (width >= 0px) {
+        #inner { z-index: 1; }
+      }
+    </style>
+    <div id="container">
+      <div id="inner"></div>
+    </div>
+  )HTML");
+
+  Element* inner = GetDocument().getElementById("inner");
+  ASSERT_TRUE(inner);
+
+  EXPECT_EQ(inner->ComputedStyleRef().ZIndex(), 1);
+
+  constexpr gfx::SizeF initial_page_size(800, 600);
+
+  GetDocument().GetFrame()->StartPrinting(initial_page_size, initial_page_size);
+  GetDocument().View()->UpdateLifecyclePhasesForPrinting();
+
+  EXPECT_EQ(inner->ComputedStyleRef().ZIndex(), 0);
+
+  GetDocument().GetFrame()->EndPrinting();
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(inner->ComputedStyleRef().ZIndex(), 1);
 }
 
 }  // namespace blink

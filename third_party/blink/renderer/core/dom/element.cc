@@ -3704,6 +3704,8 @@ static ContainerQueryEvaluator* ComputeContainerQueryEvaluator(
     const ComputedStyle& new_style) {
   if (!new_style.IsContainerForSizeContainerQueries())
     return nullptr;
+  if (new_style.InsideFragmentationContextWithNondeterministicEngine())
+    return nullptr;
   // If we're switching to display:contents, any existing results cached on
   // ContainerQueryEvaluator are no longer valid, since any style recalc
   // based on that information would *not* be corrected by a subsequent
