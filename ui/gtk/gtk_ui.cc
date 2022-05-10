@@ -76,6 +76,7 @@
 #include "ui/views/linux_ui/device_scale_factor_observer.h"
 #include "ui/views/linux_ui/nav_button_provider.h"
 #include "ui/views/linux_ui/window_button_order_observer.h"
+#include "ui/views/window/window_button_order_provider.h"
 
 #if defined(USE_GIO)
 #include "ui/gtk/settings_provider_gsettings.h"
@@ -681,9 +682,6 @@ std::unique_ptr<views::Border> GtkUi::CreateNativeBorder(
 
 void GtkUi::AddWindowButtonOrderObserver(
     views::WindowButtonOrderObserver* observer) {
-  if (nav_buttons_set_)
-    observer->OnWindowButtonOrderingChange(leading_buttons_, trailing_buttons_);
-
   window_button_order_observer_list_.AddObserver(observer);
 }
 
@@ -695,13 +693,12 @@ void GtkUi::RemoveWindowButtonOrderObserver(
 void GtkUi::SetWindowButtonOrdering(
     const std::vector<views::FrameButton>& leading_buttons,
     const std::vector<views::FrameButton>& trailing_buttons) {
-  leading_buttons_ = leading_buttons;
-  trailing_buttons_ = trailing_buttons;
-  nav_buttons_set_ = true;
+  views::WindowButtonOrderProvider::GetInstance()->SetWindowButtonOrder(
+      leading_buttons, trailing_buttons);
 
   for (views::WindowButtonOrderObserver& observer :
        window_button_order_observer_list_) {
-    observer.OnWindowButtonOrderingChange(leading_buttons_, trailing_buttons_);
+    observer.OnWindowButtonOrderingChange();
   }
 }
 

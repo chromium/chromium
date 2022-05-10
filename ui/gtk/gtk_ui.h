@@ -187,12 +187,6 @@ class GtkUi : public views::LinuxUI {
 
   std::unique_ptr<SettingsProvider> settings_provider_;
 
-  // Frame button layout state.  If |nav_buttons_set_| is false, then
-  // |leading_buttons_| and |trailing_buttons_| are meaningless.
-  bool nav_buttons_set_ = false;
-  std::vector<views::FrameButton> leading_buttons_;
-  std::vector<views::FrameButton> trailing_buttons_;
-
   // This is only used on GTK3.
   std::unique_ptr<GtkKeyBindingsHandler> key_bindings_handler_;
 

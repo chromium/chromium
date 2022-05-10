@@ -567,7 +567,6 @@ component("views") {
   }
 
   if (is_linux || is_chromeos_lacros) {
-    sources -= [ "window/window_button_order_provider.cc" ]
     public_deps += [ "//ui/base/cursor:theme_manager" ]
     deps += [
       "//build:chromecast_buildflags",
@@ -585,7 +584,6 @@ component("views") {
     sources += [
       "linux_ui/linux_ui.cc",
       "linux_ui/status_icon_linux.cc",
-      "linux_ui/window_button_order_provider.cc",
     ]
 
     if (!is_chromeos_lacros) {

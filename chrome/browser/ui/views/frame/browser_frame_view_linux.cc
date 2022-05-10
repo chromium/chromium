@@ -13,6 +13,7 @@
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/window/frame_background.h"
+#include "ui/views/window/window_button_order_provider.h"
 
 BrowserFrameViewLinux::BrowserFrameViewLinux(
     BrowserFrame* frame,
@@ -20,8 +21,10 @@ BrowserFrameViewLinux::BrowserFrameViewLinux(
     BrowserFrameViewLayoutLinux* layout)
     : OpaqueBrowserFrameView(frame, browser_view, layout), layout_(layout) {
   layout->set_view(this);
-  if (views::LinuxUI* ui = views::LinuxUI::instance())
+  if (views::LinuxUI* ui = views::LinuxUI::instance()) {
     ui->AddWindowButtonOrderObserver(this);
+    OnWindowButtonOrderingChange();
+  }
 }
 
 BrowserFrameViewLinux::~BrowserFrameViewLinux() {
@@ -49,10 +52,10 @@ gfx::ShadowValues BrowserFrameViewLinux::GetShadowValues() {
   return gfx::ShadowValue::MakeMdShadowValues(elevation);
 }
 
-void BrowserFrameViewLinux::OnWindowButtonOrderingChange(
-    const std::vector<views::FrameButton>& leading_buttons,
-    const std::vector<views::FrameButton>& trailing_buttons) {
-  layout_->SetButtonOrdering(leading_buttons, trailing_buttons);
+void BrowserFrameViewLinux::OnWindowButtonOrderingChange() {
+  auto* provider = views::WindowButtonOrderProvider::GetInstance();
+  layout_->SetButtonOrdering(provider->leading_buttons(),
+                             provider->trailing_buttons());
 
   // We can receive OnWindowButtonOrderingChange events before we've been added
   // to a Widget. We need a Widget because layout crashes due to dependencies

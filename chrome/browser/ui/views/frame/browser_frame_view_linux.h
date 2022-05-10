@@ -37,9 +37,7 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
 
  protected:
   // views::WindowButtonOrderObserver:
-  void OnWindowButtonOrderingChange(
-      const std::vector<views::FrameButton>& leading_buttons,
-      const std::vector<views::FrameButton>& trailing_buttons) override;
+  void OnWindowButtonOrderingChange() override;
 
   // views::View:
   void PaintRestoredFrameBorder(gfx::Canvas* canvas) const override;
