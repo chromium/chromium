@@ -70,10 +70,11 @@ enum class SystemAppType {
   // contact: cros-telemetry@google.com
   OS_FEEDBACK = 19,
 
-  // Projector (go/projector-player-dd) aims to make it simple for teachers and
-  // students to record and share instructional videos on a Chromebook. This app
-  // enables teachers to create a library of custom-tailored instructional
-  // content that students can search and view at home.
+  // Projector aka Screencast (go/projector-player-dd) aims to make it simple
+  // for teachers and students to record and share instructional videos on a
+  // Chromebook. This app enables teachers to create a library of
+  // custom-tailored instructional content that students can search and view at
+  // home.
   //
   // Source: //ash/webui/projector_app/
   // Contact: cros-projector@google.com

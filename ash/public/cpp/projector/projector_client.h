@@ -39,6 +39,8 @@ class ASH_PUBLIC_EXPORT ProjectorClient {
   virtual void OpenProjectorApp() const = 0;
   // Minimizes Projector SWA.
   virtual void MinimizeProjectorApp() const = 0;
+  // Closes Projector SWA.
+  virtual void CloseProjectorApp() const = 0;
 
   // Registers the AnnotatorMessageHandler that is owned by the WebUI that
   // contains the Projector annotator.

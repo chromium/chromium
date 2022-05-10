@@ -5,12 +5,14 @@
 #include "chrome/browser/ui/ash/projector/projector_client_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/annotator_message_handler.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "base/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,7 +21,11 @@
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/soda/soda_installer.h"
 #include "content/public/browser/download_manager.h"
@@ -141,6 +147,14 @@ void ProjectorClientImpl::MinimizeProjectorApp() const {
     browser->window()->Minimize();
 }
 
+void ProjectorClientImpl::CloseProjectorApp() const {
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  auto* browser =
+      FindSystemWebAppBrowser(profile, web_app::SystemAppType::PROJECTOR);
+  if (browser)
+    browser->window()->Close();
+}
+
 void ProjectorClientImpl::OnNewScreencastPreconditionChanged(
     const ash::NewScreencastPrecondition& precondition) const {
   ash::ProjectorAppClient* app_client = ash::ProjectorAppClient::Get();
@@ -217,6 +231,23 @@ void ProjectorClientImpl::OnUserProfileLoaded(const AccountId& account_id) {
   MaybeSwitchDriveIntegrationServiceObservation();
 }
 
+void ProjectorClientImpl::OnUserSessionStarted(bool is_primary_user) {
+  if (!is_primary_user || !pref_change_registrar_.IsEmpty())
+    return;
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  pref_change_registrar_.Init(profile->GetPrefs());
+  // TOOD(b/232043809): Consider using the disabled system feature policy
+  // instead.
+  pref_change_registrar_.Add(
+      ash::prefs::kProjectorAllowByPolicy,
+      base::BindRepeating(&ProjectorClientImpl::OnEnablementPolicyChanged,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      ash::prefs::kProjectorDogfoodForFamilyLinkEnabled,
+      base::BindRepeating(&ProjectorClientImpl::OnEnablementPolicyChanged,
+                          base::Unretained(this)));
+}
+
 void ProjectorClientImpl::ActiveUserChanged(user_manager::User* active_user) {
   // After user login, the first ActiveUserChanged() might be called before
   // profile is loaded.
@@ -236,4 +267,31 @@ void ProjectorClientImpl::MaybeSwitchDriveIntegrationServiceObservation() {
 
   drive_observation_.Reset();
   drive_observation_.Observe(drive_service);
+}
+
+void ProjectorClientImpl::OnEnablementPolicyChanged() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  web_app::SystemWebAppManager& manager =
+      web_app::WebAppProvider::GetForSystemWebApps(profile)
+          ->system_web_app_manager();
+  const bool is_installed =
+      manager.IsSystemWebApp(ash::kChromeUITrustedProjectorSwaAppId);
+  // We can't enable or disable the app if it's not already installed.
+  if (!is_installed)
+    return;
+
+  const bool is_enabled = IsProjectorAppEnabled(profile);
+  // The policy has changed to disallow the Projector app. Since we can't
+  // uninstall the Projector SWA until the user signs out and back in, we should
+  // close and disable the app for this current session.
+  if (!is_enabled)
+    CloseProjectorApp();
+
+  absl::optional<web_app::AppId> app_id =
+      GetAppIdForSystemWebApp(profile, web_app::SystemAppType::PROJECTOR);
+  if (!app_id)
+    return;
+
+  auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile);
+  web_app_provider->sync_bridge().SetAppIsDisabled(app_id.value(), !is_enabled);
 }

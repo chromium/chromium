@@ -36,6 +36,7 @@ class ASH_EXPORT MockProjectorClient : public ProjectorClient,
   MOCK_CONST_METHOD0(IsDriveFsMountFailed, bool());
   MOCK_CONST_METHOD0(OpenProjectorApp, void());
   MOCK_CONST_METHOD0(MinimizeProjectorApp, void());
+  MOCK_CONST_METHOD0(CloseProjectorApp, void());
   MOCK_CONST_METHOD1(OnNewScreencastPreconditionChanged,
                      void(const NewScreencastPrecondition&));
   MOCK_METHOD1(SetAnnotatorMessageHandler, void(AnnotatorMessageHandler*));
