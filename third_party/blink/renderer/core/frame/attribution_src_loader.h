@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ATTRIBUTION_SRC_LOADER_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink-forward.h"
@@ -87,11 +88,10 @@ class CORE_EXPORT AttributionSrcLoader
 
   // Returns whether the attribution is allowed to be registered. Devtool issue
   // might be reported if it's not allowed.
-  RegisterResult CanRegisterAttribution(
-      RegisterContext context,
-      const KURL& url,
-      HTMLElement* element,
-      const absl::optional<String>& request_id);
+  RegisterResult CanRegisterAttribution(RegisterContext context,
+                                        const KURL& url,
+                                        HTMLElement* element,
+                                        absl::optional<uint64_t> request_id);
 
   void RegisterTrigger(
       mojom::blink::AttributionTriggerDataPtr trigger_data) const;
@@ -105,7 +105,7 @@ class CORE_EXPORT AttributionSrcLoader
   void LogAuditIssue(AttributionReportingIssueType issue_type,
                      const absl::optional<String>& string,
                      HTMLElement* element,
-                     const absl::optional<String>& request_id);
+                     absl::optional<uint64_t> request_id);
 
   const Member<LocalFrame> local_frame_;
   size_t num_resource_clients_ = 0;

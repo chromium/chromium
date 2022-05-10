@@ -121,8 +121,10 @@ class AttributionSrcLoader::ResourceClient
   }
 
  private:
-  void HandleResponseHeaders(const ResourceResponse& response);
-  void HandleSourceRegistration(const ResourceResponse& response);
+  void HandleResponseHeaders(const ResourceResponse& response,
+                             uint64_t request_id);
+  void HandleSourceRegistration(const ResourceResponse& response,
+                                uint64_t request_id);
   void HandleTriggerRegistration(const ResourceResponse& response);
 
   // RawResourceClient:
@@ -282,7 +284,7 @@ AttributionSrcLoader::CanRegisterAttribution(
     RegisterContext context,
     const KURL& url,
     HTMLElement* element,
-    const absl::optional<String>& request_id) {
+    absl::optional<uint64_t> request_id) {
   LocalDOMWindow* window = local_frame_->DomWindow();
   DCHECK(window);
 
@@ -343,10 +345,9 @@ void AttributionSrcLoader::MaybeRegisterTrigger(
   if (!ContainsTriggerHeaders(response.HttpHeaderFields()))
     return;
 
-  if (CanRegisterAttribution(
-          RegisterContext::kResourceTrigger, response.CurrentRequestUrl(),
-          /*element=*/nullptr,
-          IdentifiersFactory::SubresourceRequestId(request.InspectorId())) !=
+  if (CanRegisterAttribution(RegisterContext::kResourceTrigger,
+                             response.CurrentRequestUrl(),
+                             /*element=*/nullptr, request.InspectorId()) !=
       RegisterResult::kSuccess) {
     return;
   }
@@ -389,14 +390,14 @@ String AttributionSrcLoader::ResourceClient::DebugName() const {
 void AttributionSrcLoader::ResourceClient::ResponseReceived(
     Resource* resource,
     const ResourceResponse& response) {
-  HandleResponseHeaders(response);
+  HandleResponseHeaders(response, resource->InspectorId());
 }
 
 bool AttributionSrcLoader::ResourceClient::RedirectReceived(
     Resource* resource,
     const ResourceRequest& request,
     const ResourceResponse& response) {
-  HandleResponseHeaders(response);
+  HandleResponseHeaders(response, request.InspectorId());
   return true;
 }
 
@@ -416,7 +417,8 @@ void AttributionSrcLoader::ResourceClient::NotifyFinished(Resource* resource) {
 }
 
 void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
-    const ResourceResponse& response) {
+    const ResourceResponse& response,
+    uint64_t request_id) {
   const auto& headers = response.HttpHeaderFields();
 
   bool can_process_source =
@@ -424,7 +426,7 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
   if (can_process_source &&
       headers.Contains(http_names::kAttributionReportingRegisterSource)) {
     type_ = SrcType::kSource;
-    HandleSourceRegistration(response);
+    HandleSourceRegistration(response, request_id);
     return;
   }
 
@@ -439,7 +441,8 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
 }
 
 void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
-    const ResourceResponse& response) {
+    const ResourceResponse& response,
+    uint64_t request_id) {
   DCHECK_EQ(type_, SrcType::kSource);
 
   mojom::blink::AttributionSourceDataPtr source_data =
@@ -452,10 +455,14 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
     return;
   source_data->reporting_origin = std::move(reporting_origin);
 
+  const AtomicString& source_json =
+      response.HttpHeaderField(http_names::kAttributionReportingRegisterSource);
+
   if (!attribution_response_parsing::ParseSourceRegistrationHeader(
-          response.HttpHeaderField(
-              http_names::kAttributionReportingRegisterSource),
-          *source_data)) {
+          source_json, *source_data)) {
+    loader_->LogAuditIssue(AttributionReportingIssueType::kInvalidHeader,
+                           source_json,
+                           /*element=*/nullptr, request_id);
     return;
   }
 
@@ -467,6 +474,9 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
   if (!aggregatable_source_json.IsNull() &&
       !attribution_response_parsing::ParseAttributionAggregatableSource(
           aggregatable_source_json, *source_data->aggregatable_source)) {
+    loader_->LogAuditIssue(AttributionReportingIssueType::kInvalidHeader,
+                           aggregatable_source_json,
+                           /*element=*/nullptr, request_id);
     return;
   }
 
@@ -477,6 +487,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     const ResourceResponse& response) {
   DCHECK_EQ(type_, SrcType::kTrigger);
 
+  // TODO(apaseltiner): Report DevTools issue(s) if this fails.
   mojom::blink::AttributionTriggerDataPtr trigger_data =
       attribution_response_parsing::ParseAttributionTriggerData(response);
 
@@ -490,12 +501,17 @@ void AttributionSrcLoader::LogAuditIssue(
     AttributionReportingIssueType issue_type,
     const absl::optional<String>& string,
     HTMLElement* element,
-    const absl::optional<String>& request_id) {
+    absl::optional<uint64_t> request_id) {
   if (!local_frame_->IsAttached())
     return;
+
+  absl::optional<String> id_string;
+  if (request_id)
+    id_string = IdentifiersFactory::SubresourceRequestId(*request_id);
+
   AuditsIssue::ReportAttributionIssue(local_frame_->DomWindow(), issue_type,
                                       local_frame_->GetDevToolsFrameToken(),
-                                      element, request_id, string);
+                                      element, id_string, string);
 }
 
 }  // namespace blink

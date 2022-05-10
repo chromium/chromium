@@ -105,6 +105,7 @@ enum class AttributionReportingIssueType {
   kPermissionPolicyDisabled,
   kAttributionSourceUntrustworthyOrigin,
   kAttributionUntrustworthyOrigin,
+  kInvalidHeader,
 };
 
 enum class SharedArrayBufferIssueType {

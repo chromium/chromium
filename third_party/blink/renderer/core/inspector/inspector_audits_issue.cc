@@ -149,6 +149,8 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
     case AttributionReportingIssueType::kAttributionUntrustworthyOrigin:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           AttributionUntrustworthyOrigin;
+    case AttributionReportingIssueType::kInvalidHeader:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::InvalidHeader;
   }
 }
 

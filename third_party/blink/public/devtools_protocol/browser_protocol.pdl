@@ -699,6 +699,7 @@ experimental domain Audits
       PermissionPolicyDisabled
       AttributionSourceUntrustworthyOrigin
       AttributionUntrustworthyOrigin
+      InvalidHeader
 
   # Details for issues around "Attribution Reporting API" usage.
   # Explainer: https://github.com/WICG/conversion-measurement-api
