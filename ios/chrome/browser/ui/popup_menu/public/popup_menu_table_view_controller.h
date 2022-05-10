@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 @protocol PopupMenuItem;
+@protocol PopupMenuMetricsHandler;
 @protocol PopupMenuTableViewControllerDelegate;
 
 // TableViewController for the popup menu.
@@ -25,6 +26,9 @@
 // Presenting ViewController for the ViewController needing to be presented as
 // result of an interaction with the popup.
 @property(nonatomic, weak) UIViewController* baseViewController;
+
+// Metrics handler for tracking events happening in this view controller.
+@property(nonatomic, weak) id<PopupMenuMetricsHandler> metricsHandler;
 
 // Initializers.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

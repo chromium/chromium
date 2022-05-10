@@ -1013,6 +1013,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.OverflowMenu.ActionType" enum="IOSOverflowMenuActionType"
+    expires_after="2022-12-31">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>The type of action the user took in the overflow/tools menu</summary>
+</histogram>
+
+<histogram name="IOS.OverflowMenu.TimeOpen" units="ms"
+    expires_after="2022-12-31">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>The amount of time the overflow/tools menu is open.</summary>
+</histogram>
+
 <histogram name="IOS.PageLoad.DefaultModeMobile" enum="Boolean"
     expires_after="2023-01-30">
   <owner>gambard@chromium.org</owner>

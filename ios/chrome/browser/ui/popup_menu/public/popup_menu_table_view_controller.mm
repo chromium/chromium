@@ -7,6 +7,7 @@
 #include "base/ios/ios_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_metrics_handler.h"
 #import "ios/chrome/browser/ui/popup_menu/public/cells/popup_menu_footer_item.h"
 #import "ios/chrome/browser/ui/popup_menu/public/cells/popup_menu_item.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller_delegate.h"
@@ -196,10 +197,17 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
   return CGSizeMake(width, ceil(height));
 }
 
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  [self.metricsHandler popupMenuScrolled];
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [self.metricsHandler popupMenuTookAction];
   UIView* cell = [self.tableView cellForRowAtIndexPath:indexPath];
   CGPoint center = [cell convertPoint:cell.center toView:nil];
   [self.delegate popupMenuTableViewController:self

@@ -46,6 +46,8 @@ struct OverflowMenuDestinationButton: ButtonStyle {
   /// The layout parameters for this view.
   var layoutParameters: OverflowMenuDestinationView.LayoutParameters
 
+  weak var metricsHandler: PopupMenuMetricsHandler?
+
   func makeBody(configuration: Configuration) -> some View {
     Group {
       switch layoutParameters {
@@ -164,9 +166,14 @@ struct OverflowMenuDestinationView: View {
   /// The layout parameters for this view.
   var layoutParameters: LayoutParameters
 
+  weak var metricsHandler: PopupMenuMetricsHandler?
+
   var body: some View {
     Button(
-      action: destination.handler,
+      action: {
+        metricsHandler?.popupMenuTookAction()
+        destination.handler()
+      },
       label: {
         EmptyView()
       }

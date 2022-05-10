@@ -44,6 +44,8 @@ struct OverflowMenuDestinationList: View {
   /// The destinations for this view.
   var destinations: [OverflowMenuDestination]
 
+  weak var metricsHandler: PopupMenuMetricsHandler?
+
   var body: some View {
     GeometryReader { geometry in
       ScrollView(.horizontal, showsIndicators: false) {
@@ -61,7 +63,8 @@ struct OverflowMenuDestinationList: View {
           LazyHStack(alignment: alignment, spacing: 0) {
             ForEach(destinations) { destination in
               OverflowMenuDestinationView(
-                destination: destination, layoutParameters: layoutParameters)
+                destination: destination, layoutParameters: layoutParameters,
+                metricsHandler: metricsHandler)
             }
           }
         }

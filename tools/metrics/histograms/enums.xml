@@ -48433,6 +48433,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Go forward"/>
 </enum>
 
+<enum name="IOSOverflowMenuActionType">
+  <int value="0" label="No scroll, no action"/>
+  <int value="1" label="Scroll, no action"/>
+  <int value="2" label="No scroll, action"/>
+  <int value="3" label="Scroll, action"/>
+</enum>
+
 <enum name="IOSPageLoadCountNavigationType">
   <int value="0" label="Chrome URL Navigation"/>
   <int value="1" label="Same Document Web Navigation"/>

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -32,6 +33,7 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_action_handler.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_mediator.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_metrics_handler.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter_delegate.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller.h"
@@ -56,9 +58,21 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
     return PopupMenuCommandTypeToolsMenu;
   return PopupMenuCommandTypeDefault;
 }
+
+// Enum for IOS.OverflowMenu.ActionType histogram.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class IOSOverflowMenuActionType {
+  kNoScrollNoAction = 0,
+  kScrollNoAction = 1,
+  kNoScrollAction = 2,
+  kScrollAction = 3,
+  kMaxValue = kScrollAction,
+};
+
 }  // namespace
 
 @interface PopupMenuCoordinator () <PopupMenuCommands,
+                                    PopupMenuMetricsHandler,
                                     PopupMenuPresenterDelegate,
                                     UIPopoverPresentationControllerDelegate,
                                     UISheetPresentationControllerDelegate>
@@ -78,6 +92,13 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 @property(nonatomic, strong) PopupMenuActionHandler* actionHandler;
 // Time when the presentation of the popup menu is requested.
 @property(nonatomic, assign) NSTimeInterval requestStartTime;
+
+// Time when the tools menu opened.
+@property(nonatomic, assign) NSTimeInterval toolsMenuOpenTime;
+// Whether the tools menu was scrolled while it was open.
+@property(nonatomic, assign) BOOL toolsMenuWasScrolled;
+// Whether the user took an action on the tools menu while it was open.
+@property(nonatomic, assign) BOOL toolsMenuUserTookAction;
 
 @end
 
@@ -154,6 +175,34 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 
 - (void)dismissPopupMenuAnimated:(BOOL)animated {
   [self.UIUpdater updateUIForMenuDismissed];
+
+  if (self.toolsMenuOpenTime != 0) {
+    base::TimeDelta elapsed = base::Seconds(
+        [NSDate timeIntervalSinceReferenceDate] - self.toolsMenuOpenTime);
+    UMA_HISTOGRAM_MEDIUM_TIMES("IOS.OverflowMenu.TimeOpen", elapsed);
+    // Reset the start time to ensure that whatever happens, we only record
+    // this once.
+    self.toolsMenuOpenTime = 0;
+
+    IOSOverflowMenuActionType actionType;
+    if (self.toolsMenuWasScrolled) {
+      if (self.toolsMenuUserTookAction) {
+        actionType = IOSOverflowMenuActionType::kScrollAction;
+      } else {
+        actionType = IOSOverflowMenuActionType::kScrollNoAction;
+      }
+    } else {
+      if (self.toolsMenuUserTookAction) {
+        actionType = IOSOverflowMenuActionType::kNoScrollAction;
+      } else {
+        actionType = IOSOverflowMenuActionType::kNoScrollNoAction;
+      }
+    }
+    base::UmaHistogramEnumeration("IOS.OverflowMenu.ActionType", actionType);
+    self.toolsMenuWasScrolled = NO;
+    self.toolsMenuUserTookAction = NO;
+  }
+
   if (self.overflowMenuMediator) {
     [self.baseViewController dismissViewControllerAnimated:animated
                                                 completion:nil];
@@ -204,6 +253,24 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self dismissPopupMenuAnimated:NO];
+}
+
+#pragma mark - UISheetPresentationControllerDelegate
+
+- (void)sheetPresentationControllerDidChangeSelectedDetentIdentifier:
+    (UISheetPresentationController*)sheetPresentationController
+    API_AVAILABLE(ios(15)) {
+  [self popupMenuScrolled];
+}
+
+#pragma mark - PopupMenuMetricsHandler
+
+- (void)popupMenuScrolled {
+  self.toolsMenuWasScrolled = YES;
+}
+
+- (void)popupMenuTookAction {
+  self.toolsMenuUserTookAction = YES;
 }
 
 #pragma mark - Notification callback
@@ -264,86 +331,94 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 
   // Create the overflow menu mediator first so the popup mediator isn't created
   // if not needed.
-  if (type == PopupMenuTypeToolsMenu && IsNewOverflowMenuEnabled()) {
-    if (@available(iOS 15, *)) {
-      self.overflowMenuMediator = [[OverflowMenuMediator alloc] init];
-      self.overflowMenuMediator.dispatcher =
-          static_cast<id<ApplicationCommands, BrowserCommands,
-                         FindInPageCommands, TextZoomCommands>>(
-              self.browser->GetCommandDispatcher());
-      self.overflowMenuMediator.webStateList = self.browser->GetWebStateList();
-      self.overflowMenuMediator.navigationAgent =
-          WebNavigationBrowserAgent::FromBrowser(self.browser);
-      self.overflowMenuMediator.baseViewController = self.baseViewController;
-      self.overflowMenuMediator.isIncognito =
-          self.browser->GetBrowserState()->IsOffTheRecord();
-      self.overflowMenuMediator.bookmarkModel =
-          ios::BookmarkModelFactory::GetForBrowserState(
+  if (type == PopupMenuTypeToolsMenu) {
+    self.toolsMenuOpenTime = [NSDate timeIntervalSinceReferenceDate];
+    self.toolsMenuWasScrolled = NO;
+    self.toolsMenuUserTookAction = NO;
+    if (IsNewOverflowMenuEnabled()) {
+      if (@available(iOS 15, *)) {
+        self.overflowMenuMediator = [[OverflowMenuMediator alloc] init];
+        self.overflowMenuMediator.dispatcher =
+            static_cast<id<ApplicationCommands, BrowserCommands,
+                           FindInPageCommands, TextZoomCommands>>(
+                self.browser->GetCommandDispatcher());
+        self.overflowMenuMediator.webStateList =
+            self.browser->GetWebStateList();
+        self.overflowMenuMediator.navigationAgent =
+            WebNavigationBrowserAgent::FromBrowser(self.browser);
+        self.overflowMenuMediator.baseViewController = self.baseViewController;
+        self.overflowMenuMediator.isIncognito =
+            self.browser->GetBrowserState()->IsOffTheRecord();
+        self.overflowMenuMediator.bookmarkModel =
+            ios::BookmarkModelFactory::GetForBrowserState(
+                self.browser->GetBrowserState());
+        self.overflowMenuMediator.prefService =
+            self.browser->GetBrowserState()->GetPrefs();
+        self.overflowMenuMediator.engagementTracker =
+            feature_engagement::TrackerFactory::GetForBrowserState(
+                self.browser->GetBrowserState());
+        self.overflowMenuMediator.webContentAreaOverlayPresenter =
+            overlayPresenter;
+        self.overflowMenuMediator.browserPolicyConnector =
+            GetApplicationContext()->GetBrowserPolicyConnector();
+            
+        if (IsWebChannelsEnabled()) {
+          self.overflowMenuMediator.followActionState = GetFollowActionState(
+              self.browser->GetWebStateList()->GetActiveWebState(),
               self.browser->GetBrowserState());
-      self.overflowMenuMediator.prefService =
-          self.browser->GetBrowserState()->GetPrefs();
-      self.overflowMenuMediator.engagementTracker =
-          feature_engagement::TrackerFactory::GetForBrowserState(
-              self.browser->GetBrowserState());
-      self.overflowMenuMediator.webContentAreaOverlayPresenter =
-          overlayPresenter;
-      self.overflowMenuMediator.browserPolicyConnector =
-          GetApplicationContext()->GetBrowserPolicyConnector();
+          ios::GetChromeBrowserProvider()
+              .GetFollowProvider()
+              ->SetFollowEventDelegate(self.browser);
+        } else {
+          self.overflowMenuMediator.followActionState = FollowActionStateHidden;
+        }
 
-      if (IsWebChannelsEnabled()) {
-        self.overflowMenuMediator.followActionState = GetFollowActionState(
-            self.browser->GetWebStateList()->GetActiveWebState(),
-            self.browser->GetBrowserState());
-        ios::GetChromeBrowserProvider()
-            .GetFollowProvider()
-            ->SetFollowEventDelegate(self.browser);
-      } else {
-        self.overflowMenuMediator.followActionState = FollowActionStateHidden;
+        self.contentBlockerMediator.consumer = self.overflowMenuMediator;
+
+        UIViewController* menu = [OverflowMenuViewProvider
+            makeViewControllerWithModel:self.overflowMenuMediator
+                                            .overflowMenuModel
+                         metricsHandler:self];
+
+        NamedGuide* guide =
+            [NamedGuide guideWithName:guideName
+                                 view:self.baseViewController.view];
+        menu.modalPresentationStyle = UIModalPresentationPopover;
+
+        UIPopoverPresentationController* popoverPresentationController =
+            menu.popoverPresentationController;
+        popoverPresentationController.sourceView = guide.constrainedView;
+        popoverPresentationController.sourceRect = guide.constrainedView.bounds;
+        popoverPresentationController.permittedArrowDirections =
+            UIPopoverArrowDirectionUp;
+        popoverPresentationController.delegate = self;
+        popoverPresentationController.backgroundColor =
+            [UIColor colorNamed:kBackgroundColor];
+
+        // The adaptive controller adjusts styles based on window size: sheet
+        // for slim windows on iPhone and iPad, popover for larger windows on
+        // ipad.
+        UISheetPresentationController* sheetPresentationController =
+            popoverPresentationController.adaptiveSheetPresentationController;
+        if (sheetPresentationController) {
+          sheetPresentationController.delegate = self;
+          sheetPresentationController.prefersGrabberVisible = YES;
+          sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
+          sheetPresentationController
+              .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+
+          sheetPresentationController.detents = @[
+            [UISheetPresentationControllerDetent mediumDetent],
+            [UISheetPresentationControllerDetent largeDetent]
+          ];
+        }
+
+        [self.UIUpdater updateUIForMenuDisplayed:type];
+        [self.baseViewController presentViewController:menu
+                                              animated:YES
+                                            completion:nil];
+        return;
       }
-
-      self.contentBlockerMediator.consumer = self.overflowMenuMediator;
-
-      UIViewController* menu = [OverflowMenuViewProvider
-          makeViewControllerWithModel:self.overflowMenuMediator
-                                          .overflowMenuModel];
-
-      NamedGuide* guide =
-          [NamedGuide guideWithName:guideName
-                               view:self.baseViewController.view];
-      menu.modalPresentationStyle = UIModalPresentationPopover;
-
-      UIPopoverPresentationController* popoverPresentationController =
-          menu.popoverPresentationController;
-      popoverPresentationController.sourceView = guide.constrainedView;
-      popoverPresentationController.sourceRect = guide.constrainedView.bounds;
-      popoverPresentationController.permittedArrowDirections =
-          UIPopoverArrowDirectionUp;
-      popoverPresentationController.delegate = self;
-      popoverPresentationController.backgroundColor =
-          [UIColor colorNamed:kBackgroundColor];
-
-      // The adaptive controller adjusts styles based on window size: sheet for
-      // slim windows on iPhone and iPad, popover for larger windows on ipad.
-      UISheetPresentationController* sheetPresentationController =
-          popoverPresentationController.adaptiveSheetPresentationController;
-      if (sheetPresentationController) {
-        sheetPresentationController.delegate = self;
-        sheetPresentationController.prefersGrabberVisible = YES;
-        sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
-        sheetPresentationController
-            .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
-
-        sheetPresentationController.detents = @[
-          [UISheetPresentationControllerDetent mediumDetent],
-          [UISheetPresentationControllerDetent largeDetent]
-        ];
-      }
-
-      [self.UIUpdater updateUIForMenuDisplayed:type];
-      [self.baseViewController presentViewController:menu
-                                            animated:YES
-                                          completion:nil];
-      return;
     }
   }
 
@@ -396,6 +471,12 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 
   [self.presenter prepareForPresentation];
   [self.presenter presentAnimated:YES];
+
+  // Scrolls happen during prepareForPresentation, so only attach the metrics
+  // handler after presentation is done.
+  if (type == PopupMenuTypeToolsMenu) {
+    tableViewController.metricsHandler = self;
+  }
 }
 
 @end

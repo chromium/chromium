@@ -66,6 +66,7 @@ source_set("overflow_menu") {
     "//ios/chrome/browser/ui/follow:enums",
     "//ios/chrome/browser/ui/ntp:feature_flags",
     "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/browser/ui/popup_menu:metrics_protocols",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web/font_size",
@@ -104,6 +105,7 @@ swift_source_set("overflow_menu_swift") {
   deps = [
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui/popup_menu:metrics_protocols",
     "//ios/chrome/common/ui/colors:swift",
   ]
 
