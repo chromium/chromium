@@ -18,6 +18,7 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 import {setBacklightColor} from './keyboard_backlight_controller.js';
 import {getTemplate} from './keyboard_backlight_element.html.js';
 import {getKeyboardBacklightProvider} from './keyboard_backlight_interface_provider.js';
+import {KeyboardBacklightObserver} from './keyboard_backlight_observer.js';
 
 
 /**
@@ -91,6 +92,7 @@ export class KeyboardBacklight extends WithPersonalizationStore {
 
   override connectedCallback() {
     super.connectedCallback();
+    KeyboardBacklightObserver.initKeyboardBacklightObserverIfNeeded();
     this.watch<KeyboardBacklight['backlightColor_']>(
         'backlightColor_', state => state.keyboardBacklight.backlightColor);
     this.updateFromStore();
@@ -193,6 +195,19 @@ export class KeyboardBacklight extends WithPersonalizationStore {
 
   private getPresetColorAriaLabel_(presetColorId: string): string {
     return this.i18n(presetColorId);
+  }
+
+  private getPresetColorAriaSelected_(
+      colorId: string, colors: Record<string, ColorInfo>,
+      selectedColor: BacklightColor) {
+    if (!colorId || !colors[colorId]) {
+      return 'false';
+    }
+    return (colors[colorId].enumVal === selectedColor).toString();
+  }
+
+  private getRainbowColorAriaSelected(selectedColor: BacklightColor) {
+    return (selectedColor === BacklightColor.kRainbow).toString();
   }
 }
 

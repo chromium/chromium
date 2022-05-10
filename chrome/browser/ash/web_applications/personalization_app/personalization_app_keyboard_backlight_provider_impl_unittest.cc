@@ -23,6 +23,35 @@ namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
 
+class TestKeyboardBacklightObserver
+    : public ash::personalization_app::mojom::KeyboardBacklightObserver {
+ public:
+  void OnBacklightColorChanged(mojom::BacklightColor backlight_color) override {
+    backlight_color_ = backlight_color;
+  }
+
+  mojo::PendingRemote<
+      ash::personalization_app::mojom::KeyboardBacklightObserver>
+  pending_remote() {
+    if (keyboard_backlight_observer_receiver_.is_bound()) {
+      keyboard_backlight_observer_receiver_.reset();
+    }
+
+    return keyboard_backlight_observer_receiver_.BindNewPipeAndPassRemote();
+  }
+
+  mojom::BacklightColor backlight_color() {
+    keyboard_backlight_observer_receiver_.FlushForTesting();
+    return backlight_color_;
+  }
+
+ private:
+  mojo::Receiver<ash::personalization_app::mojom::KeyboardBacklightObserver>
+      keyboard_backlight_observer_receiver_{this};
+
+  mojom::BacklightColor backlight_color_ = mojom::BacklightColor::kWallpaper;
+};
+
 }  // namespace
 
 class PersonalizationAppKeyboardBacklightProviderImplTest
@@ -76,6 +105,16 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
     return keyboard_backlight_provider_.get();
   }
 
+  void SetKeyboardBacklightObserver() {
+    keyboard_backlight_provider_remote_->SetKeyboardBacklightObserver(
+        test_keyboard_backlight_observer_.pending_remote());
+  }
+
+  mojom::BacklightColor ObservedBacklightColor() {
+    keyboard_backlight_provider_remote_.FlushForTesting();
+    return test_keyboard_backlight_observer_.backlight_color();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   user_manager::ScopedUserManager scoped_user_manager_;
@@ -87,10 +126,13 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
       keyboard_backlight_provider_remote_;
   std::unique_ptr<PersonalizationAppKeyboardBacklightProviderImpl>
       keyboard_backlight_provider_;
+  TestKeyboardBacklightObserver test_keyboard_backlight_observer_;
 };
 
 TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest,
        SetBackgroundColor) {
+  SetKeyboardBacklightObserver();
+  keyboard_backlight_provider_remote()->FlushForTesting();
   keyboard_backlight_provider()->SetBacklightColor(
       mojom::BacklightColor::kBlue);
 
@@ -98,6 +140,9 @@ TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest,
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 ash::prefs::kPersonalizationKeyboardBacklightColor),
             static_cast<int>(mojom::BacklightColor::kBlue));
+
+  // Verify JS side is notified.
+  EXPECT_EQ(mojom::BacklightColor::kBlue, ObservedBacklightColor());
 }
 
 }  // namespace personalization_app

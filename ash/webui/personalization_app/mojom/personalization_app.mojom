@@ -540,8 +540,19 @@ enum BacklightColor {
   kRainbow = 100,
 };
 
+// Receives information whenever there are keyboard backlight related changes
+// such as backlight colors.
+interface KeyboardBacklightObserver {
+  // Notifies the JS side about the current state of the backlight color.
+  OnBacklightColorChanged(BacklightColor color);
+};
+
 // Provides APIs to expose keyboard backlight settings.
 interface KeyboardBacklightProvider {
+  // Binds a listener to start receiving updates on backlight color changes.
+  SetKeyboardBacklightObserver(pending_remote<KeyboardBacklightObserver>
+      observer);
+
   // Sets the backlight color.
   SetBacklightColor(BacklightColor backlight_color);
 };

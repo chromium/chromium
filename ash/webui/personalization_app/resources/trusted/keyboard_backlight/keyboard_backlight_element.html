@@ -58,9 +58,11 @@
     width: 24px;
   }
 
-  .color-inner-container iron-icon {
-    /* TODO(b/227374197): Show the icon for selected color. */
+  .color-container:not([aria-selected='true']) .color-inner-container iron-icon {
     display: none;
+  }
+
+  .color-inner-container iron-icon {
     padding-block-start: 5px;
     padding-inline-start: 5px;
     --iron-icon-fill-color: var(--cros-text-color-primary);
@@ -101,8 +103,9 @@
     <div class="divider"></div>
     <template is="dom-repeat" items="[[presetColorIds_]]" as="presetColorId">
       <div id$="[[presetColorId]]" class="color-container"
+          on-click="onPresetColorSelected_" on-keypress="onPresetColorSelected_"
           aria-label$="[[getPresetColorAriaLabel_(presetColorId)]]"
-          on-click="onPresetColorSelected_" on-keypress="onPresetColorSelected_">
+          aria-selected$="[[getPresetColorAriaSelected_(presetColorId, presetColors_, backlightColor_)]]">
         <div class="color-inner-container"
             style$="[[getColorInnerContainerStyle_(presetColorId, presetColors_)]]">
           <paper-ripple class="circle"></paper-ripple>
@@ -112,7 +115,8 @@
     </template>
     <div id$="[[rainbowColorId_]]" class="color-container" tabindex="0"
         on-click="onRainbowColorSelected_" on-keypress="onRainbowColorSelected_"
-        aria-label="$i18n{rainbowColor}">
+        aria-label="$i18n{rainbowColor}"
+        aria-selected$="[[getRainbowColorAriaSelected(backlightColor_)]]">
       <div class="color-inner-container"
           style$="[[getColorInnerContainerStyle_(rainbowColorId_, presetColors_)]]">
         <paper-ripple class="circle"></paper-ripple>

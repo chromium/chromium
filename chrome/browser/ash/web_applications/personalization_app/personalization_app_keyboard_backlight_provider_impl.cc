@@ -35,6 +35,19 @@ void PersonalizationAppKeyboardBacklightProviderImpl::BindInterface(
   keyboard_backlight_receiver_.Bind(std::move(receiver));
 }
 
+void PersonalizationAppKeyboardBacklightProviderImpl::
+    SetKeyboardBacklightObserver(
+        mojo::PendingRemote<
+            ash::personalization_app::mojom::KeyboardBacklightObserver>
+            observer) {
+  // May already be bound if user refreshes page.
+  keyboard_backlight_observer_remote_.reset();
+  keyboard_backlight_observer_remote_.Bind(std::move(observer));
+
+  // Call it once to get the status of color preset.
+  NotifyBacklightColorChanged();
+}
+
 void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightColor(
     mojom::BacklightColor backlight_color) {
   if (!ash::features::IsRgbKeyboardEnabled()) {
@@ -72,6 +85,18 @@ void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightColor(
   DCHECK(pref_service);
   pref_service->SetInteger(ash::prefs::kPersonalizationKeyboardBacklightColor,
                            static_cast<int>(backlight_color));
+
+  NotifyBacklightColorChanged();
+}
+
+void PersonalizationAppKeyboardBacklightProviderImpl::
+    NotifyBacklightColorChanged() {
+  DCHECK(keyboard_backlight_observer_remote_.is_bound());
+  PrefService* pref_service = profile_->GetPrefs();
+  DCHECK(pref_service);
+  keyboard_backlight_observer_remote_->OnBacklightColorChanged(
+      static_cast<mojom::BacklightColor>(pref_service->GetInteger(
+          prefs::kPersonalizationKeyboardBacklightColor)));
 }
 
 }  // namespace personalization_app

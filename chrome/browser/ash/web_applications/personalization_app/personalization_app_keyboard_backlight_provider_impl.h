@@ -36,15 +36,27 @@ class PersonalizationAppKeyboardBacklightProviderImpl
                      ash::personalization_app::mojom::KeyboardBacklightProvider>
                          receiver) override;
 
+  // mojom::PersonalizationAppKeyboardBacklightProvider:
+  void SetKeyboardBacklightObserver(
+      mojo::PendingRemote<
+          ash::personalization_app::mojom::KeyboardBacklightObserver> observer)
+      override;
+
   void SetBacklightColor(
       ash::personalization_app::mojom::BacklightColor backlight_color) override;
 
  private:
+  // Notify webUI the current state of backlight color.
+  void NotifyBacklightColorChanged();
+
   // Pointer to profile of user that opened personalization SWA. Not owned.
   raw_ptr<Profile> const profile_ = nullptr;
 
   mojo::Receiver<ash::personalization_app::mojom::KeyboardBacklightProvider>
       keyboard_backlight_receiver_{this};
+
+  mojo::Remote<ash::personalization_app::mojom::KeyboardBacklightObserver>
+      keyboard_backlight_observer_remote_;
 };
 
 }  // namespace ash::personalization_app

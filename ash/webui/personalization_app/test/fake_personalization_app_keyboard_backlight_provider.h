@@ -36,6 +36,11 @@ class FakePersonalizationAppKeyboardBacklightProvider
                      personalization_app::mojom::KeyboardBacklightProvider>
                          receiver) override;
 
+  void SetKeyboardBacklightObserver(
+      mojo::PendingRemote<
+          ash::personalization_app::mojom::KeyboardBacklightObserver> observer)
+      override {}
+
   void SetBacklightColor(mojom::BacklightColor backlight_color) override {}
 
  private:
