@@ -20,6 +20,10 @@ enum CrosWindowVisibilityState {
   "shown",   // Window is placed on a screen.
 };
 
+// Currently, all screen space related methods and arguments correspond the top
+// left corner as (0, 0). This might change once we support multiple screens and
+// we use the multi-screen origin:
+// https://w3c.github.io/window-placement/#multi-screen-origin
 interface CrosWindow {
   readonly attribute DOMString id;
 
@@ -29,23 +33,27 @@ interface CrosWindow {
   readonly attribute boolean isFocused;
   readonly attribute CrosWindowVisibilityState visibilityState;
 
-  readonly attribute DOMPoint origin;
+  // Returns horizontal distance, in CSS pixels, from the left border of the
+  // user's browser viewport to the left side of the screen.
+  readonly attribute long screenLeft;
+  [ImplementedAs=screenLeft] readonly attribute long screenX;
+
+  // Returns the vertical distance, in CSS pixels, from the top border of the
+  // user's browser viewport to the top side of the screen.
+  readonly attribute long screenTop;
+  [ImplementedAs=screenTop] readonly attribute long screenY;
+
   readonly attribute DOMRect bounds;
 
   // Moves the window such that the window's top left corner is at coordinates
   // (x, y) relative to the top left corner of the current screen. Measured in
-  // CSS pixels of the window. The top left corner of the screen corresponds to
-  // (0, 0). This might change once we support multiple screens and we use the
-  // multi-screen origin:
-  // https://w3c.github.io/window-placement/#multi-screen-origin
+  // CSS pixels of the window.
   [CallWith=ScriptState] Promise<void> setOrigin(double x, double y);
 
   // Moves the window such that the window's top left corner is at coordinates
   // (x, y) relative to the top left corner of the current screen and sets the
   // window's dimensions to  width  and  height . Measured in CSS pixels of the
-  // window. The top left corner of the screen corresponds to (0, 0). This might
-  // change once we support multiple screens and we use the multi-screen origin:
-  // https://w3c.github.io/window-placement/#multi-screen-origin
+  // window.
   [CallWith=ScriptState] Promise<void> setBounds(double x, double y, double width, double height);
 
   // Sets or unsets window to fullscreen.

@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
-class DOMPoint;
 class DOMRect;
 class CrosWindowManagement;
 class ScriptPromise;
@@ -31,10 +30,11 @@ class CrosWindow : public ScriptWrappable {
   String windowState();
   bool isFocused();
   String visibilityState();
-  DOMPoint* origin();
+  int32_t screenLeft();
+  int32_t screenTop();
   DOMRect* bounds();
 
-  ScriptPromise setOrigin(ScriptState* script_state, double x, double y);
+  ScriptPromise setOrigin(ScriptState* script_state, int32_t x, int32_t y);
   ScriptPromise setBounds(ScriptState* script_state,
                           double x,
                           double y,

@@ -95,8 +95,12 @@ String CrosWindow::id() {
   return String::FromUTF8(window_->id.ToString());
 }
 
-DOMPoint* CrosWindow::origin() {
-  return DOMPoint::Create(window_->bounds.x(), window_->bounds.y());
+int32_t CrosWindow::screenLeft() {
+  return window_->bounds.x();
+}
+
+int32_t CrosWindow::screenTop() {
+  return window_->bounds.y();
 }
 
 DOMRect* CrosWindow::bounds() {
@@ -105,8 +109,8 @@ DOMRect* CrosWindow::bounds() {
 }
 
 ScriptPromise CrosWindow::setOrigin(ScriptState* script_state,
-                                    double x,
-                                    double y) {
+                                    int32_t x,
+                                    int32_t y) {
   auto* cros_window_management =
       window_management_->GetCrosWindowManagementOrNull();
   if (!cros_window_management) {
