@@ -4246,6 +4246,7 @@ source_set("unit_tests") {
     "../ash/crostini/throttle/crostini_throttle_unittest.cc",
     "../ash/cryptauth/client_app_metadata_provider_service_unittest.cc",
     "../ash/customization/customization_document_unittest.cc",
+    "../ash/dbus/dlp_files_policy_service_provider_unittest.cc",
     "../ash/dbus/encrypted_reporting_service_provider_unittest.cc",
     "../ash/dbus/proxy_resolution_service_provider_unittest.cc",
     "../ash/dbus/vm/vm_applications_service_provider_unittest.cc",
