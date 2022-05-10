@@ -566,7 +566,7 @@ void MediaInternals::UpdateVideoCaptureDeviceCapabilities(
                                  media::VideoCaptureFormats>>&
         descriptors_and_formats) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  video_capture_capabilities_cached_data_.ClearList();
+  video_capture_capabilities_cached_data_.GetList().clear();
 
   for (const auto& device_format_pair : descriptors_and_formats) {
     base::ListValue control_support;
@@ -588,14 +588,14 @@ void MediaInternals::UpdateVideoCaptureDeviceCapabilities(
     for (const auto& format : supported_formats)
       format_list.Append(media::VideoCaptureFormat::ToString(format));
 
-    std::unique_ptr<base::DictionaryValue> device_dict(
-        new base::DictionaryValue());
-    device_dict->SetString("id", descriptor.device_id);
-    device_dict->SetString("name", descriptor.GetNameAndModel());
-    device_dict->SetKey("controlSupport", std::move(control_support));
-    device_dict->SetKey("formats", std::move(format_list));
-    device_dict->SetString("captureApi", descriptor.GetCaptureApiTypeString());
-    video_capture_capabilities_cached_data_.Append(std::move(device_dict));
+    base::Value::Dict device_dict;
+    device_dict.Set("id", descriptor.device_id);
+    device_dict.Set("name", descriptor.GetNameAndModel());
+    device_dict.Set("controlSupport", std::move(control_support));
+    device_dict.Set("formats", std::move(format_list));
+    device_dict.Set("captureApi", descriptor.GetCaptureApiTypeString());
+    video_capture_capabilities_cached_data_.GetList().Append(
+        std::move(device_dict));
   }
 
   SendVideoCaptureDeviceCapabilities();

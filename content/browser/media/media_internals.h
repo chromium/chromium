@@ -170,7 +170,7 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   std::map<int, std::list<media::MediaLogRecord>> saved_events_by_process_;
 
   // Must only be accessed on the IO thread.
-  base::ListValue video_capture_capabilities_cached_data_;
+  base::Value video_capture_capabilities_cached_data_{base::Value::Type::LIST};
 
   NotificationRegistrar registrar_;
 
