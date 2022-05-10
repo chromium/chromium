@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/ax_node_id_forward.h"
@@ -24,11 +23,6 @@ namespace content {
 
 class RenderFrameImpl;
 
-// From content/common/frame.mojom:
-using SnapshotAndDistillAXTreeCallback =
-    base::OnceCallback<void(const ui::AXTreeUpdate&,
-                            const std::vector<int32_t>&)>;
-
 ///////////////////////////////////////////////////////////////////////////////
 // AXTreeDistiller
 //
@@ -42,7 +36,13 @@ class CONTENT_EXPORT AXTreeDistiller {
   AXTreeDistiller(const AXTreeDistiller&) = delete;
   AXTreeDistiller& operator=(const AXTreeDistiller&) = delete;
 
-  void Distill(SnapshotAndDistillAXTreeCallback callback);
+  void Distill();
+
+  ui::AXTreeUpdate* GetSnapshot() { return snapshot_.get(); }
+  std::vector<ui::AXNodeID>* GetContentNodeIDs() {
+    return content_node_ids_.get();
+  }
+  bool IsDistillable() { return is_distillable_; }
 
  private:
   // Takes a snapshot of an accessibility tree and caches it as |snapshot_|.
@@ -52,24 +52,13 @@ class CONTENT_EXPORT AXTreeDistiller {
   // IDs as |content_node_ids_|.
   void DistillAXTree();
 
-  // Called when the AXTree is distilled. Called asynchronously if Screen2x is
-  // running in another process. Runs |callback_| which sends |snapshot_| and
-  // |content_node_ids_| across the render frame.
-  void OnAXTreeDistilled();
-
   RenderFrameImpl* render_frame_;
   std::unique_ptr<ui::AXTreeUpdate> snapshot_;
   std::unique_ptr<std::vector<ui::AXNodeID>> content_node_ids_;
-  SnapshotAndDistillAXTreeCallback callback_;
   bool is_distillable_ = true;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // Passes |snapshot_| to the Screen2x ML model, which identifes the main
-  // content nodes and calls |ProcessScreen2xResult()| on completion.
   void ScheduleScreen2xRun();
-
-  // Called by the Screen2x service from the utility process. Caches
-  // |content_node_ids| as |content_node_ids_|.
   void ProcessScreen2xResult(const std::vector<ui::AXNodeID>& content_node_ids);
 
   mojo::Remote<screen_ai::mojom::Screen2xMainContentExtractor>

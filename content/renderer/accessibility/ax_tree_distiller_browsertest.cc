@@ -6,9 +6,7 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "base/bind.h"
 #include "content/public/test/render_view_test.h"
 #include "content/renderer/render_frame_impl.h"
 #include "ui/accessibility/ax_node.h"
@@ -23,46 +21,42 @@ class AXTreeDistillerTestBase : public RenderViewTest {
   AXTreeDistillerTestBase& operator=(const AXTreeDistillerTestBase&) = delete;
   ~AXTreeDistillerTestBase() override = default;
 
-  void DistillPage(const char* html,
-                   const std::vector<std::string>& expected_node_contents) {
-    expected_node_contents_ = expected_node_contents;
+  void DistillPage(const char* html) {
     LoadHTML(html);
     RenderFrameImpl* render_frame_impl =
         RenderFrameImpl::FromWebFrame(GetMainFrame());
     distiller_ = std::make_unique<AXTreeDistiller>(render_frame_impl);
-    distiller_->Distill(base::BindOnce(
-        &AXTreeDistillerTestBase::OnAXTreeDistilled, base::Unretained(this)));
+    distiller_->Distill();
   }
 
-  void OnAXTreeDistilled(const ui::AXTreeUpdate& snapshot,
-                         const std::vector<int32_t>& content_node_ids) {
-    // AXTree snapshot should unserialize successfully.
+  void CheckNodeContents(const std::vector<std::string>& node_contents) {
+    // AXTree snapshot from distiller should unserialize successfully.
     ui::AXTree tree;
-    EXPECT_TRUE(tree.Unserialize(snapshot));
+    EXPECT_TRUE(tree.Unserialize(*(distiller_->GetSnapshot())));
 
-    // Content node IDs list should be the same length as
-    // |expected_node_contents_|.
-    EXPECT_EQ(content_node_ids.size(), expected_node_contents_.size());
+    // Content node IDs list from distiller should be the same length as
+    // |node_contents| passed in.
+    auto* content_node_ids = distiller_->GetContentNodeIDs();
+    EXPECT_EQ(content_node_ids->size(), node_contents.size());
 
     // Iterate through each content node ID from distiller and check that the
-    // text value equals the passed-in string from |expected_node_contents_|.
-    for (size_t i = 0; i < content_node_ids.size(); i++) {
-      ui::AXNode* node = tree.GetFromId(content_node_ids[i]);
+    // text value equals the passed-in string from |node_contents|.
+    for (size_t i = 0; i < content_node_ids->size(); i++) {
+      ui::AXNode* node = tree.GetFromId(content_node_ids->at(i));
       EXPECT_TRUE(node);
       EXPECT_TRUE(node->GetTextContentLengthUTF8());
-      EXPECT_EQ(node->GetTextContentUTF8(), expected_node_contents_[i]);
+      EXPECT_EQ(node->GetTextContentUTF8(), node_contents[i]);
     }
   }
 
  private:
   std::unique_ptr<AXTreeDistiller> distiller_;
-  std::vector<std::string> expected_node_contents_;
 };
 
 struct TestCase {
   const char* test_name;
   const char* html;
-  std::vector<std::string> expected_node_contents;
+  std::vector<std::string> node_contents;
 };
 
 class AXTreeDistillerTest : public AXTreeDistillerTestBase,
@@ -169,7 +163,8 @@ const TestCase kDistillWebPageTestCases[] = {
 
 TEST_P(AXTreeDistillerTest, DistillsWebPage) {
   TestCase param = GetParam();
-  DistillPage(param.html, param.expected_node_contents);
+  DistillPage(param.html);
+  CheckNodeContents(param.node_contents);
 }
 
 INSTANTIATE_TEST_SUITE_P(/* prefix */,
