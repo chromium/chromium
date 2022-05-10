@@ -2,22 +2,33 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//components/safe_browsing/buildflags.gni")
+import("//tools/typescript/ts_library.gni")
 
-js_type_check("closure_compile") {
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/reset_password",
-                            root_build_dir),
-                    "js_module_root=" + rebase_path(".", root_build_dir),
-                  ]
+assert(safe_browsing_mode == 1)
 
-  deps = [ ":reset_password" ]
+# Copy mojo and src files to the same location so that they can be passed to
+# ts_library.
+copy("copy_src_and_mojo") {
+  deps = [ "//chrome/browser/ui/webui/reset_password:mojo_bindings_webui_js" ]
+  sources = [
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/reset_password/reset_password.mojom-webui.js",
+    "reset_password.ts",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
-js_library("reset_password") {
-  deps = [
-    "//chrome/browser/ui/webui/reset_password:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:util.m",
+ts_library("build_ts") {
+  root_dir = target_gen_dir
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "reset_password.ts",
+    "reset_password.mojom-webui.js",
   ]
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+  extra_deps = [ ":copy_src_and_mojo" ]
 }
