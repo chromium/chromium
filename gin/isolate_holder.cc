@@ -32,7 +32,7 @@ namespace {
 v8::ArrayBuffer::Allocator* g_array_buffer_allocator = nullptr;
 const intptr_t* g_reference_table = nullptr;
 v8::FatalErrorCallback g_fatal_error_callback = nullptr;
-v8::OOMErrorCallback g_oom_error_callback = nullptr;
+v8::LegacyOOMErrorCallback g_oom_error_callback = nullptr;
 }  // namespace
 
 IsolateHolder::IsolateHolder(
@@ -95,7 +95,7 @@ IsolateHolder::IsolateHolder(
     params.create_histogram_callback = create_histogram_callback;
     params.add_histogram_sample_callback = add_histogram_sample_callback;
     params.fatal_error_callback = g_fatal_error_callback;
-    params.oom_error_callback = g_oom_error_callback;
+    params.legacy_oom_error_callback = g_oom_error_callback;
 
     v8::Isolate::Initialize(isolate_, params);
   }
@@ -123,7 +123,7 @@ void IsolateHolder::Initialize(ScriptMode mode,
                                const intptr_t* reference_table,
                                const std::string js_command_line_flags,
                                v8::FatalErrorCallback fatal_error_callback,
-                               v8::OOMErrorCallback oom_error_callback) {
+                               v8::LegacyOOMErrorCallback oom_error_callback) {
   CHECK(allocator);
   V8Initializer::Initialize(mode, js_command_line_flags, oom_error_callback);
   g_array_buffer_allocator = allocator;

@@ -353,7 +353,7 @@ void SetFlags(IsolateHolder::ScriptMode mode,
 // static
 void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
                                const std::string js_command_line_flags,
-                               v8::OOMErrorCallback oom_error_callback) {
+                               v8::LegacyOOMErrorCallback oom_error_callback) {
   static bool v8_is_initialized = false;
   if (v8_is_initialized)
     return;
