@@ -11,6 +11,8 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "components/services/unzip/public/cpp/unzip.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -26,6 +28,7 @@ class ExtractIOTask : public IOTask {
   // will be created there.
   ExtractIOTask(std::vector<storage::FileSystemURL> source_urls,
                 storage::FileSystemURL parent_folder,
+                Profile* profile,
                 scoped_refptr<storage::FileSystemContext> file_system_context);
   ~ExtractIOTask() override;
 
@@ -53,6 +56,8 @@ class ExtractIOTask : public IOTask {
 
   void GetExtractedSize(base::FilePath source_file);
 
+  void GotFreeDiskSpace(int64_t free_space);
+
   void CheckSizeThenExtract();
 
   // URLs of the files that have archives in them for extraction.
@@ -61,10 +66,15 @@ class ExtractIOTask : public IOTask {
   // Parent folder of the files in 'source_urls_'.
   const storage::FileSystemURL parent_folder_;
 
+  // Raw pointer not owned by this.
+  Profile* profile_;
   const scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   ProgressCallback progress_callback_;
   CompleteCallback complete_callback_;
+
+  // Counter of the number of archives needing extracted size retrieved.
+  size_t sizingCount_;
 
   // Counter of the number of archives needing extraction.
   size_t extractCount_;

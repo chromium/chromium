@@ -10,9 +10,12 @@
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/filesystem_api_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
+#include "third_party/cros_system_api/constants/cryptohome.h"
 #include "third_party/zlib/google/redact.h"
 
 namespace file_manager {
@@ -21,9 +24,11 @@ namespace io_task {
 ExtractIOTask::ExtractIOTask(
     std::vector<storage::FileSystemURL> source_urls,
     storage::FileSystemURL parent_folder,
+    Profile* profile,
     scoped_refptr<storage::FileSystemContext> file_system_context)
     : source_urls_(std::move(source_urls)),
       parent_folder_(std::move(parent_folder)),
+      profile_(profile),
       file_system_context_(std::move(file_system_context)) {
   progress_.type = OperationType::kExtract;
   progress_.state = State::kQueued;
@@ -38,7 +43,7 @@ ExtractIOTask::ExtractIOTask(
       progress_.sources.emplace_back(source_url, absl::nullopt);
     }
   }
-  extractCount_ = progress_.sources.size();
+  sizingCount_ = extractCount_ = progress_.sources.size();
 }
 
 ExtractIOTask::~ExtractIOTask() {}
@@ -98,15 +103,47 @@ void ExtractIOTask::ExtractAllSources() {
   }
 }
 
+void ExtractIOTask::GotFreeDiskSpace(int64_t free_space) {
+  auto* drive_integration_service =
+      drive::util::GetIntegrationServiceByProfile(profile_);
+  if (progress_.destination_folder.filesystem_id() ==
+          util::GetDownloadsMountPointName(profile_) ||
+      (drive_integration_service &&
+       drive_integration_service->GetMountPointPath().IsParent(
+           progress_.destination_folder.path()))) {
+    free_space -= cryptohome::kMinFreeSpaceInBytes;
+  }
+
+  if (progress_.total_bytes > free_space) {
+    progress_.outputs.emplace_back(progress_.destination_folder,
+                                   base::File::FILE_ERROR_NO_SPACE);
+    progress_.state = State::kError;
+    Complete();
+    return;
+  }
+
+  ExtractAllSources();
+}
+
 void ExtractIOTask::ZipSizeCallback(unzip::mojom::SizePtr size_info) {
   DCHECK_GT(extractCount_, 0);
   if (size_info->is_valid) {
     progress_.total_bytes += size_info->value;
   }
-  if (--extractCount_ == 0) {
-    // After getting the size of all the ZIPs, extract them.
-    extractCount_ = progress_.sources.size();
-    ExtractAllSources();
+  if (--sizingCount_ == 0) {
+    // After getting the size of all the ZIPs, check if we have
+    // enough available disk space, and if so, extract them.
+    if (util::IsNonNativeFileSystemType(parent_folder_.type())) {
+      // Destination is a virtual filesystem, so skip the size check.
+      ExtractAllSources();
+    } else {
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock()},
+          base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace,
+                         parent_folder_.path()),
+          base::BindOnce(&ExtractIOTask::GotFreeDiskSpace,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 }
 

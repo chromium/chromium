@@ -1578,7 +1578,7 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
       if (base::FeatureList::IsEnabled(
               chromeos::features::kFilesExtractArchive)) {
         task = std::make_unique<file_manager::io_task::ExtractIOTask>(
-            std::move(source_urls), std::move(destination_folder_url),
+            std::move(source_urls), std::move(destination_folder_url), profile,
             file_system_context);
         break;
       }
