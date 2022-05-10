@@ -4,11 +4,16 @@
 
 #include "chrome/common/crash_keys.h"
 
+#include <deque>
+
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/format_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_switches.h"
@@ -28,20 +33,64 @@ namespace crash_keys {
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
+
+// A convenient wrapper around a crash key and its name.
+class CrashKeyWithName {
+ public:
+  explicit CrashKeyWithName(std::string name)
+      : name_(std::move(name)), crash_key_(name_.c_str()) {}
+
+  void Clear() { crash_key_.Clear(); }
+  void Set(base::StringPiece value) { crash_key_.Set(value); }
+
+ private:
+  std::string name_;
+  crash_reporter::CrashKeyString<64> crash_key_;
+};
+
+void SplitAndPopulateCrashKeys(std::deque<CrashKeyWithName>& crash_keys,
+                               base::StringPiece comma_separated_feature_list,
+                               std::string crash_key_name_prefix) {
+  // Crash keys are indestructable so we can not simply empty the deque.
+  // Instead we must keep the previous crash keys alive and clear their values.
+  for (CrashKeyWithName& crash_key : crash_keys)
+    crash_key.Clear();
+
+  auto features =
+      base::SplitString(comma_separated_feature_list, ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  for (size_t i = 0; i < features.size(); i++) {
+    if (crash_keys.size() <= i) {
+      crash_keys.emplace_back(base::StringPrintf(
+          "%s-%" PRIuS, crash_key_name_prefix.c_str(), i + 1));
+    }
+
+    CrashKeyWithName& crash_key = crash_keys[i];
+    crash_key.Set(features[i]);
+  }
+}
+
 // ChromeOS uses --enable-features and --disable-features more heavily than
 // most platforms, and the results don't fit into the default 64 bytes. So they
-// are listed in special, larger CrashKeys and excluded from the default
-// "switches".
+// are separated out in a list of CrashKeys, one for each enabled or disabled
+// feature.
+// They are also excluded from the default "switches".
 void HandleEnableDisableFeatures(const base::CommandLine& command_line) {
-  static crash_reporter::CrashKeyString<150> enable_features_key(
-      "commandline-enabled-features");
-  enable_features_key.Set(
-      command_line.GetSwitchValueASCII(switches::kEnableFeatures));
+  static base::NoDestructor<std::deque<CrashKeyWithName>>
+      enabled_features_crash_keys;
+  static base::NoDestructor<std::deque<CrashKeyWithName>>
+      disabled_features_crash_keys;
 
-  static crash_reporter::CrashKeyString<150> disable_features_key(
-      "commandline-disabled-features");
-  disable_features_key.Set(
-      command_line.GetSwitchValueASCII(switches::kDisableFeatures));
+  SplitAndPopulateCrashKeys(
+      *enabled_features_crash_keys,
+      command_line.GetSwitchValueASCII(switches::kEnableFeatures),
+      "commandline-enabled-feature");
+
+  SplitAndPopulateCrashKeys(
+      *disabled_features_crash_keys,
+      command_line.GetSwitchValueASCII(switches::kDisableFeatures),
+      "commandline-disabled-feature");
 }
 #endif
 
