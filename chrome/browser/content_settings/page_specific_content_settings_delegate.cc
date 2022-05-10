@@ -151,15 +151,6 @@ void PageSpecificContentSettingsDelegate::SetDefaultRendererContentSettingRules(
   }
 }
 
-ContentSetting PageSpecificContentSettingsDelegate::GetEmbargoSetting(
-    const GURL& request_origin,
-    ContentSettingsType permission) {
-  return PermissionDecisionAutoBlockerFactory::GetForProfile(
-             Profile::FromBrowserContext(web_contents()->GetBrowserContext()))
-      ->GetEmbargoResult(request_origin, permission)
-      .content_setting;
-}
-
 std::vector<storage::FileSystemType>
 PageSpecificContentSettingsDelegate::GetAdditionalFileSystemTypes() {
   return browsing_data_file_system_util::GetAdditionalFileSystemTypes();

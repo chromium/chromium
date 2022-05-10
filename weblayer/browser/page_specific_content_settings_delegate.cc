@@ -59,15 +59,6 @@ void PageSpecificContentSettingsDelegate::SetDefaultRendererContentSettingRules(
     content::RenderFrameHost* rfh,
     RendererContentSettingRules* rules) {}
 
-ContentSetting PageSpecificContentSettingsDelegate::GetEmbargoSetting(
-    const GURL& request_origin,
-    ContentSettingsType permission) {
-  return PermissionDecisionAutoBlockerFactory::GetForBrowserContext(
-             web_contents_->GetBrowserContext())
-      ->GetEmbargoResult(request_origin, permission)
-      .content_setting;
-}
-
 std::vector<storage::FileSystemType>
 PageSpecificContentSettingsDelegate::GetAdditionalFileSystemTypes() {
   return {};

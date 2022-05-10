@@ -31,12 +31,6 @@ void TestPageSpecificContentSettingsDelegate::
     SetDefaultRendererContentSettingRules(content::RenderFrameHost* rfh,
                                           RendererContentSettingRules* rules) {}
 
-ContentSetting TestPageSpecificContentSettingsDelegate::GetEmbargoSetting(
-    const GURL& request_origin,
-    ContentSettingsType permission) {
-  return ContentSetting::CONTENT_SETTING_ASK;
-}
-
 std::vector<storage::FileSystemType>
 TestPageSpecificContentSettingsDelegate::GetAdditionalFileSystemTypes() {
   return {};
