@@ -151,7 +151,7 @@ void RunEulaScreenChecks() {
   EXPECT_FALSE(test::IsScanningRequestedOnNetworkScreen());
 }
 
-void WaitForGaiaSignInScreen(bool arc_available) {
+void WaitForGaiaSignInScreen(bool wait_for_arc_preloading) {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   test::OobeJS()
       .CreateFocusWaiter({"gaia-signin", "signin-frame-dialog", "signin-frame"})
@@ -163,7 +163,7 @@ void WaitForGaiaSignInScreen(bool arc_available) {
   // preload is done may cause flaky load failures.
   // TODO(https://crbug/com/959902): Fix ARC terms of service screen to better
   //     handle this case.
-  if (arc_available) {
+  if (wait_for_arc_preloading) {
     test::OobeJS()
         .CreateWaiterWithDescription(
             test::GetOobeElementPath({kArcTosID}) + ".uiStep === 'loaded'",
@@ -699,7 +699,7 @@ class OobeInteractiveUITest
   }
 
   void PerformStepsBeforeEnrollmentCheck();
-  void PerformSessionSignInSteps();
+  void PerformSessionSignInSteps(bool is_managed);
 
   void SimpleEndToEnd();
 
@@ -741,14 +741,25 @@ void OobeInteractiveUITest::PerformStepsBeforeEnrollmentCheck() {
   test::ExitUpdateScreenNoUpdate();
 }
 
-void OobeInteractiveUITest::PerformSessionSignInSteps() {
+void OobeInteractiveUITest::PerformSessionSignInSteps(bool is_managed) {
   ForceBrandedBuild();
   if (GetFirstSigninScreen() == UserCreationView::kScreenId) {
     test::WaitForUserCreationScreen();
     test::TapUserCreationNext();
   }
-  WaitForGaiaSignInScreen(test_setup()->arc_state() != ArcState::kNotAvailable);
+  WaitForGaiaSignInScreen(!is_managed &&
+                          test_setup()->arc_state() != ArcState::kNotAvailable);
   LogInAsRegularUser();
+
+  // For managed devices, preloading the ARC ToS is delayed until the profile is
+  // loaded.
+  if (is_managed && test_setup()->arc_state() != ArcState::kNotAvailable) {
+    test::OobeJS()
+        .CreateWaiterWithDescription(
+            test::GetOobeElementPath({kArcTosID}) + ".uiStep === 'loaded'",
+            "Waiting for ARC TOS to load")
+        ->Wait();
+  }
 
   if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
     test::WaitForConsolidatedConsentScreen();
@@ -794,7 +805,7 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
 
 void OobeInteractiveUITest::SimpleEndToEnd() {
   PerformStepsBeforeEnrollmentCheck();
-  PerformSessionSignInSteps();
+  PerformSessionSignInSteps(/*is_managed=*/false);
 
   WaitForLoginDisplayHostShutdown();
 }
@@ -884,7 +895,7 @@ void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
   enrollment_ui_.LeaveSuccessScreen();
   login_screen_waiter->WaitEvenIfShown();
 
-  PerformSessionSignInSteps();
+  PerformSessionSignInSteps(/*is_managed=*/true);
 
   WaitForLoginDisplayHostShutdown();
 }

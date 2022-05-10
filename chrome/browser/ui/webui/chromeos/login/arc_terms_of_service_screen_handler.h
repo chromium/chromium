@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chromeos/network/network_state_handler_observer.h"
+#include "components/session_manager/core/session_manager_observer.h"
 
 namespace arc {
 class ArcOptInPreferenceHandler;
@@ -81,7 +82,8 @@ class ArcTermsOfServiceScreenHandler
       public arc::ArcOptInPreferenceHandlerObserver,
       public OobeUI::Observer,
       public system::TimezoneSettings::Observer,
-      public chromeos::NetworkStateHandlerObserver {
+      public chromeos::NetworkStateHandlerObserver,
+      public session_manager::SessionManagerObserver {
  public:
   using TView = ArcTermsOfServiceScreenView;
 
@@ -123,6 +125,9 @@ class ArcTermsOfServiceScreenHandler
   // BaseScreenHandler:
   void InitializeDeprecated() override;
 
+  // session_manager::SessionManagerObserver:
+  void OnUserProfileLoaded(const AccountId& account_id) override;
+
   // Shows default terms of service screen.
   void DoShow();
 
@@ -135,11 +140,17 @@ class ArcTermsOfServiceScreenHandler
                     bool enable_location_services,
                     bool review_arc_settings,
                     const std::string& tos_content);
-  // Loads Play Store ToS content in case default network exists. If
-  // `ignore_network_state` is set then network state is not checked.
-  void MaybeLoadPlayStoreToS(bool ignore_network_state);
+
+  // Loads Play Store ToS content.
+  // If `is_preload` is set, skip loading if one of the following conditions
+  // applies:
+  //     * A default network does not exist.
+  //     * The device is managed and ARC++ negotiation is not needed.
+  void MaybeLoadPlayStoreToS(bool is_preload);
 
   void StartNetworkAndTimeZoneObserving();
+
+  void StartSessionManagerObserving();
 
   // Handles the recording of consent given or not given after the user chooses
   // to skip or accept.
@@ -166,6 +177,9 @@ class ArcTermsOfServiceScreenHandler
 
   // Indicates that we already started network and time zone observing.
   bool network_time_zone_observing_ = false;
+
+  // Indicates that we already started observing the session manager.
+  bool session_manager_observing_ = false;
 
   // To filter out duplicate notifications from html.
   bool action_taken_ = false;
