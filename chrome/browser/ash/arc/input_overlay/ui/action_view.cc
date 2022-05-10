@@ -42,6 +42,7 @@ ActionView::ActionView(Action* action,
 ActionView::~ActionView() = default;
 
 void ActionView::SetDisplayMode(DisplayMode mode) {
+  DCHECK(mode != DisplayMode::kEducation);
   if ((!editable_ && mode == DisplayMode::kEdit) || mode == DisplayMode::kMenu)
     return;
   if (mode == DisplayMode::kView) {

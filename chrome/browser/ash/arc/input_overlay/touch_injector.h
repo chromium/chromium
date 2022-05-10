@@ -23,6 +23,7 @@ class Window;
 }  // namespace aura
 
 namespace arc {
+class ArcInputOverlayManagerTest;
 namespace input_overlay {
 class DisplayOverlayController;
 class Action;
@@ -108,6 +109,7 @@ class TouchInjector : public ui::EventRewriter {
       const Continuation continuation) override;
 
  private:
+  friend class ::arc::ArcInputOverlayManagerTest;
   friend class TouchInjectorTest;
 
   struct TouchPointInfo {
@@ -161,6 +163,7 @@ class TouchInjector : public ui::EventRewriter {
   int GetRewrittenTouchIdForTesting(ui::PointerId original_id);
   gfx::PointF GetRewrittenRootLocationForTesting(ui::PointerId original_id);
   int GetRewrittenTouchInfoSizeForTesting();
+  DisplayOverlayController* GetControllerForTesting();
 
   raw_ptr<aura::Window> target_window_;
   base::WeakPtr<ui::EventRewriterContinuation> continuation_;

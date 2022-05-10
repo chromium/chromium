@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_mode_exit_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/educational_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/error_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_menu_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -42,10 +43,7 @@ DisplayOverlayController::DisplayOverlayController(
     : touch_injector_(touch_injector) {
   AddOverlay();
   touch_injector_->set_display_overlay_controller(this);
-  // TODO(cuicuiruan): Initially it should be in |kEducation| mode when
-  // launching and showing the educational dialog. Redo the logic here when the
-  // educational dialog is ready.
-  SetDisplayMode(DisplayMode::kView);
+  SetDisplayMode(DisplayMode::kEducation);
   ash::Shell::Get()->AddPreTargetHandler(this);
 }
 
@@ -55,8 +53,14 @@ DisplayOverlayController::~DisplayOverlayController() {
 }
 
 void DisplayOverlayController::OnWindowBoundsChanged() {
+  auto mode = display_mode_;
   SetDisplayMode(DisplayMode::kNone);
-  SetDisplayMode(DisplayMode::kView);
+  // Transition to |kView| mode except while on |kEducation| mode since
+  // displaying this UI needs to be ensured as the user shouldn't be able to
+  // manually access said view.
+  if (mode != DisplayMode::kEducation)
+    mode = DisplayMode::kView;
+  SetDisplayMode(mode);
 }
 
 // For test:
@@ -78,7 +82,7 @@ void DisplayOverlayController::AddOverlay() {
   params.focusable = true;
   shell_surface_base->AddOverlay(std::move(params));
 
-  SetDisplayMode(DisplayMode::kView);
+  SetDisplayMode(DisplayMode::kEducation);
 }
 
 void DisplayOverlayController::RemoveOverlayIfAny() {
@@ -185,6 +189,12 @@ void DisplayOverlayController::RemoveEditModeExitView() {
   edit_mode_view_ = nullptr;
 }
 
+void DisplayOverlayController::OnEducationalViewDismissed() {
+  // TODO(djacobo|cuicuiruan): Save this pref on user's profile so the
+  // educational dialog is not seen ever again for this app.
+  SetDisplayMode(DisplayMode::kView);
+}
+
 views::Widget* DisplayOverlayController::GetOverlayWidget() {
   auto* shell_surface_base =
       exo::GetShellSurfaceBaseForWindow(touch_injector_->target_window());
@@ -221,6 +231,13 @@ gfx::Point DisplayOverlayController::CalculateEditModeExitPosition() {
       std::max(0, view->height() / 2 - kEditModeExitHeight / 2));
 }
 
+views::View* DisplayOverlayController::GetParentView() {
+  auto* overlay_widget = GetOverlayWidget();
+  if (!overlay_widget)
+    return nullptr;
+  return overlay_widget->GetContentsView();
+}
+
 void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
   if (display_mode_ == mode)
     return;
@@ -237,13 +254,18 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       RemoveEditModeExitView();
       break;
     case DisplayMode::kEducation:
-      // TODO(cuicuiruan): Add educational dialog.
+      // If the dialog doesn't needs to be shown just abort the rest of the
+      // function and call again on |kView| mode.
+      RemoveEducationalView();
+      if (!MaybeShowEducationalView())
+        return;
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kTargetAndDescendants);
       break;
     case DisplayMode::kView:
       RemoveInputMenuView();
       RemoveEditModeExitView();
+      RemoveEducationalView();
       AddInputMappingView(overlay_widget);
       AddMenuEntryView(overlay_widget);
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
@@ -252,6 +274,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
     case DisplayMode::kEdit:
       RemoveInputMenuView();
       RemoveMenuEntryView();
+      RemoveEducationalView();
       AddEditModeExitView(overlay_widget);
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kTargetAndDescendants);
@@ -411,6 +434,39 @@ void DisplayOverlayController::ProcessPressedEvent(
     if (!bounds.Contains(root_location))
       RemoveEditErrorMsg();
   }
+}
+
+bool DisplayOverlayController::MaybeShowEducationalView() {
+  bool first_run = FirstRun();
+  if (first_run) {
+    auto* overlay_widget = GetOverlayWidget();
+    DCHECK(overlay_widget);
+    auto* parent_view = overlay_widget->GetContentsView();
+    DCHECK(parent_view);
+
+    educational_view_ = parent_view->AddChildView(
+        EducationalView::BuildMenu(this, GetParentView()));
+  } else {
+    SetDisplayMode(DisplayMode::kView);
+  }
+
+  return first_run;
+}
+
+void DisplayOverlayController::RemoveEducationalView() {
+  if (!educational_view_)
+    return;
+  educational_view_->parent()->RemoveChildViewT(educational_view_);
+  educational_view_ = nullptr;
+}
+
+bool DisplayOverlayController::FirstRun() const {
+  // TODO(djacobo|cuicuiruan): Add logic to retrieve user's pref.
+  return false;
+}
+
+void DisplayOverlayController::DismissEducationalViewForTesting() {
+  OnEducationalViewDismissed();
 }
 
 }  // namespace input_overlay

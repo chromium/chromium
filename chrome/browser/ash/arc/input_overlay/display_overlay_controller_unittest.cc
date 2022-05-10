@@ -47,6 +47,10 @@ class DisplayOverlayControllerTest : public exo::test::ExoTestBase {
     return controller_->GetInputMappingViewBoundsForTesting();
   }
 
+  void DismissEducationalDialog() {
+    controller_->DismissEducationalViewForTesting();
+  }
+
  protected:
   std::unique_ptr<input_overlay::test::ArcTestWindow> arc_test_window_;
   std::unique_ptr<DisplayOverlayController> controller_;
@@ -78,6 +82,8 @@ class DisplayOverlayControllerTest : public exo::test::ExoTestBase {
 };
 
 TEST_F(DisplayOverlayControllerTest, TestWindowBoundsChange) {
+  // Make sure educational dialog is bypassed.
+  DismissEducationalDialog();
   auto original_bounds = GetInputMappingViewBounds();
   auto new_bounds = gfx::Rect(original_bounds);
   new_bounds.set_width(new_bounds.size().width() + 50);

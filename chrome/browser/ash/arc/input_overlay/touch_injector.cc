@@ -200,8 +200,6 @@ void TouchInjector::OnBindingChange(Action* target_action,
 void TouchInjector::OnBindingSave() {
   for (auto& action : actions_)
     action->BindPending();
-  if (display_overlay_controller_)
-    display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
   OnSaveProtoFile();
 }
 
@@ -223,6 +221,8 @@ const std::string* TouchInjector::GetPackageName() const {
 }
 
 void TouchInjector::OnProtoDataAvailable(std::unique_ptr<AppDataProto> proto) {
+  if (proto->actions().empty())
+    return;
   for (const ActionProto& action_proto : proto->actions()) {
     auto* action = GetActionById(action_proto.id());
     DCHECK(action);
@@ -569,6 +569,10 @@ gfx::PointF TouchInjector::GetRewrittenRootLocationForTesting(
 
 int TouchInjector::GetRewrittenTouchInfoSizeForTesting() {
   return rewritten_touch_infos_.size();
+}
+
+DisplayOverlayController* TouchInjector::GetControllerForTesting() {
+  return display_overlay_controller_;
 }
 
 }  // namespace input_overlay

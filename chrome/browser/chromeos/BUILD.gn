@@ -858,6 +858,8 @@ source_set("chromeos") {
     "../ash/arc/input_overlay/ui/action_view.h",
     "../ash/arc/input_overlay/ui/edit_mode_exit_view.cc",
     "../ash/arc/input_overlay/ui/edit_mode_exit_view.h",
+    "../ash/arc/input_overlay/ui/educational_view.cc",
+    "../ash/arc/input_overlay/ui/educational_view.h",
     "../ash/arc/input_overlay/ui/error_view.cc",
     "../ash/arc/input_overlay/ui/error_view.h",
     "../ash/arc/input_overlay/ui/input_mapping_view.cc",

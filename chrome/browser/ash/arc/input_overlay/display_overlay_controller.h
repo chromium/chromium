@@ -23,6 +23,7 @@ class Widget;
 }  // namespace views
 
 namespace arc {
+class ArcInputOverlayManagerTest;
 namespace input_overlay {
 class TouchInjector;
 class InputMappingView;
@@ -30,6 +31,7 @@ class InputMenuView;
 class ActionEditMenu;
 class EditModeExitView;
 class ErrorView;
+class EducationalView;
 
 // DisplayOverlayController manages the input mapping view, view and edit mode,
 // menu, and educational dialog. It also handles the visibility of the
@@ -69,7 +71,9 @@ class DisplayOverlayController : public ui::EventHandler {
   void OnTouchEvent(ui::TouchEvent* event) override;
 
  private:
+  friend class ::arc::ArcInputOverlayManagerTest;
   friend class DisplayOverlayControllerTest;
+  friend class EducationalView;
   friend class InputMenuView;
   friend class InputMappingView;
 
@@ -86,9 +90,12 @@ class DisplayOverlayController : public ui::EventHandler {
   void RemoveMenuEntryView();
   void RemoveEditModeExitView();
 
+  void OnEducationalViewDismissed();
+
   views::Widget* GetOverlayWidget();
   gfx::Point CalculateMenuEntryPosition();
   gfx::Point CalculateEditModeExitPosition();
+  views::View* GetParentView();
   bool HasMenuView() const;
   void SetInputMappingVisible(bool visible);
   bool GetInputMappingViewVisible() const;
@@ -100,8 +107,17 @@ class DisplayOverlayController : public ui::EventHandler {
   // their view bounds.
   void ProcessPressedEvent(const ui::LocatedEvent& event);
 
+  // Decide whether or not to show ed. dialog based on user profile's data.
+  bool MaybeShowEducationalView();
+  // Remove |EducationalView| and its references.
+  void RemoveEducationalView();
+  // Checks user's profile data to see if the related game/app has been run
+  // before.
+  bool FirstRun() const;
+
   // For test:
   gfx::Rect GetInputMappingViewBoundsForTesting();
+  void DismissEducationalViewForTesting();
 
   TouchInjector* touch_injector() { return touch_injector_; }
 
@@ -114,6 +130,7 @@ class DisplayOverlayController : public ui::EventHandler {
   raw_ptr<ActionEditMenu> action_edit_menu_ = nullptr;
   raw_ptr<EditModeExitView> edit_mode_view_ = nullptr;
   raw_ptr<ErrorView> error_ = nullptr;
+  raw_ptr<EducationalView> educational_view_ = nullptr;
 
   DisplayMode display_mode_ = DisplayMode::kNone;
 };

@@ -78,6 +78,11 @@ class ArcInputOverlayManagerTest : public exo::test::ExoTestBase {
     arc_test_input_overlay_manager_->OnWindowFocused(gain_focus, lost_focus);
   }
 
+  // TODO(djacobo): Maybe move all tests inside input_overlay namespace.
+  void DismissEducationalDialog(input_overlay::TouchInjector* injector) {
+    injector->GetControllerForTesting()->DismissEducationalViewForTesting();
+  }
+
  protected:
   std::unique_ptr<ArcInputOverlayManager> arc_test_input_overlay_manager_;
 
@@ -188,7 +193,11 @@ TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
   // I/O takes time here.
   task_environment()->FastForwardBy(kIORead);
   // arc_window->SetBounds(display1, gfx::Rect(1010, 910, 100, 100));
+  // Make sure to dismiss the educational dialog in beforehand.
+  auto* injector = GetTouchInjector(arc_window->GetWindow());
+  EXPECT_TRUE(injector);
   WindowFocus(arc_window->GetWindow(), nullptr);
+  DismissEducationalDialog(injector);
   EXPECT_TRUE(GetKeyEventSourceRewriter());
   // Simulate the fact that key events are only sent to primary root window
   // when there is no text input focus. Make sure the input overlay window can
@@ -197,12 +206,12 @@ TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
       std::make_unique<ui::test::EventGenerator>(root_windows[0]);
   input_overlay::test::EventCapturer event_capturer;
   root_windows[1]->AddPostTargetHandler(&event_capturer);
-  event_generator->PressKey(ui::VKEY_A, ui::EF_NONE, 1 /* keyboard id */);
+  event_generator->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer.key_events().empty());
-  EXPECT_TRUE(event_capturer.touch_events().size() == 1);
+  EXPECT_EQ(1u, event_capturer.touch_events().size());
   event_generator->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1);
   EXPECT_TRUE(event_capturer.key_events().empty());
-  EXPECT_TRUE(event_capturer.touch_events().size() == 2);
+  EXPECT_EQ(2u, event_capturer.touch_events().size());
   event_capturer.Clear();
   root_windows[1]->RemovePostTargetHandler(&event_capturer);
   // Move to the primary display.

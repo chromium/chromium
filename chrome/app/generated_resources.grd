@@ -13001,6 +13001,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_INPUT_OVERLAY_EDIT_MODE_CANCEL" desc="Discard all the newly assigned key-bindings in this session.">
         Cancel
       </message>
+      <message name="IDS_INPUT_OVERLAY_EDUCATIONAL_TITLE" desc="Educational dialog's title, this is a friendly name for the feature.">
+        Game Control
+      </message>
+      <message name="IDS_INPUT_OVERLAY_EDUCATIONAL_DESCRIPTION" desc="Text on the educational dialog describing the funcionality introduced by this feature.">
+        You’ve been invited to try out keyboard control for this game.
+      </message>
+      <message name="IDS_INPUT_OVERLAY_EDUCATIONAL_ACCEPT_BUTTON" desc="Educational dialog's accept button text.">
+        Got it
+      </message>
+      <message name="IDS_INPUT_OVERLAY_EDUCATIONAL_BETA" desc="Label marking the feature as 'Beta', this has to be removed after the feature is fully approved.">
+        Beta
+      </message>
     </if>
 
     <!-- Privacy Sandbox Dialog strings -->
