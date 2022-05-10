@@ -778,6 +778,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   void UpdatePaginationRecursive(bool needs_pagination_update = false);
   void ClearPaginationRecursive();
 
+  void SetSelfNeedsRepaint();
   void MarkCompositingContainerChainForNeedsRepaint();
 
   PaintLayerRareData& EnsureRareData() {

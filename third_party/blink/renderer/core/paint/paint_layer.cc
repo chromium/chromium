@@ -898,10 +898,9 @@ void PaintLayer::AddChild(PaintLayer* child, PaintLayer* before_child) {
 
   MarkAncestorChainForFlagsUpdate();
 
-  if (child->SelfNeedsRepaint())
-    MarkCompositingContainerChainForNeedsRepaint();
-  else
-    child->SetNeedsRepaint();
+  // TODO(wangxianzhu): Change this to the same pattern as cull rect update
+  // when removing pre-CAP code.
+  child->SetNeedsRepaint();
 
   if (child->NeedsCullRectUpdate())
     MarkCompositingContainerChainForNeedsCullRectUpdate();
@@ -2665,12 +2664,16 @@ bool PaintLayer::ComputeHasFilterThatMovesPixels() const {
 }
 
 void PaintLayer::SetNeedsRepaint() {
-  if (self_needs_repaint_)
-    return;
+  SetSelfNeedsRepaint();
+  // Do this unconditionally to ensure container chain is marked when
+  // compositing status of the layer changes.
+  MarkCompositingContainerChainForNeedsRepaint();
+}
+
+void PaintLayer::SetSelfNeedsRepaint() {
   self_needs_repaint_ = true;
   // Invalidate as a display item client.
   static_cast<DisplayItemClient*>(this)->Invalidate();
-  MarkCompositingContainerChainForNeedsRepaint();
 }
 
 void PaintLayer::SetDescendantNeedsRepaint() {
