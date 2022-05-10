@@ -568,6 +568,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabstripLoadingProgressForeground] = {ui::kColorAccent};
   mixer[kColorTabstripScrollContainerShadow] =
       ui::SetAlpha(ui::kColorShadowBase, 0x4D);
+  mixer[kColorTabThrobber] = {ui::kColorThrobber};
+  mixer[kColorTabThrobberPreconnect] = {ui::kColorThrobberPreconnect};
   mixer[kColorThumbnailTabBackground] = ui::BlendForMinContrast(
       ui::kColorAccent, ui::kColorFrameActive, absl::nullopt,
       color_utils::kMinimumVisibleContrastRatio);

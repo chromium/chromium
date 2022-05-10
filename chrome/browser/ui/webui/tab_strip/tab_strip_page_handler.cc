@@ -611,11 +611,11 @@ void TabStripPageHandler::GetThemeColors(GetThemeColorsCallback callback) {
           /* 16% opacity */ 0.16 * 255));
 
   std::string throbber_color = color_utils::SkColorToRgbaString(
-      embedder_->GetColorProviderColor(ui::kColorThrobber));
+      embedder_->GetColorProviderColor(kColorTabThrobber));
   colors["--tabstrip-tab-loading-spinning-color"] = throbber_color;
   colors["--tabstrip-tab-waiting-spinning-color"] =
       color_utils::SkColorToRgbaString(
-          embedder_->GetColorProviderColor(ui::kColorThrobberPreconnect));
+          embedder_->GetColorProviderColor(kColorTabThrobberPreconnect));
   colors["--tabstrip-indicator-recording-color"] =
       color_utils::SkColorToRgbaString(
           embedder_->GetColorProviderColor(ui::kColorAlertHighSeverity));

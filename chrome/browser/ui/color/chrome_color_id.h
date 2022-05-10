@@ -395,6 +395,8 @@
   E_CPONLY(kColorTabstripLoadingProgressBackground) \
   E_CPONLY(kColorTabstripLoadingProgressForeground) \
   E_CPONLY(kColorTabstripScrollContainerShadow) \
+  E_CPONLY(kColorTabThrobber) \
+  E_CPONLY(kColorTabThrobberPreconnect) \
   /* Thumbnail tab colors. */ \
   E_CPONLY(kColorThumbnailTabBackground) \
   E_CPONLY(kColorThumbnailTabForeground) \
