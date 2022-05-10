@@ -79,6 +79,7 @@ public class LoadingModalDialogCoordinator {
     public void show() {
         PropertyModel dialogModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                                             .with(ModalDialogProperties.FULLSCREEN_DIALOG, true)
+                                            .with(ModalDialogProperties.EXCEED_MAX_HEIGHT, true)
                                             .with(ModalDialogProperties.CONTROLLER, mMediator)
                                             .with(ModalDialogProperties.CUSTOM_VIEW, mCustomView)
                                             .build();

@@ -33,6 +33,7 @@ public class BoundedLinearLayout extends LinearLayout {
     private final int mMaxHeight;
 
     private boolean mIgnoreWidthConstraints;
+    private boolean mIgnoreHeightConstraints;
 
     /**
      * Constructor for inflating from XML.
@@ -55,9 +56,13 @@ public class BoundedLinearLayout extends LinearLayout {
     /**
      * @param ignoreWidthConstraints A boolean indicating whether we should ignore width constraints
      *         to support a full-screen type view.
+     * @param ignoreHeightConstraint A boolean indicating whether we should ignore the maxHeight
+     *        constraint to support a full-screen type view.
      */
-    public void setIgnoreWidthConstraints(boolean ignoreWidthConstraints) {
+    public void setIgnoreConstraints(
+            boolean ignoreWidthConstraints, boolean ignoreHeightConstraint) {
         mIgnoreWidthConstraints = ignoreWidthConstraints;
+        mIgnoreHeightConstraints = ignoreHeightConstraint;
         requestLayout();
     }
 
@@ -84,7 +89,8 @@ public class BoundedLinearLayout extends LinearLayout {
 
         // Limit the height.
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-        if (mMaxHeight != NOT_SPECIFIED && heightSize > mMaxHeight) {
+        if (mMaxHeight != NOT_SPECIFIED && heightSize > mMaxHeight
+                && !areHeightConstraintsIgnored()) {
             heightMeasureSpec = makeMeasureSpec(heightMeasureSpec, mMaxHeight);
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -101,5 +107,12 @@ public class BoundedLinearLayout extends LinearLayout {
      */
     private boolean isWidthConstraintsIgnored() {
         return mIgnoreWidthConstraints;
+    }
+
+    /**
+     * When true, {@code app:maxHeight} is ignored.
+     */
+    private boolean areHeightConstraintsIgnored() {
+        return mIgnoreHeightConstraints;
     }
 }

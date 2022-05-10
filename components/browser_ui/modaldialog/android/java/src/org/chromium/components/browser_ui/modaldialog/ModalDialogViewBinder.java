@@ -82,8 +82,12 @@ public class ModalDialogViewBinder
             assert checkCustomButtonsConsistency(model);
             // Intentionally left empty since this is only read once before the dialog is inflated.
         } else if (ModalDialogProperties.FULLSCREEN_DIALOG == propertyKey
-                || ModalDialogProperties.DIALOG_WHEN_LARGE == propertyKey) {
-            view.setIgnoreWidthConstraints(true);
+                || ModalDialogProperties.DIALOG_WHEN_LARGE == propertyKey
+                || ModalDialogProperties.EXCEED_MAX_HEIGHT == propertyKey) {
+            boolean ignoreWidthConstraints = model.get(ModalDialogProperties.FULLSCREEN_DIALOG)
+                    || model.get(ModalDialogProperties.DIALOG_WHEN_LARGE);
+            boolean ignoreHeightConstraint = model.get(ModalDialogProperties.EXCEED_MAX_HEIGHT);
+            view.setIgnoreConstraints(ignoreWidthConstraints, ignoreHeightConstraint);
             assert !(model.get(ModalDialogProperties.FULLSCREEN_DIALOG)
                     && model.get(ModalDialogProperties.DIALOG_WHEN_LARGE))
                 : "Both FULLSCREEN_DIALOG and DIALOG_WHEN_LARGE cannot be set to true.";

@@ -184,11 +184,16 @@ public class ModalDialogProperties {
     /** Whether the dialog should be focused for accessibility. */
     public static final WritableBooleanPropertyKey FOCUS_DIALOG = new WritableBooleanPropertyKey();
 
+    /** Whether the dialog contents can be larger than the specs prefer (e.g. in fullscreen). */
+    public static final WritableBooleanPropertyKey EXCEED_MAX_HEIGHT =
+            new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CONTROLLER, CONTENT_DESCRIPTION,
             TITLE, TITLE_MAX_LINES, TITLE_ICON, MESSAGE_PARAGRAPH_1, MESSAGE_PARAGRAPH_2,
             CUSTOM_VIEW, CUSTOM_BUTTON_BAR_VIEW, POSITIVE_BUTTON_TEXT, POSITIVE_BUTTON_ICON,
             POSITIVE_BUTTON_CONTENT_DESCRIPTION, POSITIVE_BUTTON_DISABLED, NEGATIVE_BUTTON_TEXT,
             NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED, FOOTER_MESSAGE,
             CANCEL_ON_TOUCH_OUTSIDE, FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK,
-            TITLE_SCROLLABLE, BUTTON_STYLES, FULLSCREEN_DIALOG, DIALOG_WHEN_LARGE, FOCUS_DIALOG};
+            TITLE_SCROLLABLE, BUTTON_STYLES, FULLSCREEN_DIALOG, DIALOG_WHEN_LARGE, FOCUS_DIALOG,
+            EXCEED_MAX_HEIGHT};
 }
