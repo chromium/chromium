@@ -39,9 +39,7 @@ namespace {
 const ComponentConfig kConfigs[] = {
     {"cros-termina", ComponentConfig::PolicyType::kEnvVersion, "980.1",
      "e9d960f84f628e1f42d05de4046bb5b3154b6f1f65c08412c6af57a29aecaffb"},
-    {"rtanalytics-light", ComponentConfig::PolicyType::kEnvVersion, "96.0",
-     "69f09d33c439c2ab55bbbe24b47ab55cb3f6c0bd1f1ef46eefea3216ec925038"},
-    {"rtanalytics-full", ComponentConfig::PolicyType::kEnvVersion, "96.0",
+    {"rtanalytics-full", ComponentConfig::PolicyType::kEnvVersion, "100.0",
      "c93c3e1013c52100a20038b405ac854d69fa889f6dc4fa6f188267051e05e444"},
     {"demo-mode-resources", ComponentConfig::PolicyType::kEnvVersion, "1.0",
      "93c093ebac788581389015e9c59c5af111d2fa5174d206eb795042e6376cbd10"},
