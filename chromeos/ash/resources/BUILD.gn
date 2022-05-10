@@ -1,0 +1,32 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//tools/grit/grit_rule.gni")
+
+assert(is_chromeos_ash)
+
+grit("resources") {
+  source = "ash_resources.grd"
+
+  outputs = [
+    "grit/ash_resources.h",
+    "grit/ash_resources_map.cc",
+    "grit/ash_resources_map.h",
+    "ash_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chromeos/ash"
+
+  grit_flags = [
+    "-E",
+    "mojom_root=" + rebase_path(root_gen_dir, root_build_dir),
+  ]
+
+  deps = [
+    "//ash/components/multidevice/mojom:mojom_js",
+    "//ash/services/cellular_setup/public/mojom:mojom_js",
+    "//ash/services/device_sync/public/mojom:mojom_js",
+    "//ash/services/multidevice_setup/public/mojom:mojom_js",
+  ]
+}

@@ -219,7 +219,6 @@ template("chrome_extra_paks") {
     }
     if (is_chromeos_ash) {
       sources += [
-        "$root_gen_dir/ash/ash_resources.pak",
         "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",
         "$root_gen_dir/ash/webui/ash_camera_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_color_internals_resources.pak",
@@ -261,6 +260,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/oobe_conditional_resources.pak",
         "$root_gen_dir/chrome/oobe_unconditional_resources.pak",
         "$root_gen_dir/chrome/os_settings_resources.pak",
+        "$root_gen_dir/chromeos/ash/ash_resources.pak",
         "$root_gen_dir/chromeos/chromeos_help_app_bundle_resources.pak",
         "$root_gen_dir/chromeos/chromeos_help_app_kids_magazine_bundle_resources.pak",
         "$root_gen_dir/chromeos/chromeos_media_app_bundle_resources.pak",
@@ -273,7 +273,6 @@ template("chrome_extra_paks") {
       deps += [
         "//ash/components/arc/input_overlay/resources",
         "//ash/public/cpp/resources:ash_public_unscaled_resources",
-        "//ash/resources:resources_grit",
         "//ash/webui/file_manager/resources:file_manager_swa_resources",
         "//ash/webui/file_manager/untrusted_resources:file_manager_untrusted_resources",
         "//ash/webui/resources:camera_app_resources",
@@ -318,6 +317,7 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/settings/chromeos:resources",
         "//chrome/browser/supervised_user:supervised_user_unscaled_resources",
         "//chrome/common/chromeos/extensions:resources",
+        "//chromeos/ash/resources",
         "//chromeos/resources",
         "//ui/file_manager:file_manager_gen_resources",
         "//ui/file_manager:resources",

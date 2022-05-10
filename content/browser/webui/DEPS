@@ -1,6 +1,6 @@
 include_rules = [
-  "+ash/grit/ash_resources.h",
-  "+ash/grit/ash_resources_map.h",
+  "+chromeos/ash/grit/ash_resources.h",
+  "+chromeos/ash/grit/ash_resources_map.h",
   "+components/crash/content/browser/error_reporting",
   "+ui/chromeos/styles",
 ]

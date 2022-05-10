@@ -22,9 +22,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "ash/grit/ash_resources.h"
-#include "ash/grit/ash_resources_map.h"
 #include "base/feature_list.h"
+#include "chromeos/ash/grit/ash_resources.h"
+#include "chromeos/ash/grit/ash_resources_map.h"
 #include "chromeos/grit/chromeos_resources.h"
 #include "chromeos/grit/chromeos_resources_map.h"
 #include "ui/chromeos/styles/cros_styles.h"  // nogncheck
