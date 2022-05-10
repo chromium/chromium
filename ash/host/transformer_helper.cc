@@ -101,7 +101,7 @@ void TransformerHelper::SetRootWindowTransformer(
   // update the root window size immediately.
   if (!window->layer()->GetAnimator()->IsAnimatingProperty(
           ui::LayerAnimationElement::TRANSFORM)) {
-    host->UpdateRootWindowSizeInPixels();
+    ash_host_->UpdateRootWindowSize();
   }
 }
 

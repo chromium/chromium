@@ -30,7 +30,7 @@ void CastWindowTreeHostAura::DispatchEvent(ui::Event* event) {
   WindowTreeHostPlatform::DispatchEvent(event);
 }
 
-gfx::Rect CastWindowTreeHostAura::GetTransformedRootWindowBoundsInPixels(
+gfx::Rect CastWindowTreeHostAura::GetTransformedRootWindowBoundsFromPixelSize(
     const gfx::Size& size_in_pixels) const {
   gfx::RectF new_bounds = gfx::RectF(gfx::Rect(size_in_pixels));
   GetInverseRootTransform().TransformRect(&new_bounds);

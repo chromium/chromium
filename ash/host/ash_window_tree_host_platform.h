@@ -59,12 +59,13 @@ class ASH_EXPORT AshWindowTreeHostPlatform
   void PrepareForShutdown() override;
   void UpdateCursorConfig() override;
   void ClearCursorConfig() override;
+  void UpdateRootWindowSize() override;
 
   // aura::WindowTreeHostPlatform:
   void SetRootTransform(const gfx::Transform& transform) override;
   gfx::Transform GetRootTransform() const override;
   gfx::Transform GetInverseRootTransform() const override;
-  gfx::Rect GetTransformedRootWindowBoundsInPixels(
+  gfx::Rect GetTransformedRootWindowBoundsFromPixelSize(
       const gfx::Size& host_size_in_pixels) const override;
   void OnCursorVisibilityChangedNative(bool show) override;
   void SetBoundsInPixels(const gfx::Rect& bounds) override;

@@ -24,7 +24,7 @@ class CastWindowTreeHostAura : public aura::WindowTreeHostPlatform {
   void DispatchEvent(ui::Event* event) override;
 
   // aura::WindowTreeHost implementation
-  gfx::Rect GetTransformedRootWindowBoundsInPixels(
+  gfx::Rect GetTransformedRootWindowBoundsFromPixelSize(
       const gfx::Size& size_in_pixels) const override;
 
  private:

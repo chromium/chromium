@@ -131,13 +131,6 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   virtual gfx::Transform GetInverseRootTransformForLocalEventCoordinates()
       const;
 
-  // Updates the root window's size using |host_size_in_pixels|, current
-  // transform and outsets.
-  // TODO(ccameron): Make this function no longer public. The interaction
-  // between this call, GetBounds, and OnHostResizedInPixels is ambiguous and
-  // allows for inconsistencies.
-  void UpdateRootWindowSizeInPixels();
-
   // Updates the compositor's size and scale from |new_size_in_pixels|,
   // |device_scale_factor_| and the compositor's transform hint.
   void UpdateCompositorScaleAndSize(const gfx::Size& new_size_in_pixels);
@@ -387,7 +380,8 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // True if |dom_code| is reserved for an active KeyboardLock request.
   virtual bool IsKeyLocked(ui::DomCode dom_code) = 0;
 
-  virtual gfx::Rect GetTransformedRootWindowBoundsInPixels(
+  // Return root window size computed from given pixel size.
+  virtual gfx::Rect GetTransformedRootWindowBoundsFromPixelSize(
       const gfx::Size& size_in_pixels) const;
 
   const base::ObserverList<WindowTreeHostObserver>::Unchecked& observers()
@@ -397,6 +391,9 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
 
   // Called to enabled/disable native window occlusion calculation.
   void SetNativeWindowOcclusionEnabled(bool enable);
+
+  // Updates the root window's size after WindowTreeHost's property changed.
+  void UpdateRootWindowSize();
 
  private:
   class HideHelper;

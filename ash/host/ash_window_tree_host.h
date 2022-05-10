@@ -61,6 +61,8 @@ class ASH_EXPORT AshWindowTreeHost {
   virtual void UpdateCursorConfig() = 0;
   virtual void ClearCursorConfig() = 0;
 
+  virtual void UpdateRootWindowSize() = 0;
+
  protected:
   // Returns true if cursor confinement should be allowed. For development
   // builds this will return false, for ease of switching between windows,

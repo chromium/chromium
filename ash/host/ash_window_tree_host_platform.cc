@@ -126,6 +126,10 @@ void AshWindowTreeHostPlatform::ClearCursorConfig() {
       GetAcceleratedWidget());
 }
 
+void AshWindowTreeHostPlatform::UpdateRootWindowSize() {
+  aura::WindowTreeHostPlatform::UpdateRootWindowSize();
+}
+
 void AshWindowTreeHostPlatform::SetRootWindowTransformer(
     std::unique_ptr<RootWindowTransformer> transformer) {
   transformer_helper_.SetRootWindowTransformer(std::move(transformer));
@@ -165,7 +169,8 @@ gfx::Transform AshWindowTreeHostPlatform::GetInverseRootTransform() const {
   return transformer_helper_.GetInverseTransform();
 }
 
-gfx::Rect AshWindowTreeHostPlatform::GetTransformedRootWindowBoundsInPixels(
+gfx::Rect
+AshWindowTreeHostPlatform::GetTransformedRootWindowBoundsFromPixelSize(
     const gfx::Size& host_size_in_pixels) const {
   return transformer_helper_.GetTransformedWindowBounds(host_size_in_pixels);
 }

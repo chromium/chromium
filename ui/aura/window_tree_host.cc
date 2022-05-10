@@ -193,7 +193,7 @@ void WindowTreeHost::InitHost() {
       display::Screen::GetScreen()->GetDisplayNearestWindow(window());
   device_scale_factor_ = display.device_scale_factor();
 
-  UpdateRootWindowSizeInPixels();
+  UpdateRootWindowSize();
   InitCompositor();
   Env::GetInstance()->NotifyHostInitialized(this);
 }
@@ -223,7 +223,7 @@ gfx::Transform WindowTreeHost::GetRootTransform() const {
 
 void WindowTreeHost::SetRootTransform(const gfx::Transform& transform) {
   window()->SetTransform(transform);
-  UpdateRootWindowSizeInPixels();
+  UpdateRootWindowSize();
 }
 
 gfx::Transform WindowTreeHost::GetInverseRootTransform() const {
@@ -254,16 +254,6 @@ gfx::Transform WindowTreeHost::GetInverseRootTransformForLocalEventCoordinates()
   if (!transform.GetInverse(&invert))
     return transform;
   return invert;
-}
-
-void WindowTreeHost::UpdateRootWindowSizeInPixels() {
-  // Validate that the LocalSurfaceId does not change.
-  bool compositor_inited = !!compositor()->root_layer();
-  ScopedLocalSurfaceIdValidator lsi_validator(compositor_inited ? window()
-                                                                : nullptr);
-  gfx::Rect transformed_bounds_in_pixels =
-      GetTransformedRootWindowBoundsInPixels(GetBoundsInPixels().size());
-  window()->SetBounds(transformed_bounds_in_pixels);
 }
 
 void WindowTreeHost::UpdateCompositorScaleAndSize(
@@ -461,6 +451,16 @@ void WindowTreeHost::SetNativeWindowOcclusionState(
 
   for (WindowTreeHostObserver& observer : observers_)
     observer.OnOcclusionStateChanged(this, state, occluded_region);
+}
+
+void WindowTreeHost::UpdateRootWindowSize() {
+  // Validate that the LocalSurfaceId does not change.
+  bool compositor_inited = !!compositor()->root_layer();
+  ScopedLocalSurfaceIdValidator lsi_validator(compositor_inited ? window()
+                                                                : nullptr);
+  gfx::Rect transformed_bounds_in_dp =
+      GetTransformedRootWindowBoundsFromPixelSize(GetBoundsInPixels().size());
+  window()->SetBounds(transformed_bounds_in_dp);
 }
 
 std::unique_ptr<ScopedEnableUnadjustedMouseEvents>
@@ -679,7 +679,7 @@ void WindowTreeHost::OnHostResizedInPixels(
   if (display.is_valid())
     device_scale_factor_ = display.device_scale_factor();
 
-  UpdateRootWindowSizeInPixels();
+  UpdateRootWindowSize();
 
   // Passing |new_size_in_pixels| to set compositor size. It could be different
   // from GetBoundsInPixels() on Windows to contain extra space for window
@@ -737,7 +737,7 @@ void WindowTreeHost::OnDisplayMetricsChanged(const display::Display& display,
 #endif
 }
 
-gfx::Rect WindowTreeHost::GetTransformedRootWindowBoundsInPixels(
+gfx::Rect WindowTreeHost::GetTransformedRootWindowBoundsFromPixelSize(
     const gfx::Size& size_in_pixels) const {
   gfx::RectF new_bounds = gfx::RectF(gfx::Rect(size_in_pixels));
   GetInverseRootTransform().TransformRect(&new_bounds);
