@@ -168,12 +168,17 @@ class PageViewportInLCPTest : public MetricIntegrationTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, DISABLED_FullSizeImageInIframe) {
+IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, FullSizeImageInIframe) {
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddSubFrameExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                     TimingField::kLargestContentfulPaint);
   Start();
   StartTracing({"loading"});
   Load("/full_size_image.html");
   double lcpTime = EvalJs(web_contents(), "waitForLCP()").ExtractDouble();
 
+  waiter->Wait();
   // Navigate away to force metrics recording.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
