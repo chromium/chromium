@@ -67,6 +67,7 @@ class PLATFORM_EXPORT AutoAdvancingVirtualTimeDomain
 
   int task_starvation_count() const { return task_starvation_count_; }
 
+  base::TimeTicks InitialTicks() const { return initial_time_ticks_; }
   // TickClock implementation:
   base::TimeTicks NowTicks() const override;
 

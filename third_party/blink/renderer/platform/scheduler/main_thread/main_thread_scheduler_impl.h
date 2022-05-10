@@ -871,8 +871,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
         absl::optional<base::sequence_manager::TaskQueue::QueuePriority>,
         TracingCategory::kInfo>
         task_priority_for_tracing;  // Only used for tracing.
-    base::Time initial_virtual_time;
-    base::TimeTicks initial_virtual_time_ticks;
 
     VirtualTimePolicy virtual_time_policy;
 
