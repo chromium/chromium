@@ -5244,6 +5244,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         chrome_image_<ph name="CURRENT_TIMESTAMP_MS">%1$s<ex>1582667748515</ex></ph>
       </message>
 
+      <!-- Share Crow strings -->
+      <message name="IDS_CROW_IPH" desc="In product help string for Crow feature">
+        Show thanks to this creator
+      </message>
+
       <!-- Chime DFM module strings -->
       <message name="IDS_CHIME_MODULE_TITLE" desc="Text shown when the chime module is referenced in install start, success, failure UI (e.g. in IDS_MODULE_INSTALL_START_TEXT, which will expand to 'Installing Google Notifications Platform for Chrome…').">
         Google Notifications Platform

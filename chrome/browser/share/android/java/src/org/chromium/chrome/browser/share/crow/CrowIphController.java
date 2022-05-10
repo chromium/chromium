@@ -79,8 +79,7 @@ public class CrowIphController {
     private void requestShowCrowIph() {
         mUserEducationHelper.requestShowIPH(
                 new IPHCommandBuilder(mActivity.getResources(), FeatureConstants.CROW_FEATURE,
-                        // TODO(crbug/1314530): Fix IPH strings once they are finalized.
-                        R.string.link_toggle_iph, R.string.link_toggle_iph)
+                        R.string.crow_iph, R.string.crow_iph)
                         .setAnchorView(mMenuButtonAnchorView)
                         .setOnShowCallback(this::turnOnHighlightForCrowMenuItem)
                         .setOnDismissCallback(this::turnOffHighlightForCrowMenuItem)
