@@ -226,6 +226,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   void OnMainFrameIntersectionRectChanged(
       content::RenderFrameHost* rfh,
       const gfx::Rect& main_frame_intersection_rect) override;
+  void OnMainFrameViewportRectChanged(
+      const gfx::Rect& main_frame_viewport_rect) override;
   void SetUpSharedMemoryForSmoothness(
       base::ReadOnlySharedMemoryRegion shared_memory) override;
 

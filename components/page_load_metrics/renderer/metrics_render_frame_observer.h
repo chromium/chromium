@@ -103,7 +103,9 @@ class MetricsRenderFrameObserver
   void OnAdResourceObserved(int request_id) override;
 
   void OnMainFrameIntersectionChanged(
-      const gfx::Rect& main_frame_intersection) override;
+      const gfx::Rect& main_frame_intersection_rect) override;
+  void OnMainFrameViewportRectangleChanged(
+      const gfx::Rect& main_frame_viewport_rect) override;
   void OnMobileFriendlinessChanged(const blink::MobileFriendliness&) override;
 
   bool SetUpSmoothnessReporting(
@@ -169,7 +171,7 @@ class MetricsRenderFrameObserver
   // `page_timing_metrics_sender_` is created. The signal will be send out right
   // after `page_timing_metrics_sender_` is created.
   absl::optional<gfx::Rect>
-      main_frame_intersection_before_metrics_sender_created_;
+      main_frame_intersection_rect_before_metrics_sender_created_;
 
   // Will be null when we're not actively sending metrics.
   std::unique_ptr<PageTimingMetricsSender> page_timing_metrics_sender_;

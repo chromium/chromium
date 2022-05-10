@@ -129,6 +129,12 @@ void FakePageTimingSender::PageTimingValidator::
             actual_main_frame_intersection_rect_);
 }
 
+void FakePageTimingSender::PageTimingValidator::
+    VerifyExpectedMainFrameViewportRect() const {
+  EXPECT_EQ(expected_main_frame_viewport_rect_,
+            actual_main_frame_viewport_rect_);
+}
+
 void FakePageTimingSender::PageTimingValidator::UpdateTiming(
     const mojom::PageLoadTimingPtr& timing,
     const mojom::FrameMetadataPtr& metadata,
@@ -151,6 +157,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
 
   actual_render_data_.layout_shift_delta = render_data.layout_shift_delta;
   actual_main_frame_intersection_rect_ = metadata->main_frame_intersection_rect;
+  actual_main_frame_viewport_rect_ = metadata->main_frame_viewport_rect;
 
   actual_input_timing->num_input_events += new_input_timing->num_input_events;
   actual_input_timing->total_input_delay += new_input_timing->total_input_delay;
@@ -164,6 +171,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   VerifyExpectedFeatures();
   VerifyExpectedRenderData();
   VerifyExpectedMainFrameIntersectionRect();
+  VerifyExpectedMainFrameViewportRect();
   VerifyExpectedMobileFriendliness();
 }
 

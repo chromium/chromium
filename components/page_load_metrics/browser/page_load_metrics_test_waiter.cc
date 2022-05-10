@@ -68,7 +68,8 @@ class WaiterMetricsObserver : public PageLoadMetricsObserver {
   void OnMainFrameIntersectionRectChanged(
       content::RenderFrameHost* rfh,
       const gfx::Rect& main_frame_intersection_rect) override;
-
+  void OnMainFrameViewportRectChanged(
+      const gfx::Rect& main_frame_viewport_rect) override;
   void OnV8MemoryChanged(
       const std::vector<MemoryUpdate>& memory_updates) override;
 
@@ -104,6 +105,11 @@ void PageLoadMetricsTestWaiter::AddMainFrameIntersectionExpectation(
 
 void PageLoadMetricsTestWaiter::SetMainFrameIntersectionExpectation() {
   expected_.did_set_main_frame_intersection_ = true;
+}
+
+void PageLoadMetricsTestWaiter::AddMainFrameViewportRectExpectation(
+    const gfx::Rect& rect) {
+  expected_.main_frame_viewport_rect_ = rect;
 }
 
 void PageLoadMetricsTestWaiter::AddSubFrameExpectation(TimingField field) {
@@ -281,6 +287,14 @@ void PageLoadMetricsTestWaiter::OnMainFrameIntersectionRectChanged(
     run_loop_->Quit();
 }
 
+void PageLoadMetricsTestWaiter::OnMainFrameViewportRectChanged(
+    const gfx::Rect& main_frame_viewport_rect) {
+  observed_.main_frame_viewport_rect_ = main_frame_viewport_rect;
+
+  if (ExpectationsSatisfied() && run_loop_)
+    run_loop_->Quit();
+}
+
 void PageLoadMetricsTestWaiter::OnDidFinishSubFrameNavigation(
     content::NavigationHandle* navigation_handle) {
   observed_.subframe_navigation_ = true;
@@ -449,6 +463,13 @@ bool PageLoadMetricsTestWaiter::MainFrameIntersectionExpectationsSatisfied()
   return true;
 }
 
+bool PageLoadMetricsTestWaiter::MainFrameViewportRectExpectationsSatisfied()
+    const {
+  return !expected_.main_frame_viewport_rect_ ||
+         observed_.main_frame_viewport_rect_ ==
+             expected_.main_frame_viewport_rect_;
+}
+
 bool PageLoadMetricsTestWaiter::MemoryUpdateExpectationsSatisfied() const {
   return IsSubset(expected_.memory_update_frame_ids_,
                   observed_.memory_update_frame_ids_);
@@ -465,6 +486,7 @@ bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
          LoadingBehaviorExpectationsSatisfied() &&
          CpuTimeExpectationsSatisfied() &&
          MainFrameIntersectionExpectationsSatisfied() &&
+         MainFrameViewportRectExpectationsSatisfied() &&
          MemoryUpdateExpectationsSatisfied();
 }
 
@@ -529,9 +551,17 @@ void WaiterMetricsObserver::OnFeaturesUsageObserved(
 void WaiterMetricsObserver::OnMainFrameIntersectionRectChanged(
     content::RenderFrameHost* rfh,
     const gfx::Rect& main_frame_intersection_rect) {
-  if (waiter_)
+  if (waiter_) {
     waiter_->OnMainFrameIntersectionRectChanged(rfh,
                                                 main_frame_intersection_rect);
+  }
+}
+
+void WaiterMetricsObserver::OnMainFrameViewportRectChanged(
+    const gfx::Rect& main_frame_viewport_rect) {
+  if (waiter_) {
+    waiter_->OnMainFrameViewportRectChanged(main_frame_viewport_rect);
+  }
 }
 
 void WaiterMetricsObserver::OnDidFinishSubFrameNavigation(

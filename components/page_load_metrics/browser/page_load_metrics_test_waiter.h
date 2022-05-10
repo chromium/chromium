@@ -68,6 +68,11 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   // TODO(skobes): Unify this API with AddMainFrameIntersectionExpectation.
   void SetMainFrameIntersectionExpectation();
 
+  // Add a main frame viewport intersection expectation. Expects that the
+  // mainframe receives its viewport rectangle in the main frame document's
+  // coornidate. Subsequent calls overwrite unmet expectations.
+  void AddMainFrameViewportRectExpectation(const gfx::Rect& rect);
+
   // Add a single WebFeature expectation.
   void AddWebFeatureExpectation(blink::mojom::WebFeature web_feature);
 
@@ -215,6 +220,9 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
       content::RenderFrameHost* rfh,
       const gfx::Rect& main_frame_intersection_rect);
 
+  void OnMainFrameViewportRectChanged(
+      const gfx::Rect& main_frame_viewport_rect);
+
   void OnDidFinishSubFrameNavigation(
       content::NavigationHandle* navigation_handle);
 
@@ -236,6 +244,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   bool SubframeNavigationExpectationsSatisfied() const;
   bool SubframeDataExpectationsSatisfied() const;
   bool MainFrameIntersectionExpectationsSatisfied() const;
+  bool MainFrameViewportRectExpectationsSatisfied() const;
   bool MemoryUpdateExpectationsSatisfied() const;
 
   void AddObserver(page_load_metrics::PageLoadTracker* tracker);
@@ -257,6 +266,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
     std::set<gfx::Size, FrameSizeComparator> frame_sizes_;
     bool did_set_main_frame_intersection_ = false;
     std::vector<gfx::Rect> main_frame_intersections_;
+    absl::optional<gfx::Rect> main_frame_viewport_rect_;
     std::unordered_set<content::GlobalRenderFrameHostId,
                        content::GlobalRenderFrameHostIdHasher>
         memory_update_frame_ids_;

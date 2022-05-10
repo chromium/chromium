@@ -205,8 +205,14 @@ void PageTimingMetricsSender::DidLoadResourceFromMemoryCache(
 }
 
 void PageTimingMetricsSender::OnMainFrameIntersectionChanged(
-    const gfx::Rect& main_frame_intersection) {
-  metadata_->main_frame_intersection_rect = main_frame_intersection;
+    const gfx::Rect& main_frame_intersection_rect) {
+  metadata_->main_frame_intersection_rect = main_frame_intersection_rect;
+  EnsureSendTimer();
+}
+
+void PageTimingMetricsSender::OnMainFrameViewportRectangleChanged(
+    const gfx::Rect& main_frame_viewport_rect) {
+  metadata_->main_frame_viewport_rect = main_frame_viewport_rect;
   EnsureSendTimer();
 }
 
@@ -319,6 +325,7 @@ void PageTimingMetricsSender::SendNow() {
   InitiateUserInteractionTiming();
   new_features_.clear();
   metadata_->main_frame_intersection_rect.reset();
+  metadata_->main_frame_viewport_rect.reset();
   last_cpu_timing_->task_time = base::TimeDelta();
   modified_resources_.clear();
   render_data_.new_layout_shifts.clear();

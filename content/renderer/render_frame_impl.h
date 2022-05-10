@@ -575,7 +575,10 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidChangeSelection(bool is_empty_selection,
                           blink::SyncCondition force_sync) override;
   void FocusedElementChanged(const blink::WebElement& element) override;
-  void OnMainFrameIntersectionChanged(const gfx::Rect& intersect_rect) override;
+  void OnMainFrameIntersectionChanged(
+      const gfx::Rect& main_frame_intersection_rect) override;
+  void OnMainFrameViewportRectangleChanged(
+      const gfx::Rect& main_frame_viewport_rect) override;
   void WillSendRequest(blink::WebURLRequest& request,
                        ForRedirect for_redirect) override;
   void OnOverlayPopupAdDetected() override;
@@ -1406,8 +1409,12 @@ class CONTENT_EXPORT RenderFrameImpl
   std::unique_ptr<AXTreeDistiller> ax_tree_distiller_;
 
   // Used for tracking a frame's main frame document intersection and
-  // and replicating it to the browser when it changes.
-  absl::optional<gfx::Rect> mainframe_intersection_rect_;
+  // replicating it to the browser when it changes.
+  absl::optional<gfx::Rect> main_frame_intersection_rect_;
+
+  // Used for tracking the main frame viewport rectangle (i.e. dimensions and
+  // scroll offset) within the main frame document.
+  absl::optional<gfx::Rect> main_frame_viewport_rect_;
 
   std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
       websocket_handshake_throttle_provider_;

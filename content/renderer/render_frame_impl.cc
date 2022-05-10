@@ -4254,12 +4254,21 @@ void RenderFrameImpl::DidChangeSelection(bool is_empty_selection,
 }
 
 void RenderFrameImpl::OnMainFrameIntersectionChanged(
-    const gfx::Rect& mainframe_intersection_rect) {
-  if (!mainframe_intersection_rect_ ||
-      mainframe_intersection_rect != mainframe_intersection_rect_) {
-    mainframe_intersection_rect_ = mainframe_intersection_rect;
+    const gfx::Rect& main_frame_intersection_rect) {
+  if (main_frame_intersection_rect != main_frame_intersection_rect_) {
+    main_frame_intersection_rect_ = main_frame_intersection_rect;
     for (auto& observer : observers_) {
-      observer.OnMainFrameIntersectionChanged(mainframe_intersection_rect);
+      observer.OnMainFrameIntersectionChanged(main_frame_intersection_rect);
+    }
+  }
+}
+
+void RenderFrameImpl::OnMainFrameViewportRectangleChanged(
+    const gfx::Rect& main_frame_viewport_rect) {
+  if (main_frame_viewport_rect != main_frame_viewport_rect_) {
+    main_frame_viewport_rect_ = main_frame_viewport_rect;
+    for (auto& observer : observers_) {
+      observer.OnMainFrameViewportRectangleChanged(main_frame_viewport_rect);
     }
   }
 }
@@ -4983,7 +4992,7 @@ void RenderFrameImpl::DidCommitNavigationInternal(
   // Ensure we will propagate frame intersections when the main frame commits
   // even if the intersection does not change across navigations.
   if (IsMainFrame()) {
-    mainframe_intersection_rect_.reset();
+    main_frame_intersection_rect_.reset();
   }
 }
 

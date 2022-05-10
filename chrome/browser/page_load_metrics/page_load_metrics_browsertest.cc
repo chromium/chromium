@@ -577,6 +577,42 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoNavigation) {
       << "Recorded metrics: " << GetRecordedPageLoadMetricNames();
 }
 
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MainFrameViewportRect) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/scroll/scrollable_page_with_content.html");
+
+  auto main_frame_viewport_rect_expectation_waiter =
+      CreatePageLoadMetricsTestWaiter();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  int side_scrollbar_width =
+      EvalJs(web_contents,
+             "window.innerWidth - document.documentElement.clientWidth")
+          .ExtractInt();
+  int bottom_scrollbar_height =
+      EvalJs(web_contents,
+             "window.innerHeight - document.documentElement.clientHeight")
+          .ExtractInt();
+
+  content::RenderWidgetHostView* guest_host_view =
+      web_contents->GetRenderWidgetHostView();
+  gfx::Size viewport_size = guest_host_view->GetVisibleViewportSize();
+  viewport_size -= gfx::Size(side_scrollbar_width, bottom_scrollbar_height);
+
+  main_frame_viewport_rect_expectation_waiter
+      ->AddMainFrameViewportRectExpectation(
+          gfx::Rect(5000, 5000, viewport_size.width(), viewport_size.height()));
+
+  ASSERT_TRUE(ExecJs(web_contents, "window.scrollTo(5000, 5000)"));
+
+  main_frame_viewport_rect_expectation_waiter->Wait();
+}
+
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
                        MainFrameIntersection_RTLPage) {
   ASSERT_TRUE(embedded_test_server()->Start());

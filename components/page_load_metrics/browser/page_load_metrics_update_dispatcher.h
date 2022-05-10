@@ -140,6 +140,8 @@ class PageLoadMetricsUpdateDispatcher {
     virtual void OnMainFrameIntersectionRectChanged(
         content::RenderFrameHost* rfh,
         const gfx::Rect& main_frame_intersection_rect) = 0;
+    virtual void OnMainFrameViewportRectChanged(
+        const gfx::Rect& main_frame_viewport_rect) = 0;
     virtual void SetUpSharedMemoryForSmoothness(
         base::ReadOnlySharedMemoryRegion shared_memory) = 0;
   };
@@ -254,6 +256,8 @@ class PageLoadMetricsUpdateDispatcher {
   void MaybeUpdateMainFrameIntersectionRect(
       content::RenderFrameHost* render_frame_host,
       const mojom::FrameMetadataPtr& frame_metadata);
+  void MaybeUpdateMainFrameViewportRect(
+      const mojom::FrameMetadataPtr& frame_metadata);
 
   void UpdatePageRenderData(const mojom::FrameRenderDataUpdate& render_data);
   void UpdateMainFrameRenderData(
@@ -323,6 +327,10 @@ class PageLoadMetricsUpdateDispatcher {
   // The last main frame intersection rects dispatched to page load metrics
   // observers.
   std::map<FrameTreeNodeId, gfx::Rect> main_frame_intersection_rects_;
+
+  // The last main frame viewport rect dispatched to page load metrics
+  // observers.
+  absl::optional<gfx::Rect> main_frame_viewport_rect_;
 
   LayoutShiftNormalization layout_shift_normalization_;
   // Layout shift normalization data for bfcache which needs to be reset each

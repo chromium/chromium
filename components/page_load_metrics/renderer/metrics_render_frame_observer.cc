@@ -362,15 +362,23 @@ void MetricsRenderFrameObserver::OnAdResourceObserved(int request_id) {
 }
 
 void MetricsRenderFrameObserver::OnMainFrameIntersectionChanged(
-    const gfx::Rect& main_frame_intersection) {
+    const gfx::Rect& main_frame_intersection_rect) {
   if (page_timing_metrics_sender_) {
     page_timing_metrics_sender_->OnMainFrameIntersectionChanged(
-        main_frame_intersection);
+        main_frame_intersection_rect);
     return;
   }
 
-  main_frame_intersection_before_metrics_sender_created_ =
-      main_frame_intersection;
+  main_frame_intersection_rect_before_metrics_sender_created_ =
+      main_frame_intersection_rect;
+}
+
+void MetricsRenderFrameObserver::OnMainFrameViewportRectangleChanged(
+    const gfx::Rect& main_frame_viewport_rect) {
+  if (page_timing_metrics_sender_) {
+    page_timing_metrics_sender_->OnMainFrameViewportRectangleChanged(
+        main_frame_viewport_rect);
+  }
 }
 
 void MetricsRenderFrameObserver::OnMobileFriendlinessChanged(
@@ -479,10 +487,10 @@ void MetricsRenderFrameObserver::OnMetricsSenderCreated() {
 
   // Send the latest the frame intersection update, as otherwise we may miss
   // this information for a frame completely if there are no future updates.
-  if (main_frame_intersection_before_metrics_sender_created_) {
+  if (main_frame_intersection_rect_before_metrics_sender_created_) {
     page_timing_metrics_sender_->OnMainFrameIntersectionChanged(
-        *main_frame_intersection_before_metrics_sender_created_);
-    main_frame_intersection_before_metrics_sender_created_.reset();
+        *main_frame_intersection_rect_before_metrics_sender_created_);
+    main_frame_intersection_rect_before_metrics_sender_created_.reset();
   }
 }
 

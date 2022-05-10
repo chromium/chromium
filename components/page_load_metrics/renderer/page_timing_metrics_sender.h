@@ -70,7 +70,10 @@ class PageTimingMetricsSender {
                                       int request_id,
                                       int64_t encoded_body_length,
                                       const std::string& mime_type);
-  void OnMainFrameIntersectionChanged(const gfx::Rect& intersect_rect);
+  void OnMainFrameIntersectionChanged(
+      const gfx::Rect& main_frame_intersection_rect);
+  void OnMainFrameViewportRectangleChanged(
+      const gfx::Rect& main_frame_viewport_rect);
 
   void DidObserveInputDelay(base::TimeDelta input_delay);
   void DidObserveUserInteraction(base::TimeDelta max_event_duration,

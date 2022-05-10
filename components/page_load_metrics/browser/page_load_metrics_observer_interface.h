@@ -404,13 +404,26 @@ class PageLoadMetricsObserverInterface {
       const content::WebContentsObserver::MediaPlayerInfo& video_type,
       content::RenderFrameHost* render_frame_host) = 0;
 
-  // Invoked when a frame's intersections with page elements changes and an
-  // update is received. The `main_frame_intersection_rect` is an empty rect for
-  // out of view subframes and is the root document size for the main frame.
+  // For the main frame, called when the main frame's dimensions have changed,
+  // e.g. resizing a tab causes the document width to change; loading additional
+  // content causes the document height to increase; explicitly changing the
+  // height of the body element.
+  //
+  // For a subframe, called when the intersection rect between the main frame
+  // and the subframe has changed, e.g. the subframe is initially added; the
+  // subframe's position is updated explicitly or inherently (e.g. sticky
+  // position while the page is being scrolled).
+  //
   // TODO(crbug/1048175): Expose intersections to observers via shared delegate.
   virtual void OnMainFrameIntersectionRectChanged(
       content::RenderFrameHost* rfh,
       const gfx::Rect& main_frame_intersection_rect) = 0;
+
+  // Called when the main frame's viewport rectangle (the viewport dimensions
+  // and the scroll position) changed, e.g. the user scrolled the main frame or
+  // the viewport dimensions themselves changed. Only invoked on the main frame.
+  virtual void OnMainFrameViewportRectChanged(
+      const gfx::Rect& main_frame_viewport_rect) = 0;
 
   // Invoked when the UMA metrics subsystem is persisting metrics as the
   // application goes into the background, on platforms where the browser

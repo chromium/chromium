@@ -904,6 +904,13 @@ void PageLoadTracker::OnMainFrameIntersectionRectChanged(
   }
 }
 
+void PageLoadTracker::OnMainFrameViewportRectChanged(
+    const gfx::Rect& main_frame_viewport_rect) {
+  for (const auto& observer : observers_) {
+    observer->OnMainFrameViewportRectChanged(main_frame_viewport_rect);
+  }
+}
+
 content::WebContents* PageLoadTracker::GetWebContents() const {
   return web_contents_;
 }

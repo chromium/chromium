@@ -84,11 +84,17 @@ class FakePageTimingSender : public PageTimingSender {
       expected_main_frame_intersection_rect_ = main_frame_intersection_rect;
     }
 
+    void UpdateExpectedMainFrameViewportRect(
+        const gfx::Rect& main_frame_viewport_rect) {
+      expected_main_frame_viewport_rect_ = main_frame_viewport_rect;
+    }
+
     // Forces verification that actual features sent through SendTiming match
     // expected features provided via ExpectPageLoadFeatures.
     void VerifyExpectedFeatures() const;
     void VerifyExpectedRenderData() const;
     void VerifyExpectedMainFrameIntersectionRect() const;
+    void VerifyExpectedMainFrameViewportRect() const;
 
     const std::vector<mojom::PageLoadTimingPtr>& expected_timings() const {
       return expected_timings_;
@@ -118,6 +124,8 @@ class FakePageTimingSender : public PageTimingSender {
     mojom::FrameRenderDataUpdate actual_render_data_;
     absl::optional<gfx::Rect> expected_main_frame_intersection_rect_;
     absl::optional<gfx::Rect> actual_main_frame_intersection_rect_;
+    absl::optional<gfx::Rect> expected_main_frame_viewport_rect_;
+    absl::optional<gfx::Rect> actual_main_frame_viewport_rect_;
     mojom::InputTimingPtr expected_input_timing;
     mojom::InputTimingPtr actual_input_timing;
     absl::optional<blink::MobileFriendliness> expected_mobile_friendliness;

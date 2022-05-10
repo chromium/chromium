@@ -1038,9 +1038,17 @@ void LocalFrameClientImpl::FocusedElementChanged(Element* element) {
 }
 
 void LocalFrameClientImpl::OnMainFrameIntersectionChanged(
-    const gfx::Rect& intersection_rect) {
+    const gfx::Rect& main_frame_intersection_rect) {
   DCHECK(web_frame_->Client());
-  web_frame_->Client()->OnMainFrameIntersectionChanged(intersection_rect);
+  web_frame_->Client()->OnMainFrameIntersectionChanged(
+      main_frame_intersection_rect);
+}
+
+void LocalFrameClientImpl::OnMainFrameViewportRectangleChanged(
+    const gfx::Rect& main_frame_viewport_rect) {
+  DCHECK(web_frame_->Client());
+  web_frame_->Client()->OnMainFrameViewportRectangleChanged(
+      main_frame_viewport_rect);
 }
 
 void LocalFrameClientImpl::OnOverlayPopupAdDetected() {

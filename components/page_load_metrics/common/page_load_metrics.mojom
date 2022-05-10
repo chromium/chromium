@@ -195,9 +195,17 @@ struct FrameMetadata {
   // For the main frame, the rect is the main frame document size (at (0,0));
   // for a subframe, the rect is frame's intersection rect with the main frame
   // in the main frame's coordinate system, and is an empty rect when there is
-  // no intersection with the main frame. This is only set the first time an
-  // intersection is computed or changes, and is null otherwise.
+  // no intersection with the main frame. This is only set for the first time
+  // the intersection rectangle is initially computed, and for any subsequent
+  // changes, and is null otherwise (i.e. hasn't changed).
   gfx.mojom.Rect? main_frame_intersection_rect;
+
+  // The main frame's viewport rectangle (encapsulating the dimensions and the
+  // scroll position) in the main frame's coordinate system. This is only set
+  // for the main frame, for the first time the viewport rectangle is initially
+  // computed, and for any subsequent changes, and is null otherwise (i.e.
+  // hasn't changed).
+  gfx.mojom.Rect? main_frame_viewport_rect;
 };
 
 // Enumeration of distinct cache types.
