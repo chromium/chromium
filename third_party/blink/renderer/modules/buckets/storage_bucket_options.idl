@@ -10,8 +10,8 @@ enum StorageBucketDurability {
 };
 
 dictionary StorageBucketOptions {
-  boolean persisted = false;
-  StorageBucketDurability durability = "relaxed";
+  boolean? persisted = null;
+  StorageBucketDurability? durability = null;
   unsigned long long? quota = null;
   DOMTimeStamp? expires = null;
 };

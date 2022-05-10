@@ -32,13 +32,15 @@ BucketHost::CreateStorageBucketBinding() {
 
 void BucketHost::Persist(PersistCallback callback) {
   // TODO(ayui): Add implementation for requesting Storage Bucket persistence.
+  policies_->has_persisted = true;
   policies_->persisted = true;
-  std::move(callback).Run(policies_->persisted, true);
+  std::move(callback).Run(true, true);
 }
 
 void BucketHost::Persisted(PersistedCallback callback) {
   // TODO(ayui): Retrieve from DB once Storage Buckets table is implemented.
-  std::move(callback).Run(policies_->persisted, true);
+  std::move(callback).Run(policies_->has_persisted && policies_->persisted,
+                          true);
 }
 
 void BucketHost::Estimate(EstimateCallback callback) {
@@ -47,8 +49,11 @@ void BucketHost::Estimate(EstimateCallback callback) {
 }
 
 void BucketHost::Durability(DurabilityCallback callback) {
+  auto durability = policies_->has_durability
+                        ? policies_->durability
+                        : blink::mojom::BucketDurability::kRelaxed;
   // TODO(ayui): Retrieve from DB once Storage Buckets table is implemented.
-  std::move(callback).Run(policies_->durability, true);
+  std::move(callback).Run(durability, true);
 }
 
 void BucketHost::SetExpires(base::Time expires, SetExpiresCallback callback) {

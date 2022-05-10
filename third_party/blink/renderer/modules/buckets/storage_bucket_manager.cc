@@ -45,19 +45,26 @@ bool IsValidName(const String& name) {
 mojom::blink::BucketPoliciesPtr ToMojoBucketPolicies(
     const StorageBucketOptions* options) {
   auto policies = mojom::blink::BucketPolicies::New();
-  policies->persisted = options->persisted();
-  policies->quota = options->hasQuotaNonNull()
-                        ? options->quotaNonNull()
-                        : mojom::blink::kNoQuotaPolicyValue;
+  if (options->hasPersistedNonNull()) {
+    policies->persisted = options->persistedNonNull();
+    policies->has_persisted = true;
+  }
 
-  if (options->durability() == "strict") {
-    policies->durability = mojom::blink::BucketDurability::kStrict;
-  } else {
-    policies->durability = mojom::blink::BucketDurability::kRelaxed;
+  if (options->hasQuotaNonNull()) {
+    policies->quota = options->quotaNonNull();
+    policies->has_quota = true;
+  }
+
+  if (options->hasDurabilityNonNull()) {
+    policies->durability = options->durabilityNonNull() == "strict"
+                               ? mojom::blink::BucketDurability::kStrict
+                               : mojom::blink::BucketDurability::kRelaxed;
+    policies->has_durability = true;
   }
 
   if (options->hasExpiresNonNull())
     policies->expires = base::Time::FromJavaTime(options->expiresNonNull());
+
   return policies;
 }
 

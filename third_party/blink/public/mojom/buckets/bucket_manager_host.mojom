@@ -10,8 +10,6 @@ import "mojo/public/mojom/base/time.mojom";
 //
 // Proposal: https://github.com/WICG/storage-buckets
 
-const int64 kNoQuotaPolicyValue = -1;
-
 // The durability policy to apply to a single StorageBucket.
 enum BucketDurability {
   kRelaxed,
@@ -21,8 +19,14 @@ enum BucketDurability {
 // The policies applied to a StorageBucket upon its creation.
 struct BucketPolicies {
   bool persisted;
+  bool has_persisted = false;
+
   BucketDurability durability;
+  bool has_durability = false;
+
   int64 quota;
+  bool has_quota = false;
+
   mojo_base.mojom.Time? expires;
 };
 
