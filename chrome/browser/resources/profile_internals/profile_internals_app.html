@@ -1,3 +1,8 @@
+<style>
+    tr:nth-child(odd) {
+        background: rgb(239, 243, 255);
+    }
+</style>
 <h2>Profiles</h2>\
 <template is="dom-repeat" items="[[profilesList_]]">
     <h3>[[item.localProfileName]]</h3>
@@ -33,6 +38,19 @@
         <tr>
             <td>Hosted Domain</td>
             <td>[[item.hostedDomain]]</td>
+        </tr>
+        <tr>
+            <td>KeepAlives</td>
+            <td>
+                <table>
+                    <template is="dom-repeat" items="[[item.keepAlives]]">
+                        <tr>
+                            <td>[[item.origin]]</td>
+                            <td>[[item.count]]</td>
+                        </tr>
+                    </template>
+                </table>
+            </td>
         </tr>
     </table>
 </template>

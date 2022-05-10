@@ -961,6 +961,13 @@ Profile* ProfileManager::GetProfileFromProfileKey(ProfileKey* profile_key) {
   return nullptr;
 }
 
+std::map<ProfileKeepAliveOrigin, int> ProfileManager::GetKeepAlivesByPath(
+    const base::FilePath& path) {
+  ProfileInfo* profile_info = GetProfileInfoByPath(path);
+  return profile_info ? profile_info->keep_alives
+                      : std::map<ProfileKeepAliveOrigin, int>();
+}
+
 // static
 void ProfileManager::CreateMultiProfileAsync(const std::u16string& name,
                                              size_t icon_index,

@@ -333,6 +333,11 @@ class ProfileManager : public Profile::Delegate {
   // DestroyProfileOnBrowserClose variation on memory usage.
   size_t GetZombieProfileCount() const;
 
+  // Returns ProfileKeepAliveOrigin map for the profile associated with given
+  // |path|, if the profile is registered. Otherwise returns an empty map.
+  std::map<ProfileKeepAliveOrigin, int> GetKeepAlivesByPath(
+      const base::FilePath& path);
+
  protected:
   // Creates a new profile by calling into the profile's profile creation
   // method. Virtual so that unittests can return a TestingProfile instead
