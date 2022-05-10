@@ -113,7 +113,7 @@ TEST_F(PolicyInfoTest, ChromePolicy) {
       policy::DictionaryPolicyConversions(std::move(client))
           .EnableConvertTypes(false)
           .EnablePrettyPrint(false)
-          .ToValue(),
+          .ToValueDict(),
       &profile_info);
   EXPECT_EQ(2, profile_info.chrome_policies_size());
 
@@ -162,7 +162,7 @@ TEST_F(PolicyInfoTest, ExtensionPolicy) {
       policy::DictionaryPolicyConversions(std::move(client))
           .EnableConvertTypes(false)
           .EnablePrettyPrint(false)
-          .ToValue(),
+          .ToValueDict(),
       &profile_info);
   // The second extension is not in the report because it has no policy.
   EXPECT_EQ(1, profile_info.extension_policies_size());

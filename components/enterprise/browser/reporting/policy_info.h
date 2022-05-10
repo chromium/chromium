@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ENTERPRISE_BROWSER_REPORTING_POLICY_INFO_H_
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_POLICY_INFO_H_
 
+#include "base/values.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace base {
@@ -20,11 +21,11 @@ class MachineLevelUserCloudPolicyManager;
 namespace enterprise_reporting {
 
 void AppendChromePolicyInfoIntoProfileReport(
-    const base::Value& policies,
+    const base::Value::Dict& policies,
     enterprise_management::ChromeUserProfileInfo* profile_info);
 
 void AppendExtensionPolicyInfoIntoProfileReport(
-    const base::Value& policies,
+    const base::Value::Dict& policies,
     enterprise_management::ChromeUserProfileInfo* profile_info);
 
 void AppendMachineLevelUserCloudPolicyFetchTimestamp(

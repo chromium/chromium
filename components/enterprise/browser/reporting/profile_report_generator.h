@@ -83,7 +83,7 @@ class ProfileReportGenerator {
 
  private:
   std::unique_ptr<Delegate> delegate_;
-  base::Value policies_;
+  base::Value::Dict policies_;
 
   bool extensions_enabled_ = true;
   bool policies_enabled_ = true;
