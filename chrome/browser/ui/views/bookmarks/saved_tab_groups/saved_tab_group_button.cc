@@ -20,6 +20,7 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -29,6 +30,11 @@ namespace {
 constexpr float kBorderRadius = 4.5f;
 constexpr float kButtonRadius = 5.0f;
 constexpr float kBorderThickness = 2.0f;
+
+// This value comes from tab_group_header.cc as kEmptyChipSize. Since this
+// button and the tab_group_header are rendered on different surfaces, keep the
+// value here in case we want to change one but not the other.
+constexpr float kCircleRadius = 14.0f;
 }  // namespace
 
 SavedTabGroupButton::SavedTabGroupButton(PressedCallback callback,
@@ -66,8 +72,15 @@ SavedTabGroupButton::SavedTabGroupButton(PressedCallback callback,
     show_animation_->Show();
   }
 
-  SetSize(gfx::Size(GetPreferredSize().width(),
-                    GetLayoutConstant(BOOKMARK_BAR_BUTTON_HEIGHT)));
+  int button_height = GetLayoutConstant(BOOKMARK_BAR_BUTTON_HEIGHT);
+  if (GetText().empty()) {
+    // When the text is empty force the button to have square dimensions.
+    // Likewise, we already have a constant that denotes the standard button
+    // height for all elements in the bookmarks bar. As such, we will use this
+    // constant for the width of the button to create a square that will
+    // comfortably fit in the bookmarks bar.
+    SetPreferredSize(gfx::Size(button_height, button_height));
+  }
 }
 
 SavedTabGroupButton::~SavedTabGroupButton() = default;
@@ -93,6 +106,7 @@ void SavedTabGroupButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void SavedTabGroupButton::OnPaintBackground(gfx::Canvas* canvas) {
   const ui::ThemeProvider* const tp = GetThemeProvider();
+  gfx::PointF center_point_f = gfx::PointF(width() / 2, height() / 2);
   gfx::RectF rect_f = gfx::RectF(width(), height());
   rect_f.Inset(1.0f);
 
@@ -110,13 +124,22 @@ void SavedTabGroupButton::OnPaintBackground(gfx::Canvas* canvas) {
   flags.setColor(background_color);
   canvas->DrawRoundRect(rect_f, kButtonRadius, flags);
 
-  if (is_group_in_tabstrip_) {
-    // Draw border.
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setColor(text_and_outline_color);
-    flags.setStrokeWidth(kBorderThickness);
-    canvas->DrawRoundRect(rect_f, kBorderRadius, flags);
+  // At the time this was written, all non-background elements share the same
+  // color. As such, we can set the color once here.
+  flags.setColor(text_and_outline_color);
+
+  if (GetText().empty()) {
+    // When the title is empty, we draw a circle similar to the tab group header
+    // when there is no title.
+    canvas->DrawCircle(gfx::PointF(width() / 2, width() / 2), kCircleRadius / 2,
+                       flags);
   }
+
+  // Draw border.
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+  flags.setStrokeWidth(kBorderThickness);
+  if (is_group_in_tabstrip_)
+    canvas->DrawRoundRect(rect_f, kBorderRadius, flags);
 
   if (GetState() == STATE_HOVERED) {
     // TODO: Draw a box shadow on hover.
