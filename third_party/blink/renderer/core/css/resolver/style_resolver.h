@@ -149,7 +149,6 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   RuleIndexList* PseudoCSSRulesForElement(
       Element*,
       PseudoId,
-      const AtomicString& document_transition_tag,
       unsigned rules_to_include = kAllButEmptyCSSRules);
   StyleRuleList* StyleRulesForElement(Element*, unsigned rules_to_include);
   HeapHashMap<CSSPropertyName, Member<const CSSValue>> CascadedValuesForElement(
@@ -234,7 +233,6 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   void CollectPseudoRulesForElement(const Element&,
                                     ElementRuleCollector&,
                                     PseudoId,
-                                    const AtomicString& document_transition_tag,
                                     unsigned rules_to_include);
   void MatchRuleSet(ElementRuleCollector&, RuleSet*);
   void MatchUARules(const Element&, ElementRuleCollector&);

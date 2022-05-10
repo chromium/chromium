@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -26,7 +25,6 @@ struct CORE_EXPORT InspectorCSSMatchedRules
   Member<Element> element;
   Member<RuleIndexList> matched_rules;
   PseudoId pseudo_id;
-  AtomicString document_transition_tag = g_null_atom;
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(element);
@@ -52,9 +50,7 @@ class CORE_EXPORT InspectorStyleResolver {
   STACK_ALLOCATED();
 
  public:
-  InspectorStyleResolver(Element*,
-                         PseudoId,
-                         const AtomicString& document_transition_tag);
+  explicit InspectorStyleResolver(Element*, PseudoId);
   RuleIndexList* MatchedRules() const;
   HeapVector<Member<InspectorCSSMatchedRules>> PseudoElementRules();
   HeapVector<Member<InspectorCSSMatchedRules>> ParentRules();
@@ -62,9 +58,6 @@ class CORE_EXPORT InspectorStyleResolver {
   ParentPseudoElementRules();
 
  private:
-  void AddPseudoElementRules(PseudoId pseudo_id,
-                             const AtomicString& document_transition_tag);
-
   Element* element_;
   RuleIndexList* matched_rules_;
   HeapVector<Member<InspectorCSSMatchedRules>> parent_rules_;

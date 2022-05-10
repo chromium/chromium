@@ -103,7 +103,6 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
@@ -117,8 +116,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/casting.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_concatenate.h"
 
 namespace blink {
@@ -136,24 +133,6 @@ class FrontendOperationScope {
   FrontendOperationScope() { ++g_frontend_operation_counter; }
   ~FrontendOperationScope() { --g_frontend_operation_counter; }
 };
-
-Element* GetPseudoIdAndTag(Element* element,
-                           PseudoId& element_pseudo_id,
-                           AtomicString& document_transition_tag) {
-  auto* resolved_element = element;
-  if (auto* pseudo_element = DynamicTo<PseudoElement>(element)) {
-    resolved_element = IsTransitionPseudoElement(pseudo_element->GetPseudoId())
-                           ? pseudo_element->OriginatingElement()
-                           : pseudo_element->ParentOrShadowHostElement();
-    // TODO(khushalsagar) : This should never be null.
-    if (!resolved_element)
-      return nullptr;
-
-    element_pseudo_id = pseudo_element->GetPseudoId();
-    document_transition_tag = pseudo_element->document_transition_tag();
-  }
-  return resolved_element;
-}
 
 String CreateShorthandValue(Document& document,
                             const String& shorthand,
@@ -977,13 +956,12 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
     return response;
 
   Element* animating_element = element;
-
-  PseudoId element_pseudo_id = kPseudoIdNone;
-  AtomicString document_transition_tag = g_null_atom;
-  element =
-      GetPseudoIdAndTag(element, element_pseudo_id, document_transition_tag);
-  if (!element)
-    return Response::ServerError("Pseudo element has no parent");
+  PseudoId element_pseudo_id = element->GetPseudoId();
+  if (element_pseudo_id) {
+    element = element->ParentOrShadowHostElement();
+    if (!element)
+      return Response::ServerError("Pseudo element has no parent");
+  }
 
   Document& document = element->GetDocument();
   // A non-active document has no styles.
@@ -998,8 +976,7 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
   }
 
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(&document);
-  InspectorStyleResolver resolver(element, element_pseudo_id,
-                                  document_transition_tag);
+  InspectorStyleResolver resolver(element, element_pseudo_id);
 
   // Matched rules.
   *matched_css_rules = BuildArrayForMatchedRuleList(resolver.MatchedRules());
@@ -2482,12 +2459,9 @@ void InspectorCSSAgent::ResetPseudoStates() {
 
 HeapVector<Member<CSSStyleDeclaration>> InspectorCSSAgent::MatchingStyles(
     Element* element) {
-  PseudoId pseudo_id = kPseudoIdNone;
-  AtomicString document_transition_tag = g_null_atom;
-  element = GetPseudoIdAndTag(element, pseudo_id, document_transition_tag);
-  if (!element)
-    return {};
-
+  PseudoId pseudo_id = element->GetPseudoId();
+  if (pseudo_id)
+    element = element->parentElement();
   StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();
 
   // TODO(masonf,futhark): We need to update slot assignments here, so that
@@ -2505,8 +2479,7 @@ HeapVector<Member<CSSStyleDeclaration>> InspectorCSSAgent::MatchingStyles(
 
   HeapVector<Member<CSSStyleRule>> rules =
       FilterDuplicateRules(style_resolver.PseudoCSSRulesForElement(
-          element, pseudo_id, document_transition_tag,
-          StyleResolver::kAllCSSRules));
+          element, pseudo_id, StyleResolver::kAllCSSRules));
   HeapVector<Member<CSSStyleDeclaration>> styles;
   if (!pseudo_id && element->style())
     styles.push_back(element->style());

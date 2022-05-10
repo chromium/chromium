@@ -920,11 +920,7 @@ const CSSSelector* CSSSelector::SerializeCompound(
           builder.Append(')');
           break;
         }
-        case kPseudoHighlight:
-        case kPseudoPageTransitionContainer:
-        case kPseudoPageTransitionImageWrapper:
-        case kPseudoPageTransitionIncomingImage:
-        case kPseudoPageTransitionOutgoingImage: {
+        case kPseudoHighlight: {
           builder.Append('(');
           builder.Append(simple_selector->Argument());
           builder.Append(')');

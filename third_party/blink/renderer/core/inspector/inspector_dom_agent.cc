@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/character_data.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
@@ -1918,14 +1917,6 @@ InspectorDOMAgent::BuildArrayForPseudoElements(Element* element,
       pseudo_elements.emplace_back(
           BuildObjectForNode(pseudo_element, 0, false, nodes_map));
     }
-  }
-  if (element == element->GetDocument().documentElement()) {
-    auto add_transition_pseudos = [&](PseudoElement* pseudo_element) {
-      pseudo_elements.emplace_back(
-          BuildObjectForNode(pseudo_element, 0, false, nodes_map));
-    };
-    DocumentTransitionUtils::ForEachTransitionPseudo(element->GetDocument(),
-                                                     add_transition_pseudos);
   }
   if (pseudo_elements.empty())
     return nullptr;

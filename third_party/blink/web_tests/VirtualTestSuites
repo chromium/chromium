@@ -1019,9 +1019,7 @@
   {
     "prefix": "document-transition",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["wpt_internal/document-transition",
-              "document-transition",
-              "inspector-protocol/css/css-get-styles-for-document-transition.js"],
+    "bases": ["wpt_internal/document-transition", "document-transition"],
     "args": ["--enable-features=DocumentTransition",
              "--enable-threaded-compositing",
              "--enable-gpu-rasterization"]
