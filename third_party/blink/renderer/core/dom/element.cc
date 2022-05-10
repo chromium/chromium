@@ -8266,4 +8266,8 @@ void Element::RemoveAttributeHinted(const AtomicString& name,
   RemoveAttributeInternal(index, kNotInSynchronizationOfLazyAttribute);
 }
 
+bool Element::IsDocumentElement() const {
+  return this == GetDocument().documentElement();
+}
+
 }  // namespace blink

@@ -1129,6 +1129,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   bool isVisible(IsVisibleOptions* options) const;
 
+  bool IsDocumentElement() const;
+
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }
   UniqueElementData& EnsureUniqueElementData();

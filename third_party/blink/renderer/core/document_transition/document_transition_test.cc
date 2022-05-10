@@ -26,7 +26,9 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/inspector/inspector_style_resolver.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -799,4 +801,123 @@ TEST_P(DocumentTransitionTest, DocumentTransitionSharedElementInvalidation) {
 
   UpdateAllLifecyclePhasesAndFinishDirectives();
 }
+
+TEST_P(DocumentTransitionTest, InspectorStyleResolver) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      ::page-transition {
+        background-color: red;
+      }
+      ::page-transition-container(foo) {
+        background-color: blue;
+      }
+      ::page-transition-image-wrapper(foo) {
+        background-color: lightblue;
+      }
+      ::page-transition-incoming-image(foo) {
+        background-color: black;
+      }
+      ::page-transition-outgoing-image(foo) {
+        background-color: grey;
+      }
+      div {
+        page-transition-tag: foo;
+        width: 100px;
+        height: 100px;
+        contain: paint;
+      }
+    </style>
+    <div></div>
+  )HTML");
+  auto* transition =
+      DocumentTransitionSupplement::EnsureDocumentTransition(GetDocument());
+  ASSERT_TRUE(transition->StartNewTransition());
+
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
+
+  auto start_setup_lambda =
+      [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
+
+  // This callback sets the elements for the start phase of the transition.
+  auto start_setup_callback =
+      v8::Function::New(v8_scope.GetContext(), start_setup_lambda, {})
+          .ToLocalChecked();
+
+  transition->start(script_state,
+                    V8DocumentTransitionCallback::Create(start_setup_callback),
+                    exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  UpdateAllLifecyclePhasesForTest();
+
+  // Finish the prepare phase, mutate the DOM and start the animation.
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kStarted);
+
+  struct TestCase {
+    PseudoId pseudo_id;
+    bool uses_tags;
+    String user_rule;
+  };
+  TestCase test_cases[] = {
+      {kPseudoIdPageTransition, false,
+       "::page-transition { background-color: red; }"},
+      {kPseudoIdPageTransitionContainer, true,
+       "::page-transition-container(foo) { background-color: blue; }"},
+      {kPseudoIdPageTransitionImageWrapper, true,
+       "::page-transition-image-wrapper(foo) { background-color: lightblue; }"},
+      {kPseudoIdPageTransitionIncomingImage, true,
+       "::page-transition-incoming-image(foo) { background-color: black; }"},
+      {kPseudoIdPageTransitionOutgoingImage, true,
+       "::page-transition-outgoing-image(foo) { background-color: grey; }"}};
+
+  for (const auto& test_case : test_cases) {
+    InspectorStyleResolver resolver(GetDocument().documentElement(),
+                                    test_case.pseudo_id,
+                                    test_case.uses_tags ? "foo" : g_null_atom);
+    auto* pseudo_element_rules = resolver.MatchedRules();
+
+    // The resolver collects developer and UA rules.
+    EXPECT_GT(pseudo_element_rules->size(), 1u);
+    EXPECT_EQ(pseudo_element_rules->back().first->cssText(),
+              test_case.user_rule);
+  }
+
+  InspectorStyleResolver parent_resolver(GetDocument().documentElement(),
+                                         kPseudoIdNone, g_null_atom);
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(PseudoElementTagName(test_case.pseudo_id));
+    Member<InspectorCSSMatchedRules> matched_rules_for_pseudo;
+
+    bool found_rule_for_root = false;
+    for (const auto& matched_rules : parent_resolver.PseudoElementRules()) {
+      if (matched_rules->pseudo_id != test_case.pseudo_id)
+        continue;
+      if (matched_rules->document_transition_tag == "root") {
+        EXPECT_FALSE(found_rule_for_root);
+        found_rule_for_root = true;
+        continue;
+      }
+
+      EXPECT_FALSE(matched_rules_for_pseudo);
+      matched_rules_for_pseudo = matched_rules;
+    }
+
+    ASSERT_TRUE(matched_rules_for_pseudo);
+    // Pseudo elements which are generated for each tag should include the root
+    // by default.
+    EXPECT_EQ(found_rule_for_root, test_case.uses_tags);
+    EXPECT_EQ(matched_rules_for_pseudo->document_transition_tag,
+              test_case.uses_tags ? "foo" : g_null_atom);
+
+    auto pseudo_element_rules = matched_rules_for_pseudo->matched_rules;
+    // The resolver collects developer and UA rules.
+    EXPECT_GT(pseudo_element_rules->size(), 1u);
+    EXPECT_EQ(pseudo_element_rules->back().first->cssText(),
+              test_case.user_rule);
+  }
+}
+
 }  // namespace blink

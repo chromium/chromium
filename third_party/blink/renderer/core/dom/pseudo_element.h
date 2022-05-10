@@ -99,7 +99,7 @@ class CORE_EXPORT PseudoElement : public Element {
   const AtomicString document_transition_tag_;
 };
 
-const QualifiedName& PseudoElementTagName(PseudoId);
+const QualifiedName& CORE_EXPORT PseudoElementTagName(PseudoId);
 
 bool PseudoElementLayoutObjectIsNeeded(const ComputedStyle* pseudo_style,
                                        const Element* originating_element);
