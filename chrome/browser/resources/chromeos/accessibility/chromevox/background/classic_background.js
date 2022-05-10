@@ -48,7 +48,7 @@ export class ChromeVoxBackground {
      * @type {BrailleBackground}
      * @private
      */
-    this.backgroundBraille_ = BrailleBackground.getInstance();
+    this.backgroundBraille_ = BrailleBackground.instance;
 
     // Export globals on ChromeVox.
     ChromeVox.tts = this.tts;

@@ -2045,8 +2045,7 @@ TEST_F(
 
       // Wait for it to be fully refreshed (liblouis loads the new tables, our
       // translators are re-created).
-      await BrailleBackground.getInstance()
-          .getTranslatorManager()
+      await BrailleBackground.instance.getTranslatorManager()
           .loadTablesForTest();
 
       // Fake an available display.
@@ -2056,14 +2055,12 @@ TEST_F(
       // Set braille to use 6-dot braille (which is defaulted to UEB grade 2
       // contracted braille).
       localStorage['brailleTable'] = 'en-ueb-g2';
-      BrailleBackground.getInstance().getTranslatorManager().refresh(
+      BrailleBackground.instance.getTranslatorManager().refresh(
           localStorage['brailleTable']);
       // Wait for it to be fully refreshed (liblouis loads the new tables, our
       // translators are re-created).
       await new Promise(r => {
-        BrailleBackground.getInstance()
-            .getTranslatorManager()
-            .addChangeListener(r);
+        BrailleBackground.instance.getTranslatorManager().addChangeListener(r);
       });
 
       async function waitForBrailleDots(expectedDots) {

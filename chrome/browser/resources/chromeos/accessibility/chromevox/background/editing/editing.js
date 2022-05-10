@@ -974,11 +974,11 @@ class EditingChromeVoxStateObserver {
   onCurrentRangeChanged(range, opt_fromEditing) {
     const inputType = range && range.start.node.inputType;
     if (inputType === 'email' || inputType === 'url') {
-      BrailleBackground.getInstance().getTranslatorManager().refresh(
+      BrailleBackground.instance.getTranslatorManager().refresh(
           localStorage['brailleTable8']);
       return;
     }
-    BrailleBackground.getInstance().getTranslatorManager().refresh(
+    BrailleBackground.instance.getTranslatorManager().refresh(
         localStorage['brailleTable']);
   }
 }

@@ -254,7 +254,7 @@ export class CommandHandler extends CommandHandlerInterface {
 
         localStorage['brailleTable'] = localStorage[brailleTableType];
         localStorage['brailleTableType'] = brailleTableType;
-        BrailleBackground.getInstance().getTranslatorManager().refresh(
+        BrailleBackground.instance.getTranslatorManager().refresh(
             localStorage[brailleTableType]);
         new Output().format(output).go();
       }
