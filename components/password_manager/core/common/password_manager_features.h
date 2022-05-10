@@ -122,6 +122,10 @@ extern const char kTouchToFillPasswordSubmissionWithConservativeHeuristics[];
 // enabled.
 bool IsPasswordScriptsFetchingEnabled();
 
+// Returns true if any of the features that unlock entry points for password
+// change flows are enabled.
+bool IsAutomatedPasswordChangeEnabled();
+
 #if BUILDFLAG(IS_ANDROID)
 // Returns true if the unified password manager feature is active and in a stage
 // that allows to use the new UI.

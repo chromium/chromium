@@ -275,6 +275,11 @@ bool IsPasswordScriptsFetchingEnabled() {
          base::FeatureList::IsEnabled(kPasswordDomainCapabilitiesFetching);
 }
 
+bool IsAutomatedPasswordChangeEnabled() {
+  return base::FeatureList::IsEnabled(kPasswordChangeInSettings) ||
+         base::FeatureList::IsEnabled(kPasswordChange);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 bool UsesUnifiedPasswordManagerUi() {
   if (!base::FeatureList::IsEnabled(kUnifiedPasswordManagerAndroid))
