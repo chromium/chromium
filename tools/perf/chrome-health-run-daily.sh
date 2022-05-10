@@ -3,16 +3,14 @@
 # found in the LICENSE file.
 #!/bin/sh
 
-releaseBranchNo=4844
-releaseBranchMinusOneNo=4758
-pinnedReleaseMinusOne=199fc4f2ce08413e0126f4e98393232412a76ab6 #98.0.4758.82
+releaseBranchNo=5005
+pinnedReleaseMinusOne=93c720db8323b3ec10d056025ab95c23a31997c9 #101.0.4951.41
 pinnedMain=6ee574c7eb5719153bbe0d1eff07fd0acbd864cc #refs/heads/main@{#966041}
 
 cd ~/chromium/src
 
-# Uncomment these two lines for the first run after updating one of the releaseBranchNos
-#gclient sync --with_branch_heads --with_tags
-#git fetch
+gclient sync --with_branch_heads --with_tags
+git fetch
 
 # Current release branch
 git checkout -b branch_$releaseBranchNo branch-heads/$releaseBranchNo
@@ -27,8 +25,6 @@ git pull
 headOfMain=`git whatchanged --grep="Updating trunk VERSION" --format="%H" -1 | head -n 1`
 
 # M vs. M-1
-pinpoint experiment-telemetry-start --base-commit=$pinnedReleaseMinusOne --exp-commit=$headOfRelease --presets-file tools/perf/chrome-health-presets.yaml --preset=chrome_health --attempts=40
+~/depot_tools/pinpoint experiment-telemetry-start --base-commit=$pinnedReleaseMinusOne --exp-commit=$headOfRelease --presets-file ~/chromium/src/tools/perf/chrome-health-presets.yaml --preset=chrome_health --attempts=40
 # Main
-pinpoint experiment-telemetry-start --base-commit=$pinnedMain --exp-commit=$headOfMain --presets-file tools/perf/chrome-health-presets.yaml --preset=chrome_health --attempts=40
-# A/A
-pinpoint experiment-telemetry-start --base-commit=$headOfMain --exp-commit=$headOfMain --presets-file tools/perf/chrome-health-presets.yaml --preset=chrome_health --attempts=40
+~/depot_tools/pinpoint experiment-telemetry-start --base-commit=$pinnedMain --exp-commit=$headOfMain --presets-file ~/chromium/src/tools/perf/chrome-health-presets.yaml --preset=chrome_health --attempts=40
