@@ -129,9 +129,6 @@ export class NativeLayerCrosStub extends TestBrowserProxy implements
     return this.multiplePrinterStatusRequestsPromise_.promise;
   }
 
-  recordPrinterStatusHistogram(
-      _statusReason: PrinterStatusReason, _didUserAttemptPrint: boolean) {}
-
   choosePrintServers(printServerIds: string[]) {
     this.methodCalled('choosePrintServers', printServerIds);
   }

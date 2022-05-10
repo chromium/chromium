@@ -17,9 +17,6 @@ import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, PrinterType} from '../data/destination.js';
-// <if expr="chromeos_ash or chromeos_lacros">
-import {DestinationOrigin} from '../data/destination.js';
-// </if>
 import {DocumentSettings, PrintPreviewDocumentInfoElement} from '../data/document_info.js';
 import {Margins} from '../data/margins.js';
 import {MeasurementSystem} from '../data/measurement_system.js';
@@ -29,9 +26,6 @@ import {Size} from '../data/size.js';
 import {Error, PrintPreviewStateElement, State} from '../data/state.js';
 import {MetricsContext, PrintPreviewInitializationEvents} from '../metrics.js';
 import {NativeInitialSettings, NativeLayer, NativeLayerImpl} from '../native_layer.js';
-// <if expr="chromeos_ash or chromeos_lacros">
-import {NativeLayerCros, NativeLayerCrosImpl} from '../native_layer_cros.js';
-// </if>
 
 import {getTemplate} from './app.html.js';
 import {DestinationState} from './destination_settings.js';
@@ -131,9 +125,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   private maxSheets_: number;
 
   private nativeLayer_: NativeLayer|null = null;
-  // <if expr="chromeos_ash or chromeos_lacros">
-  private nativeLayerCros_: NativeLayerCros|null = null;
-  // </if>
   private tracker_: EventTracker = new EventTracker();
   private cancelled_: boolean = false;
   private printRequested_: boolean = false;
@@ -167,9 +158,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
 
     document.documentElement.classList.remove('loading');
     this.nativeLayer_ = NativeLayerImpl.getInstance();
-    // <if expr="chromeos_ash or chromeos_lacros">
-    this.nativeLayerCros_ = NativeLayerCrosImpl.getInstance();
-    // </if>
     this.addWebUIListener('cr-dialog-open', this.onCrDialogOpen_.bind(this));
     this.addWebUIListener('close', this.onCrDialogClose_.bind(this));
     this.addWebUIListener('print-failed', this.onPrintFailed_.bind(this));
@@ -221,13 +209,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
         e.preventDefault();
       }
 
-      // <if expr="chromeos_ash or chromeos_lacros">
-      if (this.destination_ &&
-          this.destination_.origin === DestinationOrigin.CROS) {
-        this.nativeLayerCros_!.recordPrinterStatusHistogram(
-            this.destination_.printerStatusReason, false);
-      }
-      // </if>
       return;
     }
 
@@ -424,25 +405,12 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
       this.printRequested_ = true;
       return;
     }
-    // <if expr="chromeos_ash or chromeos_lacros">
-    if (this.destination_ &&
-        this.destination_.origin === DestinationOrigin.CROS) {
-      this.nativeLayerCros_!.recordPrinterStatusHistogram(
-          this.destination_.printerStatusReason, true);
-    }
-    // </if>
+
     this.$.state.transitTo(
         this.$.previewArea.previewLoaded() ? State.PRINTING : State.HIDDEN);
   }
 
   private onCancelRequested_() {
-    // <if expr="chromeos_ash or chromeos_lacros">
-    if (this.destination_ &&
-        this.destination_.origin === DestinationOrigin.CROS) {
-      this.nativeLayerCros_!.recordPrinterStatusHistogram(
-          this.destination_.printerStatusReason, false);
-    }
-    // </if>
     this.cancelled_ = true;
     this.$.state.transitTo(State.CLOSING);
   }

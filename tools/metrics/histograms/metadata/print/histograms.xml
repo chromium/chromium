@@ -172,6 +172,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrintPreview.PrinterStatus.AttemptedPrintWithErrorStatus"
     enum="Boolean" expires_after="2022-10-04">
+  <obsolete>
+    Data no longer needed 2022-05.
+  </obsolete>
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -182,6 +185,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrintPreview.PrinterStatus.AttemptedPrintWithGoodStatus"
     enum="Boolean" expires_after="2022-10-04">
+  <obsolete>
+    Data no longer needed 2022-05.
+  </obsolete>
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -192,6 +198,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrintPreview.PrinterStatus.AttemptedPrintWithUnknownStatus"
     enum="Boolean" expires_after="2022-06-15">
+  <obsolete>
+    Data no longer needed 2022-05.
+  </obsolete>
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>

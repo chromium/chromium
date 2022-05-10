@@ -6,7 +6,7 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {Cdd} from './data/cdd.js';
 import {ExtensionDestinationInfo} from './data/local_parsers.js';
-import {PrinterStatus, PrinterStatusReason} from './data/printer_status_cros.js';
+import {PrinterStatus} from './data/printer_status_cros.js';
 
 export type PrinterSetupResponse = {
   printerId: string,
@@ -55,16 +55,6 @@ export interface NativeLayerCros {
   requestPrinterStatusUpdate(printerId: string): Promise<PrinterStatus>;
 
   /**
-   * Records the histogram to capture the printer status of the current
-   * destination and whether the user chose to print or cancel.
-   * @param statusReason Current destination printer status
-   * @param didUserAttemptPrint True if user printed, false if user canceled.
-   */
-  recordPrinterStatusHistogram(
-      statusReason: PrinterStatusReason|null,
-      didUserAttemptPrint: boolean): void;
-
-  /**
    * Records the histogram to capture if the retried printer status was
    * able to get a valid response from the local printer.
    */
@@ -99,30 +89,6 @@ export class NativeLayerCrosImpl implements NativeLayerCros {
 
   requestPrinterStatusUpdate(printerId: string) {
     return sendWithPromise('requestPrinterStatus', printerId);
-  }
-
-  recordPrinterStatusHistogram(
-      statusReason: PrinterStatusReason|null, didUserAttemptPrint: boolean) {
-    if (statusReason === null) {
-      return;
-    }
-
-    let histogram;
-    switch (statusReason) {
-      case (PrinterStatusReason.UNKNOWN_REASON):
-        histogram =
-            'PrintPreview.PrinterStatus.AttemptedPrintWithUnknownStatus';
-        break;
-      case (PrinterStatusReason.NO_ERROR):
-        histogram = 'PrintPreview.PrinterStatus.AttemptedPrintWithGoodStatus';
-        break;
-      default:
-        histogram = 'PrintPreview.PrinterStatus.AttemptedPrintWithErrorStatus';
-        break;
-    }
-    chrome.send(
-        'metricsHandler:recordBooleanHistogram',
-        [histogram, didUserAttemptPrint]);
   }
 
   recordPrinterStatusRetrySuccessHistogram(retrySuccessful: boolean) {
