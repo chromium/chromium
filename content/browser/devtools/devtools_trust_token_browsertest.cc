@@ -180,13 +180,12 @@ IN_PROC_BROWSER_TEST_F(
 namespace {
 
 bool MatchStatus(const std::string& expected_status,
-                 const base::DictionaryValue* params) {
-  std::string actual_status;
-  EXPECT_TRUE(params->GetString("status", &actual_status));
-  return expected_status == actual_status;
+                 const base::Value::Dict& params) {
+  const std::string* actual_status = params.FindString("status");
+  return expected_status == *actual_status;
 }
 
-base::RepeatingCallback<bool(const base::DictionaryValue*)> okStatusMatcher =
+base::RepeatingCallback<bool(const base::Value::Dict&)> okStatusMatcher =
     base::BindRepeating(
         &MatchStatus,
         protocol::Network::TrustTokenOperationDone::StatusEnum::Ok);

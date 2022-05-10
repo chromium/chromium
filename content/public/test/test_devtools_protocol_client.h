@@ -12,41 +12,43 @@
 #include "base/callback.h"
 #include "base/values.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
 class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
  public:
-  typedef base::RepeatingCallback<bool(const base::DictionaryValue*)>
+  typedef base::RepeatingCallback<bool(const base::Value::Dict&)>
       NotificationMatcher;
 
   TestDevToolsProtocolClient();
   ~TestDevToolsProtocolClient() override;
 
  protected:
-  const base::Value::Dict* SendCommand(const std::string& method,
-                                       std::unique_ptr<base::Value> params) {
-    return SendCommand(method, std::move(params), true);
-  }
-
-  const base::Value::Dict* SendCommand(const std::string& method,
-                                       std::unique_ptr<base::Value> params,
-                                       bool wait) {
+  const base::Value::Dict* SendCommand(std::string method,
+                                       base::Value::Dict params,
+                                       bool wait = true) {
     return SendSessionCommand(method, std::move(params), std::string(), wait);
   }
 
-  const base::Value::Dict* SendSessionCommand(
-      const std::string& method,
-      std::unique_ptr<base::Value> params,
-      const std::string& session_id) {
-    return SendSessionCommand(method, std::move(params), session_id, true);
+  // DEPRECATED! Use the overload above.
+  const base::Value::Dict* SendCommand(
+      std::string method,
+      std::unique_ptr<base::DictionaryValue> params,
+      bool wait = true) {
+    base::Value::Dict params_dict;
+    if (params) {
+      params_dict = std::move(
+          base::Value::FromUniquePtrValue(std::move(params)).GetDict());
+    }
+    return SendSessionCommand(std::move(method), std::move(params_dict),
+                              std::string(), wait);
   }
 
-  const base::Value::Dict* SendSessionCommand(
-      const std::string& method,
-      std::unique_ptr<base::Value> params,
-      const std::string& session_id,
-      bool wait);
+  const base::Value::Dict* SendSessionCommand(const std::string method,
+                                              base::Value::Dict params,
+                                              const std::string session_id,
+                                              bool wait);
 
   void AttachToWebContents(WebContents* web_contents);
   void AttachToBrowserTarget();
@@ -81,6 +83,11 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
   void SetAllowUnsafeOperations(bool allow) {
     allow_unsafe_operations_ = allow;
   }
+  void SetIsTrusted(bool is_trusted) { is_trusted_ = is_trusted; }
+  void SetNavigationInitiatorOrigin(
+      const url::Origin& navigation_initiator_origin) {
+    navigation_initiator_origin_ = navigation_initiator_origin;
+  }
 
   const base::Value::Dict* result() const;
   const base::Value::Dict* error() const;
@@ -95,7 +102,9 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override;
   void AgentHostClosed(DevToolsAgentHost* agent_host) override;
+  absl::optional<url::Origin> GetNavigationInitiatorOrigin() override;
   bool AllowUnsafeOperations() override;
+  bool IsTrusted() override;
 
   int last_sent_id_ = 0;
   int waiting_for_command_result_id_ = 0;
@@ -110,7 +119,10 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
   bool in_dispatch_ = false;
   bool agent_host_can_close_ = false;
   base::OnceClosure run_loop_quit_closure_;
+
   bool allow_unsafe_operations_ = true;
+  bool is_trusted_ = true;
+  absl::optional<url::Origin> navigation_initiator_origin_;
 };
 
 }  // namespace content

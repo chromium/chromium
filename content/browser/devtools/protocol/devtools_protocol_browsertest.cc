@@ -1066,7 +1066,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsProtocolTest,
   ClearNotifications();
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    SendSessionCommand("Page.crash", nullptr, *session_id, false);
+    SendSessionCommand("Page.crash", base::Value::Dict(), *session_id, false);
     params = WaitForNotification("Target.targetCrashed", true);
   }
   EXPECT_EQ(frame_target_id, *params.FindString("targetId"));
@@ -1710,26 +1710,28 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   Attach();
-  SendCommand("Network.enable", nullptr, true);
-  SendCommand("Security.enable", nullptr, false);
+  SendCommand("Network.enable", nullptr);
+  SendCommand("Security.enable", base::Value::Dict(), false);
   SendCommand("Network.setRequestInterception",
-              base::JSONReader::ReadDeprecated(
-                  "{\"patterns\": [{\"urlPattern\": \"*\"}]}"),
-              true);
+              std::move(base::JSONReader::Read(
+                            "{\"patterns\": [{\"urlPattern\": \"*\"}]}")
+                            ->GetDict()));
 
-  SendCommand("Security.setIgnoreCertificateErrors",
-              base::JSONReader::ReadDeprecated("{\"ignore\": true}"), true);
+  SendCommand(
+      "Security.setIgnoreCertificateErrors",
+      std::move(base::JSONReader::Read("{\"ignore\": true}")->GetDict()));
 
-  SendCommand("Network.clearBrowserCache", nullptr, true);
-  SendCommand("Network.clearBrowserCookies", nullptr, true);
+  SendCommand("Network.clearBrowserCache", nullptr);
+  SendCommand("Network.clearBrowserCookies", nullptr);
   TestNavigationObserver continue_observer(shell()->web_contents(), 1);
   shell()->LoadURL(test_url);
   base::Value::Dict params =
       WaitForNotification("Network.requestIntercepted", false);
   std::string interceptionId = *params.FindString("interceptionId");
   SendCommand("Network.continueInterceptedRequest",
-              base::JSONReader::ReadDeprecated("{\"interceptionId\": \"" +
-                                               interceptionId + "\"}"),
+              std::move(base::JSONReader::Read("{\"interceptionId\": \"" +
+                                               interceptionId + "\"}")
+                            ->GetDict()),
               false);
   continue_observer.Wait();
   EXPECT_EQ(test_url, shell()
@@ -2696,14 +2698,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, UnsafeOperations) {
   params.SetStringKey("url", "http://www.example.com/hello.js");
   params.SetStringKey("data", "Tm90aGluZyB0byBzZWUgaGVyZSE=");
 
-  SendCommand("Page.addCompilationCache",
-              std::make_unique<base::Value>(params.Clone()));
+  SendCommand("Page.addCompilationCache", params.GetDict().Clone());
   EXPECT_TRUE(result());
   Detach();
   SetAllowUnsafeOperations(false);
   Attach();
-  SendCommand("Page.addCompilationCache",
-              std::make_unique<base::Value>(params.Clone()));
+  SendCommand("Page.addCompilationCache", params.GetDict().Clone());
   EXPECT_THAT(
       error()->FindInt("code"),
       testing::Optional(static_cast<int>(crdtp::DispatchCode::SERVER_ERROR)));

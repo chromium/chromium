@@ -9,86 +9,33 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/values.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "content/public/browser/devtools_agent_host.h"
-#include "content/public/browser/devtools_agent_host_client.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/origin.h"
 
 class DevToolsProtocolTestBase : public InProcessBrowserTest,
-                                 public content::DevToolsAgentHostClient {
+                                 public content::TestDevToolsProtocolClient {
  public:
   DevToolsProtocolTestBase();
   ~DevToolsProtocolTestBase() override;
 
-  void SetAllowUnsafeOperations(bool allow) {
-    allow_unsafe_operations_ = allow;
-  }
-
-  absl::optional<url::Origin> GetNavigationInitiatorOrigin() override;
-
  protected:
-  using NotificationMatcher = base::RepeatingCallback<bool(const base::Value&)>;
+  void Attach();
 
   // InProcessBrowserTest  interface
   void TearDownOnMainThread() override;
 
-  // DevToolsAgentHostClient interface
-  void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,
-                               base::span<const uint8_t> message) override;
-
-  void SendCommand(const std::string& method) {
-    SendCommand(method, base::Value(), false);
+  // DEPRECATED! Use TestDevToolsProtocolClient::SendCommand() & co.
+  // These are compatibility wrappers for existent code.
+  const base::Value::Dict* SendCommandSync(std::string method) {
+    return SendCommand(std::move(method), base::Value::Dict(), true);
   }
-
-  void SendCommandSync(const std::string& method) {
-    SendCommandSync(method, base::Value());
+  const base::Value::Dict* SendCommandSync(std::string method,
+                                           base::Value params) {
+    return SendCommand(std::move(method), std::move(params.GetDict()), true);
   }
-
-  void SendCommandSync(const std::string& method, base::Value params) {
-    SendCommand(method, std::move(params), true);
-  }
-
-  void SendCommand(const std::string& method,
-                   base::Value params,
-                   bool synchronous);
-  void WaitForResponse(bool accept_errors);
-  void RunLoopUpdatingQuitClosure();
-
-  void AttachToBrowser();
-  void Attach();
-  void Detach();
 
   virtual content::WebContents* web_contents();
-
-  base::Value WaitForNotification(const std::string& notification);
-  base::Value WaitForMatchingNotification(const std::string& notification,
-                                          const NotificationMatcher& matcher);
-
-  // DevToolsAgentHostClient interface
-  void AgentHostClosed(content::DevToolsAgentHost* agent_host) override;
-  bool AllowUnsafeOperations() override;
-  bool IsTrusted() override;
-
-  scoped_refptr<content::DevToolsAgentHost> agent_host_;
-  int last_sent_id_ = 0;
-  base::OnceClosure run_loop_quit_closure_;
-  bool in_dispatch_ = false;
-  int waiting_for_command_result_id_ = 0;
-  base::Value result_;
-  base::Value error_;
-  std::vector<std::string> notifications_;
-  std::vector<base::Value> notification_params_;
-  std::string waiting_for_notification_;
-  NotificationMatcher waiting_for_notification_matcher_;
-  base::Value waiting_for_notification_params_;
-  bool allow_unsafe_operations_ = true;
-  bool is_trusted_ = true;
-  bool accept_error_response_ = false;
-  absl::optional<url::Origin> navigation_initiator_origin_;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_PROTOCOL_DEVTOOLS_PROTOCOL_TEST_SUPPORT_H_

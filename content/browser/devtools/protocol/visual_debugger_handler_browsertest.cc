@@ -27,7 +27,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisualDebuggerTest) {
   GURL url = GURL("data:text/html,<body></body>");
   NavigateToURLBlockUntilNavigationsComplete(shell(), url, 1);
   Attach();
-  SendCommand("VisualDebugger.startStream", nullptr, true);
+  SendCommand("VisualDebugger.startStream", nullptr);
   WaitForNotification("VisualDebugger.frameResponse", true);
 
   std::unique_ptr<base::DictionaryValue> command_params =
@@ -35,8 +35,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisualDebuggerTest) {
   auto filter_param =
       std::string(R"({"filters":[{"selector":{"anno":""},"active":true}]})");
   command_params->SetString("json", filter_param);
-  SendCommand("VisualDebugger.filterStream", std::move(command_params), true);
-  SendCommand("VisualDebugger.stopStream", nullptr, true);
+  SendCommand("VisualDebugger.filterStream", std::move(command_params));
+  SendCommand("VisualDebugger.stopStream", nullptr);
 }
 
 }  // namespace content

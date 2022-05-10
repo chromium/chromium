@@ -121,8 +121,8 @@ IN_PROC_BROWSER_TEST_F(FontPreferencesBrowserTest, GenericFamilies) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,BODY_TEXT")));
   Attach();
 
-  ASSERT_TRUE(SendCommand("DOM.enable", nullptr, true));
-  ASSERT_TRUE(SendCommand("CSS.enable", nullptr, true));
+  ASSERT_TRUE(SendCommand("DOM.enable", base::Value::Dict(), true));
+  ASSERT_TRUE(SendCommand("CSS.enable", base::Value::Dict(), true));
 
   blink::web_pref::WebPreferences default_preferences =
       shell()->web_contents()->GetOrCreateWebPreferences();

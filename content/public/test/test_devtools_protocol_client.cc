@@ -30,23 +30,22 @@ TestDevToolsProtocolClient::TestDevToolsProtocolClient() = default;
 TestDevToolsProtocolClient::~TestDevToolsProtocolClient() = default;
 
 const base::Value::Dict* TestDevToolsProtocolClient::SendSessionCommand(
-    const std::string& method,
-    std::unique_ptr<base::Value> params,
-    const std::string& session_id,
+    const std::string method,
+    base::Value::Dict params,
+    const std::string session_id,
     bool wait) {
+  response_.clear();
   base::AutoReset<bool> reset_in_dispatch(&in_dispatch_, true);
-  base::DictionaryValue command;
-  command.SetInteger(kIdParam, ++last_sent_id_);
-  command.SetString(kMethodParam, method);
-  if (params) {
-    command.SetKey(kParamsParam,
-                   base::Value::FromUniquePtrValue(std::move(params)));
-  }
+  base::Value::Dict command;
+  command.Set(kIdParam, ++last_sent_id_);
+  command.Set(kMethodParam, std::move(method));
+  if (params.size())
+    command.Set(kParamsParam, std::move(params));
   if (!session_id.empty())
-    command.SetString(kSessionIdParam, session_id);
+    command.Set(kSessionIdParam, std::move(session_id));
 
   std::string json_command;
-  base::JSONWriter::Write(command, &json_command);
+  base::JSONWriter::Write(base::Value(std::move(command)), &json_command);
   agent_host_->DispatchProtocolMessage(
       this, base::as_bytes(base::make_span(json_command)));
   // Some messages are dispatched synchronously.
@@ -109,9 +108,7 @@ base::Value::Dict TestDevToolsProtocolClient::WaitForMatchingNotification(
     if (*it->FindString(kMethodParam) != notification)
       continue;
     base::Value* params = it->Find(kParamsParam);
-    if (!params)
-      continue;
-    if (!matcher.Run(&base::Value::AsDictionaryValue(*params)))
+    if (!params || !matcher.Run(params->GetDict()))
       continue;
     base::Value::Dict result = std::move(params->GetDict());
     notifications_.erase(it);
@@ -159,8 +156,7 @@ void TestDevToolsProtocolClient::DispatchProtocolMessage(
       return;
     const base::Value* params = notifications_.back().Find(kParamsParam);
     if (waiting_for_notification_matcher_.is_null() ||
-        waiting_for_notification_matcher_.Run(
-            &base::Value::AsDictionaryValue(*params))) {
+        waiting_for_notification_matcher_.Run(params->GetDict())) {
       waiting_for_notification_ = std::string();
       waiting_for_notification_matcher_ = NotificationMatcher();
       received_notification_params_ = params->GetDict().Clone();
@@ -177,6 +173,15 @@ void TestDevToolsProtocolClient::AgentHostClosed(
 
 bool TestDevToolsProtocolClient::AllowUnsafeOperations() {
   return allow_unsafe_operations_;
+}
+
+bool TestDevToolsProtocolClient::IsTrusted() {
+  return is_trusted_;
+}
+
+absl::optional<url::Origin>
+TestDevToolsProtocolClient::GetNavigationInitiatorOrigin() {
+  return navigation_initiator_origin_;
 }
 
 }  // namespace content
