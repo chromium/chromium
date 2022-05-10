@@ -9,12 +9,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt.h"
+#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -95,6 +97,8 @@ void ShowPrivacySandboxNoticeBubble(Browser* browser) {
   bubble_delegate->SetShowTitle(false);
   bubble_delegate->SetShowCloseButton(false);
   bubble_delegate->set_close_on_deactivate(false);
+  bubble_delegate->set_margins(
+      ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
   bubble_delegate->set_fixed_width(
       ChromeLayoutProvider::Get()->GetSnappedDialogWidth(kDialogWidth));
 
@@ -121,25 +125,38 @@ void ShowPrivacySandboxNoticeBubble(Browser* browser) {
       },
       base::Unretained(browser)));
 
+  auto& bundle = ui::ResourceBundle::GetSharedInstance();
+  auto image = std::make_unique<ThemeTrackingNonAccessibleImageView>(
+      *bundle.GetImageSkiaNamed(IDR_PRIVACY_SANDBOX_CONFIRMATION_BANNER),
+      *bundle.GetImageSkiaNamed(IDR_PRIVACY_SANDBOX_CONFIRMATION_BANNER_DARK),
+      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+                          base::Unretained(bubble_delegate.get())));
+
   bubble_delegate->SetContentsView(
-      std::make_unique<PrivacySandboxNoticeBubbleView>(browser));
+      std::make_unique<PrivacySandboxNoticeBubbleView>(browser,
+                                                       std::move(image)));
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate))->Show();
 }
 
-PrivacySandboxNoticeBubbleView::PrivacySandboxNoticeBubbleView(Browser* browser)
+PrivacySandboxNoticeBubbleView::PrivacySandboxNoticeBubbleView(
+    Browser* browser,
+    std::unique_ptr<views::View> image)
     : browser_(browser) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
                        views::BoxLayout::Orientation::kHorizontal))
       ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kStart);
 
-  // TODO(crbug.com/1321587): Add image view
-  AddChildView(std::make_unique<views::Label>(u"Image"));
+  // Add image view, that was created with the reference to bubble delegate to
+  // support changing color for the theme.
+  AddChildView(std::move(image));
 
   // Set up the container for the right side. It contains a title and a
   // description.
   auto* container = AddChildView(std::make_unique<views::View>());
   container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_CONTENT_LIST_VERTICAL_SINGLE)));
   container->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(0,
@@ -152,6 +169,10 @@ PrivacySandboxNoticeBubbleView::PrivacySandboxNoticeBubbleView(Browser* browser)
       l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_TITLE),
       views::style::CONTEXT_DIALOG_TITLE));
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_label->SetFontList(
+      views::style::GetFont(views::style::TextContext::CONTEXT_DIALOG_TITLE,
+                            views::style::TextStyle::STYLE_PRIMARY)
+          .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
 
   // Create the description view.
   auto* description_label =

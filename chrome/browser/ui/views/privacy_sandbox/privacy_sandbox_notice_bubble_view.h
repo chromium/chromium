@@ -17,7 +17,8 @@ class PrivacySandboxNoticeBubbleView : public views::View,
                                        public AppMenuButtonObserver {
  public:
   METADATA_HEADER(PrivacySandboxNoticeBubbleView);
-  explicit PrivacySandboxNoticeBubbleView(Browser* browser);
+  PrivacySandboxNoticeBubbleView(Browser* browser,
+                                 std::unique_ptr<views::View> image);
   ~PrivacySandboxNoticeBubbleView() override;
 
   // AppMenuButtonObserver:
