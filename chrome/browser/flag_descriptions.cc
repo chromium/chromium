@@ -4737,10 +4737,6 @@ const char kEchePhoneHubPermissionsOnboardingDescription[] =
 const char kEcheSWAName[] = "Enable Eche App SWA.";
 const char kEcheSWADescription[] = "Enable the SWA version of the Eche.";
 
-const char kEcheCustomWidgetName[] = "Move Eche in a custom widget.";
-const char kEcheCustomWidgetDescription[] =
-    "Move the Eche App into a custom widget.";
-
 const char kEcheSWADebugModeName[] = "Enable Eche Debug Mode";
 const char kEcheSWADebugModeDescription[] = "Enable the Debug Mode of the Eche";
 

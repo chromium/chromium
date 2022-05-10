@@ -66,8 +66,7 @@ class EcheTrayTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kEcheSWA,
-                              chromeos::features::kEcheCustomWidget},
+        /*enabled_features=*/{chromeos::features::kEcheSWA},
         /*disabled_features=*/{});
 
     DCHECK(test_web_view_factory_.get());

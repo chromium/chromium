@@ -2705,9 +2705,6 @@ extern const char kEchePhoneHubPermissionsOnboardingDescription[];
 extern const char kEcheSWAName[];
 extern const char kEcheSWADescription[];
 
-extern const char kEcheCustomWidgetName[];
-extern const char kEcheCustomWidgetDescription[];
-
 extern const char kEcheSWADebugModeName[];
 extern const char kEcheSWADebugModeDescription[];
 

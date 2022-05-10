@@ -151,7 +151,7 @@ void StatusAreaWidget::Initialize() {
     AddTrayButton(std::move(media_tray));
   }
 
-  if (chromeos::features::IsEcheCustomWidgetEnabled()) {
+  if (chromeos::features::IsEcheSWAEnabled()) {
     auto eche_tray = std::make_unique<EcheTray>(shelf_);
     eche_tray_ = eche_tray.get();
     AddTrayButton(std::move(eche_tray));

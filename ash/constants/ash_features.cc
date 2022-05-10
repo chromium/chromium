@@ -493,10 +493,6 @@ const base::Feature kEchePhoneHubPermissionsOnboarding{
 // Enables the System Web App (SWA) version of Eche.
 const base::Feature kEcheSWA{"EcheSWA", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Moves Eche into a custom widget.
-const base::Feature kEcheCustomWidget{"EcheCustomWidget",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables the Debug Mode of Eche.
 const base::Feature kEcheSWADebugMode{"EcheSWADebugMode",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1718,10 +1714,6 @@ bool IsEchePhoneHubPermissionsOnboarding() {
 
 bool IsEcheSWAEnabled() {
   return base::FeatureList::IsEnabled(kEcheSWA);
-}
-
-bool IsEcheCustomWidgetEnabled() {
-  return base::FeatureList::IsEnabled(kEcheCustomWidget);
 }
 
 bool IsEcheSWADebugModeEnabled() {

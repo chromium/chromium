@@ -23,7 +23,7 @@ class EcheAppManagerFactoryTest : public ChromeAshTestBase {
  protected:
   EcheAppManagerFactoryTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA, features::kEcheCustomWidget},
+        /*enabled_features=*/{features::kEcheSWA},
         /*disabled_features=*/{});
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -67,7 +67,7 @@ class EcheAppManagerFactoryWithBackgroundTest : public ChromeAshTestBase {
  protected:
   EcheAppManagerFactoryWithBackgroundTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA, features::kEcheCustomWidget},
+        /*enabled_features=*/{features::kEcheSWA},
         /*disabled_features=*/{});
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());

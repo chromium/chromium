@@ -27,13 +27,7 @@ void EcheStreamStatusChangeHandler::OnStreamStatusChanged(
                << status;
   NotifyStreamStatusChanged(status);
 
-  // This is for the connection reliability metric and only supported in the
-  // bubble widget. The reason is the bubble widget replaces SWA and we can
-  // identify the notification swap case easily there. The SWA widget is not
-  // deprecated yet, so we check the feature flag temporarily to avoid recording
-  // some SWA data if users disable the bubble widget.
-  if (status == mojom::StreamStatus::kStreamStatusStarted &&
-      features::IsEcheCustomWidgetEnabled()) {
+  if (status == mojom::StreamStatus::kStreamStatusStarted) {
     base::UmaHistogramEnumeration("Eche.StreamEvent",
                                   mojom::StreamStatus::kStreamStatusStarted);
   }

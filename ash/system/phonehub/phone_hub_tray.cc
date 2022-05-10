@@ -8,6 +8,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/components/phonehub/phone_model.h"
+#include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -61,7 +62,7 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
   tray_container()->SetMargin(kTrayIconMainAxisInset, kTrayIconCrossAxisInset);
   // TODO(nayebi): Think about constructing the eche_icon outside of this class,
   // either as an input argument or being set through a setter.
-  if (features::IsEcheCustomWidgetEnabled()) {
+  if (features::IsEcheSWAEnabled()) {
     auto eche_icon = std::make_unique<views::ImageButton>(base::BindRepeating(
         &PhoneHubTray::EcheIconActivated, weak_factory_.GetWeakPtr()));
     eche_icon->SetImageVerticalAlignment(

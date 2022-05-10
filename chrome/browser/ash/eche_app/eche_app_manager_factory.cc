@@ -113,15 +113,9 @@ void LaunchWebApp(const std::string& package_name,
   }
   const auto gurl = GURL(url);
 
-  if (features::IsEcheCustomWidgetEnabled()) {
-    return LaunchBubble(gurl, icon, visible_name,
-                        base::BindOnce(&EnsureStreamClose, profile),
-                        base::BindRepeating(&StreamGoBack, profile));
-  }
-  web_app::SystemAppLaunchParams params;
-  params.url = gurl;
-  web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::ECHE,
-                                   params);
+  return LaunchBubble(gurl, icon, visible_name,
+                      base::BindOnce(&EnsureStreamClose, profile),
+                      base::BindRepeating(&StreamGoBack, profile));
 }
 
 void RelaunchLast(Profile* profile) {
@@ -193,22 +187,7 @@ void EcheAppManagerFactory::ShowNotification(
 
 // static
 void EcheAppManagerFactory::CloseEche(Profile* profile) {
-  if (features::IsEcheCustomWidgetEnabled()) {
-    CloseBubble();
-    return;
-  }
-  for (auto* browser : *(BrowserList::GetInstance())) {
-    if (browser->profile() != profile)
-      continue;
-    if (!browser->app_controller() ||
-        !browser->app_controller()->system_app() ||
-        browser->app_controller()->system_app()->GetType() !=
-            web_app::SystemAppType::ECHE) {
-      continue;
-    }
-    browser->window()->Close();
-    return;
-  }
+  CloseBubble();
 }
 
 // static
