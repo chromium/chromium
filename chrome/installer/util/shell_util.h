@@ -761,8 +761,6 @@ class ShellUtil {
   // associated with this application by default.
   // |application_icon_path| is the path of the icon displayed for this
   // application in the Open With menu.
-  // |file_type_icon_path| is the path of the icon used for files of these
-  // types when associated with this application by default.
   // |file_extensions| is the set of extensions to associate. They must not be
   // empty or start with a '.'.
   // Returns true on success, false on failure.
@@ -772,7 +770,6 @@ class ShellUtil {
       const std::wstring& application_name,
       const std::wstring& file_type_name,
       const base::FilePath& application_icon_path,
-      const base::FilePath& file_type_icon_path,
       const std::set<std::wstring>& file_extensions);
 
   // Deletes all associations with a particular application in the Windows

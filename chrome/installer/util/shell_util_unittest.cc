@@ -46,7 +46,6 @@ const wchar_t kTestApplicationName[] = L"Test Application";
 const wchar_t kTestApplicationDescription[] = L"Application Description";
 const wchar_t kTestFileTypeName[] = L"Test File Type";
 const wchar_t kTestIconPath[] = L"D:\\test.ico";
-const wchar_t kTestFileTypeIconPath[] = L"D:\\test_file_type.ico";
 const wchar_t* kTestFileExtensions[] = {
     L"test1",
     L"test2",
@@ -1134,8 +1133,7 @@ TEST_F(ShellUtilRegistryTest, AddFileAssociations) {
   // Create file associations.
   EXPECT_TRUE(ShellUtil::AddFileAssociations(
       kTestProgId, OpenCommand(), kTestApplicationName, kTestFileTypeName,
-      base::FilePath(kTestIconPath), base::FilePath(kTestFileTypeIconPath),
-      FileExtensions()));
+      base::FilePath(kTestIconPath), FileExtensions()));
 
   // Ensure that the registry keys have been correctly set.
   base::win::RegKey key;
@@ -1146,11 +1144,6 @@ TEST_F(ShellUtilRegistryTest, AddFileAssociations) {
   EXPECT_EQ(L"Test File Type", value);
   EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"FileExtensions", &value));
   EXPECT_EQ(L".test1;.test2", value);
-  ASSERT_EQ(ERROR_SUCCESS,
-            key.Open(HKEY_CURRENT_USER,
-                     L"Software\\Classes\\TestApp\\DefaultIcon", KEY_READ));
-  EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
-  EXPECT_EQ(L"D:\\test_file_type.ico,0", value);
   ASSERT_EQ(
       ERROR_SUCCESS,
       key.Open(HKEY_CURRENT_USER,
@@ -1203,8 +1196,7 @@ TEST_F(ShellUtilRegistryTest, DeleteFileAssociations) {
   // Create file associations.
   ASSERT_TRUE(ShellUtil::AddFileAssociations(
       kTestProgId, OpenCommand(), kTestApplicationName, kTestFileTypeName,
-      base::FilePath(kTestIconPath), base::FilePath(kTestFileTypeIconPath),
-      FileExtensions()));
+      base::FilePath(kTestIconPath), FileExtensions()));
 
   // Delete them.
   EXPECT_TRUE(ShellUtil::DeleteFileAssociations(kTestProgId));
@@ -1303,8 +1295,7 @@ TEST_F(ShellUtilRegistryTest, GetAppName) {
   // case, which returns the open command executable name as the app_name.
   ASSERT_TRUE(ShellUtil::AddFileAssociations(
       kTestProgId, OpenCommand(), kTestApplicationName, kTestFileTypeName,
-      base::FilePath(kTestIconPath), base::FilePath(kTestFileTypeIconPath),
-      FileExtensions()));
+      base::FilePath(kTestIconPath), FileExtensions()));
   const std::wstring app_name(ShellUtil::GetAppName(kTestProgId));
   EXPECT_EQ(app_name, kTestApplicationName);
 }
@@ -1467,8 +1458,7 @@ TEST_F(ShellUtilRegistryTest, GetApplicationForProgId) {
   // Create file associations.
   ASSERT_TRUE(ShellUtil::AddFileAssociations(
       kTestProgId, OpenCommand(), kTestApplicationName, kTestFileTypeName,
-      base::FilePath(kTestIconPath), base::FilePath(kTestFileTypeIconPath),
-      FileExtensions()));
+      base::FilePath(kTestIconPath), FileExtensions()));
   base::FilePath exe_path = ShellUtil::GetApplicationPathForProgId(kTestProgId);
   EXPECT_EQ(exe_path, base::FilePath(kTestOpenCommand));
 }

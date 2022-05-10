@@ -81,7 +81,7 @@ void RegisterFileHandlersWithOsTask(const AppId& app_id,
         file_handler_progids.back(), app_specific_launcher_command,
         user_visible_app_name,
         base::AsWString(base::StringPiece16(file_handler.display_name)),
-        icon_path, icon_path, file_extensions_wide);
+        icon_path, file_extensions_wide);
   }
   if (!result)
     RecordRegistration(RegistrationResult::kFailToAddFileAssociation);
