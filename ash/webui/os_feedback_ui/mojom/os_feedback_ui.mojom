@@ -97,6 +97,9 @@ struct Report {
   mojo_base.mojom.String16 description;
   // Whether or not to send system logs and metrics/histograms with this report.
   bool include_system_logs_and_histograms;
+  // Whether or not to include the screenshot with this report. The screenshot
+  // data should have been cached in C++ side.
+  bool include_screenshot;
 };
 
 // Provides services needed by the feedback UI to display data and send reports.

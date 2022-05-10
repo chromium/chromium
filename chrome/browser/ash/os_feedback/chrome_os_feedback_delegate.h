@@ -46,6 +46,10 @@ class ChromeOsFeedbackDelegate : public OsFeedbackDelegate {
   void SendReport(os_feedback_ui::mojom::ReportPtr report,
                   SendReportCallback callback) override;
 
+  void SetPngDataForTesting(scoped_refptr<base::RefCountedMemory> png_data) {
+    screenshot_png_data_ = std::move(png_data);
+  }
+
  private:
   void OnSendFeedbackDone(SendReportCallback callback, bool status);
   void OnScreenshotTaken(scoped_refptr<base::RefCountedMemory> data);

@@ -9,6 +9,9 @@ import {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {eventToPromise, flushTasks, isVisible} from '../../test_util.js';
 
+/** @type {string} */
+const fakeImageUrl = 'chrome://os_feedback/app_icon_48.png';
+
 export function shareDataPageTestSuite() {
   /** @type {?ShareDataPageElement} */
   let page = null;
@@ -188,32 +191,61 @@ export function shareDataPageTestSuite() {
 
   /**
    * Test that when when the send button is clicked, an on-continue is fired.
-   * Case 3: Share email.
+   * Case 3: Share email and screenshot.
    */
   test('SendReportShareEmail', async () => {
     await initializePage();
     page.feedbackContext = fakeFeedbackContext;
+    page.screenshotUrl = fakeImageUrl;
+    assertEquals(fakeImageUrl, getElement('#screenshotImage').src);
+
     // Select the email.
     getElement('#userEmailDropDown').value = 'test.user2@test.com';
+    // Select the screenshot.
+    getElement('#screenshotCheckbox').checked = true;
 
     const request = (await clickSendAndWait(page)).report;
 
     assertEquals('test.user2@test.com', request.feedbackContext.email);
+    assertTrue(request.includeScreenshot);
   });
 
   /**
    * Test that when when the send button is clicked, an on-continue is fired.
-   * Case 3: Do not share email.
+   * Case 4: Do not share email or screenshot.
    */
   test('SendReportDoNotShareEmail', async () => {
     await initializePage();
     page.feedbackContext = fakeFeedbackContext;
+    // When there is not a screenshot.
+    page.screenshotUrl = '';
+    assertFalse(!!getElement('#screenshotImage').src);
+
     // Select the "Don't include email address" option.
     getElement('#userEmailDropDown').value = '';
 
-    const request = (await clickSendAndWait(page)).report;
+    let request = (await clickSendAndWait(page)).report;
 
     assertFalse(!!request.feedbackContext.email);
+    assertFalse(request.includeScreenshot);
+
+    // When the checkbox is selected but there is not a screenshot.
+    getElement('#screenshotCheckbox').checked = true;
+    assertFalse(!!getElement('#screenshotImage').src);
+
+    request = (await clickSendAndWait(page)).report;
+
+    assertFalse(!!request.feedbackContext.email);
+    assertFalse(request.includeScreenshot);
+
+    // When there is a screenshot but it is not selected.
+    page.screenshotUrl = fakeImageUrl;
+    assertEquals(fakeImageUrl, getElement('#screenshotImage').src);
+    getElement('#screenshotCheckbox').checked = false;
+    request = (await clickSendAndWait(page)).report;
+
+    assertFalse(!!request.feedbackContext.email);
+    assertFalse(request.includeScreenshot);
   });
 
   // Test that the screenshot checkbox is disabled when no screenshot.

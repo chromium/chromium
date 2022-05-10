@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -89,6 +90,14 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
     auto feedback_delegate_ =
         std::make_unique<ChromeOsFeedbackDelegate>(profile_, std::move(mock));
 
+    scoped_refptr<base::RefCountedMemory> fake_png_data;
+    {
+      const unsigned char kData[] = {12, 11, 99};
+      fake_png_data =
+          base::MakeRefCounted<base::RefCountedBytes>(kData, std::size(kData));
+    }
+    feedback_delegate_->SetPngDataForTesting(std::move(fake_png_data));
+
     base::test::TestFuture<SendReportStatus> future;
     feedback_delegate_->SendReport(std::move(report), future.GetCallback());
 
@@ -126,14 +135,17 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetSignedInUserEmail) {
 }
 
 // Test that feedback params and data are populated with correct data before
-// passed to SendFeedback method of the feedback service .
+// passed to SendFeedback method of the feedback service.
+// - System logs and histograms are included.
+// - Screenshot is included.
 // TODO(xiangdongkong): Add tests for other flags once they are supported.
 // Currently, only load_system_info and send_histograms flags are implemented.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
-                       FeedbackDataPopulatedIncludeSysLogs) {
+                       FeedbackDataPopulatedIncludeSysLogsAndScreenshot) {
   ReportPtr report = Report::New();
   report->feedback_context = FeedbackContext::New();
   report->description = kDescription;
+  report->include_screenshot = true;
 
   report->include_system_logs_and_histograms = true;
   const FeedbackParams expected_params{/*is_internal_email=*/false,
@@ -148,17 +160,22 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   EXPECT_EQ("", feedback_data->user_email());
   EXPECT_EQ("", feedback_data->page_url());
   EXPECT_EQ(base::UTF16ToUTF8(kDescription), feedback_data->description());
+  // Verify screenshot is added to feedback data.
+  EXPECT_GT(feedback_data->image().size(), 0);
 }
 
 // Test that feedback params and data are populated with correct data before
-// passed to SendFeedback method of the feedback service .
+// passed to SendFeedback method of the feedback service.
+// - System logs and histograms are not included.
+// - Screenshot is not included.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
-                       FeedbackDataPopulatedNotIncludeSysLogs) {
+                       FeedbackDataPopulatedNotIncludeSysLogsOrScreenshot) {
   ReportPtr report = Report::New();
   report->feedback_context = FeedbackContext::New();
   report->feedback_context->email = kSignedInUserEmail;
   report->feedback_context->page_url = GURL(kPageUrl);
   report->description = kDescription;
+  report->include_screenshot = false;
 
   report->include_system_logs_and_histograms = false;
   const FeedbackParams expected_params{/*is_internal_email=*/false,
@@ -173,6 +190,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   EXPECT_EQ(kSignedInUserEmail, feedback_data->user_email());
   EXPECT_EQ(kPageUrl, feedback_data->page_url());
   EXPECT_EQ(base::UTF16ToUTF8(kDescription), feedback_data->description());
+  // Verify no screenshot is added to feedback data.
+  EXPECT_EQ("", feedback_data->image());
 }
 
 }  // namespace ash

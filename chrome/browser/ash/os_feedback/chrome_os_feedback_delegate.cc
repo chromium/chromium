@@ -142,6 +142,12 @@ void ChromeOsFeedbackDelegate::SendReport(
     feedback_data->set_page_url(feedback_context->page_url.value().spec());
   }
 
+  if (report->include_screenshot && screenshot_png_data_ &&
+      screenshot_png_data_.get()) {
+    feedback_data->set_image(std::string(screenshot_png_data_->front_as<char>(),
+                                         screenshot_png_data_->size()));
+  }
+
   feedback_service_->SendFeedback(
       feedback_params, feedback_data,
       base::BindOnce(&ChromeOsFeedbackDelegate::OnSendFeedbackDone,

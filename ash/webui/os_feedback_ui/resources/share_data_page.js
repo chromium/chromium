@@ -94,9 +94,19 @@ export class ShareDataPageElement extends PolymerElement {
   }
 
   /**
+   * @param {string} selector
+   * @return {Element}
+   * @private
+   */
+  getElement_(selector) {
+    return this.shadowRoot.querySelector(selector);
+  }
+
+  /**
    * @return {!{
    *  feedbackContext: FeedbackContext,
    *  includeSystemLogsAndHistograms: boolean,
+   *  includeScreenshot: boolean,
    * }}
    * @private
    */
@@ -104,17 +114,19 @@ export class ShareDataPageElement extends PolymerElement {
     const report = {
       feedbackContext: {},
       includeSystemLogsAndHistograms:
-          this.shadowRoot.querySelector('#sysInfoCheckbox').checked
+          this.getElement_('#sysInfoCheckbox').checked,
+      includeScreenshot: this.getElement_('#screenshotCheckbox').checked &&
+          !!this.getElement_('#screenshotImage').src
     };
 
-    const email = this.shadowRoot.querySelector('#userEmailDropDown').value;
+    const email = this.getElement_('#userEmailDropDown').value;
     if (email) {
       report.feedbackContext.email = email;
     }
 
-    if (this.shadowRoot.querySelector('#pageUrlCheckbox').checked) {
+    if (this.getElement_('#pageUrlCheckbox').checked) {
       report.feedbackContext.pageUrl = {
-        url: this.shadowRoot.querySelector('#pageUrlText').value
+        url: this.getElement_('#pageUrlText').value
       };
     }
     return report;
