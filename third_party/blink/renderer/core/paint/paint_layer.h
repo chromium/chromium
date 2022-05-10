@@ -579,6 +579,9 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   bool DescendantNeedsCullRectUpdate() const {
     return descendant_needs_cull_rect_update_;
   }
+  bool SelfOrDescendantNeedsCullRectUpdate() const {
+    return needs_cull_rect_update_ || descendant_needs_cull_rect_update_;
+  }
   void SetNeedsCullRectUpdate();
   void SetForcesChildrenCullRectUpdate();
   void MarkCompositingContainerChainForNeedsCullRectUpdate();
@@ -777,7 +780,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   void UpdatePaginationRecursive(bool needs_pagination_update = false);
   void ClearPaginationRecursive();
 
-  void SetSelfNeedsRepaint();
   void MarkCompositingContainerChainForNeedsRepaint();
 
   PaintLayerRareData& EnsureRareData() {
