@@ -251,7 +251,7 @@ void* AllocateAlignedMemory(size_t alignment, size_t size) {
   // Note that all "AlignedFree()" variants (_aligned_free() on Windows for
   // instance) directly call PartitionFree(), so there is no risk of
   // mismatch. (see below the default_dispatch definition).
-  if (alignment <= base::kAlignment) {
+  if (alignment <= partition_alloc::internal::kAlignment) {
     // This is mandated by |posix_memalign()| and friends, so should never fire.
     PA_CHECK(base::bits::IsPowerOfTwo(alignment));
     // TODO(bartekn): See if the compiler optimizes branches down the stack on

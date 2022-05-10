@@ -138,7 +138,7 @@ struct PurgeFlags {
 // Options struct used to configure PartitionRoot and PartitionAllocator.
 struct PartitionOptions {
   enum class AlignedAlloc : uint8_t {
-    // By default all allocations will be aligned to `base::kAlignment`,
+    // By default all allocations will be aligned to `kAlignment`,
     // likely to be 8B or 16B depending on platforms and toolchains.
     // AlignedAlloc() allows to enforce higher alignment.
     // This option determines whether it is supported for the partition.

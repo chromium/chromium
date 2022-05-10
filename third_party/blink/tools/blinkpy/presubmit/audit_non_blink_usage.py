@@ -120,7 +120,7 @@ _CONFIG = [
             'base::PassKey',
 
             # //base/allocator/partition_allocator/partition_alloc_constants.h
-            'base::kAlignment',
+            'partition_alloc::internal::kAlignment',
 
             # //base/task/bind_post_task.h
             'base::BindPostTask',

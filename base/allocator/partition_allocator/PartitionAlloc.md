@@ -25,7 +25,7 @@ a partition that contains similar-sized objects, e.g. one bucket holds sizes
 geometrically-spaced, and go all the way up to `kMaxBucketed`, which is a tad
 under 1MiB (so called *normal buckets*). There are tens of buckets, 4 between
 each power of two (except for lower sizes where buckets that aren't a multiple
-of `base::kAlignment` simply don't exist).
+of `partition_alloc::internal::kAlignment` simply don't exist).
 
 Larger allocations (&gt;`kMaxBucketed`) are realized by direct memory mapping
 (*direct map*).
@@ -85,7 +85,8 @@ PartitionAlloc also guarantees that:
 ### Alignment
 
 PartitionAlloc guarantees that returned pointers are aligned on
-`base::kAlignment` boundary (typically 16B on 64-bit systems, and 8B on 32-bit).
+`partition_alloc::internal::kAlignment` boundary (typically 16B on
+64-bit systems, and 8B on 32-bit).
 
 PartitionAlloc also supports higher levels of alignment, that can be requested
 via `PartitionAlloc::AlignedAllocWithFlags()` or platform-specific APIs (such as
@@ -94,7 +95,8 @@ alignment has to be a power of two. PartitionAlloc reserves the right to round
 up the requested size to the nearest power of two, greater than or equal to the
 requested alignment. This may be wasteful, but allows taking advantage of
 natural PartitionAlloc alignment guarantees. Allocations with an alignment
-requirement greater than `base::kAlignment` are expected to be very rare.
+requirement greater than `partition_alloc::internal::kAlignment` are expected
+to be very rare.
 
 ## PartitionAlloc-Everywhere
 

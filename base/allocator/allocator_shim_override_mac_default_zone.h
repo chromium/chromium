@@ -47,7 +47,7 @@ kern_return_t MallocIntrospectionEnumerator(task_t task,
 }
 
 size_t MallocIntrospectionGoodSize(malloc_zone_t* zone, size_t size) {
-  return base::bits::AlignUp(size, base::kAlignment);
+  return base::bits::AlignUp(size, partition_alloc::internal::kAlignment);
 }
 
 boolean_t MallocIntrospectionCheck(malloc_zone_t* zone) {

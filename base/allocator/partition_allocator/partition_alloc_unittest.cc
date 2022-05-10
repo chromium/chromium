@@ -908,13 +908,13 @@ TEST_P(PartitionAllocTest, Alloc) {
 
   // To make both alloc(x + 1) and alloc(x + kSmallestBucket) to allocate from
   // the same bucket, partition_alloc::internal::base::bits::AlignUp(1 + x +
-  // kExtraAllocSize, base::kAlignment)
+  // kExtraAllocSize, kAlignment)
   // == partition_alloc::internal::base::bits::AlignUp(kSmallestBucket + x +
-  // kExtraAllocSize, base::kAlignment), because slot_size is multiples of
-  // base::kAlignment. So (x + kExtraAllocSize) must be multiples of
-  // base::kAlignment. x =
+  // kExtraAllocSize, kAlignment), because slot_size is multiples of
+  // kAlignment. So (x + kExtraAllocSize) must be multiples of
+  // kAlignment. x =
   // partition_alloc::internal::base::bits::AlignUp(kExtraAllocSize,
-  // base::kAlignment) - kExtraAllocSize;
+  // kAlignment) - kExtraAllocSize;
   size_t base_size = partition_alloc::internal::base::bits::AlignUp(
                          kExtraAllocSize, kAlignment) -
                      kExtraAllocSize;
@@ -3221,7 +3221,7 @@ TEST_P(PartitionAllocTest, FundamentalAlignment) {
 
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
     // The capacity(C) is slot size - kExtraAllocSize.
-    // Since slot size is multiples of base::kAlignment,
+    // Since slot size is multiples of kAlignment,
     // C % kAlignment == (slot_size - kExtraAllocSize) % kAlignment.
     // C % kAlignment == (-kExtraAllocSize) % kAlignment.
     // Since kCookieSize is a multiple of kAlignment,
