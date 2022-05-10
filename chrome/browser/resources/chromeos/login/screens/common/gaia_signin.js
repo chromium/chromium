@@ -679,6 +679,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     if (!this.flagRedirectToDefaultIdPEnabled_) {
       return this.cancel();
     }
+    // Reset webview to prevent calls from authenticator when the screen is
+    // hidden.
+    this.authenticator_.resetWebview();
     // Explicitly disable video here to let `onVideoEnabledChange_()` handle
     // timer start next time when `videoEnabled_` will be set to true on SAML
     // page.

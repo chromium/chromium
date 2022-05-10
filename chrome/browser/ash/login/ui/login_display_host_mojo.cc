@@ -412,16 +412,10 @@ void LoginDisplayHostMojo::HideOobeDialog(bool saml_video_timeout) {
   // on camera timeout during SAML login.
   // TODO(crbug.com/1283052): simplify the logic here.
 
-  // As ShowDialogCommon will not reload GAIA upon show for performance reasons,
-  // reload it to ensure that no state is persisted between hide and
-  // subsequent show.
   const bool no_users =
       !login_display_->IsSigninInProgress() && user_count_ == 0;
-  if (no_users || GetOobeUI()->current_screen() == GaiaView::kScreenId) {
-    GaiaScreen* gaia_screen = GetWizardController()->GetScreen<GaiaScreen>();
-    gaia_screen->LoadOnline(EmptyAccountId());
-    if (no_users && !saml_video_timeout)
-      return;
+  if (no_users && !saml_video_timeout) {
+    return;
   }
 
   user_selection_screen_->OnBeforeShow();
