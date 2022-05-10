@@ -137,6 +137,8 @@ class UserCloudSigninRestrictionPolicyFetcherChromeOS
   // `OnSecondaryGoogleAccountUsageResult` with the result from the API.
   void GetSecondaryGoogleAccountUsageInternal();
 
+  std::string GetSecureConnectApiGetAccountSigninRestrictionUrl() const;
+
   std::string email_;
   std::string hosted_domain_;
   std::string access_token_;

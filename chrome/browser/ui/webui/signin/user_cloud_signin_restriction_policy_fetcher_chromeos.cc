@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/webui/signin/user_cloud_signin_restriction_policy_fetcher_chromeos.h"
 
+#include "base/command_line.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/stringprintf.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/policy_switches.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -178,7 +180,7 @@ void UserCloudSigninRestrictionPolicyFetcherChromeOS::
     GetSecondaryGoogleAccountUsageInternal() {
   // Each url loader can only be used for one request.
   url_loader_ =
-      CreateUrlLoader(GURL(kSecureConnectApiGetSecondaryGoogleAccountUsageUrl),
+      CreateUrlLoader(GURL(GetSecureConnectApiGetAccountSigninRestrictionUrl()),
                       access_token_, annotation);
   // base::Unretained is safe here because `url_loader_` is owned by `this`.
   url_loader_->DownloadToString(
@@ -228,6 +230,17 @@ void UserCloudSigninRestrictionPolicyFetcherChromeOS::
   }
 
   std::move(callback_).Run(status, restriction, hosted_domain_);
+}
+
+std::string UserCloudSigninRestrictionPolicyFetcherChromeOS::
+    GetSecureConnectApiGetAccountSigninRestrictionUrl() const {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(policy::switches::kSecureConnectApiUrl)) {
+    return command_line->GetSwitchValueASCII(
+        policy::switches::kSecureConnectApiUrl);
+  }
+
+  return kSecureConnectApiGetSecondaryGoogleAccountUsageUrl;
 }
 
 }  // namespace ash
