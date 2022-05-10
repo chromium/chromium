@@ -1106,6 +1106,24 @@ class Observer {
   }
 }
 
+/**
+ * @param {!TableModel<?>} model
+ * @param {!Element} tab
+ */
+function installUnreadIndicator(model, tab) {
+  model.rowsChangedListeners.add(() => {
+    if (!tab.selected) {
+      tab.classList.add('unread');
+    }
+  });
+
+  tab.addEventListener('selectedChange', () => {
+    if (tab.selected) {
+      tab.classList.remove('unread');
+    }
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   // Setup the mojo interface.
   pageHandler = AttributionInternalsHandler.getRemote();
@@ -1119,6 +1137,15 @@ document.addEventListener('DOMContentLoaded', function() {
       new AggregatableAttributionReportTableModel(
           getRequiredElement('show-debug-aggregatable-reports'),
           getRequiredElement('send-aggregatable-reports'));
+
+  installUnreadIndicator(sourceTableModel, getRequiredElement('sources-tab'));
+  installUnreadIndicator(triggerTableModel, getRequiredElement('triggers-tab'));
+  installUnreadIndicator(
+      eventLevelReportTableModel,
+      getRequiredElement('event-level-reports-tab'));
+  installUnreadIndicator(
+      aggregatableAttributionReportTableModel,
+      getRequiredElement('aggregatable-reports-tab'));
 
   $('refresh').addEventListener('click', updatePageData);
   $('clear-data').addEventListener('click', clearStorage);

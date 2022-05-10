@@ -108,3 +108,12 @@ button {
   color: rgb(66,135,245);
   font-weight: bold;
 }
+
+tab::before {
+  color: transparent;
+  content: '⬤ ';
+}
+
+tab.unread::before {
+  color: rgb(26,115,232);
+}
