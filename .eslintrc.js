@@ -95,6 +95,10 @@ module.exports = {
           format: ['camelCase'],
           leadingUnderscore: 'allow',
         },
+        {
+          selector: 'function',
+          format: ['camelCase'],
+        },
       ],
 
       '@typescript-eslint/member-delimiter-style': ['error', {

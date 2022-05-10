@@ -94,8 +94,7 @@ export function convertOptionalBoolToBool(optionalBool: OptionalBool): boolean {
   }
 }
 
-export function getUserActionHistogramNameForAppType_(appType: AppType):
-    string {
+function getUserActionHistogramNameForAppType(appType: AppType): string {
   switch (appType) {
     case AppType.kArc:
       return 'AppManagement.AppDetailViews.ArcApp';
@@ -119,7 +118,7 @@ export function getUserActionHistogramNameForAppType_(appType: AppType):
 
 export function recordAppManagementUserAction(
     appType: AppType, userAction: AppManagementUserAction) {
-  const histogram = getUserActionHistogramNameForAppType_(appType);
+  const histogram = getUserActionHistogramNameForAppType(appType);
   const enumLength = Object.keys(AppManagementUserAction).length;
   BrowserProxy.getInstance().recordEnumerationValue(
       histogram, userAction, enumLength);

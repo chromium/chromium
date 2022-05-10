@@ -37,7 +37,7 @@ import {InkController, InkControllerEventType} from './ink_controller.js';
 import {LocalStorageProxyImpl} from './local_storage_proxy.js';
 import {record, UserAction} from './metrics.js';
 import {NavigatorDelegateImpl, PdfNavigator, WindowOpenDisposition} from './navigator.js';
-import {DeserializeKeyEvent, LoadState} from './pdf_scripting_api.js';
+import {deserializeKeyEvent, LoadState} from './pdf_scripting_api.js';
 import {getTemplate} from './pdf_viewer.html.js';
 import {KeyEventData, PDFViewerBaseElement} from './pdf_viewer_base.js';
 import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
@@ -749,7 +749,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       case 'sendKeyEvent':
         const keyEventData = data as unknown as KeyEventData;
         const keyEvent =
-            DeserializeKeyEvent(keyEventData.keyEvent) as ExtendedKeyEvent;
+            deserializeKeyEvent(keyEventData.keyEvent) as ExtendedKeyEvent;
         keyEvent.fromPlugin = true;
         this.handleKeyEvent(keyEvent);
         return;

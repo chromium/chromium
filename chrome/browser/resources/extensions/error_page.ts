@@ -50,7 +50,7 @@ function getRelativeUrl(
  * Given 3 strings, this function returns the correct one for the type of
  * error that |item| is.
  */
-function getErrorSeverityText_(
+function getErrorSeverityText(
     item: ManifestError|RuntimeError, log: string, warn: string,
     error: string): string {
   if (item.type === chrome.developerPrivate.ErrorType.RUNTIME) {
@@ -179,11 +179,11 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
 
   private computeErrorIcon_(error: ManifestError|RuntimeError): string {
     // Do not i18n these strings, they're CSS classes.
-    return getErrorSeverityText_(error, 'info', 'warning', 'error');
+    return getErrorSeverityText(error, 'info', 'warning', 'error');
   }
 
   private computeErrorTypeLabel_(error: ManifestError|RuntimeError): string {
-    return getErrorSeverityText_(
+    return getErrorSeverityText(
         error, loadTimeData.getString('logLevel'),
         loadTimeData.getString('warnLevel'),
         loadTimeData.getString('errorLevel'));

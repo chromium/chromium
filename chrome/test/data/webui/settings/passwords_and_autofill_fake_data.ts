@@ -206,18 +206,18 @@ export function createEmptyAddressEntry(): chrome.autofillPrivate.AddressEntry {
  */
 export function createAddressEntry(): chrome.autofillPrivate.AddressEntry {
   const fullName = 'John Doe';
-  const addressLines = patternMaker_('xxxx Main St', 10);
+  const addressLines = patternMaker('xxxx Main St', 10);
   return {
-    guid: makeGuid_(),
+    guid: makeGuid(),
     fullNames: [fullName],
     companyName: 'Google',
     addressLines: addressLines,
     addressLevel1: 'CA',
     addressLevel2: 'Venice',
-    postalCode: patternMaker_('xxxxx', 10),
+    postalCode: patternMaker('xxxxx', 10),
     countryCode: 'US',
-    phoneNumbers: [patternMaker_('(xxx) xxx-xxxx', 10)],
-    emailAddresses: [patternMaker_('userxxxx@gmail.com', 16)],
+    phoneNumbers: [patternMaker('(xxx) xxx-xxxx', 10)],
+    emailAddresses: [patternMaker('userxxxx@gmail.com', 16)],
     languageCode: 'EN-US',
     metadata: {
       isLocal: true,
@@ -247,9 +247,9 @@ export function createCreditCardEntry():
     chrome.autofillPrivate.CreditCardEntry {
   const cards = ['Visa', 'Mastercard', 'Discover', 'Card'];
   const card = cards[Math.floor(Math.random() * cards.length)];
-  const cardNumber = patternMaker_('xxxx xxxx xxxx xxxx', 10);
+  const cardNumber = patternMaker('xxxx xxxx xxxx xxxx', 10);
   return {
-    guid: makeGuid_(),
+    guid: makeGuid(),
     name: 'Jane Doe',
     cardNumber: cardNumber,
     expirationMonth: Math.ceil(Math.random() * 11).toString(),
@@ -316,8 +316,8 @@ export function makePasswordCheckStatus(
 /**
  * Creates a new random GUID for testing.
  */
-function makeGuid_(): string {
-  return patternMaker_('xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 16);
+function makeGuid(): string {
+  return patternMaker('xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 16);
 }
 
 /**
@@ -325,7 +325,7 @@ function makeGuid_(): string {
  * @param pattern The pattern that should be used as an input.
  * @param base The number base. ie: 16 for hex or 10 for decimal.
  */
-function patternMaker_(pattern: string, base: number): string {
+function patternMaker(pattern: string, base: number): string {
   return pattern.replace(/x/g, function() {
     return Math.floor(Math.random() * base).toString(base);
   });

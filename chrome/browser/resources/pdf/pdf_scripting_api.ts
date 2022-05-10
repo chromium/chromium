@@ -33,7 +33,7 @@ export type SerializedKeyEvent = {
  * Turn a dictionary received from postMessage into a key event.
  * @param dict A dictionary representing the key event.
  */
-export function DeserializeKeyEvent(dict: SerializedKeyEvent): KeyboardEvent {
+export function deserializeKeyEvent(dict: SerializedKeyEvent): KeyboardEvent {
   const e = new KeyboardEvent('keydown', {
     bubbles: true,
     cancelable: true,
@@ -52,7 +52,7 @@ export function DeserializeKeyEvent(dict: SerializedKeyEvent): KeyboardEvent {
  * Turn a key event into a dictionary which can be sent over postMessage.
  * @return A dictionary representing the key event.
  */
-export function SerializeKeyEvent(event: KeyboardEvent): SerializedKeyEvent {
+export function serializeKeyEvent(event: KeyboardEvent): SerializedKeyEvent {
   return {
     keyCode: event.keyCode,
     code: event.code,
@@ -129,7 +129,7 @@ export class PDFScriptingAPI {
         }
         case 'sendKeyEvent':
           if (this.keyEventCallback_) {
-            this.keyEventCallback_(DeserializeKeyEvent(event.data.keyEvent));
+            this.keyEventCallback_(deserializeKeyEvent(event.data.keyEvent));
           }
           break;
       }
@@ -267,7 +267,7 @@ export class PDFScriptingAPI {
    */
   sendKeyEvent(keyEvent: KeyboardEvent) {
     this.sendMessage_(
-        {type: 'sendKeyEvent', keyEvent: SerializeKeyEvent(keyEvent)});
+        {type: 'sendKeyEvent', keyEvent: serializeKeyEvent(keyEvent)});
   }
 
   /**
@@ -288,7 +288,7 @@ export class PDFScriptingAPI {
  * @param baseUrl the base URL of the PDF viewer
  * @return The iframe element containing the PDF viewer.
  */
-export function PDFCreateOutOfProcessPlugin(
+export function pdfCreateOutOfProcessPlugin(
     src: string, baseUrl: string): PDFPlugin {
   const client = new PDFScriptingAPI(window, null);
   const iframe = window.document.createElement('iframe') as PDFPlugin;

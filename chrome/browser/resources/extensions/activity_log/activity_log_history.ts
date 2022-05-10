@@ -42,7 +42,7 @@ export interface ActivityLogDelegate {
  * the scripts executed (specified as a stringified JSON array in the args
  * field) as the keys for an activity group instead.
  */
-function getActivityGroupKeysForContentScript_(
+function getActivityGroupKeysForContentScript(
     activity: chrome.activityLogPrivate.ExtensionActivity): string[] {
   assert(
       activity.activityType ===
@@ -63,7 +63,7 @@ function getActivityGroupKeysForContentScript_(
  * is in activity.other.webRequest and we use this to generate more activity
  * group keys if possible.
  */
-function getActivityGroupKeysForWebRequest_(
+function getActivityGroupKeysForWebRequest(
     activity: chrome.activityLogPrivate.ExtensionActivity): Array<string> {
   assert(
       activity.activityType ===
@@ -111,9 +111,9 @@ function groupActivities(
 
     let activityGroupKeys = [activity.apiCall];
     if (isContentScript) {
-      activityGroupKeys = getActivityGroupKeysForContentScript_(activity);
+      activityGroupKeys = getActivityGroupKeysForContentScript(activity);
     } else if (isWebRequest) {
-      activityGroupKeys = getActivityGroupKeysForWebRequest_(activity);
+      activityGroupKeys = getActivityGroupKeysForWebRequest(activity);
     }
 
     for (const key of activityGroupKeys) {

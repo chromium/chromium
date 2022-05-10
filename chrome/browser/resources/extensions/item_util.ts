@@ -151,7 +151,7 @@ export function computeInspectableViewLabel(
 /**
  * @return Whether the extension is in the terminated state.
  */
-function isTerminated_(state: chrome.developerPrivate.ExtensionState): boolean {
+function isTerminated(state: chrome.developerPrivate.ExtensionState): boolean {
   return state === chrome.developerPrivate.ExtensionState.TERMINATED;
 }
 
@@ -160,7 +160,7 @@ function isTerminated_(state: chrome.developerPrivate.ExtensionState): boolean {
  */
 export function getEnableControl(data: chrome.developerPrivate.ExtensionInfo):
     EnableControl {
-  if (isTerminated_(data.state)) {
+  if (isTerminated(data.state)) {
     return EnableControl.RELOAD;
   }
   if (data.disableReasons.corruptInstall && data.userMayModify) {

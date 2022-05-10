@@ -68,7 +68,8 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
    * @param root The root of the sub-tree to be searched
    * @return Whether or not matches were found.
    */
-  function findAndHighlightMatches_(request: SearchRequest, root: Node): boolean {
+  function findAndHighlightMatches(
+      request: SearchRequest, root: Node): boolean {
     let foundMatches = false;
     const highlights: Array<HTMLElement> = [];
 
@@ -116,7 +117,7 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
 
         if (ranges.length > 0) {
           foundMatches = true;
-          revealParentSection_(
+          revealParentSection(
               node, /*numResults=*/ ranges.length, request.bubbles);
 
           if (node.parentNode!.nodeName === 'OPTION') {
@@ -132,7 +133,7 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
               return;
             }
 
-            showBubble_(
+            showBubble(
                 select, /*numResults=*/ ranges.length, request.bubbles,
                 /*horizontallyCenter=*/ true);
           } else {
@@ -169,7 +170,7 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
    * Finds and makes visible the <settings-section> parent of |node|.
    * @param bubbles A map of bubbles created so far.
    */
-  function revealParentSection_(
+  function revealParentSection(
       node: Node, numResults: number, bubbles: Map<Node, number>) {
     let associatedControl: HTMLElement|null = null;
 
@@ -197,13 +198,13 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
     // Need to add the search bubble after the parent SETTINGS-SECTION has
     // become visible, otherwise |offsetWidth| returns zero.
     if (associatedControl) {
-      showBubble_(
+      showBubble(
           associatedControl, numResults, bubbles,
           /* horizontallyCenter= */ false);
     }
   }
 
-  function showBubble_(
+  function showBubble(
       control: Node, numResults: number, bubbles: Map<Node, number>,
       horizontallyCenter: boolean) {
     const bubble = createEmptySearchBubble(control, horizontallyCenter);
@@ -263,7 +264,7 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
 
   class SearchAndHighlightTask extends Task {
     exec() {
-      const foundMatches = findAndHighlightMatches_(this.request, this.node);
+      const foundMatches = findAndHighlightMatches(this.request, this.node);
       this.request.updateMatches(foundMatches);
       return Promise.resolve();
     }
@@ -276,7 +277,7 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
       const shouldSearch = this.request.regExp !== null;
       this.setSectionsVisibility_(!shouldSearch);
       if (shouldSearch) {
-        const foundMatches = findAndHighlightMatches_(this.request, this.node);
+        const foundMatches = findAndHighlightMatches(this.request, this.node);
         this.request.updateMatches(foundMatches);
       }
 

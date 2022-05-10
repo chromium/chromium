@@ -16,7 +16,7 @@ import {ExtendedKeyEvent, FittingType} from './constants.js';
 import {MessageData, PluginController, PrintPreviewParams} from './controller.js';
 import {ViewerPageIndicatorElement} from './elements/viewer-page-indicator.js';
 import {ViewerZoomToolbarElement} from './elements/viewer-zoom-toolbar.js';
-import {DeserializeKeyEvent, LoadState, SerializeKeyEvent} from './pdf_scripting_api.js';
+import {deserializeKeyEvent, LoadState, serializeKeyEvent} from './pdf_scripting_api.js';
 import {KeyEventData, PDFViewerBaseElement} from './pdf_viewer_base.js';
 import {getTemplate} from './pdf_viewer_pp.html.js';
 import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
@@ -98,7 +98,7 @@ export class PDFViewerPPElement extends PDFViewerBaseElement {
     // Give print preview a chance to handle the key event.
     if (!e.fromScriptingAPI) {
       this.sendScriptingMessage(
-          {type: 'sendKeyEvent', keyEvent: SerializeKeyEvent(e)});
+          {type: 'sendKeyEvent', keyEvent: serializeKeyEvent(e)});
     } else {
       // Show toolbar as a fallback.
       if (!(e.shiftKey || e.ctrlKey || e.altKey)) {
@@ -215,7 +215,7 @@ export class PDFViewerPPElement extends PDFViewerBaseElement {
         return true;
       case 'sendKeyEvent':
         const keyEvent =
-            DeserializeKeyEvent((message.data as KeyEventData).keyEvent);
+            deserializeKeyEvent((message.data as KeyEventData).keyEvent);
         const extendedKeyEvent = keyEvent as ExtendedKeyEvent;
         extendedKeyEvent.fromScriptingAPI = true;
         this.handleKeyEvent(extendedKeyEvent);
@@ -284,7 +284,7 @@ export class PDFViewerPPElement extends PDFViewerBaseElement {
         // TODO(crbug.com/1069370): Draw a focus rect around plugin.
         return;
       case 'sendKeyEvent':
-        const keyEvent = DeserializeKeyEvent((data as KeyEventData).keyEvent) as
+        const keyEvent = deserializeKeyEvent((data as KeyEventData).keyEvent) as
             ExtendedKeyEvent;
         keyEvent.fromPlugin = true;
         this.handleKeyEvent(keyEvent);

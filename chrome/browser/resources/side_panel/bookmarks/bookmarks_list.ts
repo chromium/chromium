@@ -168,7 +168,7 @@ export class BookmarksListElement extends PolymerElement {
   private findPathToId_(id: string): chrome.bookmarks.BookmarkTreeNode[] {
     const path: chrome.bookmarks.BookmarkTreeNode[] = [];
 
-    function findPathByIdInternal_(
+    function findPathByIdInternal(
         id: string, node: chrome.bookmarks.BookmarkTreeNode) {
       if (node.id === id) {
         path.push(node);
@@ -181,7 +181,7 @@ export class BookmarksListElement extends PolymerElement {
 
       path.push(node);
       const foundInChildren =
-          node.children.some(child => findPathByIdInternal_(id, child));
+          node.children.some(child => findPathByIdInternal(id, child));
       if (!foundInChildren) {
         path.pop();
       }
@@ -189,7 +189,7 @@ export class BookmarksListElement extends PolymerElement {
       return foundInChildren;
     }
 
-    this.folders_.some(folder => findPathByIdInternal_(id, folder));
+    this.folders_.some(folder => findPathByIdInternal(id, folder));
     return path;
   }
 

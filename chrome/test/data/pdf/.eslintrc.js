@@ -8,4 +8,22 @@ module.exports = {
     'no-restricted-properties': 'off',
     'eqeqeq': ['error', 'always', {'null': 'ignore'}],
   },
+
+  'overrides': [{
+    'files': ['**/*.ts'],
+    'parser': '../../../../third_party/node/node_modules/@typescript-eslint/parser',
+    'plugins': [
+      '@typescript-eslint',
+    ],
+    'rules': {
+      '@typescript-eslint/naming-convention': [
+        'error',
+        // Override default format to allow test functions like testFoo_bar().
+        {
+          selector: 'function',
+          format: null,
+        },
+      ],
+    }
+  }]
 };
