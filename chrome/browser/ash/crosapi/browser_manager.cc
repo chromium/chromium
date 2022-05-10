@@ -84,6 +84,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 // TODO(crbug.com/1101667): Currently, this source has log spamming
@@ -1045,6 +1047,14 @@ void BrowserManager::StartWithLogFile(
 
   if (crash_reporter::IsCrashpadEnabled()) {
     command_line.AppendSwitch(switches::kEnableCrashpad);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kLacrosResourcesFileSharing)) {
+    // Pass a flag to enable resources file sharing to Lacros.
+    // To use resources file sharing feature on Lacros, it's required for ash to
+    // run with enabling the feature as well since the feature is based on some
+    // ash behavior(clear or move cached shared resource file at lacros launch).
+    command_line.AppendSwitch(switches::kEnableResourcesFileSharing);
   }
 
   // Create the lacros-chrome subprocess.
