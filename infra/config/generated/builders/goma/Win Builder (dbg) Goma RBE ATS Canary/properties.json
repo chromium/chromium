@@ -1,4 +1,43 @@
 {
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "goma",
+              "builder": "Win Builder (dbg) Goma RBE ATS Canary",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-fyi-archive",
+              "builder_group": "chromium.goma.fyi",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb",
+                  "goma_canary"
+                ],
+                "build_config": "Debug",
+                "config": "chromium",
+                "target_bits": 32
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "goma",
+          "builder": "Win Builder (dbg) Goma RBE ATS Canary",
+          "project": "chromium"
+        }
+      ]
+    }
+  },
   "$build/goma": {
     "enable_ats": true,
     "rpc_extra_params": "?prod",
