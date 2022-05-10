@@ -2844,7 +2844,7 @@
   {
     "name": "enable-user-cloud-signin-restriction-policy",
     "owners": [ "ydago" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 105
   },
   {
     "name": "enable-vaapi-av1-decode-acceleration",
