@@ -50,6 +50,11 @@ class USER_MANAGER_EXPORT UserManager {
     // Called when the image of the given user is changed.
     virtual void OnUserImageChanged(const User& user);
 
+    // Called when the user image enterprise state of the given user is changed.
+    virtual void OnUserImageIsEnterpriseManagedChanged(
+        const User& user,
+        bool is_enterprise_managed);
+
     // Called when the profile image download for the given user fails or
     // user has the default profile image or no porfile image at all.
     virtual void OnUserProfileImageUpdateFailed(const User& user);
@@ -332,6 +337,9 @@ class USER_MANAGER_EXPORT UserManager {
 
   virtual void NotifyLocalStateChanged() = 0;
   virtual void NotifyUserImageChanged(const User& user) = 0;
+  virtual void NotifyUserImageIsEnterpriseManagedChanged(
+      const User& user,
+      bool is_enterprise_managed) = 0;
   virtual void NotifyUserProfileImageUpdateFailed(const User& user) = 0;
   virtual void NotifyUserProfileImageUpdated(
       const User& user,

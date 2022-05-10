@@ -61,6 +61,7 @@ class UserImageManagerImpl : public UserImageManager,
   UserImageSyncObserver* GetSyncObserver() const override;
   void Shutdown() override;
 
+  bool IsUserImageManaged() const override;
   void OnExternalDataSet(const std::string& policy) override;
   void OnExternalDataCleared(const std::string& policy) override;
   void OnExternalDataFetched(const std::string& policy,
@@ -106,10 +107,6 @@ class UserImageManagerImpl : public UserImageManager,
   void OnProfileDownloadFailure(
       ProfileDownloader* downloader,
       ProfileDownloaderDelegate::FailureReason reason) override;
-
-  // Returns true if the user image for the user is managed by
-  // policy and the user is not allowed to change it.
-  bool IsUserImageManaged() const;
 
   // Randomly chooses one of the default images for the specified user, sends a
   // LOGIN_USER_IMAGE_CHANGED notification and updates local state.

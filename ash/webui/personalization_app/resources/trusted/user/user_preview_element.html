@@ -15,15 +15,20 @@
     position: relative;
   }
 
-  :host([clickable]) #imageContainer:hover {
-    filter: brightness(0.94);
-  }
-
   #imageContainer img {
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 50%;
     height: 80px;
     width: 80px;
+  }
+
+  #imageContainer img.clickable {
+    cursor: pointer;
+  }
+
+  #imageContainer img.clickable:hover,
+  #iconContainer:hover ~ img {
+    filter: brightness(0.94);
   }
 
   #infoContainer {
@@ -74,15 +79,46 @@
     --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
   }
 
-  ::slotted(div[id='userSubpageLink']) {
+  #iconContainer,
+  #enterpriseIconContainer {
+    -webkit-tap-highlight-color: transparent;
+    border-radius: 50%;
     bottom: 0;
-    grid-area: image;
+    box-shadow: var(--cros-elevation-1-shadow);
+    display: inline-block;
+    height: 24px;
+    line-height: 24px;
     position: absolute;
     right: 2px;
+    text-align: center;
+    vertical-align: middle;
+    width: 24px;
   }
 
-  #avatar {
+  #iconContainer {
+    background-color: var(--cros-icon-color-prominent);
     cursor: pointer;
+    z-index: 1;
+  }
+
+  #iconContainer iron-icon {
+    padding-block-start: 3px;
+    padding-inline-start: 4px;
+  }
+
+  /** TODO(b/231359911) find suitable semantic colors for enterprise icon. */
+  #enterpriseIconContainer {
+    --iron-icon-fill-color: var(--google-grey-800);
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+    background-color: var(--google-grey-100);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #enterpriseIconContainer {
+      --iron-icon-fill-color: var(--google-grey-300);
+      background-color: var(--google-grey-800);
+    }
   }
 
   #avatar:focus-visible {
@@ -90,20 +126,37 @@
   }
 </style>
 <div id="container">
-  <div id="imageContainer">
+  <div id="imageContainer"
+      aria-label$="[[getImageContainerAriaLabel_(path, imageIsEnterpriseManaged_)]]">
     <template is="dom-if" if="[[imageUrl_]]">
-      <template is="dom-if" if="[[clickable]]">
+      <template is="dom-if" if="[[imageIsEnterpriseManaged_]]">
+        <img id="avatar" class="managed" src$="[[imageUrl_.url]]"
+            alt="$i18n{managedSetting}" title="$i18n{managedSetting}">
+        <div id="enterpriseIconContainer">
+          <iron-icon icon="personalization:managed">
+          </iron-icon>
+        </div>
+      </template>
+      <template is="dom-if"
+          if="[[shouldShowMainPageView_(path, imageIsEnterpriseManaged_)]]">
+        <div id="iconContainer"
+            on-click="onClickUserSubpageLink_"
+            on-keypress="onClickUserSubpageLink_">
+          <iron-icon icon="personalization:pencil"></iron-icon>
+        </div>
         <paper-ripple class="circle"></paper-ripple>
-        <img tabindex="0" id="avatar" src$="[[imageUrl_.url]]"
-            role="button" aria-label="$i18n{ariaLabelChangeAvatar}"
+        <img tabindex="0" id="avatar" class="clickable" src$="[[imageUrl_.url]]"
+            alt$="[[getImageAlt_(image_)]]"
+            role="button"
             on-click="onClickUserSubpageLink_"
             on-keypress="onClickUserSubpageLink_">
       </template>
-      <template is="dom-if" if="[[!clickable]]">
-        <img id="avatar2" src$="[[imageUrl_.url]]">
+      <template is="dom-if"
+          if="[[shouldShowSubpageView_(path, imageIsEnterpriseManaged_)]]">
+        <img id="avatar2" src$="[[imageUrl_.url]]"
+            alt$="[[getImageAlt_(image_)]]">
       </template>
     </template>
-    <slot></slot>
   </div>
   <div id="infoContainer">
     <template is="dom-if" if="[[info_]]">

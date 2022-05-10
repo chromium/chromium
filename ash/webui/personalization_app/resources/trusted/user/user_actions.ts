@@ -17,10 +17,12 @@ export enum UserActionName {
   SET_IS_CAMERA_PRESENT = 'set_is_camera_present',
   SET_USER_IMAGE = 'set_user_image',
   SET_USER_INFO = 'set_user_info',
+  SET_USER_IMAGE_IS_ENTERPRISE_MANAGED = 'set_user_image_is_enterprise_managed',
 }
 
 export type UserActions = SetIsCameraPresentAction|SetUserImageAction|
-    SetDefaultUserImagesAction|SetUserInfoAction|SetProfileImageAction;
+    SetDefaultUserImagesAction|SetUserInfoAction|SetProfileImageAction|
+    SetUserImageIsEnterpriseManagedAction;
 
 export type SetIsCameraPresentAction = Action&{
   name: UserActionName.SET_IS_CAMERA_PRESENT,
@@ -83,5 +85,18 @@ export function setProfileImageAction(profileImage: Url):
   return {
     name: UserActionName.SET_PROFILE_IMAGE,
     profileImage,
+  };
+}
+
+export type SetUserImageIsEnterpriseManagedAction = Action&{
+  name: UserActionName.SET_USER_IMAGE_IS_ENTERPRISE_MANAGED,
+  isEnterpriseManaged: boolean,
+};
+
+export function setUserImageIsEnterpriseManagedAction(
+    isEnterpriseManaged: boolean): SetUserImageIsEnterpriseManagedAction {
+  return {
+    name: UserActionName.SET_USER_IMAGE_IS_ENTERPRISE_MANAGED,
+    isEnterpriseManaged,
   };
 }

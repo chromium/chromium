@@ -55,14 +55,14 @@
     </div>
   </template>
   <template is="dom-if" if="[[shouldShowRootPage_(path_)]]">
-    <personalization-main></personalization-main>
+    <personalization-main path="[[path_]]"></personalization-main>
   </template>
   <template is="dom-if" if="[[shouldShowAmbientSubpage_(path_)]]">
     <ambient-subpage path="[[path_]]" query-params="[[queryParams_]]">
     </ambient-subpage>
   </template>
-  <template is="dom-if" if="[[shouldShowUserSubpage_(path_)]]">
-    <user-subpage></user-subpage>
+  <template is="dom-if" if="[[shouldShowUserSubpage_(path_)]]" restamp>
+    <user-subpage path="[[path_]]"></user-subpage>
   </template>
   <template is="dom-if" if="[[shouldShowWallpaperSubpage_(path_)]]">
     <wallpaper-subpage path="[[path_]]" query-params="[[queryParams_]]">

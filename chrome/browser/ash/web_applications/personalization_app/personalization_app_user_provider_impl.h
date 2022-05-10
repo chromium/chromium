@@ -83,6 +83,10 @@ class PersonalizationAppUserProviderImpl
   // user_manager::UserManager::Observer:
   void OnUserImageChanged(const user_manager::User& user) override;
 
+  void OnUserImageIsEnterpriseManagedChanged(
+      const user_manager::User& user,
+      bool is_enterprise_managed) override;
+
   void OnUserProfileImageUpdated(const user_manager::User& user,
                                  const gfx::ImageSkia& profile_image) override;
 

@@ -12,9 +12,10 @@ import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {UserInfo} from '../personalization_app.mojom-webui.js';
+import {UserImage, UserInfo} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+import {decodeString16} from '../utils.js';
 
 import {initializeUserData} from './user_controller.js';
 import {UserImageObserver} from './user_image_observer.js';
@@ -33,29 +34,36 @@ export class UserPreview extends WithPersonalizationStore {
 
   static get properties() {
     return {
-      clickable: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
+      path: String,
       info_: Object,
+      image_: Object,
       imageUrl_: {
         type: String,
         observer: 'onImageUrlChanged_',
         value: null,
       },
+      imageIsEnterpriseManaged_: {
+        type: Boolean,
+        value: null,
+      },
     };
   }
 
-  public clickable: boolean;
+  private path: string;
   private info_: UserInfo|null;
+  private image_: UserImage|null;
   private imageUrl_: Url|null;
+  private imageIsEnterpriseManaged_: boolean|null;
 
   override connectedCallback() {
     super.connectedCallback();
     UserImageObserver.initUserImageObserverIfNeeded();
     this.watch<UserPreview['info_']>('info_', state => state.user.info);
+    this.watch<UserPreview['image_']>('image_', state => state.user.image);
     this.watch<UserPreview['imageUrl_']>('imageUrl_', selectUserImageUrl);
+    this.watch<UserPreview['imageIsEnterpriseManaged_']>(
+        'imageIsEnterpriseManaged_',
+        state => state.user.imageIsEnterpriseManaged);
     this.updateFromStore();
     initializeUserData(getUserProvider(), this.getStore());
   }
@@ -74,6 +82,47 @@ export class UserPreview extends WithPersonalizationStore {
       // times.
       URL.revokeObjectURL(old.url);
     }
+  }
+
+  private shouldShowMainPageView_(path: string, isEnterpriseManaged: boolean):
+      boolean {
+    return path === Paths.ROOT && !isEnterpriseManaged;
+  }
+
+  private shouldShowSubpageView_(path: string, isEnterpriseManaged: boolean):
+      boolean {
+    return path === Paths.USER && !isEnterpriseManaged;
+  }
+
+  private getImageContainerAriaLabel_(
+      path: string, isEnterpriseManaged: boolean): string|boolean {
+    if (this.shouldShowMainPageView_(path, isEnterpriseManaged) ||
+        isEnterpriseManaged) {
+      return this.i18n('ariaLabelChangeAvatar');
+    }
+    if (this.shouldShowSubpageView_(path, isEnterpriseManaged)) {
+      return this.i18n('ariaLabelCurrentAvatar');
+    }
+    // No aria-label attribute will be set.
+    return false;
+  }
+
+  private getImageAlt_(image: UserImage|null): string {
+    if (!image || image.invalidImage) {
+      return '';
+    }
+    if (image.defaultImage) {
+      return decodeString16(image.defaultImage.title);
+    }
+    if (image.externalImage) {
+      return this.i18n('lastExternalImageTitle');
+    }
+    if (image.profileImage) {
+      return this.i18n('googleProfilePhoto');
+    }
+
+    console.warn('Unknown image type received');
+    return '';
   }
 }
 

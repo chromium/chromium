@@ -688,6 +688,10 @@ void UserImageManagerImpl::Shutdown() {
   user_image_sync_observer_.reset();
 }
 
+bool UserImageManagerImpl::IsUserImageManaged() const {
+  return has_managed_image_;
+}
+
 void UserImageManagerImpl::OnExternalDataSet(const std::string& policy) {
   DCHECK_EQ(policy::key::kUserAvatarImage, policy);
   if (IsUserImageManaged())
@@ -701,6 +705,9 @@ void UserImageManagerImpl::OnExternalDataSet(const std::string& policy) {
   // sync observer so that the policy-set image does not get synced out.
   if (user && user->is_logged_in())
     user_image_sync_observer_.reset();
+
+  user_manager_->NotifyUserImageIsEnterpriseManagedChanged(
+      *user, /*is_enterprise_managed=*/true);
 }
 
 void UserImageManagerImpl::OnExternalDataCleared(const std::string& policy) {
@@ -709,6 +716,8 @@ void UserImageManagerImpl::OnExternalDataCleared(const std::string& policy) {
     return;
 
   has_managed_image_ = false;
+  user_manager_->NotifyUserImageIsEnterpriseManagedChanged(
+      *GetUser(), /*is_enterprise_managed=*/false);
   SetInitialUserImage();
   TryToCreateImageSyncObserver();
 }
@@ -828,10 +837,6 @@ void UserImageManagerImpl::OnProfileDownloadFailure(
   }
 
   user_manager_->NotifyUserProfileImageUpdateFailed(*GetUser());
-}
-
-bool UserImageManagerImpl::IsUserImageManaged() const {
-  return has_managed_image_;
 }
 
 void UserImageManagerImpl::SetInitialUserImage() {

@@ -40,32 +40,9 @@
     font: var(--personalization-app-label-font);
     margin: 14px 0;
   }
-
-  #userSubpageLink {
-    -webkit-tap-highlight-color: transparent;
-    background-color: var(--cros-icon-color-prominent);
-    border-radius: 50%;
-    box-shadow: var(--cros-elevation-1-shadow);
-    cursor: pointer;
-    display: inline-block;
-    height: 24px;
-    line-height: 24px;
-    text-align: center;
-    vertical-align: middle;
-    width: 24px;
-  }
-
-  #userSubpageLink iron-icon {
-    padding-block-start: 3px;
-    padding-inline-start: 4px;
-  }
 </style>
 <div id="container">
-  <user-preview clickable="[[clickable_]]">
-    <div id="userSubpageLink"
-        on-click="onClickUserSubpageLink_" on-keypress="onClickUserSubpageLink_">
-     <iron-icon icon="personalization:pencil"></iron-icon>
-   </div>
+  <user-preview path="[[path]]">
   </user-preview>
   <div id="middle">
     <wallpaper-preview>

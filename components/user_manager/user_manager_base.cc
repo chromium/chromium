@@ -737,6 +737,15 @@ void UserManagerBase::NotifyUserImageChanged(const User& user) {
     observer.OnUserImageChanged(user);
 }
 
+void UserManagerBase::NotifyUserImageIsEnterpriseManagedChanged(
+    const User& user,
+    bool is_enterprise_managed) {
+  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  for (auto& observer : observer_list_) {
+    observer.OnUserImageIsEnterpriseManagedChanged(user, is_enterprise_managed);
+  }
+}
+
 void UserManagerBase::NotifyUserProfileImageUpdateFailed(const User& user) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   for (auto& observer : observer_list_)

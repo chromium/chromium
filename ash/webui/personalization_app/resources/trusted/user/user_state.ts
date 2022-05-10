@@ -13,6 +13,7 @@ export interface UserState {
   profileImage: Url|null;
   isCameraPresent: boolean;
   lastExternalUserImage: UserImage|null;
+  imageIsEnterpriseManaged: boolean|null;
 }
 
 export function emptyState(): UserState {
@@ -23,5 +24,6 @@ export function emptyState(): UserState {
     profileImage: null,
     isCameraPresent: false,
     lastExternalUserImage: null,
+    imageIsEnterpriseManaged: null,
   };
 }

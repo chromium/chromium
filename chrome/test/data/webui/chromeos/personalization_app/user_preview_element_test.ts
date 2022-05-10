@@ -5,8 +5,8 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {UserImage, UserPreview} from 'chrome://personalization/trusted/personalization_app.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {Paths, UserImage, UserPreview} from 'chrome://personalization/trusted/personalization_app.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -49,9 +49,26 @@ suite('UserPreviewTest', function() {
         userPreviewElement!.shadowRoot!.getElementById('name')!.innerText);
   });
 
+  test('displays edit icon when not managed', async () => {
+    personalizationStore.data.user.image = userProvider.image;
+    personalizationStore.data.user.imageIsEnterpriseManaged = false;
+    userPreviewElement = initElement(UserPreview, {path: Paths.ROOT});
+    await waitAfterNextRender(userPreviewElement);
+
+    const avatarImage =
+        userPreviewElement!.shadowRoot!.getElementById('avatar');
+    assertFalse(avatarImage!.classList.contains('managed'));
+    // Does show edit icon.
+    assertTrue(
+        !!userPreviewElement!.shadowRoot!.getElementById('iconContainer'));
+    // Does not show enterprise icon.
+    assertFalse(!!userPreviewElement!.shadowRoot!.getElementById(
+        'enterpriseIconContainer'));
+  });
+
   test('displays user image from default image', async () => {
     personalizationStore.data.user.image = userProvider.image;
-    userPreviewElement = initElement(UserPreview, {clickable: true});
+    userPreviewElement = initElement(UserPreview, {path: Paths.ROOT});
     await waitAfterNextRender(userPreviewElement!);
 
     const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
@@ -64,7 +81,7 @@ suite('UserPreviewTest', function() {
   test('displays user image from profile image', async () => {
     personalizationStore.data.user.image = {profileImage: {}};
     personalizationStore.data.user.profileImage = userProvider.profileImage;
-    userPreviewElement = initElement(UserPreview, {clickable: true});
+    userPreviewElement = initElement(UserPreview, {path: Paths.ROOT});
     await waitAfterNextRender(userPreviewElement!);
 
     const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
@@ -86,7 +103,7 @@ suite('UserPreviewTest', function() {
     } as UserImage;
     personalizationStore.data.user.image = externalImage;
 
-    userPreviewElement = initElement(UserPreview, {clickable: true});
+    userPreviewElement = initElement(UserPreview, {path: Paths.ROOT});
     await waitAfterNextRender(userPreviewElement);
 
     const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
@@ -99,7 +116,7 @@ suite('UserPreviewTest', function() {
 
   test('displays non-clickable user image on user subpage', async () => {
     personalizationStore.data.user.image = userProvider.image;
-    userPreviewElement = initElement(UserPreview);
+    userPreviewElement = initElement(UserPreview, {path: Paths.USER});
     await waitAfterNextRender(userPreviewElement);
 
     const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
@@ -107,5 +124,22 @@ suite('UserPreviewTest', function() {
     assertEquals(
         userProvider.image.defaultImage?.url.url, avatarImage.src,
         'default image url is shown on non-clickable image');
+  });
+
+  test('displays enterprise logo on avatar image', async () => {
+    personalizationStore.data.user.image = userProvider.image;
+    personalizationStore.data.user.imageIsEnterpriseManaged = true;
+    userPreviewElement = initElement(UserPreview, {path: Paths.ROOT});
+    await waitAfterNextRender(userPreviewElement);
+
+    const avatarImage =
+        userPreviewElement!.shadowRoot!.getElementById('avatar');
+    assertTrue(avatarImage!.classList.contains('managed'));
+    // Does not show edit icon.
+    assertFalse(
+        !!userPreviewElement!.shadowRoot!.getElementById('iconContainer'));
+    // Does show enterprise icon.
+    assertTrue(!!userPreviewElement!.shadowRoot!.getElementById(
+        'enterpriseIconContainer'));
   });
 });

@@ -389,6 +389,10 @@ interface UserImageObserver {
   // Triggered by
   // |ash::CameraPresenceNotifier::Observer::OnCameraPresenceCheckDone|.
   OnCameraPresenceCheckDone(bool is_camera_present);
+
+  // Triggered by
+  // |UserManager::Observer::OnUserImageIsEnterpriseManagedChanged|.
+  OnIsEnterpriseManagedChanged(bool is_enterprise_managed);
 };
 
 // Provides APIs to view information about the current user. This API is exposed

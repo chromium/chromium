@@ -20,6 +20,9 @@
   }
 </style>
 <div id="container">
-  <user-preview></user-preview>
-  <avatar-list></avatar-list>
+  <template is="dom-if"
+      if="[[isNotEnterpriseManaged_(isUserImageEnterpriseManaged_)]]">
+    <user-preview path="[[path]]"></user-preview>
+    <avatar-list></avatar-list>
+  </template>
 </div>

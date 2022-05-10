@@ -43,6 +43,7 @@ class MockUserImageManager : public UserImageManager {
               (const, override));
   MOCK_METHOD(UserImageSyncObserver*, GetSyncObserver, (), (const, override));
   MOCK_METHOD(void, Shutdown, (), (override));
+  MOCK_METHOD(bool, IsUserImageManaged, (), (const, override));
   MOCK_METHOD(void, OnExternalDataSet, (const std::string& policy), (override));
   MOCK_METHOD(void,
               OnExternalDataCleared,

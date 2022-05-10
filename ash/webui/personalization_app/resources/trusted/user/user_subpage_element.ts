@@ -7,10 +7,13 @@
  * current user and allows changing device avatar image.
  */
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PersonalizationRouter} from '../personalization_router_element.js';
+import {WithPersonalizationStore} from '../personalization_store.js';
+
+import {UserImageObserver} from './user_image_observer.js';
 import {getTemplate} from './user_subpage_element.html.js';
 
-export class UserSubpage extends PolymerElement {
+export class UserSubpage extends WithPersonalizationStore {
   static get is() {
     return 'user-subpage';
   }
@@ -20,7 +23,39 @@ export class UserSubpage extends PolymerElement {
   }
 
   static get properties() {
-    return {};
+    return {
+      path: String,
+      isUserImageEnterpriseManaged_: {
+        type: Boolean,
+        value: null,
+        observer: 'onUserImageIsEnterpriseManagedChanged_',
+      },
+    };
+  }
+
+  path: string;
+  isUserImageEnterpriseManaged_: boolean|null;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    UserImageObserver.initUserImageObserverIfNeeded();
+    this.watch<UserSubpage['isUserImageEnterpriseManaged_']>(
+        'isUserImageEnterpriseManaged_',
+        state => state.user.imageIsEnterpriseManaged);
+    this.updateFromStore();
+  }
+
+  private onUserImageIsEnterpriseManagedChanged_(isUserImageEnterpriseManaged:
+                                                     boolean|null) {
+    if (isUserImageEnterpriseManaged) {
+      // This page should not be accessible if the image is enterprise managed.
+      PersonalizationRouter.reloadAtRoot();
+    }
+  }
+
+  private isNotEnterpriseManaged_(isEnterpriseManaged: boolean|null): boolean {
+    // Specifically exclude null.
+    return isEnterpriseManaged === false;
   }
 }
 

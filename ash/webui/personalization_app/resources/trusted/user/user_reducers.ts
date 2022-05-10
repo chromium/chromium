@@ -78,6 +78,17 @@ export function lastExternalUserImageReducer(
   }
 }
 
+export function imageIsEnterpriseManagedReducer(
+    state: boolean|null, action: Actions, _: PersonalizationState): boolean|
+    null {
+  switch (action.name) {
+    case UserActionName.SET_USER_IMAGE_IS_ENTERPRISE_MANAGED:
+      return action.isEnterpriseManaged;
+    default:
+      return state;
+  }
+}
+
 export const userReducers:
     {[K in keyof UserState]: ReducerFunction<UserState[K]>} = {
       defaultUserImages: defaultUserImagesReducer,
@@ -86,4 +97,5 @@ export const userReducers:
       profileImage: profileImageReducer,
       isCameraPresent: isCameraPresentReducer,
       lastExternalUserImage: lastExternalUserImageReducer,
+      imageIsEnterpriseManaged: imageIsEnterpriseManagedReducer,
     };

@@ -126,15 +126,19 @@ void PersonalizationAppUserProviderImpl::SetUserImageObserver(
   if (!user_manager_observer_.IsObserving())
     user_manager_observer_.Observe(user_manager);
 
-  // Call it manually the first time.
-  OnUserImageChanged(*GetUser(profile_));
+  const auto* user = GetUser(profile_);
+
+  // Call observers manually the first time to initialize state.
+  OnUserImageChanged(*user);
 
   ash::UserImageManager* user_image_manager =
       ash::ChromeUserManager::Get()->GetUserImageManager(
           GetAccountId(profile_));
   const gfx::ImageSkia& profile_image =
       user_image_manager->DownloadedProfileImage();
-  OnUserProfileImageUpdated(*GetUser(profile_), profile_image);
+  OnUserProfileImageUpdated(*user, profile_image);
+  OnUserImageIsEnterpriseManagedChanged(
+      *user, user_image_manager->IsUserImageManaged());
 
   // Always unbind and rebind the camera check observer to trigger an immediate
   // |OnCameraPresenceCheckDone|.
@@ -308,6 +312,17 @@ void PersonalizationAppUserProviderImpl::OnUserImageChanged(
       break;
     }
   }
+}
+
+void PersonalizationAppUserProviderImpl::OnUserImageIsEnterpriseManagedChanged(
+    const user_manager::User& user,
+    bool is_enterprise_managed) {
+  if (user.GetAccountId() != GetUser(profile_)->GetAccountId()) {
+    return;
+  }
+
+  user_image_observer_remote_->OnIsEnterpriseManagedChanged(
+      is_enterprise_managed);
 }
 
 void PersonalizationAppUserProviderImpl::OnUserProfileImageUpdated(

@@ -2367,6 +2367,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_RAINBOW_COLOR_LABEL" desc="Label for the rainbow color in the keyboard backlight section of personalization hub.">
         Rainbow
       </message>
+      <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_CURRENT_AVATAR" desc="Aria label for the currently set avatar image.">
+        Current Avatar
+      </message>
 
       <!-- Personalization App Search Results -->
       <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE" desc="Text for search result item which, when clicked, navigates the user to personalization app.">

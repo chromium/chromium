@@ -124,6 +124,8 @@ void AddStrings(content::WebUIDataSource* source) {
       {"chooseAFile", IDS_PERSONALIZATION_APP_AVATAR_CHOOSE_A_FILE},
       {"lastExternalImageTitle",
        IDS_PERSONALIZATION_APP_AVATAR_LAST_EXTERNAL_IMAGE},
+      {"ariaLabelCurrentAvatar",
+       IDS_PERSONALIZATION_APP_ARIA_LABEL_CURRENT_AVATAR},
 
       // Ambient mode related string.
       {"screensaverLabel", IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL},

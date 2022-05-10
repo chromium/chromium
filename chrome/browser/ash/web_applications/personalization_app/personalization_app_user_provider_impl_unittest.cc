@@ -27,6 +27,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -100,6 +101,10 @@ class TestUserImageObserver
 
   void OnCameraPresenceCheckDone(bool is_camera_present) override {}
 
+  void OnIsEnterpriseManagedChanged(bool is_enterprise_managed) override {
+    is_enterprise_managed_ = is_enterprise_managed;
+  }
+
   mojo::PendingRemote<ash::personalization_app::mojom::UserImageObserver>
   pending_remote() {
     DCHECK(!user_image_observer_receiver_.is_bound());
@@ -118,12 +123,19 @@ class TestUserImageObserver
     return current_profile_image_;
   }
 
+  bool is_enterprise_managed() {
+    if (user_image_observer_receiver_.is_bound())
+      user_image_observer_receiver_.FlushForTesting();
+    return is_enterprise_managed_;
+  }
+
  private:
   mojo::Receiver<ash::personalization_app::mojom::UserImageObserver>
       user_image_observer_receiver_{this};
 
   ash::personalization_app::mojom::UserImagePtr current_user_image_;
   GURL current_profile_image_;
+  bool is_enterprise_managed_ = false;
 };
 
 }  // namespace
@@ -222,6 +234,13 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
     if (user_provider_remote_.is_bound())
       user_provider_remote_.FlushForTesting();
     return test_user_image_observer_.current_profile_image();
+  }
+
+  bool is_enterprise_managed() {
+    if (user_provider_remote_.is_bound()) {
+      user_provider_remote_.FlushForTesting();
+    }
+    return test_user_image_observer_.is_enterprise_managed();
   }
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -459,6 +478,25 @@ TEST_F(PersonalizationAppUserProviderImplTest,
   histogram_tester().ExpectBucketCount(
       ash::UserImageManager::kUserImageChangedHistogramName,
       ash::default_user_image::kHistogramImageExternal, 1);
+}
+
+TEST_F(PersonalizationAppUserProviderImplTest, SetsUserImageManagedByPolicy) {
+  base::SequenceCheckerImpl::EnableStackLogging();
+  // Make sure image does not start managed.
+  ASSERT_FALSE(user_image_manager()->IsUserImageManaged());
+
+  SetUserImageObserver();
+  ASSERT_FALSE(is_enterprise_managed());
+
+  user_image_manager()->OnExternalDataSet(policy::key::kUserAvatarImage);
+  EXPECT_TRUE(is_enterprise_managed());
+
+  user_image_manager()->OnExternalDataCleared(policy::key::kUserAvatarImage);
+  EXPECT_FALSE(is_enterprise_managed());
+
+  // Changes back to enterprise managed.
+  user_image_manager()->OnExternalDataSet(policy::key::kUserAvatarImage);
+  EXPECT_TRUE(is_enterprise_managed());
 }
 
 class PersonalizationAppUserProviderImplWithMockTest

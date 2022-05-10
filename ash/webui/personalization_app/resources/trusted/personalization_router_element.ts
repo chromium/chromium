@@ -88,6 +88,10 @@ export class PersonalizationRouter extends PolymerElement {
         PersonalizationRouter;
   }
 
+  static reloadAtRoot() {
+    window.location.replace(Paths.ROOT);
+  }
+
   /**
    * Reload the application at the collections page.
    */
