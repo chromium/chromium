@@ -34,6 +34,7 @@ source_set("common") {
 
   deps = [
     "//base",
+    "//components/crash/core/common:crash_key_lib",
     "//skia",
     "//third_party:freetype_harfbuzz",
     "//third_party/harfbuzz-ng:hb_scoped_util",
@@ -80,6 +81,7 @@ source_set("unit_tests") {
     ":test_utils",
     "//base",
     "//base/test:test_support",
+    "//components/crash/core/common:crash_key_lib",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",

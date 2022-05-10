@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/numerics/safe_conversions.h"
+#include "components/crash/core/common/crash_key.h"
 #include "third_party/harfbuzz-ng/utils/hb_scoped.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
@@ -63,6 +64,12 @@ void AddGlyphs(hb_set_t* glyph_id_set, uint16_t glyph_id) {
 
 // Implementation based on SkPDFSubsetFont() using harfbuzz.
 sk_sp<SkData> SubsetFont(SkTypeface* typeface, const GlyphUsage& usage) {
+  static crash_reporter::CrashKeyString<128> crash_key(
+      "PaintPreview-SubsetFont");
+  SkString family_name;
+  typeface->getFamilyName(&family_name);
+  crash_reporter::ScopedCrashKeyString auto_clear(&crash_key,
+                                                  family_name.c_str());
   int ttc_index = 0;
   sk_sp<SkData> data = StreamToData(typeface->openStream(&ttc_index));
   HbScoped<hb_face_t> face(hb_face_create(MakeBlob(data).get(), ttc_index));
