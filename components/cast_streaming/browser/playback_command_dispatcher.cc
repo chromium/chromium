@@ -24,7 +24,8 @@ PlaybackCommandDispatcher::PlaybackCommandDispatcher(
   // Create a muxer using the "real" media::mojom::Renderer instance that
   // connects to the remote media::Renderer.
   mojo::Remote<media::mojom::Renderer> renderer;
-  control_configuration->SetPlaybackController(
+  control_configuration_ = std::move(control_configuration);
+  control_configuration_->SetPlaybackController(
       renderer.BindNewPipeAndPassReceiver(),
       base::BindOnce(&PlaybackCommandDispatcher::OnSetPlaybackControllerDone,
                      weak_factory_.GetWeakPtr()));

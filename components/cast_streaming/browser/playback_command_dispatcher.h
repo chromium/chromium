@@ -108,6 +108,12 @@ class PlaybackCommandDispatcher
   Dispatcher* streaming_dispatcher_ = nullptr;
   const openscreen::cast::ReceiverSession* receiver_session_ = nullptr;
 
+  // The mojo API used to configure the renderer controls in the renderer
+  // process. Although this instance is only needed once, it is stored as an
+  // instance variable so that the destruction of this instance is visible to
+  // the Renderer process via the mojo disconnection handler.
+  mojo::AssociatedRemote<mojom::RendererController> control_configuration_;
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<PlaybackCommandDispatcher> weak_factory_{this};
 };

@@ -101,6 +101,8 @@ class CastStreamingSession {
   // lifespan of this object and only after a call to Start().
   void Stop();
 
+  bool is_running() const { return !!receiver_session_; }
+
   // Return a callback that may be used to request a buffer of the specified
   // type, to be returned asynchronously through the client API. May only be
   // called following a call to Start() and prior to a call to Stop().

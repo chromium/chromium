@@ -235,7 +235,9 @@ void ReceiverSessionImpl::OnMojoDisconnect() {
 
   // Close the Cast Streaming Session. OnSessionEnded() will be called as part
   // of the Session shutdown, which will tear down the Mojo connection.
-  cast_streaming_session_.Stop();
+  if (cast_streaming_session_.is_running()) {
+    cast_streaming_session_.Stop();
+  }
 
   // Tear down all remaining Mojo objects.
   audio_demuxer_stream_data_provider_.reset();
