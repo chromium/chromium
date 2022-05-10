@@ -841,7 +841,8 @@ SurroundingTextInfo InputMethodAsh::GetSurroundingTextInfo() {
   gfx::Range text_range;
   SurroundingTextInfo info;
   TextInputClient* client = GetTextInputClient();
-  if (!client->GetTextRange(&text_range) ||
+  if (!client ||
+      !client->GetTextRange(&text_range) ||
       !client->GetTextFromRange(text_range, &info.surrounding_text) ||
       !client->GetEditableSelectionRange(&info.selection_range)) {
     return SurroundingTextInfo();
