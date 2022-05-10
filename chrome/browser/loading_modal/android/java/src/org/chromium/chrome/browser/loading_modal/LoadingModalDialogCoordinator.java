@@ -5,15 +5,20 @@
 package org.chromium.chrome.browser.loading_modal;
 
 import android.content.Context;
+import android.os.Handler;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -26,6 +31,7 @@ import java.lang.annotation.RetentionPolicy;
 public class LoadingModalDialogCoordinator {
     private final LoadingModalDialogMediator mMediator;
     private final RelativeLayout mCustomView;
+    private final View mButtonsView;
 
     // Used to indicate the current loading dialog state.
     @IntDef({State.READY, State.LOADING_DELAYED, State.LOADING_SHOWN, State.FINISHED_SHOWN,
@@ -56,11 +62,20 @@ public class LoadingModalDialogCoordinator {
      */
     public static LoadingModalDialogCoordinator create(
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier, Context context) {
+        return create(modalDialogManagerSupplier, context, new Handler());
+    }
+
+    @VisibleForTesting
+    static LoadingModalDialogCoordinator create(
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier, Context context,
+            Handler handler) {
         LoadingModalDialogMediator dialogMediator =
-                new LoadingModalDialogMediator(modalDialogManagerSupplier);
+                new LoadingModalDialogMediator(modalDialogManagerSupplier, handler);
         RelativeLayout dialogView =
                 (RelativeLayout) LayoutInflater.from(context).inflate(R.layout.loading_modal, null);
-        return new LoadingModalDialogCoordinator(dialogMediator, dialogView);
+        RelativeLayout buttonsView = (RelativeLayout) LayoutInflater.from(context).inflate(
+                R.layout.loading_modal_button_bar, null);
+        return new LoadingModalDialogCoordinator(dialogMediator, dialogView, buttonsView);
     }
 
     /**
@@ -70,19 +85,24 @@ public class LoadingModalDialogCoordinator {
      * @param dialogView The custom view with dialog content.
      */
     private LoadingModalDialogCoordinator(@NonNull LoadingModalDialogMediator dialogMediator,
-            @NonNull RelativeLayout dialogView) {
+            @NonNull RelativeLayout dialogView, @Nullable View buttonsView) {
         mMediator = dialogMediator;
         mCustomView = dialogView;
+        mButtonsView = buttonsView;
     }
 
     /** Shows the loading modal dialog. */
     public void show() {
-        PropertyModel dialogModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                                            .with(ModalDialogProperties.FULLSCREEN_DIALOG, true)
-                                            .with(ModalDialogProperties.EXCEED_MAX_HEIGHT, true)
-                                            .with(ModalDialogProperties.CONTROLLER, mMediator)
-                                            .with(ModalDialogProperties.CUSTOM_VIEW, mCustomView)
-                                            .build();
+        PropertyModel dialogModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.FULLSCREEN_DIALOG, true)
+                        .with(ModalDialogProperties.EXCEED_MAX_HEIGHT, true)
+                        .with(ModalDialogProperties.CONTROLLER, mMediator)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, mCustomView)
+                        .with(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, mButtonsView)
+                        .build();
+        mButtonsView.findViewById(R.id.cancel_loading_modal)
+                .setOnClickListener(view -> mMediator.onClick(dialogModel, ButtonType.NEGATIVE));
         mMediator.showDialog(dialogModel);
     }
 
@@ -96,5 +116,15 @@ public class LoadingModalDialogCoordinator {
      */
     public @State int getState() {
         return mMediator.getState();
+    }
+
+    @VisibleForTesting
+    void skipDelayForTesting() {
+        mMediator.skipDelays();
+    }
+
+    @VisibleForTesting
+    View getButtonsView() {
+        return mButtonsView;
     }
 }

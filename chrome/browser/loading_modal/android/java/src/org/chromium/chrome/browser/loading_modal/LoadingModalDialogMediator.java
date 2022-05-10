@@ -25,7 +25,7 @@ class LoadingModalDialogMediator
     private static final long SHOW_DELAY_TIME_MS = 500L;
     private static final long MINIMUM_SHOW_TIME_MS = 500L;
 
-    private final Handler mHandler = new Handler();
+    private final Handler mHandler;
     private final ObservableSupplier<ModalDialogManager> mDialogManagerSupplier;
 
     private ModalDialogManager mDialogManager;
@@ -34,12 +34,12 @@ class LoadingModalDialogMediator
     private long mShownAtMs;
 
     private @LoadingModalDialogCoordinator.State int mState;
+    private boolean mSkipDelay;
 
     /** ModalDialogProperties.Controller implementation */
     @Override
     public void onClick(PropertyModel model, @ButtonType int buttonType) {
-        // TODO(crbug.com/1311674): Dismiss as follows after button is added
-        // dismissDialogImmediately(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        dismissDialogImmediately(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
     }
 
     @Override
@@ -69,10 +69,13 @@ class LoadingModalDialogMediator
         mShownAtMs = Long.valueOf(SystemClock.elapsedRealtime());
     }
 
-    LoadingModalDialogMediator(ObservableSupplier<ModalDialogManager> dialogManagerSupplier) {
+    LoadingModalDialogMediator(
+            ObservableSupplier<ModalDialogManager> dialogManagerSupplier, Handler handler) {
         assert dialogManagerSupplier != null;
+        assert handler != null;
         mDialogManagerSupplier = dialogManagerSupplier;
         mState = LoadingModalDialogCoordinator.State.READY;
+        mHandler = handler;
     }
 
     /**
@@ -91,7 +94,7 @@ class LoadingModalDialogMediator
         mDialogManager = dialogManager;
         mModel = model;
         mState = LoadingModalDialogCoordinator.State.LOADING_DELAYED;
-        mHandler.postDelayed(this::showDialogImmediately, SHOW_DELAY_TIME_MS);
+        postDelayed(this::showDialogImmediately, SHOW_DELAY_TIME_MS);
     }
 
     /**
@@ -113,10 +116,10 @@ class LoadingModalDialogMediator
                 && mShownAtMs + MINIMUM_SHOW_TIME_MS > currentTimeMs) {
             // Dialog dismiss should be postponed to prevent UI flicker.
             mState = LoadingModalDialogCoordinator.State.FINISHED_SHOWN;
-            Runnable dismissRunnable =
-                    () -> dismissDialogImmediately(DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
-            mHandler.postDelayed(
-                    dismissRunnable, mShownAtMs + MINIMUM_SHOW_TIME_MS - currentTimeMs);
+            postDelayed(()
+                                -> dismissDialogImmediately(
+                                        DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED),
+                    mShownAtMs + MINIMUM_SHOW_TIME_MS - currentTimeMs);
         } else {
             // Dialog is not yet shown or has been visible long enough.
             dismissDialogImmediately(DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
@@ -129,6 +132,10 @@ class LoadingModalDialogMediator
     @LoadingModalDialogCoordinator.State
     int getState() {
         return mState;
+    }
+
+    void skipDelays() {
+        mSkipDelay = true;
     }
 
     /** Immediately shows the dialog. */
@@ -151,5 +158,13 @@ class LoadingModalDialogMediator
             return;
         }
         mDialogManager.dismissDialog(mModel, dismissalCause);
+    }
+
+    private void postDelayed(Runnable r, long delay) {
+        if (mSkipDelay) {
+            r.run();
+        } else {
+            mHandler.postDelayed(r, delay);
+        }
     }
 }

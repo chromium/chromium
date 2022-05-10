@@ -1412,6 +1412,7 @@ android_library("chrome_test_java") {
     "//chrome/browser/language/android:java",
     "//chrome/browser/language/android:javatests",
     "//chrome/browser/lens:java",
+    "//chrome/browser/loading_modal/android:javatests",
     "//chrome/browser/locale:java",
     "//chrome/browser/notifications:java",
     "//chrome/browser/notifications:javatests",

@@ -9,6 +9,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.os.Handler;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,7 +50,7 @@ public class LoadingModalDialogMediatorTest {
     @Before
     public void setUp() {
         Mockito.when(mModalDialogManagerSupplier.get()).thenReturn(mModalDialogManager);
-        mMediator = new LoadingModalDialogMediator(mModalDialogManagerSupplier);
+        mMediator = new LoadingModalDialogMediator(mModalDialogManagerSupplier, new Handler());
         mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                          .with(ModalDialogProperties.CONTROLLER, mMediator)
                          .build();
