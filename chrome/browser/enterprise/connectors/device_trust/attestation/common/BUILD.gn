@@ -16,6 +16,8 @@ source_set("common") {
   public_deps = [
     ":types",
     "//base",
+    "//components/device_signals/core/common",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 
@@ -41,5 +43,18 @@ source_set("test_support") {
     ":common",
     ":types",
     "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "attestation_utils_unittest.cc" ]
+
+  public = [ "attestation_utils.h" ]
+
+  public_deps = [
+    ":common",
+    ":types",
+    "//testing/gtest",
   ]
 }
