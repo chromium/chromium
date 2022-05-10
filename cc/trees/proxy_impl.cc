@@ -754,11 +754,16 @@ void ProxyImpl::ScheduledActionCommit() {
   }
 
   data_for_commit_.reset();
-  scheduler_->DidCommit();
-  // Delay this step until afer the main thread has been released as it's
-  // often a good bit of work to update the tree and prepare the new frame.
-  host_impl_->CommitComplete();
+}
 
+void ProxyImpl::ScheduledActionPostCommit() {
+  TRACE_EVENT0("cc", "ProxyImpl::ScheduledActionPostCommit");
+  DCHECK(IsImplThread());
+
+  // This is run as a separate step from commit because it can be time-consuming
+  // and ought not delay sending the next BeginMainFrame.
+  host_impl_->CommitComplete();
+  // TODO(szager): This should be set at activation time. crbug.com/1323906
   next_frame_is_newly_committed_frame_ = true;
 }
 

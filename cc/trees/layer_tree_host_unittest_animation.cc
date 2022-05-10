@@ -902,10 +902,8 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationAdjusted
     scroll_layer_element_id_ = scroll_layer_->element_id();
   }
 
-  KeyframeEffect& ScrollOffsetKeyframeEffect(
-      const LayerTreeHostImpl& host_impl,
-      scoped_refptr<FakePictureLayer> layer,
-      ElementId element_id) const {
+  KeyframeEffect& ScrollOffsetKeyframeEffect(const LayerTreeHostImpl& host_impl,
+                                             ElementId element_id) const {
     scoped_refptr<ElementAnimations> element_animations =
         GetImplAnimationHost(&host_impl)
             ->GetElementAnimationsForElementId(element_id);
@@ -941,8 +939,7 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationAdjusted
       // This happens after the impl-only animation is added in
       // WillCommitCompleteOnThread.
       gfx::KeyframeModel* keyframe_model =
-          ScrollOffsetKeyframeEffect(*host_impl, scroll_layer_,
-                                     scroll_layer_element_id_)
+          ScrollOffsetKeyframeEffect(*host_impl, scroll_layer_element_id_)
               .GetKeyframeModel(TargetProperty::SCROLL_OFFSET);
       DCHECK(keyframe_model);
       const ScrollOffsetAnimationCurve* curve =
@@ -969,8 +966,7 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationAdjusted
   void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
     if (host_impl->sync_tree()->source_frame_number() == 2) {
       gfx::KeyframeModel* keyframe_model =
-          ScrollOffsetKeyframeEffect(*host_impl, scroll_layer_,
-                                     scroll_layer_element_id_)
+          ScrollOffsetKeyframeEffect(*host_impl, scroll_layer_element_id_)
               .GetKeyframeModel(TargetProperty::SCROLL_OFFSET);
       DCHECK(keyframe_model);
       const ScrollOffsetAnimationCurve* curve =

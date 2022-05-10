@@ -230,39 +230,41 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
       layer_tree_host_->GetId(), commit_args.frame_id.sequence_number);
 
   // Commit immediately.
+  DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
+  DebugScopedSetImplThread impl(task_runner_provider_);
+
+  host_impl_->BeginCommit(commit_state->source_frame_number);
+
+  host_impl_->FinishCommit(*commit_state, unsafe_state);
+  commit_state.reset();
+  completion_event->Signal();
+
   {
-    DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
-    DebugScopedSetImplThread impl(task_runner_provider_);
-
-    host_impl_->BeginCommit(commit_state->source_frame_number);
-
-    host_impl_->FinishCommit(*commit_state, unsafe_state);
-    commit_state.reset();
-    completion_event->Signal();
-
-    if (scheduler_on_impl_thread_)
-      scheduler_on_impl_thread_->DidCommit();
-
-    {
-      DebugScopedSetMainThread main(task_runner_provider_);
-      IssueImageDecodeFinishedCallbacks();
-    }
-    host_impl_->CommitComplete();
-
-    std::vector<uint32_t> ids =
-        host_impl_->TakeFinishedTransitionRequestSequenceIds();
-    {
-      DebugScopedSetMainThread main(task_runner_provider_);
-      layer_tree_host_->NotifyTransitionRequestsFinished(ids);
-    }
-
-    // Commit goes directly to the active tree, but we need to synchronously
-    // "activate" the tree still during commit to satisfy any potential
-    // SetNextCommitWaitsForActivation calls.  Unfortunately, the tree
-    // might not be ready to draw, so DidActivateSyncTree must set
-    // the flag to force the tree to not draw until textures are ready.
-    NotifyReadyToActivate();
+    DebugScopedSetMainThread main(task_runner_provider_);
+    IssueImageDecodeFinishedCallbacks();
   }
+}
+
+void SingleThreadProxy::DoPostCommit() {
+  TRACE_EVENT0("cc", "SingleThreadProxy::DoPostCommit");
+  DCHECK(task_runner_provider_->IsMainThread());
+
+  DebugScopedSetImplThread impl(task_runner_provider_);
+  host_impl_->CommitComplete();
+
+  std::vector<uint32_t> ids =
+      host_impl_->TakeFinishedTransitionRequestSequenceIds();
+  {
+    DebugScopedSetMainThread main(task_runner_provider_);
+    layer_tree_host_->NotifyTransitionRequestsFinished(ids);
+  }
+
+  // Commit goes directly to the active tree, but we need to synchronously
+  // "activate" the tree still during commit to satisfy any potential
+  // SetNextCommitWaitsForActivation calls.  Unfortunately, the tree
+  // might not be ready to draw, so DidActivateSyncTree must set
+  // the flag to force the tree to not draw until textures are ready.
+  NotifyReadyToActivate();
 }
 
 void SingleThreadProxy::IssueImageDecodeFinishedCallbacks() {
@@ -749,6 +751,7 @@ void SingleThreadProxy::CompositeImmediatelyForTest(
     commit_requested_ = false;
     DoPainting(begin_frame_args);
     DoCommit(begin_frame_args);
+    DoPostCommit();
 
     DCHECK_EQ(
         0u,
@@ -1115,6 +1118,14 @@ void SingleThreadProxy::ScheduledActionCommit() {
   DebugScopedSetImplThread impl(task_runner_provider_);
   DebugScopedSetMainThread main(task_runner_provider_);
   DoCommit(scheduler_on_impl_thread_->last_dispatched_begin_main_frame_args());
+}
+
+void SingleThreadProxy::ScheduledActionPostCommit() {
+  // DebugScopedSetImplThread here is just a formality; all SchedulerClient
+  // methods should have it.
+  DebugScopedSetImplThread impl(task_runner_provider_);
+  DebugScopedSetMainThread main(task_runner_provider_);
+  DoPostCommit();
 }
 
 void SingleThreadProxy::ScheduledActionActivateSyncTree() {

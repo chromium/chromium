@@ -67,6 +67,7 @@ class SchedulerClient {
   // compositor thread, which allows Compositor thread to update its layer tree
   // to match the state of the layer tree on the main thread.
   virtual void ScheduledActionCommit() = 0;
+  virtual void ScheduledActionPostCommit() = 0;
   virtual void ScheduledActionActivateSyncTree() = 0;
   virtual void ScheduledActionBeginLayerTreeFrameSinkCreation() = 0;
   virtual void ScheduledActionPrepareTiles() = 0;
@@ -196,7 +197,6 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // main thread updates are completed to signal it is ready for the commmit.
   void NotifyReadyToCommit(std::unique_ptr<BeginMainFrameMetrics> details);
   void BeginMainFrameAborted(CommitEarlyOutReason reason);
-  void DidCommit();
 
   // In the PrepareTiles step, compositor thread divides the layers into tiles
   // to reduce cost of raster large layers. Then, each tile is rastered by a

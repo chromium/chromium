@@ -147,6 +147,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   DrawResult ScheduledActionDrawIfPossible() override;
   DrawResult ScheduledActionDrawForced() override;
   void ScheduledActionCommit() override;
+  void ScheduledActionPostCommit() override;
   void ScheduledActionActivateSyncTree() override;
   void ScheduledActionBeginLayerTreeFrameSinkCreation() override;
   void ScheduledActionPrepareTiles() override;
