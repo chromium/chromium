@@ -86,10 +86,12 @@ GameProvider::GameProvider(Profile* profile,
   UpdateIndex();
 
   DCHECK(app_discovery_service_);
+  // It's safe to use an unretained pointer here due to the nature of
+  // CallbackListSubscription.
   subscription_ = app_discovery_service_->RegisterForAppUpdates(
       apps::ResultType::kGameSearchCatalog,
       base::BindRepeating(&GameProvider::OnIndexUpdatedBySubscription,
-                          weak_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
 }
 
 GameProvider::~GameProvider() = default;
@@ -112,6 +114,9 @@ void GameProvider::OnIndexUpdated(const GameIndex& index,
 }
 
 void GameProvider::OnIndexUpdatedBySubscription(const GameIndex& index) {
+  // TODO(crbug.com/1305880): Report the error to UMA.
+  // TODO(crbug.com/1305880): Add tests to check that this is called when the
+  // app discovery service notifies its subscribers.
   if (!index.empty())
     game_index_ = index;
 }
