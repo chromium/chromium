@@ -12,6 +12,9 @@ void ApplyAshFontStyles(int context,
   switch (context) {
     case CONTEXT_SEARCH_RESULT_VIEW_INLINE_ANSWER_DETAILS:
       break;
+    case CONTEXT_LAUNCHER_NUDGE_LABEL:
+      details.size_delta = 1;
+      break;
     case CONTEXT_SHARESHEET_BUBBLE_SMALL:
       details.size_delta = -2;
       break;

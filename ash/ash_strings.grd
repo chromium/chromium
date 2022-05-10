@@ -259,6 +259,9 @@ This file contains the strings for ash.
       <message name="IDS_SHELF_PREVIOUS" desc="Tooltip for the shelf arrow button that scrolls the shelf backward">
         Previous
       </message>
+      <message name="IDS_SHELF_LAUNCHER_NUDGE_TEXT" desc="The text shown to users beside the home button that shows the launcher UI when the device is in clamshell mode. This nudge text guides them to click on the home button to see all the apps in the launcher UI.">
+        See all apps
+      </message>
 
       <!-- Status tray items -->
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The accessible description of the status tray and the information on it.">

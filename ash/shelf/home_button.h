@@ -16,15 +16,18 @@
 #include "ui/views/view_targeter_delegate.h"
 
 namespace views {
+class AnimationBuilder;
 class CircleLayerDelegate;
+class Label;
 }  // namespace views
 
 namespace ui {
-class Layer;
+class LayerOwner;
 }
 
 namespace ash {
 
+class Shelf;
 class ShelfButtonDelegate;
 class ShelfNavigationWidget;
 
@@ -63,6 +66,9 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
     // Called when the nudge animation is started/ended.
     virtual void NudgeAnimationStarted(HomeButton* home_button) = 0;
     virtual void NudgeAnimationEnded(HomeButton* home_button) = 0;
+
+    // Called when the nudge label is animated to fully shown.
+    virtual void NudgeLabelShown(HomeButton* home_button) = 0;
   };
 
   static const char kViewClassName[];
@@ -73,6 +79,10 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   HomeButton& operator=(const HomeButton&) = delete;
 
   ~HomeButton() override;
+
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override;
+  void Layout() override;
 
   // views::Button:
   void OnGestureEvent(ui::GestureEvent* event) override;
@@ -104,11 +114,19 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   // returned ScopedNoClipRect.
   [[nodiscard]] std::unique_ptr<ScopedNoClipRect> CreateScopedNoClipRect();
 
+  // Checks if the `nudge_label_` can be shown for the launcher nudge.
+  // NOTE: This must be called after `CreateNudgeLabel()`, where the
+  // `nudge_label_` is created. This is because whether the nudge can be shown
+  // depends on nudge_label_'s preferred size.
+  bool CanShowNudgeLabel() const;
+
   // Starts the launcher nudge animation.
   void StartNudgeAnimation();
 
   void AddNudgeAnimationObserverForTest(NudgeAnimationObserver* observer);
   void RemoveNudgeAnimationObserverForTest(NudgeAnimationObserver* observer);
+
+  views::View* label_container_for_test() const { return label_container_; }
 
  protected:
   // views::Button:
@@ -116,20 +134,47 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   void OnThemeChanged() override;
 
  private:
+  // Creates `nudge_label_` for launcher nudge.
+  void CreateNudgeLabel();
+
+  // Animation functions for launcher nudge.
+  void AnimateNudgeRipple(views::AnimationBuilder& builder);
+  void AnimateNudgeBounce(views::AnimationBuilder& builder);
+  void AnimateNudgeLabelSlideIn(views::AnimationBuilder& builder);
+  void AnimateNudgeLabelSlideOut();
+  void AnimateNudgeLabelFadeOut();
+
+  // Callbacks for the nudge animation.
+  void OnNudgeAnimationStarted();
+  void OnNudgeAnimationEnded();
+  void OnLabelSlideInAnimationEnded();
+  void OnLabelFadeOutAnimationEnded();
+
+  // Removes the nudge label from the view hierarchy.
+  void RemoveNudgeLabel();
+
   // views::ViewTargeterDelegate:
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
 
-  // Callback for the nudge animation.
-  void OnNudgeAnimationStarted();
-  void OnNudgeAnimationEnded();
+  Shelf* const shelf_;
 
   // The controller used to determine the button's behavior.
   HomeButtonController controller_;
 
   // The ripple layer in the launcher nudge animation. Only exists during the
   // nudge animation.
-  std::unique_ptr<ui::Layer> nudge_ripple_layer_;
+  ui::LayerOwner nudge_ripple_layer_;
+
+  // The label view and for launcher nudge animation.
+  views::Label* nudge_label_ = nullptr;
+
+  // The container of `nudge_label_`. This is also responsible for painting the
+  // background of the label.
+  views::View* label_container_ = nullptr;
+
+  // The timer that counts down to hide the nudge_label_ from showing state.
+  base::OneShotTimer label_nudge_timer_;
 
   // The delegate used by |nudge_ripple_layer_|. Only exists during the
   // nudge animation.

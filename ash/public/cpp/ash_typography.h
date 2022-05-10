@@ -18,6 +18,9 @@ enum AshTextContext {
   // A button that appears in the launcher's status area.
   CONTEXT_LAUNCHER_BUTTON = ASH_TEXT_CONTEXT_START,
 
+  // Text label that used in launcher nudge label. Medium weight. 13pt size.
+  CONTEXT_LAUNCHER_NUDGE_LABEL,
+
   // A button that appears within a row of the tray popup.
   CONTEXT_TRAY_POPUP_BUTTON,
 

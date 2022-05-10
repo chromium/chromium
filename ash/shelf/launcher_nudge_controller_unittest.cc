@@ -5,17 +5,22 @@
 #include "ash/shelf/launcher_nudge_controller.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/home_button.h"
+#include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf_controller.h"
+#include "ash/shelf/shelf_test_util.h"
+#include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/json/values_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
@@ -43,7 +48,23 @@ class TestNudgeAnimationObserver : public HomeButton::NudgeAnimationObserver {
 
     DCHECK_EQ(started_animation_count_, ended_animation_count_ + 1);
     ++ended_animation_count_;
-    run_loop_.Quit();
+    animation_run_loop_.Quit();
+  }
+  void NudgeLabelShown(HomeButton* home_button) override {
+    if (home_button != home_button_)
+      return;
+
+    label_run_loop_.Quit();
+  }
+
+  void WaitUntilLabelShown() {
+    ASSERT_TRUE(home_button_->CanShowNudgeLabel());
+    DCHECK_GE(started_animation_count_, ended_animation_count_);
+    if (started_animation_count_ == ended_animation_count_)
+      return;
+
+    // Block the test to wait until the label is shown.
+    label_run_loop_.Run();
   }
 
   void WaitUntilAnimationEnded() {
@@ -52,14 +73,15 @@ class TestNudgeAnimationObserver : public HomeButton::NudgeAnimationObserver {
       return;
 
     // Block the test to wait until the animation ended.
-    run_loop_.Run();
+    animation_run_loop_.Run();
   }
 
   // Returns the number of finished animation on this home_button_.
   int GetShownCount() const { return ended_animation_count_; }
 
  private:
-  base::RunLoop run_loop_;
+  base::RunLoop animation_run_loop_;
+  base::RunLoop label_run_loop_;
   HomeButton* const home_button_;
 
   // Counts the number of started/ended animations.
@@ -86,6 +108,13 @@ class LauncherNudgeControllerTest : public AshTestBase {
     nudge_controller_->SetClockForTesting(
         task_environment()->GetMockClock(),
         task_environment()->GetMockTickClock());
+
+    scrollable_shelf_view_ = GetPrimaryShelf()
+                                 ->shelf_widget()
+                                 ->hotseat_widget()
+                                 ->scrollable_shelf_view();
+    test_api_ = std::make_unique<ShelfViewTestAPI>(
+        scrollable_shelf_view_->shelf_view());
   }
 
   // Advances the mock clock in the task environment and wait until it is idle.
@@ -103,8 +132,19 @@ class LauncherNudgeControllerTest : public AshTestBase {
     return LauncherNudgeController::GetShownCount(pref_service);
   }
 
+  void AddAppShortcut(int& id) {
+    ShelfItem item = ShelfTestUtil::AddAppShortcut(base::NumberToString(id++),
+                                                   TYPE_PINNED_APP);
+
+    // Wait for shelf view's bounds animation to end. Otherwise the scrollable
+    // shelf's bounds are not updated yet.
+    test_api_->RunMessageLoopUntilAnimationsDone();
+  }
+
   LauncherNudgeController* nudge_controller_;
   std::unique_ptr<TestNudgeAnimationObserver> observer_;
+  ScrollableShelfView* scrollable_shelf_view_ = nullptr;
+  std::unique_ptr<ShelfViewTestAPI> test_api_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -302,6 +342,84 @@ TEST_F(LauncherNudgeControllerTest,
   AdvanceClock(LauncherNudgeController::kMinIntervalAfterHomeButtonAppears -
                small_delta);
   EXPECT_EQ(2, GetNudgeShownCount());
+}
+
+TEST_F(LauncherNudgeControllerTest, NudgeLabelVisibilityTest) {
+  // Set the animation duration mode to non-zero for the launcher nudge
+  // animation to actually run in the tests.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  SimulateNewUserFirstLogin("user@gmail.com");
+  EXPECT_EQ(GetNudgeShownCount(), 0);
+
+  HomeButton* home_button = LauncherNudgeController::GetHomeButtonForDisplay(
+      GetPrimaryDisplay().id());
+  TestNudgeAnimationObserver waiter(home_button);
+  AdvanceClock(nudge_controller_->GetNudgeInterval(/*is_first_time=*/true));
+
+  // Wait until the label to be shown and check if the label is visible.
+  waiter.WaitUntilLabelShown();
+  views::View* label_container = home_button->label_container_for_test();
+  EXPECT_TRUE(label_container && label_container->GetVisible());
+  EXPECT_EQ(label_container->layer()->opacity(), 1);
+
+  // Wait until the label is hidden.
+  AdvanceClock(base::TimeDelta(base::Seconds(6)));
+  waiter.WaitUntilAnimationEnded();
+  EXPECT_FALSE(label_container->GetVisible());
+  EXPECT_EQ(label_container->layer()->opacity(), 0);
+  EXPECT_EQ(GetNudgeShownCount(), 1);
+
+  TestNudgeAnimationObserver waiter2(home_button);
+  AdvanceClock(nudge_controller_->GetNudgeInterval(/*is_first_time=*/false) -
+               base::Seconds(6));
+  waiter2.WaitUntilLabelShown();
+  EXPECT_TRUE(label_container->GetVisible());
+
+  gfx::Point center = label_container->GetBoundsInScreen().CenterPoint();
+  GetEventGenerator()->MoveMouseTo(center);
+
+  // Click on the nudge label should toggle the app list.
+  GetEventGenerator()->ClickLeftButton();
+  GetAppListTestHelper()->WaitUntilIdle();
+  GetAppListTestHelper()->CheckVisibility(true);
+
+  // Clicking on the nudge label should animate it. Wait until the animation
+  // ends.
+  waiter2.WaitUntilAnimationEnded();
+
+  // The label is removed after it is clicked.
+  EXPECT_FALSE(home_button->label_container_for_test());
+}
+
+TEST_F(LauncherNudgeControllerTest, AnimationUsedDependsOnAvailableSpace) {
+  // Set the animation duration mode to non-zero for the launcher nudge
+  // animation to actually run in the tests.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  SimulateNewUserFirstLogin("user@gmail.com");
+  EXPECT_EQ(GetNudgeShownCount(), 0);
+
+  HomeButton* home_button = LauncherNudgeController::GetHomeButtonForDisplay(
+      GetPrimaryDisplay().id());
+
+  // Advance the clock to trigger the animation and create the label nudge.
+  AdvanceClock(nudge_controller_->GetNudgeInterval(/*is_first_time=*/true));
+
+  // Without adding anything to shelf, there should be enough space to show
+  // nudge label.
+  EXPECT_TRUE(home_button->CanShowNudgeLabel());
+
+  int id = 0;
+  // Add app shortcuts until the hotseat overflow.
+  while (scrollable_shelf_view_->layout_strategy_for_test() ==
+         ScrollableShelfView::kNotShowArrowButtons) {
+    AddAppShortcut(id);
+  }
+
+  // If the apps overflow in shelf, there should be no space for the label to be
+  // shown.
+  EXPECT_FALSE(home_button->CanShowNudgeLabel());
 }
 
 }  // namespace ash

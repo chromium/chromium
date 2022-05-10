@@ -825,18 +825,24 @@ gfx::Size ShelfNavigationWidget::CalculateIdealSize(
   if (!ShelfConfig::Get()->shelf_controls_shown())
     return gfx::Size();
 
-  int control_button_number;
+  int controls_space = 0;
+  const int control_size = ShelfConfig::Get()->control_size();
+
   if (Shell::Get()->IsInTabletMode() && !only_visible_area) {
     // There are home button and back button. So the maximum is 2.
-    control_button_number = 2;
+    controls_space = control_size * 2 + ShelfConfig::Get()->button_spacing();
   } else {
-    control_button_number = CalculateButtonCount();
+    // Use CalculatePreferredSize here to take the launcher nudge label into
+    // consider.
+    controls_space += IsHomeButtonShown()
+                          ? GetHomeButton()->CalculatePreferredSize().width()
+                          : 0;
+    controls_space +=
+        IsBackButtonShown(shelf_->IsHorizontalAlignment()) ? control_size : 0;
+    controls_space +=
+        (CalculateButtonCount() - 1) * ShelfConfig::Get()->button_spacing();
   }
 
-  const int control_size = ShelfConfig::Get()->control_size();
-  int controls_space =
-      control_button_number * control_size +
-      (control_button_number - 1) * ShelfConfig::Get()->button_spacing();
   const int major_axis_spacing =
       2 * ShelfConfig::Get()->control_button_edge_spacing(
               shelf_->IsHorizontalAlignment());
