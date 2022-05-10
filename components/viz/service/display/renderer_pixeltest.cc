@@ -4736,18 +4736,9 @@ class ColorTransformPixelTest
   }
 
   void Basic() {
-    // Skip piecewise transfer functions because SkColorSpace (needed for
-    // CopyOutputResult::AsSkBitmap) doesn't support them..
-    if ((src_color_space_.GetTransferID() == TransferID::PIECEWISE_HDR ||
-         dst_color_space_.GetTransferID() == TransferID::PIECEWISE_HDR)) {
-      LOG(ERROR) << "Skipping piecewise HDR function";
-      return;
-    }
-
     if (src_color_space_.GetTransferID() == TransferID::PQ &&
         !dst_color_space_.IsHDR()) {
-      LOG(ERROR) << "Skipping tonemapped output";
-      return;
+      GTEST_SKIP() << "Skipping tonemapped output";
     }
 
     gfx::Rect rect(this->device_viewport_size_);
@@ -4850,9 +4841,19 @@ class ColorTransformPixelTest
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
 
-    // Allow a difference of 2 bytes in comparison for shader-based transforms,
-    // and 4 bytes for LUT-based transforms (determined empirically).
-    cc::FuzzyPixelComparator comparator(false, 100.f, 0.f, 2.f, 2, 0);
+    // Allow a difference of 2 bytes in comparison for most cases.
+    float avg_abs_error_limit = 2.0f;
+    int max_abs_error_limit = 2;
+#if BUILDFLAG(IS_FUCHSIA)
+    if (src_color_space_.GetTransferID() == TransferID::PQ) {
+      // Fuchsia+SwiftShader/Vulkan has higher error on some pixels with HDR
+      // color spaces. See https://crbug.com/1312141.
+      max_abs_error_limit = 5;
+    }
+#endif
+
+    cc::FuzzyPixelComparator comparator(false, 100.f, 0.f, avg_abs_error_limit,
+                                        max_abs_error_limit, 0);
     EXPECT_TRUE(
         this->RunPixelTest(&pass_list, &expected_output_colors, comparator))
         << " src:" << src_color_space_ << ", dst:" << dst_color_space_;
@@ -4863,13 +4864,7 @@ class ColorTransformPixelTest
   bool premultiplied_alpha_ = false;
 };
 
-// crbug.com/1312043 Disable the test due to flaky.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_Basic DISABLED_Basic
-#else
-#define MAYBE_Basic Basic
-#endif
-TEST_P(ColorTransformPixelTest, MAYBE_Basic) {
+TEST_P(ColorTransformPixelTest, Basic) {
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
   // Test is flaking with failed large allocations under TSAN when using
   // SkiaRenderer with GL backend. See https://crbug.com/1320955.
@@ -4892,8 +4887,6 @@ gfx::ColorSpace src_color_spaces[] = {
     gfx::ColorSpace(PrimaryID::BT709, TransferID::SMPTEST428_1),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB_HDR),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR),
-    // Piecewise HDR transfer functions skipped with SkiaRenderer.
-    gfx::ColorSpace::CreatePiecewiseHDR(PrimaryID::BT709, 0.5, 1.5),
     gfx::ColorSpace::CreateHDR10(50.f),
     gfx::ColorSpace::CreateHDR10(250.f),
 };
@@ -4909,8 +4902,6 @@ gfx::ColorSpace dst_color_spaces[] = {
     gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB_HDR),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR),
-    // Piecewise HDR transfer functions are skipped with SkiaRenderer.
-    gfx::ColorSpace::CreatePiecewiseHDR(PrimaryID::BT709, 0.25, 2.5),
 };
 
 gfx::ColorSpace intermediate_color_spaces[] = {
