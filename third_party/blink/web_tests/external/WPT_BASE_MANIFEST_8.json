@@ -322240,7 +322240,7 @@
       []
      ],
      "generic_sensor_mocks.js": [
-      "b7b303b6f14d47b98558f26dfc7e4b5c377f18f3",
+      "3d7e854c832428dd3dade34893971b1310394b16",
       []
      ],
      "generic_sensor_mocks.js.headers": [
@@ -393008,6 +393008,13 @@
        {}
       ]
      ],
+     "serialize-all-longhands.html": [
+      "95204b63613cf73c1b1b146db6d96c874ca68e7d",
+      [
+       null,
+       {}
+      ]
+     ],
      "serialize-custom-props.html": [
       "cfe96ff0aacb983e66b5ccee305cc5fe84d10d72",
       [
@@ -398499,7 +398506,7 @@
      ]
     },
     "historical.html": [
-     "b7dc30a2dc3e715bc1e56b81b13d471880d43fce",
+     "1bc209ec0e775026a2464a67ac708efddbdc97c4",
      [
       null,
       {}
