@@ -201,9 +201,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "android-marshmallow-arm64-rel",
-    # TODO(crbug.com/1313712): Re-enable check_for_flakiness when ResultDB RPCs
-    # no longer timeout.
-    #check_for_flakiness = True,
+    check_for_flakiness = True,
     compilator = "android-marshmallow-arm64-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
@@ -215,9 +213,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "android-marshmallow-arm64-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
-    # TODO(crbug.com/1313712): Re-enable check_for_flakiness when ResultDB RPCs
-    # no longer timeout.
-    #check_for_flakiness = True,
+    check_for_flakiness = True,
     cores = 64 if settings.is_main else 32,
     main_list_view = "try",
 )
