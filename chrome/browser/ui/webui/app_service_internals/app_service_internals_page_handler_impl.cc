@@ -33,11 +33,14 @@ void AppServiceInternalsPageHandlerImpl::GetApps(GetAppsCallback callback) {
 
   std::vector<mojom::app_service_internals::AppInfoPtr> result;
 
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  if (!proxy) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+          profile_)) {
     std::move(callback).Run(std::move(result));
     return;
   }
+
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  DCHECK(proxy);
 
   proxy->AppRegistryCache().ForEachApp(
       [&result](const apps::AppUpdate& update) {
@@ -59,11 +62,14 @@ void AppServiceInternalsPageHandlerImpl::GetPreferredApps(
 
   std::vector<mojom::app_service_internals::PreferredAppInfoPtr> result;
 
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  if (!proxy) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+          profile_)) {
     std::move(callback).Run(std::move(result));
     return;
   }
+
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  DCHECK(proxy);
 
   base::flat_map<std::string, std::stringstream> debug_info_map;
 
