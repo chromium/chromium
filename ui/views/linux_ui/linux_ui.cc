@@ -4,6 +4,8 @@
 
 #include "ui/views/linux_ui/linux_ui.h"
 
+#include <cstdio>
+
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
@@ -61,7 +63,8 @@ LinuxUI::CmdLineArgs LinuxUI::CopyCmdLine(
   cmd_line.args = std::vector<char>(args_chars);
   char* dst = cmd_line.args.data();
   for (const auto& arg : argv) {
-    cmd_line.argv.push_back(strcpy(dst, arg.c_str()));
+    cmd_line.argv.push_back(dst);
+    snprintf(dst, &cmd_line.args.back() + 1 - dst, "%s", arg.c_str());
     dst += arg.size() + 1;
   }
   cmd_line.argc = cmd_line.argv.size();
