@@ -35,7 +35,7 @@ try_.defaults.executable.set("recipe:chromium_codesearch")
 try_.defaults.execution_timeout.set(9 * time.hour)
 try_.defaults.expiration_timeout.set(2 * time.hour)
 try_.defaults.goma_backend.set(goma.backend.RBE_PROD)
-try_.defaults.os.set(os.LINUX_BIONIC_SWITCH_TO_DEFAULT)
+try_.defaults.os.set(os.LINUX_DEFAULT)
 try_.defaults.pool.set("luci.chromium.try")
 try_.defaults.service_account.set("chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com")
 

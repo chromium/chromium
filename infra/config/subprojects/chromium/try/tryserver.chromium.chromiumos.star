@@ -18,7 +18,7 @@ try_.defaults.set(
     executable = try_.DEFAULT_EXECUTABLE,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     pool = try_.DEFAULT_POOL,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
@@ -70,7 +70,6 @@ try_.builder(
     mirrors = ["ci/chromeos-arm-generic-rel"],
     builderless = not settings.is_main,
     main_list_view = "try",
-    os = os.LINUX_BIONIC_REMOVE,
     tryjob = try_.job(),
 )
 
@@ -78,7 +77,6 @@ try_.builder(
     name = "chromeos-arm64-generic-rel",
     branch_selector = branches.CROS_LTS_MILESTONE,
     mirrors = ["ci/chromeos-arm64-generic-rel"],
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 try_.builder(
@@ -87,7 +85,6 @@ try_.builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 try_.builder(
@@ -99,7 +96,6 @@ try_.builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 try_.builder(
@@ -107,7 +103,6 @@ try_.builder(
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
     main_list_view = "try",
-    os = os.LINUX_BIONIC_REMOVE,
     tryjob = try_.job(),
 )
 
@@ -186,7 +181,6 @@ try_.builder(
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
     tryjob = try_.job(),
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 try_.builder(
@@ -197,7 +191,6 @@ try_.builder(
     main_list_view = "try",
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    os = os.LINUX_BIONIC_REMOVE,
     tryjob = try_.job(
         experiment_percentage = 3,
     ),
