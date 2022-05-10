@@ -82,9 +82,7 @@ class TestResponseAdapter : public signin::ResponseAdapter,
   bool IsOutermostMainFrame() const override {
     return is_outermost_main_frame_;
   }
-  GURL GetOrigin() const override {
-    return GURL("https://accounts.google.com");
-  }
+  GURL GetURL() const override { return GURL("https://accounts.google.com"); }
   const net::HttpResponseHeaders* GetHeaders() const override {
     return headers_.get();
   }
@@ -142,7 +140,7 @@ class TestChromeRequestAdapter : public signin::ChromeRequestAdapter {
   }
   bool IsOutermostMainFrame() const override { return true; }
   bool IsFetchLikeAPI() const override { return false; }
-  GURL GetReferrerOrigin() const override { return GURL(); }
+  GURL GetReferrer() const override { return GURL(); }
   void SetDestructionCallback(base::OnceClosure closure) override {}
 
  private:

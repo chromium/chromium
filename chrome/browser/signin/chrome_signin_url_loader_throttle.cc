@@ -48,9 +48,7 @@ class URLLoaderThrottle::ThrottleRequestAdapter : public ChromeRequestAdapter {
     return throttle_->request_is_fetch_like_api_;
   }
 
-  GURL GetReferrerOrigin() const override {
-    return throttle_->request_referrer_.DeprecatedGetOriginAsURL();
-  }
+  GURL GetReferrer() const override { return throttle_->request_referrer_; }
 
   void SetDestructionCallback(base::OnceClosure closure) override {
     if (!throttle_->destruction_callback_)
@@ -81,9 +79,7 @@ class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
     return throttle_->is_outermost_main_frame_;
   }
 
-  GURL GetOrigin() const override {
-    return throttle_->request_url_.DeprecatedGetOriginAsURL();
-  }
+  GURL GetURL() const override { return throttle_->request_url_; }
 
   const net::HttpResponseHeaders* GetHeaders() const override {
     return headers_;

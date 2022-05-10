@@ -74,7 +74,7 @@ TEST(ChromeSigninURLLoaderThrottleTest, Intercept) {
             EXPECT_EQ(network::mojom::RequestDestination::kDocument,
                       adapter->GetRequestDestination());
             EXPECT_TRUE(adapter->IsOutermostMainFrame());
-            EXPECT_EQ(GURL("https://chrome.com"), adapter->GetReferrerOrigin());
+            EXPECT_EQ(kTestReferrer, adapter->GetReferrer());
 
             EXPECT_TRUE(adapter->HasHeader("X-Request-1"));
             adapter->RemoveRequestHeaderByName("X-Request-1");
@@ -117,7 +117,7 @@ TEST(ChromeSigninURLLoaderThrottleTest, Intercept) {
 
   EXPECT_CALL(*delegate, ProcessResponse(_, _))
       .WillOnce(Invoke([&](ResponseAdapter* adapter, const GURL& redirect_url) {
-        EXPECT_EQ(GURL("https://google.com"), adapter->GetOrigin());
+        EXPECT_EQ(kTestURL, adapter->GetURL());
         EXPECT_TRUE(adapter->IsOutermostMainFrame());
 
         adapter->SetUserData(kResponseUserDataKey,
@@ -144,7 +144,7 @@ TEST(ChromeSigninURLLoaderThrottleTest, Intercept) {
             // Changes to the URL and referrer take effect after the redirect
             // is followed.
             EXPECT_EQ(kTestURL, adapter->GetUrl());
-            EXPECT_EQ(GURL("https://chrome.com"), adapter->GetReferrerOrigin());
+            EXPECT_EQ(kTestReferrer, adapter->GetReferrer());
 
             // X-Request-1 and X-Request-2 were modified in the previous call to
             // ProcessRequest(). These changes should still be present.
@@ -197,7 +197,7 @@ TEST(ChromeSigninURLLoaderThrottleTest, Intercept) {
 
   EXPECT_CALL(*delegate, ProcessResponse(_, _))
       .WillOnce(Invoke([&](ResponseAdapter* adapter, const GURL& redirect_url) {
-        EXPECT_EQ(GURL("https://youtube.com"), adapter->GetOrigin());
+        EXPECT_EQ(kTestRedirectURL, adapter->GetURL());
         EXPECT_TRUE(adapter->IsOutermostMainFrame());
 
         EXPECT_EQ(response_user_data_ptr,

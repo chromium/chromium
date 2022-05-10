@@ -195,7 +195,7 @@ class ProxyingURLLoaderFactory::InProgressRequest
   // Information about the current request.
   GURL request_url_;
   GURL response_url_;
-  GURL referrer_origin_;
+  GURL referrer_;
   net::HttpRequestHeaders headers_;
   net::HttpRequestHeaders cors_exempt_headers_;
   net::RedirectInfo redirect_info_;
@@ -252,9 +252,7 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyRequestAdapter
     return in_progress_request_->is_fetch_like_api_;
   }
 
-  GURL GetReferrerOrigin() const override {
-    return in_progress_request_->referrer_origin_;
-  }
+  GURL GetReferrer() const override { return in_progress_request_->referrer_; }
 
   void SetDestructionCallback(base::OnceClosure closure) override {
     if (!in_progress_request_->destruction_callback_)
@@ -289,9 +287,7 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
     return in_progress_request_->is_outermost_main_frame_;
   }
 
-  GURL GetOrigin() const override {
-    return in_progress_request_->response_url_.DeprecatedGetOriginAsURL();
-  }
+  GURL GetURL() const override { return in_progress_request_->response_url_; }
 
   const net::HttpResponseHeaders* GetHeaders() const override {
     return headers_;
@@ -327,7 +323,7 @@ ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
     : factory_(factory),
       request_url_(request.url),
       response_url_(request.url),
-      referrer_origin_(request.referrer.DeprecatedGetOriginAsURL()),
+      referrer_(request.referrer),
       request_destination_(request.destination),
       is_outermost_main_frame_(request.is_outermost_main_frame),
       is_fetch_like_api_(request.is_fetch_like_api),
@@ -398,8 +394,7 @@ void ProxyingURLLoaderFactory::InProgressRequest::FollowRedirect(
                                  modified_cors_exempt_headers, opt_new_url);
 
   request_url_ = redirect_info_.new_url;
-  referrer_origin_ =
-      GURL(redirect_info_.new_referrer).DeprecatedGetOriginAsURL();
+  referrer_ = GURL(redirect_info_.new_referrer);
 }
 
 void ProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(
@@ -421,7 +416,7 @@ void ProxyingURLLoaderFactory::InProgressRequest::OnReceiveRedirect(
   factory_->delegate_->ProcessResponse(&adapter, redirect_info.new_url);
   target_client_->OnReceiveRedirect(redirect_info, std::move(head));
 
-  // The request URL returned by ProxyResponseAdapter::GetOrigin() is updated
+  // The request URL returned by ProxyResponseAdapter::GetURL() is updated
   // immediately but the URL and referrer
   redirect_info_ = redirect_info;
   response_url_ = redirect_info.new_url;

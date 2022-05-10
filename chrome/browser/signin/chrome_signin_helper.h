@@ -61,7 +61,7 @@ class ChromeRequestAdapter : public RequestAdapter {
 
   virtual bool IsFetchLikeAPI() const = 0;
 
-  virtual GURL GetReferrerOrigin() const = 0;
+  virtual GURL GetReferrer() const = 0;
 
   // Associate a callback with this request which will be executed when the
   // request is complete (including any redirects). If a callback was already
@@ -80,7 +80,7 @@ class ResponseAdapter {
 
   virtual content::WebContents::Getter GetWebContentsGetter() const = 0;
   virtual bool IsOutermostMainFrame() const = 0;
-  virtual GURL GetOrigin() const = 0;
+  virtual GURL GetURL() const = 0;
   virtual const net::HttpResponseHeaders* GetHeaders() const = 0;
   virtual void RemoveHeader(const std::string& name) = 0;
 

@@ -157,7 +157,8 @@ bool ShouldBlockReconcilorForRequest(ChromeRequestAdapter* request) {
   }
 
   return request->IsFetchLikeAPI() &&
-         gaia::IsGaiaSignonRealm(request->GetReferrerOrigin());
+         gaia::IsGaiaSignonRealm(
+             request->GetReferrer().DeprecatedGetOriginAsURL());
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -439,7 +440,7 @@ void ProcessDiceHeader(
 // child/route id. Must be called on IO thread.
 void ProcessMirrorResponseHeaderIfExists(ResponseAdapter* response,
                                          bool is_off_the_record) {
-  CHECK(gaia::IsGaiaSignonRealm(response->GetOrigin()));
+  CHECK(gaia::IsGaiaSignonRealm(response->GetURL().DeprecatedGetOriginAsURL()));
 
   if (!response->IsOutermostMainFrame())
     return;
@@ -489,7 +490,7 @@ void ProcessMirrorResponseHeaderIfExists(ResponseAdapter* response,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProcessDiceResponseHeaderIfExists(ResponseAdapter* response,
                                        bool is_off_the_record) {
-  CHECK(gaia::IsGaiaSignonRealm(response->GetOrigin()));
+  CHECK(gaia::IsGaiaSignonRealm(response->GetURL().DeprecatedGetOriginAsURL()));
 
   if (is_off_the_record)
     return;
@@ -550,7 +551,7 @@ std::string ParseGaiaIdFromRemoveLocalAccountResponseHeader(
 
 void ProcessRemoveLocalAccountResponseHeaderIfExists(ResponseAdapter* response,
                                                      bool is_off_the_record) {
-  CHECK(gaia::IsGaiaSignonRealm(response->GetOrigin()));
+  CHECK(gaia::IsGaiaSignonRealm(response->GetURL().DeprecatedGetOriginAsURL()));
 
   if (is_off_the_record)
     return;
@@ -665,7 +666,7 @@ void FixAccountConsistencyRequestHeader(
 void ProcessAccountConsistencyResponseHeaders(ResponseAdapter* response,
                                               const GURL& redirect_url,
                                               bool is_off_the_record) {
-  if (!gaia::IsGaiaSignonRealm(response->GetOrigin()))
+  if (!gaia::IsGaiaSignonRealm(response->GetURL().DeprecatedGetOriginAsURL()))
     return;
 
 #if BUILDFLAG(ENABLE_MIRROR)
