@@ -28,6 +28,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
       const GURL& initiator_url,
       int initiator_process_id,
       absl::optional<blink::LocalFrameToken> initiator_frame_token,
+      int initiator_frame_tree_node_id,
       ukm::SourceId initiator_ukm_id,
       ui::PageTransition transition_type,
       absl::optional<base::RepeatingCallback<bool(const GURL&)>>
@@ -63,6 +64,10 @@ struct CONTENT_EXPORT PrerenderAttributes {
 
   // This is absl::nullopt when prerendering is initiated by the browser.
   absl::optional<blink::LocalFrameToken> initiator_frame_token;
+
+  // This is RenderFrameHost::kNoFrameTreeNodeId when prerendering is initiated
+  // by the browser.
+  int initiator_frame_tree_node_id;
 
   // This is ukm::kInvalidSourceId when prerendering is initiated by the
   // browser.

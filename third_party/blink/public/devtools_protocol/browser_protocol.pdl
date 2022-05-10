@@ -8319,6 +8319,38 @@ domain Page
   type PrerenderFinalStatus extends string
     enum
       Activated
+      Destroyed
+      LowEndDevice
+      CrossOriginRedirect
+      CrossOriginNavigation
+      InvalidSchemeRedirect
+      InvalidSchemeNavigation
+      InProgressNavigation
+      NavigationRequestBlockedByCsp
+      MainFrameNavigation
+      MojoBinderPolicy
+      RendererProcessCrashed
+      RendererProcessKilled
+      Download
+      TriggerDestroyed
+      NavigationNotCommitted
+      NavigationBadHttpStatus
+      ClientCertRequested
+      NavigationRequestNetworkError
+      MaxNumOfRunningPrerendersExceeded
+      CancelAllHostsForTesting
+      DidFailLoad
+      Stop
+      SslCertificateError
+      LoginAuthRequested
+      UaChangeRequiresReload
+      BlockedByClient
+      AudioOutputDeviceRequested
+      MixedContent
+      TriggerBackgrounded
+      EmbedderTriggeredAndSameOriginRedirected
+      EmbedderTriggeredAndCrossOriginRedirected
+      EmbedderTriggeredAndDestroyed
 
   # Fired when a prerender attempt is completed.
   event prerenderAttemptCompleted

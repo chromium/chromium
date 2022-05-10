@@ -117,7 +117,8 @@ PrerenderAttributes GeneratePrerenderAttributes(const GURL& url,
       /*embedder_histogram_suffix=*/"", Referrer(),
       rfh->GetLastCommittedOrigin(), rfh->GetLastCommittedURL(),
       rfh->GetProcess()->GetID(), rfh->GetFrameToken(),
-      rfh->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
+      rfh->GetFrameTreeNodeId(), rfh->GetPageUkmSourceId(),
+      ui::PAGE_TRANSITION_LINK,
       /*url_match_predicate=*/absl::nullopt);
 }
 
@@ -130,8 +131,8 @@ PrerenderAttributes GeneratePrerenderAttributesWithPredicate(
       /*embedder_histogram_suffix=*/"", Referrer(),
       rfh->GetLastCommittedOrigin(), rfh->GetLastCommittedURL(),
       rfh->GetProcess()->GetID(), rfh->GetFrameToken(),
-      rfh->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
-      std::move(url_match_predicate));
+      rfh->GetFrameTreeNodeId(), rfh->GetPageUkmSourceId(),
+      ui::PAGE_TRANSITION_LINK, std::move(url_match_predicate));
 }
 
 class TestWebContentsDelegate : public WebContentsDelegate {

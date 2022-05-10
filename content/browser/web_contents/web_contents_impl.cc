@@ -9364,8 +9364,9 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
       prerendering_url, trigger_type, embedder_histogram_suffix,
       content::Referrer(), /*initiator_origin=*/absl::nullopt, prerendering_url,
       content::ChildProcessHost::kInvalidUniqueID,
-      /*initiator_frame_token=*/absl::nullopt, ukm::kInvalidSourceId,
-      page_transition, url_match_predicate);
+      /*initiator_frame_token=*/absl::nullopt,
+      /*initiator_frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
+      ukm::kInvalidSourceId, page_transition, url_match_predicate);
   int frame_tree_node_id =
       GetPrerenderHostRegistry()->CreateAndStartHost(attributes, *this);
 

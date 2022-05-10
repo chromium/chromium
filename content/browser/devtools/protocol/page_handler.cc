@@ -1423,6 +1423,80 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
   }
 }
 
+Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
+    PrerenderHost::FinalStatus feature) {
+  switch (feature) {
+    case PrerenderHost::FinalStatus::kActivated:
+      return Page::PrerenderFinalStatusEnum::Activated;
+    case PrerenderHost::FinalStatus::kAudioOutputDeviceRequested:
+      return Page::PrerenderFinalStatusEnum::AudioOutputDeviceRequested;
+    case PrerenderHost::FinalStatus::kBlockedByClient:
+      return Page::PrerenderFinalStatusEnum::BlockedByClient;
+    case PrerenderHost::FinalStatus::kCancelAllHostsForTesting:
+      return Page::PrerenderFinalStatusEnum::CancelAllHostsForTesting;
+    case PrerenderHost::FinalStatus::kClientCertRequested:
+      return Page::PrerenderFinalStatusEnum::ClientCertRequested;
+    case PrerenderHost::FinalStatus::kCrossOriginNavigation:
+      return Page::PrerenderFinalStatusEnum::CrossOriginNavigation;
+    case PrerenderHost::FinalStatus::kCrossOriginRedirect:
+      return Page::PrerenderFinalStatusEnum::CrossOriginRedirect;
+    case PrerenderHost::FinalStatus::kDestroyed:
+      return Page::PrerenderFinalStatusEnum::Destroyed;
+    case PrerenderHost::FinalStatus::kDidFailLoad:
+      return Page::PrerenderFinalStatusEnum::DidFailLoad;
+    case PrerenderHost::FinalStatus::kDownload:
+      return Page::PrerenderFinalStatusEnum::Download;
+    case PrerenderHost::FinalStatus::kEmbedderTriggeredAndCrossOriginRedirected:
+      return Page::PrerenderFinalStatusEnum::
+          EmbedderTriggeredAndCrossOriginRedirected;
+    case PrerenderHost::FinalStatus::kEmbedderTriggeredAndDestroyed:
+      return Page::PrerenderFinalStatusEnum::EmbedderTriggeredAndDestroyed;
+    case PrerenderHost::FinalStatus::kEmbedderTriggeredAndSameOriginRedirected:
+      return Page::PrerenderFinalStatusEnum::
+          EmbedderTriggeredAndSameOriginRedirected;
+    case PrerenderHost::FinalStatus::kInProgressNavigation:
+      return Page::PrerenderFinalStatusEnum::InProgressNavigation;
+    case PrerenderHost::FinalStatus::kInvalidSchemeNavigation:
+      return Page::PrerenderFinalStatusEnum::InvalidSchemeNavigation;
+    case PrerenderHost::FinalStatus::kInvalidSchemeRedirect:
+      return Page::PrerenderFinalStatusEnum::InvalidSchemeRedirect;
+    case PrerenderHost::FinalStatus::kLoginAuthRequested:
+      return Page::PrerenderFinalStatusEnum::LoginAuthRequested;
+    case PrerenderHost::FinalStatus::kLowEndDevice:
+      return Page::PrerenderFinalStatusEnum::LowEndDevice;
+    case PrerenderHost::FinalStatus::kMainFrameNavigation:
+      return Page::PrerenderFinalStatusEnum::MainFrameNavigation;
+    case PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded:
+      return Page::PrerenderFinalStatusEnum::MaxNumOfRunningPrerendersExceeded;
+    case PrerenderHost::FinalStatus::kMixedContent:
+      return Page::PrerenderFinalStatusEnum::MixedContent;
+    case PrerenderHost::FinalStatus::kMojoBinderPolicy:
+      return Page::PrerenderFinalStatusEnum::MojoBinderPolicy;
+    case PrerenderHost::FinalStatus::kNavigationBadHttpStatus:
+      return Page::PrerenderFinalStatusEnum::NavigationBadHttpStatus;
+    case PrerenderHost::FinalStatus::kNavigationNotCommitted:
+      return Page::PrerenderFinalStatusEnum::NavigationNotCommitted;
+    case PrerenderHost::FinalStatus::kNavigationRequestBlockedByCsp:
+      return Page::PrerenderFinalStatusEnum::NavigationRequestBlockedByCsp;
+    case PrerenderHost::FinalStatus::kNavigationRequestNetworkError:
+      return Page::PrerenderFinalStatusEnum::NavigationRequestNetworkError;
+    case PrerenderHost::FinalStatus::kRendererProcessCrashed:
+      return Page::PrerenderFinalStatusEnum::RendererProcessCrashed;
+    case PrerenderHost::FinalStatus::kRendererProcessKilled:
+      return Page::PrerenderFinalStatusEnum::RendererProcessKilled;
+    case PrerenderHost::FinalStatus::kSslCertificateError:
+      return Page::PrerenderFinalStatusEnum::SslCertificateError;
+    case PrerenderHost::FinalStatus::kStop:
+      return Page::PrerenderFinalStatusEnum::CancelAllHostsForTesting;
+    case PrerenderHost::FinalStatus::kTriggerBackgrounded:
+      return Page::PrerenderFinalStatusEnum::TriggerBackgrounded;
+    case PrerenderHost::FinalStatus::kTriggerDestroyed:
+      return Page::PrerenderFinalStatusEnum::TriggerDestroyed;
+    case PrerenderHost::FinalStatus::kUaChangeRequiresReload:
+      return Page::PrerenderFinalStatusEnum::UaChangeRequiresReload;
+  }
+}
+
 using blink::scheduler::WebSchedulerTrackedFeature;
 Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
     WebSchedulerTrackedFeature feature) {
@@ -1877,6 +1951,17 @@ void PageHandler::DidActivatePrerender(const NavigationRequest& nav_request) {
   frontend_->PrerenderAttemptCompleted(
       initiating_frame_id, prerendering_url.spec(),
       Page::PrerenderFinalStatusEnum::Activated);
+}
+
+void PageHandler::DidCancelPrerender(const GURL& prerendering_url,
+                                     const std::string& initiating_frame_id,
+                                     PrerenderHost::FinalStatus status) {
+  if (!enabled_)
+    return;
+  DCHECK_NE(status, PrerenderHost::FinalStatus::kActivated);
+  frontend_->PrerenderAttemptCompleted(initiating_frame_id,
+                                       prerendering_url.spec(),
+                                       PrerenderFinalStatusToProtocol(status));
 }
 
 bool PageHandler::ShouldBypassCSP() {

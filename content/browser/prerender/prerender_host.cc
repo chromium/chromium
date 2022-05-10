@@ -810,6 +810,16 @@ void PrerenderHost::RecordFinalStatus(FinalStatus status,
   RecordPrerenderHostFinalStatus(status, trigger_type(),
                                  embedder_histogram_suffix(), initiator_ukm_id,
                                  prerendered_ukm_id);
+
+  // The kActivated case is recorded in `PrerenderHost::Activate`. Browser
+  // initiated prerendering doesn't report cancellation reasons to the DevTools
+  // as it doesn't have the initiator frame associated with DevTools agents.
+  if (final_status_ != FinalStatus::kActivated && !IsBrowserInitiated()) {
+    auto* ftn = FrameTreeNode::GloballyFindByID(initiator_frame_tree_node_id());
+    DCHECK(ftn);
+    devtools_instrumentation::DidCancelPrerender(attributes_.prerendering_url,
+                                                 ftn, status);
+  }
 }
 
 const GURL& PrerenderHost::GetInitialUrl() const {

@@ -20,6 +20,7 @@
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
 #include "content/browser/devtools/protocol/page.h"
+#include "content/browser/prerender/prerender_host.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/javascript_dialog_manager.h"
@@ -110,6 +111,9 @@ class PageHandler : public DevToolsDomainHandler,
       const BackForwardCacheCanStoreTreeResult* tree_result);
 
   void DidActivatePrerender(const NavigationRequest& nav_request);
+  void DidCancelPrerender(const GURL& prerendering_url,
+                          const std::string& initiating_frame_id,
+                          PrerenderHost::FinalStatus status);
 
   Response Enable() override;
   Response Disable() override;

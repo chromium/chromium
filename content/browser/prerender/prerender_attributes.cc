@@ -24,6 +24,7 @@ PrerenderAttributes::PrerenderAttributes(
     const GURL& initiator_url,
     int initiator_process_id,
     absl::optional<blink::LocalFrameToken> initiator_frame_token,
+    int initiator_frame_tree_node_id,
     ukm::SourceId initiator_ukm_id,
     ui::PageTransition transition_type,
     absl::optional<base::RepeatingCallback<bool(const GURL&)>>
@@ -36,6 +37,7 @@ PrerenderAttributes::PrerenderAttributes(
       initiator_url(initiator_url),
       initiator_process_id(initiator_process_id),
       initiator_frame_token(std::move(initiator_frame_token)),
+      initiator_frame_tree_node_id(initiator_frame_tree_node_id),
       initiator_ukm_id(initiator_ukm_id),
       transition_type(transition_type),
       url_match_predicate(std::move(url_match_predicate)) {}
@@ -54,6 +56,7 @@ PrerenderAttributes::PrerenderAttributes(PrerenderAttributes&& attributes)
       initiator_url(attributes.initiator_url),
       initiator_process_id(attributes.initiator_process_id),
       initiator_frame_token(attributes.initiator_frame_token),
+      initiator_frame_tree_node_id(attributes.initiator_frame_tree_node_id),
       initiator_ukm_id(attributes.initiator_ukm_id),
       transition_type(attributes.transition_type),
       url_match_predicate(attributes.url_match_predicate) {}

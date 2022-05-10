@@ -323,6 +323,14 @@ void DidActivatePrerender(const NavigationRequest& nav_request) {
                    nav_request);
 }
 
+void DidCancelPrerender(const GURL& prerendering_url,
+                        FrameTreeNode* ftn,
+                        PrerenderHost::FinalStatus status) {
+  std::string initiating_frame_id = ftn->devtools_frame_token().ToString();
+  DispatchToAgents(ftn, &protocol::PageHandler::DidCancelPrerender,
+                   prerendering_url, initiating_frame_id, status);
+}
+
 namespace {
 
 protocol::String BuildBlockedByResponseReason(
