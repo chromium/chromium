@@ -5,6 +5,7 @@
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/controls/rounded_scroll_bar.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -23,12 +24,26 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event_handler.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/view.h"
 
 namespace ash {
 namespace {
 
 // Vertical spacing between the last grid item and the feedback button.
 constexpr int kFeedbackButtonSpacingDp = 40;
+
+// Between child spacing of Library page scroll content view.
+constexpr int kLibraryPageScrollContentsBetweenChildSpacingDp = 32;
+
+// Insets of Library page scroll content view.
+constexpr gfx::Insets kLibraryPageScrollContentsInsets = gfx::Insets::VH(32, 0);
+
+// Insets for the vertical scroll bar.
+constexpr gfx::Insets kLibraryPageVerticalScrollInsets =
+    gfx::Insets::TLBR(1, 0, 1, 1);
 
 struct SavedDesks {
   // Saved desks created as templates.
@@ -75,8 +90,12 @@ class SavedDeskLibraryWindowTargeter : public aura::WindowTargeter {
   // aura::WindowTargeter:
   bool SubtreeShouldBeExploredForEvent(aura::Window* window,
                                        const ui::LocatedEvent& event) override {
-    if (!owner_->IntersectsWithUi(event.location()))
+    // Process the event only if it intersects with grid items or it is for
+    // scrolling.
+    if (!owner_->IntersectsWithUi(event.location()) &&
+        !event.IsMouseWheelEvent()) {
       return false;
+    }
 
     // None of the libary's children will handle the event, so `window` won't
     // handle the event and it will fall through to the wallpaper.
@@ -146,26 +165,61 @@ SavedDeskLibraryView::CreateSavedDeskLibraryWidget(aura::Window* root) {
   return widget;
 }
 
-SavedDeskLibraryView::SavedDeskLibraryView()
-    : bounds_animator_(this, /*use_transforms=*/true) {
+SavedDeskLibraryView::SavedDeskLibraryView() {
+  // The entire page scrolls.
+  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
+      views::ScrollView::ScrollWithLayers::kEnabled));
+  scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
+  scroll_view_->SetDrawOverflowIndicator(false);
+  // Don't paint a background. The overview grid already has one.
+  scroll_view_->SetBackgroundColor(absl::nullopt);
+  // Arrow keys are used to select app icons.
+  scroll_view_->SetAllowKeyboardScrolling(false);
+
+  // Scroll view will have a gradient mask layer.
+  scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+
+  // Set up scroll bars.
+  scroll_view_->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  // Use ash style rounded scroll bar just like `AppListBubbleAppsPage`.
+  auto vertical_scroll =
+      std::make_unique<RoundedScrollBar>(/*horizontal=*/false);
+  vertical_scroll->SetInsets(kLibraryPageVerticalScrollInsets);
+  vertical_scroll->SetSnapBackOnDragOutside(false);
+  scroll_view_->SetVerticalScrollBar(std::move(vertical_scroll));
+
+  // Set up scroll contents.
+  auto scroll_contents = std::make_unique<views::View>();
+  auto* layout =
+      scroll_contents->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical,
+          kLibraryPageScrollContentsInsets,
+          kLibraryPageScrollContentsBetweenChildSpacingDp));
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
   // Create grids depending on which features are enabled.
   if (features::AreDesksTemplatesEnabled()) {
     desk_template_grid_view_ =
-        AddChildView(std::make_unique<SavedDeskGridView>());
+        scroll_contents->AddChildView(std::make_unique<SavedDeskGridView>());
     grid_views_.push_back(desk_template_grid_view_);
   }
   if (features::IsSavedDesksEnabled()) {
     save_and_recall_grid_view_ =
-        AddChildView(std::make_unique<SavedDeskGridView>());
+        scroll_contents->AddChildView(std::make_unique<SavedDeskGridView>());
     grid_views_.push_back(save_and_recall_grid_view_);
   }
 
-  feedback_button_ = AddChildView(std::make_unique<PillButton>(
+  feedback_button_ = scroll_contents->AddChildView(std::make_unique<PillButton>(
       base::BindRepeating(&SavedDeskLibraryView::OnFeedbackButtonPressed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_FEEDBACK),
       PillButton::Type::kIcon, &kPersistentDesksBarFeedbackIcon));
+
+  scroll_view_->SetContents(std::move(scroll_contents));
 }
 
 SavedDeskLibraryView::~SavedDeskLibraryView() {
@@ -200,7 +254,7 @@ void SavedDeskLibraryView::PopulateGridUI(
                                                last_saved_desk_uuid);
   }
 
-  AnimateItems();
+  Layout();
 }
 
 void SavedDeskLibraryView::AddOrUpdateTemplates(
@@ -219,7 +273,7 @@ void SavedDeskLibraryView::AddOrUpdateTemplates(
         last_saved_desk_uuid);
   }
 
-  AnimateItems();
+  Layout();
 }
 
 void SavedDeskLibraryView::DeleteTemplates(
@@ -229,7 +283,7 @@ void SavedDeskLibraryView::DeleteTemplates(
   if (save_and_recall_grid_view_)
     save_and_recall_grid_view_->DeleteTemplates(uuids);
 
-  AnimateItems();
+  Layout();
 }
 
 std::vector<std::pair<views::View*, gfx::Rect>>
@@ -299,20 +353,7 @@ void SavedDeskLibraryView::OnFeedbackButtonPressed() {
       extra_diagnostics);
 }
 
-void SavedDeskLibraryView::AnimateItems() {
-  for (const auto& [view, bounds] : CalculatePositions()) {
-    const gfx::Rect target_bounds = bounds_animator_.GetTargetBounds(view);
-    if (target_bounds.IsEmpty() || target_bounds == bounds)
-      view->SetBoundsRect(bounds);
-    else
-      bounds_animator_.AnimateViewTo(view, bounds);
-  }
-}
-
 bool SavedDeskLibraryView::IsAnimating() {
-  if (bounds_animator_.IsAnimating())
-    return true;
-
   for (auto* grid_view : grid_views()) {
     if (grid_view->IsAnimating())
       return true;
@@ -388,7 +429,7 @@ void SavedDeskLibraryView::AddedToWidget() {
 }
 
 void SavedDeskLibraryView::Layout() {
-  AnimateItems();
+  scroll_view_->SetBoundsRect({0, 0, width(), height()});
 }
 
 void SavedDeskLibraryView::OnThemeChanged() {

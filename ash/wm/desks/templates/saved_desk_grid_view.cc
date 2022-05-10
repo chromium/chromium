@@ -24,6 +24,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
@@ -245,6 +246,14 @@ bool SavedDeskGridView::IsTemplateNameBeingModified() const {
   return false;
 }
 
+gfx::Size SavedDeskGridView::CalculatePreferredSize() const {
+  return GetSizeForWidth(kLandscapeMinWidth);
+}
+
+int SavedDeskGridView::GetHeightForWidth(int width) const {
+  return GetSizeForWidth(width).height();
+}
+
 void SavedDeskGridView::Layout() {
   if (grid_items_.empty())
     return;
@@ -304,17 +313,14 @@ std::vector<gfx::Rect> SavedDeskGridView::CalculateGridItemPositions() const {
   const gfx::Size grid_item_size = grid_items_[0]->GetPreferredSize();
   const size_t max_column_count = GetColumnsForWidth(width());
   const size_t column_count = std::min(count, max_column_count);
-  const int total_width =
-      column_count * (grid_item_size.width() + kGridPaddingDp) - kGridPaddingDp;
 
-  const int initial_x = (width() - total_width) / 2;
-  int x = initial_x;
+  int x = 0;
   int y = 0;
 
   for (size_t i = 0; i < count; i++) {
     if (i != 0 && i % column_count == 0) {
       // Move the position to the start of the next row.
-      x = initial_x;
+      x = 0;
       y += grid_item_size.height() + kGridPaddingDp;
     }
 

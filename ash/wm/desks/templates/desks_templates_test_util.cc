@@ -88,7 +88,6 @@ SavedDeskLibraryViewTestApi::SavedDeskLibraryViewTestApi(
     : library_view_(library_view) {}
 
 void SavedDeskLibraryViewTestApi::WaitForAnimationDone() {
-  BoundsAnimatorWaiter(library_view_->bounds_animator_).Wait();
   for (auto* grid_view : library_view_->grid_views())
     SavedDeskGridViewTestApi(grid_view).WaitForItemMoveAnimationDone();
 }

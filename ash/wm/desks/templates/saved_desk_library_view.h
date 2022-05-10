@@ -13,6 +13,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/bounds_animator.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -70,7 +71,6 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // desks templates information.
   void OnFeedbackButtonPressed();
 
-  void AnimateItems();
   bool IsAnimating();
 
   // Called from `SavedDeskLibraryWindowTargeter`. Returns true if `location`
@@ -96,6 +96,10 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   SavedDeskGridView* desk_template_grid_view_ = nullptr;
   SavedDeskGridView* save_and_recall_grid_view_ = nullptr;
 
+  // Used for scroll functionality of the library page. Owned by views
+  // hierarchy.
+  views::ScrollView* scroll_view_ = nullptr;
+
   // Holds the active ones, for convenience.
   std::vector<SavedDeskGridView*> grid_views_;
 
@@ -105,9 +109,6 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
 
   // Handles mouse/touch events on saved desk library widget.
   std::unique_ptr<SavedDeskLibraryEventHandler> event_handler_;
-
-  // Used to animate individual view positions.
-  views::BoundsAnimator bounds_animator_;
 };
 
 }  // namespace ash

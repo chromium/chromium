@@ -2093,7 +2093,8 @@ TEST_F(DesksTemplatesTest, HideAndShowTemplatesGridWithoutLeavingOverview) {
   ASSERT_TRUE(library_view);
 
   // The library has two grids and one feedback button.
-  ASSERT_EQ(3ul, library_view->children().size());
+  SavedDeskLibraryViewTestApi test_api(library_view);
+  ASSERT_EQ(3ul, test_api.scroll_view()->contents()->children().size());
 
   // Click on the grid item to launch the template.
   ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
@@ -2103,7 +2104,7 @@ TEST_F(DesksTemplatesTest, HideAndShowTemplatesGridWithoutLeavingOverview) {
   // Go back to the library view and verify a new feedback button wasn't
   // created. There should still be two grids and one feedback button.
   ShowDesksTemplatesGrids();
-  ASSERT_EQ(3ul, library_view->children().size());
+  ASSERT_EQ(3ul, test_api.scroll_view()->contents()->children().size());
 }
 
 // Tests that if we open the desks templates grid a second time during an
@@ -2701,7 +2702,9 @@ TEST_F(DesksTemplatesTest, ItemsDoNotOverlapShelf) {
       GetOverviewGridList().front()->GetSavedDeskLibraryView();
 
   // The library has two grids and one feedback button.
-  views::View::Views library_child_views = library_view->children();
+  SavedDeskLibraryViewTestApi test_api(library_view);
+  views::View::Views library_child_views =
+      test_api.scroll_view()->contents()->children();
   ASSERT_EQ(3ul, library_child_views.size());
 
   const gfx::Rect shelf_bounds =
@@ -3360,7 +3363,8 @@ TEST_F(DesksTemplatesTest, RightClickOnWallpaperStaysInOverview) {
       GetItemViewFromTemplatesGrid(/*grid_item_index=*/0);
   DCHECK(item_view);
   gfx::Rect item_view_expanded_bounds = item_view->GetBoundsInScreen();
-  item_view_expanded_bounds.Outset(40);
+  item_view_expanded_bounds.set_y(item_view_expanded_bounds.y() - 32);
+  item_view_expanded_bounds.set_height(item_view_expanded_bounds.height() + 32);
   const gfx::Rect library_widget_bounds = GetOverviewGridList()[0]
                                               ->saved_desk_library_widget()
                                               ->GetWindowBoundsInScreen();

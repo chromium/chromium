@@ -61,6 +61,8 @@ class SavedDeskGridView : public views::View {
   SavedDeskItemView* GetItemForUUID(const base::GUID& uuid);
 
   // views::View:
+  gfx::Size CalculatePreferredSize() const override;
+  int GetHeightForWidth(int width) const override;
   void Layout() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 

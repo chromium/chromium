@@ -12,9 +12,11 @@
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
 #include "ash/wm/desks/templates/saved_desk_icon_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
+#include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "base/callback_helpers.h"
 #include "base/guid.h"
+#include "ui/views/controls/scroll_view.h"
 
 namespace views {
 class Button;
@@ -28,7 +30,6 @@ class DesksTemplatesPresenter;
 class OverviewGrid;
 class PillButton;
 class RoundedImageView;
-class SavedDeskLibraryView;
 
 // Wrapper for `DesksTemplatesPresenter` that exposes internal state to test
 // functions.
@@ -57,6 +58,7 @@ class SavedDeskLibraryViewTestApi {
   ~SavedDeskLibraryViewTestApi() = default;
 
   void WaitForAnimationDone();
+  const views::ScrollView* scroll_view() { return library_view_->scroll_view_; }
 
  private:
   SavedDeskLibraryView* library_view_;
