@@ -59,10 +59,10 @@ SkColor GetDefaultButtonTextColor(PillButton::Type type) {
   switch (type) {
     case PillButton::Type::kIcon:
     case PillButton::Type::kIconless:
-    case PillButton::Type::kIconlessProminent:
     case PillButton::Type::kIconlessFloating:
       break;
     case PillButton::Type::kIconlessAlert:
+    case PillButton::Type::kIconlessProminent:
       color_id = AshColorProvider::ContentLayerType::kButtonLabelColorPrimary;
       break;
     case PillButton::Type::kIconlessAccent:
