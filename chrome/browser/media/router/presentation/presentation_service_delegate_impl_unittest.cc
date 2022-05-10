@@ -107,7 +107,7 @@ class MockWebContentsPresentationObserver
   base::WeakPtr<WebContentsPresentationManager> presentation_manager_;
 };
 
-class MockCreatePresentationConnnectionCallbacks {
+class MockCreatePresentationConnectionCallbacks {
  public:
   MOCK_METHOD1(OnCreateConnectionSuccess,
                void(PresentationConnectionResultPtr result));
@@ -468,7 +468,7 @@ TEST_F(PresentationServiceDelegateImplTest, NotifyMediaRoutesChanged) {
                             kPresentationId);
 }
 
-TEST_F(PresentationServiceDelegateImplTest, ListenForConnnectionStateChange) {
+TEST_F(PresentationServiceDelegateImplTest, ListenForConnectionStateChange) {
   const MediaRoute::Id route_id("routeId");
   content::WebContentsTester::For(GetWebContents())
       ->NavigateAndCommit(frame_url_);
@@ -488,14 +488,14 @@ TEST_F(PresentationServiceDelegateImplTest, ListenForConnnectionStateChange) {
   EXPECT_CALL(mock_local_manager, IsLocalPresentation(kPresentationId))
       .WillRepeatedly(Return(false));
 
-  MockCreatePresentationConnnectionCallbacks mock_create_connection_callbacks;
+  MockCreatePresentationConnectionCallbacks mock_create_connection_callbacks;
   delegate_impl_->ReconnectPresentation(
       *presentation_request_, kPresentationId,
-      base::BindOnce(&MockCreatePresentationConnnectionCallbacks::
+      base::BindOnce(&MockCreatePresentationConnectionCallbacks::
                          OnCreateConnectionSuccess,
                      base::Unretained(&mock_create_connection_callbacks)),
       base::BindOnce(
-          &MockCreatePresentationConnnectionCallbacks::OnCreateConnectionError,
+          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionError,
           base::Unretained(&mock_create_connection_callbacks)));
 
   EXPECT_CALL(mock_create_connection_callbacks, OnCreateConnectionSuccess(_))
@@ -772,7 +772,7 @@ TEST_F(PresentationServiceDelegateImplTest, AutoJoinRequest) {
   content::WebContentsTester::For(GetWebContents())
       ->NavigateAndCommit(frame_url_);
 
-  MockCreatePresentationConnnectionCallbacks mock_create_connection_callbacks;
+  MockCreatePresentationConnectionCallbacks mock_create_connection_callbacks;
   const std::string kPresentationId("auto-join");
   ASSERT_TRUE(IsAutoJoinPresentationId(kPresentationId));
 
@@ -788,11 +788,11 @@ TEST_F(PresentationServiceDelegateImplTest, AutoJoinRequest) {
       .Times(0);
   delegate_impl_->ReconnectPresentation(
       *presentation_request_, kPresentationId,
-      base::BindOnce(&MockCreatePresentationConnnectionCallbacks::
+      base::BindOnce(&MockCreatePresentationConnectionCallbacks::
                          OnCreateConnectionSuccess,
                      base::Unretained(&mock_create_connection_callbacks)),
       base::BindOnce(
-          &MockCreatePresentationConnnectionCallbacks::OnCreateConnectionError,
+          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionError,
           base::Unretained(&mock_create_connection_callbacks)));
 
   // Remove the user preference for |origin|.
@@ -807,11 +807,11 @@ TEST_F(PresentationServiceDelegateImplTest, AutoJoinRequest) {
       .Times(1);
   delegate_impl_->ReconnectPresentation(
       *presentation_request_, kPresentationId,
-      base::BindOnce(&MockCreatePresentationConnnectionCallbacks::
+      base::BindOnce(&MockCreatePresentationConnectionCallbacks::
                          OnCreateConnectionSuccess,
                      base::Unretained(&mock_create_connection_callbacks)),
       base::BindOnce(
-          &MockCreatePresentationConnnectionCallbacks::OnCreateConnectionError,
+          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionError,
           base::Unretained(&mock_create_connection_callbacks)));
 }
 
@@ -820,7 +820,7 @@ TEST_F(PresentationServiceDelegateImplIncognitoTest, AutoJoinRequest) {
   content::WebContentsTester::For(GetWebContents())
       ->NavigateAndCommit(frame_url_);
 
-  MockCreatePresentationConnnectionCallbacks mock_create_connection_callbacks;
+  MockCreatePresentationConnectionCallbacks mock_create_connection_callbacks;
   const std::string kPresentationId("auto-join");
   ASSERT_TRUE(IsAutoJoinPresentationId(kPresentationId));
 
@@ -845,11 +845,11 @@ TEST_F(PresentationServiceDelegateImplIncognitoTest, AutoJoinRequest) {
       .Times(0);
   delegate_impl_->ReconnectPresentation(
       *presentation_request_, kPresentationId,
-      base::BindOnce(&MockCreatePresentationConnnectionCallbacks::
+      base::BindOnce(&MockCreatePresentationConnectionCallbacks::
                          OnCreateConnectionSuccess,
                      base::Unretained(&mock_create_connection_callbacks)),
       base::BindOnce(
-          &MockCreatePresentationConnnectionCallbacks::OnCreateConnectionError,
+          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionError,
           base::Unretained(&mock_create_connection_callbacks)));
 
   // Remove the user preference for |origin| in OffTheRecord.
@@ -865,11 +865,11 @@ TEST_F(PresentationServiceDelegateImplIncognitoTest, AutoJoinRequest) {
       .Times(1);
   delegate_impl_->ReconnectPresentation(
       *presentation_request_, kPresentationId,
-      base::BindOnce(&MockCreatePresentationConnnectionCallbacks::
+      base::BindOnce(&MockCreatePresentationConnectionCallbacks::
                          OnCreateConnectionSuccess,
                      base::Unretained(&mock_create_connection_callbacks)),
       base::BindOnce(
-          &MockCreatePresentationConnnectionCallbacks::OnCreateConnectionError,
+          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionError,
           base::Unretained(&mock_create_connection_callbacks)));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -41,7 +41,7 @@ class MediaRouterBase : public MediaRouter {
   FRIEND_TEST_ALL_PREFIXES(MediaRouterBaseTest, CreatePresentationIds);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterBaseTest, NotifyCallbacks);
   FRIEND_TEST_ALL_PREFIXES(PresentationServiceDelegateImplTest,
-                           ListenForConnnectionStateChange);
+                           ListenForConnectionStateChange);
   FRIEND_TEST_ALL_PREFIXES(PresentationServiceDelegateImplTest, GetMediaRoutes);
 
   MediaRouterBase();
