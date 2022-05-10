@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBrowserTest, DISABLED_ZoomPreservedOnReload) {
   // Set the new zoom, wait for the page to be resized, and sanity-check that
   // the zoom was applied.
   {
-    DOMMessageQueue msg_queue;
+    DOMMessageQueue msg_queue(web_contents());
     ResizeObserver observer(root->current_frame_host());
 
     const double new_zoom_level =
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, DISABLED_SubframesZoomProperly) {
 
   const double new_zoom_factor = 2.5;
   {
-    DOMMessageQueue msg_queue;
+    DOMMessageQueue msg_queue(web_contents());
 
     std::vector<FrameResizeObserver> frame_observers;
     frame_observers.emplace_back(child, "child",
@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
 
   const double new_default_zoom_factor = 2.0;
   {
-    DOMMessageQueue msg_queue;
+    DOMMessageQueue msg_queue(web_contents());
 
     std::vector<FrameResizeObserver> frame_observers;
     frame_observers.emplace_back(child, "child",
@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, MAYBE_SiblingFramesZoom) {
 
   const double new_zoom_factor = 2.5;
   {
-    DOMMessageQueue msg_queue;
+    DOMMessageQueue msg_queue(web_contents());
 
     std::vector<FrameResizeObserver> frame_observers;
     frame_observers.emplace_back(child1, "child1",
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframeRetainsZoomOnNavigation) {
 
   const double new_zoom_factor = 0.5;
   {
-    DOMMessageQueue msg_queue;
+    DOMMessageQueue msg_queue(web_contents());
 
     std::vector<FrameResizeObserver> frame_observers;
     frame_observers.emplace_back(child, "child",
