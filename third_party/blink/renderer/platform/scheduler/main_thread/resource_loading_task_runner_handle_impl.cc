@@ -23,8 +23,7 @@ ResourceLoadingTaskRunnerHandleImpl::WrapTaskRunner(
 ResourceLoadingTaskRunnerHandleImpl::ResourceLoadingTaskRunnerHandleImpl(
     scoped_refptr<MainThreadTaskQueue> task_queue)
     : task_queue_(std::move(task_queue)),
-      task_runner_(task_queue_->CreateTaskRunner(
-          TaskType::kNetworkingWithURLLoaderAnnotation)) {}
+      task_runner_(task_queue_->CreateTaskRunner(TaskType::kNetworking)) {}
 
 ResourceLoadingTaskRunnerHandleImpl::~ResourceLoadingTaskRunnerHandleImpl() {
   if (task_queue_->GetFrameScheduler()) {

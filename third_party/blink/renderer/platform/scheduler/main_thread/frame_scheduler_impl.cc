@@ -392,7 +392,6 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     }
     case TaskType::kInternalLoading:
     case TaskType::kNetworking:
-    case TaskType::kNetworkingWithURLLoaderAnnotation:
       return LoadingTaskQueueTraits();
     case TaskType::kNetworkingUnfreezable:
       return IsInflightNetworkRequestBackForwardCacheSupportEnabled()
@@ -572,7 +571,7 @@ FrameSchedulerImpl::CreateResourceLoadingTaskRunnerHandleImpl() {
   }
 
   return ResourceLoadingTaskRunnerHandleImpl::WrapTaskRunner(
-      GetTaskQueue(TaskType::kNetworkingWithURLLoaderAnnotation));
+      GetTaskQueue(TaskType::kNetworking));
 }
 
 void FrameSchedulerImpl::DidChangeResourceLoadingPriority(

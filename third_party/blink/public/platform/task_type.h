@@ -46,9 +46,6 @@ enum class TaskType : unsigned char {
   // This task source is used for features that trigger in response to network
   // activity.
   kNetworking = 3,
-  // This is a part of Networking task source used to annotate tasks which are
-  // posted from the loading stack (i.e. WebURLLoader).
-  kNetworkingWithURLLoaderAnnotation = 50,
   // This is a part of Networking task that should not be frozen when a page is
   // frozen.
   kNetworkingUnfreezable = 75,
@@ -143,6 +140,7 @@ enum class TaskType : unsigned char {
   kWorkerAnimation = 51,
 
   // Obsolete.
+  // kNetworkingWithURLLoaderAnnotation = 50, (see crbug.com/860545)
   // kExperimentalWebSchedulingUserInteraction = 53,
   // kExperimentalWebSchedulingBestEffort = 54,
 

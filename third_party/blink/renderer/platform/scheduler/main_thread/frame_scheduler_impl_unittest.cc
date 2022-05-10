@@ -108,7 +108,6 @@ constexpr TaskType kAllFrameTaskTypes[] = {
     TaskType::kJavascriptTimerDelayedHighNesting,
     TaskType::kInternalLoading,
     TaskType::kNetworking,
-    TaskType::kNetworkingWithURLLoaderAnnotation,
     TaskType::kNetworkingUnfreezable,
     TaskType::kNetworkingControl,
     TaskType::kDOMManipulation,

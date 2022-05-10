@@ -197,7 +197,8 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
                                                                duration);
   }
 
-  if (task_type == TaskType::kNetworkingWithURLLoaderAnnotation && queue) {
+  // TODO(crbug.com/860545): Consider removing below
+  if (task_type == TaskType::kNetworking && queue) {
     if (queue->net_request_priority()) {
       UMA_HISTOGRAM_ENUMERATION(
           "RendererScheduler.ResourceLoadingTaskCountPerNetPriority",

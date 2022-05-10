@@ -126,9 +126,6 @@ RendererMainThreadTaskExecution::TaskType TaskTypeToProto(TaskType task_type) {
     case TaskType::kCompositorThreadTaskQueueInput:
       return RendererMainThreadTaskExecution::
           TASK_TYPE_COMPOSITOR_THREAD_TASK_QUEUE_INPUT;
-    case TaskType::kNetworkingWithURLLoaderAnnotation:
-      return RendererMainThreadTaskExecution::
-          TASK_TYPE_NETWORKING_WITH_URL_LOADER_ANNOTATION;
     case TaskType::kWorkerAnimation:
       return RendererMainThreadTaskExecution::TASK_TYPE_WORKER_ANIMATION;
     case TaskType::kInternalTranslation:

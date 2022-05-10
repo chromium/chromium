@@ -155,7 +155,6 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerSchedulerImpl::GetTaskRunner(
     case TaskType::kDOMManipulation:
     case TaskType::kUserInteraction:
     case TaskType::kNetworking:
-    case TaskType::kNetworkingWithURLLoaderAnnotation:
     case TaskType::kNetworkingControl:
     case TaskType::kHistoryTraversal:
     case TaskType::kEmbed:
