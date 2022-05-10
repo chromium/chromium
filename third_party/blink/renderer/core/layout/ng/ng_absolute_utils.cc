@@ -387,19 +387,16 @@ bool ComputeOutOfFlowInlineDimensions(
   } else if (!style.LogicalWidth().IsAuto()) {
     inline_size = ResolveMainInlineLength(
         space, style, border_padding, MinMaxSizesFunc, style.LogicalWidth());
-  } else if (!style.AspectRatio().IsAuto()) {
-    const bool stretch_inline_size = !node.IsTable() &&
-                                     !style.LogicalLeft().IsAuto() &&
-                                     !style.LogicalRight().IsAuto();
+  } else if (!style.AspectRatio().IsAuto() &&
+             can_compute_block_size_without_layout) {
+    const bool stretch_inline_size =
+        !style.LogicalLeft().IsAuto() && !style.LogicalRight().IsAuto();
 
-    // The aspect-ratio applies from the block-axis if:
-    //  - Our auto inline-size would have stretched but we have an explicit
-    //    block-size.
-    //  - Our auto inline-size doesn't stretch but we can compute our
-    //    block-size without layout.
-    if ((stretch_inline_size &&
-         !style.LogicalHeight().IsAutoOrContentOrIntrinsic()) ||
-        (!stretch_inline_size && can_compute_block_size_without_layout)) {
+    // The aspect-ratio applies from the block-axis if we can compute our
+    // block-size without invoking layout, and:
+    //  - We aren't stretching our auto inline-size.
+    //  - We are stretching our auto inline-size, but the block-size isn't auto.
+    if (!stretch_inline_size || !style.LogicalHeight().IsAuto()) {
       is_shrink_to_fit = true;
 
       // Apply the automatic minimum size.
