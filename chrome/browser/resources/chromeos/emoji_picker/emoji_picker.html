@@ -10,6 +10,7 @@
     --emoji-spacing: 0;
     --emoji-per-row: 0;
     /* Values set in css only. */
+    --emoji-group-clear-recents-icon-size: 16px;
     --emoji-group-heading-padding-bottom: 10px;
     --emoji-group-heading-padding-top: 16px;
     --emoji-group-heading-size: 32px;
@@ -378,7 +379,7 @@
             emojiGroupsFullyLoaded,emoticonHistory.emoji.length)]]">
             <emoticon-group data="[[emoticonHistory.emoji]]"
               group="[[emoticonHistory.group]]" class="group"
-              data-group="emoticon-history">
+              data-group="emoticon-history" clearable>
             </emoticon-group>
         </template>
       </div>

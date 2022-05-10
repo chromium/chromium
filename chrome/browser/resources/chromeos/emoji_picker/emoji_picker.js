@@ -214,7 +214,7 @@ export class EmojiPicker extends PolymerElement {
     this.addEventListener(
         EMOJI_BUTTON_CLICK, (ev) => this.onEmojiButtonClick(ev));
     this.addEventListener(
-        EMOJI_CLEAR_RECENTS_CLICK, ev => this.clearRecentEmoji());
+        EMOJI_CLEAR_RECENTS_CLICK, ev => this.clearRecentEmoji(ev));
     // variant popup related handlers
     this.addEventListener(
         EMOJI_VARIANTS_SHOWN,
@@ -377,7 +377,7 @@ export class EmojiPicker extends PolymerElement {
           break;
 
         default:
-          throw new Error('Unknown category');
+          throw new Error(`Unknown category "${category}."`);
       }
     }
     const searchLength =
@@ -391,9 +391,24 @@ export class EmojiPicker extends PolymerElement {
     this.apiProxy_.insertEmoji(text, isVariant, searchLength);
   }
 
-  clearRecentEmoji() {
-    this.set(['emojiHistory', 'emoji'], makeRecentlyUsed([]));
-    this.recentEmojiStore.clearRecents();
+  clearRecentEmoji(event) {
+    switch (event.detail.category) {
+      case CategoryEnum.EMOJI:
+        this.set(['emojiHistory', 'emoji'], makeRecentlyUsed([]));
+        this.recentEmojiStore.clearRecents();
+        break;
+
+      case CategoryEnum.EMOTICON:
+        this.set(['emoticonHistory', 'emoji'], makeRecentlyUsed([]));
+        this.recentEmoticonStore.clearRecents();
+        break;
+
+      default:
+        throw new Error(
+          'Clear history logic is not implemented ' +
+          `for category "${this.category}."`);
+    }
+
     afterNextRender(
         this, () => {
           this.updateActiveGroup(/*updateTabsScroll=*/ true);
@@ -674,6 +689,15 @@ export class EmojiPicker extends PolymerElement {
       this.shadowRoot.querySelector(`div[data-group="history"]`)
           .querySelector('emoji-group')
           .showClearRecents = false;
+    }
+
+    if (this.emoticonHistory.emoji.length > 0) {
+      const emoticonHistoryElement = this.shadowRoot.querySelector(
+        `div[data-group="emoticon-history"]`).querySelector('emoticon-group');
+      if (emoticonHistoryElement != null) {
+        emoticonHistoryElement.showClearRecents = false;
+      }
+
     }
   }
 

@@ -112,7 +112,7 @@ suite('emoji-picker-extension', () => {
         for (let idx = 0; idx < allEmoticonGroups.length; ++idx) {
           const group = allEmoticonGroups[idx];
           const actualFirstGroupName =
-              group.shadowRoot.querySelector('#heading').innerHTML.trim();
+              group.shadowRoot.querySelector('#heading-left').innerHTML.trim();
           const expectedFirstGroupName = emojiPicker.emoticonData[idx].group;
           assertEquals(expectedFirstGroupName, actualFirstGroupName);
 

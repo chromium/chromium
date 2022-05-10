@@ -7,7 +7,7 @@ import './emoji_button.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {createCustomEvent, EMOJI_CLEAR_RECENTS_CLICK} from './events.js';
-import {EmojiVariants} from './types.js';
+import {CategoryEnum, EmojiVariants} from './types.js';
 
 class EmojiGroupComponent extends PolymerElement {
   static get is() {
@@ -28,11 +28,9 @@ class EmojiGroupComponent extends PolymerElement {
       clearable: {type: Boolean, value: false},
       /** @type {boolean} */
       showClearRecents: {type: Boolean, value: false},
+      /** @type {string} */
+      category: {type: String, value: CategoryEnum.EMOJI},
     };
-  }
-
-  constructor() {
-    super();
   }
 
   /** @param emoji {Emoji} */
@@ -44,17 +42,32 @@ class EmojiGroupComponent extends PolymerElement {
     return this.preferred[emoji] || emoji;
   }
 
+  /**
+   * Handles the click event for show-clear button which results
+   * in showing "clear recently used emojis" button.
+   *
+   * @param {Event} ev
+   */
   onClearClick(ev) {
     ev.preventDefault();
     ev.stopPropagation();
     this.showClearRecents = true;
   }
 
+  /**
+   * Handles the event for clicking on the "clear recently used" button.
+   * It makes "show-clear" button disappear and fires an event
+   * indicating that the "clear recently used" is clicked.
+   *
+   * @fires CustomEvent#`EMOJI_CLEAR_RECENTS_CLICK`
+   * @param {Event} ev
+   */
   onClearRecentsClick(ev) {
     ev.preventDefault();
     ev.stopPropagation();
     this.showClearRecents = false;
-    this.dispatchEvent(createCustomEvent(EMOJI_CLEAR_RECENTS_CLICK, {}));
+    this.dispatchEvent(createCustomEvent(
+      EMOJI_CLEAR_RECENTS_CLICK,  {category: this.category}));
   }
 }
 
