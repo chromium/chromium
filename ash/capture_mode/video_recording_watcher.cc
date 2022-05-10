@@ -260,6 +260,7 @@ void VideoRecordingWatcher::ShutDown() {
   is_shutting_down_ = true;
   DCHECK(window_being_recorded_);
 
+  window_size_change_throttle_timer_.Stop();
   cursor_events_throttle_timer_.Stop();
   cursor_capture_overlay_remote_.reset();
   root_observer_.reset();
