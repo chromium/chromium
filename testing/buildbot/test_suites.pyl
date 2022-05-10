@@ -7700,5 +7700,101 @@
         ],
       },
     },
+
+    'win_optional_gpu_tests_rel_gpu_telemetry_tests': {
+      'gpu_common_and_optional_telemetry_tests': {
+        'variants': [
+          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+      'gpu_mediapipe_passthrough_telemetry_tests': {
+        'variants': [
+          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+      'gpu_webcodecs_telemetry_test': {
+        'variants': [
+          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+      'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests': {
+        'variants': [
+          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+      'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests': {
+        'variants': [
+          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+      'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests': {
+        'variants': [
+          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+      'gpu_webgl_conformance_gl_passthrough_telemetry_tests': {
+        'variants': [
+          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+      'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests': {
+        'variants': [
+          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+      'gpu_webgl_conformance_fast_call_passthrough_telemetry_tests': {
+        'variants': [
+          'WIN10_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+      'gpu_win_intel_specific_telemetry_tests': {
+        'variants': [
+          'WIN10_INTEL_HD_630_STABLE',
+        ],
+      },
+    },
+
+    'win_optional_gpu_tests_rel_gtests': {
+      'gpu_default_and_optional_win_specific_gtests': {
+        'variants': [
+          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+      'gpu_fyi_and_optional_non_linux_gtests': {
+        'variants': [
+          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+      'gpu_fyi_and_optional_win_specific_gtests': {
+        'variants': [
+          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+      'gpu_gles2_conform_gtests': {
+        'variants': [
+          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+    },
+
+    'win_optional_gpu_tests_rel_isolated_scripts': {
+      'gpu_command_buffer_perf_passthrough_isolated_scripts': {
+        'variants': [
+          'WIN10_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+    },
   }
 }

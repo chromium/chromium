@@ -1085,4 +1085,17 @@
       ],
     },
   },
+  'WIN10_INTEL_HD_630_STABLE': {
+    'identifier': '8086:5912 or 8086:3e92',
+    'mixins': [
+      'swarming_containment_auto',
+      'win10_intel_hd_630_stable',
+    ],
+  },
+  'WIN10_NVIDIA_GTX_1660_STABLE': {
+    'identifier': '10de:2184',
+    'mixins': [
+      'win10_nvidia_gtx_1660_stable',
+    ],
+  },
 }
