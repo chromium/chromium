@@ -15,13 +15,13 @@
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class ComputedStyle;
-struct AutoDarkMode;
 class FrameSelection;
 class LayoutObject;
 class NGFragmentItem;
@@ -139,12 +139,9 @@ class CORE_EXPORT NGHighlightPainter {
   void Paint(Phase phase);
 
   // HighlightOverlayPainting feature only
-  void PaintOriginatingText(const TextPaintStyle&,
-                            DOMNodeId,
-                            const AutoDarkMode&);
+  void PaintOriginatingText(const TextPaintStyle&, DOMNodeId);
   void PaintHighlightOverlays(const TextPaintStyle&,
                               DOMNodeId,
-                              const AutoDarkMode&,
                               bool paint_marker_backgrounds,
                               absl::optional<AffineTransform> rotation);
   void ClipToPartDecorations(const NGHighlightOverlay::HighlightPart&);
@@ -192,6 +189,8 @@ class CORE_EXPORT NGHighlightPainter {
   SelectionPaintState* selection_;
   const LayoutObject* layout_object_;
   Node* node_;
+  const AutoDarkMode foreground_auto_dark_mode_;
+  const AutoDarkMode background_auto_dark_mode_;
   const DocumentMarkerVector markers_;
   DocumentMarkerVector target_;
   DocumentMarkerVector spelling_;

@@ -360,6 +360,10 @@ NGHighlightPainter::NGHighlightPainter(
       selection_(selection),
       layout_object_(fragment_item_.GetLayoutObject()),
       node_(layout_object_->GetNode()),
+      foreground_auto_dark_mode_(
+          PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kForeground)),
+      background_auto_dark_mode_(
+          PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground)),
       markers_(ComputeMarkersToPaint(node_, fragment_item_.IsEllipsis())),
       skip_backgrounds_(is_printing ||
                         paint_info.phase == PaintPhase::kTextClip ||
@@ -418,11 +422,6 @@ void NGHighlightPainter::Paint(Phase phase) {
   const auto& text_node = To<Text>(*fragment_item_.GetNode());
   const StringView text = cursor_.CurrentText();
 
-  AutoDarkMode foreground_auto_dark_mode(
-      PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kForeground));
-  AutoDarkMode background_auto_dark_mode(
-      PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground));
-
   for (const DocumentMarker* marker : markers_) {
     const unsigned marker_start_offset =
         GetTextContentOffset(text_node, marker->StartOffset());
@@ -471,7 +470,7 @@ void NGHighlightPainter::Paint(Phase phase) {
           PaintRect(paint_info_.context, PhysicalOffset(box_origin_),
                     fragment_item_.LocalRect(text, paint_start_offset,
                                              paint_end_offset),
-                    color, background_auto_dark_mode);
+                    color, background_auto_dark_mode_);
           break;
         }
 
@@ -494,7 +493,7 @@ void NGHighlightPainter::Paint(Phase phase) {
         }
         text_painter_.Paint(paint_start_offset, paint_end_offset,
                             paint_end_offset - paint_start_offset, text_style,
-                            kInvalidDOMNodeId, foreground_auto_dark_mode);
+                            kInvalidDOMNodeId, foreground_auto_dark_mode_);
       } break;
 
       case DocumentMarker::kComposition:
@@ -506,7 +505,7 @@ void NGHighlightPainter::Paint(Phase phase) {
                     fragment_item_.LocalRect(text, paint_start_offset,
                                              paint_end_offset),
                     styleable_marker.BackgroundColor(),
-                    background_auto_dark_mode);
+                    background_auto_dark_mode_);
           break;
         }
         if (DocumentMarkerPainter::ShouldPaintMarkerUnderline(
@@ -539,7 +538,7 @@ void NGHighlightPainter::Paint(Phase phase) {
           PaintRect(paint_info_.context, PhysicalOffset(box_origin_),
                     fragment_item_.LocalRect(text, paint_start_offset,
                                              paint_end_offset),
-                    background_color, background_auto_dark_mode);
+                    background_color, background_auto_dark_mode_);
           break;
         }
 
@@ -578,7 +577,7 @@ void NGHighlightPainter::Paint(Phase phase) {
         text_painter_.Paint(paint_start_offset, paint_end_offset,
                             paint_end_offset - paint_start_offset,
                             final_text_style, kInvalidDOMNodeId,
-                            foreground_auto_dark_mode);
+                            foreground_auto_dark_mode_);
 
         decoration_painter.PaintOnlyLineThrough();
       } break;
@@ -590,17 +589,15 @@ void NGHighlightPainter::Paint(Phase phase) {
   }
 }
 
-void NGHighlightPainter::PaintOriginatingText(
-    const TextPaintStyle& text_style,
-    DOMNodeId node_id,
-    const AutoDarkMode& auto_dark_mode) {
+void NGHighlightPainter::PaintOriginatingText(const TextPaintStyle& text_style,
+                                              DOMNodeId node_id) {
   DCHECK(RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled());
 
   // First paint the shadows for the whole range.
   if (text_style.shadow) {
     text_painter_.Paint(fragment_paint_info_.from, fragment_paint_info_.to,
                         fragment_paint_info_.to - fragment_paint_info_.from,
-                        text_style, node_id, auto_dark_mode,
+                        text_style, node_id, foreground_auto_dark_mode_,
                         NGTextPainter::kShadowsOnly);
   }
 
@@ -612,7 +609,7 @@ void NGHighlightPainter::PaintOriginatingText(
 
     PaintDecorationsExceptLineThrough(part);
     text_painter_.Paint(part.from, part.to, part.to - part.from, text_style,
-                        node_id, auto_dark_mode,
+                        node_id, foreground_auto_dark_mode_,
                         NGTextPainter::kTextProperOnly);
     PaintDecorationsOnlyLineThrough(part);
     PaintSpellingGrammarDecorations(part);
@@ -622,7 +619,6 @@ void NGHighlightPainter::PaintOriginatingText(
 void NGHighlightPainter::PaintHighlightOverlays(
     const TextPaintStyle& originating_text_style,
     DOMNodeId node_id,
-    const AutoDarkMode& auto_dark_mode,
     bool paint_marker_backgrounds,
     absl::optional<AffineTransform> rotation) {
   DCHECK(RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled());
@@ -672,10 +668,10 @@ void NGHighlightPainter::PaintHighlightOverlays(
       // not writing-mode space (SelectionPaintState::PaintSelectionBackground)
       PaintRect(paint_info_.context, PhysicalOffset(box_origin_),
                 fragment_item_.LocalRect(text, clamped_start, clamped_end),
-                background_color, auto_dark_mode);
+                background_color, background_auto_dark_mode_);
 
       text_painter_.Paint(clamped_start, clamped_end, length, layer.text_style,
-                          node_id, auto_dark_mode,
+                          node_id, foreground_auto_dark_mode_,
                           TextPainterBase::kShadowsOnly);
     }
   }
@@ -710,7 +706,7 @@ void NGHighlightPainter::PaintHighlightOverlays(
       PaintDecorationsExceptLineThrough(part);
       text_painter_.Paint(clamped_start, clamped_end,
                           clamped_end - clamped_start, layer.text_style,
-                          node_id, auto_dark_mode,
+                          node_id, foreground_auto_dark_mode_,
                           TextPainterBase::kTextProperOnly);
       PaintDecorationsOnlyLineThrough(part);
       PaintSpellingGrammarDecorations(part);
@@ -728,7 +724,7 @@ void NGHighlightPainter::PaintHighlightOverlays(
 
     selection_->PaintSelectedText(
         text_painter_, fragment_paint_info_.to - fragment_paint_info_.from,
-        originating_text_style, node_id, auto_dark_mode);
+        originating_text_style, node_id, foreground_auto_dark_mode_);
 
     for (const HighlightPart& part : parts_) {
       if (part.layer.type == HighlightLayerType::kSelection) {

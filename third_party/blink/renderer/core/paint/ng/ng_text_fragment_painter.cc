@@ -418,11 +418,10 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     DCHECK(RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled());
     // New slow path: paint suppressing text proper where highlighted, then
     // paint each highlight overlay, suppressing unless topmost highlight.
-    highlight_painter.PaintOriginatingText(text_style, node_id, auto_dark_mode);
+    highlight_painter.PaintOriginatingText(text_style, node_id);
 
     highlight_painter.PaintHighlightOverlays(
-        text_style, node_id, auto_dark_mode, paint_marker_backgrounds,
-        rotation);
+        text_style, node_id, paint_marker_backgrounds, rotation);
   }
 
   // Paint ::selection background.
