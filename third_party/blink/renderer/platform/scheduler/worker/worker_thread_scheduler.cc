@@ -102,14 +102,15 @@ WorkerThreadScheduler::WorkerThreadScheduler(
     : NonMainThreadSchedulerImpl(sequence_manager,
                                  TaskType::kWorkerThreadTaskQueueDefault),
       thread_type_(thread_type),
-      idle_helper_(helper(),
+      idle_helper_(&GetHelper(),
                    this,
                    "WorkerSchedulerIdlePeriod",
                    base::Milliseconds(300),
-                   helper()->NewTaskQueue(TaskQueue::Spec("worker_idle_tq"))),
+                   GetHelper().NewTaskQueue(TaskQueue::Spec("worker_idle_tq"))),
       lifecycle_state_(proxy ? proxy->lifecycle_state()
                              : SchedulingLifecycleState::kNotThrottled),
-      worker_metrics_helper_(thread_type, helper()->HasCPUTimingForEachTask()),
+      worker_metrics_helper_(thread_type,
+                             GetHelper().HasCPUTimingForEachTask()),
       initial_frame_status_(proxy ? proxy->initial_frame_status()
                                   : FrameStatus::kNone),
       ukm_source_id_(proxy ? proxy->ukm_source_id() : ukm::kInvalidSourceId) {
@@ -168,25 +169,25 @@ bool WorkerThreadScheduler::ShouldYieldForHighPriorityWork() {
 
 void WorkerThreadScheduler::AddTaskObserver(base::TaskObserver* task_observer) {
   DCHECK(initialized_);
-  helper()->AddTaskObserver(task_observer);
+  GetHelper().AddTaskObserver(task_observer);
 }
 
 void WorkerThreadScheduler::RemoveTaskObserver(
     base::TaskObserver* task_observer) {
   DCHECK(initialized_);
-  helper()->RemoveTaskObserver(task_observer);
+  GetHelper().RemoveTaskObserver(task_observer);
 }
 
 void WorkerThreadScheduler::Shutdown() {
   DCHECK(initialized_);
   idle_helper_.Shutdown();
-  helper()->Shutdown();
+  GetHelper().Shutdown();
 }
 
 scoped_refptr<NonMainThreadTaskQueue>
 WorkerThreadScheduler::DefaultTaskQueue() {
   DCHECK(initialized_);
-  return helper()->DefaultNonMainThreadTaskQueue();
+  return GetHelper().DefaultNonMainThreadTaskQueue();
 }
 
 void WorkerThreadScheduler::Init() {
@@ -217,7 +218,7 @@ void WorkerThreadScheduler::OnTaskCompleted(
 }
 
 SchedulerHelper* WorkerThreadScheduler::GetSchedulerHelperForTesting() {
-  return helper();
+  return &GetHelper();
 }
 
 bool WorkerThreadScheduler::CanEnterLongIdlePeriod(base::TimeTicks,
@@ -254,7 +255,7 @@ void WorkerThreadScheduler::UnregisterWorkerScheduler(
 
 scoped_refptr<NonMainThreadTaskQueue>
 WorkerThreadScheduler::ControlTaskQueue() {
-  return helper()->ControlNonMainThreadTaskQueue();
+  return GetHelper().ControlNonMainThreadTaskQueue();
 }
 
 void WorkerThreadScheduler::CreateBudgetPools() {
@@ -276,7 +277,7 @@ void WorkerThreadScheduler::RecordTaskUkm(
     NonMainThreadTaskQueue* worker_task_queue,
     const base::sequence_manager::Task& task,
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
-  if (!helper()->ShouldRecordTaskUkm(task_timing.has_thread_time()))
+  if (!GetHelper().ShouldRecordTaskUkm(task_timing.has_thread_time()))
     return;
 
   if (!ukm_recorder_)
@@ -305,7 +306,7 @@ void WorkerThreadScheduler::SetUkmRecorderForTest(
 }
 
 void WorkerThreadScheduler::SetUkmTaskSamplingRateForTest(double rate) {
-  helper()->SetUkmTaskSamplingRateForTest(rate);
+  GetHelper().SetUkmTaskSamplingRateForTest(rate);
 }
 
 void WorkerThreadScheduler::SetCPUTimeBudgetPoolForTesting(

@@ -94,12 +94,12 @@ class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
   using WorkerThreadScheduler::SetUkmTaskSamplingRateForTest;
 
   void AddTaskTimeObserver(base::sequence_manager::TaskTimeObserver* observer) {
-    helper()->AddTaskTimeObserver(observer);
+    GetHelper().AddTaskTimeObserver(observer);
   }
 
   void RemoveTaskTimeObserver(
       base::sequence_manager::TaskTimeObserver* observer) {
-    helper()->RemoveTaskTimeObserver(observer);
+    GetHelper().RemoveTaskTimeObserver(observer);
   }
 
   void set_on_microtask_checkpoint(base::OnceClosure cb) {

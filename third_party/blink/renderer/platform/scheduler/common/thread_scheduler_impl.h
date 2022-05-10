@@ -23,6 +23,8 @@ class Isolate;
 namespace blink {
 namespace scheduler {
 
+class SchedulerHelper;
+
 // Scheduler-internal interface for the common methods between
 // MainThreadSchedulerImpl and NonMainThreadSchedulerImpl which should
 // not be exposed outside the scheduler.
@@ -57,6 +59,9 @@ class PLATFORM_EXPORT ThreadSchedulerImpl : public ThreadScheduler,
 
   // Returns the list of callbacks to execute after the current task.
   virtual WTF::Vector<base::OnceClosure>& GetOnTaskCompletionCallbacks() = 0;
+
+  // Returns instance of specific helper instantiated by a subclass.
+  virtual SchedulerHelper& GetHelper() = 0;
 
   // Dispatch the callbacks which requested to be executed after the current
   // task.

@@ -113,7 +113,7 @@ class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadSchedulerImpl {
 
   friend class WorkerSchedulerImpl;
 
-  NonMainThreadSchedulerHelper* helper() { return &helper_; }
+  NonMainThreadSchedulerHelper& GetHelper() override { return helper_; }
 
  private:
   NonMainThreadSchedulerHelper helper_;

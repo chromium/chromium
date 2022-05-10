@@ -76,14 +76,14 @@ WorkerThreadScheduler* WorkerSchedulerImpl::GetWorkerThreadScheduler() const {
 }
 
 std::unique_ptr<WorkerSchedulerImpl::PauseHandle> WorkerSchedulerImpl::Pause() {
-  thread_scheduler_->helper()->CheckOnValidThread();
+  thread_scheduler_->GetHelper().CheckOnValidThread();
   if (is_disposed_)
     return nullptr;
   return std::make_unique<PauseHandleImpl>(GetWeakPtr());
 }
 
 void WorkerSchedulerImpl::PauseImpl() {
-  thread_scheduler_->helper()->CheckOnValidThread();
+  thread_scheduler_->GetHelper().CheckOnValidThread();
   paused_count_++;
   if (paused_count_ == 1) {
     for (const auto& pair : task_runners_) {
@@ -95,7 +95,7 @@ void WorkerSchedulerImpl::PauseImpl() {
 }
 
 void WorkerSchedulerImpl::ResumeImpl() {
-  thread_scheduler_->helper()->CheckOnValidThread();
+  thread_scheduler_->GetHelper().CheckOnValidThread();
   paused_count_--;
   if (paused_count_ == 0 && !is_disposed_) {
     for (const auto& pair : task_runners_) {

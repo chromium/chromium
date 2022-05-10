@@ -267,6 +267,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   scoped_refptr<SingleThreadIdleTaskRunner> IdleTaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> ControlTaskRunner() override;
   const base::TickClock* GetTickClock() const override;
+  MainThreadSchedulerHelper& GetHelper() override { return helper_; }
 
   base::TimeTicks NowTicks() const;
 

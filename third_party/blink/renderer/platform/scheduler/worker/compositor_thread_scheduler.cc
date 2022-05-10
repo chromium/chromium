@@ -33,7 +33,7 @@ CompositorThreadScheduler::CompositorThreadScheduler(
     base::sequence_manager::SequenceManager* sequence_manager)
     : NonMainThreadSchedulerImpl(sequence_manager,
                                  TaskType::kCompositorThreadTaskQueueDefault),
-      compositor_metrics_helper_(helper()->HasCPUTimingForEachTask()) {
+      compositor_metrics_helper_(GetHelper().HasCPUTimingForEachTask()) {
   DCHECK(!g_compositor_thread_scheduler);
   g_compositor_thread_scheduler = this;
 }
@@ -45,7 +45,7 @@ CompositorThreadScheduler::~CompositorThreadScheduler() {
 
 scoped_refptr<NonMainThreadTaskQueue>
 CompositorThreadScheduler::DefaultTaskQueue() {
-  return helper()->DefaultNonMainThreadTaskQueue();
+  return GetHelper().DefaultNonMainThreadTaskQueue();
 }
 
 void CompositorThreadScheduler::OnTaskCompleted(
@@ -65,7 +65,7 @@ CompositorThreadScheduler::IdleTaskRunner() {
   // which runs them after the current frame has been drawn before the next
   // vsync. https://crbug.com/609532
   return base::MakeRefCounted<SingleThreadIdleTaskRunner>(
-      helper()->DefaultTaskRunner(), helper()->ControlTaskRunner(), this);
+      GetHelper().DefaultTaskRunner(), GetHelper().ControlTaskRunner(), this);
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -76,12 +76,12 @@ CompositorThreadScheduler::V8TaskRunner() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 CompositorThreadScheduler::DefaultTaskRunner() {
-  return helper()->DefaultTaskRunner();
+  return GetHelper().DefaultTaskRunner();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
 CompositorThreadScheduler::InputTaskRunner() {
-  return helper()->InputTaskRunner();
+  return GetHelper().InputTaskRunner();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -106,12 +106,12 @@ bool CompositorThreadScheduler::ShouldYieldForHighPriorityWork() {
 
 void CompositorThreadScheduler::AddTaskObserver(
     base::TaskObserver* task_observer) {
-  helper()->AddTaskObserver(task_observer);
+  GetHelper().AddTaskObserver(task_observer);
 }
 
 void CompositorThreadScheduler::RemoveTaskObserver(
     base::TaskObserver* task_observer) {
-  helper()->RemoveTaskObserver(task_observer);
+  GetHelper().RemoveTaskObserver(task_observer);
 }
 
 void CompositorThreadScheduler::Shutdown() {
