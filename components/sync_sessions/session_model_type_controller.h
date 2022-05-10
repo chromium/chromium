@@ -7,8 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
-#include "components/prefs/pref_change_registrar.h"
+#include "components/history/core/browser/sync/history_model_type_controller_helper.h"
 #include "components/sync/driver/model_type_controller.h"
 
 class PrefService;
@@ -19,7 +18,6 @@ class SyncService;
 
 namespace sync_sessions {
 
-// Overrides LoadModels to check if history sync is allowed by policy.
 class SessionModelTypeController : public syncer::ModelTypeController {
  public:
   SessionModelTypeController(
@@ -37,12 +35,7 @@ class SessionModelTypeController : public syncer::ModelTypeController {
   PreconditionState GetPreconditionState() const override;
 
  private:
-  void OnSavingBrowserHistoryPrefChanged();
-
-  const raw_ptr<syncer::SyncService> sync_service_;
-  const raw_ptr<PrefService> pref_service_;
-
-  PrefChangeRegistrar pref_registrar_;
+  history::HistoryModelTypeControllerHelper helper_;
 };
 
 }  // namespace sync_sessions

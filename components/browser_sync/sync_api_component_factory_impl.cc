@@ -251,46 +251,40 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     }
   }
 
-  // These features are enabled only if history is not disabled.
-  if (!sync_client_->GetPrefService()->GetBoolean(
-          prefs::kSavingBrowserHistoryDisabled)) {
-    // TypedUrl sync is enabled by default.  Register unless explicitly
-    // disabled.
-    if (!disabled_types.Has(syncer::TYPED_URLS)) {
-      // TypedURLModelTypeController uses a proxy delegate internally, as
-      // provided by HistoryService.
-      controllers.push_back(
-          std::make_unique<history::TypedURLModelTypeController>(
-              sync_client_->GetHistoryService(),
-              sync_client_->GetPrefService()));
-    }
+  // TypedUrl sync is enabled by default.  Register unless explicitly disabled.
+  if (!disabled_types.Has(syncer::TYPED_URLS)) {
+    // TypedURLModelTypeController uses a proxy delegate internally, as
+    // provided by HistoryService.
+    controllers.push_back(
+        std::make_unique<history::TypedURLModelTypeController>(
+            sync_service, sync_client_->GetHistoryService(),
+            sync_client_->GetPrefService()));
+  }
 
-    // Delete directive sync is enabled by default.
-    if (!disabled_types.Has(syncer::HISTORY_DELETE_DIRECTIVES)) {
-      controllers.push_back(
-          std::make_unique<history::HistoryDeleteDirectivesModelTypeController>(
-              dump_stack, sync_service,
-              sync_client_->GetModelTypeStoreService(),
-              sync_client_->GetHistoryService()));
-    }
+  // Delete directive sync is enabled by default.
+  if (!disabled_types.Has(syncer::HISTORY_DELETE_DIRECTIVES)) {
+    controllers.push_back(
+        std::make_unique<history::HistoryDeleteDirectivesModelTypeController>(
+            dump_stack, sync_service, sync_client_->GetModelTypeStoreService(),
+            sync_client_->GetHistoryService(), sync_client_->GetPrefService()));
+  }
 
-    // Session sync is enabled by default.  This is disabled if history is
-    // disabled because the tab sync data is added to the web history on the
-    // server.
-    if (!disabled_types.Has(syncer::PROXY_TABS)) {
-      controllers.push_back(
-          std::make_unique<sync_sessions::ProxyTabsDataTypeController>(
-              base::BindRepeating(
-                  &sync_sessions::SessionSyncService::ProxyTabsStateChanged,
-                  base::Unretained(sync_client_->GetSessionSyncService()))));
-      controllers.push_back(
-          std::make_unique<sync_sessions::SessionModelTypeController>(
-              sync_service, sync_client_->GetPrefService(),
-              std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-                  sync_client_->GetSessionSyncService()
-                      ->GetControllerDelegate()
-                      .get())));
-    }
+  if (!disabled_types.Has(syncer::PROXY_TABS)) {
+    controllers.push_back(
+        std::make_unique<sync_sessions::ProxyTabsDataTypeController>(
+            sync_service, sync_client_->GetPrefService(),
+            base::BindRepeating(
+                &sync_sessions::SessionSyncService::ProxyTabsStateChanged,
+                base::Unretained(sync_client_->GetSessionSyncService()))));
+  }
+  if (!disabled_types.Has(syncer::SESSIONS)) {
+    controllers.push_back(
+        std::make_unique<sync_sessions::SessionModelTypeController>(
+            sync_service, sync_client_->GetPrefService(),
+            std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+                sync_client_->GetSessionSyncService()
+                    ->GetControllerDelegate()
+                    .get())));
   }
 
   // Password sync is enabled by default.  Register unless explicitly

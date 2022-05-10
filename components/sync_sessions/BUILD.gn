@@ -53,6 +53,7 @@ static_library("sync_sessions") {
     "//components/bookmarks/browser",
     "//components/favicon/core",
     "//components/favicon_base",
+    "//components/history/core/browser",
     "//components/history/core/common",
     "//components/keyed_service/core",
     "//components/prefs",

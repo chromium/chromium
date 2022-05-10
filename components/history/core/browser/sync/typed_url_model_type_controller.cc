@@ -8,12 +8,6 @@
 
 #include "base/bind.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/history/core/common/pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/sync/driver/model_type_controller.h"
-#include "components/sync/driver/sync_client.h"
-
-using syncer::SyncClient;
 
 namespace history {
 
@@ -30,42 +24,18 @@ GetDelegateFromHistoryService(HistoryService* history_service) {
 }  // namespace
 
 TypedURLModelTypeController::TypedURLModelTypeController(
+    syncer::SyncService* sync_service,
     HistoryService* history_service,
     PrefService* pref_service)
     : ModelTypeController(syncer::TYPED_URLS,
                           GetDelegateFromHistoryService(history_service)),
-      history_service_(history_service),
-      pref_service_(pref_service) {
-  pref_registrar_.Init(pref_service_);
-  pref_registrar_.Add(
-      prefs::kSavingBrowserHistoryDisabled,
-      base::BindRepeating(
-          &TypedURLModelTypeController::OnSavingBrowserHistoryDisabledChanged,
-          base::AsWeakPtr(this)));
-}
+      helper_(syncer::TYPED_URLS, sync_service, pref_service) {}
 
-TypedURLModelTypeController::~TypedURLModelTypeController() {}
+TypedURLModelTypeController::~TypedURLModelTypeController() = default;
 
 syncer::DataTypeController::PreconditionState
 TypedURLModelTypeController::GetPreconditionState() const {
-  return (history_service_ &&
-          !pref_service_->GetBoolean(prefs::kSavingBrowserHistoryDisabled))
-             ? PreconditionState::kPreconditionsMet
-             : PreconditionState::kMustStopAndClearData;
-}
-
-void TypedURLModelTypeController::OnSavingBrowserHistoryDisabledChanged() {
-  if (pref_service_->GetBoolean(prefs::kSavingBrowserHistoryDisabled)) {
-    // We've turned off history persistence, so if we are running,
-    // generate an unrecoverable error. This can be fixed by restarting
-    // Chrome (on restart, typed urls will not be a registered type).
-    // TODO(crbug.com/990802): Adopt DataTypePreconditionChanged().
-    if (state() != NOT_RUNNING && state() != STOPPING) {
-      ReportModelError(
-          syncer::SyncError::DATATYPE_POLICY_ERROR,
-          {FROM_HERE, "History saving is now disabled by policy."});
-    }
-  }
+  return helper_.GetPreconditionState();
 }
 
 }  // namespace history

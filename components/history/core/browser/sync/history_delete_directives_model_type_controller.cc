@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/sync/driver/sync_service.h"
@@ -32,23 +31,26 @@ HistoryDeleteDirectivesModelTypeController::
         const base::RepeatingClosure& dump_stack,
         syncer::SyncService* sync_service,
         syncer::ModelTypeStoreService* model_type_store_service,
-        HistoryService* history_service)
+        HistoryService* history_service,
+        PrefService* pref_service)
     : SyncableServiceBasedModelTypeController(
           syncer::HISTORY_DELETE_DIRECTIVES,
           model_type_store_service->GetStoreFactory(),
           GetSyncableServiceFromHistoryService(history_service),
           dump_stack),
+      helper_(syncer::HISTORY_DELETE_DIRECTIVES, sync_service, pref_service),
       sync_service_(sync_service) {}
 
 HistoryDeleteDirectivesModelTypeController::
-    ~HistoryDeleteDirectivesModelTypeController() {}
+    ~HistoryDeleteDirectivesModelTypeController() = default;
 
 syncer::DataTypeController::PreconditionState
 HistoryDeleteDirectivesModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
-  return sync_service_->GetUserSettings()->IsEncryptEverythingEnabled()
-             ? PreconditionState::kMustStopAndClearData
-             : PreconditionState::kPreconditionsMet;
+  if (sync_service_->GetUserSettings()->IsEncryptEverythingEnabled()) {
+    return PreconditionState::kMustStopAndClearData;
+  }
+  return helper_.GetPreconditionState();
 }
 
 void HistoryDeleteDirectivesModelTypeController::LoadModels(
