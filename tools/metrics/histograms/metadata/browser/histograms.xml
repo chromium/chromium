@@ -717,7 +717,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.LabeledInTaskManager"
-    units="BooleanLabeledRendererTask" expires_after="2022-09-01">
+    units="BooleanLabeledRendererTask" expires_after="2022-11-06">
   <owner>creis@chromium.org</owner>
   <owner>avi@chromium.org</owner>
   <summary>

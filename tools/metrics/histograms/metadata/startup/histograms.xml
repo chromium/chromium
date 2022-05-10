@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Startup.Android.Cold.FirstNavigationCommitOccurredPreForeground"
-    units="Boolean" expires_after="2022-09-01">
+    units="Boolean" expires_after="2022-11-06">
   <owner>blundell@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.FirstPaintOccurredPreForeground"
-    units="Boolean" expires_after="2022-09-01">
+    units="Boolean" expires_after="2022-11-06">
   <owner>blundell@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -331,7 +331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.StartupTabPreloader.LoadDecisionReason"
-    enum="StartupTabPreloaderLoadDecisionCause" expires_after="2022-09-01">
+    enum="StartupTabPreloaderLoadDecisionCause" expires_after="2022-11-06">
   <owner>blundell@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -345,7 +345,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.StartupTabPreloader.TabLoaded" units="Boolean"
-    expires_after="2022-09-01">
+    expires_after="2022-11-06">
   <owner>skyostil@chromium.org</owner>
   <summary>
     Android: Whether or not creation of a profile lead to the
@@ -356,7 +356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.StartupTabPreloader.TabTaken" units="Boolean"
-    expires_after="2022-09-01">
+    expires_after="2022-11-06">
   <owner>skyostil@chromium.org</owner>
   <summary>
     Android: Whether or not a tab speculatively created by the

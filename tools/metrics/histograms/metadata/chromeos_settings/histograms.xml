@@ -46,7 +46,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Apps.DoNotDisturbOnOff"
-    enum="BooleanToggled" expires_after="2022-09-01">
+    enum="BooleanToggled" expires_after="2022-11-06">
   <owner>hsuregan@chromium.org</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <summary>
@@ -170,7 +170,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.NotificationPage.PermissionOnOff"
-    enum="BooleanToggled" expires_after="2022-09-01">
+    enum="BooleanToggled" expires_after="2022-11-06">
   <owner>hsuregan@chromium.org</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <summary>
@@ -190,7 +190,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.NumClicksUntilChange"
-    units="clicks" expires_after="2022-09-01">
+    units="clicks" expires_after="2022-11-06">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
 
   <owner>khorimoto@chromium.org</owner>
@@ -199,7 +199,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.NumNavigationsUntilChange"
-    units="navigations" expires_after="2022-09-01">
+    units="navigations" expires_after="2022-11-06">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
 
   <owner>khorimoto@chromium.org</owner>
@@ -208,7 +208,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.NumSearchesUntilChange"
-    units="searches" expires_after="2022-09-01">
+    units="searches" expires_after="2022-11-06">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
 
   <owner>khorimoto@chromium.org</owner>
@@ -363,7 +363,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.TimeUntilChange" units="ms"
-    expires_after="2022-09-01">
+    expires_after="2022-11-06">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
 
   <owner>khorimoto@chromium.org</owner>

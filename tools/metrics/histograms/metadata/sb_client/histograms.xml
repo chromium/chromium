@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DeepScanType" enum="SBDeepScanType"
-    expires_after="2022-09-01">
+    expires_after="2022-11-06">
   <owner>domfc@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
