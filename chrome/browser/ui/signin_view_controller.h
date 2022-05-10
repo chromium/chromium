@@ -145,9 +145,12 @@ class SigninViewController {
   // top of the `browser_`'s window. `domain_name` is the domain of the
   // enterprise account being shown. `callback` is called with the user's action
   // on the dialog.
+  // If `profile_creation_required_by_policy` is true, the wording of the dialog
+  // will tell the user that an admin requires a new profile for the account,
+  // otherwise the default wording will be used.
   void ShowModalEnterpriseConfirmationDialog(
       const AccountInfo& account_info,
-      bool force_new_profile,
+      bool profile_creation_required_by_policy,
       bool show_link_data_option,
       SkColor profile_color,
       signin::SigninChoiceCallback callback);

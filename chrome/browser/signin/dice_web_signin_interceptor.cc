@@ -541,6 +541,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
     }
   } else if (ShouldShowEnterpriseDialog(info)) {
     interception_type = SigninInterceptionType::kEnterpriseAcceptManagement;
+    show_link_data_option = true;
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kInterceptEnterprise);
   } else if (!profile_->GetPrefs()->GetBoolean(

@@ -46,13 +46,13 @@ class EnterpriseProfileWelcomeHandlerTestBase
   }
 
   void InitializeHandler(EnterpriseProfileWelcomeUI::ScreenType screen_type,
-                         bool force_new_profile,
+                         bool profile_creation_required_by_policy,
                          signin::SigninChoiceCallback proceed_callback) {
     message_handler_.reset();
 
     message_handler_ = std::make_unique<EnterpriseProfileWelcomeHandler>(
-        /*browser=*/nullptr, screen_type, force_new_profile, account_info_,
-        absl::optional<SkColor>(), std::move(proceed_callback));
+        /*browser=*/nullptr, screen_type, profile_creation_required_by_policy,
+        account_info_, absl::optional<SkColor>(), std::move(proceed_callback));
     message_handler_->set_web_ui_for_test(web_ui());
     message_handler_->RegisterMessages();
   }
@@ -73,12 +73,12 @@ class EnterpriseProfileWelcomeHandlerTestBase
 };
 
 struct HandleProceedTestParam {
-  bool force_new_profile = false;
+  bool profile_creation_required_by_policy = false;
   bool should_link_data = false;
   signin::SigninChoice expected_choice = signin::SIGNIN_CHOICE_CANCEL;
 };
 const HandleProceedTestParam kHandleProceedParams[] = {
-    {false, false, signin::SIGNIN_CHOICE_CONTINUE},
+    {false, false, signin::SIGNIN_CHOICE_NEW_PROFILE},
     {false, true, signin::SIGNIN_CHOICE_CONTINUE},
     {true, false, signin::SIGNIN_CHOICE_NEW_PROFILE},
     {true, true, signin::SIGNIN_CHOICE_CONTINUE},
@@ -94,7 +94,8 @@ TEST_P(EnterpriseProfileWelcomeHandleProceedTest, HandleProceed) {
   base::MockCallback<signin::SigninChoiceCallback> mock_proceed_callback;
   InitializeHandler(
       EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      GetParam().force_new_profile, mock_proceed_callback.Get());
+      GetParam().profile_creation_required_by_policy,
+      mock_proceed_callback.Get());
 
   base::ListValue args;
   args.Append(GetParam().should_link_data);

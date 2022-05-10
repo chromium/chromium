@@ -193,11 +193,14 @@ void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(browser_->profile()->GetPath());
-  auto force_new_profile = signin_util::ProfileSeparationEnforcedByPolicy(
-      browser_->profile(), signin_restriction);
+  auto profile_creation_required_by_policy =
+      signin_util::ProfileSeparationEnforcedByPolicy(browser_->profile(),
+                                                     signin_restriction);
+  bool show_link_data_option = signin_util::
+      ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
+          browser_->profile(), signin_restriction);
   browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
-      account_info, force_new_profile,
-      /*show_link_data_option=*/!force_new_profile,
+      account_info, profile_creation_required_by_policy, show_link_data_option,
       GenerateNewProfileColor(entry).color,
       base::BindOnce(
           [](signin::SigninChoiceCallback callback, Browser* browser,
@@ -236,7 +239,7 @@ void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(browser_->profile()->GetPath());
   browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
-      account_info, /*force_new_profile=*/false,
+      account_info, /*profile_creation_required_by_policy=*/false,
       /*show_link_data_option*/ false, GenerateNewProfileColor(entry).color,
       base::BindOnce(
           [](signin::SigninChoiceCallback callback, Browser* browser,

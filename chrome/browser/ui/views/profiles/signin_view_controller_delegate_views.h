@@ -76,7 +76,7 @@ class SigninViewControllerDelegateViews
   static std::unique_ptr<views::WebView> CreateEnterpriseConfirmationWebView(
       Browser* browser,
       const AccountInfo& account_info,
-      bool force_new_profile,
+      bool profile_creation_required_by_policy,
       bool show_link_data_option,
       SkColor profile_color,
       signin::SigninChoiceCallback callback);

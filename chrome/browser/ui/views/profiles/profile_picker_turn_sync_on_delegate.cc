@@ -248,7 +248,7 @@ void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
     return;
   }
 
-  DCHECK_EQ(choice, signin::SIGNIN_CHOICE_CONTINUE);
+  DCHECK_EQ(choice, signin::SIGNIN_CHOICE_NEW_PROFILE);
 
   switch (type) {
     case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled:

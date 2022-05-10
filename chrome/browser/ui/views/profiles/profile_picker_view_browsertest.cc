@@ -1347,7 +1347,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   profiles::testing::ExpectPickerWelcomeScreenTypeAndProceed(
       /*expected_type=*/
       EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      /*choice=*/signin::SIGNIN_CHOICE_CONTINUE);
+      /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
 
   WaitForLoadStop(GetSyncConfirmationURL());
   // Simulate finishing the flow with "No, thanks".
@@ -1404,7 +1404,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   profiles::testing::ExpectPickerWelcomeScreenTypeAndProceed(
       /*expected_type=*/
       EnterpriseProfileWelcomeUI::ScreenType::kConsumerAccountSyncDisabled,
-      /*choice=*/signin::SIGNIN_CHOICE_CONTINUE);
+      /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
 
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
   WaitForLoadStop(GURL("chrome://newtab/"),
@@ -1456,7 +1456,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   profiles::testing::ExpectPickerWelcomeScreenTypeAndProceed(
       /*expected_type=*/
       EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      /*choice=*/signin::SIGNIN_CHOICE_CONTINUE);
+      /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
 
   WaitForLoadStop(GetSyncConfirmationURL());
   // Simulate finishing the flow with "Configure sync".
