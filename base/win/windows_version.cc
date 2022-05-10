@@ -26,7 +26,7 @@
 #endif
 
 #if !defined(NTDDI_WIN10_FE)
-#error Windows 10.0.20348.0SDK or higher required.
+#error Windows 10.0.20348.0 SDK or higher required.
 #endif
 
 namespace base {

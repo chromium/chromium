@@ -24,6 +24,13 @@
 #define HAS_CPP_ATTRIBUTE(x) 0
 #endif
 
+// A wrapper around `__has_attribute`, similar to HAS_CPP_ATTRIBUTE.
+#if defined(__has_attribute)
+#define HAS_ATTRIBUTE(x) __has_attribute(x)
+#else
+#define HAS_ATTRIBUTE(x) 0
+#endif
+
 // A wrapper around `__has_builtin`, similar to HAS_CPP_ATTRIBUTE.
 #if defined(__has_builtin)
 #define HAS_BUILTIN(x) __has_builtin(x)
@@ -58,7 +65,7 @@
 // prevent code folding, see NO_CODE_FOLDING() in base/debug/alias.h.
 // Use like:
 //   void NOT_TAIL_CALLED FooBar();
-#if defined(__clang__) && __has_attribute(not_tail_called)
+#if defined(__clang__) && HAS_ATTRIBUTE(not_tail_called)
 #define NOT_TAIL_CALLED __attribute__((not_tail_called))
 #else
 #define NOT_TAIL_CALLED
@@ -126,10 +133,8 @@
 //   __attribute__((format(wprintf, format_param, dots_param)))
 
 // Sanitizers annotations.
-#if defined(__has_attribute)
-#if __has_attribute(no_sanitize)
+#if HAS_ATTRIBUTE(no_sanitize)
 #define NO_SANITIZE(what) __attribute__((no_sanitize(what)))
-#endif
 #endif
 #if !defined(NO_SANITIZE)
 #define NO_SANITIZE(what)
@@ -238,7 +243,7 @@
 #endif
 #endif
 
-#if defined(__clang__) && __has_attribute(uninitialized)
+#if defined(__clang__) && HAS_ATTRIBUTE(uninitialized)
 // Attribute "uninitialized" disables -ftrivial-auto-var-init=pattern for
 // the specified variable.
 // Library-wide alternative is
@@ -285,13 +290,9 @@
 // In some cases it's desirable to remove this, e.g. on hot functions, or if
 // we have purposely changed the reference canary.
 #if defined(COMPILER_GCC) || defined(__clang__)
-#if defined(__has_attribute)
-#if __has_attribute(__no_stack_protector__)
+#if HAS_ATTRIBUTE(__no_stack_protector__)
 #define NO_STACK_PROTECTOR __attribute__((__no_stack_protector__))
-#else  // __has_attribute(__no_stack_protector__)
-#define NO_STACK_PROTECTOR __attribute__((__optimize__("-fno-stack-protector")))
-#endif
-#else  // defined(__has_attribute)
+#else
 #define NO_STACK_PROTECTOR __attribute__((__optimize__("-fno-stack-protector")))
 #endif
 #else
@@ -328,7 +329,7 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #endif  // defined(__clang_analyzer__)
 
 // Use nomerge attribute to disable optimization of merging multiple same calls.
-#if defined(__clang__) && __has_attribute(nomerge)
+#if defined(__clang__) && HAS_ATTRIBUTE(nomerge)
 #define NOMERGE [[clang::nomerge]]
 #else
 #define NOMERGE
@@ -355,7 +356,7 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // See also:
 //   https://clang.llvm.org/docs/AttributeReference.html#trivial-abi
 //   https://libcxx.llvm.org/docs/DesignDocs/UniquePtrTrivialAbi.html
-#if defined(__clang__) && __has_attribute(trivial_abi)
+#if defined(__clang__) && HAS_ATTRIBUTE(trivial_abi)
 #define TRIVIAL_ABI [[clang::trivial_abi]]
 #else
 #define TRIVIAL_ABI
@@ -364,7 +365,7 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // Marks a member function as reinitializing a moved-from variable.
 // See also
 // https://clang.llvm.org/extra/clang-tidy/checks/bugprone-use-after-move.html#reinitialization
-#if defined(__clang__) && __has_attribute(reinitializes)
+#if defined(__clang__) && HAS_ATTRIBUTE(reinitializes)
 #define REINITIALIZES_AFTER_MOVE [[clang::reinitializes]]
 #else
 #define REINITIALIZES_AFTER_MOVE
@@ -373,10 +374,8 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // Requires constant initialization. See constinit in C++20. Allows to rely on a
 // variable being initialized before execution, and not requiring a global
 // constructor.
-#if defined(__has_attribute)
-#if __has_attribute(require_constant_initialization)
+#if HAS_ATTRIBUTE(require_constant_initialization)
 #define CONSTINIT __attribute__((require_constant_initialization))
-#endif
 #endif
 #if !defined(CONSTINIT)
 #define CONSTINIT
