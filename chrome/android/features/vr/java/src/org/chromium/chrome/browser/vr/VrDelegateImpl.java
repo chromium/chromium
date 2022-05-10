@@ -8,8 +8,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import org.chromium.base.supplier.ObservableSupplier;
-
 /**
  * {@link VrDelegate} implementation if the VR module is available. Mostly forwards calls to {@link
  * VrShellDelegate}.
@@ -44,16 +42,6 @@ import org.chromium.base.supplier.ObservableSupplier;
     @Override
     public boolean onBackPressed() {
         return VrShellDelegate.onBackPressed();
-    }
-
-    @Override
-    public void handleBackPress() {
-        onBackPressed();
-    }
-
-    @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
-        return VrShellDelegate.getVrModeEnabledSupplier();
     }
 
     @Override

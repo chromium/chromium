@@ -12,7 +12,6 @@ import org.junit.runners.model.Statement;
 import org.chromium.chrome.browser.vr.TestVrShellDelegate;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction.SupportedActivity;
 import org.chromium.chrome.browser.vr.util.XrTestRuleUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Rule that conditionally skips a test if the current VrTestRule's Activity is not
@@ -28,11 +27,7 @@ public class VrActivityRestrictionRule implements TestRule {
     @Override
     public Statement apply(final Statement base, final Description desc) {
         // Currently, we don't have any VR-specific logic except for standalone devices.
-        // TestVrShellDelegate creation should be done on the UI thread. Run inside UI thread
-        // to ensure its internal static members are also initialized on UI thread.
-        boolean isOnStandalone = TestThreadUtils.runOnUiThreadBlockingNoException(
-                TestVrShellDelegate::isOnStandalone);
-        if (!isOnStandalone) {
+        if (!TestVrShellDelegate.isOnStandalone()) {
             return base;
         }
         // We can only run tests in ChromeTabbedActivity on standalones, so ignore if the current
