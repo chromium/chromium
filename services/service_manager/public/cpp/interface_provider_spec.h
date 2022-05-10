@@ -33,7 +33,7 @@ struct SERVICE_MANAGER_PUBLIC_CPP_TYPES_EXPORT InterfaceProviderSpec {
   bool operator==(const InterfaceProviderSpec& other) const;
   bool operator<(const InterfaceProviderSpec& other) const;
   std::map<Capability, InterfaceSet> provides;
-  std::map<Name, CapabilitySet> requires;
+  std::map<Name, CapabilitySet> needs;
 };
 
 // Map of spec name -> spec.

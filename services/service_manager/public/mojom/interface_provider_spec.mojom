@@ -21,7 +21,7 @@ struct CapabilitySet {
 
 // An InterfaceProviderSpec is the static definition of a collection of
 // capabilities that a service provides to other services and a collection of
-// capabilities that it requires from other services.
+// capabilities that it needs from other services.
 struct InterfaceProviderSpec {
   // The capabilities provided by this service, and for each class an array of
   // interfaces. If no interfaces are granted with a capability, the array will
@@ -30,12 +30,12 @@ struct InterfaceProviderSpec {
   // non-empty, or ["*"], which means allow access to all interfaces.
   map<string, InterfaceSet> provides;
 
-  // The services this service needs to speak to, and the capabilities it
-  // requires from each.
+  // The services this service needs to speak to, and the capabilities it needs
+  // from each.
   // A map of service name -> collection of required capabilities. "*" is also
   // supported as the key, which supplies a set of capabilities required from
   // all services in addition to specific ones specified.
-  map<string, CapabilitySet> requires;
+  map<string, CapabilitySet> needs;
 };
 
 // The name of the InterfaceProviderSpec in service manifests used by the

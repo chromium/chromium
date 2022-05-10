@@ -380,7 +380,7 @@ void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
   const base::TimeTicks now = clock_->NowTicks();
   if (next_generate_time_ < now) {
     TRACE_EVENT_INSTANT1("audio", "GenerateMoreAudio Is Behind",
-                         TRACE_EVENT_SCOPE_THREAD, u8"µsec_behind",
+                         TRACE_EVENT_SCOPE_THREAD, "µsec_behind",
                          (now - next_generate_time_).InMicroseconds());
     // Audio generation has fallen behind. Skip-ahead the frame counter so that
     // audio generation will resume for the next buffer after the one that

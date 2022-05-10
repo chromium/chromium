@@ -20,13 +20,12 @@ struct COMPONENT_EXPORT(SERVICE_MANAGER_MOJOM)
     return spec.provides;
   }
   static const std::map<service_manager::Name, service_manager::CapabilitySet>&
-  requires(const service_manager::InterfaceProviderSpec& spec) {
-    return spec.requires;
+  needs(const service_manager::InterfaceProviderSpec& spec) {
+    return spec.needs;
   }
   static bool Read(service_manager::mojom::InterfaceProviderSpecDataView data,
                    service_manager::InterfaceProviderSpec* out) {
-    return data.ReadProvides(&out->provides) &&
-           data.ReadRequires(&out->requires);
+    return data.ReadProvides(&out->provides) && data.ReadNeeds(&out->needs);
   }
 };
 
