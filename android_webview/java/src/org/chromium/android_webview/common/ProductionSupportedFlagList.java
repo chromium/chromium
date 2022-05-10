@@ -188,6 +188,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AutofillFeatures.AUTOFILL_UPSTREAM_ALLOW_ALL_EMAIL_DOMAINS,
                     "When enabled, Autofill will allow credit card upload save for all "
                             + "non-Google-based accounts."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_NAME_SURENAME_PARSING,
+                    "Adds new name surname field combinations to the parsing logic"),
             Flag.baseFeature(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                     "When enabled, merchant bound virtual cards will be offered in the keyboard "
                             + "accessory."),
