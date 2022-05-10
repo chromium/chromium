@@ -27,15 +27,9 @@ export class ExpandingBrailleTranslator {
    *     Translator to use for uncontracted braille translation.
    */
   constructor(defaultTranslator, opt_uncontractedTranslator) {
-    /**
-     * @type {!LibLouis.Translator}
-     * @private
-     */
+    /** @private {!LibLouis.Translator} */
     this.defaultTranslator_ = defaultTranslator;
-    /**
-     * @type {LibLouis.Translator}
-     * @private
-     */
+    /** @private {LibLouis.Translator} */
     this.uncontractedTranslator_ = opt_uncontractedTranslator || null;
   }
 
@@ -51,15 +45,12 @@ export class ExpandingBrailleTranslator {
    */
   translate(text, expansionType, callback) {
     const expandRanges = this.findExpandRanges_(text, expansionType);
-    const extraCellsSpans =
-        text.getSpansInstanceOf(ExtraCellsSpan).filter(function(span) {
-          return span.cells.byteLength > 0;
-        });
-    const extraCellsPositions = extraCellsSpans.map(function(span) {
-      return text.getSpanStart(span);
-    });
+    const extraCellsSpans = text.getSpansInstanceOf(ExtraCellsSpan)
+                                .filter(span => span.cells.byteLength > 0);
+    const extraCellsPositions =
+        extraCellsSpans.map(span => text.getSpanStart(span));
     const formTypeMap = new Array(text.length).fill(0);
-    text.getSpansInstanceOf(BrailleTextStyleSpan).forEach(function(span) {
+    text.getSpansInstanceOf(BrailleTextStyleSpan).forEach(span => {
       const start = text.getSpanStart(span);
       const end = text.getSpanEnd(span);
       for (let i = start; i < end; i++) {
@@ -114,9 +105,7 @@ export class ExpandingBrailleTranslator {
     }
     addChunk(this.defaultTranslator_, lastEnd, text.length);
 
-    const chunksToTranslate = chunks.filter(function(chunk) {
-      return chunk.translator;
-    });
+    const chunksToTranslate = chunks.filter(chunk => chunk.translator);
     let numPendingCallbacks = chunksToTranslate.length;
 
     function chunkTranslated(chunk, cells, textToBraille, brailleToText) {
@@ -129,17 +118,14 @@ export class ExpandingBrailleTranslator {
     }
 
     function finish() {
-      const totalCells = chunks.reduce(function(accum, chunk) {
-        return accum + chunk.cells.byteLength;
-      }, 0);
+      const totalCells =
+          chunks.reduce((accum, chunk) => accum + chunk.cells.byteLength, 0);
       const cells = new Uint8Array(totalCells);
       let cellPos = 0;
       const textToBraille = [];
       const brailleToText = [];
       function appendAdjusted(array, toAppend, adjustment) {
-        array.push.apply(array, toAppend.map(function(elem) {
-          return adjustment + elem;
-        }));
+        array.push.apply(array, toAppend.map(elem => adjustment + elem));
       }
       for (let i = 0, chunk; chunk = chunks[i]; ++i) {
         cells.set(new Uint8Array(chunk.cells), cellPos);
@@ -151,7 +137,7 @@ export class ExpandingBrailleTranslator {
     }
 
     if (chunksToTranslate.length > 0) {
-      chunksToTranslate.forEach(function(chunk) {
+      chunksToTranslate.forEach(chunk => {
         chunk.translator.translate(
             text.toString().substring(chunk.start, chunk.end),
             formTypeMap.slice(chunk.start, chunk.end),
