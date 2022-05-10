@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ash/external_metrics.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
@@ -151,6 +152,10 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   void PostDestroyThreads() override;
 
  private:
+  // Helper which depends on device policies being loaded before initializing
+  // the |device_activity_controller_|.
+  void StartDeviceActivityController();
+
   std::unique_ptr<chromeos::default_app_order::ExternalLoader>
       app_order_loader_;
   std::unique_ptr<NetworkPrefStateObserver> network_pref_state_observer_;
@@ -267,6 +272,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<ash::traffic_counters::TrafficCountersHandler>
       traffic_counters_handler_;
+
+  base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

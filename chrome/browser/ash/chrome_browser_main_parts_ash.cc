@@ -1221,20 +1221,7 @@ void ChromeBrowserMainPartsAsh::PreBrowserStart() {
 }
 
 void ChromeBrowserMainPartsAsh::PostBrowserStart() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Branded builds are packaged with valid google chrome api keys.
-  if (base::FeatureList::IsEnabled(features::kDeviceActiveClient)) {
-    device_activity_controller_ =
-        std::make_unique<device_activity::DeviceActivityController>(
-            device_activity::ChromeDeviceMetadataParameters{
-                chrome::GetChannel() /* chromeos_channel */},
-            g_browser_process->local_state(),
-            g_browser_process->system_network_context_manager()
-                ->GetSharedURLLoaderFactory(),
-            device_activity::DeviceActivityController::DetermineStartUpDelay(
-                first_run::GetFirstRunSentinelCreationTime()));
-  }
-#endif
+  StartDeviceActivityController();
 
   // Construct a delegate to connect the accessibility component extensions and
   // AccessibilityEventRewriter.
@@ -1589,6 +1576,42 @@ void ChromeBrowserMainPartsAsh::PostDestroyThreads() {
   // Shutdown these services after g_browser_process.
   InstallAttributes::Shutdown();
   DeviceSettingsService::Shutdown();
+}
+
+void ChromeBrowserMainPartsAsh::StartDeviceActivityController() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Terminate immediately if feature is turned off.
+  if (!base::FeatureList::IsEnabled(features::kDeviceActiveClient))
+    return;
+
+  CrosSettingsProvider::TrustedStatus status =
+      CrosSettings::Get()->PrepareTrustedValues(base::BindOnce(
+          &ChromeBrowserMainPartsAsh::StartDeviceActivityController,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  if (status == CrosSettingsProvider::TEMPORARILY_UNTRUSTED ||
+      status == CrosSettingsProvider::PERMANENTLY_UNTRUSTED) {
+    // When status is TEMPORARILY_UNTRUSTED, PrepareTrustedValues method takes
+    // ownership of the |StartDeviceActivityController| callback.
+    // It will retry later when the TRUSTED status becomes available.
+    //
+    // When status is PERMANENTLY_UNTRUSTED, client assumes this status is final
+    // until browser restarts. Client does not proceed without signature
+    // verification, so retry is not attempted.
+    return;
+  }
+
+  // CrosSettingsProvider::TRUSTED: device policies are loaded and trusted.
+  device_activity_controller_ =
+      std::make_unique<device_activity::DeviceActivityController>(
+          device_activity::ChromeDeviceMetadataParameters{
+              chrome::GetChannel() /* chromeos_channel */},
+          g_browser_process->local_state(),
+          g_browser_process->system_network_context_manager()
+              ->GetSharedURLLoaderFactory(),
+          device_activity::DeviceActivityController::DetermineStartUpDelay(
+              first_run::GetFirstRunSentinelCreationTime()));
+#endif
 }
 
 }  //  namespace ash
