@@ -9496,7 +9496,6 @@ if (is_android) {
       "//components/signin/public/android:java",
       "//components/sync/android:sync_java",
       "//content/public/test/android:content_java_test_support",
-      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/junit",
     ]
     sources = [ "../android/javatests/src/org/chromium/chrome/browser/sync/SyncTestSigninUtils.java" ]

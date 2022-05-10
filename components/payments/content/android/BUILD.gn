@@ -357,7 +357,6 @@ java_library("junit") {
     "//mojo/public/java:system_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/android_deps:robolectric_all_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/junit",

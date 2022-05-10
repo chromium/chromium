@@ -16,10 +16,7 @@ android_library("common_java") {
 
 android_library("splash_java") {
   sources = [ "src/org/chromium/webapk/lib/common/splash/SplashLayout.java" ]
-  deps = [
-    ":splash_resources",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-  ]
+  deps = [ ":splash_resources" ]
   resources_package = "org.chromium.webapk.lib.common.splash"
 }
 

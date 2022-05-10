@@ -148,7 +148,6 @@ instrumentation_test_apk("chrome_java_test_feed_test") {
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_support_test_runner:runner_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",

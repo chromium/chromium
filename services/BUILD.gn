@@ -135,7 +135,6 @@ if (is_android) {
       "//services/device/public/mojom:mojom_java",
       "//services/shape_detection:shape_detection_java",
       "//skia/public/mojom:mojom_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 

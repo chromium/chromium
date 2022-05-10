@@ -77,7 +77,6 @@ android_library("util_java") {
   deps = [
     "//base:jni_java",
     "//build/android:build_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.locale"

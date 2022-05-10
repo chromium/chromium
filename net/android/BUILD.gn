@@ -59,7 +59,7 @@ android_aidl("embedded_test_server_aidl") {
 
 android_library("embedded_test_server_aidl_java") {
   testonly = true
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  deps = []
   srcjar_deps = [ ":embedded_test_server_aidl" ]
 }
 

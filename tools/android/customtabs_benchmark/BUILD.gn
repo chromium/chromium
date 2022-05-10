@@ -23,7 +23,6 @@ android_apk("customtabs_benchmark_apk") {
   apk_name = "CustomTabsBenchmark"
   deps = [
     ":customtabs_benchmark_apk_resources",
-    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_core_core_java",
   ]

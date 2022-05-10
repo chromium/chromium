@@ -17,7 +17,6 @@ android_library("client_java") {
     "//chrome/android/webapk/libs/common:common_java",
     "//chrome/android/webapk/libs/runtime_library:webapk_service_aidl_java",
     "//components/webapk/android/libs/common:java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
 

@@ -11,7 +11,6 @@ android_library("java") {
   deps = [
     "//components/module_installer/android:module_installer_java",
     "//components/module_installer/android:module_interface_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
   ]
   annotation_processor_deps =

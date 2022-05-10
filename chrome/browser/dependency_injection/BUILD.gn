@@ -9,7 +9,6 @@ android_library("java") {
   deps = [
     "//third_party/android_deps:dagger_java",
     "//third_party/android_deps:javax_inject_javax_inject_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
   ]
 }
