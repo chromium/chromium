@@ -487,16 +487,6 @@ AXPlatformNodeDelegateBase::ChildIteratorBase::ChildIteratorBase(
   DCHECK(parent_);
 }
 
-bool AXPlatformNodeDelegateBase::ChildIteratorBase::operator==(
-    const AXPlatformNodeDelegate::ChildIterator& rhs) const {
-  return rhs.GetIndexInParent() == index_;
-}
-
-bool AXPlatformNodeDelegateBase::ChildIteratorBase::operator!=(
-    const AXPlatformNodeDelegate::ChildIterator& rhs) const {
-  return rhs.GetIndexInParent() != index_;
-}
-
 AXPlatformNodeDelegateBase::ChildIteratorBase&
 AXPlatformNodeDelegateBase::ChildIteratorBase::operator++() {
   index_++;

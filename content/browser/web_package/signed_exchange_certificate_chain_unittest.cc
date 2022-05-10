@@ -46,7 +46,7 @@ TEST(SignedExchangeCertificateParseTest, Empty) {
 
 TEST(SignedExchangeCertificateParseTest, EmptyChain) {
   cbor::Value::ArrayValue cbor_array;
-  cbor_array.push_back(cbor::Value(u8"\U0001F4DC\u26D3"));
+  cbor_array.push_back(cbor::Value("\U0001F4DC\u26D3"));
 
   auto serialized = cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
   ASSERT_TRUE(serialized.has_value());
@@ -62,7 +62,7 @@ TEST(SignedExchangeCertificateParseTest, MissingCert) {
   cbor_map[cbor::Value("ocsp")] = CBORByteString("OCSP");
 
   cbor::Value::ArrayValue cbor_array;
-  cbor_array.push_back(cbor::Value(u8"\U0001F4DC\u26D3"));
+  cbor_array.push_back(cbor::Value("\U0001F4DC\u26D3"));
   cbor_array.push_back(cbor::Value(std::move(cbor_map)));
 
   auto serialized = cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
@@ -87,7 +87,7 @@ TEST(SignedExchangeCertificateParseTest, OneCert) {
   cbor_map[cbor::Value("ocsp")] = CBORByteString("OCSP");
 
   cbor::Value::ArrayValue cbor_array;
-  cbor_array.push_back(cbor::Value(u8"\U0001F4DC\u26D3"));
+  cbor_array.push_back(cbor::Value("\U0001F4DC\u26D3"));
   cbor_array.push_back(cbor::Value(std::move(cbor_map)));
 
   auto serialized = cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
@@ -116,7 +116,7 @@ TEST(SignedExchangeCertificateParseTest, MissingOCSPInFirstCert) {
   cbor_map[cbor::Value("cert")] = CBORByteString(cert_der);
 
   cbor::Value::ArrayValue cbor_array;
-  cbor_array.push_back(cbor::Value(u8"\U0001F4DC\u26D3"));
+  cbor_array.push_back(cbor::Value("\U0001F4DC\u26D3"));
   cbor_array.push_back(cbor::Value(std::move(cbor_map)));
 
   auto serialized = cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
@@ -146,7 +146,7 @@ TEST(SignedExchangeCertificateParseTest, TwoCerts) {
   cbor_map2[cbor::Value("cert")] = CBORByteString(cert2_der);
 
   cbor::Value::ArrayValue cbor_array;
-  cbor_array.push_back(cbor::Value(u8"\U0001F4DC\u26D3"));
+  cbor_array.push_back(cbor::Value("\U0001F4DC\u26D3"));
   cbor_array.push_back(cbor::Value(std::move(cbor_map1)));
   cbor_array.push_back(cbor::Value(std::move(cbor_map2)));
 
@@ -185,7 +185,7 @@ TEST(SignedExchangeCertificateParseTest, HavingOCSPInSecondCert) {
   cbor_map2[cbor::Value("ocsp")] = CBORByteString("OCSP2");
 
   cbor::Value::ArrayValue cbor_array;
-  cbor_array.push_back(cbor::Value(u8"\U0001F4DC\u26D3"));
+  cbor_array.push_back(cbor::Value("\U0001F4DC\u26D3"));
   cbor_array.push_back(cbor::Value(std::move(cbor_map1)));
   cbor_array.push_back(cbor::Value(std::move(cbor_map2)));
 

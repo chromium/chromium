@@ -925,11 +925,11 @@ TEST_F(PlatformNotificationContextTest, WriteReadNotificationResources) {
 
   // Store resources for the new notification.
   std::vector<NotificationResourceData> resources;
-  resources.push_back(
-      {notification_id, origin, blink::NotificationResources()});
+  resources.emplace_back(notification_id, origin,
+                         blink::NotificationResources());
   // Also try inserting resources for an invalid notification id.
   std::string invalid_id = "invalid-id";
-  resources.push_back({invalid_id, origin, blink::NotificationResources()});
+  resources.emplace_back(invalid_id, origin, blink::NotificationResources());
   // Writing resources should succeed.
   ASSERT_TRUE(
       WriteNotificationResourcesSync(context.get(), std::move(resources)));
@@ -966,8 +966,8 @@ TEST_F(PlatformNotificationContextTest, ReDisplayNotifications) {
   std::string notification_id =
       WriteNotificationDataSync(context.get(), origin, data2);
   std::vector<NotificationResourceData> resources;
-  resources.push_back(
-      {notification_id, origin, blink::NotificationResources()});
+  resources.emplace_back(notification_id, origin,
+                         blink::NotificationResources());
   WriteNotificationResourcesSync(context.get(), std::move(resources));
   // 1 notification without resources.
   NotificationDatabaseData data3;

@@ -36,10 +36,10 @@ TEST(ParseBaseFrequencyFromCpuidTest, InvalidStrings) {
       "GHz",
       "FooMHz",  // Units preceded by non-numbers.
       "FooGHz",
-      u8"\U0001f41bGHz",
-      u8"1\U0001f41bGHz",
-      u8"1.\U0001f41bGHz",
-      u8"1.0\U0001f41bGHz",
+      "\U0001f41bGHz",
+      "1\U0001f41bGHz",
+      "1.\U0001f41bGHz",
+      "1.0\U0001f41bGHz",
       "1",       // Numbers without units.
       "1000MH",  // Numbers without units.
       "1000Mz",
@@ -98,8 +98,8 @@ TEST(ParseBaseFrequencyFromCpuidTest, ValidStrings) {
       {"3Ghz", 3'000'000'000},
       {"4GHZ", 4'000'000'000},
       {"@2GHz", 2'000'000'000},  // Text right before the number.
-      {u8"\U0001f5782GHz", 2'000'000'000},
-      {u8"\U0001f578 2GHz", 2'000'000'000},
+      {"\U0001f5782GHz", 2'000'000'000},
+      {"\U0001f578 2GHz", 2'000'000'000},
       {"933 MHz", 933'000'000},  // Spaces between unit and frequency.
       {"1.2   GHz", 1'200'000'000},
       {"0.1GHz", 100'000'000},    // Smallest value for GHz.
@@ -112,7 +112,7 @@ TEST(ParseBaseFrequencyFromCpuidTest, ValidStrings) {
       {"9223372036800Mhz", 9'223'372'036'800'000'000},
       {"0GHz 0.00GHz 1.0.0Ghz 1.1Ghz 1.2Ghz", 1'100'000'000},  // False starts.
       {"100MHzabc", 100'000'000},  // Text after the frequency
-      {u8"1GHz\U0001f578", 1'000'000'000},
+      {"1GHz\U0001f578", 1'000'000'000},
   };
 
   for (const TestCase& test_case : test_cases) {

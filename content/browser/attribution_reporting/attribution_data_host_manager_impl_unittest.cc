@@ -479,34 +479,23 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
   auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
   EXPECT_CALL(
       mock_manager_,
-      HandleTrigger(AttributionTriggerMatches({
-          .destination_origin = destination_origin,
-          .reporting_origin = reporting_origin,
-          .filters = *AttributionFilterData::FromTriggerFilterValues({
+      HandleTrigger(AttributionTriggerMatches(AttributionTriggerMatcherConfig(
+          destination_origin, reporting_origin,
+          *AttributionFilterData::FromTriggerFilterValues({
               {"a", {"b"}},
           }),
-          .debug_key = Optional(789),
-          .event_triggers = ElementsAre(
-              EventTriggerDataMatches({
-                  .data = 1,
-                  .priority = 2,
-                  .dedup_key = Optional(3),
-                  .filters = *AttributionFilterData::FromTriggerFilterValues({
-                      {"c", {"d"}},
-                  }),
-                  .not_filters =
-                      *AttributionFilterData::FromTriggerFilterValues({
-                          {"e", {"f"}},
-                      }),
-              }),
-              EventTriggerDataMatches({
-                  .data = 4,
-                  .priority = 5,
-                  .dedup_key = Eq(absl::nullopt),
-                  .filters = AttributionFilterData(),
-                  .not_filters = AttributionFilterData(),
-              })),
-      })));
+          Optional(789),
+          ElementsAre(EventTriggerDataMatches(EventTriggerDataMatcherConfig(
+                          1, 2, Optional(3),
+                          *AttributionFilterData::FromTriggerFilterValues({
+                              {"c", {"d"}},
+                          }),
+                          *AttributionFilterData::FromTriggerFilterValues({
+                              {"e", {"f"}},
+                          }))),
+                      EventTriggerDataMatches(EventTriggerDataMatcherConfig(
+                          4, 5, Eq(absl::nullopt), AttributionFilterData(),
+                          AttributionFilterData())))))));
 
   {
     RemoteDataHost data_host_remote{.task_environment = task_environment_};
@@ -1359,11 +1348,13 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(mock_manager_, HandleTrigger(AttributionTriggerMatches(
-                                   {.reporting_origin = reporting_origin1})));
+    EXPECT_CALL(mock_manager_,
+                HandleTrigger(AttributionTriggerMatches(
+                    AttributionTriggerMatcherConfig(_, reporting_origin1))));
     EXPECT_CALL(checkpoint, Call(2));
-    EXPECT_CALL(mock_manager_, HandleTrigger(AttributionTriggerMatches(
-                                   {.reporting_origin = reporting_origin2})));
+    EXPECT_CALL(mock_manager_,
+                HandleTrigger(AttributionTriggerMatches(
+                    AttributionTriggerMatcherConfig(_, reporting_origin2))));
   }
 
   mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
@@ -1478,9 +1469,9 @@ TEST_F(AttributionDataHostManagerImplTest,
     url::Origin reporting_origin = url::Origin::Create(GURL(
         base::StrCat({"https://report", base::NumberToString(i), ".test"})));
 
-    EXPECT_CALL(mock_manager_, HandleTrigger(AttributionTriggerMatches({
-                                   .reporting_origin = reporting_origin,
-                               })))
+    EXPECT_CALL(mock_manager_,
+                HandleTrigger(AttributionTriggerMatches(
+                    AttributionTriggerMatcherConfig(_, reporting_origin))))
         .WillOnce([&](AttributionTrigger trigger) { barrier.Run(); });
 
     send_trigger(std::move(reporting_origin));

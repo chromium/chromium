@@ -105,14 +105,18 @@ class AlwaysSetCookieChecker : public AttributionCookieChecker {
 };
 
 struct AttributionReportJsonConverter {
+  AttributionReportJsonConverter(bool remove_report_ids,
+                                 AttributionReportTimeFormat report_time_format,
+                                 bool remove_assembled_report,
+                                 base::Time time_origin)
+      : remove_report_ids(remove_report_ids),
+        report_time_format(report_time_format),
+        remove_assembled_report(remove_assembled_report),
+        time_origin(time_origin) {}
   AttributionReportJsonConverter(const AttributionReportJsonConverter&) =
       delete;
-  AttributionReportJsonConverter(AttributionReportJsonConverter&&) = delete;
-
   AttributionReportJsonConverter& operator=(
       const AttributionReportJsonConverter&) = delete;
-  AttributionReportJsonConverter& operator=(AttributionReportJsonConverter&&) =
-      delete;
 
   base::Value::Dict ToJson(
       const AttributionReport& report,
@@ -473,11 +477,11 @@ base::Value RunAttributionSimulation(
     rng = std::make_unique<AttributionDefaultRandomGenerator>();
   }
 
-  const AttributionReportJsonConverter json_converter{
-      .remove_report_ids = options.remove_report_ids,
-      .report_time_format = options.report_time_format,
-      .remove_assembled_report = options.remove_assembled_report,
-      .time_origin = base::Time::Now()};
+  const AttributionReportJsonConverter json_converter(
+      options.remove_report_ids,
+      options.report_time_format,
+      options.remove_assembled_report,
+      base::Time::Now());
 
   base::Value::List event_level_reports;
   base::Value::List debug_event_level_reports;

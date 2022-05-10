@@ -112,7 +112,12 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
   virtual std::unique_ptr<BrowsingDataFilterBuilder> Copy() = 0;
 
   // Comparison.
-  virtual bool operator==(const BrowsingDataFilterBuilder& other) = 0;
+  bool operator==(const BrowsingDataFilterBuilder& other) const {
+    return IsEqual(other);
+  }
+
+ private:
+  virtual bool IsEqual(const BrowsingDataFilterBuilder& other) const = 0;
 };
 
 }  // namespace content

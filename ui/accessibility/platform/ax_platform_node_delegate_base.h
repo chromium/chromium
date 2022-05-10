@@ -153,8 +153,6 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
     ChildIteratorBase(AXPlatformNodeDelegateBase* parent, int index);
     ChildIteratorBase(const ChildIteratorBase& it);
     ~ChildIteratorBase() override = default;
-    bool operator==(const ChildIterator& rhs) const override;
-    bool operator!=(const ChildIterator& rhs) const override;
     ChildIteratorBase& operator++() override;
     ChildIteratorBase& operator++(int) override;
     ChildIteratorBase& operator--() override;

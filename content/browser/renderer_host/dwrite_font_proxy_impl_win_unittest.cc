@@ -40,10 +40,10 @@ struct FontExpectation {
   uint16_t ttc_index;
 };
 
-constexpr FontExpectation kExpectedTestFonts[] = {{u8"CambriaMath", 1},
-                                                  {u8"Ming-Lt-HKSCS-ExtB", 2},
-                                                  {u8"NSimSun", 1},
-                                                  {u8"calibri-bolditalic", 0}};
+constexpr FontExpectation kExpectedTestFonts[] = {{"CambriaMath", 1},
+                                                  {"Ming-Lt-HKSCS-ExtB", 2},
+                                                  {"NSimSun", 1},
+                                                  {"calibri-bolditalic", 0}};
 
 // DirectWrite on Windows supports IDWriteFontSet API which allows for querying
 // by PostScript name and full font name directly. In the implementation of

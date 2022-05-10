@@ -41,9 +41,10 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
       override;
   Mode GetMode() override;
   std::unique_ptr<BrowsingDataFilterBuilder> Copy() override;
-  bool operator==(const BrowsingDataFilterBuilder& other) override;
 
  private:
+  bool IsEqual(const BrowsingDataFilterBuilder& other) const override;
+
   Mode mode_;
 
   std::set<url::Origin> origins_;

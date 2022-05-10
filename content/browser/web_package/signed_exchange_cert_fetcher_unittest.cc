@@ -195,7 +195,7 @@ class SignedExchangeCertFetcherTest : public testing::Test {
         cbor::Value("OCSP", cbor::Value::Type::BYTE_STRING);
 
     cbor::Value::ArrayValue cbor_array;
-    cbor_array.push_back(cbor::Value(u8"\U0001F4DC\u26D3"));
+    cbor_array.push_back(cbor::Value("\U0001F4DC\u26D3"));
     cbor_array.push_back(cbor::Value(std::move(cbor_map)));
 
     absl::optional<std::vector<uint8_t>> serialized =

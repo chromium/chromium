@@ -4,8 +4,6 @@
 
 #include "content/public/browser/content_browser_client.h"
 
-#include "build/build_config.h"
-
 // content_browser_client.h is a widely included header and its size impacts
 // build time significantly. If you run into this limit, try using forward
 // declarations instead of including more headers. If that is infeasible, adjust

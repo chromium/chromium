@@ -3889,7 +3889,7 @@ void RenderFrameImpl::DidCommitNavigation(
   // disagree on the origin during commit navigation.
   if (pending_cookie_manager_info_ &&
       pending_cookie_manager_info_->origin ==
-          frame_->GetDocument().GetSecurityOrigin()) {
+          url::Origin(frame_->GetDocument().GetSecurityOrigin())) {
     frame_->GetDocument().SetCookieManager(
         std::move(pending_cookie_manager_info_->cookie_manager));
   }
@@ -3897,8 +3897,9 @@ void RenderFrameImpl::DidCommitNavigation(
   // TODO(crbug.com/888079): Turn this into a DCHECK for origin equality when
   // the linked bug is fixed. Currently sometimes the browser and renderer
   // disagree on the origin during commit navigation.
-  if (pending_storage_info_ && original_storage_key_.origin() ==
-                                   frame_->GetDocument().GetSecurityOrigin()) {
+  if (pending_storage_info_ &&
+      original_storage_key_.origin() ==
+          url::Origin(frame_->GetDocument().GetSecurityOrigin())) {
     if (pending_storage_info_->local_storage_area) {
       frame_->SetLocalStorageArea(
           std::move(pending_storage_info_->local_storage_area));

@@ -1558,16 +1558,6 @@ BrowserAccessibility::PlatformChildIterator::PlatformChildIterator(
 
 BrowserAccessibility::PlatformChildIterator::~PlatformChildIterator() = default;
 
-bool BrowserAccessibility::PlatformChildIterator::operator==(
-    const ChildIterator& rhs) const {
-  return GetIndexInParent() == rhs.GetIndexInParent();
-}
-
-bool BrowserAccessibility::PlatformChildIterator::operator!=(
-    const ChildIterator& rhs) const {
-  return GetIndexInParent() != rhs.GetIndexInParent();
-}
-
 BrowserAccessibility::PlatformChildIterator&
 BrowserAccessibility::PlatformChildIterator::operator++() {
   ++platform_iterator;

@@ -915,13 +915,20 @@ MATCHER_P(NewAggregatableReportIs, matcher, "") {
 }
 
 struct EventTriggerDataMatcherConfig {
-  ::testing::Matcher<uint64_t> data = ::testing::_;
-  ::testing::Matcher<int64_t> priority = ::testing::_;
-  ::testing::Matcher<absl::optional<uint64_t>> dedup_key = ::testing::_;
-  ::testing::Matcher<const AttributionFilterData&> filters = ::testing::_;
-  ::testing::Matcher<const AttributionFilterData&> not_filters = ::testing::_;
+  ::testing::Matcher<uint64_t> data;
+  ::testing::Matcher<int64_t> priority;
+  ::testing::Matcher<absl::optional<uint64_t>> dedup_key;
+  ::testing::Matcher<const AttributionFilterData&> filters;
+  ::testing::Matcher<const AttributionFilterData&> not_filters;
 
   EventTriggerDataMatcherConfig() = delete;
+  EventTriggerDataMatcherConfig(
+      ::testing::Matcher<uint64_t> data = ::testing::_,
+      ::testing::Matcher<int64_t> priority = ::testing::_,
+      ::testing::Matcher<absl::optional<uint64_t>> dedup_key = ::testing::_,
+      ::testing::Matcher<const AttributionFilterData&> filters = ::testing::_,
+      ::testing::Matcher<const AttributionFilterData&> not_filters =
+          ::testing::_);
   ~EventTriggerDataMatcherConfig();
 };
 
@@ -937,6 +944,14 @@ struct AttributionTriggerMatcherConfig {
       event_triggers = ::testing::_;
 
   AttributionTriggerMatcherConfig() = delete;
+  AttributionTriggerMatcherConfig(
+      ::testing::Matcher<const url::Origin&> destination_origin = ::testing::_,
+      ::testing::Matcher<const url::Origin&> reporting_origin = ::testing::_,
+      ::testing::Matcher<const AttributionFilterData&> filters = ::testing::_,
+      ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_,
+      ::testing::Matcher<
+          const std::vector<AttributionTrigger::EventTriggerData>&>
+          event_triggers = ::testing::_);
   ~AttributionTriggerMatcherConfig();
 };
 

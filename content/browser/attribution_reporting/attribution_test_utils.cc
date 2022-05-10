@@ -1315,6 +1315,18 @@ std::ostream& operator<<(
   return out << "]}";
 }
 
+EventTriggerDataMatcherConfig::EventTriggerDataMatcherConfig(
+    ::testing::Matcher<uint64_t> data,
+    ::testing::Matcher<int64_t> priority,
+    ::testing::Matcher<absl::optional<uint64_t>> dedup_key,
+    ::testing::Matcher<const AttributionFilterData&> filters,
+    ::testing::Matcher<const AttributionFilterData&> not_filters)
+    : data(std::move(data)),
+      priority(std::move(priority)),
+      dedup_key(std::move(dedup_key)),
+      filters(std::move(filters)),
+      not_filters(std::move(not_filters)) {}
+
 EventTriggerDataMatcherConfig::~EventTriggerDataMatcherConfig() = default;
 
 ::testing::Matcher<const AttributionTrigger::EventTriggerData&>
@@ -1330,6 +1342,19 @@ EventTriggerDataMatches(const EventTriggerDataMatcherConfig& cfg) {
       Field("not_filters", &AttributionTrigger::EventTriggerData::not_filters,
             cfg.not_filters));
 }
+
+AttributionTriggerMatcherConfig::AttributionTriggerMatcherConfig(
+    ::testing::Matcher<const url::Origin&> destination_origin,
+    ::testing::Matcher<const url::Origin&> reporting_origin,
+    ::testing::Matcher<const AttributionFilterData&> filters,
+    ::testing::Matcher<absl::optional<uint64_t>> debug_key,
+    ::testing::Matcher<const std::vector<AttributionTrigger::EventTriggerData>&>
+        event_triggers)
+    : destination_origin(std::move(destination_origin)),
+      reporting_origin(std::move(reporting_origin)),
+      filters(std::move(filters)),
+      debug_key(std::move(debug_key)),
+      event_triggers(std::move(event_triggers)) {}
 
 AttributionTriggerMatcherConfig::~AttributionTriggerMatcherConfig() = default;
 

@@ -253,15 +253,14 @@ BrowsingDataFilterBuilderImpl::Copy() {
   return std::move(copy);
 }
 
-bool BrowsingDataFilterBuilderImpl::operator==(
-    const BrowsingDataFilterBuilder& other) {
+bool BrowsingDataFilterBuilderImpl::IsEqual(
+    const BrowsingDataFilterBuilder& other) const {
   // This is the only implementation of BrowsingDataFilterBuilder, so we can
   // downcast |other|.
   const BrowsingDataFilterBuilderImpl* other_impl =
       static_cast<const BrowsingDataFilterBuilderImpl*>(&other);
 
-  return origins_ == other_impl->origins_ &&
-         domains_ == other_impl->domains_ &&
+  return origins_ == other_impl->origins_ && domains_ == other_impl->domains_ &&
          mode_ == other_impl->mode_;
 }
 

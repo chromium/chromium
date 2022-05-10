@@ -324,8 +324,12 @@ class AX_EXPORT AXPlatformNodeDelegate {
   class ChildIterator {
    public:
     virtual ~ChildIterator() = default;
-    virtual bool operator==(const ChildIterator& rhs) const = 0;
-    virtual bool operator!=(const ChildIterator& rhs) const = 0;
+    bool operator==(const ChildIterator& rhs) const {
+      return GetIndexInParent() == rhs.GetIndexInParent();
+    }
+    bool operator!=(const ChildIterator& rhs) const {
+      return GetIndexInParent() != rhs.GetIndexInParent();
+    }
     virtual ChildIterator& operator++() = 0;
     virtual ChildIterator& operator++(int) = 0;
     virtual ChildIterator& operator--() = 0;

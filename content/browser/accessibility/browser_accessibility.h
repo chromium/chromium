@@ -125,8 +125,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
                           BrowserAccessibility* child);
     PlatformChildIterator(const PlatformChildIterator& it);
     ~PlatformChildIterator() override;
-    bool operator==(const ChildIterator& rhs) const override;
-    bool operator!=(const ChildIterator& rhs) const override;
     PlatformChildIterator& operator++() override;
     PlatformChildIterator& operator++(int) override;
     PlatformChildIterator& operator--() override;
