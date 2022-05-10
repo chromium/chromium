@@ -89,6 +89,9 @@ class BookmarkStorage
   // The state of the backup file creation which is created lazily just before
   // the first scheduled save.
   bool backup_triggered_ = false;
+
+  // Used to track the frequency of saves starting from the first save.
+  base::TimeTicks last_scheduled_save_;
 };
 
 }  // namespace bookmarks

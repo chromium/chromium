@@ -670,6 +670,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.Storage.FileSizeAtStartup" units="KB"
+    expires_after="2023-04-21">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>Size of the bookmarks file, recorded at startup.</summary>
+</histogram>
+
+<histogram name="Bookmarks.Storage.TimeSinceLastScheduledSave" units="ms"
+    expires_after="2023-04-21">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Time delta between bookmark file saves, recorded when a save occurs.
+    Recorded on the first save as the time since startup.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.Storage.TimeToLoadAtStartup" units="ms"
+    expires_after="2023-04-21">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Duration of loading the bookmarks file, recorded when the bookmark model is
+    loaded.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.UsageCountPerProfileType" enum="BrowserProfileType"
     expires_after="2022-10-16">
   <owner>rhalavati@chromium.org</owner>
