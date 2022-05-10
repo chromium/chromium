@@ -169,7 +169,6 @@ ci.builder(
         category = "ToT Code Coverage",
         short_name = "and",
     ),
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.builder(
