@@ -448,13 +448,13 @@ Polymer({
         return this.i18n('multidevicePermissionsSetupCompletedTitle');
       case Status.TIMED_OUT_CONNECTING:
         return this.i18n(
-            'multideviceNotificationAccessSetupCouldNotEstablishConnectionTitle');
+            'multidevicePermissionsSetupCouldNotEstablishConnectionTitle');
       case Status.CONNECTION_DISCONNECTED:
         return this.i18n(
             'multideviceNotificationAccessSetupConnectionLostWithPhoneTitle');
       case Status.NOTIFICATION_ACCESS_PROHIBITED:
         return this.i18n(
-            'multideviceNotificationAccessSetupAccessProhibitedTitle');
+            'multidevicePermissionsSetupNotificationAccessProhibitedTitle');
       default:
         return '';
     }
@@ -478,14 +478,12 @@ Polymer({
       case Status.COMPLETED_SUCCESSFULLY:
         return this.i18n('multidevicePermissionsSetupCompletedSummary');
       case Status.TIMED_OUT_CONNECTING:
-        return this.i18n(
-            'multideviceNotificationAccessSetupEstablishFailureSummary');
+        return this.i18n('multidevicePermissionsSetupEstablishFailureSummary');
       case Status.CONNECTION_DISCONNECTED:
-        return this.i18n(
-            'multideviceNotificationAccessSetupMaintainFailureSummary');
+        return this.i18n('multidevicePermissionsSetupMaintainFailureSummary');
       case Status.NOTIFICATION_ACCESS_PROHIBITED:
         return this.i18nAdvanced(
-            'multideviceNotificationAccessSetupAccessProhibitedSummary');
+            'multidevicePermissionsSetupNotificationAccessProhibitedSummary');
       case Status.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE:
         return this.i18n('multidevicePermissionsSetupOperationsInstructions');
       case Status.CONNECTION_REQUESTED:
