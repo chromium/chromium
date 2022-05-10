@@ -12,6 +12,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
+import {isSelectionEvent} from '../../common/utils.js';
 import {BacklightColor} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
@@ -129,16 +130,20 @@ export class KeyboardBacklight extends WithPersonalizationStore {
         selector.selectNext();
         break;
       case 'enter':
-      case 'space':
         switch (this.ironSelectedColor_.id) {
           case this.rainbowColorId_:
-            this.onRainbowColorSelected_();
+            this.onRainbowColorSelected_(e.detail.keyboardEvent);
             break;
           case this.wallpaperColorId_:
-            // TODO(b/224871280): Handle selecting wallpaper color.
+            this.onWallpaperColorSelected_(e.detail.keyboardEvent);
             break;
           default:
-            this.onPresetColorSelected_(e);
+            // |onPresetColorSelected_| is not invoked here because the event
+            // listener target is iron-selector, which results in undefined
+            // colorId.
+            setBacklightColor(
+                this.presetColors_[this.ironSelectedColor_.id].enumVal,
+                getKeyboardBacklightProvider(), this.getStore());
             break;
         }
         break;
@@ -157,9 +162,22 @@ export class KeyboardBacklight extends WithPersonalizationStore {
     e.detail.keyboardEvent.preventDefault();
   }
 
+  /** Invoked when the wallpaper color is selected. */
+  private onWallpaperColorSelected_(e: Event) {
+    if (!isSelectionEvent(e)) {
+      return;
+    }
+    setBacklightColor(
+        BacklightColor.kWallpaper, getKeyboardBacklightProvider(),
+        this.getStore());
+  }
+
   /** Invoked when a preset color is selected. */
-  private onPresetColorSelected_(event: Event) {
-    const htmlElement = event.currentTarget as HTMLElement;
+  private onPresetColorSelected_(e: Event) {
+    if (!isSelectionEvent(e)) {
+      return;
+    }
+    const htmlElement = e.currentTarget as HTMLElement;
     const colorId = htmlElement.id;
     assert(colorId !== undefined, 'colorId not found');
     setBacklightColor(
@@ -168,7 +186,10 @@ export class KeyboardBacklight extends WithPersonalizationStore {
   }
 
   /** Invoked when the rainbow color is selected. */
-  private onRainbowColorSelected_() {
+  private onRainbowColorSelected_(e: Event) {
+    if (!isSelectionEvent(e)) {
+      return;
+    }
     setBacklightColor(
         BacklightColor.kRainbow, getKeyboardBacklightProvider(),
         this.getStore());
@@ -195,6 +216,10 @@ export class KeyboardBacklight extends WithPersonalizationStore {
 
   private getPresetColorAriaLabel_(presetColorId: string): string {
     return this.i18n(presetColorId);
+  }
+
+  private getWallpaperColorAriaSelected_(selectedColor: BacklightColor) {
+    return (selectedColor === BacklightColor.kWallpaper).toString();
   }
 
   private getPresetColorAriaSelected_(

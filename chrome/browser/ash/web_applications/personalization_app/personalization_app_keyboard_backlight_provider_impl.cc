@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/color_analysis.h"
 
 namespace ash {
 namespace personalization_app {
@@ -60,10 +61,16 @@ void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightColor(
   DCHECK(rgb_keyboard_manager);
   SkColor color = kInvalidColor;
   switch (backlight_color) {
-    case mojom::BacklightColor::kWallpaper:
-      // TODO(b/224871280): Add support to set keyboard color to wallpaper
-      // extracted color.
+    case mojom::BacklightColor::kWallpaper: {
+      auto* wallpaper_controller = ash::Shell::Get()->wallpaper_controller();
+      DCHECK(wallpaper_controller);
+      color = wallpaper_controller->GetProminentColor(
+          color_utils::ColorProfile(color_utils::LumaRange::NORMAL,
+                                    color_utils::SaturationRange::VIBRANT));
+      rgb_keyboard_manager->SetStaticBackgroundColor(
+          SkColorGetR(color), SkColorGetG(color), SkColorGetB(color));
       break;
+    }
     case mojom::BacklightColor::kWhite:
     case mojom::BacklightColor::kRed:
     case mojom::BacklightColor::kYellow:

@@ -88,12 +88,15 @@
   <div id="keyboardBacklightLabel">
     <p class="title">$i18n{keyboardBacklightTitle}</p>
   </div>
-  <iron-a11y-keys id="keys" keys="left right space enter" on-keys-pressed="onKeysPress_">
+  <iron-a11y-keys id="keys" keys="left right enter" on-keys-pressed="onKeysPress_">
   </iron-a11y-keys>
   <iron-selector id="selector" selected="0" selectable=".color-container"
       selected-item="{{ironSelectedColor_}}">
     <div id$="[[wallpaperColorId_]]" class="color-container" tabindex="0"
-        aria-label="$i18n{wallpaperColor}">
+        on-click="onWallpaperColorSelected_"
+        on-keypress="onWallpaperColorSelected_"
+        aria-label="$i18n{wallpaperColor}"
+        aria-selected$="[[getWallpaperColorAriaSelected_(backlightColor_)]]">
       <div class="color-inner-container"
           style$="[[getColorInnerContainerStyle_(wallpaperColorId_, presetColors_)]]">
         <paper-ripple class="circle"></paper-ripple>
