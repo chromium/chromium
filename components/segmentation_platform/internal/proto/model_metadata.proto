@@ -112,6 +112,9 @@ message CustomInput {
 
   // If the fill type need additional arguments, use this value.
   map<string, string> additional_args = 4;
+
+  // The human readable name of the custom input.
+  optional string name = 5;
 }
 
 // Configuration for storing signals in the SQL database.
@@ -165,6 +168,9 @@ message SqlFeature {
     optional CustomInput value = 3;
   }
   repeated BindValue bind_values = 3;
+
+  // The human readable name of the ukm event and metric.
+  optional string name = 4;
 }
 
 // Contains a feature used as an input to the ML model.
