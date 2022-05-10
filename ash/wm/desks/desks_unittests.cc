@@ -375,6 +375,30 @@ class FullScreenStateObserver : public ShellObserver {
   bool is_fullscreen_ = false;
 };
 
+// A widget delegate that refuses to close.
+class StuckWidgetDelegate : public views::WidgetDelegate {
+ public:
+  StuckWidgetDelegate() {
+    SetCanMaximize(true);
+    SetCanMinimize(true);
+    SetCanResize(true);
+    SetOwnedByWidget(true);
+  }
+  StuckWidgetDelegate(const StuckWidgetDelegate& other) = delete;
+  StuckWidgetDelegate& operator=(const StuckWidgetDelegate& other) = delete;
+  ~StuckWidgetDelegate() override = default;
+
+  // Overridden from WidgetDelegate:
+  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+      views::Widget* widget) override {
+    return Shell::Get()->CreateDefaultNonClientFrameView(widget);
+  }
+
+  bool OnCloseRequested(views::Widget::ClosedReason close_reason) override {
+    return false;
+  }
+};
+
 // Defines a test fixture to test Virtual Desks behavior, parameterized to run
 // some window drag tests with both touch gestures and with mouse events.
 class DesksTest : public AshTestBase,
@@ -7151,28 +7175,40 @@ TEST_F(DesksCloseAllTest, CloseDesksWithWindowsInOverview) {
     // We do it in this order so that we do not switch the active desk.
     if (test_case.source == CloseAllSource::kCloseAllButton) {
       ClickOnCloseAllButtonForDesk(1);
+      WaitForMilliseconds(
+          ToastData::kDefaultToastDuration.InMilliseconds() +
+          DesksController::kCloseAllWindowCloseTimeout.InMilliseconds());
       EXPECT_FALSE(DesksTestApi::DesksControllerHasDesk(desk_2));
-      // `win1` and `win2` should both be valid at this point because `desk_2`
-      // is being preserved.
       EXPECT_TRUE(win1.is_valid());
-      EXPECT_TRUE(win2.is_valid());
+      // `win2` is closed along with `desk_2` and should become invalid.
+      EXPECT_FALSE(win2.is_valid());
 
       ClickOnCloseAllButtonForDesk(0);
+      WaitForMilliseconds(
+          ToastData::kDefaultToastDuration.InMilliseconds() +
+          DesksController::kCloseAllWindowCloseTimeout.InMilliseconds());
       EXPECT_FALSE(DesksTestApi::DesksControllerHasDesk(desk_1));
-      EXPECT_TRUE(win1.is_valid());
-      EXPECT_FALSE(win2.is_valid());
+      // `win1` is closed along with `desk_1` and should become invalid.
+      EXPECT_FALSE(win1.is_valid());
     } else if (test_case.source == CloseAllSource::kContextMenu) {
       ExecuteContextMenuCloseAllForDesk(1);
+      WaitForMilliseconds(
+          ToastData::kDefaultToastDuration.InMilliseconds() +
+          DesksController::kCloseAllWindowCloseTimeout.InMilliseconds());
       EXPECT_FALSE(DesksTestApi::DesksControllerHasDesk(desk_2));
       // `win1` and `win2` should both be valid at this point because `desk_2`
       // is being preserved.
       EXPECT_TRUE(win1.is_valid());
-      EXPECT_TRUE(win2.is_valid());
+      // `win2` is closed along with `desk_2` and should become invalid.
+      EXPECT_FALSE(win2.is_valid());
 
       ExecuteContextMenuCloseAllForDesk(0);
+      WaitForMilliseconds(
+          ToastData::kDefaultToastDuration.InMilliseconds() +
+          DesksController::kCloseAllWindowCloseTimeout.InMilliseconds());
       EXPECT_FALSE(DesksTestApi::DesksControllerHasDesk(desk_1));
-      EXPECT_TRUE(win1.is_valid());
-      EXPECT_FALSE(win2.is_valid());
+      // `win1` is closed along with `desk_1` and should become invalid.
+      EXPECT_FALSE(win1.is_valid());
     }
 
     // Desk activation should have changed to `desk_3` and we should still be in
@@ -7352,7 +7388,9 @@ TEST_F(DesksCloseAllTest, RestoreOrDestroyDeskWithToast) {
     } else {
       // When we wait for the undo toast to expire, `desk_1` should be
       // destroyed.
-      WaitForMilliseconds(ToastData::kDefaultToastDuration.InMilliseconds());
+      WaitForMilliseconds(
+          ToastData::kDefaultToastDuration.InMilliseconds() +
+          DesksController::kCloseAllWindowCloseTimeout.InMilliseconds());
       EXPECT_EQ(1u, controller->desks().size());
       EXPECT_FALSE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
       EXPECT_FALSE(window.is_valid());
@@ -7436,9 +7474,69 @@ TEST_F(DesksCloseAllTest, ShortcutCloseAll) {
   // Tests that after hitting Ctrl + Shift + W, the desk is destroyed along with
   // all it's app windows.
   SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-  WaitForMilliseconds(ToastData::kDefaultToastDuration.InMilliseconds());
+  WaitForMilliseconds(
+      ToastData::kDefaultToastDuration.InMilliseconds() +
+      DesksController::kCloseAllWindowCloseTimeout.InMilliseconds());
   EXPECT_EQ(1u, controller->desks().size());
   EXPECT_FALSE(window1.is_valid());
+  EXPECT_FALSE(window2.is_valid());
+}
+
+// Tests CloseAll on active desk will close app windows on it.
+TEST_F(DesksCloseAllTest, CloseActiveDeskCloseWindows) {
+  WindowHolder window1(CreateAppWindow());
+  WindowHolder window2(CreateAppWindow());
+
+  NewDesk();
+
+  auto* controller = DesksController::Get();
+  ASSERT_EQ(2u, controller->desks().size());
+  Desk* desk_1 = controller->desks()[0].get();
+  ASSERT_TRUE(desk_1->is_active());
+  ASSERT_TRUE(base::Contains(desk_1->windows(), window1.window()));
+  ASSERT_TRUE(base::Contains(desk_1->windows(), window2.window()));
+
+  // Closes the active desk.
+  RemoveDesk(desk_1, DeskCloseType::kCloseAllWindowsAndWait);
+
+  // Waits for the toaster to disappear.
+  WaitForMilliseconds(
+      ToastData::kDefaultToastDuration.InMilliseconds() +
+      DesksController::kCloseAllWindowCloseTimeout.InMilliseconds());
+  EXPECT_EQ(1u, controller->desks().size());
+  EXPECT_FALSE(window1.is_valid());
+  EXPECT_FALSE(window2.is_valid());
+}
+
+// Tests CloseAll will forcefully close window that is not closed in time.
+TEST_F(DesksCloseAllTest, ForceCloseWindows) {
+  WindowHolder window1(CreateAppWindow());
+
+  WindowHolder window2(CreateAppWindow(gfx::Rect(), AppType::SYSTEM_APP,
+                                       ShellWindowId::kShellWindowId_Invalid,
+                                       new StuckWidgetDelegate()));
+
+  NewDesk();
+  auto* controller = DesksController::Get();
+  ASSERT_EQ(2u, controller->desks().size());
+  Desk* desk_1 = controller->desks()[0].get();
+  ASSERT_TRUE(desk_1->is_active());
+  ASSERT_TRUE(base::Contains(desk_1->windows(), window1.window()));
+  ASSERT_TRUE(base::Contains(desk_1->windows(), window2.window()));
+
+  RemoveDesk(desk_1, DeskCloseType::kCloseAllWindowsAndWait);
+
+  // not long enough for slow window (window2) close hoos to finish.
+  WaitForMilliseconds(
+      ToastData::kDefaultToastDuration.InMilliseconds() +
+      DesksController::kCloseAllWindowCloseTimeout.InMilliseconds() / 2);
+  EXPECT_EQ(1u, controller->desks().size());
+  EXPECT_FALSE(window1.is_valid());
+  EXPECT_TRUE(window2.is_valid());
+
+  // Waits for long enough for `DesksController` to forcefully close the window.
+  WaitForMilliseconds(
+      DesksController::kCloseAllWindowCloseTimeout.InMilliseconds());
   EXPECT_FALSE(window2.is_valid());
 }
 

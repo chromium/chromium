@@ -17,7 +17,9 @@
 #include "ash/wm/desks/templates/restore_data_collector.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/account_id/account_id.h"
@@ -97,6 +99,11 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
    protected:
     virtual ~Observer() = default;
   };
+
+  // The timeout duration that we allow an app window on a closed desk to run
+  // its "close" hooks before being forcefully closed.
+  static constexpr base::TimeDelta kCloseAllWindowCloseTimeout =
+      base::Seconds(1);
 
   DesksController();
 
@@ -376,6 +383,10 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   void CommitPendingDeskRemoval();
 
+  // Forcefully cleans up app windows that should be closed.
+  void CleanUpClosedAppWindowsTask(
+      std::unique_ptr<aura::WindowTracker> closing_window_tracker);
+
   // Moves all the windows that are visible on all desks that currently
   // reside on |active_desk_| to |new_desk|.
   void MoveVisibleOnAllDesksWindowsFromActiveDeskTo(Desk* new_desk);
@@ -450,6 +461,10 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   // Does the job for the `CaptureActiveDeskAsTemplate()` method.
   mutable RestoreDataCollector restore_data_collector_;
+
+  // Note: This should remain the last member so it'll be destroyed and
+  // invalidate its weak pointers before any other members are destroyed.
+  base::WeakPtrFactory<DesksController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

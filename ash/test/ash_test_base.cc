@@ -218,15 +218,23 @@ std::unique_ptr<views::Widget> AshTestBase::CreateFramelessTestWidget() {
 std::unique_ptr<aura::Window> AshTestBase::CreateAppWindow(
     const gfx::Rect& bounds_in_screen,
     AppType app_type,
-    int shell_window_id) {
+    int shell_window_id,
+    views::WidgetDelegate* delegate) {
   TestWidgetBuilder builder;
   if (app_type != AppType::NON_APP) {
     builder.SetWindowProperty(aura::client::kAppType,
                               static_cast<int>(app_type));
   }
+
+  if (delegate) {
+    builder.SetDelegate(delegate);
+  } else {
+    builder.SetTestWidgetDelegate();
+  }
+
   // |widget| is configured to be owned by the underlying window.
   views::Widget* widget =
-      builder.SetTestWidgetDelegate()
+      builder
           .SetBounds(bounds_in_screen.IsEmpty() ? gfx::Rect(0, 0, 300, 300)
                                                 : bounds_in_screen)
           .SetContext(Shell::GetPrimaryRootWindow())

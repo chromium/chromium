@@ -320,12 +320,14 @@ void DeskActivationAnimation::PrepareDeskForScreenshot(int index) {
 DeskRemovalAnimation::DeskRemovalAnimation(DesksController* controller,
                                            int desk_to_remove_index,
                                            int desk_to_activate_index,
-                                           DesksCreationRemovalSource source)
+                                           DesksCreationRemovalSource source,
+                                           DeskCloseType close_type)
     : DeskAnimationBase(controller,
                         desk_to_activate_index,
                         /*is_continuous_gesture_animation=*/false),
       desk_to_remove_index_(desk_to_remove_index),
-      request_source_(source) {
+      request_source_(source),
+      close_type_(close_type) {
   DCHECK(!Shell::Get()->overview_controller()->InOverviewSession());
   DCHECK_EQ(controller_->active_desk(),
             controller_->desks()[desk_to_remove_index_].get());
@@ -372,8 +374,7 @@ void DeskRemovalAnimation::OnDeskSwitchAnimationFinishedInternal() {
   // are destroyed.
   controller_->RemoveDeskInternal(
       controller_->desks()[desk_to_remove_index_].get(), request_source_,
-      DeskCloseType::kCombineDesks);
-
+      close_type_);
   MaybeRestoreSplitView(/*refresh_snapped_windows=*/true);
 }
 

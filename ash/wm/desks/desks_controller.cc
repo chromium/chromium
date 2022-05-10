@@ -517,25 +517,12 @@ void DesksController::RemoveDesk(const Desk* desk,
     DCHECK_GE(target_desk_index, 0);
     DCHECK_LT(target_desk_index, static_cast<int>(desks_.size()));
     animation_ = std::make_unique<DeskRemovalAnimation>(
-        this, current_desk_index, target_desk_index, source);
+        this, current_desk_index, target_desk_index, source, close_type);
     animation_->Launch();
     return;
   }
 
-  // Cancelling the close-all toast closes the toast and also runs the callback
-  // that deletes any existing data in `temporary_removed_desk_`.
-  ToastManager::Get()->Cancel(kCloseAllToastID);
-
   RemoveDeskInternal(desk, source, close_type);
-
-  if (close_type == DeskCloseType::kCloseAllWindowsAndWait) {
-    ShowDeskRemovalUndoToast(
-        /*dismiss_callback=*/base::BindRepeating(
-            &DesksController::UndoDeskRemoval, base::Unretained(this)),
-        /*expired_callback=*/base::BindRepeating(
-            &DesksController::CommitPendingDeskRemoval,
-            base::Unretained(this)));
-  }
 }
 
 void DesksController::ReorderDesk(int old_index, int new_index) {
@@ -819,9 +806,10 @@ bool DesksController::MoveWindowFromActiveDeskTo(
 }
 
 void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
-  // Now that WorkspaceLayoutManager requests Add/MaybeRemoveVisibleOnAllDesksWindow
-  // when a child window is added in OnWindowAddedToLayout, the window could be
-  // the one that has already been added.
+  // Now that WorkspaceLayoutManager requests
+  // Add/MaybeRemoveVisibleOnAllDesksWindow when a child window is added in
+  // OnWindowAddedToLayout, the window could be the one that has already been
+  // added.
   if (!visible_on_all_desks_windows_.emplace(window).second)
     return;
   wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
@@ -1368,6 +1356,10 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
 void DesksController::RemoveDeskInternal(const Desk* desk,
                                          DesksCreationRemovalSource source,
                                          DeskCloseType close_type) {
+  // Cancelling the close-all toast closes the toast and also runs the callback
+  // that deletes any existing data in `temporary_removed_desk_`.
+  ToastManager::Get()->Cancel(kCloseAllToastID);
+
   DCHECK(CanRemoveDesks());
 
   base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
@@ -1539,6 +1531,15 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
 
   DCHECK_LE(available_container_ids_.size(), desks_util::kMaxNumberOfDesks);
+
+  if (close_type == DeskCloseType::kCloseAllWindowsAndWait) {
+    ShowDeskRemovalUndoToast(
+        /*dismiss_callback=*/base::BindRepeating(
+            &DesksController::UndoDeskRemoval, base::Unretained(this)),
+        /*expired_callback=*/base::BindRepeating(
+            &DesksController::CommitPendingDeskRemoval,
+            base::Unretained(this)));
+  }
 }
 
 void DesksController::UndoDeskRemoval() {
@@ -1591,13 +1592,71 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
   // We need to ensure there are no app windows in the desk before destruction.
   // During a combine desks operation, the windows would have already been
   // moved, so in that case this would be a no-op.
-  removed_desk->CloseAllAppWindows();
+
+  // Content changed notifications for this desk should be disabled when
+  // we are destroying the windows.
+  auto throttle_desk_notifications =
+      removed_desk->GetScopedNotifyContentChangedDisabler();
+
+  std::vector<aura::Window*> app_windows = removed_desk->GetAllAppWindows();
+
+  // We use `closing_window_tracker` to track all app windows that should be
+  // closed from the removed desk, `WindowTracker` will handle windows that may
+  // have already been indirectly closed due to the closure of other windows, as
+  // the `WindowTracker` automatically removes windows when they are closed.
+  std::unique_ptr<aura::WindowTracker> closing_window_tracker =
+      std::make_unique<aura::WindowTracker>(app_windows);
+
+  for (aura::Window* window : app_windows) {
+    views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
+    DCHECK(widget);
+
+    widget->Close();
+
+    // `widget->Close();` calls the underlying `native_widget_->Close()` which
+    // will schedule `native_widget_->CloseNow()` as an async task. Only
+    // when `native_widget_->CloseNow()` finishes running, the window will
+    // finally be removed from desk. Therefore, to remove the desk now, we have
+    // to manually remove the window from desk now.
+    removed_desk->RemoveWindowFromDesk(window);
+  }
+
+  // Schedules a delayed task to forcefully close all windows that have not
+  // finish closing.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DesksController::CleanUpClosedAppWindowsTask,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(closing_window_tracker)),
+      kCloseAllWindowCloseTimeout);
+
+  // Remove the desk.
+  temporary_removed_desk_.reset();
 }
 
 void DesksController::CommitPendingDeskRemoval() {
   // This method will be invoked on both undo and expired toast.
   base::UmaHistogramBoolean(kCloseAllUndoAndExpiredHistogramName, true);
   temporary_removed_desk_.reset();
+}
+
+void DesksController::CleanUpClosedAppWindowsTask(
+    std::unique_ptr<aura::WindowTracker> closing_window_tracker) {
+  // We have waited long enough for these app windows to close cleanly.
+  // If there is any app windows still around, we will close them forcefully.
+  // These window's desk has already been removed. We should not let these
+  // windows linger around.
+  while (!closing_window_tracker->windows().empty()) {
+    aura::Window* window = closing_window_tracker->Pop();
+    views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
+    DCHECK(widget);
+
+    // Forcefully close this app window. `CloseNow` which directly deleted the
+    // associated native widget. This will skip many Window shutdown hook
+    // logic. However, the desk controller has waited for the app window to
+    // close cleanly before this.
+    widget->CloseNow();
+  }
 }
 
 void DesksController::MoveVisibleOnAllDesksWindowsFromActiveDeskTo(

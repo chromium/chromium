@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/wm/desks/desk_animation_base.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -17,8 +18,6 @@ class PresentationTimeRecorder;
 }
 
 namespace ash {
-
-class DesksController;
 
 class ASH_EXPORT DeskActivationAnimation : public DeskAnimationBase {
  public:
@@ -75,7 +74,8 @@ class DeskRemovalAnimation : public DeskAnimationBase {
   DeskRemovalAnimation(DesksController* controller,
                        int desk_to_remove_index,
                        int desk_to_activate_index,
-                       DesksCreationRemovalSource source);
+                       DesksCreationRemovalSource source,
+                       DeskCloseType close_type);
   DeskRemovalAnimation(const DeskRemovalAnimation&) = delete;
   DeskRemovalAnimation& operator=(const DeskRemovalAnimation&) = delete;
   ~DeskRemovalAnimation() override;
@@ -89,6 +89,7 @@ class DeskRemovalAnimation : public DeskAnimationBase {
  private:
   const int desk_to_remove_index_;
   const DesksCreationRemovalSource request_source_;
+  const DeskCloseType close_type_;
 };
 
 }  // namespace ash

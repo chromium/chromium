@@ -184,8 +184,8 @@ class ASH_EXPORT Desk {
   // accounts for cases where the user removes the active desk.
   void RecordAndResetConsecutiveDailyVisits(bool being_removed);
 
-  // Closes all app windows associated with this desk.
-  void CloseAllAppWindows();
+  // Gets all app windows on this desk that should be closed.
+  std::vector<aura::Window*> GetAllAppWindows();
 
  private:
   friend class DesksTestApi;
