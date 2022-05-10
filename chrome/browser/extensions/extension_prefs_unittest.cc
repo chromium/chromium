@@ -1077,28 +1077,10 @@ class ExtensionPrefsMigratedPref : public ExtensionPrefsTest {
 
   void Initialize() override {
     extension_ = prefs_.AddExtension("a");
-    prefs()->UpdateExtensionPref(extension_->id(),
-                                 "settings.privacy.drm_enabled",
-                                 std::make_unique<base::Value>(false));
-    bool bool_value;
-    EXPECT_TRUE(prefs()->ReadPrefAsBoolean(
-        extension_->id(), "settings.privacy.drm_enabled", &bool_value));
-    EXPECT_FALSE(bool_value);
-
     prefs()->MigrateObsoleteExtensionPrefs();
   }
 
-  void Verify() override {
-    int int_value;
-    bool bool_value;
-    EXPECT_FALSE(prefs()->ReadPrefAsBoolean(
-        extension_->id(), "settings.privacy.drm_enabled", &bool_value));
-    EXPECT_TRUE(prefs()->ReadPrefAsInteger(
-        extension_->id(),
-        "profile.default_content_setting_values.protected_media_identifier",
-        &int_value));
-    EXPECT_EQ(int_value, CONTENT_SETTING_BLOCK);
-  }
+  void Verify() override {}
 
  private:
   scoped_refptr<const Extension> extension_;

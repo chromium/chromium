@@ -2573,9 +2573,6 @@ void ExtensionPrefs::MigrateObsoleteExtensionPrefs() {
       // Permanent testing-only key.
       kFakeObsoletePrefForTesting,
 
-      // Added 2021-05, also used in unit test.
-      "settings.privacy.drm_enabled",
-
       // TODO(crbug.com/1015619): Remove 2023-05. Incorrect spelling from 2013.
       "id_mapping_dictioanry"};
 
@@ -2584,16 +2581,6 @@ void ExtensionPrefs::MigrateObsoleteExtensionPrefs() {
       continue;
     ScopedExtensionPrefUpdate update(prefs_, key_value.first);
     std::unique_ptr<prefs::DictionaryValueUpdate> inner_update = update.Get();
-
-    // Added 2021-05.
-    bool drm_enabled;
-    if (inner_update->GetBoolean("settings.privacy.drm_enabled",
-                                 &drm_enabled)) {
-      // Old value exists, migrate to the new setting.
-      inner_update->SetInteger(
-          "profile.default_content_setting_values.protected_media_identifier",
-          drm_enabled ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
-    }
 
     for (const char* key : kObsoleteKeys)
       inner_update->Remove(key);
