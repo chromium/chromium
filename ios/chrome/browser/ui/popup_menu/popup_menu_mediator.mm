@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/follow/follow_menu_updater.h"
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
+#import "ios/chrome/browser/follow/follow_util.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
@@ -1075,7 +1076,8 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 - (NSArray<TableViewItem*>*)actionItems {
   NSMutableArray* actionsArray = [NSMutableArray array];
 
-  if (!self.isIncognito && IsWebChannelsEnabled()) {
+  if (!self.isIncognito && IsWebChannelsEnabled() &&
+      GetFollowActionState(self.webState) != FollowActionStateHidden) {
     // Follow.
     self.followItem =
         CreateFollowItem(IDS_IOS_TOOLS_MENU_FOLLOW, PopupMenuActionFollow,
