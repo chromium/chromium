@@ -566,9 +566,13 @@ WebContentRunner::WebInstanceConfig CastRunner::GetCommonWebInstanceConfig() {
 
   WebContentRunner::WebInstanceConfig config;
 
-  // Pass all arguments from `cast_runner` to the `web_instance`.
-  // TODO(crbug.com/1323372): Remove this.
-  config.extra_args = *base::CommandLine::ForCurrentProcess();
+  constexpr char const* kSwitchesToCopy[] = {
+      // Must match the value in `content/public/common/content_switches.cc`.
+      "enable-logging",
+  };
+  config.extra_args.CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
+                                     kSwitchesToCopy,
+                                     std::size(kSwitchesToCopy));
 
   config.params.set_features(fuchsia::web::ContextFeatureFlags::AUDIO);
 
