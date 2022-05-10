@@ -9,6 +9,11 @@
 #include <algorithm>
 #include <queue>
 
+#ifdef __SSE2__
+#include <immintrin.h>
+#include "base/bits.h"
+#endif
+
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
@@ -371,11 +376,35 @@ SubstringSetMatcher::AhoCorasickNode::operator=(AhoCorasickNode&& other) {
 SubstringSetMatcher::NodeID
 SubstringSetMatcher::AhoCorasickNode::GetEdgeNoInline(uint32_t label) const {
   DCHECK(edges_capacity_ != 0);
+#ifdef __SSE2__
+  const __m128i lbl = _mm_set1_epi32(label);
+  const __m128i mask = _mm_set1_epi32(0x1ff);
+  for (unsigned edge_idx = 0; edge_idx < num_edges(); edge_idx += 4) {
+    const __m128i four = _mm_loadu_si128(
+        reinterpret_cast<const __m128i*>(&edges_.edges[edge_idx]));
+    const __m128i match = _mm_cmpeq_epi32(_mm_and_si128(four, mask), lbl);
+    const uint32_t match_mask = _mm_movemask_epi8(match);
+    if (match_mask != 0) {
+      if (match_mask & 0x1u) {
+        return edges_.edges[edge_idx].node_id;
+      }
+      if (match_mask & 0x10u) {
+        return edges_.edges[edge_idx + 1].node_id;
+      }
+      if (match_mask & 0x100u) {
+        return edges_.edges[edge_idx + 2].node_id;
+      }
+      DCHECK(match_mask & 0x1000u);
+      return edges_.edges[edge_idx + 3].node_id;
+    }
+  }
+#else
   for (unsigned edge_idx = 0; edge_idx < num_edges(); ++edge_idx) {
     const AhoCorasickEdge& edge = edges_.edges[edge_idx];
     if (edge.label == label)
       return edge.node_id;
   }
+#endif
   return kInvalidNodeID;
 }
 
@@ -408,6 +437,7 @@ void SubstringSetMatcher::AhoCorasickNode::SetEdge(uint32_t label,
     unsigned old_capacity =
         edges_capacity_ == 0 ? kNumInlineEdges : edges_capacity_;
     unsigned new_capacity = old_capacity * 2;
+    DCHECK_EQ(0u, new_capacity % 4);
     AhoCorasickEdge* new_edges = new AhoCorasickEdge[new_capacity];
     memcpy(new_edges, edges(), sizeof(AhoCorasickEdge) * old_capacity);
     for (unsigned edge_idx = old_capacity; edge_idx < new_capacity;

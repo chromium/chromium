@@ -287,6 +287,9 @@ class URL_MATCHER_EXPORT SubstringSetMatcher {
     // How many edges we have allocated room for (can never be more than
     // kEmptyLabel + 1). If equal to zero, we are not using heap storage,
     // but instead are using inline_edges.
+    //
+    // If not equal to zero, will be a multiple of 4, so that we can use
+    // SIMD to accelerate looking for edges.
     uint16_t edges_capacity_ = 0;
   } __attribute__((packed));
 
