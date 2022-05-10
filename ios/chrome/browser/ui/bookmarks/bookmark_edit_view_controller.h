@@ -48,6 +48,9 @@ class BookmarkNode;
 
 @property(nonatomic, weak) id<BookmarkEditViewControllerDelegate> delegate;
 
+// TODO(crbug.com/1323778): This class needs to have an explicit
+// id<SnacbarCommands> handler property.
+
 // Designated initializer.
 // |bookmark|: mustn't be NULL at initialization time. It also mustn't be a
 //             folder.

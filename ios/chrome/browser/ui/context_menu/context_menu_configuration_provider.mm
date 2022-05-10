@@ -417,6 +417,8 @@ NSString* const kContextMenuEllipsis = @"…";
 
 // Searches an image with Lens using the given |imageData|.
 - (void)searchImageUsingLensWithData:(NSData*)imageData {
+  // TODO(crbug.com/1323783): This should be an id<LensCommands> and use
+  // HandlerForProtocol().
   id<BrowserCommands> handler =
       static_cast<id<BrowserCommands>>(_browser->GetCommandDispatcher());
   UIImage* image = [UIImage imageWithData:imageData];

@@ -578,6 +578,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - Public Properties
 
+// TODO(crbug.com/1323764): This uses PopupMenuCommands via inclusion in
+// BrowserCommands. This is also not a public property. Instead of using
+// |self.dispatcher| internally, this should use the currect pattern for handler
+// injection into a view controller with a dedicated id<PopupMenuCommands>
+// public property set externally.
+// TODO(crbug.com/1323778): This uses SnackbarCommands via inclusion in
+// BrowserCommands. Instead a a dedicated id<SnackbarCommands> property should
+// be injected.
 - (id<ApplicationCommands,
       BrowserCommands,
       FindInPageCommands,
@@ -1059,6 +1067,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [self.textZoomHandler closeTextZoom];
   }
 
+  // TODO(crbug.com/1323764): This will need to be called on the
+  // PopupMenuCommands handler.
   [self.dispatcher dismissPopupMenuAnimated:NO];
 
   if (self.presentedViewController) {
@@ -2383,6 +2393,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // be unrecognized.
   if (_isShutdown)
     return;
+
+  // TODO(crbug.com/1323764): This will need to be called on the
+  // PopupMenuCommands handler.
   [self.dispatcher dismissPopupMenuAnimated:NO];
   [self.helpHandler hideAllHelpBubbles];
 }
@@ -2614,6 +2627,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   message.accessibilityLabel = text;
   message.duration = 2.0;
   message.category = kBrowserViewControllerSnackbarCategory;
+
+  // TODO(crbug.com/1323778): This will need to be called on the
+  // SnackbarCommands handler.
   [self.dispatcher showSnackbarMessage:message];
 }
 

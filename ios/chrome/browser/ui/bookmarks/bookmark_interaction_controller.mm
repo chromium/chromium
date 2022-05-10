@@ -130,6 +130,9 @@ enum class PresentedState {
 
 @property(nonatomic, strong) BookmarkMediator* mediator;
 
+// TODO(crbug.com/1323778): This should use an explicit (separate)
+// SnackbarCommands handler. This can be set from the |browser| used on init,
+// although ideally it would be injected by the owning coordinator.
 @property(nonatomic, readonly, weak) id<ApplicationCommands, BrowserCommands>
     handler;
 
@@ -218,6 +221,9 @@ enum class PresentedState {
   void (^editAction)() = ^{
     [weakSelf presentBookmarkEditorForURL:bookmarkedURL];
   };
+
+  // TODO(crbug.com/1323778): This will need to be called on the
+  // SnackbarCommands handler.
   [self.handler
       showSnackbarMessage:[self.mediator addBookmarkWithTitle:title
                                                           URL:bookmarkedURL
@@ -614,6 +620,8 @@ bookmarkHomeViewControllerWantsDismissal:(BookmarkHomeViewController*)controller
             const bookmarks::BookmarkNode* folder) {
     BookmarkInteractionController* strongSelf = weakSelf;
     if (folder && strongSelf) {
+      // TODO(crbug.com/1323778): This will need to be called on the
+      // SnackbarCommands handler.
       [strongSelf.handler
           showSnackbarMessage:[strongSelf.mediator addBookmarks:command.URLs
                                                        toFolder:folder]];

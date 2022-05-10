@@ -95,6 +95,8 @@ using base::UserMetricsAction;
       break;
     case PopupMenuActionSiteInformation:
       RecordAction(UserMetricsAction("MobileMenuSiteInformation"));
+      // TODO(crbug.com/1323758): This will need to be called on the
+      // PageInfoCommands handler.
       [self.dispatcher showPageInfo];
       break;
     case PopupMenuActionReportIssue:
@@ -104,6 +106,8 @@ using base::UserMetricsAction;
                                        sender:UserFeedbackSender::ToolsMenu];
       // Dismisses the popup menu without animation to allow the snapshot to be
       // taken without the menu presented.
+      // TODO(crbug.com/1323764): This will need to be called on the
+      // PopupMenuCommands handler.
       [self.dispatcher dismissPopupMenuAnimated:NO];
       break;
     case PopupMenuActionHelp:
@@ -114,6 +118,8 @@ using base::UserMetricsAction;
       RecordAction(
           UserMetricsAction("MobileDownloadFolderUIShownFromToolsMenu"));
       [self.delegate recordDownloadsMetricsPerProfile];
+      // TODO(crbug.com/906662): This will need to be called on the
+      // BrowserCoordinatorCommands handler.
       [self.dispatcher showDownloadsFolder];
       break;
     case PopupMenuActionTextZoom:
@@ -122,6 +128,8 @@ using base::UserMetricsAction;
       break;
 #if !defined(NDEBUG)
     case PopupMenuActionViewSource:
+      // TODO(crbug.com/906662): This will need to be called on the
+      // BrowserCoordinatorCommands handler.
       [self.dispatcher viewSource];
       break;
 #endif  // !defined(NDEBUG)
@@ -141,10 +149,14 @@ using base::UserMetricsAction;
       break;
     case PopupMenuActionReadingList:
       RecordAction(UserMetricsAction("MobileMenuReadingList"));
+      // TODO(crbug.com/906662): This will need to be called on the
+      // BrowserCoordinatorCommands handler.
       [self.dispatcher showReadingList];
       break;
     case PopupMenuActionRecentTabs:
       RecordAction(UserMetricsAction("MobileMenuRecentTabs"));
+      // TODO(crbug.com/906662): This will need to be called on the
+      // BrowserCoordinatorCommands handler.
       [self.dispatcher showRecentTabs];
       break;
     case PopupMenuActionHistory:
@@ -184,6 +196,8 @@ using base::UserMetricsAction;
     }
     case PopupMenuActionQRCodeSearch:
       RecordAction(UserMetricsAction("MobileMenuScanQRCode"));
+      // TODO(crbug.com/1323775): This will need to be called on the
+      // QRScannerCommands handler.
       [self.dispatcher showQRScanner];
       break;
     case PopupMenuActionSearchCopiedImage: {
@@ -232,6 +246,8 @@ using base::UserMetricsAction;
   }
 
   // Close the tools menu.
+  // TODO(crbug.com/1323764): This will need to be called on the
+  // PopupMenuCommands handler.
   [self.dispatcher dismissPopupMenuAnimated:YES];
 }
 

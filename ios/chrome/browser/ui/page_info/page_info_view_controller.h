@@ -27,6 +27,7 @@
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 // Handler used to navigate outside the page info.
+// TODO(crbug.com/1323758): This should just be id<PageInfoCommands>.
 @property(nonatomic, weak) id<BrowserCommands> handler;
 
 // Delegate used to handle permission actions.

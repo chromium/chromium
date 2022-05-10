@@ -22,17 +22,20 @@ class GURL;
 
 // Protocol for commands that will generally be handled by the "current tab",
 // which in practice is the BrowserViewController instance displaying the tab.
-// TODO(crbug.com/906662) : Extract BrowserCoordinatorCommands from
-// BrowserCommands.
-@protocol BrowserCommands <NSObject,
-                           BrowserCoordinatorCommands,
-                           NewTabPageCommands,
-                           PageInfoCommands,
-                           PopupMenuCommands,
-                           QRScannerCommands,
-                           SnackbarCommands,
-                           DefaultPromoCommands,
-                           LensCommands>
+@protocol BrowserCommands <
+    NSObject,
+    // TODO(crbug.com/906662) : Remove BrowserCoordinatorCommands conformance.
+    BrowserCoordinatorCommands,
+    // TODO(crbug.com/1323758):Remove PageInfoCommands conformance.
+    PageInfoCommands,
+    // TODO(crbug.com/1323764): Remove PopupMenuCommands conformance.
+    PopupMenuCommands,
+    // TODO(crbug.com/1323775): Remove QRScannerCommands conformance.
+    QRScannerCommands,
+    // TODO(crbug.com/1323778): Remove SnackbarCommands conformance.
+    SnackbarCommands,
+    // TODO(crbug.com/1323783): Remove LensCommands conformance.
+    LensCommands>
 
 // Closes the current tab.
 // TODO(crbug.com/1272498): Refactor this command away; call sites should close

@@ -399,6 +399,8 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
 // Handles the gseture recognizer on the views.
 - (void)handleGestureRecognizer:(UILongPressGestureRecognizer*)gesture {
   if (gesture.state == UIGestureRecognizerStateBegan) {
+    // TODO(crbug.com/1323764): All of these calls on |self.dispatcher| need to
+    // go to a dedicated PopupMenyCommands handler.
     if (gesture.view == self.view.backButton) {
       [self.dispatcher showNavigationHistoryBackPopupMenu];
     } else if (gesture.view == self.view.forwardButton) {

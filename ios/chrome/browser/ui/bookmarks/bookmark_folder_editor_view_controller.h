@@ -43,6 +43,9 @@ class BookmarkNode;
 @property(nonatomic, weak) id<BookmarkFolderEditorViewControllerDelegate>
     delegate;
 
+// TODO(crbug.com/1323778): This class needs to have an explicit
+// id<SnacbarCommands> handler property.
+
 // Designated factory methods.
 
 // Returns a view controller set to create a new folder in |parentFolder|.

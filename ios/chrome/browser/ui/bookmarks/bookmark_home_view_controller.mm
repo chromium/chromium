@@ -682,6 +682,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 // Deletes the current node.
 - (void)deleteNodes:(const std::set<const BookmarkNode*>&)nodes {
   DCHECK_GE(nodes.size(), 1u);
+  // TODO(crbug.com/1323778): This will need to be called on the
+  // SnackbarCommands handler.
   [self.handler
       showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
                               nodes, self.bookmarks, self.browserState)];
@@ -878,6 +880,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (void)handleMoveNode:(const bookmarks::BookmarkNode*)node
             toPosition:(int)position {
+  // TODO(crbug.com/1323778): This will need to be called on the
+  // SnackbarCommands handler.
   [self.handler
       showSnackbarMessage:
           bookmark_utils_ios::UpdateBookmarkPositionWithUndoToast(
@@ -918,6 +922,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   DCHECK(!folder->is_url());
   DCHECK_GE(folderPicker.editedNodes.size(), 1u);
 
+  // TODO(crbug.com/1323778): This will need to be called on the
+  // SnackbarCommands handler.
   [self.handler
       showSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoToast(
                               folderPicker.editedNodes, self.bookmarks, folder,
@@ -2520,6 +2526,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
        didDropURL:(const GURL&)URL
       atIndexPath:(NSIndexPath*)indexPath {
   NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
+
+  // TODO(crbug.com/1323778): This will need to be called on the
+  // SnackbarCommands handler.
   [self.handler showSnackbarMessage:
                     bookmark_utils_ios::CreateBookmarkAtPositionWithUndoToast(
                         base::SysUTF8ToNSString(URL.spec()), URL, _rootNode,

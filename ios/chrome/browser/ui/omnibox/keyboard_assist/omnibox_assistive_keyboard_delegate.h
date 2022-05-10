@@ -31,6 +31,8 @@
 @interface OmniboxAssistiveKeyboardDelegateImpl
     : NSObject <OmniboxAssistiveKeyboardDelegate>
 
+// TODO(crbug.com/1323775): This should just be an id<QRScannerCommands> handler
+// (not named 'dispatcher').
 @property(nonatomic, weak) id<ApplicationCommands, BrowserCommands> dispatcher;
 @property(nonatomic, weak) OmniboxTextFieldIOS* omniboxTextField;
 @property(nonatomic, weak) NamedGuide* voiceSearchButtonGuide;

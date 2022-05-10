@@ -180,6 +180,8 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
     MDCSnackbarMessage* message =
         [MDCSnackbarMessage messageWithText:messageText];
     message.category = kTranslateSettingsCategory;
+    // TODO(crbug.com/1323778): This will need to be called on the
+    // SnackbarCommands handler.
     [self.dispatcher showSnackbarMessage:message bottomOffset:0];
   }
   [tableView deselectRowAtIndexPath:indexPath animated:NO];

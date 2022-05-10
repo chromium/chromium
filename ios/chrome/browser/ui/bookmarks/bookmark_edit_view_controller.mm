@@ -332,6 +332,8 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
     [self.delegate bookmarkEditorWillCommitTitleOrUrlChange:self];
   }
 
+  // TODO(crbug.com/906662): This will need to be called on the SnackbarCommands
+  // handler.
   [self.dispatcher showSnackbarMessage:
                        bookmark_utils_ios::CreateOrUpdateBookmarkWithUndoToast(
                            self.bookmark, [self inputBookmarkName], url,
@@ -439,6 +441,9 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
       // removes the current node.
       nodes.insert(self.bookmark);
     }
+
+    // TODO(crbug.com/1323778): This will need to be called on the
+    // SnackbarCommands handler.
     [self.dispatcher
         showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
                                 nodes, self.bookmarkModel, self.browserState)];

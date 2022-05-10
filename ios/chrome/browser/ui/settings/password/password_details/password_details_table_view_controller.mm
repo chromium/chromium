@@ -1012,6 +1012,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   TriggerHapticFeedbackForNotification(success
                                            ? UINotificationFeedbackTypeSuccess
                                            : UINotificationFeedbackTypeError);
+  // TODO(crbug.com/1323778): This will need to be called on the
+  // SnackbarCommands handler.
   [self.commandsHandler showSnackbarWithMessage:message
                                      buttonText:nil
                                   messageAction:nil
