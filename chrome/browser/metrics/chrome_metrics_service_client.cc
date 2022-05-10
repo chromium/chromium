@@ -128,6 +128,7 @@
 #include "components/metrics/android_metrics_provider.h"
 #else
 #include "chrome/browser/metrics/browser_activity_watcher.h"
+#include "components/performance_manager/public/metrics/metrics_provider.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX)
@@ -772,6 +773,9 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<PageLoadMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<FamilyLinkUserMetricsProvider>());
+#else
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<performance_manager::MetricsProvider>(local_state));
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

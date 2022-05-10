@@ -172,6 +172,9 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   // AndroidMetricsProvider, ChromeAndroidMetricsProvider,
   // FamilyLinkUserMetricsProvider, and PageLoadMetricsProvider.
   expected_providers += 4;
+#else
+  // performance_manager::MetricsProvider
+  expected_providers += 1;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

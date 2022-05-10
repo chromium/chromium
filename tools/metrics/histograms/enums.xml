@@ -28670,6 +28670,14 @@ Called by update_document_policy_enum.py.-->
   <int value="8294400" label="3840 x 2160"/>
 </enum>
 
+<enum name="EfficiencyMode">
+  <int value="0" label="Normal"/>
+  <int value="1" label="High Efficiency"/>
+  <int value="2" label="Battery Saver"/>
+  <int value="3" label="Both"/>
+  <int value="4" label="Mixed"/>
+</enum>
+
 <enum name="EGLDisplayType">
   <int value="0" label="Default"/>
   <int value="1" label="SwiftShader"/>
