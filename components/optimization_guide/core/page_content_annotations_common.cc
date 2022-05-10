@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/page_content_annotations_common.h"
 
 #include <algorithm>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
