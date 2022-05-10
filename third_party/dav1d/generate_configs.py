@@ -202,6 +202,8 @@ def main():
     GenerateConfig('config/linux/arm64', linux_env,
                    ['--cross-file', '../crossfiles/arm64.crossfile'])
 
+    GenerateConfig('config/linux/ppc64', linux_env)
+
     win_x86_env = SetupWindowsCrossCompileToolchain('x86')
     GenerateConfig('config/win/x86', win_x86_env,
                    ['--cross-file', '../crossfiles/win32.crossfile'] + [

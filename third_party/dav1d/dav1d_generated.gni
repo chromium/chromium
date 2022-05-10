@@ -109,6 +109,11 @@ arm_template_sources = [
   "libdav1d/src/arm/mc_init_tmpl.c",
 ]
 
+ppc64_template_sources = [
+  "libdav1d/src/ppc/cdef_init_tmpl.c",
+  "libdav1d/src/ppc/looprestoration_init_tmpl.c",
+]
+
 template_sources = [
   "libdav1d/src/cdef_apply_tmpl.c",
   "libdav1d/src/cdef_tmpl.c",

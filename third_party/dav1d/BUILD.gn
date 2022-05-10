@@ -200,6 +200,8 @@ static_library("dav1d_8bit") {
     sources += arm_template_sources
   } else if (current_cpu == "arm64") {
     sources += arm_template_sources
+  } else if (current_cpu == "ppc64") {
+    sources += ppc64_template_sources
   }
 
   cflags = dav1d_copts
@@ -230,6 +232,8 @@ static_library("dav1d_10bit") {
     sources += arm_template_sources
   } else if (current_cpu == "arm64") {
     sources += arm_template_sources
+  } else if (current_cpu == "ppc64") {
+    sources += ppc64_template_sources
   }
 
   cflags = dav1d_copts
@@ -293,6 +297,23 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     deps = [ ":dav1d_headers" ]
     allow_circular_includes_from = [ ":dav1d_headers" ]
   }
+} else if (current_cpu == "ppc64") {
+  static_library("dav1d_ppc64") {
+    sources = [
+      "libdav1d/src/ppc/cpu.c",
+      "libdav1d/src/ppc/cpu.h",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+      ":dav1d_config",
+    ]
+    cflags = dav1d_copts
+
+    deps = [ ":dav1d_headers" ]
+    allow_circular_includes_from = [ ":dav1d_headers" ]
+  }
 }
 
 static_library("dav1d") {
@@ -321,5 +342,7 @@ static_library("dav1d") {
     }
   } else if (current_cpu == "arm" || current_cpu == "arm64") {
     deps += [ ":dav1d_arm" ]
+  } else if (current_cpu == "ppc64") {
+    deps += [ ":dav1d_ppc64" ]
   }
 }
