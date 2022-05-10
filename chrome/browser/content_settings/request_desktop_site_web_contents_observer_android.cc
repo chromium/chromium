@@ -31,7 +31,11 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
     return;
   }
 
-  const GURL& url = navigation_handle->GetURL();
+  const GURL& url = navigation_handle->GetParentFrameOrOuterDocument()
+                        ? navigation_handle->GetParentFrameOrOuterDocument()
+                              ->GetOutermostMainFrame()
+                              ->GetLastCommittedURL()
+                        : navigation_handle->GetURL();
   ContentSetting setting = host_content_settings_map_->GetContentSetting(
       url, url, ContentSettingsType::REQUEST_DESKTOP_SITE);
   bool use_rds = setting == CONTENT_SETTING_ALLOW;
