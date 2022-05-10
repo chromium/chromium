@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/editing/editing_boundary.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
@@ -30,20 +29,6 @@ DisplayLockUtilities::LockCheckMemoizationScope*
     DisplayLockUtilities::memoizer_ = nullptr;
 
 namespace {
-
-void WarnOnForcedUpdateInNonActivatableContext(Document& document) {
-  if (!v8::Isolate::GetCurrent()->InContext())
-    return;
-  String message =
-      "Rendering was performed in a subtree hidden by "
-      "content-visibility:hidden.";
-  // Note that this is a verbose level message, since it can happen
-  // frequently and is not necessarily a problem if the developer is
-  // accessing content-visibility: hidden subtrees intentionally.
-  document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kJavaScript,
-      mojom::blink::ConsoleMessageLevel::kVerbose, message));
-}
 
 // Returns the nearest non-inclusive ancestor of |node| that is display
 // locked.
@@ -250,8 +235,12 @@ DisplayLockUtilities::ActivatableLockedInclusiveAncestors(
 DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
     const Range* range,
     DisplayLockContext::ForcedPhase phase,
-    bool only_cv_auto)
-    : node_(range->FirstNode()), phase_(phase), only_cv_auto_(only_cv_auto) {
+    bool only_cv_auto,
+    bool emit_warnings)
+    : node_(range->FirstNode()),
+      phase_(phase),
+      only_cv_auto_(only_cv_auto),
+      emit_warnings_(emit_warnings) {
   if (!node_)
     return;
 
@@ -306,11 +295,7 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
     }
   }
   for (DisplayLockContext* context : forced_context_set_) {
-    if (context->IsLocked() &&
-        !context->IsActivatable(DisplayLockActivationReason::kAny)) {
-      WarnOnForcedUpdateInNonActivatableContext(node_->GetDocument());
-    }
-    context->NotifyForcedUpdateScopeStarted(phase_);
+    context->NotifyForcedUpdateScopeStarted(phase_, emit_warnings_);
   }
 }
 
@@ -320,7 +305,10 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
     bool include_self,
     bool only_cv_auto,
     bool emit_warnings)
-    : node_(node), phase_(phase), only_cv_auto_(only_cv_auto) {
+    : node_(node),
+      phase_(phase),
+      only_cv_auto_(only_cv_auto),
+      emit_warnings_(emit_warnings) {
   if (!node_)
     return;
 
@@ -365,10 +353,6 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
     if (!ancestor_node)
       continue;
     if (auto* context = ancestor_node->GetDisplayLockContext()) {
-      if (emit_warnings && context->IsLocked() &&
-          !context->IsActivatable(DisplayLockActivationReason::kAny)) {
-        WarnOnForcedUpdateInNonActivatableContext(node->GetDocument());
-      }
       ForceDisplayLockIfNeeded(context);
     }
   }
@@ -381,7 +365,7 @@ void DisplayLockUtilities::ScopedForcedUpdate::Impl::EnsureMinimumForcedPhase(
     return;
   for (auto context : forced_context_set_) {
     context->NotifyForcedUpdateScopeEnded(phase_);
-    context->NotifyForcedUpdateScopeStarted(phase);
+    context->NotifyForcedUpdateScopeStarted(phase, emit_warnings_);
   }
   phase_ = phase;
 }
@@ -409,7 +393,7 @@ void DisplayLockUtilities::ScopedForcedUpdate::Impl::ForceDisplayLockIfNeeded(
   if (!only_cv_auto_ ||
       context->IsActivatable(DisplayLockActivationReason::kViewport)) {
     forced_context_set_.insert(context);
-    context->NotifyForcedUpdateScopeStarted(phase_);
+    context->NotifyForcedUpdateScopeStarted(phase_, emit_warnings_);
   }
 }
 

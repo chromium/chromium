@@ -84,7 +84,8 @@ class CORE_EXPORT DisplayLockUtilities {
                                            emit_warnings)) {}
     explicit ScopedForcedUpdate(const Range* range,
                                 DisplayLockContext::ForcedPhase phase,
-                                bool only_cv_auto = false)
+                                bool only_cv_auto = false,
+                                bool emit_warnings = true)
         : impl_(MakeGarbageCollected<Impl>(range, phase)) {}
 
     friend class DisplayLockDocumentState;
@@ -98,7 +99,8 @@ class CORE_EXPORT DisplayLockUtilities {
            bool emit_warnings = true);
       Impl(const Range* range,
            DisplayLockContext::ForcedPhase phase,
-           bool only_cv_auto = false);
+           bool only_cv_auto = false,
+           bool emit_warnings = true);
 
       // Adds another display-lock scope to this chain. Added when a new lock is
       // created in the ancestor chain of this chain's node.
@@ -122,6 +124,7 @@ class CORE_EXPORT DisplayLockUtilities {
       HeapHashSet<Member<DisplayLockContext>> forced_context_set_;
       Member<Impl> parent_frame_impl_;
       bool only_cv_auto_;
+      bool emit_warnings_;
     };
 
     Impl* impl_ = nullptr;

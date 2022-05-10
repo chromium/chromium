@@ -237,7 +237,7 @@ class CORE_EXPORT DisplayLockContext final
   void RequestUnlock();
 
   // Called in |DisplayLockUtilities| to notify the state of scope.
-  void NotifyForcedUpdateScopeStarted(ForcedPhase phase);
+  void NotifyForcedUpdateScopeStarted(ForcedPhase phase, bool emit_warnings);
   void NotifyForcedUpdateScopeEnded(ForcedPhase phase);
 
   // Records the locked context counts on the document as well as context that
