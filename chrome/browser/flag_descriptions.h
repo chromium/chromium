@@ -2019,9 +2019,6 @@ extern const char kSyncAndroidPromosWithTitleDescription[];
 extern const char kTabGroupsForTabletsName[];
 extern const char kTabGroupsForTabletsDescription[];
 
-extern const char kThemeRefactorAndroidName[];
-extern const char kThemeRefactorAndroidDescription[];
-
 extern const char kToolbarIphAndroidName[];
 extern const char kToolbarIphAndroidDescription[];
 

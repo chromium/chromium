@@ -59,7 +59,6 @@
     <dimen name="tab_grid_card_thumbnail_corner_radius_top">4dp</dimen>
     <dimen name="tab_grid_card_thumbnail_corner_radius_bottom">12dp</dimen>
     <dimen name="tab_grid_card_thumbnail_margin">4dp</dimen>
-    <dimen name="tab_list_card_margin">2dp</dimen>
     <dimen name="tab_list_card_action_button_size">48dp</dimen>
     <dimen name="tab_list_card_action_button_margin">4dp</dimen>
     <dimen name="tab_list_card_title_fading_length">24dp</dimen>

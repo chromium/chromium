@@ -3563,10 +3563,6 @@ const char kTabStripImprovementsAndroidName[] =
 const char kTabStripImprovementsAndroidDescription[] =
     "Enables scrollable tab strip with tab group indicators.";
 
-const char kThemeRefactorAndroidName[] = "Theme refactor on Android";
-const char kThemeRefactorAndroidDescription[] =
-    "Enables the theme refactoring on Android.";
-
 const char kToolbarIphAndroidName[] = "Enable Toolbar IPH on Android";
 const char kToolbarIphAndroidDescription[] =
     "Enables in product help bubbles on the toolbar. In particular, the home "

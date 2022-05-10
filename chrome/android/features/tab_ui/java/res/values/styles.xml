@@ -13,7 +13,6 @@
         <item name="colorControlHighlight">@color/filled_button_bg_color</item>
     </style>
 
-    <integer name="view_visible">0</integer> <!-- This is VISIBLE -->
     <integer name="view_gone">2</integer> <!-- This is GONE -->
 
     <!-- Theme overlay for theme refactor 2021 -->
@@ -65,33 +64,9 @@
         <item name="android:fadingEdgeLength">@dimen/tab_grid_card_title_fading_length</item>
     </style>
 
-    <style name="TabGridDialogUngroupBarDivider.Shadow" parent="">
-        <item name="android:layout_height">@dimen/toolbar_shadow_height</item>
-        <item name="android:src">@drawable/modern_toolbar_shadow</item>
-        <item name="android:tint">@color/ungroup_bar_shadow_color</item>
-        <item name="android:scaleType">fitXY</item>
-        <item name="android:scaleY">-1</item>
-    </style>
-
     <style name="TabGridDialogUngroupBarDivider.Hairline" parent="">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:src">@drawable/toolbar_hairline</item>
-    </style>
-
-    <style name="ThemeRefactorOverlay.Disabled.TabUi" parent="">
-        <item name="tabGridDividerVisible">@integer/view_visible</item>
-        <item name="tabGridHeaderHeight">@dimen/tab_list_card_title_height</item>
-        <item name="tabGridBackground">@drawable/dialog_bg_tinted</item>
-        <item name="tabGridMargin">@dimen/tab_list_card_margin</item>
-
-        <item name="tabGridFaviconStyle">@style/TabGridCardTopFaviconStyle</item>
-        <item name="tabGridActionButtonStyle">@style/TabGridCardActionButtonStyle</item>
-        <item name="tabGridThumbnailStyle">@style/TabGridCardThumbnailStyle</item>
-        <item name="tabGridTitleStyle">@style/TabGridCardTitleStyle</item>
-
-        <item name="tabGridDialogCornerRadius">@dimen/tab_list_card_radius</item>
-        <item name="tabGridDialogAppBarPadding">0dp</item>
-        <item name="tabGridDialogUngroupBarDividerStyle">@style/TabGridDialogUngroupBarDivider.Shadow</item>
     </style>
 
     <style name="ThemeRefactorOverlay.Enabled.TabUi" parent="">
