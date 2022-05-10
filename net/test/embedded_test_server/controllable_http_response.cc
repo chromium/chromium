@@ -113,6 +113,10 @@ void ControllableHttpResponse::Done() {
   state_ = State::DONE;
 }
 
+bool ControllableHttpResponse::has_received_request() {
+  return loop_.AnyQuitCalled();
+}
+
 void ControllableHttpResponse::OnRequest(
     scoped_refptr<base::SingleThreadTaskRunner>
         embedded_test_server_task_runner,

@@ -37,7 +37,6 @@ namespace content {
 //   pending operations the renderer sends to the browser process at a time.
 // * Add detailed error information to DevTools or as a Promise failure on
 //   rejection.
-// * Add rate limiting in some manner in a way that avoids leaking information.
 // * Figure out integration with IsInterestGroupAPIAllowed() - e.g., for
 //   cross-origin iframes, there are 3 origins (top-level frame, iframe,
 //   interest group frame). Currently we're not considering iframe origin at

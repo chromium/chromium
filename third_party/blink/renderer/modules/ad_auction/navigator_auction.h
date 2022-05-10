@@ -7,13 +7,17 @@
 
 #include <stdint.h>
 
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom-blink.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/modules/ad_auction/join_leave_queue.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -120,12 +124,38 @@ class MODULES_EXPORT NavigatorAuction final
   }
 
  private:
+  // Pending cross-site interest group joins and leaves. These may be added to a
+  // queue before being passed to the browser process.
+
+  struct PendingJoin {
+    mojom::blink::InterestGroupPtr interest_group;
+    mojom::blink::AdAuctionService::JoinInterestGroupCallback callback;
+  };
+
+  struct PendingLeave {
+    scoped_refptr<const SecurityOrigin> owner;
+    String name;
+    mojom::blink::AdAuctionService::LeaveInterestGroupCallback callback;
+  };
+
+  // Tells the browser process to start `pending_join`. Its callback will be
+  // invoked on completion.
+  void StartJoin(PendingJoin&& pending_join);
+
   // Completion callback for joinInterestGroup() Mojo calls.
-  void JoinComplete(ScriptPromiseResolver* resolver,
+  void JoinComplete(bool is_cross_origin,
+                    ScriptPromiseResolver* resolver,
                     bool failed_well_known_check);
+
+  // Tells the browser process to start `pending_leave`. Its callback will be
+  // invoked on completion.
+  void StartLeave(PendingLeave&& pending_leave);
+
   // Completion callback for leaveInterestGroup() Mojo calls.
-  void LeaveComplete(ScriptPromiseResolver* resolver,
+  void LeaveComplete(bool is_cross_origin,
+                     ScriptPromiseResolver* resolver,
                      bool failed_well_known_check);
+
   // Completion callback for createAdRequest() Mojo call.
   void AdsRequested(ScriptPromiseResolver* resolver,
                     const WTF::String& ads_guid);
@@ -137,6 +167,11 @@ class MODULES_EXPORT NavigatorAuction final
   // Completion callback for Mojo call made by deprecatedURNToURL().
   void GetURLFromURNComplete(ScriptPromiseResolver*,
                              const absl::optional<KURL>&);
+
+  // Manage queues of cross-site join and leave operations that have yet to be
+  // sent to the browser process.
+  JoinLeaveQueue<PendingJoin> queued_cross_site_joins_;
+  JoinLeaveQueue<PendingLeave> queued_cross_site_leaves_;
 
   HeapMojoRemote<mojom::blink::AdAuctionService> ad_auction_service_;
 };

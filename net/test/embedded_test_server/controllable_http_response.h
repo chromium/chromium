@@ -64,6 +64,9 @@ class ControllableHttpResponse {
   // Returns the HttpRequest after a call to WaitForRequest.
   const HttpRequest* http_request() const { return http_request_.get(); }
 
+  // Returns whether or not the request has been received yet.
+  bool has_received_request();
+
  private:
   class Interceptor;
 
