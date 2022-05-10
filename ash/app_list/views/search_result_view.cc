@@ -1248,7 +1248,6 @@ void SearchResultView::OnGestureEvent(ui::GestureEvent* event) {
         ScrollRectToVisible(GetLocalBounds());
         SetSelected(true, absl::nullopt);
         confirm_remove_by_long_press_ = true;
-        OnSearchResultActionActivated(SearchResultActionType::kRemove);
         event->SetHandled();
       }
       break;

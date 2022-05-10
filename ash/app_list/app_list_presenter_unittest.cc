@@ -2060,11 +2060,20 @@ TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionUsingLongTap) {
   // buttons.
   result_view->GetWidget()->LayoutRootViewIfNecessary();
 
-  // Long tap on the search result. This should show the removal confirmation
-  // dialog.
-  LongPressAt(result_view->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(result_view->actions_view());
+  EXPECT_EQ(1u, result_view->actions_view()->children().size());
+  views::View* const action_view = result_view->actions_view()->children()[0];
 
-  EXPECT_TRUE(result_view->selected());
+  EXPECT_FALSE(action_view->GetVisible());
+  LongPressAt(result_view->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(action_view->GetVisible());
+
+  // Ensure layout after the action view visibility has been updated.
+  result_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Click the remove action button, this should surface a confirmation dialog.
+  LeftClickOn(action_view);
+
   EXPECT_TRUE(GetAppListTestHelper()
                   ->app_list_client()
                   ->GetAndClearInvokedResultActions()
@@ -2087,6 +2096,12 @@ TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionUsingLongTap) {
 
   // Long tap on the result again.
   LongPressAt(result_view->GetBoundsInScreen().CenterPoint());
+
+  // Ensure layout after the action view visibility has been updated.
+  result_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Click the remove action button, this should surface a confirmation dialog.
+  LeftClickOn(action_view);
 
   // Expect the removal confirmation dialog - this time, accept it.
   ASSERT_TRUE(GetSearchResultPageDialog());
@@ -2125,6 +2140,13 @@ TEST_F(AppListPresenterNonBubbleTest,
 
   // Show remove suggestion dialog.
   LongPressAt(result_view->GetBoundsInScreen().CenterPoint());
+
+  // Ensure layout after the action view visibility has been updated.
+  result_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Click the remove action button, this should surface a confirmation dialog.
+  LeftClickOn(result_view->actions_view()->children()[0]);
+
   ASSERT_TRUE(search_result_page()->dialog_for_test());
 
   views::Widget* const confirmation_dialog =
@@ -2172,6 +2194,13 @@ TEST_F(AppListPresenterNonBubbleTest,
 
   // Show the remove suggestion dialog.
   LongPressAt(result_view->GetBoundsInScreen().CenterPoint());
+
+  // Ensure layout after the action view visibility has been updated.
+  result_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Click the remove action button, this should surface a confirmation dialog.
+  LeftClickOn(result_view->actions_view()->children()[0]);
+
   ASSERT_TRUE(search_result_page()->dialog_for_test());
 
   views::Widget* const confirmation_dialog =
@@ -2221,6 +2250,9 @@ TEST_P(AppListBubbleAndTabletTest,
   // Show remove suggestion dialog.
   result_view->GetWidget()->LayoutRootViewIfNecessary();
   LongPressAt(result_view->GetBoundsInScreen().CenterPoint());
+  result_view->GetWidget()->LayoutRootViewIfNecessary();
+  LeftClickOn(result_view->actions_view()->children()[0]);
+
   ASSERT_TRUE(GetSearchResultPageDialog());
 
   views::Widget* const confirmation_dialog =
@@ -2273,6 +2305,13 @@ TEST_P(AppListBubbleAndTabletTest,
   // Show remove suggestion dialog.
   result_view->GetWidget()->LayoutRootViewIfNecessary();
   LongPressAt(result_view->GetBoundsInScreen().CenterPoint());
+
+  // Ensure layout after the action view visibility has been updated.
+  result_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Click the remove action button, this should surface a confirmation dialog.
+  LeftClickOn(result_view->actions_view()->children()[0]);
+
   ASSERT_TRUE(GetSearchResultPageDialog());
 
   // The search box should have lost the focus, which should have hidden the
