@@ -15,7 +15,7 @@ ci.defaults.set(
     cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,

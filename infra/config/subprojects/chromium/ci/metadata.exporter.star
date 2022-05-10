@@ -10,7 +10,7 @@ load("//lib/consoles.star", "consoles")
 ci.defaults.set(
     cores = 8,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
 )
 

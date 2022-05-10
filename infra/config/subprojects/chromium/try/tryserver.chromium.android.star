@@ -19,7 +19,7 @@ try_.defaults.set(
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
     compilator_goma_jobs = goma.jobs.J300,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     pool = try_.DEFAULT_POOL,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )

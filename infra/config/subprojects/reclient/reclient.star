@@ -94,7 +94,7 @@ fyi_reclient_staging_builder(
         ),
     ),
     console_view_category = "linux",
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 fyi_reclient_test_builder(
@@ -113,7 +113,7 @@ fyi_reclient_test_builder(
         ),
     ),
     console_view_category = "linux",
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 fyi_reclient_staging_builder(
@@ -165,7 +165,7 @@ fyi_reclient_test_builder(
 fyi_reclient_staging_builder(
     name = "Simple Chrome Builder reclient staging",
     console_view_category = "linux",
-    os = os.LINUX_BIONIC_REMOVE,
+    os = os.LINUX_DEFAULT,
     builder_spec = builder_config.builder_spec(
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -186,7 +186,7 @@ fyi_reclient_staging_builder(
 fyi_reclient_test_builder(
     name = "Simple Chrome Builder reclient test",
     console_view_category = "linux",
-    os = os.LINUX_BIONIC_REMOVE,
+    os = os.LINUX_DEFAULT,
     builder_spec = builder_config.builder_spec(
         chromium_config = builder_config.chromium_config(
             config = "chromium",

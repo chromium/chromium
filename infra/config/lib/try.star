@@ -257,7 +257,7 @@ def _orchestrator_builder(
         * builderless: True on branches, False on main
         * cores: The orchestrator_cores module-level default.
         * executable: "recipe:chromium/orchestrator"
-        * os: os.LINUX_BIONIC_SWITCH_TO_DEFAULT
+        * os: os.LINUX_DEFAULT
         * service_account: "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com"
         * ssd: None
     """
@@ -270,7 +270,7 @@ def _orchestrator_builder(
     kwargs.setdefault("executable", "recipe:chromium/orchestrator")
 
     kwargs.setdefault("goma_backend", None)
-    kwargs.setdefault("os", os.LINUX_BIONIC_SWITCH_TO_DEFAULT)
+    kwargs.setdefault("os", os.LINUX_DEFAULT)
     kwargs.setdefault("service_account", "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com")
     kwargs.setdefault("ssd", None)
 

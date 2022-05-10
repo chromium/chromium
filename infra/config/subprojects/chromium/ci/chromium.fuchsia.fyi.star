@@ -16,7 +16,7 @@ ci.defaults.set(
     execution_timeout = 10 * time.hour,
     goma_backend = goma.backend.RBE_PROD,
     notifies = ["cr-fuchsia"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )

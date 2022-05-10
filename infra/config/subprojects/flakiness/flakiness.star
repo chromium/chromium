@@ -10,7 +10,7 @@ ci.defaults.set(
     bucket = "flakiness",
     build_numbers = True,
     execution_timeout = 3 * time.hour,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     pool = "luci.chromium.ci",
     # TODO(jeffyoon): replace with smaller scoped service account, and update
     # below for bucket ACL

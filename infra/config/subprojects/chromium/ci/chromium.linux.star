@@ -17,7 +17,7 @@ ci.defaults.set(
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     main_console_view = "main",
     notifies = ["chromium.linux"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
     reclient_instance = rbe_instance.DEFAULT,

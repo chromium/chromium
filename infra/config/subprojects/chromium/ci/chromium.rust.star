@@ -17,7 +17,7 @@ ci.defaults.set(
     reclient_jobs = rbe_jobs.DEFAULT,
     reclient_instance = rbe_instance.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     notifies = ["chrome-rust-experiments"],
 )
 
