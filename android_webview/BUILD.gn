@@ -886,6 +886,7 @@ repack("repack_pack") {
     "$root_gen_dir/content/content_resources.pak",
     "$root_gen_dir/net/net_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
+    "$root_gen_dir/third_party/blink/public/resources/inspector_overlay_resources.pak",
     "$target_gen_dir/components_resources.pak",
     "$target_gen_dir/mojo_bindings_resources.pak",
     "$target_gen_dir/webui_generated_resources.pak",
@@ -896,6 +897,7 @@ repack("repack_pack") {
     ":generate_webui_resources",
     "//content:content_resources",
     "//net:net_resources",
+    "//third_party/blink/public:devtools_inspector_resources",
     "//third_party/blink/public:resources",
   ]
   output = "$target_gen_dir/resources.pak"
