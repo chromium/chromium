@@ -93,14 +93,14 @@ bool SubstringSetMatcher::Match(const std::string& text,
 
   const AhoCorasickNode* current_node = root;
   for (const char c : text) {
-    NodeID child = current_node->GetEdge(c);
+    NodeID child = current_node->GetEdge(static_cast<unsigned char>(c));
 
     // If the child not can't be found, progressively iterate over the longest
     // proper suffix of the string represented by the current node. In a sense
     // we are pruning prefixes from the text.
     while (child == kInvalidNodeID && current_node != root) {
       current_node = &tree_[current_node->failure()];
-      child = current_node->GetEdge(c);
+      child = current_node->GetEdge(static_cast<unsigned char>(c));
     }
 
     if (child != kInvalidNodeID) {
@@ -127,14 +127,14 @@ bool SubstringSetMatcher::AnyMatch(const std::string& text) const {
 
   const AhoCorasickNode* current_node = root;
   for (const char c : text) {
-    NodeID child = current_node->GetEdge(c);
+    NodeID child = current_node->GetEdge(static_cast<unsigned char>(c));
 
     // If the child not can't be found, progressively iterate over the longest
     // proper suffix of the string represented by the current node. In a sense
     // we are pruning prefixes from the text.
     while (child == kInvalidNodeID && current_node != root) {
       current_node = &tree_[current_node->failure()];
-      child = current_node->GetEdge(c);
+      child = current_node->GetEdge(static_cast<unsigned char>(c));
     }
 
     if (child != kInvalidNodeID) {
@@ -207,11 +207,6 @@ void SubstringSetMatcher::BuildAhoCorasickTree(
   for (const StringPattern* pattern : patterns)
     InsertPatternIntoAhoCorasickTree(pattern);
 
-  // Trie creation is complete and edges are finalized. Shrink to fit each edge
-  // map to save on memory.
-  for (AhoCorasickNode& node : tree_)
-    node.ShrinkEdges();
-
   CreateFailureAndOutputEdges();
 }
 
@@ -226,7 +221,7 @@ void SubstringSetMatcher::InsertPatternIntoAhoCorasickTree(
 
   // Follow existing paths for as long as possible.
   while (i != text_end) {
-    NodeID child = current_node->GetEdge(*i);
+    NodeID child = current_node->GetEdge(static_cast<unsigned char>(*i));
     if (child == kInvalidNodeID)
       break;
     current_node = &tree_[child];
@@ -236,7 +231,7 @@ void SubstringSetMatcher::InsertPatternIntoAhoCorasickTree(
   // Create new nodes if necessary.
   while (i != text_end) {
     tree_.emplace_back();
-    current_node->SetEdge(*i, tree_.size() - 1);
+    current_node->SetEdge(static_cast<unsigned char>(*i), tree_.size() - 1);
     current_node = &tree_.back();
     ++i;
   }
@@ -262,8 +257,9 @@ void SubstringSetMatcher::CreateFailureAndOutputEdges() {
 
   NodeID root_output_link = root->IsEndOfPattern() ? kRootID : kInvalidNodeID;
 
-  for (const auto& edge : root->edges()) {
-    AhoCorasickNode* child = &tree_[edge.second];
+  for (unsigned edge_idx = 0; edge_idx < root->num_edges(); ++edge_idx) {
+    const AhoCorasickEdge& edge = root->edges()[edge_idx];
+    AhoCorasickNode* child = &tree_[edge.node_id];
     child->SetFailure(kRootID);
     child->SetOutputLink(root_output_link);
     queue.push(child);
@@ -278,18 +274,19 @@ void SubstringSetMatcher::CreateFailureAndOutputEdges() {
 
     // Compute the failure and output edges of children using the failure edges
     // of the current node.
-    for (const auto& edge : current_node->edges()) {
-      const char edge_label = edge.first;
-      AhoCorasickNode* child = &tree_[edge.second];
+    for (unsigned edge_idx = 0; edge_idx < current_node->num_edges();
+         ++edge_idx) {
+      const AhoCorasickEdge& edge = current_node->edges()[edge_idx];
+      AhoCorasickNode* child = &tree_[edge.node_id];
 
       const AhoCorasickNode* failure_candidate_parent =
           &tree_[current_node->failure()];
       NodeID failure_candidate_id =
-          failure_candidate_parent->GetEdge(edge_label);
+          failure_candidate_parent->GetEdge(edge.label);
       while (failure_candidate_id == kInvalidNodeID &&
              failure_candidate_parent != root) {
         failure_candidate_parent = &tree_[failure_candidate_parent->failure()];
-        failure_candidate_id = failure_candidate_parent->GetEdge(edge_label);
+        failure_candidate_id = failure_candidate_parent->GetEdge(edge.label);
       }
 
       if (failure_candidate_id == kInvalidNodeID) {
@@ -332,25 +329,98 @@ void SubstringSetMatcher::AccumulateMatchesForNode(
   }
 }
 
-SubstringSetMatcher::AhoCorasickNode::AhoCorasickNode() = default;
-SubstringSetMatcher::AhoCorasickNode::~AhoCorasickNode() = default;
-
-SubstringSetMatcher::AhoCorasickNode::AhoCorasickNode(AhoCorasickNode&& other) =
-    default;
-
-SubstringSetMatcher::AhoCorasickNode&
-SubstringSetMatcher::AhoCorasickNode::operator=(AhoCorasickNode&& other) =
-    default;
-
-SubstringSetMatcher::NodeID SubstringSetMatcher::AhoCorasickNode::GetEdge(
-    char c) const {
-  auto i = edges_.find(c);
-  return i == edges_.end() ? kInvalidNodeID : i->second;
+SubstringSetMatcher::AhoCorasickNode::AhoCorasickNode() {
+  static_assert(kNumInlineEdges == 2, "Code below needs updating");
+  edges_.inline_edges[0].label = kEmptyLabel;
+  edges_.inline_edges[1].label = kEmptyLabel;
 }
 
-void SubstringSetMatcher::AhoCorasickNode::SetEdge(char c, NodeID node) {
-  DCHECK_NE(kInvalidNodeID, node);
-  edges_[c] = node;
+SubstringSetMatcher::AhoCorasickNode::~AhoCorasickNode() {
+  if (edges_capacity_ != 0) {
+    delete[] edges_.edges;
+  }
+}
+
+SubstringSetMatcher::AhoCorasickNode::AhoCorasickNode(AhoCorasickNode&& other) {
+  *this = std::move(other);
+}
+
+SubstringSetMatcher::AhoCorasickNode&
+SubstringSetMatcher::AhoCorasickNode::operator=(AhoCorasickNode&& other) {
+  if (edges_capacity_ != 0) {
+    // Delete the old heap allocation if needed.
+    delete[] edges_.edges;
+  }
+  if (other.edges_capacity_ == 0) {
+    static_assert(kNumInlineEdges == 2, "Code below needs updating");
+    edges_.inline_edges[0] = other.edges_.inline_edges[0];
+    edges_.inline_edges[1] = other.edges_.inline_edges[1];
+  } else {
+    // Move over the heap allocation.
+    edges_.edges = other.edges_.edges;
+    other.edges_.edges = nullptr;
+  }
+  num_free_edges_ = other.num_free_edges_;
+  edges_capacity_ = other.edges_capacity_;
+  failure_ = other.failure_;
+  match_id_ = other.match_id_;
+  output_link_ = other.output_link_;
+  return *this;
+}
+
+SubstringSetMatcher::NodeID
+SubstringSetMatcher::AhoCorasickNode::GetEdgeNoInline(uint32_t label) const {
+  DCHECK(edges_capacity_ != 0);
+  for (unsigned edge_idx = 0; edge_idx < num_edges(); ++edge_idx) {
+    const AhoCorasickEdge& edge = edges_.edges[edge_idx];
+    if (edge.label == label)
+      return edge.node_id;
+  }
+  return kInvalidNodeID;
+}
+
+void SubstringSetMatcher::AhoCorasickNode::SetEdge(uint32_t label,
+                                                   NodeID node) {
+  DCHECK_LT(node, kInvalidNodeID);
+
+#if DCHECK_IS_ON()
+  // We don't support overwriting existing edges.
+  for (unsigned edge_idx = 0; edge_idx < num_edges(); ++edge_idx) {
+    DCHECK_NE(label, edges()[edge_idx].label);
+  }
+#endif
+
+  if (edges_capacity_ == 0 && num_free_edges_ > 0) {
+    // Still space in the inline storage, so use that.
+    edges_.inline_edges[num_edges()] = AhoCorasickEdge{label, node};
+    --num_free_edges_;
+    return;
+  }
+
+  if (num_free_edges_ == 0) {
+    // We are out of space, so double our capacity. This can either be
+    // because we are converting from inline to heap storage, or because
+    // we are increasing the size of our heap storage.
+    unsigned old_capacity =
+        edges_capacity_ == 0 ? kNumInlineEdges : edges_capacity_;
+    unsigned new_capacity = old_capacity * 2;
+    AhoCorasickEdge* new_edges = new AhoCorasickEdge[new_capacity];
+    memcpy(new_edges, edges(), sizeof(AhoCorasickEdge) * old_capacity);
+    for (unsigned edge_idx = old_capacity; edge_idx < new_capacity;
+         ++edge_idx) {
+      new_edges[edge_idx].label = kEmptyLabel;
+    }
+    if (edges_capacity_ != 0) {
+      delete[] edges_.edges;
+    }
+    edges_.edges = new_edges;
+    edges_capacity_ = new_capacity;
+    num_free_edges_ = new_capacity - old_capacity;
+  }
+
+  // Insert the new edge at the end of our heap storage.
+  edges_.edges[num_edges()] = AhoCorasickEdge{label, node};
+  --num_free_edges_;
 }
 
 void SubstringSetMatcher::AhoCorasickNode::SetFailure(NodeID node) {
@@ -359,7 +429,12 @@ void SubstringSetMatcher::AhoCorasickNode::SetFailure(NodeID node) {
 }
 
 size_t SubstringSetMatcher::AhoCorasickNode::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(edges_);
+  if (edges_capacity_ == 0) {
+    return 0;
+  } else {
+    return base::trace_event::EstimateMemoryUsage(edges_.edges,
+                                                  edges_capacity_);
+  }
 }
 
 }  // namespace url_matcher

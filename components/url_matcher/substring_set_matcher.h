@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_map.h"
+#include "base/check_op.h"
 #include "components/url_matcher/string_pattern.h"
 #include "components/url_matcher/url_matcher_export.h"
 
@@ -70,13 +70,14 @@ class URL_MATCHER_EXPORT SubstringSetMatcher {
 
  private:
   // Represents the index of the node within |tree_|. It is specifically
-  // uint32_t so that we can be sure it takes up 4 bytes. If the computed size
-  // of |tree_| is larger than what can be stored within an uint32_t,
-  // Build() will fail.
+  // uint32_t so that we can be sure it takes up 4 bytes when stored together
+  // with the 9-bit label (so 23 bits are allocated to the NodeID, even though
+  // it is exposed as uint32_t). If the computed size of |tree_| is
+  // larger than what can be stored within 23 bits, Build() will fail.
   using NodeID = uint32_t;
 
   // This is the maximum possible size of |tree_| and hence can't be a valid ID.
-  static constexpr NodeID kInvalidNodeID = std::numeric_limits<NodeID>::max();
+  static constexpr NodeID kInvalidNodeID = (1u << 23) - 1;
 
   static constexpr NodeID kRootID = 0;
 
@@ -111,21 +112,47 @@ class URL_MATCHER_EXPORT SubstringSetMatcher {
   // If your brain thinks "Forget it, let's go shopping.", don't worry.
   // Take a nap and read an introductory text on the Aho Corasick algorithm.
   // It will make sense. Eventually.
+
+  // An edge internal to the tree. We pack the label (character we are
+  // matching on) and the destination node ID into 32 bits, to save memory.
+  struct AhoCorasickEdge {
+    // char (unsigned, so [0..255]), or a special label below.
+    uint32_t label : 9;
+    NodeID node_id : 23;
+  };
+
+  // Used for uninitialized label slots; used so that we do not have to test for
+  // them in other ways, since we know the data will be initialized and never
+  // match any other labels.
+  static constexpr uint32_t kEmptyLabel = 0x103;
+  static constexpr uint32_t kFirstSpecialLabel = kEmptyLabel;
+
+  // A node in the trie.
   class AhoCorasickNode {
    public:
-    // Map from edge label to NodeID.
-    using Edges = base::flat_map<char, NodeID>;
-
     AhoCorasickNode();
     ~AhoCorasickNode();
     AhoCorasickNode(AhoCorasickNode&& other);
     AhoCorasickNode& operator=(AhoCorasickNode&& other);
 
-    NodeID GetEdge(char c) const;
-    void SetEdge(char c, NodeID node);
-    const Edges& edges() const { return edges_; }
-
-    void ShrinkEdges() { edges_.shrink_to_fit(); }
+    NodeID GetEdge(uint32_t label) const {
+      if (edges_capacity_ != 0) {
+        return GetEdgeNoInline(label);
+      }
+      static_assert(kNumInlineEdges == 2, "Code below needs updating");
+      if (edges_.inline_edges[0].label == label) {
+        return edges_.inline_edges[0].node_id;
+      }
+      if (edges_.inline_edges[1].label == label) {
+        return edges_.inline_edges[1].node_id;
+      }
+      return kInvalidNodeID;
+    }
+    NodeID GetEdgeNoInline(uint32_t label) const;
+    void SetEdge(uint32_t label, NodeID node);
+    const AhoCorasickEdge* edges() const {
+      return edges_capacity_ == 0 ? edges_.inline_edges : edges_.edges;
+    }
 
     NodeID failure() const { return failure_; }
     void SetFailure(NodeID failure);
@@ -150,14 +177,63 @@ class URL_MATCHER_EXPORT SubstringSetMatcher {
     NodeID output_link() const { return output_link_; }
 
     size_t EstimateMemoryUsage() const;
+    size_t num_edges() const {
+      if (edges_capacity_ == 0) {
+        return kNumInlineEdges - num_free_edges_;
+      } else {
+        return edges_capacity_ - num_free_edges_;
+      }
+    }
 
     bool has_outputs() const {
       return IsEndOfPattern() || output_link() != kInvalidNodeID;
     }
 
    private:
-    // Outgoing edges of current node.
-    Edges edges_;
+    // Outgoing edges of current node, including failure edge and output links.
+    // Most nodes have only one or two (or even zero) edges, not the last
+    // because many of them are leaves. Thus, we make an optimization for this
+    // common case; instead of a pointer to an edge array on the heap, we can
+    // pack two edges inline where the pointer would otherwise be. This reduces
+    // memory usage dramatically, as well as saving us a cache-line fetch.
+    //
+    // Note that even though most nodes have fewer outgoing edges, most nodes
+    // that we actually traverse will have any of them. This apparent
+    // contradiction is because we tend to spend more of our time near the root
+    // of the trie, where it is wide. This means that another layout would be
+    // possible: If we wanted to, non-inline nodes could simply store an array
+    // of 259 (256 possible characters plus the three special label types)
+    // edges, indexed directly by label type. This would use 20–50% more RAM,
+    // but also increases the speed of lookups due to removing the search loop.
+    //
+    // The nodes are generally unordered; since we typically index text, even
+    // the root will rarely be more than 20–30 wide, and at that point, it's
+    // better to just do a linear search than a binary one (which fares poorly
+    // on branch predictors). However, a special case, we put kFailureNodeLabel
+    // in the first slot if it exists (ie., is not equal to kRootID), since we
+    // need to access that label during every single node we look at during
+    // traversal.
+    static constexpr int kNumInlineEdges = 2;
+    union {
+      // Out-of-line edge storage, having room for edges_capacity_ elements.
+      AhoCorasickEdge* edges;
+
+      // Inline edge storage, used if edges_capacity_ == 0.
+      AhoCorasickEdge inline_edges[kNumInlineEdges];
+    } edges_;
+
+    // Number of unused left in edges_. Edges are always allocated from the
+    // beginning and never deleted; those after num_edges_ will be marked with
+    // kEmptyLabel (and have an undefined node_id). We store the number of
+    // free edges instead of the more common number of _used_ edges, to be
+    // sure that we are able to fit it in an uint8_t. num_edges() provides
+    // a useful abstraction over this.
+    uint8_t num_free_edges_ = kNumInlineEdges;
+
+    // How many edges we have allocated room for (can never be more than
+    // kEmptyLabel + 1). If equal to zero, we are not using heap storage,
+    // but instead are using inline_edges.
+    uint16_t edges_capacity_ = 0;
 
     // Node index that failure edge leads to. The failure node corresponds to
     // the node which represents the longest proper suffix (include empty
