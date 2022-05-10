@@ -70,7 +70,7 @@ void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
       chromeos::ChildUserService::kFamilyLinkHelperAppPackageName, profile_);
   if (registry.GetAppType(app_id) != apps::AppType::kUnknown) {
     // Launch FLH app since it is available.
-    proxy->Launch(app_id, ui::EventFlags::EF_NONE,
+    proxy->Launch(app_id, ui::EF_NONE,
                   apps::mojom::LaunchSource::kFromParentalControls,
                   apps::MakeWindowInfo(display::kDefaultDisplayId));
     return;

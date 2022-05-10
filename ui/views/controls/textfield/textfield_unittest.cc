@@ -714,12 +714,12 @@ void TextfieldTest::MouseClick(const gfx::Rect bound, int x_offset) {
 void TextfieldTest::NonClientMouseClick() {
   ui::MouseEvent click(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(),
-                       ui::EF_LEFT_MOUSE_BUTTON | ui::EF_IS_NON_CLIENT,
+                       int{ui::EF_LEFT_MOUSE_BUTTON} | ui::EF_IS_NON_CLIENT,
                        ui::EF_LEFT_MOUSE_BUTTON);
   event_target_->OnMousePressed(click);
   ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
                          ui::EventTimeForNow(),
-                         ui::EF_LEFT_MOUSE_BUTTON | ui::EF_IS_NON_CLIENT,
+                         int{ui::EF_LEFT_MOUSE_BUTTON} | ui::EF_IS_NON_CLIENT,
                          ui::EF_LEFT_MOUSE_BUTTON);
   event_target_->OnMouseReleased(release);
 }

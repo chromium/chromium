@@ -31,9 +31,9 @@ namespace views {
 namespace {
 
 // This should probably be a definition on AnimationTestApi.
-using RenderModeLock = std::result_of<decltype (
-    &gfx::AnimationTestApi::SetRichAnimationRenderMode)(
-    gfx::Animation::RichAnimationRenderMode)>::type;
+using RenderModeLock = std::invoke_result<
+    decltype(&gfx::AnimationTestApi::SetRichAnimationRenderMode),
+    gfx::Animation::RichAnimationRenderMode>::type;
 
 constexpr gfx::Size kChildViewSize{10, 10};
 

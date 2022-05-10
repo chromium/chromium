@@ -469,10 +469,10 @@ TEST_F(SharesheetBubbleViewTest, CloseMultipleTimes) {
 }
 
 TEST_F(SharesheetBubbleViewTest, HoldEscapeKey) {
-  GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EventFlags::EF_NONE);
+  GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
   ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(),
                       ::sharesheet::LaunchSource::kUnknown);
-  GetEventGenerator()->ReleaseKey(ui::VKEY_ESCAPE, ui::EventFlags::EF_NONE);
+  GetEventGenerator()->ReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
   CloseBubbleWithEscKey();
 }
 

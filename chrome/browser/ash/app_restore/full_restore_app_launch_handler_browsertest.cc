@@ -1254,9 +1254,9 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
 
   void SaveAppLaunchInfo(const std::string& app_id, int32_t session_id) {
     ::full_restore::SaveAppLaunchInfo(
-        profile()->GetPath(), std::make_unique<::app_restore::AppLaunchInfo>(
-                                  app_id, ui::EventFlags::EF_NONE, session_id,
-                                  display::kDefaultDisplayId));
+        profile()->GetPath(),
+        std::make_unique<::app_restore::AppLaunchInfo>(
+            app_id, ui::EF_NONE, session_id, display::kDefaultDisplayId));
   }
 
   void Restore() {
@@ -1297,7 +1297,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
     EXPECT_EQ(restore_window_id, app_launch_info->window_id.value());
 
     EXPECT_TRUE(app_launch_info->event_flag.has_value());
-    EXPECT_EQ(ui::EventFlags::EF_NONE, app_launch_info->event_flag.value());
+    EXPECT_EQ(ui::EF_NONE, app_launch_info->event_flag.value());
   }
 
   void VerifyWindowProperty(aura::Window* window,
@@ -2507,7 +2507,7 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
     navigation_observer.StartWatchingNewWebContents();
 
     proxy->Launch(*GetManager().GetAppIdForSystemApp(system_app_type),
-                  ui::EventFlags::EF_NONE, launch_source,
+                  ui::EF_NONE, launch_source,
                   apps::MakeWindowInfo(display::kDefaultDisplayId));
 
     navigation_observer.Wait();

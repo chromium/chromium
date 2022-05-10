@@ -975,7 +975,7 @@ IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
 
   // Close the flow without approval - interstitial should be still shown.
   ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
-  generator.PressKey(ui::VKEY_ESCAPE, ui::EventFlags::EF_NONE);
+  generator.PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
 
   EXPECT_FALSE(chromeos::ParentAccessDialog::GetInstance());
   EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
@@ -1006,7 +1006,7 @@ IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
 
   // Close the flow without approval - interstitial should be still shown.
   ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
-  generator.PressKey(ui::VKEY_ESCAPE, ui::EventFlags::EF_NONE);
+  generator.PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
 
   EXPECT_FALSE(chromeos::ParentAccessDialog::GetInstance());
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));

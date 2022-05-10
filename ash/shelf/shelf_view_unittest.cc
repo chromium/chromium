@@ -3203,18 +3203,17 @@ class ShelfViewFocusTest : public ShelfViewTest {
 
   void DoTab() {
     ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
-    generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EventFlags::EF_NONE);
+    generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
   }
 
   void DoShiftTab() {
     ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
-    generator.PressKey(ui::KeyboardCode::VKEY_TAB,
-                       ui::EventFlags::EF_SHIFT_DOWN);
+    generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
   }
 
   void DoEnter() {
     ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
-    generator.PressKey(ui::KeyboardCode::VKEY_RETURN, ui::EventFlags::EF_NONE);
+    generator.PressKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
   }
 };
 

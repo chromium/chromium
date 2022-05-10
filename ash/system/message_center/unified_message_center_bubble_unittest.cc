@@ -114,19 +114,15 @@ class UnifiedMessageCenterBubbleTest
   }
 
   // Helper functions for focus cycle testing.
-  void DoTab() {
-    PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EventFlags::EF_NONE);
-  }
+  void DoTab() { PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE); }
 
   void DoShiftTab() {
-    PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB,
-                       ui::EventFlags::EF_SHIFT_DOWN);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
   }
 
   void DoAltShiftN() {
-    PressAndReleaseKey(
-        ui::KeyboardCode::VKEY_N,
-        ui::EventFlags::EF_SHIFT_DOWN | ui::EventFlags::EF_ALT_DOWN);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_N,
+                       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
   }
 
   void DoEsc() { PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE); }

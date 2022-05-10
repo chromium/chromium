@@ -80,9 +80,14 @@ class AX_EXPORT MSAAChildren final {
   const MSAAChild& ChildAt(LONG index) const { return children_[index]; }
   IAccessible* Parent() const { return parent_.Get(); }
 
-  class AX_EXPORT Iterator final
-      : public std::iterator<std::input_iterator_tag, MSAAChild> {
+  class AX_EXPORT Iterator final {
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = MSAAChild;
+    using difference_type = std::ptrdiff_t;
+    using pointer = MSAAChild*;
+    using reference = MSAAChild&;
+
     Iterator(MSAAChildren*);
     Iterator(MSAAChildren*, LONG);
     Iterator(const Iterator&);

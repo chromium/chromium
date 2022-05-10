@@ -300,7 +300,7 @@ class ContinueSectionViewTestBase : public AshTestBase {
     SimulateRightClickOrLongPressOn(continue_task_view);
     EXPECT_TRUE(continue_task_view->IsMenuShowing());
     continue_task_view->ExecuteCommand(ContinueTaskCommandId::kRemoveResult,
-                                       ui::EventFlags::EF_NONE);
+                                       ui::EF_NONE);
   }
 
   SearchResultPageAnchoredDialog* GetSearchViewAnchoredDialog() {
@@ -779,7 +779,7 @@ TEST_P(ContinueSectionViewTest, OpenWithContextMenuOption) {
   SimulateRightClickOrLongPressOn(continue_task_view);
   EXPECT_TRUE(continue_task_view->IsMenuShowing());
   continue_task_view->ExecuteCommand(ContinueTaskCommandId::kOpenResult,
-                                     ui::EventFlags::EF_NONE);
+                                     ui::EF_NONE);
 
   // The item was activated.
   TestAppListClient* client = GetAppListTestHelper()->app_list_client();

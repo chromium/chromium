@@ -136,16 +136,6 @@ class AXPositionTest : public ::testing::Test, public TestAXTreeManager {
 // ExpandToEnclosingTextBoundary method with the arguments provided in this
 // struct.
 struct ExpandToEnclosingTextBoundaryTestParam {
-  ExpandToEnclosingTextBoundaryTestParam() = default;
-
-  // Required by GTest framework.
-  ExpandToEnclosingTextBoundaryTestParam(
-      const ExpandToEnclosingTextBoundaryTestParam& other) = default;
-  ExpandToEnclosingTextBoundaryTestParam& operator=(
-      const ExpandToEnclosingTextBoundaryTestParam& other) = default;
-
-  ~ExpandToEnclosingTextBoundaryTestParam() = default;
-
   // The text boundary to expand to.
   ax::mojom::TextBoundary boundary;
 
@@ -183,16 +173,6 @@ class AXPositionExpandToEnclosingTextBoundaryTestWithParam
 // CreatePositionAtTextBoundary method with the arguments provided in this
 // struct.
 struct CreatePositionAtTextBoundaryTestParam {
-  CreatePositionAtTextBoundaryTestParam() = default;
-
-  // Required by GTest framework.
-  CreatePositionAtTextBoundaryTestParam(
-      const CreatePositionAtTextBoundaryTestParam& other) = default;
-  CreatePositionAtTextBoundaryTestParam& operator=(
-      const CreatePositionAtTextBoundaryTestParam& other) = default;
-
-  ~CreatePositionAtTextBoundaryTestParam() = default;
-
   // The text boundary to move to.
   ax::mojom::TextBoundary boundary;
 
@@ -232,15 +212,6 @@ class AXPositionCreatePositionAtTextBoundaryTestWithParam
 // operation, such as |CreateNextWordStartPosition|, until it runs out of
 // expectations.
 struct TextNavigationTestParam {
-  TextNavigationTestParam() = default;
-
-  // Required by GTest framework.
-  TextNavigationTestParam(const TextNavigationTestParam& other) = default;
-  TextNavigationTestParam& operator=(const TextNavigationTestParam& other) =
-      default;
-
-  ~TextNavigationTestParam() = default;
-
   // Stores the method that should be called repeatedly by the test to create
   // the next position.
   base::RepeatingCallback<TestPositionType(const TestPositionType&)> TestMethod;

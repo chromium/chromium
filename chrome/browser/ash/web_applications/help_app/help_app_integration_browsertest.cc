@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2AppServiceMetrics) {
 
   proxy->Launch(
       *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::HELP),
-      ui::EventFlags::EF_NONE, apps::mojom::LaunchSource::kFromKeyboard,
+      ui::EF_NONE, apps::mojom::LaunchSource::kFromKeyboard,
       apps::MakeWindowInfo(display::kDefaultDisplayId));
 
   navigation_observer.Wait();

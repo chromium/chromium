@@ -204,8 +204,14 @@ class AXRange {
   //
   // This class allows AXRange to be iterated through all "leaf text ranges"
   // contained between its endpoints, composing the entire range.
-  class Iterator : public std::iterator<std::input_iterator_tag, AXRange> {
+  class Iterator {
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = AXRange;
+    using difference_type = std::ptrdiff_t;
+    using pointer = AXRange*;
+    using reference = AXRange&;
+
     Iterator()
         : current_start_(AXPositionType::CreateNullPosition()),
           iterator_end_(AXPositionType::CreateNullPosition()) {}

@@ -205,8 +205,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
   auto* proxy = GetAppServiceProxy(browser()->profile());
 
   proxy->Launch(GetManager().GetAppIdForSystemApp(GetMockAppType()).value(),
-                ui::EventFlags::EF_NONE,
-                apps::mojom::LaunchSource::kFromAppListGrid,
+                ui::EF_NONE, apps::mojom::LaunchSource::kFromAppListGrid,
                 apps::MakeWindowInfo(display::kDefaultDisplayId));
   navigation_observer.Wait();
 
@@ -229,9 +228,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
   intent->mime_type = "text/plain";
 
   proxy->LaunchAppWithIntent(
-      GetManager().GetAppIdForSystemApp(GetMockAppType()).value(),
-      ui::EventFlags::EF_NONE, std::move(intent),
-      apps::mojom::LaunchSource::kFromAppListGrid,
+      GetManager().GetAppIdForSystemApp(GetMockAppType()).value(), ui::EF_NONE,
+      std::move(intent), apps::mojom::LaunchSource::kFromAppListGrid,
       apps::MakeWindowInfo(display::kDefaultDisplayId));
   navigation_observer.Wait();
 

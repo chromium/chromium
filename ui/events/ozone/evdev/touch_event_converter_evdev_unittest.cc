@@ -1919,12 +1919,12 @@ TEST_F(TouchEventConverterEvdevTest, ActiveStylusBarrelButtonWhileHovering) {
 
   auto down_event = dispatched_touch_event(0);
   EXPECT_EQ(ET_TOUCH_PRESSED, down_event.type);
-  EXPECT_TRUE(down_event.flags & ui::EventFlags::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_TRUE(down_event.flags & ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_EQ(EventPointerType::kPen, down_event.pointer_details.pointer_type);
 
   auto up_event = dispatched_touch_event(1);
   EXPECT_EQ(ET_TOUCH_RELEASED, up_event.type);
-  EXPECT_TRUE(down_event.flags & ui::EventFlags::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_TRUE(down_event.flags & ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_EQ(EventPointerType::kPen, up_event.pointer_details.pointer_type);
 }
 
@@ -1966,24 +1966,24 @@ TEST_F(TouchEventConverterEvdevTest, ActiveStylusBarrelButton) {
 
   auto down_event = dispatched_touch_event(0);
   EXPECT_EQ(ET_TOUCH_PRESSED, down_event.type);
-  EXPECT_FALSE(down_event.flags & ui::EventFlags::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_FALSE(down_event.flags & ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_EQ(EventPointerType::kPen, down_event.pointer_details.pointer_type);
 
   auto button_down_event = dispatched_touch_event(1);
   EXPECT_EQ(ET_TOUCH_MOVED, button_down_event.type);
-  EXPECT_TRUE(button_down_event.flags & ui::EventFlags::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_TRUE(button_down_event.flags & ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_EQ(EventPointerType::kPen,
             button_down_event.pointer_details.pointer_type);
 
   auto button_up_event = dispatched_touch_event(2);
   EXPECT_EQ(ET_TOUCH_MOVED, button_up_event.type);
-  EXPECT_FALSE(button_up_event.flags & ui::EventFlags::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_FALSE(button_up_event.flags & ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_EQ(EventPointerType::kPen,
             button_up_event.pointer_details.pointer_type);
 
   auto up_event = dispatched_touch_event(3);
   EXPECT_EQ(ET_TOUCH_RELEASED, up_event.type);
-  EXPECT_FALSE(down_event.flags & ui::EventFlags::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_FALSE(down_event.flags & ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_EQ(EventPointerType::kPen, up_event.pointer_details.pointer_type);
 }
 

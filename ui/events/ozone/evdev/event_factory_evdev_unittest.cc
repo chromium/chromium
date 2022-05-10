@@ -53,7 +53,7 @@ TEST_F(EventFactoryEvdevTest, OrdinalImpliesFlag) {
   EXPECT_CALL(event_observer_, WillProcessEvent)
       .WillOnce([](const PlatformEvent& platform_event) {
         MouseEvent mouse_event(platform_event);
-        EXPECT_TRUE(mouse_event.flags() & MouseEventFlags::EF_UNADJUSTED_MOUSE);
+        EXPECT_TRUE(mouse_event.flags() & EF_UNADJUSTED_MOUSE);
         EXPECT_EQ(mouse_event.movement(), gfx::Vector2dF(2.67, 3.14));
       });
 
@@ -71,8 +71,7 @@ TEST_F(EventFactoryEvdevTest, NoOrdinalImpliesNoFlag) {
   EXPECT_CALL(event_observer_, WillProcessEvent)
       .WillOnce([](const PlatformEvent& platform_event) {
         MouseEvent mouse_event(platform_event);
-        EXPECT_FALSE(mouse_event.flags() &
-                     MouseEventFlags::EF_UNADJUSTED_MOUSE);
+        EXPECT_FALSE(mouse_event.flags() & EF_UNADJUSTED_MOUSE);
       });
 
   event_factory_.DispatchMouseMoveEvent(

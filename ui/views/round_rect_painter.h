@@ -19,7 +19,7 @@ namespace views {
 // Painter to draw a border with rounded corners.
 class VIEWS_EXPORT RoundRectPainter : public Painter {
  public:
-  enum { kBorderWidth = 1 };
+  static constexpr int kBorderWidth = 1;
 
   RoundRectPainter(SkColor border_color, int corner_radius);
 

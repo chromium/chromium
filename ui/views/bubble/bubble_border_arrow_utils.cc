@@ -101,12 +101,12 @@ gfx::Vector2d GetContentBoundsOffsetToArrowAnchorPoint(
 BubbleArrowSide GetBubbleArrowSide(BubbleBorder::Arrow arrow) {
   // Note: VERTICAL arrows are on the sides of the bubble, while !VERTICAL are
   // on the top or bottom.
-  if (arrow & BubbleBorder::VERTICAL) {
-    return (arrow & BubbleBorder::RIGHT) ? BubbleArrowSide::kRight
-                                         : BubbleArrowSide::kLeft;
+  if (int{arrow} & BubbleBorder::VERTICAL) {
+    return (int{arrow} & BubbleBorder::RIGHT) ? BubbleArrowSide::kRight
+                                              : BubbleArrowSide::kLeft;
   }
-  return (arrow & BubbleBorder::BOTTOM) ? BubbleArrowSide::kBottom
-                                        : BubbleArrowSide::kTop;
+  return (int{arrow} & BubbleBorder::BOTTOM) ? BubbleArrowSide::kBottom
+                                             : BubbleArrowSide::kTop;
 }
 
 gfx::Vector2d GetContentsBoundsOffsetToPlaceVisibleArrow(

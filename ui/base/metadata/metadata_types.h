@@ -110,9 +110,14 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
   //    for(views::MemberMetaDataBase* member : class_meta_data) {
   //      OperateOn(member);
   //    }
-  class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMemberIterator
-      : public std::iterator<std::forward_iterator_tag, MemberMetaDataBase*> {
+  class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMemberIterator {
    public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = MemberMetaDataBase*;
+    using difference_type = std::ptrdiff_t;
+    using pointer = MemberMetaDataBase**;
+    using reference = MemberMetaDataBase*&;
+
     ClassMemberIterator(const ClassMemberIterator& other);
     ~ClassMemberIterator();
 

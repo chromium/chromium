@@ -1460,8 +1460,7 @@ class AppListControllerWithAssistantTest
 
  protected:
   void ToggleAssistantUiWithAccelerator() {
-    PressAndReleaseKey(ui::KeyboardCode::VKEY_A,
-                       ui::EventFlags::EF_COMMAND_DOWN);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_COMMAND_DOWN);
     EXPECT_TRUE(assistant_test_api_->IsVisible());
   }
 

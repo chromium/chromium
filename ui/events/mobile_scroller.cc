@@ -75,7 +75,7 @@ struct SplineConstants {
     float x_min = 0.0f;
     float y_min = 0.0f;
     for (int i = 0; i < NUM_SAMPLES; i++) {
-      const float alpha = static_cast<float>(i) / NUM_SAMPLES;
+      const float alpha = i / float{NUM_SAMPLES};
 
       float x_max = 1.0f;
       float x, tx, coef;
@@ -118,10 +118,10 @@ struct SplineConstants {
                              float* velocity_coef) {
     *distance_coef = 1.f;
     *velocity_coef = 0.f;
-    const int index = static_cast<int>(NUM_SAMPLES * t);
+    const int index = base::ClampFloor(float{NUM_SAMPLES} * t);
     if (index < NUM_SAMPLES) {
-      const float t_inf = static_cast<float>(index) / NUM_SAMPLES;
-      const float t_sup = static_cast<float>(index + 1) / NUM_SAMPLES;
+      const float t_inf = index / float{NUM_SAMPLES};
+      const float t_sup = (index + 1) / float{NUM_SAMPLES};
       const float d_inf = spline_position_[index];
       const float d_sup = spline_position_[index + 1];
       *velocity_coef = (d_sup - d_inf) / (t_sup - t_inf);

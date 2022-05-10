@@ -2095,10 +2095,10 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientArcTest,
   const int32_t kTaskId1 = 100;
   views::Widget* widget = ash::CreateExoWindow("org.chromium.arc.100");
   widget->SetBounds(gfx::Rect(500, 500));
-  full_restore::SaveAppLaunchInfo(browser()->profile()->GetPath(),
-                                  std::make_unique<app_restore::AppLaunchInfo>(
-                                      app_id, ui::EventFlags::EF_NONE,
-                                      session_id1, display::kDefaultDisplayId));
+  full_restore::SaveAppLaunchInfo(
+      browser()->profile()->GetPath(),
+      std::make_unique<app_restore::AppLaunchInfo>(
+          app_id, ui::EF_NONE, session_id1, display::kDefaultDisplayId));
 
   // Simulate creating the task.
   arc_helper()->CreateTask(app_id, kTaskId1, session_id1);

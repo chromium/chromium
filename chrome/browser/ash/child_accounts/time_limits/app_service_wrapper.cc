@@ -99,7 +99,7 @@ void AppServiceWrapper::ResumeApp(const AppId& app_id) {
 }
 
 void AppServiceWrapper::LaunchApp(const std::string& app_service_id) {
-  GetAppProxy()->Launch(app_service_id, ui::EventFlags::EF_NONE,
+  GetAppProxy()->Launch(app_service_id, ui::EF_NONE,
                         apps::mojom::LaunchSource::kFromParentalControls,
                         apps::MakeWindowInfo(display::kDefaultDisplayId));
 }

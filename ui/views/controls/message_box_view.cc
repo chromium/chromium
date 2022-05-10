@@ -269,7 +269,7 @@ bool MessageBoxView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
   scw.WriteText(std::accumulate(message_labels_.cbegin(),
                                 message_labels_.cend(), std::u16string(),
-                                [](std::u16string& left, Label* right) {
+                                [](const std::u16string& left, Label* right) {
                                   return left + right->GetText();
                                 }));
   return true;

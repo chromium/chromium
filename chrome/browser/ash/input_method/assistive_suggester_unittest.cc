@@ -50,23 +50,21 @@ ui::KeyEvent GenerateKeyEvent(const ui::DomCode& code,
 }
 
 ui::KeyEvent PressKey(const ui::DomCode& code) {
-  return GenerateKeyEvent(code, ui::EventType::ET_KEY_PRESSED,
-                          ui::EventFlags::EF_NONE);
+  return GenerateKeyEvent(code, ui::EventType::ET_KEY_PRESSED, ui::EF_NONE);
 }
 
 ui::KeyEvent PressKeyWithAlt(const ui::DomCode& code) {
-  return GenerateKeyEvent(code, ui::EventType::ET_KEY_PRESSED,
-                          ui::EventFlags::EF_ALT_DOWN);
+  return GenerateKeyEvent(code, ui::EventType::ET_KEY_PRESSED, ui::EF_ALT_DOWN);
 }
 
 ui::KeyEvent PressKeyWithCtrl(const ui::DomCode& code) {
   return GenerateKeyEvent(code, ui::EventType::ET_KEY_PRESSED,
-                          ui::EventFlags::EF_CONTROL_DOWN);
+                          ui::EF_CONTROL_DOWN);
 }
 
 ui::KeyEvent PressKeyWithShift(const ui::DomCode& code) {
   return GenerateKeyEvent(code, ui::EventType::ET_KEY_PRESSED,
-                          ui::EventFlags::EF_SHIFT_DOWN);
+                          ui::EF_SHIFT_DOWN);
 }
 
 void SetInputMethodOptions(Profile& profile, bool predictive_writing_enabled) {

@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, ShowDialog) {
   // Send ESCAPE keypress.  EventGenerator requires the root window, which has
   // to be fetched from the Ash shell.
   ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
-  generator.PressKey(ui::VKEY_ESCAPE, ui::EventFlags::EF_NONE);
+  generator.PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
 
   // The dialog instance should be gone after ESC is pressed.
   EXPECT_EQ(chromeos::ParentAccessDialog::GetInstance(), nullptr);

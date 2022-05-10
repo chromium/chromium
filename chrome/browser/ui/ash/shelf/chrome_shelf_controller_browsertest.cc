@@ -183,7 +183,7 @@ void CloseBrowserWindow(Browser* browser,
                         ShelfContextMenu* menu,
                         int close_command) {
   // Note that event_flag is never used inside function ExecuteCommand.
-  menu->ExecuteCommand(close_command, ui::EventFlags::EF_NONE);
+  menu->ExecuteCommand(close_command, ui::EF_NONE);
   ui_test_utils::WaitForBrowserToClose(browser);
 }
 

@@ -536,9 +536,9 @@ bool BubbleBorder::AddArrowToBubbleCornerAndPointTowardsAnchor(
     // towards the center of the element. If the arrow is right-aligned, it
     // points towards the right edge of the element, and to the left otherwise.
     int x_optimal_position =
-        (arrow_ & ArrowMask::CENTER)
+        (int{arrow_} & ArrowMask::CENTER)
             ? anchor_rect.CenterPoint().x() - kVisibleArrowRadius
-            : ((arrow_ & ArrowMask::RIGHT)
+            : ((int{arrow_} & ArrowMask::RIGHT)
                    ? anchor_rect.right() - kVisibleArrowDiamater
                    : anchor_rect.x());
 
@@ -567,14 +567,14 @@ bool BubbleBorder::AddArrowToBubbleCornerAndPointTowardsAnchor(
 
     // Calculate the y position of the arrow to be either on top of below the
     // bubble.
-    y_position = (arrow_ & ArrowMask::BOTTOM)
+    y_position = (int{arrow_} & ArrowMask::BOTTOM)
                      ? popup_bounds.bottom() - insets.bottom()
                      : popup_bounds.y() + insets.top() - kVisibleArrowLength;
   } else {
     // For an horizontal arrow, the x position is either the left or the right
     // edge of the bubble, taking the inset of the bubble and the length of the
     // arrow into account.
-    x_position = (arrow_ & ArrowMask::RIGHT)
+    x_position = (int{arrow_} & ArrowMask::RIGHT)
                      ? popup_bounds.right() - insets.right()
                      : popup_bounds.x() + insets.left() - kVisibleArrowLength;
 

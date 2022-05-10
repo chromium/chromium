@@ -296,7 +296,7 @@ TEST_F(MediaTrayTest, BubbleGetsFocusWhenOpenWithKeyboard) {
 
   // Generate a tab key press.
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
-  generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EventFlags::EF_NONE);
+  generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
 
   EXPECT_TRUE(GetBubbleWrapper()->GetBubbleWidget()->IsActive());
 }

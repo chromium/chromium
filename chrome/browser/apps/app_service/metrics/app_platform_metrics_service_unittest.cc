@@ -2020,7 +2020,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
 
   proxy->Launch(
-      /*app_id=*/borealis::kClientAppId, ui::EventFlags::EF_NONE,
+      /*app_id=*/borealis::kClientAppId, ui::EF_NONE,
       apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
   VerifyAppsLaunchUkm("app://borealis/client", AppTypeName::kBorealis,
                       apps::mojom::LaunchSource::kFromChromeInternal);
@@ -2029,7 +2029,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kBorealis);
 
   proxy->Launch(
-      /*app_id=*/borealis::FakeAppId("borealistest"), ui::EventFlags::EF_NONE,
+      /*app_id=*/borealis::FakeAppId("borealistest"), ui::EF_NONE,
       apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
   VerifyAppsLaunchUkm("app://borealis/123", AppTypeName::kBorealis,
                       apps::mojom::LaunchSource::kFromChromeInternal);
@@ -2038,9 +2038,8 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   VerifyAppLaunchPerAppTypeV2Histogram(2, AppTypeNameV2::kBorealis);
 
   proxy->Launch(
-      /*app_id=*/crostini::kCrostiniTerminalSystemAppId,
-      ui::EventFlags::EF_NONE, apps::mojom::LaunchSource::kFromChromeInternal,
-      nullptr);
+      /*app_id=*/crostini::kCrostiniTerminalSystemAppId, ui::EF_NONE,
+      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
   VerifyAppsLaunchUkm("app://CrostiniTerminal/Terminal", AppTypeName::kCrostini,
                       apps::mojom::LaunchSource::kFromChromeInternal);
 
@@ -2048,7 +2047,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kCrostini);
 
   proxy->Launch(
-      /*app_id=*/"a", ui::EventFlags::EF_NONE,
+      /*app_id=*/"a", ui::EF_NONE,
       apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
   VerifyAppsLaunchUkm("app://com.google.A", AppTypeName::kArc,
                       apps::mojom::LaunchSource::kFromChromeInternal);
@@ -2056,7 +2055,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kArc);
 
   proxy->Launch(
-      /*app_id=*/app_constants::kLacrosAppId, ui::EventFlags::EF_NONE,
+      /*app_id=*/app_constants::kLacrosAppId, ui::EF_NONE,
       apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
   VerifyAppsLaunchUkm("app://" + std::string(app_constants::kLacrosAppId),
                       AppTypeName::kStandaloneBrowser,
@@ -2065,7 +2064,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kStandaloneBrowser);
 
   proxy->Launch(
-      /*app_id=*/MuxId(profile(), kChromeAppId), ui::EventFlags::EF_NONE,
+      /*app_id=*/MuxId(profile(), kChromeAppId), ui::EF_NONE,
       apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
   VerifyAppsLaunchUkm("app://" + std::string(kChromeAppId),
                       AppTypeName::kStandaloneBrowserChromeApp,
@@ -2089,7 +2088,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
 
   // Launch `kChromeAppId1`.
   proxy->Launch(
-      /*app_id=*/MuxId(profile(), kChromeAppId1), ui::EventFlags::EF_NONE,
+      /*app_id=*/MuxId(profile(), kChromeAppId1), ui::EF_NONE,
       apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
   // Verify `kChromeAppId1` launching as kStandaloneBrowser.
   VerifyAppsLaunchUkm("app://" + kChromeAppId1, AppTypeName::kStandaloneBrowser,
@@ -2101,7 +2100,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
 
   // Launch `kChromeAppId2` in a Lacros window tab.
   proxy->Launch(
-      /*app_id=*/MuxId(profile(), kChromeAppId2), ui::EventFlags::EF_NONE,
+      /*app_id=*/MuxId(profile(), kChromeAppId2), ui::EF_NONE,
       apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
   // Verify `kChromeAppId2` launching as kStandaloneBrowserChromeApp.
   VerifyAppsLaunchUkm("app://" + kChromeAppId2,
@@ -2114,7 +2113,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
       AppTypeNameV2::kStandaloneBrowserChromeAppWindow);
 
   proxy->Launch(
-      /*app_id=*/MuxId(profile(), kExtensionId), ui::EventFlags::EF_NONE,
+      /*app_id=*/MuxId(profile(), kExtensionId), ui::EF_NONE,
       apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
   VerifyAppsLaunchUkm("app://" + std::string(kExtensionId),
                       AppTypeName::kStandaloneBrowserExtension,
@@ -2125,7 +2124,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
       1, AppTypeNameV2::kStandaloneBrowserExtension);
 
   proxy->LaunchAppWithUrl(
-      /*app_id=*/"w", ui::EventFlags::EF_NONE, GURL("https://boo.com/a"),
+      /*app_id=*/"w", ui::EF_NONE, GURL("https://boo.com/a"),
       apps::mojom::LaunchSource::kFromFileManager, nullptr);
   VerifyAppsLaunchUkm("https://foo.com", GetWebAppTypeName(),
                       apps::mojom::LaunchSource::kFromFileManager);

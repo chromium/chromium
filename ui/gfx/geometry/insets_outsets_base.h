@@ -107,12 +107,14 @@ class InsetsOutsetsBase {
     right_ = std::max(right_, other.right_);
   }
 
-  bool operator==(const T& other) const {
+  bool operator==(const InsetsOutsetsBase<T>& other) const {
     return top_ == other.top_ && left_ == other.left_ &&
            bottom_ == other.bottom_ && right_ == other.right_;
   }
 
-  bool operator!=(const T& other) const { return !(*this == other); }
+  bool operator!=(const InsetsOutsetsBase<T>& other) const {
+    return !(*this == other);
+  }
 
   void operator+=(const T& other) {
     top_ = base::ClampAdd(top_, other.top_);

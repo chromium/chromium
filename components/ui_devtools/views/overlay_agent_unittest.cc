@@ -344,7 +344,7 @@ TEST_F(OverlayAgentTest, MouseEventsGenerateFEEventsInInspectMode) {
   // Press escape to exit inspect mode. We're intentionally not supporting
   // this on Mac due do difficulties in receiving key events without aura::Env.
 #if defined(USE_AURA)
-  generator.PressKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EventFlags::EF_NONE);
+  generator.PressKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
   // Upon exiting inspect mode, the element is inspected and highlighted.
   EXPECT_EQ(inspect_node_notification_count + 1,
             GetOverlayInspectNodeRequestedCount(node_id));

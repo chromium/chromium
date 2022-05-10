@@ -132,23 +132,23 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   }
 
   static bool is_arrow_on_horizontal(Arrow a) {
-    return a >= NONE ? false : !(a & VERTICAL);
+    return a >= NONE ? false : !(int{a} & VERTICAL);
   }
 
   static bool is_arrow_at_center(Arrow a) {
-    return has_arrow(a) && !!(a & CENTER);
+    return has_arrow(a) && !!(int{a} & CENTER);
   }
 
   static Arrow horizontal_mirror(Arrow a) {
     return (a == TOP_CENTER || a == BOTTOM_CENTER || a >= NONE)
                ? a
-               : static_cast<Arrow>(a ^ RIGHT);
+               : static_cast<Arrow>(int{a} ^ RIGHT);
   }
 
   static Arrow vertical_mirror(Arrow a) {
     return (a == LEFT_CENTER || a == RIGHT_CENTER || a >= NONE)
                ? a
-               : static_cast<Arrow>(a ^ BOTTOM);
+               : static_cast<Arrow>(int{a} ^ BOTTOM);
   }
 
   // Returns the insets required by a border and shadow based on
