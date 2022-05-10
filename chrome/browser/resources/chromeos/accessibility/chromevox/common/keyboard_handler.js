@@ -67,8 +67,7 @@ ChromeVoxKbHandler.sortKeyToFunctionsTable_ = function(keyToFunctionsTable) {
  */
 ChromeVoxKbHandler.basicKeyDownActionsListener = function(evt) {
   const keySequence = KeyUtil.keyEventToKeySequence(evt);
-  const chromeVoxState = ChromeVoxState.instance;
-  const monitor = chromeVoxState ? chromeVoxState.getUserActionMonitor() : null;
+  const monitor = UserActionMonitor.instance;
   if (monitor && !monitor.onKeySequence(keySequence)) {
     // UserActionMonitor returns true if this key sequence should propagate.
     // Prevent the default action if it returns false.

@@ -21,6 +21,7 @@ goog.require('Output');
 goog.require('PanelCommand');
 goog.require('PanelNodeMenuData');
 goog.require('QueueMode');
+goog.require('UserActionMonitor');
 goog.require('constants');
 goog.require('cursors.Cursor');
 goog.require('cursors.Range');

@@ -1108,7 +1108,7 @@ export class Panel extends PanelInterface {
 
     $('chromevox-tutorial').addEventListener('closetutorial', (evt) => {
       // Ensure UserActionMonitor is destroyed before closing tutorial.
-      chromeVoxStateInstance.destroyUserActionMonitor();
+      UserActionMonitor.destroy();
       Panel.onCloseTutorial();
     });
     $('chromevox-tutorial').addEventListener('requestspeech', (evt) => {
@@ -1132,15 +1132,15 @@ export class Panel extends PanelInterface {
     });
     $('chromevox-tutorial').addEventListener('startinteractivemode', (evt) => {
       const actions = evt.detail.actions;
-      chromeVoxStateInstance.createUserActionMonitor(actions, () => {
-        chromeVoxStateInstance.destroyUserActionMonitor();
+      UserActionMonitor.create(actions, () => {
+        UserActionMonitor.destroy();
         if (Panel.tutorial && Panel.tutorial.showNextLesson) {
           Panel.tutorial.showNextLesson();
         }
       });
     });
     $('chromevox-tutorial').addEventListener('stopinteractivemode', (evt) => {
-      chromeVoxStateInstance.destroyUserActionMonitor();
+      UserActionMonitor.destroy();
     });
     $('chromevox-tutorial').addEventListener('requestfullydescribe', (evt) => {
       BackgroundBridge.CommandHandler.onCommand('fullyDescribe');
@@ -1159,7 +1159,7 @@ export class Panel extends PanelInterface {
     $('chromevox-tutorial').addEventListener('openUrl', (evt) => {
       const url = evt.detail.url;
       // Ensure UserActionMonitor is destroyed before closing tutorial.
-      chromeVoxStateInstance.destroyUserActionMonitor();
+      UserActionMonitor.destroy();
       Panel.onCloseTutorial();
       chrome.tabs.create({url});
     });

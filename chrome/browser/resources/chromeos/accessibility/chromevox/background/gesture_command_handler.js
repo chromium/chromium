@@ -50,8 +50,7 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
 
   EventSourceState.set(EventSourceType.TOUCH_GESTURE);
 
-  const chromeVoxState = ChromeVoxState.instance;
-  const monitor = chromeVoxState ? chromeVoxState.getUserActionMonitor() : null;
+  const monitor = UserActionMonitor.instance;
   if (gesture !== Gesture.SWIPE_LEFT2 && monitor &&
       !monitor.onGesture(gesture)) {
     // UserActionMonitor returns true if this gesture should propagate.

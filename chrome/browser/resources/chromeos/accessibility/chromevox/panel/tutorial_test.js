@@ -638,11 +638,11 @@ TEST_F('ChromeVoxTutorialTest', 'StartStopInteractiveMode', async function() {
 
   // Swap in functions below so we can track the number of times
   // UserActionMonitor is created and destroyed.
-  ChromeVoxState.instance.createUserActionMonitor = (actions, callback) => {
+  UserActionMonitor.create = (actions, callback) => {
     userActionMonitorCreatedCount += 1;
     isUserActionMonitorActive = true;
   };
-  ChromeVoxState.instance.destroyUserActionMonitor = () => {
+  UserActionMonitor.destroy = () => {
     userActionMonitorDestroyedCount += 1;
     isUserActionMonitorActive = false;
   };

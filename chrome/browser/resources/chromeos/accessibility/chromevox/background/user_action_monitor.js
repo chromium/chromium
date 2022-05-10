@@ -163,6 +163,28 @@ UserActionMonitor = class {
   static closeChromeVox_() {
     (new PanelCommand(PanelCommandType.CLOSE_CHROMEVOX)).send();
   }
+
+  /**
+   * Creates a new user action monitor.
+   * @param {!Array<{
+   *    type: string,
+   *    value: (string|Object),
+   *    beforeActionMsg: (string|undefined),
+   *    afterActionMsg: (string|undefined)
+   * }>} actions
+   * @param {function(): void} callback
+   */
+  static create(actions, callback) {
+    if (UserActionMonitor.instance) {
+      throw 'Error: trying to create a second UserActionMonitor';
+    }
+    UserActionMonitor.instance = new UserActionMonitor(actions, callback);
+  }
+
+  /** Destroys the user action monitor */
+  static destroy() {
+    UserActionMonitor.instance = null;
+  }
 };
 
 /**
@@ -330,3 +352,6 @@ UserActionMonitor.Action = class {
     CommandHandlerInterface.instance.onCommand(command);
   }
 };
+
+/** @type {UserActionMonitor} */
+UserActionMonitor.instance;
