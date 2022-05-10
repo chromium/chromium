@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/keyword_search_term.h"
+#include "components/history/core/browser/keyword_search_term_util.h"
 #include "sql/database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -219,6 +220,111 @@ TEST_F(URLDatabaseTest, KeywordSearchTermVisit) {
   ASSERT_EQ(0U, zero_prefix_matches.size());
 
   ASSERT_FALSE(GetKeywordSearchTermRow(url_id, &keyword_search_term_row));
+}
+
+// Tests querying most repeated search terms.
+TEST_F(URLDatabaseTest, MostRepeatedSearchTerms) {
+  KeywordID keyword_id = 100;
+  // Choose the local midnight of yesterday as the baseline for the time.
+  base::Time local_midnight = Time::Now().LocalMidnight() - base::Days(1);
+
+  // First search for "foo" - yesterday.
+  URLRow foo_url_1(GURL("https://www.google.com/search?q=foo&num=1"));
+  foo_url_1.set_visit_count(1);
+  foo_url_1.set_last_visit(local_midnight - base::Days(1) + base::Hours(1));
+  URLID foo_url_1_id = AddURL(foo_url_1);
+  ASSERT_NE(0, foo_url_1_id);
+  ASSERT_TRUE(SetKeywordSearchTermsForURL(foo_url_1_id, keyword_id, u"foo"));
+
+  // First search for "bar" - yesterday.
+  URLRow bar_url_1(GURL("https://www.google.com/search?q=bar&num=1"));
+  bar_url_1.set_visit_count(1);
+  bar_url_1.set_last_visit(local_midnight - base::Days(1) + base::Hours(2));
+  URLID bar_url_1_id = AddURL(bar_url_1);
+  ASSERT_NE(0, bar_url_1_id);
+  ASSERT_TRUE(SetKeywordSearchTermsForURL(bar_url_1_id, keyword_id, u"bar"));
+
+  // Second search for "bar" - yesterday.
+  URLRow bar_url_2(GURL("https://www.google.com/search?q=Bar&num=2"));
+  bar_url_2.set_visit_count(1);
+  bar_url_2.set_last_visit(local_midnight - base::Days(1) + base::Hours(3));
+  URLID bar_url_2_id = AddURL(bar_url_2);
+  ASSERT_NE(0, bar_url_2_id);
+  ASSERT_TRUE(SetKeywordSearchTermsForURL(bar_url_2_id, keyword_id, u"Bar"));
+
+  // Second search for "foo" - yesterday.
+  URLRow foo_url_2(GURL("https://www.google.com/search?q=Foo&num=2"));
+  foo_url_2.set_visit_count(1);
+  foo_url_2.set_last_visit(local_midnight - base::Days(1) + base::Hours(4));
+  URLID foo_url_2_id = AddURL(foo_url_2);
+  ASSERT_NE(0, foo_url_2_id);
+  ASSERT_TRUE(SetKeywordSearchTermsForURL(foo_url_2_id, keyword_id, u"Foo"));
+
+  // Third search for "bar" - today.
+  // This search will be ignored for having a visit count of 0.
+  URLRow bar_url_3(GURL("https://www.google.com/search?q=BAr&num=3"));
+  bar_url_3.set_visit_count(0);
+  bar_url_3.set_last_visit(local_midnight + base::Hours(1));
+  URLID bar_url_3_id = AddURL(bar_url_3);
+  ASSERT_NE(0, bar_url_3_id);
+  ASSERT_TRUE(SetKeywordSearchTermsForURL(bar_url_3_id, keyword_id, u"BAr"));
+
+  // Third search for "foo" - today.
+  // This search will be ignored for having a visit count of 0.
+  URLRow foo_url_3(GURL("https://www.google.com/search?q=FOo&num=3"));
+  foo_url_3.set_visit_count(0);
+  foo_url_3.set_last_visit(local_midnight + base::Hours(2));
+  URLID foo_url_3_id = AddURL(foo_url_3);
+  ASSERT_NE(0, foo_url_3_id);
+  ASSERT_TRUE(SetKeywordSearchTermsForURL(foo_url_3_id, keyword_id, u"FOo"));
+
+  // Fourth search for "bar" - today.
+  URLRow bar_url_4(GURL("https://www.google.com/search?q=BAR&num=4"));
+  bar_url_4.set_visit_count(1);
+  bar_url_4.set_last_visit(local_midnight + base::Hours(3));
+  URLID bar_url_4_id = AddURL(bar_url_4);
+  ASSERT_NE(0, bar_url_4_id);
+  ASSERT_TRUE(SetKeywordSearchTermsForURL(bar_url_4_id, keyword_id, u"BAR"));
+
+  // Fourth search for "foo" - today.
+  URLRow foo_url_4(GURL("https://www.google.com/search?q=FOO&num=4"));
+  foo_url_4.set_visit_count(1);
+  foo_url_4.set_last_visit(local_midnight + base::Hours(4));
+  URLID foo_url_4_id = AddURL(foo_url_4);
+  ASSERT_NE(0, foo_url_4_id);
+  ASSERT_TRUE(SetKeywordSearchTermsForURL(foo_url_4_id, keyword_id, u"FOO"));
+
+  // Make sure we get both "foo" and "bar" back. search terms with identical
+  // scores are ranked in alphabetical order.
+  auto enumerator = CreateKeywordSearchTermVisitEnumerator(
+      keyword_id, history::AutocompleteAgeThreshold());
+  ASSERT_TRUE(enumerator);
+  std::vector<std::unique_ptr<KeywordSearchTermVisit>> matches;
+  GetMostRepeatedSearchTermsFromEnumerator(*enumerator, &matches);
+  ASSERT_EQ(2U, matches.size());
+  EXPECT_EQ(matches[0]->score, matches[1]->score);
+  EXPECT_EQ(u"BAR", matches[0]->term);
+  EXPECT_EQ(u"bar", matches[0]->normalized_term);
+  EXPECT_EQ(u"FOO", matches[1]->term);
+  EXPECT_EQ(u"foo", matches[1]->normalized_term);
+
+  KeywordSearchTermRow keyword_search_term_row;
+  ASSERT_TRUE(GetKeywordSearchTermRow(foo_url_4_id, &keyword_search_term_row));
+  ASSERT_TRUE(GetKeywordSearchTermRow(bar_url_4_id, &keyword_search_term_row));
+
+  // Delete all the search terms for the keyword.
+  DeleteAllSearchTermsForKeyword(keyword_id);
+
+  ASSERT_FALSE(GetKeywordSearchTermRow(foo_url_4_id, &keyword_search_term_row));
+  ASSERT_FALSE(GetKeywordSearchTermRow(bar_url_4_id, &keyword_search_term_row));
+
+  // Make sure we get nothing back.
+  enumerator = CreateKeywordSearchTermVisitEnumerator(
+      keyword_id, history::AutocompleteAgeThreshold());
+  ASSERT_TRUE(enumerator);
+  matches.clear();
+  GetMostRepeatedSearchTermsFromEnumerator(*enumerator, &matches);
+  ASSERT_EQ(0U, matches.size());
 }
 
 // Make sure deleting a URL also deletes a keyword visit.

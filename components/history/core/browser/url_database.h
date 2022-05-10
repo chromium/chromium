@@ -28,6 +28,7 @@ class Database;
 
 namespace history {
 
+class KeywordSearchTermVisitEnumerator;
 struct KeywordSearchTermRow;
 struct KeywordSearchTermVisit;
 
@@ -230,6 +231,14 @@ class URLDatabase {
       KeywordID keyword_id,
       base::Time age_threshold,
       std::vector<KeywordSearchTermVisit>* visits);
+
+  // Returns an enumerator to enumerate all the KeywordSearchTermVisits no older
+  // than `age_threshold` for the given keyword. The visits are ordered first by
+  // |normalized_term| and then by |last_visit_time| in ascending order, i.e.,
+  // from the oldest to the newest.
+  std::unique_ptr<KeywordSearchTermVisitEnumerator>
+  CreateKeywordSearchTermVisitEnumerator(KeywordID keyword_id,
+                                         base::Time age_threshold);
 
   // Deletes all searches matching `term`.
   bool DeleteKeywordSearchTerm(const std::u16string& term);

@@ -682,6 +682,38 @@ void URLDatabase::GetMostRecentKeywordSearchTerms(
   }
 }
 
+std::unique_ptr<KeywordSearchTermVisitEnumerator>
+URLDatabase::CreateKeywordSearchTermVisitEnumerator(KeywordID keyword_id,
+                                                    base::Time age_threshold) {
+  // NOTE: the keyword_id can be zero if on first run the user does a query
+  // before the TemplateURLService has finished loading. As the chances of this
+  // occurring are small, we ignore it.
+  if (!keyword_id)
+    return nullptr;
+
+  auto enumerator = base::WrapUnique<KeywordSearchTermVisitEnumerator>(
+      new KeywordSearchTermVisitEnumerator());
+  enumerator->statement_.Assign(GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                                           R"(
+      SELECT
+        kst.term,
+        kst.normalized_term,
+        u.visit_count,
+        u.last_visit_time
+      FROM
+        keyword_search_terms kst JOIN urls u ON kst.url_id = u.id
+      WHERE
+        kst.keyword_id = ? AND
+        u.last_visit_time > ? AND
+        kst.normalized_term <> ''
+      ORDER BY kst.normalized_term, u.last_visit_time
+      )"));
+  enumerator->statement_.BindInt64(0, keyword_id);
+  enumerator->statement_.BindInt64(1, age_threshold.ToInternalValue());
+  enumerator->initialized_ = enumerator->statement_.is_valid();
+  return enumerator;
+}
+
 bool URLDatabase::DeleteKeywordSearchTerm(const std::u16string& term) {
   sql::Statement statement(GetDB().GetCachedStatement(SQL_FROM_HERE,
       "DELETE FROM keyword_search_terms WHERE term=?"));

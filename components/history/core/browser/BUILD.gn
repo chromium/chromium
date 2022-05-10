@@ -46,6 +46,8 @@ static_library("browser") {
     "keyword_id.h",
     "keyword_search_term.cc",
     "keyword_search_term.h",
+    "keyword_search_term_util.cc",
+    "keyword_search_term_util.h",
     "page_usage_data.cc",
     "page_usage_data.h",
     "sync/delete_directive_handler.cc",
