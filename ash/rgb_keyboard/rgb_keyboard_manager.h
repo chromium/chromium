@@ -30,6 +30,7 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer {
   rgbkbd::RgbKeyboardCapabilities GetRgbKeyboardCapabilities() const;
   void SetStaticBackgroundColor(uint8_t r, uint8_t g, uint8_t b);
   void SetRainbowMode();
+  void SetAnimationMode(rgbkbd::RgbAnimationMode mode);
 
   // Returns the global instance if initialized. May return null.
   static RgbKeyboardManager* Get();

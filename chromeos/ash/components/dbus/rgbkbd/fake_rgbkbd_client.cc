@@ -36,4 +36,7 @@ void FakeRgbkbdClient::SetRainbowMode() {
   is_rainbow_mode_set_ = true;
   ResetStoredRgbColors();
 }
+void FakeRgbkbdClient::SetAnimationMode(rgbkbd::RgbAnimationMode mode) {
+  ++animation_mode_call_count_;
+}
 }  // namespace ash

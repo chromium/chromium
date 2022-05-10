@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -63,6 +64,16 @@ void RgbKeyboardManager::SetRainbowMode() {
   DCHECK(RgbkbdClient::Get());
   // TODO(michaelcheco): Check RGB capabilities before proceeding.
   RgbkbdClient::Get()->SetRainbowMode();
+}
+
+void RgbKeyboardManager::SetAnimationMode(rgbkbd::RgbAnimationMode mode) {
+  if (!features::IsExperimentalRgbKeyboardPatternsEnabled()) {
+    LOG(ERROR) << "Attempted to set animation mode, but flag is disabled.";
+    return;
+  }
+
+  DCHECK(RgbkbdClient::Get());
+  RgbkbdClient::Get()->SetAnimationMode(mode);
 }
 
 void RgbKeyboardManager::OnCapsLockChanged(bool enabled) {

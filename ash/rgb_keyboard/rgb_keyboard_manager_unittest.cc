@@ -20,7 +20,11 @@ namespace ash {
 class RgbKeyboardManagerTest : public testing::Test {
  public:
   RgbKeyboardManagerTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kRgbKeyboard);
+    // scoped_feature_list_.InitAndEnableFeature(features::kRgbKeyboard);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kRgbKeyboard,
+                              features::kExperimentalRgbKeyboardPatterns},
+        /*disabled_features=*/{});
     // ImeControllerImpl must be initialized before RgbKeyboardManager.
     ime_controller_ = std::make_unique<ImeControllerImpl>();
     // This is instantiating a global instance that will be deallocated in
@@ -134,5 +138,15 @@ TEST_F(RgbKeyboardManagerTest, OnLoginCapsLock) {
   manager_.reset();
   manager_ = std::make_unique<RgbKeyboardManager>(ime_controller_.get());
   EXPECT_TRUE(client_->get_caps_lock_state());
+}
+
+// TODO(jimmyxgong): This is just a stub test, there is only one enum available
+// so just check num times the function has been called.
+TEST_F(RgbKeyboardManagerTest, SetAnimationMode) {
+  EXPECT_EQ(0, client_->animation_mode_call_count());
+
+  manager_->SetAnimationMode(rgbkbd::RgbAnimationMode::kBasicTestPattern);
+
+  EXPECT_EQ(1, client_->animation_mode_call_count());
 }
 }  // namespace ash

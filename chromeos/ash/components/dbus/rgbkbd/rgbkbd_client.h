@@ -48,6 +48,8 @@ class COMPONENT_EXPORT(RGBKBD_CLIENT) RgbkbdClient {
 
   virtual void SetRainbowMode() = 0;
 
+  virtual void SetAnimationMode(rgbkbd::RgbAnimationMode mode) = 0;
+
  protected:
   // Initialize/Shutdown should be used instead.
   RgbkbdClient();

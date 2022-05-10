@@ -31,6 +31,8 @@ class COMPONENT_EXPORT(RGBKBD) FakeRgbkbdClient : public RgbkbdClient {
 
   void SetRainbowMode() override;
 
+  void SetAnimationMode(rgbkbd::RgbAnimationMode mode) override;
+
   void set_rgb_keyboard_capabilities(
       absl::optional<rgbkbd::RgbKeyboardCapabilities> capabilities) {
     capabilities_ = capabilities;
@@ -46,6 +48,8 @@ class COMPONENT_EXPORT(RGBKBD) FakeRgbkbdClient : public RgbkbdClient {
 
   const RgbColor& recently_sent_rgb() const { return rgb_color_; }
 
+  int animation_mode_call_count() const { return animation_mode_call_count_; }
+
   void ResetStoredRgbColors();
 
  private:
@@ -54,6 +58,7 @@ class COMPONENT_EXPORT(RGBKBD) FakeRgbkbdClient : public RgbkbdClient {
   bool caps_lock_state_;
   bool is_rainbow_mode_set_ = false;
   RgbColor rgb_color_;
+  int animation_mode_call_count_ = 0;
 };
 
 }  // namespace ash

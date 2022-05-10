@@ -79,6 +79,19 @@ class RgbkbdClientImpl : public RgbkbdClient {
                               base::DoNothing());
   }
 
+  void SetAnimationMode(rgbkbd::RgbAnimationMode mode) override {
+    VLOG(1) << "rgbkbd: SetAnimationMode with mode: "
+            << static_cast<uint32_t>(mode);
+    dbus::MethodCall method_call(rgbkbd::kRgbkbdServiceName,
+                                 rgbkbd::kSetAnimationMode);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint32(static_cast<uint32_t>(mode));
+    CHECK(rgbkbd_proxy_);
+    rgbkbd_proxy_->CallMethod(&method_call,
+                              dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                              base::DoNothing());
+  }
+
  private:
   void GetRgbKeyboardCapabilitiesCallback(
       GetRgbKeyboardCapabilitiesCallback callback,
