@@ -373,7 +373,9 @@
     <div class="category-gap"></div>
     <template is="dom-if" if="[[v2Enabled]]">
       <div data-group="emoticon-history">
-        <template is="dom-if" if="[[emoticonHistory.emoji.length]]">
+        <template is="dom-if"
+          if="[[_isHistoryReadyToPresent(
+            emojiGroupsFullyLoaded,emoticonHistory.emoji.length)]]">
             <emoticon-group data="[[emoticonHistory.emoji]]"
               group="[[emoticonHistory.group]]" class="group"
               data-group="emoticon-history">

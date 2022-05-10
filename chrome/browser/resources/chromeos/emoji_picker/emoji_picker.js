@@ -162,7 +162,9 @@ export class EmojiPicker extends PolymerElement {
       /** @private {boolean} */
       v2Enabled: {type: Boolean, value: false, reflectToAttribute: true},
       /** @private {boolean} */
-      searchExtensionEnabled: {type: Boolean, value: false}
+      searchExtensionEnabled: {type: Boolean, value: false},
+      /** @private {boolean} */
+      emojiGroupsFullyLoaded: {type: Boolean, value: false},
     };
   }
 
@@ -683,6 +685,20 @@ export class EmojiPicker extends PolymerElement {
   }
 
   /**
+   * Returns true when there are history items ("Recently Used") and
+   * the previous groups (e.g. emoji) are already shown. This function
+   * is a helper to implement the logic in the UI components.
+   *
+   * @param {boolean} previousGroupShown A boolean denoting
+   *  whether the previous group is show.
+   * @param {number} historyLength Lengths of the history items.
+   * @returns {boolean}
+   */
+   _isHistoryReadyToPresent(previousGroupShown, historyLength) {
+    return previousGroupShown && historyLength > 0;
+  }
+
+  /**
    * Disables the history tab when there is no usage history for the
    * selected category and enables it otherwise.
    */
@@ -792,6 +808,9 @@ export class EmojiPicker extends PolymerElement {
   onEmojiDataLoadedRemaining(data) {
     this.push('emojiData', ...data);
     this.dispatchEvent(createCustomEvent(EMOJI_REMAINING_DATA_LOADED));
+    afterNextRender(this, () => {
+      this.emojiGroupsFullyLoaded = true;
+    });
   }
 
   /**
