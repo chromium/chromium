@@ -16,7 +16,6 @@
 #include <unistd.h>
 
 #include "base/files/file.h"
-#include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -13,9 +13,9 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/files/file_util.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/posix/eintr_wrapper.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !BUILDFLAG(IS_NACL)
@@ -41,7 +41,7 @@ static constexpr int kOpenFlags = O_RDONLY | O_CLOEXEC;
 // we can use a static-local variable to handle opening it on the first access.
 class URandomFd {
  public:
-  URandomFd() : fd_(HANDLE_EINTR(open("/dev/urandom", kOpenFlags))) {
+  URandomFd() : fd_(PA_HANDLE_EINTR(open("/dev/urandom", kOpenFlags))) {
     CHECK(fd_ >= 0) << "Cannot open /dev/urandom";
   }
 
@@ -72,7 +72,7 @@ void RandBytes(void* output, size_t output_length) {
   // We have to call `getrandom` via Linux Syscall Support, rather than through
   // the libc wrapper, because we might not have an up-to-date libc (e.g. on
   // some bots).
-  const ssize_t r = HANDLE_EINTR(sys_getrandom(output, output_length, 0));
+  const ssize_t r = PA_HANDLE_EINTR(sys_getrandom(output, output_length, 0));
 
   // Return success only on total success. In case errno == ENOSYS (or any other
   // error), we'll fall through to reading from urandom below.

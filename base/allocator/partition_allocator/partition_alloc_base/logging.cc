@@ -61,7 +61,7 @@
 #include <string>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
-#include "base/posix/eintr_wrapper.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/posix/eintr_wrapper.h"
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include "base/allocator/partition_allocator/partition_alloc_base/posix/safe_strerror.h"
@@ -90,7 +90,8 @@ void WriteToFd(int fd, const char* data, size_t length) {
   size_t bytes_written = 0;
   int rv;
   while (bytes_written < length) {
-    rv = HANDLE_EINTR(write(fd, data + bytes_written, length - bytes_written));
+    rv = PA_HANDLE_EINTR(
+        write(fd, data + bytes_written, length - bytes_written));
     if (rv < 0) {
       // Give up, nothing we can do now.
       break;
@@ -266,7 +267,7 @@ void RawLog(int level, const char* message) {
     if (message_len > 0 && message[message_len - 1] != '\n') {
       int rv;
       do {
-        rv = HANDLE_EINTR(write(STDERR_FILENO, "\n", 1));
+        rv = PA_HANDLE_EINTR(write(STDERR_FILENO, "\n", 1));
         if (rv < 0) {
           // Give up, nothing we can do now.
           break;

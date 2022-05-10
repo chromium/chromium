@@ -14,9 +14,9 @@
 
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/posix/eintr_wrapper.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/dcheck_is_on.h"
-#include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -197,8 +197,8 @@ bool TrySetSystemPagesAccessInternal(
     uintptr_t address,
     size_t length,
     PageAccessibilityConfiguration accessibility) {
-  return 0 == HANDLE_EINTR(mprotect(reinterpret_cast<void*>(address), length,
-                                    GetAccessFlags(accessibility)));
+  return 0 == PA_HANDLE_EINTR(mprotect(reinterpret_cast<void*>(address), length,
+                                       GetAccessFlags(accessibility)));
 }
 
 void SetSystemPagesAccessInternal(
@@ -206,7 +206,7 @@ void SetSystemPagesAccessInternal(
     size_t length,
     PageAccessibilityConfiguration accessibility) {
   int access_flags = GetAccessFlags(accessibility);
-  const int ret = HANDLE_EINTR(
+  const int ret = PA_HANDLE_EINTR(
       mprotect(reinterpret_cast<void*>(address), length, access_flags));
 
   // On Linux, man mprotect(2) states that ENOMEM is returned when (1) internal
