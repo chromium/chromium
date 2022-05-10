@@ -69,10 +69,7 @@ using ::chromeos::kTrackDefaultFrameColors;
 class NonClientFrameViewAshTestWidgetDelegate
     : public views::WidgetDelegateView {
  public:
-  NonClientFrameViewAshTestWidgetDelegate() : views::WidgetDelegateView() {
-    SetCanMaximize(true);
-    SetCanResize(true);
-  }
+  NonClientFrameViewAshTestWidgetDelegate() = default;
 
   NonClientFrameViewAshTestWidgetDelegate(
       const NonClientFrameViewAshTestWidgetDelegate&) = delete;
@@ -319,7 +316,6 @@ TEST_F(NonClientFrameViewAshTest, FrameHiddenInTabletModeForMaximizedWindows) {
 TEST_F(NonClientFrameViewAshTest,
        FrameShownInTabletModeForNonMaximizedWindows) {
   auto* delegate = new NonClientFrameViewAshTestWidgetDelegate();
-  delegate->SetCanMaximize(false);
   std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
@@ -609,7 +605,7 @@ TEST_F(NonClientFrameViewAshTest, CustomButtonModel) {
   EXPECT_TRUE(test_api.close_button()->GetVisible());
 
   EXPECT_FALSE(test_api.minimize_button()->GetVisible());
-  EXPECT_TRUE(test_api.size_button()->GetVisible());
+  EXPECT_FALSE(test_api.size_button()->GetVisible());
   EXPECT_FALSE(test_api.menu_button()->GetVisible());
 
   // Back button

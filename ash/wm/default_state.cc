@@ -364,15 +364,6 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
     return;
   }
 
-  if ((next_state_type == WindowStateType::kMaximized ||
-       next_state_type == WindowStateType::kFullscreen) &&
-      !window_state->CanMaximize()) {
-    // No bounce animation for normal case.
-    VLOG(1) << "Attempting to to maximize or enter full screen, but window "
-               "is not allowed to maximize. Request will be dropped.";
-    return;
-  }
-
   if (next_state_type == WindowStateType::kPrimarySnapped ||
       next_state_type == WindowStateType::kSecondarySnapped) {
     if (type == WM_EVENT_RESTORE) {

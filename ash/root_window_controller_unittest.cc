@@ -37,7 +37,6 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
@@ -91,17 +90,8 @@ aura::LayoutManager* GetLayoutManager(RootWindowController* controller,
 class RootWindowControllerTest : public AshTestBase {
  public:
   views::Widget* CreateTestWidget(const gfx::Rect& bounds) {
-    auto default_delegate = std::make_unique<views::WidgetDelegateView>();
-    default_delegate->SetCanMaximize(true);
-    default_delegate->SetCanResize(true);
-    default_delegate->SetOwnedByWidget(true);
-    return CreateTestWidget(bounds, default_delegate.release());
-  }
-
-  views::Widget* CreateTestWidget(const gfx::Rect& bounds,
-                                  views::WidgetDelegateView* delegate) {
     views::Widget* widget =
-        views::Widget::CreateWindowWithContext(delegate, GetContext());
+        views::Widget::CreateWindowWithContext(nullptr, GetContext());
     // Any initial bounds are constrained to the screen work area or the parent.
     // See Widget::InitialBounds() & Widget::SetBoundsConstrained(). Explicitly
     // setting the bounds here will allow the view to be positioned such that it
@@ -113,9 +103,7 @@ class RootWindowControllerTest : public AshTestBase {
 
   views::WidgetDelegate* CreateModalWidgetDelegate() {
     auto delegate = std::make_unique<views::WidgetDelegateView>();
-    delegate->SetCanMaximize(true);
     delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
-    delegate->SetOwnedByWidget(true);
     return delegate.release();
   }
 

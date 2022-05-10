@@ -27,7 +27,6 @@
 #include "base/test/task_environment.h"
 #include "chromeos/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 #include "ui/views/view_utils.h"
-#include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
 
@@ -284,16 +283,7 @@ aura::Window* AssistantAshTestBase::SwitchToNewAppWindow() {
 }
 
 views::Widget* AssistantAshTestBase::SwitchToNewWidget() {
-  class TestWidgetDelegate : public views::WidgetDelegate {
-   public:
-    TestWidgetDelegate() {
-      SetOwnedByWidget(true);
-      // Maximize must be set to false. Otherwise the widget would start
-      // maximized in tablet mode and does not handle gesture events correctly.
-      SetCanMaximize(false);
-    };
-  };
-  widgets_.push_back(CreateTestWidget(new TestWidgetDelegate));
+  widgets_.push_back(CreateTestWidget());
 
   views::Widget* result = widgets_.back().get();
   // Give the widget a non-zero size, otherwise things like tapping and clicking

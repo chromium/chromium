@@ -9,7 +9,6 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
-#include "ash/test/test_widget_builder.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -19,12 +18,9 @@
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
-#include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
-#include "ui/aura/window_delegate.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
 #include "ui/wm/core/window_util.h"
 
@@ -186,8 +182,6 @@ aura::Window* ShelfLayoutManagerTestBase::CreateTestWindow() {
   aura::Window* window = new aura::Window(nullptr);
   window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
   window->SetType(aura::client::WINDOW_TYPE_NORMAL);
-  window->SetProperty(aura::client::kResizeBehaviorKey,
-                      aura::client::kResizeBehaviorCanMaximize);
   window->Init(ui::LAYER_TEXTURED);
   ParentWindowInPrimaryRootWindow(window);
   return window;
@@ -195,28 +189,22 @@ aura::Window* ShelfLayoutManagerTestBase::CreateTestWindow() {
 
 aura::Window* ShelfLayoutManagerTestBase::CreateTestWindowInParent(
     aura::Window* root_window) {
-  return CreateTestWindowInParent(root_window, gfx::Rect());
-}
-
-aura::Window* ShelfLayoutManagerTestBase::CreateTestWindowInParent(
-    aura::Window* root_window,
-    const gfx::Rect& bounds) {
   aura::Window* window = new aura::Window(nullptr);
   window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
   window->SetType(aura::client::WINDOW_TYPE_NORMAL);
   window->Init(ui::LAYER_TEXTURED);
-  aura::client::ParentWindowWithContext(window, root_window, bounds);
+  aura::client::ParentWindowWithContext(window, root_window, gfx::Rect());
   return window;
 }
 
 views::Widget* ShelfLayoutManagerTestBase::CreateTestWidget() {
-  return TestWidgetBuilder()
-      .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW)
-      .SetTestWidgetDelegate()
-      .SetContext(GetContext())
-      .SetBounds(gfx::Rect(200, 200))
-      .SetShow(true)
-      .BuildOwnedByNativeWidget();
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  params.bounds = gfx::Rect(0, 0, 200, 200);
+  params.context = GetContext();
+  views::Widget* widget = new views::Widget;
+  widget->Init(std::move(params));
+  widget->Show();
+  return widget;
 }
 
 gfx::Rect ShelfLayoutManagerTestBase::GetVisibleShelfWidgetBoundsInScreen() {
@@ -411,8 +399,7 @@ void ShelfLayoutManagerTestBase::RunGestureDragTests(
   views::Widget* widget = CreateTestWidget();
   widget->Maximize();
 
-  // The time delta should be large enough to prevent accidental fling
-  // creation.
+  // The time delta should be large enough to prevent accidental fling creation.
   const base::TimeDelta kTimeDelta = base::Milliseconds(100);
 
   aura::Window* window = widget->GetNativeWindow();
@@ -502,11 +489,11 @@ void ShelfLayoutManagerTestBase::RunGestureDragTests(
   }
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
-  // Gesture drag should not change the auto hide behavior of shelf, even
-  // though its visibility has been changed.
+  // Gesture drag should not change the auto hide behavior of shelf, even though
+  // its visibility has been changed.
   EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
-  // The auto-hide shelf is above the window, which should not change the
-  // bounds of the window.
+  // The auto-hide shelf is above the window, which should not change the bounds
+  // of the window.
   EXPECT_EQ(window_bounds_with_noshelf.ToString(), window->bounds().ToString());
   EXPECT_EQ(shelf_shown.ToString(),
             GetShelfWidget()->GetWindowBoundsInScreen().ToString());
@@ -615,8 +602,8 @@ void ShelfLayoutManagerTestBase::RunGestureDragTests(
   EXPECT_EQ(shelf_hidden.ToString(),
             GetShelfWidget()->GetWindowBoundsInScreen().ToString());
 
-  // Put |widget| into fullscreen. Set the shelf to be auto hidden when
-  // |widget| is fullscreen. (eg browser immersive fullscreen).
+  // Put |widget| into fullscreen. Set the shelf to be auto hidden when |widget|
+  // is fullscreen. (eg browser immersive fullscreen).
   widget->SetFullscreen(true);
   WindowState::Get(window)->SetHideShelfWhenFullscreen(false);
   layout_manager->UpdateVisibilityState();
@@ -659,8 +646,8 @@ void ShelfLayoutManagerTestBase::RunGestureDragTests(
             GetShelfWidget()->GetWindowBoundsInScreen().ToString());
   EXPECT_EQ(window_bounds_fullscreen.ToString(), window->bounds().ToString());
 
-  // Set the shelf to be hidden when |widget| is fullscreen. (eg tab
-  // fullscreen with or without immersive browser fullscreen).
+  // Set the shelf to be hidden when |widget| is fullscreen. (eg tab fullscreen
+  // with or without immersive browser fullscreen).
   WindowState::Get(window)->SetHideShelfWhenFullscreen(true);
 
   layout_manager->UpdateVisibilityState();
@@ -690,8 +677,8 @@ void ShelfLayoutManagerTestBase::RunGestureDragTests(
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
   EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
 
-  // Swipe-down to hide. This should have no effect because there are no
-  // visible windows.
+  // Swipe-down to hide. This should have no effect because there are no visible
+  // windows.
   {
     SCOPED_TRACE("SWIPE_DOWN_AUTO_HIDE_5");
     generator->GestureScrollSequenceWithCallback(
@@ -715,9 +702,9 @@ void ShelfLayoutManagerTestBase::RunGestureDragTests(
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(layout_manager->HasVisibleWindow());
 
-  // Swipe up on the shelf. This should show the shelf but should not change
-  // the auto-hide behavior, since auto-hide behavior can only be changed
-  // through context menu of the shelf.
+  // Swipe up on the shelf. This should show the shelf but should not change the
+  // auto-hide behavior, since auto-hide behavior can only be changed through
+  // context menu of the shelf.
   {
     SCOPED_TRACE("SWIPE_UP_AUTO_HIDE_2");
     // Do not check bounds because the events outside of the bounds
@@ -736,8 +723,8 @@ void ShelfLayoutManagerTestBase::RunGestureDragTests(
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(layout_manager->HasVisibleWindow());
 
-  // Swipe-down to hide. This should have no effect because there are no
-  // visible windows.
+  // Swipe-down to hide. This should have no effect because there are no visible
+  // windows.
   {
     SCOPED_TRACE("SWIPE_DOWN_AUTO_HIDE_6");
     generator->GestureScrollSequenceWithCallback(

@@ -80,7 +80,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
-#include "components/session_manager/session_manager_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
@@ -421,9 +420,6 @@ TEST_F(ShelfLayoutManagerTest, AutoHide) {
   UpdateAutoHideStateNow();
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 
-  // Maximize the widget so that we don't accidentally go into overview mode
-  // (e.g.: if the window happened to be snapped to the edge).
-  widget->Maximize();
   // Switch to tablet mode should hide the AUTO_HIDE_SHOWN shelf even the mouse
   // cursor is inside the shelf area.
   EXPECT_FALSE(TabletModeControllerTestApi().IsTabletModeStarted());
@@ -648,7 +644,8 @@ TEST_F(ShelfLayoutManagerTest, VisibleInOverview) {
 
   // Tests that the shelf is visible when in overview mode.
   EnterOverview();
-  WaitForOverviewAnimation(/*enter=*/true);
+  ShellTestApi().WaitForOverviewAnimationState(
+      OverviewAnimationState::kEnterAnimationComplete);
 
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
@@ -657,7 +654,8 @@ TEST_F(ShelfLayoutManagerTest, VisibleInOverview) {
 
   // Test that on exiting overview mode, the shelf returns to auto hide state.
   ExitOverview();
-  WaitForOverviewAnimation(/*enter=*/false);
+  ShellTestApi().WaitForOverviewAnimationState(
+      OverviewAnimationState::kExitAnimationComplete);
 
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
@@ -1020,12 +1018,12 @@ TEST_F(ShelfLayoutManagerTest, DualDisplayOpenAppListWithShelfAutoHideState) {
   shelf_2->shelf_layout_manager()->LayoutShelf();
 
   // Create a window in each display and show them in maximized state.
-  aura::Window* window_1 =
-      CreateTestWindowInParent(root_windows[0], gfx::Rect(0, 0, 100, 100));
+  aura::Window* window_1 = CreateTestWindowInParent(root_windows[0]);
+  window_1->SetBounds(gfx::Rect(0, 0, 100, 100));
   window_1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
   window_1->Show();
-  aura::Window* window_2 =
-      CreateTestWindowInParent(root_windows[1], gfx::Rect(201, 0, 100, 100));
+  aura::Window* window_2 = CreateTestWindowInParent(root_windows[1]);
+  window_2->SetBounds(gfx::Rect(201, 0, 100, 100));
   window_2->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
   window_2->Show();
 
@@ -1287,12 +1285,12 @@ TEST_F(ShelfLayoutManagerTest, ShelfWithSystemModalWindowDualDisplay) {
   shelf_2->shelf_layout_manager()->LayoutShelf();
 
   // Create a window in each display and show them in maximized state.
-  aura::Window* window_1 =
-      CreateTestWindowInParent(root_windows[0], gfx::Rect(0, 0, 100, 100));
+  aura::Window* window_1 = CreateTestWindowInParent(root_windows[0]);
+  window_1->SetBounds(gfx::Rect(0, 0, 100, 100));
   window_1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
   window_1->Show();
-  aura::Window* window_2 =
-      CreateTestWindowInParent(root_windows[1], gfx::Rect(201, 0, 100, 100));
+  aura::Window* window_2 = CreateTestWindowInParent(root_windows[1]);
+  window_2->SetBounds(gfx::Rect(201, 0, 100, 100));
   window_2->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
   window_2->Show();
 
@@ -1315,10 +1313,10 @@ TEST_F(ShelfLayoutManagerTest, ShelfWithSystemModalWindowDualDisplay) {
 
 TEST_F(ShelfLayoutManagerTest, FullscreenWidgetHidesShelf) {
   Shelf* shelf = GetPrimaryShelf();
-
   // Create a normal window.
-  views::Widget* widget = CreateTestWidget();
-  widget->SetBounds(gfx::Rect(11, 22, 300, 400));
+  views::Widget* widget = TestWidgetBuilder()
+                              .SetBounds(gfx::Rect(11, 22, 300, 400))
+                              .BuildOwnedByNativeWidget();
   ASSERT_FALSE(widget->IsFullscreen());
 
   // Shelf defaults to visible.
@@ -1326,8 +1324,7 @@ TEST_F(ShelfLayoutManagerTest, FullscreenWidgetHidesShelf) {
 
   // Fullscreen window hides it.
   widget->SetFullscreen(true);
-  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
-  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+  EXPECT_EQ(SHELF_HIDDEN, shelf->GetVisibilityState());
 
   // Restoring the window restores it.
   widget->Restore();

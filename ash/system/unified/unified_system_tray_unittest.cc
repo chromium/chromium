@@ -21,14 +21,11 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/test_widget_builder.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/message_center/message_center.h"
-#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -140,14 +137,12 @@ TEST_F(UnifiedSystemTrayTest, SliderBubbleMovesOnShelfAutohide) {
   // Create a test widget to make auto-hiding work. Auto-hidden shelf will
   // remain visible if no windows are shown, making it impossible to properly
   // test.
-  views::Widget* widget =
-      TestWidgetBuilder()
-          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW)
-          .SetTestWidgetDelegate()
-          .SetContext(GetContext())
-          .SetBounds(gfx::Rect(0, 0, 200, 200))
-          .SetShow(true)
-          .BuildOwnedByNativeWidget();
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  params.bounds = gfx::Rect(0, 0, 200, 200);
+  params.context = GetContext();
+  views::Widget* widget = new views::Widget;
+  widget->Init(std::move(params));
+  widget->Show();
 
   // Start off the mouse nowhere near the shelf; the shelf should be hidden.
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();

@@ -54,9 +54,7 @@ class NetworkDetailedViewTest : public AshTestBase {
         list_type_);
 
     widget_ = CreateFramelessTestWidget();
-    ASSERT_TRUE(widget_->widget_delegate()->CanMaximize());
     widget_->SetFullscreen(true);
-    DCHECK(widget_->IsFullscreen());
     widget_->SetContentsView(network_detailed_view_);
 
     base::RunLoop().RunUntilIdle();

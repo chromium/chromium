@@ -33,8 +33,6 @@ class ShelfLayoutManagerTestBase : public AshTestBase {
 
   aura::Window* CreateTestWindow();
   aura::Window* CreateTestWindowInParent(aura::Window* root_window);
-  aura::Window* CreateTestWindowInParent(aura::Window* root_window,
-                                         const gfx::Rect& bounds);
 
   // Create a simple widget in the current context (will delete on TearDown).
   views::Widget* CreateTestWidget();

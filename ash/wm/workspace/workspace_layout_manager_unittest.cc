@@ -87,10 +87,7 @@ using ::chromeos::WindowStateType;
 class MaximizeDelegateView : public views::WidgetDelegateView {
  public:
   explicit MaximizeDelegateView(const gfx::Rect& initial_bounds)
-      : initial_bounds_(initial_bounds) {
-    SetCanMaximize(true);
-    SetCanResize(true);
-  }
+      : initial_bounds_(initial_bounds) {}
 
   MaximizeDelegateView(const MaximizeDelegateView&) = delete;
   MaximizeDelegateView& operator=(const MaximizeDelegateView&) = delete;
@@ -401,8 +398,6 @@ TEST_F(WorkspaceLayoutManagerTest, DontClobberRestoreBounds) {
   DontClobberRestoreBoundsWindowObserver window_observer;
   std::unique_ptr<aura::Window> window =
       std::make_unique<aura::Window>(nullptr, aura::client::WINDOW_TYPE_NORMAL);
-  window->SetProperty(aura::client::kResizeBehaviorKey,
-                      aura::client::kResizeBehaviorCanMaximize);
   window->Init(ui::LAYER_TEXTURED);
   window->SetBounds(gfx::Rect(10, 20, 30, 40));
   // NOTE: for this test to exercise the failure the observer needs to be added

@@ -38,7 +38,6 @@ TEST_F(ZcrRemoteShellTest, GetWorkAreaInsetsInPixel) {
 
   // Stable Insets
   auto widget = CreateTestWidget();
-  EXPECT_TRUE(widget->widget_delegate()->CanMaximize());
   widget->SetFullscreen(true);
   display = display::Screen::GetScreen()->GetPrimaryDisplay();
   ASSERT_EQ(display.bounds(), display.work_area());

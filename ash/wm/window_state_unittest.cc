@@ -699,36 +699,6 @@ TEST_F(WindowStateTest, DoNotResizeMaximizedWindowInFullscreen) {
             maximized->GetBoundsInScreen().ToString());
 }
 
-TEST_F(WindowStateTest, ResizeSettingIsRespected) {
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
-  auto* window_state = WindowState::Get(window.get());
-
-  // Start with disallowing maximize.
-  window->SetProperty(aura::client::kResizeBehaviorKey,
-                      aura::client::kResizeBehaviorNone);
-
-  // Check starting state.
-  ASSERT_FALSE(window_state->IsMaximized());
-
-  // This event should be ignored, because the window is not allowed to
-  // maximize.
-  window_state->Maximize();
-  ASSERT_FALSE(window_state->IsMaximized());
-  // Also check fullscreen event.
-  {
-    const WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
-    window_state->OnWMEvent(&fullscreen_event);
-  }
-  ASSERT_FALSE(window_state->IsMaximized());
-
-  window->SetProperty(aura::client::kResizeBehaviorKey,
-                      aura::client::kResizeBehaviorCanMaximize);
-
-  // Maximize should work once we allow it.
-  window_state->Maximize();
-  ASSERT_TRUE(window_state->IsMaximized());
-}
-
 TEST_F(WindowStateTest, TrustedPinned) {
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
   WindowState* window_state = WindowState::Get(window.get());
