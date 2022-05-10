@@ -115,19 +115,46 @@ class URL_MATCHER_EXPORT SubstringSetMatcher {
 
   // An edge internal to the tree. We pack the label (character we are
   // matching on) and the destination node ID into 32 bits, to save memory.
+  // We also use these edges as a sort of generic key/value store for
+  // some special values that not all nodes will have; this also saves on
+  // memory over the otherwise obvious choice of having them as struct fields,
+  // as it means we do not to store them when they are not present.
   struct AhoCorasickEdge {
     // char (unsigned, so [0..255]), or a special label below.
     uint32_t label : 9;
     NodeID node_id : 23;
   };
 
+  // Node index that failure edge leads to. The failure node corresponds to
+  // the node which represents the longest proper suffix (include empty
+  // string) of the string represented by this node. Not stored if it is
+  // equal to kRootID (since that is the most common value).
+  //
+  // NOTE: Assigning |root| as the failure edge for itself doesn't strictly
+  // abide by the definition of "proper" suffix. The proper suffix of an empty
+  // string should probably be defined as null, but we assign it to the |root|
+  // to simplify the code and have the invariant that the failure edge is always
+  // defined.
+  static constexpr uint32_t kFailureNodeLabel = 0x100;
+  static constexpr uint32_t kFirstSpecialLabel = kFailureNodeLabel;
+
+  // Node index that corresponds to the longest proper suffix (including empty
+  // suffix) of this node and which also represents the end of a pattern.
+  // Does not have to exist.
+  static constexpr uint32_t kOutputLinkLabel = 0x101;
+
+  // If present, this node represents the end of a pattern. It stores the ID of
+  // the corresponding pattern (ie., it is not really a NodeID, but a
+  // StringPattern::ID).
+  static constexpr uint32_t kMatchIDLabel = 0x102;
+
   // Used for uninitialized label slots; used so that we do not have to test for
   // them in other ways, since we know the data will be initialized and never
   // match any other labels.
   static constexpr uint32_t kEmptyLabel = 0x103;
-  static constexpr uint32_t kFirstSpecialLabel = kEmptyLabel;
 
-  // A node in the trie.
+  // A node in the trie, packed tightly together so that it occupies 12 bytes
+  // (both on 32- and 64-bit platforms).
   class AhoCorasickNode {
    public:
     AhoCorasickNode();
@@ -154,27 +181,47 @@ class URL_MATCHER_EXPORT SubstringSetMatcher {
       return edges_capacity_ == 0 ? edges_.inline_edges : edges_.edges;
     }
 
-    NodeID failure() const { return failure_; }
+    NodeID failure() const {
+      // NOTE: Even if num_edges_ == 0, we are not doing anything
+      // undefined, as we will have room for at least two edges
+      // and empty edges are set to kEmptyLabel.
+      const AhoCorasickEdge& first_edge = *edges();
+      if (first_edge.label == kFailureNodeLabel) {
+        return first_edge.node_id;
+      } else {
+        return kRootID;
+      }
+    }
     void SetFailure(NodeID failure);
 
     void SetMatchID(StringPattern::ID id) {
       DCHECK(!IsEndOfPattern());
-      match_id_ = id;
+      SetEdge(kMatchIDLabel, id);
+      has_outputs_ = true;
     }
 
     // Returns true if this node corresponds to a pattern.
     bool IsEndOfPattern() const {
-      return match_id_ != StringPattern::kInvalidId;
+      if (!has_outputs_) {
+        // Fast reject.
+        return false;
+      }
+      return GetEdge(kMatchIDLabel) != kInvalidNodeID;
     }
 
     // Must only be called if |IsEndOfPattern| returns true for this node.
     StringPattern::ID GetMatchID() const {
       DCHECK(IsEndOfPattern());
-      return match_id_;
+      return GetEdge(kMatchIDLabel);
     }
 
-    void SetOutputLink(NodeID node) { output_link_ = node; }
-    NodeID output_link() const { return output_link_; }
+    void SetOutputLink(NodeID node) {
+      if (node != kInvalidNodeID) {
+        SetEdge(kOutputLinkLabel, node);
+        has_outputs_ = true;
+      }
+    }
+    NodeID output_link() const { return GetEdge(kOutputLinkLabel); }
 
     size_t EstimateMemoryUsage() const;
     size_t num_edges() const {
@@ -185,9 +232,7 @@ class URL_MATCHER_EXPORT SubstringSetMatcher {
       }
     }
 
-    bool has_outputs() const {
-      return IsEndOfPattern() || output_link() != kInvalidNodeID;
-    }
+    bool has_outputs() const { return has_outputs_; }
 
    private:
     // Outgoing edges of current node, including failure edge and output links.
@@ -216,11 +261,20 @@ class URL_MATCHER_EXPORT SubstringSetMatcher {
     static constexpr int kNumInlineEdges = 2;
     union {
       // Out-of-line edge storage, having room for edges_capacity_ elements.
+      // Note that due to __attribute__((packed)) below, this pointer may be
+      // unaligned on 64-bit platforms, causing slightly less efficient
+      // access to it in some cases.
       AhoCorasickEdge* edges;
 
       // Inline edge storage, used if edges_capacity_ == 0.
       AhoCorasickEdge inline_edges[kNumInlineEdges];
     } edges_;
+
+    // Whether we have an edge for kMatchIDLabel or kOutputLinkLabel,
+    // ie., hitting this node during traversal will create one or more
+    // matches. This is redundant, but since every single lookup during
+    // traversal needs this, it saves a few searches for us.
+    bool has_outputs_ = false;
 
     // Number of unused left in edges_. Edges are always allocated from the
     // beginning and never deleted; those after num_edges_ will be marked with
@@ -234,22 +288,7 @@ class URL_MATCHER_EXPORT SubstringSetMatcher {
     // kEmptyLabel + 1). If equal to zero, we are not using heap storage,
     // but instead are using inline_edges.
     uint16_t edges_capacity_ = 0;
-
-    // Node index that failure edge leads to. The failure node corresponds to
-    // the node which represents the longest proper suffix (include empty
-    // string) of the string represented by this node. Must be valid, equal to
-    // kInvalidNodeID when uninitialized.
-    NodeID failure_ = kInvalidNodeID;
-
-    // If valid, this node represents the end of a pattern. It stores the ID of
-    // the corresponding pattern.
-    StringPattern::ID match_id_ = StringPattern::kInvalidId;
-
-    // Node index that corresponds to the longest proper suffix (including empty
-    // suffix) of this node and which also represents the end of a pattern. Can
-    // be invalid.
-    NodeID output_link_ = kInvalidNodeID;
-  };
+  } __attribute__((packed));
 
   using SubstringPatternVector = std::vector<const StringPattern*>;
 

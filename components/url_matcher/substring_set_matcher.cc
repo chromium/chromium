@@ -246,21 +246,17 @@ void SubstringSetMatcher::CreateFailureAndOutputEdges() {
   // Initialize the failure edges for |root| and its children.
   AhoCorasickNode* const root = &tree_[0];
 
-  // Assigning |root| as the failure edge for itself doesn't strictly abide by
-  // the definition of "proper" suffix. The proper suffix of an empty string
-  // should probably be defined as null, but we assign it to the |root| to
-  // simplify the code and have the invariant that the failure edge is always
-  // defined.
-  root->SetFailure(kRootID);
-
   root->SetOutputLink(kInvalidNodeID);
 
   NodeID root_output_link = root->IsEndOfPattern() ? kRootID : kInvalidNodeID;
 
   for (unsigned edge_idx = 0; edge_idx < root->num_edges(); ++edge_idx) {
     const AhoCorasickEdge& edge = root->edges()[edge_idx];
+    if (edge.label >= kFirstSpecialLabel) {
+      continue;
+    }
     AhoCorasickNode* child = &tree_[edge.node_id];
-    child->SetFailure(kRootID);
+    // Failure node is kept as the root.
     child->SetOutputLink(root_output_link);
     queue.push(child);
   }
@@ -277,6 +273,9 @@ void SubstringSetMatcher::CreateFailureAndOutputEdges() {
     for (unsigned edge_idx = 0; edge_idx < current_node->num_edges();
          ++edge_idx) {
       const AhoCorasickEdge& edge = current_node->edges()[edge_idx];
+      if (edge.label >= kFirstSpecialLabel) {
+        continue;
+      }
       AhoCorasickNode* child = &tree_[edge.node_id];
 
       const AhoCorasickNode* failure_candidate_parent =
@@ -295,9 +294,9 @@ void SubstringSetMatcher::CreateFailureAndOutputEdges() {
         // have reached the root. Hence the longest proper suffix of this string
         // represented by this node is the empty string (represented by root).
         failure_candidate_id = kRootID;
+      } else {
+        child->SetFailure(failure_candidate_id);
       }
-
-      child->SetFailure(failure_candidate_id);
 
       const AhoCorasickNode* failure_candidate = &tree_[failure_candidate_id];
       // Now |failure_candidate| is |child|'s longest possible proper suffix in
@@ -318,6 +317,10 @@ void SubstringSetMatcher::AccumulateMatchesForNode(
     std::set<StringPattern::ID>* matches) const {
   DCHECK(matches);
 
+  if (!node->has_outputs()) {
+    // Fast reject.
+    return;
+  }
   if (node->IsEndOfPattern())
     matches->insert(node->GetMatchID());
 
@@ -362,9 +365,6 @@ SubstringSetMatcher::AhoCorasickNode::operator=(AhoCorasickNode&& other) {
   }
   num_free_edges_ = other.num_free_edges_;
   edges_capacity_ = other.edges_capacity_;
-  failure_ = other.failure_;
-  match_id_ = other.match_id_;
-  output_link_ = other.output_link_;
   return *this;
 }
 
@@ -393,6 +393,10 @@ void SubstringSetMatcher::AhoCorasickNode::SetEdge(uint32_t label,
   if (edges_capacity_ == 0 && num_free_edges_ > 0) {
     // Still space in the inline storage, so use that.
     edges_.inline_edges[num_edges()] = AhoCorasickEdge{label, node};
+    if (label == kFailureNodeLabel) {
+      // Make sure that kFailureNodeLabel is first.
+      std::swap(edges_.inline_edges[0], edges_.inline_edges[num_edges()]);
+    }
     --num_free_edges_;
     return;
   }
@@ -420,12 +424,18 @@ void SubstringSetMatcher::AhoCorasickNode::SetEdge(uint32_t label,
 
   // Insert the new edge at the end of our heap storage.
   edges_.edges[num_edges()] = AhoCorasickEdge{label, node};
+  if (label == kFailureNodeLabel) {
+    // Make sure that kFailureNodeLabel is first.
+    std::swap(edges_.edges[0], edges_.edges[num_edges()]);
+  }
   --num_free_edges_;
 }
 
 void SubstringSetMatcher::AhoCorasickNode::SetFailure(NodeID node) {
   DCHECK_NE(kInvalidNodeID, node);
-  failure_ = node;
+  if (node != kRootID) {
+    SetEdge(kFailureNodeLabel, node);
+  }
 }
 
 size_t SubstringSetMatcher::AhoCorasickNode::EstimateMemoryUsage() const {
