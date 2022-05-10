@@ -513,7 +513,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
       try_catch.SetVerbose(true);
     }
 
-    const ReferrerScriptInfo referrer_info(classic_script->BaseURL(),
+    const ReferrerScriptInfo referrer_info(classic_script->BaseUrl(),
                                            classic_script->FetchOptions());
 
     v8::Local<v8::Script> script;
@@ -653,7 +653,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CompileAndRunInternalScript(
     const ClassicScript& classic_script) {
   DCHECK_EQ(isolate, script_state->GetIsolate());
 
-  const ReferrerScriptInfo referrer_info(classic_script.BaseURL(),
+  const ReferrerScriptInfo referrer_info(classic_script.BaseUrl(),
                                          classic_script.FetchOptions());
   v8::Local<v8::Data> host_defined_options =
       referrer_info.ToV8HostDefinedOptions(isolate, classic_script.SourceUrl());
@@ -865,7 +865,7 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
     // Script IDs are not available on errored modules or on non-source text
     // modules, so we give them a default value.
     probe::ExecuteScript probe(execution_context, script_state->GetContext(),
-                               module_script->SourceURL(),
+                               module_script->SourceUrl(),
                                record->GetStatus() != v8::Module::kErrored &&
                                        record->IsSourceTextModule()
                                    ? record->ScriptId()

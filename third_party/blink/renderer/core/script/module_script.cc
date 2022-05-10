@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/script/module_record_resolver.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -25,10 +26,10 @@ ModuleScript::ModuleScript(Modulator* settings_object,
                            v8::Local<v8::Module> record,
                            const KURL& source_url,
                            const KURL& base_url,
-                           const ScriptFetchOptions& fetch_options)
-    : Script(fetch_options, base_url),
-      settings_object_(settings_object),
-      source_url_(source_url) {
+                           const ScriptFetchOptions& fetch_options,
+                           const TextPosition& start_position)
+    : Script(fetch_options, base_url, source_url, start_position),
+      settings_object_(settings_object) {
   if (record.IsEmpty()) {
     // We allow empty records for module infra tests which never touch records.
     // This should never happen outside unit tests.
@@ -91,7 +92,7 @@ KURL ModuleScript::ResolveModuleSpecifier(const String& module_request,
   if (found != specifier_to_url_cache_.end())
     return found->value;
 
-  KURL url = SettingsObject()->ResolveModuleSpecifier(module_request, BaseURL(),
+  KURL url = SettingsObject()->ResolveModuleSpecifier(module_request, BaseUrl(),
                                                       failure_reason);
   // Cache the result only on success, so that failure_reason is set for
   // subsequent calls too.

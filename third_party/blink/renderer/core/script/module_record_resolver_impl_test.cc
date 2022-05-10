@@ -153,7 +153,7 @@ TEST_F(ModuleRecordResolverImplTest, RegisterResolveSuccess) {
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_EQ(resolved, target_module_script->V8Module());
   EXPECT_EQ(1, modulator_->GetFetchedModuleScriptCalled());
-  EXPECT_EQ(modulator_->FetchedUrl(), target_module_script->BaseURL())
+  EXPECT_EQ(modulator_->FetchedUrl(), target_module_script->BaseUrl())
       << "Unexpectedly fetched URL: " << modulator_->FetchedUrl().GetString();
 }
 

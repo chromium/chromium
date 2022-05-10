@@ -173,7 +173,7 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
     // Check that the module script is instantiated/evaluated correctly.
     ASSERT_TRUE(ModuleRecord::Instantiate(scope.GetScriptState(),
                                           module_script->V8Module(),
-                                          module_script->SourceURL())
+                                          module_script->SourceUrl())
                     .IsEmpty());
     ASSERT_EQ(module_script
                   ->RunScriptOnScriptStateAndReturnValue(scope.GetScriptState())
@@ -293,7 +293,7 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithDiscarding) {
     // Check that the module script is instantiated/evaluated correctly.
     ASSERT_TRUE(ModuleRecord::Instantiate(scope.GetScriptState(),
                                           module_script->V8Module(),
-                                          module_script->SourceURL())
+                                          module_script->SourceUrl())
                     .IsEmpty());
     ASSERT_EQ(module_script
                   ->RunScriptOnScriptStateAndReturnValue(scope.GetScriptState())
@@ -464,7 +464,7 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
     // Check that the module script is instantiated/evaluated correctly.
     ASSERT_TRUE(ModuleRecord::Instantiate(scope.GetScriptState(),
                                           module_script->V8Module(),
-                                          module_script->SourceURL())
+                                          module_script->SourceUrl())
                     .IsEmpty());
     ASSERT_EQ(module_script
                   ->RunScriptOnScriptStateAndReturnValue(scope.GetScriptState())

@@ -235,7 +235,7 @@ void ModuleTreeLinker::FetchRootInline(
     base::PassKey<ModuleTreeLinkerRegistry>) {
   DCHECK(module_script);
 #if DCHECK_IS_ON()
-  original_url_ = module_script->BaseURL();
+  original_url_ = module_script->BaseUrl();
   url_ = original_url_;
   module_type_ = ModuleType::kJavaScript;
   root_is_inline_ = true;
@@ -448,7 +448,7 @@ void ModuleTreeLinker::FetchDescendants(const ModuleScript* module_script) {
     // script's base URL. ...</spec>
     ModuleScriptFetchRequest request(
         module_request.url, module_request.module_type, context_type_,
-        destination_, options, module_script->BaseURL().GetString(),
+        destination_, options, module_script->BaseUrl().GetString(),
         module_request.position);
 
     // <spec label="IMSGF" step="1">Assert: visited set contains url.</spec>
@@ -526,7 +526,7 @@ void ModuleTreeLinker::Instantiate() {
 
     ScriptState::Scope scope(script_state);
     ScriptValue instantiation_error =
-        ModuleRecord::Instantiate(script_state, record, result_->SourceURL());
+        ModuleRecord::Instantiate(script_state, record, result_->SourceUrl());
 
     // <spec step="5.2">... If this throws an exception, set result's error to
     // rethrow to that exception.</spec>

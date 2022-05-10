@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_fetch_options.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -68,11 +69,19 @@ class CORE_EXPORT Script : public GarbageCollected<Script> {
           V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
 
   const ScriptFetchOptions& FetchOptions() const { return fetch_options_; }
-  const KURL& BaseURL() const { return base_url_; }
+  const KURL& BaseUrl() const { return base_url_; }
+  const KURL& SourceUrl() const { return source_url_; }
+  const TextPosition& StartPosition() const { return start_position_; }
 
  protected:
-  explicit Script(const ScriptFetchOptions& fetch_options, const KURL& base_url)
-      : fetch_options_(fetch_options), base_url_(base_url) {}
+  explicit Script(const ScriptFetchOptions& fetch_options,
+                  const KURL& base_url,
+                  const KURL& source_url,
+                  const TextPosition& start_position)
+      : fetch_options_(fetch_options),
+        base_url_(base_url),
+        source_url_(source_url),
+        start_position_(start_position) {}
 
  private:
   // https://html.spec.whatwg.org/C/#concept-script-script-fetch-options
@@ -80,6 +89,27 @@ class CORE_EXPORT Script : public GarbageCollected<Script> {
 
   // https://html.spec.whatwg.org/C/#concept-script-base-url
   const KURL base_url_;
+
+  // The URL of the script, which is primarily intended for DevTools
+  // javascript debugger, and can be observed as:
+  // 1) The 'source-file' in CSP violations reports.
+  // 2) The URL(s) in javascript stack traces.
+  // 3) How relative source map are resolved.
+  //
+  // The fragment is stripped due to https://crbug.com/306239 (except for worker
+  // top-level scripts), at the callers of Create(), or inside
+  // CreateFromResource() and CreateUnspecifiedScript() in ClassicScript.
+  //
+  // It is important to keep the url fragment for worker top-level scripts so
+  // that errors in worker scripts can include the fragment when reporting the
+  // location of the failure. This is enforced by several tests in
+  // external/wpt/workers/interfaces/WorkerGlobalScope/onerror/.
+  //
+  // Note that this can be different from the script's base URL
+  // (`Script::BaseUrl()`, #concept-script-base-url).
+  const KURL source_url_;
+
+  const TextPosition start_position_;
 };
 
 }  // namespace blink

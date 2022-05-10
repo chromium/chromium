@@ -68,12 +68,8 @@ class CORE_EXPORT JSModuleScript final : public ModuleScript,
       const TextPosition&,
       ModuleRecordProduceCacheData* produce_cache_data);
 
-  const TextPosition& StartPosition() const { return start_position_; }
-
   // For V8CodeCache statistics.
   const size_t source_text_length_;
-
-  const TextPosition start_position_;
 
   // Only for ProduceCache(). JSModuleScript keeps |produce_cache_data_|
   // because:

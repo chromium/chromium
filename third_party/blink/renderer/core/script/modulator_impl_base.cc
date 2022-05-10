@@ -198,7 +198,7 @@ ModuleImportMeta ModulatorImplBase::HostGetImportMetaProperties(
 
   // <spec step="3">Let urlString be module script's base URL,
   // serialized.</spec>
-  String url_string = module_script->BaseURL().GetString();
+  String url_string = module_script->BaseUrl().GetString();
 
   // <spec step="4">Return « Record { [[Key]]: "url", [[Value]]: urlString }
   // ».</spec>

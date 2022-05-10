@@ -76,7 +76,6 @@ class CORE_EXPORT ClassicScript final : public Script {
   void Trace(Visitor*) const override;
 
   const ParkableString& SourceText() const { return source_text_; }
-  const KURL& SourceUrl() const { return source_url_; }
 
   ScriptSourceLocationType SourceLocationType() const {
     return source_location_type_;
@@ -87,7 +86,6 @@ class CORE_EXPORT ClassicScript final : public Script {
   }
 
   SingleCachedMetadataHandler* CacheHandler() const { return cache_handler_; }
-  const TextPosition& StartPosition() const { return start_position_; }
 
   ScriptStreamer* Streamer() const { return streamer_; }
   ScriptStreamer::NotStreamingReason NotStreamingReason() const {
@@ -117,32 +115,11 @@ class CORE_EXPORT ClassicScript final : public Script {
 
   const ParkableString source_text_;
 
-  // The URL of the script, which is primarily intended for DevTools
-  // javascript debugger, and can be observed as:
-  // 1) The 'source-file' in CSP violations reports.
-  // 2) The URL(s) in javascript stack traces.
-  // 3) How relative source map are resolved.
-  //
-  // The fragment is stripped due to https://crbug.com/306239 (except for worker
-  // top-level scripts), at the callers of Create(), or inside
-  // CreateFromResource() and CreateUnspecifiedScript().
-  //
-  // It is important to keep the url fragment for worker top-level scripts so
-  // that errors in worker scripts can include the fragment when reporting the
-  // location of the failure. This is enforced by several tests in
-  // external/wpt/workers/interfaces/WorkerGlobalScope/onerror/.
-  //
-  // Note that this can be different from the script's base URL
-  // (`Script::BaseURL()`, #concept-script-base-url).
-  const KURL source_url_;
-
   const ScriptSourceLocationType source_location_type_;
 
   const SanitizeScriptErrors sanitize_script_errors_;
 
   const Member<SingleCachedMetadataHandler> cache_handler_;
-
-  const TextPosition start_position_;
 
   const Member<ScriptStreamer> streamer_;
   const ScriptStreamer::NotStreamingReason not_streaming_reason_;

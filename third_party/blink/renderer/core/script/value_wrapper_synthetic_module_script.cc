@@ -192,7 +192,8 @@ ValueWrapperSyntheticModuleScript::ValueWrapperSyntheticModuleScript(
                    record,
                    source_url,
                    base_url,
-                   fetch_options),
+                   fetch_options,
+                   start_position),
       export_value_(v8::Isolate::GetCurrent(), value) {}
 
 // This is the definition of [[EvaluationSteps]] As per the synthetic module

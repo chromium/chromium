@@ -21,7 +21,7 @@ void ModuleRecordResolverImpl::RegisterModuleScript(
   v8::Isolate* isolate = modulator_->GetScriptState()->GetIsolate();
   BoxedV8Module* record = MakeGarbageCollected<BoxedV8Module>(isolate, module);
   DVLOG(1) << "ModuleRecordResolverImpl::RegisterModuleScript(url="
-           << module_script->BaseURL().GetString()
+           << module_script->BaseUrl().GetString()
            << ", hash=" << BoxedV8ModuleHash::GetHash(record) << ")";
 
   auto result = record_to_module_script_map_.Set(record, module_script);
@@ -39,7 +39,7 @@ void ModuleRecordResolverImpl::UnregisterModuleScript(
   v8::Isolate* isolate = modulator_->GetScriptState()->GetIsolate();
   BoxedV8Module* record = MakeGarbageCollected<BoxedV8Module>(isolate, module);
   DVLOG(1) << "ModuleRecordResolverImpl::UnregisterModuleScript(url="
-           << module_script->BaseURL().GetString()
+           << module_script->BaseUrl().GetString()
            << ", hash=" << BoxedV8ModuleHash::GetHash(record) << ")";
 
   record_to_module_script_map_.erase(record);

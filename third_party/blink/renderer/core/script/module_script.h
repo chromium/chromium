@@ -52,7 +52,6 @@ class CORE_EXPORT ModuleScript : public Script {
   void Trace(Visitor*) const override;
 
   virtual void ProduceCache() {}
-  const KURL& SourceURL() const { return source_url_; }
 
   [[nodiscard]] ScriptEvaluationResult RunScriptOnScriptStateAndReturnValue(
       ScriptState*,
@@ -68,7 +67,8 @@ class CORE_EXPORT ModuleScript : public Script {
                v8::Local<v8::Module>,
                const KURL& source_url,
                const KURL& base_url,
-               const ScriptFetchOptions&);
+               const ScriptFetchOptions&,
+               const TextPosition& start_position);
 
  private:
   mojom::blink::ScriptType GetScriptType() const override {
@@ -124,7 +124,6 @@ class CORE_EXPORT ModuleScript : public Script {
   WorldSafeV8Reference<v8::Value> error_to_rethrow_;
 
   mutable HashMap<String, KURL> specifier_to_url_cache_;
-  KURL source_url_;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const ModuleScript&);
