@@ -5,6 +5,9 @@
 <link rel="help" href="https://fullscreen.spec.whatwg.org/#::backdrop-pseudo-element">
 <link rel="match" href="backdrop-animate-002-ref.html">
 <dialog id="target">Dialog contents</dialog>
+<!-- This test fails on WPT.fyi with off-by-one on the green background: -->
+<meta name=fuzzy content="maxDifference=1;totalPixels=472272">
+
 <style>
 #target::backdrop {
   will-change: transform;
