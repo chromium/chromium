@@ -73,6 +73,12 @@
     "eager",
     "auto",
 
+    // popup attribute (experimental)
+    // https://github.com/openui/open-ui/blob/main/research/src/pages/popup/popup.research.explainer.mdx
+    "popup",
+    "hint",
+    "async",
+
     // referrerpolicy attribute
     // https://w3c.github.io/webappsec-referrer-policy/#referrer-policies
     "no-referrer",

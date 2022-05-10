@@ -80,19 +80,27 @@
     popup.setAttribute('popup','hint');
     assert_equals(popup.popup,'hint');
     popup.setAttribute('popup','invalid');
-    assert_equals(popup.popup,'invalid');
+    assert_equals(popup.popup,'','Invalid values should reflect as empty string');
     popup.setAttribute('popup','HiNt');
-    assert_equals(popup.popup,'HiNt');
+    assert_equals(popup.popup,'hint','Case is normalized');
     popup.removeAttribute('popup');
-    assert_equals(popup.popup,'');
+    assert_equals(popup.popup,'','No value should reflect as empty string');
     popup.popup='hint';
     assert_equals(popup.getAttribute('popup'),'hint');
     popup.popup='popup';
     assert_equals(popup.getAttribute('popup'),'popup');
     popup.popup='invalid';
-    assert_equals(popup.getAttribute('popup'),'invalid');
+    assert_equals(popup.getAttribute('popup'),'invalid','IDL setter allows any value');
+    assert_equals(popup.popup,'','but IDL getter does not re-reflect invalid values');
     popup.popup='';
-    assert_equals(popup.getAttribute('popup'),'');
+    assert_equals(popup.getAttribute('popup'),'','Empty should map to empty');
+    assert_equals(popup.popup,'','Empty should map to empty in IDL');
+    popup.popup=null;
+    assert_equals(popup.getAttribute('popup'),'null','Attribute for "null" should still get set');
+    assert_equals(popup.popup,'','Null should map to empty in IDL');
+    popup.popup=undefined;
+    assert_equals(popup.getAttribute('popup'),'undefined','Attribute for "undefined" should still get set');
+    assert_equals(popup.popup,'','undefined should map to empty in IDL');
   },'IDL attribute reflection');
 
   test(() => {
@@ -110,6 +118,8 @@
     assertIsFunctionalPopup(popup);
     popup.popup = 'PoPuP';
     assertIsFunctionalPopup(popup);
+    popup.popup = 'invalid';
+    assertNotAPopup(popup);
   },'Popup attribute value should be case insensitive');
 
   test(() => {
