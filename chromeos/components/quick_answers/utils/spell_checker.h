@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/public/mojom/spell_check.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -58,6 +59,14 @@ class SpellChecker : public QuickAnswersStateObserver {
       mojo::PendingRemote<mojom::SpellCheckDictionary> dictionary);
 
   void MaybeRetryInitialize();
+
+  // The reply points for PostTaskAndReplyWithResult.
+  void OnPathExistsComplete(bool path_exists);
+  void OnSaveDictionaryDataComplete(bool dictionary_saved);
+  void OnOpenDictionaryFileComplete(base::File file);
+
+  // Task runner where the file operations takes place.
+  scoped_refptr<base::SequencedTaskRunner> const task_runner_;
 
   // Whether the Quick answers feature is enabled in settings.
   bool feature_enabled_ = false;

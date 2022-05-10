@@ -7,6 +7,9 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/task/task_runner_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/spellcheck/common/spellcheck_common.h"
@@ -63,7 +66,6 @@ GURL GetDictionaryURL(const std::string& file_name) {
 
 bool SaveDictionaryData(std::unique_ptr<std::string> data,
                         const base::FilePath& file_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -87,8 +89,21 @@ bool SaveDictionaryData(std::unique_ptr<std::string> data,
   return base::ReplaceFile(tmp_path, file_path, nullptr);
 }
 
-void RemoveDictionaryFle(const base::FilePath& file_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+base::File OpenDictionaryFile(const base::FilePath& file_path) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  base::File file(file_path, base::File::FLAG_READ | base::File::FLAG_OPEN);
+  return file;
+}
+
+void CloseDictionaryFile(base::File file) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  file.Close();
+}
+
+void RemoveDictionaryFile(const base::FilePath& file_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -99,7 +114,9 @@ void RemoveDictionaryFle(const base::FilePath& file_path) {
 
 SpellChecker::SpellChecker(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(url_loader_factory) {
+    : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
+      url_loader_factory_(url_loader_factory) {
   quick_answers_state_observation_.Observe(QuickAnswersState::Get());
 }
 
@@ -139,30 +156,14 @@ void SpellChecker::OnApplicationLocaleReady(const std::string& locale) {
 void SpellChecker::InitializeDictionary() {
   DCHECK(!dictionary_file_path_.empty());
 
-  // If the dictionary is not available, try to download it from the server.
-  if (!base::PathExists(dictionary_file_path_)) {
-    auto url =
-        GetDictionaryURL(dictionary_file_path_.BaseName().MaybeAsASCII());
-
-    auto resource_request = std::make_unique<network::ResourceRequest>();
-    resource_request->url = url;
-    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-    loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                               kNetworkTrafficAnnotationTag);
-    // TODO(b/226221138): Probably use |DownloadToTempFile| instead.
-    loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        url_loader_factory_.get(),
-        base::BindOnce(&SpellChecker::OnSimpleURLLoaderComplete,
-                       base::Unretained(this)));
-    return;
-  }
-
-  InitializeSpellCheckService();
+  base::PostTaskAndReplyWithResult(
+      task_runner_.get(), FROM_HERE,
+      base::BindOnce(&base::PathExists, dictionary_file_path_),
+      base::BindOnce(&SpellChecker::OnPathExistsComplete,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SpellChecker::InitializeSpellCheckService() {
-  DCHECK(base::PathExists(dictionary_file_path_));
-
   if (!service_) {
     service_ = content::ServiceProcessHost::Launch<mojom::SpellCheckService>(
         content::ServiceProcessHost::Options()
@@ -170,12 +171,11 @@ void SpellChecker::InitializeSpellCheckService() {
             .Pass());
   }
 
-  base::File file(dictionary_file_path_,
-                  base::File::FLAG_READ | base::File::FLAG_OPEN);
-
-  service_->CreateDictionary(file.Duplicate(),
-                             base::BindOnce(&SpellChecker::OnDictionaryCreated,
-                                            base::Unretained(this)));
+  base::PostTaskAndReplyWithResult(
+      task_runner_.get(), FROM_HERE,
+      base::BindOnce(&OpenDictionaryFile, dictionary_file_path_),
+      base::BindOnce(&SpellChecker::OnOpenDictionaryFileComplete,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SpellChecker::OnSimpleURLLoaderComplete(
@@ -197,12 +197,12 @@ void SpellChecker::OnSimpleURLLoaderComplete(
     return;
   }
 
-  if (!SaveDictionaryData(std::move(data), dictionary_file_path_)) {
-    MaybeRetryInitialize();
-    return;
-  }
-
-  InitializeSpellCheckService();
+  base::PostTaskAndReplyWithResult(
+      task_runner_.get(), FROM_HERE,
+      base::BindOnce(&SaveDictionaryData, std::move(data),
+                     dictionary_file_path_),
+      base::BindOnce(&SpellChecker::OnSaveDictionaryDataComplete,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SpellChecker::OnDictionaryCreated(
@@ -219,7 +219,8 @@ void SpellChecker::OnDictionaryCreated(
 }
 
 void SpellChecker::MaybeRetryInitialize() {
-  RemoveDictionaryFle(dictionary_file_path_);
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&RemoveDictionaryFile, dictionary_file_path_));
 
   if (num_retries_ >= kMaxRetries) {
     LOG(ERROR) << "Service initialize failed after max retries";
@@ -229,6 +230,46 @@ void SpellChecker::MaybeRetryInitialize() {
 
   ++num_retries_;
   InitializeDictionary();
+}
+
+void SpellChecker::OnPathExistsComplete(bool path_exists) {
+  // If the dictionary is not available, try to download it from the server.
+  if (path_exists) {
+    auto url =
+        GetDictionaryURL(dictionary_file_path_.BaseName().MaybeAsASCII());
+
+    auto resource_request = std::make_unique<network::ResourceRequest>();
+    resource_request->url = url;
+    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+    loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
+                                               kNetworkTrafficAnnotationTag);
+    // TODO(b/226221138): Probably use |DownloadToTempFile| instead.
+    loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+        url_loader_factory_.get(),
+        base::BindOnce(&SpellChecker::OnSimpleURLLoaderComplete,
+                       base::Unretained(this)));
+    return;
+  }
+
+  InitializeSpellCheckService();
+}
+
+void SpellChecker::OnSaveDictionaryDataComplete(bool dictionary_saved) {
+  if (!dictionary_saved) {
+    MaybeRetryInitialize();
+    return;
+  }
+
+  InitializeSpellCheckService();
+}
+
+void SpellChecker::OnOpenDictionaryFileComplete(base::File file) {
+  service_->CreateDictionary(file.Duplicate(),
+                             base::BindOnce(&SpellChecker::OnDictionaryCreated,
+                                            base::Unretained(this)));
+
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&CloseDictionaryFile, std::move(file)));
 }
 
 }  // namespace quick_answers
