@@ -5,13 +5,13 @@
 #import "ios/chrome/browser/ui/alert_coordinator/repost_form_coordinator.h"
 
 #include "base/check.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/dialogs/completion_block_util.h"
 #import "ios/web/public/web_state.h"
-#import "ios/web/public/web_state_observer_bridge.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -21,17 +21,15 @@
 using completion_block_util::DecidePolicyCallback;
 using completion_block_util::GetSafeDecidePolicyCompletion;
 
-@interface RepostFormCoordinator () <CRWWebStateObserver> {
+@interface RepostFormCoordinator () {
   // WebState which requested this dialog.
-  web::WebState* _webState;
+  base::WeakPtr<web::WebState> _webState;
   // View Controller representing the dialog.
   UIAlertController* _dialogController;
   // Number of attempts to show the repost form action sheet.
   NSUInteger _repostAttemptCount;
   // A completion handler to be called when the dialog is dismissed.
   void (^_dismissCompletionHandler)(void);
-  // Bridge to observe the web state from Objective-C.
-  std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
 }
 
 // Creates a new UIAlertController to use for the dialog.
@@ -54,10 +52,7 @@ using completion_block_util::GetSafeDecidePolicyCompletion;
   DCHECK(completionHandler);
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _webState = webState;
-    _webStateObserverBridge =
-        std::make_unique<web::WebStateObserverBridge>(self);
-    _webState->AddObserver(_webStateObserverBridge.get());
+    _webState = webState->GetWeakPtr();
     CGRect sourceRect = CGRectMake(dialogLocation.x, dialogLocation.y, 1, 1);
     DecidePolicyCallback safeCallback =
         GetSafeDecidePolicyCompletion(completionHandler);
@@ -76,7 +71,11 @@ using completion_block_util::GetSafeDecidePolicyCompletion;
 }
 
 - (void)start {
-  if (!_webState || !_webState->IsWebUsageEnabled())
+  // The WebState may have been destroyed since the RepostFormCoordinator was
+  // created, in that case, there is nothing to do (as the tab would have been
+  // closed).
+  web::WebState* webState = _webState.get();
+  if (!webState || !webState->IsWebUsageEnabled())
     return;
 
   // Check to see if an action sheet can be shown.
@@ -120,11 +119,7 @@ using completion_block_util::GetSafeDecidePolicyCompletion;
                          completion:_dismissCompletionHandler];
   _repostAttemptCount = 0;
   _dismissCompletionHandler = nil;
-  if (_webState) {
-    _webState->RemoveObserver(_webStateObserverBridge.get());
-    _webStateObserverBridge.reset();
-    _webState = nullptr;
-  }
+  _webState.reset();
 }
 
 #pragma mark - Private
@@ -167,17 +162,6 @@ using completion_block_util::GetSafeDecidePolicyCompletion;
   result.popoverPresentationController.sourceRect = sourceRect;
 
   return result;
-}
-
-#pragma mark - CRWWebStateObserver
-
-- (void)webStateDestroyed:(web::WebState*)webState {
-  DCHECK_EQ(_webState, webState);
-  if (_webState) {
-    _webState->RemoveObserver(_webStateObserverBridge.get());
-    _webStateObserverBridge.reset();
-    _webState = nullptr;
-  }
 }
 
 @end
