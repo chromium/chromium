@@ -181,25 +181,22 @@ void OfflineInternalsUIMessageHandler::HandleStoredPagesCallback(
 void OfflineInternalsUIMessageHandler::HandleRequestQueueCallback(
     std::string callback_id,
     std::vector<std::unique_ptr<offline_pages::SavePageRequest>> requests) {
-  base::ListValue save_page_requests;
+  base::Value::List save_page_requests;
   for (const auto& request : requests) {
-    auto save_page_request = std::make_unique<base::DictionaryValue>();
-    save_page_request->SetStringKey("onlineUrl", request->url().spec());
-    save_page_request->SetDoubleKey("creationTime",
-                                    request->creation_time().ToJsTime());
-    save_page_request->SetStringKey("status", GetStringFromSavePageStatus());
-    save_page_request->SetStringKey("namespace",
-                                    request->client_id().name_space);
-    save_page_request->SetDoubleKey("lastAttemptTime",
-                                    request->last_attempt_time().ToJsTime());
-    save_page_request->SetStringKey("id",
-                                    std::to_string(request->request_id()));
-    save_page_request->SetStringKey("originalUrl",
-                                    request->original_url().spec());
-    save_page_request->SetStringKey("requestOrigin", request->request_origin());
+    base::Value::Dict save_page_request;
+    save_page_request.Set("onlineUrl", request->url().spec());
+    save_page_request.Set("creationTime", request->creation_time().ToJsTime());
+    save_page_request.Set("status", GetStringFromSavePageStatus());
+    save_page_request.Set("namespace", request->client_id().name_space);
+    save_page_request.Set("lastAttemptTime",
+                          request->last_attempt_time().ToJsTime());
+    save_page_request.Set("id", base::NumberToString(request->request_id()));
+    save_page_request.Set("originalUrl", request->original_url().spec());
+    save_page_request.Set("requestOrigin", request->request_origin());
     save_page_requests.Append(std::move(save_page_request));
   }
-  ResolveJavascriptCallback(base::Value(callback_id), save_page_requests);
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(std::move(save_page_requests)));
 }
 
 void OfflineInternalsUIMessageHandler::HandleGetRequestQueue(
