@@ -1393,6 +1393,7 @@ dialog:-internal-modal {
     max-width: calc(100% - 6px - 2em);
     max-height: calc(100% - 6px - 2em);
     user-select: text;
+    visibility: visible;
 }
 
 /* TODO(foolip): In the Fullscreen spec, there's a ::backdrop block with the

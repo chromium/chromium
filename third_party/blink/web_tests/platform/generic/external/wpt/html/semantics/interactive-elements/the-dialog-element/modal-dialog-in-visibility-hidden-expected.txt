@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS Non-modal dialog should let parent visibility inherit
-FAIL Modal dialog should have visibility: visible by default in UA sheet assert_equals: expected "visible" but got "hidden"
-PASS Modal dialog visibility should be overridable
-Harness: the test ran to completion.
-
