@@ -63,7 +63,7 @@ bool IsIntensiveWakeUpThrottlingEnabled() {
 // that admins get consistent behaviour that clients can't override. Otherwise
 // use the base::FeatureParams.
 
-base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod() {
+base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod(bool loading) {
   // Controls the time that elapses after a page is backgrounded before the
   // throttling policy takes effect.
   static const base::FeatureParam<int>
@@ -76,6 +76,9 @@ base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod() {
   if (GetIntensiveWakeUpThrottlingPolicyOverride() ==
       PolicyOverride::kNoOverride) {
     seconds = kIntensiveWakeUpThrottling_GracePeriodSeconds.Get();
+    if (!loading && base::FeatureList::IsEnabled(
+                        kQuickIntensiveWakeUpThrottlingAfterLoading))
+      seconds = kIntensiveWakeUpThrottling_GracePeriodSeconds_Loaded;
   }
   return base::Seconds(seconds);
 }

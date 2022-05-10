@@ -132,6 +132,14 @@ const base::Feature kHighPriorityDatabaseTaskType{
 //
 // Parameter name and default values, exposed for testing.
 constexpr int kIntensiveWakeUpThrottling_GracePeriodSeconds_Default = 5 * 60;
+constexpr int kIntensiveWakeUpThrottling_GracePeriodSeconds_Loaded = 10;
+
+// If enabled, the grace period of features::kIntensiveWakeUpThrottling will be
+// |kIntensiveWakeUpThrottling_GracePeriodSeconds_Loaded| when a background page
+// is loaded.
+const base::Feature kQuickIntensiveWakeUpThrottlingAfterLoading{
+    "QuickIntensiveWakeUpThrottlingAfterLoading",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Exposed so that multiple tests can tinker with the policy override.
 PLATFORM_EXPORT void
@@ -141,7 +149,11 @@ ClearIntensiveWakeUpThrottlingPolicyOverrideCacheForTesting();
 PLATFORM_EXPORT bool IsIntensiveWakeUpThrottlingEnabled();
 // Grace period after hiding a page during which there is no intensive wake up
 // throttling for the kIntensiveWakeUpThrottling feature.
-PLATFORM_EXPORT base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod();
+// |loading| is the loading state of the page, used to determine if the grace
+// period should be overwritten when kQuickIntensiveWakeUpThrottlingAfterLoading
+// is enabled.
+PLATFORM_EXPORT base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod(
+    bool loading);
 
 // If enabled, base::ThreadTaskRunnerHandle::Get() and
 // base::SequencedTaskRunnerHandle::Get() returns the current active

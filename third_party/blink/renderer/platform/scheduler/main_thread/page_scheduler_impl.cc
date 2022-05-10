@@ -682,7 +682,7 @@ void PageSchedulerImpl::UpdatePolicyOnVisibilityChange(
     }
     main_thread_scheduler_->ControlTaskRunner()->PostDelayedTask(
         FROM_HERE, do_intensively_throttle_wake_ups_callback_.GetCallback(),
-        GetIntensiveWakeUpThrottlingGracePeriod());
+        GetIntensiveWakeUpThrottlingGracePeriod(IsLoading()));
   }
 
   if (ShouldFreezePage()) {

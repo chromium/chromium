@@ -636,7 +636,7 @@ class FrameSchedulerImplTestWithIntensiveWakeUpThrottlingBase
 
   const int kNumTasks = 5;
   const base::TimeDelta kGracePeriod =
-      GetIntensiveWakeUpThrottlingGracePeriod();
+      GetIntensiveWakeUpThrottlingGracePeriod(false);
 };
 
 // Test param for FrameSchedulerImplTestWithIntensiveWakeUpThrottling
@@ -3616,13 +3616,34 @@ TEST_F(FrameSchedulerImplTestWithIntensiveWakeUpThrottlingPolicyOverride,
   // The parameters should be the defaults.
   EXPECT_EQ(
       base::Seconds(kIntensiveWakeUpThrottling_GracePeriodSeconds_Default),
-      GetIntensiveWakeUpThrottlingGracePeriod());
+      GetIntensiveWakeUpThrottlingGracePeriod(false));
 }
 
 TEST_F(FrameSchedulerImplTestWithIntensiveWakeUpThrottlingPolicyOverride,
        PolicyForceDisable) {
   SetPolicyOverride(/* enabled = */ false);
   EXPECT_FALSE(IsIntensiveWakeUpThrottlingEnabled());
+}
+
+class FrameSchedulerImplTestQuickIntensiveWakeUpThrottlingEnabled
+    : public FrameSchedulerImplTest {
+ public:
+  FrameSchedulerImplTestQuickIntensiveWakeUpThrottlingEnabled()
+      : FrameSchedulerImplTest({kQuickIntensiveWakeUpThrottlingAfterLoading},
+                               {}) {}
+};
+
+TEST_F(FrameSchedulerImplTestQuickIntensiveWakeUpThrottlingEnabled,
+       LoadingPageGracePeriod) {
+  EXPECT_EQ(
+      base::Seconds(kIntensiveWakeUpThrottling_GracePeriodSeconds_Default),
+      GetIntensiveWakeUpThrottlingGracePeriod(true));
+}
+
+TEST_F(FrameSchedulerImplTestQuickIntensiveWakeUpThrottlingEnabled,
+       LoadedPageGracePeriod) {
+  EXPECT_EQ(base::Seconds(kIntensiveWakeUpThrottling_GracePeriodSeconds_Loaded),
+            GetIntensiveWakeUpThrottlingGracePeriod(false));
 }
 
 class DeprioritizeDOMTimerTest : public FrameSchedulerImplTest {
