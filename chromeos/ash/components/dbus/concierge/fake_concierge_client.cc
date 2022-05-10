@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/cicerone/fake_cicerone_client.h"
+#include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 
 namespace ash {
 

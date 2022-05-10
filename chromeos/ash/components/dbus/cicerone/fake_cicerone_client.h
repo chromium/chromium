@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CICERONE_FAKE_CICERONE_CLIENT_H_
-#define CHROMEOS_DBUS_CICERONE_FAKE_CICERONE_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CICERONE_FAKE_CICERONE_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CICERONE_FAKE_CICERONE_CLIENT_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/cicerone/cicerone_client.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 
 namespace chromeos {
 
 // FakeCiceroneClient is a fake implementation of CiceroneClient used for
 // testing.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
-    : public CiceroneClient {
+class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
  public:
   using LaunchContainerApplicationCallback = base::RepeatingCallback<void(
       const vm_tools::cicerone::LaunchContainerApplicationRequest& request,
@@ -520,4 +519,4 @@ namespace ash {
 using ::chromeos::FakeCiceroneClient;
 }
 
-#endif  // CHROMEOS_DBUS_CICERONE_FAKE_CICERONE_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CICERONE_FAKE_CICERONE_CLIENT_H_

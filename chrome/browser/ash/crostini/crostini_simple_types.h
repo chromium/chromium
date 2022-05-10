@@ -9,8 +9,8 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/cicerone/cicerone_service.pb.h"
 
 // This file contains simple C++ types. Simple isn't a precise term, but as a
 // guideline enums and PoD structs are simple while structs/classes with methods

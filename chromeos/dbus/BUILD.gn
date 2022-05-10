@@ -134,14 +134,6 @@ source_set("unit_tests") {
   ]
 }
 
-proto_library("cicerone_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/vm_cicerone/cicerone_service.proto",
-  ]
-
-  proto_out_dir = "chromeos/dbus/cicerone"
-}
-
 proto_library("metrics_event_proto") {
   sources =
       [ "//third_party/cros_system_api/dbus/metrics_event/metrics_event.proto" ]

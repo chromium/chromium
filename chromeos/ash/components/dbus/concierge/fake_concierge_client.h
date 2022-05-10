@@ -10,10 +10,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/cicerone/cicerone_client.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/dbus/cicerone/fake_cicerone_client.h"
+#include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
