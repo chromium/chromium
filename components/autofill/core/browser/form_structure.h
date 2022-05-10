@@ -272,6 +272,7 @@ class FormStructure {
   std::vector<std::unique_ptr<AutofillField>>::const_iterator begin() const {
     return fields_.begin();
   }
+
   std::vector<std::unique_ptr<AutofillField>>::const_iterator end() const {
     return fields_.end();
   }
