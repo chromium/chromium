@@ -28,6 +28,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
@@ -285,6 +286,13 @@ ScrollView::ScrollView(ScrollWithLayers scroll_with_layers)
   vert_sb_->set_controller(this);
   corner_view_->SetVisible(false);
 
+  // "Ignored" removes the scrollbar from the accessibility tree.
+  // "IsLeaf" removes their children (e.g. the buttons and thumb).
+  horiz_sb_->GetViewAccessibility().OverrideIsIgnored(true);
+  horiz_sb_->GetViewAccessibility().OverrideIsLeaf(true);
+  vert_sb_->GetViewAccessibility().OverrideIsIgnored(true);
+  vert_sb_->GetViewAccessibility().OverrideIsLeaf(true);
+
   // Just make sure the more_content indicators aren't visible for now. They'll
   // be added as child controls and appropriately made visible depending on
   // |show_edges_with_hidden_content_|.
@@ -410,6 +418,12 @@ void ScrollView::SetHorizontalScrollBarMode(
     return;
   horizontal_scroll_bar_mode_ = horizontal_scroll_bar_mode;
   OnPropertyChanged(&horizontal_scroll_bar_mode_, kPropertyEffectsPaint);
+
+  // "Ignored" removes the scrollbar from the accessibility tree.
+  // "IsLeaf" removes their children (e.g. the buttons and thumb).
+  bool is_disabled = horizontal_scroll_bar_mode == ScrollBarMode::kDisabled;
+  horiz_sb_->GetViewAccessibility().OverrideIsIgnored(is_disabled);
+  horiz_sb_->GetViewAccessibility().OverrideIsLeaf(is_disabled);
 }
 
 void ScrollView::SetVerticalScrollBarMode(
@@ -424,6 +438,12 @@ void ScrollView::SetVerticalScrollBarMode(
 
   vertical_scroll_bar_mode_ = vertical_scroll_bar_mode;
   OnPropertyChanged(&vertical_scroll_bar_mode_, kPropertyEffectsPaint);
+
+  // "Ignored" removes the scrollbar from the accessibility tree.
+  // "IsLeaf" removes their children (e.g. the buttons and thumb).
+  bool is_disabled = vertical_scroll_bar_mode == ScrollBarMode::kDisabled;
+  vert_sb_->GetViewAccessibility().OverrideIsIgnored(is_disabled);
+  vert_sb_->GetViewAccessibility().OverrideIsLeaf(is_disabled);
 }
 
 void ScrollView::SetTreatAllScrollEventsAsHorizontal(
