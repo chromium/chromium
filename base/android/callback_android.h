@@ -27,6 +27,9 @@ void BASE_EXPORT RunBooleanCallbackAndroid(const JavaRef<jobject>& callback,
 void BASE_EXPORT RunIntCallbackAndroid(const JavaRef<jobject>& callback,
                                        int arg);
 
+void BASE_EXPORT RunLongCallbackAndroid(const JavaRef<jobject>& callback,
+                                        int64_t arg);
+
 void BASE_EXPORT RunTimeCallbackAndroid(const JavaRef<jobject>& callback,
                                         base::Time time);
 

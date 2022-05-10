@@ -48,12 +48,12 @@ class AwQuotaManagerBridge
                     const base::android::JavaParamRef<jstring>& origin);
   void GetOrigins(JNIEnv* env,
                   const base::android::JavaParamRef<jobject>& object,
-                  jint callback_id);
+                  const base::android::JavaParamRef<jobject>& callback);
   void GetUsageAndQuotaForOrigin(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& object,
       const base::android::JavaParamRef<jstring>& origin,
-      jint callback_id,
+      const base::android::JavaParamRef<jobject>& callback,
       bool is_quota);
 
   using GetOriginsCallback =
@@ -71,22 +71,6 @@ class AwQuotaManagerBridge
   content::StoragePartition* GetStoragePartition() const;
 
   storage::QuotaManager* GetQuotaManager() const;
-
-  void DeleteAllDataOnUiThread();
-  void DeleteOriginOnUiThread(const std::u16string& origin);
-  void GetOriginsOnUiThread(jint callback_id);
-  void GetUsageAndQuotaForOriginOnUiThread(const std::u16string& origin,
-                                           jint callback_id,
-                                           bool is_quota);
-
-  void GetOriginsCallbackImpl(int jcallback_id,
-                              const std::vector<std::string>& origin,
-                              const std::vector<int64_t>& usage,
-                              const std::vector<int64_t>& quota);
-  void QuotaUsageCallbackImpl(int jcallback_id,
-                              bool is_quota,
-                              int64_t usage,
-                              int64_t quota);
 
   raw_ptr<AwBrowserContext> browser_context_;
   JavaObjectWeakGlobalRef java_ref_;

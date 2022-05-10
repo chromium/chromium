@@ -9,6 +9,7 @@
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser_jni_headers/AwQuotaManagerBridge_jni.h"
+#include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
@@ -27,7 +28,8 @@
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
-using base::android::ScopedJavaLocalRef;
+using base::android::JavaRef;
+using base::android::ScopedJavaGlobalRef;
 using content::BrowserThread;
 using content::StoragePartition;
 using storage::QuotaManager;
@@ -146,14 +148,6 @@ void GetStorageKeysTask::DoneOnUIThread() {
   std::move(ui_callback_).Run(origin_, usage_, quota_);
 }
 
-void RunOnUIThread(base::OnceClosure task) {
-  if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    std::move(task).Run();
-  } else {
-    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));
-  }
-}
-
 }  // namespace
 
 // static
@@ -192,11 +186,6 @@ QuotaManager* AwQuotaManagerBridge::GetQuotaManager() const {
 
 void AwQuotaManagerBridge::DeleteAllData(JNIEnv* env,
                                          const JavaParamRef<jobject>& object) {
-  RunOnUIThread(
-      base::BindOnce(&AwQuotaManagerBridge::DeleteAllDataOnUiThread, this));
-}
-
-void AwQuotaManagerBridge::DeleteAllDataOnUiThread() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   GetStoragePartition()->ClearData(
       // Clear all web storage data except cookies.
@@ -211,58 +200,39 @@ void AwQuotaManagerBridge::DeleteAllDataOnUiThread() {
 void AwQuotaManagerBridge::DeleteOrigin(JNIEnv* env,
                                         const JavaParamRef<jobject>& object,
                                         const JavaParamRef<jstring>& origin) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::u16string origin_string(
       base::android::ConvertJavaStringToUTF16(env, origin));
-  RunOnUIThread(base::BindOnce(&AwQuotaManagerBridge::DeleteOriginOnUiThread,
-                               this, origin_string));
-}
-
-void AwQuotaManagerBridge::DeleteOriginOnUiThread(
-    const std::u16string& origin) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   StoragePartition* storage_partition = GetStoragePartition();
   storage_partition->ClearDataForOrigin(
       // All (temporary) QuotaClient types.
       StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
           StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
           StoragePartition::REMOVE_DATA_MASK_WEBSQL,
-      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_TEMPORARY, GURL(origin),
-      base::DoNothing());
+      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_TEMPORARY,
+      GURL(origin_string), base::DoNothing());
 }
 
 void AwQuotaManagerBridge::GetOrigins(JNIEnv* env,
                                       const JavaParamRef<jobject>& object,
-                                      jint callback_id) {
-  RunOnUIThread(base::BindOnce(&AwQuotaManagerBridge::GetOriginsOnUiThread,
-                               this, callback_id));
-}
-
-void AwQuotaManagerBridge::GetOriginsOnUiThread(jint callback_id) {
+                                      const JavaParamRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  GetOriginsCallback ui_callback =
-      base::BindOnce(&AwQuotaManagerBridge::GetOriginsCallbackImpl,
-                     weak_factory_.GetWeakPtr(), callback_id);
+  GetOriginsCallback ui_callback = base::BindOnce(
+      [](const JavaRef<jobject>& obj, const JavaRef<jobject>& callback,
+         const std::vector<std::string>& origin,
+         const std::vector<int64_t>& usage, const std::vector<int64_t>& quota) {
+        JNIEnv* env = AttachCurrentThread();
+        Java_AwQuotaManagerBridge_onGetOriginsCallback(
+            env, obj, callback,
+            base::android::ToJavaArrayOfStrings(env, origin),
+            base::android::ToJavaLongArray(env, usage),
+            base::android::ToJavaLongArray(env, quota));
+      },
+      ScopedJavaGlobalRef<jobject>(env, object),
+      ScopedJavaGlobalRef<jobject>(env, callback));
   base::MakeRefCounted<GetStorageKeysTask>(std::move(ui_callback),
                                            GetQuotaManager())
       ->Run();
-}
-
-void AwQuotaManagerBridge::GetOriginsCallbackImpl(
-    int jcallback_id,
-    const std::vector<std::string>& origin,
-    const std::vector<int64_t>& usage,
-    const std::vector<int64_t>& quota) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj)
-    return;
-
-  Java_AwQuotaManagerBridge_onGetOriginsCallback(
-      env, obj, jcallback_id, base::android::ToJavaArrayOfStrings(env, origin),
-      base::android::ToJavaLongArray(env, usage),
-      base::android::ToJavaLongArray(env, quota));
 }
 
 namespace {
@@ -287,46 +257,28 @@ void AwQuotaManagerBridge::GetUsageAndQuotaForOrigin(
     JNIEnv* env,
     const JavaParamRef<jobject>& object,
     const JavaParamRef<jstring>& origin,
-    jint callback_id,
-    bool is_quota) {
-  std::u16string origin_string(
-      base::android::ConvertJavaStringToUTF16(env, origin));
-  RunOnUIThread(
-      base::BindOnce(&AwQuotaManagerBridge::GetUsageAndQuotaForOriginOnUiThread,
-                     this, origin_string, callback_id, is_quota));
-}
-
-void AwQuotaManagerBridge::GetUsageAndQuotaForOriginOnUiThread(
-    const std::u16string& origin,
-    jint callback_id,
+    const JavaParamRef<jobject>& callback,
     bool is_quota) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  QuotaUsageCallback ui_callback =
-      base::BindOnce(&AwQuotaManagerBridge::QuotaUsageCallbackImpl,
-                     weak_factory_.GetWeakPtr(), callback_id, is_quota);
+  std::u16string origin_string(
+      base::android::ConvertJavaStringToUTF16(env, origin));
+
+  QuotaUsageCallback ui_callback = base::BindOnce(
+      [](const JavaRef<jobject>& callback, bool is_quota, int64_t usage,
+         int64_t quota) {
+        base::android::RunLongCallbackAndroid(callback,
+                                              (is_quota ? quota : usage));
+      },
+      ScopedJavaGlobalRef<jobject>(env, callback), is_quota);
 
   // TODO(crbug.com/889590): Use helper for url::Origin creation from string.
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
           &QuotaManager::GetUsageAndQuota, GetQuotaManager(),
-          blink::StorageKey(url::Origin::Create(GURL(origin))),
+          blink::StorageKey(url::Origin::Create(GURL(origin_string))),
           blink::mojom::StorageType::kTemporary,
           base::BindOnce(&OnUsageAndQuotaObtained, std::move(ui_callback))));
-}
-
-void AwQuotaManagerBridge::QuotaUsageCallbackImpl(int jcallback_id,
-                                                  bool is_quota,
-                                                  int64_t usage,
-                                                  int64_t quota) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj)
-    return;
-
-  Java_AwQuotaManagerBridge_onGetUsageAndQuotaForOriginCallback(
-      env, obj, jcallback_id, is_quota, usage, quota);
 }
 
 }  // namespace android_webview

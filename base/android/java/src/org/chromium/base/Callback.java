@@ -55,6 +55,12 @@ public interface Callback<T> {
 
         @SuppressWarnings("unchecked")
         @CalledByNative("Helper")
+        static void onLongResultFromNative(Callback callback, long result) {
+            callback.onResult(Long.valueOf(result));
+        }
+
+        @SuppressWarnings("unchecked")
+        @CalledByNative("Helper")
         static void onTimeResultFromNative(Callback callback, long result) {
             callback.onResult(Long.valueOf(result));
         }
