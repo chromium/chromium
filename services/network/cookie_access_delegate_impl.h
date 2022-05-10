@@ -40,10 +40,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
   // expected. |cookie_settings| contains the set of content settings that
   // describes which cookies should be subject to legacy access rules.
   // If non-null, |cookie_settings| is expected to outlive this class. If
-  // non-null, `first_party_sets` must outlive `this`.
-  CookieAccessDelegateImpl(mojom::CookieAccessDelegateType type,
-                           FirstPartySetsManager* const first_party_sets,
-                           const CookieSettings* cookie_settings = nullptr);
+  // non-null, `first_party_sets_manager` must outlive `this`.
+  CookieAccessDelegateImpl(
+      mojom::CookieAccessDelegateType type,
+      FirstPartySetsManager* const first_party_sets_manager,
+      const CookieSettings* cookie_settings = nullptr);
 
   ~CookieAccessDelegateImpl() override;
 

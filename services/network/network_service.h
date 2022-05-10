@@ -253,7 +253,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   }
 #endif
 
-  FirstPartySetsManager* first_party_sets() const {
+  FirstPartySetsManager* first_party_sets_manager() const {
     return first_party_sets_manager_.get();
   }
 

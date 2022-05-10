@@ -511,7 +511,7 @@ NetworkContext::NetworkContext(
       std::move(on_url_request_context_builder_configured));
   url_request_context_ = url_request_context_owner_.url_request_context.get();
   cookie_manager_ = std::make_unique<CookieManager>(
-      url_request_context_, network_service_->first_party_sets(),
+      url_request_context_, network_service_->first_party_sets_manager(),
       std::move(session_cleanup_cookie_store),
       std::move(params_->cookie_manager_params));
 
@@ -788,7 +788,7 @@ void NetworkContext::OnComputedFirstPartySetMetadata(
           role, url_request_context_->cookie_store(),
           cookie_manager_->cookie_settings(), origin, isolation_info,
           std::move(cookie_observer),
-          network_service_->first_party_sets()->is_enabled(),
+          network_service_->first_party_sets_manager()->is_enabled(),
           std::move(first_party_set_metadata)),
       std::move(receiver));
 }
@@ -2365,7 +2365,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     std::unique_ptr<net::CookieMonster> cookie_store =
         std::make_unique<net::CookieMonster>(
             session_cleanup_cookie_store.get(), net_log,
-            network_service_->first_party_sets()->is_enabled());
+            network_service_->first_party_sets_manager()->is_enabled());
     if (params_->persist_session_cookies)
       cookie_store->SetPersistSessionCookies(true);
 
@@ -2584,7 +2584,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       command_line->GetSwitchValueASCII(switches::kHostResolverRules));
 
   builder.set_first_party_sets_enabled(
-      network_service_->first_party_sets()->is_enabled());
+      network_service_->first_party_sets_manager()->is_enabled());
 
   // If `require_network_isolation_key_` is true, but the features that can
   // trigger another URLRequest are not set to respect NetworkIsolationKeys,

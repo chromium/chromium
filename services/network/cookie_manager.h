@@ -38,7 +38,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
  public:
   // Construct a CookieService that can serve mojo requests for the underlying
   // cookie store.  |url_request_context->cookie_store()| must outlive this
-  // object. `*first_party_sets` must outlive
+  // object. `*first_party_sets_manager` must outlive
   // `url_request_context->cookie_store()`.
   CookieManager(
       net::URLRequestContext* url_request_context,
