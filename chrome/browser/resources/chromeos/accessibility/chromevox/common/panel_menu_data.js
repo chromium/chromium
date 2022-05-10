@@ -10,6 +10,7 @@
 goog.provide('PanelNodeMenuData');
 goog.provide('PanelNodeMenuId');
 goog.provide('PanelNodeMenuItemData');
+goog.provide('PanelTabMenuItemData');
 goog.provide('ALL_NODE_MENU_DATA');
 
 goog.require('AutomationPredicate');
@@ -41,6 +42,9 @@ let PanelNodeMenuData;
  * }}
  */
 let PanelNodeMenuItemData;
+
+/** @typedef {{title: string, windowId: number, tabId: number}} */
+PanelTabMenuItemData;
 
 /** @const {!Array<!PanelNodeMenuData>} */
 ALL_NODE_MENU_DATA = [

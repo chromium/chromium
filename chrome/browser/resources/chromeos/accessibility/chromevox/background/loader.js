@@ -37,6 +37,7 @@ goog.require('Output');
 goog.require('OutputEventType');
 goog.require('PanelCommand');
 goog.require('PanelNodeMenuData');
+goog.require('PanelTabMenuItemData');
 goog.require('PhoneticData');
 goog.require('QueueMode');
 goog.require('Spannable');

@@ -453,27 +453,13 @@ export class Panel extends PanelInterface {
       }
 
       // Add all open tabs to the Tabs menu.
-      bkgnd.chrome.windows.getLastFocused(function(lastFocusedWindow) {
-        bkgnd.chrome.windows.getAll({'populate': true}, function(windows) {
-          for (let i = 0; i < windows.length; i++) {
-            const tabs = windows[i].tabs;
-            for (let j = 0; j < tabs.length; j++) {
-              let title = tabs[j].title;
-              if (tabs[j].active && windows[i].id === lastFocusedWindow.id) {
-                title += ' ' + Msgs.getMsg('active_tab');
-              }
-              tabsMenu.addMenuItem(
-                  title, '', '', '', (function(win, tab) {
-                                       bkgnd.chrome.windows.update(
-                                           win.id, {focused: true}, function() {
-                                             bkgnd.chrome.tabs.update(
-                                                 tab.id, {active: true});
-                                           });
-                                     }).bind(this, windows[i], tabs[j]));
-            }
-          }
-        });
-      });
+      const data = await BackgroundBridge.PanelBackground.getTabMenuData();
+      for (const menuInfo of data) {
+        tabsMenu.addMenuItem(
+            menuInfo.title, '', '', '',
+            () => BackgroundBridge.PanelTabMenuBackground.focus(
+                menuInfo.windowId, menuInfo.tabId));
+      }
 
       if (Panel.sessionState !== 'IN_SESSION') {
         tabsMenu.disable();

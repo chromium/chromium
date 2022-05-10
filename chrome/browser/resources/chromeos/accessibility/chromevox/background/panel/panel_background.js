@@ -9,6 +9,7 @@
 import {ISearch} from '/chromevox/background/panel/i_search.js';
 import {ISearchHandler} from '/chromevox/background/panel/i_search_handler.js';
 import {PanelNodeMenuBackground} from '/chromevox/background/panel/panel_node_menu_background.js';
+import {PanelTabMenuBackground} from '/chromevox/background/panel/panel_tab_menu_background.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 
@@ -47,9 +48,16 @@ export class PanelBackground {
         BridgeTarget.PANEL_BACKGROUND, BridgeAction.DESTROY_I_SEARCH,
         () => PanelBackground.instance.destroyISearch_());
     BridgeHelper.registerHandler(
+        BridgeTarget.PANEL_BACKGROUND, BridgeAction.FOCUS_TAB,
+        ({windowId, tabId}) =>
+            PanelTabMenuBackground.focusTab(windowId, tabId));
+    BridgeHelper.registerHandler(
         BridgeTarget.PANEL_BACKGROUND,
         BridgeAction.GET_ACTIONS_FOR_CURRENT_NODE,
         () => PanelBackground.instance.getActionsForCurrentNode_());
+    BridgeHelper.registerHandler(
+        BridgeTarget.PANEL_BACKGROUND, BridgeAction.GET_TAB_MENU_DATA,
+        () => PanelTabMenuBackground.getTabMenuData());
     BridgeHelper.registerHandler(
         BridgeTarget.PANEL_BACKGROUND, BridgeAction.INCREMENTAL_SEARCH,
         ({searchStr, dir, opt_nextObject}) =>
