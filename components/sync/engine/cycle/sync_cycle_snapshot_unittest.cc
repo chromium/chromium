@@ -46,13 +46,11 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
   SyncCycleSnapshot snapshot(
       kBirthday, kBagOfChips, model_neutral, download_progress_markers,
       kIsSilenced, kNumServerConflicts, false, base::Time::Now(),
-      base::Time::Now(), std::vector<int>(GetNumModelTypes(), 0),
-      std::vector<int>(GetNumModelTypes(), 0),
-      sync_pb::SyncEnums::UNKNOWN_ORIGIN,
+      base::Time::Now(), sync_pb::SyncEnums::UNKNOWN_ORIGIN,
       /*poll_interval=*/base::Minutes(30),
       /*has_remaining_local_changes=*/false);
   std::unique_ptr<base::DictionaryValue> value(snapshot.ToValue());
-  EXPECT_EQ(15u, value->DictSize());
+  EXPECT_EQ(14u, value->DictSize());
   ExpectDictStringValue(kBirthday, *value, "birthday");
   // Base64-encoded version of |kBagOfChips|.
   ExpectDictStringValue("YmFnb2ZjaGlwcwE=", *value, "bagOfChips");

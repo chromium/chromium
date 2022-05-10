@@ -40,8 +40,6 @@ class SyncCycleSnapshot {
                     bool notifications_enabled,
                     base::Time sync_start_time,
                     base::Time poll_finish_time,
-                    const std::vector<int>& num_entries_by_type,
-                    const std::vector<int>& num_to_delete_entries_by_type,
                     sync_pb::SyncEnums::GetUpdatesOrigin get_updates_origin,
                     base::TimeDelta poll_interval,
                     bool has_remaining_local_changes);
@@ -61,8 +59,6 @@ class SyncCycleSnapshot {
   bool notifications_enabled() const;
   base::Time sync_start_time() const;
   base::Time poll_finish_time() const;
-  const std::vector<int>& num_entries_by_type() const;
-  const std::vector<int>& num_to_delete_entries_by_type() const;
   sync_pb::SyncEnums::GetUpdatesOrigin get_updates_origin() const;
   base::TimeDelta poll_interval() const;
   // Whether usynced items existed at the time the sync cycle completed.
@@ -81,9 +77,6 @@ class SyncCycleSnapshot {
   bool notifications_enabled_;
   base::Time sync_start_time_;
   base::Time poll_finish_time_;
-
-  std::vector<int> num_entries_by_type_;
-  std::vector<int> num_to_delete_entries_by_type_;
 
   sync_pb::SyncEnums::GetUpdatesOrigin get_updates_origin_;
 

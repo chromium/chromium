@@ -31,8 +31,6 @@ SyncCycleSnapshot::SyncCycleSnapshot()
     : is_silenced_(false),
       num_server_conflicts_(0),
       notifications_enabled_(false),
-      num_entries_by_type_(GetNumModelTypes(), 0),
-      num_to_delete_entries_by_type_(GetNumModelTypes(), 0),
       has_remaining_local_changes_(false),
       is_initialized_(false) {}
 
@@ -46,8 +44,6 @@ SyncCycleSnapshot::SyncCycleSnapshot(
     bool notifications_enabled,
     base::Time sync_start_time,
     base::Time poll_finish_time,
-    const std::vector<int>& num_entries_by_type,
-    const std::vector<int>& num_to_delete_entries_by_type,
     sync_pb::SyncEnums::GetUpdatesOrigin get_updates_origin,
     base::TimeDelta poll_interval,
     bool has_remaining_local_changes)
@@ -60,8 +56,6 @@ SyncCycleSnapshot::SyncCycleSnapshot(
       notifications_enabled_(notifications_enabled),
       sync_start_time_(sync_start_time),
       poll_finish_time_(poll_finish_time),
-      num_entries_by_type_(num_entries_by_type),
-      num_to_delete_entries_by_type_(num_to_delete_entries_by_type),
       get_updates_origin_(get_updates_origin),
       poll_interval_(poll_interval),
       has_remaining_local_changes_(has_remaining_local_changes),
@@ -95,17 +89,6 @@ std::unique_ptr<base::DictionaryValue> SyncCycleSnapshot::ToValue() const {
                       ProtoEnumToString(get_updates_origin_));
   value->SetBoolKey("notificationsEnabled", notifications_enabled_);
 
-  base::DictionaryValue counter_entries;
-  for (ModelType type : ModelTypeSet::All()) {
-    base::DictionaryValue type_entries;
-    type_entries.SetIntKey("numEntries", num_entries_by_type_[type]);
-    type_entries.SetIntKey("numToDeleteEntries",
-                           num_to_delete_entries_by_type_[type]);
-
-    counter_entries.SetKey(ModelTypeToDebugString(type),
-                           std::move(type_entries));
-  }
-  value->SetKey("counter_entries", std::move(counter_entries));
   value->SetBoolKey("hasRemainingLocalChanges", has_remaining_local_changes_);
   value->SetStringKey("poll_interval", FormatTimeDelta(poll_interval_));
   value->SetStringKey(
@@ -151,15 +134,6 @@ bool SyncCycleSnapshot::has_remaining_local_changes() const {
 
 bool SyncCycleSnapshot::is_initialized() const {
   return is_initialized_;
-}
-
-const std::vector<int>& SyncCycleSnapshot::num_entries_by_type() const {
-  return num_entries_by_type_;
-}
-
-const std::vector<int>& SyncCycleSnapshot::num_to_delete_entries_by_type()
-    const {
-  return num_to_delete_entries_by_type_;
 }
 
 sync_pb::SyncEnums::GetUpdatesOrigin SyncCycleSnapshot::get_updates_origin()
