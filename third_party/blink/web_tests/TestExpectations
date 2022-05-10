@@ -80,6 +80,8 @@ crbug.com/807686 crbug.com/24182 jquery/manipulation.html [ Pass Timeout ]
 # Activation v2 (UAv2).
 crbug.com/906791 external/wpt/fullscreen/api/element-ready-check-allowed-cross-origin-manual.sub.html [ Timeout ]
 
+crbug.com/1293083 external/wpt/fullscreen/api/delegate-request.https.sub.tentative.html [ Failure ]
+
 # These two are left over from crbug.com/881040, I rebaselined them twice and
 # they continue to fail.
 crbug.com/881040 media/controls/lazy-loaded-style.html [ Failure Pass ]
