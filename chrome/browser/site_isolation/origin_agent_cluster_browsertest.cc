@@ -121,21 +121,6 @@ class OriginAgentClusterBrowserTest : public InProcessBrowserTest {
     std::string origin_list =
         https_server()->GetURL("isolated.foo.com", "/").spec();
     command_line->AppendSwitchASCII(switches::kIsolateOrigins, origin_list);
-
-    // To keep the tests easier to reason about, turn off both the spare
-    // renderer process and process reuse for subframes in different
-    // BrowsingInstances.
-    if (enable_origin_agent_cluster_) {
-      feature_list_.InitWithFeatures(
-          /* enable_features */ {features::kOriginIsolationHeader,
-                                 features::kDisableProcessReuse},
-          /* disable_features */ {features::kSpareRendererForSitePerProcess});
-    } else {
-      feature_list_.InitWithFeatures(
-          /* enable_features */ {features::kDisableProcessReuse},
-          /* disable_features */ {features::kOriginIsolationHeader,
-                                  features::kSpareRendererForSitePerProcess});
-    }
   }
 
   void SetUpOnMainThread() override {
@@ -152,7 +137,22 @@ class OriginAgentClusterBrowserTest : public InProcessBrowserTest {
  protected:
   explicit OriginAgentClusterBrowserTest(bool enable_oac)
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
-        enable_origin_agent_cluster_(enable_oac) {}
+        enable_origin_agent_cluster_(enable_oac) {
+    // To keep the tests easier to reason about, turn off both the spare
+    // renderer process and process reuse for subframes in different
+    // BrowsingInstances.
+    if (enable_origin_agent_cluster_) {
+      feature_list_.InitWithFeatures(
+          /* enable_features */ {features::kOriginIsolationHeader,
+                                 features::kDisableProcessReuse},
+          /* disable_features */ {features::kSpareRendererForSitePerProcess});
+    } else {
+      feature_list_.InitWithFeatures(
+          /* enable_features */ {features::kDisableProcessReuse},
+          /* disable_features */ {features::kOriginIsolationHeader,
+                                  features::kSpareRendererForSitePerProcess});
+    }
+  }
 
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleResponse(
