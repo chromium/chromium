@@ -182,13 +182,19 @@ Once it is built, you can simply run the browser:
 $ out/Default/Chromium.app/Contents/MacOS/Chromium
 ```
 
-## Avoiding the "incoming network connections" dialog
+## Avoiding system permissions dialogs after each build
 
-Every time you start a new developer build of Chrome you get a system dialog
-asking "Do you want the application Chromium.app to accept incoming
-network connections?" - to avoid this, run with this command-line flag:
+Every time you start a new developer build, you may get two system dialogs:
+`Chromium wants to use your confidential information stored in "Chromium Safe
+Storage" in your keychain.`, and `Do you want the application "Chromium.app" to
+accept incoming network connections?`.
 
---disable-features="DialMediaRouteProvider"
+To avoid them, you can run Chromium with these command-line flags (but of
+course beware that they will change the behavior of certain subsystems):
+
+```shell
+--use-mock-keychain --disable-features=DialMediaRouteProvider
+```
 
 ## Build and run test targets
 

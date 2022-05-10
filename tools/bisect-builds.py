@@ -1174,8 +1174,9 @@ def main():
            '    are incorrect, they are from branches.\n'
            '\n'
            'Use "-- <args-to-pass-to-chromium>" to pass arbitrary extra \n'
-           'arguments to the test binaries.\n'
-           'E.g., add "-- --no-first-run" to bypass the first run prompts.')
+           'arguments to the test binaries. For example, to bypass first-run\n'
+           'prompts, add "-- --no-first-run", and on Mac, also append\n'
+           '"--use-mock-keychain --disable-features=DialMediaRouteProvider.')
   parser = optparse.OptionParser(usage=usage)
   # Strangely, the default help output doesn't include the choice list.
   choices = ['mac', 'mac64', 'mac-arm', 'win', 'win64', 'linux', 'linux64',
