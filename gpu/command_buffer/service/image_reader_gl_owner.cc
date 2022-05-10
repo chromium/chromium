@@ -436,21 +436,19 @@ void ImageReaderGLOwner::ReleaseRefOnImageLocked(AImage* image,
   DCHECK_GT(max_images_, static_cast<int32_t>(image_refs_.size()));
   auto buffer_available_cb = std::move(buffer_available_cb_);
 
-  {
-    // |buffer_available_cb| will try to acquire lock again via
-    // UpdatetexImage(), hence we need to unlock here. Note that when
-    // |max_images_| is 1, this callback will always be empty here since it will
-    // be run immediately in RunWhenBufferIsAvailable(). Hence resetting
-    // |current_image_ref_| in UpdateTexImage() can not trigger this callback.
-    // Otherwise triggering this callback from UpdateTexImage() on
-    // |current_image_ref_| reset would cause callback and hence FrameInfoHelper
-    // to run and eventually call UpdateTexImage() from there which could have
-    // been filmsy.
+  // |buffer_available_cb| will try to acquire lock again via
+  // UpdatetexImage(), hence we need to unlock here. Note that when
+  // |max_images_| is 1, this callback will always be empty here since it will
+  // be run immediately in RunWhenBufferIsAvailable(). Hence resetting
+  // |current_image_ref_| in UpdateTexImage() can not trigger this callback.
+  // Otherwise triggering this callback from UpdateTexImage() on
+  // |current_image_ref_| reset would cause callback and hence FrameInfoHelper
+  // to run and eventually call UpdateTexImage() from there which could have
+  // been filmsy.
+  if (buffer_available_cb) {
     base::AutoUnlock auto_unlock(lock_);
-    if (buffer_available_cb) {
-      DCHECK_GT(max_images_, 1);
-      std::move(buffer_available_cb).Run();
-    }
+    DCHECK_GT(max_images_, 1);
+    std::move(buffer_available_cb).Run();
   }
 }
 
