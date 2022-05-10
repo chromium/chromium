@@ -985,12 +985,8 @@ void InstallableManager::OnDestruct(content::ServiceWorkerContext* context) {
   service_worker_context_ = nullptr;
 }
 
-void InstallableManager::DidFinishNavigation(
-    content::NavigationHandle* handle) {
-  if (handle->IsInPrimaryMainFrame() && handle->HasCommitted() &&
-      !handle->IsSameDocument()) {
-    Reset(USER_NAVIGATED);
-  }
+void InstallableManager::PrimaryPageChanged(content::Page& page) {
+  Reset(USER_NAVIGATED);
 }
 
 void InstallableManager::DidUpdateWebManifestURL(content::RenderFrameHost* rfh,

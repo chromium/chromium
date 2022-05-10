@@ -249,7 +249,7 @@ class InstallableManager
   void OnDestruct(content::ServiceWorkerContext* context) override;
 
   // content::WebContentsObserver overrides
-  void DidFinishNavigation(content::NavigationHandle* handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void DidUpdateWebManifestURL(content::RenderFrameHost* rfh,
                                const GURL& manifest_url) override;
   void WebContentsDestroyed() override;
