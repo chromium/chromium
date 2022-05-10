@@ -39,7 +39,7 @@ fit::function<void(zx_status_t)> LogFidlErrorAndExitProcess(
       logging::ZxLogMessage(from_here.file_name(), from_here.line_number(),
                             logging::LOGGING_ERROR, status)
               .stream()
-          << protocol_name << " disconnected unexpectedly";
+          << protocol_name << " disconnected unexpectedly, exiting";
     }
     base::Process::TerminateCurrentProcessImmediately(1);
   };
