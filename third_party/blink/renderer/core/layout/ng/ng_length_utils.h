@@ -329,9 +329,7 @@ MinMaxSizes ComputeMinMaxInlineSizes(const NGConstraintSpace& space,
 
   // This implements the transferred min/max sizes per:
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-size-transfers
-  if (!style.AspectRatio().IsAuto() &&
-      BlockLengthUnresolvable(space, style.LogicalHeight()) &&
-      style.LogicalWidth().IsAuto() &&
+  if (!style.AspectRatio().IsAuto() && style.LogicalWidth().IsAuto() &&
       space.InlineAutoBehavior() != NGAutoBehavior::kStretchExplicit) {
     MinMaxSizes transferred_sizes =
         ComputeMinMaxInlineSizesFromAspectRatio(space, style, border_padding);
