@@ -150,7 +150,8 @@ TEST_F(OmniboxAnswerResultTest, WeatherResult) {
       "{ \"l\": ["
       "  { \"il\": { \"t\": [{ \"t\": \"text one\", \"tt\": 8 }], "
       "              \"at\": { \"t\": \"additional one\", \"tt\": 42 } } }, "
-      "  { \"il\": { \"t\": [{ \"t\": \"-5°C\", \"tt\": 8 }], "
+      "  { \"il\": { \"al\": \"accessibility label\", "
+      "              \"t\": [{ \"t\": \"-5°C\", \"tt\": 8 }], "
       "              \"at\": { \"t\": \"additional two\", \"tt\": 42 } } } "
       "] }";
   absl::optional<base::Value> value = base::JSONReader::Read(json);
@@ -183,10 +184,7 @@ TEST_F(OmniboxAnswerResultTest, WeatherResult) {
   ASSERT_EQ(result.title_text_vector().size(), 1);
   const auto& title = result.title_text_vector()[0];
   ASSERT_EQ(title.GetType(), ash::SearchResultTextItemType::kString);
-  // TODO(crbug.com/1250154): Once the weather description is enabled from the
-  // Suggest server, this should be updated to display the weather description
-  // instead of |match.contents|.
-  EXPECT_EQ(title.GetText(), u"contents");
+  EXPECT_EQ(title.GetText(), u"accessibility label");
   EXPECT_TRUE(title.GetTextTags().empty());
 
   ASSERT_EQ(result.details_text_vector().size(), 1);

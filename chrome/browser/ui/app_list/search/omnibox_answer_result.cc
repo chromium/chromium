@@ -244,11 +244,15 @@ void OmniboxAnswerResult::UpdateTitleAndDetails() {
       scoring().filter = true;
     }
 
-    // TODO(crbug.com/1250154): Put additional weather text into the title
-    // field instead of match contents, once the information becomes available
-    // from the Suggest server.
-    SetTitleTextVector(
-        MatchFieldsToTextVector(match_.contents, match_.contents_class));
+    if (second_line.accessibility_label()) {
+      SetTitleTextVector(
+          {CreateStringTextItem(*second_line.accessibility_label())});
+    } else {
+      // If the weather condition text is missing, fall back to use
+      // `match_.contents`.
+      SetTitleTextVector(
+          MatchFieldsToTextVector(match_.contents, match_.contents_class));
+    }
 
     std::vector<TextItem> details_vector;
     AppendAdditionalText(second_line, details_vector);
