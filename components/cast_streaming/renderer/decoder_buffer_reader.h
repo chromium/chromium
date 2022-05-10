@@ -25,6 +25,8 @@ class DecoderBufferReader {
 
   DecoderBufferReader(NewBufferCb new_buffer_cb,
                       mojo::ScopedDataPipeConsumerHandle data_pipe);
+  DecoderBufferReader(DecoderBufferReader&& other,
+                      mojo::ScopedDataPipeConsumerHandle data_pipe);
   ~DecoderBufferReader();
 
   // Queues up a DecodeBuffer to be read. The contents of this buffer will be

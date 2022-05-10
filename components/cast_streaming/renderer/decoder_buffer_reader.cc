@@ -17,6 +17,14 @@ DecoderBufferReader::DecoderBufferReader(
   DCHECK(new_buffer_cb_);
 }
 
+DecoderBufferReader::DecoderBufferReader(
+    DecoderBufferReader&& other,
+    mojo::ScopedDataPipeConsumerHandle data_pipe)
+    : DecoderBufferReader(std::move(other.new_buffer_cb_),
+                          std::move(data_pipe)) {
+  is_read_pending_ = other.is_read_pending_;
+}
+
 DecoderBufferReader::~DecoderBufferReader() = default;
 
 void DecoderBufferReader::ProvideBuffer(media::mojom::DecoderBufferPtr buffer) {

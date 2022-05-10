@@ -160,10 +160,15 @@ class CastStreamingDemuxerStream : public media::DemuxerStream {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     decoder_config_ = std::move(data_stream_info->decoder_config);
-    buffer_reader_ = std::make_unique<DecoderBufferReader>(
-        base::BindRepeating(&CastStreamingDemuxerStream::OnBufferReady,
-                            weak_factory_.GetWeakPtr()),
-        std::move(data_stream_info->data_pipe));
+    if (!buffer_reader_) {
+      buffer_reader_ = std::make_unique<DecoderBufferReader>(
+          base::BindRepeating(&CastStreamingDemuxerStream::OnBufferReady,
+                              weak_factory_.GetWeakPtr()),
+          std::move(data_stream_info->data_pipe));
+    } else {
+      buffer_reader_ = std::make_unique<DecoderBufferReader>(
+          std::move(*buffer_reader_), std::move(data_stream_info->data_pipe));
+    }
 
     if (pending_read_cb_) {
       // Return early if there is already an ongoing Read() call. The prior
