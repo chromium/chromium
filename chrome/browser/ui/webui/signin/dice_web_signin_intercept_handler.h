@@ -39,10 +39,6 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
  private:
-  friend class DiceWebSigninInterceptHandlerTest;
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptHandlerTest,
-                           GetInterceptionParametersValue);
-
   const AccountInfo& primary_account();
   const AccountInfo& intercepted_account();
 
@@ -62,9 +58,6 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   std::string GetHeaderText();
   std::string GetBodyTitle();
   std::string GetBodyText();
-  std::string GetConfirmButtonLabel();
-  std::string GetCancelButtonLabel();
-  bool GetShouldUseV2Design();
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
