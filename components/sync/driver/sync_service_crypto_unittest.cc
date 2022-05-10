@@ -42,6 +42,7 @@ using testing::Ne;
 using testing::Not;
 using testing::NotNull;
 using testing::Return;
+using testing::SaveArg;
 
 sync_pb::EncryptedData MakeEncryptedData(
     const std::string& passphrase,
@@ -672,6 +673,47 @@ TEST_F(SyncServiceCryptoTest,
   EXPECT_CALL(delegate_, SetEncryptionBootstrapToken).Times(0);
   crypto_.SetDecryptionNigoriKey(Nigori::CreateByDerivation(
       KeyDerivationParams::CreateForPbkdf2(), "unexpected_passphrase"));
+  EXPECT_FALSE(crypto_.IsPassphraseRequired());
+}
+
+// Regression test for crbug.com/1322687: engine initialization may happen after
+// SetDecryptionNigoriKey() call, verify it doesn't crash and that decryption
+// key populated to the engine later, upon initialization.
+TEST_F(SyncServiceCryptoTest,
+       ShouldDeferDecryptionWithNigoriKeyUntilEngineInitialization) {
+  const std::string kTestPassphrase = "somepassphrase";
+
+  ASSERT_FALSE(crypto_.IsPassphraseRequired());
+
+  // Mimic the engine determining that a passphrase is required.
+  EXPECT_CALL(delegate_, ReconfigureDataTypesDueToCrypto());
+  crypto_.OnPassphraseRequired(
+      KeyDerivationParams::CreateForPbkdf2(),
+      MakeEncryptedData(kTestPassphrase,
+                        KeyDerivationParams::CreateForPbkdf2()));
+  ASSERT_TRUE(crypto_.IsPassphraseRequired());
+  VerifyAndClearExpectations();
+
+  // Pass decryption nigori key, it should be stored in the bootstrap token, but
+  // shouldn't cause other changes, since engine isn't initialized.
+  std::string bootstrap_token;
+  ON_CALL(delegate_, SetEncryptionBootstrapToken(_))
+      .WillByDefault(SaveArg<0>(&bootstrap_token));
+  ON_CALL(delegate_, GetEncryptionBootstrapToken())
+      .WillByDefault([&bootstrap_token]() { return bootstrap_token; });
+  crypto_.SetDecryptionNigoriKey(Nigori::CreateByDerivation(
+      KeyDerivationParams::CreateForPbkdf2(), kTestPassphrase));
+  EXPECT_TRUE(crypto_.IsPassphraseRequired());
+
+  // Decryption key should be passed to the engine once it's initialized.
+  EXPECT_CALL(engine_, SetExplicitPassphraseDecryptionKey(NotNull()))
+      .WillOnce(
+          [&](std::unique_ptr<Nigori>) { crypto_.OnPassphraseAccepted(); });
+  // The current implementation issues two reconfigurations: one immediately
+  // after checking the passphrase in the UI thread and a second time later when
+  // the engine confirms with OnPassphraseAccepted().
+  EXPECT_CALL(delegate_, ReconfigureDataTypesDueToCrypto()).Times(2);
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
   EXPECT_FALSE(crypto_.IsPassphraseRequired());
 }
 
