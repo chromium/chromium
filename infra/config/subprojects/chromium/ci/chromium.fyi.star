@@ -85,7 +85,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "viz",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -94,7 +94,7 @@ ci.builder(
         category = "site_isolation",
     ),
     notifies = ["Site Isolation Android"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -104,7 +104,7 @@ ci.builder(
         category = "linux",
     ),
     cq_mirrors_console_view = "mirrors",
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -115,7 +115,7 @@ ci.builder(
         short_name = "32rel",
     ),
     notifies = ["chrome-memory-safety"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -126,7 +126,7 @@ ci.builder(
         short_name = "64rel",
     ),
     notifies = ["chrome-memory-safety"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -144,7 +144,7 @@ ci.builder(
         ),
     ],
     notifies = ["cr-fuchsia"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -156,7 +156,7 @@ ci.builder(
         ),
     ],
     notifies = ["cr-fuchsia"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -174,7 +174,7 @@ ci.builder(
         ),
     ],
     notifies = ["cr-fuchsia"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -192,7 +192,7 @@ ci.builder(
         ),
     ],
     notifies = ["cr-fuchsia"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -210,7 +210,7 @@ ci.builder(
         ),
     ],
     notifies = ["cr-fuchsia"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -219,7 +219,7 @@ ci.builder(
         category = "lacros",
         short_name = "lcr",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -229,7 +229,7 @@ ci.builder(
         short_name = "lnx",
     ),
     notifies = ["annotator-rel"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -238,7 +238,7 @@ ci.builder(
         category = "default",
         short_name = "lcr",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -277,7 +277,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "default",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -286,7 +286,7 @@ ci.builder(
         category = "linux|blink",
         short_name = "TD",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -295,7 +295,7 @@ ci.builder(
         category = "linux|blink",
         short_name = "CM",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -305,7 +305,7 @@ ci.builder(
         short_name = "VF",
     ),
     notifies = ["linux-blink-fyi-bots"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -315,7 +315,7 @@ ci.builder(
         short_name = "VO",
     ),
     notifies = ["linux-blink-fyi-bots"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -323,7 +323,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "linux",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     schedule = "with 12h interval",
     triggered_by = [],
 )
@@ -333,7 +333,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "linux",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -341,7 +341,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "linux",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -349,7 +349,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "linux",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     triggered_by = ["linux-lacros-builder-fyi-rel"],
 )
 
@@ -358,7 +358,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "linux",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -366,7 +366,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "linux",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     triggered_by = ["linux-lacros-dbg-fyi"],
 )
 
@@ -378,7 +378,7 @@ ci.builder(
         short_name = "64rel",
     ),
     notifies = ["chrome-memory-safety"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -386,7 +386,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "linux",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -396,7 +396,7 @@ ci.builder(
     ),
     experimental = True,
     goma_backend = goma.backend.RBE_PROD,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -406,7 +406,7 @@ ci.builder(
     ),
     experimental = True,
     goma_backend = goma.backend.RBE_PROD,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -416,7 +416,7 @@ ci.builder(
     ),
     experimental = True,
     goma_backend = goma.backend.RBE_PROD,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 # This is launching & collecting entirely isolated tests.
@@ -429,7 +429,7 @@ ci.builder(
     ),
     goma_backend = goma.backend.RBE_PROD,
     main_console_view = None,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     triggered_by = ["ci/Mac Builder"],
 )
 
@@ -440,7 +440,7 @@ ci.builder(
         short_name = "hdls",
     ),
     notifies = ["headless-owners"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -502,7 +502,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "win10",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     triggered_by = ["win-pixel-builder-rel"],
 )
 
@@ -512,7 +512,7 @@ ci.builder(
         category = "perfetto",
         short_name = "lnx",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -552,7 +552,7 @@ ci.builder(
     reclient_cache_silo = "Comparison Linux - cache siloed",
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = 250,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -567,7 +567,7 @@ ci.builder(
     },
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = 500,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     schedule = "triggered",
 )
 
@@ -582,7 +582,7 @@ ci.builder(
     # TODO(thakis): Remove once https://crbug.com/927738 is resolved.
     execution_timeout = 5 * time.hour,
     goma_backend = None,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     reclient_jobs = 400,
     reclient_instance = rbe_instance.DEFAULT,
 )
@@ -666,7 +666,7 @@ ci.builder(
         category = "cros x64",
         short_name = "cgc",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -676,7 +676,7 @@ ci.builder(
     ),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     reclient_rewrapper_env = {"RBE_cache_silo": "chromeos-amd64-generic-rel (reclient)"},
 )
 
@@ -689,7 +689,7 @@ ci.builder(
     ),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     reclient_rewrapper_env = {"RBE_compare": "true"},
     reclient_ensure_verified = True,
     description_html = "verify artifacts. should be removed after the migration. crbug.com/1235218",
@@ -701,7 +701,7 @@ ci.builder(
         category = "lacros x64",
         short_name = "cgc",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -711,7 +711,7 @@ ci.builder(
     ),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     reclient_rewrapper_env = {"RBE_cache_silo": "lacros-amd64-generic-rel (reclient)"},
 )
 
@@ -721,7 +721,7 @@ ci.builder(
         category = "lacros rel",
         short_name = "cgc",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -731,7 +731,7 @@ ci.builder(
     ),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     reclient_rewrapper_env = {"RBE_cache_silo": "linux-lacros-builder-rel (reclient)"},
 )
 
@@ -758,7 +758,7 @@ fyi_coverage_builder(
         category = "code_coverage",
         short_name = "and",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     coverage_test_types = ["overall", "unit"],
     schedule = "triggered",
     triggered_by = [],
@@ -771,7 +771,7 @@ fyi_coverage_builder(
         category = "code_coverage",
         short_name = "ann",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     use_clang_coverage = True,
     coverage_test_types = ["overall", "unit"],
 )
@@ -790,7 +790,7 @@ fyi_coverage_builder(
             short_name = "cov",
         ),
     ],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     use_clang_coverage = True,
     schedule = "triggered",
     triggered_by = [],
@@ -816,7 +816,7 @@ fyi_coverage_builder(
         category = "code_coverage",
         short_name = "lcr",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     use_clang_coverage = True,
     coverage_test_types = ["overall", "unit"],
     schedule = "triggered",
@@ -829,7 +829,7 @@ fyi_coverage_builder(
         category = "code_coverage",
         short_name = "jcr",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     use_javascript_coverage = True,
     schedule = "triggered",
     triggered_by = [],
@@ -841,7 +841,7 @@ fyi_coverage_builder(
         category = "code_coverage",
         short_name = "lnx",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     use_clang_coverage = True,
     coverage_test_types = ["overall", "unit"],
     triggered_by = [],
@@ -853,7 +853,7 @@ fyi_coverage_builder(
         category = "code_coverage",
         short_name = "lac",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     use_clang_coverage = True,
     coverage_test_types = ["overall", "unit"],
 )

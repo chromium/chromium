@@ -27,7 +27,7 @@ try_.builder(
         "ci/linux-bootstrap",
         "ci/linux-bootstrap-tests",
     ],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 try_.builder(

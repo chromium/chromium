@@ -15,7 +15,7 @@ ci.defaults.set(
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
     goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     main_console_view = "main",
     pool = ci.DEFAULT_POOL,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
@@ -197,7 +197,6 @@ ci.builder(
         category = "linux|webkit",
         short_name = "asn",
     ),
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.builder(
@@ -206,7 +205,6 @@ ci.builder(
         category = "linux|webkit",
         short_name = "lk",
     ),
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.builder(
@@ -215,7 +213,6 @@ ci.builder(
         category = "linux|webkit",
         short_name = "msn",
     ),
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.builder(
@@ -238,7 +235,6 @@ ci.builder(
     builderless = 1,
     cores = 32,
     tree_closing = False,
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.builder(

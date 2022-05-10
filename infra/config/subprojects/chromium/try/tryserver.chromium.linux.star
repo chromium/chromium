@@ -15,7 +15,7 @@ try_.defaults.set(
     executable = try_.DEFAULT_EXECUTABLE,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     pool = try_.DEFAULT_POOL,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
@@ -603,7 +603,6 @@ try_.builder(
     tryjob = try_.job(
         experiment_percentage = 5,
     ),
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.builder(
@@ -614,7 +613,6 @@ try_.builder(
     tryjob = try_.job(
         experiment_percentage = 5,
     ),
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 # RTS builders (https://crbug.com/1203048)
@@ -627,11 +625,9 @@ try_.builder(
     tryjob = try_.job(
         experiment_percentage = 5,
     ),
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.builder(
     name = "fuchsia_x64_rts",
     builderless = False,
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )

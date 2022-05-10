@@ -35,7 +35,7 @@ ci.builder(
         short_name = "32",
     ),
     notifies = ["chrome-memory-safety"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 ci.builder(
@@ -46,5 +46,5 @@ ci.builder(
         short_name = "64",
     ),
     notifies = ["chrome-memory-safety"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
