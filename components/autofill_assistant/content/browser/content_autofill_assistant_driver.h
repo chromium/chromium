@@ -68,6 +68,7 @@ class ContentAutofillAssistantDriver
   void RunCallback(const std::string& guid,
                    mojom::ModelStatus model_status,
                    base::File model_file);
+  std::string GetOverridesPolicy() const;
 
   raw_ptr<AnnotateDomModelService> annotate_dom_model_service_ = nullptr;
 

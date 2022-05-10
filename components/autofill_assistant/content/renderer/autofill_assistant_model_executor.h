@@ -113,6 +113,7 @@ class AutofillAssistantModelExecutor
   // Data regarding business logic for model execution.
   // Set if there is an override for this model execution.
   // Sparse encoding of a feature vector table.
+  // The format is: overrides_[vector] = (semantic_role, objective)
   absl::optional<OverridesMap> overrides_;
   absl::optional<std::pair<int, int>> overrides_result_;
 };
