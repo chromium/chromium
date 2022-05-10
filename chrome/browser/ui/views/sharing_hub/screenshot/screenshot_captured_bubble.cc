@@ -4,8 +4,19 @@
 
 #include "chrome/browser/ui/views/sharing_hub/screenshot/screenshot_captured_bubble.h"
 
+#include <memory>
+#include <utility>
+#include <vector>
+
+#include "base/bind.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
+#include "chrome/browser/image_editor/image_editor_component_info.h"
+#include "chrome/browser/image_editor/screenshot_flow.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/share/share_features.h"
 #include "chrome/browser/ui/browser.h"
@@ -22,6 +33,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/border.h"
@@ -38,7 +50,6 @@ namespace {
 // Rendered image size, pixels.
 constexpr int kImageWidthPx = 336;
 constexpr int kImageHeightPx = 252;
-
 }  // namespace
 
 namespace sharing_hub {
@@ -151,7 +162,9 @@ void ScreenshotCapturedBubble::Init() {
           .Build();
 
   auto download_row = views::Builder<views::TableLayoutView>();
-  if (base::FeatureList::IsEnabled(share::kSharingDesktopScreenshotsEdit)) {
+  if (base::FeatureList::IsEnabled(share::kSharingDesktopScreenshotsEdit) &&
+      image_editor::ImageEditorComponentInfo::GetInstance()
+          ->IsImageEditorAvailable()) {
     const int kPaddingEditDownloadButtonPx =
         kImageWidthPx - edit_button->CalculatePreferredSize().width() -
         download_button->CalculatePreferredSize().width();
@@ -240,7 +253,42 @@ void ScreenshotCapturedBubble::DownloadButtonPressed() {
       "SharingDesktopScreenshot.ScreenshotSavedViaBubble"));
 }
 
+static base::FilePath WriteTemporaryFile(
+    const std::vector<unsigned char>& image_bytes) {
+  base::FilePath file_path;
+  base::CreateTemporaryFile(&file_path);
+  if (!file_path.empty()) {
+    if (!base::WriteFile(file_path, base::make_span(image_bytes.data(),
+                                                    image_bytes.size()))) {
+      file_path.clear();
+    }
+  }
+  return file_path;
+}
+
 void ScreenshotCapturedBubble::EditButtonPressed() {
+  const gfx::ImageSkia& image_ref = image_view_->GetImage();
+  const gfx::ImageSkiaRep& image_rep = image_ref.GetRepresentation(1.0f);
+  const SkBitmap& captured_skbitmap = image_rep.GetBitmap();
+
+  std::vector<unsigned char> image_bytes;
+  gfx::PNGCodec::EncodeBGRASkBitmap(captured_skbitmap, false, &image_bytes);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&WriteTemporaryFile, image_bytes),
+      base::BindOnce(&ScreenshotCapturedBubble::NavigateToImageEditor,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ScreenshotCapturedBubble::NavigateToImageEditor(
+    const base::FilePath& screenshot_file_path) {
+  auto screenshot_data =
+      std::make_unique<image_editor::ScreenshotCapturedData>();
+  screenshot_data->screenshot_filepath = screenshot_file_path;
+  profile_->SetUserData(image_editor::ScreenshotCapturedData::kDataKey,
+                        std::move(screenshot_data));
+
   GURL url(chrome::kChromeUIImageEditorURL);
   NavigateParams params(profile_, url, ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;

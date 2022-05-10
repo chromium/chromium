@@ -18,6 +18,7 @@
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
+#include "chrome/browser/image_editor/image_editor_component_info.h"
 #include "chrome/browser/share/share_features.h"
 #include "components/component_updater/component_updater_paths.h"
 
@@ -62,6 +63,8 @@ void DesktopScreenshotEditorComponentInstallerPolicy::ComponentReady(
     base::Value manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
+  image_editor::ImageEditorComponentInfo::GetInstance()->SetInstalledPath(
+      install_dir);
 }
 
 // Called during startup and installation before ComponentReady().

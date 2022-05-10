@@ -6,6 +6,15 @@ import("//build/config/ui.gni")
 assert(is_chromeos || is_linux || is_mac || is_win || is_fuchsia,
        "Image Editor is for desktop plaforms only")
 
+static_library("image_editor_component_util") {
+  sources = [
+    "image_editor_component_info.cc",
+    "image_editor_component_info.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 static_library("image_editor") {
   sources = [
     "screenshot_flow.cc",

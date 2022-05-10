@@ -6,8 +6,11 @@
 
 #include <memory>
 
+#include "base/callback.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -48,6 +51,9 @@ static constexpr SkColor kColorSelectionRect = SkColorSetRGB(0xEE, 0xEE, 0xEE);
 
 // Minimum selection rect edge size to treat as a valid capture region.
 static constexpr int kMinimumValidSelectionEdgePixels = 30;
+
+ScreenshotCapturedData::ScreenshotCapturedData() = default;
+ScreenshotCapturedData::~ScreenshotCapturedData() = default;
 
 ScreenshotFlow::ScreenshotFlow(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),

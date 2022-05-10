@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/files/file_path.h"
+#include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -40,6 +42,19 @@ class Layer;
 }
 
 namespace image_editor {
+
+// Class to associate screenshot capture data with Profile across navigation.
+class ScreenshotCapturedData : public base::SupportsUserData::Data {
+ public:
+  ScreenshotCapturedData();
+  ~ScreenshotCapturedData() override;
+  ScreenshotCapturedData(const ScreenshotCapturedData&) = delete;
+  ScreenshotCapturedData& operator=(const ScreenshotCapturedData&) = delete;
+
+  static constexpr char kDataKey[] = "share_hub_screenshot_data";
+
+  base::FilePath screenshot_filepath;
+};
 
 // Result codes to distinguish between how the capture mode was closed.
 enum class ScreenshotCaptureResultCode {
