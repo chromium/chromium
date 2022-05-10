@@ -85,6 +85,7 @@
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/ui_util.h"
+#include "extensions/browser/updater/extension_downloader_types.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/browser/warning_service_factory.h"
 #include "extensions/browser/zipfile_installer.h"
@@ -752,7 +753,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateAutoUpdateFunction::Run() {
       ExtensionSystem::Get(browser_context())->extension_service()->updater();
   if (updater) {
     ExtensionUpdater::CheckParams params;
-    params.fetch_priority = ManifestFetchData::FetchPriority::FOREGROUND;
+    params.fetch_priority = DownloadFetchPriority::kForeground;
     params.install_immediately = true;
     params.callback =
         base::BindOnce(&DeveloperPrivateAutoUpdateFunction::OnComplete,

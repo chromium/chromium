@@ -86,7 +86,7 @@ void ExtensionDownloaderDelegate::OnExtensionDownloadRetryForTests() {}
 
 bool ExtensionDownloaderDelegate::GetPingDataForExtension(
     const ExtensionId& id,
-    ManifestFetchData::PingData* ping) {
+    DownloadPingData* ping) {
   return false;
 }
 

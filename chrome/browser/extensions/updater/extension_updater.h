@@ -23,7 +23,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
-#include "extensions/browser/updater/manifest_fetch_data.h"
+#include "extensions/browser/updater/extension_downloader_types.h"
 #include "extensions/browser/updater/update_service.h"
 #include "extensions/common/extension_id.h"
 #include "url/gurl.h"
@@ -83,8 +83,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
     // An extension update check can be originated by a user or by a scheduled
     // task. When the value of |fetch_priority| is FOREGROUND, the update
     // request was initiated by a user.
-    ManifestFetchData::FetchPriority fetch_priority =
-        ManifestFetchData::FetchPriority::BACKGROUND;
+    DownloadFetchPriority fetch_priority = DownloadFetchPriority::kBackground;
 
     // Callback to call when the update check is complete. Can be null, if
     // you're not interested in when this happens.
@@ -217,17 +216,16 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
   void AddToDownloader(const ExtensionSet* extensions,
                        const std::set<ExtensionId>& pending_ids,
                        int request_id,
-                       ManifestFetchData::FetchPriority fetch_priority,
+                       DownloadFetchPriority fetch_priority,
                        ExtensionUpdateCheckParams* update_check_params);
 
   // Adds |extension| to the downloader, providing it with |fetch_priority|,
   // |request_id| and data extracted from the extension object.
   // |fetch_priority| parameter notifies the downloader the priority of this
   // extension update (either foreground or background).
-  bool AddExtensionToDownloader(
-      const Extension& extension,
-      int request_id,
-      ManifestFetchData::FetchPriority fetch_priority);
+  bool AddExtensionToDownloader(const Extension& extension,
+                                int request_id,
+                                DownloadFetchPriority fetch_priority);
 
   // Conduct a check as scheduled by ScheduleNextCheck.
   void NextCheck();
@@ -254,7 +252,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
                                    const std::set<int>& request_id,
                                    InstallCallback callback) override;
   bool GetPingDataForExtension(const ExtensionId& id,
-                               ManifestFetchData::PingData* ping_data) override;
+                               DownloadPingData* ping_data) override;
   bool IsExtensionPending(const ExtensionId& id) override;
   bool GetExtensionExistingVersion(const ExtensionId& id,
                                    std::string* version) override;

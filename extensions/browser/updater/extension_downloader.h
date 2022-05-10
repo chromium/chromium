@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/version.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
+#include "extensions/browser/updater/extension_downloader_types.h"
 #include "extensions/browser/updater/manifest_fetch_data.h"
 #include "extensions/browser/updater/request_queue.h"
 #include "extensions/browser/updater/safe_manifest_parser.h"
@@ -72,7 +73,7 @@ struct ExtensionDownloaderTask {
                           mojom::ManifestLocation install_location,
                           bool is_corrupt_reinstall,
                           int request_id,
-                          ManifestFetchData::FetchPriority fetch_priority,
+                          DownloadFetchPriority fetch_priority,
                           base::Version version,
                           Manifest::Type type,
                           std::string update_url_data);
@@ -81,7 +82,7 @@ struct ExtensionDownloaderTask {
                           mojom::ManifestLocation install_location,
                           bool is_corrupt_reinstall,
                           int request_id,
-                          ManifestFetchData::FetchPriority fetch_priority);
+                          DownloadFetchPriority fetch_priority);
 
   ExtensionDownloaderTask(ExtensionDownloaderTask&&);
   ExtensionDownloaderTask& operator=(ExtensionDownloaderTask&&);
@@ -103,8 +104,7 @@ struct ExtensionDownloaderTask {
 
   // Notifies the downloader the priority of this extension update (either
   // foreground or background).
-  ManifestFetchData::FetchPriority fetch_priority{
-      ManifestFetchData::BACKGROUND};
+  DownloadFetchPriority fetch_priority{DownloadFetchPriority::kBackground};
 
   // Specifies the version of the already downloaded crx file, equals
   // to 0.0.0.0 if there is no crx file or for a pending extension so it will
@@ -236,7 +236,7 @@ class ExtensionDownloader {
                    const std::string& package_hash,
                    const std::string& version,
                    const std::set<int>& request_ids,
-                   ManifestFetchData::FetchPriority fetch_priority);
+                   DownloadFetchPriority fetch_priority);
     ~ExtensionFetch();
 
     ExtensionId id;
@@ -244,7 +244,7 @@ class ExtensionDownloader {
     std::string package_hash;
     base::Version version;
     std::set<int> request_ids;
-    ManifestFetchData::FetchPriority fetch_priority;
+    DownloadFetchPriority fetch_priority;
 
     enum CredentialsMode {
       CREDENTIALS_NONE = 0,
@@ -443,7 +443,7 @@ class ExtensionDownloader {
   ManifestFetchData* CreateManifestFetchData(
       const GURL& update_url,
       int request_id,
-      ManifestFetchData::FetchPriority fetch_priority);
+      DownloadFetchPriority fetch_priority);
 
   // This function helps obtain an update (if any) from |possible_updates|.
   // |possible_indices| is an array of indices of |possible_updates| which

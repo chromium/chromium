@@ -30,6 +30,7 @@
 #include "content/public/browser/notification_source.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/updater/extension_downloader.h"
+#include "extensions/browser/updater/extension_downloader_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
@@ -282,7 +283,7 @@ void ExternalCacheImpl::CheckCache() {
         downloader_->AddPendingExtension(extensions::ExtensionDownloaderTask(
             entry.first, update_url,
             extensions::mojom::ManifestLocation::kExternalPolicy, false, 0,
-            extensions::ManifestFetchData::FetchPriority::BACKGROUND,
+            extensions::DownloadFetchPriority::kBackground,
             base::Version(version), extensions::Manifest::TYPE_UNKNOWN,
             std::string()));
       }

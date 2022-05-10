@@ -193,7 +193,7 @@ ExtensionDownloader::ExtensionFetch::ExtensionFetch(
     const std::string& package_hash,
     const std::string& version,
     const std::set<int>& request_ids,
-    const ManifestFetchData::FetchPriority fetch_priority)
+    const DownloadFetchPriority fetch_priority)
     : id(id),
       url(url),
       package_hash(package_hash),
@@ -257,7 +257,7 @@ ExtensionDownloaderTask::ExtensionDownloaderTask(
     mojom::ManifestLocation install_location,
     bool is_corrupt_reinstall,
     int request_id,
-    ManifestFetchData::FetchPriority fetch_priority,
+    DownloadFetchPriority fetch_priority,
     base::Version version,
     Manifest::Type type,
     std::string update_url_data)
@@ -279,7 +279,7 @@ ExtensionDownloaderTask::ExtensionDownloaderTask(
     mojom::ManifestLocation install_location,
     bool is_corrupt_reinstall,
     int request_id,
-    ManifestFetchData::FetchPriority fetch_priority)
+    DownloadFetchPriority fetch_priority)
     : id(std::move(id)),
       update_url(std::move(update_url)),
       install_location(install_location),
@@ -335,8 +335,8 @@ void ExtensionDownloader::DoStartAllPending() {
     if (task.is_corrupt_reinstall)
       install_source = kReinstallInstallSource;
 
-    ManifestFetchData::PingData ping_data;
-    ManifestFetchData::PingData* optional_ping_data = nullptr;
+    DownloadPingData ping_data;
+    DownloadPingData* optional_ping_data = nullptr;
     if (delegate_->GetPingDataForExtension(task.id, &ping_data))
       optional_ping_data = &ping_data;
 
@@ -596,8 +596,7 @@ void ExtensionDownloader::CreateManifestLoader() {
   resource_request->url = active_request->full_url(),
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
 
-  if (active_request->fetch_priority() ==
-      ManifestFetchData::FetchPriority::FOREGROUND) {
+  if (active_request->fetch_priority() == DownloadFetchPriority::kForeground) {
     resource_request->priority = net::MEDIUM;
   }
 
@@ -856,7 +855,7 @@ void ExtensionDownloader::HandleManifestResults(
     NotifyUpdateFound(extension_id, update->version);
     if (fetch_data->is_all_external_policy_download() && crx_url.is_empty()) {
       DCHECK_EQ(fetch_data->fetch_priority(),
-                ManifestFetchData::FetchPriority::FOREGROUND);
+                DownloadFetchPriority::kForeground);
     }
     FetchUpdatedExtension(
         std::make_unique<ExtensionFetch>(
@@ -1273,8 +1272,7 @@ void ExtensionDownloader::StartExtensionLoader() {
       extension_loader_resource_request_->load_flags;
 
   const ExtensionFetch* active_request = extensions_queue_.active_request();
-  if (active_request->fetch_priority ==
-      ManifestFetchData::FetchPriority::FOREGROUND) {
+  if (active_request->fetch_priority == DownloadFetchPriority::kForeground) {
     extension_loader_resource_request_->priority = net::MEDIUM;
   }
 
@@ -1503,7 +1501,7 @@ void ExtensionDownloader::OnAccessTokenFetchComplete(
 ManifestFetchData* ExtensionDownloader::CreateManifestFetchData(
     const GURL& update_url,
     int request_id,
-    ManifestFetchData::FetchPriority fetch_priority) {
+    DownloadFetchPriority fetch_priority) {
   ManifestFetchData::PingMode ping_mode = ManifestFetchData::NO_PING;
   if (update_url.DomainIs(ping_enabled_domain_.c_str()))
     ping_mode = ManifestFetchData::PING_WITH_ENABLED_STATE;

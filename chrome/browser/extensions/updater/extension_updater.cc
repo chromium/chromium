@@ -305,7 +305,7 @@ void ExtensionUpdater::AddToDownloader(
     const ExtensionSet* extensions,
     const std::set<ExtensionId>& pending_ids,
     int request_id,
-    ManifestFetchData::FetchPriority fetch_priority,
+    DownloadFetchPriority fetch_priority,
     ExtensionUpdateCheckParams* update_check_params) {
   DCHECK(update_service_);
 
@@ -353,7 +353,7 @@ void ExtensionUpdater::AddToDownloader(
 bool ExtensionUpdater::AddExtensionToDownloader(
     const Extension& extension,
     int request_id,
-    ManifestFetchData::FetchPriority fetch_priority) {
+    DownloadFetchPriority fetch_priority) {
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(profile_);
   GURL update_url = extension_management->GetEffectiveUpdateURL(extension);
@@ -476,7 +476,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
                      pending_id, info->update_url(), info->install_source(),
                      is_corrupt_reinstall, request_id,
                      is_high_priority_extension_pending
-                         ? ManifestFetchData::FOREGROUND
+                         ? DownloadFetchPriority::kForeground
                          : params.fetch_priority))) {
         request.in_progress_ids.insert(pending_id);
         InstallStageTracker::Get(profile_)->ReportInstallationStage(
@@ -533,7 +533,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
 
   if (awaiting_update_service) {
     update_check_params.priority =
-        params.fetch_priority == ManifestFetchData::FetchPriority::BACKGROUND
+        params.fetch_priority == DownloadFetchPriority::kBackground
             ? ExtensionUpdateCheckParams::UpdateCheckPriority::BACKGROUND
             : ExtensionUpdateCheckParams::UpdateCheckPriority::FOREGROUND;
     update_check_params.install_immediately = params.install_immediately;
@@ -646,9 +646,8 @@ void ExtensionUpdater::OnExtensionDownloadFinished(
   InstallCRXFile(std::move(fetched));
 }
 
-bool ExtensionUpdater::GetPingDataForExtension(
-    const ExtensionId& id,
-    ManifestFetchData::PingData* ping_data) {
+bool ExtensionUpdater::GetPingDataForExtension(const ExtensionId& id,
+                                               DownloadPingData* ping_data) {
   DCHECK(alive_);
   ping_data->rollcall_days =
       CalculatePingDaysForExtension(extension_prefs_->LastPingDay(id));

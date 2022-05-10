@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "extensions/browser/crx_file_info.h"
-#include "extensions/browser/updater/manifest_fetch_data.h"
+#include "extensions/browser/updater/extension_downloader_types.h"
 #include "extensions/browser/updater/safe_manifest_parser.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -270,7 +270,7 @@ class ExtensionDownloaderDelegate {
   // if PingData should not be included for this extension's update check
   // (this is the default).
   virtual bool GetPingDataForExtension(const ExtensionId& id,
-                                       ManifestFetchData::PingData* ping);
+                                       DownloadPingData* ping);
 
   // Invoked to determine whether extension |id| is currently
   // pending installation.

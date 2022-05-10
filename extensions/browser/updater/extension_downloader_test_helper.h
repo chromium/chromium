@@ -11,6 +11,7 @@
 
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
+#include "extensions/browser/updater/extension_downloader_types.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -55,7 +56,7 @@ class MockExtensionDownloaderDelegate
                     InstallCallback&));
   MOCK_METHOD0(OnExtensionDownloadRetryForTests, void());
   MOCK_METHOD2(GetPingDataForExtension,
-               bool(const ExtensionId&, ManifestFetchData::PingData*));
+               bool(const ExtensionId&, DownloadPingData*));
   MOCK_METHOD1(GetUpdateUrlData, std::string(const ExtensionId&));
   MOCK_METHOD1(IsExtensionPending, bool(const ExtensionId&));
   MOCK_METHOD2(GetExtensionExistingVersion,
