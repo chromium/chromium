@@ -531,16 +531,17 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
   if (has_aspect_ratio) {
     if ((logical_width.IsAuto() &&
          space.InlineAutoBehavior() != NGAutoBehavior::kStretchExplicit) ||
-        logical_width.IsMinContent() || logical_width.IsMaxContent())
+        logical_width.IsMinContent() || logical_width.IsMaxContent()) {
       extent = ComputeInlineSizeFromAspectRatio(space, style, border_padding);
 
-    if (extent != kIndefiniteSize) {
-      // This means we successfully applied aspect-ratio and now need to check
-      // if we need to apply the implied minimum size:
-      // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
-      if (style.OverflowInlineDirection() == EOverflow::kVisible &&
-          min_length.IsAuto())
-        min_length = Length::MinIntrinsic();
+      if (extent != kIndefiniteSize) {
+        // This means we successfully applied aspect-ratio and now need to check
+        // if we need to apply the implied minimum size:
+        // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
+        if (style.OverflowInlineDirection() == EOverflow::kVisible &&
+            min_length.IsAuto())
+          min_length = Length::MinIntrinsic();
+      }
     }
   }
 
