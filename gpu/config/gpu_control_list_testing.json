@@ -197,6 +197,7 @@
     {
       "id": 18,
       "description": "GpuControlListEntryTest.DriverVendorBeginWith",
+      "vendor_id": "0x10de",
       "driver_vendor": "NVIDIA.*",
       "features": [
         "test_feature_0"
@@ -906,6 +907,7 @@
       "os": {
         "type": "win"
       },
+      "vendor_id": "0x8086",
       "driver_vendor": "Intel.*",
       "driver_version": {
         "schema": "intel_driver",
@@ -970,6 +972,38 @@
       },
       "vendor_id": "0x1002",
       "device_id": ["0x15D8", "0x15DD"],
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 79,
+      "description": "GpuControlListEntryTest.AnyDriverVersion",
+      "os": {
+        "type": "macosx"
+      },
+      "vendor_id": "0x10de",
+      "multi_gpu_category": "any",
+      "driver_version": {
+        "op": "<=",
+        "value": "24.21.13.9826"
+      },
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 80,
+      "description": "GpuControlListEntryTest.ActiveDriverVersion",
+      "os": {
+        "type": "macosx"
+      },
+      "vendor_id": "0x10de",
+      "multi_gpu_category": "active",
+      "driver_version": {
+        "op": "<=",
+        "value": "24.21.13.9826"
+      },
       "features": [
         "test_feature_0"
       ]
