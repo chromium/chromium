@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 import java.lang.ref.WeakReference;
@@ -23,8 +26,9 @@ public class PrivacySandboxDialogController {
     /**
      * Launches an appropriate dialog if necessary and returns whether that happened.
      */
-    public static boolean maybeLaunchPrivacySandboxDialog(
-            Context context, @NonNull SettingsLauncher settingsLauncher, boolean isIncognito) {
+    public static boolean maybeLaunchPrivacySandboxDialog(Context context,
+            @NonNull SettingsLauncher settingsLauncher, boolean isIncognito,
+            BottomSheetController bottomSheetController) {
         if (isIncognito) {
             return false;
         }
@@ -35,9 +39,18 @@ public class PrivacySandboxDialogController {
             case DialogType.NONE:
                 return false;
             case DialogType.NOTICE:
-                dialog = new PrivacySandboxDialogNotice(context, settingsLauncher);
-                dialog.show();
-                sDialog = new WeakReference<>(dialog);
+                if (showNewNotice()) {
+                    if (bottomSheetController == null) return false;
+                    PrivacySandboxBottomSheetNotice bottomSheet =
+                            new PrivacySandboxBottomSheetNotice(
+                                    LayoutInflater.from(context).inflate(
+                                            R.layout.privacy_sandbox_notice_bottom_sheet, null));
+                    bottomSheetController.requestShowContent(bottomSheet, /* animate= */ true);
+                } else {
+                    dialog = new PrivacySandboxDialogNotice(context, settingsLauncher);
+                    dialog.show();
+                    sDialog = new WeakReference<>(dialog);
+                }
                 return true;
             case DialogType.CONSENT:
                 dialog = new PrivacySandboxDialogConsent(context);
@@ -49,6 +62,17 @@ public class PrivacySandboxDialogController {
                 // Should not be reached.
                 return false;
         }
+    }
+
+    static boolean showNewNotice() {
+        // Must match privacy_sandbox::kPrivacySandboxSettings3NewNotice.
+        final String newNoticeParam = "new-notice";
+        // Must match the default value for this param.
+        final boolean newNoticeParamDefault = false;
+
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3, newNoticeParam,
+                newNoticeParamDefault);
     }
 
     @VisibleForTesting
