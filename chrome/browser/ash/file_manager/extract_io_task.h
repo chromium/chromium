@@ -47,6 +47,14 @@ class ExtractIOTask : public IOTask {
       size_t index,
       base::FileErrorOr<storage::FileSystemURL> destination_result);
 
+  void ExtractAllSources();
+
+  void ZipSizeCallback(unzip::mojom::SizePtr size_info);
+
+  void GetExtractedSize(base::FilePath source_file);
+
+  void CheckSizeThenExtract();
+
   // URLs of the files that have archives in them for extraction.
   const std::vector<storage::FileSystemURL> source_urls_;
 

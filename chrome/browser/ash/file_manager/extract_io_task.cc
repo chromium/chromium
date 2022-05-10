@@ -87,6 +87,44 @@ void ExtractIOTask::ExtractArchive(
   }
 }
 
+void ExtractIOTask::ExtractAllSources() {
+  for (size_t index = 0; index < progress_.sources.size(); ++index) {
+    const EntryStatus& source = progress_.sources[index];
+    const base::FilePath source_file = source.url.path().BaseName();
+    util::GenerateUnusedFilename(
+        parent_folder_, source_file.RemoveExtension(), file_system_context_,
+        base::BindOnce(&ExtractIOTask::ExtractArchive,
+                       weak_ptr_factory_.GetWeakPtr(), index));
+  }
+}
+
+void ExtractIOTask::ZipSizeCallback(unzip::mojom::SizePtr size_info) {
+  DCHECK_GT(extractCount_, 0);
+  if (size_info->is_valid) {
+    progress_.total_bytes += size_info->value;
+  }
+  if (--extractCount_ == 0) {
+    // After getting the size of all the ZIPs, extract them.
+    extractCount_ = progress_.sources.size();
+    ExtractAllSources();
+  }
+}
+
+void ExtractIOTask::GetExtractedSize(base::FilePath source_file) {
+  unzip::GetExtractedSize(unzip::LaunchUnzipper(), source_file,
+                          base::BindOnce(&ExtractIOTask::ZipSizeCallback,
+                                         weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ExtractIOTask::CheckSizeThenExtract() {
+  for (const EntryStatus& source : progress_.sources) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ExtractIOTask::GetExtractedSize,
+                       weak_ptr_factory_.GetWeakPtr(), source.url.path()));
+  }
+}
+
 void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
                             IOTask::CompleteCallback complete_callback) {
   progress_callback_ = std::move(progress_callback);
@@ -99,14 +137,7 @@ void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
     progress_.state = State::kError;
     Complete();
   } else {
-    for (size_t index = 0; index < progress_.sources.size(); ++index) {
-      const EntryStatus& source = progress_.sources[index];
-      const base::FilePath source_file = source.url.path().BaseName();
-      util::GenerateUnusedFilename(
-          parent_folder_, source_file.RemoveExtension(), file_system_context_,
-          base::BindOnce(&ExtractIOTask::ExtractArchive,
-                         weak_ptr_factory_.GetWeakPtr(), index));
-    }
+    CheckSizeThenExtract();
   }
 }
 

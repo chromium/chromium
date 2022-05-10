@@ -125,6 +125,24 @@ class UnzipTest : public testing::Test {
     return result;
   }
 
+  mojom::Size DoGetExtractedSize(const base::FilePath& zip_file) {
+    mojo::PendingRemote<mojom::Unzipper> unzipper;
+    receivers_.Add(&unzipper_, unzipper.InitWithNewPipeAndPassReceiver());
+
+    base::RunLoop run_loop;
+    mojom::Size result;
+
+    GetExtractedSizeCallback result_callback =
+        base::BindLambdaForTesting([&](mojom::SizePtr size_info) {
+          result = *size_info;
+          run_loop.QuitClosure().Run();
+        });
+
+    GetExtractedSize(std::move(unzipper), zip_file, std::move(result_callback));
+    run_loop.Run();
+    return result;
+  }
+
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -225,6 +243,17 @@ TEST_F(UnzipTest, DetectEncodingSjis) {
     EXPECT_EQ(Encoding::JAPANESE_SHIFT_JIS,
               DoDetectEncoding(GetArchivePath(name)));
   }
+}
+
+TEST_F(UnzipTest, GetExtractedSize) {
+  mojom::Size result = DoGetExtractedSize(GetArchivePath("good_archive.zip"));
+  EXPECT_TRUE(result.is_valid);
+  EXPECT_EQ(137, static_cast<int64_t>(result.value));
+}
+
+TEST_F(UnzipTest, GetExtractedSizeBrokenArchive) {
+  mojom::Size result = DoGetExtractedSize(GetArchivePath("bad_archive.zip"));
+  EXPECT_FALSE(result.is_valid);
 }
 
 TEST_F(UnzipTest, UnzipWithOptions) {

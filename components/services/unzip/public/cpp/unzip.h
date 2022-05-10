@@ -44,6 +44,11 @@ void DetectEncoding(mojo::PendingRemote<mojom::Unzipper> unzipper,
                     const base::FilePath& zip_file,
                     DetectEncodingCallback result_callback);
 
+using GetExtractedSizeCallback = base::OnceCallback<void(mojom::SizePtr)>;
+void GetExtractedSize(mojo::PendingRemote<mojom::Unzipper> unzipper,
+                      const base::FilePath& zip_file,
+                      GetExtractedSizeCallback result_callback);
+
 }  // namespace unzip
 
 #endif  // COMPONENTS_SERVICES_UNZIP_PUBLIC_CPP_UNZIP_H_

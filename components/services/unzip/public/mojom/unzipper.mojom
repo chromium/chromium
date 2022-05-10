@@ -15,6 +15,13 @@ struct UnzipOptions {
   string encoding;
 };
 
+struct Size {
+  // Boolean set to false if broken sizes are stored in the ZIP archive.
+  bool is_valid;
+  // Predicted size as read from the ZIP archive (not trustable).
+  uint64 value;
+};
+
 // UnzipFilter is used to call back into the caller to check if
 // the supplied |path| should be unpacked.
 interface UnzipFilter {
@@ -43,4 +50,7 @@ interface Unzipper {
   // third_party/ced/src/util/encodings/encodings.pb.h
   // or UNKNOWN_ENCODING in case of error.
   DetectEncoding(mojo_base.mojom.ReadOnlyFile zip_file) => (int32 encoding);
+
+  // Returns the size of the extracted archive in bytes.
+  GetExtractedSize(mojo_base.mojom.ReadOnlyFile zip_file) => (Size size);
 };

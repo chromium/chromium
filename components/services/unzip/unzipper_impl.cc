@@ -222,4 +222,40 @@ void UnzipperImpl::DetectEncoding(base::File zip_file,
   std::move(callback).Run(encoding);
 }
 
+void UnzipperImpl::GetExtractedSize(base::File zip_file,
+                                    GetExtractedSizeCallback callback) {
+  DCHECK(zip_file.IsValid());
+
+  // Open ZIP archive for reading.
+  zip::ZipReader reader;
+  if (!reader.OpenFromPlatformFile(zip_file.GetPlatformFile())) {
+    LOG(ERROR) << "Cannot decode ZIP archive from file handle "
+               << zip_file.GetPlatformFile();
+    unzip::mojom::SizePtr size_info = unzip::mojom::Size::New(false, 0);
+    std::move(callback).Run(std::move(size_info));
+    return;
+  }
+
+  int64_t size = 0;
+  bool valid = true;
+
+  // Iterate over file entries of the ZIP archive.
+  while (const zip::ZipReader::Entry* const entry = reader.Next()) {
+    // Check for (invalid) size stored.
+    if (entry->original_size < 0 ||
+        entry->original_size > std::numeric_limits<int64_t>::max() - size) {
+      LOG(ERROR) << "ZIP bad size info from file handle "
+                 << zip_file.GetPlatformFile();
+      valid = false;
+      break;
+    }
+    // Accumulate size (since original_size is signed, ignore invalid sizes).
+    if (entry->original_size > 0) {
+      size += entry->original_size;
+    }
+  }
+  unzip::mojom::SizePtr size_info = unzip::mojom::Size::New(valid, size);
+  std::move(callback).Run(std::move(size_info));
+}
+
 }  // namespace unzip

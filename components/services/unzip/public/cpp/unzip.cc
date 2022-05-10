@@ -112,6 +112,33 @@ class DetectEncodingParams : public base::RefCounted<DetectEncodingParams> {
   const base::TimeTicks start_time_ = base::TimeTicks::Now();
 };
 
+class GetExtractedSizeParams : public base::RefCounted<GetExtractedSizeParams> {
+ public:
+  GetExtractedSizeParams(mojo::PendingRemote<mojom::Unzipper> unzipper,
+                         GetExtractedSizeCallback callback)
+      : unzipper_(std::move(unzipper)), callback_(std::move(callback)) {}
+
+  mojo::Remote<mojom::Unzipper>& unzipper() { return unzipper_; }
+
+  void InvokeCallback(mojom::SizePtr size_info) {
+    if (callback_) {
+      // TODO(crbug.com/953256) Add UMA timing.
+      std::move(callback_).Run(std::move(size_info));
+    }
+
+    unzipper_.reset();
+  }
+
+ private:
+  friend class base::RefCounted<GetExtractedSizeParams>;
+
+  ~GetExtractedSizeParams() = default;
+
+  // The Remote is stored so it does not get deleted before the callback runs.
+  mojo::Remote<mojom::Unzipper> unzipper_;
+  GetExtractedSizeCallback callback_;
+};
+
 void DoUnzip(mojo::PendingRemote<mojom::Unzipper> unzipper,
              const base::FilePath& zip_path,
              const base::FilePath& output_dir,
@@ -177,6 +204,32 @@ void DoDetectEncoding(mojo::PendingRemote<mojom::Unzipper> unzipper,
       base::BindOnce(&DetectEncodingParams::InvokeCallback, params));
 }
 
+void DoGetExtractedSize(mojo::PendingRemote<mojom::Unzipper> unzipper,
+                        const base::FilePath& zip_path,
+                        GetExtractedSizeCallback result_callback) {
+  base::File zip_file(zip_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  unzip::mojom::SizePtr size_info = unzip::mojom::Size::New(false, 0);
+  if (!zip_file.IsValid()) {
+    LOG(ERROR) << "Cannot open ZIP archive " << Redact(zip_path) << ": "
+               << base::File::ErrorToString(zip_file.error_details());
+    std::move(result_callback).Run(std::move(size_info));
+    return;
+  }
+
+  // |result_callback| is shared between the connection error handler and the
+  // GetExtractedSize call using a refcounted GetExtractedSizeParams object that
+  // owns |result_callback|.
+  auto params = base::MakeRefCounted<GetExtractedSizeParams>(
+      std::move(unzipper), std::move(result_callback));
+
+  params->unzipper().set_disconnect_handler(base::BindOnce(
+      &GetExtractedSizeParams::InvokeCallback, params, std::move(size_info)));
+
+  params->unzipper()->GetExtractedSize(
+      std::move(zip_file),
+      base::BindOnce(&GetExtractedSizeParams::InvokeCallback, params));
+}
+
 }  // namespace
 
 void Unzip(mojo::PendingRemote<mojom::Unzipper> unzipper,
@@ -235,6 +288,20 @@ void DetectEncoding(mojo::PendingRemote<mojom::Unzipper> unzipper,
   runner->PostTask(
       FROM_HERE,
       base::BindOnce(&DoDetectEncoding, std::move(unzipper), zip_path,
+                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                                        std::move(result_callback))));
+}
+
+void GetExtractedSize(mojo::PendingRemote<mojom::Unzipper> unzipper,
+                      const base::FilePath& zip_path,
+                      GetExtractedSizeCallback result_callback) {
+  const scoped_refptr<base::SequencedTaskRunner> runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DoGetExtractedSize, std::move(unzipper), zip_path,
                      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
                                         std::move(result_callback))));
 }
