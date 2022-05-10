@@ -236,6 +236,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kIncognitoScreenshot,
     &kInstanceSwitcher,
     &kInstantStart,
+    &kIsVoiceSearchEnabledCache,
     &kKitKatSupported,
     &kLensCameraAssistedSearch,
     &kLensOnQuickActionSearchWidget,
@@ -654,6 +655,9 @@ const base::Feature kIncognitoScreenshot{"IncognitoScreenshot",
 
 const base::Feature kInstantStart{"InstantStart",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kIsVoiceSearchEnabledCache{
+    "IsVoiceSearchEnabledCache", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kKitKatSupported{"KitKatSupported",
                                      base::FEATURE_DISABLED_BY_DEFAULT};

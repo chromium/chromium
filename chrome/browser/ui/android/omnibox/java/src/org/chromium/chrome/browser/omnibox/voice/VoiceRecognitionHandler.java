@@ -1019,7 +1019,7 @@ public class VoiceRecognitionHandler {
         if (windowAndroid.getActivity().get() == null) return false;
         if (!VoiceRecognitionUtil.isVoiceSearchPermittedByPolicy(false)) return false;
 
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.LOCATION_BAR_MODEL_OPTIMIZATIONS)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.IS_VOICE_SEARCH_ENABLED_CACHE)) {
             return VoiceRecognitionUtil.isVoiceSearchEnabled(windowAndroid);
         }
 

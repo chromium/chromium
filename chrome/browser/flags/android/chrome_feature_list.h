@@ -101,6 +101,7 @@ extern const base::Feature kImprovedA2HS;
 extern const base::Feature kImproveReaderModePrompt;
 extern const base::Feature kInstanceSwitcher;
 extern const base::Feature kInstantStart;
+extern const base::Feature kIsVoiceSearchEnabledCache;
 extern const base::Feature kKitKatSupported;
 extern const base::Feature kLanguagesPreference;
 extern const base::Feature kLensCameraAssistedSearch;
