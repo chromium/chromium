@@ -27,14 +27,6 @@
         height: 242px;
         width: 352px;
       }
-
-      #sensorLocation {
-        background-image:
-            url(chrome://oobe/fingerprint_scanner_illustration.svg);
-        background-size: 352px 242px;
-        height: 100%;
-        width: 100%;
-      }
     </style>
     <oobe-adaptive-dialog id="setupFingerprint" role="dialog" for-step="start"
         footer-shrinkable
@@ -54,14 +46,9 @@
       <iron-icon slot="icon" icon="oobe-32:fingerprint"></iron-icon>
       <div slot="content" class="flex layout vertical center center-justified">
         <div id="sensorLocationContainer" class="oobe-illustration">
-          <template is="dom-if" if="[[shouldUseLottieAnimation_]]">
-            <oobe-cr-lottie id="scannerLocationLottie"
-                animation-url="fingerprint_scanner_animation.json">
-            </oobe-cr-lottie>
-          </template>
-          <template is="dom-if" if="[[!shouldUseLottieAnimation_]]">
-            <div id="sensorLocation"></div>
-          </template>
+          <oobe-cr-lottie id="scannerLocationLottie"
+              animation-url="fingerprint_scanner_animation_light.json">
+          </oobe-cr-lottie>
         </div>
       </div>
       <div slot="bottom-buttons">

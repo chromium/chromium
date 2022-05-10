@@ -95,15 +95,6 @@ class FingerprintSetup extends FingerprintSetupBase {
       },
 
       /**
-       * True if lottie animation file should be used instead of an
-       * illustration.
-       * @private
-       */
-      shouldUseLottieAnimation_: {
-        type: Boolean,
-      },
-
-      /**
        * Indicates whether user is a child account.
        */
       isChildAccount_: {
@@ -119,8 +110,6 @@ class FingerprintSetup extends FingerprintSetupBase {
     this.complete_ = false;
     this.canAddFinger = true;
     this.scanResult_ = FingerprintResultType.SUCCESS;
-    this.shouldUseLottieAnimation_ =
-        loadTimeData.getBoolean('useLottieAnimationForFingerprint');
     this.isChildAccount_ = false;
   }
 
@@ -205,12 +194,10 @@ class FingerprintSetup extends FingerprintSetupBase {
    * @param {boolean} playing True if animation should be playing.
    */
   setAnimationState_(playing) {
-    if (this.shouldUseLottieAnimation_) {
-      const lottieElement = /** @type{CrLottieElement} */ (
-          this.$.setupFingerprint.querySelector('#scannerLocationLottie'));
-      lottieElement.playing = playing;
-      this.$.arc.setPlay(playing);
-    }
+    const lottieElement = /** @type{CrLottieElement} */ (
+        this.$.setupFingerprint.querySelector('#scannerLocationLottie'));
+    lottieElement.playing = playing;
+    this.$.arc.setPlay(playing);
   }
 
   /**

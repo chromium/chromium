@@ -1,14 +1,9 @@
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-media-query/iron-media-query.html">
+
 <style include="settings-shared">
   #dialog::part(dialog) {
     min-width: 500px;
     width: 500px;
-  }
-
-  #scannerLocation {
-    display: block;
-    height: 205px;
-    margin: auto;
-    padding: 10px 0;
   }
 
   #scannerLocationLottie {
@@ -39,20 +34,16 @@
         aria-live="polite">
       <span>[[getInstructionMessage_(step_, problemMessage_)]]</span>
     </div>
-    <template is="dom-if" if="[[shouldUseLottieAnimation_]]">
-      <div id="scannerLocationLottie"
+    <div id="scannerLocationLottie"
         hidden="[[!showScannerLocation_(step_)]]" aria-live="polite"
         aria-label="$i18n{configureFingerprintScannerStepAriaLabel}">
-        <cr-lottie animation-url="fingerprint_scanner_animation.json" autoplay>
-        </cr-lottie>
-      </div>
-    </template>
-    <template is="dom-if" if="[[!shouldUseLottieAnimation_]]">
-      <img id="scannerLocation" hidden="[[!showScannerLocation_(step_)]]"
-        aria-label="$i18n{configureFingerprintScannerStepAriaLabel}"
-        aria-live="polite"
-        src="fingerprint_scanner_illustration.svg">
-    </template>
+      <iron-media-query query="(prefers-color-scheme: dark)"
+          query-matches="{{isDarkModeActive_}}">
+      </iron-media-query>
+      <cr-lottie animation-url="[[getAnimationUrl_(isDarkModeActive_)]]"
+          autoplay>
+      </cr-lottie>
+    </div>
     <cr-fingerprint-progress-arc id="arc" circle-radius="100" autoplay
         hidden="[[!showArc_(step_)]]">
     </cr-fingerprint-progress-arc>

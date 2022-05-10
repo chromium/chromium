@@ -48,6 +48,18 @@ export const FingerprintLocation = {
  */
 const SHOW_TAP_SENSOR_MESSAGE_DELAY_MS = 2000;
 
+/**
+ * The onboarding animation asset for dark mode.
+ * @type {string}
+ */
+const ONBOARDING_ANIMATION_DARK = 'fingerprint_scanner_animation_dark.json';
+
+/**
+ * The onboarding animation asset for light mode.
+ * @type {string}
+ */
+const ONBOARDING_ANIMATION_LIGHT = 'fingerprint_scanner_animation_light.json';
+
 Polymer({
   _template: html`{__html_template__}`,
   is: 'settings-setup-fingerprint-dialog',
@@ -103,18 +115,14 @@ Polymer({
     },
 
     /**
-     * True if lottie animation file should be used instead of an
-     * illustration.
+     * Whether the dialog is being rendered in dark mode.
      * @type {boolean}
      * @private
      */
-    shouldUseLottieAnimation_: {
+    isDarkModeActive_: {
       type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('useLottieAnimationForFingerprint');
-      },
-      readOnly: true,
-    }
+      value: false,
+    },
   },
 
   /**
@@ -347,5 +355,16 @@ Polymer({
     }
 
     this.$.arc.setProgress(oldValue, newValue, newValue === 100);
+  },
+
+  /**
+   * Returns the URL for the asset that defines the onboarding animation for the
+   * current fingerprint sensor location.
+   * @return {string}
+   * @private
+   */
+  getAnimationUrl_() {
+    return this.isDarkModeActive_ ? ONBOARDING_ANIMATION_DARK :
+                                    ONBOARDING_ANIMATION_LIGHT;
   },
 });

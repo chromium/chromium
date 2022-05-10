@@ -260,48 +260,41 @@ bool IsFingerprintEnabled(Profile* profile, Purpose purpose) {
 }
 
 void AddFingerprintResources(content::WebUIDataSource* html_source) {
-  int resource_id;
-  bool is_lottie_animation = false;
+  int resource_id_dark;
+  int resource_id_light;
   switch (GetFingerprintLocation()) {
     case FingerprintLocation::TABLET_POWER_BUTTON:
-      is_lottie_animation = true;
-      resource_id = IDR_FINGERPRINT_TABLET_ANIMATION;
+      resource_id_dark = IDR_FINGERPRINT_TABLET_ANIMATION_DARK;
+      resource_id_light = IDR_FINGERPRINT_TABLET_ANIMATION_LIGHT;
       break;
     case FingerprintLocation::KEYBOARD_BOTTOM_RIGHT:
-      is_lottie_animation = true;
-      resource_id = IDR_FINGERPRINT_LAPTOP_BOTTOM_RIGHT_ANIMATION;
+      resource_id_dark = IDR_FINGERPRINT_LAPTOP_BOTTOM_RIGHT_ANIMATION_DARK;
+      resource_id_light = IDR_FINGERPRINT_LAPTOP_BOTTOM_RIGHT_ANIMATION_LIGHT;
       break;
     case FingerprintLocation::KEYBOARD_BOTTOM_LEFT:
-      resource_id = IDR_FINGERPRINT_LAPTOP_BOTTOM_LEFT_ILLUSTRATION_SVG;
+      resource_id_dark = IDR_FINGERPRINT_LAPTOP_BOTTOM_LEFT_ANIMATION_DARK;
+      resource_id_light = IDR_FINGERPRINT_LAPTOP_BOTTOM_LEFT_ANIMATION_LIGHT;
       break;
     case FingerprintLocation::KEYBOARD_TOP_RIGHT:
-      resource_id = IDR_FINGERPRINT_LAPTOP_TOP_RIGHT_ILLUSTRATION_SVG;
-      break;
     case FingerprintLocation::RIGHT_SIDE:
     case FingerprintLocation::LEFT_SIDE:
     case FingerprintLocation::UNKNOWN:
-      is_lottie_animation = true;
-      resource_id = IDR_FINGERPRINT_DEFAULT_ANIMATION;
+      resource_id_dark = IDR_FINGERPRINT_DEFAULT_ANIMATION_DARK;
+      resource_id_light = IDR_FINGERPRINT_DEFAULT_ANIMATION_LIGHT;
       break;
   }
-  if (is_lottie_animation) {
-    html_source->AddResourcePath("fingerprint_scanner_animation.json",
-                                 resource_id);
+  html_source->AddResourcePath("fingerprint_scanner_animation_dark.json",
+                               resource_id_dark);
+  html_source->AddResourcePath("fingerprint_scanner_animation_light.json",
+                               resource_id_light);
 
-    // To use lottie, the worker-src CSP needs to be updated for the web ui
-    // that is using it. Since as of now there are only a couple of webuis
-    // using lottie animations, this update has to be performed manually. As
-    // the usage increases, set this as the default so manual override is no
-    // longer required.
-    html_source->OverrideContentSecurityPolicy(
-        network::mojom::CSPDirectiveName::WorkerSrc,
-        "worker-src blob: 'self';");
-  } else {
-    html_source->AddResourcePath("fingerprint_scanner_illustration.svg",
-                                 resource_id);
-  }
-  html_source->AddBoolean("useLottieAnimationForFingerprint",
-                          is_lottie_animation);
+  // To use lottie, the worker-src CSP needs to be updated for the web ui
+  // that is using it. Since as of now there are only a couple of webuis
+  // using lottie animations, this update has to be performed manually. As
+  // the usage increases, set this as the default so manual override is no
+  // longer required.
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 }
 
 }  // namespace quick_unlock

@@ -143,10 +143,7 @@ suite('settings-fingerprint-list', function() {
   });
 
   test('EnrollingFingerprintLottieAnimation', function() {
-    loadTimeData.overrideValues({
-      fingerprintUnlockEnabled: true,
-      useLottieAnimationForFingerprint: true,
-    });
+    loadTimeData.overrideValues({fingerprintUnlockEnabled: true});
     openDialog();
     return browserProxy.whenCalled('startEnroll').then(function() {
       assertTrue(dialog.$$('#dialog').open);
@@ -155,26 +152,10 @@ suite('settings-fingerprint-list', function() {
     });
   });
 
-  test('EnrollingFingerprintIllustration', function() {
-    loadTimeData.overrideValues({
-      fingerprintUnlockEnabled: true,
-      useLottieAnimationForFingerprint: false,
-    });
-    openDialog();
-    return browserProxy.whenCalled('startEnroll').then(function() {
-      assertTrue(dialog.$$('#dialog').open);
-      assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
-      assertFalse(dialog.$$('#scannerLocation').hidden);
-    });
-  });
-
   // Verify running through the enroll session workflow
   // (settings-setup-fingerprint-dialog) works as expected.
   test('EnrollingFingerprint', function() {
-    loadTimeData.overrideValues({
-      fingerprintUnlockEnabled: true,
-      useLottieAnimationForFingerprint: true,
-    });
+    loadTimeData.overrideValues({fingerprintUnlockEnabled: true});
     openDialog();
     return browserProxy.whenCalled('startEnroll').then(function() {
       assertTrue(dialog.$$('#dialog').open);
@@ -234,10 +215,7 @@ suite('settings-fingerprint-list', function() {
   // Verify enrolling a fingerprint, then enrolling another without closing the
   // dialog works as intended.
   test('EnrollingAnotherFingerprint', function() {
-    loadTimeData.overrideValues({
-      fingerprintUnlockEnabled: true,
-      useLottieAnimationForFingerprint: false,
-    });
+    loadTimeData.overrideValues({fingerprintUnlockEnabled: true});
     openDialog();
     return browserProxy.whenCalled('startEnroll')
         .then(function() {
@@ -274,7 +252,7 @@ suite('settings-fingerprint-list', function() {
           assertTrue(dialog.$$('#dialog').open);
           assertFalse(isVisible(addAnotherButton));
           assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
-          assertTrue(dialog.$$('#scannerLocation').hidden);
+          assertTrue(dialog.$$('#scannerLocationLottie').hidden);
           assertFalse(dialog.$$('#arc').hidden);
 
           browserProxy.scanReceived(
