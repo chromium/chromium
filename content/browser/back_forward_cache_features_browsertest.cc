@@ -2080,13 +2080,17 @@ class AppBannerBackForwardCacheBrowserTest
     : public BackForwardCacheBrowserTest,
       public ::testing::WithParamInterface<bool> {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (GetParam()) {
-      EnableFeatureAndSetParams(blink::features::kBackForwardCacheAppBanner, "",
-                                "");
+  AppBannerBackForwardCacheBrowserTest() {
+    const base::Feature& feature = blink::features::kBackForwardCacheAppBanner;
+    if (ShouldEnabledAppBannerCaching()) {
+      EnableFeatureAndSetParams(feature, "", "");
+    } else {
+      DisableFeature(feature);
     }
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
+
+ protected:
+  bool ShouldEnabledAppBannerCaching() { return GetParam(); }
 };
 
 // Disabled on Mac due to flakes; see https://crbug.com/1276864#c8.
@@ -2115,13 +2119,13 @@ IN_PROC_BROWSER_TEST_P(AppBannerBackForwardCacheBrowserTest,
   // 2) Navigate away. Page A requested a PWA app banner, and thus not cached.
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
-  if (!GetParam()) {
-    delete_observer_rfh.WaitUntilDeleted();
+  if (!ShouldEnabledAppBannerCaching()) {
+    ASSERT_TRUE(delete_observer_rfh.WaitUntilDeleted());
   }
 
   // 3) Go back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  if (GetParam()) {
+  if (ShouldEnabledAppBannerCaching()) {
     ExpectRestored(FROM_HERE);
   } else {
     ExpectNotRestored(
