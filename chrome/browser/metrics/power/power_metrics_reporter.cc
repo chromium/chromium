@@ -164,11 +164,8 @@ void PowerMetricsReporter::ReportLongIntervalHistograms(
 #if BUILDFLAG(IS_MAC)
 void PowerMetricsReporter::MaybeEmitHighCPUTraceEvent(
     const ScenarioParams& short_interval_scenario_params,
-    absl::optional<CoalitionResourceUsageRate> coalition_resource_usage_rate) {
-  if (!coalition_resource_usage_rate.has_value())
-    return;
-
-  if (coalition_resource_usage_rate->cpu_time_per_second >=
+    const CoalitionResourceUsageRate& coalition_resource_usage_rate) {
+  if (coalition_resource_usage_rate.cpu_time_per_second >=
       short_interval_scenario_params.short_interval_cpu_threshold) {
     const base::TimeTicks now = base::TimeTicks::Now();
 
@@ -248,10 +245,13 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
   const ScenarioParams short_interval_scenario_params =
       GetShortIntervalScenarioParams(short_interval_data, long_interval_data);
 
-  ReportShortIntervalHistograms(short_interval_scenario_params.histogram_suffix,
-                                short_interval_resource_usage_rate);
-  MaybeEmitHighCPUTraceEvent(short_interval_scenario_params,
-                             short_interval_resource_usage_rate);
+  if (short_interval_resource_usage_rate.has_value()) {
+    ReportShortIntervalHistograms(
+        short_interval_scenario_params.histogram_suffix,
+        short_interval_resource_usage_rate.value());
+    MaybeEmitHighCPUTraceEvent(short_interval_scenario_params,
+                               short_interval_resource_usage_rate.value());
+  }
 #endif  // BUILDFLAG(IS_MAC)
 
   if (on_battery_sampled_for_testing_)

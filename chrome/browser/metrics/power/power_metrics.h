@@ -59,7 +59,7 @@ void ReportBatteryHistograms(base::TimeDelta interval_duration,
 #if BUILDFLAG(IS_MAC)
 void ReportShortIntervalHistograms(
     const char* scenario_suffix,
-    absl::optional<power_metrics::CoalitionResourceUsageRate>
+    const power_metrics::CoalitionResourceUsageRate&
         coalition_resource_usage_rate);
 
 // Report resource coalition metrics to histograms with |suffixes|.

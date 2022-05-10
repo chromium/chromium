@@ -122,16 +122,13 @@ void ReportBatteryHistograms(base::TimeDelta interval_duration,
 #if BUILDFLAG(IS_MAC)
 void ReportShortIntervalHistograms(
     const char* scenario_suffix,
-    absl::optional<power_metrics::CoalitionResourceUsageRate>
+    const power_metrics::CoalitionResourceUsageRate&
         coalition_resource_usage_rate) {
-  if (!coalition_resource_usage_rate.has_value())
-    return;
-
   for (const char* suffix : {"", scenario_suffix}) {
     UsageTimeHistogram(
         base::StrCat(
             {"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", suffix}),
-        coalition_resource_usage_rate->cpu_time_per_second, kMaxCPUProportion);
+        coalition_resource_usage_rate.cpu_time_per_second, kMaxCPUProportion);
   }
 }
 

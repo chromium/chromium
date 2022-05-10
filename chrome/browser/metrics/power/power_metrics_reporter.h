@@ -101,7 +101,7 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   // Emit trace event when CPU usage is high for 10 secondes or more.
   void MaybeEmitHighCPUTraceEvent(
       const ScenarioParams& short_interval_scenario_params,
-      absl::optional<CoalitionResourceUsageRate> coalition_resource_usage_rate);
+      const CoalitionResourceUsageRate& coalition_resource_usage_rate);
 #endif  // BUILDFLAG(IS_MAC)
 
  private:
