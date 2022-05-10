@@ -315,6 +315,7 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
             editButtonContentDescription = getEditButtonContentDescription(item.mOption);
         }
         mItemsView.addItem(item.mFullView, /* hasEditButton= */ canEditOption,
+                /* itemSelectedListener= */
                 selected
                 -> {
                     if (mIgnoreItemSelectedNotifications || !selected) {
@@ -329,10 +330,11 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
                         createOrEditItem(item.mOption);
                     }
                 },
+                /* itemEditedListener= */
                 ()
                         -> createOrEditItem(item.mOption),
-                /*editButtonDrawable=*/editButtonDrawable,
-                /*editButtonContentDescription=*/editButtonContentDescription);
+                /* editButtonDrawable= */ editButtonDrawable,
+                /* editButtonContentDescription= */ editButtonContentDescription);
         updateVisibility();
     }
 
@@ -398,6 +400,7 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
             if (mRequestReloadOnChange) {
                 int eventType = oldItem == null ? AssistantUserDataEventType.ENTRY_CREATED
                                                 : AssistantUserDataEventType.ENTRY_EDITED;
+                mSectionExpander.post(() -> mSectionExpander.setExpanded(false));
                 notifyDataChanged(editedItem, eventType);
                 return;
             }
