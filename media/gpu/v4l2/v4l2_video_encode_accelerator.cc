@@ -277,24 +277,15 @@ bool V4L2VideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  bool result = false;
-  base::WaitableEvent done;
   encoder_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&V4L2VideoEncodeAccelerator::InitializeTask,
-                                weak_this_, config, &result, &done));
-  done.Wait();
-  return result;
+                                weak_this_, config));
+  return true;
 }
 
-void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config,
-                                                bool* result,
-                                                base::WaitableEvent* done) {
+void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-
-  // Signal the event when leaving the method.
-  base::ScopedClosureRunner signal_event(
-      base::BindOnce(&base::WaitableEvent::Signal, base::Unretained(done)));
-  *result = false;
+  TRACE_EVENT0("media,gpu", "V4L2VEA::InitializeTask");
 
   native_input_mode_ =
       config.storage_type.value_or(Config::StorageType::kShmem) ==
@@ -310,6 +301,7 @@ void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config,
 
   if (!SetFormats(config.input_format, config.output_profile)) {
     VLOGF(1) << "Failed setting up formats";
+    NOTIFY_ERROR(kPlatformFailureError);
     return;
   }
 
@@ -323,6 +315,7 @@ void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config,
             VideoFrame::NumPlanes(config.input_format)));
     if (!input_layout) {
       VLOGF(1) << "Invalid image processor input layout";
+      NOTIFY_ERROR(kPlatformFailureError);
       return;
     }
 
@@ -332,6 +325,7 @@ void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config,
                               encoder_input_visible_rect_,
                               encoder_input_visible_rect_)) {
       VLOGF(1) << "Failed to create image processor";
+      NOTIFY_ERROR(kPlatformFailureError);
       return;
     }
 
@@ -343,16 +337,16 @@ void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config,
       VLOGF(1) << "Failed to reconfigure v4l2 encoder driver with the "
                << "ImageProcessor output buffer: "
                << ip_output_buffer_size.ToString();
+      NOTIFY_ERROR(kPlatformFailureError);
       return;
     }
   }
 
-  if (!InitInputMemoryType(config))
+  if (!InitInputMemoryType(config) || !InitControls(config) ||
+      !CreateOutputBuffers()) {
+    NOTIFY_ERROR(kPlatformFailureError);
     return;
-  if (!InitControls(config))
-    return;
-  if (!CreateOutputBuffers())
-    return;
+  }
 
   encoder_state_ = kInitialized;
   RequestEncodingParametersChangeTask(
@@ -385,9 +379,6 @@ void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config,
   child_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&Client::NotifyEncoderInfoChange, client_, encoder_info));
-
-  // Finish initialization.
-  *result = true;
 }
 
 bool V4L2VideoEncodeAccelerator::CreateImageProcessor(

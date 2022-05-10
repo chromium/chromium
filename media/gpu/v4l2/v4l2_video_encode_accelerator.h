@@ -200,9 +200,7 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
                                            uint32_t framerate);
 
   // Do several initializations (e.g. set up format) on |encoder_task_runner_|.
-  void InitializeTask(const Config& config,
-                      bool* result,
-                      base::WaitableEvent* done);
+  void InitializeTask(const Config& config);
 
   // Set up formats and initialize the device for them.
   bool SetFormats(VideoPixelFormat input_format,
