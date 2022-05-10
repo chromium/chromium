@@ -9,8 +9,10 @@
 #ifndef __XML_LIBXML_H__
 #define __XML_LIBXML_H__
 
-#include <libxml/xmlstring.h>
-
+/*
+ * These macros must be defined before including system headers.
+ * Do not add any #include directives above this block.
+ */
 #ifndef NO_LARGEFILE_SOURCE
 #ifndef _LARGEFILE_SOURCE
 #define _LARGEFILE_SOURCE
@@ -27,6 +29,7 @@
  */
 #include "config.h"
 #include <libxml/xmlversion.h>
+#include <libxml/xmlstring.h>
 
 #ifndef SYSCONFDIR
   #define SYSCONFDIR "/etc"

@@ -160,6 +160,8 @@ AC_ARG_WITH(xpath,
 [  --with-xpath            add the XPATH support (on)])
 AC_ARG_WITH(xptr,
 [  --with-xptr             add the XPointer support (on)])
+AC_ARG_WITH(xptr-locs,
+[  --with-xptr-locs        add support for XPointer locations (off)])
 AC_ARG_WITH(modules,
 [  --with-modules          add the dynamic modules support (on)])
 AC_ARG_WITH(zlib,
@@ -198,6 +200,10 @@ fi
 if test "$with_reader" = "yes"
 then
     with_push=yes
+fi
+if test "$with_xptr_locs" = "yes"
+then
+    with_xptr=yes
 fi
 if test "$with_xptr" = "yes"
 then
@@ -1071,6 +1077,7 @@ AC_SUBST(TEST_CATALOG)
 if test "$with_xptr" = "no" ; then
     echo Disabling XPointer support
     WITH_XPTR=0
+    WITH_XPTR_LOCS=0
     XPTR_OBJ=
 else    
     WITH_XPTR=1
@@ -1079,8 +1086,14 @@ else
         echo XPointer requires XPath support - enabling it
 	with_xpath=yes
     fi
+    if test "$with_xptr_locs" = "yes" ; then
+        WITH_XPTR_LOCS=1
+    else
+        WITH_XPTR_LOCS=0
+    fi
 fi
 AC_SUBST(WITH_XPTR)
+AC_SUBST(WITH_XPTR_LOCS)
 AC_SUBST(XPTR_OBJ)
 
 if test "$with_c14n" = "no" ; then

@@ -601,7 +601,7 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
 #else /* ! LIBXML_XPATH_ENABLED */
 #include <stdio.h>
 int
-main(int argc, char **argv) {
+main(int argc ATTRIBUTE_UNUSED, char **argv) {
     fprintf(stderr, "%s need XPath support\n", argv[0]);
 }
 #endif

@@ -598,7 +598,8 @@ htmlSkipBlankChars(xmlParserCtxtPtr ctxt) {
 	    if (*ctxt->input->cur == 0)
 		xmlParserInputGrow(ctxt->input, INPUT_CHUNK);
 	}
-	res++;
+	if (res < INT_MAX)
+	    res++;
     }
     return(res);
 }
