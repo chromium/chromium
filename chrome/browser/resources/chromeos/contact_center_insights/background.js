@@ -17,7 +17,7 @@ goog.require('proto.reporting.UserStatusTelemetry');
 goog.require('proto.reporting.UserStatusTelemetry.DeviceActivityState');
 
 const NETWORK_BANDWIDTH_ALARM = 'NetworkBandwidth';
-const REPORT_NETWORK_BANDWIDTH_PERIOD_MINUTES = 12 /** hours **/ * 60;
+const REPORT_NETWORK_BANDWIDTH_PERIOD_MINUTES = 15;
 
 const DEVICE_ACTIVITY_STATE_ALARM = 'DeviceActivityState';
 const REPORT_DEVICE_ACTIVITY_STATE_PERIOD_MINUTES = 15;
