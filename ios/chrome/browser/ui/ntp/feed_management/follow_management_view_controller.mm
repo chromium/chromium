@@ -109,6 +109,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - UITableViewDelegate
 
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
 - (UISwipeActionsConfiguration*)tableView:(UITableView*)tableView
     trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath {
   UIContextualAction* unfollowSwipeAction = [UIContextualAction
@@ -123,6 +128,39 @@ typedef NS_ENUM(NSInteger, ItemType) {
                         }];
   return [UISwipeActionsConfiguration
       configurationWithActions:@[ unfollowSwipeAction ]];
+}
+
+- (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
+    contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath
+                                        point:(CGPoint)point {
+  __weak FollowManagementViewController* weakSelf = self;
+
+  UIContextMenuActionProvider actionProvider = ^(
+      NSArray<UIMenuElement*>* suggestedActions) {
+    if (!weakSelf) {
+      // Return an empty menu.
+      return [UIMenu menuWithTitle:@"" children:@[]];
+    }
+    FollowManagementViewController* strongSelf = weakSelf;
+    NSMutableArray<UIMenuElement*>* menuElements =
+        [[NSMutableArray alloc] init];
+    UIAction* unfollowSwipeAction = [UIAction
+        actionWithTitle:l10n_util::GetNSString(
+                            IDS_IOS_FOLLOW_MANAGEMENT_UNFOLLOW_ACTION)
+                  image:nil
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [strongSelf requestUnfollowWebChannelAtIndexPath:indexPath];
+                }];
+    unfollowSwipeAction.attributes = UIMenuElementAttributesDestructive;
+    [menuElements addObject:unfollowSwipeAction];
+    return [UIMenu menuWithTitle:@"" children:menuElements];
+  };
+
+  return
+      [UIContextMenuConfiguration configurationWithIdentifier:nil
+                                              previewProvider:nil
+                                               actionProvider:actionProvider];
 }
 
 #pragma mark - FollowManagementUIUpdater
