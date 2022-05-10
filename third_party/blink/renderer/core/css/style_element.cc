@@ -153,8 +153,12 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
                                &element, text, element.nonce(), document.Url(),
                                start_position_.line_));
 
-  // Clearing the current sheet may remove the cache entry so create the new
-  // sheet first
+  // Use a strong reference to keep the cache entry (which is a weak reference)
+  // alive after ClearSheet().
+  Persistent<CSSStyleSheet> old_sheet = sheet_;
+  if (old_sheet)
+    ClearSheet(element);
+
   CSSStyleSheet* new_sheet = nullptr;
 
   // If type is empty or CSS, this is a CSS style sheet.
@@ -187,9 +191,6 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
     new_sheet->SetMediaQueries(media_queries);
     loading_ = false;
   }
-
-  if (sheet_)
-    ClearSheet(element);
 
   sheet_ = new_sheet;
   if (sheet_)
