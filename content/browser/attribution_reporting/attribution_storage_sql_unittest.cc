@@ -506,7 +506,8 @@ TEST_F(AttributionStorageSqlTest, MaxSourcesPerOrigin) {
 
 TEST_F(AttributionStorageSqlTest, MaxAttributionsPerOrigin) {
   OpenDatabase();
-  delegate()->set_max_attributions_per_origin(2);
+  delegate()->set_max_attributions_per_origin(
+      AttributionReport::ReportType::kEventLevel, 2);
   storage()->StoreSource(SourceBuilder().Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));

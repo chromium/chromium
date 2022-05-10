@@ -94,7 +94,8 @@ int AttributionStorageDelegateImpl::GetMaxSourcesPerOrigin() const {
   return 1024;
 }
 
-int AttributionStorageDelegateImpl::GetMaxAttributionsPerOrigin() const {
+int AttributionStorageDelegateImpl::GetMaxAttributionsPerOrigin(
+    AttributionReport::ReportType) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return 1024;
 }

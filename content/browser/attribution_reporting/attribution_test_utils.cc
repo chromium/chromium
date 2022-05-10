@@ -152,9 +152,15 @@ int ConfigurableStorageDelegate::GetMaxSourcesPerOrigin() const {
   return max_sources_per_origin_;
 }
 
-int ConfigurableStorageDelegate::GetMaxAttributionsPerOrigin() const {
+int ConfigurableStorageDelegate::GetMaxAttributionsPerOrigin(
+    AttributionReport::ReportType report_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return max_attributions_per_origin_;
+  switch (report_type) {
+    case AttributionReport::ReportType::kEventLevel:
+      return max_event_level_attributions_per_origin_;
+    case AttributionReport::ReportType::kAggregatableAttribution:
+      return max_aggregatable_attributions_per_origin_;
+  }
 }
 
 int ConfigurableStorageDelegate::
@@ -250,9 +256,18 @@ void ConfigurableStorageDelegate::set_max_sources_per_origin(int max) {
   max_sources_per_origin_ = max;
 }
 
-void ConfigurableStorageDelegate::set_max_attributions_per_origin(int max) {
+void ConfigurableStorageDelegate::set_max_attributions_per_origin(
+    AttributionReport::ReportType report_type,
+    int max) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  max_attributions_per_origin_ = max;
+  switch (report_type) {
+    case AttributionReport::ReportType::kEventLevel:
+      max_event_level_attributions_per_origin_ = max;
+      break;
+    case AttributionReport::ReportType::kAggregatableAttribution:
+      max_aggregatable_attributions_per_origin_ = max;
+      break;
+  }
 }
 
 void ConfigurableStorageDelegate::

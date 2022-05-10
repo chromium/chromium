@@ -52,7 +52,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   int GetMaxAttributionsPerSource(
       AttributionSourceType source_type) const override;
   int GetMaxSourcesPerOrigin() const override;
-  int GetMaxAttributionsPerOrigin() const override;
+  int GetMaxAttributionsPerOrigin(AttributionReport::ReportType) const override;
   int GetMaxDestinationsPerSourceSiteReportingOrigin() const override;
   RateLimitConfig GetRateLimits() const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;

@@ -201,7 +201,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   int GetMaxAttributionsPerSource(
       AttributionSourceType source_type) const override;
   int GetMaxSourcesPerOrigin() const override;
-  int GetMaxAttributionsPerOrigin() const override;
+  int GetMaxAttributionsPerOrigin(
+      AttributionReport::ReportType report_type) const override;
   RateLimitConfig GetRateLimits() const override;
   int GetMaxDestinationsPerSourceSiteReportingOrigin() const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
@@ -222,7 +223,9 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   void set_max_sources_per_origin(int max);
 
-  void set_max_attributions_per_origin(int max);
+  void set_max_attributions_per_origin(
+      AttributionReport::ReportType report_type,
+      int max);
 
   void set_max_destinations_per_source_site_reporting_origin(int max);
 
@@ -258,7 +261,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
  private:
   int max_attributions_per_source_ = INT_MAX;
   int max_sources_per_origin_ = INT_MAX;
-  int max_attributions_per_origin_ = INT_MAX;
+  int max_event_level_attributions_per_origin_ = INT_MAX;
+  int max_aggregatable_attributions_per_origin_ = INT_MAX;
   int max_destinations_per_source_site_reporting_origin_ = INT_MAX;
   int64_t aggregatable_budget_per_source_ = std::numeric_limits<int64_t>::max();
 

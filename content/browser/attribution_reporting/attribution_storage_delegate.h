@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -18,7 +19,6 @@ class GUID;
 
 namespace content {
 
-class AttributionReport;
 class CommonSourceInfo;
 
 // Storage delegate that can supplied to extend basic attribution storage
@@ -87,12 +87,13 @@ class AttributionStorageDelegate {
   // time for a source top-level origin.
   virtual int GetMaxSourcesPerOrigin() const = 0;
 
-  // Returns the maximum number of reports that can be in storage at any
-  // time for an attribution top-level origin. Note that since reporting
-  // origins are the actual entities that invoke attribution registration, we
-  // could consider changing this limit to be keyed by an <attribution origin,
-  // reporting origin> tuple.
-  virtual int GetMaxAttributionsPerOrigin() const = 0;
+  // Returns the maximum number of reports of the given type that can be in
+  // storage at any time for an attribution top-level origin. Note that since
+  // reporting origins are the actual entities that invoke attribution
+  // registration, we could consider changing this limit to be keyed by an
+  // <attribution origin, reporting origin> tuple.
+  virtual int GetMaxAttributionsPerOrigin(
+      AttributionReport::ReportType) const = 0;
 
   // Returns the maximum number of distinct attribution destinations that can
   // be in storage at any time for sources with the same <source site,
