@@ -57,6 +57,7 @@ constexpr int kNotificationIndicatorRadiusDip = 6;
 constexpr int kNotificationIndicatorPadding = 1;
 
 constexpr SkColor kDefaultIndicatorColor = SK_ColorWHITE;
+constexpr SkAlpha kInactiveIndicatorOpacity = 0x80;
 
 // The time threshold before an item can be dragged.
 constexpr int kDragTimeThresholdMs = 300;
@@ -147,12 +148,16 @@ namespace ash {
 // ShelfAppButton::AppStatusIndicatorView
 
 class ShelfAppButton::AppStatusIndicatorView
-    : public views::View,
+    : public gfx::AnimationDelegate,
+      public views::View,
       public ShelfAppButtonAnimation::Observer {
  public:
   AppStatusIndicatorView() {
     // Make sure the events reach the parent view for handling.
     SetCanProcessEventsWithinSubtree(false);
+    status_change_animation_ = std::make_unique<gfx::SlideAnimation>(this);
+    status_change_animation_->SetSlideDuration(base::Milliseconds(250));
+    status_change_animation_->SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
   }
 
   AppStatusIndicatorView(const AppStatusIndicatorView&) = delete;
@@ -170,13 +175,7 @@ class ShelfAppButton::AppStatusIndicatorView
 
   void OnPaint(gfx::Canvas* canvas) override {
     gfx::ScopedCanvas scoped(canvas);
-    if (show_attention_) {
-      const SkAlpha alpha =
-          ShelfAppButtonAnimation::GetInstance()->HasObserver(this)
-              ? ShelfAppButtonAnimation::GetInstance()->GetAlpha()
-              : SK_AlphaOPAQUE;
-      canvas->SaveLayerAlpha(alpha);
-    }
+    canvas->SaveLayerAlpha(GetAlpha());
 
     const float dsf = canvas->UndoDeviceScaleFactor();
     gfx::PointF center = gfx::RectF(GetLocalBounds()).CenterPoint();
@@ -189,8 +188,7 @@ class ShelfAppButton::AppStatusIndicatorView
     flags.setStrokeJoin(cc::PaintFlags::Join::kRound_Join);
     flags.setStrokeWidth(kStatusIndicatorThickness);
     flags.setStyle(cc::PaintFlags::kStroke_Style);
-    float stroke_length =
-        active_ ? kStatusIndicatorActiveSize : kStatusIndicatorRunningSize;
+    float stroke_length = GetStrokeLength();
     gfx::PointF start;
     gfx::PointF end;
     if (horizontal_shelf_) {
@@ -208,6 +206,30 @@ class ShelfAppButton::AppStatusIndicatorView
     canvas->DrawPath(path, flags);
   }
 
+  float GetStrokeLength() {
+    if (status_change_animation_->is_animating()) {
+      return status_change_animation_->CurrentValueBetween(
+          kStatusIndicatorRunningSize, kStatusIndicatorActiveSize);
+    }
+
+    return active_ ? kStatusIndicatorActiveSize : kStatusIndicatorRunningSize;
+  }
+
+  SkAlpha GetAlpha() {
+    if (show_attention_) {
+      return ShelfAppButtonAnimation::GetInstance()->HasObserver(this)
+                 ? ShelfAppButtonAnimation::GetInstance()->GetAlpha()
+                 : SK_AlphaOPAQUE;
+    }
+
+    if (status_change_animation_->is_animating()) {
+      return status_change_animation_->CurrentValueBetween(
+          kInactiveIndicatorOpacity, SK_AlphaOPAQUE);
+    }
+
+    return active_ ? SK_AlphaOPAQUE : kInactiveIndicatorOpacity;
+  }
+
   // ShelfAppButtonAnimation::Observer
   void AnimationProgressed() override {
     UpdateAnimating();
@@ -219,6 +241,10 @@ class ShelfAppButton::AppStatusIndicatorView
       return;
 
     show_attention_ = show;
+
+    if (status_change_animation_->is_animating())
+      status_change_animation_->End();
+
     if (show_attention_) {
       animation_end_time_ = base::TimeTicks::Now() + base::Seconds(10);
       ShelfAppButtonAnimation::GetInstance()->AddObserver(this);
@@ -227,11 +253,21 @@ class ShelfAppButton::AppStatusIndicatorView
     }
   }
 
+  // gfx::AnimationDelegate
+  void AnimationProgressed(const gfx::Animation* animation) override {
+    if (animation != status_change_animation_.get())
+      return;
+    SchedulePaint();
+  }
+
   void ShowActiveStatus(bool active) {
     if (active_ == active)
       return;
     active_ = active;
-    SchedulePaint();
+    if (active_)
+      status_change_animation_->Show();
+    else
+      status_change_animation_->Hide();
   }
 
   void SetHorizontalShelf(bool horizontal_shelf) {
@@ -250,6 +286,7 @@ class ShelfAppButton::AppStatusIndicatorView
   bool show_attention_ = false;
   bool active_ = false;
   bool horizontal_shelf_ = true;
+  std::unique_ptr<gfx::SlideAnimation> status_change_animation_;
   base::TimeTicks animation_end_time_;  // For attention throbbing underline.
 };
 
