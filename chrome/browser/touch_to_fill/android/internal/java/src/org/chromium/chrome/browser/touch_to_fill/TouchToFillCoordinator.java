@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
+import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -38,8 +39,9 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
 
     @Override
     public void showCredentials(GURL url, boolean isOriginSecure, List<Credential> credentials,
-            boolean triggerSubmission) {
-        mMediator.showCredentials(url, isOriginSecure, credentials, triggerSubmission);
+            List<WebAuthnCredential> webAuthnCredentials, boolean triggerSubmission) {
+        mMediator.showCredentials(
+                url, isOriginSecure, credentials, webAuthnCredentials, triggerSubmission);
     }
 
     /**

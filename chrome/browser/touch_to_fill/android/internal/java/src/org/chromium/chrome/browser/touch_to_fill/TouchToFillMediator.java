@@ -17,6 +17,8 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.He
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.ON_WEBAUTHN_CLICK_LISTENER;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_CREDENTIAL;
 
 import androidx.annotation.Px;
 
@@ -24,7 +26,9 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillComponent.UserAction;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties;
+import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
+import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.embedder_support.util.Origin;
@@ -55,6 +59,7 @@ class TouchToFillMediator {
     private LargeIconBridge mLargeIconBridge;
     private @Px int mDesiredIconSize;
     private List<Credential> mCredentials;
+    private List<WebAuthnCredential> mWebAuthnCredentials;
 
     void initialize(TouchToFillComponent.Delegate delegate, PropertyModel model,
             LargeIconBridge largeIconBridge, @Px int desiredIconSize) {
@@ -66,7 +71,7 @@ class TouchToFillMediator {
     }
 
     void showCredentials(GURL url, boolean isOriginSecure, List<Credential> credentials,
-            boolean triggerSubmission) {
+            List<WebAuthnCredential> webAuthnCredentials, boolean triggerSubmission) {
         assert credentials != null;
         mModel.set(ON_CLICK_MANAGE, this::onManagePasswordSelected);
 
@@ -90,8 +95,17 @@ class TouchToFillMediator {
         for (Credential credential : credentials) {
             final PropertyModel model = createModel(credential, triggerSubmission);
             sheetItems.add(new ListItem(TouchToFillProperties.ItemType.CREDENTIAL, model));
+            if (shouldCreateConfirmationButton(credentials, webAuthnCredentials)) {
+                sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FILL_BUTTON, model));
+            }
             requestIconOrFallbackImage(model, url);
-            if (shouldCreateConfirmationButton(credentials)) {
+        }
+
+        mWebAuthnCredentials = webAuthnCredentials;
+        for (WebAuthnCredential credential : webAuthnCredentials) {
+            final PropertyModel model = createWebAuthnModel(credential);
+            sheetItems.add(new ListItem(TouchToFillProperties.ItemType.WEBAUTHN_CREDENTIAL, model));
+            if (shouldCreateConfirmationButton(credentials, webAuthnCredentials)) {
                 sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FILL_BUTTON, model));
             }
         }
@@ -124,19 +138,30 @@ class TouchToFillMediator {
         return o != null && !o.uri().isOpaque() ? credentialOrigin : siteUrl.getSpec();
     }
 
-    private void onSelectedCredential(Credential credential) {
-        mModel.set(VISIBLE, false);
-        if (mCredentials.size() > 1) {
+    private void reportCredentialSelection(int userAction, int index) {
+        if (mCredentials.size() + mWebAuthnCredentials.size() > 1) {
             // We only record this histogram in case multiple credentials were shown to the user.
             // Otherwise the single credential case where position should always be 0 will dominate
             // the recording.
-            RecordHistogram.recordCount100Histogram(
-                    UMA_TOUCH_TO_FILL_CREDENTIAL_INDEX, mCredentials.indexOf(credential));
+            RecordHistogram.recordCount100Histogram(UMA_TOUCH_TO_FILL_CREDENTIAL_INDEX, index);
         }
 
-        RecordHistogram.recordEnumeratedHistogram(UMA_TOUCH_TO_FILL_USER_ACTION,
-                UserAction.SELECT_CREDENTIAL, UserAction.MAX_VALUE + 1);
+        RecordHistogram.recordEnumeratedHistogram(
+                UMA_TOUCH_TO_FILL_USER_ACTION, userAction, UserAction.MAX_VALUE + 1);
+    }
+
+    private void onSelectedCredential(Credential credential) {
+        mModel.set(VISIBLE, false);
+        reportCredentialSelection(UserAction.SELECT_CREDENTIAL, mCredentials.indexOf(credential));
         mDelegate.onCredentialSelected(credential);
+    }
+
+    private void onSelectedWebAuthnCredential(WebAuthnCredential credential) {
+        mModel.set(VISIBLE, false);
+        // The index assumes WebAuthn credentials are listed after password credentials.
+        reportCredentialSelection(UserAction.SELECT_WEBAUTHN_CREDENTIAL,
+                mCredentials.size() + mWebAuthnCredentials.indexOf(credential));
+        mDelegate.onWebAuthnCredentialSelected(credential);
     }
 
     public void onDismissed(@StateChangeReason int reason) {
@@ -160,8 +185,9 @@ class TouchToFillMediator {
      * @param credentials The available credentials. Show the confirmation for a lone credential.
      * @return True if a confirmation button should be shown at the end of the bottom sheet.
      */
-    private boolean shouldCreateConfirmationButton(List<Credential> credentials) {
-        return credentials.size() == 1;
+    private boolean shouldCreateConfirmationButton(
+            List<Credential> credentials, List<WebAuthnCredential> webauthnCredentials) {
+        return credentials.size() + webauthnCredentials.size() == 1;
     }
 
     private PropertyModel createModel(Credential credential, boolean triggerSubmission) {
@@ -171,6 +197,13 @@ class TouchToFillMediator {
                 .with(FORMATTED_ORIGIN,
                         UrlFormatter.formatUrlForDisplayOmitScheme(credential.getOriginUrl()))
                 .with(SHOW_SUBMIT_BUTTON, triggerSubmission)
+                .build();
+    }
+
+    private PropertyModel createWebAuthnModel(WebAuthnCredential credential) {
+        return new PropertyModel.Builder(WebAuthnCredentialProperties.ALL_KEYS)
+                .with(WEBAUTHN_CREDENTIAL, credential)
+                .with(ON_WEBAUTHN_CLICK_LISTENER, this::onSelectedWebAuthnCredential)
                 .build();
     }
 }

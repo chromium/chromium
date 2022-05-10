@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
+import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -82,6 +83,22 @@ class TouchToFillProperties {
     }
 
     /**
+     * Properties for a Web Authentication credential entry in TouchToFill sheet.
+     */
+    static class WebAuthnCredentialProperties {
+        static final PropertyModel
+                .ReadableObjectPropertyKey<WebAuthnCredential> WEBAUTHN_CREDENTIAL =
+                new PropertyModel.ReadableObjectPropertyKey<>("webauthn_credential");
+        static final PropertyModel.ReadableObjectPropertyKey<Callback<WebAuthnCredential>>
+                ON_WEBAUTHN_CLICK_LISTENER =
+                new PropertyModel.ReadableObjectPropertyKey<>("on_webauthn_click_listener");
+
+        static final PropertyKey[] ALL_KEYS = {WEBAUTHN_CREDENTIAL, ON_WEBAUTHN_CLICK_LISTENER};
+
+        private WebAuthnCredentialProperties() {}
+    }
+
+    /**
      * Properties defined here reflect the visible state of the header in the TouchToFill sheet.
      */
     static class HeaderProperties {
@@ -102,7 +119,8 @@ class TouchToFillProperties {
         private HeaderProperties() {}
     }
 
-    @IntDef({ItemType.HEADER, ItemType.CREDENTIAL, ItemType.FILL_BUTTON})
+    @IntDef({ItemType.HEADER, ItemType.CREDENTIAL, ItemType.WEBAUTHN_CREDENTIAL,
+            ItemType.FILL_BUTTON})
     @Retention(RetentionPolicy.SOURCE)
     @interface ItemType {
         /**
@@ -116,9 +134,14 @@ class TouchToFillProperties {
         int CREDENTIAL = 2;
 
         /**
+         * A section containing information about a WebAuthn credential.
+         */
+        int WEBAUTHN_CREDENTIAL = 3;
+
+        /**
          * The fill button at the end of the sheet that filling more obvious for one suggestion.
          */
-        int FILL_BUTTON = 3;
+        int FILL_BUTTON = 4;
     }
 
     /**

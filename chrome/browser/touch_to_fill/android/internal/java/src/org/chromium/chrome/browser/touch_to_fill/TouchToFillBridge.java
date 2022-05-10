@@ -73,10 +73,10 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     }
 
     @CalledByNative
-    private void showCredentials(
-            GURL url, boolean isOriginSecure, Credential[] credentials, boolean submitCredential) {
-        mTouchToFillComponent.showCredentials(
-                url, isOriginSecure, Arrays.asList(credentials), submitCredential);
+    private void showCredentials(GURL url, boolean isOriginSecure, Credential[] credentials,
+            WebAuthnCredential[] webAuthnCredentials, boolean submitCredential) {
+        mTouchToFillComponent.showCredentials(url, isOriginSecure, Arrays.asList(credentials),
+                Arrays.asList(webAuthnCredentials), submitCredential);
     }
 
     @Override
@@ -93,6 +93,13 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     public void onCredentialSelected(Credential credential) {
         if (mNativeView != 0) {
             TouchToFillBridgeJni.get().onCredentialSelected(mNativeView, credential);
+        }
+    }
+
+    @Override
+    public void onWebAuthnCredentialSelected(WebAuthnCredential credential) {
+        if (mNativeView != 0) {
+            TouchToFillBridgeJni.get().onWebAuthnCredentialSelected(mNativeView, credential);
         }
     }
 

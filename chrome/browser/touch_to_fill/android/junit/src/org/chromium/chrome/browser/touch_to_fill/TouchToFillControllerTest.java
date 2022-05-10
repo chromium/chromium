@@ -136,7 +136,8 @@ public class TouchToFillControllerTest {
 
     @Test
     public void testShowCredentialsWithMultipleEntries() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, CARL), true);
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA, CARL), Collections.emptyList(), true);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(3)); // Header + 2 credentials
 
@@ -162,7 +163,8 @@ public class TouchToFillControllerTest {
 
     @Test
     public void testShowCredentialsWithSingleEntry() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA), false);
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA), Collections.emptyList(), false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(3)); // Header + 1 credential + Button
 
@@ -183,7 +185,8 @@ public class TouchToFillControllerTest {
 
     @Test
     public void testShowCredentialsToSubmit() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA), true);
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA), Collections.emptyList(), true);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(3)); // Header + 1 credential + Button
 
@@ -196,7 +199,8 @@ public class TouchToFillControllerTest {
 
     @Test
     public void testShowCredentialsSetsCredentialListAndRequestsFavicons() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, CARL, BOB), false);
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA, CARL, BOB), Collections.emptyList(), false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(4)); // Header + three Credentials
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
@@ -219,7 +223,8 @@ public class TouchToFillControllerTest {
 
     @Test
     public void testFetchFaviconUpdatesModel() {
-        mMediator.showCredentials(TEST_URL, true, Collections.singletonList(CARL), false);
+        mMediator.showCredentials(
+                TEST_URL, true, Collections.singletonList(CARL), Collections.emptyList(), false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(3)); // Header + Credential + Continue Button
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
@@ -245,7 +250,8 @@ public class TouchToFillControllerTest {
 
     @Test
     public void testShowCredentialsFormatPslOrigins() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, BOB), false);
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA, BOB), Collections.emptyList(), false);
         assertThat(mModel.get(SHEET_ITEMS).size(), is(3)); // Header + two Credentials
         assertThat(mModel.get(SHEET_ITEMS).get(1).type, is(ItemType.CREDENTIAL));
         assertThat(mModel.get(SHEET_ITEMS).get(1).model.get(FORMATTED_ORIGIN),
@@ -257,7 +263,8 @@ public class TouchToFillControllerTest {
 
     @Test
     public void testClearsCredentialListWhenShowingAgain() {
-        mMediator.showCredentials(TEST_URL, true, Collections.singletonList(ANA), false);
+        mMediator.showCredentials(
+                TEST_URL, true, Collections.singletonList(ANA), Collections.emptyList(), false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(3)); // Header + Credential + Continue Button
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
@@ -265,7 +272,8 @@ public class TouchToFillControllerTest {
         assertThat(itemList.get(1).model.get(FAVICON_OR_FALLBACK), is(nullValue()));
 
         // Showing the sheet a second time should replace all changed credentials.
-        mMediator.showCredentials(TEST_URL, true, Collections.singletonList(BOB), false);
+        mMediator.showCredentials(
+                TEST_URL, true, Collections.singletonList(BOB), Collections.emptyList(), false);
         itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(3)); // Header + Credential + Continue Button
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
@@ -275,13 +283,15 @@ public class TouchToFillControllerTest {
 
     @Test
     public void testShowCredentialsSetsVisibile() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, CARL, BOB), false);
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA, CARL, BOB), Collections.emptyList(), false);
         assertThat(mModel.get(VISIBLE), is(true));
     }
 
     @Test
     public void testCallsCallbackAndHidesOnSelectingItemDoesNotRecordIndexForSingleCredential() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA), false);
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA), Collections.emptyList(), false);
         assertThat(mModel.get(VISIBLE), is(true));
         assertNotNull(mModel.get(SHEET_ITEMS).get(1).model.get(ON_CLICK_LISTENER));
 
@@ -299,7 +309,8 @@ public class TouchToFillControllerTest {
 
     @Test
     public void testCallsCallbackAndHidesOnSelectingItem() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, CARL), false);
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA, CARL), Collections.emptyList(), false);
         assertThat(mModel.get(VISIBLE), is(true));
         assertNotNull(mModel.get(SHEET_ITEMS).get(1).model.get(ON_CLICK_LISTENER));
 
@@ -317,7 +328,8 @@ public class TouchToFillControllerTest {
 
     @Test
     public void testCallsDelegateAndHidesOnDismiss() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, CARL), false);
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA, CARL), Collections.emptyList(), false);
         mMediator.onDismissed(BottomSheetController.StateChangeReason.BACK_PRESS);
         verify(mMockDelegate).onDismissed();
         assertThat(mModel.get(VISIBLE), is(false));
@@ -332,7 +344,8 @@ public class TouchToFillControllerTest {
 
     @Test
     public void testHidesWhenSelectingManagePasswords() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, CARL, BOB), false);
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA, CARL, BOB), Collections.emptyList(), false);
         assertThat(mModel.get(ON_CLICK_MANAGE), is(notNullValue()));
         mModel.get(ON_CLICK_MANAGE).run();
         verify(mMockDelegate).onManagePasswordsSelected();

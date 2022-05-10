@@ -116,11 +116,10 @@ void TouchToFillViewImpl::Show(
         ConvertUTF8ToJavaString(env, credential.id()));
   }
 
-  // TODO(crbug.com/1318942): |webauthn_credentials| will be passed in a
-  // subsequent CL.
   Java_TouchToFillBridge_showCredentials(
       env, java_object_internal_, url::GURLAndroid::FromNativeGURL(env, url),
-      is_origin_secure.value(), credential_array, trigger_submission);
+      is_origin_secure.value(), credential_array, webauthn_credential_array,
+      trigger_submission);
 }
 
 void TouchToFillViewImpl::OnCredentialSelected(const UiCredential& credential) {
