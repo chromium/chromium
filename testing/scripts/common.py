@@ -395,8 +395,8 @@ class BaseIsolatedScriptArgsAdapter(object):
   def generate_test_also_run_disabled_tests_args(self):
     raise RuntimeError('this method is not yet implemented')
 
-  def generate_sharding_args(self, total_shard, shard_index):
-    del total_shard, shard_index  # unused
+  def generate_sharding_args(self, total_shards, shard_index):
+    del total_shards, shard_index  # unused
     raise RuntimeError('this method is not yet implemented')
 
   def select_python_executable(self):
