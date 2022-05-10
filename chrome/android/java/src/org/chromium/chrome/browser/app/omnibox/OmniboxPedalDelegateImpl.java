@@ -187,7 +187,7 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
     @Override
     public @NonNull PedalIcon getIcon(OmniboxPedal omniboxPedal) {
         if (!omniboxPedal.hasPedalId()) {
-            return new PedalIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
+            return getActionIcon(omniboxPedal);
         }
 
         @OmniboxPedalType
@@ -214,6 +214,18 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
                 break;
         }
         return new PedalIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
+    }
+
+    /** Returns the icon for an action that's not a pedal. */
+    private PedalIcon getActionIcon(OmniboxPedal omniboxPedal) {
+        int omniboxActionType = omniboxPedal.getActionID();
+
+        switch (omniboxActionType) {
+            case OmniboxActionType.HISTORY_CLUSTERS:
+                return new PedalIcon(R.drawable.ic_journeys, /*tintWithTextColor=*/true);
+            default:
+                return new PedalIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
+        }
     }
 
     /**

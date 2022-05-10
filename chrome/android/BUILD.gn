@@ -383,6 +383,7 @@ android_library("chrome_java") {
     "//chrome/browser/fullscreen/android:java",
     "//chrome/browser/gsa:java",
     "//chrome/browser/history_clusters:java",
+    "//chrome/browser/history_clusters:java_resources",
     "//chrome/browser/image_descriptions:java",
     "//chrome/browser/image_editor/public:java",
     "//chrome/browser/incognito:java",
