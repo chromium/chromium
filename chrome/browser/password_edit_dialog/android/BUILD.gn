@@ -21,10 +21,14 @@ source_set("android") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/NoFilterArrayAdapter.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogBridge.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogProperties.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogView.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogViewBinder.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogWithDetailsView.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/UsernameSelectionConfirmationView.java",
   ]
 
   deps = [
@@ -86,12 +90,14 @@ java_library("junit") {
 android_library("javatests") {
   testonly = true
 
-  sources = [ "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogViewTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogWithDetailsViewTest.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/UsernameSelectionConfirmationViewTest.java",
+  ]
 
   deps = [
     ":java",
     "//base:base_java_test_support",
-    "//chrome/browser/flags:java",
     "//chrome/test/android:chrome_java_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:material_design_java",

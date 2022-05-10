@@ -68,15 +68,17 @@ class PasswordEditDialogCoordinator implements ModalDialogProperties.Controller 
     static PasswordEditDialogCoordinator create(
             @NonNull WindowAndroid windowAndroid, @NonNull Delegate delegate) {
         Context context = windowAndroid.getContext().get();
-        PasswordEditDialogView dialogView =
-                (PasswordEditDialogView) LayoutInflater.from(context).inflate(
-                        ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
-                                ? R.layout.password_edit_dialog_with_details
-                                : R.layout.password_edit_dialog,
-                        null);
-        return new PasswordEditDialogCoordinator(
-                context, windowAndroid.getModalDialogManager(), dialogView, delegate);
+
+        return new PasswordEditDialogCoordinator(context, windowAndroid.getModalDialogManager(),
+                createPasswordEditDialogView(context), delegate);
+    }
+
+    private static PasswordEditDialogView createPasswordEditDialogView(Context context) {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
+                ? (PasswordEditDialogWithDetailsView) LayoutInflater.from(context).inflate(
+                        R.layout.password_edit_dialog_with_details, null)
+                : (UsernameSelectionConfirmationView) LayoutInflater.from(context).inflate(
+                        R.layout.password_edit_dialog, null);
     }
 
     /**
@@ -113,7 +115,7 @@ class PasswordEditDialogCoordinator implements ModalDialogProperties.Controller 
             @NonNull String origin, @Nullable String account) {
         createDialogViewModel(usernames, selectedUsernameIndex, password, account);
         PropertyModelChangeProcessor.create(
-                mDialogViewModel, mDialogView, PasswordEditDialogView::bind);
+                mDialogViewModel, mDialogView, PasswordEditDialogViewBinder::bind);
 
         createModelDialogModel();
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);

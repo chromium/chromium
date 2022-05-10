@@ -10,5 +10,6 @@
     -->
     <dimen name="password_edit_field_horizontal_margin">4dp</dimen>
     <dimen name="password_edit_field_vertical_margin">8dp</dimen>
+    <dimen name="password_edit_field_padding_top">12dp</dimen>
     <dimen name="password_edit_large_bottom_margin">16dp</dimen>
 </resources>
