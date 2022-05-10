@@ -532,6 +532,7 @@ let kRTCTransportStats = new RTCStats(null, {
   selectedCandidatePairChanges: 'number',
   iceRole: 'string',
   iceLocalUsernameFragment: 'string',
+  iceState: 'string',
 });
 addRTCStatsToAllowlist(Presence.MANDATORY, 'transport', kRTCTransportStats);
 

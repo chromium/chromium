@@ -234,7 +234,7 @@ FAIL transport's rtcpTransportStatsId assert_true: Is rtcpTransportStatsId prese
 PASS transport's iceRole
 PASS transport's iceLocalUsernameFragment
 PASS transport's dtlsState
-FAIL transport's iceState assert_true: Is iceState present expected true got false
+PASS transport's iceState
 PASS transport's selectedCandidatePairId
 PASS transport's localCertificateId
 PASS transport's remoteCertificateId
