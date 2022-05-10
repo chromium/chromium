@@ -264,7 +264,7 @@ TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
   WindowFocus(arc_window_no_data->GetWindow(), nullptr);
   event_generator->PressKey(ui::VKEY_A, ui::EF_NONE, 1 /* keyboard id */);
   event_generator->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1 /* keyboard id */);
-  EXPECT_TRUE(event_capturer.key_events().size() == 2);
+  EXPECT_EQ(2u, event_capturer.key_events().size());
   event_capturer.Clear();
   // Focus input overlay window.
   WindowFocus(arc_window->GetWindow(), arc_window_no_data->GetWindow());
