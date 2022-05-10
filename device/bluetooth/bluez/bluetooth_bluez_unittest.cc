@@ -46,7 +46,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
@@ -262,14 +261,8 @@ class FakeBluetoothLowEnergyScanSessionDelegate
 
 class BluetoothBlueZTest : public testing::Test {
  public:
-#if BUILDFLAG(IS_CHROMEOS)
-  BluetoothBlueZTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::
-                                  kBluetoothAdvertisementMonitoring},
-        /*disabled_features=*/{});
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS
+  BluetoothBlueZTest() = default;
+
   static const char kGapUuid[];
   static const char kGattUuid[];
   static const char kPnpUuid[];
@@ -507,9 +500,6 @@ class BluetoothBlueZTest : public testing::Test {
     if (base::RunLoop::IsRunningOnCurrentThread())
       base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
-#if BUILDFLAG(IS_CHROMEOS)
-  base::test::ScopedFeatureList scoped_feature_list_;
-#endif
 };
 
 // This class was created to test BluetoothDeviceBluez::Connect() and

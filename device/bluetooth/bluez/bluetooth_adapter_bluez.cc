@@ -356,12 +356,10 @@ void BluetoothAdapterBlueZ::Init() {
   DCHECK(agent_.get());
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::features::IsBluetoothAdvertisementMonitoringEnabled()) {
-    advertisement_monitor_application_provider_ =
-        BluetoothAdvertisementMonitorApplicationServiceProvider::Create(
-            system_bus,
-            dbus::ObjectPath(kAdvertisementMonitorApplicationObjectPath));
-  }
+  advertisement_monitor_application_provider_ =
+      BluetoothAdvertisementMonitorApplicationServiceProvider::Create(
+          system_bus,
+          dbus::ObjectPath(kAdvertisementMonitorApplicationObjectPath));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   std::vector<dbus::ObjectPath> object_paths = bluez::BluezDBusManager::Get()
@@ -1590,10 +1588,6 @@ std::unique_ptr<device::BluetoothLowEnergyScanSession>
 BluetoothAdapterBlueZ::StartLowEnergyScanSession(
     std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
     base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate) {
-  if (!chromeos::features::IsBluetoothAdvertisementMonitoringEnabled()) {
-    return nullptr;
-  }
-
   DCHECK(filter);
 
   dbus::ObjectPath monitor_path = dbus::ObjectPath(
@@ -1637,9 +1631,6 @@ BluetoothAdapterBlueZ::StartLowEnergyScanSession(
 
 BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
 BluetoothAdapterBlueZ::GetLowEnergyScanSessionHardwareOffloadingStatus() {
-  if (!chromeos::features::IsBluetoothAdvertisementMonitoringEnabled())
-    return LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
-
   if (!IsPresent())
     return LowEnergyScanSessionHardwareOffloadingStatus::kUndetermined;
 
@@ -2184,8 +2175,7 @@ void BluetoothAdapterBlueZ::UpdateDeviceBatteryLevelFromBatteryClient(
 void BluetoothAdapterBlueZ::
     RegisterAdvertisementMonitorApplicationServiceProvider() {
   if (is_advertisement_monitor_application_provider_registered_ ||
-      !IsPresent() ||
-      !chromeos::features::IsBluetoothAdvertisementMonitoringEnabled()) {
+      !IsPresent()) {
     return;
   }
   BLUETOOTH_LOG(EVENT) << __func__;

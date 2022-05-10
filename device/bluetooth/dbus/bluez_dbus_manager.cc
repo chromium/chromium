@@ -255,10 +255,8 @@ void BluezDBusManager::InitializeClients() {
   client_bundle_->bluetooth_admin_policy_client()->Init(GetSystemBus(),
                                                         bluetooth_service_name);
 #if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::features::IsBluetoothAdvertisementMonitoringEnabled()) {
-    client_bundle_->bluetooth_advertisement_monitor_manager_client()->Init(
-        GetSystemBus(), bluetooth_service_name);
-  }
+  client_bundle_->bluetooth_advertisement_monitor_manager_client()->Init(
+      GetSystemBus(), bluetooth_service_name);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   client_bundle_->bluetooth_agent_manager_client()->Init(
       GetSystemBus(), bluetooth_service_name);

@@ -247,8 +247,7 @@ void NearbyShareSettings::OnEnabledPrefChanged() {
   }
 
   if (base::FeatureList::IsEnabled(
-          features::kNearbySharingBackgroundScanning) &&
-      chromeos::features::IsBluetoothAdvertisementMonitoringEnabled()) {
+          features::kNearbySharingBackgroundScanning)) {
     ProcessFastInitiationNotificationParentPrefChanged(enabled);
   }
 }

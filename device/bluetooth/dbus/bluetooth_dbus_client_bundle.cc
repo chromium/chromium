@@ -51,10 +51,8 @@ BluetoothDBusClientBundle::BluetoothDBusClientBundle(bool use_fakes)
     bluetooth_le_advertising_manager_client_.reset(
         BluetoothLEAdvertisingManagerClient::Create());
 #if BUILDFLAG(IS_CHROMEOS)
-    if (chromeos::features::IsBluetoothAdvertisementMonitoringEnabled()) {
-      bluetooth_advertisement_monitor_manager_client_ =
-          BluetoothAdvertisementMonitorManagerClient::Create();
-    }
+    bluetooth_advertisement_monitor_manager_client_ =
+        BluetoothAdvertisementMonitorManagerClient::Create();
 #endif  // BUILDFLAG(IS_CHROMEOS)
     bluetooth_agent_manager_client_.reset(
         BluetoothAgentManagerClient::Create());
@@ -86,10 +84,8 @@ BluetoothDBusClientBundle::BluetoothDBusClientBundle(bool use_fakes)
     bluetooth_le_advertising_manager_client_ =
         std::make_unique<FakeBluetoothLEAdvertisingManagerClient>();
 #if BUILDFLAG(IS_CHROMEOS)
-    if (chromeos::features::IsBluetoothAdvertisementMonitoringEnabled()) {
-      bluetooth_advertisement_monitor_manager_client_ =
-          std::make_unique<FakeBluetoothAdvertisementMonitorManagerClient>();
-    }
+    bluetooth_advertisement_monitor_manager_client_ =
+        std::make_unique<FakeBluetoothAdvertisementMonitorManagerClient>();
 #endif  // BUILDFLAG(IS_CHROMEOS)
     bluetooth_agent_manager_client_ =
         std::make_unique<FakeBluetoothAgentManagerClient>();

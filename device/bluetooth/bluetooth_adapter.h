@@ -734,9 +734,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   // an identical scanning session, it should discard its newly invalidated
   // BluetoothLowEnergyScanSession and create a new one by calling
   // StartLowEnergyScanSession() again.
-  //
-  // Returns a nullptr if the BluetoothAdvertisementMonitoring chrome flag is
-  // not enabled.
   virtual std::unique_ptr<BluetoothLowEnergyScanSession>
   StartLowEnergyScanSession(
       std::unique_ptr<BluetoothLowEnergyScanFilter> filter,

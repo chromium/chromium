@@ -3183,9 +3183,6 @@ extern const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersName[];
 extern const char
     kAllowDefaultWebAppMigrationForChromeOsManagedUsersDescription[];
 
-extern const char kBluetoothAdvertisementMonitoringName[];
-extern const char kBluetoothAdvertisementMonitoringDescription[];
-
 extern const char kCrOSDspBasedAecAllowedName[];
 extern const char kCrOSDspBasedAecAllowedDescription[];
 

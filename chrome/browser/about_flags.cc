@@ -6130,13 +6130,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSkiaRendererDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kUseSkiaRenderer)},
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"bluetooth-advertisement-monitoring",
-     flag_descriptions::kBluetoothAdvertisementMonitoringName,
-     flag_descriptions::kBluetoothAdvertisementMonitoringDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kBluetoothAdvertisementMonitoring)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"allow-disable-touchpad-haptic-feedback",
      flag_descriptions::kAllowDisableTouchpadHapticFeedbackName,

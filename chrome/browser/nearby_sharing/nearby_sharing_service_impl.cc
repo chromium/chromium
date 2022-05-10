@@ -113,8 +113,7 @@ constexpr base::TimeDelta kNearbyVisibilityReminderTimerDelay = base::Days(180);
 
 bool IsBackgroundScanningFeatureEnabled() {
   return base::FeatureList::IsEnabled(
-             features::kNearbySharingBackgroundScanning) &&
-         chromeos::features::IsBluetoothAdvertisementMonitoringEnabled();
+      features::kNearbySharingBackgroundScanning);
 }
 
 std::string ReceiveSurfaceStateToString(

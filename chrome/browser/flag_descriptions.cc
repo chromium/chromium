@@ -4471,9 +4471,7 @@ const char kEnableFakeKeyboardHeuristicDescription[] =
 const char kFastPairName[] = "Enable Fast Pair";
 const char kFastPairDescription[] =
     "Enables Google Fast Pair service which uses BLE to discover supported "
-    "nearby Bluetooth devices and surfaces a notification for quick pairing. "
-    "Use along with #bluetooth-advertisement-monitoring to allow background "
-    "scanning.";
+    "nearby Bluetooth devices and surfaces a notification for quick pairing.";
 
 const char kFastPairLowPowerName[] = "Enable Fast Pair Low Power mode";
 const char kFastPairLowPowerDescription[] =
@@ -5550,13 +5548,6 @@ const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersDescription[] =
     "(chrome://flags/#enable-migrate-default-chrome-app-to-web-apps-gsuite and "
     "chrome://flags/#enable-migrate-default-chrome-app-to-web-apps-non-gsuite) "
     "are ignored for managed ChromeOS users unless this feature is enabled.";
-
-const char kBluetoothAdvertisementMonitoringName[] =
-    "Bluetooth Advertisement Monitoring";
-const char kBluetoothAdvertisementMonitoringDescription[] =
-    "Advertisement monitoring allows applications to register low energy "
-    "scanners that filter low energy advertisements in a power-efficient "
-    "manner.";
 
 const char kCrOSDspBasedAecAllowedName[] =
     "Allow CRAS to use a DSP-based AEC if available";

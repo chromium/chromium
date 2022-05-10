@@ -590,11 +590,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "bluetooth-advertisement-monitoring",
-    "owners": [ "cvandermerwe@google.com", "hansenmichael@google.com", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "bluetooth-bond-on-demand",
     "owners": [ "cmumford@chromium.org", "deviceapi-team@google.com" ],
     "expiry_milestone": 100

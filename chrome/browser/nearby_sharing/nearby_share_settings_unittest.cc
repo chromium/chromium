@@ -88,9 +88,7 @@ class NearbyShareSettingsTest : public ::testing::Test {
   NearbyShareSettingsTest() : local_device_data_manager_(kDefaultDeviceName) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kNearbySharing,
-                              features::kNearbySharingBackgroundScanning,
-                              chromeos::features::
-                                  kBluetoothAdvertisementMonitoring},
+                              features::kNearbySharingBackgroundScanning},
         /*disabled_features=*/{});
 
     RegisterNearbySharingPrefs(pref_service_.registry());

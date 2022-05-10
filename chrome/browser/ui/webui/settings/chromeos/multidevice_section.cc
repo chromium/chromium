@@ -612,11 +612,9 @@ void MultiDeviceSection::AddLoadTimeData(
       NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
           profile()));
   // Background scanning depends on Bluetooth Advertisement Monitoring.
-  html_source->AddBoolean(
-      "isNearbyShareBackgroundScanningEnabled",
-      chromeos::features::IsBluetoothAdvertisementMonitoringEnabled() &&
-          base::FeatureList::IsEnabled(
-              ::features::kNearbySharingBackgroundScanning));
+  html_source->AddBoolean("isNearbyShareBackgroundScanningEnabled",
+                          base::FeatureList::IsEnabled(
+                              ::features::kNearbySharingBackgroundScanning));
   html_source->AddBoolean("isEcheAppEnabled", features::IsEcheSWAEnabled());
   bool is_phone_screen_lock_enabled =
       static_cast<phonehub::ScreenLockManager::LockStatus>(
