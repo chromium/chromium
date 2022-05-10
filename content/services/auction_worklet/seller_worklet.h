@@ -88,6 +88,7 @@ class SellerWorklet : public mojom::SellerWorklet {
       const std::vector<GURL>& browser_signal_ad_components,
       uint32_t browser_signal_bidding_duration_msecs,
       const absl::optional<base::TimeDelta> seller_timeout,
+      uint64_t trace_id,
       ScoreAdCallback callback) override;
   void SendPendingSignalsRequests() override;
   void ReportResult(
@@ -103,6 +104,7 @@ class SellerWorklet : public mojom::SellerWorklet {
           browser_signals_component_auction_report_result_params,
       uint32_t scoring_signals_data_version,
       bool browser_signal_has_data_version,
+      uint64_t trace_id,
       ReportResultCallback callback) override;
   void ConnectDevToolsAgent(
       mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
@@ -131,6 +133,7 @@ class SellerWorklet : public mojom::SellerWorklet {
     std::vector<std::string> browser_signal_ad_components;
     uint32_t browser_signal_bidding_duration_msecs;
     absl::optional<base::TimeDelta> seller_timeout;
+    uint64_t trace_id;
 
     ScoreAdCallback callback;
 
@@ -165,6 +168,7 @@ class SellerWorklet : public mojom::SellerWorklet {
     auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
         browser_signals_component_auction_report_result_params;
     absl::optional<uint32_t> scoring_signals_data_version;
+    uint64_t trace_id;
 
     ReportResultCallback callback;
   };
@@ -215,6 +219,7 @@ class SellerWorklet : public mojom::SellerWorklet {
         const std::vector<std::string>& browser_signal_ad_components,
         uint32_t browser_signal_bidding_duration_msecs,
         const absl::optional<base::TimeDelta> seller_timeout,
+        uint64_t trace_id,
         ScoreAdCallbackInternal callback);
 
     void ReportResult(
@@ -229,6 +234,7 @@ class SellerWorklet : public mojom::SellerWorklet {
         auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
             browser_signals_component_auction_report_result_params,
         absl::optional<uint32_t> scoring_signals_data_version,
+        uint64_t trace_id,
         ReportResultCallbackInternal callback);
 
     void ConnectDevToolsAgent(

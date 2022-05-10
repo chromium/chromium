@@ -4,6 +4,8 @@
 
 #include "content/services/auction_worklet/bidder_worklet.h"
 
+#include <stdint.h>
+
 #include <string>
 #include <utility>
 #include <vector>
@@ -283,6 +285,7 @@ class BidderWorkletTest : public testing::Test {
         browser_signal_made_highest_scoring_other_bid_,
         browser_signal_seller_origin_, browser_signal_top_level_seller_origin_,
         data_version_.value_or(0), data_version_.has_value(),
+        /*trace_id=*/1,
         base::BindOnce(
             [](const absl::optional<GURL>& expected_report_url,
                const base::flat_map<std::string, GURL>& expected_ad_beacon_map,
@@ -375,6 +378,7 @@ class BidderWorkletTest : public testing::Test {
         per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
+        /*trace_id=*/1,
         base::BindOnce(&BidderWorkletTest::GenerateBidCallback,
                        base::Unretained(this)));
     bidder_worklet->SendPendingSignalsRequests();
@@ -388,6 +392,7 @@ class BidderWorkletTest : public testing::Test {
         per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
+        /*trace_id=*/1,
         base::BindOnce([](mojom::BidderWorkletBidPtr bid, uint32_t data_version,
                           bool has_data_version,
                           const absl::optional<GURL>& debug_loss_report_url,
@@ -1538,6 +1543,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
           per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
           browser_signal_top_level_seller_origin_,
           CreateBiddingBrowserSignals(), auction_start_time_,
+          /*trace_id=*/1,
           base::BindLambdaForTesting(
               [&run_loop, &num_generate_bid_calls, bid_value](
                   mojom::BidderWorkletBidPtr bid, uint32_t data_version,
@@ -1629,6 +1635,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
         per_buyer_timeout_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
+        /*trace_id=*/1,
         base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid, uint32_t data_version,
@@ -1726,6 +1733,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
         per_buyer_timeout_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
+        /*trace_id=*/1,
         base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid, uint32_t data_version,
@@ -1829,6 +1837,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
         per_buyer_timeout_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
+        /*trace_id=*/1,
         base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid, uint32_t data_version,
@@ -1911,6 +1920,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
         per_buyer_timeout_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
+        /*trace_id=*/1,
         base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid, uint32_t data_version,
@@ -2322,6 +2332,7 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
       browser_signal_made_highest_scoring_other_bid_,
       browser_signal_seller_origin_, browser_signal_top_level_seller_origin_,
       data_version_.value_or(0), data_version_.has_value(),
+      /*trace_id=*/1,
       base::BindLambdaForTesting(
           [&run_loop](const absl::optional<GURL>& report_url,
                       const base::flat_map<std::string, GURL>& ad_beacon_map,
@@ -2778,6 +2789,7 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
       browser_signal_made_highest_scoring_other_bid_,
       browser_signal_seller_origin_, browser_signal_top_level_seller_origin_,
       data_version_.value_or(0), data_version_.has_value(),
+      /*trace_id=*/1,
       base::BindOnce([](const absl::optional<GURL>& report_url,
                         const base::flat_map<std::string, GURL>& ad_beacon_map,
                         const std::vector<std::string>& errors) {
@@ -2820,6 +2832,7 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
           browser_signal_seller_origin_,
           browser_signal_top_level_seller_origin_, data_version_.value_or(0),
           data_version_.has_value(),
+          /*trace_id=*/1,
           base::BindLambdaForTesting(
               [&run_loop, &num_report_win_calls, i](
                   const absl::optional<GURL>& report_url,
@@ -2862,6 +2875,7 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
         browser_signal_made_highest_scoring_other_bid_,
         browser_signal_seller_origin_, browser_signal_top_level_seller_origin_,
         data_version_.value_or(0), data_version_.has_value(),
+        /*trace_id=*/1,
         base::BindOnce(
             [](const absl::optional<GURL>& report_url,
                const base::flat_map<std::string, GURL>& ad_beacon_map,
@@ -3073,6 +3087,7 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
         browser_signal_made_highest_scoring_other_bid_,
         browser_signal_seller_origin_, browser_signal_top_level_seller_origin_,
         data_version_.value_or(0), data_version_.has_value(),
+        /*trace_id=*/1,
         base::BindLambdaForTesting(
             [&run_loop](const absl::optional<GURL>& report_url,
                         const base::flat_map<std::string, GURL>& ad_beacon_map,

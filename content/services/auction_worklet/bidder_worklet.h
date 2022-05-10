@@ -5,6 +5,8 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_BIDDER_WORKLET_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_BIDDER_WORKLET_H_
 
+#include <stdint.h>
+
 #include <cmath>
 #include <list>
 #include <memory>
@@ -102,6 +104,7 @@ class BidderWorklet : public mojom::BidderWorklet {
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
+      uint64_t trace_id,
       GenerateBidCallback generate_bid_callback) override;
   void SendPendingSignalsRequests() override;
   void ReportWin(
@@ -117,6 +120,7 @@ class BidderWorklet : public mojom::BidderWorklet {
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       uint32_t bidding_signals_data_version,
       bool has_bidding_signals_data_version,
+      uint64_t trace_id,
       ReportWinCallback report_win_callback) override;
   void ConnectDevToolsAgent(
       mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
@@ -135,6 +139,7 @@ class BidderWorklet : public mojom::BidderWorklet {
     absl::optional<url::Origin> browser_signal_top_level_seller_origin;
     mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
     base::Time auction_start_time;
+    uint64_t trace_id;
 
     // Set while loading is in progress.
     std::unique_ptr<TrustedSignalsRequestManager::Request>
@@ -166,6 +171,7 @@ class BidderWorklet : public mojom::BidderWorklet {
     url::Origin browser_signal_seller_origin;
     absl::optional<url::Origin> browser_signal_top_level_seller_origin;
     absl::optional<uint32_t> bidding_signals_data_version;
+    uint64_t trace_id;
 
     ReportWinCallback callback;
   };
@@ -213,6 +219,7 @@ class BidderWorklet : public mojom::BidderWorklet {
                    const absl::optional<url::Origin>&
                        browser_signal_top_level_seller_origin,
                    const absl::optional<uint32_t>& bidding_signals_data_version,
+                   uint64_t trace_id,
                    ReportWinCallbackInternal callback);
 
     void GenerateBid(
@@ -226,6 +233,7 @@ class BidderWorklet : public mojom::BidderWorklet {
         mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
         base::Time auction_start_time,
         scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result,
+        uint64_t trace_id,
         GenerateBidCallbackInternal callback);
 
     void ConnectDevToolsAgent(

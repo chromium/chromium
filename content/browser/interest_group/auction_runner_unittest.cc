@@ -4,6 +4,8 @@
 
 #include "content/browser/interest_group/auction_runner.h"
 
+#include <stdint.h>
+
 #include <limits>
 #include <map>
 #include <memory>
@@ -804,6 +806,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
+      uint64_t trace_id,
       GenerateBidCallback generate_bid_callback) override {
     generate_bid_called_ = true;
     // While the real BidderWorklet implementation supports multiple pending
@@ -854,6 +857,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       uint32_t bidding_signals_data_version,
       bool has_bidding_signals_data_version,
+      uint64_t trace_id,
       ReportWinCallback report_win_callback) override {
     // While the real BidderWorklet implementation supports multiple pending
     // callbacks, this class does not.
@@ -997,6 +1001,7 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
                const std::vector<GURL>& browser_signal_ad_components,
                uint32_t browser_signal_bidding_duration_msecs,
                const absl::optional<base::TimeDelta> seller_timeout,
+               uint64_t trace_id,
                ScoreAdCallback score_ad_callback) override {
     // SendPendingSignalsRequests() should only be called once all ads are
     // scored.
@@ -1039,6 +1044,7 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
           browser_signals_component_auction_report_result_params,
       uint32_t browser_signal_data_version,
       bool browser_signal_has_data_version,
+      uint64_t trace_id,
       ReportResultCallback report_result_callback) override {
     report_result_callback_ = std::move(report_result_callback);
     if (report_result_run_loop_)

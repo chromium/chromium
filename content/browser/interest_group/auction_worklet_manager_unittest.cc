@@ -4,6 +4,8 @@
 
 #include "content/browser/interest_group/auction_worklet_manager.h"
 
+#include <stdint.h>
+
 #include <list>
 #include <memory>
 #include <string>
@@ -131,6 +133,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
+      uint64_t trace_id,
       GenerateBidCallback generate_bid_callback) override {
     NOTREACHED();
   }
@@ -156,6 +159,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       uint32_t browser_signal_data_version,
       bool browser_signal_has_data_version,
+      uint64_t trace_id,
       ReportWinCallback report_win_callback) override {
     NOTREACHED();
   }
@@ -270,6 +274,7 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
                const std::vector<GURL>& browser_signal_ad_components,
                uint32_t browser_signal_bidding_duration_msecs,
                const absl::optional<base::TimeDelta> seller_timeout,
+               uint64_t trace_id,
                ScoreAdCallback score_ad_callback) override {
     NOTREACHED();
   }
@@ -296,6 +301,7 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
           browser_signals_component_auction_report_result_params,
       uint32_t browser_signal_data_version,
       bool browser_signal_has_data_version,
+      uint64_t trace_id,
       ReportResultCallback report_result_callback) override {
     NOTREACHED();
   }

@@ -252,6 +252,7 @@ class SellerWorkletTest : public testing::Test {
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         seller_timeout_,
+        /*trace_id=*/1,
         base::BindOnce(
             [](double expected_score,
                mojom::ComponentAuctionModifiedBidParamsPtr
@@ -307,6 +308,7 @@ class SellerWorkletTest : public testing::Test {
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         seller_timeout_,
+        /*trace_id=*/1,
         base::BindOnce([](double score,
                           mojom::ComponentAuctionModifiedBidParamsPtr
                               component_auction_modified_bid_params,
@@ -420,6 +422,7 @@ class SellerWorkletTest : public testing::Test {
         browser_signals_component_auction_report_result_params_.Clone(),
         browser_signal_data_version_.value_or(0),
         browser_signal_data_version_.has_value(),
+        /*trace_id=*/1,
         base::BindOnce(
             [](const absl::optional<std::string>& expected_signals_for_winner,
                const absl::optional<GURL>& expected_report_url,
@@ -451,6 +454,7 @@ class SellerWorkletTest : public testing::Test {
         browser_signals_component_auction_report_result_params_.Clone(),
         browser_signal_data_version_.value_or(0),
         browser_signal_data_version_.has_value(),
+        /*trace_id=*/1,
         base::BindOnce(
             [](const absl::optional<std::string>& signals_for_winner,
                const absl::optional<GURL>& report_url,
@@ -2229,6 +2233,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
           browser_signal_interest_group_owner_, browser_signal_render_url_,
           browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
           seller_timeout_,
+          /*trace_id=*/1,
           base::BindLambdaForTesting(
               [&run_loop](double score,
                           mojom::ComponentAuctionModifiedBidParamsPtr
@@ -2257,6 +2262,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
           browser_signals_component_auction_report_result_params_.Clone(),
           browser_signal_data_version_.value_or(0),
           browser_signal_data_version_.has_value(),
+          /*trace_id=*/1,
           base::BindLambdaForTesting(
               [&run_loop](
                   const absl::optional<std::string>& signals_for_winner,
@@ -2285,6 +2291,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
       browser_signal_interest_group_owner_, browser_signal_render_url_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
       seller_timeout_,
+      /*trace_id=*/1,
       base::BindOnce([](double score,
                         mojom::ComponentAuctionModifiedBidParamsPtr
                             component_auction_modified_bid_params,
@@ -2318,6 +2325,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
       browser_signals_component_auction_report_result_params_.Clone(),
       browser_signal_data_version_.value_or(0),
       browser_signal_data_version_.has_value(),
+      /*trace_id=*/1,
       base::BindOnce([](const absl::optional<std::string>& signals_for_winner,
                         const absl::optional<GURL>& report_url,
                         const base::flat_map<std::string, GURL>& ad_beacon_map,
@@ -3152,6 +3160,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         seller_timeout_,
+        /*trace_id=*/1,
         base::BindLambdaForTesting(
             [&run_loop](double score,
                         mojom::ComponentAuctionModifiedBidParamsPtr

@@ -4,6 +4,8 @@
 
 #include "content/services/auction_worklet/seller_worklet.h"
 
+#include <stdint.h>
+
 #include <list>
 #include <memory>
 #include <string>
@@ -17,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
@@ -272,9 +275,9 @@ void SellerWorklet::ScoreAd(
     const std::vector<GURL>& browser_signal_ad_components,
     uint32_t browser_signal_bidding_duration_msecs,
     const absl::optional<base::TimeDelta> seller_timeout,
+    uint64_t trace_id,
     ScoreAdCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-
   score_ad_tasks_.emplace_front();
 
   auto score_ad_task = score_ad_tasks_.begin();
@@ -293,11 +296,14 @@ void SellerWorklet::ScoreAd(
   score_ad_task->browser_signal_bidding_duration_msecs =
       browser_signal_bidding_duration_msecs;
   score_ad_task->seller_timeout = seller_timeout;
+  score_ad_task->trace_id = trace_id;
   score_ad_task->callback = std::move(callback);
 
   // If `trusted_signals_request_manager_` exists, there's a trusted scoring
   // signals URL which needs to be fetched before the auction can be run.
   if (trusted_signals_request_manager_) {
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "request_scoring_signals",
+                                      trace_id);
     score_ad_task->trusted_scoring_signals_request =
         trusted_signals_request_manager_->RequestScoringSignals(
             browser_signal_render_url,
@@ -307,6 +313,8 @@ void SellerWorklet::ScoreAd(
     return;
   }
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "waiting_for_seller_script",
+                                    trace_id);
   ScoreAdIfReady(score_ad_task);
 }
 
@@ -328,6 +336,7 @@ void SellerWorklet::ReportResult(
         browser_signals_component_auction_report_result_params,
     uint32_t scoring_signals_data_version,
     bool has_scoring_signals_data_version,
+    uint64_t trace_id,
     ReportResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   // `browser_signals_component_auction_report_result_params` should only be
@@ -354,12 +363,16 @@ void SellerWorklet::ReportResult(
       browser_signal_highest_scoring_other_bid;
   report_result_task->browser_signals_component_auction_report_result_params =
       std::move(browser_signals_component_auction_report_result_params);
+  report_result_task->trace_id = trace_id;
 
   if (has_scoring_signals_data_version) {
     report_result_task->scoring_signals_data_version =
         scoring_signals_data_version;
   }
   report_result_task->callback = std::move(callback);
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "waiting_for_seller_script",
+                                    trace_id);
 
   // If not yet ready, need to wait for load to complete.
   if (!IsCodeReady())
@@ -422,8 +435,12 @@ void SellerWorklet::V8State::ScoreAd(
     const std::vector<std::string>& browser_signal_ad_components,
     uint32_t browser_signal_bidding_duration_msecs,
     const absl::optional<base::TimeDelta> seller_timeout,
+    uint64_t trace_id,
     ScoreAdCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "post_v8_task", trace_id);
+
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
   v8::Local<v8::ObjectTemplate> global_template =
@@ -519,10 +536,16 @@ void SellerWorklet::V8State::ScoreAd(
   std::vector<std::string> errors_out;
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
       *debug_id_, "beforeSellerWorkletScoringStart");
-  if (!v8_helper_
-           ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
-                       "scoreAd", args, std::move(seller_timeout), errors_out)
-           .ToLocal(&score_ad_result)) {
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "score_ad", trace_id);
+  bool got_return_value =
+      v8_helper_
+          ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
+                      "scoreAd", args, std::move(seller_timeout), errors_out)
+          .ToLocal(&score_ad_result);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "score_ad", trace_id);
+
+  if (!got_return_value) {
     // Keep debug loss reports since `scoreAd()` might use it to detect script
     // timeout or failures.
     PostScoreAdCallbackToUserThread(
@@ -677,8 +700,11 @@ void SellerWorklet::V8State::ReportResult(
     auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
         browser_signals_component_auction_report_result_params,
     absl::optional<uint32_t> scoring_signals_data_version,
+    uint64_t trace_id,
     ReportResultCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "post_v8_task", trace_id);
+
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
 
@@ -757,11 +783,17 @@ void SellerWorklet::V8State::ReportResult(
   std::vector<std::string> errors_out;
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
       *debug_id_, "beforeSellerWorkletReportingStart");
-  if (!v8_helper_
-           ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
-                       "reportResult", args, /*script_timeout=*/absl::nullopt,
-                       errors_out)
-           .ToLocal(&signals_for_winner_value)) {
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "report_result", trace_id);
+  bool got_return_value =
+      v8_helper_
+          ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
+                      "reportResult", args, /*script_timeout=*/absl::nullopt,
+                      errors_out)
+          .ToLocal(&signals_for_winner_value);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_result", trace_id);
+
+  if (!got_return_value) {
     PostReportResultCallbackToUserThread(
         std::move(callback), /*signals_for_winner=*/absl::nullopt,
         /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
@@ -908,6 +940,11 @@ void SellerWorklet::OnTrustedScoringSignalsDownloaded(
     absl::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "request_scoring_signals",
+                                  task->trace_id);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "waiting_for_seller_script",
+                                    task->trace_id);
+
   task->trusted_scoring_signals_error_msg = std::move(error_msg);
   task->trusted_scoring_signals_result = std::move(result);
   // Clean up single-use object, now that it has done its job.
@@ -922,6 +959,10 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
   if (task->trusted_scoring_signals_request || !IsCodeReady())
     return;
 
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "waiting_for_seller_script",
+                                  task->trace_id);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "post_v8_task", task->trace_id);
+
   v8_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -934,7 +975,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
           std::move(task->browser_signal_render_url),
           std::move(task->browser_signal_ad_components),
           task->browser_signal_bidding_duration_msecs,
-          std::move(task->seller_timeout),
+          std::move(task->seller_timeout), task->trace_id,
           base::BindOnce(&SellerWorklet::DeliverScoreAdCallbackOnUserThread,
                          weak_ptr_factory_.GetWeakPtr(), task)));
 }
@@ -966,6 +1007,10 @@ void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
 void SellerWorklet::RunReportResult(ReportResultTaskList::iterator task) {
   DCHECK(IsCodeReady());
 
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "waiting_for_seller_script",
+                                  task->trace_id);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "post_v8_task", task->trace_id);
+
   v8_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -979,7 +1024,7 @@ void SellerWorklet::RunReportResult(ReportResultTaskList::iterator task) {
           task->browser_signal_highest_scoring_other_bid,
           std::move(
               task->browser_signals_component_auction_report_result_params),
-          task->scoring_signals_data_version,
+          task->scoring_signals_data_version, task->trace_id,
           base::BindOnce(
               &SellerWorklet::DeliverReportResultCallbackOnUserThread,
               weak_ptr_factory_.GetWeakPtr(), task)));

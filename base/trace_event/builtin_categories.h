@@ -87,6 +87,7 @@
   X("explore_sites")                                                     \
   X("FileSystem")                                                        \
   X("file_system_provider")                                              \
+  X("fledge")                                                            \
   X("fonts")                                                             \
   X("GAMEPAD")                                                           \
   X("gpu")                                                               \

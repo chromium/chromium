@@ -23,6 +23,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
@@ -100,8 +102,31 @@ struct StorageInterestGroupDescByPriority {
 }  // namespace
 
 AuctionRunner::BidState::BidState() = default;
-AuctionRunner::BidState::~BidState() = default;
+
+AuctionRunner::BidState::~BidState() {
+  if (trace_id.has_value())
+    EndTracing();
+}
+
 AuctionRunner::BidState::BidState(BidState&&) = default;
+
+void AuctionRunner::BidState::BeginTracing() {
+  DCHECK(!trace_id.has_value());
+
+  trace_id = base::trace_event::GetNextGlobalTraceId();
+
+  const blink::InterestGroup& interest_group = bidder.interest_group;
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("fledge", "bid", *trace_id, "bidding_url",
+                                    interest_group.bidding_url,
+                                    "interest_group_name", interest_group.name);
+}
+
+void AuctionRunner::BidState::EndTracing() {
+  DCHECK(trace_id.has_value());
+
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "bid", *trace_id);
+  trace_id = absl::nullopt;
+}
 
 AuctionRunner::Bid::Bid(std::string ad_metadata,
                         double bid,
@@ -151,11 +176,16 @@ AuctionRunner::Auction::Auction(
     AuctionWorkletManager* auction_worklet_manager,
     InterestGroupManagerImpl* interest_group_manager,
     base::Time auction_start_time)
-    : auction_worklet_manager_(auction_worklet_manager),
+    : trace_id_(base::trace_event::GetNextGlobalTraceId()),
+      auction_worklet_manager_(auction_worklet_manager),
       interest_group_manager_(interest_group_manager),
       config_(config),
       parent_(parent),
       auction_start_time_(auction_start_time) {
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("fledge", "auction", trace_id_,
+                                    "decision_logic_url",
+                                    config_->decision_logic_url);
+
   for (const auto& component_auction_config :
        config->auction_ad_config_non_shared_params->component_auctions) {
     // Nested component auctions are not supported.
@@ -167,6 +197,8 @@ AuctionRunner::Auction::Auction(
 }
 
 AuctionRunner::Auction::~Auction() {
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "auction", trace_id_);
+
   if (!final_auction_result_)
     final_auction_result_ = AuctionResult::kAborted;
 
@@ -209,6 +241,8 @@ void AuctionRunner::Auction::StartLoadInterestGroupsPhase(
   DCHECK(!reporting_phase_callback_);
   DCHECK(!final_auction_result_);
   DCHECK_EQ(num_pending_loads_, 0u);
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "load_groups_phase", trace_id_);
 
   load_interest_groups_phase_callback_ =
       std::move(load_interest_groups_phase_callback);
@@ -272,6 +306,9 @@ void AuctionRunner::Auction::StartBiddingAndScoringPhase(
   DCHECK(!top_bid_);
   DCHECK_EQ(pending_component_seller_worklet_requests_, 0u);
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "bidding_and_scoring_phase",
+                                    trace_id_);
+
   on_seller_receiver_callback_ = std::move(on_seller_receiver_callback);
   bidding_and_scoring_phase_callback_ =
       std::move(bidding_and_scoring_phase_callback);
@@ -313,6 +350,8 @@ void AuctionRunner::Auction::StartReportingPhase(
   DCHECK(!reporting_phase_callback_);
   DCHECK(!final_auction_result_);
   DCHECK(top_bid_);
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "reporting_phase", trace_id_);
 
   reporting_phase_callback_ = std::move(reporting_phase_callback);
 
@@ -693,6 +732,8 @@ void AuctionRunner::Auction::OnStartLoadInterestGroupsPhaseComplete(
   DCHECK(load_interest_groups_phase_callback_);
   DCHECK(!final_auction_result_);
 
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "load_groups_phase", trace_id_);
+
   // `final_auction_result_` should only be set to kSuccess when the entire
   // auction is complete.
   bool success = auction_result == AuctionResult::kSuccess;
@@ -709,6 +750,8 @@ void AuctionRunner::Auction::OnComponentSellerWorkletReceived() {
 }
 
 void AuctionRunner::Auction::RequestSellerWorklet() {
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "request_seller_worklet",
+                                    trace_id_);
   if (auction_worklet_manager_->RequestSellerWorklet(
           config_->decision_logic_url, config_->trusted_scoring_signals_url,
           config_->has_seller_experiment_group_id
@@ -726,6 +769,9 @@ void AuctionRunner::Auction::RequestSellerWorklet() {
 void AuctionRunner::Auction::OnSellerWorkletReceived() {
   DCHECK(!seller_worklet_received_);
 
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "request_seller_worklet",
+                                  trace_id_);
+
   if (on_seller_receiver_callback_)
     std::move(on_seller_receiver_callback_).Run();
 
@@ -733,6 +779,8 @@ void AuctionRunner::Auction::OnSellerWorkletReceived() {
 
   auto unscored_bids = std::move(unscored_bids_);
   for (auto& unscored_bid : unscored_bids) {
+    TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "Wait_for_seller_worklet",
+                                    *unscored_bid->bid_state->trace_id);
     ScoreBidIfReady(std::move(unscored_bid));
   }
   // No more unscored bids should be added, once the seller worklet has been
@@ -778,6 +826,11 @@ void AuctionRunner::Auction::OnSellerWorkletFatalError(
 
 void AuctionRunner::Auction::OnBidderWorkletReceived(BidState* bid_state) {
   const blink::InterestGroup& interest_group = bid_state->bidder.interest_group;
+
+  bid_state->BeginTracing();
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "bidder_worklet_generate_bid",
+                                    *bid_state->trace_id);
+
   bid_state->worklet_handle->GetBidderWorklet()->GenerateBid(
       auction_worklet::mojom::BidderWorkletNonSharedParams::New(
           interest_group.name, interest_group.daily_update_url,
@@ -788,6 +841,7 @@ void AuctionRunner::Auction::OnBidderWorkletReceived(BidState* bid_state) {
       PerBuyerSignals(bid_state), PerBuyerTimeout(bid_state), config_->seller,
       parent_ ? parent_->config_->seller : absl::optional<url::Origin>(),
       bid_state->bidder.bidding_browser_signals.Clone(), auction_start_time_,
+      *bid_state->trace_id,
       base::BindOnce(&Auction::OnGenerateBidComplete,
                      weak_ptr_factory_.GetWeakPtr(), bid_state));
 
@@ -852,6 +906,9 @@ void AuctionRunner::Auction::OnGenerateBidComplete(
   DCHECK_GT(num_bids_not_sent_to_seller_worklet_, 0);
   DCHECK_GT(outstanding_bids_, 0);
 
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "bidder_worklet_generate_bid",
+                                  *state->trace_id);
+
   absl::optional<uint32_t> maybe_bidding_signals_data_version;
   if (has_bidding_signals_data_version)
     maybe_bidding_signals_data_version = bidding_signals_data_version;
@@ -879,6 +936,7 @@ void AuctionRunner::Auction::OnGenerateBidComplete(
   }
 
   if (!bid) {
+    state->EndTracing();
     OnNoBid();
     return;
   }
@@ -901,6 +959,11 @@ void AuctionRunner::Auction::OnComponentAuctionComplete(
   const auto* modified_bid_params =
       component_auction->top_bid()->component_auction_modified_bid_params.get();
   DCHECK(modified_bid_params);
+
+  // Create a new event for the bid, since the component auction's event for it
+  // ended after the component auction scored the bid.
+  component_bid->bid_state->BeginTracing();
+
   ScoreBidIfReady(std::make_unique<Bid>(
       modified_bid_params->ad,
       modified_bid_params->has_bid ? modified_bid_params->bid
@@ -931,9 +994,15 @@ void AuctionRunner::Auction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
 
   // If seller worklet hasn't been received yet, wait until it is.
   if (!seller_worklet_received_) {
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_for_seller_worklet",
+                                      *bid->bid_state->trace_id);
     unscored_bids_.emplace_back(std::move(bid));
     return;
   }
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+      "fledge", "seller_worklet_score_ad", *bid->bid_state->trace_id,
+      "decision_logic_url", config_->decision_logic_url);
 
   Bid* bid_raw = bid.get();
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
@@ -942,6 +1011,7 @@ void AuctionRunner::Auction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
       GetOtherSellerParam(*bid_raw), bid_raw->interest_group->owner,
       bid_raw->render_url, bid_raw->ad_components,
       bid_raw->bid_duration.InMilliseconds(), SellerTimeout(),
+      *bid_raw->bid_state->trace_id,
       base::BindOnce(&Auction::OnBidScored, weak_ptr_factory_.GetWeakPtr(),
                      std::move(bid)));
 
@@ -964,6 +1034,10 @@ void AuctionRunner::Auction::OnBidScored(
     const absl::optional<GURL>& debug_loss_report_url,
     const absl::optional<GURL>& debug_win_report_url,
     const std::vector<std::string>& errors) {
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "seller_worklet_score_ad",
+                                  *bid->bid_state->trace_id);
+  bid->bid_state->EndTracing();
+
   --outstanding_bids_;
 
   // If `debug_loss_report_url` or `debug_win_report_url` is not a valid HTTPS
@@ -1170,6 +1244,9 @@ void AuctionRunner::Auction::OnBiddingAndScoringComplete(
   DCHECK(bidding_and_scoring_phase_callback_);
   DCHECK(!final_auction_result_);
 
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "bidding_and_scoring_phase",
+                                  trace_id_);
+
   // `highest_scoring_other_bid_owner_` is set to null if there are more
   // than one interest groups having bids getting the second highest score.
   if (!at_most_one_second_highest_scoring_bids_owner_)
@@ -1223,6 +1300,9 @@ void AuctionRunner::Auction::ReportSellerResult(
   DCHECK(seller_worklet_handle_);
   DCHECK(reporting_phase_callback_);
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "seller_worklet_report_result",
+                                    trace_id_);
+
   auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
       browser_signals_component_auction_report_result_params;
   if (parent_) {
@@ -1244,7 +1324,7 @@ void AuctionRunner::Auction::ReportSellerResult(
       highest_scoring_other_bid_,
       std::move(browser_signals_component_auction_report_result_params),
       top_bid_->scoring_signals_data_version.value_or(0),
-      top_bid_->scoring_signals_data_version.has_value(),
+      top_bid_->scoring_signals_data_version.has_value(), trace_id_,
       base::BindOnce(&Auction::OnReportSellerResultComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -1254,6 +1334,9 @@ void AuctionRunner::Auction::OnReportSellerResultComplete(
     const absl::optional<GURL>& seller_report_url,
     const base::flat_map<std::string, GURL>& seller_ad_beacon_map,
     const std::vector<std::string>& errors) {
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "seller_worklet_report_result",
+                                  trace_id_);
+
   // There should be no other report URLs at this point.
   DCHECK(report_urls_.empty());
 
@@ -1327,6 +1410,9 @@ void AuctionRunner::Auction::ReportBidWin(
     const std::string& signals_for_winner) {
   DCHECK(top_bid_);
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "bidder_worklet_report_win",
+                                    trace_id_);
+
   top_bid_->bid->bid_state->worklet_handle->GetBidderWorklet()->ReportWin(
       top_bid_->bid->interest_group->name,
       config_->auction_ad_config_non_shared_params->auction_signals,
@@ -1339,7 +1425,7 @@ void AuctionRunner::Auction::ReportBidWin(
       config_->seller,
       parent_ ? parent_->config_->seller : absl::optional<url::Origin>(),
       top_bid_->bid->bidding_signals_data_version.value_or(0),
-      top_bid_->bid->bidding_signals_data_version.has_value(),
+      top_bid_->bid->bidding_signals_data_version.has_value(), trace_id_,
       base::BindOnce(&Auction::OnReportBidWinComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -1350,6 +1436,9 @@ void AuctionRunner::Auction::OnReportBidWinComplete(
     const std::vector<std::string>& errors) {
   // There should be at most one other report URL at this point.
   DCHECK_LE(report_urls_.size(), 1u);
+
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "bidder_worklet_report_win",
+                                  trace_id_);
 
   // The winning bidder worklet is no longer needed. Unload it to prevent a
   // fatal error notification.
@@ -1451,6 +1540,8 @@ void AuctionRunner::Auction::OnReportingPhaseComplete(
   DCHECK(!final_auction_result_);
   // There should be at most two report URLs.
   DCHECK_LE(report_urls_.size(), 2u);
+
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "reporting_phase", trace_id_);
 
   errors_.insert(errors_.end(), errors.begin(), errors.end());
   final_auction_result_ = auction_result;

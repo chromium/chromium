@@ -129,6 +129,9 @@ interface BidderWorklet {
   // `auction_start_time` The time the auction started, used to ensure the
   //  last win times provided to all worklets are relative to the same time.
   //
+  // `trace_id` ID of a nestable asynchronous trace event of category `fledge`
+  //  to use with tracing calls.
+  //
   // Returns:
   // `bid` If the worklet is successfully loaded and chooses to bid in the
   //  auction, contains information about the bid. Null otherwise.
@@ -163,7 +166,8 @@ interface BidderWorklet {
       url.mojom.Origin browser_signal_seller_origin,
       url.mojom.Origin? browser_signal_top_level_seller_origin,
       BiddingBrowserSignals bidding_browser_signals,
-      mojo_base.mojom.Time auction_start_time) => (
+      mojo_base.mojom.Time auction_start_time,
+      uint64 trace_id) => (
           BidderWorkletBid? bid,
           uint32 bidding_signals_data_version,
           bool has_bidding_signals_data_version,
@@ -228,6 +232,9 @@ interface BidderWorklet {
   //  was present in the HTTP response for the trusted bidding signals.
   //  TODO(https://crbug.com/657632): Update when optional integers supported.
   //
+  // `trace_id` ID of a nestable asynchronous trace event of category `fledge`
+  //  to use with tracing calls.
+  //
   // Returns:
   // `report_url` is the URL to request to report the result of the auction
   //  to the bidder. It will be null if no reports are requested, or the
@@ -252,7 +259,8 @@ interface BidderWorklet {
             url.mojom.Origin browser_signal_seller_origin,
             url.mojom.Origin? browser_signal_top_level_seller_origin,
             uint32 bidding_signals_data_version,
-            bool has_bidding_signals_data_version) => (
+            bool has_bidding_signals_data_version,
+            uint64 trace_id) => (
                 url.mojom.Url? report_url,
                 map<string, url.mojom.Url> ad_beacon_map,
                 array<string> errors);

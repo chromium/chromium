@@ -4,6 +4,8 @@
 
 #include "content/services/auction_worklet/auction_v8_helper.h"
 
+#include <stdint.h>
+
 #include <limits>
 #include <string>
 #include <vector>
@@ -74,6 +76,7 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
+      uint64_t trace_id,
       GenerateBidCallback generate_bid_callback) override {
     ADD_FAILURE() << "GenerateBid shouldn't be called on DebugConnector";
   }
@@ -91,6 +94,7 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       uint32_t bidding_data_version,
       bool has_biding_data_version,
+      uint64_t trace_id,
       ReportWinCallback report_win_callback) override {
     ADD_FAILURE() << "ReportWin shouldn't be called on DebugConnector";
   }
