@@ -341,8 +341,6 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
 
     // Step 5.2: "Run the classic script script, with the rethrow errors
     // argument set to true."
-    ReportingProxy().WillEvaluateImportedClassicScript(
-        source_code.length(), handler ? handler->GetCodeCacheSize() : 0);
     v8::HandleScope scope(isolate);
     ScriptEvaluationResult result =
         script->RunScriptOnScriptStateAndReturnValue(
@@ -491,16 +489,7 @@ void WorkerGlobalScope::RunWorkerScript() {
   if (debugger && stack_id_)
     debugger->ExternalAsyncTaskStarted(*stack_id_);
 
-  const auto script_type = worker_script_->GetScriptType();
-  switch (script_type) {
-    case mojom::blink::ScriptType::kClassic: {
-      ReportingProxy().WillEvaluateClassicScript();
-      break;
-    }
-    case mojom::blink::ScriptType::kModule:
-      ReportingProxy().WillEvaluateModuleScript();
-      break;
-  }
+  ReportingProxy().WillEvaluateScript();
 
   // Step 24. If script is a classic script, then run the classic script script.
   // Otherwise, it is a module script; run the module script script. [spec text]
@@ -510,7 +499,7 @@ void WorkerGlobalScope::RunWorkerScript() {
     ScriptEvaluationResult result =
         std::move(worker_script_)
             ->RunScriptOnScriptStateAndReturnValue(script_state);
-    switch (script_type) {
+    switch (worker_script_->GetScriptType()) {
       case mojom::blink::ScriptType::kClassic:
         is_success = result.GetResultType() ==
                      ScriptEvaluationResult::ResultType::kSuccess;

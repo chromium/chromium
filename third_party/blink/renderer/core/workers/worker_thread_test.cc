@@ -98,8 +98,7 @@ void CreateNestedWorkerThenTerminateParent(
   EXPECT_CALL(*nested_worker_helper->reporting_proxy,
               DidCreateWorkerGlobalScope(_))
       .Times(1);
-  EXPECT_CALL(*nested_worker_helper->reporting_proxy,
-              WillEvaluateClassicScriptMock())
+  EXPECT_CALL(*nested_worker_helper->reporting_proxy, WillEvaluateScriptMock())
       .Times(1);
   EXPECT_CALL(*nested_worker_helper->reporting_proxy,
               DidEvaluateTopLevelScript(true))
@@ -188,7 +187,7 @@ class WorkerThreadTest : public testing::Test {
  protected:
   void ExpectReportingCalls() {
     EXPECT_CALL(*reporting_proxy_, DidCreateWorkerGlobalScope(_)).Times(1);
-    EXPECT_CALL(*reporting_proxy_, WillEvaluateClassicScriptMock()).Times(1);
+    EXPECT_CALL(*reporting_proxy_, WillEvaluateScriptMock()).Times(1);
     EXPECT_CALL(*reporting_proxy_, DidEvaluateTopLevelScript(true)).Times(1);
     EXPECT_CALL(*reporting_proxy_, WillDestroyWorkerGlobalScope()).Times(1);
     EXPECT_CALL(*reporting_proxy_, DidTerminateWorkerThread()).Times(1);
@@ -196,8 +195,7 @@ class WorkerThreadTest : public testing::Test {
 
   void ExpectReportingCallsForWorkerPossiblyTerminatedBeforeInitialization() {
     EXPECT_CALL(*reporting_proxy_, DidCreateWorkerGlobalScope(_)).Times(1);
-    EXPECT_CALL(*reporting_proxy_, WillEvaluateClassicScriptMock())
-        .Times(AtMost(1));
+    EXPECT_CALL(*reporting_proxy_, WillEvaluateScriptMock()).Times(AtMost(1));
     EXPECT_CALL(*reporting_proxy_, DidEvaluateTopLevelScript(_))
         .Times(AtMost(1));
     EXPECT_CALL(*reporting_proxy_, WillDestroyWorkerGlobalScope())
@@ -207,7 +205,7 @@ class WorkerThreadTest : public testing::Test {
 
   void ExpectReportingCallsForWorkerForciblyTerminated() {
     EXPECT_CALL(*reporting_proxy_, DidCreateWorkerGlobalScope(_)).Times(1);
-    EXPECT_CALL(*reporting_proxy_, WillEvaluateClassicScriptMock()).Times(1);
+    EXPECT_CALL(*reporting_proxy_, WillEvaluateScriptMock()).Times(1);
     EXPECT_CALL(*reporting_proxy_, DidEvaluateTopLevelScript(false)).Times(1);
     EXPECT_CALL(*reporting_proxy_, WillDestroyWorkerGlobalScope()).Times(1);
     EXPECT_CALL(*reporting_proxy_, DidTerminateWorkerThread()).Times(1);

@@ -85,15 +85,8 @@ class CORE_EXPORT WorkerReportingProxy {
   // or InstalledScriptsManager).
   virtual void DidFailToFetchModuleScript() {}
 
-  // Invoked when the main classic script is about to be evaluated.
-  virtual void WillEvaluateClassicScript() {}
-
-  // Invoked when an imported classic script is about to be evaluated.
-  virtual void WillEvaluateImportedClassicScript(size_t script_size,
-                                                 size_t cached_metadata_size) {}
-
-  // Invoked when the worker's main module script is about to be evaluated.
-  virtual void WillEvaluateModuleScript() {}
+  // Invoked when the main classic/module script is about to be evaluated.
+  virtual void WillEvaluateScript() {}
 
   // Invoked when the worker main script is evaluated. |success| is true if the
   // evaluation completed with no uncaught exception.

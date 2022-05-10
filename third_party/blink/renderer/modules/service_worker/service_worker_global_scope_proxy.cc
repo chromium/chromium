@@ -168,27 +168,7 @@ void ServiceWorkerGlobalScopeProxy::DidFailToFetchModuleScript() {
   Client().FailedToFetchModuleScript();
 }
 
-void ServiceWorkerGlobalScopeProxy::WillEvaluateClassicScript() {
-  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "ServiceWorker", "ServiceWorkerGlobalScopeProxy::EvaluateTopLevelScript",
-      TRACE_ID_LOCAL(this));
-  // TODO(https://crbug.com/1253218): Merge WillEvaluateClassicScript and
-  // WillEvaluateModuleScript for cleanup.
-  ScriptState::Scope scope(
-      WorkerGlobalScope()->ScriptController()->GetScriptState());
-  Client().WillEvaluateScript(
-      WorkerGlobalScope()->ScriptController()->GetContext());
-}
-
-void ServiceWorkerGlobalScopeProxy::WillEvaluateImportedClassicScript(
-    size_t script_size,
-    size_t cached_metadata_size) {
-  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  // TODO(https://crbug.com/1253218): Remove this empty function.
-}
-
-void ServiceWorkerGlobalScopeProxy::WillEvaluateModuleScript() {
+void ServiceWorkerGlobalScopeProxy::WillEvaluateScript() {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "ServiceWorker", "ServiceWorkerGlobalScopeProxy::EvaluateTopLevelScript",
