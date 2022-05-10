@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
+#include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -23,8 +24,10 @@
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/network/proxy/proxy_config_handler.h"
 #include "components/account_id/account_id.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/proxy_config/proxy_config_dictionary.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -39,6 +42,7 @@ constexpr char kTestAuthSIDCookie1[] = "fake-auth-SID-cookie-1";
 constexpr char kTestAuthLSIDCookie1[] = "fake-auth-LSID-cookie-1";
 constexpr char kTestRefreshToken[] = "fake-refresh-token";
 constexpr char kWifiServicePath[] = "/service/wifi1";
+constexpr char kEthServicePath[] = "/service/eth1";
 
 void ErrorCallbackFunction(base::OnceClosure run_loop_quit_closure,
                            const std::string& error_name,
@@ -50,6 +54,14 @@ void ErrorCallbackFunction(base::OnceClosure run_loop_quit_closure,
 void SetConnected(const std::string& service_path) {
   base::RunLoop run_loop;
   ShillServiceClient::Get()->Connect(
+      dbus::ObjectPath(service_path), run_loop.QuitWhenIdleClosure(),
+      base::BindOnce(&ErrorCallbackFunction, run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+void SetDisconnected(const std::string& service_path) {
+  base::RunLoop run_loop;
+  ShillServiceClient::Get()->Disconnect(
       dbus::ObjectPath(service_path), run_loop.QuitWhenIdleClosure(),
       base::BindOnce(&ErrorCallbackFunction, run_loop.QuitClosure()));
   run_loop.Run();
@@ -369,12 +381,16 @@ class ProxyAuthLockscreenWebUiTest : public LockscreenWebUiTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     LockscreenWebUiTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(::switches::kProxyServer,
-                                    proxy_server_.host_port_pair().ToString());
   }
 
   void SetUpOnMainThread() override {
     LockscreenWebUiTest::SetUpOnMainThread();
+
+    // Disconnect unneeded wifi network - these tests use only the network which
+    // corresponds to `kEthServicePath`
+    SetDisconnected(kWifiServicePath);
+    ConfigureNetworkBehindProxy();
+
     // Proxy authentication will be required as soon as we request any url from
     // lock screen's webview. This observer will notice it and allow us to
     // access corresponding `LoginHandler` object.
@@ -396,6 +412,28 @@ class ProxyAuthLockscreenWebUiTest : public LockscreenWebUiTest {
   LoginHandler* login_handler() const { return login_handler_; }
 
  private:
+  // Configure settings which are neccesarry for `NetworkStateInformer` to
+  // report `NetworkStateInformer::PROXY_AUTH_REQUIRED` in the tests.
+  void ConfigureNetworkBehindProxy() {
+    network_portal_detector_.SetDefaultNetwork(
+        kEthServicePath,
+        NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED);
+
+    base::Value proxy_config = ProxyConfigDictionary::CreateFixedServers(
+        proxy_server_.host_port_pair().ToString(), "");
+
+    ProxyConfigDictionary proxy_config_dict(std::move(proxy_config));
+    const chromeos::NetworkState* network =
+        network_state_test_helper_->network_state_handler()->DefaultNetwork();
+    ASSERT_TRUE(network);
+    ASSERT_EQ(network->guid(),
+              FakeShillManagerClient::kFakeEthernetNetworkGuid);
+
+    chromeos::proxy_config::SetProxyConfigForNetwork(proxy_config_dict,
+                                                     *network);
+    base::RunLoop().RunUntilIdle();
+  }
+
   bool OnAuthRequested(const content::NotificationSource& /* source */,
                        const content::NotificationDetails& details) {
     login_handler_ =
@@ -403,24 +441,66 @@ class ProxyAuthLockscreenWebUiTest : public LockscreenWebUiTest {
     return true;
   }
 
+  NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
   net::SpawnedTestServer proxy_server_;
   std::unique_ptr<content::WindowedNotificationObserver> auth_needed_observer_;
   // Used for proxy server authentication.
   LoginHandler* login_handler_;
 };
 
-// TODO(andreydav@): Investigate why we never get
-// `NetworkStateInformer::PROXY_AUTH_REQUIRED` state from
-// `NetworkStateInformer::UpdateState()` with current test setup. This prevents
-// us from writing tests where we would switch to to a network behind proxy on a
-// network screen or where we would cancel proxy auth to choose another network.
-IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, ProxyAuth) {
+IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, SwitchToProxyNetwork) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
+
   Login();
 
-  LOG(INFO) << "ScreenLockerTester().Lock()";
+  // Start with disconnected network.
+  SetDisconnected(kEthServicePath);
+
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
-  LOG(INFO) << "LockScreenReauthDialogTestHelper::ShowDialogAndWait()";
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      LockScreenReauthDialogTestHelper::ShowDialogAndWait();
+  ASSERT_TRUE(reauth_dialog_helper);
+
+  reauth_dialog_helper->ForceSamlRedirect();
+
+  // No networks are connected so we should start on the network screen.
+  reauth_dialog_helper->WaitForNetworkDialogAndSetHandlers();
+  reauth_dialog_helper->ExpectNetworkDialogVisible();
+
+  // Connect to a network behind proxy.
+  SetConnected(kEthServicePath);
+
+  reauth_dialog_helper->ExpectNetworkDialogHidden();
+
+  reauth_dialog_helper->WaitForVerifyAccountScreen();
+  reauth_dialog_helper->ClickVerifyButton();
+
+  reauth_dialog_helper->WaitForSamlScreen();
+  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
+
+  // Wait for proxy login handler and authenticate.
+  WaitForLoginHandler();
+  ASSERT_TRUE(login_handler());
+  login_handler()->SetAuth(u"foo", u"bar");
+
+  reauth_dialog_helper->WaitForIdpPageLoad();
+
+  // Fill-in the SAML IdP form and submit.
+  test::JSChecker signin_frame_js = reauth_dialog_helper->SigninFrameJS();
+  signin_frame_js.CreateVisibilityWaiter(true, {"Email"})->Wait();
+  signin_frame_js.TypeIntoPath(FakeGaiaMixin::kEnterpriseUser1, {"Email"});
+  signin_frame_js.TypeIntoPath("actual_password", {"Password"});
+  signin_frame_js.TapOn("Submit");
+
+  ScreenLockerTester().WaitForUnlock();
+}
+
+IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, ProxyAuthCanBeCancelled) {
+  Login();
+
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
   absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::ShowDialogAndWait();
   ASSERT_TRUE(reauth_dialog_helper);
@@ -436,6 +516,22 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, ProxyAuth) {
   // Appearance of login handler means that proxy authentication was requested
   WaitForLoginHandler();
   ASSERT_TRUE(login_handler());
+
+  content::WindowedNotificationObserver auth_cancelled_waiter(
+      chrome::NOTIFICATION_AUTH_CANCELLED,
+      content::NotificationService::AllSources());
+
+  // Cancel proxy authentication
+  login_handler()->CancelAuth();
+  auth_cancelled_waiter.Wait();
+
+  // Expect to end up on the network screen
+  reauth_dialog_helper->WaitForNetworkDialogAndSetHandlers();
+  reauth_dialog_helper->ExpectNetworkDialogVisible();
+
+  // Close all dialogs at the end of the test - otherwise these tests crash
+  reauth_dialog_helper->ClickCloseNetworkButton();
+  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 }
 
 }  // namespace ash
