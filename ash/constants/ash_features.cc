@@ -516,7 +516,7 @@ const base::Feature kEnableDesksTrackpadSwipeImprovements{
 // Enables the DNS proxy service providing support split and secure DNS
 // for ChromeOS.
 const base::Feature kEnableDnsProxy{"EnableDnsProxy",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables external keyboard testers in the diagnostics app.
 const base::Feature kEnableExternalKeyboardsInDiagnostics{

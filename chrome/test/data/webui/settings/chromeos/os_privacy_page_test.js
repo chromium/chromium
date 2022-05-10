@@ -394,6 +394,8 @@ suite('PrivacePageTest_OfficialBuild', async () => {
         value: false,
       }
     },
+    'dns_over_https':
+        {'mode': {value: SecureDnsMode.AUTOMATIC}, 'templates': {value: ''}},
   };
 
   /** @type {?TestPeripheralDataAccessBrowserProxy} */
