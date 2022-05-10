@@ -7,6 +7,8 @@
 #include <wrl/implements.h>
 
 #include "base/bind.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -539,10 +541,11 @@ TEST_F(PlatformSensorAndProviderTestWin, GetMaximumSupportedFrequencyFallback) {
 
 // Tests that Accelerometer readings are correctly converted.
 TEST_F(PlatformSensorAndProviderTestWin, CheckAccelerometerReadingConversion) {
-  mojo::ScopedSharedBufferHandle handle = provider_->CloneSharedBufferHandle();
-  mojo::ScopedSharedBufferMapping mapping = handle->MapAtOffset(
-      sizeof(SensorReadingSharedBuffer),
-      SensorReadingSharedBuffer::GetOffset(SensorType::ACCELEROMETER));
+  base::ReadOnlySharedMemoryRegion region =
+      provider_->CloneSharedMemoryRegion();
+  base::ReadOnlySharedMemoryMapping mapping = region.MapAt(
+      SensorReadingSharedBuffer::GetOffset(SensorType::ACCELEROMETER),
+      sizeof(SensorReadingSharedBuffer));
 
   SetSupportedSensor(SENSOR_TYPE_ACCELEROMETER_3D);
   auto sensor = CreateSensor(SensorType::ACCELEROMETER);
@@ -567,8 +570,8 @@ TEST_F(PlatformSensorAndProviderTestWin, CheckAccelerometerReadingConversion) {
                             {SENSOR_DATA_TYPE_ACCELERATION_Z_G, pvZ.ptr()}});
 
   base::RunLoop().RunUntilIdle();
-  SensorReadingSharedBuffer* buffer =
-      static_cast<SensorReadingSharedBuffer*>(mapping.get());
+  const SensorReadingSharedBuffer* buffer =
+      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
   EXPECT_THAT(buffer->reading.accel.x,
               RoundAccelerometerValue(-x_accel * base::kMeanGravityDouble));
   EXPECT_THAT(buffer->reading.accel.y,
@@ -580,10 +583,11 @@ TEST_F(PlatformSensorAndProviderTestWin, CheckAccelerometerReadingConversion) {
 
 // Tests that Gyroscope readings are correctly converted.
 TEST_F(PlatformSensorAndProviderTestWin, CheckGyroscopeReadingConversion) {
-  mojo::ScopedSharedBufferHandle handle = provider_->CloneSharedBufferHandle();
-  mojo::ScopedSharedBufferMapping mapping = handle->MapAtOffset(
-      sizeof(SensorReadingSharedBuffer),
-      SensorReadingSharedBuffer::GetOffset(SensorType::GYROSCOPE));
+  base::ReadOnlySharedMemoryRegion region =
+      provider_->CloneSharedMemoryRegion();
+  base::ReadOnlySharedMemoryMapping mapping =
+      region.MapAt(SensorReadingSharedBuffer::GetOffset(SensorType::GYROSCOPE),
+                   sizeof(SensorReadingSharedBuffer));
 
   SetSupportedSensor(SENSOR_TYPE_GYROMETER_3D);
   auto sensor = CreateSensor(SensorType::GYROSCOPE);
@@ -609,8 +613,8 @@ TEST_F(PlatformSensorAndProviderTestWin, CheckGyroscopeReadingConversion) {
        {SENSOR_DATA_TYPE_ANGULAR_VELOCITY_Z_DEGREES_PER_SECOND, pvZ.ptr()}});
 
   base::RunLoop().RunUntilIdle();
-  SensorReadingSharedBuffer* buffer =
-      static_cast<SensorReadingSharedBuffer*>(mapping.get());
+  const SensorReadingSharedBuffer* buffer =
+      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
   EXPECT_THAT(buffer->reading.gyro.x,
               RoundGyroscopeValue(gfx::DegToRad(x_ang_accel)));
   EXPECT_THAT(buffer->reading.gyro.y,
@@ -622,10 +626,11 @@ TEST_F(PlatformSensorAndProviderTestWin, CheckGyroscopeReadingConversion) {
 
 // Tests that Magnetometer readings are correctly converted.
 TEST_F(PlatformSensorAndProviderTestWin, CheckMagnetometerReadingConversion) {
-  mojo::ScopedSharedBufferHandle handle = provider_->CloneSharedBufferHandle();
-  mojo::ScopedSharedBufferMapping mapping = handle->MapAtOffset(
-      sizeof(SensorReadingSharedBuffer),
-      SensorReadingSharedBuffer::GetOffset(SensorType::MAGNETOMETER));
+  base::ReadOnlySharedMemoryRegion region =
+      provider_->CloneSharedMemoryRegion();
+  base::ReadOnlySharedMemoryMapping mapping = region.MapAt(
+      SensorReadingSharedBuffer::GetOffset(SensorType::MAGNETOMETER),
+      sizeof(SensorReadingSharedBuffer));
 
   SetSupportedSensor(SENSOR_TYPE_COMPASS_3D);
   auto sensor = CreateSensor(SensorType::MAGNETOMETER);
@@ -651,8 +656,8 @@ TEST_F(PlatformSensorAndProviderTestWin, CheckMagnetometerReadingConversion) {
        {SENSOR_DATA_TYPE_MAGNETIC_FIELD_STRENGTH_Z_MILLIGAUSS, pvZ.ptr()}});
 
   base::RunLoop().RunUntilIdle();
-  SensorReadingSharedBuffer* buffer =
-      static_cast<SensorReadingSharedBuffer*>(mapping.get());
+  const SensorReadingSharedBuffer* buffer =
+      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
   EXPECT_THAT(buffer->reading.magn.x, x_magn_field * kMicroteslaInMilligauss);
   EXPECT_THAT(buffer->reading.magn.y, y_magn_field * kMicroteslaInMilligauss);
   EXPECT_THAT(buffer->reading.magn.z, z_magn_field * kMicroteslaInMilligauss);
@@ -663,11 +668,12 @@ TEST_F(PlatformSensorAndProviderTestWin, CheckMagnetometerReadingConversion) {
 // provided.
 TEST_F(PlatformSensorAndProviderTestWin,
        CheckDeviceOrientationEulerAnglesReadingConversion) {
-  mojo::ScopedSharedBufferHandle handle = provider_->CloneSharedBufferHandle();
-  mojo::ScopedSharedBufferMapping mapping =
-      handle->MapAtOffset(sizeof(SensorReadingSharedBuffer),
-                          SensorReadingSharedBuffer::GetOffset(
-                              SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES));
+  base::ReadOnlySharedMemoryRegion region =
+      provider_->CloneSharedMemoryRegion();
+  base::ReadOnlySharedMemoryMapping mapping =
+      region.MapAt(SensorReadingSharedBuffer::GetOffset(
+                       SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES),
+                   sizeof(SensorReadingSharedBuffer));
 
   SetSupportedSensor(SENSOR_TYPE_INCLINOMETER_3D);
   auto sensor = CreateSensor(SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES);
@@ -692,8 +698,8 @@ TEST_F(PlatformSensorAndProviderTestWin,
                             {SENSOR_DATA_TYPE_TILT_Z_DEGREES, pvZ.ptr()}});
 
   base::RunLoop().RunUntilIdle();
-  SensorReadingSharedBuffer* buffer =
-      static_cast<SensorReadingSharedBuffer*>(mapping.get());
+  const SensorReadingSharedBuffer* buffer =
+      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
 
   EXPECT_THAT(buffer->reading.orientation_euler.x, x);
   EXPECT_THAT(buffer->reading.orientation_euler.y, y);
@@ -705,11 +711,12 @@ TEST_F(PlatformSensorAndProviderTestWin,
 // provided.
 TEST_F(PlatformSensorAndProviderTestWin,
        CheckDeviceOrientationQuaternionReadingConversion) {
-  mojo::ScopedSharedBufferHandle handle = provider_->CloneSharedBufferHandle();
-  mojo::ScopedSharedBufferMapping mapping =
-      handle->MapAtOffset(sizeof(SensorReadingSharedBuffer),
-                          SensorReadingSharedBuffer::GetOffset(
-                              SensorType::ABSOLUTE_ORIENTATION_QUATERNION));
+  base::ReadOnlySharedMemoryRegion region =
+      provider_->CloneSharedMemoryRegion();
+  base::ReadOnlySharedMemoryMapping mapping =
+      region.MapAt(SensorReadingSharedBuffer::GetOffset(
+                       SensorType::ABSOLUTE_ORIENTATION_QUATERNION),
+                   sizeof(SensorReadingSharedBuffer));
 
   SetSupportedSensor(SENSOR_TYPE_AGGREGATED_DEVICE_ORIENTATION);
   auto sensor = CreateSensor(SensorType::ABSOLUTE_ORIENTATION_QUATERNION);
@@ -745,8 +752,8 @@ TEST_F(PlatformSensorAndProviderTestWin,
   GenerateDataUpdatedEvent({{SENSOR_DATA_TYPE_QUATERNION, pvQuat.ptr()}});
 
   base::RunLoop().RunUntilIdle();
-  SensorReadingSharedBuffer* buffer =
-      static_cast<SensorReadingSharedBuffer*>(mapping.get());
+  const SensorReadingSharedBuffer* buffer =
+      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
 
   const float epsilon = 1.0e-3;
   EXPECT_NEAR(buffer->reading.orientation_quat.x, quat_elements[0], epsilon);

@@ -175,8 +175,7 @@ void FakeSensorProvider::GetSensor(mojom::SensorType type,
   if (sensor) {
     auto init_params = mojom::SensorInitParams::New();
     init_params->client_receiver = sensor->GetClient();
-    init_params->memory = shared_buffer_handle_->Clone(
-        mojo::SharedBufferHandle::AccessMode::READ_ONLY);
+    init_params->memory = mapped_region_.region.Duplicate();
     init_params->buffer_offset = sensor->GetBufferOffset();
     init_params->default_configuration = sensor->GetDefaultConfiguration();
     init_params->maximum_frequency = sensor->GetMaximumSupportedFrequency();
@@ -313,26 +312,18 @@ void FakeSensorProvider::UpdateAbsoluteOrientationSensorData(double alpha,
 }
 
 bool FakeSensorProvider::CreateSharedBufferIfNeeded() {
-  if (shared_buffer_mapping_.get())
+  if (mapped_region_.IsValid())
     return true;
 
-  if (!shared_buffer_handle_.is_valid()) {
-    shared_buffer_handle_ =
-        mojo::SharedBufferHandle::Create(kSharedBufferSizeInBytes);
-    if (!shared_buffer_handle_.is_valid())
-      return false;
-  }
-
-  // Create read/write mapping now, to ensure it is kept writable
-  // after the region is sealed read-only on Android.
-  shared_buffer_mapping_ = shared_buffer_handle_->Map(kSharedBufferSizeInBytes);
-  return shared_buffer_mapping_.get() != nullptr;
+  mapped_region_ =
+      base::ReadOnlySharedMemoryRegion::Create(kSharedBufferSizeInBytes);
+  return mapped_region_.IsValid();
 }
 
 SensorReadingSharedBuffer*
 FakeSensorProvider::GetSensorReadingSharedBufferForType(
     mojom::SensorType type) {
-  auto* ptr = static_cast<char*>(shared_buffer_mapping_.get());
+  auto* ptr = static_cast<char*>(mapped_region_.mapping.memory());
   if (!ptr)
     return nullptr;
 

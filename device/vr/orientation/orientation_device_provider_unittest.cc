@@ -8,6 +8,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -52,9 +54,10 @@ class VROrientationDeviceProviderTest : public testing::Test {
 
     fake_sensor_ = std::make_unique<FakeOrientationSensor>(
         sensor_.InitWithNewPipeAndPassReceiver());
-    shared_buffer_handle_ = mojo::SharedBufferHandle::Create(
+    mapped_region_ = base::ReadOnlySharedMemoryRegion::Create(
         sizeof(SensorReadingSharedBuffer) *
         (static_cast<uint64_t>(mojom::SensorType::kMaxValue) + 1));
+    ASSERT_TRUE(mapped_region_.IsValid());
 
     mojo::PendingRemote<device::mojom::SensorProvider> sensor_provider;
     fake_sensor_provider_->Bind(
@@ -85,8 +88,7 @@ class VROrientationDeviceProviderTest : public testing::Test {
 
     init_params->client_receiver = sensor_client_.BindNewPipeAndPassReceiver();
 
-    init_params->memory = shared_buffer_handle_->Clone(
-        mojo::SharedBufferHandle::AccessMode::READ_ONLY);
+    init_params->memory = mapped_region_.region.Duplicate();
 
     init_params->buffer_offset =
         SensorReadingSharedBuffer::GetOffset(kOrientationSensorType);
@@ -105,7 +107,7 @@ class VROrientationDeviceProviderTest : public testing::Test {
   // Fake Sensor Init params objects
   std::unique_ptr<FakeOrientationSensor> fake_sensor_;
   mojo::PendingRemote<mojom::Sensor> sensor_;
-  mojo::ScopedSharedBufferHandle shared_buffer_handle_;
+  base::MappedReadOnlyRegion mapped_region_;
   mojo::Remote<mojom::SensorClient> sensor_client_;
 };
 

@@ -151,6 +151,8 @@ mojom("generic_sensor") {
           [ "//services/device/public/cpp/generic_sensor:sensor_configuration" ]
     },
   ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
 }
 
 mojom("usb") {

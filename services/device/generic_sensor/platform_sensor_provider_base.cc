@@ -67,31 +67,20 @@ scoped_refptr<PlatformSensor> PlatformSensorProviderBase::GetSensor(
 
 bool PlatformSensorProviderBase::CreateSharedBufferIfNeeded() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (shared_buffer_mapping_.get())
+  if (mapped_region_.IsValid())
     return true;
 
-  if (!shared_buffer_handle_.is_valid()) {
-    shared_buffer_handle_ =
-        mojo::SharedBufferHandle::Create(kSharedBufferSizeInBytes);
-    if (!shared_buffer_handle_.is_valid())
-      return false;
-  }
+  mapped_region_ =
+      base::ReadOnlySharedMemoryRegion::Create(kSharedBufferSizeInBytes);
 
-  // Create a writable mapping for the buffer as soon as possible, that will be
-  // used by all platform sensor implementations that want to update it. Note
-  // that on Android, cloning the shared memory handle readonly (as performed
-  // by CloneSharedBufferHandle()) will seal the region read-only, preventing
-  // future writable mappings to be created (but this one will survive).
-  shared_buffer_mapping_ = shared_buffer_handle_->Map(kSharedBufferSizeInBytes);
-  return shared_buffer_mapping_.get() != nullptr;
+  return mapped_region_.IsValid();
 }
 
 void PlatformSensorProviderBase::FreeResourcesIfNeeded() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (sensor_map_.empty() && requests_map_.empty()) {
     FreeResources();
-    shared_buffer_mapping_.reset();
-    shared_buffer_handle_.reset();
+    mapped_region_ = {};
   }
 }
 
@@ -120,12 +109,11 @@ void PlatformSensorProviderBase::RemoveSensor(mojom::SensorType type,
   FreeResourcesIfNeeded();
 }
 
-mojo::ScopedSharedBufferHandle
-PlatformSensorProviderBase::CloneSharedBufferHandle() {
+base::ReadOnlySharedMemoryRegion
+PlatformSensorProviderBase::CloneSharedMemoryRegion() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CreateSharedBufferIfNeeded();
-  return shared_buffer_handle_->Clone(
-      mojo::SharedBufferHandle::AccessMode::READ_ONLY);
+  return mapped_region_.region.Duplicate();
 }
 
 bool PlatformSensorProviderBase::HasSensors() const {
@@ -166,7 +154,7 @@ PlatformSensorProviderBase::GetPendingRequestTypes() {
 SensorReadingSharedBuffer*
 PlatformSensorProviderBase::GetSensorReadingSharedBufferForType(
     mojom::SensorType type) {
-  auto* ptr = static_cast<char*>(shared_buffer_mapping_.get());
+  auto* ptr = static_cast<char*>(mapped_region_.mapping.memory());
   if (!ptr)
     return nullptr;
 

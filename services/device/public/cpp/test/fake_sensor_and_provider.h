@@ -6,10 +6,10 @@
 #define SERVICES_DEVICE_PUBLIC_CPP_TEST_FAKE_SENSOR_AND_PROVIDER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/system/buffer.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/mojom/sensor.mojom.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
@@ -157,8 +157,7 @@ class FakeSensorProvider : public mojom::SensorProvider {
   bool relative_orientation_sensor_is_available_ = true;
   bool absolute_orientation_sensor_is_available_ = true;
   mojo::ReceiverSet<mojom::SensorProvider> receivers_{};
-  mojo::ScopedSharedBufferHandle shared_buffer_handle_;
-  mojo::ScopedSharedBufferMapping shared_buffer_mapping_;
+  base::MappedReadOnlyRegion mapped_region_;
 };
 
 }  // namespace device
