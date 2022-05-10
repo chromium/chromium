@@ -19,7 +19,7 @@ ci.defaults.set(
     goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
     main_console_view = "main",
     notifies = ["chromium.linux"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     sheriff_rotations = sheriff_rotations.CHROMIUM,

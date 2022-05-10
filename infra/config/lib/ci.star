@@ -210,7 +210,7 @@ def _gpu_linux_builder(*, name, **kwargs):
     groups.
     """
     kwargs.setdefault("cores", 8)
-    kwargs.setdefault("os", os.LINUX_BIONIC_SWITCH_TO_DEFAULT)
+    kwargs.setdefault("os", os.LINUX_DEFAULT)
     return ci.builder(name = name, **kwargs)
 
 def _gpu_mac_builder(*, name, **kwargs):
@@ -264,7 +264,7 @@ def thin_tester(
     cores = defaults.get_value("thin_tester_cores", cores)
     kwargs.setdefault("goma_backend", None)
     kwargs.setdefault("reclient_instance", None)
-    kwargs.setdefault("os", builders.os.LINUX_BIONIC_SWITCH_TO_DEFAULT)
+    kwargs.setdefault("os", builders.os.LINUX_DEFAULT)
     return ci.builder(
         name = name,
         triggered_by = triggered_by,

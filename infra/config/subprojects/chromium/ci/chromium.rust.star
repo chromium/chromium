@@ -16,7 +16,7 @@ ci.defaults.set(
     goma_backend = goma.backend.RBE_PROD,
     pool = ci.DEFAULT_POOL,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     notifies = ["chrome-rust-experiments"],
 )
 
