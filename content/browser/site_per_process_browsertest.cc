@@ -13279,9 +13279,6 @@ class InnerWebContentsAttachTest
     raw_ptr<RenderFrameHostImpl> new_render_frame_host_ = nullptr;
     base::RunLoop run_loop_;
   };
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // This is a test for the FrameTreeNode preparation process for various types
