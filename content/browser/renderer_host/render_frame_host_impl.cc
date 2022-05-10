@@ -241,6 +241,7 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
+#include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
 #include "third_party/blink/public/mojom/page/display_cutout.mojom.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
@@ -1070,6 +1071,19 @@ bool IsWindowPlacementGranted(RenderFrameHost* host) {
   return permission_controller->GetPermissionStatusForCurrentDocument(
              blink::PermissionType::WINDOW_PLACEMENT, host) ==
          blink::mojom::PermissionStatus::GRANTED;
+}
+
+bool IsOpenGraphMetadataValid(const blink::mojom::OpenGraphMetadata* metadata) {
+  return !metadata->image || metadata->image->SchemeIsHTTPOrHTTPS();
+}
+
+void ForwardOpenGraphMetadataIfValid(
+    base::OnceCallback<void(blink::mojom::OpenGraphMetadataPtr)> callback,
+    blink::mojom::OpenGraphMetadataPtr metadata) {
+  if (IsOpenGraphMetadataValid(metadata.get()))
+    std::move(callback).Run(std::move(metadata));
+  else
+    std::move(callback).Run({});
 }
 
 }  // namespace
@@ -2196,6 +2210,16 @@ void RenderFrameHostImpl::GetCanonicalUrl(
         base::BindOnce(validate_and_forward, std::move(callback)));
   } else {
     std::move(callback).Run(absl::nullopt);
+  }
+}
+
+void RenderFrameHostImpl::GetOpenGraphMetadata(
+    base::OnceCallback<void(blink::mojom::OpenGraphMetadataPtr)> callback) {
+  if (IsRenderFrameCreated()) {
+    GetAssociatedLocalFrame()->GetOpenGraphMetadata(
+        base::BindOnce(&ForwardOpenGraphMetadataIfValid, std::move(callback)));
+  } else {
+    std::move(callback).Run({});
   }
 }
 

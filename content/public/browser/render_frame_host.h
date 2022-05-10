@@ -30,6 +30,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-forward.h"
+#include "third_party/blink/public/mojom/opengraph/metadata.mojom-forward.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
@@ -1013,6 +1014,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // trustworthy.
   virtual void GetCanonicalUrl(
       base::OnceCallback<void(const absl::optional<GURL>&)> callback) = 0;
+
+  // Fetch the OpenGraph metadata from the renderer process. The returned data
+  // has only been validated as follows:
+  // * Contained URLs are web schemes, not other schemes
+  // Any other properties you want, you'll need to check yourself.
+  virtual void GetOpenGraphMetadata(
+      base::OnceCallback<void(blink::mojom::OpenGraphMetadataPtr)>) = 0;
 
   // Returns true if the last navigation in this RenderFrameHost has committed
   // an error document that is a placeholder document installed when the

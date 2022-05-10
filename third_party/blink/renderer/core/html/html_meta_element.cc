@@ -652,6 +652,14 @@ const AtomicString& HTMLMetaElement::GetName() const {
   return FastGetAttribute(html_names::kNameAttr);
 }
 
+const AtomicString& HTMLMetaElement::Property() const {
+  return FastGetAttribute(html_names::kPropertyAttr);
+}
+
+const AtomicString& HTMLMetaElement::Itemprop() const {
+  return FastGetAttribute(html_names::kItempropAttr);
+}
+
 // static
 void HTMLMetaElement::ProcessMetaAcceptCH(Document& document,
                                           const AtomicString& content,

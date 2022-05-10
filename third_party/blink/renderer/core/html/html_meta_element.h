@@ -64,6 +64,8 @@ class CORE_EXPORT HTMLMetaElement final : public HTMLElement {
   const AtomicString& HttpEquiv() const;
   const AtomicString& Media() const;
   const AtomicString& GetName() const;
+  const AtomicString& Property() const;
+  const AtomicString& Itemprop() const;
 
  private:
   static void ProcessViewportKeyValuePair(Document*,

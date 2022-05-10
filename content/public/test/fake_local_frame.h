@@ -140,6 +140,8 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void HandleRendererDebugURL(const GURL& url) override;
   void GetCanonicalUrlForSharing(
       base::OnceCallback<void(const absl::optional<GURL>&)> callback) override;
+  void GetOpenGraphMetadata(
+      base::OnceCallback<void(blink::mojom::OpenGraphMetadataPtr)>) override;
   void SetNavigationApiHistoryEntriesForRestore(
       blink::mojom::NavigationApiHistoryEntryArraysPtr entry_arrays) override;
 

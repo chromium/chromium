@@ -5048,6 +5048,7 @@ static_library("ui") {
       "//components/user_notes/browser",
       "//components/user_notes/interfaces",
       "//device/vr/buildflags:buildflags",
+      "//services/data_decoder/public/cpp",
       "//services/media_session/public/mojom",
       "//ui/base/dragdrop:types",
       "//ui/gfx/geometry",

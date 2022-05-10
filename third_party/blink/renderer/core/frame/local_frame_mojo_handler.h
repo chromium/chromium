@@ -191,6 +191,7 @@ class LocalFrameMojoHandler
   void HandleRendererDebugURL(const KURL& url) final;
   void GetCanonicalUrlForSharing(
       GetCanonicalUrlForSharingCallback callback) final;
+  void GetOpenGraphMetadata(GetOpenGraphMetadataCallback callback) final;
 
   void SetNavigationApiHistoryEntriesForRestore(
       mojom::blink::NavigationApiHistoryEntryArraysPtr) final;

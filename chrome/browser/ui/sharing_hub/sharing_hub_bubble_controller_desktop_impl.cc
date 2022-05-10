@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/share/share_features.h"
 #include "chrome/browser/share/share_metrics.h"
@@ -23,10 +24,54 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/image_fetcher/core/image_fetcher.h"
+#include "components/image_fetcher/core/image_fetcher_impl.h"
+#include "content/public/browser/site_instance.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace sharing_hub {
+
+namespace {
+
+constexpr char kPreviewUmaClient[] = "SharePreview";
+
+constexpr net::NetworkTrafficAnnotationTag kPreviewImageNetworkAnnotationTag =
+    net::DefineNetworkTrafficAnnotation("share_preview_image_fetch",
+                                        R"(
+      semantics {
+        sender: "Share bubble"
+        description:
+            "The share bubble offers a preview of the site or image being "
+            "shared. For sites, this image is specified by the site author "
+            "using OpenGraph metadata. If this metadata is present on the "
+            "site being shared and specifies a preview image, the share "
+            "bubble fetches the image to display it."
+        trigger:
+            "User presses 'Share' on a page that has OpenGraph metadata."
+        data:
+            "The image URL being requested from the site. Since the user has "
+            "already visited the site to trigger the sharing flow, this "
+            "request is similar to a request for any other part of the page."
+        destination: WEBSITE
+      }
+      policy {
+        cookies_allowed: NO
+        setting:
+          "Administrators can disable this feature by disabling the share "
+          "bubble altogether, which can be done via policy. There is no "
+          "specific way to disable loading the preview image."
+        chrome_policy: {
+          DesktopSharingHubEnabled: {
+            DesktopSharingHubEnabled: false
+          }
+        }
+      }
+  )");
+
+}  // namespace
 
 // static
 // SharingHubBubbleController:
@@ -58,6 +103,9 @@ void SharingHubBubbleControllerDesktopImpl::ShowBubble() {
 
   sharing_hub_bubble_view_ =
       browser->window()->ShowSharingHubBubble(web_contents());
+
+  if (ShouldUsePreview())
+    FetchHQImageForPreview();
 
   share::LogShareSourceDesktop(share::ShareSourceDesktop::kOmniboxSharingHub);
 }
@@ -176,6 +224,43 @@ SharingHubModel* SharingHubBubbleControllerDesktopImpl::GetSharingHubModel() {
     sharing_hub_model_ = service->GetSharingHubModel();
   }
   return sharing_hub_model_;
+}
+
+void SharingHubBubbleControllerDesktopImpl::FetchHQImageForPreview() {
+  content::RenderFrameHost& main_frame =
+      GetWebContents().GetPrimaryPage().GetMainDocument();
+  main_frame.GetOpenGraphMetadata(base::BindOnce(
+      &SharingHubBubbleControllerDesktopImpl::OnGetOpenGraphMetadata,
+      AsWeakPtr()));
+}
+
+void SharingHubBubbleControllerDesktopImpl::OnGetOpenGraphMetadata(
+    blink::mojom::OpenGraphMetadataPtr metadata) {
+  if (!metadata->image)
+    return;
+
+  auto* profile =
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+  if (!profile)
+    return;
+
+  image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
+      std::make_unique<ImageDecoderImpl>(),
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
+
+  image_fetcher_->FetchImage(
+      *metadata->image,
+      base::BindOnce(&SharingHubBubbleControllerDesktopImpl::OnGetHQImage,
+                     AsWeakPtr()),
+      image_fetcher::ImageFetcherParams(kPreviewImageNetworkAnnotationTag,
+                                        kPreviewUmaClient));
+}
+
+void SharingHubBubbleControllerDesktopImpl::OnGetHQImage(
+    const gfx::Image& image,
+    const image_fetcher::RequestMetadata& metadata) {
+  preview_image_changed_callbacks_.Notify(ui::ImageModel::FromImage(image));
 }
 
 SharingHubBubbleControllerDesktopImpl::SharingHubBubbleControllerDesktopImpl(

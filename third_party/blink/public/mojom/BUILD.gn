@@ -142,6 +142,7 @@ mojom("mojom_platform") {
     "notifications/notification.mojom",
     "notifications/notification_service.mojom",
     "oom_intervention/oom_intervention.mojom",
+    "opengraph/metadata.mojom",
     "parakeet/ad_request.mojom",
     "payments/payment_app.mojom",
     "peerconnection/peer_connection_tracker.mojom",

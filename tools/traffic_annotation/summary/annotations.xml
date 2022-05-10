@@ -374,4 +374,5 @@ Refer to README.md for content description and update process.
  <item id="device_activity_client_check_membership" added_in_milestone="102" content_hash_code="02827a9f" os_list="chromeos" file_path="ash/components/device_activity/device_activity_client.cc" />
  <item id="interest_group_well_known_fetcher" added_in_milestone="103" content_hash_code="01ea06eb" os_list="linux,windows,android,chromeos" file_path="content/browser/interest_group/interest_group_permissions_checker.cc" />
  <item id="speculation_rules_prefetch" added_in_milestone="103" content_hash_code="015fd398" os_list="linux,windows,android,chromeos" file_path="content/browser/speculation_rules/prefetch/prefetch_service.cc" />
+ <item id="share_preview_image_fetch" added_in_milestone="103" content_hash_code="03f3333d" os_list="linux,windows" file_path="chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller_desktop_impl.cc" />
 </annotations>

@@ -75,6 +75,7 @@ void PreviewView::TakeCallbackSubscription(
 
 void PreviewView::OnImageChanged(ui::ImageModel model) {
   image_->SetImage(model);
+  image_->SetImageSize(kImageSize);
 }
 
 }  // namespace sharing_hub

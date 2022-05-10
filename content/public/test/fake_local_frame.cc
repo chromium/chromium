@@ -188,6 +188,9 @@ void FakeLocalFrame::HandleRendererDebugURL(const GURL& url) {}
 void FakeLocalFrame::GetCanonicalUrlForSharing(
     base::OnceCallback<void(const absl::optional<GURL>&)> callback) {}
 
+void FakeLocalFrame::GetOpenGraphMetadata(
+    base::OnceCallback<void(blink::mojom::OpenGraphMetadataPtr)>) {}
+
 void FakeLocalFrame::SetNavigationApiHistoryEntriesForRestore(
     blink::mojom::NavigationApiHistoryEntryArraysPtr entry_arrays) {}
 
