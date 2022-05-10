@@ -36,8 +36,7 @@ export class LearnMode {
         LearnMode.onAccessibilityGesture);
     chrome.accessibilityPrivate.setKeyboardListener(true, true);
     BackgroundBridge.BrailleCommandHandler.setEnabled(false);
-    chrome.runtime.sendMessage(
-        {target: 'GestureCommandHandler', action: 'setEnabled', value: false});
+    BackgroundBridge.GestureCommandHandler.setEnabled(false);
 
     ChromeVoxKbHandler.handlerKeyMap = KeyMap.get();
 

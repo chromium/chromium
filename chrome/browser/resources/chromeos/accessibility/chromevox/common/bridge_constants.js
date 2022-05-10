@@ -19,6 +19,7 @@ BridgeTarget = {
   CHROMEVOX_STATE: 'ChromeVoxState',
   COMMAND_HANDLER: 'CommandHandler',
   EVENT_SOURCE_STATE: 'EventSourceState',
+  GESTURE_COMMAND_HANDLER: 'GestureCommandHandler',
   LOG_STORE: 'LogStore',
   PANEL: 'Panel',
   PANEL_BACKGROUND: 'PanelBackground',

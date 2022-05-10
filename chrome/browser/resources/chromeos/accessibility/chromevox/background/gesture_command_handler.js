@@ -22,12 +22,6 @@ export const GestureCommandHandler = {};
 GestureCommandHandler.setEnabled = function(state) {
   GestureCommandHandler.enabled_ = state;
 };
-chrome.runtime.onMessage.addListener((message) => {
-  if (message.target === 'GestureCommandHandler' &&
-      message.action === 'setEnabled') {
-    GestureCommandHandler.setEnabled(message.value);
-  }
-});
 
 /**
  * Global setting for the enabled state of this handler.
@@ -141,3 +135,7 @@ GestureCommandHandler.init_ = function() {
 GestureCommandHandler.granularity = GestureGranularity.LINE;
 
 GestureCommandHandler.init_();
+
+BridgeHelper.registerHandler(
+    BridgeTarget.GESTURE_COMMAND_HANDLER, BridgeAction.SET_ENABLED,
+    enabled => GestureCommandHandler.setEnabled(enabled));

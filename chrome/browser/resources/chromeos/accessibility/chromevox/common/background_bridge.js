@@ -127,7 +127,18 @@ BackgroundBridge.EventSourceState = {
   async get() {
     return BridgeHelper.sendMessage(
         BridgeTarget.EVENT_SOURCE_STATE, BridgeAction.GET);
-  }
+  },
+};
+
+BackgroundBridge.GestureCommandHandler = {
+  /**
+   * @param {boolean} enabled
+   * @return {!Promise}
+   */
+  async setEnabled(enabled) {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.GESTURE_COMMAND_HANDLER, BridgeAction.SET_ENABLED);
+  },
 };
 
 BackgroundBridge.LogStore = {
