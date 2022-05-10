@@ -109,11 +109,11 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   VLOG(1) << "[CPSS] Selector activated";
   callback_ = std::move(callback);
   last_request_grant_likelihood_ = absl::nullopt;
+  was_decision_held_back_ = absl::nullopt;
   const PredictionSource prediction_source =
       GetPredictionTypeToUse(request->request_type());
   if (prediction_source == PredictionSource::USE_NONE) {
-    VLOG(1) << "[CPSS] Configuration either does not allows CPSS requests or "
-               "the request was held back";
+    VLOG(1) << "[CPSS] Configuration does not allow CPSS requests";
     std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
     return;
   }
@@ -208,6 +208,11 @@ PredictionBasedPermissionUiSelector::PredictedGrantLikelihoodForUKM() {
   return last_request_grant_likelihood_;
 }
 
+absl::optional<bool>
+PredictionBasedPermissionUiSelector::WasSelectorDecisionHeldback() {
+  return was_decision_held_back_;
+}
+
 permissions::PredictionRequestFeatures
 PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
     permissions::PermissionRequest* request) {
@@ -258,11 +263,12 @@ void PredictionBasedPermissionUiSelector::LookupResponseReceived(
 
   if (ShouldHoldBack(is_on_device, request_type)) {
     VLOG(1) << "[CPSS] Prediction service decision held back";
+    was_decision_held_back_ = true;
     std::move(callback_).Run(
-        Decision(Decision::UseNormalUi(), Decision::ShowNoWarning(), true));
+        Decision(Decision::UseNormalUi(), Decision::ShowNoWarning()));
     return;
   }
-
+  was_decision_held_back_ = false;
   VLOG(1)
       << "[CPSS] Prediction service request succeeded and received likelihood: "
       << last_request_grant_likelihood_.value();
@@ -271,12 +277,12 @@ void PredictionBasedPermissionUiSelector::LookupResponseReceived(
     std::move(callback_).Run(Decision(
         is_on_device ? QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant
                      : QuietUiReason::kServicePredictedVeryUnlikelyGrant,
-        Decision::ShowNoWarning(), false));
+        Decision::ShowNoWarning()));
     return;
   }
 
   std::move(callback_).Run(
-      Decision(Decision::UseNormalUi(), Decision::ShowNoWarning(), false));
+      Decision(Decision::UseNormalUi(), Decision::ShowNoWarning()));
 }
 
 bool PredictionBasedPermissionUiSelector::ShouldHoldBack(
