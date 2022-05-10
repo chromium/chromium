@@ -687,10 +687,10 @@ If your feedback is about image or video quality, please attach a sample photo o
         Show all resolutions
       </message>
       <message desc="Label for spoken feedback to indicate that the mute button is now off." name="IDS_ARIA_MUTE_OFF">
-        Mute button off
+        Toggle microphone mute. Mute is off
       </message>
       <message desc="Label for spoken feedback to indicate that the mute button is now on." name="IDS_ARIA_MUTE_ON">
-        Mute button on
+        Toggle microphone mute. Mute is on
       </message>
     </messages>
   </release>
