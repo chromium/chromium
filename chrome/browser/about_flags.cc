@@ -5252,10 +5252,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          features::kPrivateNetworkAccessRespectPreflightResults)},
 
-    {"disable-keepalive-fetch", flag_descriptions::kDisableKeepaliveFetchName,
-     flag_descriptions::kDisableKeepaliveFetchDescription, kOsAll,
-     FEATURE_VALUE_TYPE(network::features::kDisableKeepaliveFetch)},
-
     {"mbi-mode", flag_descriptions::kMBIModeName,
      flag_descriptions::kMBIModeDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kMBIMode,

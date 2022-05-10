@@ -107,12 +107,6 @@ const base::Feature kDnsOverHttpsUpgrade {
 const base::Feature kMdnsResponderGeneratedNameListing{
     "MdnsResponderGeneratedNameListing", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Disable special treatment on requests with keepalive set (see
-// https://fetch.spec.whatwg.org/#request-keepalive-flag). This is introduced
-// for investigation on the memory usage, and should not be enabled widely.
-const base::Feature kDisableKeepaliveFetch{"DisableKeepaliveFetch",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Switches Cross-Origin Read Blocking (CORB) to use an early implementation of
 // Opaque Response Blocking (ORB, aka CORB++) behind the scenes.
 //

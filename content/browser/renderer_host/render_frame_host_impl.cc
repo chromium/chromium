@@ -7271,10 +7271,6 @@ void RenderFrameHostImpl::GetKeepAliveHandleFactory(
   if (GetProcess()->AreRefCountsDisabled())
     return;
 
-  if (base::FeatureList::IsEnabled(network::features::kDisableKeepaliveFetch)) {
-    return;
-  }
-
   keep_alive_handle_factory_.Bind(std::move(receiver));
 }
 

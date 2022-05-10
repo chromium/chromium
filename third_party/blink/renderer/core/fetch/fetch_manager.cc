@@ -646,9 +646,7 @@ void FetchManager::Loader::Dispose() {
   // Prevent notification
   fetch_manager_ = nullptr;
   if (threadable_loader_) {
-    if (fetch_request_data_->Keepalive() &&
-        !base::FeatureList::IsEnabled(
-            network::features::kDisableKeepaliveFetch)) {
+    if (fetch_request_data_->Keepalive()) {
       threadable_loader_->Detach();
     } else {
       threadable_loader_->Cancel();

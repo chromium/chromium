@@ -42,8 +42,6 @@ extern const base::Feature kDnsOverHttpsUpgrade;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kMdnsResponderGeneratedNameListing;
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kDisableKeepaliveFetch;
-COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kOpaqueResponseBlockingV01;
 
 COMPONENT_EXPORT(NETWORK_CPP)

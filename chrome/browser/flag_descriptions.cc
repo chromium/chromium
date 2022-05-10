@@ -1128,11 +1128,6 @@ const char kDeprecateAltBasedSixPackDescription[] =
     "Show deprecation notifications and disable functionality for Alt based "
     "six pack deprecations. The Search based versions continue to work.";
 
-const char kDisableKeepaliveFetchName[] = "Disable fetch with keepalive set";
-const char kDisableKeepaliveFetchDescription[] =
-    "Disable fetch with keepalive set "
-    "(https://fetch.spec.whatwg.org/#request-keepalive-flag).";
-
 const char kExperimentalAccessibilityLanguageDetectionName[] =
     "Experimental accessibility language detection";
 const char kExperimentalAccessibilityLanguageDetectionDescription[] =
