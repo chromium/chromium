@@ -902,8 +902,8 @@ export class CommandHandler extends CommandHandlerInterface {
         output.withString(target.docUrl || '').go();
         return false;
       case 'toggleSelection':
-        if (!ChromeVoxState.instance.pageSel_) {
-          ChromeVoxState.instance.pageSel_ =
+        if (!ChromeVoxState.instance.pageSel) {
+          ChromeVoxState.instance.pageSel =
               ChromeVoxState.instance.currentRange;
           DesktopAutomationInterface.instance.ignoreDocumentSelectionFromAction(
               true);
@@ -923,7 +923,7 @@ export class CommandHandler extends CommandHandlerInterface {
             DesktopAutomationInterface.instance
                 .ignoreDocumentSelectionFromAction(false);
           }
-          ChromeVoxState.instance.pageSel_ = null;
+          ChromeVoxState.instance.pageSel = null;
           return false;
         }
         break;

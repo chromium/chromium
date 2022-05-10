@@ -120,6 +120,11 @@ export class Background extends ChromeVoxState {
   }
 
   /** @override */
+  get pageSel() {
+    return this.pageSel_;
+  }
+
+  /** @override */
   getCurrentRangeWithoutRecovery() {
     return this.currentRange_;
   }
@@ -168,6 +173,11 @@ export class Background extends ChromeVoxState {
     let url = root.docUrl;
     url = url.substring(0, url.indexOf('#')) || url;
     ChromeVox.position[url] = position;
+  }
+
+  /** @override */
+  set pageSel(newPageSel) {
+    this.pageSel_ = newPageSel;
   }
 
   /**

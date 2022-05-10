@@ -75,7 +75,7 @@ ChromeVoxState.backgroundTts;
 ChromeVoxState.isReadingContinuously;
 
 ChromeVoxState.prototype = {
-  /** @type {cursors.Range} */
+  /** @return {cursors.Range} */
   get currentRange() {
     return this.getCurrentRange();
   },
@@ -85,6 +85,11 @@ ChromeVoxState.prototype = {
    * @protected
    */
   getCurrentRange() {
+    return null;
+  },
+
+  /** @return {cursors.Range} */
+  get pageSel() {
     return null;
   },
 
@@ -99,6 +104,10 @@ ChromeVoxState.prototype = {
    * @param {boolean=} opt_fromEditing
    */
   setCurrentRange: goog.abstractMethod,
+
+  /** @param {cursors.Range} */
+  set pageSel(newPageSel) {},
+
   /**
    * Navigate to the given range - it both sets the range and outputs it.
    * @param {!cursors.Range} range The new range.
