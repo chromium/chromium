@@ -315,18 +315,18 @@ void EnsureOrientationMatches(const mojom::PrintParams& css_params,
                 page_params->printable_area.width()));
 }
 
-void ComputeWebKitPrintParamsInDesiredDpi(
+blink::WebPrintParams ComputeWebKitPrintParamsInDesiredDpi(
     const mojom::PrintParams& print_params,
-    bool source_is_pdf,
-    blink::WebPrintParams* webkit_print_params) {
+    bool source_is_pdf) {
+  blink::WebPrintParams webkit_print_params;
   int dpi = GetDPI(print_params);
-  webkit_print_params->printer_dpi = dpi;
+  webkit_print_params.printer_dpi = dpi;
   if (source_is_pdf) {
     // The |scale_factor| in print_params comes from the |scale_factor| in
     // PrintSettings, which converts an integer percentage between 10 and 200
     // to a float in PrintSettingsFromJobSettings. As a result, it can be
     // converted back safely for the integer |scale_factor| in WebPrintParams.
-    webkit_print_params->scale_factor =
+    webkit_print_params.scale_factor =
         static_cast<int>(print_params.scale_factor * 100);
 
 #if BUILDFLAG(IS_APPLE)
@@ -334,31 +334,33 @@ void ComputeWebKitPrintParamsInDesiredDpi(
     // correct except when rastering PDFs, which uses |printer_dpi|, and the
     // value for |printer_dpi| is too low. Adjust that here.
     // See https://crbug.com/943462
-    webkit_print_params->printer_dpi = kDefaultPdfDpi;
+    webkit_print_params.printer_dpi = kDefaultPdfDpi;
 #endif
 
     if (print_params.rasterize_pdf && print_params.rasterize_pdf_dpi > 0)
-      webkit_print_params->printer_dpi = print_params.rasterize_pdf_dpi;
+      webkit_print_params.printer_dpi = print_params.rasterize_pdf_dpi;
   }
-  webkit_print_params->rasterize_pdf = print_params.rasterize_pdf;
-  webkit_print_params->print_scaling_option = print_params.print_scaling_option;
+  webkit_print_params.rasterize_pdf = print_params.rasterize_pdf;
+  webkit_print_params.print_scaling_option = print_params.print_scaling_option;
 
-  webkit_print_params->print_content_area.set_size(gfx::Size(
+  webkit_print_params.print_content_area.set_size(gfx::Size(
       ConvertUnit(print_params.content_size.width(), dpi, kPointsPerInch),
       ConvertUnit(print_params.content_size.height(), dpi, kPointsPerInch)));
 
-  webkit_print_params->printable_area = gfx::Rect(
+  webkit_print_params.printable_area = gfx::Rect(
       ConvertUnit(print_params.printable_area.x(), dpi, kPointsPerInch),
       ConvertUnit(print_params.printable_area.y(), dpi, kPointsPerInch),
       ConvertUnit(print_params.printable_area.width(), dpi, kPointsPerInch),
       ConvertUnit(print_params.printable_area.height(), dpi, kPointsPerInch));
 
-  webkit_print_params->paper_size = gfx::Size(
+  webkit_print_params.paper_size = gfx::Size(
       ConvertUnit(print_params.page_size.width(), dpi, kPointsPerInch),
       ConvertUnit(print_params.page_size.height(), dpi, kPointsPerInch));
 
   // The following settings is for N-up mode.
-  webkit_print_params->pages_per_sheet = print_params.pages_per_sheet;
+  webkit_print_params.pages_per_sheet = print_params.pages_per_sheet;
+
+  return webkit_print_params;
 }
 
 bool IsPrintingPdfFrame(blink::WebLocalFrame* frame,
@@ -1069,8 +1071,8 @@ void PrepareFrameAndViewForPrint::ComputeScalingAndPrintParams(
     bool is_pdf,
     bool ignore_css_margins,
     bool fit_to_page) {
-  ComputeWebKitPrintParamsInDesiredDpi(*print_params, is_pdf,
-                                       &web_print_params_);
+  web_print_params_ =
+      ComputeWebKitPrintParamsInDesiredDpi(*print_params, is_pdf);
   frame->PrintBegin(web_print_params_, node_to_print_);
   double scale_factor = PrintRenderFrameHelper::GetScaleFactor(
       print_params->scale_factor, is_pdf);
@@ -1080,8 +1082,8 @@ void PrepareFrameAndViewForPrint::ComputeScalingAndPrintParams(
   if (selection)
     *selection = frame->SelectionAsMarkup().Utf8();
   frame->PrintEnd();
-  ComputeWebKitPrintParamsInDesiredDpi(*print_params, is_pdf,
-                                       &web_print_params_);
+  web_print_params_ =
+      ComputeWebKitPrintParamsInDesiredDpi(*print_params, is_pdf);
 }
 
 void PrepareFrameAndViewForPrint::DidStopLoading() {
@@ -1603,9 +1605,8 @@ void PrintRenderFrameHelper::SnapshotForContentAnalysis(
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   blink::WebNode node = delegate_->GetPdfElement(frame);
   bool is_pdf = IsPrintingPdfFrame(frame, node);
-  blink::WebPrintParams web_print_params;
-  ComputeWebKitPrintParamsInDesiredDpi(*print_pages_params.params, is_pdf,
-                                       &web_print_params);
+  blink::WebPrintParams web_print_params =
+      ComputeWebKitPrintParamsInDesiredDpi(*print_pages_params.params, is_pdf);
   uint32_t page_count = frame->PrintBegin(web_print_params, node);
   if (page_count == 0) {
     frame->PrintEnd();
