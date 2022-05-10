@@ -373,8 +373,14 @@ TEST_F(OmniboxFieldTrialTest, LocalZeroSuggestAgeThreshold) {
       {{omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
         {{OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam, "j"}}}},
       {});
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  int expected_age_threshold_days = 7;
+#else
+  int expected_age_threshold_days = 60;
+#endif
   age_threshold = OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold();
-  EXPECT_EQ(7, base::TimeDelta(base::Time::Now() - age_threshold).InDays());
+  EXPECT_EQ(expected_age_threshold_days,
+            base::TimeDelta(base::Time::Now() - age_threshold).InDays());
 }
 
 TEST_F(OmniboxFieldTrialTest, HUPNewScoringFieldTrial) {
