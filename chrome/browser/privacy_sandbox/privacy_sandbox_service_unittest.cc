@@ -1397,6 +1397,18 @@ TEST_F(PrivacySandboxServiceTest, DialogActionsUMAActions) {
                    "Settings.PrivacySandbox.Notice.ClosedNoInteraction"));
 
   SetupDialogTestState(feature_list(), prefs(),
+                       {/*consent_required=*/false,
+                        /*old_api_pref=*/true,
+                        /*new_api_pref=*/false,
+                        /*notice_displayed=*/false,
+                        /*consent_decision_made=*/false,
+                        /*confirmation_not_shown=*/false});
+  privacy_sandbox_service()->DialogActionOccurred(
+      PrivacySandboxService::DialogAction::kNoticeLearnMore);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.Notice.LearnMore"));
+
+  SetupDialogTestState(feature_list(), prefs(),
                        {/*consent_required=*/true,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,

@@ -287,6 +287,11 @@ void PrivacySandboxService::DialogActionOccurred(
           "Settings.PrivacySandbox.Consent.ClosedNoInteraction"));
       break;
     }
+    case (DialogAction::kNoticeLearnMore): {
+      base::RecordAction(
+          base::UserMetricsAction("Settings.PrivacySandbox.Notice.LearnMore"));
+      break;
+    }
     default:
       break;
   }

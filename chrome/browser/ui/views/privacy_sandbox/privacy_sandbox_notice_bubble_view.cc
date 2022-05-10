@@ -215,9 +215,9 @@ void PrivacySandboxNoticeBubbleView::AppMenuShown() {
 }
 
 void PrivacySandboxNoticeBubbleView::OpenAboutAdPersonalizationSettings() {
-  // TODO(crbug.com/1321587): Open the correct page and notify the service about
-  // this.
   chrome::ShowPrivacySandboxSettings(browser_);
+  NotifyServiceAboutDialogAction(browser_->profile(),
+                                 DialogAction::kNoticeLearnMore);
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCancelButtonClicked);
 }

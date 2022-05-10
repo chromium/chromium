@@ -90,7 +90,11 @@ class PrivacySandboxService : public KeyedService,
     // has made the decision (accepted or declined the consent).
     kConsentClosedNoDecision = 10,
 
-    kMaxValue = kConsentClosedNoDecision,
+    // Interaction with notice bubble: click on the link to open interests
+    // settings.
+    kNoticeLearnMore = 11,
+
+    kMaxValue = kNoticeLearnMore,
   };
 
   PrivacySandboxService(

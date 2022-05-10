@@ -26383,6 +26383,17 @@ should be able to be added at any place in this file.
   <description>User dismissed the Privacy Sandbox notice.</description>
 </action>
 
+<action name="Settings.PrivacySandbox.Notice.LearnMore">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>
+    User clicked on the link &quot;estimates your interests&quot; from the
+    Privacy Sandbox notice. It opens Privacy Sandbox settings page with
+    &quot;About Browser-based ad personalization&quot; dialog.
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.Notice.OpenedSettings">
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
