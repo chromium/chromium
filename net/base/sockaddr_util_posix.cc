@@ -4,6 +4,7 @@
 
 #include "net/base/sockaddr_util_posix.h"
 
+#include <stddef.h>
 #include <string.h>
 
 #include <sys/socket.h>
