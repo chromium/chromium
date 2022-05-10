@@ -58,6 +58,8 @@ class LacrosServiceNeverBlockingState;
 // documented with threading requirements.
 class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
  public:
+  using ComponentPolicyMap =
+      base::flat_map<policy::PolicyNamespace, base::Value>;
   class Observer {
    public:
     // Called when the new policy data is received from Ash.
@@ -66,6 +68,9 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
 
     // Called when policy fetch attempt is made in Ash.
     virtual void OnPolicyFetchAttempt() {}
+
+    // Called when the new component policy is received from Ash.
+    virtual void OnComponentPolicyUpdated(const ComponentPolicyMap& policy) {}
 
    protected:
     virtual ~Observer() = default;
@@ -124,6 +129,10 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
 
   // Notifies that an attempt to update the device account policy has been made.
   void NotifyPolicyFetchAttempt();
+
+  // Notifies that the device account component policy is updated with the
+  // input data. Must be called on the affined sequence.
+  void NotifyComponentPolicyUpdated(ComponentPolicyMap policy);
 
   // Returns whether this interface uses the automatic registration system to be
   // available for immediate use at startup. Any crosapi interface can be

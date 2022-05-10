@@ -10,6 +10,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -24,6 +25,10 @@ namespace policy {
 namespace em = enterprise_management;
 
 namespace {
+
+const char kValue[] = "Value";
+const char kLevel[] = "Level";
+const char kRecommended[] = "Recommended";
 
 // Returns true and sets |level| to a PolicyLevel if the policy has been set
 // at that level. Returns false if the policy is not set, or has been set at
@@ -208,6 +213,44 @@ void DecodeProtoFields(
     map->Set(access.policy_key, level, scope, source,
              DecodeStringListProto(proto), nullptr);
   }
+}
+
+bool ParseComponentPolicy(base::Value json,
+                          PolicyScope scope,
+                          PolicySource source,
+                          PolicyMap* policy,
+                          std::string* error) {
+  // Each top-level key maps a policy name to its description.
+  //
+  // Each description is an object that contains the policy value under the
+  // "Value" key. The optional "Level" key is either "Mandatory" (default) or
+  // "Recommended".
+  for (auto it : json.DictItems()) {
+    const std::string& policy_name = it.first;
+    base::Value description = std::move(it.second);
+    if (!description.is_dict()) {
+      *error = "The JSON blob dictionary value is not a dictionary.";
+      return false;
+    }
+
+    absl::optional<base::Value> value = description.ExtractKey(kValue);
+    if (!value.has_value()) {
+      *error = base::StrCat(
+          {"The JSON blob dictionary value doesn't contain the required ",
+           kValue, " field."});
+      return false;
+    }
+
+    PolicyLevel level = POLICY_LEVEL_MANDATORY;
+    const std::string* level_string = description.FindStringKey(kLevel);
+    if (level_string && *level_string == kRecommended)
+      level = POLICY_LEVEL_RECOMMENDED;
+
+    policy->Set(policy_name, level, scope, source, std::move(value.value()),
+                nullptr);
+  }
+
+  return true;
 }
 
 }  // namespace policy

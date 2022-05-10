@@ -66,6 +66,10 @@ PolicyLoaderLacros::PolicyLoaderLacros(
     LOG(ERROR) << "No init params";
     return;
   }
+  if (per_profile_ == PolicyPerProfileFilter::kTrue &&
+      init_params->device_account_component_policy) {
+    SetComponentPolicy(init_params->device_account_component_policy.value());
+  }
   if (!init_params->device_account_policy) {
     LOG(ERROR) << "No policy data";
     return;
@@ -99,6 +103,10 @@ void PolicyLoaderLacros::InitOnBackgroundThread() {
 std::unique_ptr<PolicyBundle> PolicyLoaderLacros::Load() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::unique_ptr<PolicyBundle> bundle = std::make_unique<PolicyBundle>();
+
+  // If per_profile loader is used, apply policy for extensions.
+  if (per_profile_ == PolicyPerProfileFilter::kTrue && component_policy_)
+    bundle->MergeFrom(*component_policy_);
 
   if (!policy_fetch_response_ || policy_fetch_response_->empty()) {
     return bundle;
@@ -159,6 +167,43 @@ void PolicyLoaderLacros::OnPolicyUpdated(
 
 void PolicyLoaderLacros::OnPolicyFetchAttempt() {
   last_fetch_timestamp_ = base::Time::Now();
+}
+
+void PolicyLoaderLacros::OnComponentPolicyUpdated(
+    const policy::ComponentPolicyMap& component_policy) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The component policy is per_profile=true policy. If Lacros is using
+  // secondary profile, that policy is loaded directly from DMServer. In case
+  // it is using the device account, there are two PolicyLoaderLacros objects
+  // present, and we need to store it only in the object with per_profile:True.
+  if (per_profile_ == PolicyPerProfileFilter::kFalse) {
+    return;
+  }
+
+  SetComponentPolicy(component_policy);
+  Reload(true);
+}
+
+void PolicyLoaderLacros::SetComponentPolicy(
+    const policy::ComponentPolicyMap& component_policy) {
+  if (component_policy_) {
+    component_policy_->Clear();
+  } else {
+    component_policy_ = std::make_unique<PolicyBundle>();
+  }
+  for (auto& policy_pair : component_policy) {
+    PolicyMap component_policy_map;
+    std::string error;
+    // The component policy received from Ash is the JSON data corresponding to
+    // the policy for the namespace.
+    ParseComponentPolicy(policy_pair.second.Clone(), POLICY_SCOPE_USER,
+                         POLICY_SOURCE_CLOUD_FROM_ASH, &component_policy_map,
+                         &error);
+    DCHECK(error.empty());
+
+    // The data is also good; expose the policies.
+    component_policy_->Get(policy_pair.first).Swap(&component_policy_map);
+  }
 }
 
 enterprise_management::PolicyData* PolicyLoaderLacros::GetPolicyData() {
