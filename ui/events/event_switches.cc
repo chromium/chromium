@@ -14,6 +14,13 @@ namespace switches {
 const char kCompensateForUnstablePinchZoom[] =
     "compensate-for-unstable-pinch-zoom";
 
+// Overrides touch slop distance for gesture detection. The touch slop distance
+// is the maximum distance from the starting point of a touch sequence that a
+// gesture can travel before it can no longer be considered a tap. Scroll
+// gestures can only begin after this distance has been travelled. The switch
+// value is a floating point number that is interpreted as a distance in pixels.
+const char kTouchSlopDistance[] = "touch-slop-distance";
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Tells chrome to interpret events from these devices as touch events. Only
 // available with XInput 2 (i.e. X server 1.8 or above). The id's of the

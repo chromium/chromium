@@ -11,6 +11,7 @@
 namespace switches {
 
 EVENTS_BASE_EXPORT extern const char kCompensateForUnstablePinchZoom[];
+EVENTS_BASE_EXPORT extern const char kTouchSlopDistance[];
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 EVENTS_BASE_EXPORT extern const char kTouchDevices[];
