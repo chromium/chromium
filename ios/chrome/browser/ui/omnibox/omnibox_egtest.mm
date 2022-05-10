@@ -345,6 +345,7 @@ id<GREYMatcher> SearchCopiedTextButton() {
 
   // Defocus the omnibox.
   if ([ChromeEarlGrey isIPadIdiom]) {
+    // This won't defocus the omnibox, it would only dismiss the keyboard.
     id<GREYMatcher> typingShield = grey_accessibilityID(@"Typing Shield");
     [[EarlGrey selectElementWithMatcher:typingShield] performAction:grey_tap()];
   } else {

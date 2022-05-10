@@ -136,6 +136,7 @@ source_set("omnibox_internal") {
     "web_omnibox_edit_controller_impl.mm",
   ]
   deps = [
+    ":features",
     ":omnibox",
     ":omnibox_popup_shared",
     ":omnibox_util",
