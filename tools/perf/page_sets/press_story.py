@@ -29,13 +29,18 @@ class PressStory(page_module.Page):
   DETERMINISTIC_JS = False
   NAME = None
 
-  def __init__(self, page_set, tags=None, extra_browser_args=None):
+  def __init__(self,
+               page_set,
+               tags=None,
+               extra_browser_args=None,
+               url=None,
+               name=None):
     super(PressStory,
-          self).__init__(self.URL,
+          self).__init__(url or self.URL,
                          page_set,
                          base_dir=page_set.base_dir,
                          make_javascript_deterministic=self.DETERMINISTIC_JS,
-                         name=self.NAME if self.NAME else self.URL,
+                         name=name or self.NAME or self.URL,
                          tags=self.PreprocessTags(tags),
                          extra_browser_args=extra_browser_args)
     self._measurements = []

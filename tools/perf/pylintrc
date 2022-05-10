@@ -52,3 +52,7 @@ indent-string='  '
 # We suppress long line check for lines that contain only the URL (with or
 # without quote).
 ignore-long-lines=^\s*'?https?://\S+'?$
+
+
+[DESIGN]
+max-parents=10
