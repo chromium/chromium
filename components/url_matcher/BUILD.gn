@@ -2,14 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-component("url_matcher") {
+component("substring_set_matcher") {
   sources = [
-    "regex_set_matcher.cc",
-    "regex_set_matcher.h",
     "string_pattern.cc",
     "string_pattern.h",
     "substring_set_matcher.cc",
     "substring_set_matcher.h",
+    "url_matcher_export.h",
+  ]
+
+  defines = [ "URL_MATCHER_IMPLEMENTATION" ]
+
+  public_deps = [ "//base" ]
+}
+
+component("url_matcher") {
+  sources = [
+    "regex_set_matcher.cc",
+    "regex_set_matcher.h",
     "url_matcher.cc",
     "url_matcher.h",
     "url_matcher_constants.cc",
@@ -24,6 +34,7 @@ component("url_matcher") {
   defines = [ "URL_MATCHER_IMPLEMENTATION" ]
 
   public_deps = [
+    ":substring_set_matcher",
     "//base",
     "//base/third_party/dynamic_annotations",
     "//components/google/core/common",
@@ -45,6 +56,7 @@ source_set("unit_tests") {
     "url_util_unittest.cc",
   ]
   deps = [
+    ":substring_set_matcher",
     ":url_matcher",
     "//testing/gmock",
     "//testing/gtest",
