@@ -2577,6 +2577,9 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
     const AttributionTrigger& trigger,
     bool top_level_filters_match,
     absl::optional<AttributionReport>& report) {
+  if (!top_level_filters_match)
+    return AggregatableResult::kNoMatchingSourceFilterData;
+
   std::vector<AggregatableHistogramContribution> contributions =
       CreateAggregatableHistogram(
           attribution_info.source.common_info().filter_data(),
@@ -2584,9 +2587,6 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
           trigger.aggregatable_trigger());
   if (contributions.empty())
     return AggregatableResult::kNoHistograms;
-
-  if (!top_level_filters_match)
-    return AggregatableResult::kNoMatchingSourceFilterData;
 
   base::Time report_time =
       delegate_->GetAggregatableReportTime(attribution_info.time);
