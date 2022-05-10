@@ -185,7 +185,7 @@ class USBDevice : public ScriptWrappable,
   void AsyncReset(ScriptPromiseResolver*, bool success);
 
   void OnConnectionError();
-  bool MarkRequestComplete(ScriptPromiseResolver*);
+  void MarkRequestComplete(ScriptPromiseResolver*);
 
   const Member<USB> parent_;
   device::mojom::blink::UsbDeviceInfoPtr device_info_;
