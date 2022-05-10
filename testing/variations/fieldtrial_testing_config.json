@@ -439,6 +439,21 @@
             ]
         }
     ],
+    "ArcVmGmsCoreLowMemoryKillerProtection": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ArcVmGmsCoreLowMemoryKillerProtection"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcVmInitThrottle2": [
         {
             "platforms": [
