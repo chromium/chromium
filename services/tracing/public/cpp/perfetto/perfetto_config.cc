@@ -71,6 +71,7 @@ perfetto::TraceConfig::DataSource* AddDataSourceConfig(
          base_config.category_filter().disabled_categories()) {
       te_cfg.add_enabled_categories(disabled);
     }
+    te_cfg.set_enable_thread_time_sampling(true);
     source_config->set_track_event_config_raw(te_cfg.SerializeAsString());
   }
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
