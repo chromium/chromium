@@ -107,6 +107,8 @@ message KeyInfo {
   optional DeviceTrustSignals device_trust_signals = 9 [deprecated = true];
   // Device Trust Signals
   optional string device_trust_signals_json = 10;
+  // DM token to be used for this request.
+  optional string dm_token = 11;
 }
 
 // Device Trust Signals
