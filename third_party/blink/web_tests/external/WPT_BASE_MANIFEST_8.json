@@ -1822,6 +1822,13 @@
         {}
        ]
       ],
+      "nested-multicol-fieldset-tall-trailing-border-freeze.html": [
+       "014073a9e8c1513dbd38dc0ee66e4547a6b3be36",
+       [
+        null,
+        {}
+       ]
+      ],
       "nested-multicol-fieldset-tall-trailing-padding.html": [
        "b155a4d7f42283c18e6ea113dc2000393752c72a",
        [
@@ -96324,6 +96331,19 @@
         {}
        ]
       ],
+      "inner-first-line-non-matching.html": [
+       "5f39124e514bcfc2b7293b6e36c7e3c3f4bbd5df",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/container-queries/inner-first-line-non-matching-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "multicol-inside-container.html": [
        "9fc8393a513f236996d60fdc39e2401a3dba0376",
        [
@@ -148936,6 +148956,19 @@
        {}
       ]
      ],
+     "first-line-nested-gcs.html": [
+      "6777e5468f57b507f96f4e92fbba4393002d15e7",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/first-line-green-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "first-line-on-ancestor-block.html": [
       "6b797107df80156b511b9dc58c5ee40d6114cfc4",
       [
@@ -156614,6 +156647,19 @@
       ],
       "block-aspect-ratio-036.html": [
        "e264646c107822a14794c22ef30de378fcd8f37b",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-aspect-ratio-037.html": [
+       "26b795b2a0ba30fa61d16ef595107398bb605106",
        [
         null,
         [
@@ -261016,6 +261062,10 @@
        "ecd72b7516c41c83b6e8d320c9b0b87f9c231781",
        []
       ],
+      "inner-first-line-non-matching-ref.html": [
+       "99e9c334bf2c856535c7643911a3050390658a6f",
+       []
+      ],
       "pseudo-elements-002-ref.html": [
        "9dc6c572b303678e8f9b9f76eb3e527318a0ed81",
        []
@@ -278377,6 +278427,10 @@
      ],
      "first-line-change-inline-color-ref.html": [
       "84becd9a78d186ba3c0e658746fd56aef8039b74",
+      []
+     ],
+     "first-line-green-ref.html": [
+      "99e9c334bf2c856535c7643911a3050390658a6f",
       []
      ],
      "first-line-line-height-001-ref.html": [
@@ -316142,6 +316196,10 @@
        "3be2852348ba800662fa2caf626654b2f40b5902",
        []
       ],
+      "png-with-early-hints.h2.py": [
+       "0785d512c1b024acf7e349735764ac341e219d4b",
+       []
+      ],
       "preconnect-in-early-hints.h2.py": [
        "e448fd0af71abf850786437f818d4a74d74060c0",
        []
@@ -322056,7 +322114,7 @@
       []
      ],
      "nested-contexts.js": [
-      "31bc97bb119399be0d8ebb283e01ac32c2a9ec0f",
+      "c0822943e86a68f43d003e03166fbc987014946e",
       []
      ],
      "nested.css": [
@@ -481414,6 +481472,24 @@
        }
       ]
      ],
+     "embed-object.h2.window.js": [
+      "82365fafddbb8df1ea80cecdf2d24db65e3ef379",
+      [
+       "loading/early-hints/embed-object.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "invalid-headers-in-early-hints.h2.window.js": [
       "6c5161dc8bf72d193c843860f24024f753075314",
       [
@@ -510112,7 +510188,7 @@
      ]
     ],
     "nested-context-navigations-embed.html": [
-     "5c8a62a9ae281d7f4823e27ae7fe37032de8cb2e",
+     "f804adbb8a99e44bd0f7d0c543ceea3f09e6ea62",
      [
       null,
       {
@@ -510121,7 +510197,7 @@
      ]
     ],
     "nested-context-navigations-iframe.html": [
-     "6e5cdd85c30d3ecbdb68c987a40b7eda5370fd4b",
+     "32ab21633c669ccf1db59f3cd4667dd2ce810e79",
      [
       null,
       {
@@ -510130,7 +510206,7 @@
      ]
     ],
     "nested-context-navigations-object.html": [
-     "8d63c5e3d44e5d722861d3c8fed19f9b76080d0d",
+     "1508d8829fd2695918d891a9ef7bf9d03fa285f8",
      [
       null,
       {
