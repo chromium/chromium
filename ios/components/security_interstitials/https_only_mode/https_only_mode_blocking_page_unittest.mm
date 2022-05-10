@@ -4,13 +4,16 @@
 
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_blocking_page.h"
 
+#include <set>
+
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "components/security_interstitials/core/metrics_helper.h"
-#include "ios/components/security_interstitials/https_only_mode/https_only_mode_allowlist.h"
 #include "ios/components/security_interstitials/https_only_mode/https_only_mode_controller_client.h"
+#include "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -38,9 +41,10 @@ const char kInterstitialInteractionMetric[] =
 // Creates a HttpsOnlyModeBlockingPage with a given |request_url|.
 std::unique_ptr<HttpsOnlyModeBlockingPage> CreateBlockingPage(
     web::WebState* web_state,
-    const GURL& request_url) {
+    const GURL& request_url,
+    HttpsUpgradeService* service) {
   return std::make_unique<HttpsOnlyModeBlockingPage>(
-      web_state, request_url,
+      web_state, request_url, service,
       std::make_unique<HttpsOnlyModeControllerClient>(web_state, request_url,
                                                       "en-US"));
 }
@@ -55,6 +59,22 @@ class FakeWebState : public web::FakeWebState {
 
 }  // namespace
 
+class FakeHttpsUpgradeService : public HttpsUpgradeService {
+ public:
+  bool IsHttpAllowedForHost(const std::string& host) const override {
+    return base::Contains(allowed_http_hosts_, host);
+  }
+
+  void AllowHttpForHost(const std::string& host) override {
+    allowed_http_hosts_.insert(host);
+  };
+
+  void ClearAllowlist() override { allowed_http_hosts_.clear(); }
+
+ private:
+  std::set<std::string> allowed_http_hosts_;
+};
+
 // Test fixture for HttpsOnlyModeBlockingPage.
 class HttpsOnlyModeBlockingPageTest : public PlatformTest {
  public:
@@ -62,8 +82,7 @@ class HttpsOnlyModeBlockingPageTest : public PlatformTest {
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
-    HttpsOnlyModeAllowlist::CreateForWebState(&web_state_);
-    HttpsOnlyModeAllowlist::FromWebState(&web_state_);
+    service_ = std::make_unique<FakeHttpsUpgradeService>();
   }
 
   void SendCommand(SecurityInterstitialCommand command) {
@@ -71,6 +90,8 @@ class HttpsOnlyModeBlockingPageTest : public PlatformTest {
                          /*user_is_interacting=*/true,
                          /*sender_frame=*/nullptr);
   }
+
+  HttpsUpgradeService* service() { return service_.get(); }
 
  protected:
   web::WebTaskEnvironment task_environment_{
@@ -80,21 +101,20 @@ class HttpsOnlyModeBlockingPageTest : public PlatformTest {
   GURL url_;
   std::unique_ptr<IOSSecurityInterstitialPage> page_;
   base::HistogramTester histogram_tester_;
+  std::unique_ptr<HttpsUpgradeService> service_;
 };
 
 // Tests that the blocking page handles the proceed command by updating the
 // allow list and reloading the page.
 TEST_F(HttpsOnlyModeBlockingPageTest, HandleProceedCommand) {
-  page_ = CreateBlockingPage(&web_state_, url_);
-  HttpsOnlyModeAllowlist* allow_list =
-      HttpsOnlyModeAllowlist::FromWebState(&web_state_);
-  ASSERT_FALSE(allow_list->IsHttpAllowedForHost(url_.host()));
+  page_ = CreateBlockingPage(&web_state_, url_, service());
+  ASSERT_FALSE(service()->IsHttpAllowedForHost(url_.host()));
   ASSERT_FALSE(navigation_manager_->ReloadWasCalled());
 
   // Send the proceed command.
   SendCommand(security_interstitials::CMD_PROCEED);
 
-  EXPECT_TRUE(allow_list->IsHttpAllowedForHost(url_.host()));
+  EXPECT_TRUE(service()->IsHttpAllowedForHost(url_.host()));
   EXPECT_TRUE(navigation_manager_->ReloadWasCalled());
 
   // Verify that metrics are recorded correctly.
@@ -119,7 +139,7 @@ TEST_F(HttpsOnlyModeBlockingPageTest,
   ASSERT_EQ(1, navigation_manager_->GetLastCommittedItemIndex());
   ASSERT_TRUE(navigation_manager_->CanGoBack());
 
-  page_ = CreateBlockingPage(&web_state_, url_);
+  page_ = CreateBlockingPage(&web_state_, url_, service());
 
   // Send the don't proceed command.
   SendCommand(security_interstitials::CMD_DONT_PROCEED);
@@ -144,7 +164,7 @@ TEST_F(HttpsOnlyModeBlockingPageTest,
 // back.
 TEST_F(HttpsOnlyModeBlockingPageTest,
        HandleDontProceedCommandWithoutSafeUrlClose) {
-  page_ = CreateBlockingPage(&web_state_, url_);
+  page_ = CreateBlockingPage(&web_state_, url_, service());
   ASSERT_FALSE(navigation_manager_->CanGoBack());
 
   // Send the don't proceed command.

@@ -15,6 +15,7 @@
 + (void)useFakeHTTPSForTesting:(bool)useFakeHTTPSForTesting;
 + (void)setFallbackDelayForTesting:(int)fallbackDelayInMilliseconds;
 + (BOOL)isTimerRunning;
++ (void)clearAllowlist;
 
 @end
 

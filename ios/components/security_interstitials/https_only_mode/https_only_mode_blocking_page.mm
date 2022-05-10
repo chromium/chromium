@@ -11,7 +11,7 @@
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/security_interstitials/core/https_only_mode_ui_util.h"
 #include "components/security_interstitials/core/metrics_helper.h"
-#include "ios/components/security_interstitials/https_only_mode/https_only_mode_allowlist.h"
+#include "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #include "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
 
@@ -22,11 +22,13 @@
 HttpsOnlyModeBlockingPage::HttpsOnlyModeBlockingPage(
     web::WebState* web_state,
     const GURL& request_url,
+    HttpsUpgradeService* service,
     std::unique_ptr<HttpsOnlyModeControllerClient> client)
     : security_interstitials::IOSSecurityInterstitialPage(web_state,
                                                           request_url,
                                                           client.get()),
       web_state_(web_state),
+      service_(service),
       controller_(std::move(client)) {
   DCHECK(web_state_);
   controller_->metrics_helper()->RecordUserDecision(
@@ -76,9 +78,7 @@ void HttpsOnlyModeBlockingPage::HandleCommand(
         security_interstitials::MetricsHelper::DONT_PROCEED);
     controller_->GoBack();
   } else if (command == security_interstitials::CMD_PROCEED) {
-    HttpsOnlyModeAllowlist* allowlist =
-        HttpsOnlyModeAllowlist::FromWebState(web_state());
-    allowlist->AllowHttpForHost(request_url().host());
+    service_->AllowHttpForHost(request_url().host());
 
     controller_->metrics_helper()->RecordUserDecision(
         security_interstitials::MetricsHelper::PROCEED);

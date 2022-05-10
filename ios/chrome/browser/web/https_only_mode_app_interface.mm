@@ -47,4 +47,10 @@
       ->IsTimerRunningForTesting();
 }
 
++ (void)clearAllowlist {
+  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
+  HttpsOnlyModeUpgradeTabHelper::FromWebState(web_state)
+      ->ClearAllowlistForTesting();
+}
+
 @end

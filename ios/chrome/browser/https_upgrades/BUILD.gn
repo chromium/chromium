@@ -7,9 +7,15 @@ source_set("https_upgrades") {
   sources = [
     "https_only_mode_upgrade_tab_helper.h",
     "https_only_mode_upgrade_tab_helper.mm",
+    "https_upgrade_service_factory.h",
+    "https_upgrade_service_factory.mm",
+    "https_upgrade_service_impl.h",
+    "https_upgrade_service_impl.mm",
   ]
   deps = [
     "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
     "//components/prefs:prefs",
     "//components/security_interstitials/core",
     "//ios/chrome/browser:pref_names",

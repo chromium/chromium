@@ -210,6 +210,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 - (void)tearDown {
   [ChromeEarlGrey setBoolValue:self.originalHttpsOnlyModeEnabled
                    forUserPref:prefs::kHttpsOnlyModeEnabled];
+  [HttpsOnlyModeAppInterface clearAllowlist];
 
   // Release the histogram tester.
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
@@ -516,6 +517,24 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
                 @"Unexpected histogram event recorded.");
   GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
              @"Timer is still running");
+
+  // Allowlist decisions shouldn't carry over to incognito. Open an incognito
+  // tab and try there.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:testURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:"You are seeing this warning because this "
+                                    "site does not support HTTPS"];
+  // Click through the interstitial. This should load the HTTP page.
+  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
+             @"Timer is still running");
+
+  // Reload. Since the URL is now allowlisted, this should immediately load
+  // HTTP without trying to upgrade.
+  [ChromeEarlGrey reload];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
 }
 
 // Same as testUpgrade_BadHTTPS_ProceedInterstitial_Allowlisted but uses

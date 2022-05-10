@@ -58,6 +58,8 @@ class HttpsOnlyModeUpgradeTabHelper
   void SetFallbackDelayForTesting(base::TimeDelta delay);
   // Returns true if the upgrade timer is running.
   bool IsTimerRunningForTesting() const;
+  // Clears the allowlist that contains domains allowed over HTTP.
+  void ClearAllowlistForTesting();
 
  private:
   HttpsOnlyModeUpgradeTabHelper(web::WebState* web_state,

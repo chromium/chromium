@@ -9,6 +9,11 @@
 #include "ios/components/security_interstitials/ios_security_interstitial_page.h"
 
 class GURL;
+class HttpsUpgradeService;
+
+namespace web {
+class WebState;
+}
 
 // This class is responsible for showing/hiding the interstitial page that is
 // shown on an HTTP URL in HTTPS-Only mode.
@@ -25,6 +30,7 @@ class HttpsOnlyModeBlockingPage
   HttpsOnlyModeBlockingPage(
       web::WebState* web_state,
       const GURL& request_url,
+      HttpsUpgradeService* service,
       std::unique_ptr<HttpsOnlyModeControllerClient> client);
 
  protected:
@@ -41,6 +47,7 @@ class HttpsOnlyModeBlockingPage
       web::WebFrame* sender_frame) override;
 
   web::WebState* web_state_ = nullptr;
+  HttpsUpgradeService* service_ = nullptr;
   std::unique_ptr<HttpsOnlyModeControllerClient> controller_;
 };
 

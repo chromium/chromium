@@ -11,16 +11,17 @@
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
-#import "ios/components/security_interstitials/https_only_mode/https_only_mode_allowlist.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_blocking_page.h"
 #include "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_controller_client.h"
 #include "ios/components/security_interstitials/https_only_mode/https_only_mode_error.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_error.h"
+#import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #include "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/navigation_manager.h"
@@ -102,6 +103,12 @@ bool HttpsOnlyModeUpgradeTabHelper::IsTimerRunningForTesting() const {
   return timer_.IsRunning();
 }
 
+void HttpsOnlyModeUpgradeTabHelper::ClearAllowlistForTesting() {
+  HttpsUpgradeService* service = HttpsUpgradeServiceFactory::GetForBrowserState(
+      web_state()->GetBrowserState());
+  service->ClearAllowlist();
+}
+
 bool HttpsOnlyModeUpgradeTabHelper::IsFakeHTTPSForTesting(
     const GURL& url) const {
   return url.IntPort() == https_port_for_testing_;
@@ -110,9 +117,9 @@ bool HttpsOnlyModeUpgradeTabHelper::IsFakeHTTPSForTesting(
 bool HttpsOnlyModeUpgradeTabHelper::IsHttpAllowedForUrl(const GURL& url) const {
   // TODO(crbug.com/1302509): Allow HTTP for IP addresses when not running
   // tests. If the URL is in the allowlist, don't show any warning.
-  HttpsOnlyModeAllowlist* allow_list =
-      HttpsOnlyModeAllowlist::FromWebState(web_state());
-  return allow_list->IsHttpAllowedForHost(url.host());
+  HttpsUpgradeService* service = HttpsUpgradeServiceFactory::GetForBrowserState(
+      web_state()->GetBrowserState());
+  return service->IsHttpAllowedForHost(url.host());
 }
 
 // static

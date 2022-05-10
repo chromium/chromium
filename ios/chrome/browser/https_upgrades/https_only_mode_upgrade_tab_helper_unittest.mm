@@ -9,12 +9,13 @@
 #include "base/test/task_environment.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/prerender/fake_prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
-#include "ios/components/security_interstitials/https_only_mode/https_only_mode_allowlist.h"
 #include "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
+#include "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -30,12 +31,36 @@ std::unique_ptr<KeyedService> BuildFakePrerenderService(
   return std::make_unique<FakePrerenderService>();
 }
 
+class FakeHttpsUpgradeService : public HttpsUpgradeService {
+ public:
+  bool IsHttpAllowedForHost(const std::string& host) const override {
+    return base::Contains(allowed_http_hosts_, host);
+  }
+
+  void AllowHttpForHost(const std::string& host) override {
+    allowed_http_hosts_.insert(host);
+  };
+
+  void ClearAllowlist() override { allowed_http_hosts_.clear(); }
+
+ private:
+  std::set<std::string> allowed_http_hosts_;
+};
+
+std::unique_ptr<KeyedService> BuildFakeHttpsUpgradeService(
+    web::BrowserState* context) {
+  return std::make_unique<FakeHttpsUpgradeService>();
+}
+
 class HttpsOnlyModeUpgradeTabHelperTest : public PlatformTest {
  protected:
   HttpsOnlyModeUpgradeTabHelperTest() {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(PrerenderServiceFactory::GetInstance(),
                               base::BindRepeating(&BuildFakePrerenderService));
+    builder.AddTestingFactory(
+        HttpsUpgradeServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeHttpsUpgradeService));
 
     browser_state_ = builder.Build();
     web_state_.SetBrowserState(browser_state_.get());
@@ -43,10 +68,15 @@ class HttpsOnlyModeUpgradeTabHelperTest : public PlatformTest {
     HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
         &web_state_, browser_state_->GetPrefs());
     HttpsOnlyModeContainer::CreateForWebState(&web_state_);
-    HttpsOnlyModeAllowlist::CreateForWebState(&web_state_);
-    allowlist_ = HttpsOnlyModeAllowlist::FromWebState(&web_state_);
 
     browser_state_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
+  }
+
+  void TearDown() override {
+    HttpsUpgradeService* service =
+        HttpsUpgradeServiceFactory::GetForBrowserState(
+            web_state_.GetBrowserState());
+    service->ClearAllowlist();
   }
 
   // Helper function that calls into WebState::ShouldAllowResponse with the
@@ -75,13 +105,10 @@ class HttpsOnlyModeUpgradeTabHelperTest : public PlatformTest {
     return policy_decision;
   }
 
-  HttpsOnlyModeAllowlist* allowlist() { return allowlist_; }
-
   base::HistogramTester histogram_tester_;
   web::FakeWebState web_state_;
 
  private:
-  HttpsOnlyModeAllowlist* allowlist_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
   base::test::TaskEnvironment task_environment_;
 };
@@ -116,7 +143,9 @@ TEST_F(HttpsOnlyModeUpgradeTabHelperTest, ShouldAllowResponse) {
                   .ShouldAllowNavigation());
 
   // Allowlisted hosts shouldn't be blocked.
-  allowlist()->AllowHttpForHost("example.com");
+  HttpsUpgradeService* service = HttpsUpgradeServiceFactory::GetForBrowserState(
+      web_state_.GetBrowserState());
+  service->AllowHttpForHost("example.com");
   EXPECT_TRUE(ShouldAllowResponseUrl(http_url, /*main_frame=*/true)
                   .ShouldAllowNavigation());
 }

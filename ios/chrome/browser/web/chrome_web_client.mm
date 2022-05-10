@@ -31,6 +31,7 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/follow/follow_java_script_feature.h"
+#import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
 #include "ios/chrome/browser/ios_chrome_main_parts.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_java_script_feature.h"
 #include "ios/chrome/browser/ntp/browser_policy_new_tab_page_rewriter.h"
@@ -60,6 +61,7 @@
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_controller_client.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_error.h"
+#import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_blocking_page.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
@@ -162,11 +164,13 @@ NSString* GetHttpsOnlyModeErrorPageHtml(web::WebState* web_state,
   // Fetch the HTTP URL from the container.
   HttpsOnlyModeContainer* container =
       HttpsOnlyModeContainer::FromWebState(web_state);
+  HttpsUpgradeService* service = HttpsUpgradeServiceFactory::GetForBrowserState(
+      web_state->GetBrowserState());
 
   // Construct the blocking page and associate it with the WebState.
   std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage> page =
       std::make_unique<HttpsOnlyModeBlockingPage>(
-          web_state, container->http_url(),
+          web_state, container->http_url(), service,
           std::make_unique<HttpsOnlyModeControllerClient>(
               web_state, container->http_url(),
               GetApplicationContext()->GetApplicationLocale()));

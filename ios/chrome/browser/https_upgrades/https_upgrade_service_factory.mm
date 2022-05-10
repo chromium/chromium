@@ -1,0 +1,48 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
+
+#include "base/no_destructor.h"
+#include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#include "ios/web/public/browser_state.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+// static
+HttpsUpgradeService* HttpsUpgradeServiceFactory::GetForBrowserState(
+    web::BrowserState* browser_state) {
+  return static_cast<HttpsUpgradeService*>(
+      GetInstance()->GetServiceForBrowserState(browser_state, true));
+}
+
+// static
+HttpsUpgradeServiceFactory* HttpsUpgradeServiceFactory::GetInstance() {
+  static base::NoDestructor<HttpsUpgradeServiceFactory> instance;
+  return instance.get();
+}
+
+HttpsUpgradeServiceFactory::HttpsUpgradeServiceFactory()
+    : BrowserStateKeyedServiceFactory(
+          "HttpsUpgradeService",
+          BrowserStateDependencyManager::GetInstance()) {}
+
+HttpsUpgradeServiceFactory::~HttpsUpgradeServiceFactory() {}
+
+std::unique_ptr<KeyedService>
+HttpsUpgradeServiceFactory::BuildServiceInstanceFor(
+    web::BrowserState* context) const {
+  return std::make_unique<HttpsUpgradeServiceImpl>(context);
+}
+
+web::BrowserState* HttpsUpgradeServiceFactory::GetBrowserStateToUse(
+    web::BrowserState* context) const {
+  return GetBrowserStateOwnInstanceInIncognito(context);
+}
+
+bool HttpsUpgradeServiceFactory::ServiceIsNULLWhileTesting() const {
+  return false;
+}
