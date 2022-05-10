@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 
 #include "base/run_loop.h"
 #include "chrome/browser/browser_process.h"
@@ -133,10 +132,10 @@ IN_PROC_BROWSER_TEST_F(ApplicationLifetimeTest, AttemptRelaunchRelaunchesOs) {
   auto* fake_power_manager_client = chromeos::FakePowerManagerClient::Get();
   EXPECT_GE(fake_power_manager_client->num_request_restart_calls(), 1);
 
-  // No restart flags set.
+  // Restart flags are set.
   PrefService* pref_service = g_browser_process->local_state();
-  EXPECT_FALSE(pref_service->GetBoolean(prefs::kWasRestarted));
-  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsRestarting());
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kWasRestarted));
+  EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsRestarting());
 
   WaitForBrowserToClose();
 }
@@ -158,16 +157,6 @@ IN_PROC_BROWSER_TEST_F(ApplicationLifetimeTest,
   PrefService* pref_service = g_browser_process->local_state();
   EXPECT_FALSE(pref_service->GetBoolean(prefs::kWasRestarted));
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsRestarting());
-
-  WaitForBrowserToClose();
-}
-
-IN_PROC_BROWSER_TEST_F(ApplicationLifetimeTest, RelaunchForUpdate) {
-  FakePendingUpdate();
-  RelaunchForUpdate();
-
-  // Reboot requested via update engine client.
-  EXPECT_TRUE(RequestedRebootAfterUpdate());
 
   WaitForBrowserToClose();
 }
