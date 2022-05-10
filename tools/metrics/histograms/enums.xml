@@ -85951,6 +85951,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="0" label="Tap on side search toolbar button"/>
 </enum>
 
+<enum name="SideSearchPageActionLabelVisibility">
+  <int value="0" label="Label not visible"/>
+  <int value="1" label="Label visible"/>
+</enum>
+
 <enum name="SignedExchangeLoadResult">
   <int value="0" label="Loaded successfully"/>
   <int value="1" label="Served from non-secure origin"/>

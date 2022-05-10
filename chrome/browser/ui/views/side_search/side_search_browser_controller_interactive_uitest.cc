@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
+#include "chrome/browser/ui/views/side_search/side_search_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/webui_url_constants.h"
@@ -744,6 +745,57 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
   NotifyButtonClick(browser());
   EXPECT_TRUE(side_panel->GetVisible());
   EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 0));
+}
+
+// Only test the side search icon view chip in the DSE configuration.
+using SideSearchIconViewTest = SideSearchBrowserControllerTest;
+INSTANTIATE_TEST_SUITE_P(All, SideSearchIconViewTest, testing::Values(true));
+
+// Tests that metrics correctly capture whether the label was visible when the
+// entrypoint was toggled.
+IN_PROC_BROWSER_TEST_P(SideSearchIconViewTest,
+                       LabelVisibilityMetricsCorrectlyEmittedWhenToggled) {
+  auto* button_view = GetSidePanelButtonFor(browser());
+  ASSERT_NE(nullptr, button_view);
+  auto* icon_view = views::AsViewClass<SideSearchIconView>(button_view);
+
+  // Get the browser into a state where the icon view is visible.
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+  ASSERT_FALSE(icon_view->GetVisible());
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+  EXPECT_TRUE(icon_view->GetVisible());
+
+  // Show the icon's label and toggle the side panel. It should correctly log
+  // being shown while the label was visible.
+  EXPECT_TRUE(icon_view->GetVisible());
+  icon_view->SetLabelVisibilityForTesting(true);
+  NotifyButtonClick(browser());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+  histogram_tester_.ExpectBucketCount(
+      "SideSearch.PageActionIcon.LabelVisibleWhenToggled",
+      SideSearchPageActionLabelVisibility::kVisible, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SideSearch.PageActionIcon.LabelVisibleWhenToggled",
+      SideSearchPageActionLabelVisibility::kNotVisible, 0);
+
+  // Close the side panel.
+  NotifyCloseButtonClick(browser());
+  EXPECT_TRUE(icon_view->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  // Hide the icon's label and toggle the side panel. It should correctly log
+  // being shown while the label was hidden.
+  EXPECT_TRUE(icon_view->GetVisible());
+  icon_view->SetLabelVisibilityForTesting(false);
+  NotifyButtonClick(browser());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+  histogram_tester_.ExpectBucketCount(
+      "SideSearch.PageActionIcon.LabelVisibleWhenToggled",
+      SideSearchPageActionLabelVisibility::kVisible, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SideSearch.PageActionIcon.LabelVisibleWhenToggled",
+      SideSearchPageActionLabelVisibility::kNotVisible, 1);
 }
 
 // Fixture for testing side panel clobbering behavior with global panels.

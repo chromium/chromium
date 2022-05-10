@@ -11,6 +11,12 @@ void RecordSideSearchAvailabilityChanged(
   base::UmaHistogramEnumeration("SideSearch.AvailabilityChanged", type);
 }
 
+void RecordSideSearchPageActionLabelVisibilityOnToggle(
+    SideSearchPageActionLabelVisibility label_visibility) {
+  base::UmaHistogramEnumeration(
+      "SideSearch.PageActionIcon.LabelVisibleWhenToggled", label_visibility);
+}
+
 void RecordSideSearchOpenAction(SideSearchOpenActionType action) {
   base::UmaHistogramEnumeration("SideSearch.OpenAction", action);
 }

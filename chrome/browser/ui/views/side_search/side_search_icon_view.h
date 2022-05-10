@@ -27,6 +27,8 @@ class SideSearchIconView : public PageActionIconView {
   SideSearchIconView& operator=(const SideSearchIconView&) = delete;
   ~SideSearchIconView() override;
 
+  void SetLabelVisibilityForTesting(bool visible);
+
  protected:
   // PageActionIconView:
   void UpdateImpl() override;

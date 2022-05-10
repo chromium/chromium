@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
+#include "chrome/browser/ui/side_search/side_search_metrics.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
@@ -41,6 +42,10 @@ SideSearchIconView::SideSearchIconView(
 }
 
 SideSearchIconView::~SideSearchIconView() = default;
+
+void SideSearchIconView::SetLabelVisibilityForTesting(bool visible) {
+  label()->SetVisible(visible);
+}
 
 void SideSearchIconView::UpdateImpl() {
   content::WebContents* active_contents = GetWebContents();
@@ -78,6 +83,9 @@ void SideSearchIconView::UpdateImpl() {
 void SideSearchIconView::OnExecuting(PageActionIconView::ExecuteSource source) {
   auto* side_search_browser_controller =
       BrowserView::GetBrowserViewForBrowser(browser_)->side_search_controller();
+  RecordSideSearchPageActionLabelVisibilityOnToggle(
+      label()->GetVisible() ? SideSearchPageActionLabelVisibility::kVisible
+                            : SideSearchPageActionLabelVisibility::kNotVisible);
   side_search_browser_controller->ToggleSidePanel();
 }
 

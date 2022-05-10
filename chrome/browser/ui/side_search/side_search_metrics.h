@@ -14,6 +14,12 @@ enum class SideSearchAvailabilityChangeType {
   kMaxValue = kBecomeUnavailable
 };
 
+enum class SideSearchPageActionLabelVisibility {
+  kNotVisible = 0,
+  kVisible = 1,
+  kMaxValue = kVisible
+};
+
 enum class SideSearchOpenActionType {
   kTapOnSideSearchToolbarButton = 0,
   kMaxValue = kTapOnSideSearchToolbarButton
@@ -33,6 +39,8 @@ enum class SideSearchNavigationType {
 // End of enums for histograms.
 
 void RecordSideSearchAvailabilityChanged(SideSearchAvailabilityChangeType type);
+void RecordSideSearchPageActionLabelVisibilityOnToggle(
+    SideSearchPageActionLabelVisibility label_visibility);
 void RecordSideSearchOpenAction(SideSearchOpenActionType action);
 void RecordSideSearchCloseAction(SideSearchCloseActionType action);
 void RecordSideSearchNavigation(SideSearchNavigationType type);
