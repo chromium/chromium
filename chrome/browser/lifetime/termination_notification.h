@@ -23,17 +23,8 @@ void NotifyAppTerminating();
 
 // Send out notifications.
 // For ChromeOS, also request session manager to end the session.
-// |reboot_policy| is used to signal whether or not a reboot should be forced.
-// By default, the functions only reboot the system if an update is available.
-// When a component flash update is present, but not a system update, the
-// kForceReboot flag is passed.
-enum class RebootPolicy { kForceReboot, kOptionalReboot };
+// The function reboots the system if an update is available.
 void NotifyAndTerminate(bool fast_path);
-void NotifyAndTerminate(bool fast_path, RebootPolicy reboot_policy);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-bool UpdatePending();
-#endif
 
 }  // namespace browser_shutdown
 

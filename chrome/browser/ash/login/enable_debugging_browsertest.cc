@@ -263,6 +263,13 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowAndCancelRemoveProtection) {
 // Show remove protection, click on [Remove protection] button and wait for
 // reboot.
 IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowAndRemoveProtection) {
+  // Disarm faked reboot, otherwise Chrome just stops and there's nothing to
+  // verify.
+  chromeos::FakePowerManagerClient* fake_power_manager_client =
+      chromeos::FakePowerManagerClient::Get();
+  ASSERT_NE(fake_power_manager_client, nullptr);
+  fake_power_manager_client->set_restart_callback(base::DoNothing());
+
   ShowRemoveProtectionScreen();
   debug_daemon_client_->ResetWait();
   test::OobeJS().TapOnPath(kRemoveProtectionButton);
@@ -273,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowAndRemoveProtection) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(debug_daemon_client_->num_remove_protection(), 1);
   EXPECT_EQ(debug_daemon_client_->num_enable_debugging_features(), 0);
-  EXPECT_EQ(FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
+  EXPECT_EQ(fake_power_manager_client->num_request_restart_calls(), 1);
 }
 
 // Show setup screen. Click on [Enable] button. Wait until done screen is shown.

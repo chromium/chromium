@@ -9,6 +9,7 @@
 #include "apps/launcher.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -72,6 +73,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -1339,53 +1341,48 @@ IN_PROC_BROWSER_TEST_F(PlatformAppIncognitoBrowserTest,
 
 class RestartDeviceTest : public PlatformAppBrowserTest {
  public:
-  RestartDeviceTest() = default;
-  RestartDeviceTest(const RestartDeviceTest&) = delete;
-  RestartDeviceTest& operator=(const RestartDeviceTest&) = delete;
-  ~RestartDeviceTest() override = default;
-
-  // PlatformAppBrowserTest overrides
-  void SetUpInProcessBrowserTestFixture() override {
-    PlatformAppBrowserTest::SetUpInProcessBrowserTestFixture();
-  }
-
   void SetUpOnMainThread() override {
     PlatformAppBrowserTest::SetUpOnMainThread();
 
-    mock_user_manager_ = new ash::MockUserManager;
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(mock_user_manager_));
-
-    EXPECT_CALL(*mock_user_manager_, IsUserLoggedIn())
-        .WillRepeatedly(testing::Return(true));
-    EXPECT_CALL(*mock_user_manager_, IsLoggedInAsKioskApp())
-        .WillRepeatedly(testing::Return(true));
-    EXPECT_CALL(*mock_user_manager_, GetLoggedInUsers())
-        .WillRepeatedly(testing::Invoke(mock_user_manager_,
-                                        &ash::MockUserManager::GetUsers));
+    // Disable "faked" shutdown of Chrome if the OS was supposed to restart.
+    // The fakes this test injects would cause it to crash.
+    chromeos::FakePowerManagerClient* fake_power_manager_client =
+        chromeos::FakePowerManagerClient::Get();
+    ASSERT_NE(nullptr, fake_power_manager_client);
+    fake_power_manager_client->set_restart_callback(base::DoNothing());
   }
 
   void TearDownOnMainThread() override {
-    user_manager_enabler_.reset();
     PlatformAppBrowserTest::TearDownOnMainThread();
+    user_manager_enabler_.reset();
+    fake_user_manager_ = nullptr;
   }
 
-  void TearDownInProcessBrowserTestFixture() override {
-    PlatformAppBrowserTest::TearDownInProcessBrowserTestFixture();
-  }
-
-  int num_request_restart_calls() const {
+ protected:
+  static int num_request_restart_calls() {
     return chromeos::FakePowerManagerClient::Get()->num_request_restart_calls();
   }
 
+  void EnterKioskSession() {
+    fake_user_manager_ = new ash::FakeChromeUserManager();
+    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
+        base::WrapUnique(fake_user_manager_));
+
+    const AccountId kiosk_account_id(
+        AccountId::FromUserEmail("kiosk@foobar.com"));
+    fake_user_manager_->AddKioskAppUser(kiosk_account_id);
+    fake_user_manager_->LoginUser(kiosk_account_id);
+  }
+
  private:
-  ash::MockUserManager* mock_user_manager_ = nullptr;
+  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 };
 
 // Tests that chrome.runtime.restart would request device restart in
 // ChromeOS kiosk mode.
 IN_PROC_BROWSER_TEST_F(RestartDeviceTest, Restart) {
+  EnterKioskSession();
   ASSERT_EQ(0, num_request_restart_calls());
 
   ExtensionTestMessageListener launched_listener("Launched", true);

@@ -200,6 +200,7 @@
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "chromeos/dbus/constants/cryptohome_key_delegate_constants.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
@@ -292,11 +293,34 @@ void ApplySigninProfileModifications(Profile* profile) {
   prefs->SetBoolean(::prefs::kSafeBrowsingEnabled, false);
 }
 
-void FakeSessionStopped() {
-  // Session manager would ask Chrome to exit. Fake this behavior.
+#if !defined(USE_REAL_DBUS_CLIENTS)
+chromeos::FakeSessionManagerClient* FakeSessionManagerClient() {
+  chromeos::FakeSessionManagerClient* fake_session_manager_client =
+      chromeos::FakeSessionManagerClient::Get();
+  DCHECK(fake_session_manager_client);
+  return fake_session_manager_client;
+}
+
+chromeos::FakePowerManagerClient* FakePowerManagerClient() {
+  chromeos::FakePowerManagerClient* fake_power_manager_client =
+      chromeos::FakePowerManagerClient::Get();
+  DCHECK(fake_power_manager_client);
+  return fake_power_manager_client;
+}
+
+void FakeShutdownSignal() {
+  // Receiving SIGTERM would result in `ExitIgnoreUnloadHandlers`.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&chrome::ExitIgnoreUnloadHandlers));
 }
+
+void InstallFakeShutdownCalls() {
+  FakeSessionManagerClient()->set_stop_session_callback(
+      base::BindOnce(&FakeShutdownSignal));
+  FakePowerManagerClient()->set_restart_callback(
+      base::BindOnce(&FakeShutdownSignal));
+}
+#endif  // !defined(USE_REAL_DBUS_CLIENTS)
 
 }  // namespace
 
@@ -617,7 +641,7 @@ int ChromeBrowserMainPartsAsh::PreEarlyInitialization() {
   CHECK(DBusThreadManager::IsInitialized());
 
 #if !defined(USE_REAL_DBUS_CLIENTS)
-  // USE_REAL_DBUS clients may be undefined even if the device is using reals
+  // USE_REAL_DBUS clients may be undefined even if the device is using real
   // dbus clients.
   if (!base::SysInfo::IsRunningOnChromeOS()) {
     if (command_line->HasSwitch(switches::kFakeDriveFsLauncherChrootPath) &&
@@ -633,11 +657,10 @@ int ChromeBrowserMainPartsAsh::PreEarlyInitialization() {
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
     FakeUserDataAuthClient::Get()->set_user_data_dir(user_data_dir);
 
-    chromeos::FakeSessionManagerClient* fake_session_manager_client =
-        chromeos::FakeSessionManagerClient::Get();
-    DCHECK(fake_session_manager_client);
-    fake_session_manager_client->set_stop_session_callback(
-        base::BindOnce(&FakeSessionStopped));
+    // If we're not running on a device, i.e. either in a test or in ash Chrome
+    // on linux, fake dbus calls that would result in a shutdown of Chrome by
+    // the system.
+    InstallFakeShutdownCalls();
   }
 #endif  // !defined(USE_REAL_DBUS_CLIENTS)
 
