@@ -62,6 +62,7 @@ struct MEDIA_EXPORT HEVCDecoderConfigurationRecord : Box {
   std::vector<HVCCNALArray> arrays;
 
   VideoCodecProfile GetVideoProfile() const;
+  VideoColorSpace GetColorSpace();
 
  private:
   bool ParseInternal(BufferReader* reader, MediaLog* media_log);

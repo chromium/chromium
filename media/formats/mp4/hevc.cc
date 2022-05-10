@@ -15,10 +15,13 @@
 #include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_reader.h"
-#include "media/video/h265_nalu_parser.h"
+#include "media/video/h265_parser.h"
 
 namespace media {
 namespace mp4 {
+
+static constexpr uint8_t kAnnexBStartCode[] = {0, 0, 0, 1};
+static constexpr int kAnnexBStartCodeSize = 4;
 
 HEVCDecoderConfigurationRecord::HEVCDecoderConfigurationRecord()
     : configurationVersion(0),
@@ -151,8 +154,44 @@ VideoCodecProfile HEVCDecoderConfigurationRecord::GetVideoProfile() const {
   return VIDEO_CODEC_PROFILE_UNKNOWN;
 }
 
-static const uint8_t kAnnexBStartCode[] = {0, 0, 0, 1};
-static const int kAnnexBStartCodeSize = 4;
+VideoColorSpace HEVCDecoderConfigurationRecord::GetColorSpace() {
+  if (!arrays.size()) {
+    DVLOG(1) << "HVCCNALArray not found, fallback to default colorspace";
+    return VideoColorSpace();
+  }
+
+  std::vector<uint8_t> param_sets;
+  if (!HEVC::ConvertConfigToAnnexB(*this, &param_sets))
+    return VideoColorSpace();
+
+  H265Parser parser;
+  H265NALU nalu;
+  parser.SetStream(param_sets.data(), param_sets.size());
+  while (true) {
+    H265Parser::Result result = parser.AdvanceToNextNALU(&nalu);
+
+    if (result != H265Parser::kOk)
+      return VideoColorSpace();
+
+    switch (nalu.nal_unit_type) {
+      case H265NALU::SPS_NUT: {
+        int sps_id = -1;
+        result = parser.ParseSPS(&sps_id);
+        if (result != H265Parser::kOk) {
+          DVLOG(1) << "Could not parse SPS, fallback to default colorspace";
+          return VideoColorSpace();
+        }
+
+        const H265SPS* sps = parser.GetSPS(sps_id);
+        DCHECK(sps);
+        return sps->GetColorSpace();
+      }
+      default:
+        break;
+    }
+  }
+  NOTREACHED();
+}
 
 // static
 bool HEVC::InsertParamSetsAnnexB(

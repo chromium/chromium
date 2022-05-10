@@ -1126,6 +1126,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       RCHECK(reader->ReadChild(hevcConfig.get()));
       video_codec = VideoCodec::kHEVC;
       video_codec_profile = hevcConfig->GetVideoProfile();
+      video_color_space = hevcConfig->GetColorSpace();
       frame_bitstream_converter =
           base::MakeRefCounted<HEVCBitstreamConverter>(std::move(hevcConfig));
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
@@ -1166,6 +1167,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       std::unique_ptr<HEVCDecoderConfigurationRecord> hevcConfig(
           new HEVCDecoderConfigurationRecord());
       RCHECK(reader->ReadChild(hevcConfig.get()));
+      video_color_space = hevcConfig->GetColorSpace();
       frame_bitstream_converter =
           base::MakeRefCounted<HEVCBitstreamConverter>(std::move(hevcConfig));
       DVLOG(2) << __func__ << " reading DolbyVisionConfiguration (dvcC/dvvC)";
