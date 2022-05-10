@@ -16,59 +16,53 @@ export class BrailleDisplayManager {
    *     of the current translator to use.
    */
   constructor(translatorManager) {
-    /**
-     * @type {!BrailleTranslatorManager}
-     * @private
-     */
-    this.translatorManager_ = translatorManager;
-    /**
-     * @type {!NavBraille}
-     * @private
-     */
+    /** @private {number|undefined} */
+    this.blinkerId_;
+
+    /** @private {!NavBraille} */
     this.content_ = new NavBraille({});
-    /**
-     * @type {!ExpandingBrailleTranslator.ExpansionType} valueExpansion
-     * @private
-     */
-    this.expansionType_ = ExpandingBrailleTranslator.ExpansionType.SELECTION;
-    /**
-     * @type {PanStrategy}
-     * @private
-     */
-    this.panStrategy_ = new PanStrategy();
-    /**
-     * @type {function(!BrailleKeyEvent, !NavBraille)}
-     * @private
-     */
+
+    /** @private {function(!BrailleKeyEvent, !NavBraille)} */
     this.commandListener_ = function() {};
+
     /**
      * Current display state to show in the Virtual Braille Captions display.
      * This is different from realDisplayState_ if the braille captions feature
      * is enabled and there is no hardware display connected.  Otherwise, it is
      * the same object as realDisplayState_.
-     * @type {!BrailleDisplayState}
-     * @private
+     * @private {!BrailleDisplayState}
      */
     this.displayState_ = {
       available: false,
       textRowCount: 0,
       textColumnCount: 0
     };
+
+    /** @private {!ExpandingBrailleTranslator.ExpansionType} valueExpansion */
+    this.expansionType_ = ExpandingBrailleTranslator.ExpansionType.SELECTION;
+
+    /** @private {PanStrategy} */
+    this.panStrategy_ = new PanStrategy();
+
     /**
      * State reported from the chrome api, reflecting a real hardware
      * display.
-     * @type {!BrailleDisplayState}
-     * @private
+     * @private {!BrailleDisplayState}
      */
     this.realDisplayState_ = this.displayState_;
-    /** @private {number|undefined} */
-    this.blinkerId_;
 
-    translatorManager.addChangeListener(function() {
-      this.translateContent_(this.content_, this.expansionType_);
-    }.bind(this));
+    /** @private {!BrailleTranslatorManager} */
+    this.translatorManager_ = translatorManager;
 
-    chrome.storage.onChanged.addListener(function(changes, area) {
+    this.init_();
+  }
+
+  /** @private */
+  init_() {
+    this.translatorManager_.addChangeListener(
+        () => this.translateContent_(this.content_, this.expansionType_));
+
+    chrome.storage.onChanged.addListener((changes, area) => {
       if (area === 'local' && 'brailleWordWrap' in changes) {
         this.updatePanStrategy_(changes.brailleWordWrap.newValue);
       }
@@ -77,19 +71,20 @@ export class BrailleDisplayManager {
            'virtualBrailleColumns' in changes)) {
         this.onCaptionsStateChanged_();
       }
-    }.bind(this));
-    chrome.storage.local.get({brailleWordWrap: true}, function(items) {
-      this.updatePanStrategy_(items.brailleWordWrap);
-    }.bind(this));
+    });
+    chrome.storage.local.get(
+        {brailleWordWrap: true},
+        items => this.updatePanStrategy_(items.brailleWordWrap));
 
-    BrailleCaptionsBackground.init(this.onCaptionsStateChanged_.bind(this));
+    BrailleCaptionsBackground.init(() => this.onCaptionsStateChanged_());
     if (goog.isDef(chrome.brailleDisplayPrivate)) {
-      const onDisplayStateChanged = this.refreshDisplayState_.bind(this);
+      const onDisplayStateChanged = (newState) =>
+          this.refreshDisplayState_(newState);
       chrome.brailleDisplayPrivate.getDisplayState(onDisplayStateChanged);
       chrome.brailleDisplayPrivate.onDisplayStateChanged.addListener(
           onDisplayStateChanged);
       chrome.brailleDisplayPrivate.onKeyEvent.addListener(
-          this.onKeyEvent_.bind(this));
+          (event) => this.onKeyEvent_(event));
     } else {
       // Get the initial captions state since we won't refresh the display
       // state in an API callback in this case.
@@ -131,7 +126,7 @@ export class BrailleDisplayManager {
     const imageDataUrl = imageUrl;
     const imgElement = document.createElement('img');
     imgElement.src = imageDataUrl;
-    imgElement.onload = function() {
+    imgElement.onload = () => {
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
       canvas.width = columns * cellWidth;
@@ -189,7 +184,7 @@ export class BrailleDisplayManager {
       if (BrailleCaptionsBackground.isEnabled()) {
         BrailleCaptionsBackground.setImageContent(brailleBuf, rows, columns);
       }
-    }.bind(this);
+    };
   }
 
   /**
@@ -223,7 +218,7 @@ export class BrailleDisplayManager {
   refreshDisplayState_(newState) {
     const oldColumnCount = this.displayState_.textColumnCount || 0;
     const oldRowCount = this.displayState_.textRowCount || 0;
-    const processDisplayState = function(displayState) {
+    const processDisplayState = displayState => {
       this.displayState_ = displayState;
       const newColumnCount = displayState.textColumnCount || 0;
       const newRowCount = displayState.textRowCount || 0;
@@ -232,7 +227,7 @@ export class BrailleDisplayManager {
         this.panStrategy_.setDisplaySize(newRowCount, newColumnCount);
       }
       this.refresh_();
-    }.bind(this);
+    };
     this.realDisplayState_ = {
       available: newState.available,
       textRowCount: newState.textRowCount || 0,
@@ -280,10 +275,10 @@ export class BrailleDisplayManager {
     }
 
     let showCursor = false;
-    this.blinkerId_ = window.setInterval(function() {
+    this.blinkerId_ = window.setInterval(() => {
       this.refreshInternal_(showCursor);
       showCursor = !showCursor;
-    }.bind(this), BrailleDisplayManager.CURSOR_BLINK_TIME_MS);
+    }, BrailleDisplayManager.CURSOR_BLINK_TIME_MS);
   }
 
   /**
@@ -317,8 +312,7 @@ export class BrailleDisplayManager {
    * @private
    */
   translateContent_(newContent, newExpansionType) {
-    const writeTranslatedContent = function(
-                                       cells, textToBraille, brailleToText) {
+    const writeTranslatedContent = (cells, textToBraille, brailleToText) => {
       this.content_ = newContent;
       this.expansionType_ = newExpansionType;
       const startIndex = this.content_.startIndex;
@@ -357,7 +351,7 @@ export class BrailleDisplayManager {
           this.content_.text.toString(), cells, brailleToText, targetPosition);
 
       this.refresh_();
-    }.bind(this);
+    };
 
     const translator = this.translatorManager_.getExpandingTranslator();
     if (!translator) {
