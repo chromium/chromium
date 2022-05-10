@@ -6,6 +6,7 @@ from optparse import OptionParser
 from selenium import webdriver
 
 import json
+import selenium
 import sys
 import time
 
@@ -37,8 +38,17 @@ class BrowserBench(object):
     if optargs.browser == 'chrome':
       return BrowserBench._CreateChromeDriver(optargs)
     elif optargs.browser == 'safari':
-      return webdriver.Safari(executable_path=optargs.executable
-                              ) if optargs.executable else webdriver.Safari()
+      for i in range(0, 10):
+        try:
+          return webdriver.Safari(
+              executable_path=optargs.executable
+          ) if optargs.executable else webdriver.Safari()
+        except selenium.common.exceptions.SessionNotCreatedException as e:
+          print('Connecting to Safari failed, will try again ', e)
+          time.sleep(5)
+      print('Failed to connect to Safari, this likely means Safari is running '
+            ' something else')
+      return None
     else:
       return None
 
