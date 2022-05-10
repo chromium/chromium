@@ -132,7 +132,7 @@ static bool InitMediaCodec() {
 bool IsThereGoodMediaCodecFor(VideoCodec codec) {
   switch (codec) {
     case VideoCodec::kH264:
-      if (!MediaCodecUtil::IsH264EncoderAvailable(true))
+      if (!MediaCodecUtil::IsH264EncoderAvailable())
         return false;
       break;
     case VideoCodec::kVP8:

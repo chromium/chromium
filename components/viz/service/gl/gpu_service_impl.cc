@@ -299,10 +299,8 @@ void GetVideoCapabilities(const gpu::GpuPreferences& gpu_preferences,
   }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (media::MediaCodecUtil::IsH264EncoderAvailable(/*use_codec_list*/ false)) {
-    vea_profile.profile = gpu::H264PROFILE_BASELINE;
-    encoding_profiles.push_back(vea_profile);
-  }
+  vea_profile.profile = gpu::H264PROFILE_BASELINE;
+  encoding_profiles.push_back(vea_profile);
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
   // Note: Since Android doesn't have to support PPAPI/Flash, we have not

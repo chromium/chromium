@@ -309,12 +309,8 @@ bool MediaCodecUtil::CanDecode(AudioCodec codec) {
 }
 
 // static
-bool MediaCodecUtil::IsH264EncoderAvailable(bool use_codec_list) {
-  if (use_codec_list)
-    return IsEncoderSupportedByDevice(kAvcMimeType);
-
-  // Assume support since Chrome only supports Marshmallow+.
-  return true;
+bool MediaCodecUtil::IsH264EncoderAvailable() {
+  return IsEncoderSupportedByDevice(kAvcMimeType);
 }
 
 // static
