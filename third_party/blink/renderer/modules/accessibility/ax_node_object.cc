@@ -3268,7 +3268,7 @@ String AXNodeObject::TextAlternative(
   // points to itself. The easiest way to check this is by testing whether this
   // node has already been visited.
   if (recursive && !visited.Contains(this)) {
-    String value_for_name = GetValueContributionToName();
+    String value_for_name = GetValueContributionToName(visited);
     if (!value_for_name.IsNull())
       return value_for_name;
   }
@@ -5743,7 +5743,7 @@ String AXNodeObject::PlaceholderFromNativeAttribute() const {
   return ToTextControl(node)->StrippedPlaceholder();
 }
 
-String AXNodeObject::GetValueContributionToName() const {
+String AXNodeObject::GetValueContributionToName(AXObjectSet& visited) const {
   if (IsTextField())
     return SlowGetValueForControlIncludingContentEditable();
 
@@ -5764,9 +5764,11 @@ String AXNodeObject::GetValueContributionToName() const {
     AXObjectVector selected_options;
     SelectedOptions(selected_options);
     for (const auto& child : selected_options) {
-      if (accumulated_text.length())
-        accumulated_text.Append(" ");
-      accumulated_text.Append(child->ComputedName());
+      if (visited.insert(child).is_new_entry) {
+        if (accumulated_text.length())
+          accumulated_text.Append(" ");
+        accumulated_text.Append(child->ComputedName());
+      }
     }
     return accumulated_text.ToString();
   }

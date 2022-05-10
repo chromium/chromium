@@ -1,0 +1,15 @@
+<!--
+  Issue 1322085: calculating accessible name caused loop and page to crash
+-->
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<label for="id-28-1">How often?</label>
+<select name="totalIncome" id="id-28-1" required="">
+  <option value="" aria-labelledby="id-28-1"></option>
+  <option value="Week" aria-labelledby="id-28-1">Week</option>
+  <option value="Month" aria-labelledby="id-28-1">Month</option>
+  <option value="Year" aria-labelledby="id-28-1">Year</option>
+</select>
+</body>
+</html>
