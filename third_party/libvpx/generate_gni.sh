@@ -374,6 +374,7 @@ gen_config_files linux/arm-neon-highbd "--target=armv7-linux-gcc ${all_platforms
 gen_config_files linux/arm64-highbd "--target=armv8-linux-gcc ${all_platforms} ${HIGHBD}"
 gen_config_files linux/mipsel "--target=mips32-linux-gcc ${all_platforms}"
 gen_config_files linux/mips64el "--target=mips64-linux-gcc ${all_platforms}"
+gen_config_files linux/ppc64 "--target=ppc64le-linux-gcc ${all_platforms}"
 gen_config_files linux/generic "--target=generic-gnu $HIGHBD ${all_platforms}"
 gen_config_files win/arm64 "--target=arm64-win64-vs15 ${all_platforms} ${HIGHBD}"
 gen_config_files win/ia32 "--target=x86-win32-vs14 ${all_platforms} ${x86_platforms}"
@@ -399,6 +400,7 @@ lint_config linux/arm-neon-highbd
 lint_config linux/arm64-highbd
 lint_config linux/mipsel
 lint_config linux/mips64el
+lint_config linux/ppc64
 lint_config linux/generic
 lint_config win/arm64
 lint_config win/ia32
@@ -428,6 +430,7 @@ gen_rtcd_header linux/arm-neon-highbd armv7
 gen_rtcd_header linux/arm64-highbd armv8
 gen_rtcd_header linux/mipsel mipsel
 gen_rtcd_header linux/mips64el mips64el
+gen_rtcd_header linux/ppc64 ppc
 gen_rtcd_header linux/generic generic
 gen_rtcd_header win/arm64 armv8
 gen_rtcd_header win/ia32 x86 "${require_sse2}"
@@ -512,6 +515,13 @@ if [ -z $ONLY_CONFIGS ]; then
   convert_srcs_to_project_files libvpx_srcs.txt libvpx_srcs_mips
 
   echo "MIPS64 source list is identical to MIPS source list. No need to generate it."
+
+  echo "Generate ppc64 source list."
+  config=$(print_config_basic linux/ppc64)
+  make_clean
+  make libvpx_srcs.txt target=libs $config > /dev/null
+  convert_srcs_to_project_files libvpx_srcs.txt libvpx_srcs_ppc64
+
 
   echo "Generate NaCl source list."
   config=$(print_config_basic nacl)
