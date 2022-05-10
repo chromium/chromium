@@ -613,6 +613,25 @@ const ComputedStyle* ComputedStyle::AddCachedPseudoElementStyle(
   return result;
 }
 
+const ComputedStyle* ComputedStyle::ReplaceCachedPseudoElementStyle(
+    scoped_refptr<const ComputedStyle> pseudo_style,
+    PseudoId pseudo_id,
+    const AtomicString& pseudo_argument) const {
+  DCHECK(pseudo_style->StyleType() != kPseudoIdNone &&
+         pseudo_style->StyleType() != kPseudoIdFirstLineInherited);
+  if (HasCachedPseudoElementStyles()) {
+    for (auto& cached_style : *GetPseudoElementStyleCache()) {
+      if (cached_style->StyleType() == pseudo_id &&
+          (!PseudoElementHasArguments(pseudo_id) ||
+           cached_style->PseudoArgument() == pseudo_argument)) {
+        cached_style = pseudo_style;
+        return pseudo_style.get();
+      }
+    }
+  }
+  return AddCachedPseudoElementStyle(pseudo_style, pseudo_id, pseudo_argument);
+}
+
 void ComputedStyle::ClearCachedPseudoElementStyles() const {
   if (cached_data_ && cached_data_->pseudo_element_styles_)
     cached_data_->pseudo_element_styles_->clear();
