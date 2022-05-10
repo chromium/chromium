@@ -172,7 +172,10 @@ def callback_function_name(cg_context,
         else:
             kind = "ExposedConstruct"
     elif cg_context.operation_group:
-        kind = "Operation"
+        if cg_context.operation_group.is_static:
+            kind = "StaticOperation"
+        else:
+            kind = "Operation"
     elif cg_context.stringifier:
         kind = "Operation"
 

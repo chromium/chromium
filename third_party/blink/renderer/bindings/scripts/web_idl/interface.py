@@ -203,12 +203,13 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
             for operation_ir in ir.operations
         ])
         self._operation_groups = tuple([
-            OperationGroup(
-                group_ir,
-                list(
-                    filter(lambda x: x.identifier == group_ir.identifier,
-                           self._operations)),
-                owner=self) for group_ir in ir.operation_groups
+            OperationGroup(group_ir,
+                           list(
+                               filter(
+                                   lambda x: x.is_static == group_ir.is_static
+                                   and x.identifier == group_ir.identifier,
+                                   self._operations)),
+                           owner=self) for group_ir in ir.operation_groups
         ])
         self._exposed_constructs = tuple(ir.exposed_constructs)
         self._legacy_window_aliases = tuple(ir.legacy_window_aliases)

@@ -76,6 +76,7 @@ class Operation(FunctionLike, WithExtendedAttributes, WithCodeGeneratorInfo,
         WithComponent.__init__(self, ir, readonly=True)
         WithDebugInfo.__init__(self, ir)
 
+        self._is_static = ir.is_static
         self._is_getter = ir.is_getter
         self._is_setter = ir.is_setter
         self._is_deleter = ir.is_deleter
@@ -96,6 +97,11 @@ class Operation(FunctionLike, WithExtendedAttributes, WithCodeGeneratorInfo,
         (one of getter, setter, or deleter).
         """
         return self.is_getter or self.is_setter or self.is_deleter
+
+    @property
+    def is_static(self):
+        """Returns True if this is a static operation."""
+        return self._is_static
 
     @property
     def is_getter(self):
@@ -147,7 +153,8 @@ class OperationGroup(OverloadGroup, WithExtendedAttributes,
                      WithCodeGeneratorInfo, WithExposure, WithOwner,
                      WithComponent, WithDebugInfo):
     """
-    Represents a group of operations with the same identifier.
+    Represents a group of operations with the same identifier and
+    static/prototype visibility.
 
     The number of operations in this group may be 1 or 2+.  In the latter case,
     the operations are overloaded.
