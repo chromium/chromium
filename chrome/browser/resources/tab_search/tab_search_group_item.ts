@@ -4,8 +4,8 @@
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
-import 'chrome://resources/cr_elements/mwb_shared_icons.js';
-import 'chrome://resources/cr_elements/mwb_shared_vars.js';
+import 'chrome://resources/cr_elements/mwb_shared_icons.html.js';
+import 'chrome://resources/cr_elements/mwb_shared_vars.css.js';
 
 import {MouseHoverableMixin} from 'chrome://resources/cr_elements/mouse_hoverable_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

@@ -12,7 +12,7 @@
  */
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/cr_elements/cr_drawer/cr_drawer.js';
-import '//resources/cr_elements/cr_page_host_style_css.js';
+import '//resources/cr_elements/cr_page_host_style.css.js';
 import '//resources/cr_elements/icons.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import '../os_settings_menu/os_settings_menu.js';

@@ -31,6 +31,7 @@ if (optimize_webui) {
 
     deps = [
       ":preprocess_generated",
+      "../../../../../ui/webui/resources:library",
       "../../../../../ui/webui/resources:preprocess",
     ]
   }

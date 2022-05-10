@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
-import '//resources/cr_elements/cr_nav_menu_item_style.js';
+import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
 import '//resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {assert} from '//resources/js/assert_ts.js';

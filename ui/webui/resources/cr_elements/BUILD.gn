@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/polymer/polymer.gni")
@@ -196,7 +197,6 @@ if (include_polymer) {
       "cr_input/cr_input_style_css.m.js",
       "cr_lazy_render/cr_lazy_render.m.js",
       "cr_lottie/cr_lottie.m.js",
-      "cr_page_host_style_css.js",
       "cr_radio_button/cr_card_radio_button.m.js",
       "cr_radio_button/cr_radio_button_behavior.m.js",
       "cr_radio_button/cr_radio_button.m.js",
@@ -235,30 +235,34 @@ preprocess_if_expr("preprocess_generated_ts") {
   out_folder = preprocess_folder
   in_files = [ "cr_tab_box/cr_tab_box.ts" ]
   if (include_polymer) {
-    deps += [ ":html_wrapper_files" ]
+    deps += [
+      ":css_wrapper_files",
+      ":html_wrapper_files",
+    ]
     in_files += [
       "cr_a11y_announcer/cr_a11y_announcer.html.ts",
       "cr_action_menu/cr_action_menu.html.ts",
       "cr_drawer/cr_drawer.html.ts",
       "cr_grid/cr_grid.html.ts",
       "cr_link_row/cr_link_row.html.ts",
-      "cr_nav_menu_item_style.ts",
+      "cr_nav_menu_item_style.css.ts",
+      "cr_page_host_style.css.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.html.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector.html.ts",
       "cr_search_field/cr_search_field.html.ts",
       "cr_slider/cr_slider.html.ts",
       "cr_tabs/cr_tabs.html.ts",
-      "cr_toast/cr_toast_manager.html.ts",
       "cr_toast/cr_toast.html.ts",
+      "cr_toast/cr_toast_manager.html.ts",
+      "cr_toolbar/cr_toolbar.html.ts",
       "cr_toolbar/cr_toolbar_search_field.html.ts",
       "cr_toolbar/cr_toolbar_selection_overlay.html.ts",
-      "cr_toolbar/cr_toolbar.html.ts",
       "cr_view_manager/cr_view_manager.html.ts",
-      "mwb_element_shared_style.ts",
-      "mwb_shared_icons.ts",
-      "mwb_shared_style.ts",
-      "mwb_shared_vars.ts",
-      "search_highlight_style_css.ts",
+      "mwb_element_shared_style.css.ts",
+      "mwb_shared_icons.html.ts",
+      "mwb_shared_style.css.ts",
+      "mwb_shared_vars.css.ts",
+      "search_highlight_style.css.ts",
     ]
 
     if (is_chromeos) {
@@ -475,6 +479,7 @@ if (include_polymer) {
       "cr_toolbar/cr_toolbar_search_field.html",
       "cr_toolbar/cr_toolbar_selection_overlay.html",
       "cr_view_manager/cr_view_manager.html",
+      "mwb_shared_icons.html",
     ]
 
     if (is_chromeos) {
@@ -483,18 +488,19 @@ if (include_polymer) {
   }
 }
 
-html_to_js("web_components") {
-  js_files = [ "cr_tab_box/cr_tab_box.ts" ]
-  if (include_polymer) {
-    js_files += [
-      # Local files
-      "cr_nav_menu_item_style.ts",
-      "cr_page_host_style_css.js",
-      "mwb_shared_icons.ts",
-      "mwb_element_shared_style.ts",
-      "mwb_shared_style.ts",
-      "mwb_shared_vars.ts",
-      "search_highlight_style_css.ts",
+if (include_polymer) {
+  css_to_wrapper("css_wrapper_files") {
+    in_files = [
+      "cr_nav_menu_item_style.css",
+      "mwb_element_shared_style.css",
+      "mwb_shared_style.css",
+      "mwb_shared_vars.css",
+      "search_highlight_style.css",
+      "cr_page_host_style.css",
     ]
   }
+}
+
+html_to_js("web_components") {
+  js_files = [ "cr_tab_box/cr_tab_box.ts" ]
 }
