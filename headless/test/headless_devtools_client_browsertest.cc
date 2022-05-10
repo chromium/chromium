@@ -859,12 +859,14 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
           node_dict->SetInteger("styleIndex", layout_node->GetStyleIndex());
 
         if (layout_node->HasInlineTextNodes()) {
-          base::ListValue inline_text_nodes;
+          base::Value::List inline_text_nodes;
           for (const std::unique_ptr<dom_snapshot::InlineTextBox>&
                    inline_text_box : *layout_node->GetInlineTextNodes()) {
-            inline_text_nodes.Append(inline_text_box->Serialize());
+            inline_text_nodes.Append(
+                base::Value::FromUniquePtrValue(inline_text_box->Serialize()));
           }
-          node_dict->SetKey("inlineTextNodes", std::move(inline_text_nodes));
+          node_dict->GetDict().Set("inlineTextNodes",
+                                   std::move(inline_text_nodes));
         }
       }
     }
