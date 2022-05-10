@@ -3,7 +3,6 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Full dynamic colors ?attr version. -->
     <macro name="default_bg_color">?attr/colorSurface</macro>
     <macro name="default_bg_color_elev_0">?attr/colorSurface</macro>
 
@@ -40,51 +39,10 @@
 
     <macro name="toolbar_background_primary" tools:ignore="UnusedResources">@macro/default_bg_color</macro>
 
-    <!-- Temporarily holdback @color version. Keep until we're certain we won't
-         need to disable. -->
-    <!--
-    <macro name="default_bg_color">@color/default_bg_color_baseline</macro>
-    <macro name="default_bg_color_elev_0">@color/default_bg_color_elev_0_baseline</macro>
-
-    <macro name="default_control_color_active">@color/default_control_color_active_baseline</macro>
-    <macro name="default_control_color_normal">@color/default_control_color_normal_baseline</macro>
-
-    <macro name="default_icon_color">@color/default_icon_color_baseline</macro>
-    <macro name="default_icon_color_accent1">@color/default_icon_color_accent1_baseline</macro>
-    <macro name="default_icon_color_inverse">@color/default_icon_color_inverse_baseline</macro>
-    <macro name="default_icon_color_on_accent1">@color/default_icon_color_on_accent1_baseline</macro>
-    <macro name="default_icon_color_secondary">@color/default_icon_color_secondary_baseline</macro>
-
-    <macro name="default_text_color">@color/default_text_color_baseline</macro>
-    <macro name="default_text_color_accent1">@color/default_text_color_blue_baseline</macro>
-    <macro name="default_text_color_on_accent1">@color/default_text_color_on_accent1_baseline</macro>
-    <macro name="default_text_color_on_accent2_container">@color/default_text_color_on_accent2_container_baseline</macro>
-    <macro name="default_text_color_secondary">@color/default_text_color_secondary_baseline</macro>
-
-    <macro name="switch_enabled_unchecked_color_dark">@color/switch_enabled_unchecked_color_baseline_dark</macro>
-    <macro name="switch_enabled_unchecked_color_light">@color/switch_enabled_unchecked_color_baseline_light</macro>
-    <macro name="switch_track_disabled_color">@color/switch_track_disabled_color_baseline</macro>
-    <macro name="switch_thumb_disabled_color">@color/switch_thumb_disabled_color_baseline</macro>
-
-    <macro name="hairline_stroke_color">@color/hairline_stroke_color_baseline</macro>
-    <macro name="divider_line_bg_color">@color/divider_line_bg_color_baseline</macro>
-    <macro name="drag_handlebar_color">@macro/divider_line_bg_color</macro>
-
-    <macro name="chip_bg_color">@color/default_bg_color_baseline</macro>
-    <macro name="chip_bg_selected_color">@color/chip_bg_selected_color_baseline</macro>
-    <macro name="chip_outline_color">@color/default_chip_outline_color</macro>
-    <macro name="chip_outline_focused_color">@color/chip_outline_focused_color_baseline</macro>
-    <macro name="chip_state_layer_color">@color/chip_state_layer_color_baseline</macro>
-    <macro name="chip_state_layer_selected_color">@color/chip_state_layer_selected_color_baseline</macro>
-
-    <macro name="toolbar_background_primary">@color/default_bg_color_baseline</macro>
-    -->
-
     <!-- Gated by full dynamic colors param, no fallback needed. -->
     <macro name="circular_progress_icon_color_small_large">?attr/colorPrimary</macro>
     <macro name="circular_progress_outer_circle_progress_color_small">?attr/colorPrimary</macro>
 
     <!-- Colors that will be experimented with. -->
-    <!--<macro name="default_text_color_link">?attr/colorPrimary</macro>-->
     <macro name="default_text_color_link">@color/default_text_color_link_baseline</macro>
 </resources>
