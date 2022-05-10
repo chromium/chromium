@@ -70,8 +70,9 @@ CONTENT_EXPORT
                         image:(NSImage*)image
                        offset:(NSPoint)offset;
 - (void)clearViewsHostableView;
-- (void)updateWebContentsVisibility:
-    (remote_cocoa::mojom::Visibility)visibilityState;
+// Updates the web contents's visibility state based on its window's visibility.
+- (void)updateWebContentsVisibilityFromWindowVisibility:
+    (remote_cocoa::mojom::Visibility)windowVisibilityState;
 - (void)viewDidBecomeFirstResponder:(NSNotification*)notification;
 @end
 

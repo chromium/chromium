@@ -40,8 +40,8 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
 // Computes and returns the `window`'s visibility state, a hybrid of
 // macOS's and our manual occlusion calculation.
 - (remote_cocoa::mojom::Visibility)
-    contentVisibilityStateForWindow:(NSWindow*)window
-                         windowList:(NSArray<NSWindow*>*)windowList;
+    visibilityStateForWindow:(NSWindow*)window
+                  windowList:(NSArray<NSWindow*>*)windowList;
 - (void)updateWebContentsVisibilityInWindow:(NSWindow*)window
                                  windowList:(NSArray<NSWindow*>*)windowList;
 
@@ -268,21 +268,18 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
   }
 
   remote_cocoa::mojom::Visibility windowVisibilityState =
-      [self contentVisibilityStateForWindow:window windowList:windowList];
+      [self visibilityStateForWindow:window windowList:windowList];
 
   for (WebContentsViewCocoa* webContentsViewCocoa in
            webContentsViewCocoaInWindow) {
-    remote_cocoa::mojom::Visibility visibilityState =
-        [webContentsViewCocoa isHiddenOrHasHiddenAncestor]
-            ? remote_cocoa::mojom::Visibility::kHidden
-            : windowVisibilityState;
-    [webContentsViewCocoa updateWebContentsVisibility:visibilityState];
+    [webContentsViewCocoa
+        updateWebContentsVisibilityFromWindowVisibility:windowVisibilityState];
   }
 }
 
 - (remote_cocoa::mojom::Visibility)
-    contentVisibilityStateForWindow:(NSWindow*)window
-                         windowList:(nonnull NSArray<NSWindow*>*)windowList {
+    visibilityStateForWindow:(NSWindow*)window
+                  windowList:(nonnull NSArray<NSWindow*>*)windowList {
   if (_displaysAreAsleep) {
     return remote_cocoa::mojom::Visibility::kHidden;
   }
@@ -341,11 +338,12 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
 
 - (void)updateWebContentsVisibility:
     (WebContentsViewCocoa*)webContentsViewCocoa {
-  remote_cocoa::mojom::Visibility contentVisibilityState =
-      [self contentVisibilityStateForWindow:[webContentsViewCocoa window]
-                                 windowList:[self windowsFromFrontToBack]];
+  remote_cocoa::mojom::Visibility windowVisibilityState =
+      [self visibilityStateForWindow:[webContentsViewCocoa window]
+                          windowList:[self windowsFromFrontToBack]];
 
-  [webContentsViewCocoa updateWebContentsVisibility:contentVisibilityState];
+  [webContentsViewCocoa
+      updateWebContentsVisibilityFromWindowVisibility:windowVisibilityState];
 }
 
 @end

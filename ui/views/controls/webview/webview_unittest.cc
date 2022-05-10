@@ -272,16 +272,7 @@ TEST_F(WebViewUnitTest, TestWebViewAttachDetachWebContents) {
   web_view()->SetWebContents(web_contents1.get());
   // Layout() is normally async, call it now to ensure visibility is updated.
   web_view()->Layout();
-  int expected_shown_count = 1;
-#if defined(USE_MAC)
-  // On Mac, setting the web contents adds a WebContentsViewCocoa
-  // to the view hierarchy. When enhanced occlusion checking is enabled, the
-  // window change (from nil to non-nil) generates one more web contents
-  // visibility update that Aura.
-  if (base::FeatureList::IsEnabled(features::kMacWebContentsOcclusion))
-    expected_shown_count++;
-#endif
-  EXPECT_EQ(expected_shown_count, observer1.shown_count());
+  EXPECT_EQ(1, observer1.shown_count());
 
   // Nothing else should change.
   EXPECT_EQ(1, observer1.hidden_count());

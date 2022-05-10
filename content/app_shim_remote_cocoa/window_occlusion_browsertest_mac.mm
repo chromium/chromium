@@ -83,15 +83,15 @@ const int kNeverCalled = -100;
 
 @implementation WebContentsViewCocoaForOcclusionTesting
 
-- (void)updateWebContentsVisibility:
-    (remote_cocoa::mojom::Visibility)visibility {
+- (void)updateWebContentsVisibilityFromWindowVisibility:
+    (remote_cocoa::mojom::Visibility)windowVisibility {
   WebContentsHostWindowForOcclusionTesting* hostWindow =
       base::mac::ObjCCast<WebContentsHostWindowForOcclusionTesting>(
           [self window]);
 
   EXPECT_FALSE([hostWindow modifyingChildWindowList]);
 
-  [super updateWebContentsVisibility:visibility];
+  [super updateWebContentsVisibilityFromWindowVisibility:windowVisibility];
 }
 
 @end
@@ -879,6 +879,15 @@ IN_PROC_BROWSER_TEST_F(
   SetViewHidden([window_a_web_contents_view_cocoa superview], NO);
   EXPECT_EQ(WindowAWebContentsVisibility(),
             remote_cocoa::mojom::Visibility::kVisible);
+
+  // Test that this direct visibility update code path works correctly.
+  // Previously it omitted the check for the view or its ancestor
+  // being hidden.
+  [[window_a_web_contents_view_cocoa superview] setHidden:YES];
+  [[NSClassFromString(@"WebContentsOcclusionCheckerMac") sharedInstance]
+      updateWebContentsVisibility:window_a_web_contents_view_cocoa];
+  EXPECT_EQ(WindowAWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kHidden);
 }
 
 // Checks that web contentses are marked kHidden on WebContentsViewCocoa removal
