@@ -285,7 +285,7 @@ test("device_unittests") {
   }
 
   if (is_linux || is_chromeos) {
-    if (is_chromecast) {
+    if (is_castos) {
       # Cast does not support GATT server mode.
       sources -= [
         "bluetooth/bluetooth_local_gatt_characteristic_unittest.cc",

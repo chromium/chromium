@@ -16,7 +16,7 @@ declare_args() {
   # and Chromecast, at least for now. This feature needs configuration
   # (krb5.conf and so on).
   # TODO(fuchsia): Enable kerberos on Fuchsia when it's implemented there.
-  use_kerberos = !is_ios && !is_chromecast && !is_fuchsia
+  use_kerberos = !is_ios && !is_castos && !is_fuchsia
 
   # Do not disable brotli filter by default.
   disable_brotli_filter = false

@@ -125,7 +125,7 @@ void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
 #endif
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
 bool CanAccessDeviceFile(const GPUInfo& gpu_info) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (gpu_info.gpu.vendor_id != 0x10de ||  // NVIDIA
@@ -143,7 +143,7 @@ bool CanAccessDeviceFile(const GPUInfo& gpu_info) {
   return true;
 #endif
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
 
 class GpuWatchdogInit {
  public:
@@ -210,7 +210,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // SwiftShader needs to wait until creating a context.
   bool needs_more_info = true;
   uint64_t system_device_id = 0;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
   needs_more_info = false;
   if (!PopGPUInfoCache(&gpu_info_)) {
     CollectBasicGraphicsInfo(command_line, &gpu_info_);
@@ -278,7 +278,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     system_device_id = CHROME_LUID_to_uint64_t(preferred_gpu->luid);
 #endif
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
 
   gpu_info_.in_process_gpu = false;
   gl_use_swiftshader_ = false;
@@ -786,7 +786,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   ui::OzonePlatform::InitializeForGPU(params);
 #endif
   bool needs_more_info = true;
-#if !BUILDFLAG(IS_CHROMECAST)
+#if !BUILDFLAG(IS_CASTOS)
   needs_more_info = false;
   if (!PopGPUInfoCache(&gpu_info_)) {
     CollectBasicGraphicsInfo(command_line, &gpu_info_);
@@ -804,7 +804,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
     InitializeSwitchableGPUs(
         gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
   }
-#endif  // !BUILDFLAG(IS_CHROMECAST)
+#endif  // !BUILDFLAG(IS_CASTOS)
 
   gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
       command_line, gpu_feature_info_,

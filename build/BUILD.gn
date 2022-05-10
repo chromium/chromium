@@ -34,6 +34,7 @@ buildflag_header("chromecast_buildflags") {
   flags = [
     "IS_CHROMECAST=$is_chromecast",
     "IS_CASTOS=$is_castos",
+    "ENABLE_CAST_RECEIVER=$enable_cast_receiver",
   ]
 }
 

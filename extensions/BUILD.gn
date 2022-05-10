@@ -62,7 +62,7 @@ grit("extensions_browser_resources") {
 
 grit("extensions_renderer_resources") {
   source = "renderer/resources/extensions_renderer_resources.grd"
-  defines = [ "is_chromecast=$is_chromecast" ]
+  defines = [ "enable_cast_receiver=$enable_cast_receiver" ]
   outputs = [
     "grit/extensions_renderer_resources.h",
     "extensions_renderer_resources.pak",

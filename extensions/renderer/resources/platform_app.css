@@ -8,7 +8,7 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
-<if expr="not is_chromecast">
+<if expr="not enable_cast_receiver">
 body {
   -webkit-user-select: none;
   cursor: default;
