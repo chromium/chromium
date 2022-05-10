@@ -17,6 +17,8 @@
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -34,6 +36,7 @@ constexpr int kBubbleContentLabelPreferredWidthDp = 380;
 class PaletteWelcomeBubble::WelcomeBubbleView
     : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(WelcomeBubbleView);
   WelcomeBubbleView(views::View* anchor, views::BubbleBorder::Arrow arrow)
       : views::BubbleDialogDelegateView(anchor, arrow) {
     SetTitle(
@@ -56,30 +59,32 @@ class PaletteWelcomeBubble::WelcomeBubbleView
   ~WelcomeBubbleView() override = default;
 
   void Init() override {
-    SetLayoutManager(std::make_unique<views::FillLayout>());
-    auto* label = new views::Label(l10n_util::GetStringUTF16(
-        assistant::util::IsGoogleDevice()
-            ? IDS_ASH_STYLUS_WARM_WELCOME_BUBBLE_WITH_ASSISTANT_DESCRIPTION
-            : IDS_ASH_STYLUS_WARM_WELCOME_BUBBLE_DESCRIPTION));
-    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    label->SetMultiLine(true);
-    label->SizeToFit(kBubbleContentLabelPreferredWidthDp);
-    AddChildView(label);
+    SetUseDefaultFillLayout(true);
+    views::Builder<views::BubbleDialogDelegateView>(this)
+        .AddChild(
+            views::Builder<views::Label>()
+                .SetText(l10n_util::GetStringUTF16(
+                    assistant::util::IsGoogleDevice()
+                        ? IDS_ASH_STYLUS_WARM_WELCOME_BUBBLE_WITH_ASSISTANT_DESCRIPTION
+                        : IDS_ASH_STYLUS_WARM_WELCOME_BUBBLE_DESCRIPTION))
+                .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                .SetMultiLine(true)
+                .SizeToFit(kBubbleContentLabelPreferredWidthDp))
+        .BuildChildren();
   }
-
-  // views::View:
-  const char* GetClassName() const override { return "WelcomeBubbleView"; }
 };
+
+BEGIN_METADATA(PaletteWelcomeBubble,
+               WelcomeBubbleView,
+               views::BubbleDialogDelegateView)
+END_METADATA
 
 PaletteWelcomeBubble::PaletteWelcomeBubble(PaletteTray* tray) : tray_(tray) {
   Shell::Get()->session_controller()->AddObserver(this);
 }
 
 PaletteWelcomeBubble::~PaletteWelcomeBubble() {
-  if (bubble_view_) {
-    bubble_view_->GetWidget()->RemoveObserver(this);
-    Shell::Get()->RemovePreTargetHandler(this);
-  }
+  DisconnectObservers();
   Shell::Get()->session_controller()->RemoveObserver(this);
   CHECK(!views::WidgetObserver::IsInObserverList());
 }
@@ -89,10 +94,9 @@ void PaletteWelcomeBubble::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kShownPaletteWelcomeBubble, false);
 }
 
-void PaletteWelcomeBubble::OnWidgetClosing(views::Widget* widget) {
-  widget->RemoveObserver(this);
-  bubble_view_ = nullptr;
-  Shell::Get()->RemovePreTargetHandler(this);
+void PaletteWelcomeBubble::OnWidgetDestroying(views::Widget* widget) {
+  DCHECK(bubble_view_ && bubble_view_->GetWidget() == widget);
+  DisconnectObservers();
 }
 
 void PaletteWelcomeBubble::OnActiveUserPrefServiceChanged(
@@ -148,8 +152,18 @@ void PaletteWelcomeBubble::Show() {
 }
 
 void PaletteWelcomeBubble::Hide() {
-  if (bubble_view_)
+  if (bubble_view_) {
     bubble_view_->GetWidget()->Close();
+    DisconnectObservers();
+  }
+}
+
+void PaletteWelcomeBubble::DisconnectObservers() {
+  if (bubble_view_) {
+    bubble_view_->GetWidget()->RemoveObserver(this);
+    bubble_view_ = nullptr;
+  }
+  Shell::Get()->RemovePreTargetHandler(this);
 }
 
 void PaletteWelcomeBubble::OnMouseEvent(ui::MouseEvent* event) {
