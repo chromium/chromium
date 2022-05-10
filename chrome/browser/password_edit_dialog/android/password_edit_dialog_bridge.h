@@ -25,8 +25,7 @@ class WebContents;
 //
 // OnDialogAccepted callback is called when the user accepts saving the
 // presented password (by tapping Update button). The callback parameters denote
-// the index of selected username in the list of usernames and the password
-// which could have possibly been edited by user. The dialog will be
+// the username and the password that are going to be saved. The dialog will be
 // dismissed after this callback, feature code shouldn't call Dismiss from
 // callback implementation to dismiss the dialog.
 //
@@ -52,7 +51,7 @@ class WebContents;
 class PasswordEditDialog {
  public:
   using DialogAcceptedCallback =
-      base::OnceCallback<void(int, const std::u16string&)>;
+      base::OnceCallback<void(const std::u16string&, const std::u16string&)>;
   using DialogDismissedCallback = base::OnceCallback<void(bool)>;
 
   virtual ~PasswordEditDialog();
@@ -99,10 +98,10 @@ class PasswordEditDialogBridge : public PasswordEditDialog {
   void Dismiss() override;
 
   // Called from Java to indicate that the user tapped the positive button with
-  // |selected_username| being selected from usernames list and
-  // |password| which could have possibly been edited in the dialog.
+  // |username| and
+  // |password| which are going to be saved.
   void OnDialogAccepted(JNIEnv* env,
-                        jint selected_username_index,
+                        const base::android::JavaParamRef<jstring>& username,
                         const base::android::JavaParamRef<jstring>& password);
 
   // Called from Java when the modal dialog is dismissed.

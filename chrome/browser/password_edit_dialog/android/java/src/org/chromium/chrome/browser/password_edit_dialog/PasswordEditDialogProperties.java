@@ -19,14 +19,14 @@ class PasswordEditDialogProperties {
      * selected username.
      */
     static final PropertyModel
-            .ReadableObjectPropertyKey<Callback<Integer>> USERNAME_SELECTED_CALLBACK =
+            .ReadableObjectPropertyKey<Callback<String>> USERNAME_CHANGED_CALLBACK =
             new PropertyModel.ReadableObjectPropertyKey<>("username selected callback");
 
     static final PropertyModel.ReadableObjectPropertyKey<List<String>> USERNAMES =
             new PropertyModel.ReadableObjectPropertyKey<>("usernames");
 
-    static final PropertyModel.WritableIntPropertyKey SELECTED_USERNAME_INDEX =
-            new PropertyModel.WritableIntPropertyKey("selected username index");
+    static final PropertyModel.WritableObjectPropertyKey<String> USERNAME =
+            new PropertyModel.WritableObjectPropertyKey<>("username");
 
     static final PropertyModel.WritableObjectPropertyKey<String> PASSWORD =
             new PropertyModel.WritableObjectPropertyKey<>("password");
@@ -41,7 +41,6 @@ class PasswordEditDialogProperties {
     static final PropertyModel.WritableBooleanPropertyKey EMPTY_PASSWORD_ERROR =
             new PropertyModel.WritableBooleanPropertyKey("empty password error");
 
-    static final PropertyKey[] ALL_KEYS = {USERNAME_SELECTED_CALLBACK, USERNAMES,
-            SELECTED_USERNAME_INDEX, PASSWORD, PASSWORD_CHANGED_CALLBACK, EMPTY_PASSWORD_ERROR,
-            FOOTER};
+    static final PropertyKey[] ALL_KEYS = {USERNAME_CHANGED_CALLBACK, USERNAMES, USERNAME, PASSWORD,
+            PASSWORD_CHANGED_CALLBACK, EMPTY_PASSWORD_ERROR, FOOTER};
 }

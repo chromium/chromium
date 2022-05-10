@@ -46,7 +46,7 @@ public class UsernameSelectionConfirmationViewTest {
     UsernameSelectionConfirmationView mDialogView;
     Spinner mUsernamesView;
     TextView mFooterView;
-    int mSelectedUsernameIndex;
+    String mUsername;
 
     @BeforeClass
     public static void setupSuite() {
@@ -66,17 +66,17 @@ public class UsernameSelectionConfirmationViewTest {
         });
     }
 
-    void handleUsernameSelection(int selectedUsernameIndex) {
-        mSelectedUsernameIndex = selectedUsernameIndex;
+    void handleUsernameChanged(String username) {
+        mUsername = username;
     }
 
     PropertyModel.Builder populateDialogPropertiesBuilder() {
         return new PropertyModel.Builder(PasswordEditDialogProperties.ALL_KEYS)
                 .with(PasswordEditDialogProperties.USERNAMES, Arrays.asList(USERNAMES))
-                .with(PasswordEditDialogProperties.SELECTED_USERNAME_INDEX, INITIAL_USERNAME_INDEX)
+                .with(PasswordEditDialogProperties.USERNAME, USERNAMES[INITIAL_USERNAME_INDEX])
                 .with(PasswordEditDialogProperties.PASSWORD, PASSWORD)
-                .with(PasswordEditDialogProperties.USERNAME_SELECTED_CALLBACK,
-                        this::handleUsernameSelection);
+                .with(PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK,
+                        this::handleUsernameChanged);
     }
 
     /** Tests that all the properties propagated correctly. */
@@ -130,9 +130,9 @@ public class UsernameSelectionConfirmationViewTest {
                     model, mDialogView, PasswordEditDialogViewBinder::bind);
             mUsernamesView.setSelection(SELECTED_USERNAME_INDEX);
         });
-        CriteriaHelper.pollUiThread(() -> mSelectedUsernameIndex == SELECTED_USERNAME_INDEX);
+        CriteriaHelper.pollUiThread(() -> USERNAMES[SELECTED_USERNAME_INDEX].equals(mUsername));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mUsernamesView.setSelection(INITIAL_USERNAME_INDEX); });
-        CriteriaHelper.pollUiThread(() -> mSelectedUsernameIndex == INITIAL_USERNAME_INDEX);
+        CriteriaHelper.pollUiThread(() -> USERNAMES[INITIAL_USERNAME_INDEX].equals(mUsername));
     }
 }

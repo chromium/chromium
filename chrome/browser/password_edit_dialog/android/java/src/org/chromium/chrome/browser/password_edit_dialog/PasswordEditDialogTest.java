@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.password_edit_dialog;
 
 import static org.hamcrest.Matchers.contains;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 
@@ -42,7 +41,8 @@ public class PasswordEditDialogTest {
     private static final long NATIVE_PTR = 1;
     private static final String[] USERNAMES = {"user1", "user2", "user3"};
     private static final int INITIAL_USERNAME_INDEX = 1;
-    private static final int SELECTED_USERNAME_INDEX = 2;
+    private static final String INITIAL_USERNAME = USERNAMES[INITIAL_USERNAME_INDEX];
+    private static final String CHANGED_USERNAME = "user3";
     private static final String INITIAL_PASSWORD = "password";
     private static final String CHANGED_PASSWORD = "passwordChanged";
     private static final String ORIGIN = "example.com";
@@ -94,8 +94,8 @@ public class PasswordEditDialogTest {
                 .showDialog(mModalDialogModel, ModalDialogManager.ModalDialogType.TAB);
         Assert.assertThat("Usernames don't match",
                 mDialogProperties.get(PasswordEditDialogProperties.USERNAMES), contains(USERNAMES));
-        Assert.assertEquals("Selected username doesn't match", INITIAL_USERNAME_INDEX,
-                mDialogProperties.get(PasswordEditDialogProperties.SELECTED_USERNAME_INDEX));
+        Assert.assertEquals("Selected username doesn't match", INITIAL_USERNAME,
+                mDialogProperties.get(PasswordEditDialogProperties.USERNAME));
         Assert.assertEquals("Password doesn't match", INITIAL_PASSWORD,
                 mDialogProperties.get(PasswordEditDialogProperties.PASSWORD));
         Assert.assertNull(
@@ -108,15 +108,15 @@ public class PasswordEditDialogTest {
     @Test
     @DisableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testUserSelection() {
-        Callback<Integer> usernameSelectedCallback =
-                mDialogProperties.get(PasswordEditDialogProperties.USERNAME_SELECTED_CALLBACK);
-        usernameSelectedCallback.onResult(SELECTED_USERNAME_INDEX);
-        Assert.assertEquals("Selected username doesn't match", SELECTED_USERNAME_INDEX,
-                mDialogProperties.get(PasswordEditDialogProperties.SELECTED_USERNAME_INDEX));
+        Callback<String> usernameSelectedCallback =
+                mDialogProperties.get(PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK);
+        usernameSelectedCallback.onResult(CHANGED_USERNAME);
+        Assert.assertEquals("Selected username doesn't match", CHANGED_USERNAME,
+                mDialogProperties.get(PasswordEditDialogProperties.USERNAME));
         ModalDialogProperties.Controller dialogController =
                 mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
         dialogController.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
-        Mockito.verify(mDelegateMock).onDialogAccepted(SELECTED_USERNAME_INDEX, INITIAL_PASSWORD);
+        Mockito.verify(mDelegateMock).onDialogAccepted(CHANGED_USERNAME, INITIAL_PASSWORD);
         Mockito.verify(mModalDialogManagerMock)
                 .dismissDialog(mModalDialogModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
     }
@@ -129,7 +129,7 @@ public class PasswordEditDialogTest {
     @DisableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testDialogDismissedFromNative() {
         mDialogCoordinator.dismiss();
-        Mockito.verify(mDelegateMock, never()).onDialogAccepted(anyInt(), anyString());
+        Mockito.verify(mDelegateMock, never()).onDialogAccepted(anyString(), anyString());
         Mockito.verify(mModalDialogManagerMock)
                 .dismissDialog(mModalDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
     }
@@ -144,7 +144,7 @@ public class PasswordEditDialogTest {
         ModalDialogProperties.Controller dialogController =
                 mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
         dialogController.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.NEGATIVE);
-        Mockito.verify(mDelegateMock, never()).onDialogAccepted(anyInt(), anyString());
+        Mockito.verify(mDelegateMock, never()).onDialogAccepted(anyString(), anyString());
         Mockito.verify(mModalDialogManagerMock)
                 .dismissDialog(mModalDialogModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
     }
@@ -160,8 +160,8 @@ public class PasswordEditDialogTest {
                 .showDialog(mModalDialogModel, ModalDialogManager.ModalDialogType.TAB);
         Assert.assertThat("Usernames don't match",
                 mDialogProperties.get(PasswordEditDialogProperties.USERNAMES), contains(USERNAMES));
-        Assert.assertEquals("Selected username doesn't match", INITIAL_USERNAME_INDEX,
-                mDialogProperties.get(PasswordEditDialogProperties.SELECTED_USERNAME_INDEX));
+        Assert.assertEquals("Selected username doesn't match", INITIAL_USERNAME,
+                mDialogProperties.get(PasswordEditDialogProperties.USERNAME));
         Assert.assertEquals("Password doesn't match", INITIAL_PASSWORD,
                 mDialogProperties.get(PasswordEditDialogProperties.PASSWORD));
         Assert.assertNotNull(
@@ -187,7 +187,7 @@ public class PasswordEditDialogTest {
         ModalDialogProperties.Controller dialogController =
                 mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
         dialogController.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
-        Mockito.verify(mDelegateMock).onDialogAccepted(INITIAL_USERNAME_INDEX, CHANGED_PASSWORD);
+        Mockito.verify(mDelegateMock).onDialogAccepted(INITIAL_USERNAME, CHANGED_PASSWORD);
         Mockito.verify(mModalDialogManagerMock)
                 .dismissDialog(mModalDialogModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
     }
@@ -196,15 +196,15 @@ public class PasswordEditDialogTest {
     @Test
     @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testUserSelectionFeatureEnabled() {
-        Callback<Integer> usernameSelectedCallback =
-                mDialogProperties.get(PasswordEditDialogProperties.USERNAME_SELECTED_CALLBACK);
-        usernameSelectedCallback.onResult(SELECTED_USERNAME_INDEX);
-        Assert.assertEquals("Selected username doesn't match", SELECTED_USERNAME_INDEX,
-                mDialogProperties.get(PasswordEditDialogProperties.SELECTED_USERNAME_INDEX));
+        Callback<String> usernameSelectedCallback =
+                mDialogProperties.get(PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK);
+        usernameSelectedCallback.onResult(CHANGED_USERNAME);
+        Assert.assertEquals("Selected username doesn't match", CHANGED_USERNAME,
+                mDialogProperties.get(PasswordEditDialogProperties.USERNAME));
         ModalDialogProperties.Controller dialogController =
                 mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
         dialogController.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
-        Mockito.verify(mDelegateMock).onDialogAccepted(SELECTED_USERNAME_INDEX, INITIAL_PASSWORD);
+        Mockito.verify(mDelegateMock).onDialogAccepted(CHANGED_USERNAME, INITIAL_PASSWORD);
         Mockito.verify(mModalDialogManagerMock)
                 .dismissDialog(mModalDialogModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
     }
@@ -217,7 +217,7 @@ public class PasswordEditDialogTest {
     @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testDialogDismissedFromNativeFeatureEnabled() {
         mDialogCoordinator.dismiss();
-        Mockito.verify(mDelegateMock, never()).onDialogAccepted(anyInt(), anyString());
+        Mockito.verify(mDelegateMock, never()).onDialogAccepted(anyString(), anyString());
         Mockito.verify(mModalDialogManagerMock)
                 .dismissDialog(mModalDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
     }
@@ -232,7 +232,7 @@ public class PasswordEditDialogTest {
         ModalDialogProperties.Controller dialogController =
                 mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
         dialogController.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.NEGATIVE);
-        Mockito.verify(mDelegateMock, never()).onDialogAccepted(anyInt(), anyString());
+        Mockito.verify(mDelegateMock, never()).onDialogAccepted(anyString(), anyString());
         Mockito.verify(mModalDialogManagerMock)
                 .dismissDialog(mModalDialogModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
     }

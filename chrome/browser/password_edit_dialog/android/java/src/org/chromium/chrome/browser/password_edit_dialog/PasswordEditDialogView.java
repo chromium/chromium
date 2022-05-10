@@ -45,16 +45,16 @@ abstract class PasswordEditDialogView extends LinearLayout {
      * Sets list of known usernames which can be selected from the list by user
      *
      * @param usernames Known usernames list
-     * @param selectedUsernameIndex Initially selected username
+     * @param initialUsername Initially typed username
      */
-    abstract void setUsernames(List<String> usernames, int selectedUsernameIndex);
+    abstract void setUsernames(List<String> usernames, String initialUsername);
 
     /**
-     * Sets callback for handling username selection change
+     * Sets callback for handling username change
      *
-     * @param callback The callback to be called with the index of the selected username
+     * @param callback The callback to be called with new user typed username
      */
-    abstract void setUsernameSelectedCallback(Callback<Integer> callback);
+    abstract void setUsernameChangedCallback(Callback<String> callback);
 
     /**
      * Sets initial password

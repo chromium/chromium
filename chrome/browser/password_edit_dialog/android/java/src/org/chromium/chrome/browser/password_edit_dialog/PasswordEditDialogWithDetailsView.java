@@ -27,6 +27,7 @@ import java.util.List;
 public class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
     private AutoCompleteTextView mUsernameView;
     private TextInputEditText mPasswordView;
+    private Callback<String> mUsernameChangedCallback;
     private Callback<String> mPasswordChangedCallback;
 
     public PasswordEditDialogWithDetailsView(Context context, AttributeSet attrs) {
@@ -40,6 +41,19 @@ public class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mUsernameView = findViewById(R.id.username_view);
+        mUsernameView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (mUsernameChangedCallback == null) return;
+                mUsernameChangedCallback.onResult(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
         TextInputLayout usernameInput = findViewById(R.id.username_input_layout);
         usernameInput.setEndIconOnClickListener(view -> mUsernameView.showDropDown());
 
@@ -62,18 +76,17 @@ public class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
     }
 
     @Override
-    public void setUsernames(List<String> usernames, int selectedUsernameIndex) {
+    public void setUsernames(List<String> usernames, String initialUsername) {
         ArrayAdapter<String> usernamesAdapter = new NoFilterArrayAdapter<>(
                 getContext(), android.R.layout.simple_spinner_item, usernames);
         usernamesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mUsernameView.setAdapter(usernamesAdapter);
-        mUsernameView.setText(usernames.get(selectedUsernameIndex));
+        mUsernameView.setText(initialUsername);
     }
 
     @Override
-    public void setUsernameSelectedCallback(Callback<Integer> callback) {
-        // TODO(crbug.com/1315916): Transform this method into
-        // setUsername(Callback<String> callback) format and implement
+    public void setUsernameChangedCallback(Callback<String> callback) {
+        mUsernameChangedCallback = callback;
     }
 
     @Override

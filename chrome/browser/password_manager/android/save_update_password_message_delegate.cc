@@ -327,13 +327,11 @@ void SaveUpdatePasswordMessageDelegate::HandleDialogDismissed(
 }
 
 void SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog(
-    int selected_username_index,
+    const std::u16string& username,
     const std::u16string& password) {
   DCHECK(passwords_state_.GetCurrentForms().size() > 1);
-  UpdatePasswordFormUsernameAndPassword(
-      passwords_state_.GetCurrentForms()[selected_username_index]
-          ->username_value,
-      password, passwords_state_.form_manager());
+  UpdatePasswordFormUsernameAndPassword(username, password,
+                                        passwords_state_.form_manager());
   passwords_state_.form_manager()->Save();
 }
 

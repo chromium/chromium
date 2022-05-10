@@ -73,10 +73,10 @@ void PasswordEditDialogBridge::Dismiss() {
 
 void PasswordEditDialogBridge::OnDialogAccepted(
     JNIEnv* env,
-    jint selected_username_index,
+    const base::android::JavaParamRef<jstring>& username,
     const base::android::JavaParamRef<jstring>& password) {
   std::move(dialog_accepted_callback_)
-      .Run(selected_username_index,
+      .Run(base::android::ConvertJavaStringToUTF16(username),
            base::android::ConvertJavaStringToUTF16(password));
 }
 

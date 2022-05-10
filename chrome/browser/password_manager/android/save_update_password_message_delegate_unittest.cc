@@ -108,8 +108,8 @@ class SaveUpdatePasswordMessageDelegateTest
   // expectations.
   MockPasswordEditDialog* PreparePasswordEditDialog();
 
-  void TriggerDialogAcceptedCallback(int selected_user_index,
-                                     const std::u16string& edited_password);
+  void TriggerDialogAcceptedCallback(const std::u16string& username,
+                                     const std::u16string& password);
   void TriggerDialogDismissedCallback(bool dialog_accepted);
 
   void CommitPasswordFormMetrics();
@@ -280,10 +280,9 @@ SaveUpdatePasswordMessageDelegateTest::PreparePasswordEditDialog() {
 }
 
 void SaveUpdatePasswordMessageDelegateTest::TriggerDialogAcceptedCallback(
-    int selected_username_index,
-    const std::u16string& edited_password) {
-  std::move(dialog_accepted_callback_)
-      .Run(selected_username_index, edited_password);
+    const std::u16string& username,
+    const std::u16string& password) {
+  std::move(dialog_accepted_callback_).Run(username, password);
 }
 
 void SaveUpdatePasswordMessageDelegateTest::TriggerDialogDismissedCallback(
@@ -611,8 +610,8 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialog_Accept) {
   EXPECT_NE(nullptr, GetMessageWrapper());
   TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
-  TriggerDialogAcceptedCallback(/*selected_username_index=*/0,
-                                /*edited_password=*/kPassword);
+  TriggerDialogAcceptedCallback(/*username=*/kUsername,
+                                /*password=*/kPassword);
   TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
 
   CommitPasswordFormMetrics();

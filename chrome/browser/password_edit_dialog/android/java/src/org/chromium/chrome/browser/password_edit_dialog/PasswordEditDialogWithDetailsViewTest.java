@@ -34,7 +34,8 @@ import java.util.Arrays;
 @RunWith(BaseJUnit4ClassRunner.class)
 public class PasswordEditDialogWithDetailsViewTest {
     private static final String[] USERNAMES = {"user1", "user2", "user3"};
-    private static final int INITIAL_USERNAME_INDEX = 1;
+    private static final String INITIAL_USERNAME = "user2";
+    private static final String CHANGED_USERNAME = "user21";
     private static final String INITIAL_PASSWORD = "password";
     private static final String CHANGED_PASSWORD = "passwordChanged";
     private static final String FOOTER = "Footer";
@@ -49,7 +50,7 @@ public class PasswordEditDialogWithDetailsViewTest {
     AutoCompleteTextView mUsernamesView;
     TextInputEditText mPasswordView;
     TextView mFooterView;
-    int mSelectedUsernameIndex;
+    String mUsername;
     String mCurrentPassword;
 
     @BeforeClass
@@ -71,8 +72,8 @@ public class PasswordEditDialogWithDetailsViewTest {
         });
     }
 
-    void handleUsernameSelection(int selectedUsernameIndex) {
-        mSelectedUsernameIndex = selectedUsernameIndex;
+    void handleUsernameSelection(String username) {
+        mUsername = username;
     }
 
     void handlePasswordChanged(String password) {
@@ -82,9 +83,9 @@ public class PasswordEditDialogWithDetailsViewTest {
     PropertyModel.Builder populateDialogPropertiesBuilder() {
         return new PropertyModel.Builder(PasswordEditDialogProperties.ALL_KEYS)
                 .with(PasswordEditDialogProperties.USERNAMES, Arrays.asList(USERNAMES))
-                .with(PasswordEditDialogProperties.SELECTED_USERNAME_INDEX, INITIAL_USERNAME_INDEX)
+                .with(PasswordEditDialogProperties.USERNAME, INITIAL_USERNAME)
                 .with(PasswordEditDialogProperties.PASSWORD, INITIAL_PASSWORD)
-                .with(PasswordEditDialogProperties.USERNAME_SELECTED_CALLBACK,
+                .with(PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK,
                         this::handleUsernameSelection)
                 .with(PasswordEditDialogProperties.PASSWORD_CHANGED_CALLBACK,
                         this::handlePasswordChanged);
@@ -101,8 +102,8 @@ public class PasswordEditDialogWithDetailsViewTest {
             PropertyModelChangeProcessor.create(
                     model, mDialogView, PasswordEditDialogViewBinder::bind);
         });
-        Assert.assertEquals("Username doesn't match the initial one",
-                USERNAMES[INITIAL_USERNAME_INDEX], mUsernamesView.getText().toString());
+        Assert.assertEquals("Username doesn't match the initial one", INITIAL_USERNAME,
+                mUsernamesView.getText().toString());
         Assert.assertEquals(
                 "Password doesn't match", INITIAL_PASSWORD, mPasswordView.getText().toString());
         Assert.assertEquals("Footer should be visible", View.VISIBLE, mFooterView.getVisibility());
@@ -146,5 +147,20 @@ public class PasswordEditDialogWithDetailsViewTest {
                     emptyModel, mDialogView, PasswordEditDialogViewBinder::bind);
         });
         Assert.assertEquals("Footer should not be visible", View.GONE, mFooterView.getVisibility());
+    }
+
+    /** Tests username selected callback. */
+    @Test
+    @MediumTest
+    public void testUsernameSelection() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel model = populateDialogPropertiesBuilder().build();
+            PropertyModelChangeProcessor.create(
+                    model, mDialogView, PasswordEditDialogViewBinder::bind);
+            mUsernamesView.setText(CHANGED_USERNAME);
+        });
+        CriteriaHelper.pollUiThread(() -> mUsername.equals(CHANGED_USERNAME));
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mUsernamesView.setText(INITIAL_USERNAME); });
+        CriteriaHelper.pollUiThread(() -> mUsername.equals(INITIAL_USERNAME));
     }
 }

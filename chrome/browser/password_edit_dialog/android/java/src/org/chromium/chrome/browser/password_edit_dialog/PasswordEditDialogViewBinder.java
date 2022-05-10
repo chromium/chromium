@@ -16,20 +16,20 @@ class PasswordEditDialogViewBinder {
             PropertyModel model, PasswordEditDialogView dialogView, PropertyKey propertyKey) {
         if (propertyKey == PasswordEditDialogProperties.USERNAMES) {
             dialogView.setUsernames(model.get(PasswordEditDialogProperties.USERNAMES),
-                    model.get(PasswordEditDialogProperties.SELECTED_USERNAME_INDEX));
-        } else if (propertyKey == PasswordEditDialogProperties.SELECTED_USERNAME_INDEX) {
+                    model.get(PasswordEditDialogProperties.USERNAME));
+        } else if (propertyKey == PasswordEditDialogProperties.USERNAME) {
             // Propagation of USERNAMES property triggers passing both USERNAMES and
-            // SELECTED_USERNAME_INDEX properties to the view. This is safe because both properties
+            // USERNAME properties to the view. This is safe because both properties
             // are set through property model builder and available by the time the property model
-            // is bound to the view. The SELECTED_USERNAME_INDEX property is writable since it
-            // maintains username index of the user, currently selected in UI. Updating the property
+            // is bound to the view. The USERNAME property is writable since it
+            // maintains username, currently typed or selected in UI. Updating the property
             // by itself doesn't get propagated to the view as the value originates in the view and
-            // gets routed to coordinator through USERNAME_SELECTED_CALLBACK.
+            // gets routed to coordinator through USERNAME_CHANGED_CALLBACK.
         } else if (propertyKey == PasswordEditDialogProperties.FOOTER) {
             dialogView.setFooter(model.get(PasswordEditDialogProperties.FOOTER));
-        } else if (propertyKey == PasswordEditDialogProperties.USERNAME_SELECTED_CALLBACK) {
-            dialogView.setUsernameSelectedCallback(
-                    model.get(PasswordEditDialogProperties.USERNAME_SELECTED_CALLBACK));
+        } else if (propertyKey == PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK) {
+            dialogView.setUsernameChangedCallback(
+                    model.get(PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK));
         } else if (propertyKey == PasswordEditDialogProperties.PASSWORD_CHANGED_CALLBACK) {
             dialogView.setPasswordChangedCallback(
                     model.get(PasswordEditDialogProperties.PASSWORD_CHANGED_CALLBACK));
