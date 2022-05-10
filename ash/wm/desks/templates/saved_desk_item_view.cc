@@ -203,11 +203,15 @@ SavedDeskItemView::SavedDeskItemView(const DeskTemplate* desk_template)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
+  const int button_text_id =
+      desk_template_->type() == DeskTemplateType::kTemplate
+          ? IDS_ASH_DESKS_TEMPLATES_USE_TEMPLATE_BUTTON
+          : IDS_ASH_DESKS_TEMPLATES_OPEN_DESK_BUTTON;
   launch_button_ = hover_container_->AddChildView(std::make_unique<PillButton>(
       base::BindRepeating(&SavedDeskItemView::OnGridItemPressed,
                           weak_ptr_factory_.GetWeakPtr()),
-      l10n_util::GetStringUTF16(IDS_ASH_DESKS_TEMPLATES_USE_TEMPLATE_BUTTON),
-      PillButton::Type::kIconless, /*icon=*/nullptr));
+      l10n_util::GetStringUTF16(button_text_id), PillButton::Type::kIconless,
+      /*icon=*/nullptr));
 
   // Users cannot delete admin templates.
   if (!is_admin_managed) {
