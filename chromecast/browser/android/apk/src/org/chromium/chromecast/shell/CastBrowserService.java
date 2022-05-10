@@ -15,13 +15,11 @@ import android.os.IBinder;
  */
 public class CastBrowserService extends Service {
     @Override
-    public void onCreate() {
-        CastBrowserHelper.initializeBrowser(getApplicationContext());
-    }
+    public void onCreate() {}
 
     @Override
     public IBinder onBind(Intent intent) {
-        CastBrowserHelper.initializeBrowser(getApplicationContext());
+        CastBrowserHelper.initializeBrowser(getApplicationContext(), intent);
         return null;
     }
 

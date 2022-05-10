@@ -103,10 +103,19 @@ android_library("cast_audio_manager_java") {
   ]
 }
 
+android_library("cast_command_line_helper_java") {
+  java_src_dir = "//chromecast/browser/android/apk/src"
+  sources = [
+    "$java_src_dir/org/chromium/chromecast/shell/CastCommandLineHelper.java",
+  ]
+  deps = [ "//base:base_java" ]
+}
+
 android_library("cast_intents_java") {
   java_src_dir = "//chromecast/browser/android/apk/src"
   sources = [ "$java_src_dir/org/chromium/chromecast/shell/CastIntents.java" ]
 }
+
 android_aidl("logs_provider_aidl") {
   java_src_dir = "//chromecast/browser/android/apk/src"
   interface_file =
@@ -137,6 +146,7 @@ generate_product_config_srcjar("chromecast_product_config") {
 
 common_android_library_deps = [
   ":cast_audio_manager_java",
+  ":cast_command_line_helper_java",
   ":cast_intents_java",
   ":reactive_android_java",
   "//base:base_java",
