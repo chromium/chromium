@@ -307,8 +307,6 @@ void SignedExchangeLoader::OnHTTPExchangeFound(
   }
   inner_response_head_shown_to_client->was_fetched_via_cache =
       outer_response_head_->was_fetched_via_cache;
-  client_->OnReceiveResponse(std::move(inner_response_head_shown_to_client),
-                             mojo::ScopedDataPipeConsumerHandle());
 
   // Currently we always assume that we have body.
   // TODO(https://crbug.com/80374): Add error handling and bail out
@@ -327,7 +325,10 @@ void SignedExchangeLoader::OnHTTPExchangeFound(
         network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
     return;
   }
-  pending_body_consumer_ = std::move(consumer_handle);
+
+  client_->OnReceiveResponse(std::move(inner_response_head_shown_to_client),
+                             std::move(consumer_handle));
+
   body_data_pipe_adapter_ = std::make_unique<network::SourceStreamToDataPipe>(
       std::move(payload_stream), std::move(producer_handle));
 
@@ -336,7 +337,6 @@ void SignedExchangeLoader::OnHTTPExchangeFound(
 
 void SignedExchangeLoader::StartReadingBody() {
   DCHECK(body_data_pipe_adapter_);
-  DCHECK(pending_body_consumer_.is_valid());
 
   // If it's not for prefetch, kSignedHTTPExchangePingValidity is enabled
   // and validity_pinger_ is not initialized yet, create a validity pinger
@@ -363,7 +363,6 @@ void SignedExchangeLoader::StartReadingBody() {
   validity_pinger_.reset();
 
   // Start reading.
-  client_->OnStartLoadingResponseBody(std::move(pending_body_consumer_));
   body_data_pipe_adapter_->Start(base::BindOnce(
       &SignedExchangeLoader::FinishReadingBody, base::Unretained(this)));
 }

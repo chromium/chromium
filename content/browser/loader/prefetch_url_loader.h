@@ -128,6 +128,8 @@ class PrefetchURLLoader : public network::mojom::URLLoader,
   // Set in the constructor and updated when redirected.
   network::ResourceRequest resource_request_;
 
+  network::mojom::URLResponseHeadPtr response_;
+
   const net::NetworkIsolationKey network_isolation_key_;
 
   scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory_;

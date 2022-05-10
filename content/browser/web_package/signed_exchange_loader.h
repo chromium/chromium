@@ -173,9 +173,6 @@ class CONTENT_EXPORT SignedExchangeLoader final
   std::unique_ptr<SignedExchangeHandler> signed_exchange_handler_;
   std::unique_ptr<network::SourceStreamToDataPipe> body_data_pipe_adapter_;
 
-  // Kept around until ProceedWithResponse is called.
-  mojo::ScopedDataPipeConsumerHandle pending_body_consumer_;
-
   const uint32_t url_loader_options_;
   const bool should_redirect_on_failure_;
   std::unique_ptr<SignedExchangeDevToolsProxy> devtools_proxy_;

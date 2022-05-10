@@ -246,7 +246,6 @@ TEST_P(SignedExchangeLoaderTest, Simple) {
   if (!base::FeatureList::IsEnabled(
           features::kSignedHTTPExchangePingValidity)) {
     run_loop.Run();
-    EXPECT_CALL(mock_client_after_redirect, OnStartLoadingResponseBody(_));
     EXPECT_CALL(mock_client_after_redirect, OnComplete(_));
   }
 
@@ -258,7 +257,6 @@ TEST_P(SignedExchangeLoaderTest, Simple) {
     // client-after-redirect will be called only after the ping loader returns
     // something.
     ASSERT_TRUE(ping_loader_client());
-    EXPECT_CALL(mock_client_after_redirect, OnStartLoadingResponseBody(_));
     EXPECT_CALL(mock_client_after_redirect, OnComplete(_));
     ping_loader_client()->OnReceiveResponse(
         network::mojom::URLResponseHead::New(),
