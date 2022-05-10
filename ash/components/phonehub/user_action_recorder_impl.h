@@ -24,8 +24,6 @@ class UserActionRecorderImpl : public UserActionRecorder {
  private:
   friend class UserActionRecorderImplTest;
   FRIEND_TEST_ALL_PREFIXES(UserActionRecorderImplTest, RecordActions);
-  FRIEND_TEST_ALL_PREFIXES(UserActionRecorderImplTest,
-                           UiOpenedOnlyRecordedWhenConnected);
 
   // Types of user actions; numerical value should not be reused or reordered
   // since this enum is used in metrics.

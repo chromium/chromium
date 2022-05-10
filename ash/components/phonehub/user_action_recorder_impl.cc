@@ -18,10 +18,7 @@ UserActionRecorderImpl::UserActionRecorderImpl(
 UserActionRecorderImpl::~UserActionRecorderImpl() = default;
 
 void UserActionRecorderImpl::RecordUiOpened() {
-  if (feature_status_provider_->GetStatus() ==
-      FeatureStatus::kEnabledAndConnected) {
-    HandleUserAction(UserAction::kUiOpened);
-  }
+  HandleUserAction(UserAction::kUiOpened);
 }
 
 void UserActionRecorderImpl::RecordTetherConnectionAttempt() {

@@ -10,7 +10,6 @@
 #include "ash/components/phonehub/connection_scheduler.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/components/phonehub/tether_controller.h"
-#include "ash/components/phonehub/user_action_recorder.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -124,7 +123,6 @@ void PhoneHubUiController::HandleBubbleOpened() {
     phone_hub_manager_->GetConnectionScheduler()->ScheduleConnectionNow();
 
   phone_hub_manager_->GetBrowserTabsModelProvider()->TriggerRefresh();
-  phone_hub_manager_->GetUserActionRecorder()->RecordUiOpened();
 
   bool is_feature_enabled =
       feature_status == FeatureStatus::kEnabledAndConnected ||

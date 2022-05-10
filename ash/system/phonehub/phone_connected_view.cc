@@ -8,6 +8,7 @@
 
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/components/phonehub/user_action_recorder.h"
 #include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/camera_roll_view.h"
@@ -68,6 +69,8 @@ PhoneConnectedView::PhoneConnectedView(
     setup_layered_view(AddChildView(std::make_unique<CameraRollView>(
         camera_roll_manager, phone_hub_manager->GetUserActionRecorder())));
   }
+
+  phone_hub_manager->GetUserActionRecorder()->RecordUiOpened();
 }
 
 PhoneConnectedView::~PhoneConnectedView() = default;

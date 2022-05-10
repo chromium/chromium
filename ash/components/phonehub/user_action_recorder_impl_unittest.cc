@@ -74,29 +74,5 @@ TEST_F(UserActionRecorderImplTest, RecordActions) {
       /*expected_count=*/1);
 }
 
-TEST_F(UserActionRecorderImplTest, UiOpenedOnlyRecordedWhenConnected) {
-  // Should record a metric when enabled and connected.
-  recorder_.RecordUiOpened();
-  histogram_tester_.ExpectBucketCount(
-      kCompletedActionMetricName, UserActionRecorderImpl::UserAction::kUiOpened,
-      /*expected_count=*/1);
-
-  // Change to another status; opening the UI should not record a metric.
-  fake_feature_status_provider_.SetStatus(
-      FeatureStatus::kUnavailableBluetoothOff);
-  recorder_.RecordUiOpened();
-  histogram_tester_.ExpectBucketCount(
-      kCompletedActionMetricName, UserActionRecorderImpl::UserAction::kUiOpened,
-      /*expected_count=*/1);
-
-  // Change back to enabled and connected; opening the UI should record a
-  // metric.
-  fake_feature_status_provider_.SetStatus(FeatureStatus::kEnabledAndConnected);
-  recorder_.RecordUiOpened();
-  histogram_tester_.ExpectBucketCount(
-      kCompletedActionMetricName, UserActionRecorderImpl::UserAction::kUiOpened,
-      /*expected_count=*/2);
-}
-
 }  // namespace phonehub
 }  // namespace ash
