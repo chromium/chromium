@@ -134,7 +134,7 @@ void RegisterScreenAIComponent(ComponentUpdateService* cus,
                                PrefService* global_prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!features::IsScreenAIEnabled()) {
+  if (!features::IsScreenAIServiceNeeded()) {
     ScreenAIComponentInstallerPolicy::DeleteLibraryOrScheduleDeletionIfNeeded(
         global_prefs);
     return;

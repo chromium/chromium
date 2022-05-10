@@ -926,8 +926,8 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    case IDC_RUN_SCREEN_AI:
-      RunScreenAI(browser_);
+    case IDC_RUN_SCREEN_AI_VISUAL_ANNOTATIONS:
+      RunScreenAIVisualAnnotation(browser_);
       break;
 #endif
 
@@ -1474,8 +1474,9 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
       IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY, main_not_fullscreen);
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  command_updater_.UpdateCommandEnabled(IDC_RUN_SCREEN_AI,
-                                        features::IsScreenAIEnabled());
+  command_updater_.UpdateCommandEnabled(
+      IDC_RUN_SCREEN_AI_VISUAL_ANNOTATIONS,
+      features::IsScreenAIVisualAnnotationsEnabled());
 #endif
 
   // Show various bits of UI

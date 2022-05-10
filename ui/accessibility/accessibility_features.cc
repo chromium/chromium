@@ -202,8 +202,13 @@ bool IsReadAnythingWithScreen2xEnabled() {
 
 const base::Feature kScreenAI{"ScreenAI", base::FEATURE_DISABLED_BY_DEFAULT};
 
-bool IsScreenAIEnabled() {
+bool IsScreenAIVisualAnnotationsEnabled() {
   return base::FeatureList::IsEnabled(::features::kScreenAI);
+}
+
+bool IsScreenAIServiceNeeded() {
+  return IsScreenAIVisualAnnotationsEnabled() ||
+         IsReadAnythingWithScreen2xEnabled();
 }
 
 // This feature is only for debug purposes and for security/privacy reasons,

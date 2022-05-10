@@ -1855,7 +1855,7 @@ void UnfollowSite(content::WebContents* web_contents) {
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void RunScreenAI(Browser* browser) {
+void RunScreenAIVisualAnnotation(Browser* browser) {
   browser->RunScreenAIAnnotator();
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

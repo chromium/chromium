@@ -403,7 +403,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #endif  // !BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (features::IsScreenAIEnabled())
+  if (features::IsScreenAIServiceNeeded())
     services.Add(RunScreenAIService);
 #endif
 

@@ -237,7 +237,8 @@ const AcceleratorMapping kAcceleratorMap[] = {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_MAC)
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    {ui::VKEY_S, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN, IDC_RUN_SCREEN_AI},
+    {ui::VKEY_S, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
+     IDC_RUN_SCREEN_AI_VISUAL_ANNOTATIONS},
 #endif
 };
 

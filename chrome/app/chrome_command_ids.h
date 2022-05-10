@@ -448,8 +448,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-// Screen AI
-#define IDC_RUN_SCREEN_AI 52420
+// Screen AI Visual Annotations
+#define IDC_RUN_SCREEN_AI_VISUAL_ANNOTATIONS 52420
 #endif
 
 // Tab Search

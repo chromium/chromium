@@ -177,13 +177,14 @@ AX_BASE_EXPORT bool IsReadAnythingWithScreen2xEnabled();
 // Enables using Screen AI library to add metadata for accessibility tools.
 AX_BASE_EXPORT extern const base::Feature kScreenAI;
 
-// Returns true if Screen AI feature is enabled. This feature uses a local
-// machine intelligence library to process browser screenshots and add metadata
-// to the accessibility tree.
-// TODO(https://crbug.com/1278249): Rename to IsScreenAIVisualAnnotationsEnabled
-// and add a new function that covers this and
-// IsReadAnythingWithScreen2xEnabled.
-AX_BASE_EXPORT bool IsScreenAIEnabled();
+// Returns true if Screen AI Visual Annotations feature is enabled. This feature
+// uses a local machine intelligence library to process browser screenshots and
+// add metadata to the accessibility tree.
+AX_BASE_EXPORT bool IsScreenAIVisualAnnotationsEnabled();
+
+// Returns true if Screen AI Service is needed as either
+// ScreenAIVisualAnnotations or ReadAnythingWithScreen2x are enabled.
+AX_BASE_EXPORT bool IsScreenAIServiceNeeded();
 
 // If enabled, ScreenAI library writes some debug data in /tmp.
 AX_BASE_EXPORT bool IsScreenAIDebugModeEnabled();

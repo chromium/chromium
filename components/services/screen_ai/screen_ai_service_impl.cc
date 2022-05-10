@@ -36,7 +36,7 @@ ScreenAIService::ScreenAIService(
       receiver_(this, std::move(receiver)) {
   auto init_result = InitializationResult::kOk;
 
-  if (features::IsScreenAIEnabled()) {
+  if (features::IsScreenAIVisualAnnotationsEnabled()) {
     if (!screen_ai_init_function_ || !annotate_function_)
       init_result = InitializationResult::kErrorInvalidLibraryFunctions;
     else if (!screen_ai_init_function_(features::IsScreenAIDebugModeEnabled()))
