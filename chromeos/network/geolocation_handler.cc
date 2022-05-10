@@ -22,7 +22,10 @@ constexpr const char* kDevicePropertyNames[] = {
     shill::kGeoWifiAccessPointsProperty, shill::kGeoCellTowersProperty};
 
 std::string HexToDecimal(std::string hex_str) {
-  return std::to_string(std::stoi(hex_str, nullptr, 16));
+  int result;
+  if (!base::HexStringToInt(hex_str, &result))
+    return std::string();
+  return base::NumberToString(result);
 }
 
 std::string FindStringOrEmpty(const base::Value& dict,
