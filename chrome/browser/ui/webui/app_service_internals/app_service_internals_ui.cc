@@ -15,7 +15,6 @@
 #include "chrome/grit/app_service_internals_resources.h"
 #include "chrome/grit/app_service_internals_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 AppServiceInternalsUI::AppServiceInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui), profile_(Profile::FromWebUI(web_ui)) {
@@ -34,9 +33,8 @@ void AppServiceInternalsUI::BindInterface(
     mojo::PendingReceiver<
         mojom::app_service_internals::AppServiceInternalsPageHandler>
         receiver) {
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<AppServiceInternalsPageHandlerImpl>(profile_),
-      std::move(receiver));
+  handler_ = std::make_unique<AppServiceInternalsPageHandlerImpl>(
+      profile_, std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(AppServiceInternalsUI)
