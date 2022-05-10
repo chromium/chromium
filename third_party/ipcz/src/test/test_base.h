@@ -42,6 +42,10 @@ class TestBase : public testing::Test {
                   TrapEventHandler fn,
                   IpczTrapConditionFlags* flags = nullptr,
                   IpczPortalStatus* status = nullptr);
+  IpczResult WaitForConditions(IpczHandle portal,
+                               const IpczTrapConditions& conditions);
+  IpczResult WaitForConditionFlags(IpczHandle portal,
+                                   IpczTrapConditionFlags flags);
 
  private:
   static void HandleEvent(const IpczTrapEvent* event);

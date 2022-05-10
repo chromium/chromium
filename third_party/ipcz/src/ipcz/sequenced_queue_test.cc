@@ -154,29 +154,35 @@ TEST(SequencedQueueTest, FullyConsumed) {
   EXPECT_TRUE(q.IsSequenceFullyConsumed());
 }
 
-TEST(SequencedQueueTest, SkipNextSequenceNumber) {
+TEST(SequencedQueueTest, MaybeSkipSequenceNumber) {
   TestQueue q;
   const std::string kEntry = "woot";
-  q.SkipNextSequenceNumber();
+  EXPECT_TRUE(q.MaybeSkipSequenceNumber(SequenceNumber(0)));
+  EXPECT_FALSE(q.MaybeSkipSequenceNumber(SequenceNumber(0)));
   EXPECT_FALSE(q.Push(SequenceNumber(0), kEntry));
   EXPECT_TRUE(q.Push(SequenceNumber(1), kEntry));
+  EXPECT_FALSE(q.MaybeSkipSequenceNumber(SequenceNumber(1)));
 
   std::string s;
   EXPECT_TRUE(q.Pop(s));
 
   // Skip ahead to SequenceNumber 4.
-  q.SkipNextSequenceNumber();
-  q.SkipNextSequenceNumber();
+  EXPECT_TRUE(q.MaybeSkipSequenceNumber(SequenceNumber(2)));
+  EXPECT_TRUE(q.MaybeSkipSequenceNumber(SequenceNumber(3)));
   EXPECT_FALSE(q.Push(SequenceNumber(2), kEntry));
   EXPECT_FALSE(q.Push(SequenceNumber(3), kEntry));
   EXPECT_TRUE(q.Push(SequenceNumber(4), kEntry));
+  EXPECT_FALSE(q.MaybeSkipSequenceNumber(SequenceNumber(4)));
 
   EXPECT_TRUE(q.SetFinalSequenceLength(SequenceNumber(6)));
   EXPECT_FALSE(q.IsSequenceFullyConsumed());
   EXPECT_TRUE(q.Pop(s));
   EXPECT_FALSE(q.IsSequenceFullyConsumed());
-  q.SkipNextSequenceNumber();
+  EXPECT_TRUE(q.MaybeSkipSequenceNumber(SequenceNumber(5)));
   EXPECT_TRUE(q.IsSequenceFullyConsumed());
+
+  // Fully consumed queue: skipping must fail.
+  EXPECT_FALSE(q.MaybeSkipSequenceNumber(SequenceNumber(6)));
 }
 
 TEST(SequencedQueueTest, Accounting) {

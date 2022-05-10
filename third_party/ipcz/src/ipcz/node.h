@@ -44,6 +44,18 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   // APIObject:
   IpczResult Close() override;
 
+  // Deactivates all NodeLinks and their underlying driver transports in
+  // preparation for this node's imminent destruction.
+  void ShutDown();
+
+  // Connects to another node using `driver_transport` for I/O to and from the
+  // other node. `initial_portals` is a collection of new portals who may
+  // immediately begin to route parcels over a link to the new node, assuming
+  // the link is established successfully.
+  IpczResult ConnectNode(IpczDriverHandle driver_transport,
+                         IpczConnectNodeFlags flags,
+                         absl::Span<IpczHandle> initial_portals);
+
   // Retrieves the name assigned to this node, if any.
   NodeName GetAssignedName();
 

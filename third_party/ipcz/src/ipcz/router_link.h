@@ -16,6 +16,12 @@ class Router;
 
 // A RouterLink represents one endpoint of a link between two Routers. All
 // subclasses must be thread-safe.
+//
+// NOTE: Implementations of this class must take caution when calling into
+// Routers, since such calls may re-enter the RouterLink implementation to
+// deactivate it. As a general rule, calls into Router should be made using a
+// Router reference owned on the calling stack rather than a reference owned by
+// the RouterLink.
 class RouterLink : public RefCounted {
  public:
   using Pair = std::pair<Ref<RouterLink>, Ref<RouterLink>>;

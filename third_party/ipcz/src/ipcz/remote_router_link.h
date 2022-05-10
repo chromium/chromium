@@ -26,6 +26,9 @@ class NodeLink;
 // LinkSide at construction time. This assignment is arbitrary but will always
 // be the opposite of the LinkSide assigned to the RemoteRouteLink on the other
 // end.
+//
+// NOTE: This implementation must take caution when calling into any Router. See
+// note on RouterLink's own class documentation.
 class RemoteRouterLink : public RouterLink {
  public:
   // Constructs a new RemoteRouterLink which sends messages over `node_link`

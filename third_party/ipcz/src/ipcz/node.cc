@@ -45,6 +45,49 @@ IpczResult Node::Close() {
   return IPCZ_RESULT_OK;
 }
 
+void Node::ShutDown() {
+  absl::flat_hash_map<NodeName, Ref<NodeLink>> node_links;
+  {
+    absl::MutexLock lock(&mutex_);
+    std::swap(node_links_, node_links);
+    broker_link_.reset();
+  }
+
+  for (const auto& entry : node_links) {
+    entry.second->Deactivate();
+  }
+}
+
+IpczResult Node::ConnectNode(IpczDriverHandle driver_transport,
+                             IpczConnectNodeFlags flags,
+                             absl::Span<IpczHandle> initial_portals) {
+  std::vector<Ref<Portal>> portals(initial_portals.size());
+  for (size_t i = 0; i < initial_portals.size(); ++i) {
+    auto portal =
+        MakeRefCounted<Portal>(WrapRefCounted(this), MakeRefCounted<Router>());
+    portals[i] = portal;
+    initial_portals[i] = Portal::ReleaseAsHandle(std::move(portal));
+  }
+
+  auto transport = MakeRefCounted<DriverTransport>(
+      DriverObject(WrapRefCounted(this), driver_transport));
+  IpczResult result = NodeConnector::ConnectNode(WrapRefCounted(this),
+                                                 transport, flags, portals);
+  if (result != IPCZ_RESULT_OK) {
+    // On failure the caller retains ownership of `driver_transport`. Release
+    // it here so it doesn't get closed when `transport` is destroyed.
+    transport->Release();
+
+    // Wipe out the initial portals we created, since they are invalid and
+    // effectively not returned to the caller on failure.
+    for (Ref<Portal>& portal : portals) {
+      Ref<Portal> doomed_portal = AdoptRef(portal.get());
+    }
+    return result;
+  }
+  return IPCZ_RESULT_OK;
+}
+
 NodeName Node::GetAssignedName() {
   absl::MutexLock lock(&mutex_);
   return assigned_name_;

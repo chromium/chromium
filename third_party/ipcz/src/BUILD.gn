@@ -251,6 +251,7 @@ ipcz_source_set("ipcz_tests_sources") {
 
   sources = [
     "api_test.cc",
+    "connect_test.cc",
     "ipcz/driver_memory_test.cc",
     "ipcz/driver_object_test.cc",
     "ipcz/driver_transport_test.cc",
@@ -262,6 +263,8 @@ ipcz_source_set("ipcz_tests_sources") {
     "reference_drivers/single_process_reference_driver_test.cc",
     "test/mock_driver.cc",
     "test/mock_driver.h",
+    "test/multinode_test.cc",
+    "test/multinode_test.h",
     "test/test_base.cc",
     "test/test_base.h",
     "test/test_transport_listener.cc",

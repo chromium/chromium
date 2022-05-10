@@ -69,7 +69,18 @@ IpczResult ConnectNode(IpczHandle node_handle,
                        IpczConnectNodeFlags flags,
                        const void* options,
                        IpczHandle* initial_portals) {
-  return IPCZ_RESULT_UNIMPLEMENTED;
+  ipcz::Node* node = ipcz::Node::FromHandle(node_handle);
+  if (!node || driver_transport == IPCZ_INVALID_HANDLE) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  if (num_initial_portals == 0 || !initial_portals) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  return node->ConnectNode(
+      driver_transport, flags,
+      absl::Span<IpczHandle>(initial_portals, num_initial_portals));
 }
 
 IpczResult OpenPortals(IpczHandle node_handle,

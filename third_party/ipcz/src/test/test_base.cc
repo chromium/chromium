@@ -7,6 +7,7 @@
 #include "api.h"
 #include "ipcz/ipcz.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/synchronization/notification.h"
 
 namespace ipcz::test {
 
@@ -115,6 +116,34 @@ IpczResult TestBase::Trap(IpczHandle portal,
     std::ignore = handler.release();
   }
   return result;
+}
+
+IpczResult TestBase::WaitForConditions(IpczHandle portal,
+                                       const IpczTrapConditions& conditions) {
+  absl::Notification notification;
+  const IpczResult result = Trap(
+      portal, conditions, [&](const IpczTrapEvent&) { notification.Notify(); });
+
+  switch (result) {
+    case IPCZ_RESULT_OK:
+      notification.WaitForNotification();
+      return IPCZ_RESULT_OK;
+
+    case IPCZ_RESULT_FAILED_PRECONDITION:
+      return IPCZ_RESULT_OK;
+
+    default:
+      return result;
+  }
+}
+
+IpczResult TestBase::WaitForConditionFlags(IpczHandle portal,
+                                           IpczTrapConditionFlags flags) {
+  const IpczTrapConditions conditions = {
+      .size = sizeof(conditions),
+      .flags = flags,
+  };
+  return WaitForConditions(portal, conditions);
 }
 
 void TestBase::HandleEvent(const IpczTrapEvent* event) {

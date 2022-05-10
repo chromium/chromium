@@ -107,10 +107,20 @@ class Router : public RefCounted {
  private:
   ~Router() override;
 
-  absl::Mutex mutex_;
+  // Flushes any inbound or outbound parcels, as well as any route closure
+  // notifications. RouterLinks which are no longer needed for the operation of
+  // this Router may be deactivated by this call.
+  //
+  // Since this may be called by many other Router methods, RouterLink
+  // implementations must exercise caution when calling into a Router to ensure
+  // that their own potentially reentrant deactivation by Flush() won't end up
+  // dropping the last reference and deleting `this` before Flush() returns.
+  //
+  // A safe way to ensure that is for RouterLink implementations to only call
+  // into Router using a reference held on the calling stack.
+  void Flush();
 
-  // The SequenceNumber of the next outbound parcel to be sent from this router.
-  SequenceNumber next_outbound_sequence_number_ ABSL_GUARDED_BY(mutex_){0};
+  absl::Mutex mutex_;
 
   // The current computed portal status to be reflected by a portal controlling
   // this router, iff this is a terminal router.
@@ -129,6 +139,13 @@ class Router : public RefCounted {
   // TODO(rockot): Replace this with a dynamic link that can be incrementally
   // decayed and replaced.
   Ref<RouterLink> outward_link_ ABSL_GUARDED_BY(mutex_);
+
+  // Parcels transmitted directly from this router (if sent by a controlling
+  // portal) or received from an inward peer which sent them outward toward this
+  // Router. These parcels generally only accumulate if there is no outward link
+  // present when received, and they are forwarded along `outward_link_` as soon
+  // as possible.
+  ParcelQueue outbound_parcels_ ABSL_GUARDED_BY(mutex_);
 };
 
 }  // namespace ipcz

@@ -19,9 +19,6 @@ using APITest = test::TestBase;
 
 TEST_F(APITest, Unimplemented) {
   EXPECT_EQ(IPCZ_RESULT_UNIMPLEMENTED,
-            ipcz().ConnectNode(IPCZ_INVALID_HANDLE, IPCZ_INVALID_DRIVER_HANDLE,
-                               0, IPCZ_NO_FLAGS, nullptr, nullptr));
-  EXPECT_EQ(IPCZ_RESULT_UNIMPLEMENTED,
             ipcz().MergePortals(IPCZ_INVALID_HANDLE, IPCZ_INVALID_HANDLE,
                                 IPCZ_NO_FLAGS, nullptr));
 
@@ -69,6 +66,51 @@ TEST_F(APITest, CreateNode) {
             ipcz().CreateNode(&kDefaultDriver, IPCZ_INVALID_DRIVER_HANDLE,
                               IPCZ_NO_FLAGS, nullptr, &node));
   EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(node, IPCZ_NO_FLAGS, nullptr));
+}
+
+TEST_F(APITest, ConnectNodeInvalid) {
+  IpczHandle node = CreateNode(kDefaultDriver);
+  IpczDriverHandle transport0, transport1;
+  ASSERT_EQ(IPCZ_RESULT_OK,
+            kDefaultDriver.CreateTransports(
+                IPCZ_INVALID_DRIVER_HANDLE, IPCZ_INVALID_DRIVER_HANDLE,
+                IPCZ_NO_FLAGS, nullptr, &transport0, &transport1));
+
+  IpczHandle portal;
+
+  // Invalid node handle
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().ConnectNode(IPCZ_INVALID_HANDLE, transport0, 1,
+                               IPCZ_NO_FLAGS, nullptr, &portal));
+
+  // Non-node handle
+  auto [a, b] = OpenPortals(node);
+  EXPECT_EQ(
+      IPCZ_RESULT_INVALID_ARGUMENT,
+      ipcz().ConnectNode(a, transport0, 1, IPCZ_NO_FLAGS, nullptr, &portal));
+  CloseAll({a, b});
+
+  // Invalid transport
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().ConnectNode(node, IPCZ_INVALID_DRIVER_HANDLE, 1,
+                               IPCZ_NO_FLAGS, nullptr, &portal));
+
+  // No initial portals
+  EXPECT_EQ(
+      IPCZ_RESULT_INVALID_ARGUMENT,
+      ipcz().ConnectNode(node, transport0, 0, IPCZ_NO_FLAGS, nullptr, &portal));
+
+  // Null portal storage
+  EXPECT_EQ(
+      IPCZ_RESULT_INVALID_ARGUMENT,
+      ipcz().ConnectNode(node, transport0, 0, IPCZ_NO_FLAGS, nullptr, nullptr));
+
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            kDefaultDriver.Close(transport0, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            kDefaultDriver.Close(transport1, IPCZ_NO_FLAGS, nullptr));
+
+  Close(node);
 }
 
 TEST_F(APITest, OpenPortalsInvalid) {

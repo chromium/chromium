@@ -13,6 +13,9 @@
 namespace ipcz {
 
 // Local link between two Routers on the same node. This class is thread-safe.
+//
+// NOTE: This implementation must take caution when calling into any Router. See
+// note on RouterLink's own class documentation.
 class LocalRouterLink : public RouterLink {
  public:
   // Creates a new pair of LocalRouterLinks linking the given pair of Routers

@@ -202,17 +202,26 @@ class SequencedQueue {
     base_sequence_number_ = n;
   }
 
-  // Skips the next SequenceNumber by advancing `base_sequence_number_` by one.
-  // Must be called only when no elements are currently available in the queue.
-  // This is equivalent to pushing and immediately popping an element with the
-  // current SequenceNumber, except that it does not grow, shrink, or otherwise
-  // modify the queue's underlying element storage.
-  void SkipNextSequenceNumber() {
-    ABSL_ASSERT(!HasNextElement());
-    base_sequence_number_ = SequenceNumber{base_sequence_number_.value() + 1};
+  // Attempts to skip SequenceNumber `n` in the sequence by advancing the
+  // current SequenceNumber by one. Returns true on success and false on
+  // failure.
+  //
+  // This can only succeed when `current_sequence_number()` is equal to `n`, no
+  // entry for SequenceNumber `n` is already in the queue, and the `n` is less
+  // the final sequence length if applicable. Success is equivalent to pushing
+  // and immediately popping element `n` except that it does not grow, shrink,
+  // or otherwise modify the queue's underlying storage.
+  bool MaybeSkipSequenceNumber(SequenceNumber n) {
+    if (base_sequence_number_ != n || HasNextElement() ||
+        (final_sequence_length_ && *final_sequence_length_ <= n)) {
+      return false;
+    }
+
+    base_sequence_number_ = SequenceNumber{n.value() + 1};
     if (num_entries_ != 0) {
       entries_.remove_prefix(1);
     }
+    return true;
   }
 
   // Pushes an element into the queue with the given SequenceNumber. This may
