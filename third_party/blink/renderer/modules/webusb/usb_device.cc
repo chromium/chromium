@@ -810,43 +810,44 @@ UsbControlTransferParamsPtr USBDevice::ConvertControlTransferParameters(
     ExceptionState& exception_state) const {
   auto mojo_parameters = device::mojom::blink::UsbControlTransferParams::New();
 
-  if (parameters->requestType() == "standard") {
-    mojo_parameters->type = UsbControlTransferType::STANDARD;
-  } else if (parameters->requestType() == "class") {
-    mojo_parameters->type = UsbControlTransferType::CLASS;
-  } else if (parameters->requestType() == "vendor") {
-    mojo_parameters->type = UsbControlTransferType::VENDOR;
-  } else {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kTypeMismatchError,
-        "The control transfer requestType parameter is invalid.");
-    return nullptr;
+  switch (parameters->requestType().AsEnum()) {
+    case V8USBRequestType::Enum::kStandard:
+      mojo_parameters->type = UsbControlTransferType::STANDARD;
+      break;
+    case V8USBRequestType::Enum::kClass:
+      mojo_parameters->type = UsbControlTransferType::CLASS;
+      break;
+    case V8USBRequestType::Enum::kVendor:
+      mojo_parameters->type = UsbControlTransferType::VENDOR;
+      break;
   }
 
-  if (parameters->recipient() == "device") {
-    mojo_parameters->recipient = UsbControlTransferRecipient::DEVICE;
-  } else if (parameters->recipient() == "interface") {
-    uint8_t interface_number = parameters->index() & 0xff;
-    EnsureInterfaceClaimed(interface_number, exception_state);
-    if (exception_state.HadException())
-      return nullptr;
+  switch (parameters->recipient().AsEnum()) {
+    case V8USBRecipient::Enum::kDevice:
+      mojo_parameters->recipient = UsbControlTransferRecipient::DEVICE;
+      break;
+    case V8USBRecipient::Enum::kInterface: {
+      uint8_t interface_number = parameters->index() & 0xff;
+      EnsureInterfaceClaimed(interface_number, exception_state);
+      if (exception_state.HadException())
+        return nullptr;
 
-    mojo_parameters->recipient = UsbControlTransferRecipient::INTERFACE;
-  } else if (parameters->recipient() == "endpoint") {
-    bool in_transfer = parameters->index() & 0x80;
-    uint8_t endpoint_number = parameters->index() & 0x0f;
-    EnsureEndpointAvailable(in_transfer, endpoint_number, exception_state);
-    if (exception_state.HadException())
-      return nullptr;
+      mojo_parameters->recipient = UsbControlTransferRecipient::INTERFACE;
+      break;
+    }
+    case V8USBRecipient::Enum::kEndpoint: {
+      bool in_transfer = parameters->index() & 0x80;
+      uint8_t endpoint_number = parameters->index() & 0x0f;
+      EnsureEndpointAvailable(in_transfer, endpoint_number, exception_state);
+      if (exception_state.HadException())
+        return nullptr;
 
-    mojo_parameters->recipient = UsbControlTransferRecipient::ENDPOINT;
-  } else if (parameters->recipient() == "other") {
-    mojo_parameters->recipient = UsbControlTransferRecipient::OTHER;
-  } else {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kTypeMismatchError,
-        "The control transfer recipient parameter is invalid.");
-    return nullptr;
+      mojo_parameters->recipient = UsbControlTransferRecipient::ENDPOINT;
+      break;
+    }
+    case V8USBRecipient::Enum::kOther:
+      mojo_parameters->recipient = UsbControlTransferRecipient::OTHER;
+      break;
   }
 
   mojo_parameters->request = parameters->request();
