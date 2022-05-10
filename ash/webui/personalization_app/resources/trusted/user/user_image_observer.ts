@@ -31,7 +31,8 @@ export class UserImageObserver implements UserImageObserverInterface {
     }
   }
 
-  receiver_: UserImageObserverReceiver = this.initReceiver_(getUserProvider());
+  private receiver_: UserImageObserverReceiver =
+      this.initReceiver_(getUserProvider());
 
   private initReceiver_(userProvider: UserProviderInterface):
       UserImageObserverReceiver {

@@ -31,14 +31,14 @@ export class KeyboardBacklightObserver implements
     }
   }
 
-  receiver_: KeyboardBacklightObserverReceiver =
+  private receiver_: KeyboardBacklightObserverReceiver =
       this.initReceiver_(getKeyboardBacklightProvider());
 
-  private initReceiver_(KeyboardBacklightProvider:
+  private initReceiver_(keyboardBacklightProvider:
                             KeyboardBacklightProviderInterface):
       KeyboardBacklightObserverReceiver {
     const receiver = new KeyboardBacklightObserverReceiver(this);
-    KeyboardBacklightProvider.setKeyboardBacklightObserver(
+    keyboardBacklightProvider.setKeyboardBacklightObserver(
         receiver.$.bindNewPipeAndPassRemote());
     return receiver;
   }

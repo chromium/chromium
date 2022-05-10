@@ -42,7 +42,7 @@ export class WallpaperObserver implements WallpaperObserverInterface {
     }
   }
 
-  receiver_: WallpaperObserverReceiver =
+  private receiver_: WallpaperObserverReceiver =
       initWallpaperObserver(getWallpaperProvider(), this);
 
   onWallpaperChanged(currentWallpaper: CurrentWallpaper) {

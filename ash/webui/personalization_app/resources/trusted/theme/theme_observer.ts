@@ -28,7 +28,8 @@ export class ThemeObserver implements ThemeObserverInterface {
     }
   }
 
-  receiver_: ThemeObserverReceiver = this.initReceiver_(getThemeProvider());
+  private receiver_: ThemeObserverReceiver =
+      this.initReceiver_(getThemeProvider());
 
   private initReceiver_(themeProvider: ThemeProviderInterface):
       ThemeObserverReceiver {

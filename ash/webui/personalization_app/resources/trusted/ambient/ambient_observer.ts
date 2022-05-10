@@ -30,7 +30,8 @@ export class AmbientObserver implements AmbientObserverInterface {
     }
   }
 
-  receiver_: AmbientObserverReceiver = this.initReceiver_(getAmbientProvider());
+  private receiver_: AmbientObserverReceiver =
+      this.initReceiver_(getAmbientProvider());
 
   private initReceiver_(ambientProvider: AmbientProviderInterface):
       AmbientObserverReceiver {
