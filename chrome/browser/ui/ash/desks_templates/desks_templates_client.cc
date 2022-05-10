@@ -10,6 +10,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -25,6 +26,7 @@
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/window_properties.h"
+#include "components/desks_storage/core/desk_model_wrapper.h"
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
 #include "ui/views/widget/widget.h"
@@ -191,9 +193,23 @@ void DesksTemplatesClient::OnActiveUserSessionChanged(
   active_profile_ = profile;
   DCHECK(active_profile_);
 
-  if (!chromeos::features::IsDeskTemplateSyncEnabled()) {
-    storage_manager_ = std::make_unique<desks_storage::LocalDeskDataManager>(
-        active_profile_->GetPath(), account_id);
+  if (chromeos::features::IsSavedDesksEnabled()) {
+    save_and_recall_desks_storage_manager_ =
+        std::make_unique<desks_storage::LocalDeskDataManager>(
+            active_profile_->GetPath(), account_id);
+
+    if (ash::saved_desk_util::AreDesksTemplatesEnabled()) {
+      saved_desk_storage_manager_ =
+          std::make_unique<desks_storage::DeskModelWrapper>(
+              save_and_recall_desks_storage_manager_.get());
+    }
+
+  } else {
+    if (!chromeos::features::IsDeskTemplateSyncEnabled()) {
+      desk_templates_storage_manager_ =
+          std::make_unique<desks_storage::LocalDeskDataManager>(
+              active_profile_->GetPath(), account_id);
+    }
   }
 
   auto policy_desk_templates_it =
@@ -352,13 +368,26 @@ void DesksTemplatesClient::LaunchAppsFromTemplate(
 }
 
 desks_storage::DeskModel* DesksTemplatesClient::GetDeskModel() {
-  if (chromeos::features::IsDeskTemplateSyncEnabled()) {
-    return DeskSyncServiceFactory::GetForProfile(active_profile_)
-        ->GetDeskModel();
-  }
+  if (chromeos::features::IsSavedDesksEnabled()) {
+    if (!ash::saved_desk_util::AreDesksTemplatesEnabled()) {
+      DCHECK(save_and_recall_desks_storage_manager_.get());
+      return save_and_recall_desks_storage_manager_.get();
+    }
+    DCHECK(saved_desk_storage_manager_);
+    saved_desk_storage_manager_->SetDeskSyncBridge(
+        static_cast<desks_storage::DeskSyncBridge*>(
+            DeskSyncServiceFactory::GetForProfile(active_profile_)
+                ->GetDeskModel()));
+    return saved_desk_storage_manager_.get();
+  } else {
+    if (chromeos::features::IsDeskTemplateSyncEnabled()) {
+      return DeskSyncServiceFactory::GetForProfile(active_profile_)
+          ->GetDeskModel();
+    }
 
-  DCHECK(storage_manager_.get());
-  return storage_manager_.get();
+    DCHECK(desk_templates_storage_manager_.get());
+    return desk_templates_storage_manager_.get();
+  }
 }
 
 // Sets the preconfigured desk template. Data contains the contents of the JSON

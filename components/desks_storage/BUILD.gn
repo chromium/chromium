@@ -9,6 +9,8 @@ static_library("desks_storage") {
     "core/desk_model.cc",
     "core/desk_model.h",
     "core/desk_model_observer.h",
+    "core/desk_model_wrapper.cc",
+    "core/desk_model_wrapper.h",
     "core/desk_sync_bridge.cc",
     "core/desk_sync_bridge.h",
     "core/desk_sync_service.cc",

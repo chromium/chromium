@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,18 +63,13 @@ class LocalDeskDataManager : public DeskModel {
   void DeleteAllEntries(DeleteEntryCallback callback) override;
   std::size_t GetEntryCount() const override;
   std::size_t GetMaxEntryCount() const override;
+  std::size_t GetSaveAndRecallDeskEntryCount() const override;
+  std::size_t GetDeskTemplateEntryCount() const override;
+  std::size_t GetMaxSaveAndRecallDeskEntryCount() const override;
+  std::size_t GetMaxDeskTemplateEntryCount() const override;
   std::vector<base::GUID> GetAllEntryUuids() const override;
   bool IsReady() const override;
   bool IsSyncing() const override;
-
-  // TODO(crbug.com/1320805): Once DeskSyncBridge is set to support save and
-  // recall desk, add methods to support operations on both types of templates
-  // for a generic desk model. For now, these methods will only be for the local
-  // storage implementation of the desk model.
-  std::size_t GetSaveAndRecallDeskEntryCount() const;
-  std::size_t GetDeskTemplateEntryCount() const;
-  std::size_t GetMaxSaveAndRecallDeskEntryCount() const;
-  std::size_t GetMaxDeskTemplateEntryCount() const;
 
   static void SetDisableMaxTemplateLimitForTesting(bool disabled);
   static void SetExcludeSaveAndRecallDeskInMaxEntryCountForTesting(

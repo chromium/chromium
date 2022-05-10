@@ -139,9 +139,23 @@ class DeskModel {
   virtual std::size_t GetEntryCount() const = 0;
 
   // Gets the maximum number of templates this storage backend could hold.
-  // Adding more templates beyond this limit will result in |kHitMaximumLimit|
+  // Adding more templates beyond this limit will result in `kHitMaximumLimit`
   // error.
   virtual std::size_t GetMaxEntryCount() const = 0;
+
+  // Gets the number of save and recall desks currently saved.
+  virtual std::size_t GetSaveAndRecallDeskEntryCount() const = 0;
+
+  // Gets the number of desk templates currently saved.
+  virtual std::size_t GetDeskTemplateEntryCount() const = 0;
+
+  // Gets the maximum number of save and recall desks entry this storage backend
+  // could hold.
+  virtual std::size_t GetMaxSaveAndRecallDeskEntryCount() const = 0;
+
+  // Gets the maximum number of desk template entry this storage backend
+  // could hold.
+  virtual std::size_t GetMaxDeskTemplateEntryCount() const = 0;
 
   // Returns a vector of desk template UUIDs.
   // This method assumes each implementation has a cache and can return the

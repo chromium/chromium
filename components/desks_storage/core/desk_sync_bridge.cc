@@ -853,9 +853,15 @@ std::string DeskSyncBridge::GetStorageKey(
 void DeskSyncBridge::GetAllEntries(GetAllEntriesCallback callback) {
   std::vector<const DeskTemplate*> entries;
 
+  GetAllEntriesStatus status = GetAllEntries(entries);
+
+  std::move(callback).Run(status, std::move(entries));
+}
+
+DeskModel::GetAllEntriesStatus DeskSyncBridge::GetAllEntries(
+    std::vector<const DeskTemplate*>& entries) {
   if (!IsReady()) {
-    std::move(callback).Run(GetAllEntriesStatus::kFailure, std::move(entries));
-    return;
+    return GetAllEntriesStatus::kFailure;
   }
 
   for (const auto& it : policy_entries_)
@@ -866,7 +872,7 @@ void DeskSyncBridge::GetAllEntries(GetAllEntriesCallback callback) {
     entries.push_back(it.second.get());
   }
 
-  std::move(callback).Run(GetAllEntriesStatus::kOk, std::move(entries));
+  return GetAllEntriesStatus::kOk;
 }
 
 void DeskSyncBridge::GetEntryByUUID(const std::string& uuid_str,
@@ -991,11 +997,15 @@ void DeskSyncBridge::DeleteEntry(const std::string& uuid_str,
 }
 
 void DeskSyncBridge::DeleteAllEntries(DeleteEntryCallback callback) {
+  DeleteEntryStatus status = DeleteAllEntries();
+  std::move(callback).Run(status);
+}
+
+DeskModel::DeleteEntryStatus DeskSyncBridge::DeleteAllEntries() {
   if (!IsReady()) {
     // This sync bridge has not finished initializing.
     // Cannot delete anything.
-    std::move(callback).Run(DeleteEntryStatus::kFailure);
-    return;
+    return DeleteEntryStatus::kFailure;
   }
 
   std::unique_ptr<ModelTypeStore::WriteBatch> batch =
@@ -1009,15 +1019,33 @@ void DeskSyncBridge::DeleteAllEntries(DeleteEntryCallback callback) {
     batch->DeleteData(uuid.AsLowercaseString());
   }
   desk_template_entries_.clear();
-
-  std::move(callback).Run(DeleteEntryStatus::kOk);
+  return DeleteEntryStatus::kOk;
 }
 
-std::size_t DeskSyncBridge::GetEntryCount() const {
+size_t DeskSyncBridge::GetEntryCount() const {
+  return GetSaveAndRecallDeskEntryCount() + GetDeskTemplateEntryCount();
+}
+
+size_t DeskSyncBridge::GetMaxEntryCount() const {
+  return GetMaxSaveAndRecallDeskEntryCount() + GetMaxDeskTemplateEntryCount();
+}
+
+// Return 0 for now since chrome sync does not support save and recall desks.
+size_t DeskSyncBridge::GetSaveAndRecallDeskEntryCount() const {
+  return 0u;
+}
+
+size_t DeskSyncBridge::GetDeskTemplateEntryCount() const {
   return desk_template_entries_.size() + policy_entries_.size();
 }
 
-std::size_t DeskSyncBridge::GetMaxEntryCount() const {
+// Chrome sync does not support save and recall desks yet. Return 0 for max
+// count.
+size_t DeskSyncBridge::GetMaxSaveAndRecallDeskEntryCount() const {
+  return 0u;
+}
+
+size_t DeskSyncBridge::GetMaxDeskTemplateEntryCount() const {
   return kMaxTemplateCount + policy_entries_.size();
 }
 
@@ -1199,6 +1227,19 @@ bool DeskSyncBridge::HasUserTemplateWithName(const std::u16string& name) {
              [&name](std::pair<const base::GUID,
                                std::unique_ptr<ash::DeskTemplate>>& entry) {
                return entry.second->template_name() == name;
+             }) != desk_template_entries_.end();
+}
+
+bool DeskSyncBridge::HasUuid(const std::string& uuid_str) const {
+  const base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
+  if (!uuid.is_valid())
+    return false;
+  return std::find_if(
+             desk_template_entries_.begin(), desk_template_entries_.end(),
+             [&uuid](
+                 const std::pair<const base::GUID,
+                                 std::unique_ptr<ash::DeskTemplate>>& entry) {
+               return entry.first == uuid;
              }) != desk_template_entries_.end();
 }
 

@@ -47,6 +47,14 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
 
   size_t GetMaxEntryCount() const;
 
+  size_t GetDeskTemplateEntryCount() const;
+
+  size_t GetMaxDeskTemplateEntryCount() const;
+
+  size_t GetSaveAndRecallDeskEntryCount() const;
+
+  size_t GetMaxSaveAndRecallDeskEntryCount() const;
+
   // Update the buttons of the desks templates UI and the visibility of the
   // templates grid. The grid contents are not updated. Updates
   // `should_show_templates_ui_`.

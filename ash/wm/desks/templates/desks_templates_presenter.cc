@@ -83,6 +83,22 @@ size_t DesksTemplatesPresenter::GetMaxEntryCount() const {
   return GetDeskModel()->GetMaxEntryCount();
 }
 
+size_t DesksTemplatesPresenter::GetDeskTemplateEntryCount() const {
+  return GetDeskModel()->GetDeskTemplateEntryCount();
+}
+
+size_t DesksTemplatesPresenter::GetMaxDeskTemplateEntryCount() const {
+  return GetDeskModel()->GetMaxDeskTemplateEntryCount();
+}
+
+size_t DesksTemplatesPresenter::GetSaveAndRecallDeskEntryCount() const {
+  return GetDeskModel()->GetSaveAndRecallDeskEntryCount();
+}
+
+size_t DesksTemplatesPresenter::GetMaxSaveAndRecallDeskEntryCount() const {
+  return GetDeskModel()->GetMaxSaveAndRecallDeskEntryCount();
+}
+
 void DesksTemplatesPresenter::UpdateDesksTemplatesUI() {
   // The save as desk template button is hidden in tablet mode. The desks
   // templates button on the desk bar view and the desks templates grid are
