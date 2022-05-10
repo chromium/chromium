@@ -581,6 +581,7 @@ static_library("test_support") {
     "autofill_test_utils.h",
     "data_model/test_autofill_data_model.cc",
     "data_model/test_autofill_data_model.h",
+    "form_structure_test_api.h",
     "geo/alternative_state_name_map_test_utils.cc",
     "geo/alternative_state_name_map_test_utils.h",
     "geo/mock_alternative_state_name_map_updater.cc",

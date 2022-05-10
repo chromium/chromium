@@ -1894,7 +1894,8 @@ void FormStructure::RationalizeCreditCardFieldPredictions(
   }
 }
 
-void FormStructure::RationalizePhoneNumbersInSection(std::string section) {
+void FormStructure::RationalizePhoneNumbersInSection(
+    const std::string& section) {
   if (phone_rationalized_[section])
     return;
   std::vector<AutofillField*> fields;

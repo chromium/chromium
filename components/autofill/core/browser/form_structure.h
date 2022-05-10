@@ -246,7 +246,7 @@ class FormStructure {
 
   // Rationalize phone number fields in a given section, that is only fill
   // the fields that are considered composing a first complete phone number.
-  void RationalizePhoneNumbersInSection(std::string section);
+  void RationalizePhoneNumbersInSection(const std::string& section);
 
   // Overrides server predictions with specific heuristic predictions:
   // * NAME_LAST_SECOND heuristic predictions are unconditionally used.
@@ -439,20 +439,6 @@ class FormStructure {
 
   FormVersion version() const { return version_; }
 
-  bool ShouldSkipFieldVisibleForTesting(const FormFieldData& field) const {
-    return ShouldSkipField(field);
-  }
-
-  static void ProcessQueryResponseForTesting(
-      const AutofillQueryResponse& response,
-      const std::vector<FormStructure*>& forms,
-      const std::vector<FormSignature>& queried_form_signatures,
-      AutofillMetrics::FormInteractionsUkmLogger*
-          form_interactions_ukm_logger) {
-    ProcessQueryResponse(response, forms, queried_form_signatures,
-                         form_interactions_ukm_logger, nullptr);
-  }
-
   void set_single_username_data(
       AutofillUploadContents::SingleUsernameData single_username_data) {
     single_username_data_ = single_username_data;
@@ -463,15 +449,7 @@ class FormStructure {
   }
 
  private:
-  friend class AutofillMergeTest;
-  friend class FormStructureTestImpl;
-  friend class ParameterizedFormStructureTest;
-  FRIEND_TEST_ALL_PREFIXES(AutofillDownloadTest, QueryAndUploadTest);
-  FRIEND_TEST_ALL_PREFIXES(FormStructureTestImpl, FindLongestCommonPrefix);
-  FRIEND_TEST_ALL_PREFIXES(FormStructureTestImpl, FindLongestCommonAffixLength);
-  FRIEND_TEST_ALL_PREFIXES(FormStructureTestImpl, IsValidParseableName);
-  FRIEND_TEST_ALL_PREFIXES(FormStructureTestImpl,
-                           RationalizePhoneNumber_RunsOncePerSection);
+  friend class FormStructureTestApi;
 
   // This class wraps a vector of vectors of field indices. The indices of a
   // vector belong to the same group.
