@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1340068511406764697">You must provide a postcode, for example <ph name="EXAMPLE" />. Don't know your postcode? Find it out <ph name="BEGIN_LINK" />here<ph name="END_LINK" />.</translation>
-<translation id="2053553514270667976">ZIP code</translation>
+<translation id="2053553514270667976">Postcode</translation>
 <translation id="2096368010154057602">Department</translation>
 <translation id="2577522251608256362">Neighbourhood</translation>
 <translation id="3050787670591910834">You must provide a postcode, for example <ph name="EXAMPLE" />.</translation>

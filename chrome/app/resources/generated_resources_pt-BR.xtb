@@ -262,7 +262,7 @@
 <translation id="1244303850296295656">Erro na extensão</translation>
 <translation id="1246863218384630739">Não foi possível instalar o <ph name="VM_NAME" />: o URL da imagem retornou um código de erro <ph name="HTTP_ERROR" />. Entre em contato com o administrador.</translation>
 <translation id="1251366534849411931">Chave de abertura esperada: <ph name="ERROR_LINE" /></translation>
-<translation id="1251480783646955802">Essa ação apagará <ph name="TOTAL_USAGE" /> de dados de armazenados por sites e apps instalados</translation>
+<translation id="1251480783646955802">Essa ação vai apagar <ph name="TOTAL_USAGE" /> de dados de armazenados por sites e apps instalados</translation>
 <translation id="1251578593170406502">Procurando redes de dados móveis…</translation>
 <translation id="125220115284141797">Padrão</translation>
 <translation id="1252987234827889034">Ocorreu um erro de perfil</translation>
@@ -592,7 +592,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1585717515139318619">Outro programa no seu computador adicionou um tema que pode mudar a forma como o Google Chrome funciona.
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="1587129667417059148">Essa ação apagará todos os dados e cookies armazenados por <ph name="ORIGIN_NAME" /></translation>
+<translation id="1587129667417059148">Essa ação vai apagar todos os dados e cookies armazenados por <ph name="ORIGIN_NAME" /></translation>
 <translation id="1587275751631642843">&amp;Console JavaScript</translation>
 <translation id="1587907146729660231">Toque no botão liga/desliga com o dedo</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -751,7 +751,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1709217939274742847">Selecione um tíquete para usar na autenticação. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Configurações de rede</translation>
 <translation id="1709972045049031556">Não foi possível compartilhar</translation>
-<translation id="1711935594505774770">Essa ação apagará todos os dados e cookies armazenados por <ph name="SITE_GROUP_NAME" />, incluindo os dos sites relacionados e os dos apps instalados</translation>
+<translation id="1711935594505774770">Essa ação vai apagar todos os dados e cookies armazenados por <ph name="SITE_GROUP_NAME" />, incluindo os dos sites relacionados e os dos apps instalados</translation>
 <translation id="1714644264617423774">Ative recursos de acessibilidade para facilitar o uso do seu dispositivo. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1719312230114180055">Observação: sua impressão digital pode ser menos segura que uma senha forte ou um PIN.</translation>
@@ -5136,7 +5136,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6122600716821516697">Compartilhar com esse dispositivo?</translation>
 <translation id="6122831415929794347">Desativar "Navegação segura"?</translation>
 <translation id="6122875415561139701">A operação de escrita não é permitida em: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="6124213551517593835">Essa ação apagará todos os dados e cookies armazenados por <ph name="SITE_GROUP_NAME" />, incluindo os dos sites relacionados</translation>
+<translation id="6124213551517593835">Essa ação vai apagar todos os dados e cookies armazenados por <ph name="SITE_GROUP_NAME" />, incluindo os dos sites relacionados</translation>
 <translation id="6124650939968185064">As extensões a seguir dependem desta extensão:</translation>
 <translation id="6124698108608891449">Este site precisa de outras permissões.</translation>
 <translation id="6125479973208104919">Adicione sua conta a esse <ph name="DEVICE_TYPE" /> novamente.</translation>
@@ -5710,7 +5710,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6712943853047024245">Você já salvou uma senha relacionada a esse nome de usuário em <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Adicionar perfil de trabalho</translation>
 <translation id="6715803357256707211">Ocorreu um erro durante a instalação do aplicativo Linux. Clique na notificação para ver mais detalhes.</translation>
-<translation id="671619610707606484">Essa ação apagará <ph name="TOTAL_USAGE" /> de dados armazenados por sites</translation>
+<translation id="671619610707606484">Essa ação vai apagar <ph name="TOTAL_USAGE" /> de dados armazenados por sites</translation>
 <translation id="6716798148881908873">Conexão de rede perdida. Confira ou tente usar outra rede Wi-Fi.</translation>
 <translation id="671928215901716392">Bloquear tela</translation>
 <translation id="6721972322305477112">&amp;Arquivo</translation>
@@ -5901,7 +5901,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6904655473976120856">Pressione o botão App para sair</translation>
 <translation id="6909422577741440844">Receber desse dispositivo?</translation>
 <translation id="6910211073230771657">Excluído</translation>
-<translation id="691106080621596509">Essa ação apagará todos os dados e cookies armazenados por <ph name="SITE_GROUP_NAME" />, incluindo os dos sites relacionados e os do app instalado</translation>
+<translation id="691106080621596509">Essa ação vai apagar todos os dados e cookies armazenados por <ph name="SITE_GROUP_NAME" />, incluindo os dos sites relacionados e os do app instalado</translation>
 <translation id="6911734910326569517">Ocupação da memória</translation>
 <translation id="6912007319859991306">PIN do chip da rede celular</translation>
 <translation id="691289340230098384">Preferências de legenda</translation>
@@ -6302,7 +6302,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7343372807593926528">Descreva o problema antes de enviar feedback.</translation>
 <translation id="7345706641791090287">Confirmar sua senha</translation>
 <translation id="7346909386216857016">Ok, entendi.</translation>
-<translation id="7347452120014970266">Essa ação apagará todos os dados e cookies armazenados por <ph name="ORIGIN_NAME" />, incluindo os dos apps instalados</translation>
+<translation id="7347452120014970266">Essa ação vai apagar todos os dados e cookies armazenados por <ph name="ORIGIN_NAME" />, incluindo os dos apps instalados</translation>
 <translation id="7347751611463936647">Para usar esta extensão, digite "<ph name="EXTENSION_KEYWORD" />" e, em seguida, pressione a tecla TAB e insira seu comando ou termo de pesquisa.</translation>
 <translation id="7347943691222276892">Clique para sair de <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Teclado virtual</translation>
