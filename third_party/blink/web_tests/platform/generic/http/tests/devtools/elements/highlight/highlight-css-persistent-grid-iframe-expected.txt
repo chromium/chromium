@@ -289,7 +289,38 @@ This test verifies that persistent grid in iframe are positioned correctly.
           "name": "header-start"
         }
       ],
-      "columnLineNameOffsets": [],
+      "columnLineNameOffsets": [
+        {
+          "x": 223,
+          "y": 98,
+          "name": "sidebar-end"
+        },
+        {
+          "x": 98,
+          "y": 98,
+          "name": "sidebar-start"
+        },
+        {
+          "x": 223,
+          "y": 98,
+          "name": "content-start"
+        },
+        {
+          "x": 478,
+          "y": 98,
+          "name": "header-end"
+        },
+        {
+          "x": 478,
+          "y": 98,
+          "name": "content-end"
+        },
+        {
+          "x": 223,
+          "y": 98,
+          "name": "header-start"
+        }
+      ],
       "gridBorder": [
         "M",
         98,

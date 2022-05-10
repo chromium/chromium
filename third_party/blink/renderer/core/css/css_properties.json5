@@ -2576,9 +2576,6 @@
       keywords: ["auto", "min-content", "max-content"],
       typedom_types: ["Keyword", "Length", "Percentage", "Flex"],
       separator: " ",
-      // See comment on grid.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "grid-auto-flow",
@@ -2592,9 +2589,6 @@
       converter: "ConvertGridAutoFlow",
       keywords: ["row", "column"],
       typedom_types: ["Keyword"],
-      // See comment on grid.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "grid-auto-rows",
@@ -2608,9 +2602,6 @@
       keywords: ["auto", "min-content", "max-content"],
       typedom_types: ["Keyword", "Length", "Percentage", "Flex"],
       separator: " ",
-      // See comment on grid.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "grid-column-end",
@@ -2623,9 +2614,6 @@
       keywords: ["auto"],
       typedom_types: ["Keyword"],
       converter: "ConvertGridPosition",
-      // See comment on grid.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "grid-column-start",
@@ -2638,9 +2626,6 @@
       keywords: ["auto"],
       typedom_types: ["Keyword"],
       converter: "ConvertGridPosition",
-      // See comment on grid.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "grid-row-end",
@@ -2653,9 +2638,6 @@
       keywords: ["auto"],
       typedom_types: ["Keyword"],
       converter: "ConvertGridPosition",
-      // See comment on grid.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "grid-row-start",
@@ -2668,9 +2650,6 @@
       keywords: ["auto"],
       typedom_types: ["Keyword"],
       converter: "ConvertGridPosition",
-      // See comment on grid.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "grid-template-areas",
@@ -2678,9 +2657,6 @@
       style_builder_custom_functions: ["initial", "inherit", "value"],
       keywords: ["none"],
       typedom_types: ["Keyword"],
-      // See comment on grid.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "grid-template-columns",
@@ -2697,9 +2673,6 @@
       },
       keywords: ["none"],
       typedom_types: ["Keyword"],
-      // See comment on grid.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "grid-template-rows",
@@ -2716,9 +2689,6 @@
       },
       keywords: ["none"],
       typedom_types: ["Keyword"],
-      // See comment on grid.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "height",
@@ -6469,15 +6439,6 @@
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       layout_dependent: true,
-      // The flow with GridTemplateAreas::ApplyValue() and
-      // GridTemplate{Columns,Rows}::ApplyValue() is not idempotent:
-      // If you set grids twice, it may find a previous implicit
-      // named grid area, wrongly assume it was explicit, and thus set named
-      // grid lines as explicit, too. Since we don't want to track whether
-      // the grid was implicit or e.g. explicit from inheritance, we simply
-      // block out anything related to CSS grids from incremental updates.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "place-content",
@@ -6501,56 +6462,36 @@
         "grid-column-end"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      // See comment on grid.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "grid-column",
       longhands: ["grid-column-start", "grid-column-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      // See comment on grid.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "grid-column-gap",
       longhands: ["column-gap"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      // See comment on grid.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "grid-row-gap",
       longhands: ["row-gap"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      // See comment on grid.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "gap",
       longhands: ["row-gap", "column-gap"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      // See comment on grid.
-      supports_incremental_style: false,
     },
     {
       name: "grid-gap",
       longhands: ["row-gap", "column-gap"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      // See comment on grid.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "grid-row",
       longhands: ["grid-row-start", "grid-row-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      // See comment on grid.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "grid-template",
@@ -6559,9 +6500,6 @@
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       layout_dependent: true,
-      // See comment on grid.
-      supports_incremental_style: false,
-      idempotent: false,
     },
     {
       name: "inset",

@@ -914,41 +914,52 @@ std::unique_ptr<protocol::ListValue> BuildGridLineNames(
 
   std::unique_ptr<protocol::ListValue> lines = protocol::ListValue::create();
 
-  const NamedGridLinesMap& named_lines_map =
-      (direction == kForColumns)
-          ? grid_container_style.GridTemplateColumns().named_grid_lines
-          : grid_container_style.GridTemplateRows().named_grid_lines;
   LayoutUnit gap = grid_interface->GridGap(direction);
   LayoutUnit alt_axis_pos = GetPositionForFirstTrack(
       layout_object, direction == kForRows ? kForColumns : kForRows,
       alt_axis_positions);
 
-  for (const auto& item : named_lines_map) {
-    const String& name = item.key;
+  auto process_grid_lines_map = [&](const NamedGridLinesMap& named_lines_map) {
+    for (const auto& item : named_lines_map) {
+      const String& name = item.key;
 
-    for (const wtf_size_t index : item.value) {
-      LayoutUnit track =
-          GetPositionForTrackAt(layout_object, index, direction, positions);
+      for (const wtf_size_t index : item.value) {
+        LayoutUnit track =
+            GetPositionForTrackAt(layout_object, index, direction, positions);
 
-      LayoutUnit gap_offset =
-          index > 0 && index < positions.size() - 1 ? gap / 2 : LayoutUnit();
-      if (is_rtl)
-        gap_offset *= -1;
+        LayoutUnit gap_offset =
+            index > 0 && index < positions.size() - 1 ? gap / 2 : LayoutUnit();
+        if (is_rtl)
+          gap_offset *= -1;
 
-      LayoutUnit main_axis_pos = track - gap_offset;
-      PhysicalOffset line_name_pos(main_axis_pos, alt_axis_pos);
+        LayoutUnit main_axis_pos = track - gap_offset;
+        PhysicalOffset line_name_pos(main_axis_pos, alt_axis_pos);
 
-      if (direction == kForRows)
-        line_name_pos = Transpose(line_name_pos);
+        if (direction == kForRows)
+          line_name_pos = Transpose(line_name_pos);
 
-      std::unique_ptr<protocol::DictionaryValue> line =
-          BuildPosition(LocalToAbsolutePoint(node, line_name_pos, scale));
+        std::unique_ptr<protocol::DictionaryValue> line =
+            BuildPosition(LocalToAbsolutePoint(node, line_name_pos, scale));
 
-      line->setString("name", name);
+        line->setString("name", name);
 
-      lines->pushValue(std::move(line));
+        lines->pushValue(std::move(line));
+      }
     }
-  }
+  };
+
+  const NamedGridLinesMap& explicit_lines_map =
+      (direction == kForColumns)
+          ? grid_container_style.GridTemplateColumns().named_grid_lines
+          : grid_container_style.GridTemplateRows().named_grid_lines;
+
+  const NamedGridLinesMap& implicit_lines_map =
+      (direction == kForColumns)
+          ? grid_container_style.ImplicitNamedGridColumnLines()
+          : grid_container_style.ImplicitNamedGridRowLines();
+
+  process_grid_lines_map(explicit_lines_map);
+  process_grid_lines_map(implicit_lines_map);
 
   return lines;
 }

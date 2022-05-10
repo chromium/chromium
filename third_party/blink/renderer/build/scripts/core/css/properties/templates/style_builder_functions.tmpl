@@ -374,11 +374,6 @@ To<Longhand>(resolved_property).{{apply_call}};
     {% call(property) apply_value(property) %}
   ComputedGridTrackList computed_grid_track_list;
   StyleBuilderConverter::ConvertGridTrackList(value, computed_grid_track_list, state);
-  const NamedGridAreaMap& named_grid_areas = state.Style()->NamedGridArea();
-  if (!named_grid_areas.IsEmpty()) {
-    StyleBuilderConverter::CreateImplicitNamedGridLinesFromGridArea(
-        named_grid_areas, computed_grid_track_list.named_grid_lines, kFor{{type}}s);
-  }
   state.Style()->SetGridTemplate{{type}}s(computed_grid_track_list);
     {% endcall %}
   {% endif %}
