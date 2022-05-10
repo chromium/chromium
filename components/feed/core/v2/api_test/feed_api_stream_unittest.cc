@@ -1864,7 +1864,8 @@ TEST_F(FeedApiTest, LoadMoreDoesNotUpdateLoggingEnabled) {
   for (bool waa_on : {true, false}) {
     for (bool privacy_notice_fulfilled : {true, false}) {
       response_translator_.InjectResponse(MakeTypicalNextPageState(
-          page++, kTestTimeEpoch, signed_in, waa_on, privacy_notice_fulfilled));
+          page++, kTestTimeEpoch, kTestTimeEpoch, signed_in, waa_on,
+          privacy_notice_fulfilled));
       stream_->LoadMore(surface, base::DoNothing());
       WaitForIdleTaskQueue();
       EXPECT_TRUE(surface.update->logging_parameters().logging_enabled());
@@ -3101,13 +3102,25 @@ TEST_F(FeedApiTest, FollowedFromWebPageMenuCount) {
 }
 
 TEST_F(FeedApiTest, InfoCardTrackingActions) {
-  StreamModelUpdateRequestGenerator model_generator;
-  response_translator_.InjectResponse(model_generator.MakeFirstPage());
+  // Set up the server and client timestamps that affect the computation of
+  // the view timestamps in the info card tracking state.
+  base::Time server_timestamp = base::Time::Now();
+  task_environment_.AdvanceClock(base::Seconds(100));
+  base::Time client_timestamp = base::Time::Now();
+  base::TimeDelta timestamp_adjustment = server_timestamp - client_timestamp;
+  task_environment_.AdvanceClock(base::Seconds(200));
+
+  // Load the initial page.
+  response_translator_.InjectResponse(
+      MakeTypicalInitialModelState(0, client_timestamp, server_timestamp));
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
   base::HistogramTester histograms;
 
+  // Perform actions on one info card and verify the histograms.
+  base::Time first_view_timestamp2 = base::Time::Now() + timestamp_adjustment;
+  base::Time last_view_timestamp2 = first_view_timestamp2;
   stream_->ReportInfoCardTrackViewStarted(kForYouStream, kTestInfoCardType2);
   stream_->ReportInfoCardViewed(kForYouStream, kTestInfoCardType2,
                                 kMinimumViewIntervalSeconds);
@@ -3122,12 +3135,15 @@ TEST_F(FeedApiTest, InfoCardTrackingActions) {
   histograms.ExpectBucketCount("ContentSuggestions.Feed.InfoCard.Dismissed",
                                kTestInfoCardType2, 0);
 
+  // Perform actions on another info card and verify the histograms.
+  base::Time first_view_timestamp1 = base::Time::Now() + timestamp_adjustment;
   stream_->ReportInfoCardViewed(kForYouStream, kTestInfoCardType1,
                                 kMinimumViewIntervalSeconds);
   task_environment_.AdvanceClock(base::Seconds(kMinimumViewIntervalSeconds));
   stream_->ReportInfoCardViewed(kForYouStream, kTestInfoCardType1,
                                 kMinimumViewIntervalSeconds);
   task_environment_.AdvanceClock(base::Seconds(kMinimumViewIntervalSeconds));
+  base::Time last_view_timestamp1 = base::Time::Now() + timestamp_adjustment;
   stream_->ReportInfoCardViewed(kForYouStream, kTestInfoCardType1,
                                 kMinimumViewIntervalSeconds);
   stream_->ReportInfoCardClicked(kForYouStream, kTestInfoCardType1);
@@ -3141,11 +3157,14 @@ TEST_F(FeedApiTest, InfoCardTrackingActions) {
   histograms.ExpectBucketCount("ContentSuggestions.Feed.InfoCard.Dismissed",
                                kTestInfoCardType1, 1);
 
-  response_translator_.InjectResponse(model_generator.MakeFirstPage());
-  stream_->UnloadModel(kForYouStream);
-  stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
+  // Refresh the page so that a feed query including the info card tracking
+  // states is sent.
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  stream_->ManualRefresh(kForYouStream, base::DoNothing());
   WaitForIdleTaskQueue();
 
+  // Verify the info card tracking states. There should be 2 states with
+  // expected counts and view timestamps populated.
   ASSERT_EQ(2, network_.query_request_sent->feed_request()
                    .feed_query()
                    .chrome_fulfillment_info()
@@ -3155,6 +3174,10 @@ TEST_F(FeedApiTest, InfoCardTrackingActions) {
   state1.set_view_count(3);
   state1.set_click_count(1);
   state1.set_explicitly_dismissed_count(1);
+  state1.set_first_view_timestamp(
+      feedstore::ToTimestampMillis(first_view_timestamp1));
+  state1.set_last_view_timestamp(
+      feedstore::ToTimestampMillis(last_view_timestamp1));
   EXPECT_THAT(state1, EqualsProto(network_.query_request_sent->feed_request()
                                       .feed_query()
                                       .chrome_fulfillment_info()
@@ -3163,6 +3186,10 @@ TEST_F(FeedApiTest, InfoCardTrackingActions) {
   state2.set_type(kTestInfoCardType2);
   state2.set_view_count(1);
   state2.set_click_count(2);
+  state2.set_first_view_timestamp(
+      feedstore::ToTimestampMillis(first_view_timestamp2));
+  state2.set_last_view_timestamp(
+      feedstore::ToTimestampMillis(last_view_timestamp2));
   EXPECT_THAT(state2, EqualsProto(network_.query_request_sent->feed_request()
                                       .feed_query()
                                       .chrome_fulfillment_info()

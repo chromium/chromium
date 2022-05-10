@@ -320,6 +320,12 @@ RefreshResponseData TranslateWireResponse(
         TranslateContentLifetime(response_metadata.content_lifetime());
   }
 
+  if (response_metadata.has_response_time_ms()) {
+    feedstore::SetLastServerResponseTime(
+        feedstore::FromTimestampMillis(response_metadata.response_time_ms()),
+        result->stream_data);
+  }
+
   const auto& chrome_response_metadata =
       response_metadata.chrome_feed_response_metadata();
   // Note that we're storing the raw proto bytes for the root event ID because

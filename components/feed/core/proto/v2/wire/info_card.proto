@@ -18,8 +18,8 @@ message InfoCardTrackingState {
   optional int32 explicitly_dismissed_count = 2;
   optional int32 view_count = 3;
   optional int32 click_count = 4;
-  optional uint64 first_view_timestamp = 5;
-  optional uint64 last_view_timestamp = 6;
+  optional int64 first_view_timestamp = 5;
+  optional int64 last_view_timestamp = 6;
 }
 message InfoCardServingInfo {
   repeated int32 fulfilled_info_card_types = 1;

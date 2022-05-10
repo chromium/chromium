@@ -60,6 +60,7 @@ feedstore::Record MakeRecord(feedstore::StreamData stream_data);
 // refresh response payloads.
 struct StreamModelUpdateRequestGenerator {
   base::Time last_added_time = kTestTimeEpoch;
+  base::Time last_server_response_time = kTestTimeEpoch;
   bool signed_in = true;
   AccountInfo account_info = TestAccountInfo();
   bool logging_enabled = true;
@@ -89,6 +90,7 @@ std::vector<feedstore::DataOperation> MakeTypicalStreamOperations();
 std::unique_ptr<StreamModelUpdateRequest> MakeTypicalInitialModelState(
     int first_cluster_id = 0,
     base::Time last_added_time = kTestTimeEpoch,
+    base::Time last_server_response_time = kTestTimeEpoch,
     bool signed_in = true,
     bool logging_enabled = true,
     bool privacy_notice_fulfilled = false);
@@ -103,6 +105,7 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalInitialModelState(
 std::unique_ptr<StreamModelUpdateRequest> MakeTypicalRefreshModelState(
     int first_cluster_id = 2,
     base::Time last_added_time = kTestTimeEpoch,
+    base::Time last_server_response_time = kTestTimeEpoch,
     bool signed_in = true,
     bool logging_enabled = true);
 // Root
@@ -113,6 +116,7 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalRefreshModelState(
 std::unique_ptr<StreamModelUpdateRequest> MakeTypicalNextPageState(
     int page_number = 2,
     base::Time last_added_time = kTestTimeEpoch,
+    base::Time last_server_response_time = kTestTimeEpoch,
     bool signed_in = true,
     bool logging_enabled = true,
     bool privacy_notice_fulfilled = true,

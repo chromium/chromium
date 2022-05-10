@@ -119,6 +119,18 @@ class StreamModel {
     return stream_data_.privacy_notice_fulfilled();
   }
 
+  // The client timestamp, in milliseconds from the Epoch, when the content
+  // from the response is retrieved.
+  int64_t last_added_time_millis() const {
+    return stream_data_.last_added_time_millis();
+  }
+
+  // The server timestamp, in milliseconds from the Epoch, when the response is
+  // produced.
+  int64_t last_server_response_time_millis() const {
+    return stream_data_.last_server_response_time_millis();
+  }
+
   // Returns the full list of content in the order it should be presented.
   const std::vector<ContentRevision>& GetContentList() const {
     return content_list_;

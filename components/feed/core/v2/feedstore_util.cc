@@ -186,4 +186,12 @@ feed::ContentIdSet GetViewContentIds(const Metadata& metadata,
   return {};
 }
 
+void SetLastServerResponseTime(base::Time t, feedstore::StreamData& data) {
+  data.set_last_server_response_time_millis(ToTimestampMillis(t));
+}
+
+base::Time GetLastServerResponseTime(const feedstore::StreamData& data) {
+  return FromTimestampMillis(data.last_server_response_time_millis());
+}
+
 }  // namespace feedstore

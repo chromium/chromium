@@ -6,7 +6,6 @@
 #define COMPONENTS_FEED_CORE_V2_STREAM_INFO_CARD_TRACKER_H_
 
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -29,8 +28,16 @@ class InfoCardTracker {
   InfoCardTracker(const InfoCardTracker&) = delete;
   InfoCardTracker& operator=(const InfoCardTracker&) = delete;
 
-  // Returns the list of states of all tracked info cards.
-  std::vector<feedwire::InfoCardTrackingState> GetAllStates() const;
+  // Returns the list of states of all tracked info cards. The returned view
+  // timestamps will be adjusted to be based on server's clock. The adjustment
+  // is computed based on `server_timestamp` and `client_timestamp`.
+  // `server_timestamp` is the server timestamp, in milliseconds from Epoch,
+  // when the response is produced.
+  // `client_timestamp` is the client timestamp, in milliseconds from Epoch,
+  // when the response is received.
+  std::vector<feedwire::InfoCardTrackingState> GetAllStates(
+      int64_t server_timestamp,
+      int64_t client_timestamp) const;
 
   // Called when the info card is fully visible.
   void OnViewed(int info_card_type, int minimum_view_interval_seconds);
@@ -50,7 +57,6 @@ class InfoCardTracker {
                 const feedwire::InfoCardTrackingState& state);
 
   raw_ptr<PrefService> profile_prefs_;
-  std::unordered_map<int, base::TimeTicks> last_view_times_;
 };
 
 }  // namespace feed

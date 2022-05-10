@@ -254,6 +254,8 @@ StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id,
         initial_update->content[i].content_id().id());
   }
   feedstore::SetLastAddedTime(last_added_time, initial_update->stream_data);
+  feedstore::SetLastServerResponseTime(last_server_response_time,
+                                       initial_update->stream_data);
 
   return initial_update;
 }
@@ -295,6 +297,8 @@ StreamModelUpdateRequestGenerator::MakeNextPage(
   initial_update->stream_data.add_content_ids(MakeContent(j).content_id().id());
 
   feedstore::SetLastAddedTime(last_added_time, initial_update->stream_data);
+  feedstore::SetLastServerResponseTime(last_server_response_time,
+                                       initial_update->stream_data);
 
   return initial_update;
 }
@@ -302,11 +306,13 @@ StreamModelUpdateRequestGenerator::MakeNextPage(
 std::unique_ptr<StreamModelUpdateRequest> MakeTypicalInitialModelState(
     int first_cluster_id,
     base::Time last_added_time,
+    base::Time last_server_response_time,
     bool signed_in,
     bool logging_enabled,
     bool privacy_notice_fulfilled) {
   StreamModelUpdateRequestGenerator generator;
   generator.last_added_time = last_added_time;
+  generator.last_server_response_time = last_server_response_time;
   generator.signed_in = signed_in;
   generator.logging_enabled = logging_enabled;
   generator.privacy_notice_fulfilled = privacy_notice_fulfilled;
@@ -316,10 +322,12 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalInitialModelState(
 std::unique_ptr<StreamModelUpdateRequest> MakeTypicalRefreshModelState(
     int first_cluster_id,
     base::Time last_added_time,
+    base::Time last_server_response_time,
     bool signed_in,
     bool logging_enabled) {
   StreamModelUpdateRequestGenerator generator;
   generator.last_added_time = last_added_time;
+  generator.last_server_response_time = last_server_response_time;
   generator.signed_in = signed_in;
   generator.logging_enabled = logging_enabled;
   generator.privacy_notice_fulfilled = false;
@@ -330,12 +338,14 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalRefreshModelState(
 std::unique_ptr<StreamModelUpdateRequest> MakeTypicalNextPageState(
     int page_number,
     base::Time last_added_time,
+    base::Time last_server_response_time,
     bool signed_in,
     bool logging_enabled,
     bool privacy_notice_fulfilled,
     StreamModelUpdateRequest::Source source) {
   StreamModelUpdateRequestGenerator generator;
   generator.last_added_time = last_added_time;
+  generator.last_server_response_time = last_server_response_time;
   generator.signed_in = signed_in;
   generator.logging_enabled = logging_enabled;
   generator.privacy_notice_fulfilled = privacy_notice_fulfilled;

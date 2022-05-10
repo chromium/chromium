@@ -70,6 +70,9 @@ message StreamData {
   repeated int64 content_ids = 11;
   // Root EventID provided by the server.
   bytes root_event_id = 12;
+  // The unix timestamp in milliseconds that the feed response is produced on
+  // the server. This is returned from the server and based on server clock.
+  int64 last_server_response_time_millis = 15;
 
   reserved 3, 5;
 }

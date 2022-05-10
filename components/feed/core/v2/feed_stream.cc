@@ -905,7 +905,6 @@ RequestMetadata FeedStream::GetCommonRequestMetadata(
   result.autoplay_enabled = delegate_->IsAutoplayEnabled();
   result.acknowledged_notice_keys =
       NoticeCardTracker::GetAllAckowledgedKeys(profile_prefs_);
-  result.info_card_tracking_states = info_card_tracker_.GetAllStates();
 
   if (signed_in_request) {
     result.client_instance_id = prefs::GetClientInstanceId(*profile_prefs_);
@@ -953,6 +952,13 @@ RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
   if (stream_type.IsWebFeed()) {
     result.content_order = GetValidWebFeedContentOrder(*profile_prefs_);
   }
+
+  if (stream->model) {
+    result.info_card_tracking_states = info_card_tracker_.GetAllStates(
+        stream->model->last_server_response_time_millis(),
+        stream->model->last_added_time_millis());
+  }
+
   return result;
 }
 

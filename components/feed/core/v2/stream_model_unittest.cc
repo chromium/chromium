@@ -455,7 +455,7 @@ TEST(StreamModelTest, SharedStateUpdatesKeepOriginal) {
   observer.Clear();
   store_observer.Clear();
   model.Update(MakeTypicalNextPageState(
-      2, kTestTimeEpoch, true, true, true,
+      2, kTestTimeEpoch, kTestTimeEpoch, true, true, true,
       StreamModelUpdateRequest::Source::kNetworkLoadMore));
 
   EXPECT_EQ(2UL, observer.GetUiUpdate()->shared_states.size());
