@@ -62,8 +62,7 @@ void AXScreenAIAnnotator::OnAnnotationReceived(
     return;
   }
 
-  VLOG(2) << "AxScreenAIAnnotator received " << updates.nodes.size()
-          << " updates for " << manager->GetRootAsAXNode();
+  VLOG(2) << "AxScreenAIAnnotator received:\n" << updates.ToString();
   // TODO(https://crbug.com/1278249): To keep the ScreenAI related heuristics
   // centeralized, apply |updates| here.
 }
