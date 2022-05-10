@@ -107,7 +107,6 @@ ci.builder(
             "tools/android/avd/proto/creation/generic_playstore_android31.textpb",
         ],
     },
-    os = os.LINUX_BIONIC_REMOVE,
     # Triggered manually through the scheduler UI
     # https://luci-scheduler.appspot.com/jobs/chromium/android-avd-packager
     schedule = "triggered",

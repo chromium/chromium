@@ -16,7 +16,7 @@ ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     sheriff_rotations = sheriff_rotations.CHROMIUM,
@@ -152,7 +152,6 @@ ci.builder(
         category = "simple|release|x64",
         short_name = "rel",
     ),
-    os = os.LINUX_BIONIC_REMOVE,
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
 )
@@ -188,7 +187,6 @@ ci.builder(
         category = "simple|release",
         short_name = "arm",
     ),
-    os = os.LINUX_BIONIC_REMOVE,
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
 )
@@ -281,7 +279,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.builder(
@@ -336,7 +333,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.builder(
@@ -348,7 +344,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.builder(
@@ -362,7 +357,6 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     triggered_by = ["linux-lacros-builder-rel"],
     tree_closing = False,
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.builder(
@@ -392,7 +386,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 # For Chromebox for meetings(CfM)

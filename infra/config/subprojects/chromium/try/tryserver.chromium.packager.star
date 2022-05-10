@@ -23,7 +23,7 @@ try_.builder(
     name = "3pp-linux-amd64-packager",
     builderless = False,
     cores = 8,
-    os = os.LINUX_XENIAL_OR_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     properties = {
         "$build/chromium_3pp": {
             "platform": "linux-amd64",

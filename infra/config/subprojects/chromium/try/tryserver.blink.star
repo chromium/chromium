@@ -37,7 +37,7 @@ def blink_mac_builder(*, name, **kwargs):
 try_.builder(
     name = "linux-blink-optional-highdpi-rel",
     goma_backend = goma.backend.RBE_PROD,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
 )
 
 try_.builder(
@@ -61,7 +61,7 @@ try_.builder(
     ),
     goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    os = os.LINUX_DEFAULT,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/cc/.+",

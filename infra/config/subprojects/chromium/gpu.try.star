@@ -47,7 +47,6 @@ def gpu_android_builder(*, name, **kwargs):
         builder_group = "tryserver.chromium.android",
         builderless = True,
         goma_backend = goma.backend.RBE_PROD,
-        os = os.LINUX_BIONIC_REMOVE,
         ssd = None,
         **kwargs
     )
@@ -98,7 +97,6 @@ def gpu_chromeos_builder(*, name, **kwargs):
         builder_group = "tryserver.chromium.chromiumos",
         builderless = True,
         goma_backend = goma.backend.RBE_PROD,
-        os = os.LINUX_BIONIC_REMOVE,
         ssd = None,
         **kwargs
     )
@@ -129,7 +127,6 @@ def gpu_linux_builder(*, name, **kwargs):
         builder_group = "tryserver.chromium.linux",
         builderless = True,
         goma_backend = goma.backend.RBE_PROD,
-        os = os.LINUX_BIONIC_REMOVE,
         ssd = None,
         **kwargs
     )

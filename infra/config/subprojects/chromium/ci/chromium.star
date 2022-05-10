@@ -15,6 +15,7 @@ ci.defaults.set(
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
     main_console_view = "main",
+    os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     sheriff_rotations = sheriff_rotations.CHROMIUM,
@@ -46,7 +47,6 @@ ci.builder(
     ),
     cores = 8,
     execution_timeout = 4 * time.hour,
-    os = os.LINUX_BIONIC_REMOVE,
     tree_closing = True,
 )
 
@@ -57,7 +57,6 @@ ci.builder(
         short_name = "rel",
     ),
     cores = 32,
-    os = os.LINUX_BIONIC_REMOVE,
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -84,7 +83,6 @@ ci.builder(
     # See https://crbug.com/1153349#c22, as we update symbol_level=2, build
     # needs longer time to complete.
     execution_timeout = 7 * time.hour,
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.builder(
@@ -107,7 +105,6 @@ ci.builder(
     # TODO: Change this back down to something reasonable once these builders
     # have populated their cached by getting through the compile step
     execution_timeout = 10 * time.hour,
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.builder(
@@ -118,7 +115,6 @@ ci.builder(
     ),
     # Bump to 32 if needed.
     cores = 8,
-    os = os.LINUX_BIONIC_REMOVE,
     tree_closing = True,
     goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
@@ -133,7 +129,6 @@ ci.builder(
     ),
     cores = 32,
     notifies = ["linux-archive-rel"],
-    os = os.LINUX_BIONIC_REMOVE,
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -160,7 +155,6 @@ ci.builder(
     ),
     cores = 32,
     execution_timeout = 7 * time.hour,
-    os = os.LINUX_BIONIC_REMOVE,
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -222,7 +216,6 @@ ci.builder(
     ),
     cores = 32,
     execution_timeout = 7 * time.hour,
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.builder(

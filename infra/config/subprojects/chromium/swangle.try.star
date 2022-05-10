@@ -38,7 +38,7 @@ consoles.list_view(
 
 def swangle_linux_builder(*, name, **kwargs):
     kwargs.setdefault("cores", 8)
-    kwargs.setdefault("os", os.LINUX_BIONIC_SWITCH_TO_DEFAULT)
+    kwargs.setdefault("os", os.LINUX_DEFAULT)
     return try_.builder(name = name, **kwargs)
 
 def swangle_mac_builder(*, name, **kwargs):
