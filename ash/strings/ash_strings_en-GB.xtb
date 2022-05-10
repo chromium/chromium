@@ -304,6 +304,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2834813915651407382">Recently opened</translation>
 <translation id="2841907151129139818">Switched to tablet mode</translation>
 <translation id="2844169650293029770">USB-C device (left side front port)</translation>
+<translation id="2848120746144143659">Press enter to capture full-screen screenshot</translation>
 <translation id="2849936225196189499">Critical</translation>
 <translation id="2860184359326882502">Best match</translation>
 <translation id="2865888419503095837">Network info</translation>
@@ -482,6 +483,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3846575436967432996">No network information available</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="385300504083504382">Beginning</translation>
+<translation id="3861651314799684201">Press enter to record full screen</translation>
 <translation id="3886872229787704059">Opened today</translation>
 <translation id="3891340733213178823">Press Ctrl+Shift+Q twice to sign out.</translation>
 <translation id="3893630138897523026">ChromeVox (spoken feedback)</translation>
@@ -813,6 +815,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="595202126637698455">Performance tracing enabled</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Supervised user</translation>
+<translation id="5976112937189445008">Press enter to record window</translation>
 <translation id="5977415296283489383">Headphone</translation>
 <translation id="5978382165065462689">Sharing control of your screen via Remote Assistance.</translation>
 <translation id="5980301590375426705">Exit guest</translation>
@@ -1199,6 +1202,7 @@ New install</translation>
 <translation id="8364673525741149932">Toggle Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Forward by letter</translation>
 <translation id="8371991222807690464">Peripheral performance may be limited in Guest mode</translation>
+<translation id="8374601332003098278">Press enter to record partial screen</translation>
 <translation id="8375916635258623388">This <ph name="DEVICE_NAME" /> and your phone will connect automatically</translation>
 <translation id="8380784334203145311">Good night,</translation>
 <translation id="8382715499079447151">Viewing protection</translation>
@@ -1251,6 +1255,7 @@ New install</translation>
 <translation id="8653151467777939995">Show notification settings. Notifications are on</translation>
 <translation id="8660331759611631213">Square root of 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">Press enter to capture partial screenshot</translation>
 <translation id="8664753092453405566">Show network list. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Open <ph name="NAME" /> to set up your device</translation>
 <translation id="8676770494376880701">Low-power charger connected</translation>
@@ -1292,6 +1297,7 @@ New install</translation>
 <translation id="8909138438987180327">Battery at <ph name="PERCENTAGE" /> per cent.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">The Google Assistant doesn’t speak this language.</translation>
+<translation id="8924458948354692166">Press enter to capture window screenshot</translation>
 <translation id="8926951137623668982">Shelf always hidden</translation>
 <translation id="8936501819958976551">deactivated</translation>
 <translation id="8938800817013097409">USB-C device (right port in the back)</translation>

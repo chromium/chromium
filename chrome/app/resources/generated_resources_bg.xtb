@@ -968,6 +968,7 @@
 <translation id="1892341345406963517">Здравейте, <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Други езици</translation>
 <translation id="1895658205118569222">Изключване</translation>
+<translation id="1897120393475391208">Използване на надеждна парола</translation>
 <translation id="1900305421498694955">Приложенията от Google Play може да искат пълен достъп до файловата система, за да четат и записват файлове във външни устройства за съхранение. Създадените на устройството файлове и папки са видими за всички, които използват външното хранилище. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">&amp;Избиране на всички</translation>
 <translation id="1901396183631570154">Chrome не успя да запази тези пароли в профила ви в Google. Можете обаче да ги запазите на това устройство.</translation>
@@ -6559,6 +6560,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7444970023873202833">Разгледайте още спомени в Google Снимки</translation>
 <translation id="7444983668544353857">Деактивиране на <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Автоматично инсталиране на приложения</translation>
+<translation id="7449381494541372002">стартира се…</translation>
 <translation id="7449752890690775568">Да се премахне ли паролата?</translation>
 <translation id="7450761244949417357">Отваря се чрез <ph name="ALTERNATIVE_BROWSER_NAME" /> сега</translation>
 <translation id="7452166281927983300">Отхвърлени предупреждения (<ph name="MUTED_PASSWORDS" />)</translation>

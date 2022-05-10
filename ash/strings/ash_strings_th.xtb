@@ -301,6 +301,7 @@
 <translation id="2834813915651407382">เปิดเมื่อเร็วๆ นี้</translation>
 <translation id="2841907151129139818">เปลี่ยนเป็นโหมดแท็บเล็ตแล้ว</translation>
 <translation id="2844169650293029770">อุปกรณ์ USB-C (พอร์ตด้านหน้าซ้าย)</translation>
+<translation id="2848120746144143659">กด Enter เพื่อจับภาพแบบเต็มหน้าจอ</translation>
 <translation id="2849936225196189499">สำคัญ</translation>
 <translation id="2860184359326882502">ตรงที่สุด</translation>
 <translation id="2865888419503095837">ข้อมูลเครือข่าย</translation>
@@ -479,6 +480,7 @@
 <translation id="3846575436967432996">ไม่มีข้อมูลเครือข่ายที่สามารถใช้งานได้</translation>
 <translation id="385051799172605136">กลับ</translation>
 <translation id="385300504083504382">จุดเริ่มต้น</translation>
+<translation id="3861651314799684201">กด Enter เพื่อบันทึกแบบเต็มหน้าจอ</translation>
 <translation id="3886872229787704059">เปิดวันนี้</translation>
 <translation id="3891340733213178823">กด Ctrl+Shift+Q 2 ครั้งเพื่อออกจากระบบ</translation>
 <translation id="3893630138897523026">ChromeVox (การตอบสนองด้วยเสียง)</translation>
@@ -810,6 +812,7 @@
 <translation id="595202126637698455">เปิดใช้งานการติดตามการปฏิบัติงานแล้ว</translation>
 <translation id="5955304353782037793">แอป</translation>
 <translation id="5958529069007801266">ผู้ใช้ภายใต้การควบคุมดูแล</translation>
+<translation id="5976112937189445008">กด Enter เพื่อบันทึกหน้าต่าง</translation>
 <translation id="5977415296283489383">ชุดหูฟัง</translation>
 <translation id="5978382165065462689">กำลังแชร์การควบคุมหน้าจอผ่านความช่วยเหลือระยะไกล</translation>
 <translation id="5980301590375426705">ออกเซสชันผู้มาเยือน</translation>
@@ -1195,6 +1198,7 @@
 <translation id="8364673525741149932">เปิดหรือปิด Shelf Party <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">ไปข้างหน้าทีละตัวอักษร</translation>
 <translation id="8371991222807690464">อุปกรณ์ต่อพ่วงอาจมีประสิทธิภาพจำกัดเมื่อใช้โหมดผู้มาเยือน</translation>
+<translation id="8374601332003098278">กด Enter เพื่อบันทึกหน้าจอบางส่วน</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> นี้และโทรศัพท์จะเชื่อมต่อกันโดยอัตโนมัติ</translation>
 <translation id="8380784334203145311">ราตรีสวัสดิ์</translation>
 <translation id="8382715499079447151">การป้องกันการดู</translation>
@@ -1247,6 +1251,7 @@
 <translation id="8653151467777939995">แสดงการตั้งค่าการแจ้งเตือน การแจ้งเตือนเปิดอยู่</translation>
 <translation id="8660331759611631213">รากที่สองของ 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">กด Enter เพื่อจับภาพหน้าจอบางส่วน</translation>
 <translation id="8664753092453405566">แสดงรายการเครือข่าย <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">เปิด <ph name="NAME" /> เพื่อตั้งค่าอุปกรณ์</translation>
 <translation id="8676770494376880701">เชื่อมต่อกับที่ชาร์จพลังงานต่ำ</translation>
@@ -1288,6 +1293,7 @@
 <translation id="8909138438987180327">แบตเตอรี่เหลือ <ph name="PERCENTAGE" /> เปอร์เซ็นต์</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant ยังพูดภาษานี้ไม่ได้</translation>
+<translation id="8924458948354692166">กด Enter เพื่อจับภาพหน้าจอทั้งหน้าต่าง</translation>
 <translation id="8926951137623668982">ซ่อนชั้นวางเสมอ</translation>
 <translation id="8936501819958976551">ปิดใช้งานอยู่</translation>
 <translation id="8938800817013097409">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>

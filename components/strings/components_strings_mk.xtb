@@ -619,7 +619,6 @@
 <translation id="259821504105826686">Фотографски и дигитални уметности</translation>
 <translation id="2601150049980261779">Романтични филмови</translation>
 <translation id="2604589665489080024">Поп музика</translation>
-<translation id="2609632851001447353">Варијации</translation>
 <translation id="2610561535971892504">Кликнете за копирање</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />нема да ги зачувува<ph name="END_EMPHASIS" /> следниве податоци:
           <ph name="BEGIN_LIST" />
@@ -1102,6 +1101,7 @@
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> е блокиран</translation>
 <translation id="3978338123949022456">Режим на пребарување, напишете барање и притиснете Enter за да пребарувате со <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Птици</translation>
+<translation id="3985750352229496475">Управувајте со адресите…</translation>
 <translation id="3986705137476756801">Исклучете ја „Автоматски титлови“ засега</translation>
 <translation id="3987940399970879459">Помалку од 1 MB</translation>
 <translation id="3990250421422698716">Офсет превиткување</translation>
@@ -1229,6 +1229,7 @@
 <translation id="4305666528087210886">Не може да се пристапи до вашата датотека</translation>
 <translation id="4306529830550717874">Да се зачува адресата?</translation>
 <translation id="4306812610847412719">привремена меморија</translation>
+<translation id="4310070645992025887">Пребарајте ги вашите „Патувања“</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блокирај (стандардно)</translation>
 <translation id="4314815835985389558">Управувајте со синхронизацијата</translation>
@@ -2113,6 +2114,7 @@
 <translation id="6839929833149231406">Област</translation>
 <translation id="6846340164947227603">Користете број на виртуелна картичка…</translation>
 <translation id="6852204201400771460">Дали да се вчита апликацијата повторно?</translation>
+<translation id="6857776781123259569">Управувајте со лозинките…</translation>
 <translation id="686485648936420384">Потрошувачки ресурси</translation>
 <translation id="6865412394715372076">Картичкава не може да се потврди во моментов</translation>
 <translation id="6869334554832814367">Лични заеми</translation>
@@ -2439,6 +2441,7 @@
 <translation id="7669271284792375604">Напаѓачите што се наоѓаат на сајтов може да се обидат да ве измамат да инсталирате програми што ќе му наштетат на вашето искуство со прелистувањето (на пример, со изменување на вашата почетна страница или со прикажување дополнителни реклами на локациите што ги посетувате).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Дејствата преземени со податоци означени како доверливи (1 дејство од најавувањето). <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" />}one{Дејствата преземени со податоци означени како доверливи (# дејство од најавувањето). <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" />}other{Дејствата преземени со податоци означени како доверливи (# дејства од најавувањето). <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Поштенско сандаче 6</translation>
+<translation id="7675325315208090829">Управувајте со начините на плаќање…</translation>
 <translation id="7676643023259824263">Пребарајте текст во привремената меморија, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Прегледајте ја и управувајте со историјата на прелистувањето во поставките за Chrome</translation>
 <translation id="7679947978757153706">Бејзбол</translation>

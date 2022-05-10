@@ -450,6 +450,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4840495572919996524">북마크, 방문 기록, 비밀번호 등이 더 이상 Google 계정과 동기화되지 않습니다.</translation>
 <translation id="4844899002472726590">관심 주제를 보고 수정합니다.</translation>
 <translation id="4854345657858711387">비밀번호 설정</translation>
+<translation id="4858786880085262208">가능하면 HTTPS로 전환하세요. 안전한 사이트에도 안전하지 않은 콘텐츠가 삽입되어 있을 수 있습니다.</translation>
 <translation id="4860895144060829044">전화걸기</translation>
 <translation id="4872323082491632254">비밀번호 확인</translation>
 <translation id="4881695831933465202">열기</translation>
@@ -697,7 +698,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6807889908376551050">모두 표시...</translation>
 <translation id="681368974849482173">북마크가 생성되었습니다.</translation>
 <translation id="683022620450280906">어느 기기에서든 저장된 비밀번호를 사용할 수 있습니다. <ph name="EMAIL" />의 Google 비밀번호 관리자에 비밀번호가 저장됩니다.</translation>
-<translation id="6830804042318138535">자세히 보기</translation>
 <translation id="6831043979455480757">번역</translation>
 <translation id="6842136130964845393">저장된 비밀번호에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
 <translation id="6851516051005285358">데스크톱 버전으로 보기</translation>
@@ -799,6 +799,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7781069478569868053">새 탭 페이지</translation>
 <translation id="7781829728241885113">어제</translation>
 <translation id="778855399387580014">새 Chrome 탭에서 검색을 시작합니다.</translation>
+<translation id="7790892308048519147">안전한 연결 사용 시도</translation>
 <translation id="7791543448312431591">추가</translation>
 <translation id="7807060072011926525">Google 제공</translation>
 <translation id="7839985698273989086">오프라인 페이지</translation>

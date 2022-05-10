@@ -136,6 +136,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1719094688023114093">Subtítulos automáticos activados.</translation>
 <translation id="1720011244392820496">Activar Sincronización Wi‑Fi</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" es visible para los dispositivos Bluetooth.</translation>
+<translation id="174102739345480129">El marcador está desactivado.</translation>
 <translation id="1743570585616704562">No se ha reconocido</translation>
 <translation id="1746730358044914197">El administrador configura los métodos de introducción.</translation>
 <translation id="1747827819627189109">Teclado en pantalla habilitado</translation>
@@ -565,6 +566,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4379531060876907730">Estas son las herramientas del lápiz óptico</translation>
 <translation id="4389184120735010762">Has pulsado la combinación de teclas que activa la lupa fijada. ¿Quieres activarla?</translation>
 <translation id="439598569299422042">En pausa, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">No se puede guardar la grabación de pantalla</translation>
 <translation id="4405151984121254935">El tipo de periférico conectado no es compatible.</translation>
 <translation id="4406883609789734330">Subtítulos automáticos</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> está desactivado.</translation>
@@ -671,6 +673,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Siguiente frase</translation>
+<translation id="5016558321564993266">Activar/Desactivar marcador. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Se ha agotado el tiempo</translation>
 <translation id="5033299697334913360">Haz clic en cualquier parte de la pantalla para hacer una captura de la pantalla completa</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> está conectado a un nuevo teléfono</translation>
@@ -700,6 +703,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5222676887888702881">Cerrar sesión</translation>
 <translation id="5234764350956374838">Cerrar</translation>
 <translation id="523505283826916779">Ajustes de accesibilidad</translation>
+<translation id="5245201184978705914">No se puede generar la transcripción</translation>
 <translation id="5253783950165989294">Conectado a un dispositivo llamado <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
 <translation id="5260676007519551770">Escritorio 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> solicita tu atención.</translation>
@@ -734,6 +738,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5433020815079095860">Entrada de audio</translation>
 <translation id="544691375626129091">Todos los usuarios disponibles ya se han añadido a esta sesión.</translation>
 <translation id="54609108002486618">Administrado</translation>
+<translation id="5460938382730614333">El marcador está activado.</translation>
 <translation id="5465662442746197494">¿Necesitas ayuda?</translation>
 <translation id="547979256943495781">La estantería está en la parte derecha</translation>
 <translation id="5491186829646618080">Hay actualizaciones de firmware disponibles</translation>
@@ -775,6 +780,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5745612484876805746">La luz nocturna se activa automáticamente al anochecer</translation>
 <translation id="5750765938512549687">El Bluetooth está desactivado</translation>
 <translation id="5760866832697883462">Conecta <ph name="NAME" /></translation>
+<translation id="5762420912707163638">Activar/Desactivar marcador. <ph name="STATE_TEXT" /> Usa el panel táctil, la pantalla táctil o el lápiz óptico para dibujar en la pantalla.</translation>
 <translation id="576341972084747908">Descargando archivo peligroso <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Grupo de estanterías está desactivado.</translation>
 <translation id="576453121877257266">Luz nocturna activada.</translation>

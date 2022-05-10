@@ -24,7 +24,9 @@
 <translation id="1201402288615127009">ถัดไป</translation>
 <translation id="1204296502688602597">เวลาในการตอบสนองของ DNS</translation>
 <translation id="123124571410524056">สงสัยว่าเป็นพอร์ทัล</translation>
+<translation id="1236400083787698183">ทำ Powerwash อุปกรณ์ก่อนรีสตาร์ท หากอุปกรณ์มีฝา ให้รอจนกว่าจะทำ Powerwash เสร็จจึงค่อยปิดฝา การทำ Powerwash อาจใช้เวลาถึง 1 นาทีจึงจะเสร็จสมบูรณ์</translation>
 <translation id="1238612778414822719">เวลาในการตอบสนองของ HTTPS</translation>
+<translation id="1240699967155581440">ต้องทำ Powerwash (รีเซ็ตเป็นค่าเริ่มต้น)</translation>
 <translation id="1264116747675686718">กำลังอัปเดตเวอร์ชันระบบปฏิบัติการ</translation>
 <translation id="1264369926465113395">ดูนิตยสารดิจิทัลใหม่ของ Chromebook สำหรับผู้สร้างสรรค์งานศิลปะและการออกแบบ</translation>
 <translation id="1270369111467284986">สงสัยว่าเป็นแคพทีฟพอร์ทัล</translation>
@@ -61,6 +63,7 @@
 <translation id="150962533380566081">PUK ไม่ถูกต้อง</translation>
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
 <translation id="152892567002884378">เพิ่มระดับเสียง</translation>
+<translation id="1555130319947370107">สีน้ำเงิน</translation>
 <translation id="155865706765934889">ทัชแพด</translation>
 <translation id="1565038567006703504">อัปเดต <ph name="DEVICE_NAME" /> ไม่ได้</translation>
 <translation id="1567064801249837505">อัลบั้ม</translation>
@@ -112,7 +115,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">การตั้งค่าเพิ่มเติม</translation>
 <translation id="2085089206770112532">ลดความสว่างของหน้าจอ</translation>
-<translation id="2104796393919810494">ซ่อมเสร็จแล้ว</translation>
 <translation id="2105810540595158374">อุปกรณ์เป็นอุปกรณ์ควบคุมเกม</translation>
 <translation id="2115956742084455574">รหัสไม่ถูกต้อง</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" /> เวอร์ชัน <ph name="MILESTONE_VERSION" /></translation>
@@ -149,6 +151,7 @@
 <translation id="2360257214555822463">ตรวจพบ<ph name="LINK_BEGIN" />คอมโพเนนต์ที่ไม่ตรงตามข้อกำหนด<ph name="LINK_END" /> หากคุณเลือกที่จะยืนยันว่าได้ติดตั้งคอมโพเนนต์เหล่านี้ โปรดดำเนินการดังกล่าวตอนนี้เลย</translation>
 <translation id="2363636958541445404">เปิดฟีเจอร์นี้เพื่อเลือกตัวเลือกโปรแกรมรักษาหน้าจอ</translation>
 <translation id="2364498172489649528">ผ่าน</translation>
+<translation id="236594517359128026">วางแล็ปท็อปบนพื้นราบก่อนดำเนินการต่อ</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ส่งรายงานความคิดเห็น</translation>
 <translation id="2407209115954268704">สถานะการล็อกซิม</translation>
@@ -175,6 +178,7 @@
 <translation id="2638662041295312666">รูปภาพการลงชื่อเข้าใช้</translation>
 <translation id="2640549051766135490">เลือกอัลบั้ม <ph name="TITLE" /> <ph name="DESC" /> อยู่</translation>
 <translation id="2712812801627182647">คีย์การตรวจสอบสิทธิ์ TLS</translation>
+<translation id="2713444072780614174">สีขาว</translation>
 <translation id="2717139507051041123">เปิดใช้โหมดสีมืด</translation>
 <translation id="2740531572673183784">ตกลง</translation>
 <translation id="2751739896257479635">การตรวจสอบสิทธิ์ขั้นที่ 2 ของ EAP</translation>
@@ -266,6 +270,7 @@
 <translation id="3820172043799983114">PIN ไม่ถูกต้อง</translation>
 <translation id="3838338534323494292">รหัสผ่านใหม่</translation>
 <translation id="385051799172605136">กลับ</translation>
+<translation id="385832974417157471">ทำ Powerwash อุปกรณ์ก่อนปิด หากอุปกรณ์มีฝา ให้รอจนกว่าจะทำ Powerwash เสร็จจึงค่อยปิดฝา การทำ Powerwash อาจใช้เวลาถึง 1 นาทีจึงจะเสร็จสมบูรณ์</translation>
 <translation id="3858860766373142691">ชื่อ</translation>
 <translation id="3865414814144988605">ความละเอียด</translation>
 <translation id="387301095347517405">จำนวนครั้งที่ชาร์จแบตเตอรี่จนเต็ม</translation>
@@ -297,6 +302,7 @@
 <translation id="4145784616224233563">ไฟร์วอลล์ HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">ตรวจสอบว่าเครื่องสแกนเปิดอยู่และใช้งานได้ผ่านทางเครือข่ายของคุณหรือการเชื่อมต่อโดยตรง</translation>
+<translation id="4159784952369912983">ม่วง</translation>
 <translation id="4170180284036919717">ถ่ายรูป</translation>
 <translation id="4170700058716978431">ไม่สำเร็จ</translation>
 <translation id="4176463684765177261">ปิดการทำงาน</translation>
@@ -454,6 +460,7 @@
 <translation id="5507300744274596613">ตรวจสอบว่า Chrome OS เป็นเวอร์ชันล่าสุด</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5548284010950733518">ปรับเทียบคอมโพเนนต์</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">สแกนอีกครั้ง</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -483,6 +490,7 @@
 <translation id="5866840822086176774">แรงมาก</translation>
 <translation id="588258955323874662">เต็มหน้าจอ</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
+<translation id="5901630391730855834">สีเหลือง</translation>
 <translation id="5903200662178656908">อุปกรณ์คือชุดแป้นพิมพ์และเมาส์</translation>
 <translation id="5916084858004523819">ห้ามใช้</translation>
 <translation id="5916664084637901428">เปิด</translation>
@@ -492,6 +500,7 @@
 <translation id="594552776027197022">สร้างคู่คีย์แบบสุ่ม</translation>
 <translation id="5972388717451707488">อัปเดตเครื่องมือ</translation>
 <translation id="5984145644188835034">วอลเปเปอร์เริ่มต้น</translation>
+<translation id="6017514345406065928">สีเขียว</translation>
 <translation id="6034694447310538551">เปิดใช้การรีเซ็ตทุกเดือนโดยอัตโนมัติ</translation>
 <translation id="6037291330010597344">ไม่มีเอกสารในตัวป้อนเอกสารของเครื่องสแกน ใส่เอกสารแล้วลองอีกครั้ง</translation>
 <translation id="6040143037577758943">ปิด</translation>
@@ -679,6 +688,7 @@
 <translation id="7882501334836096755">คีย์สาธารณะ</translation>
 <translation id="7890841768028788197">หน้าจอสัมผัสภายใน</translation>
 <translation id="7936303884198020182">ไม่พบเนมเซิร์ฟเวอร์</translation>
+<translation id="7942349550061667556">สีแดง</translation>
 <translation id="7943235353293548836">ระยะเวลาของ Keepalive ต่อเนื่อง</translation>
 <translation id="7955587717700691983">แป้นพิมพ์บลูทูธ</translation>
 <translation id="7960831585769876809">อุณหภูมิ</translation>
@@ -704,9 +714,11 @@
 <translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
 <translation id="8208861521865154048">สิทธิประโยชน์</translation>
 <translation id="8217675307824400706">เชื่อมต่ออินเทอร์เน็ต</translation>
+<translation id="8221728673725659466">การปรับเทียบเสร็จสมบูรณ์</translation>
 <translation id="8226628635270268143">เลือกรูปภาพและอัลบั้มที่ชื่นชอบ</translation>
 <translation id="8230672074305416752">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายเริ่มต้นไม่สำเร็จ</translation>
 <translation id="8246209727385807362">ผู้ให้บริการที่ไม่รู้จัก</translation>
+<translation id="827422111966801947">สีคราม</translation>
 <translation id="8281886186245836920">ข้าม</translation>
 <translation id="8286154143153872371">โปรดเชื่อมต่อเครือข่ายและโหลดหน้าซ้ำเพื่อดูวอลเปเปอร์</translation>
 <translation id="8291967909914612644">ประเทศผู้ให้บริการหน้าแรก</translation>
@@ -714,6 +726,7 @@
 <translation id="8297006494302853456">อ่อน</translation>
 <translation id="8302368968391049045">ไฟร์วอลล์ HTTPS</translation>
 <translation id="8318753676953949627">ไม่มีภาพ</translation>
+<translation id="8327249300223641918">วางทั้งอุปกรณ์ (ฐานและฝา) บนพื้นราบก่อนดำเนินการต่อ</translation>
 <translation id="8336739000755212683">เปลี่ยนรูปภาพของบัญชีอุปกรณ์</translation>
 <translation id="8347227221149377169">งานพิมพ์</translation>
 <translation id="8352772353338965963">เพิ่มบัญชีเพื่อลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี บัญชีที่ลงชื่อเข้าใช้แล้วทั้งหมดสามารถเข้าถึงได้โดยไม่ต้องใช้รหัสผ่าน คุณจึงควรใช้ฟีเจอร์นี้กับบัญชีที่เชื่อถือเท่านั้น</translation>
@@ -728,6 +741,7 @@
 <translation id="844521431886043384">ไม่ได้ตั้งค่า DNS</translation>
 <translation id="8456761643544401578">โหมดมืดอัตโนมัติ</translation>
 <translation id="8461329675984532579">ชื่อผู้ให้บริการหน้าแรก</translation>
+<translation id="8467104829907989997">กำลังปรับเทียบคอมโพเนนต์...</translation>
 <translation id="8475690821716466388">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP PSK ที่ไม่รัดกุม</translation>
 <translation id="8477551185774834963">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้เล็กน้อย</translation>
 <translation id="8483248364096924578">ที่อยู่ IP</translation>
@@ -787,6 +801,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{สแกน}=1{สแกนหน้า {NUMBER_OF_PAGES}}other{สแกนหน้า {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">อุปกรณ์มีแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="9003704114456258138">ความถี่</translation>
+<translation id="9025198690966128418">ใช้เป็นอุปกรณ์ส่วนบุคคล</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">การแปลง DNS มีเวลาในการตอบสนองสูง</translation>
 <translation id="9073281213608662541">PAP</translation>

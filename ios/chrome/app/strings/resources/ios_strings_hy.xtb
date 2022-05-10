@@ -450,6 +450,7 @@
 <translation id="4840495572919996524">Ձեր էջանիշները, պատմությունը, գաղտնաբառերն ու այլ կարգավորումներ կհամաժամացվեն ձեր Google հաշվի հետ:</translation>
 <translation id="4844899002472726590">Դիտեք և փոփոխեք ձեզ հետաքրքրող թեմաները</translation>
 <translation id="4854345657858711387">Սահմանեք անցակոդ</translation>
+<translation id="4858786880085262208">Հնարավորության դեպքում օգտագործել HTTPS հաղորդակարգը։ Ապահով կայքերը կարող են պարունակել ոչ անվտանգ ներկառուցված բովանդակություն։</translation>
 <translation id="4860895144060829044">Զանգեք</translation>
 <translation id="4872323082491632254">Ստուգել գաղտնաբառերը</translation>
 <translation id="4881695831933465202">Բացել</translation>
@@ -697,7 +698,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6807889908376551050">Ցույց տալ բոլորը…</translation>
 <translation id="681368974849482173">Տարրը ստեղծվեց</translation>
 <translation id="683022620450280906">Պահված գաղտնաբառերը կարող եք օգտագործել ցանկացած սարքում։ Դրանք պահված են <ph name="EMAIL" /> հաշվի Google Գաղտնաբառերի կառավարիչում։</translation>
-<translation id="6830804042318138535">Կարդալ ավելին</translation>
 <translation id="6831043979455480757">Թարգմանել</translation>
 <translation id="6842136130964845393">Հաստատեք ձեր ինքնությունը, որպեսզի պահված գաղտնաբառերը միշտ հասանելի լինեն ձեզ</translation>
 <translation id="6851516051005285358">Համակարգչային տարբերակ</translation>
@@ -799,6 +799,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7781069478569868053">Նոր ներդիրի էջ</translation>
 <translation id="7781829728241885113">Երեկ</translation>
 <translation id="778855399387580014">Սկսեք որոնել Chrome-ի նոր ներդիրում:</translation>
+<translation id="7790892308048519147">Օգտագործել անվտանգ միացումներ</translation>
 <translation id="7791543448312431591">Ավելացնել</translation>
 <translation id="7807060072011926525">Տրամադրված է Google-ի կողմից</translation>
 <translation id="7839985698273989086">Անցանց էջ</translation>

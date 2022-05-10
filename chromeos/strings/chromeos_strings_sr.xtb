@@ -61,6 +61,7 @@
 <translation id="150962533380566081">Неважећи PUK.</translation>
 <translation id="1510238584712386396">Покретач</translation>
 <translation id="152892567002884378">Појачајте звук</translation>
+<translation id="1555130319947370107">Плава</translation>
 <translation id="155865706765934889">Додирна табла</translation>
 <translation id="1565038567006703504">Ажурирање уређаја <ph name="DEVICE_NAME" /> није успело</translation>
 <translation id="1567064801249837505">Албуми</translation>
@@ -91,6 +92,7 @@
 <translation id="1801418420130173017">Онемогућите тамну тему</translation>
 <translation id="1807246157184219062">Светлa</translation>
 <translation id="1827738518074806965">Ликовна галерија</translation>
+<translation id="1840835860961531162">Искључите заштиту од уписивања</translation>
 <translation id="1851218745569890714">Видео конференције</translation>
 <translation id="1852934301711881861">Инсталирај Chrome OS Flex</translation>
 <translation id="1856388568474281774">Стрелица надоле</translation>
@@ -111,7 +113,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Више подешавања</translation>
 <translation id="2085089206770112532">Смањите осветљеност екрана</translation>
-<translation id="2104796393919810494">Поправка је завршена</translation>
 <translation id="2105810540595158374">Уређај је контролер за игре.</translation>
 <translation id="2115956742084455574">Нетачан кôд</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, верзија <ph name="MILESTONE_VERSION" /></translation>
@@ -174,6 +175,7 @@
 <translation id="2638662041295312666">Слика за пријављивање</translation>
 <translation id="2640549051766135490">Изабран је албум <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2712812801627182647">Кључ за TLS потврду идентитета</translation>
+<translation id="2713444072780614174">Бела</translation>
 <translation id="2717139507051041123">Омогућите режим тамне боје</translation>
 <translation id="2740531572673183784">Потврди</translation>
 <translation id="2751739896257479635">EAP потврда идентитета 2. фазе:</translation>
@@ -274,6 +276,7 @@
 <translation id="3941014780699102620">Разрешење хоста није успело</translation>
 <translation id="3942420633017001071">Дијагностика</translation>
 <translation id="3954678691475912818">Тип уређаја је непознат.</translation>
+<translation id="3958703339436883942">Припрема се рестартовање...</translation>
 <translation id="3966286471246132217">Да бисте добили тачније резултате, затворите све апликације док се тест не доврши.</translation>
 <translation id="3967822245660637423">Преузимање је довршено</translation>
 <translation id="3969602104473960991">Chrome OS лозинка је ажурирана</translation>
@@ -295,6 +298,7 @@
 <translation id="4145784616224233563">HTTP заштитни зид</translation>
 <translation id="4147897805161313378">Google слике</translation>
 <translation id="4155551848414053977">Проверите да ли је скенер укључен и доступан преко мреже или директне везе</translation>
+<translation id="4159784952369912983">Љубичаста</translation>
 <translation id="4170180284036919717">Сликајте</translation>
 <translation id="4170700058716978431">НИЈЕ УСПЕЛО</translation>
 <translation id="4176463684765177261">Онемогућено</translation>
@@ -422,6 +426,7 @@
 <translation id="5275828089655680674">Поново покрени рутине</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">верзија <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">Онемогућите заштиту од уписивања да бисте прешли на следећи екран. Информације потражите на страници за подршку произвођача уређаја.</translation>
 <translation id="5300814202279832142">Преместите прозор на радну површину</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">Повежи</translation>
@@ -473,12 +478,14 @@
 <translation id="583281660410589416">Непознато</translation>
 <translation id="5843706793424741864">Фаренхајт</translation>
 <translation id="5849570051105887917">Кôд добављача за Home</translation>
+<translation id="5856532218727053281">Систем ће се рестартовати када се верификује статус заштите од уписивања</translation>
 <translation id="5859603669299126575">Албум ликовне галерије</translation>
 <translation id="5860033963881614850">Искључено</translation>
 <translation id="5860491529813859533">Укључи</translation>
 <translation id="5866840822086176774">Веома јак</translation>
 <translation id="588258955323874662">Цеo екран</translation>
 <translation id="5895138241574237353">Покрени поново</translation>
+<translation id="5901630391730855834">Жута</translation>
 <translation id="5903200662178656908">Уређај је комбинација тастатуре и миша.</translation>
 <translation id="5916084858004523819">Забрањено</translation>
 <translation id="5916664084637901428">Укључено</translation>
@@ -488,6 +495,7 @@
 <translation id="594552776027197022">Генеришите насумични пар кључева</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Подразумевана позадина</translation>
+<translation id="6017514345406065928">Зелена</translation>
 <translation id="6034694447310538551">Омогући аутоматско месечно ресетовање</translation>
 <translation id="6037291330010597344">Механизам за увлачење докумената на скенеру је празан. Додајте документе и пробајте поново.</translation>
 <translation id="6040143037577758943">Затвори</translation>
@@ -675,6 +683,7 @@
 <translation id="7882501334836096755">Јавни кључ</translation>
 <translation id="7890841768028788197">Интерни додирни екран</translation>
 <translation id="7936303884198020182">Није пронађен ниједан сервер за имена</translation>
+<translation id="7942349550061667556">Црвена</translation>
 <translation id="7943235353293548836">Трајни интервал одржавања линка</translation>
 <translation id="7955587717700691983">Bluetooth тастатура</translation>
 <translation id="7960831585769876809">Температура</translation>
@@ -703,6 +712,7 @@
 <translation id="8226628635270268143">Одаберите омиљене слике и албуме</translation>
 <translation id="8230672074305416752">Пинговање подразумеваног мрежног пролаза није успело</translation>
 <translation id="8246209727385807362">Непознат мобилни оператер</translation>
+<translation id="827422111966801947">Тамноплава</translation>
 <translation id="8281886186245836920">Прескочи</translation>
 <translation id="8286154143153872371">Повежите се на мрежу и поново учитајте страницу да бисте видели позадину.</translation>
 <translation id="8291967909914612644">Земља добављача за Home</translation>

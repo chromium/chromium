@@ -83,6 +83,7 @@
 <translation id="632825460376924298">Permite conectarea la Chromium</translation>
 <translation id="6337530241089703714">Alege dacă ștergi datele Chromium de pe dispozitiv sau le păstrezi</translation>
 <translation id="6424492062988593837">Chromium a devenit și mai bun! Este disponibilă o nouă versiune.</translation>
+<translation id="6625409903340039086">Chromium acceptă acum politicile privind utilizatorii pentru contul tău gestionat</translation>
 <translation id="6752854822223394465">Organizația ta configurează Chromium...</translation>
 <translation id="6820823224820483452">Chromium nu a putut verifica toate parolele. Încearcă din nou mâine.</translation>
 <translation id="7006920032187763988">Poți folosi parolele salvate în Managerul de parole în alte aplicații de pe iPad.</translation>
@@ -104,6 +105,7 @@
 <translation id="7674213385180944843">Deschide Setări &gt; Confidențialitate &gt; Cameră foto &gt; Chromium și activează camera foto.</translation>
 <translation id="7746854981345936341">Sfat pentru Chromium: unele butoane se află acum în partea de jos a ecranului, cum ar fi Înapoi, Înainte și Caută.</translation>
 <translation id="7763454117143368771">Folosește Chromium ca browser prestabilit ca să te protejezi de site-uri periculoase și să păstrezi parolele în siguranță</translation>
+<translation id="7812317783196516890">Te-ai conectat și datele tale se sincronizează cu un cont gestionat de <ph name="DOMAIN" />, în care administratorul acestuia poate acum să seteze politici privind utilizatorii specifice contului, care pot să modifice comportamentul browserului Chromium.</translation>
 <translation id="786327964234957808">Comuți contul pentru sincronizare de la <ph name="USER_EMAIL1" /> la <ph name="USER_EMAIL2" />. Datele Chromium existente sunt gestionate de <ph name="DOMAIN" />. Astfel, datele vor fi șterse de pe acest dispozitiv, dar vor rămâne în <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Începe să folosești scanerul din Chromium</translation>
 <translation id="7928628054454574139">Deschide Chromium când atingi linkuri în alte aplicații</translation>

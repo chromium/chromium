@@ -24,7 +24,9 @@
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1204296502688602597">ডিএনএস লেটেন্সি</translation>
 <translation id="123124571410524056">পোর্টাল হতে পারে</translation>
+<translation id="1236400083787698183">রিস্টার্ট করার আগে, আপনার ডিভাইস পাওয়ারওয়াশ করুন। আপনার ডিভাইসে লিড থাকলে, লিড বন্ধ করার আগে পাওয়ারওয়াশ সম্পূর্ণ না হওয়া পর্যন্ত অপেক্ষা করুন। পাওয়ারওয়াশ সম্পূর্ণ হতে এক মিনিট পর্যন্ত সময় লাগতে পারে।</translation>
 <translation id="1238612778414822719">HTTPS লেটেন্সি</translation>
+<translation id="1240699967155581440">পাওয়ারওয়াশ (ফ্যাক্টরি রিসেট) করতে হবে</translation>
 <translation id="1264116747675686718">OS ভার্সন আপডেট করা হচ্ছে</translation>
 <translation id="1264369926465113395">ক্রিয়েটরের জন্য Chromebook-এর নতুন ডিজিট্যাল ম্যাগাজিন দেখুন</translation>
 <translation id="1270369111467284986">এটি একটি অন্তরীণ পোর্টাল হতে পারে</translation>
@@ -61,6 +63,7 @@
 <translation id="150962533380566081">ভুল PUK।</translation>
 <translation id="1510238584712386396">লঞ্চার</translation>
 <translation id="152892567002884378">ভলিউম বাড়ান</translation>
+<translation id="1555130319947370107">নীল</translation>
 <translation id="155865706765934889">টাচপ্যাড</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> আপডেট করা যাচ্ছে না</translation>
 <translation id="1567064801249837505">অ্যালবাম</translation>
@@ -112,7 +115,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">আরও সেটিংস</translation>
 <translation id="2085089206770112532">ডিসপ্লে উজ্জ্বলতা কমান</translation>
-<translation id="2104796393919810494">রিপেয়ার হয়ে গেছে</translation>
 <translation id="2105810540595158374">ডিভাইস একটি গেম কন্ট্রোলার।</translation>
 <translation id="2115956742084455574">ভুল কোড</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ভার্সন <ph name="MILESTONE_VERSION" /></translation>
@@ -149,6 +151,7 @@
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />উপযুক্ত নয় এমন কম্পোনেন্ট<ph name="LINK_END" /> পাওয়া গেছে। এটি ইনস্টল করা হয়েছে তা কনফার্ম করতে চাইলে, এখনই করুন।</translation>
 <translation id="2363636958541445404">স্ক্রিন সেভার বিকল্প বেছে নেওয়ার জন্য ফিচার চালু করুন</translation>
 <translation id="2364498172489649528">পাস করেছে</translation>
+<translation id="236594517359128026">চালিয়ে যাওয়ার আগে, আপনার ল্যাপটপটি সমতল পৃষ্ঠে রাখুন</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ফিডব্যাক রিপোর্ট পাঠান</translation>
 <translation id="2407209115954268704">সিম লক স্ট্যাটাস</translation>
@@ -175,6 +178,7 @@
 <translation id="2638662041295312666">সাইন-ইন স্ক্রিনের ছবি</translation>
 <translation id="2640549051766135490">বেছে নেওয়া অ্যালবাম: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2712812801627182647">TLS যাচাইকরণ কী</translation>
+<translation id="2713444072780614174">সাদা</translation>
 <translation id="2717139507051041123">'ডার্ক কালার' মোড চালু করুন</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2751739896257479635">EAP ফেজ ২ যাচাইকরণ</translation>
@@ -266,6 +270,7 @@
 <translation id="3820172043799983114">ভুল পিন।</translation>
 <translation id="3838338534323494292">নতুন পাসওয়ার্ড</translation>
 <translation id="385051799172605136">ফিরুন</translation>
+<translation id="385832974417157471">বন্ধ করার আগে, আপনার ডিভাইস পাওয়ারওয়াশ করুন। আপনার ডিভাইসে লিড থাকলে, লিড বন্ধ করার আগে পাওয়ারওয়াশ সম্পূর্ণ না হওয়া পর্যন্ত অপেক্ষা করুন। পাওয়ারওয়াশ সম্পূর্ণ হতে এক মিনিট পর্যন্ত সময় লাগতে পারে।</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3865414814144988605">রেজোলিউশন</translation>
 <translation id="387301095347517405">আপনার ব্যাটারি যতবার পুরো চার্জ দেওয়া হয়েছে</translation>
@@ -297,6 +302,7 @@
 <translation id="4145784616224233563">HTTP ফায়ারওয়াল</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">আপনার স্ক্যানার চালু এবং নেটওয়ার্ক বা সরাসরি কানেকশনের মাধ্যমে উপলভ্য রয়েছে তা দেখে নিন</translation>
+<translation id="4159784952369912983">বেগুনি</translation>
 <translation id="4170180284036919717">ফটো তুলুন</translation>
 <translation id="4170700058716978431">ব্যর্থ হয়েছে</translation>
 <translation id="4176463684765177261">অক্ষম হয়েছে</translation>
@@ -453,6 +459,7 @@
 <translation id="5507300744274596613">Chrome OS আপ-টু-ডেট আছে কিনা কনফার্ম করুন</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5548284010950733518">কম্পোনেন্ট ক্যালিব্রেট করুন</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">আবার স্ক্যান করুন</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -482,6 +489,7 @@
 <translation id="5866840822086176774">খুব জোরালো</translation>
 <translation id="588258955323874662">সম্পূর্নস্ক্রীণ</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
+<translation id="5901630391730855834">হলুদ</translation>
 <translation id="5903200662178656908">ডিভাইসটি কীবোর্ড এবং মাউসের একটি কম্বো।</translation>
 <translation id="5916084858004523819">নিষিদ্ধ</translation>
 <translation id="5916664084637901428">চালু</translation>
@@ -491,6 +499,7 @@
 <translation id="594552776027197022">র‍্যান্ডম কী পেয়ার জেনারেট করুন</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">ডিফল্ট ওয়ালপেপার</translation>
+<translation id="6017514345406065928">সবুজ</translation>
 <translation id="6034694447310538551">প্রতিমাসে অটোমেটিক রিসেট করার ফিচার চালু করুন</translation>
 <translation id="6037291330010597344">স্ক্যানারের ডকুমেন্ট ফিডার খালি আছে। ডকুমেন্ট যোগ করে আবার চেষ্টা করুন।</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
@@ -678,6 +687,7 @@
 <translation id="7882501334836096755">সর্বজনীন 'কী'</translation>
 <translation id="7890841768028788197">ইন্টার্নাল টাচস্ক্রিন</translation>
 <translation id="7936303884198020182">ডোমেন নেম সার্ভার খুঁজে পাওয়া যায়নি</translation>
+<translation id="7942349550061667556">লাল</translation>
 <translation id="7943235353293548836">অবিরাম সক্রিয়-রাখা ইন্টারভ্যাল</translation>
 <translation id="7955587717700691983">ব্লুটুথ কীবোর্ড</translation>
 <translation id="7960831585769876809">তাপমাত্রা</translation>
@@ -703,9 +713,11 @@
 <translation id="8206859287963243715">সেলুলার</translation>
 <translation id="8208861521865154048">বিশেষ সুবিধা</translation>
 <translation id="8217675307824400706">কানেক্ট হন</translation>
+<translation id="8221728673725659466">ক্যালিব্রেশন হয়ে গেছে</translation>
 <translation id="8226628635270268143">আপনার পছন্দের ফটো ও অ্যালবাম বাছুন</translation>
 <translation id="8230672074305416752">ডিফল্ট নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
 <translation id="8246209727385807362">অজানা পরিষেবা প্রদানকারী</translation>
+<translation id="827422111966801947">নীল</translation>
 <translation id="8281886186245836920">ছেড়ে যান</translation>
 <translation id="8286154143153872371">ওয়ালপেপার দেখার জন্য কোনও নেটওয়ার্কে কানেক্ট করে পৃষ্ঠা আবার লোড করুন।</translation>
 <translation id="8291967909914612644">হোম পরিষেবা প্রদানকারী দেশ</translation>
@@ -713,6 +725,7 @@
 <translation id="8297006494302853456">দুর্বল</translation>
 <translation id="8302368968391049045">HTTPS ফায়ারওয়াল</translation>
 <translation id="8318753676953949627">কোন ছবি নেই</translation>
+<translation id="8327249300223641918">চালিয়ে যাওয়ার আগে, আপনার পুরো ডিভাইস (বেস এবং লিড) একটি সমতল পৃষ্ঠে রাখুন।</translation>
 <translation id="8336739000755212683">ডিভাইস অ্যাকাউন্টের ছবিটি পরিবর্তন করুন</translation>
 <translation id="8347227221149377169">প্রিন্ট করার কাজগুলি</translation>
 <translation id="8352772353338965963">একাধিক সাইন-ইন-এ একটি অ্যাকাউন্ট যোগ করুন৷ সমস্ত সাইন-ইন থাকা অ্যাকাউন্টগুলি কোনো পাসওয়ার্ড ছাড়াই অ্যাক্সেস করা যাবে, তাই এই বৈশিষ্ট্যটি শুধুমাত্র বিশ্বস্ত অ্যাকাউন্টগুলির সাথে ব্যবহার করা উচিৎ৷</translation>
@@ -727,6 +740,7 @@
 <translation id="844521431886043384">DNS সেট আপ করা হয়নি</translation>
 <translation id="8456761643544401578">অটোমেটিক 'ডার্ক মোড'</translation>
 <translation id="8461329675984532579">হোম পরিষেবা প্রদানকারীর নাম</translation>
+<translation id="8467104829907989997">কম্পোনেন্ট ক্যালিব্রেট করা...</translation>
 <translation id="8475690821716466388">দুর্বল WEP PSK প্রোটোকল ব্যবহার করে ওয়াই-ফাই নেটওয়ার্ক সুরক্ষিত করা হয়েছে</translation>
 <translation id="8477551185774834963">যতদূর পর্যন্ত লেটেন্সির ঊর্ধ্বসীমা অনুমোদন করা যায়, ডিএনএস লেটেন্সি তার চেয়ে বেশি</translation>
 <translation id="8483248364096924578">আইপি অ্যাড্রেস</translation>
@@ -786,6 +800,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{স্ক্যান করুন}=1{{NUMBER_OF_PAGES} নম্বর পৃষ্ঠা স্ক্যান করুন}one{{NUMBER_OF_PAGES} নম্বর পৃষ্ঠা স্ক্যান করুন}other{{NUMBER_OF_PAGES} নম্বর পৃষ্ঠা স্ক্যান করুন}}</translation>
 <translation id="8997710128084572139">ডিভাইসে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
 <translation id="9003704114456258138">ফ্রিকোয়েন্সি</translation>
+<translation id="9025198690966128418">ব্যক্তিগত ডিভাইস হিসেবে ব্যবহার করুন</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">ডিএনএস রেজোলিউশনে খুব বেশি ল্যাটেন্সি আছে</translation>
 <translation id="9073281213608662541">PAP</translation>

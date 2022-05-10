@@ -61,6 +61,7 @@
 <translation id="150962533380566081">‏PUK לא חוקי.</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
 <translation id="152892567002884378">הגברת עוצמת הקול</translation>
+<translation id="1555130319947370107">כחול</translation>
 <translation id="155865706765934889">לוח מגע</translation>
 <translation id="1565038567006703504">לא ניתן לעדכן את <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">אלבומים</translation>
@@ -91,6 +92,7 @@
 <translation id="1801418420130173017">השבתת העיצוב הכהה</translation>
 <translation id="1807246157184219062">בהיר</translation>
 <translation id="1827738518074806965">גלריית אומנות</translation>
+<translation id="1840835860961531162">‏השבתה של Write Protect</translation>
 <translation id="1851218745569890714">שיחת ועידה בווידאו</translation>
 <translation id="1852934301711881861">‏התקנה של ChromeOS Flex</translation>
 <translation id="1856388568474281774">חץ למטה</translation>
@@ -111,7 +113,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">הגדרות נוספות</translation>
 <translation id="2085089206770112532">הפחתת הבהירות של התצוגה</translation>
-<translation id="2104796393919810494">התיקון הושלם</translation>
 <translation id="2105810540595158374">המכשיר הוא שלט לגיימינג.</translation>
 <translation id="2115956742084455574">קוד שגוי</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, גרסה <ph name="MILESTONE_VERSION" /></translation>
@@ -157,6 +158,7 @@
 <translation id="2446553403094072641">‏רמת הדיוק של נקודה צפה (floating-point)</translation>
 <translation id="2448312741937722512">סוג</translation>
 <translation id="2461822463642141190">כרגע</translation>
+<translation id="2480034874476596812">כיבוי ידני</translation>
 <translation id="2491955442992294626">המקשים לא נבדקים כשמשתמשים בחלון אחר</translation>
 <translation id="2493126929778606526">התמונות הטובות ביותר שלך שנבחרו באופן אוטומטי</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -173,6 +175,7 @@
 <translation id="2638662041295312666">תמונת המשתמש</translation>
 <translation id="2640549051766135490">האלבום <ph name="TITLE" /> <ph name="DESC" /> נבחר</translation>
 <translation id="2712812801627182647">‏מפתח האימות של TLS (אבטחת שכבת התעבורה)</translation>
+<translation id="2713444072780614174">לבן</translation>
 <translation id="2717139507051041123">הפעלה של מצב כהה</translation>
 <translation id="2740531572673183784">אישור</translation>
 <translation id="2751739896257479635">‏אימות שלב 2 של EAP</translation>
@@ -251,6 +254,7 @@
 <translation id="3606583719724308068">‏זמן אחזור ארוך לאתרי HTTPS</translation>
 <translation id="3621202678540785336">קלט</translation>
 <translation id="3632579075709132555">לחצן להחלפת מצב של מסך הפרטיות</translation>
+<translation id="3678765385266369662">‏בחירת הדרך לכיבוי Write Protect</translation>
 <translation id="3689839747745352263">בדיקת <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">בטעינה...</translation>
 <translation id="3708186454126126312">מכשירים שחוברו בעבר</translation>
@@ -272,6 +276,7 @@
 <translation id="3941014780699102620">לא ניתן היה להתאים את נתוני המארח</translation>
 <translation id="3942420633017001071">אבחון</translation>
 <translation id="3954678691475912818">סוג המכשיר לא ידוע.</translation>
+<translation id="3958703339436883942">המערכת מתכוננת להפעלה מחדש…</translation>
 <translation id="3966286471246132217">כדי לקבל תוצאות מדויקות יותר, סוגרים את כל האפליקציות עד להשלמת הבדיקה.</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3969602104473960991">‏הסיסמה של ChromeOS עודכנה</translation>
@@ -293,6 +298,7 @@
 <translation id="4145784616224233563">‏חומת אש מסוג HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">יש לוודא שהסורק מופעל וזמין דרך הרשת או דרך חיבור ישיר</translation>
+<translation id="4159784952369912983">סגול</translation>
 <translation id="4170180284036919717">צילום תמונה</translation>
 <translation id="4170700058716978431">הבדיקה הסתיימה בכישלון</translation>
 <translation id="4176463684765177261">מושבת</translation>
@@ -305,6 +311,7 @@
 <translation id="4244962993387259361">‏צריך נפח אחסון פנוי של MB‏500 לפחות כדי להריץ בדיקת זיכרון. כדי לפנות מקום, עוברים להגדרות &gt; ניהול האחסון.</translation>
 <translation id="4250229828105606438">צילום מסך</translation>
 <translation id="4258281355379922695">‏זמן המתנה ל-HTTP</translation>
+<translation id="4258561075226177474">המכשיר יוחזר למשתמש המקורי. למחוק את נתוני המשתמש?</translation>
 <translation id="4271957103967917607">הצגת מסך מלא</translation>
 <translation id="4275799948641988986">מי ישתמש במכשיר לאחר התיקון?</translation>
 <translation id="4289540628985791613">סקירה כללית</translation>
@@ -353,6 +360,7 @@
 <translation id="473775607612524610">עדכון</translation>
 <translation id="4744944742468440486">מידע בקשר לבחירה שלך</translation>
 <translation id="4773299976671772492">הופסק</translation>
+<translation id="4774530504324923332">‏יהיה צורך במפתח אבטחה עם תמיכה ב-RSU, סורק קודי QR ומכשיר נוסף עם חיבור לאינטרנט</translation>
 <translation id="4782311465517282004">בלחיצה ימנית או בלחיצה ארוכה על טקסט, יוצגו הגדרות, תרגומים או המרת יחידות</translation>
 <translation id="4791000909649665275">מספר התמונות: <ph name="NUMBER" /></translation>
 <translation id="4793710386569335688">עזרה נוספת זמינה ב<ph name="BEGIN_LINK" />מרכז העזרה<ph name="END_LINK" />.</translation>
@@ -418,6 +426,7 @@
 <translation id="5275828089655680674">הפעלת תרחישים מחדש</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">גרסה <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">‏יש להשבית את Write Protect כדי להמשיך למסך הבא. לקבלת הוראות, יש לעבור לדף התמיכה של יצרן המכשיר.</translation>
 <translation id="5300814202279832142">העברת חלון לשולחן עבודה וירטואלי</translation>
 <translation id="5304899856529773394">‏נתוני EvDo</translation>
 <translation id="5308380583665731573">התחברות</translation>
@@ -432,6 +441,7 @@
 <translation id="5372659122375744710">‏רשת ה-Wi-Fi לא מאובטחת</translation>
 <translation id="5376354385557966694">מצב בהיר אוטומטי</translation>
 <translation id="537872351913703572">המכשיר יועבר למשתמש או לארגון אחר</translation>
+<translation id="5395600419410242651">מחיקת כל הנתונים</translation>
 <translation id="5400907029458559844">המכשיר בתהליך התחברות.</translation>
 <translation id="5401938042319910061">הרצה של כל התרחישים</translation>
 <translation id="5423849171846380976">מופעל</translation>
@@ -468,12 +478,14 @@
 <translation id="583281660410589416">לא ידוע</translation>
 <translation id="5843706793424741864">פרנהייט</translation>
 <translation id="5849570051105887917">קוד ספק ביתי</translation>
+<translation id="5856532218727053281">‏המערכת תופעל מחדש אחרי אימות הסטטוס של Write Protection</translation>
 <translation id="5859603669299126575">אלבום של גלריית אומנות</translation>
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="5860491529813859533">הפעלה</translation>
 <translation id="5866840822086176774">חזק מאוד</translation>
 <translation id="588258955323874662">מסך מלא</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
+<translation id="5901630391730855834">צהוב</translation>
 <translation id="5903200662178656908">המכשיר משלב מקלדת ועכבר.</translation>
 <translation id="5916084858004523819">אסור</translation>
 <translation id="5916664084637901428">פועל</translation>
@@ -483,6 +495,7 @@
 <translation id="594552776027197022">יצירת זוג מפתחות רנדומלי</translation>
 <translation id="5972388717451707488">עדכון המנוע</translation>
 <translation id="5984145644188835034">הטפט המוגדר כברירת מחדל</translation>
+<translation id="6017514345406065928">ירוק</translation>
 <translation id="6034694447310538551">הפעלת האיפוס החודשי באופן אוטומטי</translation>
 <translation id="6037291330010597344">מזין המסמכים של הסורק ריק. יש להוסיף מסמכים ולנסות שוב.</translation>
 <translation id="6040143037577758943">סגירה</translation>
@@ -642,6 +655,7 @@
 <translation id="7570674786725311828">‏מסך מגע של USB</translation>
 <translation id="7595982850646262331">הזמן שנותר: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">מידע נוסף במרכז העזרה</translation>
+<translation id="7626501172915339021">‏ביטול הנעילה של שרת ה-RMA‏ (RSU)</translation>
 <translation id="763165478673169849">זמן האיפוס האחרון</translation>
 <translation id="7648838807254605802">‏זמן רב של אחזור HTTPS</translation>
 <translation id="7656388927906093505">המכשיר הוא עכבר.</translation>
@@ -669,6 +683,7 @@
 <translation id="7882501334836096755">מפתח ציבורי</translation>
 <translation id="7890841768028788197">מסך מגע פנימי</translation>
 <translation id="7936303884198020182">לא נמצאו שרתי שמות</translation>
+<translation id="7942349550061667556">אדום</translation>
 <translation id="7943235353293548836">‏מרווח keepalive קבוע</translation>
 <translation id="7955587717700691983">‏מקלדת Bluetooth</translation>
 <translation id="7960831585769876809">טמפרטורה</translation>
@@ -697,6 +712,7 @@
 <translation id="8226628635270268143">בחירת התמונות והאלבומים האהובים עליך</translation>
 <translation id="8230672074305416752">לא ניתן היה לבצע פינג לשער הרשת המוגדרת כברירת מחדל</translation>
 <translation id="8246209727385807362">ספק לא ידוע</translation>
+<translation id="827422111966801947">כחול כהה</translation>
 <translation id="8281886186245836920">דילוג</translation>
 <translation id="8286154143153872371">כדי לצפות בטפט, מתחברים לרשת וטוענים מחדש את הדף.</translation>
 <translation id="8291967909914612644">המדינה של הספק הביתי</translation>
@@ -785,6 +801,8 @@
 <translation id="9087578468327036362">דיווח על השאילתה הזו</translation>
 <translation id="9088306295921699330">שימוש נוכחי</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">יהיה צורך לפרק את המכשיר</translation>
+<translation id="9098156406873149060">שמירת נתוני המשתמש</translation>
 <translation id="910415269708673980">רענון הכרטיס עבור <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ביטול נעילה</translation>

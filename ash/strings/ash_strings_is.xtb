@@ -136,6 +136,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1719094688023114093">Kveikt er á skjátextum í rauntíma.</translation>
 <translation id="1720011244392820496">Kveikja á Wi-Fi-samstillingu</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />“ er sýnilegt Bluetooth-tækjum.</translation>
+<translation id="174102739345480129">Slökkt er á merkipennanum.</translation>
 <translation id="1743570585616704562">Þekktist ekki</translation>
 <translation id="1746730358044914197">Kerfisstjóri stillti innfærsluaðferðir.</translation>
 <translation id="1747827819627189109">Skjályklaborð virkt</translation>
@@ -564,6 +565,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4379531060876907730">Þetta eru pennaverkfærin þín</translation>
 <translation id="4389184120735010762">Þú ýttir á flýtilykilinn fyrir stækkunargler í föstum glugga. Viltu kveikja á því?</translation>
 <translation id="439598569299422042">Í bið, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Ekki tókst að vista skjáupptöku</translation>
 <translation id="4405151984121254935">Gerð tengda jaðartækisins er ekki studd</translation>
 <translation id="4406883609789734330">Skjátextar í rauntíma</translation>
 <translation id="4412944820643904175">Slökkt er á <ph name="FEATURE_NAME" />.</translation>
@@ -670,6 +672,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Næsta setning</translation>
+<translation id="5016558321564993266">Sýna/fela merkipenna. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Nú er tíminn á þrotum</translation>
 <translation id="5033299697334913360">Smelltu hvar sem er til að mynda allan skjáinn</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> tengdist nýjum síma</translation>
@@ -699,6 +702,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5222676887888702881">Skrá út</translation>
 <translation id="5234764350956374838">Hunsa</translation>
 <translation id="523505283826916779">Aðgengisstillingar</translation>
+<translation id="5245201184978705914">Ekki tókst að búa til textauppskrift</translation>
 <translation id="5253783950165989294">Tengdist tækinu <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% rafhleðsla</translation>
 <translation id="5260676007519551770">Skrifborð 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> vill ná athygli þinni.</translation>
@@ -733,6 +737,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5433020815079095860">Hljóðinntak</translation>
 <translation id="544691375626129091">Öllum tiltækum notendum hefur þegar verið bætt við þessa lotu.</translation>
 <translation id="54609108002486618">Stjórnað</translation>
+<translation id="5460938382730614333">Kveikt er á merkipennanum</translation>
 <translation id="5465662442746197494">Þarftu aðstoð?</translation>
 <translation id="547979256943495781">Hilla til hægri</translation>
 <translation id="5491186829646618080">Fastbúnaðaruppfærslur í boði</translation>
@@ -774,6 +779,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5745612484876805746">Sjálfkrafa kviknar á næturljósi við sólsetur</translation>
 <translation id="5750765938512549687">Slökkt er á Bluetooth</translation>
 <translation id="5760866832697883462">Tengdu <ph name="NAME" /></translation>
+<translation id="5762420912707163638">Sýna/fela merkipenna. <ph name="STATE_TEXT" /> Notaðu snertiflötinn, snertiskjáinn eða pennann til að teikna á skjánum.</translation>
 <translation id="576341972084747908">Hættulegt niðurhal <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Slökkt er á Shelf Party.</translation>
 <translation id="576453121877257266">Kveikt er á næturljósi.</translation>

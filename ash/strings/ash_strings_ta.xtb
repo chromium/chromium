@@ -136,6 +136,7 @@
 <translation id="1719094688023114093">'உடனடி வசனம்' இயக்கப்பட்டது.</translation>
 <translation id="1720011244392820496">வைஃபை ஒத்திசைவை இயக்குங்கள்</translation>
 <translation id="1736898441010944794">புளூடூத் சாதனங்களுக்கு "<ph name="NAME" />" காட்டப்படும்.</translation>
+<translation id="174102739345480129">மார்க்கர் முடக்கத்தில் உள்ளது.</translation>
 <translation id="1743570585616704562">அடையாளங்காண முடியவில்லை</translation>
 <translation id="1746730358044914197">உள்ளீட்டு முறைகளை உங்கள் நிர்வாகி உள்ளமைத்துள்ளார்.</translation>
 <translation id="1747827819627189109">ஆன்ஸ்க்ரீன் கீபோர்டு இயக்கப்பட்டது</translation>
@@ -564,6 +565,7 @@
 <translation id="4379531060876907730">இவை உங்கள் ஸ்டைலஸ் கருவிகள்</translation>
 <translation id="4389184120735010762">டாக் செய்யப்பட்ட பெரிதாக்கியின் கீபோர்டு ஷார்ட்கட்டை அழுத்தியுள்ளீர்கள். அதை இயக்க விரும்புகிறீர்களா?</translation>
 <translation id="439598569299422042">இடைநிறுத்தப்பட்டது, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">ஸ்க்ரீன்காஸ்ட்டைச் சேமிக்க முடியவில்லை</translation>
 <translation id="4405151984121254935">இணைத்துள்ள இந்த வகையான சாதனத்தைப் பயன்படுத்த முடியாது</translation>
 <translation id="4406883609789734330">உடனடி வசனம்</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> முடக்கப்பட்டுள்ளது.</translation>
@@ -670,6 +672,7 @@
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">அடுத்த வாக்கியம்</translation>
+<translation id="5016558321564993266">மார்க்கரை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">நேரம் முடிந்தது</translation>
 <translation id="5033299697334913360">முழுத்திரையைப் படமெடுக்க, எங்கு வேண்டுமானாலும் கிளிக் செய்யவும்</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ஒரு புதிய ஃபோனுடன் இணைக்கப்பட்டுள்ளது</translation>
@@ -699,6 +702,7 @@
 <translation id="5222676887888702881">வெளியேறு</translation>
 <translation id="5234764350956374838">நிராகரி</translation>
 <translation id="523505283826916779">அணுகல்தன்மை அமைப்புகள்</translation>
+<translation id="5245201184978705914">டிரான்ஸ்கிரிப்ட்டை உருவாக்க முடியவில்லை</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> என்ற சாதனத்துடன் இணைக்கப்பட்டுள்ளது. பேட்டரி: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">மேசை 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ஆப்ஸில் புதிய அறிவிப்புகள் உள்ளன.</translation>
@@ -733,6 +737,7 @@
 <translation id="5433020815079095860">ஆடியோ உள்ளீடு</translation>
 <translation id="544691375626129091">எல்லா பயனர்களும் ஏற்கனவே இந்த அமர்வில் சேர்க்கப்பட்டுள்ளனர்.</translation>
 <translation id="54609108002486618">நிர்வகிக்கப்பட்டது</translation>
+<translation id="5460938382730614333">மார்க்கர் இயக்கத்தில் உள்ளது.</translation>
 <translation id="5465662442746197494">உதவி தேவையா?</translation>
 <translation id="547979256943495781">ஷெல்ஃப் வலப்புறம் உள்ளது</translation>
 <translation id="5491186829646618080">நிலைபொருள் புதுப்பிப்புகள் உள்ளன</translation>
@@ -774,6 +779,7 @@
 <translation id="5745612484876805746">சூரிய அஸ்தமனத்தின் போது நைட் லைட் விருப்பம் தானாக இயக்கப்படும்</translation>
 <translation id="5750765938512549687">புளூடூத் முடக்கப்பட்டுள்ளது</translation>
 <translation id="5760866832697883462">உங்கள் <ph name="NAME" /> சாதனத்தை இணைத்திடுங்கள்</translation>
+<translation id="5762420912707163638">மார்க்கரை இயக்கலாம்/முடக்கலாம். <ph name="STATE_TEXT" /> திரையில் வரைய டிராக்பேட், டச்ஸ்கிரீன், ஸ்டைலஸ் போன்றவற்றைப் பயன்படுத்தலாம்.</translation>
 <translation id="576341972084747908"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்குவது ஆபத்தானது</translation>
 <translation id="5763928712329149804">'ஷெல்ஃப் பார்ட்டி' பயன்முறை முடக்கப்பட்டுள்ளது.</translation>
 <translation id="576453121877257266">நைட் லைட் ஆன் செய்யப்பட்டது.</translation>

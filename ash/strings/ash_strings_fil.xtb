@@ -136,6 +136,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1719094688023114093">Naka-on ang Instant Caption.</translation>
 <translation id="1720011244392820496">I-on ang Wi-Fi Sync</translation>
 <translation id="1736898441010944794">Nakikita ng mga Bluetooth device ang "<ph name="NAME" />."</translation>
+<translation id="174102739345480129">Naka-off ang marker.</translation>
 <translation id="1743570585616704562">Hindi nakilala</translation>
 <translation id="1746730358044914197">Isinasaayos ng iyong administrator ang mga pamamaraan sa pag-input.</translation>
 <translation id="1747827819627189109">Naka-enable ang on-screen na keyboard</translation>
@@ -564,6 +565,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4379531060876907730">Ito ang iyong mga stylus tool</translation>
 <translation id="4389184120735010762">Napindot mo ang keyboard shortcut para sa naka-dock na magnifier. Gusto mo ba itong i-on?</translation>
 <translation id="439598569299422042">Naka-pause, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Hindi ma-save ang screencast</translation>
 <translation id="4405151984121254935">Hindi sinusuportahan ang nakakonektang uri ng peripheral</translation>
 <translation id="4406883609789734330">Instant Caption</translation>
 <translation id="4412944820643904175">Naka-off ang <ph name="FEATURE_NAME" />.</translation>
@@ -670,6 +672,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Susunod na pangungusap</translation>
+<translation id="5016558321564993266">I-toggle ang marker. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Tapos na ang oras</translation>
 <translation id="5033299697334913360">Mag-click kahit saan para i-capture ang full screen</translation>
 <translation id="5035236842988137213">Kumonekta ang <ph name="DEVICE_NAME" /> sa isang bagong telepono</translation>
@@ -699,6 +702,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5222676887888702881">Mag-sign out</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
 <translation id="523505283826916779">Mga setting ng accessibility</translation>
+<translation id="5245201184978705914">Hindi makabuo ng transcript</translation>
 <translation id="5253783950165989294">Nakakonekta sa isang device na may pangalang <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterya</translation>
 <translation id="5260676007519551770">Desk 4</translation>
 <translation id="5283099933536931082">Hinihiling ng <ph name="APP_ITEM_TITLE" /> ang iyong atensyon.</translation>
@@ -733,6 +737,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5433020815079095860">Audio input</translation>
 <translation id="544691375626129091">Naidagdag na ang lahat ng available na user sa session na ito.</translation>
 <translation id="54609108002486618">Pinamamahalaan</translation>
+<translation id="5460938382730614333">Naka-on ang marker.</translation>
 <translation id="5465662442746197494">Kailangan ng tulong?</translation>
 <translation id="547979256943495781">Nasa kanan ang shelf</translation>
 <translation id="5491186829646618080">May mga available na update sa firmware</translation>
@@ -774,6 +779,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5745612484876805746">Awtomatikong nag-o-on ang Night Light sa paglubog ng araw</translation>
 <translation id="5750765938512549687">Naka-off ang Bluetooth</translation>
 <translation id="5760866832697883462">Ikonekta ang iyong <ph name="NAME" /></translation>
+<translation id="5762420912707163638">I-toggle ang marker. <ph name="STATE_TEXT" /> Gamitin ang trackpad, touchscreen, o stylus para gumuhit sa screen.</translation>
 <translation id="576341972084747908">I-download ang mapanganib na <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Naka-off ang Shelf Party.</translation>
 <translation id="576453121877257266">Naka-on ang Night Light.</translation>

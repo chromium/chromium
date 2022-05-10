@@ -61,6 +61,7 @@
 <translation id="3411958449466169012">Исклучен тајмер</translation>
 <translation id="3448774564454087943">Видеото не се зачува бидејќи е прекратко</translation>
 <translation id="346539236881580388">Фотографирај пак</translation>
+<translation id="3511295087439225876">Копчето за исклучување звук е вклучено</translation>
 <translation id="3517926952904427380">Не може да фотографира во портрет</translation>
 <translation id="3566302376254083266">Се преместува горе лево</translation>
 <translation id="3569311554794739032">Дали навистина сакате да ја отстраните <ph name="FILE" />?</translation>
@@ -118,6 +119,7 @@
 Ако повратните информации се за квалитетот на сликата или видеото, прикачете пример од фотографија или видео и опишете што не е во ред. (На пример, фотографијата е претемна или предметот не е во фокус.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" /> x <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мегапиксели</translation>
 <translation id="6527303717912515753">Сподели</translation>
+<translation id="6617916774429601017">Прикажи ги сите резолуции</translation>
 <translation id="6631515515009660915">Исклучено е отсликување</translation>
 <translation id="6652737148136672975">Поместете ја положбата на аголот со копчињата со стрелки</translation>
 <translation id="667999046851023355">Документ</translation>
@@ -151,6 +153,7 @@
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8145038249676204903">Префрли на фотографирање</translation>
 <translation id="8167081290930651932">Зачувај како фотографија</translation>
+<translation id="8236532224592646488">Копчето за исклучување звук е исклучено</translation>
 <translation id="8239780215768881278">Создајте слика од видеото</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8425673304802773841">Навалете надолу</translation>

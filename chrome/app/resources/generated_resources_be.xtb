@@ -963,6 +963,7 @@
 <translation id="1892341345406963517">Вітаем, <ph name="PARENT_NAME" />!</translation>
 <translation id="189358972401248634">Іншыя мовы</translation>
 <translation id="1895658205118569222">Завяршэнне працы</translation>
+<translation id="1897120393475391208">Выкарыстоўвайце надзейны пароль</translation>
 <translation id="1900305421498694955">Праграмы з Google Play могуць патрабаваць поўнага доступу да файлавай сістэмы – каб чытаць і запісваць файлы на знешніх прыладах сховішча. Створаныя на прыладзе файлы і папкі бачныя ўсім, хто выкарыстоўвае знешні дыск. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Выбраць &amp;усё</translation>
 <translation id="1901396183631570154">Браўзеру Chrome не ўдалося захаваць гэтыя паролі ва Уліковым запісе Google. Можна захаваць іх на гэтай прыладзе.</translation>
@@ -1005,6 +1006,7 @@
 <translation id="1942600407708803723">Пры закрыцці вечка выключаць прыладу</translation>
 <translation id="1944528062465413897">Код спалучэння па Bluetooth</translation>
 <translation id="1944921356641260203">Знойдзена абнаўленне</translation>
+<translation id="1947136734041527201">Дазваляе ўваходзіць на вэб-сайты праз уліковы запіс сэрвісу ідэнтыфікацыі</translation>
 <translation id="1949584741547056205">Хуткія адказы</translation>
 <translation id="1951012854035635156">Памочнік</translation>
 <translation id="1954597385941141174">Сайты могуць запытваць дазвол на падключэнне да прылад USB</translation>
@@ -2401,6 +2403,7 @@
 <translation id="32939749466444286">Кантэйнер Linux не запусціўся. Паўтарыце спробу.</translation>
 <translation id="3294437725009624529">Госць</translation>
 <translation id="3294686910656423119">Статыстыка выкарыстання і справаздачы аб збоях</translation>
+<translation id="3297105622164376095">Дазволена паказваць запыты на ўваход ад старонніх сэрвісаў</translation>
 <translation id="3297536526040732495">Часова звязвае гэтыя даныя з Уліковым запісам Google, у які вы ўвайшлі, каб абараніць вас у праграмах Google</translation>
 <translation id="329838636886466101">Выправіць</translation>
 <translation id="3298789223962368867">Уведзены недапушчальны URL-адрас.</translation>
@@ -3655,6 +3658,7 @@
 <translation id="452750746583162491">Праверыць сінхранізаваныя даныя</translation>
 <translation id="4527929807707405172">Уключыць адваротную прагортку. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Прапанова перакладу</translation>
+<translation id="4529455689802245339">Функцыя Chrome "Імгненныя субцітры" можа не працаваць</translation>
 <translation id="4530494379350999373">Крыніца</translation>
 <translation id="4531924570968473143">Каго б вы хацелі дадаць на гэту прыладу (<ph name="DEVICE_TYPE" />)?</translation>
 <translation id="4532625150642446981">Прылада "<ph name="USB_DEVICE_NAME" />" выкарыстоўваецца. Перапрызначэнне прылады падчас яе выкарыстання можа прывесці да памылак. Сапраўды працягнуць?</translation>
@@ -3852,6 +3856,7 @@
 <translation id="471880041731876836">Вам забаронены доступ да гэтага сайта</translation>
 <translation id="4722735765955348426">Пароль карыстальніка <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> абагульвае ваш экран.</translation>
+<translation id="4722989931633062466">Не дазволена паказваць запыты на ўваход ад старонніх сэрвісаў</translation>
 <translation id="4723140812774948886">Памяняць месцамі з наступным</translation>
 <translation id="4724450788351008910">Зменена прыналежнасць</translation>
 <translation id="4725511304875193254">Коргі</translation>
@@ -4822,6 +4827,7 @@
 <translation id="5711010025974903573">Журналы абслугоўвання</translation>
 <translation id="5711983031544731014">Не ўдалося разблакіраваць. Увядзіце пароль.</translation>
 <translation id="5712153969432126546">Часам сайты публікуюць PDF-файлы (напрыклад, дакументы, кантракты і формы)</translation>
+<translation id="571222594670061844">Сайты могуць паказваць запыты на ўваход ад сэрвісаў ідэнтыфікацыі</translation>
 <translation id="5713158217420111469">Падключана да прылады "<ph name="DEVICE" />"</translation>
 <translation id="5715711091495208045">Брокер убудовы: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Стандартныя пошукавыя сістэмы</translation>
@@ -4980,6 +4986,7 @@
 <translation id="5876851302954717356">Новая ўкладка справа</translation>
 <translation id="5877064549588274448">Канал зменены. Перазапусціце прыладу, каб змены прымяніліся.</translation>
 <translation id="5877584842898320529">Выбраны прынтар недаступны або ўсталяваны няправільна. <ph name="BR" /> Праверце прынтар або выберыце іншы.</translation>
+<translation id="5878945009165002849">Блакіраваць запыты на ўваход ад сэрвісаў ідэнтыфікацыі</translation>
 <translation id="5882919346125742463">Вядомыя сеткі</translation>
 <translation id="5883356647197510494">Заблакіравана аўтаматычна: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Гэта ўкладка падключана да прылады USB.</translation>
@@ -5616,6 +5623,7 @@
 <translation id="6513247462497316522">Google Chrome будзе выкарыстоўваць мабільную перадачу даных, калі вы не падключаны да іншай сеткі.</translation>
 <translation id="6514010653036109809">Даступная прылада:</translation>
 <translation id="6514565641373682518">Гэта старонка выключыла вам курсор мышы.</translation>
+<translation id="6517709704288360414">Ваша прылада можа перастаць працаваць належным чынам. Магчымыя праблемы з прадукцыйнасцю і бяспекай. Выключэнне абнаўленняў таксама можа паўплываць на ваша права заяўляць законныя прэтэнзіі ў выпадку ўзнікнення праблем.</translation>
 <translation id="6518014396551869914">&amp;Капіраваць відарыс</translation>
 <translation id="6518133107902771759">Спраўдзіць</translation>
 <translation id="651942933739530207">Хочаце, каб праграма <ph name="APP_NAME" /> абагульвала ваш экран і аўдыя?</translation>
@@ -6546,6 +6554,7 @@
 <translation id="7444970023873202833">Паглядзіце іншыя ўспаміны ў Google Фота</translation>
 <translation id="7444983668544353857">Выключыць <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Усталёўваць праграмы аўтаматычна</translation>
+<translation id="7449381494541372002">ідзе запуск…</translation>
 <translation id="7449752890690775568">Выдаліць пароль?</translation>
 <translation id="7450761244949417357">Зараз адкрываецца ў браўзеры <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7452166281927983300">Адхіленыя заўвагі (<ph name="MUTED_PASSWORDS" />)</translation>

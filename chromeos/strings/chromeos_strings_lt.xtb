@@ -61,6 +61,7 @@
 <translation id="150962533380566081">Netinkamas PUK.</translation>
 <translation id="1510238584712386396">Paleidimo priemonė</translation>
 <translation id="152892567002884378">Padidinti garsumą</translation>
+<translation id="1555130319947370107">Mėlyna</translation>
 <translation id="155865706765934889">Jutiklinis kilimėlis</translation>
 <translation id="1565038567006703504">Nepavyksta atnaujinti įrenginio „<ph name="DEVICE_NAME" />“</translation>
 <translation id="1567064801249837505">Albumai</translation>
@@ -91,6 +92,7 @@
 <translation id="1801418420130173017">Išjungti tamsiąją temą</translation>
 <translation id="1807246157184219062">Šviesi</translation>
 <translation id="1827738518074806965">Meno galerija</translation>
+<translation id="1840835860961531162">Įrašymo apsaugos išjungimas</translation>
 <translation id="1851218745569890714">Vaizdo konferencijos</translation>
 <translation id="1852934301711881861">Įdiegti „ChromeOS Flex“</translation>
 <translation id="1856388568474281774">Rodyklė žemyn</translation>
@@ -111,7 +113,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Daugiau nustatymų</translation>
 <translation id="2085089206770112532">Sumažinti ekrano šviesumą</translation>
-<translation id="2104796393919810494">Baigta taisyti</translation>
 <translation id="2105810540595158374">Įrenginys yra žaidimų valdiklis.</translation>
 <translation id="2115956742084455574">Kodas netinkamas</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> versija</translation>
@@ -174,6 +175,7 @@
 <translation id="2638662041295312666">Prisijungimo vaizdas</translation>
 <translation id="2640549051766135490">Pasirinktas albumas „<ph name="TITLE" />“ (<ph name="DESC" />)</translation>
 <translation id="2712812801627182647">TLS autentifikavimo raktas</translation>
+<translation id="2713444072780614174">Balta</translation>
 <translation id="2717139507051041123">Įgalinti tamsių spalvų režimą</translation>
 <translation id="2740531572673183784">Gerai</translation>
 <translation id="2751739896257479635">EAP 2 tapatybės nustatymo etapas</translation>
@@ -274,6 +276,7 @@
 <translation id="3941014780699102620">Nepavyko nustatyti prieglobos pavadinimo</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
 <translation id="3954678691475912818">Nežinomas įrenginio tipas.</translation>
+<translation id="3958703339436883942">Ruošiamasi paleisti iš naujo...</translation>
 <translation id="3966286471246132217">Jei reikia tikslesnių rezultatų, uždarykite visas programas, kol bandymas bus baigtas.</translation>
 <translation id="3967822245660637423">Atsisiuntimas baigtas</translation>
 <translation id="3969602104473960991">Atnaujintas „Chrome“ OS slaptažodis</translation>
@@ -295,6 +298,7 @@
 <translation id="4145784616224233563">HTTP užkarda</translation>
 <translation id="4147897805161313378">„Google“ nuotraukos</translation>
 <translation id="4155551848414053977">Įsitikinkite, kad skaitytuvas įjungtas ir pasiekiamas tinkle arba tiesioginiu ryšiu</translation>
+<translation id="4159784952369912983">Violetinė</translation>
 <translation id="4170180284036919717">Fotografuoti</translation>
 <translation id="4170700058716978431">NESĖKMINGAS</translation>
 <translation id="4176463684765177261">Išjungta</translation>
@@ -422,6 +426,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5275828089655680674">Iš naujo vykdyti veiksmų sekas</translation>
 <translation id="5286252187236914003">L2TP / „IPsec“</translation>
 <translation id="5294769550414936029"><ph name="MILESTONE_VERSION" /> versija</translation>
+<translation id="5298334025463010990">Išjunkite įrašymo apsaugą, kad galėtumėte pereiti į kitą ekraną. Instrukcijas rasite įrenginio gamintojo palaikymo puslapyje.</translation>
 <translation id="5300814202279832142">Perkelti langą į darbalaukį</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">Prisijungti</translation>
@@ -473,12 +478,14 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="583281660410589416">Nežinoma</translation>
 <translation id="5843706793424741864">Farenheito laipsniai</translation>
 <translation id="5849570051105887917">Namų paslaugos teikėjo kodas</translation>
+<translation id="5856532218727053281">Sistema bus paleista iš naujo, patvirtinus įrašymo apsaugos būseną</translation>
 <translation id="5859603669299126575">Meno galerijos albumas</translation>
 <translation id="5860033963881614850">Išjungta</translation>
 <translation id="5860491529813859533">Įjungti</translation>
 <translation id="5866840822086176774">Labai stiprus</translation>
 <translation id="588258955323874662">Visas ekranas</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
+<translation id="5901630391730855834">Geltona</translation>
 <translation id="5903200662178656908">Įrenginį sudaro klaviatūra ir pelė.</translation>
 <translation id="5916084858004523819">Draudžiama</translation>
 <translation id="5916664084637901428">Įjungta</translation>
@@ -488,6 +495,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="594552776027197022">Generuoti atsitiktinę raktų porą</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Numatytasis ekrano fonas</translation>
+<translation id="6017514345406065928">Žalia</translation>
 <translation id="6034694447310538551">Įgalinti automatinį nustatymą iš naujo kas mėnesį</translation>
 <translation id="6037291330010597344">Skaitytuvo dokumentų tiektuvas tuščias. Pridėkite dokumentų ir bandykite dar kartą.</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
@@ -675,6 +683,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7882501334836096755">Viešasis raktas</translation>
 <translation id="7890841768028788197">Vidinis jutiklinis ekranas</translation>
 <translation id="7936303884198020182">Domenų pavadinimų serverių nerasta</translation>
+<translation id="7942349550061667556">Raudona</translation>
 <translation id="7943235353293548836">Nuolatinio palaikymo intervalas</translation>
 <translation id="7955587717700691983">„Bluetooth“ klaviatūra</translation>
 <translation id="7960831585769876809">Temperatūra</translation>
@@ -703,6 +712,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8226628635270268143">Pasirinkite mėgstamiausias nuotraukas ir albumus</translation>
 <translation id="8230672074305416752">Nepavyko patikrinti ryšio su numatytuoju tinklų sietuvu</translation>
 <translation id="8246209727385807362">Nežinomas operatorius</translation>
+<translation id="827422111966801947">Indigo spalva</translation>
 <translation id="8281886186245836920">Praleisti</translation>
 <translation id="8286154143153872371">Jei norite peržiūrėti ekrano foną, prisijunkite prie tinklo ir iš naujo įkelkite puslapį.</translation>
 <translation id="8291967909914612644">Namų paslaugos teikėjo šalis</translation>

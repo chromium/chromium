@@ -190,6 +190,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2690858294534178585">La videocamera è in uso</translation>
 <translation id="2691653761409724435">Non disponibile offline</translation>
 <translation id="2695507686909505111">Pagina tradotta</translation>
+<translation id="2697526135132990015">Esci e cancella i dati</translation>
 <translation id="2700241355396984822">Opzioni per impostare le autorizzazioni</translation>
 <translation id="2702801445560668637">Elenco di lettura</translation>
 <translation id="2704491540504985681">Download</translation>
@@ -364,6 +365,7 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="4121993058175073134">Per inviare dati net-export, configura il tuo account email nell'app Impostazioni.</translation>
 <translation id="4124987746317609294">Intervallo di tempo</translation>
 <translation id="4133265950310064865">Protezione avanzata</translation>
+<translation id="4148023517926189160">Questo sito web richiede il download di un file e la relativa aggiunta al tuo calendario.</translation>
 <translation id="4152011295694446843">Qui troverai i tuoi preferiti</translation>
 <translation id="4172051516777682613">Mostra sempre</translation>
 <translation id="418156467088430727">Visualizza versione offline in una nuova scheda</translation>
@@ -450,6 +452,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4840495572919996524">I preferiti, la cronologia, le password e altre impostazioni non verranno più sincronizzati con il tuo Account Google.</translation>
 <translation id="4844899002472726590">Visualizza e modifica gli argomenti che ti interessano</translation>
 <translation id="4854345657858711387">Imposta un passcode</translation>
+<translation id="4858786880085262208">Passa a HTTPS, quando è possibile. I siti sicuri potrebbero incorporare contenuti non sicuri.</translation>
 <translation id="4860895144060829044">Chiama</translation>
 <translation id="4872323082491632254">Controlla password</translation>
 <translation id="4881695831933465202">Apri</translation>
@@ -691,13 +694,13 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6760509555861141183">Torna alla scheda recente</translation>
 <translation id="6762812039470893796">Deseleziona tutto</translation>
 <translation id="6780034285637185932">Codice postale</translation>
+<translation id="6781260999953472352">Vuoi attivare la sincronizzazione?</translation>
 <translation id="6785453220513215166">Invio report sugli arresti anomali...</translation>
 <translation id="6797885426782475225">Ricerca vocale</translation>
 <translation id="6801927553864092214">Per navigare in privato, apri una scheda di navigazione in incognito</translation>
 <translation id="6807889908376551050">Mostra tutte...</translation>
 <translation id="681368974849482173">Elemento creato</translation>
 <translation id="683022620450280906">Puoi usare le password salvate su qualsiasi dispositivo. Sono salvate in Gestore delle password di Google per <ph name="EMAIL" />.</translation>
-<translation id="6830804042318138535">Leggi tutto</translation>
 <translation id="6831043979455480757">Traduci</translation>
 <translation id="6842136130964845393">Per assicurarti di poter accedere alle tue password salvate in qualsiasi momento, verifica la tua identità</translation>
 <translation id="6851516051005285358">Richiedi sito desktop</translation>
@@ -799,10 +802,12 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7781069478569868053">Pagina Nuova scheda</translation>
 <translation id="7781829728241885113">Ieri</translation>
 <translation id="778855399387580014">Avvia una ricerca in una nuova scheda di Chrome.</translation>
+<translation id="7790892308048519147">Prova a usare connessioni sicure</translation>
 <translation id="7791543448312431591">Aggiungi</translation>
 <translation id="7807060072011926525">Fornito da Google</translation>
 <translation id="7839985698273989086">Pagina offline</translation>
 <translation id="7840771868269352570">Gli elementi selezionati verranno rimossi.</translation>
+<translation id="784551991304901159">Per visualizzare i contenuti, seleziona Attiva dal menu</translation>
 <translation id="7853202427316060426">Attività</translation>
 <translation id="7856733331829174190">Download non riuscito</translation>
 <translation id="7859704718976024901">Cronologia di navigazione</translation>

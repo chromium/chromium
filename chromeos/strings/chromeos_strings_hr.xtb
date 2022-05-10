@@ -61,6 +61,7 @@
 <translation id="150962533380566081">PUK nije važeći.</translation>
 <translation id="1510238584712386396">Pokretač</translation>
 <translation id="152892567002884378">Pojačavanje glasnoće</translation>
+<translation id="1555130319947370107">Plava</translation>
 <translation id="155865706765934889">Dodirna površina</translation>
 <translation id="1565038567006703504">Ažuriranje uređaja <ph name="DEVICE_NAME" /> nije moguće</translation>
 <translation id="1567064801249837505">Albumi</translation>
@@ -112,7 +113,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Više postavki</translation>
 <translation id="2085089206770112532">Smanjivanje svjetline zaslona</translation>
-<translation id="2104796393919810494">Popravak je dovršen</translation>
 <translation id="2105810540595158374">Uređaj je kontroler za videoigre.</translation>
 <translation id="2115956742084455574">Netočan kôd</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzija <ph name="MILESTONE_VERSION" /></translation>
@@ -174,6 +174,7 @@
 <translation id="2638662041295312666">Slika za prijavu</translation>
 <translation id="2640549051766135490">Odabran je album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2712812801627182647">Ključ za TLS autentifikaciju</translation>
+<translation id="2713444072780614174">Bijela</translation>
 <translation id="2717139507051041123">Omogućite način tamne boje</translation>
 <translation id="2740531572673183784">U redu</translation>
 <translation id="2751739896257479635">2. faza autentifikacije za EAP</translation>
@@ -295,6 +296,7 @@
 <translation id="4145784616224233563">Vatrozid za HTTP</translation>
 <translation id="4147897805161313378">Google fotografije</translation>
 <translation id="4155551848414053977">Provjerite je li skener uključen i dostupan putem vaše mreže ili izravne veze</translation>
+<translation id="4159784952369912983">Ljubičasto</translation>
 <translation id="4170180284036919717">Fotografiraj</translation>
 <translation id="4170700058716978431">NIJE USPJELO</translation>
 <translation id="4176463684765177261">Onemogućeno</translation>
@@ -478,6 +480,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="5866840822086176774">Vrlo jak</translation>
 <translation id="588258955323874662">Puni zaslon</translation>
 <translation id="5895138241574237353">Ponovno pokreni</translation>
+<translation id="5901630391730855834">Žuta</translation>
 <translation id="5903200662178656908">Uređaj je kombinacija tipkovnice i miša.</translation>
 <translation id="5916084858004523819">Zabranjeno</translation>
 <translation id="5916664084637901428">Uključi</translation>
@@ -487,6 +490,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="594552776027197022">Generiraj nasumični par ključeva</translation>
 <translation id="5972388717451707488">Ažuriraj alat</translation>
 <translation id="5984145644188835034">Zadana pozadina</translation>
+<translation id="6017514345406065928">Zelena</translation>
 <translation id="6034694447310538551">Omogući automatsko mjesečno poništavanje</translation>
 <translation id="6037291330010597344">Ulagač dokumenata u skener je prazan. Dodajte dokumente i pokušajte ponovo.</translation>
 <translation id="6040143037577758943">Zatvori</translation>
@@ -673,6 +677,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7882501334836096755">Javni ključ</translation>
 <translation id="7890841768028788197">Interni dodirni zaslon</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan poslužitelj naziva</translation>
+<translation id="7942349550061667556">Crvena</translation>
 <translation id="7943235353293548836">Postojani keepalive interval</translation>
 <translation id="7955587717700691983">Bluetooth tipkovnica</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -701,6 +706,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="8226628635270268143">Odaberite svoje omiljene fotografije i albume</translation>
 <translation id="8230672074305416752">Pinganje pristupnika zadane mreže nije uspjelo</translation>
 <translation id="8246209727385807362">Nepoznat mobilni operater</translation>
+<translation id="827422111966801947">Indigo</translation>
 <translation id="8281886186245836920">Preskoči</translation>
 <translation id="8286154143153872371">Povežite se s mrežom i ponovo učitajte stranicu da biste pregledali pozadinu.</translation>
 <translation id="8291967909914612644">Zemlja davatelja usluge kućne mreže</translation>

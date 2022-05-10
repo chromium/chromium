@@ -61,6 +61,7 @@
 <translation id="150962533380566081">Μη έγκυρος κωδικός PUK.</translation>
 <translation id="1510238584712386396">Λειτουργία εκκίνησης</translation>
 <translation id="152892567002884378">Αύξηση έντασης ήχου</translation>
+<translation id="1555130319947370107">Μπλε</translation>
 <translation id="155865706765934889">Επιφάνεια Αφής</translation>
 <translation id="1565038567006703504">Αδυναμία ενημέρωσης <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Λευκώματα</translation>
@@ -91,6 +92,7 @@
 <translation id="1801418420130173017">Απενεργοποίηση σκούρου θέματος</translation>
 <translation id="1807246157184219062">Ανοιχτόχρωμο</translation>
 <translation id="1827738518074806965">Γκαλερί</translation>
+<translation id="1840835860961531162">Απενεργοποίηση Προστασίας εγγραφής</translation>
 <translation id="1851218745569890714">Συνεδρίαση με βίντεο</translation>
 <translation id="1852934301711881861">Εγκατάσταση ChromeOS</translation>
 <translation id="1856388568474281774">Κάτω βέλος</translation>
@@ -111,7 +113,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Περισσότερες ρυθμίσεις</translation>
 <translation id="2085089206770112532">Μείωση φωτεινότητας οθόνης</translation>
-<translation id="2104796393919810494">Η επιδιόρθωση ολοκληρώθηκε</translation>
 <translation id="2105810540595158374">Η συσκευή είναι χειριστήριο παιχνιδιού.</translation>
 <translation id="2115956742084455574">Εσφαλμένος κωδικός</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, έκδοση <ph name="MILESTONE_VERSION" /></translation>
@@ -157,6 +158,7 @@
 <translation id="2446553403094072641">Ακρίβεια κινητής υποδιαστολής</translation>
 <translation id="2448312741937722512">Τύπος</translation>
 <translation id="2461822463642141190">Τρέχουσα</translation>
+<translation id="2480034874476596812">Μη αυτόματη απενεργοποίηση</translation>
 <translation id="2491955442992294626">Η δοκιμή των πλήκτρων δεν πραγματοποιείται όταν χρησιμοποιείτε άλλο παράθυρο</translation>
 <translation id="2493126929778606526">Οι καλύτερες αυτόματα επιλεγμένες φωτογραφίες σας</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -173,6 +175,7 @@
 <translation id="2638662041295312666">Εικόνα σύνδεσης</translation>
 <translation id="2640549051766135490">Επιλέχθηκε το λεύκωμα <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2712812801627182647">Κλειδί ελέγχου ταυτότητας TLS</translation>
+<translation id="2713444072780614174">Λευκό</translation>
 <translation id="2717139507051041123">Ενεργοποίηση λειτουργίας σκοτεινού χρώματος</translation>
 <translation id="2740531572673183784">ΟK</translation>
 <translation id="2751739896257479635">2η φάση ελέγχου ταυτότητας EAP:</translation>
@@ -251,6 +254,7 @@
 <translation id="3606583719724308068">Υψηλός λανθάνων χρόνος σε ιστοτόπους HTTPS</translation>
 <translation id="3621202678540785336">Είσοδος</translation>
 <translation id="3632579075709132555">Εναλλαγή οθόνης απορρήτου</translation>
+<translation id="3678765385266369662">Επιλογή τρόπου απενεργοποίησης της Προστασίας εγγραφής</translation>
 <translation id="3689839747745352263">Δοκιμή <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Φόρτωση...</translation>
 <translation id="3708186454126126312">Συνδέθηκαν στο παρελθόν</translation>
@@ -272,6 +276,7 @@
 <translation id="3941014780699102620">Αποτυχία επίλυσης κεντρικού υπολογιστή</translation>
 <translation id="3942420633017001071">Διαγνωστικά</translation>
 <translation id="3954678691475912818">Ο τύπος συσκευής είναι άγνωστος.</translation>
+<translation id="3958703339436883942">Προετοιμασία για επανεκκίνηση…</translation>
 <translation id="3966286471246132217">Για πιο ακριβή αποτελέσματα, κλείστε όλες τις εφαρμογές έως ότου ολοκληρωθεί ο έλεγχος.</translation>
 <translation id="3967822245660637423">Ολοκλήρωση λήψης</translation>
 <translation id="3969602104473960991">Ο κωδικός πρόσβασης του Chrome OS ενημερώθηκε</translation>
@@ -293,6 +298,7 @@
 <translation id="4145784616224233563">Τείχος προστασίας HTTP</translation>
 <translation id="4147897805161313378">Φωτογραφίες Google</translation>
 <translation id="4155551848414053977">Βεβαιωθείτε ότι ο σαρωτής είναι ενεργοποιημένος και διαθέσιμος μέσω του δικτύου σας ή μέσω άμεσης σύνδεσης.</translation>
+<translation id="4159784952369912983">Μοβ</translation>
 <translation id="4170180284036919717">Λήψη φωτογραφίας</translation>
 <translation id="4170700058716978431">ΑΠΕΤΥΧΕ</translation>
 <translation id="4176463684765177261">Απενεργοποιημένο</translation>
@@ -305,6 +311,7 @@
 <translation id="4244962993387259361">Χρειάζεστε τουλάχιστον 500 MB ελεύθερης μνήμης για να εκτελέσετε μια δοκιμή μνήμης. Για να ελευθερώσετε χώρο, μεταβείτε στις Ρυθμίσεις &gt; Διαχείριση αποθηκευτικού χώρου.</translation>
 <translation id="4250229828105606438">Στιγμιότυπο οθόνης</translation>
 <translation id="4258281355379922695">Λανθάνων χρόνος HTTP</translation>
+<translation id="4258561075226177474">Η συσκευή προορίζεται για τον ίδιο χρήστη. Διαγραφή δεδομένων χρήστη;</translation>
 <translation id="4271957103967917607">Προβολή πλήρους οθόνης</translation>
 <translation id="4275799948641988986">Μετά την επισκευή, ποιος θα χρησιμοποιεί τη συσκευή;</translation>
 <translation id="4289540628985791613">Επισκόπηση</translation>
@@ -353,6 +360,7 @@
 <translation id="473775607612524610">Ενημέρωση</translation>
 <translation id="4744944742468440486">Πληροφορίες που σχετίζονται με την επιλογή σας</translation>
 <translation id="4773299976671772492">Διακόπηκε</translation>
+<translation id="4774530504324923332">Θα χρειαστείτε ένα κλειδί ασφαλείας με δυνατότητα RSU, μια εφαρμογή σάρωσης κωδικών QR και μια δεύτερη συσκευή με σύνδεση στο διαδίκτυο</translation>
 <translation id="4782311465517282004">Λάβετε ορισμούς, μεταφράσεις ή μετατροπές μονάδων κάνοντας δεξί κλικ ή αγγίζοντας παρατεταμένα κείμενο.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> φωτογραφία</translation>
 <translation id="4793710386569335688">Για περισσότερη βοήθεια, μεταβείτε στο <ph name="BEGIN_LINK" />Κέντρο βοήθειας<ph name="END_LINK" />.</translation>
@@ -418,6 +426,7 @@
 <translation id="5275828089655680674">Επανεκτέλεση ρουτινών</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">έκδοση <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">Απενεργοποιήστε την προστασία εγγραφής για να συνεχίσετε στην επόμενη οθόνη. Μεταβείτε στη σελίδα υποστήριξης του κατασκευαστή για οδηγίες.</translation>
 <translation id="5300814202279832142">Μετακίνηση παραθύρου στο γραφείο</translation>
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5308380583665731573">Σύνδεση</translation>
@@ -432,6 +441,7 @@
 <translation id="5372659122375744710">Το δίκτυο Wi-Fi δεν είναι ασφαλές.</translation>
 <translation id="5376354385557966694">Αυτόματη φωτεινή λειτουργία</translation>
 <translation id="537872351913703572">Η συσκευή θα μεταβιβαστεί σε διαφορετικό χρήστη ή οργανισμό</translation>
+<translation id="5395600419410242651">Διαγραφή όλων των δεδομένων</translation>
 <translation id="5400907029458559844">Η συσκευή συνδέεται.</translation>
 <translation id="5401938042319910061">Εκτέλεση όλων των ρουτινών</translation>
 <translation id="5423849171846380976">Ενεργοποιημένο</translation>
@@ -468,12 +478,14 @@
 <translation id="583281660410589416">Άγνωστο</translation>
 <translation id="5843706793424741864">Βαθμοί Φαρενάιτ</translation>
 <translation id="5849570051105887917">Κωδικός παρόχου αρχικής σελίδας</translation>
+<translation id="5856532218727053281">Το σύστημα θα επανεκκινηθεί αφού επαληθεύσει την κατάσταση της Προστασίας εγγραφής</translation>
 <translation id="5859603669299126575">Λεύκωμα γκαλερί</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
 <translation id="5860491529813859533">Ενεργοποίηση</translation>
 <translation id="5866840822086176774">Πολύ ισχυρό</translation>
 <translation id="588258955323874662">Πλήρης οθόνη</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
+<translation id="5901630391730855834">Κίτρινο</translation>
 <translation id="5903200662178656908">Η συσκευή είναι ένας συνδυασμός πληκτρολογίου και ποντικιού.</translation>
 <translation id="5916084858004523819">Απαγορεύεται</translation>
 <translation id="5916664084637901428">Ενεργό</translation>
@@ -483,6 +495,7 @@
 <translation id="594552776027197022">Δημιουργία τυχαίου ζεύγους κλειδιών</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Προεπιλεγμένη ταπετσαρία</translation>
+<translation id="6017514345406065928">Πράσινο</translation>
 <translation id="6034694447310538551">Ενεργοποίηση αυτόματης μηνιαίας επαναφοράς</translation>
 <translation id="6037291330010597344">Ο τροφοδότης εγγράφων του σαρωτή είναι άδειος. Προσθέστε έγγραφα και δοκιμάστε ξανά.</translation>
 <translation id="6040143037577758943">Κλείσιμο</translation>
@@ -642,6 +655,7 @@
 <translation id="7570674786725311828">Επιφάνεια αφής USB</translation>
 <translation id="7595982850646262331">Απομένουν <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Μάθετε περισσότερα στο Κέντρο βοήθειας</translation>
+<translation id="7626501172915339021">Εκτέλεση ξεκλειδώματος διακομιστή εξουσιοδότησης επιστροφής εμπορικών προϊόντων (RMA) (RSU)</translation>
 <translation id="763165478673169849">Ώρα τελευταίας ενημέρωσης</translation>
 <translation id="7648838807254605802">Μεγάλος λανθάνων χρόνος HTTPS</translation>
 <translation id="7656388927906093505">Η συσκευή είναι ποντίκι.</translation>
@@ -669,6 +683,7 @@
 <translation id="7882501334836096755">Δημόσιο κλειδί</translation>
 <translation id="7890841768028788197">Ενσωματωμένη οθόνη αφής</translation>
 <translation id="7936303884198020182">Δεν βρέθηκαν διακομιστές ονομάτων.</translation>
+<translation id="7942349550061667556">Κόκκινο</translation>
 <translation id="7943235353293548836">Χρονικό διάστημα συνεχούς μηνύματος keepalive</translation>
 <translation id="7955587717700691983">Πληκτρολόγιο Bluetooth</translation>
 <translation id="7960831585769876809">Θερμοκρασία</translation>
@@ -697,6 +712,7 @@
 <translation id="8226628635270268143">Επιλέξτε τις αγαπημένες σας φωτογραφίες και λευκώματα.</translation>
 <translation id="8230672074305416752">Αποτυχία ping της προεπιλεγμένης πύλης δικτύου.</translation>
 <translation id="8246209727385807362">Άγνωστη εταιρεία κινητής τηλεφωνίας</translation>
+<translation id="827422111966801947">Λουλάκι</translation>
 <translation id="8281886186245836920">Παράβλεψη</translation>
 <translation id="8286154143153872371">Συνδεθείτε σε ένα δίκτυο και επαναφορτώστε τη σελίδα για να δείτε την ταπετσαρία.</translation>
 <translation id="8291967909914612644">Χώρα παρόχου αρχικής σελίδας</translation>
@@ -785,6 +801,8 @@
 <translation id="9087578468327036362">Υποβάλετε αναφορά για αυτό το ερώτημα.</translation>
 <translation id="9088306295921699330">Τρέχουσα χρήση</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">Θα χρειαστεί να αποσυναρμολογήσετε τη συσκευή</translation>
+<translation id="9098156406873149060">Διατήρηση δεδομένων χρήστη</translation>
 <translation id="910415269708673980">Ανανέωση εισιτηρίου για το <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Σάρωση σελίδας <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Ξεκλείδωμα</translation>

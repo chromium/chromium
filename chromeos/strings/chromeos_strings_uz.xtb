@@ -61,6 +61,7 @@
 <translation id="150962533380566081">PUK kod xato.</translation>
 <translation id="1510238584712386396">Ishga tushirish paneli</translation>
 <translation id="152892567002884378">Ovozni kuchaytirish</translation>
+<translation id="1555130319947370107">Ko‘k</translation>
 <translation id="155865706765934889">Sensorli panel</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> yangilanmadi</translation>
 <translation id="1567064801249837505">Albomlar</translation>
@@ -112,7 +113,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Kengaytirilgan sozlamalar</translation>
 <translation id="2085089206770112532">Displey yorlinligini pasaytirish</translation>
-<translation id="2104796393919810494">Tuzatildi</translation>
 <translation id="2105810540595158374">Qurilma — geympad</translation>
 <translation id="2115956742084455574">Kod xato</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiya: <ph name="MILESTONE_VERSION" /></translation>
@@ -175,6 +175,7 @@
 <translation id="2638662041295312666">Kirish sahifasidagi rasm</translation>
 <translation id="2640549051766135490">Albom: <ph name="TITLE" /> <ph name="DESC" /> tanlandi</translation>
 <translation id="2712812801627182647">TLS autentifikatsiya kaliti</translation>
+<translation id="2713444072780614174">Oq</translation>
 <translation id="2717139507051041123">Toʻq rangli rejimni yoqish</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP autentifikatsiya 2-bosqichi</translation>
@@ -297,6 +298,7 @@
 <translation id="4145784616224233563">HTTP Fayrvol</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">Skaner yoqilganini va tarmoq orqali ishlashi yoki bevosita ulanganini tekshiring</translation>
+<translation id="4159784952369912983">Siyohrang</translation>
 <translation id="4170180284036919717">Suratga olish</translation>
 <translation id="4170700058716978431">BAJARILMADI</translation>
 <translation id="4176463684765177261">O‘chirib qo‘yilgan</translation>
@@ -483,6 +485,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5866840822086176774">Juda kuchli</translation>
 <translation id="588258955323874662">Butun ekran</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
+<translation id="5901630391730855834">Sariq</translation>
 <translation id="5903200662178656908">Qurilma klaviatura va sichqonchaning kombinatsiyasi.</translation>
 <translation id="5916084858004523819">Taqiqlangan</translation>
 <translation id="5916664084637901428">Yoniq</translation>
@@ -492,6 +495,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="594552776027197022">Tasodifiy kalitlar juftligini yaratish</translation>
 <translation id="5972388717451707488">Tizimni yangilash</translation>
 <translation id="5984145644188835034">Standart fon rasmi</translation>
+<translation id="6017514345406065928">Yashil</translation>
 <translation id="6034694447310538551">Har oyda avtomatik asliga qaytarishni yoqish</translation>
 <translation id="6037291330010597344">Skanerga qogʻozlar joylanmagan. Hujjatlarni joylang va qaytadan urining.</translation>
 <translation id="6040143037577758943">Yopish</translation>
@@ -679,6 +683,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7882501334836096755">Ochiq kalit</translation>
 <translation id="7890841768028788197">Ichki sensorli ekran</translation>
 <translation id="7936303884198020182">Nom serverlari topilmadi</translation>
+<translation id="7942349550061667556">Qizil</translation>
 <translation id="7943235353293548836">Aloqani muntazam ushlab turish intervali</translation>
 <translation id="7955587717700691983">Bluetooth klaviatura</translation>
 <translation id="7960831585769876809">Harorat</translation>
@@ -707,6 +712,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8226628635270268143">Sevimli suratlar va albomlaringizni tanlang</translation>
 <translation id="8230672074305416752">Birlamchi tarmoq shlyuzi ping qilinmadi</translation>
 <translation id="8246209727385807362">Noma’lum provayder</translation>
+<translation id="827422111966801947">Toʻq siyohrang</translation>
 <translation id="8281886186245836920">Tashlab ketish</translation>
 <translation id="8286154143153872371">Fon rasmini koʻrish uchun tarmoqqa ulaning va sahifani yangilang.</translation>
 <translation id="8291967909914612644">Mahalliy ta’minotchi mamlakati</translation>

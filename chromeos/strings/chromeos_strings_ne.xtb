@@ -24,7 +24,9 @@
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1204296502688602597">DNS को विलम्बता</translation>
 <translation id="123124571410524056">पोर्टलका कारणले हुन सक्छ</translation>
+<translation id="1236400083787698183">आफ्नो डिभाइस रिस्टार्ट गर्नुअघि सो डिभाइस पावरवास गर्नुहोस्। तपाईंको डिभाइसको कभर छ भने पावरवास गर्ने कार्य पूरा भएपछि मात्र उक्त कभर लगाउनुहोस्। पावरवास गर्ने कार्य पूरा हुन एक मिनेटसम्म लाग्न सक्छ।</translation>
 <translation id="1238612778414822719">HTTPS को विलम्बता</translation>
+<translation id="1240699967155581440">पावरवास (फ्याक्ट्री रिसेट) गरिनु पर्छ</translation>
 <translation id="1264116747675686718">OS को संस्करण अपडेट गरिँदै छ</translation>
 <translation id="1264369926465113395">निर्माताहरूका लागि बनाइएको Chromebook को नयाँ डिजिटल पत्रिका पढ्नुहोस्</translation>
 <translation id="1270369111467284986">संदिग्ध क्याप्टिभ पोर्टल</translation>
@@ -61,6 +63,7 @@
 <translation id="150962533380566081">अमान्य PUK।</translation>
 <translation id="1510238584712386396">लन्चर</translation>
 <translation id="152892567002884378">भोल्युम बढाउनुहोस्</translation>
+<translation id="1555130319947370107">निलो</translation>
 <translation id="155865706765934889">टचप्याड</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> अपडेट गर्न सकिएन</translation>
 <translation id="1567064801249837505">एल्बमहरू</translation>
@@ -112,7 +115,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">थप सेटिङहरू</translation>
 <translation id="2085089206770112532">डिस्प्लेको चमक घटाउने की</translation>
-<translation id="2104796393919810494">मर्मत गरियो</translation>
 <translation id="2105810540595158374">यो डिभाइस गेम कन्ट्रोलर हो।</translation>
 <translation id="2115956742084455574">कोड गलत छ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, संस्करण <ph name="MILESTONE_VERSION" /></translation>
@@ -149,6 +151,7 @@
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />अयोग्य कम्पोनेन्टहरू<ph name="LINK_END" /> भेटिए। तपाईं यो कम्पोनेन्ट इन्स्टल गरिएको छ भन्ने कुरा पुष्टि गर्ने विकल्प रोज्न चाहनुहुन्छ भने कृपया अहिले नै उक्त विकल्प रोज्नुहोस्।</translation>
 <translation id="2363636958541445404">स्क्रिनसेभरसम्बन्धी विकल्पहरू चयन गर्न यो सुविधा अन गर्नुहोस्</translation>
 <translation id="2364498172489649528">सुरक्षा जाँचमा पास भयो</translation>
+<translation id="236594517359128026">अगाडि बढ्नुअघि आफ्नो ल्यापटप कुनै समतल सतहमा राख्नुहोस्</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">फिडब्याक रिपोर्ट पठाउनुहोस्</translation>
 <translation id="2407209115954268704">SIM लकको स्थिति</translation>
@@ -175,6 +178,7 @@
 <translation id="2638662041295312666">प्रोफाइल फोटो</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चयन गरियो</translation>
 <translation id="2712812801627182647">TLS प्रमाणीकरण की</translation>
+<translation id="2713444072780614174">सेतो</translation>
 <translation id="2717139507051041123">अँध्यारो रङ मोड अन गर्नुहोस्</translation>
 <translation id="2740531572673183784">ठिक छ</translation>
 <translation id="2751739896257479635">EAP दोस्रो चरणको प्रमाणीकरण</translation>
@@ -266,6 +270,7 @@
 <translation id="3820172043799983114">अमान्य PIN।</translation>
 <translation id="3838338534323494292">नयाँ पासवर्ड</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
+<translation id="385832974417157471">आफ्नो डिभाइस सट डाउन गर्नुअघि सो डिभाइस पावरवास गर्नुहोस्। तपाईंको डिभाइसको कभर छ भने पावरवास गर्ने कार्य पूरा भएपछि मात्र उक्त कभर लगाउनुहोस्। पावरवास गर्ने कार्य पूरा हुन एक मिनेटसम्म लाग्न सक्छ।</translation>
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3865414814144988605">रिजोलुसन</translation>
 <translation id="387301095347517405">तपाईंको डिभाइसको ब्याट्री पूर्ण रूपमा चार्ज गरिएको सङ्ख्या</translation>
@@ -297,6 +302,7 @@
 <translation id="4145784616224233563">HTTP फायरवाल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">स्क्यानर अन छ र उक्त स्क्यानर तपाईंको नेटवर्क वा कुनै डाइरेक्ट कनेक्सनमार्फत प्रयोग गर्न मिल्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
+<translation id="4159784952369912983">बैजनी</translation>
 <translation id="4170180284036919717">फोटो खिच्नुहोस्</translation>
 <translation id="4170700058716978431">असफल भयो</translation>
 <translation id="4176463684765177261">असक्षम गरिएको</translation>
@@ -453,6 +459,7 @@
 <translation id="5507300744274596613">Chrome OS अप टु डेट छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5548284010950733518">कम्पोनेन्टहरू क्यालिब्रेट गर्नुहोस्</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">पुनः स्क्यान गर्नुहोस्</translation>
 <translation id="5583640892426849032">ब्याकस्पेस</translation>
@@ -482,6 +489,7 @@
 <translation id="5866840822086176774">अत्यन्त बलियो</translation>
 <translation id="588258955323874662">पूर्णस्क्रिन</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
+<translation id="5901630391730855834">पहेँलो</translation>
 <translation id="5903200662178656908">यो डिभाइस किबोर्ड र माउसको कम्बो हो।</translation>
 <translation id="5916084858004523819">प्रतिबन्धित</translation>
 <translation id="5916664084637901428">अन</translation>
@@ -491,6 +499,7 @@
 <translation id="594552776027197022">क्रमरहित किपेयर सिर्जना गर्नुहोस्</translation>
 <translation id="5972388717451707488">अपडेट इन्जिन</translation>
 <translation id="5984145644188835034">डिफल्ट वालपेपर</translation>
+<translation id="6017514345406065928">हरियो</translation>
 <translation id="6034694447310538551">मासिक रूपमा डेटा प्रयोग स्वतः रिसेट गर्ने विकल्प अन गर</translation>
 <translation id="6037291330010597344">स्क्यानरको डकुमेन्ट फिडर खाली छ। डकुमेन्टहरू हाल्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
@@ -678,6 +687,7 @@
 <translation id="7882501334836096755">सार्वजनिक की</translation>
 <translation id="7890841768028788197">इन्टर्नल टचस्क्रिन</translation>
 <translation id="7936303884198020182">कुनै पनि डोमेन नेम सर्भर फेला परेन</translation>
+<translation id="7942349550061667556">रातो</translation>
 <translation id="7943235353293548836">पर्सिस्टेन्ट किपअलाइभ इन्टर्भल</translation>
 <translation id="7955587717700691983">ब्लुटुथ भएको किबोर्ड</translation>
 <translation id="7960831585769876809">तापक्रम</translation>
@@ -703,9 +713,11 @@
 <translation id="8206859287963243715">सेल्युलर</translation>
 <translation id="8208861521865154048">लाभहरू</translation>
 <translation id="8217675307824400706">कनेक्ट गर्नुहोस्</translation>
+<translation id="8221728673725659466">क्यालिब्रेट गर्ने कार्य पूरा भयो</translation>
 <translation id="8226628635270268143">आफूलाई मन पर्ने फोटो र एल्बमहरू छनौट गर्नुहोस्</translation>
 <translation id="8230672074305416752">डिफल्ट नेटवर्कको गेटवे पिङ गर्न सकिएन</translation>
 <translation id="8246209727385807362">अज्ञात सेवा प्रदायक</translation>
+<translation id="827422111966801947">इन्डिगो</translation>
 <translation id="8281886186245836920">त्याग्नुहोस्</translation>
 <translation id="8286154143153872371">वालपेपर हेर्न कृपया इन्टरनेटमा कनेक्ट गर्नुहोस् र पेज रिलोड गर्नुहोस्।</translation>
 <translation id="8291967909914612644">गृह प्रदायकको देश</translation>
@@ -713,6 +725,7 @@
 <translation id="8297006494302853456">कमजोर</translation>
 <translation id="8302368968391049045">HTTPS फायरवाल</translation>
 <translation id="8318753676953949627">कुनै पनि फोटो छैन</translation>
+<translation id="8327249300223641918">अगाडि बढ्नुअघि आफ्नो पूरै डिभाइस (तल्लो भाग र कभर) कुनै समतल सतहमा राख्नुहोस्।</translation>
 <translation id="8336739000755212683">यन्त्रको खाताको छवि बदल्नुहोस्</translation>
 <translation id="8347227221149377169">प्रिन्टसम्बन्धी कार्यहरू</translation>
 <translation id="8352772353338965963">बहुविध साइन-इन को लागि एउटा खाता थप्नुहोस्। सबै साइन-इन भएका खाताहरू पासवर्ड विना नै पहुँच गर्न सकिन्छ, त्यसैले यो सुविधा विश्वसनीय खाताहरूसँग मात्रै प्रयोग गर्नुपर्छ।</translation>
@@ -727,6 +740,7 @@
 <translation id="844521431886043384">DNS सेट अप गरिएको छैन</translation>
 <translation id="8456761643544401578">स्वचालित अँध्यारो मोड</translation>
 <translation id="8461329675984532579">गृह प्रदायकको नाम</translation>
+<translation id="8467104829907989997">कम्पोनेन्टहरू क्यालिब्रेट गरिँदै छ...</translation>
 <translation id="8475690821716466388">WiFi नेटवर्क WEP PSK नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
 <translation id="8477551185774834963">DNS को विलम्बता तोकिएको समयसीमाभन्दा थोरै बढी छ</translation>
 <translation id="8483248364096924578">IP एड्रेस</translation>
@@ -786,6 +800,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{स्क्यान गर्नुहोस्}=1{{NUMBER_OF_PAGES} औँ पेज स्क्यान गर्नुहोस्}other{{NUMBER_OF_PAGES} औँ पेज स्क्यान गर्नुहोस्}}</translation>
 <translation id="8997710128084572139">यो डिभाइसमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="9003704114456258138">फ्रिक्वेन्सी</translation>
+<translation id="9025198690966128418">व्यक्तिगत डिभाइसका रूपमा प्रयोग गर्नुहोस्</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS रिजोल्युसनमा उच्च विलम्बता छ</translation>
 <translation id="9073281213608662541">PAP</translation>

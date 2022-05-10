@@ -24,7 +24,9 @@
 <translation id="1201402288615127009">Кийинки</translation>
 <translation id="1204296502688602597">DNS күтүү убакыты</translation>
 <translation id="123124571410524056">Портал бар окшойт</translation>
+<translation id="1236400083787698183">Өчүрүп күйгүзүүдөн мурда түзмөктү жууп салыңыз. Эгер түзмөгүңүздүн капкагы болсо, түзмөк жуулуп бүтмөйүнчө, капкакты жаппай туруңуз. Жууп салуу бир мүнөткө чейин созулушу мүмкүн.</translation>
 <translation id="1238612778414822719">HTTPS күтүү убакыты</translation>
+<translation id="1240699967155581440">Жууп салуу (баштапкы абалга кайтаруу) талап кылынат</translation>
 <translation id="1264116747675686718">OS версиясы жаңыртылууда</translation>
 <translation id="1264369926465113395">Chromebook'тун авторлорго арналган жаңы санариптик журналын көрүңүз</translation>
 <translation id="1270369111467284986">Кирүү бети бар окшойт</translation>
@@ -61,6 +63,7 @@
 <translation id="150962533380566081">Жараксыз PUK.</translation>
 <translation id="1510238584712386396">Жүргүзгүч</translation>
 <translation id="152892567002884378">Катуулатуу</translation>
+<translation id="1555130319947370107">Көк</translation>
 <translation id="155865706765934889">Тийме такта</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> жаңыртылбай жатат</translation>
 <translation id="1567064801249837505">Альбомдор</translation>
@@ -91,6 +94,7 @@
 <translation id="1801418420130173017">Караңгы теманы өчүрүү</translation>
 <translation id="1807246157184219062">Ачык</translation>
 <translation id="1827738518074806965">Көркөм галерея</translation>
+<translation id="1840835860961531162">Жазуудан коргоону өчүрүү</translation>
 <translation id="1851218745569890714">Видео конференция</translation>
 <translation id="1852934301711881861">ChromeOS Flex'ти орнотуу</translation>
 <translation id="1856388568474281774">Ылдый жебе</translation>
@@ -111,7 +115,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Дагы жөндөөлөр</translation>
 <translation id="2085089206770112532">Дисплейдин жарыктыгын азайтуу</translation>
-<translation id="2104796393919810494">Оңдолуп бүттү</translation>
 <translation id="2105810540595158374">Түзмөк — оюнду көзөмөлдөгүч.</translation>
 <translation id="2115956742084455574">Код туура эмес</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> версиясы</translation>
@@ -148,6 +151,7 @@
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Такталбаган курамдык бөлүктөр<ph name="LINK_END" /> аныкталды. Эгер анын орнотулганын ырастагыңыз келсе, азыр ырастаңыз.</translation>
 <translation id="2363636958541445404">Көшөгөнүн параметрлерин тандоо үчүн функцияны күйгүзүңүз</translation>
 <translation id="2364498172489649528">Текшерүүдөн өттү</translation>
+<translation id="236594517359128026">Улантуудан мурда ноутбукту түз жерге коюңуз</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Жооп пикир баяндамасын жөнөтүү</translation>
 <translation id="2407209115954268704">SIM картаны кулпулоо абалы</translation>
@@ -174,6 +178,7 @@
 <translation id="2638662041295312666">Аккаунтка кирүү сүрөтү</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> альбому тандалды</translation>
 <translation id="2712812801627182647">TLS аутентификация ачкычы</translation>
+<translation id="2713444072780614174">Ак</translation>
 <translation id="2717139507051041123">Караңгы түс режимин иштетүү</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP 2-фазадагы аныктыгын текшерүү</translation>
@@ -265,6 +270,7 @@
 <translation id="3820172043799983114">PIN код жараксыз.</translation>
 <translation id="3838338534323494292">Жаңы сырсөз</translation>
 <translation id="385051799172605136">Артка</translation>
+<translation id="385832974417157471">Өчүрүүдөн мурда түзмөктү жууп салыңыз. Эгер түзмөгүңүздүн капкагы болсо, түзмөк жуулуп бүтмөйүнчө, капкакты жаппай туруңуз. Жууп салуу бир мүнөткө чейин созулушу мүмкүн.</translation>
 <translation id="3858860766373142691">Аталышы</translation>
 <translation id="3865414814144988605">Чечилиш</translation>
 <translation id="387301095347517405">Батарея толук кубатталган циклдердин саны</translation>
@@ -274,6 +280,7 @@
 <translation id="3941014780699102620">Башкы түйүн чечилген жок</translation>
 <translation id="3942420633017001071">Мүчүлүштүктөрдү аныктоо</translation>
 <translation id="3954678691475912818">Түзмөктүн түрү белгисиз.</translation>
+<translation id="3958703339436883942">Өчүрүп күйгүзүүгө даярдалууда...</translation>
 <translation id="3966286471246132217">Тагыраак жыйынтык алуу үчүн тест аягына чыкмайынча бардык колдонмолорду жаап туруңуз.</translation>
 <translation id="3967822245660637423">Жүктөп алуу аяктады</translation>
 <translation id="3969602104473960991">ChromeOS сырсөзү өзгөрдү</translation>
@@ -295,6 +302,7 @@
 <translation id="4145784616224233563">HTTP тармактык коргоосу</translation>
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4155551848414053977">Сканер күйгүзүлгөнүн жана тармак аркылуу жеткиликтүү же түздөн-түз туташууга даяр экенин текшериңиз</translation>
+<translation id="4159784952369912983">Кызгылт көгүш</translation>
 <translation id="4170180284036919717">Сүрөткө тартуу</translation>
 <translation id="4170700058716978431">АТКАРЫЛГАН ЖОК</translation>
 <translation id="4176463684765177261">Өчүк</translation>
@@ -422,6 +430,7 @@
 <translation id="5275828089655680674">Программаларды кайра иштетүү</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029"><ph name="MILESTONE_VERSION" /> версиясы</translation>
+<translation id="5298334025463010990">Кийинки экранга өтүү үчүн жазуудан коргоону өчүрүңүз. Нускамаларды көрүү үчүн түзмөктү өндүрүүчүнүн колдоо көрсөтүү барагына өтүңүз.</translation>
 <translation id="5300814202279832142">Терезени иш тактага жылдыруу</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">Туташуу</translation>
@@ -451,6 +460,7 @@
 <translation id="5507300744274596613">Chrome OS жаңы экенин текшериңиз</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5548284010950733518">Курамдык бөлүктөрдү калибрлөө</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Кайра скандоо</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -473,12 +483,14 @@
 <translation id="583281660410589416">Белгисиз</translation>
 <translation id="5843706793424741864">Фаренгейт</translation>
 <translation id="5849570051105887917">Баштапкы жабдуучунун коду</translation>
+<translation id="5856532218727053281">Тутум жазуудан коргоо статусу текшерилгенден кийин өчүрүлүп күйгүзүлөт</translation>
 <translation id="5859603669299126575">Көркөм галерея альбому</translation>
 <translation id="5860033963881614850">Өчүк</translation>
 <translation id="5860491529813859533">Күйгүзүү</translation>
 <translation id="5866840822086176774">Абдан күчтүү</translation>
 <translation id="588258955323874662">Толук экран</translation>
 <translation id="5895138241574237353">Өчүрүп күйгүзүү</translation>
+<translation id="5901630391730855834">Сары</translation>
 <translation id="5903200662178656908">Түзмөк баскычтоп менен чычкандан турат.</translation>
 <translation id="5916084858004523819">Тыюу салынат</translation>
 <translation id="5916664084637901428">Күйүк</translation>
@@ -488,6 +500,7 @@
 <translation id="594552776027197022">Башаламан иретте жуп ачкычты түзүү</translation>
 <translation id="5972388717451707488">Каражатты жаңыртуу</translation>
 <translation id="5984145644188835034">Демейки тушкагаз</translation>
+<translation id="6017514345406065928">Жашыл</translation>
 <translation id="6034694447310538551">Ай сайын автоматтык түрдө баштапкы абалга келтирүүнү иштетүү</translation>
 <translation id="6037291330010597344">Сканердин документ түрмөгү бош. Документтерди коюп, кайра аракет кылыңыз.</translation>
 <translation id="6040143037577758943">Жабуу</translation>
@@ -675,6 +688,7 @@
 <translation id="7882501334836096755">Жалпыга ачык ачкыч</translation>
 <translation id="7890841768028788197">Ички сенсордук экран</translation>
 <translation id="7936303884198020182">Ысым серверлери табылган жок</translation>
+<translation id="7942349550061667556">Кызыл</translation>
 <translation id="7943235353293548836">Туруктуу сактоочу интервал</translation>
 <translation id="7955587717700691983">Bluetooth баскычтобу</translation>
 <translation id="7960831585769876809">Температура</translation>
@@ -700,9 +714,11 @@
 <translation id="8206859287963243715">Уюктук</translation>
 <translation id="8208861521865154048">Бонустар</translation>
 <translation id="8217675307824400706">Туташыңыз</translation>
+<translation id="8221728673725659466">Калибрдөө аяктады</translation>
 <translation id="8226628635270268143">Сүйүктүү сүрөттөр менен альбомдорду тандоо</translation>
 <translation id="8230672074305416752">Демейки тармактын шлюзуна ping сурамы жөнөтүлгөн жок</translation>
 <translation id="8246209727385807362">Белгисиз байланыш оператору</translation>
+<translation id="827422111966801947">Индиго</translation>
 <translation id="8281886186245836920">Өткөрүп жиберүү</translation>
 <translation id="8286154143153872371">Тушкагазды көрүү үчүн тармакка туташып, баракты кайра жүктөңүз.</translation>
 <translation id="8291967909914612644">Баштапкы жабдуучу өлкө</translation>
@@ -710,6 +726,7 @@
 <translation id="8297006494302853456">Начар</translation>
 <translation id="8302368968391049045">HTTPS тармактык коргоосу</translation>
 <translation id="8318753676953949627">Сүрөттөр жок</translation>
+<translation id="8327249300223641918">Улантуудан мурда түзмөктү (негизин жана капкагын) түз жерге коюңуз.</translation>
 <translation id="8336739000755212683">Түзмөктөгү аккаунттун сүрөтүн өзгөртүү</translation>
 <translation id="8347227221149377169">Басып чыгаруу тапшырмалары</translation>
 <translation id="8352772353338965963">Бир нече профиль менен кирүү үчүн каттоо эсебин кошуңуз. Катталган бардык аккаунттарына кирүүдө сырсөз талап кылынбагандыктан, бул мүмкүнчүлүктү ишенимдүү каттоо эсептери гана колдонушу керек.</translation>
@@ -724,6 +741,7 @@
 <translation id="844521431886043384">DNS туураланган жок</translation>
 <translation id="8456761643544401578">Караңгы теманын автоматтык графиги</translation>
 <translation id="8461329675984532579">Баштапкы жабдуучунун аты</translation>
+<translation id="8467104829907989997">Курамдык бөлүктөр калибрленүүдө...</translation>
 <translation id="8475690821716466388">WiFi тармагынын WEP PSK протоколунун коопсуздугу начар</translation>
 <translation id="8477551185774834963">DNS күтүү убакыты уруксат берилген босогодон бир аз жогору</translation>
 <translation id="8483248364096924578">IP дареги</translation>
@@ -783,6 +801,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скандоо}=1{{NUMBER_OF_PAGES} бетти скандоо}other{{NUMBER_OF_PAGES} бетти скандоо}}</translation>
 <translation id="8997710128084572139">Түзмөктүн батареясынын деңгээли: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Жыштык</translation>
+<translation id="9025198690966128418">Жеке түзмөк катары колдонуу</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS дааналыгын күтүү убакыты узакка созулат</translation>
 <translation id="9073281213608662541">PAP</translation>

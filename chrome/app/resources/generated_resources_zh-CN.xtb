@@ -953,6 +953,7 @@
 <translation id="1892341345406963517"><ph name="PARENT_NAME" />，您好！</translation>
 <translation id="189358972401248634">其他语言</translation>
 <translation id="1895658205118569222">关机</translation>
+<translation id="1897120393475391208">使用安全系数高的密码</translation>
 <translation id="1900305421498694955">Google Play 中的应用可能需要获得完整的文件系统访问权限，才能在外部存储设备上读取和写入文件。任何使用外部驱动器的人员都能看到在此设备上创建的文件和文件夹。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">全选(&amp;A)</translation>
 <translation id="1901396183631570154">Chrome 无法将这些密码保存到您的 Google 帐号中，但您依然可以将它们保存在此设备上。</translation>
@@ -995,6 +996,7 @@
 <translation id="1942600407708803723">合盖后关机</translation>
 <translation id="1944528062465413897">蓝牙配对码：</translation>
 <translation id="1944921356641260203">发现更新</translation>
+<translation id="1947136734041527201">允许您使用您在身份服务中注册的帐号登录网站</translation>
 <translation id="1949584741547056205">快速解答</translation>
 <translation id="1951012854035635156">智能助理</translation>
 <translation id="1954597385941141174">网站可以请求连接到 USB 设备</translation>
@@ -2390,6 +2392,7 @@
 <translation id="32939749466444286">无法启动 Linux 容器。请重试。</translation>
 <translation id="3294437725009624529">访客</translation>
 <translation id="3294686910656423119">使用情况统计信息和崩溃报告</translation>
+<translation id="3297105622164376095">可以显示第三方登录提示</translation>
 <translation id="3297536526040732495">而且，会在您登录后暂时将这些数据关联到您的 Google 帐号，以便在各款 Google 应用中为您提供保护</translation>
 <translation id="329838636886466101">修复</translation>
 <translation id="3298789223962368867">输入的网址无效。</translation>
@@ -3641,6 +3644,7 @@
 <translation id="452750746583162491">查看您已同步的数据</translation>
 <translation id="4527929807707405172">启用反向滚动。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">建议翻译</translation>
+<translation id="4529455689802245339">Chrome 实时字幕功能可能无法运行</translation>
 <translation id="4530494379350999373">来源</translation>
 <translation id="4531924570968473143">您想将谁添加到此 <ph name="DEVICE_TYPE" />？</translation>
 <translation id="4532625150642446981">“<ph name="USB_DEVICE_NAME" />”正在使用中。重新分配正在使用中的设备可能会导致出错。确定要继续吗？</translation>
@@ -3838,6 +3842,7 @@
 <translation id="471880041731876836">您无权访问此网站</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> 的密码</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" />正在共享您的屏幕。</translation>
+<translation id="4722989931633062466">不得显示第三方登录提示</translation>
 <translation id="4723140812774948886">与后一项调换</translation>
 <translation id="4724450788351008910">附属关系已更改</translation>
 <translation id="4725511304875193254">柯基犬</translation>
@@ -4806,6 +4811,7 @@
 <translation id="5711010025974903573">服务日志</translation>
 <translation id="5711983031544731014">无法解锁，请输入密码。</translation>
 <translation id="5712153969432126546">网站有时会发布 PDF 文件，例如文档、合同和表单</translation>
+<translation id="571222594670061844">网站可以显示来自身份服务的登录提示</translation>
 <translation id="5713158217420111469">已连接到“<ph name="DEVICE" />”</translation>
 <translation id="5715711091495208045">插件代理程序：<ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">默认搜索引擎</translation>
@@ -4964,6 +4970,7 @@
 <translation id="5876851302954717356">在右侧新增标签页</translation>
 <translation id="5877064549588274448">版本已更改。请重新启动设备来应用这些变更。</translation>
 <translation id="5877584842898320529">所选打印机不可用或未正确安装。<ph name="BR" />请检查打印机，或尝试另选一台打印机。</translation>
+<translation id="5878945009165002849">屏蔽来自身份服务的登录提示</translation>
 <translation id="5882919346125742463">已知网络</translation>
 <translation id="5883356647197510494">已自动禁用“<ph name="PERMISSION_1" />”和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="5884474295213649357">此标签页已连接到 USB 设备。</translation>
@@ -5599,6 +5606,7 @@
 <translation id="6513247462497316522">如果您没有连接到其他网络，则 Google Chrome 会使用移动数据网络。</translation>
 <translation id="6514010653036109809">可用的设备：</translation>
 <translation id="6514565641373682518">此网页已隐藏鼠标指针。</translation>
+<translation id="6517709704288360414">您的设备可能会无法继续正常运行，您则可能会遇到安全问题和性能问题。万一您遇到问题，关闭更新可能还会影响您依法索赔的权利。</translation>
 <translation id="6518014396551869914">复制图片(&amp;Y)</translation>
 <translation id="6518133107902771759">验证</translation>
 <translation id="651942933739530207">您是否想让 <ph name="APP_NAME" /> 共享您的屏幕和音频输出？</translation>
@@ -6523,6 +6531,7 @@
 <translation id="7444970023873202833">在 Google 相册中发掘您的更多美好回忆</translation>
 <translation id="7444983668544353857">停用<ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">自动安装应用</translation>
+<translation id="7449381494541372002">正在启动…</translation>
 <translation id="7449752890690775568">移除此密码？</translation>
 <translation id="7450761244949417357">正在<ph name="ALTERNATIVE_BROWSER_NAME" />中打开</translation>
 <translation id="7452166281927983300">已忽略的警告 (<ph name="MUTED_PASSWORDS" />)</translation>

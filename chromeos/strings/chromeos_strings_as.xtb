@@ -63,6 +63,7 @@
 <translation id="150962533380566081">অমান্য PUK।</translation>
 <translation id="1510238584712386396">লঞ্চাৰ</translation>
 <translation id="152892567002884378">ভলিউম বঢ়াওক</translation>
+<translation id="1555130319947370107">নীলা</translation>
 <translation id="155865706765934889">টাচ্চ্‌পেড</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> আপডে’ট কৰিব নোৱাৰি</translation>
 <translation id="1567064801249837505">এলবাম</translation>
@@ -114,7 +115,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">অধিক ছেটিং</translation>
 <translation id="2085089206770112532">ডিছপ্লে’ৰ উজ্জ্বলতা ডাউন</translation>
-<translation id="2104796393919810494">মেৰামতি সম্পূৰ্ণ হৈছে</translation>
 <translation id="2105810540595158374">ডিভাইচটো এটা গে’ম নিয়ন্ত্ৰক।</translation>
 <translation id="2115956742084455574">ভুল ক’ড</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, সংস্কৰণ <ph name="MILESTONE_VERSION" /></translation>
@@ -178,6 +178,7 @@
 <translation id="2638662041295312666">ছাইন-ইন প্ৰতিচ্ছবি</translation>
 <translation id="2640549051766135490">এলবাম <ph name="TITLE" /> <ph name="DESC" /> বাছনি কৰা হৈছে</translation>
 <translation id="2712812801627182647">TLS বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ চাবি</translation>
+<translation id="2713444072780614174">বগা</translation>
 <translation id="2717139507051041123">গাঢ় ৰঙৰ ম'ডটো সক্ষম কৰক</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2751739896257479635">EAPৰ ২য় স্তৰৰ বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণ</translation>
@@ -301,6 +302,7 @@
 <translation id="4145784616224233563">HTTPৰ ফায়াৰৱাল</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">নিশ্চিত কৰক যে স্কেনাৰটো অন কৰা আছে আৰু আপোনাৰ নেটৱৰ্ক অথবা এটা পোনপটীয়া সংযোগৰ জৰিয়তে উপলব্ধ হৈ আছে</translation>
+<translation id="4159784952369912983">বেঙুনীয়া</translation>
 <translation id="4170180284036919717">এখন ফট’ তোলক</translation>
 <translation id="4170700058716978431">বিফল হৈছে</translation>
 <translation id="4176463684765177261">অক্ষম আছে</translation>
@@ -488,6 +490,7 @@
 <translation id="5866840822086176774">যথেষ্ট ভাল</translation>
 <translation id="588258955323874662">পূৰ্ণস্ক্ৰীণ</translation>
 <translation id="5895138241574237353">ৰিষ্টাৰ্ট কৰক</translation>
+<translation id="5901630391730855834">হালধীয়া</translation>
 <translation id="5903200662178656908">ডিভাইচটো এখন কীব’ৰ্ড আৰু এটা মাউছৰ সমাহাৰ।</translation>
 <translation id="5916084858004523819">নিষিদ্ধ</translation>
 <translation id="5916664084637901428">অন আছে</translation>
@@ -497,6 +500,7 @@
 <translation id="594552776027197022">যাদৃচ্ছিক কী পেয়াৰ সৃষ্টি কৰক</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">ডিফ’ল্ট ৱালপেপাৰ</translation>
+<translation id="6017514345406065928">সেউজীয়া ৰং</translation>
 <translation id="6034694447310538551">স্বয়ংক্ৰিয়ভাৱে মাহিলী ৰিছেট হোৱাৰ সুবিধাটো সক্ষম কৰক</translation>
 <translation id="6037291330010597344">স্কেনাৰৰ নথিৰ ফীডাৰটো খালী আছে। নথি যোগ দি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
@@ -684,6 +688,7 @@
 <translation id="7882501334836096755">ৰাজহুৱা চাবি</translation>
 <translation id="7890841768028788197">অভ্যন্তৰীণ টাচ্চস্ক্ৰীন</translation>
 <translation id="7936303884198020182">ড’মেইন নাম থকা কোনো ছাৰ্ভাৰ পোৱা নগ'ল</translation>
+<translation id="7942349550061667556">ৰঙা</translation>
 <translation id="7943235353293548836">অবিৰত কীপএলাইভৰ অন্তৰাল</translation>
 <translation id="7955587717700691983">ব্লুটুথ কীব’ৰ্ড</translation>
 <translation id="7960831585769876809">তাপমান</translation>
@@ -713,6 +718,7 @@
 <translation id="8226628635270268143">আপোনাৰ প্ৰিয় ফট’ আৰু এলবামসমূহ বাছনি কৰক</translation>
 <translation id="8230672074305416752">ডিফ'ল্ট নেটৱৰ্কৰ গে’টৱে’টো পিং কৰাত বিফল হ'ল</translation>
 <translation id="8246209727385807362">অজ্ঞাত বাহক</translation>
+<translation id="827422111966801947">ইণ্ডিগ'</translation>
 <translation id="8281886186245836920">এৰি যাওক</translation>
 <translation id="8286154143153872371">অনুগ্ৰহ কৰি এটা নেটৱৰ্কৰ সৈতে সংযোগ কৰক আৰু ৱালপেপাৰ চাবলৈ পৃষ্ঠাখন পুনৰ ল’ড কৰক।</translation>
 <translation id="8291967909914612644">গৃহ প্ৰদানকাৰী দেশ</translation>

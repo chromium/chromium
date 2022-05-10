@@ -136,6 +136,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1719094688023114093">Titl uživo je uključen.</translation>
 <translation id="1720011244392820496">Uključite WiFi sinhronizaciju</translation>
 <translation id="1736898441010944794">Stavka „<ph name="NAME" />“ je vidljiva za Bluetooth uređaje.</translation>
+<translation id="174102739345480129">Marker je isključen.</translation>
 <translation id="1743570585616704562">Nije prepoznat</translation>
 <translation id="1746730358044914197">Metode unosa konfiguriše administrator.</translation>
 <translation id="1747827819627189109">Tastatura na ekranu je omogućena</translation>
@@ -564,6 +565,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4379531060876907730">Ovo su alatke za pisaljku</translation>
 <translation id="4389184120735010762">Pritisnuli ste tastersku prečicu za montiranu lupu ekrana. Želite li da je uključite?</translation>
 <translation id="439598569299422042">Pauzirano, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Čuvanje video snimka ekrana nije uspelo</translation>
 <translation id="4405151984121254935">Tip povezanog perifernog uređaja nije podržan</translation>
 <translation id="4406883609789734330">Titl uživo</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> je isključena.</translation>
@@ -670,6 +672,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Sledeća rečenica</translation>
+<translation id="5016558321564993266">Uključite/isključite marker. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Vreme je isteklo</translation>
 <translation id="5033299697334913360">Kliknite bilo gde da biste snimili ceo ekran</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> se povezao sa novim telefonom</translation>
@@ -699,6 +702,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="5222676887888702881">Odjavi me</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="523505283826916779">Podešavanja pristupačnosti</translation>
+<translation id="5245201184978705914">Generisanje transkripta nije uspelo</translation>
 <translation id="5253783950165989294">Povezani ste sa uređajem pod nazivom <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterije</translation>
 <translation id="5260676007519551770">Radna površina 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> zahteva vašu pažnju.</translation>
@@ -733,6 +737,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="5433020815079095860">Audio ulaz</translation>
 <translation id="544691375626129091">Svi dostupni korisnici su već dodati u ovu sesiju.</translation>
 <translation id="54609108002486618">Upravljani</translation>
+<translation id="5460938382730614333">Marker je uključen.</translation>
 <translation id="5465662442746197494">Potrebna vam je pomoć?</translation>
 <translation id="547979256943495781">Polica na desnoj strani</translation>
 <translation id="5491186829646618080">Dostupna su ažuriranja firmvera</translation>
@@ -774,6 +779,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="5745612484876805746">Noćno svetlo se automatski uključuje kada sunce zađe</translation>
 <translation id="5750765938512549687">Bluetooth je isključen</translation>
 <translation id="5760866832697883462">Povežite uređaj <ph name="NAME" /></translation>
+<translation id="5762420912707163638">Uključite/isključite marker. <ph name="STATE_TEXT" /> Koristite dodirnu tablu, dodirni ekran ili pisaljku da biste crtali na ekranu.</translation>
 <translation id="576341972084747908">Preuzimate opasan fajl <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Žurka na polici je isključena.</translation>
 <translation id="576453121877257266">Noćno svetlo je uključeno.</translation>

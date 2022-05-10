@@ -304,6 +304,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2834813915651407382">Niedawno otwierane</translation>
 <translation id="2841907151129139818">Przełączono na tryb tabletu</translation>
 <translation id="2844169650293029770">Urządzenie USB-C (przedni port na lewym boku)</translation>
+<translation id="2848120746144143659">Aby zrobić zrzut całego ekranu, naciśnij Enter</translation>
 <translation id="2849936225196189499">Krytyczne</translation>
 <translation id="2860184359326882502">Najlepsze dopasowanie</translation>
 <translation id="2865888419503095837">Informacje o sieci</translation>
@@ -482,6 +483,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3846575436967432996">Brak informacji o sieciach</translation>
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="385300504083504382">Początek</translation>
+<translation id="3861651314799684201">Aby nagrać pełny ekran, naciśnij Enter</translation>
 <translation id="3886872229787704059">Otwierane dzisiaj</translation>
 <translation id="3891340733213178823">Naciśnij dwukrotnie Ctrl+Shift+Q, by się wylogować.</translation>
 <translation id="3893630138897523026">ChromeVox (komunikaty głosowe)</translation>
@@ -813,6 +815,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="595202126637698455">Śledzenie wydajności jest włączone</translation>
 <translation id="5955304353782037793">aplikacja</translation>
 <translation id="5958529069007801266">Użytkownik nadzorowany</translation>
+<translation id="5976112937189445008">Aby nagrać okno, naciśnij Enter</translation>
 <translation id="5977415296283489383">Słuchawki</translation>
 <translation id="5978382165065462689">Udostępnianie sterowania ekranem przy użyciu pomocy zdalnej.</translation>
 <translation id="5980301590375426705">Zakończ sesję gościa</translation>
@@ -1198,6 +1201,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8364673525741149932">Przełączanie trybu Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Do przodu o jedną literę</translation>
 <translation id="8371991222807690464">W trybie gościa urządzenia peryferyjne mogą działać mniej wydajnie.</translation>
+<translation id="8374601332003098278">Aby nagrać fragment ekranu, naciśnij Enter</translation>
 <translation id="8375916635258623388">To urządzenie <ph name="DEVICE_NAME" /> i Twój telefon będą się łączyć automatycznie</translation>
 <translation id="8380784334203145311">Dobranoc,</translation>
 <translation id="8382715499079447151">Ochrona przeglądania</translation>
@@ -1250,6 +1254,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8653151467777939995">Pokaż ustawienia powiadomień. Powiadomienia są włączone</translation>
 <translation id="8660331759611631213">Pierwiastek kwadratowy z 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">Aby zrobić częściowy zrzut ekranu, naciśnij Enter</translation>
 <translation id="8664753092453405566">Pokaż listę sieci. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Otwórz aplikację <ph name="NAME" />, aby skonfigurować urządzenie</translation>
 <translation id="8676770494376880701">Podłączono ładowarkę o małej mocy</translation>
@@ -1291,6 +1296,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8909138438987180327">Poziom naładowania baterii: <ph name="PERCENTAGE" />.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Asystent Google nie mówi w tym języku.</translation>
+<translation id="8924458948354692166">Aby zrobić zrzut ekranu okna, naciśnij Enter</translation>
 <translation id="8926951137623668982">Półka zawsze ukryta</translation>
 <translation id="8936501819958976551">dezaktywowana</translation>
 <translation id="8938800817013097409">Urządzenie USB-C (prawy port z tyłu)</translation>

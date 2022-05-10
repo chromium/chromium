@@ -136,6 +136,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1719094688023114093">Živý přepis je zapnutý</translation>
 <translation id="1720011244392820496">Zapnutí Synchronizace Wi-Fi</translation>
 <translation id="1736898441010944794">Adaptér <ph name="NAME" /> je viditelný pro zařízení Bluetooth.</translation>
+<translation id="174102739345480129">Popisovač je vypnutý.</translation>
 <translation id="1743570585616704562">Nerozpoznáno</translation>
 <translation id="1746730358044914197">Metody zadávání nastavuje váš administrátor.</translation>
 <translation id="1747827819627189109">Softwarová klávesnice je aktivována</translation>
@@ -564,6 +565,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4379531060876907730">Toto jsou nástroje pro dotykové pero</translation>
 <translation id="4389184120735010762">Stiskli jste klávesovou zkratku pro zabudovanou lupu. Chcete ji zapnout?</translation>
 <translation id="439598569299422042">Pozastaveno, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Záznam obrazovky se nepodařilo uložit.</translation>
 <translation id="4405151984121254935">Připojený typ periferního zařízení není podporován</translation>
 <translation id="4406883609789734330">Živý přepis</translation>
 <translation id="4412944820643904175">Funkce <ph name="FEATURE_NAME" /> je vypnutá.</translation>
@@ -670,6 +672,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Další věta</translation>
+<translation id="5016558321564993266">Přepnout popisovač. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Čas vypršel</translation>
 <translation id="5033299697334913360">Snímek celé obrazovky pořídíte klepnutím kamkoliv</translation>
 <translation id="5035236842988137213">Zařízení <ph name="DEVICE_NAME" /> je připojeno k novému telefonu</translation>
@@ -699,6 +702,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5222676887888702881">Odhlásit se</translation>
 <translation id="5234764350956374838">Zavřít</translation>
 <translation id="523505283826916779">Nastavení usnadnění přístupu</translation>
+<translation id="5245201184978705914">Přepis se nepodařilo vygenerovat</translation>
 <translation id="5253783950165989294">Připojeno k zařízení <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % baterie</translation>
 <translation id="5260676007519551770">Plocha 4</translation>
 <translation id="5283099933536931082">Aplikace <ph name="APP_ITEM_TITLE" /> vyžaduje vaši pozornost.</translation>
@@ -733,6 +737,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5433020815079095860">Zvukový vstup</translation>
 <translation id="544691375626129091">Do této návštěvy již byli přidáni všichni dostupní uživatelé.</translation>
 <translation id="54609108002486618">Spravovaný</translation>
+<translation id="5460938382730614333">Popisovač je zapnutý.</translation>
 <translation id="5465662442746197494">Potřebujete pomoc?</translation>
 <translation id="547979256943495781">Polička vpravo</translation>
 <translation id="5491186829646618080">K dispozici jsou aktualizace firmwaru</translation>
@@ -774,6 +779,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5745612484876805746">Noční režim se zapíná automaticky za soumraku</translation>
 <translation id="5750765938512549687">Rozhraní Bluetooth je vypnuté</translation>
 <translation id="5760866832697883462">Připojení zařízení <ph name="NAME" /></translation>
+<translation id="5762420912707163638">Přepnout popisovač. <ph name="STATE_TEXT" /> Ke kreslení na obrazovku použijte trackpad, dotykovou obrazovku nebo dotykové pero.</translation>
 <translation id="576341972084747908">Stažení nebezpečného souboru <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Režim Shelf Party je vypnutý.</translation>
 <translation id="576453121877257266">Noční režim je zapnutý.</translation>

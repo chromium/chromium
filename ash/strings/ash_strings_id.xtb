@@ -136,6 +136,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1719094688023114093">Teks Otomatis aktif.</translation>
 <translation id="1720011244392820496">Aktifkan Wi-Fi Sync</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" dapat dilihat oleh perangkat Bluetooth.</translation>
+<translation id="174102739345480129">Penanda nonaktif.</translation>
 <translation id="1743570585616704562">Tidak dikenali</translation>
 <translation id="1746730358044914197">Metode masukan dikonfigurasi oleh administrator.</translation>
 <translation id="1747827819627189109">Keyboard di layar diaktifkan</translation>
@@ -303,6 +304,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2834813915651407382">Dibuka baru-baru ini</translation>
 <translation id="2841907151129139818">Beralih ke mode tablet</translation>
 <translation id="2844169650293029770">Perangkat USB-C (port depan sebelah kiri)</translation>
+<translation id="2848120746144143659">Tekan Enter untuk mengambil screenshot layar penuh</translation>
 <translation id="2849936225196189499">Kritis</translation>
 <translation id="2860184359326882502">Paling Cocok</translation>
 <translation id="2865888419503095837">Info jaringan</translation>
@@ -481,6 +483,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3846575436967432996">Tidak tersedia informasi jaringan</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="385300504083504382">Awal</translation>
+<translation id="3861651314799684201">Tekan Enter untuk merekam dalam layar penuh</translation>
 <translation id="3886872229787704059">Dibuka hari ini</translation>
 <translation id="3891340733213178823">Tekan Ctrl+Shift+Q dua kali untuk keluar.</translation>
 <translation id="3893630138897523026">ChromeVox (respons lisan)</translation>
@@ -564,6 +567,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4379531060876907730">Ini adalah fitur stilus</translation>
 <translation id="4389184120735010762">Anda menekan pintasan keyboard untuk kaca pembesar tersemat. Ingin mengaktifkannya?</translation>
 <translation id="439598569299422042">Dijeda, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Tidak dapat menyimpan screencast</translation>
 <translation id="4405151984121254935">Jenis periferal yang terhubung tidak didukung</translation>
 <translation id="4406883609789734330">Teks Otomatis</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> nonaktif.</translation>
@@ -670,6 +674,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Kalimat berikutnya</translation>
+<translation id="5016558321564993266">Aktifkan/nonaktifkan penanda. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Waktu habis</translation>
 <translation id="5033299697334913360">Klik di mana saja untuk menangkap gambar dalam layar penuh</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> terhubung ke ponsel baru</translation>
@@ -699,6 +704,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5222676887888702881">Logout</translation>
 <translation id="5234764350956374838">Tutup</translation>
 <translation id="523505283826916779">Setelan aksesibilitas</translation>
+<translation id="5245201184978705914">Tidak dapat membuat transkrip</translation>
 <translation id="5253783950165989294">Terhubung ke perangkat bernama <ph name="DEVICE_NAME" />, baterai <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">Halaman kerja 4</translation>
 <translation id="5283099933536931082">Anda perlu memeriksa <ph name="APP_ITEM_TITLE" />.</translation>
@@ -733,6 +739,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5433020815079095860">Input audio</translation>
 <translation id="544691375626129091">Semua pengguna yang tersedia telah ditambahkan ke sesi ini.</translation>
 <translation id="54609108002486618">Terkelola</translation>
+<translation id="5460938382730614333">Penanda aktif.</translation>
 <translation id="5465662442746197494">Butuh bantuan?</translation>
 <translation id="547979256943495781">Rak di bagian kanan</translation>
 <translation id="5491186829646618080">Update firmware tersedia</translation>
@@ -774,6 +781,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5745612484876805746">Fitur Cahaya Malam akan otomatis aktif saat matahari terbenam</translation>
 <translation id="5750765938512549687">Bluetooth nonaktif</translation>
 <translation id="5760866832697883462">Hubungkan <ph name="NAME" /> Anda</translation>
+<translation id="5762420912707163638">Aktifkan/nonaktifkan penanda. <ph name="STATE_TEXT" /> Gunakan trackpad, layar sentuh, atau stilus untuk menggambar pada layar.</translation>
 <translation id="576341972084747908">Download <ph name="FILENAME" /> berbahaya</translation>
 <translation id="5763928712329149804">Shelf Party nonaktif.</translation>
 <translation id="576453121877257266">Mode Cahaya Malam aktif.</translation>
@@ -807,6 +815,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="595202126637698455">Kinerja pelacakan aktif</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Pengguna yang diawasi</translation>
+<translation id="5976112937189445008">Tekan Enter untuk merekam jendela</translation>
 <translation id="5977415296283489383">Headphone</translation>
 <translation id="5978382165065462689">Berbagi kontrol layar via Remote Assistance.</translation>
 <translation id="5980301590375426705">Hentikan sesi tamu</translation>
@@ -1193,6 +1202,7 @@ Baru diinstal</translation>
 <translation id="8364673525741149932">Aktifkan/Nonaktifkan Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Maju per huruf</translation>
 <translation id="8371991222807690464">Performa periferal mungkin dibatasi dalam mode Tamu</translation>
+<translation id="8374601332003098278">Tekan Enter untuk merekam sebagian layar</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> ini dan ponsel Anda akan terhubung otomatis</translation>
 <translation id="8380784334203145311">Selamat malam,</translation>
 <translation id="8382715499079447151">Perlindungan tampilan</translation>
@@ -1245,6 +1255,7 @@ Baru diinstal</translation>
 <translation id="8653151467777939995">Tampilkan setelan notifikasi. Notifikasi aktif.</translation>
 <translation id="8660331759611631213">Akar pangkat dua dari 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">Tekan Enter untuk mengambil screenshot sebagian</translation>
 <translation id="8664753092453405566">Tampilkan daftar jaringan. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Buka <ph name="NAME" /> untuk menyiapkan perangkat Anda</translation>
 <translation id="8676770494376880701">Pengisi daya rendah terpasang</translation>
@@ -1286,6 +1297,7 @@ Baru diinstal</translation>
 <translation id="8909138438987180327">Baterai <ph name="PERCENTAGE" /> persen.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Asisten Google tidak berbicara dalam bahasa ini.</translation>
+<translation id="8924458948354692166">Tekan Enter untuk mengambil screenshot jendela</translation>
 <translation id="8926951137623668982">Rak selalu disembunyikan</translation>
 <translation id="8936501819958976551">dinonaktifkan</translation>
 <translation id="8938800817013097409">Perangkat USB-C (port belakang sebelah kanan)</translation>

@@ -615,7 +615,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="259821504105826686">Arts digitals i fotogràfiques</translation>
 <translation id="2601150049980261779">Pel·lícules romàntiques</translation>
 <translation id="2604589665489080024">Música pop</translation>
-<translation id="2609632851001447353">Variacions</translation>
 <translation id="2610561535971892504">Fes clic per copiar</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />no desarà<ph name="END_EMPHASIS" /> la informació següent:
         <ph name="BEGIN_LIST" />
@@ -895,6 +894,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3399952811970034796">Adreça d'entrega</translation>
 <translation id="3402261774528610252">La connexió utilitzada per carregar aquest lloc web ha fet servir TLS 1.0 o 1.1, estàndards que estan obsolets i es desactivaran en el futur. Un cop desactivats, els usuaris no podran carregar aquest lloc web. El servidor ha d'activar TLS 1.2 o una versió posterior.</translation>
 <translation id="3405664148539009465">Personalitza els tipus de lletra</translation>
+<translation id="3407789382767355356">inici de sessió de tercers</translation>
 <translation id="3409896703495473338">Gestiona la configuració de seguretat</translation>
 <translation id="3414952576877147120">Mida:</translation>
 <translation id="3417660076059365994">Els fitxers que penges o adjuntes s'envien a Google Cloud o a tercers perquè s'analitzin. Per exemple, pot ser que s'analitzin per detectar-hi dades sensibles o programari maliciós.</translation>

@@ -959,6 +959,7 @@
 <translation id="1892341345406963517"><ph name="PARENT_NAME" />，你好</translation>
 <translation id="189358972401248634">其他語言</translation>
 <translation id="1895658205118569222">關閉</translation>
+<translation id="1897120393475391208">使用高強度密碼</translation>
 <translation id="1900305421498694955">透過 Google Play 下載的應用程式可能會要求取得檔案系統的完整存取權，以讀取和寫入外部儲存裝置上的檔案。外接式磁碟的任何使用者都能看見在此裝置上建立的檔案和資料夾。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">選取全部(&amp;A)</translation>
 <translation id="1901396183631570154">Chrome 無法將這些密碼儲存在你的 Google 帳戶中。你仍然可以將這些密碼儲存在這部裝置上。</translation>
@@ -1001,6 +1002,7 @@
 <translation id="1942600407708803723">蓋上機蓋時關機</translation>
 <translation id="1944528062465413897">藍牙配對碼：</translation>
 <translation id="1944921356641260203">找到更新</translation>
+<translation id="1947136734041527201">讓你透過身分識別服務使用你擁有的帳戶登入網站</translation>
 <translation id="1949584741547056205">快速解答</translation>
 <translation id="1951012854035635156">小幫手</translation>
 <translation id="1954597385941141174">網站可以要求連線至 USB 裝置</translation>
@@ -2398,6 +2400,7 @@
 <translation id="32939749466444286">無法啟動 Linux 容器，請再試一次。</translation>
 <translation id="3294437725009624529">訪客</translation>
 <translation id="3294686910656423119">使用統計資料和當機報告</translation>
+<translation id="3297105622164376095">允許顯示第三方登入提示</translation>
 <translation id="3297536526040732495">當你登入 Google 帳戶後，系統會將這些資料暫時連結至你的帳戶，以便在你使用各個 Google 應用程式時提供保護</translation>
 <translation id="329838636886466101">修復</translation>
 <translation id="3298789223962368867">輸入的網址無效。</translation>
@@ -3650,6 +3653,7 @@
 <translation id="452750746583162491">查看已同步處理的資料</translation>
 <translation id="4527929807707405172">啟用反向捲動功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">翻譯建議</translation>
+<translation id="4529455689802245339">Chrome 即時字幕可能無法運作</translation>
 <translation id="4530494379350999373">來源</translation>
 <translation id="4531924570968473143">你想要將誰加入這部 <ph name="DEVICE_TYPE" />？</translation>
 <translation id="4532625150642446981">「<ph name="USB_DEVICE_NAME" />」正在使用中。重新指派使用中的裝置可能會造成錯誤。確定要繼續嗎？</translation>
@@ -3847,6 +3851,7 @@
 <translation id="471880041731876836">你沒有這個網站的瀏覽權限</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />的密碼</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> 正在共用你的畫面。</translation>
+<translation id="4722989931633062466">不允許顯示第三方登入提示</translation>
 <translation id="4723140812774948886">與下一個交換</translation>
 <translation id="4724450788351008910">聯盟已變更</translation>
 <translation id="4725511304875193254">柯基犬</translation>
@@ -4815,6 +4820,7 @@
 <translation id="5711010025974903573">服務記錄</translation>
 <translation id="5711983031544731014">無法解鎖，請輸入你的密碼。</translation>
 <translation id="5712153969432126546">網站有時會發布文件、合約和表單等 PDF 檔案</translation>
+<translation id="571222594670061844">網站可以顯示身分識別服務的登入提示</translation>
 <translation id="5713158217420111469">已連線至「<ph name="DEVICE" />」</translation>
 <translation id="5715711091495208045">外掛程式代理元件：<ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">預設搜尋引擎</translation>
@@ -4973,6 +4979,7 @@
 <translation id="5876851302954717356">在右側新增分頁</translation>
 <translation id="5877064549588274448">版本已變更。請重新啟動裝置以套用變更。</translation>
 <translation id="5877584842898320529">選取的印表機無法使用或未正確安裝。<ph name="BR" />請檢查你的印表機，或改選其他印表機。</translation>
+<translation id="5878945009165002849">封鎖身分識別服務的登入提示</translation>
 <translation id="5882919346125742463">已知網路</translation>
 <translation id="5883356647197510494">已自動封鎖：<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">這個分頁已連上 USB 裝置。</translation>
@@ -5607,6 +5614,7 @@
 <translation id="6513247462497316522">如果你沒有連線至其他網路，Google Chrome 將使用行動數據網路連線。</translation>
 <translation id="6514010653036109809">可用的裝置：</translation>
 <translation id="6514565641373682518">這個網頁已停用滑鼠游標。</translation>
+<translation id="6517709704288360414">裝置可能無法再正常運作，你可能會遇到安全性和效能問題。關閉更新可能也會影響你在遇到問題時，提出法律請求的權利。</translation>
 <translation id="6518014396551869914">複製圖片(&amp;Y)</translation>
 <translation id="6518133107902771759">驗證</translation>
 <translation id="651942933739530207">你想讓 <ph name="APP_NAME" /> 共用你的畫面和音訊輸入嗎？</translation>
@@ -6531,6 +6539,7 @@
 <translation id="7444970023873202833">在 Google 相簿中發掘更多美好回憶</translation>
 <translation id="7444983668544353857">停用 <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">自動安裝應用程式</translation>
+<translation id="7449381494541372002">啟動中…</translation>
 <translation id="7449752890690775568">要移除密碼嗎？</translation>
 <translation id="7450761244949417357">正在 <ph name="ALTERNATIVE_BROWSER_NAME" /> 中開啟</translation>
 <translation id="7452166281927983300">已忽略的警告 (<ph name="MUTED_PASSWORDS" />)</translation>

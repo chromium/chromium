@@ -24,7 +24,9 @@
 <translation id="1201402288615127009">បន្ទាប់</translation>
 <translation id="1204296502688602597">ការពន្យារ DNS</translation>
 <translation id="123124571410524056">បានសន្មតថាជាច្រក</translation>
+<translation id="1236400083787698183">មុនពេលចាប់ផ្តើមឡើងវិញ សូម powerwash ឧបករណ៍របស់អ្នក។ ប្រសិនបើឧបករណ៍របស់អ្នកមានគម្រប សូមរង់ចាំរហូតទាល់តែ powerwash ចប់សិន មុនពេលបិទគម្រប។ Powerwash អាចចំណាយពេលរហូតដល់មួយនាទីទើបដំណើរការចប់។</translation>
 <translation id="1238612778414822719">ការពន្យារ HTTPS</translation>
+<translation id="1240699967155581440">តម្រូវឱ្យមាន Powerwash (កំណត់​ដូច​ចេញ​ពី​រោងចក្រ​)</translation>
 <translation id="1264116747675686718">កំពុងដំឡើងកំណែប្រព័ន្ធ​ប្រតិបត្តិការ</translation>
 <translation id="1264369926465113395">ពិនិត្យមើល​ទស្សនាវដ្ដី​ឌីជីថលថ្មី​របស់ Chromebook សម្រាប់​អ្នកបង្កើត</translation>
 <translation id="1270369111467284986">បានសន្មតថាជាច្រកចូលប្រើបណ្ដាញ</translation>
@@ -61,6 +63,7 @@
 <translation id="150962533380566081">PUK មិនត្រឹមត្រូវ។</translation>
 <translation id="1510238584712386396">ឡាន់ឆ័រ</translation>
 <translation id="152892567002884378">បង្កើន​សំឡេង</translation>
+<translation id="1555130319947370107">ខៀវ</translation>
 <translation id="155865706765934889">ផ្ទាំងប៉ះ</translation>
 <translation id="1565038567006703504">មិនអាចដំឡើងកំណែ <ph name="DEVICE_NAME" /> បានទេ</translation>
 <translation id="1567064801249837505">អាល់ប៊ុម</translation>
@@ -112,7 +115,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">ការកំណត់ច្រើនទៀត</translation>
 <translation id="2085089206770112532">គ្រាប់ចុចព្រួញចុះក្រោមសម្រាប់បន្ថយពន្លឺផ្ទាំងអេក្រង់</translation>
-<translation id="2104796393919810494">បានបញ្ចប់ការជួសជុល</translation>
 <translation id="2105810540595158374">ឧបករណ៍គឺជាឧបករណ៍បញ្ជាហ្គេម។</translation>
 <translation id="2115956742084455574">កូដ​មិន​ត្រឹមត្រូវ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, កំណែ <ph name="MILESTONE_VERSION" /></translation>
@@ -149,6 +151,7 @@
 <translation id="2360257214555822463">បានរកឃើញ​<ph name="LINK_BEGIN" />សមាសភាគ​ដែលគ្មាន​ការទទួលស្គាល់<ph name="LINK_END" />។ ប្រសិនបើ​អ្នក​ជ្រើសរើស​ដើម្បីបញ្ជាក់​ថា​វា​ត្រូវបាន​ដំឡើង សូម​ធ្វើបែបនេះ​ឥឡូវនេះ។</translation>
 <translation id="2363636958541445404">បើកមុខងារនេះ ដើម្បីជ្រើសរើសជម្រើសធាតុរក្សាអេក្រង់</translation>
 <translation id="2364498172489649528">ជាប់</translation>
+<translation id="236594517359128026">មុនពេលបន្ត សូមដាក់កុំព្យូទ័រ​យួរ​ដៃរបស់អ្នកនៅលើផ្ទៃរាបស្មើ</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ផ្ញើ​របាយការណ៍អំពីមតិកែលម្អ</translation>
 <translation id="2407209115954268704">ស្ថានភាពនៃការចាក់សោស៊ីម</translation>
@@ -175,6 +178,7 @@
 <translation id="2638662041295312666">រូបភាពចូលគណនី</translation>
 <translation id="2640549051766135490">បានជ្រើសរើស​អាល់ប៊ុម <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2712812801627182647">សោផ្ទៀងផ្ទាត់ TLS</translation>
+<translation id="2713444072780614174">ស</translation>
 <translation id="2717139507051041123">បើកមុខងារពណ៌ងងឹត</translation>
 <translation id="2740531572673183784">យល់ព្រម</translation>
 <translation id="2751739896257479635">ការផ្ទៀងផ្ទាត់ EAP ដំណាក់កាលទី 2</translation>
@@ -266,6 +270,7 @@
 <translation id="3820172043799983114">លេខ​កូដ PIN ​មិន​ត្រឹមត្រូវ។</translation>
 <translation id="3838338534323494292">ពាក្យសម្ងាត់ថ្មី</translation>
 <translation id="385051799172605136">ថយក្រោយ</translation>
+<translation id="385832974417157471">មុនពេលបិទ សូម powerwash ឧបករណ៍របស់អ្នក។ ប្រសិនបើឧបករណ៍របស់អ្នកមានគម្រប សូមរង់ចាំរហូតទាល់តែ powerwash ចប់សិន មុនពេលបិទគម្រប។ Powerwash អាចចំណាយពេលរហូតដល់មួយនាទីទើបដំណើរការចប់។</translation>
 <translation id="3858860766373142691">ឈ្មោះ</translation>
 <translation id="3865414814144988605">គុណភាពបង្ហាញ</translation>
 <translation id="387301095347517405">ចំនួនដង​ដែលថ្មរបស់អ្នក​បានសាកពេញ</translation>
@@ -297,6 +302,7 @@
 <translation id="4145784616224233563">ជញ្ជាំងភ្លើង HTTP</translation>
 <translation id="4147897805161313378">Google រូបថត</translation>
 <translation id="4155551848414053977">សូមប្រាកដថា ម៉ាស៊ីនស្កេន​ត្រូវបានបើក និងអាចប្រើ​តាមរយៈ​ការតភ្ជាប់​ដោយផ្ទាល់ ឬបណ្ដាញរបស់អ្នក</translation>
+<translation id="4159784952369912983">ស្វាយ</translation>
 <translation id="4170180284036919717">ថតរូប</translation>
 <translation id="4170700058716978431">មិនបានសម្រេច</translation>
 <translation id="4176463684765177261">បានបិទដំណើរការ</translation>
@@ -453,6 +459,7 @@
 <translation id="5507300744274596613">ត្រូវប្រាកដថា Chrome OS មាន​បច្ចុប្បន្ន​ភាព</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5548284010950733518">រៀបចំសមាសភាគ</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ស្កេន​ឡើងវិញ</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -482,6 +489,7 @@
 <translation id="5866840822086176774">ខ្លាំងណាស់</translation>
 <translation id="588258955323874662">ពេញអេក្រង់</translation>
 <translation id="5895138241574237353">ចាប់ផ្តើមឡើងវិញ</translation>
+<translation id="5901630391730855834">លឿង</translation>
 <translation id="5903200662178656908">ឧបករណ៍គឺជាការរួមបញ្ចូលគ្នារវាងក្ដារចុច និងកណ្ដុរ។</translation>
 <translation id="5916084858004523819">ត្រូវបាន​ហាមឃាត់</translation>
 <translation id="5916664084637901428">បើក</translation>
@@ -491,6 +499,7 @@
 <translation id="594552776027197022">បង្កើត​គូសោ​ចៃដន្យ</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">ផ្ទាំង​រូបភាព​លំនាំដើម</translation>
+<translation id="6017514345406065928">បៃតង</translation>
 <translation id="6034694447310538551">បើកការកំណត់ឡើងវិញប្រចាំខែដោយស្វ័យប្រវត្តិ</translation>
 <translation id="6037291330010597344">ឧបករណ៍​បញ្ចូល​ឯកសារ​របស់ម៉ាស៊ីនស្កេន​គឺទទេ។ សូមបញ្ចូល​ឯកសារ រួចព្យាយាម​ម្ដងទៀត។</translation>
 <translation id="6040143037577758943">បិទ</translation>
@@ -678,6 +687,7 @@
 <translation id="7882501334836096755">សោ​សាធារណៈ</translation>
 <translation id="7890841768028788197">អេក្រង់ថាច់​ដែលភ្ជាប់មក​ជាមួយស្រាប់</translation>
 <translation id="7936303884198020182">រកមិនឃើញ DNS ទេ</translation>
+<translation id="7942349550061667556">ក្រហម</translation>
 <translation id="7943235353293548836">ចន្លោះពេល​នៃការរក្សាឱ្យនៅដំណើរការ​ជាប់លាប់</translation>
 <translation id="7955587717700691983">ក្តារចុច​ប៊្លូធូស</translation>
 <translation id="7960831585769876809">សីតុណ្ហភាព</translation>
@@ -703,9 +713,11 @@
 <translation id="8206859287963243715">ប្រព័ន្ធទូរស័ព្ទ</translation>
 <translation id="8208861521865154048">អត្ថប្រយោជន៍</translation>
 <translation id="8217675307824400706">តភ្ជាប់</translation>
+<translation id="8221728673725659466">ការរៀបចំ​ចប់</translation>
 <translation id="8226628635270268143">ជ្រើសរើស​រូបថត និងអាល់ប៊ុមដែលអ្នកចូលចិត្ត</translation>
 <translation id="8230672074305416752">មិនអាចភីងច្រកបណ្ដាញលំនាំដើមបានទេ</translation>
 <translation id="8246209727385807362">ក្រុមហ៊ុនបម្រើសេវាទូរសព្ទ​ដែលមិនស្គាល់</translation>
+<translation id="827422111966801947">ទឹកប៊ិក</translation>
 <translation id="8281886186245836920">រំលង</translation>
 <translation id="8286154143153872371">សូមភ្ជាប់​បណ្ដាញ រួចផ្ទុកទំព័រ​ឡើងវិញ ដើម្បីមើល​ផ្ទាំងរូបភាព។</translation>
 <translation id="8291967909914612644">ប្រទេសនៃអ្នកផ្តល់សេវាកម្មនៅផ្ទះ</translation>
@@ -713,6 +725,7 @@
 <translation id="8297006494302853456">ខ្សោយ</translation>
 <translation id="8302368968391049045">ជញ្ជាំងភ្លើង HTTPS</translation>
 <translation id="8318753676953949627">មិនមាន​រូបភាព​ទេ</translation>
+<translation id="8327249300223641918">មុនពេលបន្ត សូមដាក់ឧបករណ៍ទាំងមូលរបស់អ្នក (តួ​ទ្រទ្រង់ និងគម្រប) នៅលើផ្ទៃរាបស្មើ។</translation>
 <translation id="8336739000755212683">ប្ដូរ​រូបភាពគណនីរបស់​ឧបករណ៍</translation>
 <translation id="8347227221149377169">ការងារ​បោះពុម្ព</translation>
 <translation id="8352772353338965963">បន្ថែមគណនីមួយដើម្បីចូលពីគណនីច្រើន។ គណនីដែលចូលទាំងអស់អាចចូលប្រើដោយគ្មានពាក្យសម្ងាត់ ដូច្នេះលក្ខណពិសេសនេះគួរត្រូវបានប្រើជាមួយគណនីដែលគួរជឿជាក់តែប៉ុណ្ណោះ។</translation>
@@ -727,6 +740,7 @@
 <translation id="844521431886043384">មិនបានរៀបចំ DNS ទេ</translation>
 <translation id="8456761643544401578">មុខងារងងឹត​ស្វ័យប្រវត្តិ</translation>
 <translation id="8461329675984532579">ឈ្មោះអ្នកផ្តល់សេវាកម្មនៅផ្ទះ</translation>
+<translation id="8467104829907989997">កំពុងរៀបចំសមាសភាគ...</translation>
 <translation id="8475690821716466388">បណ្ដាញ WiFi មានសុវត្ថិភាពជាមួយ WEP PSK ប្រូតូកូលខ្សោយ</translation>
 <translation id="8477551185774834963">កម្រិត​ពន្យាររបស់ DNS ខ្ពស់ជាងកម្រិតអនុញ្ញាតបន្តិច</translation>
 <translation id="8483248364096924578">អាសយដ្ឋាន IP</translation>
@@ -786,6 +800,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ស្កេន}=1{ស្កេនទំព័រទី {NUMBER_OF_PAGES}}other{ស្កេនទំព័រទី {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">ឧបករណ៍មានថ្ម <ph name="BATTERY_PERCENTAGE" />%។</translation>
 <translation id="9003704114456258138">ហ្វ្រេកង់</translation>
+<translation id="9025198690966128418">ប្រើប្រាស់ជាឧបករណ៍ផ្ទាល់ខ្លួន</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">ដំណោះស្រាយ DNS មានការ​ពន្យារខ្ពស់</translation>
 <translation id="9073281213608662541">PAP</translation>

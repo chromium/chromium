@@ -615,7 +615,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="259821504105826686">Fotografie und digitale Kunst</translation>
 <translation id="2601150049980261779">Liebesfilme</translation>
 <translation id="2604589665489080024">Popmusik</translation>
-<translation id="2609632851001447353">Varianten</translation>
 <translation id="2610561535971892504">Zum Kopieren klicken</translation>
 <translation id="2617988307566202237">Chrome speichert folgende Daten <ph name="BEGIN_EMPHASIS" />nicht<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -1096,6 +1095,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ist gesperrt</translation>
 <translation id="3978338123949022456">Suchmodus – Tippe eine Anfrage ein und drück die Eingabetaste, um mit <ph name="KEYWORD_SUFFIX" /> zu suchen</translation>
 <translation id="398470910934384994">Vögel</translation>
+<translation id="3985750352229496475">Adressen verwalten…</translation>
 <translation id="3986705137476756801">Automatische Untertitel vorerst deaktivieren</translation>
 <translation id="3987940399970879459">Weniger als 1 MB</translation>
 <translation id="3990250421422698716">Jog-Versatz</translation>
@@ -1218,6 +1218,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4305666528087210886">Zugriff auf die Datei nicht möglich</translation>
 <translation id="4306529830550717874">Adresse speichern?</translation>
 <translation id="4306812610847412719">Zwischenablage</translation>
+<translation id="4310070645992025887">In Onlinerecherchen stöbern</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blockieren (Standard)</translation>
 <translation id="4314815835985389558">Synchronisierung verwalten</translation>
@@ -2102,6 +2103,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6839929833149231406">Region</translation>
 <translation id="6846340164947227603">Virtuelle Kartennummer verwenden...</translation>
 <translation id="6852204201400771460">App neu laden?</translation>
+<translation id="6857776781123259569">Passwörter verwalten…</translation>
 <translation id="686485648936420384">Verbraucherressourcen</translation>
 <translation id="6865412394715372076">Diese Karte kann momentan nicht geprüft werden</translation>
 <translation id="6869334554832814367">Privatkredite</translation>
@@ -2428,6 +2430,7 @@ Weitere Details:
 <translation id="7669271284792375604">Unbefugte Dritte auf dieser Website versuchen eventuell, dich zur Installation von Programmen zu bewegen, die sich nachteilig auf deine Browsernutzung auswirken. Dabei kann zum Beispiel deine Startseite geändert werden oder es erscheinen zusätzliche Anzeigen auf von dir besuchten Websites.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Maßnahmen, die für Daten ergriffen werden, die als vertraulich gekennzeichnet sind (eine Maßnahme seit Anmeldung). <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" />}other{Maßnahmen, die für Daten ergriffen werden, die als vertraulich gekennzeichnet sind (# Maßnahmen seit Anmeldung). <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Ablage 6</translation>
+<translation id="7675325315208090829">Zahlungsmethoden verwalten…</translation>
 <translation id="7676643023259824263">Nach Text aus Zwischenablage suchen: <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Browserverlauf in den Chrome-Einstellungen anzeigen und verwalten</translation>
 <translation id="7679947978757153706">Baseball</translation>

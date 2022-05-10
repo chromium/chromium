@@ -190,6 +190,7 @@
 <translation id="2690858294534178585">ใช้กล้องถ่ายรูปอยู่</translation>
 <translation id="2691653761409724435">ไม่สามารถใช้ออฟไลน์</translation>
 <translation id="2695507686909505111">แปลหน้าเว็บแล้ว</translation>
+<translation id="2697526135132990015">ออกจากระบบและล้างข้อมูล</translation>
 <translation id="2700241355396984822">ตัวเลือกในการตั้งค่าสิทธิ์</translation>
 <translation id="2702801445560668637">รายการที่จะอ่าน</translation>
 <translation id="2704491540504985681">ดาวน์โหลด</translation>
@@ -364,6 +365,7 @@
 <translation id="4121993058175073134">หากต้องการส่งข้อมูล net-export โปรดกำหนดค่าบัญชีอีเมลของคุณในแอปการตั้งค่า</translation>
 <translation id="4124987746317609294">ช่วงเวลา</translation>
 <translation id="4133265950310064865">การปกป้องที่ปรับปรุงแล้ว</translation>
+<translation id="4148023517926189160">เว็บไซต์นี้ต้องการดาวน์โหลดไฟล์และเพิ่มลงในปฏิทิน</translation>
 <translation id="4152011295694446843">คุณจะเห็นบุ๊กมาร์กที่นี่</translation>
 <translation id="4172051516777682613">แสดงทุกครั้ง</translation>
 <translation id="418156467088430727">ดูเวอร์ชันออฟไลน์ในแท็บใหม่</translation>
@@ -692,13 +694,13 @@
 <translation id="6760509555861141183">กลับไปที่แท็บล่าสุด</translation>
 <translation id="6762812039470893796">ยกเลิกการเลือกทั้งหมด</translation>
 <translation id="6780034285637185932">รหัสไปรษณีย์</translation>
+<translation id="6781260999953472352">เปิดการซิงค์ไหม</translation>
 <translation id="6785453220513215166">กำลังส่งรายงานข้อขัดข้อง...</translation>
 <translation id="6797885426782475225">ค้นหาด้วยเสียง</translation>
 <translation id="6801927553864092214">หากต้องการท่องเว็บแบบส่วนตัว ให้เปิดแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="6807889908376551050">แสดงทั้งหมด...</translation>
 <translation id="681368974849482173">สร้างรายการแล้ว</translation>
 <translation id="683022620450280906">คุณใช้รหัสผ่านที่บันทึกไว้ในอุปกรณ์ใดก็ได้ โดยจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านของ Google สำหรับ <ph name="EMAIL" /></translation>
-<translation id="6830804042318138535">อ่านเพิ่มเติม</translation>
 <translation id="6831043979455480757">แปลภาษา</translation>
 <translation id="6842136130964845393">โปรดยืนยันว่าเป็นคุณเพื่อให้เข้าถึงรหัสผ่านที่บันทึกไว้ได้ทุกเมื่อ</translation>
 <translation id="6851516051005285358">ขอเว็บไซต์สำหรับเดสก์ท็อป</translation>
@@ -805,6 +807,7 @@
 <translation id="7807060072011926525">ให้บริการโดย Google</translation>
 <translation id="7839985698273989086">หน้าแบบออฟไลน์</translation>
 <translation id="7840771868269352570">ระบบจะนำรายการที่คุณเลือกออก</translation>
+<translation id="784551991304901159">หากต้องการดูเนื้อหา ให้เลือก "เปิด" จากเมนู</translation>
 <translation id="7853202427316060426">กิจกรรม</translation>
 <translation id="7856733331829174190">ดาวน์โหลดไม่ได้</translation>
 <translation id="7859704718976024901">ประวัติการเข้าชม</translation>

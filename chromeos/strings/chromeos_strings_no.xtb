@@ -24,7 +24,9 @@
 <translation id="1201402288615127009">Neste</translation>
 <translation id="1204296502688602597">DNS-tidsforsinkelse</translation>
 <translation id="123124571410524056">Mistanke om portal</translation>
+<translation id="1236400083787698183">Utfør en powerwash på enheten før du starter den på nytt. Hvis enheten har lokk, må du vente til powerwashen er fullført før du lukker lokket. Det kan ta opptil et minutt å fullføre powerwashen.</translation>
 <translation id="1238612778414822719">HTTPS-tidsforsinkelse</translation>
+<translation id="1240699967155581440">Powerwash (tilbakestilling til fabrikkstandard) kreves</translation>
 <translation id="1264116747675686718">Oppdaterer OS-versjonen</translation>
 <translation id="1264369926465113395">Ta en kikk på Chromebooks nye digitale magasin for skapere</translation>
 <translation id="1270369111467284986">Mistanke om obligatorisk side</translation>
@@ -61,6 +63,7 @@
 <translation id="150962533380566081">Ugyldig PUK.</translation>
 <translation id="1510238584712386396">Appoversikt</translation>
 <translation id="152892567002884378">Volum opp</translation>
+<translation id="1555130319947370107">Blå</translation>
 <translation id="155865706765934889">Styreflate</translation>
 <translation id="1565038567006703504">Kan ikke oppdatere <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Album</translation>
@@ -91,6 +94,7 @@
 <translation id="1801418420130173017">Slå av mørkt tema</translation>
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1827738518074806965">Kunstgalleri</translation>
+<translation id="1840835860961531162">Slå av skrivebeskyttelsen</translation>
 <translation id="1851218745569890714">Videokonferanser</translation>
 <translation id="1852934301711881861">Installer ChromeOS Flex</translation>
 <translation id="1856388568474281774">Nedoverpil</translation>
@@ -111,7 +115,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Flere innstillinger</translation>
 <translation id="2085089206770112532">Skjermlysstyrke ned</translation>
-<translation id="2104796393919810494">Reparasjonen er fullført</translation>
 <translation id="2105810540595158374">Enheten er en spillkontroller.</translation>
 <translation id="2115956742084455574">Feil kode</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versjon <ph name="MILESTONE_VERSION" /></translation>
@@ -148,6 +151,7 @@
 <translation id="2360257214555822463">Fant <ph name="LINK_BEGIN" />ikke-kvalifiserte komponenter<ph name="LINK_END" />. Hvis du velger å bekrefte at disse er installert, må du gjøre det nå.</translation>
 <translation id="2363636958541445404">Slå på funksjonen for å velge alternativer for skjermsparer</translation>
 <translation id="2364498172489649528">Bestått</translation>
+<translation id="236594517359128026">Før du går videre, må du plassere laptopen på en flat overflate</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Send tilbakemeldingsrapport</translation>
 <translation id="2407209115954268704">Status for SIM-låsing</translation>
@@ -174,6 +178,7 @@
 <translation id="2638662041295312666">Påloggingsbilde</translation>
 <translation id="2640549051766135490">Albumet <ph name="TITLE" /> med <ph name="DESC" /> er valgt</translation>
 <translation id="2712812801627182647">TLS-autentiseringsnøkkel</translation>
+<translation id="2713444072780614174">Hvit</translation>
 <translation id="2717139507051041123">Slå på modus for mørke farger</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Fase 2-autentisering av EAP</translation>
@@ -265,6 +270,7 @@
 <translation id="3820172043799983114">Ugyldig PIN-kode</translation>
 <translation id="3838338534323494292">Nytt passord</translation>
 <translation id="385051799172605136">Tilbake</translation>
+<translation id="385832974417157471">Utfør en powerwash på enheten før du slår den av. Hvis enheten har lokk, må du vente til powerwashen er fullført før du lukker lokket. Det kan ta opptil et minutt å fullføre powerwashen.</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3865414814144988605">Oppløsning</translation>
 <translation id="387301095347517405">Antall ganger batteriet har gjennomgått en fullstendig ladesyklus</translation>
@@ -274,6 +280,7 @@
 <translation id="3941014780699102620">Kunne ikke finne tilknytning til verten</translation>
 <translation id="3942420633017001071">Diagnostikk</translation>
 <translation id="3954678691475912818">Enhetstypen er ukjent.</translation>
+<translation id="3958703339436883942">Klargjør for omstart …</translation>
 <translation id="3966286471246132217">For å få mer nøyaktige resultater, lukk alle apper frem til testen er fullført.</translation>
 <translation id="3967822245660637423">Nedlasting fullført</translation>
 <translation id="3969602104473960991">ChromeOS-passordet er oppdatert</translation>
@@ -295,6 +302,7 @@
 <translation id="4145784616224233563">HTTP-brannmur</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4155551848414053977">Sørg for at skanneren er påslått og tilgjengelig via nettverket eller en direktetilkobling</translation>
+<translation id="4159784952369912983">Fiolett</translation>
 <translation id="4170180284036919717">Ta et bilde</translation>
 <translation id="4170700058716978431">MISLYKKET</translation>
 <translation id="4176463684765177261">Deaktivert</translation>
@@ -422,6 +430,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5275828089655680674">Kjør rutinene på nytt</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">versjon <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">Slå av skrivebeskyttelsen for å gå videre til det neste skjermbildet. Gå til enhetsprodusentens støtteside for å få veiledning.</translation>
 <translation id="5300814202279832142">Flytt vindu til skrivebord</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">Koble til</translation>
@@ -451,6 +460,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5507300744274596613">Sørg for at Chrome OS er oppdatert</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5548284010950733518">Kalibrer komponenter</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skann på nytt</translation>
 <translation id="5583640892426849032">Tilbake-tasten</translation>
@@ -473,12 +483,14 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="583281660410589416">Ukjent</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Kode for leverandøren for hjemmeenheten</translation>
+<translation id="5856532218727053281">Systemet startes på nytt når statusen for skrivebeskyttelsen er bekreftet</translation>
 <translation id="5859603669299126575">Kunstgallerialbum</translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Slå på</translation>
 <translation id="5866840822086176774">Veldig sterk</translation>
 <translation id="588258955323874662">Fullskjerm</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
+<translation id="5901630391730855834">Gul</translation>
 <translation id="5903200662178656908">Enheten er en kombinasjon av tastatur og mus.</translation>
 <translation id="5916084858004523819">Forbudt</translation>
 <translation id="5916664084637901428">På</translation>
@@ -488,6 +500,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="594552776027197022">Generer tilfeldig nøkkelpar</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Standardbakgrunn</translation>
+<translation id="6017514345406065928">Grønn</translation>
 <translation id="6034694447310538551">Slå på automatisk månedlig tilbakestilling</translation>
 <translation id="6037291330010597344">Skannerens dokumentmater er tom. Legg inn dokumenter, og prøv på nytt.</translation>
 <translation id="6040143037577758943">Lukk</translation>
@@ -675,6 +688,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7882501334836096755">Offentlig nøkkel</translation>
 <translation id="7890841768028788197">Intern berøringsskjerm</translation>
 <translation id="7936303884198020182">Fant ingen navnetjenere</translation>
+<translation id="7942349550061667556">Rød</translation>
 <translation id="7943235353293548836">Vedvarende keepalive-intervall</translation>
 <translation id="7955587717700691983">Bluetooth-tastatur</translation>
 <translation id="7960831585769876809">Temperatur</translation>
@@ -700,9 +714,11 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordeler</translation>
 <translation id="8217675307824400706">Koble til</translation>
+<translation id="8221728673725659466">Kalibreringen er fullført</translation>
 <translation id="8226628635270268143">Velg favorittbildene og -albumene dine</translation>
 <translation id="8230672074305416752">Kunne ikke pinge gatewayen for standardnettverket</translation>
 <translation id="8246209727385807362">Ukjent operatør</translation>
+<translation id="827422111966801947">Indigo</translation>
 <translation id="8281886186245836920">Hopp over</translation>
 <translation id="8286154143153872371">Koble til et nettverk og last inn siden på nytt for å se bakgrunnsbildet.</translation>
 <translation id="8291967909914612644">Land for leverandøren av hjemmeenheten</translation>
@@ -710,6 +726,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8297006494302853456">Svakt</translation>
 <translation id="8302368968391049045">HTTPS-brannmur</translation>
 <translation id="8318753676953949627">Ingen bilder</translation>
+<translation id="8327249300223641918">Før du går videre, må du plassere hele enheten (base og lokk) på en flat overflate.</translation>
 <translation id="8336739000755212683">Endre bildet for enhetskontoen</translation>
 <translation id="8347227221149377169">Utskriftsjobber</translation>
 <translation id="8352772353338965963">Legg til en konto for multipålogging. Alle påloggede kontoer kan brukes uten passord, så denne funksjonen burde bare brukes med pålitelige kontoer.</translation>
@@ -724,6 +741,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="844521431886043384">DNS er ikke konfigurert</translation>
 <translation id="8456761643544401578">Automatisk mørk modus</translation>
 <translation id="8461329675984532579">Navn på leverandøren for hjemmeenheten</translation>
+<translation id="8467104829907989997">Kalibrerer komponenter …</translation>
 <translation id="8475690821716466388">Wi-Fi-nettverket er sikret med den svake protokollen WEP PSK</translation>
 <translation id="8477551185774834963">DNS-forsinkelsen er noe høyere enn den tillatte grenseverdien</translation>
 <translation id="8483248364096924578">IP-adresse</translation>
@@ -783,6 +801,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skann}=1{Skann side {NUMBER_OF_PAGES}}other{Skann side {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri.</translation>
 <translation id="9003704114456258138">Frekvens</translation>
+<translation id="9025198690966128418">Bruk som personlig enhet</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-oppslag har høy tidsforsinkelse</translation>
 <translation id="9073281213608662541">PAP</translation>

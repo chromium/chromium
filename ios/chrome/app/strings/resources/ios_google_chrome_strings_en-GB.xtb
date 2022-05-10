@@ -7,6 +7,7 @@
 <translation id="1479202195792305274">Chrome can check your passwords when you sign in with your Google Account.</translation>
 <translation id="1493827051843127077">Set Chrome as default to sync your tabs, passwords and payment info on all your devices</translation>
 <translation id="1504372625950710826">Chrome couldn't check for updates. Try checking your Internet connection.</translation>
+<translation id="1511320244449497906">You are signed in and syncing your data with an account managed by <ph name="DOMAIN" /> where its administrator can now set user policies specific to that account that can change the behaviour of Chrome.</translation>
 <translation id="1682483655351012182">Sync your Chrome data</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1812249337131447686">Help improve Chrome by sending usage statistics and crash reports to Google</translation>
@@ -109,6 +110,7 @@
 <translation id="7780154209050837198">To get the most out of Chrome, sign in to Chrome with your Google Account.</translation>
 <translation id="7855730255114109580">Google Chrome is up to date</translation>
 <translation id="8022947259858476807">Use Chrome by default to open links, search from widgets and auto-fill passwords in other apps</translation>
+<translation id="81358522153858150">Chrome now supports user policies for your managed account</translation>
 <translation id="8160472928944011082">Chrome can't update</translation>
 <translation id="8263079278049777200">Sign in to this site, your Google Account and Chrome. You can turn on sync later.</translation>
 <translation id="8357607116237445042">Choose whether to clear your Chrome data from this device or keep it</translation>

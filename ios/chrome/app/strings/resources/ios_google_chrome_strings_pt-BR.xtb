@@ -7,6 +7,7 @@
 <translation id="1479202195792305274">O Chrome pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
 <translation id="1493827051843127077">Defina o Chrome como padrão para sincronizar guias, senhas e informações de pagamento em todos os seus dispositivos</translation>
 <translation id="1504372625950710826">Não foi possível verificar se há atualizações. Verifique sua conexão de Internet.</translation>
+<translation id="1511320244449497906">Sua conta está conectada e seus dados estão sendo sincronizados com uma conta gerenciada por <ph name="DOMAIN" />, onde o administrador pode definir políticas do usuário específicas para a conta que podem mudar o comportamento do Chrome.</translation>
 <translation id="1682483655351012182">Sincronizar seus dados do Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1812249337131447686">Envie estatísticas de uso e relatórios de erros ao Google para ajudar a melhorar o Chrome</translation>
@@ -109,6 +110,7 @@
 <translation id="7780154209050837198">Para aproveitar o Chrome ao máximo, faça login na sua Conta do Google.</translation>
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
 <translation id="8022947259858476807">Use o Chrome como padrão para abrir links, pesquisar em widgets e preencher senhas automaticamente em outros apps</translation>
+<translation id="81358522153858150">O Chrome agora oferece suporte para políticas do usuário na sua conta gerenciada</translation>
 <translation id="8160472928944011082">Não é possível atualizar o Chrome</translation>
 <translation id="8263079278049777200">Faça login neste site, na sua Conta do Google e no Chrome. É possível ativar a sincronização mais tarde.</translation>
 <translation id="8357607116237445042">Você quer apagar ou manter os dados do Chrome neste dispositivo?</translation>

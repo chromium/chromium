@@ -972,6 +972,7 @@
 <translation id="1892341345406963517"><ph name="PARENT_NAME" />님, 안녕하세요</translation>
 <translation id="189358972401248634">다른 언어</translation>
 <translation id="1895658205118569222">종료</translation>
+<translation id="1897120393475391208">안전한 비밀번호를 사용하세요.</translation>
 <translation id="1900305421498694955">Google Play의 앱이 외부 저장장치에 있는 파일을 읽고 쓰기 위해 전체 파일 시스템 액세스 권한을 요구할 수도 있습니다. 이 기기에서 생성된 파일 및 폴더는 외장 드라이브를 사용하는 모든 사람이 볼 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">전체 선택(&amp;A)</translation>
 <translation id="1901396183631570154">Chrome에서 이 비밀번호를 Google 계정에 저장할 수 없습니다. 이 기기에는 여전히 비밀번호를 저장할 수 있습니다.</translation>
@@ -1014,6 +1015,7 @@
 <translation id="1942600407708803723">커버를 닫으면 종료</translation>
 <translation id="1944528062465413897">블루투스 페어링 코드:</translation>
 <translation id="1944921356641260203">사용 가능한 업데이트 있음</translation>
+<translation id="1947136734041527201">가지고 있는 ID 서비스 계정으로 웹사이트에 로그인할 수 있습니다.</translation>
 <translation id="1949584741547056205">빠른 답변</translation>
 <translation id="1951012854035635156">어시스턴트</translation>
 <translation id="1954597385941141174">사이트에서 USB 기기에 연결하도록 요청할 수 있음</translation>
@@ -2415,6 +2417,7 @@
 <translation id="32939749466444286">Linux 컨테이너가 시작되지 않았습니다. 다시 시도해 주세요.</translation>
 <translation id="3294437725009624529">게스트</translation>
 <translation id="3294686910656423119">사용 통계 및 비정상 종료 보고서</translation>
+<translation id="3297105622164376095">서드 파티 로그인 메시지 표시가 허용됨</translation>
 <translation id="3297536526040732495">사용자가 로그인하면 이 데이터를 사용자의 Google 계정에 일시적으로 연결하여 Google 앱 전반에서 사용자를 보호합니다.</translation>
 <translation id="329838636886466101">복구</translation>
 <translation id="3298789223962368867">잘못된 URL을 입력했습니다.</translation>
@@ -3668,6 +3671,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="452750746583162491">동기화된 데이터 검토</translation>
 <translation id="4527929807707405172">역방향 스크롤이 사용 설정되었습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">번역 제안</translation>
+<translation id="4529455689802245339">Chrome 실시간 자막이 작동하지 않을 수 있음</translation>
 <translation id="4530494379350999373">출처</translation>
 <translation id="4531924570968473143"><ph name="DEVICE_TYPE" />에 어떤 사용자를 추가할까요?</translation>
 <translation id="4532625150642446981">'<ph name="USB_DEVICE_NAME" />' 기기를 사용 중입니다. 사용 중인 기기를 재할당하면 오류가 발생할 수 있습니다. 계속하시겠습니까?</translation>
@@ -3865,6 +3869,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="471880041731876836">이 사이트에 방문할 수 있는 권한이 없습니다.</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />의 비밀번호</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" />에서 내 화면을 공유하는 중입니다.</translation>
+<translation id="4722989931633062466">서드 파티 로그인 메시지 표시가 허용되지 않음</translation>
 <translation id="4723140812774948886">다음 항목과 교환</translation>
 <translation id="4724450788351008910">제휴가 변경됨</translation>
 <translation id="4725511304875193254">웰시 코기</translation>
@@ -4835,6 +4840,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5711010025974903573">서비스 로그</translation>
 <translation id="5711983031544731014">잠금 해제할 수 없습니다. 비밀번호를 입력하세요.</translation>
 <translation id="5712153969432126546">사이트에서 때때로 문서, 계약서, 양식과 같은 PDF를 게시할 수 있습니다.</translation>
+<translation id="571222594670061844">사이트에서 ID 서비스의 로그인 메시지를 표시할 수 있음</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" />에 연결됨</translation>
 <translation id="5715711091495208045">플러그인 중개인: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">기본 검색엔진</translation>
@@ -4993,6 +4999,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5876851302954717356">오른쪽에 새 탭 열기</translation>
 <translation id="5877064549588274448">채널이 변경되었습니다. 변경사항을 적용하려면 기기를 다시 시작하세요.</translation>
 <translation id="5877584842898320529">선택한 프린터가 사용할 수 없거나 제대로 설치되어 있지 않습니다. <ph name="BR" /> 프린터를 확인하거나 다른 프린터를 선택해 보세요.</translation>
+<translation id="5878945009165002849">ID 서비스의 로그인 메시지를 차단합니다.</translation>
 <translation id="5882919346125742463">알려진 네트워크</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 자동으로 차단됨</translation>
 <translation id="5884474295213649357">이 탭이 USB 기기에 연결되었습니다.</translation>
@@ -5629,6 +5636,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6513247462497316522">다른 네트워크에 연결되어 있지 않을 경우 Chrome은 모바일 데이터를 사용합니다.</translation>
 <translation id="6514010653036109809">사용할 수 있는 기기:</translation>
 <translation id="6514565641373682518">이 페이지에서 마우스 커서를 사용 중지했습니다.</translation>
+<translation id="6517709704288360414">기기가 더 이상 제대로 작동하지 않을 수 있으며 보안 및 성능 문제가 발생할 수 있습니다. 업데이트를 사용 중지하면 문제 발생 시 법적 소송을 제기할 권리에 영향이 있을 수도 있습니다.</translation>
 <translation id="6518014396551869914">이미지 복사(&amp;Y)</translation>
 <translation id="6518133107902771759">확인</translation>
 <translation id="651942933739530207"><ph name="APP_NAME" />에서 화면 및 오디오 출력을 공유하도록 하시겠습니까?</translation>
@@ -6553,6 +6561,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7444970023873202833">Google 포토에서 더 많은 추억을 살펴보세요.</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> 사용 중지</translation>
 <translation id="7448430327655618736">앱 자동 설치</translation>
+<translation id="7449381494541372002">시작 중...</translation>
 <translation id="7449752890690775568">비밀번호를 삭제할까요?</translation>
 <translation id="7450761244949417357">지금 <ph name="ALTERNATIVE_BROWSER_NAME" />에서 여는 중</translation>
 <translation id="7452166281927983300">닫은 경고(<ph name="MUTED_PASSWORDS" />개)</translation>

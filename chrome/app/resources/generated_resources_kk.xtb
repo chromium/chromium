@@ -999,6 +999,7 @@
 <translation id="1942600407708803723">Қақпағы жабылғанда, жұмысты аяқтау</translation>
 <translation id="1944528062465413897">Bluetooth жұптау коды:</translation>
 <translation id="1944921356641260203">Жаңарту табылды</translation>
+<translation id="1947136734041527201">Идентификация қызметін пайдаланып, аккаунт арқылы веб-сайттарға кіруге мүмкіндік береді.</translation>
 <translation id="1949584741547056205">Жылдам жауаптар</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954597385941141174">Сайттар USB құрылғыларына қосылуға рұқсат сұрайды</translation>
@@ -2395,6 +2396,7 @@
 <translation id="32939749466444286">Linux контейнері іске қосылмады. Қайталап көріңіз.</translation>
 <translation id="3294437725009624529">Қонақ</translation>
 <translation id="3294686910656423119">Қолданыс статистикасы және жаңылыс туралы есептер</translation>
+<translation id="3297105622164376095">Аккаунтқа үшінші тарап арқылы кіру хабарларының көрсетілуіне рұқсат беру</translation>
 <translation id="3297536526040732495">Google қолданбаларында сізді қорғау үшін, аккаунтқа кіріп отырғанда деректер мен аккаунтты уақытша байланыстырады.</translation>
 <translation id="329838636886466101">Жөндеу</translation>
 <translation id="3298789223962368867">Жарамсыз URL енгізілді.</translation>
@@ -3649,6 +3651,7 @@
 <translation id="452750746583162491">Синхрондалған деректерді қарау</translation>
 <translation id="4527929807707405172">Кері айналдыруды қосу. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Аударма ұсынысы</translation>
+<translation id="4529455689802245339">Chrome Live Caption жұмыс істемеуі мүмкін.</translation>
 <translation id="4530494379350999373">Түпнұсқа</translation>
 <translation id="4531924570968473143"><ph name="DEVICE_TYPE" /> құрылғысына кімді қосқыңыз келеді?</translation>
 <translation id="4532625150642446981">"<ph name="USB_DEVICE_NAME" />" қолданылып жатыр. Қолданылып жатқан құрылғыны қайта тағайындасаңыз, қате шығуы мүмкін. Шынымен жалғастырғыңыз келе ме?</translation>
@@ -3846,6 +3849,7 @@
 <translation id="471880041731876836">Бұл сайтқа кіруге рұқсатыңыз жоқ</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> құпия сөзі</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> экраныңызды бөлісуде.</translation>
+<translation id="4722989931633062466">Аккаунтқа үшінші тарап арқылы кіру хабарларының көрсетілуіне рұқсат бермеу</translation>
 <translation id="4723140812774948886">Келесіге ауыстыру</translation>
 <translation id="4724450788351008910">Мүшелік өзгерді</translation>
 <translation id="4725511304875193254">Корги</translation>
@@ -4814,6 +4818,7 @@
 <translation id="5711010025974903573">Қызметтік журналдар</translation>
 <translation id="5711983031544731014">Құлпын ашу мүмкін емес. Құпия сөзіңізді енгізіңіз.</translation>
 <translation id="5712153969432126546">Сайттар кейде PDF-терді (мысалы, құжаттар, келісімшарттар және үлгілер) жариялайды.</translation>
+<translation id="571222594670061844">Сайттар идентификация қызметтері жіберген аккаунтқа кіру хабарларын көрсетуі мүмкін.</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> құрылғысына жалғанған</translation>
 <translation id="5715711091495208045">Плагин делдалы: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Әдепкі іздеу жүйелері</translation>
@@ -4972,6 +4977,7 @@
 <translation id="5876851302954717356">Оң жақтағы жаңа қойынды</translation>
 <translation id="5877064549588274448">Арна өзгерді. Өзгерістерді қолдану үшін құрылғыңызды қайта іске қосыңыз.</translation>
 <translation id="5877584842898320529">Таңдалған принтер жоқ немесе дұрыс реттелмеген. <ph name="BR" /> Принтерді тексеріңіз немесе басқасын таңдаңыз.</translation>
+<translation id="5878945009165002849">Идентификация қызметтері жіберген аккаунтқа кіру хабарлары бөгеледі.</translation>
 <translation id="5882919346125742463">Сақталған желілер</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> автоматты түрде бөгелді.</translation>
 <translation id="5884474295213649357">Бұл қойынды USB құрылғысына қосылған.</translation>
@@ -5607,6 +5613,7 @@
 <translation id="6513247462497316522">Басқа желіге қосылмаған болсаңыз, Google Chrome ұялы деректерді пайдаланады.</translation>
 <translation id="6514010653036109809">Қолжетімді құрылғы:</translation>
 <translation id="6514565641373682518">Бұл бет тінтуір жүгіргісін өшірді.</translation>
+<translation id="6517709704288360414">Құрылғыңыз дұрыс жұмыс істемей, өнімділікке және қауіпсіздікке қатысты ақаулар пайда болуы мүмкін. Жаңартуларды өшірсеңіз, ақаулар пайда болған жағдайда құқықтық шағым жібере алмауыңыз мүмкін.</translation>
 <translation id="6518014396551869914">Кескінді көшіру</translation>
 <translation id="6518133107902771759">Растау</translation>
 <translation id="651942933739530207"><ph name="APP_NAME" /> қолданбасы экраныңыз бен аудио шығысты бөлісуін қалайсыз ба?</translation>

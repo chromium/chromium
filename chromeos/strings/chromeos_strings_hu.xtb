@@ -61,6 +61,7 @@
 <translation id="150962533380566081">Érvénytelen PUK-kód.</translation>
 <translation id="1510238584712386396">Indító</translation>
 <translation id="152892567002884378">Hangerő növelése</translation>
+<translation id="1555130319947370107">Kék</translation>
 <translation id="155865706765934889">Érintőpad</translation>
 <translation id="1565038567006703504">Nem sikerült frissíteni a következőt: <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albumok</translation>
@@ -112,7 +113,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">További beállítások</translation>
 <translation id="2085089206770112532">Kijelző fényerejének csökkentése</translation>
-<translation id="2104796393919810494">Javítás befejezve</translation>
 <translation id="2105810540595158374">Az eszköz egy kontroller.</translation>
 <translation id="2115956742084455574">Hibás kód</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzió: <ph name="MILESTONE_VERSION" /></translation>
@@ -175,6 +175,7 @@
 <translation id="2638662041295312666">Bejelentkezési kép</translation>
 <translation id="2640549051766135490">A következő album kiválasztva: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2712812801627182647">TLS-hitelesítési kulcs</translation>
+<translation id="2713444072780614174">Fehér</translation>
 <translation id="2717139507051041123">Sötét szín mód engedélyezése</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP hitelesítés 2. fázisa</translation>
@@ -297,6 +298,7 @@
 <translation id="4145784616224233563">HTTP-tűzfal</translation>
 <translation id="4147897805161313378">Google Fotók</translation>
 <translation id="4155551848414053977">Győződjön meg arról, hogy a szkenner be van kapcsolva, és hogy hozzáférhető a hálózaton vagy közvetlen kapcsolaton keresztül</translation>
+<translation id="4159784952369912983">Lila</translation>
 <translation id="4170180284036919717">Fotó készítése</translation>
 <translation id="4170700058716978431">SIKERTELEN</translation>
 <translation id="4176463684765177261">Letiltva</translation>
@@ -483,6 +485,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5866840822086176774">Nagyon erős</translation>
 <translation id="588258955323874662">Teljes képernyő</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
+<translation id="5901630391730855834">Sárga</translation>
 <translation id="5903200662178656908">Az eszközhöz billentyűzet és egér is tartozik.</translation>
 <translation id="5916084858004523819">Letiltva</translation>
 <translation id="5916664084637901428">Be</translation>
@@ -492,6 +495,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="594552776027197022">Véletlenszerű kulcspár generálása</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Alapértelmezett háttérkép</translation>
+<translation id="6017514345406065928">Zöld</translation>
 <translation id="6034694447310538551">Havonta történő automatikus visszaállítás engedélyezése</translation>
 <translation id="6037291330010597344">A szkenner dokumentumadagolója üres. Helyezzen be dokumentumokat, és próbálja újra.</translation>
 <translation id="6040143037577758943">Bezárás</translation>
@@ -679,6 +683,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7882501334836096755">Nyilvános kulcs</translation>
 <translation id="7890841768028788197">Belső érintőképernyő</translation>
 <translation id="7936303884198020182">Nem találhatók névszerverek</translation>
+<translation id="7942349550061667556">Piros</translation>
 <translation id="7943235353293548836">Folyamatos keepalive-időintervallum</translation>
 <translation id="7955587717700691983">Bluetooth-billentyűzet</translation>
 <translation id="7960831585769876809">Hőmérséklet</translation>
@@ -707,6 +712,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8226628635270268143">Kedvenc fotók és albumok kiválasztása</translation>
 <translation id="8230672074305416752">Nem sikerült az alapértelmezett hálózati átjáró pingelése</translation>
 <translation id="8246209727385807362">Ismeretlen szolgáltató</translation>
+<translation id="827422111966801947">Indigókék</translation>
 <translation id="8281886186245836920">Kihagyás</translation>
 <translation id="8286154143153872371">A háttérkép megtekintése érdekében csatlakozzon egy hálózathoz, majd töltse be újra az oldalt.</translation>
 <translation id="8291967909914612644">Otthoni szolgáltató országa</translation>

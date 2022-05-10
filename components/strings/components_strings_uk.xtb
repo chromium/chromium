@@ -619,7 +619,6 @@
 <translation id="259821504105826686">Мистецтво фотографії й цифрове мистецтво</translation>
 <translation id="2601150049980261779">Романтичні фільми</translation>
 <translation id="2604589665489080024">Поп-музика</translation>
-<translation id="2609632851001447353">Різновиди</translation>
 <translation id="2610561535971892504">Натиснути, щоб скопіювати</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />не зберігатиме<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -1102,6 +1101,7 @@
 <translation id="3973234410852337861">Хост <ph name="HOST_NAME" /> заблокований</translation>
 <translation id="3978338123949022456">Режим пошуку: щоб здійснити пошук на <ph name="KEYWORD_SUFFIX" />, введіть запит і натисніть Enter</translation>
 <translation id="398470910934384994">Птахи</translation>
+<translation id="3985750352229496475">Керувати адресами…</translation>
 <translation id="3986705137476756801">Наразі вимкнути живі субтитри</translation>
 <translation id="3987940399970879459">Менше 1 МБ</translation>
 <translation id="3990250421422698716">Поступове зміщення</translation>
@@ -1229,6 +1229,7 @@
 <translation id="4305666528087210886">Не вдалося отримати доступ до файлу</translation>
 <translation id="4306529830550717874">Зберегти адресу?</translation>
 <translation id="4306812610847412719">буфер обміну</translation>
+<translation id="4310070645992025887">Пошук у сеансах</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блокувати (за умовчанням)</translation>
 <translation id="4314815835985389558">Керувати синхронізацією</translation>
@@ -2113,6 +2114,7 @@
 <translation id="6839929833149231406">Область</translation>
 <translation id="6846340164947227603">Скористатися номером віртуальної картки…</translation>
 <translation id="6852204201400771460">Перезапустити додаток?</translation>
+<translation id="6857776781123259569">Керувати паролями…</translation>
 <translation id="686485648936420384">Ресурси для споживачів</translation>
 <translation id="6865412394715372076">Зараз цю картку не можна підтвердити</translation>
 <translation id="6869334554832814367">Кредити фізичним особам</translation>
@@ -2439,6 +2441,7 @@
 <translation id="7669271284792375604">Зловмисники на цьому сайті можуть обманом змусити вас установити програми, які погіршують роботу в Інтернеті (наприклад, змінюють вашу домашню сторінку або показують додаткову рекламу на сайтах, які ви відвідуєте).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Дії з даними, які позначено як конфіденційні (з моменту входу повідомлено про 1 дію). <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" />}one{Дії з даними, які позначено як конфіденційні (з моменту входу повідомлено про # дію). <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" />}few{Дії з даними, які позначено як конфіденційні (з моменту входу повідомлено про # дії). <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" />}many{Дії з даними, які позначено як конфіденційні (з моменту входу повідомлено про # дій). <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" />}other{Дії з даними, які позначено як конфіденційні (з моменту входу повідомлено про # дії). <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Поштова скринька 6</translation>
+<translation id="7675325315208090829">Керувати способами оплати…</translation>
 <translation id="7676643023259824263">Пошук тексту з буфера обміну: <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Переглянути історію веб-перегляду та керувати нею в налаштуваннях Chrome</translation>
 <translation id="7679947978757153706">Бейсбол</translation>

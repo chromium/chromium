@@ -618,7 +618,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="259821504105826686">Fotografía e arte dixital</translation>
 <translation id="2601150049980261779">Películas románticas</translation>
 <translation id="2604589665489080024">Música pop</translation>
-<translation id="2609632851001447353">Variacións</translation>
 <translation id="2610561535971892504">Fai clic para copiar a información</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />non gardará<ph name="END_EMPHASIS" /> a seguinte información:
 <ph name="BEGIN_LIST" />
@@ -898,6 +897,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3399952811970034796">Enderezo de entrega</translation>
 <translation id="3402261774528610252">A conexión coa que se cargou este sitio utilizou TLS 1.0 ou TLS 1.1, as cales son versións obsoletas que se desactivarán no futuro. Cando se desactiven, evitarase que os usuarios carguen este sitio. O servidor debería activar TLS 1.2 ou unha versión superior.</translation>
 <translation id="3405664148539009465">Personalizar tipos de letra</translation>
+<translation id="3407789382767355356">inicio de sesión de terceiros</translation>
 <translation id="3409896703495473338">Xestionar configuración de seguranza</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="3417660076059365994">Os ficheiros que cargas ou anexas envíanse a Google Cloud ou a terceiros para analizalos. Por exemplo, poderíase comprobar se conteñen datos confidenciais ou software malicioso.</translation>

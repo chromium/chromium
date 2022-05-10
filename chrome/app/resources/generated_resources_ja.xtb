@@ -999,6 +999,7 @@
 <translation id="1942600407708803723">ディスプレイを閉じたときにシャットダウンする</translation>
 <translation id="1944528062465413897">Bluetooth ペア設定コード:</translation>
 <translation id="1944921356641260203">アップデートが見つかりました</translation>
+<translation id="1947136734041527201">ID サービスで使用しているアカウントでウェブサイトにログインできます</translation>
 <translation id="1949584741547056205">クイック アンサー</translation>
 <translation id="1951012854035635156">アシスタント</translation>
 <translation id="1954597385941141174">サイトが USB デバイスへの接続を要求できるようにする</translation>
@@ -2393,6 +2394,7 @@
 <translation id="32939749466444286">Linux コンテナを起動できませんでした。もう一度お試しください。</translation>
 <translation id="3294437725009624529">ゲスト</translation>
 <translation id="3294686910656423119">使用統計データと障害レポート</translation>
+<translation id="3297105622164376095">サードパーティのログイン メッセージの表示を許可するサイト</translation>
 <translation id="3297536526040732495">ログイン時には、このデータを一時的に Google アカウントにリンクして、すべての Google アプリを安全に利用できるように保護します</translation>
 <translation id="329838636886466101">修復</translation>
 <translation id="3298789223962368867">入力された URL が無効です。</translation>
@@ -3642,6 +3644,7 @@
 <translation id="452750746583162491">同期したデータを確認する</translation>
 <translation id="4527929807707405172">逆スクロールを有効にする。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">翻訳の提案</translation>
+<translation id="4529455689802245339">Chrome 自動字幕起こしを使用できない可能性があります</translation>
 <translation id="4530494379350999373">オリジン</translation>
 <translation id="4531924570968473143">この <ph name="DEVICE_TYPE" /> にどのユーザーを追加しますか？</translation>
 <translation id="4532625150642446981">「<ph name="USB_DEVICE_NAME" />」は使用中です。このデバイスを使用中に再割り当てすると、エラーが発生する可能性があります。続行してもよろしいですか？</translation>
@@ -3838,6 +3841,7 @@
 <translation id="471880041731876836">このサイトへのアクセスが許可されていません</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> のパスワード</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> が画面を共有しています。</translation>
+<translation id="4722989931633062466">サードパーティのログイン メッセージの表示を許可しないサイト</translation>
 <translation id="4723140812774948886">次と交換</translation>
 <translation id="4724450788351008910">アフィリエーションが変更された</translation>
 <translation id="4725511304875193254">コーギー</translation>
@@ -4806,6 +4810,7 @@
 <translation id="5711010025974903573">サービスログ</translation>
 <translation id="5711983031544731014">ロックを解除できません。パスワードを入力してください。</translation>
 <translation id="5712153969432126546">一部のサイトはドキュメント、契約、フォームなどの PDF を一般に提供しています</translation>
+<translation id="571222594670061844">サイトで ID サービスからのログイン メッセージを表示できるようにする</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> に接続しました</translation>
 <translation id="5715711091495208045">プラグイン ブローカー: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">既定の検索エンジン</translation>
@@ -4964,6 +4969,7 @@
 <translation id="5876851302954717356">右隣に新しいタブを開く</translation>
 <translation id="5877064549588274448">チャンネルが変更されました。変更を適用するには、デバイスを再起動してください。</translation>
 <translation id="5877584842898320529">選択したプリンタは利用できないか、正しくインストールされていません。<ph name="BR" />プリンタを確認するか、別のプリンタを選択してみてください。</translation>
+<translation id="5878945009165002849">ID サービスからのログイン メッセージをブロックする</translation>
 <translation id="5882919346125742463">既知のネットワーク</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />を自動ブロックしました</translation>
 <translation id="5884474295213649357">このタブは USB デバイスに接続されています。</translation>
@@ -5597,6 +5603,7 @@
 <translation id="6513247462497316522">他のネットワークに接続していない場合、Google Chrome はモバイル データを使用します。</translation>
 <translation id="6514010653036109809">接続可能なデバイス:</translation>
 <translation id="6514565641373682518">このページではマウスカーソルが無効になります。</translation>
+<translation id="6517709704288360414">お使いのデバイスが正しく動作しなくなり、セキュリティやパフォーマンス上の問題が発生する可能性があります。また、更新を無効にすると、問題発生時に法的申し立てを行う権利にも影響が及ぶ場合があります。</translation>
 <translation id="6518014396551869914">画像をコピー(&amp;Y)</translation>
 <translation id="6518133107902771759">確認</translation>
 <translation id="651942933739530207">画面と音声出力を <ph name="APP_NAME" /> と共有しますか？</translation>

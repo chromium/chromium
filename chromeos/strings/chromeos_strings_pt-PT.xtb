@@ -61,6 +61,7 @@
 <translation id="150962533380566081">PUK inválido.</translation>
 <translation id="1510238584712386396">Iniciador</translation>
 <translation id="152892567002884378">Aumentar o volume</translation>
+<translation id="1555130319947370107">Azul</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1565038567006703504">Não é possível atualizar o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Álbuns</translation>
@@ -112,7 +113,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Mais definições</translation>
 <translation id="2085089206770112532">Diminuir o brilho do ecrã</translation>
-<translation id="2104796393919810494">Reparação concluída</translation>
 <translation id="2105810540595158374">O dispositivo é um comando de jogos.</translation>
 <translation id="2115956742084455574">Código incorreto</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versão <ph name="MILESTONE_VERSION" /></translation>
@@ -174,6 +174,7 @@
 <translation id="2638662041295312666">Imagem do início de sessão</translation>
 <translation id="2640549051766135490">Álbum <ph name="TITLE" /> <ph name="DESC" /> selecionado</translation>
 <translation id="2712812801627182647">Chave de autenticação TLS</translation>
+<translation id="2713444072780614174">Branco</translation>
 <translation id="2717139507051041123">Ativar modo de cor escura</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Autenticação da fase 2 de EAP</translation>
@@ -295,6 +296,7 @@
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4155551848414053977">Certifique-se de que o lscannerestá ativado e disponível através da sua rede ou de uma ligação direta.</translation>
+<translation id="4159784952369912983">Roxo</translation>
 <translation id="4170180284036919717">Tirar uma foto</translation>
 <translation id="4170700058716978431">FALHOU</translation>
 <translation id="4176463684765177261">Desativado</translation>
@@ -478,6 +480,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5866840822086176774">Muito forte</translation>
 <translation id="588258955323874662">Ecrã inteiro</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="5901630391730855834">Amarelo</translation>
 <translation id="5903200662178656908">O dispositivo é uma combinação de teclado e rato.</translation>
 <translation id="5916084858004523819">Proibido</translation>
 <translation id="5916664084637901428">Ativado</translation>
@@ -487,6 +490,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="594552776027197022">Gerar par de chaves aleatório</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Imagem de fundo predefinida</translation>
+<translation id="6017514345406065928">Verde</translation>
 <translation id="6034694447310538551">Ativar reposição mensal automática</translation>
 <translation id="6037291330010597344">O alimentador de documentos do scanner está vazio. Adicione documentos e tente novamente.</translation>
 <translation id="6040143037577758943">Fechar</translation>
@@ -673,6 +677,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7882501334836096755">Chave pública</translation>
 <translation id="7890841768028788197">Ecrã tátil interno</translation>
 <translation id="7936303884198020182">Não foram encontrados servidores de nomes.</translation>
+<translation id="7942349550061667556">Vermelho</translation>
 <translation id="7943235353293548836">Intervalo keep-alive persistente</translation>
 <translation id="7955587717700691983">Teclado Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -701,6 +706,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8226628635270268143">Escolha os seus álbuns ou fotos favoritos.</translation>
 <translation id="8230672074305416752">Falha ao enviar ping ao gateway da rede predefinida.</translation>
 <translation id="8246209727385807362">Operador desconhecido</translation>
+<translation id="827422111966801947">Índigo</translation>
 <translation id="8281886186245836920">Ignorar</translation>
 <translation id="8286154143153872371">Estabeleça ligação a uma rede e atualize a página para ver a imagem de fundo.</translation>
 <translation id="8291967909914612644">País do fornecedor base</translation>

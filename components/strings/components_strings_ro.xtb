@@ -619,7 +619,6 @@
 <translation id="259821504105826686">Artă fotografică și digitală</translation>
 <translation id="2601150049980261779">Filme romantice</translation>
 <translation id="2604589665489080024">Muzică pop</translation>
-<translation id="2609632851001447353">Modificări</translation>
 <translation id="2610561535971892504">Dă clic pentru a copia</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />nu va salva<ph name="END_EMPHASIS" /> următoarele informații:
           <ph name="BEGIN_LIST" />
@@ -1101,6 +1100,7 @@
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> este blocat</translation>
 <translation id="3978338123949022456">Modul de căutare, introdu o interogare și apasă pe Enter ca să cauți cu <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Păsări</translation>
+<translation id="3985750352229496475">Gestionează adresele…</translation>
 <translation id="3986705137476756801">Dezactivează Subtitrările live pentru moment</translation>
 <translation id="3987940399970879459">Mai puțin de 1 MB</translation>
 <translation id="3990250421422698716">Decalaj de îndoire</translation>
@@ -1228,6 +1228,7 @@
 <translation id="4305666528087210886">Fișierul nu a putut fi accesat</translation>
 <translation id="4306529830550717874">Salvezi adresa?</translation>
 <translation id="4306812610847412719">Clipboard</translation>
+<translation id="4310070645992025887">Caută parcursuri</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blochează (în mod prestabilit)</translation>
 <translation id="4314815835985389558">Gestionează sincronizarea</translation>
@@ -2112,6 +2113,7 @@
 <translation id="6839929833149231406">Zonă</translation>
 <translation id="6846340164947227603">Folosește un număr de card virtual…</translation>
 <translation id="6852204201400771460">Reîncarci aplicația?</translation>
+<translation id="6857776781123259569">Gestionează parolele…</translation>
 <translation id="686485648936420384">Resurse pentru consumatori</translation>
 <translation id="6865412394715372076">Acest card nu poate fi confirmat chiar acum.</translation>
 <translation id="6869334554832814367">Credite personale</translation>
@@ -2438,6 +2440,7 @@ Detalii suplimentare:
 <translation id="7669271284792375604">Atacatorii de pe acest site pot încerca să te înșele pentru a instala programe care dăunează experienței de navigare (de exemplu, schimbând pagina de pornire sau afișând anunțuri suplimentare pe site-urile pe care le accesezi).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Acțiuni realizate cu datele marcate drept confidențiale (o acțiune de la conectare). <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" />}few{Acțiuni realizate cu datele marcate drept confidențiale (# acțiuni de la conectare). <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" />}other{Acțiuni realizate cu datele marcate drept confidențiale (# de acțiuni de la conectare). <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Căsuța de e-mail 6</translation>
+<translation id="7675325315208090829">Gestionează metodele de plată…</translation>
 <translation id="7676643023259824263">Caută text din clipboard, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Vezi și gestionează istoricul de navigare în setările Chrome</translation>
 <translation id="7679947978757153706">Baseball</translation>

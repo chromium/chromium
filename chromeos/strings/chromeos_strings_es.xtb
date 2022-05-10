@@ -61,6 +61,7 @@
 <translation id="150962533380566081">El PUK no es válido.</translation>
 <translation id="1510238584712386396">Menú de aplicaciones</translation>
 <translation id="152892567002884378">Subir el volumen</translation>
+<translation id="1555130319947370107">Azul</translation>
 <translation id="155865706765934889">Panel táctil</translation>
 <translation id="1565038567006703504">No se puede actualizar <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Álbumes</translation>
@@ -91,6 +92,7 @@
 <translation id="1801418420130173017">Inhabilitar tema oscuro</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1827738518074806965">Galería de arte</translation>
+<translation id="1840835860961531162">Desactivar la protección contra escritura</translation>
 <translation id="1851218745569890714">Videoconferencias</translation>
 <translation id="1852934301711881861">Instalar ChromeOS Flex</translation>
 <translation id="1856388568474281774">Flecha hacia abajo</translation>
@@ -111,7 +113,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Más ajustes</translation>
 <translation id="2085089206770112532">Reducir el brillo de la pantalla</translation>
-<translation id="2104796393919810494">Reparación completada</translation>
 <translation id="2105810540595158374">El dispositivo es un mando de juegos.</translation>
 <translation id="2115956742084455574">Código incorrecto</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" /></translation>
@@ -174,6 +175,7 @@
 <translation id="2638662041295312666">Imagen de inicio de sesión</translation>
 <translation id="2640549051766135490">Álbum <ph name="TITLE" /> <ph name="DESC" /> seleccionado</translation>
 <translation id="2712812801627182647">Clave de autenticación TLS</translation>
+<translation id="2713444072780614174">Blanco</translation>
 <translation id="2717139507051041123">Habilitar modo de color oscuro</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 EAP</translation>
@@ -274,6 +276,7 @@
 <translation id="3941014780699102620">No se ha podido resolver el host</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
 <translation id="3954678691475912818">Se desconoce el tipo de dispositivo.</translation>
+<translation id="3958703339436883942">Preparándose para reiniciar...</translation>
 <translation id="3966286471246132217">Para obtener resultados más precisos, cierra todas las aplicaciones hasta que se haya completado la prueba.</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3969602104473960991">Contraseña de ChromeOS actualizada</translation>
@@ -295,6 +298,7 @@
 <translation id="4145784616224233563">Cortafuegos de HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4155551848414053977">Comprueba que el escáner esté activado y que esté disponible a través de tu red o de una conexión directa</translation>
+<translation id="4159784952369912983">Morado</translation>
 <translation id="4170180284036919717">Hacer foto</translation>
 <translation id="4170700058716978431">ERROR</translation>
 <translation id="4176463684765177261">Inhabilitado</translation>
@@ -421,6 +425,7 @@
 <translation id="5275828089655680674">Repetir rutinas</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">versión <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">Inhabilita la protección contra escritura para pasar a la siguiente pantalla. Ve a la página de asistencia del fabricante del dispositivo para obtener instrucciones.</translation>
 <translation id="5300814202279832142">Mover ventana al escritorio</translation>
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5308380583665731573">Conectar</translation>
@@ -472,12 +477,14 @@
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Código del proveedor inicial</translation>
+<translation id="5856532218727053281">El sistema se reiniciará después de verificar el estado de la protección contra escritura</translation>
 <translation id="5859603669299126575">Álbum de galería de arte</translation>
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5866840822086176774">Óptima</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="5901630391730855834">Amarillo</translation>
 <translation id="5903200662178656908">El dispositivo es una combinación de teclado y ratón.</translation>
 <translation id="5916084858004523819">Prohibida</translation>
 <translation id="5916664084637901428">Activado</translation>
@@ -487,6 +494,7 @@
 <translation id="594552776027197022">Generar par de claves aleatorio</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Fondo de pantalla predeterminado</translation>
+<translation id="6017514345406065928">Verde</translation>
 <translation id="6034694447310538551">Habilitar el reinicio mensual automático</translation>
 <translation id="6037291330010597344">El alimentador de documentos del escáner está vacío. Añade documentos y vuelve a intentarlo.</translation>
 <translation id="6040143037577758943">Cerrar</translation>
@@ -674,6 +682,7 @@
 <translation id="7882501334836096755">Clave pública</translation>
 <translation id="7890841768028788197">Pantalla táctil interna</translation>
 <translation id="7936303884198020182">No se han encontrado servidores de nombres</translation>
+<translation id="7942349550061667556">Rojo</translation>
 <translation id="7943235353293548836">Intervalo keepalive persistente</translation>
 <translation id="7955587717700691983">Teclado Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -702,6 +711,7 @@
 <translation id="8226628635270268143">Elige tus fotos y álbumes favoritos</translation>
 <translation id="8230672074305416752">Se ha producido un error al hacer ping en la puerta de enlace de red predeterminada</translation>
 <translation id="8246209727385807362">Operador desconocido</translation>
+<translation id="827422111966801947">Índigo</translation>
 <translation id="8281886186245836920">Saltar</translation>
 <translation id="8286154143153872371">Conéctate a una red y vuelve a cargar la página para ver el fondo de pantalla.</translation>
 <translation id="8291967909914612644">País del proveedor inicial</translation>

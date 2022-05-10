@@ -61,6 +61,7 @@
 <translation id="150962533380566081">தவறான PUK.</translation>
 <translation id="1510238584712386396">துவக்கி</translation>
 <translation id="152892567002884378">ஒலியளவை அதிகரிக்கும்</translation>
+<translation id="1555130319947370107">நீலம்</translation>
 <translation id="155865706765934889">டச்பேட்</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> ஐப் புதுப்பிக்க முடியவில்லை</translation>
 <translation id="1567064801249837505">ஆல்பங்கள்</translation>
@@ -91,6 +92,7 @@
 <translation id="1801418420130173017">டார்க் தீமினை முடக்குதல்</translation>
 <translation id="1807246157184219062">வெளிச்சம்</translation>
 <translation id="1827738518074806965">ஆர்ட் கேலரி</translation>
+<translation id="1840835860961531162">திருத்துவதைத் தடுக்கும் அம்சத்தை முடக்குதல்</translation>
 <translation id="1851218745569890714">வீடியோ கான்ஃபிரன்ஸ்</translation>
 <translation id="1852934301711881861">ChromeOS Flexஸை நிறுவு</translation>
 <translation id="1856388568474281774">கீழ்நோக்கிய அம்புக்குறி</translation>
@@ -111,7 +113,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">மேலும் அமைப்புகள்</translation>
 <translation id="2085089206770112532">காட்சி ஒளிர்வைக் குறைக்கும்</translation>
-<translation id="2104796393919810494">ரிப்பேர் நிறைவடைந்தது</translation>
 <translation id="2105810540595158374">சாதனம் ஒரு கேம் கண்ட்ரோலர்.</translation>
 <translation id="2115956742084455574">தவறான குறியீடு</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, பதிப்பு <ph name="MILESTONE_VERSION" /></translation>
@@ -157,6 +158,7 @@
 <translation id="2446553403094072641">ஃப்லோட்டிங் பாயிண்ட் துல்லியத்தன்மை</translation>
 <translation id="2448312741937722512">வகை</translation>
 <translation id="2461822463642141190">தற்போதைய மின் உபயோகம்</translation>
+<translation id="2480034874476596812">நேரடியாக முடக்கு</translation>
 <translation id="2491955442992294626">வேறொரு சாளரத்தைப் பயன்படுத்தும்போது, விசைகள் சோதனை செய்யப்படாது</translation>
 <translation id="2493126929778606526">தானாகத் தேர்ந்தெடுக்கப்பட்ட உங்களின் சிறந்த படங்கள்</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -173,6 +175,7 @@
 <translation id="2638662041295312666">உள்நுழைவுப் படம்</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> ஆல்பம் தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="2712812801627182647">TLS அங்கீகரிப்புக் குறியீடு</translation>
+<translation id="2713444072780614174">வெள்ளை</translation>
 <translation id="2717139507051041123">அடர் வண்ணப் பயன்முறையை இயக்கும்</translation>
 <translation id="2740531572673183784">சரி</translation>
 <translation id="2751739896257479635">EAP 2ஆம் கட்ட அங்கீகரிப்பு</translation>
@@ -251,6 +254,7 @@
 <translation id="3606583719724308068">HTTPS இணையதளங்களில் அதிகளவு தாமதம் ஏற்படுகிறது</translation>
 <translation id="3621202678540785336">உள்ளீடு</translation>
 <translation id="3632579075709132555">தனிப்பட்ட திரையை இயக்கும்/முடக்கும்</translation>
+<translation id="3678765385266369662">திருத்துதலைத் தடுக்கும் அம்சத்தை எப்படி முடக்குவது என்பதைத் தேர்ந்தெடுங்கள்</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> சோதனை</translation>
 <translation id="370665806235115550">ஏற்றுகிறது…</translation>
 <translation id="3708186454126126312">ஏற்கெனவே இணைத்தவை</translation>
@@ -272,6 +276,7 @@
 <translation id="3941014780699102620">ஹோஸ்ட்டைச் சரிசெய்ய முடியவில்லை</translation>
 <translation id="3942420633017001071">கண்டறிதல்</translation>
 <translation id="3954678691475912818">சாதனத்தின் வகை தெரியவில்லை.</translation>
+<translation id="3958703339436883942">மீண்டும் தொடங்கத் தயாராகிறது...</translation>
 <translation id="3966286471246132217">மிகவும் துல்லியமான முடிவுகளைப் பெற சோதனை முடியும் வரை ஆப்ஸ் அனைத்தையும் மூடவும்.</translation>
 <translation id="3967822245660637423">பதிவிறக்கம் முடிந்தது</translation>
 <translation id="3969602104473960991">ChromeOS கடவுச்சொல் மாற்றப்பட்டது</translation>
@@ -293,6 +298,7 @@
 <translation id="4145784616224233563">HTTP ஃபயர்வால்</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">ஸ்கேனர் இயக்கப்பட்டிருப்பதையும் அது உங்கள் நெட்வொர்க் மூலமாகவோ நேரடியாகவோ இணைக்கப்பட்டிருப்பதையும் உறுதிசெய்துகொள்ளவும்</translation>
+<translation id="4159784952369912983">பர்பிள்</translation>
 <translation id="4170180284036919717">படமெடு</translation>
 <translation id="4170700058716978431">தோல்வியடைந்தது</translation>
 <translation id="4176463684765177261">முடக்கப்பட்டது</translation>
@@ -305,6 +311,7 @@
 <translation id="4244962993387259361">நினைவகச் சோதனையை இயக்க, குறைந்தது 500 MB சேமிப்பிடம் காலியாக இருக்க வேண்டும். சேமிப்பிடத்தைக் காலியாக்க 'அமைப்புகள் &gt; சேமிப்பக நிர்வாகி' என்பதற்குச் செல்லவும்.</translation>
 <translation id="4250229828105606438">ஸ்கிரீன்ஷாட்</translation>
 <translation id="4258281355379922695">HTTP தாமதம்</translation>
+<translation id="4258561075226177474">அதே பயனரிடம் சாதனம் வழங்கப்படும். பயனர் தரவை அழிக்கவா?</translation>
 <translation id="4271957103967917607">முழுத்திரையில் காட்டும்</translation>
 <translation id="4275799948641988986">பழுது நீக்கியபிறகு, இந்தச் சாதனத்தை யார் பயன்படுத்துவார்கள்?</translation>
 <translation id="4289540628985791613">மேலோட்டம்</translation>
@@ -353,6 +360,7 @@
 <translation id="473775607612524610">புதுப்பி</translation>
 <translation id="4744944742468440486">உங்கள் தேர்வுடன் தொடர்புடைய தகவல்கள்</translation>
 <translation id="4773299976671772492">நிறுத்தப்பட்டது</translation>
+<translation id="4774530504324923332">RSU இயக்கப்பட்ட பாதுகாப்பு விசை, QR குறியீடு ஸ்கேனர், இணைய இணைப்பு உள்ள மற்றொரு சாதனம் ஆகியவை உங்களுக்குத் தேவை</translation>
 <translation id="4782311465517282004">வார்த்தையை வலது கிளிக் செய்தோ தொட்டுப் பிடித்தோ அதற்கான வரையறைகள், மொழிபெயர்ப்புகள், அலகு மாற்றங்கள் ஆகியவற்றைத் தெரிந்துகொள்ளலாம்</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> படம்</translation>
 <translation id="4793710386569335688">கூடுதல் உதவிக்கு, <ph name="BEGIN_LINK" />உதவி மையத்திற்குச்<ph name="END_LINK" /> செல்லவும்.</translation>
@@ -418,6 +426,7 @@
 <translation id="5275828089655680674">வழக்கங்களை மீண்டும் இயக்கு</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">பதிப்பு <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">அடுத்த திரைக்குச் செல்ல, திருத்துவதைத் தடுக்கும் அம்சத்தை முடக்கவும். வழிமுறைகளைத் தெரிந்துகொள்ள, சாதன உற்பத்தியாளரின் உதவிப் பக்கத்திற்குச் செல்லவும்.</translation>
 <translation id="5300814202279832142">சாளரத்தை டெஸ்கிற்கு நகர்த்து</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">இணை</translation>
@@ -432,6 +441,7 @@
 <translation id="5372659122375744710">வைஃபை நெட்வொர்க் பாதுகாப்பாக இல்லை</translation>
 <translation id="5376354385557966694">தானியங்கு லைட் பயன்முறை</translation>
 <translation id="537872351913703572">வேறொரு பயனருக்கோ நிறுவனத்திற்கோ சாதனம் வழங்கப்படும்</translation>
+<translation id="5395600419410242651">எல்லாத் தரவையும் அழி</translation>
 <translation id="5400907029458559844">சாதனம் இணைக்கப்படுகிறது.</translation>
 <translation id="5401938042319910061">எல்லாச் சோதனைகளையும் இயக்கு</translation>
 <translation id="5423849171846380976">செயலாக்கப்பட்டது</translation>
@@ -468,12 +478,14 @@
 <translation id="583281660410589416">தெரியாதது</translation>
 <translation id="5843706793424741864">ஃபாரன்ஹீட்</translation>
 <translation id="5849570051105887917">உள்நாட்டு மொபைல் சேவை வழங்குநர் குறியீடு</translation>
+<translation id="5856532218727053281">திருத்துவதைத் தடுக்கும் அம்சத்தின் நிலையைச் சரிபார்த்த பிறகு சிஸ்டம் மீண்டும் தொடங்கும்</translation>
 <translation id="5859603669299126575">ஆர்ட் கேலரி ஆல்பம்</translation>
 <translation id="5860033963881614850">ஆஃப்</translation>
 <translation id="5860491529813859533">இயக்கு</translation>
 <translation id="5866840822086176774">மிக வலிமையானது</translation>
 <translation id="588258955323874662">முழுத்திரை</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
+<translation id="5901630391730855834">மஞ்சள்</translation>
 <translation id="5903200662178656908">கீபோர்டும் மவுஸும் இணைந்ததே சாதனமாகும்.</translation>
 <translation id="5916084858004523819">தடைசெய்யப்பட்டது</translation>
 <translation id="5916664084637901428">இயக்கு</translation>
@@ -483,6 +495,7 @@
 <translation id="594552776027197022">ரேண்டம் குறியீட்டு இணையை உருவாக்கு</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">இயல்பு வால்பேப்பர்</translation>
+<translation id="6017514345406065928">பச்சை</translation>
 <translation id="6034694447310538551">மாதந்தோறும் தானாக ரீசெட் செய்வதை இயக்கு</translation>
 <translation id="6037291330010597344">ஸ்கேனரின் டாக்குமெண்ட் ஃபீடர் காலியாக உள்ளது. ஆவணங்களைச் சேர்த்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="6040143037577758943">மூடு</translation>
@@ -642,6 +655,7 @@
 <translation id="7570674786725311828">USB டச்ஸ்கிரீன்</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> மீதமுள்ளது</translation>
 <translation id="7620771111601174153">உதவி மையத்தில் மேலும் அறிக</translation>
+<translation id="7626501172915339021">RMA சேவையக அன்லாக்கை (RSU) செயல்படுத்து</translation>
 <translation id="763165478673169849">கடைசியாக மீட்டமைத்த நேரம்</translation>
 <translation id="7648838807254605802">HTTPS கோரிக்கைகள் அதிக நேரம் எடுக்கின்றன</translation>
 <translation id="7656388927906093505">சாதனம் ஒரு மவுஸ்.</translation>
@@ -669,6 +683,7 @@
 <translation id="7882501334836096755">பொதுக் குறியீடு</translation>
 <translation id="7890841768028788197">சாதனத்தில் உள்ள டச்ஸ்கிரீன்</translation>
 <translation id="7936303884198020182">பெயர் சேவையகங்கள் எதுவும் இல்லை</translation>
+<translation id="7942349550061667556">சிவப்பு</translation>
 <translation id="7943235353293548836">பெர்சிஸ்டெண்ட் கீப்-அலைவ் இன்டெர்வல்</translation>
 <translation id="7955587717700691983">புளூடூத் கீபோர்டு</translation>
 <translation id="7960831585769876809">வெப்பநிலை</translation>
@@ -697,6 +712,7 @@
 <translation id="8226628635270268143">உங்களுக்குப் பிடித்த படங்களையும் ஆல்பங்களையும் தேர்வுசெய்க</translation>
 <translation id="8230672074305416752">இயல்புநிலை நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
 <translation id="8246209727385807362">அறியப்படாத தொலைத்தொடர்பு நிறுவனம்</translation>
+<translation id="827422111966801947">இண்டிகோ</translation>
 <translation id="8281886186245836920">தவிர்</translation>
 <translation id="8286154143153872371">வால்பேப்பரைப் பார்க்க நெட்வொர்க்குடன் இணைத்து, பக்கத்தை ரெஃப்ரெஷ் செய்யவும்.</translation>
 <translation id="8291967909914612644">உள்நாட்டு மொபைல் சேவை வழங்குநரின் நாடு</translation>
@@ -785,6 +801,8 @@
 <translation id="9087578468327036362">இந்த வினவல் குறித்துப் புகாரளிக்கலாம்</translation>
 <translation id="9088306295921699330">தற்போதைய உபயோகம்</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">இந்தச் சாதனத்தின் பாகங்களை நீங்கள் பிரிக்க வேண்டும்</translation>
+<translation id="9098156406873149060">பயனர் தரவை வைத்திரு</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> வலைதளத்திற்கான டிக்கெட்டை ரெஃப்ரெஷ் செய்யவும்</translation>
 <translation id="9106415115617144481">ஸ்கேன் செய்யப்படும் பக்கம்: <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">அன்லாக் செய்</translation>

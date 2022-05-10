@@ -136,6 +136,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1719094688023114093">Mae Capsiynau Byw ymlaen.</translation>
 <translation id="1720011244392820496">Troi Cysoni Wi-Fi ymlaen</translation>
 <translation id="1736898441010944794">Mae "<ph name="NAME" />" yn weladwy i ddyfeisiau Bluetooth.</translation>
+<translation id="174102739345480129">Mae'r marciwr wedi'i ddiffodd.</translation>
 <translation id="1743570585616704562">Heb ei adnabod</translation>
 <translation id="1746730358044914197">Mae dulliau mewnbynnu yn cael eu ffurfweddu gan eich gweinyddwr.</translation>
 <translation id="1747827819627189109">Mae bysellfwrdd ar y sgrîn wedi'i alluogi</translation>
@@ -564,6 +565,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="4379531060876907730">Dyma'ch offer pwyntil</translation>
 <translation id="4389184120735010762">Gwnaethoch bwyso'r llwybr byr bysellfwrdd ar gyfer y chwyddwydr sydd wedi'i docio. Ydych chi am ei droi ymlaen?</translation>
 <translation id="439598569299422042">Seibiwyd, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Methu â chadw'r sgrinlediad</translation>
 <translation id="4405151984121254935">Ni chefnogir y math perifferol sydd wedi'i gysylltu</translation>
 <translation id="4406883609789734330">Capsiynau Byw</translation>
 <translation id="4412944820643904175">Mae <ph name="FEATURE_NAME" /> wedi'i ddiffodd.</translation>
@@ -670,6 +672,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Brawddeg nesaf</translation>
+<translation id="5016558321564993266">Toglo'r marciwr. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Amser ar ben</translation>
 <translation id="5033299697334913360">Cliciwch unrhyw le i dynnu sgrinlun o'r sgrîn lawn</translation>
 <translation id="5035236842988137213">Mae <ph name="DEVICE_NAME" /> wedi cysylltu â ffôn newydd</translation>
@@ -699,6 +702,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="5222676887888702881">Allgofnodi</translation>
 <translation id="5234764350956374838">Diystyru</translation>
 <translation id="523505283826916779">Gosodiadau hygyrchedd</translation>
+<translation id="5245201184978705914">Methu â chynhyrchu trawsgrifiad</translation>
 <translation id="5253783950165989294">Wedi'i gysylltu â dyfais o'r enw <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% batri</translation>
 <translation id="5260676007519551770">Desg 4</translation>
 <translation id="5283099933536931082">Mae angen eich sylw ar <ph name="APP_ITEM_TITLE" />.</translation>
@@ -733,6 +737,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="5433020815079095860">Mewnbwn sain</translation>
 <translation id="544691375626129091">Mae'r holl ddefnyddwyr sydd ar gael eisoes wedi'u hychwanegu at y sesiwn hon.</translation>
 <translation id="54609108002486618">Rheolir</translation>
+<translation id="5460938382730614333">Mae'r marciwr ymlaen.</translation>
 <translation id="5465662442746197494">Angen help?</translation>
 <translation id="547979256943495781">Silff i'r dde</translation>
 <translation id="5491186829646618080">Mae diweddariadau cadarnwedd ar gael</translation>
@@ -774,6 +779,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="5745612484876805746">Mae Golau Nos yn troi ymlaen yn awtomatig ar fachlud haul</translation>
 <translation id="5750765938512549687">Mae Bluetooth wedi'i ddiffodd</translation>
 <translation id="5760866832697883462">Cysylltu eich <ph name="NAME" /></translation>
+<translation id="5762420912707163638">Toglo'r marciwr. <ph name="STATE_TEXT" /> Defnyddiwch y pad cyffwrdd, y sgrîn gyffwrdd, neu'r pwyntil i dynnu llun ar y sgrîn.</translation>
 <translation id="576341972084747908">Lawrlwytho'r ffeil beryglus <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Mae'r modd Parti Silff wedi'i ddiffodd.</translation>
 <translation id="576453121877257266">Mae Golau Nos ymlaen.</translation>

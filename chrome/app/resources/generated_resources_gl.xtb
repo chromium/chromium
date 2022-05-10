@@ -1001,6 +1001,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1942600407708803723">Apagar dispositivo cando se peche a tapa</translation>
 <translation id="1944528062465413897">Código de sincronización por Bluetooth:</translation>
 <translation id="1944921356641260203">Encontrouse unha actualización</translation>
+<translation id="1947136734041527201">Permíteche iniciar sesión en sitios web coa conta que teñas cun servizo de identidade</translation>
 <translation id="1949584741547056205">Respostas rápidas</translation>
 <translation id="1951012854035635156">Asistente</translation>
 <translation id="1954597385941141174">Os sitios poden pedirche permiso para conectarse aos dispositivos USB</translation>
@@ -2397,6 +2398,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="32939749466444286">O contedor de Linux non se iniciou. Téntao de novo.</translation>
 <translation id="3294437725009624529">Invitado</translation>
 <translation id="3294686910656423119">Estatísticas de uso e informes de fallos</translation>
+<translation id="3297105622164376095">Permítese mostrar solicitudes de inicio de sesión de terceiros</translation>
 <translation id="3297536526040732495">Vincula temporalmente estes datos á túa Conta de Google cando tes a sesión iniciada para protexerte nas nosas aplicacións</translation>
 <translation id="329838636886466101">Reparar</translation>
 <translation id="3298789223962368867">Introduciuse un URL non válido.</translation>
@@ -3651,6 +3653,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="452750746583162491">Revisar os datos sincronizados</translation>
 <translation id="4527929807707405172">Activar desprazamento inverso. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Suxestión de tradución</translation>
+<translation id="4529455689802245339">É posible que os Subtítulos instantáneos de Chrome non funcionen</translation>
 <translation id="4530494379350999373">Orixe</translation>
 <translation id="4531924570968473143">Queres engadir estas persoas ao <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532625150642446981">O dispositivo (<ph name="USB_DEVICE_NAME" />) estase usando. Se reasignas o dispositivo mentres se usa, pódense producir erros. Seguro que queres continuar?</translation>
@@ -3848,6 +3851,7 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="471880041731876836">Non tes permiso para visitar este sitio</translation>
 <translation id="4722735765955348426">Contrasinal de <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> está compartindo a túa pantalla.</translation>
+<translation id="4722989931633062466">Non se permite mostrar solicitudes de inicio de sesión de terceiros</translation>
 <translation id="4723140812774948886">Cambiar co seguinte</translation>
 <translation id="4724450788351008910">Afiliación cambiada</translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -4816,6 +4820,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5711010025974903573">Rexistros de servizo</translation>
 <translation id="5711983031544731014">Non se pode desbloquear. Introduce o teu contrasinal.</translation>
 <translation id="5712153969432126546">Ás veces, os sitios publican PDF (por exemplo, documentos, contratos e formularios)</translation>
+<translation id="571222594670061844">Os sitios poden mostrar solicitudes de inicio de sesión dos servizos de identidade</translation>
 <translation id="5713158217420111469">Conectado con: <ph name="DEVICE" /></translation>
 <translation id="5715711091495208045">Axente do plugin: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motores de busca predeterminados</translation>
@@ -4974,6 +4979,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5876851302954717356">Nova pestana á dereita</translation>
 <translation id="5877064549588274448">Canle cambiada. Reinicia o dispositivo para aplicar os cambios.</translation>
 <translation id="5877584842898320529">A impresora seleccionada non está dispoñible ou non está instalada correctamente. <ph name="BR" /> Comproba a impresora ou tenta seleccionar outra.</translation>
+<translation id="5878945009165002849">Bloquear as solicitudes de inicio de sesión dos servizos de identidade</translation>
 <translation id="5882919346125742463">Redes coñecidas</translation>
 <translation id="5883356647197510494">Bloqueáronse automaticamente os seguintes permisos: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Esta pestana está conectada a un dispositivo USB.</translation>
@@ -5609,6 +5615,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6513247462497316522">Google Chrome utilizará datos móbiles se non estás conectado a outra rede.</translation>
 <translation id="6514010653036109809">Dispositivo dispoñible:</translation>
 <translation id="6514565641373682518">Esta páxina desactivou o cursor do rato.</translation>
+<translation id="6517709704288360414">É posible que o dispositivo deixe de funcionar adecuadamente e que teñas problemas de seguranza e de rendemento. O feito de desactivar as actualizacións pode afectarlle ao teu dereito a facer reclamacións legais se tes algún problema.</translation>
 <translation id="6518014396551869914">Co&amp;piar imaxe</translation>
 <translation id="6518133107902771759">Verificar</translation>
 <translation id="651942933739530207">Queres que <ph name="APP_NAME" /> comparta a túa pantalla e saída de audio?</translation>
@@ -8351,7 +8358,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="93766956588638423">Reparar extensión</translation>
 <translation id="938568644810664664">Tenta dicir: “Hey Google, que canción é esta?” ou “Hey Google, que hai na miña pantalla?”</translation>
 <translation id="938623846785894166">O ficheiro non é habitual</translation>
-<translation id="939401694733344652">Neste momento, estas contas non se están usando con aplicacións Android. Se seleccionas unha conta para usala con esta aplicación Android, tamén se pode utilizar con outras aplicacións Android. Podes cambiar o acceso ás aplicacións Android en <ph name="LINK_BEGIN" />Configuración &gt; Contas<ph name="LINK_END" />.</translation>
+<translation id="939401694733344652">Neste momento, estas contas non se están usando con aplicacións Android. Se seleccionas unha conta para usala con esta aplicación de Android, tamén se pode utilizar con outras aplicacións Android. Podes cambiar o acceso ás aplicacións Android en <ph name="LINK_BEGIN" />Configuración &gt; Contas<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Introducir frase de acceso</translation>
 <translation id="939736085109172342">Cartafol novo</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> está compartindo audio e unha pestana de Chrome.</translation>

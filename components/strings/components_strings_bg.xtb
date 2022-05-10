@@ -617,7 +617,6 @@
 <translation id="259821504105826686">Фотографски и цифрови изкуства</translation>
 <translation id="2601150049980261779">Романтични филми</translation>
 <translation id="2604589665489080024">Поп музика</translation>
-<translation id="2609632851001447353">Вариации</translation>
 <translation id="2610561535971892504">Кликнете, за да копирате</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />няма да запазва<ph name="END_EMPHASIS" /> следната информация:
 <ph name="BEGIN_LIST" />
@@ -1100,6 +1099,7 @@
 <translation id="3973234410852337861">Хостът <ph name="HOST_NAME" /> е блокиран</translation>
 <translation id="3978338123949022456">Режим на търсене. Въведете заявка и натиснете Enter, за да търсите със <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Птици</translation>
+<translation id="3985750352229496475">Управление на адресите…</translation>
 <translation id="3986705137476756801">Изключване на „Надписи на живо“ засега</translation>
 <translation id="3987940399970879459">По-малко от 1 МБ</translation>
 <translation id="3990250421422698716">Разделно офсетово отпечатване</translation>
@@ -1227,6 +1227,7 @@
 <translation id="4305666528087210886">Няма достъп до файла</translation>
 <translation id="4306529830550717874">Да се запази ли адресът?</translation>
 <translation id="4306812610847412719">буферна памет</translation>
+<translation id="4310070645992025887">Търсете в пътуванията си</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блокиране (по подразбиране)</translation>
 <translation id="4314815835985389558">Управление на синхронизирането</translation>
@@ -2111,6 +2112,7 @@
 <translation id="6839929833149231406">Район</translation>
 <translation id="6846340164947227603">Използване на номер на виртуална карта...</translation>
 <translation id="6852204201400771460">Искате ли да презаредите приложението?</translation>
+<translation id="6857776781123259569">Управление на паролите…</translation>
 <translation id="686485648936420384">Потребителски ресурси</translation>
 <translation id="6865412394715372076">Тази карта не може да бъде потвърдена в момента</translation>
 <translation id="6869334554832814367">Потребителски заеми</translation>
@@ -2437,6 +2439,7 @@
 <translation id="7669271284792375604">Извършителите на атаки, използващи този сайт, може да опитат да ви подведат да инсталирате програми, които вредят на сърфирането ви (например, като променят началната ви страница или показват допълнителни реклами в посещаваните от вас сайтове).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Действията с данни, означени като поверителни (1 действие след влизането в профила). <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" />}other{Действията с данни, означени като поверителни (# действия след влизането в профила). <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Пощенска кутия 6</translation>
+<translation id="7675325315208090829">Управление на начините на плащане…</translation>
 <translation id="7676643023259824263">Търсене на текста от буферната памет, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Преглед и управление на историята ви на сърфиране в настройките на Chrome</translation>
 <translation id="7679947978757153706">Бейзбол</translation>

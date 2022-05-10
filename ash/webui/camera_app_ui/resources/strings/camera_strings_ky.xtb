@@ -61,6 +61,7 @@
 <translation id="3411958449466169012">Таймер өчүк</translation>
 <translation id="3448774564454087943">Видео өтө кыска болгондуктан, сакталган жок</translation>
 <translation id="346539236881580388">Кайра тартуу</translation>
+<translation id="3511295087439225876">Үнүн басуу баскычы күйүк</translation>
 <translation id="3517926952904427380">Сүрөткө тигинен тартылбай жатат</translation>
 <translation id="3566302376254083266">Жогорку сол жакка жылууда</translation>
 <translation id="3569311554794739032">"<ph name="FILE" />" файлын чын эле өчүрөсүзбү?</translation>
@@ -118,6 +119,7 @@
 Эгер сүрөттүн же видеонун сапаты жөнүндө пикир билдирип жатсаңыз, анын үлгүсүн тиркеп, маселе эмнеде экенин түшүндүрүңүз. (Мисалы, сүрөт өтө караңгы же объект бүдөмүк болуп турат.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мега-пиксель</translation>
 <translation id="6527303717912515753">Бөлүшүү</translation>
+<translation id="6617916774429601017">Бардык резолюцияларды көрсөтүү</translation>
 <translation id="6631515515009660915">Чагылдыруу өчүк</translation>
 <translation id="6652737148136672975">Бурчтарды жебелердин жардамы менен жылдырыңыз</translation>
 <translation id="667999046851023355">Документ</translation>
@@ -151,6 +153,7 @@
 <translation id="8131740175452115882">Ырастоо</translation>
 <translation id="8145038249676204903">Сүрөт режимине которулуу</translation>
 <translation id="8167081290930651932">Сүрөт катары сактоо</translation>
+<translation id="8236532224592646488">Үнүн басуу баскычы өчүк</translation>
 <translation id="8239780215768881278">Видео жаздыруу учурунда сүрөткө тартып алуу</translation>
 <translation id="8261506727792406068">Жок кылуу</translation>
 <translation id="8425673304802773841">Төмөн кыйшайтуу</translation>

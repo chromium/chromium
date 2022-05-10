@@ -61,6 +61,7 @@
 <translation id="150962533380566081">වලංගු නොවන PUK.</translation>
 <translation id="1510238584712386396">දියත්කරණය</translation>
 <translation id="152892567002884378">හඬ පරිමාව වැඩි</translation>
+<translation id="1555130319947370107">නිල්</translation>
 <translation id="155865706765934889">ස්පර්ශ පුවරුව</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> යාවත්කාලීන කළ නොහැකිය</translation>
 <translation id="1567064801249837505">ඇල්බම</translation>
@@ -112,7 +113,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">තවත් සැකසුම්</translation>
 <translation id="2085089206770112532">සංදර්ශක දීප්තිය පහළට</translation>
-<translation id="2104796393919810494">අලුත්වැඩියාව සම්පූර්ණ කරන ලදි</translation>
 <translation id="2105810540595158374">උපාංගය ක්‍රීඩා පාලකයකි.</translation>
 <translation id="2115956742084455574">වැරදි කේතයකි</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, අනුවාදය <ph name="MILESTONE_VERSION" /></translation>
@@ -175,6 +175,7 @@
 <translation id="2638662041295312666">පුරන රූපය</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> ඇල්බමය තෝරන ලදි</translation>
 <translation id="2712812801627182647">TLS සත්‍යාපන යතුර</translation>
+<translation id="2713444072780614174">සුදු</translation>
 <translation id="2717139507051041123">අඳුරු වර්ණ ප්‍රකාරය සබල කරන්න</translation>
 <translation id="2740531572673183784">හරි</translation>
 <translation id="2751739896257479635">EAP අදියර 2 සත්‍යාපනය</translation>
@@ -297,6 +298,7 @@
 <translation id="4145784616224233563">HTTP ෆයර්වෝලය</translation>
 <translation id="4147897805161313378">Google ඡායාරූප</translation>
 <translation id="4155551848414053977">ස්කෑනරය ක්‍රියාත්මක කර ඇති බව සහ ඔබගේ ජාලය හරහා හෝ සෘජු සබැඳුමක් හරහා ලබා ගත හැකි බව සහතික කර ගන්න</translation>
+<translation id="4159784952369912983">දම්</translation>
 <translation id="4170180284036919717">ඡායාරූපයක් ගන්න</translation>
 <translation id="4170700058716978431">අසාර්ථක විය</translation>
 <translation id="4176463684765177261">අබල කරන ලද</translation>
@@ -483,6 +485,7 @@
 <translation id="5866840822086176774">ඉතා ශක්තිමත්</translation>
 <translation id="588258955323874662">සම්පුර්ණ තිරය</translation>
 <translation id="5895138241574237353">යළි අරඹන්න</translation>
+<translation id="5901630391730855834">කහ</translation>
 <translation id="5903200662178656908">උපාංගය යතුරු පුවරු සහ මූසික සංයෝජනයකි.</translation>
 <translation id="5916084858004523819">තහනම්</translation>
 <translation id="5916664084637901428">ක්‍රියාත්මකයි</translation>
@@ -492,6 +495,7 @@
 <translation id="594552776027197022">අහඹු යතුරු යුගල උත්පාදනය කරන්න</translation>
 <translation id="5972388717451707488">යන්ත්‍රය යාවත්කාලීන කරන්න</translation>
 <translation id="5984145644188835034">පෙරනිමි වෝල්පේපරය</translation>
+<translation id="6017514345406065928">කොළ</translation>
 <translation id="6034694447310538551">ස්වයංක්‍රීය මාසික යළි සැකසීම සබල කරන්න</translation>
 <translation id="6037291330010597344">ස්කෑනරයේ ලේඛන සංග්‍රහය හිස්ය. ලේඛන එක් කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="6040143037577758943">වසන්න</translation>
@@ -679,6 +683,7 @@
 <translation id="7882501334836096755">පොදු යතුර</translation>
 <translation id="7890841768028788197">අභ්‍යන්තර ස්පර්ශ තිරය</translation>
 <translation id="7936303884198020182">නම් සේවාදායක හමු නොවීය</translation>
+<translation id="7942349550061667556">රතු</translation>
 <translation id="7943235353293548836">ස්ථිර keepalive විරාමය</translation>
 <translation id="7955587717700691983">බ්ලූටූත් යතුරු පුවරුව</translation>
 <translation id="7960831585769876809">උෂ්ණත්වය</translation>
@@ -707,6 +712,7 @@
 <translation id="8226628635270268143">ඔබේ ප්‍රියතම ඡායාරූප සහ ඇල්බම තෝරන්න</translation>
 <translation id="8230672074305416752">පෙරනිමි ජාල වාහල පින්ග් කිරීම අසාර්ථක විය</translation>
 <translation id="8246209727385807362">නොදන්නා වාහකයෙකි</translation>
+<translation id="827422111966801947">අවරිය</translation>
 <translation id="8281886186245836920">මඟහරින්න</translation>
 <translation id="8286154143153872371">වෝල්පේපරය බැලීමට කරුණාකර ජාලයකට සම්බන්ධ වී පිටුව නැවත පූරණය කරන්න.</translation>
 <translation id="8291967909914612644">නිවෙස් සපයන්නාගේ රට</translation>

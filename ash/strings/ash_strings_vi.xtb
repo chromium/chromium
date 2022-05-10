@@ -136,6 +136,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1719094688023114093">Tính năng Phụ đề trực tiếp đang bật.</translation>
 <translation id="1720011244392820496">Bật tính năng Đồng bộ hóa Wi-Fi</translation>
 <translation id="1736898441010944794">Cho phép các thiết bị Bluetooth tìm thấy "<ph name="NAME" />".</translation>
+<translation id="174102739345480129">Tính năng Đánh dấu đang tắt.</translation>
 <translation id="1743570585616704562">Không nhận dạng được</translation>
 <translation id="1746730358044914197">Các phương thức nhập do quản trị viên của bạn định cấu hình.</translation>
 <translation id="1747827819627189109">Đã bật bàn phím ảo</translation>
@@ -564,6 +565,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4379531060876907730">Đây là các công cụ bút dành cho bút cảm ứng</translation>
 <translation id="4389184120735010762">Bạn đã nhấn phím tắt của tính năng phóng to ở vị trí cố định. Bạn có muốn bật tính năng này không?</translation>
 <translation id="439598569299422042">Đã tạm dừng, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Không lưu được video ghi lại chuyển động trên màn hình</translation>
 <translation id="4405151984121254935">Loại thiết bị ngoại vi đã kết nối không được hỗ trợ</translation>
 <translation id="4406883609789734330">Phụ đề trực tiếp</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> đang tắt.</translation>
@@ -670,6 +672,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Câu tiếp theo</translation>
+<translation id="5016558321564993266">Bật/tắt tính năng đánh dấu. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Đã hết thời gian</translation>
 <translation id="5033299697334913360">Nhấp vào bất cứ đâu để chụp toàn màn hình</translation>
 <translation id="5035236842988137213">Đã kết nối <ph name="DEVICE_NAME" /> với một điện thoại mới</translation>
@@ -699,6 +702,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5222676887888702881">Đăng xuất</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
 <translation id="523505283826916779">Hỗ trợ tiếp cận</translation>
+<translation id="5245201184978705914">Không tạo được bản chép lời</translation>
 <translation id="5253783950165989294">Đã kết nối với thiết bị có tên <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% pin</translation>
 <translation id="5260676007519551770">Không gian làm việc 4</translation>
 <translation id="5283099933536931082">Có thông báo từ <ph name="APP_ITEM_TITLE" />.</translation>
@@ -733,6 +737,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5433020815079095860">Thiết bị đầu vào âm thanh</translation>
 <translation id="544691375626129091">Tất cả người dùng hiện có mặt đã được thêm vào phiên này.</translation>
 <translation id="54609108002486618">Được quản lý</translation>
+<translation id="5460938382730614333">Tính năng Đánh dấu đang bật.</translation>
 <translation id="5465662442746197494">Bạn cần trợ giúp?</translation>
 <translation id="547979256943495781">Giá ở bên phải</translation>
 <translation id="5491186829646618080">Đã có bản cập nhật chương trình cơ sở</translation>
@@ -774,6 +779,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5745612484876805746">Chế độ Ánh sáng đêm sẽ tự động bật khi trời tối</translation>
 <translation id="5750765938512549687">Bluetooth đang tắt</translation>
 <translation id="5760866832697883462">Kết nối với <ph name="NAME" /></translation>
+<translation id="5762420912707163638">Bật/tắt tính năng đánh dấu. <ph name="STATE_TEXT" /> Dùng bàn di chuột, màn hình cảm ứng hoặc bút cảm ứng để vẽ trên màn hình.</translation>
 <translation id="576341972084747908">Tải <ph name="FILENAME" /> xuống có thể gây nguy hiểm</translation>
 <translation id="5763928712329149804">Đã tắt chế độ Shelf Party.</translation>
 <translation id="576453121877257266">Chế độ Ánh sáng đêm đang bật.</translation>

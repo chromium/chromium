@@ -619,7 +619,6 @@
 <translation id="259821504105826686">Фото жана санарип көркөм өнөрү</translation>
 <translation id="2601150049980261779">Романтикалык тасмалар</translation>
 <translation id="2604589665489080024">Поп-музыка</translation>
-<translation id="2609632851001447353">Варианттар</translation>
 <translation id="2610561535971892504">Көчүрүү үчүн чыкылдатыңыз</translation>
 <translation id="2617988307566202237">Chrome төмөнкү маалыматты <ph name="BEGIN_EMPHASIS" />сактабайт<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -1101,6 +1100,7 @@
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> сайты бөгөттөлгөн</translation>
 <translation id="3978338123949022456">Издөө режими, <ph name="KEYWORD_SUFFIX" /> кызматында издөө үчүн сурамды терип, Enter баскычын басыңыз</translation>
 <translation id="398470910934384994">Куштар</translation>
+<translation id="3985750352229496475">Даректерди башкаруу…</translation>
 <translation id="3986705137476756801">Ыкчам коштомо жазууларды азырынча өчүрүү</translation>
 <translation id="3987940399970879459">1 Мб азыраак</translation>
 <translation id="3990250421422698716">Оффсеттик басып чыгаруу</translation>
@@ -1228,6 +1228,7 @@
 <translation id="4305666528087210886">Файл ачылбай койду</translation>
 <translation id="4306529830550717874">Дарек сакталсынбы?</translation>
 <translation id="4306812610847412719">алмашуу буфери</translation>
+<translation id="4310070645992025887">Саякаттарыңызды издеңиз</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Бөгөттөө (демейки)</translation>
 <translation id="4314815835985389558">Шайкештирүүнү башкаруу</translation>
@@ -2112,6 +2113,7 @@
 <translation id="6839929833149231406">Аймак</translation>
 <translation id="6846340164947227603">Виртуалдык картанын номерин колдонуу...</translation>
 <translation id="6852204201400771460">Колдонмо кайра жүктөлсүнбү?</translation>
+<translation id="6857776781123259569">Сырсөздөрдү башкаруу…</translation>
 <translation id="686485648936420384">Керектөөчү ресурстары</translation>
 <translation id="6865412394715372076">Бул картаны учурда ырастоо мүмкүн эмес</translation>
 <translation id="6869334554832814367">Жеке насыялар</translation>
@@ -2438,6 +2440,7 @@
 <translation id="7669271284792375604">Бул сайттагы бүлдүргүчтөр сизди алдап, серептөө тажрыйбаңызга зыян келтирүүчү программаларды орнотууга аракет кылышы мүмкүн (мисалы, башкы бетиңизди өзгөртүп же кирген сайттарыңызда кошумча жарнамаларды көрсөтүү менен).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Купуя маалымат колдонулган аракеттер (киргенден бери 1 аракет). <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" />}other{Купуя маалымат колдонулган аракеттер (киргенден бери # аракет). <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">6-электрондук каттар кутусу</translation>
+<translation id="7675325315208090829">Төлөм ыкмаларын башкаруу…</translation>
 <translation id="7676643023259824263">Алмашуу буфериндеги текстти издөө, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Chrome жөндөөлөрүндө көрүлгөн вебсайттарды көрүү жана башкаруу</translation>
 <translation id="7679947978757153706">Бейсбол</translation>

@@ -61,6 +61,7 @@
 <translation id="150962533380566081">‏PUK غير صالح.</translation>
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
 <translation id="152892567002884378">رفع مستوى الصوت</translation>
+<translation id="1555130319947370107">أزرق</translation>
 <translation id="155865706765934889">لوحة اللمس</translation>
 <translation id="1565038567006703504">يتعذَّر تحديث <ph name="DEVICE_NAME" />.</translation>
 <translation id="1567064801249837505">الألبومات</translation>
@@ -111,7 +112,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">مزيد من الإعدادات</translation>
 <translation id="2085089206770112532">تقليل سطوع الشاشة</translation>
-<translation id="2104796393919810494">اكتملت عملية الإصلاح</translation>
 <translation id="2105810540595158374">الجهاز هو ذراع تحكّم في الألعاب.</translation>
 <translation id="2115956742084455574">الرمز غير صحيح</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />، الإصدار <ph name="MILESTONE_VERSION" /></translation>
@@ -157,6 +157,7 @@
 <translation id="2446553403094072641">دقة النقطة العائمة</translation>
 <translation id="2448312741937722512">النوع</translation>
 <translation id="2461822463642141190">الاستهلاك الحالي لطاقة البطارية</translation>
+<translation id="2480034874476596812">الإيقاف يدويًا</translation>
 <translation id="2491955442992294626">لا يمكن اختبار المفاتيح أثناء استخدام نافذة أخرى.</translation>
 <translation id="2493126929778606526">أفضل الصور التي تم اختيارها تلقائيًا</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -173,6 +174,7 @@
 <translation id="2638662041295312666">صورة الملف الشخصي</translation>
 <translation id="2640549051766135490">تمّ اختيار ألبوم <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2712812801627182647">‏مفتاح مصادقة بروتوكول أمان طبقة النقل (TLS)</translation>
+<translation id="2713444072780614174">أبيض</translation>
 <translation id="2717139507051041123">تفعيل وضع الألوان الداكنة</translation>
 <translation id="2740531572673183784">حسنًا</translation>
 <translation id="2751739896257479635">‏مصادقة المرحلة الثانية عبر EAP</translation>
@@ -251,6 +253,7 @@
 <translation id="3606583719724308068">‏وقت الاستجابة طويل في المواقع الإلكترونية التي تستخدم بروتوكول HTTPS</translation>
 <translation id="3621202678540785336">الإدخال</translation>
 <translation id="3632579075709132555">إيقاف/تفعيل شاشة الخصوصية</translation>
+<translation id="3678765385266369662">اختَر كيف تريد إيقاف وضع "الحماية من إضافة المعلومات أو تغييرها"</translation>
 <translation id="3689839747745352263">اختبار <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">جارٍ التحميل...</translation>
 <translation id="3708186454126126312">الأجهزة المتصلة سابقًا</translation>
@@ -293,6 +296,7 @@
 <translation id="4145784616224233563">‏الجدار الناري لبروتوكل HTTP</translation>
 <translation id="4147897805161313378">‏صور Google‏‏</translation>
 <translation id="4155551848414053977">يُرجى التأكُّد من تشغيل الماسح الضوئي وتوفّره من خلال شبكتك أو الاتصال المباشر.</translation>
+<translation id="4159784952369912983">أرجواني</translation>
 <translation id="4170180284036919717">التقاط صورة</translation>
 <translation id="4170700058716978431">تعذّر إجراء الاختبار.</translation>
 <translation id="4176463684765177261">غير مفعّل</translation>
@@ -305,6 +309,7 @@
 <translation id="4244962993387259361">يجب توفّر مساحة قدرها 500 ميغابايت على الأقل لتشغيل اختبار الذاكرة. لإخلاء بعض المساحة، انتقِل إلى الإعدادات &gt; إدارة مساحة التخزين.</translation>
 <translation id="4250229828105606438">لقطة شاشة</translation>
 <translation id="4258281355379922695">‏وقت استجابة بروتوكول HTTP</translation>
+<translation id="4258561075226177474">سيتم نقل الجهاز إلى المستخدم نفسه. هل تريد محو بيانات المستخدم؟</translation>
 <translation id="4271957103967917607">عرض بملء الشاشة</translation>
 <translation id="4275799948641988986">من سيستخدم الجهاز بعد إصلاحه؟</translation>
 <translation id="4289540628985791613">نظرة عامة</translation>
@@ -353,6 +358,7 @@
 <translation id="473775607612524610">تحديث</translation>
 <translation id="4744944742468440486">معلومات ذات صلة باختيارك</translation>
 <translation id="4773299976671772492">متوقفة</translation>
+<translation id="4774530504324923332">‏يجب أن يكون لديك مفتاح أمان يستخدم الإجراء RSU و"ماسح ضوئي لرمز الاستجابة السريعة" وجهاز آخر متصل بالإنترنت.</translation>
 <translation id="4782311465517282004">يمكنك الحصول على تعريفات أو ترجمات للنصوص أو تحويل الوحدات من خلال النقر بزر الماوس الأيمن على النص أو النقر عليه مع الاستمرار.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> صورة</translation>
 <translation id="4793710386569335688">للحصول على مزيد من المساعدة، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />مركز المساعدة<ph name="END_LINK" />.</translation>
@@ -432,6 +438,7 @@
 <translation id="5372659122375744710">‏شبكة Wi-Fi غير آمنة.</translation>
 <translation id="5376354385557966694">الوضع الفاتح التلقائي</translation>
 <translation id="537872351913703572">سيتم نقل الجهاز إلى مستخدم آخر أو إلى مؤسسة أخرى.</translation>
+<translation id="5395600419410242651">محو جميع البيانات</translation>
 <translation id="5400907029458559844">جارٍ توصيل الجهاز</translation>
 <translation id="5401938042319910061">تشغيل جميع سلاسل الإجراءات</translation>
 <translation id="5423849171846380976">نشطة</translation>
@@ -474,6 +481,7 @@
 <translation id="5866840822086176774">قوية جدًا</translation>
 <translation id="588258955323874662">ملء الشاشة</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
+<translation id="5901630391730855834">أصفر</translation>
 <translation id="5903200662178656908">يتكوّن الجهاز من لوحة مفاتيح وماوس.</translation>
 <translation id="5916084858004523819">محظورة</translation>
 <translation id="5916664084637901428">مفعّل</translation>
@@ -483,6 +491,7 @@
 <translation id="594552776027197022">إنشاء مفتاحَي تشفير عشوائيين</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">خلفية تلقائية</translation>
+<translation id="6017514345406065928">أخضر</translation>
 <translation id="6034694447310538551">تفعيل ميزة إعادة الضبط التلقائية شهريًا</translation>
 <translation id="6037291330010597344">وحدة تغذية المستندات في الماسح الضوئي فارغة. يُرجى إضافة مستندات وإعادة المحاولة.</translation>
 <translation id="6040143037577758943">إغلاق</translation>
@@ -642,6 +651,7 @@
 <translation id="7570674786725311828">‏شاشة USB تعمل باللمس</translation>
 <translation id="7595982850646262331">الوقت المتبقّي: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">مزيد من المعلومات في "مركز المساعدة"</translation>
+<translation id="7626501172915339021">‏تنفيذ الإجراء "فتح قفل خادم RMA" ‏(RSU)</translation>
 <translation id="763165478673169849">وقت آخر عملية إعادة ضبط</translation>
 <translation id="7648838807254605802">‏وقت استجابة بروتوكول HTTPS طويل.</translation>
 <translation id="7656388927906093505">الجهاز هو ماوس.</translation>
@@ -669,6 +679,7 @@
 <translation id="7882501334836096755">مفتاح عام</translation>
 <translation id="7890841768028788197">شاشة تعمل باللمس مدمَجة</translation>
 <translation id="7936303884198020182">لم يتم العثور على خوادم الأسماء.</translation>
+<translation id="7942349550061667556">أحمر</translation>
 <translation id="7943235353293548836">الفاصل الدائم لرسالة التحقّق من الاتصال</translation>
 <translation id="7955587717700691983">لوحة مفاتيح تتضمّن بلوتوث</translation>
 <translation id="7960831585769876809">درجة الحرارة</translation>
@@ -697,6 +708,7 @@
 <translation id="8226628635270268143">اختيار صورك وألبوماتك المفضَّلة</translation>
 <translation id="8230672074305416752">تعذَّر فحص اتصال بوابة الشبكة التلقائية.</translation>
 <translation id="8246209727385807362">مشغل شبكة جوّال غير معروف</translation>
+<translation id="827422111966801947">نيلي</translation>
 <translation id="8281886186245836920">التخطّي</translation>
 <translation id="8286154143153872371">يُرجى الاتصال بإحدى الشبكات وإعادة تحميل الصفحة لعرض الخلفية.</translation>
 <translation id="8291967909914612644">بلد مقدم الخدمة الرئيسي</translation>
@@ -785,6 +797,8 @@
 <translation id="9087578468327036362">الإبلاغ عن هذا الطلب</translation>
 <translation id="9088306295921699330">الاستخدام الحالي</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">يجب فصل أجزاء الجهاز.</translation>
+<translation id="9098156406873149060">الاحتفاظ ببيانات المستخدم</translation>
 <translation id="910415269708673980">تحديث تذكرة من أجل <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">جارٍ المسح ضوئيًا للصفحة رقم <ph name="PAGE_NUMBER" />.</translation>
 <translation id="9111102763498581341">فتح القفل</translation>

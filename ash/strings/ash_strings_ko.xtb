@@ -136,6 +136,7 @@
 <translation id="1719094688023114093">실시간 자막이 켜져 있습니다.</translation>
 <translation id="1720011244392820496">Wi-Fi 동기화 사용 설정</translation>
 <translation id="1736898441010944794">블루투스 기기에 "<ph name="NAME" />"이(가) 표시됩니다.</translation>
+<translation id="174102739345480129">마커가 꺼졌습니다.</translation>
 <translation id="1743570585616704562">인식할 수 없음</translation>
 <translation id="1746730358044914197">입력 방법은 관리자가 설정합니다.</translation>
 <translation id="1747827819627189109">터치 키보드 사용 설정됨</translation>
@@ -564,6 +565,7 @@
 <translation id="4379531060876907730">스타일러스 도구입니다</translation>
 <translation id="4389184120735010762">고정 돋보기 단축키를 누르셨습니다. 사용 설정할까요?</translation>
 <translation id="439598569299422042">일시중지됨, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">스크린캐스트를 저장할 수 없음</translation>
 <translation id="4405151984121254935">지원되지 않는 유형의 주변기기가 연결되었습니다.</translation>
 <translation id="4406883609789734330">실시간 자막</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> 기능이 꺼져 있습니다.</translation>
@@ -670,6 +672,7 @@
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">다음 문장</translation>
+<translation id="5016558321564993266">마커를 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">시간이 다 됨</translation>
 <translation id="5033299697334913360">전체 화면을 캡처하려면 아무 곳이나 클릭하세요</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />이(가) 새 휴대전화에 연결되었습니다.</translation>
@@ -699,6 +702,7 @@
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="5234764350956374838">닫기</translation>
 <translation id="523505283826916779">접근성 설정</translation>
+<translation id="5245201184978705914">스크립트를 생성할 수 없음</translation>
 <translation id="5253783950165989294">이름이 <ph name="DEVICE_NAME" />인 기기에 연결됨(배터리 <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="5260676007519551770">데스크 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> 알림이 있습니다.</translation>
@@ -733,6 +737,7 @@
 <translation id="5433020815079095860">오디오 입력</translation>
 <translation id="544691375626129091">사용 가능한 모든 사용자가 이미 이 세션에 추가되었습니다.</translation>
 <translation id="54609108002486618">관리</translation>
+<translation id="5460938382730614333">마커가 켜졌습니다.</translation>
 <translation id="5465662442746197494">도움이 필요하신가요?</translation>
 <translation id="547979256943495781">오른쪽에 실행기 표시</translation>
 <translation id="5491186829646618080">펌웨어 업데이트 사용 가능</translation>
@@ -774,6 +779,7 @@
 <translation id="5745612484876805746">일몰 시 야간 조명이 자동으로 켜짐</translation>
 <translation id="5750765938512549687">블루투스가 사용 중지됨</translation>
 <translation id="5760866832697883462"><ph name="NAME" />에 연결</translation>
+<translation id="5762420912707163638">마커를 전환합니다. <ph name="STATE_TEXT" /> 화면에 그리려면 트랙패드, 터치스크린 또는 스타일러스를 사용하세요.</translation>
 <translation id="576341972084747908">위험한 <ph name="FILENAME" /> 파일을 다운로드합니다</translation>
 <translation id="5763928712329149804">Shelf Party가 꺼져 있습니다.</translation>
 <translation id="576453121877257266">야간 조명이 켜졌습니다.</translation>

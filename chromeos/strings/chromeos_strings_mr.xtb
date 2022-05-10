@@ -61,6 +61,7 @@
 <translation id="150962533380566081">चुकीची PUK.</translation>
 <translation id="1510238584712386396">लाँचर</translation>
 <translation id="152892567002884378">आवाज मोठा करा</translation>
+<translation id="1555130319947370107">निळा</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> अपडेट करू शकत नाही</translation>
 <translation id="1567064801249837505">अल्बम</translation>
@@ -111,7 +112,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">अधिक सेटिंग्ज</translation>
 <translation id="2085089206770112532">डिस्प्लेचा ब्राइटनेस कमी करा</translation>
-<translation id="2104796393919810494">निराकरण करणे पूर्ण झाले आहे</translation>
 <translation id="2105810540595158374">डिव्हाइस हे गेम नियंत्रक आहे.</translation>
 <translation id="2115956742084455574">चुकीचा कोड</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, आवृत्ती <ph name="MILESTONE_VERSION" /></translation>
@@ -174,6 +174,7 @@
 <translation id="2638662041295312666">साइन इन इमेज</translation>
 <translation id="2640549051766135490">अल्‍बम <ph name="TITLE" /> <ph name="DESC" /> निवडला</translation>
 <translation id="2712812801627182647">TLS ऑथेंटिकेशन की</translation>
+<translation id="2713444072780614174">पांढरा</translation>
 <translation id="2717139507051041123">गडद रंगाचा मोड सुरू करा</translation>
 <translation id="2740531572673183784">ठीक आहे</translation>
 <translation id="2751739896257479635">EAP टप्पा 2 ऑथेंटिकेशन</translation>
@@ -295,6 +296,7 @@
 <translation id="4145784616224233563">HTTP फायरवॉल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">तुमच्या नेटवर्क किंवा थेट कनेक्शनद्वारे स्कॅनर सुरू आणि उपलब्ध असल्याची खात्री करा</translation>
+<translation id="4159784952369912983">जांभळा</translation>
 <translation id="4170180284036919717">फोटो काढा</translation>
 <translation id="4170700058716978431">करता आली नाही</translation>
 <translation id="4176463684765177261">अक्षम केले</translation>
@@ -479,6 +481,7 @@
 <translation id="5866840822086176774">खूप मजबूत</translation>
 <translation id="588258955323874662">क्षेत्रे</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
+<translation id="5901630391730855834">पिवळा</translation>
 <translation id="5903200662178656908">डिव्हाइस हे कीबोर्ड आणि माउस यांचे काँबो आहे.</translation>
 <translation id="5916084858004523819">प्रतिबंधित</translation>
 <translation id="5916664084637901428">सुरू</translation>
@@ -488,6 +491,7 @@
 <translation id="594552776027197022">रँडम कीपेअर जनरेट करा</translation>
 <translation id="5972388717451707488">इंजीन अपडेट करा</translation>
 <translation id="5984145644188835034">डीफॉल्ट वॉलपेपर</translation>
+<translation id="6017514345406065928">हिरवा</translation>
 <translation id="6034694447310538551">ऑटोमॅटिक मासिक रीसेट सुरू करा</translation>
 <translation id="6037291330010597344">स्कॅनरचा दस्तऐवज फीडर रिकामा आहे. दस्तऐवज जोडा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="6040143037577758943">बंद करा</translation>
@@ -675,6 +679,7 @@
 <translation id="7882501334836096755">सार्वजनिक की</translation>
 <translation id="7890841768028788197">अंतर्गत टचस्क्रीन</translation>
 <translation id="7936303884198020182">नेम सर्व्हर आढळले नाहीत</translation>
+<translation id="7942349550061667556">लाल</translation>
 <translation id="7943235353293548836">परसिस्टंट कीपअलाइव्ह इंटर्व्हल</translation>
 <translation id="7955587717700691983">ब्लूटूथ कीबोर्ड</translation>
 <translation id="7960831585769876809">तापमान</translation>
@@ -703,6 +708,7 @@
 <translation id="8226628635270268143">तुमचे आवडते फोटो आणि अल्बम निवडा</translation>
 <translation id="8230672074305416752">डीफॉल्ट नेटवर्क गेटवे पिंग करता आला नाही</translation>
 <translation id="8246209727385807362">माहीत नसलेला वाहक</translation>
+<translation id="827422111966801947">नीळ</translation>
 <translation id="8281886186245836920">वगळा</translation>
 <translation id="8286154143153872371">कृपया वॉलपेपर पाहण्यासाठी नेटवर्कशी कनेक्ट करा आणि पेज रीलोड करा.</translation>
 <translation id="8291967909914612644">होम पुरवठादार देश</translation>

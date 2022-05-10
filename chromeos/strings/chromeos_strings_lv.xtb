@@ -61,6 +61,7 @@
 <translation id="150962533380566081">PUK nav derīgs.</translation>
 <translation id="1510238584712386396">Lietojumprogrammu palaidējs</translation>
 <translation id="152892567002884378">Palielināt skaļumu</translation>
+<translation id="1555130319947370107">Zila</translation>
 <translation id="155865706765934889">Skārienpaliktnis</translation>
 <translation id="1565038567006703504">Nevar atjaunināt ierīci “<ph name="DEVICE_NAME" />”</translation>
 <translation id="1567064801249837505">Albumi</translation>
@@ -111,7 +112,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Vairāk iestatījumu</translation>
 <translation id="2085089206770112532">Samazināt displeja spilgtumu</translation>
-<translation id="2104796393919810494">Labošana pabeigta</translation>
 <translation id="2105810540595158374">Ierīce ir spēļu vadāmierīce.</translation>
 <translation id="2115956742084455574">Nepareizs kods</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versija <ph name="MILESTONE_VERSION" /></translation>
@@ -157,6 +157,7 @@
 <translation id="2446553403094072641">Peldošā punkta precizitāte</translation>
 <translation id="2448312741937722512">Tips</translation>
 <translation id="2461822463642141190">Šobrīd</translation>
+<translation id="2480034874476596812">Manuāla izslēgšana</translation>
 <translation id="2491955442992294626">Taustiņi netiek pārbaudīti, ja ir fokusēts cits logs.</translation>
 <translation id="2493126929778606526">Jūsu labākie fotoattēli (atlasīti automātiski)</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> — <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -173,6 +174,7 @@
 <translation id="2638662041295312666">Pierakstīšanās attēls</translation>
 <translation id="2640549051766135490">Atlasīts albums <ph name="TITLE" />: <ph name="DESC" /></translation>
 <translation id="2712812801627182647">TLS autentifikācijas atslēga</translation>
+<translation id="2713444072780614174">Balta</translation>
 <translation id="2717139507051041123">Atspējot tumšo krāsu režīmu</translation>
 <translation id="2740531572673183784">Labi</translation>
 <translation id="2751739896257479635">EAP 2. fāzes autentificēšana</translation>
@@ -251,6 +253,7 @@
 <translation id="3606583719724308068">Augsts latentums HTTPS vietnēs</translation>
 <translation id="3621202678540785336">Ievade</translation>
 <translation id="3632579075709132555">Konfidencialitātes ekrāna slēdzis</translation>
+<translation id="3678765385266369662">Atlasiet, kā vēlaties izslēgt aizsardzību pret rakstīšanu</translation>
 <translation id="3689839747745352263">Pārbaude: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Notiek ielāde...</translation>
 <translation id="3708186454126126312">Ierīces, ar kurām iepriekš tika izveidots savienojums</translation>
@@ -293,6 +296,7 @@
 <translation id="4145784616224233563">HTTP ugunsmūris</translation>
 <translation id="4147897805161313378">Google fotoattēli</translation>
 <translation id="4155551848414053977">Skenerim ir jābūt ieslēgtam un ar to ir jāizveido savienojums tīklā vai tiešs savienojums.</translation>
+<translation id="4159784952369912983">Violets</translation>
 <translation id="4170180284036919717">Uzņemt fotoattēlu</translation>
 <translation id="4170700058716978431">NESEKMĪGA</translation>
 <translation id="4176463684765177261">Atspējota</translation>
@@ -305,6 +309,7 @@
 <translation id="4244962993387259361">Lai veiktu atmiņas pārbaudi, jābūt vismaz 500 MB brīvai vietai. Lai atbrīvotu vietu, pārejiet uz sadaļu Iestatījumi &gt; Krātuves pārvaldnieks.</translation>
 <translation id="4250229828105606438">Ekrānuzņēmums</translation>
 <translation id="4258281355379922695">HTTP latentums</translation>
+<translation id="4258561075226177474">Ierīci izmantos tas pats lietotājs. Vai dzēst lietotāja datus?</translation>
 <translation id="4271957103967917607">Skatīt pilnekrāna režīmā</translation>
 <translation id="4275799948641988986">Kas izmantos ierīci pēc labošanas?</translation>
 <translation id="4289540628985791613">Kopsavilkums</translation>
@@ -353,6 +358,7 @@
 <translation id="473775607612524610">Atjaunināt</translation>
 <translation id="4744944742468440486">Ar atlasīto saturu saistīta informācija</translation>
 <translation id="4773299976671772492">Pārtraukts</translation>
+<translation id="4774530504324923332">Jums būs nepieciešama drošības atslēga ar iespējotu RSU, kvadrātkoda skeneris un otra ierīce ar interneta savienojumu</translation>
 <translation id="4782311465517282004">Iegūstiet definīcijas vai tulkojumus vai izsakiet vērtības citās mērvienībās, noklikšķinot uz teksta ar peles labo pogu vai pieskaroties tekstam un to turot</translation>
 <translation id="4791000909649665275">Fotoattēlu skaits: <ph name="NUMBER" /></translation>
 <translation id="4793710386569335688">Lai iegūtu papildu palīdzību, pārejiet uz <ph name="BEGIN_LINK" />palīdzības centru<ph name="END_LINK" />.</translation>
@@ -432,6 +438,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5372659122375744710">Wi-Fi tīkls nav drošs</translation>
 <translation id="5376354385557966694">Automātisks gaišais režīms</translation>
 <translation id="537872351913703572">Ierīci izmantos cits lietotājs vai organizācija</translation>
+<translation id="5395600419410242651">Dzēst visus datus</translation>
 <translation id="5400907029458559844">Notiek ierīces pievienošana.</translation>
 <translation id="5401938042319910061">Izpildīt visas pārbaudes</translation>
 <translation id="5423849171846380976">Aktivizēts</translation>
@@ -474,6 +481,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5866840822086176774">Ļoti spēcīgs</translation>
 <translation id="588258955323874662">Pilnekrāna</translation>
 <translation id="5895138241574237353">Restartēt</translation>
+<translation id="5901630391730855834">Dzeltena</translation>
 <translation id="5903200662178656908">Ierīce sastāv no tastatūras un peles.</translation>
 <translation id="5916084858004523819">Aizliegts</translation>
 <translation id="5916664084637901428">Iesl.</translation>
@@ -483,6 +491,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="594552776027197022">Ģenerēt nejauši izveidotu atslēgu pāri</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Noklusējuma fona tapete</translation>
+<translation id="6017514345406065928">Zaļa</translation>
 <translation id="6034694447310538551">Iespējot automātisku atiestatīšanu katru mēnesi</translation>
 <translation id="6037291330010597344">Skenera dokumentu padevējs ir tukšs. Pievienojiet dokumentus un mēģiniet vēlreiz.</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
@@ -642,6 +651,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7570674786725311828">USB skārienekrāns</translation>
 <translation id="7595982850646262331">Atlikušais laiks: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Uzzināt vairāk palīdzības centrā</translation>
+<translation id="7626501172915339021">RMA servera atbloķēšana (RSU)</translation>
 <translation id="763165478673169849">Pēdējās atiestatīšanas laiks</translation>
 <translation id="7648838807254605802">Liels HTTPS latentums</translation>
 <translation id="7656388927906093505">Ierīce ir pele.</translation>
@@ -669,6 +679,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7882501334836096755">Publiskā atslēga</translation>
 <translation id="7890841768028788197">Iekšējais skārienekrāns</translation>
 <translation id="7936303884198020182">Netika atrasts neviens nosaukumu serveris</translation>
+<translation id="7942349550061667556">Sarkana</translation>
 <translation id="7943235353293548836">Pastāvīgs saites darbības pārbaudes ziņojuma intervāls</translation>
 <translation id="7955587717700691983">Bluetooth tastatūra</translation>
 <translation id="7960831585769876809">Temperatūra</translation>
@@ -697,6 +708,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8226628635270268143">Izvēlieties savus iecienītākos fotoattēlus un albumus.</translation>
 <translation id="8230672074305416752">Neizdevās ehotestēt noklusējuma tīkla vārteju</translation>
 <translation id="8246209727385807362">Nezināms operators</translation>
+<translation id="827422111966801947">Indigo</translation>
 <translation id="8281886186245836920">Izlaist</translation>
 <translation id="8286154143153872371">Izveidojiet savienojumu ar tīklu un atkārtoti ielādējiet lapu, lai skatītu fona tapeti.</translation>
 <translation id="8291967909914612644">Mājas pakalpojumu sniedzēja valsts</translation>
@@ -785,6 +797,8 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="9087578468327036362">Ziņot par šo vaicājumu</translation>
 <translation id="9088306295921699330">Pašreizējais lietojums</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">Jums būs jāizjauc ierīce</translation>
+<translation id="9098156406873149060">Saglabāt lietotāja datus</translation>
 <translation id="910415269708673980">Atsvaidziniet <ph name="PRINCIPAL_NAME" /> biļeti</translation>
 <translation id="9106415115617144481">Notiek <ph name="PAGE_NUMBER" />. lapas skenēšana</translation>
 <translation id="9111102763498581341">Atbloķēt</translation>

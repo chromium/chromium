@@ -61,6 +61,7 @@
 <translation id="150962533380566081">Неверный PUK-код.</translation>
 <translation id="1510238584712386396">Панель запуска</translation>
 <translation id="152892567002884378">Увеличить громкость</translation>
+<translation id="1555130319947370107">Синий</translation>
 <translation id="155865706765934889">Сенсорная панель</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" />: не удается обновить устройство</translation>
 <translation id="1567064801249837505">Альбомы</translation>
@@ -111,7 +112,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Дополнительные настройки</translation>
 <translation id="2085089206770112532">Уменьшение яркости дисплея</translation>
-<translation id="2104796393919810494">Неполадки устранены</translation>
 <translation id="2105810540595158374">Это игровой контроллер.</translation>
 <translation id="2115956742084455574">Неверный код</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" /></translation>
@@ -174,6 +174,7 @@
 <translation id="2638662041295312666">Изображение на странице входа</translation>
 <translation id="2640549051766135490">Выбран альбом "<ph name="TITLE" />" с описанием "<ph name="DESC" />"</translation>
 <translation id="2712812801627182647">Ключ аутентификации TLS</translation>
+<translation id="2713444072780614174">Белый</translation>
 <translation id="2717139507051041123">Включить режим темных цветов</translation>
 <translation id="2740531572673183784">ОК</translation>
 <translation id="2751739896257479635">2-й этап аутентификации EAP</translation>
@@ -295,6 +296,7 @@
 <translation id="4145784616224233563">Брандмауэр HTTP</translation>
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4155551848414053977">Убедитесь, что сканер работает и доступен для подключения напрямую или по сети.</translation>
+<translation id="4159784952369912983">Фиолетовый</translation>
 <translation id="4170180284036919717">Сделать снимок</translation>
 <translation id="4170700058716978431">ОШИБКА</translation>
 <translation id="4176463684765177261">Отключено</translation>
@@ -479,6 +481,7 @@
 <translation id="5866840822086176774">Очень сильный</translation>
 <translation id="588258955323874662">Полноэкранный режим</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
+<translation id="5901630391730855834">Желтый</translation>
 <translation id="5903200662178656908">Устройство представляет собой комплект из мыши и клавиатуры.</translation>
 <translation id="5916084858004523819">Запрещено</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
@@ -488,6 +491,7 @@
 <translation id="594552776027197022">Создать случайную пару ключей</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Обои по умолчанию</translation>
+<translation id="6017514345406065928">Зеленый</translation>
 <translation id="6034694447310538551">Включить ежемесячный автоматический сброс показателя</translation>
 <translation id="6037291330010597344">Автоподатчик документов пуст. Положите документы и повторите попытку.</translation>
 <translation id="6040143037577758943">Закрыть</translation>
@@ -675,6 +679,7 @@
 <translation id="7882501334836096755">Открытый ключ</translation>
 <translation id="7890841768028788197">Встроенный сенсорный экран</translation>
 <translation id="7936303884198020182">Не найдены серверы доменных имен.</translation>
+<translation id="7942349550061667556">Красный</translation>
 <translation id="7943235353293548836">Постоянный интервал keepalive</translation>
 <translation id="7955587717700691983">Клавиатура Bluetooth</translation>
 <translation id="7960831585769876809">Температура</translation>
@@ -703,6 +708,7 @@
 <translation id="8226628635270268143">Выберите любимые фото и альбомы</translation>
 <translation id="8230672074305416752">Не удалось выполнить проверку ping сетевого шлюза, заданного по умолчанию.</translation>
 <translation id="8246209727385807362">Неизвестный оператор</translation>
+<translation id="827422111966801947">Индиго</translation>
 <translation id="8281886186245836920">Пропустить</translation>
 <translation id="8286154143153872371">Чтобы посмотреть обои, подключитесь к сети и обновите страницу.</translation>
 <translation id="8291967909914612644">Страна провайдера</translation>

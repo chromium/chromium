@@ -615,7 +615,6 @@
 <translation id="259821504105826686">攝影與數位藝術</translation>
 <translation id="2601150049980261779">浪漫愛情片</translation>
 <translation id="2604589665489080024">流行樂</translation>
-<translation id="2609632851001447353">變化版本</translation>
 <translation id="2610561535971892504">點選複製</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />下列資訊：
         <ph name="BEGIN_LIST" />
@@ -895,6 +894,7 @@
 <translation id="3399952811970034796">快遞地址</translation>
 <translation id="3402261774528610252">用來載入這個網站的連線使用傳輸層安全標準 (TLS) 1.0 或 1.1，現已不適用，並將在日後遭到停用。一旦停用，使用者將無法載入這個網站。伺服器應啟用傳輸層安全標準 (TLS) 1.2 以上版本。</translation>
 <translation id="3405664148539009465">自訂字型</translation>
+<translation id="3407789382767355356">第三方登入</translation>
 <translation id="3409896703495473338">管理安全性設定</translation>
 <translation id="3414952576877147120">空間大小：</translation>
 <translation id="3417660076059365994">系統會將你上傳或附加的檔案傳送到 Google Cloud 或第三方進行分析。舉例來說，Google Cloud 或第三方可能會掃描檔案，檢查是否含有機密資料或惡意軟體。</translation>
@@ -1097,6 +1097,7 @@
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 遭到封鎖</translation>
 <translation id="3978338123949022456">搜尋模式，輸入查詢並按下 Enter 鍵即可用 <ph name="KEYWORD_SUFFIX" /> 搜尋</translation>
 <translation id="398470910934384994">鳥</translation>
+<translation id="3985750352229496475">管理地址...</translation>
 <translation id="3986705137476756801">暫時關閉即時字幕</translation>
 <translation id="3987940399970879459">不到 1 MB</translation>
 <translation id="3990250421422698716">撞頁偏移</translation>
@@ -1219,6 +1220,7 @@
 <translation id="4305666528087210886">無法存取你的檔案</translation>
 <translation id="4306529830550717874">要儲存地址嗎？</translation>
 <translation id="4306812610847412719">剪貼簿</translation>
+<translation id="4310070645992025887">搜尋瀏覽歷程</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">封鎖 (預設)</translation>
 <translation id="4314815835985389558">管理同步功能資料</translation>
@@ -2103,6 +2105,7 @@
 <translation id="6839929833149231406">區域</translation>
 <translation id="6846340164947227603">使用虛擬卡號...</translation>
 <translation id="6852204201400771460">要重新載入應用程式嗎？</translation>
+<translation id="6857776781123259569">管理密碼...</translation>
 <translation id="686485648936420384">消費者資源</translation>
 <translation id="6865412394715372076">目前無法驗證這張信用卡</translation>
 <translation id="6869334554832814367">個人信貸</translation>
@@ -2429,6 +2432,7 @@
 <translation id="7669271284792375604">攻擊者可能會試圖透過這個網站誘使你安裝對瀏覽體驗有害 (例如變更你的首頁，或是在你造訪的網站上顯示多餘的廣告) 的程式。</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{針對標記為機密的資料所執行的動作 (自登入後已回報 1 個動作)。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />}other{針對標記為機密的資料所執行的動作 (自登入後已回報 # 個動作)。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">出紙槽 6</translation>
+<translation id="7675325315208090829">管理付款方式...</translation>
 <translation id="7676643023259824263">搜尋剪貼簿文字：<ph name="TEXT" /></translation>
 <translation id="7679367271685653708">在 Chrome 設定中查看及管理瀏覽記錄</translation>
 <translation id="7679947978757153706">棒球</translation>

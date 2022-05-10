@@ -190,6 +190,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2690858294534178585">Kamera word tans gebruik</translation>
 <translation id="2691653761409724435">Nie vanlyn beskikbaar nie</translation>
 <translation id="2695507686909505111">Bladsy is vertaal</translation>
+<translation id="2697526135132990015">Meld af en vee data uit</translation>
 <translation id="2700241355396984822">Opsies om toestemmings te stel</translation>
 <translation id="2702801445560668637">Leeslys</translation>
 <translation id="2704491540504985681">Aflaaie</translation>
@@ -364,6 +365,7 @@ Volg die stappe hieronder:</translation>
 <translation id="4121993058175073134">Stel asseblief jou e-posrekening in die Instellingsprogram op om netto-uitvoerdata te stuur.</translation>
 <translation id="4124987746317609294">Tydreeks</translation>
 <translation id="4133265950310064865">Gevorderde Beskerming</translation>
+<translation id="4148023517926189160">Hierdie webwerf wil ’n lêer aflaai en dit by jou kalender voeg.</translation>
 <translation id="4152011295694446843">Jy sal jou boekmerke hier kry</translation>
 <translation id="4172051516777682613">Wys altyd</translation>
 <translation id="418156467088430727">Bekyk vanlyn weergawe in nuwe oortjie</translation>
@@ -692,13 +694,13 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="6760509555861141183">Keer terug na onlangse oortjie</translation>
 <translation id="6762812039470893796">Ontkies alles</translation>
 <translation id="6780034285637185932">Poskode</translation>
+<translation id="6781260999953472352">Skakel sinkronisering aan?</translation>
 <translation id="6785453220513215166">Stuur tans omvalverslag …</translation>
 <translation id="6797885426782475225">Stemsoektog</translation>
 <translation id="6801927553864092214">Maak 'n Incognito-oortjie oop om privaat te blaai</translation>
 <translation id="6807889908376551050">Wys alles …</translation>
 <translation id="681368974849482173">Item is geskep</translation>
 <translation id="683022620450280906">Jy kan gestoorde wagwoorde op enige toestel gebruik. Hulle word vir <ph name="EMAIL" /> in Google Wagwoordbestuurder gestoor</translation>
-<translation id="6830804042318138535">Lees meer</translation>
 <translation id="6831043979455480757">Vertaal</translation>
 <translation id="6842136130964845393">Verifieer dis jy om seker te maak dat jy altyd toegang tot jou gestoorde wagwoorde het</translation>
 <translation id="6851516051005285358">Versoek werkskermwerf</translation>
@@ -805,6 +807,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7807060072011926525">Verskaf deur Google</translation>
 <translation id="7839985698273989086">Vanlyn bladsy</translation>
 <translation id="7840771868269352570">Die items wat jy gekies het, sal verwyder word.</translation>
+<translation id="784551991304901159">Kies Skakel Aan op die kieslys om inhoud te sien</translation>
 <translation id="7853202427316060426">Aktiwiteit</translation>
 <translation id="7856733331829174190">Kon nie aflaai nie</translation>
 <translation id="7859704718976024901">Blaaigeskiedenis</translation>

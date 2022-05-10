@@ -136,6 +136,7 @@
 <translation id="1719094688023114093">«زیرنویس ناشنوایان زنده» روشن است.</translation>
 <translation id="1720011244392820496">‏روشن کردن «همگام‌سازی Wi-Fi»</translation>
 <translation id="1736898441010944794">«<ph name="NAME" />» برای دستگاه‌های بلوتوث قابل‌مشاهده است.</translation>
+<translation id="174102739345480129">نشانگر خاموش است.</translation>
 <translation id="1743570585616704562">شناسایی نشد</translation>
 <translation id="1746730358044914197">روش‌های ورودی توسط سرپرستتان پیکربندی می‌شوند.</translation>
 <translation id="1747827819627189109">صفحه‌کلید مجازی فعال شد</translation>
@@ -564,6 +565,7 @@
 <translation id="4379531060876907730">این‌ها ابزارهای قلم شما هستند</translation>
 <translation id="4389184120735010762">میان‌بر صفحه‌کلید مربوط به ذره‌بین متصل را فشار دادید. می‌خواهید آن را روشن کنید؟</translation>
 <translation id="439598569299422042">موقتاً متوقف شده است، <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">ضبط ویدیویی از صفحه ذخیره نشد</translation>
 <translation id="4405151984121254935">دستگاه جانبی متصل پشتیبانی نمی‌شود</translation>
 <translation id="4406883609789734330">زیرنویس زنده</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> خاموش است.</translation>
@@ -670,6 +672,7 @@
         <ph name="NOTIFICATION_2" />،
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">جمله بعدی</translation>
+<translation id="5016558321564993266">روشن/ خاموش کردن نشانگر. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">وقت تمام شد</translation>
 <translation id="5033299697334913360">برای گرفتن عکس از کل صفحه، روی هرجایی که می‌خواهید کلیک کنید</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> به تلفن جدیدی متصل است</translation>
@@ -699,6 +702,7 @@
 <translation id="5222676887888702881">خروج از سیستم</translation>
 <translation id="5234764350956374838">رد کردن</translation>
 <translation id="523505283826916779">تنظیمات دسترس‌پذیری</translation>
+<translation id="5245201184978705914">ترانویسی ایجاد نشد</translation>
 <translation id="5253783950165989294">متصل به دستگاهی با نام <ph name="DEVICE_NAME" />، شارژ باتری <ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="5260676007519551770">میز ۴</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> به توجه شما نیاز دارد.</translation>
@@ -733,6 +737,7 @@
 <translation id="5433020815079095860">ورودی صوتی</translation>
 <translation id="544691375626129091">تمام کاربران موجود قبلاً به این جلسه اضافه شده‌اند.</translation>
 <translation id="54609108002486618">مدیریت شده</translation>
+<translation id="5460938382730614333">نشانگر روشن است.</translation>
 <translation id="5465662442746197494">به راهنمایی نیاز دارید؟</translation>
 <translation id="547979256943495781">قفسه در سمت چپ است</translation>
 <translation id="5491186829646618080">به‌روزرسانی‌های سفت‌افزار دردسترس است</translation>
@@ -774,6 +779,7 @@
 <translation id="5745612484876805746">«نور شب» هنگام غروب آفتاب به‌طور خودکار روشن می‌شود</translation>
 <translation id="5750765938512549687">بلوتوث خاموش است</translation>
 <translation id="5760866832697883462">متصل کردن <ph name="NAME" /></translation>
+<translation id="5762420912707163638">روشن/ خاموش کردن نشانگر. <ph name="STATE_TEXT" /> برای کشیدن طرح روی صفحه از پد لمسی، صفحه لمسی، یا قلم استفاده کنید.</translation>
 <translation id="576341972084747908">بارگیری <ph name="FILENAME" /> خطرناک</translation>
 <translation id="5763928712329149804">«گروه قفسه‌ها» خاموش است.</translation>
 <translation id="576453121877257266">«نور شب» روشن است.</translation>

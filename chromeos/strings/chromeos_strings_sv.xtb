@@ -61,6 +61,7 @@
 <translation id="150962533380566081">Ogiltig PUK-kod.</translation>
 <translation id="1510238584712386396">Startprogram</translation>
 <translation id="152892567002884378">Höj volymen</translation>
+<translation id="1555130319947370107">Blå</translation>
 <translation id="155865706765934889">Styrplatta</translation>
 <translation id="1565038567006703504">Det gick inte att uppdatera <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Album</translation>
@@ -111,7 +112,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Fler inställningar</translation>
 <translation id="2085089206770112532">Tangenten som minskar skärmens ljusstyrka</translation>
-<translation id="2104796393919810494">Reparationen är klar</translation>
 <translation id="2105810540595158374">Enheten är en spelkontroll.</translation>
 <translation id="2115956742084455574">Fel kod</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
@@ -157,6 +157,7 @@
 <translation id="2446553403094072641">Flyttalsprecision</translation>
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2461822463642141190">Nuvarande</translation>
+<translation id="2480034874476596812">Stäng av manuellt</translation>
 <translation id="2491955442992294626">Inga tangenter testas när du använder ett annat fönster</translation>
 <translation id="2493126929778606526">Dina bästa bilder, utvalda automatiskt</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -173,6 +174,7 @@
 <translation id="2638662041295312666">Inloggningsbild</translation>
 <translation id="2640549051766135490">Detta album har markerats: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2712812801627182647">TLS-autentiseringsnyckel</translation>
+<translation id="2713444072780614174">Vit</translation>
 <translation id="2717139507051041123">Aktivera mörkt färgläge</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Fas 2 i EAP-autentisering</translation>
@@ -251,6 +253,7 @@
 <translation id="3606583719724308068">Hög fördröjning till HTTPS-webbplatser</translation>
 <translation id="3621202678540785336">Ingång</translation>
 <translation id="3632579075709132555">Tangenten som aktiverar och inaktiverar sekretesskärmen</translation>
+<translation id="3678765385266369662">Välj hur du vill stänga av skrivskyddet</translation>
 <translation id="3689839747745352263">Test – <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Läser in...</translation>
 <translation id="3708186454126126312">Tidigare anslutna enheter</translation>
@@ -293,6 +296,7 @@
 <translation id="4145784616224233563">HTTP-brandvägg</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4155551848414053977">Kontrollera att skannern är på och tillgänglig via nätverket eller med direktanslutning</translation>
+<translation id="4159784952369912983">Lila</translation>
 <translation id="4170180284036919717">Ta ett foto</translation>
 <translation id="4170700058716978431">MISSLYCKADES</translation>
 <translation id="4176463684765177261">Inaktiverad</translation>
@@ -305,6 +309,7 @@
 <translation id="4244962993387259361">Du behöver minst 500 MB ledigt utrymme för att köra ett minnestest. Öppna Inställningar &gt; Lagringshantering om du vill frigöra utrymme.</translation>
 <translation id="4250229828105606438">Skärmbild</translation>
 <translation id="4258281355379922695">HTTP-latens</translation>
+<translation id="4258561075226177474">Användaren ska fortsätta att använda enheten. Vill du rensa användaruppgifter?</translation>
 <translation id="4271957103967917607">Visa helskärm</translation>
 <translation id="4275799948641988986">Vem ska använda enheten efter reparationen?</translation>
 <translation id="4289540628985791613">Översikt</translation>
@@ -353,6 +358,7 @@
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4744944742468440486">Information om det som är markerat</translation>
 <translation id="4773299976671772492">Har stoppats</translation>
+<translation id="4774530504324923332">Du behöver en RSU-aktiverad säkerhetsnyckel, en QR-skanner eller en annan enhet med en internetanslutning</translation>
 <translation id="4782311465517282004">Få definitioner, översättningar eller enhetskonverteringar när du högerklickar eller trycker länge på text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Besök <ph name="BEGIN_LINK" />hjälpcentret<ph name="END_LINK" /> om du vill ha mer hjälp.</translation>
@@ -432,6 +438,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5372659122375744710">wifi-nätverket är inte säkert</translation>
 <translation id="5376354385557966694">Automatiskt ljust läge</translation>
 <translation id="537872351913703572">En annan användare eller organisation tar över enheten</translation>
+<translation id="5395600419410242651">Rensa all data</translation>
 <translation id="5400907029458559844">Enheter ansluter.</translation>
 <translation id="5401938042319910061">Kör alla rutiner</translation>
 <translation id="5423849171846380976">Aktiverat</translation>
@@ -474,6 +481,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5866840822086176774">Mycket stark</translation>
 <translation id="588258955323874662">Helskärm</translation>
 <translation id="5895138241574237353">Starta om</translation>
+<translation id="5901630391730855834">Gul</translation>
 <translation id="5903200662178656908">Detta är en kombinationsenhet med tangentbord och mus.</translation>
 <translation id="5916084858004523819">Aldrig</translation>
 <translation id="5916664084637901428">På</translation>
@@ -483,6 +491,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="594552776027197022">Generera slumpmässigt nyckelpar</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Standardbakgrund</translation>
+<translation id="6017514345406065928">Grön</translation>
 <translation id="6034694447310538551">Aktivera automatisk månadsåterställning</translation>
 <translation id="6037291330010597344">Skannerns dokumentmatare är tom. Fyll på med dokument och försök igen.</translation>
 <translation id="6040143037577758943">Stäng</translation>
@@ -642,6 +651,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7570674786725311828">USB-pekskärm</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> återstår</translation>
 <translation id="7620771111601174153">Läs mer i hjälpcentret</translation>
+<translation id="7626501172915339021">Utför RMA-Server Unlock (RSU)</translation>
 <translation id="763165478673169849">Återställdes senast</translation>
 <translation id="7648838807254605802">Hög HTTPS-fördröjning</translation>
 <translation id="7656388927906093505">Enheten är en mus.</translation>
@@ -669,6 +679,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7882501334836096755">Offentlig nyckel</translation>
 <translation id="7890841768028788197">Intern pekskärm</translation>
 <translation id="7936303884198020182">Inga namnservrar hittades</translation>
+<translation id="7942349550061667556">Röd</translation>
 <translation id="7943235353293548836">Beständigt keepalive-intervall</translation>
 <translation id="7955587717700691983">Bluetooth-tangentbord</translation>
 <translation id="7960831585769876809">Temperatur</translation>
@@ -697,6 +708,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8226628635270268143">Välj favoritfoton och favoritalbum</translation>
 <translation id="8230672074305416752">Det gick inte att pinga standardnätverkets gateway</translation>
 <translation id="8246209727385807362">Okänd operatör</translation>
+<translation id="827422111966801947">Indigoblå</translation>
 <translation id="8281886186245836920">Hoppa över</translation>
 <translation id="8286154143153872371">Anslut till ett nätverk och läs in sidan igen för att se bakgrunden.</translation>
 <translation id="8291967909914612644">Hemleverantörens land</translation>
@@ -785,6 +797,8 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="9087578468327036362">Rapportera sökfrågan</translation>
 <translation id="9088306295921699330">Nuvarande användning</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">Du behöver ta isär enheten</translation>
+<translation id="9098156406873149060">Behåll användaruppgifter</translation>
 <translation id="910415269708673980">Uppdatera biljetten för <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannar sidan <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Lås upp</translation>

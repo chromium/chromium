@@ -61,6 +61,7 @@
 <translation id="150962533380566081">‏PUK نامعتبر.</translation>
 <translation id="1510238584712386396">راه‌انداز</translation>
 <translation id="152892567002884378">افزایش صدا</translation>
+<translation id="1555130319947370107">آبی</translation>
 <translation id="155865706765934889">صفحه لمسی</translation>
 <translation id="1565038567006703504">به‌روزرسانی <ph name="DEVICE_NAME" /> انجام نشد</translation>
 <translation id="1567064801249837505">آلبوم‌ها</translation>
@@ -91,6 +92,7 @@
 <translation id="1801418420130173017">غیرفعال کردن زمینه تیره</translation>
 <translation id="1807246157184219062">روشن</translation>
 <translation id="1827738518074806965">گالری هنری</translation>
+<translation id="1840835860961531162">خاموش کردن «محافظت دربرابر نوشتن»</translation>
 <translation id="1851218745569890714">کنفرانس ویدیویی</translation>
 <translation id="1852934301711881861">‏نصب ChromeOS Flex</translation>
 <translation id="1856388568474281774">جهت‌نمای پایین</translation>
@@ -111,7 +113,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">تنظیمات بیشتر</translation>
 <translation id="2085089206770112532">کاهش روشنایی نمایشگر</translation>
-<translation id="2104796393919810494">تعمیر تکمیل شد</translation>
 <translation id="2105810540595158374">دستگاه کنترل بازی است.</translation>
 <translation id="2115956742084455574">کد نادرست است</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />، نسخه <ph name="MILESTONE_VERSION" /></translation>
@@ -174,6 +175,7 @@
 <translation id="2638662041295312666">تصویر ورود به سیستم</translation>
 <translation id="2640549051766135490">آلبوم <ph name="TITLE" /> <ph name="DESC" /> انتخاب شد</translation>
 <translation id="2712812801627182647">کلید اصالت‌سنجی «امنیت لایه انتقال»</translation>
+<translation id="2713444072780614174">سفید</translation>
 <translation id="2717139507051041123">فعال کردن حالت رنگ تیره</translation>
 <translation id="2740531572673183784">تأیید</translation>
 <translation id="2751739896257479635">‏اصالت‌سنجی مرحله ۲ EAP</translation>
@@ -274,6 +276,7 @@
 <translation id="3941014780699102620">حل کردن میزبان انجام نشد</translation>
 <translation id="3942420633017001071">تشخیص خطا</translation>
 <translation id="3954678691475912818">نوع دستگاه مشخص نیست.</translation>
+<translation id="3958703339436883942">درحال آماده‌سازی برای بازراه‌اندازی…</translation>
 <translation id="3966286471246132217">برای دریافت نتایج دقیق‌تر، تا زمان تکمیل شدن آزمایش، همه برنامه‌ها را ببندید.</translation>
 <translation id="3967822245660637423">بارگیری کامل شد</translation>
 <translation id="3969602104473960991">‏گذرواژه ChromeOS به‌روزرسانی شد</translation>
@@ -295,6 +298,7 @@
 <translation id="4145784616224233563">‏دیوار آتش HTTPS</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">مطمئن شوید اسکنر روشن باشد و ازطریق شبکه یا اتصال مستقیم دردسترس باشد</translation>
+<translation id="4159784952369912983">بنفش</translation>
 <translation id="4170180284036919717">گرفتن عکس</translation>
 <translation id="4170700058716978431">ناموفق</translation>
 <translation id="4176463684765177261">غیرفعال شد</translation>
@@ -422,6 +426,7 @@
 <translation id="5275828089655680674">اجرای دوباره روال‌ها</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">نسخه <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">برای رفتن به صفحه بعدی، «محافظت دربرابر نوشتن» را غیرفعال کنید. برای دستورالعمل‌ها به صفحه پشتیبانی سازنده دستگاه بروید.</translation>
 <translation id="5300814202279832142">انتقال پنجره به میزکار</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">متصل کردن</translation>
@@ -473,12 +478,14 @@
 <translation id="583281660410589416">ناشناس</translation>
 <translation id="5843706793424741864">فارنهایت</translation>
 <translation id="5849570051105887917">کد ارائه‌دهنده صفحه اصلی</translation>
+<translation id="5856532218727053281">سیستم پس‌از تأیید کردن وضعیت «محافظت دربرابر نوشتن» بازراه‌اندازی خواهد شد</translation>
 <translation id="5859603669299126575">آلبوم گالری هنری</translation>
 <translation id="5860033963881614850">خاموش</translation>
 <translation id="5860491529813859533">روشن کردن</translation>
 <translation id="5866840822086176774">بسیار قوی</translation>
 <translation id="588258955323874662">تمام صفحه</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
+<translation id="5901630391730855834">زرد</translation>
 <translation id="5903200662178656908">دستگاه ترکیبی از صفحه‌کلید و موشواره است.</translation>
 <translation id="5916084858004523819">ممنوع</translation>
 <translation id="5916664084637901428">روشن</translation>
@@ -488,6 +495,7 @@
 <translation id="594552776027197022">ایجد جفت‌کلید تصادفی</translation>
 <translation id="5972388717451707488">به‌روزرسانی موتور</translation>
 <translation id="5984145644188835034">کاغذدیواری پیش‌فرض</translation>
+<translation id="6017514345406065928">سبز</translation>
 <translation id="6034694447310538551">فعال کردن بازنشانی خودکار ماهانه</translation>
 <translation id="6037291330010597344">تغذیه‌کننده سند اسکنر خالی است. اسناد را اضافه کنید و دوباره امتحان کنید.</translation>
 <translation id="6040143037577758943">بستن</translation>
@@ -675,6 +683,7 @@
 <translation id="7882501334836096755">کلید عمومی</translation>
 <translation id="7890841768028788197">صفحه لمسی داخلی</translation>
 <translation id="7936303884198020182">سرور نام دامنه پیدا نشد</translation>
+<translation id="7942349550061667556">قرمز</translation>
 <translation id="7943235353293548836">فاصله زمانی زنده‌نگهداری دائم</translation>
 <translation id="7955587717700691983">صفحه‌کلید بلوتوث</translation>
 <translation id="7960831585769876809">دما</translation>
@@ -703,6 +712,7 @@
 <translation id="8226628635270268143">انتخاب عکس‌ها و آلبوم‌های دلخواه</translation>
 <translation id="8230672074305416752">پینگ کردن دروازه شبکه پیش‌فرض انجام نشد</translation>
 <translation id="8246209727385807362">شرکت مخابراتی ناشناس</translation>
+<translation id="827422111966801947">نیلی سیر</translation>
 <translation id="8281886186245836920">رد شدن</translation>
 <translation id="8286154143153872371">لطفاً برای مشاهده کاغذدیواری، به شبکه متصل شوید و صفحه را تازه‌سازی کنید.</translation>
 <translation id="8291967909914612644">کشور ارائه‌دهنده اصلی</translation>

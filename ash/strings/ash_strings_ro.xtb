@@ -136,6 +136,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1719094688023114093">Funcția Subtitrări live este activată.</translation>
 <translation id="1720011244392820496">Activează Sincronizarea Wi-Fi</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />” vizibil pentru dispozitivele Bluetooth.</translation>
+<translation id="174102739345480129">Marcatorul este dezactivat.</translation>
 <translation id="1743570585616704562">Nu este recunoscută</translation>
 <translation id="1746730358044914197">Metodele de introducere a textului sunt configurate de administratorul tău.</translation>
 <translation id="1747827819627189109">Tastatură pe ecran activată</translation>
@@ -303,6 +304,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2834813915651407382">Deschis recent</translation>
 <translation id="2841907151129139818">S-a comutat la modul tabletă</translation>
 <translation id="2844169650293029770">Dispozitiv USB-C (portul din stânga față)</translation>
+<translation id="2848120746144143659">Apasă pe Enter pentru a realiza o captură de ecran completă</translation>
 <translation id="2849936225196189499">Critic</translation>
 <translation id="2860184359326882502">Cea mai bună potrivire</translation>
 <translation id="2865888419503095837">Informații despre rețea</translation>
@@ -481,6 +483,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3846575436967432996">Nu sunt disponibile informații despre rețele</translation>
 <translation id="385051799172605136">Înapoi</translation>
 <translation id="385300504083504382">Început</translation>
+<translation id="3861651314799684201">Apasă pe Enter pentru a înregistra ecranul complet</translation>
 <translation id="3886872229787704059">Deschis astăzi</translation>
 <translation id="3891340733213178823">Apăsați de două ori Ctrl+Shift+Q pentru a vă deconecta.</translation>
 <translation id="3893630138897523026">ChromeVox (feedback rostit)</translation>
@@ -564,6 +567,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4379531060876907730">Acestea sunt instrumentele pentru creion</translation>
 <translation id="4389184120735010762">Ai accesat comanda rapidă de la tastatură pentru lupa andocată. Vrei să o activezi?</translation>
 <translation id="439598569299422042">Întreruptă, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Nu se poate salva înregistrarea de pe ecran</translation>
 <translation id="4405151984121254935">Tipul de dispozitiv periferic conectat nu este acceptat</translation>
 <translation id="4406883609789734330">Subtitrări live</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> este dezactivat.</translation>
@@ -670,6 +674,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Propoziția următoare</translation>
+<translation id="5016558321564993266">Comută marcatorul. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Timpul a expirat</translation>
 <translation id="5033299697334913360">Dă clic oriunde pentru a captura ecranul complet</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> conectat la un telefon nou</translation>
@@ -699,6 +704,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5222676887888702881">Deconectează-te</translation>
 <translation id="5234764350956374838">Închide</translation>
 <translation id="523505283826916779">Setări de accesibilitate</translation>
+<translation id="5245201184978705914">Nu se poate genera transcrierea</translation>
 <translation id="5253783950165989294">S-a conectat la dispozitivul <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterie</translation>
 <translation id="5260676007519551770">Desktop 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> are nevoie de atenție.</translation>
@@ -733,6 +739,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5433020815079095860">Intrare audio</translation>
 <translation id="544691375626129091">Toți utilizatorii disponibili au fost deja adăugați la această sesiune.</translation>
 <translation id="54609108002486618">Gestionat</translation>
+<translation id="5460938382730614333">Marcatorul este activat.</translation>
 <translation id="5465662442746197494">Ai nevoie de ajutor?</translation>
 <translation id="547979256943495781">Raft în partea dreaptă</translation>
 <translation id="5491186829646618080">Sunt disponibile actualizări de firmware</translation>
@@ -774,6 +781,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5745612484876805746">Lumina de noapte se activează automat la apus</translation>
 <translation id="5750765938512549687">Bluetooth este dezactivat</translation>
 <translation id="5760866832697883462">Conectează <ph name="NAME" /></translation>
+<translation id="5762420912707163638">Comută marcatorul. <ph name="STATE_TEXT" /> Folosește un trackpad, un ecran tactil sau un creion ca să desenezi pe ecran.</translation>
 <translation id="576341972084747908">Se descarcă fișierul periculos <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Modul Shelf Party este dezactivat.</translation>
 <translation id="576453121877257266">Lumina de noapte este activată.</translation>
@@ -807,6 +815,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="595202126637698455">Urmărirea performanței este activată</translation>
 <translation id="5955304353782037793">aplicație</translation>
 <translation id="5958529069007801266">Utilizator monitorizat</translation>
+<translation id="5976112937189445008">Apasă pe Enter pentru a înregistra fereastra</translation>
 <translation id="5977415296283489383">Căști</translation>
 <translation id="5978382165065462689">În prezent, permiți controlul la ecran prin Asistență la distanță.</translation>
 <translation id="5980301590375426705">Ieși ca invitat</translation>
@@ -1193,6 +1202,7 @@ Instalare nouă</translation>
 <translation id="8364673525741149932">Activează / dezactivează Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Înainte cu o literă</translation>
 <translation id="8371991222807690464">Performanța dispozitivelor periferice poate fi limitată în modul pentru invitați</translation>
+<translation id="8374601332003098278">Apasă pe Enter pentru a înregistra ecranul parțial</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> și telefonul se vor conecta automat</translation>
 <translation id="8380784334203145311">Bună seara!</translation>
 <translation id="8382715499079447151">Protecție la afișare</translation>
@@ -1245,6 +1255,7 @@ Instalare nouă</translation>
 <translation id="8653151467777939995">Afișează setările pentru notificări. Notificările sunt activate</translation>
 <translation id="8660331759611631213">Rădăcina pătrată a numărului 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">Apasă pe Enter pentru a realiza o captură de ecran parțială</translation>
 <translation id="8664753092453405566">Afișează lista de rețele. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Deschide <ph name="NAME" /> pentru a configura dispozitivul</translation>
 <translation id="8676770494376880701">A fost conectat un încărcător de putere joasă</translation>
@@ -1286,6 +1297,7 @@ Instalare nouă</translation>
 <translation id="8909138438987180327">Nivelul bateriei este <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Asistentul Google nu vorbește în această limbă.</translation>
+<translation id="8924458948354692166">Apasă pe Enter pentru a realiza o captură de ecran a ferestrei</translation>
 <translation id="8926951137623668982">Raftul este ascuns mereu</translation>
 <translation id="8936501819958976551">dezactivată</translation>
 <translation id="8938800817013097409">Dispozitiv USB-C (portul din dreapta în spate)</translation>

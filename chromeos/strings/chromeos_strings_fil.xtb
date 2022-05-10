@@ -61,6 +61,7 @@
 <translation id="150962533380566081">Di-wasto ang PUK.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="152892567002884378">Lakasan ang volume</translation>
+<translation id="1555130319947370107">Asul</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1565038567006703504">Hindi ma-update ang <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Mga Album</translation>
@@ -91,6 +92,7 @@
 <translation id="1801418420130173017">I-disable ang madilim na tema</translation>
 <translation id="1807246157184219062">Maliwanag</translation>
 <translation id="1827738518074806965">Art gallery</translation>
+<translation id="1840835860961531162">I-off ang Write Protect</translation>
 <translation id="1851218745569890714">Pakikipagkumperensya Gamit ang Video</translation>
 <translation id="1852934301711881861">I-install ang ChromeOS Flex</translation>
 <translation id="1856388568474281774">Pababang arrow</translation>
@@ -111,7 +113,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Higit pang mga setting</translation>
 <translation id="2085089206770112532">Babaan ang liwanag ng display</translation>
-<translation id="2104796393919810494">Kumpleto na ang pag-repair</translation>
 <translation id="2105810540595158374">Game controller ang device.</translation>
 <translation id="2115956742084455574">Maling code</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, bersyon <ph name="MILESTONE_VERSION" /></translation>
@@ -174,6 +175,7 @@
 <translation id="2638662041295312666">Larawan sa pag-sign in</translation>
 <translation id="2640549051766135490">Pinili ang album na <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2712812801627182647">TLS authentication key</translation>
+<translation id="2713444072780614174">Puti</translation>
 <translation id="2717139507051041123">I-enable ang dark color mode</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP Phase 2 na pag-authenticate</translation>
@@ -274,6 +276,7 @@
 <translation id="3941014780699102620">Hindi nalutas ang host</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
 <translation id="3954678691475912818">Hindi alam ang uri ng device.</translation>
+<translation id="3958703339436883942">Naghahanda para sa pag-restart...</translation>
 <translation id="3966286471246132217">Para sa mga tumpak na resulta, isara ang lahat ng app hanggang sa makumpleto ang pagsusuri.</translation>
 <translation id="3967822245660637423">Tapos na ang pag-download</translation>
 <translation id="3969602104473960991">Na-update ang password sa ChromeOS</translation>
@@ -295,6 +298,7 @@
 <translation id="4145784616224233563">Firewall ng HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">Tiyaking naka-on ang scanner at available ito sa pamamagitan ng iyong network o ng isang direktang koneksyon</translation>
+<translation id="4159784952369912983">Lila</translation>
 <translation id="4170180284036919717">Kumuha ng larawan</translation>
 <translation id="4170700058716978431">NABIGO</translation>
 <translation id="4176463684765177261">Hindi pinapagana</translation>
@@ -422,6 +426,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5275828089655680674">Patakbuhin Ulit ang Mga Routine</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">bersyon <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">I-disable ang write-protect para magpatuloy sa susunod na screen. Pumunta sa page ng suporta ng manufacturer ng device para sa mga tagubilin.</translation>
 <translation id="5300814202279832142">Ilipat sa desk ang window</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">Kumonekta</translation>
@@ -473,12 +478,14 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Home provider code</translation>
+<translation id="5856532218727053281">Magre-restart ang system pagkatapos i-verify ang status ng Write Protection</translation>
 <translation id="5859603669299126575">Album sa art gallery</translation>
 <translation id="5860033963881614850">Naka-off</translation>
 <translation id="5860491529813859533">I-on</translation>
 <translation id="5866840822086176774">Napakalakas</translation>
 <translation id="588258955323874662">Fullscreen</translation>
 <translation id="5895138241574237353">I-restart</translation>
+<translation id="5901630391730855834">Dilaw</translation>
 <translation id="5903200662178656908">Pinagsamang keyboard at mouse ang device.</translation>
 <translation id="5916084858004523819">Ipinagbabawal</translation>
 <translation id="5916664084637901428">Naka-on</translation>
@@ -488,6 +495,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="594552776027197022">Bumuo ng random na keypair</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Default na Wallpaper</translation>
+<translation id="6017514345406065928">Berde</translation>
 <translation id="6034694447310538551">I-enable ang awtomatikong buwanang pag-reset</translation>
 <translation id="6037291330010597344">Walang laman ang document feeder ng scanner. Magdagdag ng mga dokumento at subukan ulit.</translation>
 <translation id="6040143037577758943">Isara</translation>
@@ -675,6 +683,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7882501334836096755">Pampublikong key</translation>
 <translation id="7890841768028788197">Internal na touchscreen</translation>
 <translation id="7936303884198020182">Walang nakitang name server</translation>
+<translation id="7942349550061667556">Pula</translation>
 <translation id="7943235353293548836">Persistent keepalive Interval</translation>
 <translation id="7955587717700691983">Bluetooth na keyboard</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -703,6 +712,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8226628635270268143">Piliin ang iyong mga paboritong larawan at album</translation>
 <translation id="8230672074305416752">Hindi na-ping ang default na network gateway</translation>
 <translation id="8246209727385807362">Hindi kilalang carrier</translation>
+<translation id="827422111966801947">Indigo</translation>
 <translation id="8281886186245836920">Laktawan</translation>
 <translation id="8286154143153872371">Kumonekta sa network at i-reload ang page para makita ang wallpaper.</translation>
 <translation id="8291967909914612644">Bansa ng home provider</translation>

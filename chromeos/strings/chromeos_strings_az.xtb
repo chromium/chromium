@@ -63,6 +63,7 @@
 <translation id="150962533380566081">Yanlış PUK.</translation>
 <translation id="1510238584712386396">Başladıcı</translation>
 <translation id="152892567002884378">Səsi artırın</translation>
+<translation id="1555130319947370107">Mavi</translation>
 <translation id="155865706765934889">Taçped</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> cihazını güncəlləmək mümkün deyil</translation>
 <translation id="1567064801249837505">Albomlar</translation>
@@ -113,7 +114,6 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Digər ayarlar</translation>
 <translation id="2085089206770112532">Displey parlaqlığını azaldın</translation>
-<translation id="2104796393919810494">Təmir tamamlanıb</translation>
 <translation id="2105810540595158374">Cihaz oyun nizamlayıcısıdır.</translation>
 <translation id="2115956742084455574">Yanlış kod</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiya <ph name="MILESTONE_VERSION" /></translation>
@@ -177,6 +177,7 @@
 <translation id="2638662041295312666">Daxil olma şəkli</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> albomu seçildi</translation>
 <translation id="2712812801627182647">TLS doğrulama açarı</translation>
+<translation id="2713444072780614174">Ağ</translation>
 <translation id="2717139507051041123">Tünd rəng rejimini aktiv edin</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP Faza 2 doğrulaması</translation>
@@ -299,6 +300,7 @@
 <translation id="4145784616224233563">HTTP Qoruyucu divarı</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4155551848414053977">Skanerin aktiv olduğuna, şəbəkə və ya birbaşa qoşulma üzərindən əlçatan olduğuna əmin olun</translation>
+<translation id="4159784952369912983">Bənövşəyi</translation>
 <translation id="4170180284036919717">Foto çəkin</translation>
 <translation id="4170700058716978431">UĞURSUZ OLDU</translation>
 <translation id="4176463684765177261">Deaktiv edildi</translation>
@@ -483,6 +485,7 @@
 <translation id="5866840822086176774">Çox güclü</translation>
 <translation id="588258955323874662">Tam ekran</translation>
 <translation id="5895138241574237353">Yenidən başladın</translation>
+<translation id="5901630391730855834">Sarı</translation>
 <translation id="5903200662178656908">Cihaz klaviatura və maus kombinidir.</translation>
 <translation id="5916084858004523819">Qadağan olunub</translation>
 <translation id="5916664084637901428">Aktiv</translation>
@@ -492,6 +495,7 @@
 <translation id="594552776027197022">Təsadüfi açar cütü yaradın</translation>
 <translation id="5972388717451707488">Güncəlləmə Mexanizmi</translation>
 <translation id="5984145644188835034">Defolt Divar Kağızı</translation>
+<translation id="6017514345406065928">Yaşıl</translation>
 <translation id="6034694447310538551">Avtomatik aylıq sıfırlamanı aktivləşdirin</translation>
 <translation id="6037291330010597344">Skanerin sənəd ötürücüsü boşdur. Sənəd əlavə edib yenidən sınayın.</translation>
 <translation id="6040143037577758943">Qapat</translation>
@@ -679,6 +683,7 @@
 <translation id="7882501334836096755">İctimai açar</translation>
 <translation id="7890841768028788197">Daxili taçskrin</translation>
 <translation id="7936303884198020182">Ad serveri tapılmadı</translation>
+<translation id="7942349550061667556">Qırmızı</translation>
 <translation id="7943235353293548836">Davamlı aktivlik mesajı intervalı</translation>
 <translation id="7955587717700691983">Bluetooth klaviatura</translation>
 <translation id="7960831585769876809">Temperatur</translation>
@@ -708,6 +713,7 @@
 <translation id="8226628635270268143">Sevimli fotolarınızı və albomlarınızı seçin</translation>
 <translation id="8230672074305416752">Defolt şəbəkə girişini yoxlamaq alınmadı</translation>
 <translation id="8246209727385807362">Naməlum operator</translation>
+<translation id="827422111966801947">İndiqo</translation>
 <translation id="8281886186245836920">Keçin</translation>
 <translation id="8286154143153872371">Divar kağızı görmək üçün şəbəkəyə qoşulun və səhifəni yenidən yükləyin.</translation>
 <translation id="8291967909914612644">Əsas səhifə provayder ölkəsi</translation>

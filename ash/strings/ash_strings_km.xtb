@@ -304,6 +304,7 @@
 <translation id="2834813915651407382">បានបើក​ថ្មីៗនេះ</translation>
 <translation id="2841907151129139818">បានប្ដូរទៅ​មុខងារថេប្លេត</translation>
 <translation id="2844169650293029770">ឧបករណ៍ USB-C (រន្ធមុខផ្នែកខាងឆ្វេង)</translation>
+<translation id="2848120746144143659">ចុច enter ដើម្បីថតរូប​អេក្រង់​ពេញ​អេក្រង់</translation>
 <translation id="2849936225196189499">សំខាន់</translation>
 <translation id="2860184359326882502">ត្រូវគ្នាបំផុត</translation>
 <translation id="2865888419503095837">ព័ត៌មាន​បណ្តាញ</translation>
@@ -482,6 +483,7 @@
 <translation id="3846575436967432996">គ្មានព័ត៌មានបណ្តាញទេ</translation>
 <translation id="385051799172605136">ថយក្រោយ</translation>
 <translation id="385300504083504382">ផ្នែកចាប់ផ្តើម</translation>
+<translation id="3861651314799684201">ចុច enter ដើម្បីថតអេក្រង់ពេញ</translation>
 <translation id="3886872229787704059">បានបើក​នៅថ្ងៃនេះ</translation>
 <translation id="3891340733213178823">ចុច Ctrl+Shift+Q ពីរដងដើម្បីចាកចេញ។</translation>
 <translation id="3893630138897523026">ChromeVox (មតិនិយាយ)</translation>
@@ -813,6 +815,7 @@
 <translation id="595202126637698455">ការតាមដានប្រតិបត្តិការបានបើកដំណើរការ</translation>
 <translation id="5955304353782037793">កម្មវិធី</translation>
 <translation id="5958529069007801266">អ្នកប្រើដែលបានចាត់</translation>
+<translation id="5976112937189445008">ចុច enter ដើម្បីថតវិនដូ</translation>
 <translation id="5977415296283489383">កាសត្រចៀក</translation>
 <translation id="5978382165065462689">ចែករំលែកការបញ្ជាអេក្រង់របស់អ្នកតាមរយៈជំនួយការពីចម្ងាយ។</translation>
 <translation id="5980301590375426705">ចាកចេញពីរបៀបភ្ញៀវ</translation>
@@ -1199,6 +1202,7 @@
 <translation id="8364673525741149932">បិទ/បើក Shelf Party។ <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">ទៅមុខមួយតួអក្សរ</translation>
 <translation id="8371991222807690464">ប្រតិបត្តិការរបស់​ឧបករណ៍សម្រាប់​ភ្ជាប់​ជាមួយ​កុំព្យូទ័រអាចមានកម្រិតនៅក្នុងមុខងារភ្ញៀវ</translation>
+<translation id="8374601332003098278">ចុច enter ដើម្បីថតអេក្រង់មួយផ្នែក</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> នេះ និងទូរសព្ទរបស់អ្នក​នឹងភ្ជាប់ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="8380784334203145311">រាត្រីសួស្ដី</translation>
 <translation id="8382715499079447151">ការការពារ​ការមើល</translation>
@@ -1251,6 +1255,7 @@
 <translation id="8653151467777939995">បង្ហាញ​ការកំណត់​ការជូនដំណឹង។ ការជូនដំណឹង​ត្រូវបាន​បើក​</translation>
 <translation id="8660331759611631213">ឫសការ៉េនៃ 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">ចុច enter ដើម្បីថតរូប​អេក្រង់មួយផ្នែក</translation>
 <translation id="8664753092453405566">បង្ហាញ​បញ្ជី​បណ្ដាញ។ <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">បើក <ph name="NAME" /> ដើម្បីរៀបចំឧបករណ៍របស់អ្នក</translation>
 <translation id="8676770494376880701">ឆ្នាំងសាកដែលមានថាមពលទាបត្រូវបានភ្ជាប់</translation>
@@ -1292,6 +1297,7 @@
 <translation id="8909138438987180327">ថ្ម​មានកម្រិត <ph name="PERCENTAGE" /> ភាគរយ។</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google ជំនួយការមិននិយាយភាសានេះទេ។</translation>
+<translation id="8924458948354692166">ចុច enter ដើម្បីថតរូប​អេក្រង់នៃវិនដូ</translation>
 <translation id="8926951137623668982">លាក់​ធ្នើ​ជានិច្ច</translation>
 <translation id="8936501819958976551">បាន​បិទដំណើរការ</translation>
 <translation id="8938800817013097409">ឧបករណ៍ USB-C (រន្ធស្តាំផ្នែកខាងក្រោយ)</translation>

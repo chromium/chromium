@@ -424,6 +424,7 @@
 <translation id="1415708812149920388">Одбиен е пристапот за читање на привремената меморија</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ИД на наставка „<ph name="EXTENSION_ID" />“) не е дозволена во ваков тип сесија.</translation>
 <translation id="1418552618736477642">Известувања и апликации</translation>
+<translation id="1418882096915998312">Регистрацијата за Enterprise е во тек</translation>
 <translation id="1418954524306642206">Прелистувајте за да ја одредите PPD-датотеката на вашиот печатач</translation>
 <translation id="1420834118113404499">Дозволи за аудио-визуелни содржини</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> за да се дозволи спарување</translation>
@@ -973,6 +974,7 @@
 <translation id="1892341345406963517">Здраво <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Други јазици</translation>
 <translation id="1895658205118569222">Исклучување</translation>
+<translation id="1897120393475391208">Користете силна лозинка</translation>
 <translation id="1900305421498694955">Апликациите од Google Play може да бараат целосен пристап до системот на датотеки за да читаат и да запишуваат датотеки на надворешни уреди за складирање. Датотеките и папките создадени на уредот се видливи за сите што го користат надворешниот диск. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Избери ги &amp;сите</translation>
 <translation id="1901396183631570154">Chrome не може да ги зачува лозинкиве во сметката на Google. Сѐ уште може да ги зачувате на уредов.</translation>
@@ -3423,6 +3425,7 @@
 <translation id="4275830172053184480">Рестартирај го уредот</translation>
 <translation id="4277434192562187284">Извор на XML-конфигурација</translation>
 <translation id="4278390842282768270">Дозволено</translation>
+<translation id="4278498748067682896">Ќе користите „Надградба за киоск и уред за сигнализација“, којашто дозволува уредот да работи само во режим на киоск или уред за сигнализација. Ако сакате корисниците да се најавуваат на уредот, вратете се назад и регистрирајте се со „Надградбата за Chrome Enterprise“.</translation>
 <translation id="4279129444466079448">Може да инсталирате до <ph name="PROFILE_LIMIT" /> профили на eSIM на уредов. За да додадете друг профил, прво отстранете го постојниот профил.</translation>
 <translation id="4280325816108262082">Врската со уредот автоматски ќе се прекине кога е исклучен или кога не се користи</translation>
 <translation id="4281844954008187215">Услови за користење</translation>
@@ -6564,6 +6567,7 @@
 <translation id="7444970023873202833">Истражете уште од вашите спомени во „Фотографии на Google“</translation>
 <translation id="7444983668544353857">Оневозможи <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Инсталирајте ги апликациите автоматски</translation>
+<translation id="7449381494541372002">Се стартува…</translation>
 <translation id="7449752890690775568">Да се отстрани лозинката?</translation>
 <translation id="7450761244949417357">Се отвора во <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7452166281927983300">Отфрлени опомени (<ph name="MUTED_PASSWORDS" />)</translation>

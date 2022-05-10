@@ -1002,6 +1002,7 @@
 <translation id="1942600407708803723">Apaga quan es tanqui la tapa</translation>
 <translation id="1944528062465413897">Codi de vinculació per Bluetooth:</translation>
 <translation id="1944921356641260203">S'ha trobat una actualització.</translation>
+<translation id="1947136734041527201">Et permet iniciar la sessió en llocs web amb un servei d'identitats utilitzant el compte que ja tens</translation>
 <translation id="1949584741547056205">Respostes ràpides</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954597385941141174">Els llocs web poden demanar permís per connectar-se a dispositius USB</translation>
@@ -2399,6 +2400,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="32939749466444286">El contenidor de Linux no s'ha iniciat. Torna-ho a provar.</translation>
 <translation id="3294437725009624529">Convidat</translation>
 <translation id="3294686910656423119">Estadístiques d'ús i informes d'error</translation>
+<translation id="3297105622164376095">Es poden mostrar sol·licituds d'inici de sessió de tercers</translation>
 <translation id="3297536526040732495">Enllaça temporalment aquestes dades al teu Compte de Google quan tens la sessió iniciada per protegir-te en totes les aplicacions de Google</translation>
 <translation id="329838636886466101">Repara</translation>
 <translation id="3298789223962368867">Heu introduït un URL no vàlid.</translation>
@@ -3652,6 +3654,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="452750746583162491">Revisa les teves dades sincronitzades</translation>
 <translation id="4527929807707405172">Activa el desplaçament invers. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Suggeriment de traducció</translation>
+<translation id="4529455689802245339">Pot ser que Subtítols instantanis de Chrome no funcioni</translation>
 <translation id="4530494379350999373">Origen</translation>
 <translation id="4531924570968473143">A qui t'agradaria afegir al <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532625150642446981">El dispositiu "<ph name="USB_DEVICE_NAME" />" està en ús. Reassignar-lo en aquest estat podria provocar errors. Confirmes que vols continuar?</translation>
@@ -3849,6 +3852,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="471880041731876836">No tens permís per visitar aquest lloc web</translation>
 <translation id="4722735765955348426">Contrasenya per a <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> comparteix la vostra pantalla.</translation>
+<translation id="4722989931633062466">No es poden mostrar sol·licituds d'inici de sessió de tercers</translation>
 <translation id="4723140812774948886">Canvia pel següent</translation>
 <translation id="4724450788351008910">Ha canviat l'afiliació</translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -4819,6 +4823,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5711010025974903573">Registres de servei</translation>
 <translation id="5711983031544731014">No es pot desbloquejar: introduïu la contrasenya</translation>
 <translation id="5712153969432126546">A vegades, els llocs web publiquen fitxers PDF, com ara documents, contractes i formularis</translation>
+<translation id="571222594670061844">Els llocs web poden mostrar sol·licituds d'inici de sessió procedents de serveis d'identitat</translation>
 <translation id="5713158217420111469">Connectat a <ph name="DEVICE" /></translation>
 <translation id="5715711091495208045">Agent de connectors: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motors de cerca predeterminats</translation>
@@ -4977,6 +4982,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5876851302954717356">Pestanya nova a la dreta</translation>
 <translation id="5877064549588274448">El canal ha canviat. Reinicieu el dispositiu perquè s'apliquin els canvis.</translation>
 <translation id="5877584842898320529">La impressora seleccionada no està disponible o no s'ha instal·lat correctament.<ph name="BR" />Comprova la impressora o prova de seleccionar-ne una altra.</translation>
+<translation id="5878945009165002849">Bloqueja les sol·licituds d'inici de sessió procedents de serveis d'identitat</translation>
 <translation id="5882919346125742463">Xarxes conegudes</translation>
 <translation id="5883356647197510494">Permisos bloquejats automàticament: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Aquesta pestanya està connectada a un dispositiu USB</translation>
@@ -5612,6 +5618,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6513247462497316522">Google Chrome utilitzarà dades mòbils si no esteu connectat a una altra xarxa.</translation>
 <translation id="6514010653036109809">Dispositiu disponible:</translation>
 <translation id="6514565641373682518">Aquesta pàgina ha desactivat el cursor del ratolí.</translation>
+<translation id="6517709704288360414">És possible que el dispositiu ja no funcioni correctament i que tinguis problemes de seguretat i de rendiment. La desactivació de les actualitzacions pot afectar el teu dret de presentar reclamacions legals si tens cap problema.</translation>
 <translation id="6518014396551869914">Copia&amp; la imatge</translation>
 <translation id="6518133107902771759">Verifica</translation>
 <translation id="651942933739530207">Voleu que <ph name="APP_NAME" /> comparteixi la vostra pantalla i sortida d'àudio?</translation>

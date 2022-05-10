@@ -61,6 +61,7 @@
 <translation id="3411958449466169012">Timer nonaktif</translation>
 <translation id="3448774564454087943">Video tidak disimpan karena terlalu pendek</translation>
 <translation id="346539236881580388">Ambil ulang</translation>
+<translation id="3511295087439225876">Tombol bisukan aktif</translation>
 <translation id="3517926952904427380">Tidak dapat mengambil foto potret</translation>
 <translation id="3566302376254083266">Berpindah ke arah kiri atas</translation>
 <translation id="3569311554794739032">Yakin ingin menghapus <ph name="FILE" />?</translation>
@@ -118,6 +119,7 @@
 Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh foto atau video serta deskripsikan masalahnya. (Misalnya, foto terlalu gelap atau subjek tidak berada dalam fokus.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
 <translation id="6527303717912515753">Bagikan</translation>
+<translation id="6617916774429601017">Tampilkan semua resolusi</translation>
 <translation id="6631515515009660915">Cermin nonaktif</translation>
 <translation id="6652737148136672975">Pindahkan posisi pojok dengan tombol panah</translation>
 <translation id="667999046851023355">Dokumen</translation>
@@ -151,6 +153,7 @@ Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh 
 <translation id="8131740175452115882">Konfirmasi</translation>
 <translation id="8145038249676204903">Beralih ke mode mengambil foto</translation>
 <translation id="8167081290930651932">Simpan sebagai Foto</translation>
+<translation id="8236532224592646488">Tombol bisukan nonaktif</translation>
 <translation id="8239780215768881278">Ambil ringkasan video</translation>
 <translation id="8261506727792406068">Hapus</translation>
 <translation id="8425673304802773841">Miringkan ke bawah</translation>

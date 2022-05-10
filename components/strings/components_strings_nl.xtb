@@ -616,7 +616,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="259821504105826686">Fotografie en digitale kunst</translation>
 <translation id="2601150049980261779">Romantische films</translation>
 <translation id="2604589665489080024">Popmuziek</translation>
-<translation id="2609632851001447353">Varianten</translation>
 <translation id="2610561535971892504">Klik om te kopiëren</translation>
 <translation id="2617988307566202237">De volgende gegevens worden <ph name="BEGIN_EMPHASIS" />niet opgeslagen<ph name="END_EMPHASIS" /> in Chrome:
 <ph name="BEGIN_LIST" />
@@ -1094,6 +1093,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> wordt geblokkeerd</translation>
 <translation id="3978338123949022456">Zoekmodus, typ een zoekopdracht en druk op Enter om te zoeken met <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Vogels</translation>
+<translation id="3985750352229496475">Adressen beheren...</translation>
 <translation id="3986705137476756801">Live ondertiteling nu uitzetten</translation>
 <translation id="3987940399970879459">Minder dan 1 MB</translation>
 <translation id="3990250421422698716">Sorteren</translation>
@@ -1221,6 +1221,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4305666528087210886">Je bestand kan niet worden geopend</translation>
 <translation id="4306529830550717874">Adres opslaan?</translation>
 <translation id="4306812610847412719">klembord</translation>
+<translation id="4310070645992025887">Je Trajecten doorzoeken</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokkeren (standaard)</translation>
 <translation id="4314815835985389558">Synchronisatie beheren</translation>
@@ -2104,6 +2105,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6839929833149231406">Gebied</translation>
 <translation id="6846340164947227603">Een virtueel kaartnummer gebruiken…</translation>
 <translation id="6852204201400771460">App opnieuw laden?</translation>
+<translation id="6857776781123259569">Wachtwoorden beheren…</translation>
 <translation id="686485648936420384">Hulpbronnen voor consumenten</translation>
 <translation id="6865412394715372076">Deze pas kan momenteel niet worden geverifieerd</translation>
 <translation id="6869334554832814367">Persoonlijke leningen</translation>
@@ -2430,6 +2432,7 @@ Aanvullende informatie:
 <translation id="7669271284792375604">Cybercriminelen op deze site proberen je mogelijk over te halen om programma's te installeren die schadelijk zijn voor de browsefunctionaliteit (door bijvoorbeeld je homepage te wijzigen of extra advertenties te bekijken op sites die je bezoekt).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Acties ondernomen met gegevens die zijn gemarkeerd als vertrouwelijk (1 actie sinds het inloggen). <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" />}other{Acties ondernomen met gegevens die zijn gemarkeerd als vertrouwelijk (# acties sinds het inloggen). <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Mailbox 6</translation>
+<translation id="7675325315208090829">Betaalmethoden beheren...</translation>
 <translation id="7676643023259824263">Zoeken naar klembordtekst, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Je browsegeschiedenis bekijken en beheren in de Chrome-instellingen</translation>
 <translation id="7679947978757153706">Honkbal</translation>
