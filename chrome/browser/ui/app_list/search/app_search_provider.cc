@@ -36,12 +36,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/app_list/search/app_service_app_result.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_search_result_ranker.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
@@ -55,6 +57,8 @@
 #include "ui/chromeos/devicetype_utils.h"
 
 namespace {
+
+constexpr double kEps = 1e-5;
 
 // The minimum capacity we reserve in the Apps container which will be filled
 // with extensions and ARC apps, to avoid successive reallocation.
@@ -71,9 +75,29 @@ constexpr bool kUseEditDistance = false;
 constexpr double kRelevanceThreshold = 0.32;
 constexpr double kPartialMatchPenaltyRate = 0.9;
 
+// Default recommended apps in descending order of priority.
+constexpr const char* const ranked_default_app_ids[] = {
+    web_app::kOsSettingsAppId, web_app::kHelpAppId, arc::kPlayStoreAppId,
+    web_app::kCanvasAppId, web_app::kCameraAppId};
+
 using chromeos::string_matching::FuzzyTokenizedStringMatch;
 using chromeos::string_matching::TokenizedString;
 using chromeos::string_matching::TokenizedStringMatch;
+
+// A selection of apps are designated as default recommended apps, and these are
+// ranked in a priority order. Determine the rank of the app corresponding to
+// |app_id|.
+//
+// Returns:
+//    The priority rank 0, 1, ... if the app is a default app.
+//    -1 if the app is not a default app.
+int GetDefaultAppRank(const std::string app_id) {
+  for (size_t i = 0; i < std::size(ranked_default_app_ids); ++i) {
+    if (app_id == ranked_default_app_ids[i])
+      return i;
+  }
+  return -1;
+}
 
 // Adds |app_result| to |results| only in case no duplicate apps were already
 // added. Duplicate means the same app but for different domain, Chrome and
@@ -506,6 +530,7 @@ void AppSearchProvider::UpdateRecommendedResults(
         app->data_source()->CreateResult(app->id(), list_controller_, true);
     result->SetTitle(title);
 
+    const int default_rank = GetDefaultAppRank(app->id());
     const auto find_in_app_list = id_to_app_list_index.find(app->id());
     const base::Time time = app->GetLastActivityTime();
 
@@ -517,12 +542,18 @@ void AppSearchProvider::UpdateRecommendedResults(
       // in [0.34, 0.66] based on the time.
       result->UpdateFromLastLaunchedOrInstalledTime(clock_->Now(), time);
       result->set_relevance(ReRange(result->relevance(), 0.34, 0.66));
+    } else if (default_rank != -1) {
+      // Case 2: if it's a default recommended app, set the relevance in (0.33,
+      // 0.34) based on a hard-coded ordering.
+      const double relevance = 0.34 - (kEps * (default_rank + 1));
+      DCHECK(0.33 < relevance && relevance < 0.34);
+      result->set_relevance(relevance);
     } else if (find_in_app_list != id_to_app_list_index.end()) {
-      // Case 2: if it's in the app_list_index, set the relevance in [0.1, 0.33]
+      // Case 3: if it's in the app_list_index, set the relevance in [0.1, 0.33]
       result->set_relevance(
           ReRange(1.0f / (1.0f + find_in_app_list->second), 0.1, 0.33));
     } else {
-      // Case 3: otherwise set the relevance as 0.0f;
+      // Case 4: otherwise set the relevance as 0.0f;
       result->set_relevance(0.0f);
     }
 
