@@ -19,7 +19,7 @@ namespace {
 
 constexpr int kButtonMargin = 2;
 constexpr int kButtonSpacing = 4;
-constexpr int kCornerRadius = 11;
+constexpr int kCornerRadius = 20;
 
 }  // namespace
 
@@ -58,6 +58,12 @@ void DeskActionView::UpdateCombineDesksTooltip(
 
 void DeskActionView::SetCombineDesksButtonVisibility(bool visible) {
   combine_desks_button_->SetVisible(visible);
+
+  // When `combine_desks_button_` is invisible, we want to make sure that there
+  // is no space between the invisible `combine_desks_button_` and the
+  // `close_all_button_`. Otherwise, the desk action view will appear lopsided
+  // when the `combine_desks_button_` isn't visible.
+  SetBetweenChildSpacing(visible ? kButtonSpacing : 0);
 }
 
 BEGIN_METADATA(DeskActionView, views::BoxLayoutView)
