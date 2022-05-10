@@ -197,8 +197,7 @@ base::SharedMemoryMapper* CreateSharedMemoryMapperForArrayBuffers() {
     return &instance;
   else
 #endif
-    // Use nullptr here and let //base select the default mapper.
-    return nullptr;
+    return base::SharedMemoryMapper::GetDefaultInstance();
 }
 }  // namespace
 
