@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -22,6 +23,17 @@
 #endif
 
 namespace {
+
+// The current popup UI variation according to flags.
+PopupUIVariation CurrentPopupUIVariation() {
+  std::string variationName = base::GetFieldTrialParamValueByFeature(
+      kIOSOmniboxUpdatedPopupUI, kIOSOmniboxUpdatedPopupUIVariationName);
+
+  return variationName == kIOSOmniboxUpdatedPopupUIVariation1
+             ? PopupUIVariationOne
+             : PopupUIVariationTwo;
+}
+
 // The color of the main text of a suggest cell.
 UIColor* SuggestionTextColor() {
   return [UIColor colorNamed:kTextPrimaryColor];
@@ -117,10 +129,12 @@ UIColor* DimColorIncognito() {
     // suggestions. For non-search suggestions (URLs), a highlight color is used
     // instead.
     UIColor* suggestionDetailTextColor = nil;
-    if (_match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
-      suggestionDetailTextColor = SuggestionTextColor();
-    } else {
+    if (_match.type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY ||
+        (base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI) &&
+         CurrentPopupUIVariation() == PopupUIVariationTwo)) {
       suggestionDetailTextColor = SuggestionDetailTextColor();
+    } else {
+      suggestionDetailTextColor = SuggestionTextColor();
     }
     DCHECK(suggestionDetailTextColor);
     return [self attributedStringWithString:detailText

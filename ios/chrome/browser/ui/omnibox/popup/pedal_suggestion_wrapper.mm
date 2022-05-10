@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_suggestion_wrapper.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -52,11 +53,21 @@
 }
 
 - (NSAttributedString*)text {
-  return [[NSAttributedString alloc] initWithString:self.innerPedal.title];
+  return [[NSAttributedString alloc]
+      initWithString:self.innerPedal.title
+          attributes:@{
+            NSForegroundColorAttributeName :
+                [UIColor colorNamed:kTextPrimaryColor]
+          }];
 }
 
 - (NSAttributedString*)detailText {
-  return [[NSAttributedString alloc] initWithString:self.innerPedal.subtitle];
+  return [[NSAttributedString alloc]
+      initWithString:self.innerPedal.subtitle
+          attributes:@{
+            NSForegroundColorAttributeName :
+                [UIColor colorNamed:kTextSecondaryColor]
+          }];
 }
 
 - (id<OmniboxIcon>)icon {

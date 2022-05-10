@@ -126,7 +126,7 @@ struct PopupMatchRowView: View {
 
       button
 
-      let highlightColor = isHighlighted ? foregroundColorPrimary : nil
+      let highlightColor = isHighlighted ? Color.white : nil
 
       // The content is in front of the button, for proper hit testing.
       HStack(alignment: .center, spacing: 0) {
@@ -155,7 +155,6 @@ struct PopupMatchRowView: View {
               if match.hasAnswer {
                 OmniboxText(subtitle, highlightColor: highlightColor)
                   .font(.footnote)
-                  .foregroundColor(foregroundColorSecondary)
                   .lineLimit(match.numberOfLines)
                   .accessibilityHidden(true)
               } else {
@@ -163,7 +162,6 @@ struct PopupMatchRowView: View {
                   subtitle, highlightColor: highlightColor
                 )
                 .font(.footnote)
-                .foregroundColor(foregroundColorSecondary)
                 .lineLimit(1)
                 .accessibilityHidden(true)
               }
@@ -174,7 +172,7 @@ struct PopupMatchRowView: View {
         Spacer(minLength: 0)
         if match.isAppendable || match.isTabMatch {
           PopupMatchTrailingButton(match: match, action: trailingButtonHandler)
-            .foregroundColor(isHighlighted ? foregroundColorPrimary : .chromeBlue)
+            .foregroundColor(isHighlighted ? highlightColor : .chromeBlue)
             .environment(\.layoutDirection, layoutDirection)
         }
         Color.clear.frame(width: omniboxTrailingSpace)
@@ -193,22 +191,6 @@ struct PopupMatchRowView: View {
       return Color(toolbarConfiguration.backgroundColor)
     case .two:
       return .groupedSecondaryBackground
-    }
-  }
-
-  var foregroundColorPrimary: Color {
-    if isHighlighted {
-      return .white
-    } else {
-      return .black
-    }
-  }
-
-  var foregroundColorSecondary: Color {
-    if isHighlighted {
-      return .white
-    } else {
-      return .gray
     }
   }
 }
