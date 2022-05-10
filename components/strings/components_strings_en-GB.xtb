@@ -423,7 +423,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="205212645995975601">BBQ and grilling</translation>
 <translation id="2053111141626950936">Pages in <ph name="LANGUAGE" /> will not be translated.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{When this control is on and the status is active, Chrome determines which large group of people, or 'cohort', your recent browsing activity is most similar to. Advertisers can select ads for the group, and your browsing activity is kept private on your device. Your group is updated every day.}=1{When this control is on and the status is active, Chrome determines which large group of people, or 'cohort', your recent browsing activity is most similar to. Advertisers can select ads for the group, and your browsing activity is kept private on your device. Your group is updated every day.}other{When this control is on and the status is active, Chrome determines which large group of people, or 'cohort', your recent browsing activity is most similar to. Advertisers can select ads for the group, and your browsing activity is kept private on your device. Your group is updated every {NUM_DAYS} days.}}</translation>
-<translation id="2053553514270667976">ZIP code</translation>
+<translation id="2053553514270667976">Postcode</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggestion}other{# suggestions}}</translation>
 <translation id="2068528718802935086">Babies and toddlers</translation>
 <translation id="2071156619270205202">This card is not eligible for virtual card number.</translation>
