@@ -216,6 +216,9 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
     return static_cast<AshNotificationView*>(
         view->grouped_notifications_container_->children().front());
   }
+  std::vector<views::View*> GetChildNotifications(AshNotificationView* view) {
+    return view->grouped_notifications_container_->children();
+  }
   views::View* GetMainView(AshNotificationView* view) {
     return view->main_view_;
   }
@@ -491,6 +494,50 @@ TEST_F(AshNotificationViewTest, GroupedNotificationChildIcon) {
   notification_view()->UpdateWithNotification(*notification.get());
 }
 
+TEST_F(AshNotificationViewTest,
+       GroupedNotificationExpandCollapseStateVisibility) {
+  auto notification = CreateTestNotification();
+  notification_view()->UpdateWithNotification(*notification);
+  MakeNotificationGroupParent(
+      notification_view(),
+      4 * message_center_style::kMaxGroupedNotificationsInCollapsedState);
+
+  // Only the first `kMaxGroupedNotificationsInCollapsedState` grouped
+  // notifications should be visible in the collapsed state.
+  int counter = 0;
+  for (auto* child : GetChildNotifications(notification_view())) {
+    if (counter <
+        message_center_style::kMaxGroupedNotificationsInCollapsedState) {
+      EXPECT_TRUE(child->GetVisible());
+    } else {
+      EXPECT_FALSE(child->GetVisible());
+    }
+    counter++;
+  }
+
+  // All grouped notifications should be visible once the parent is expanded.
+  notification_view()->SetExpanded(true);
+  for (auto* child : GetChildNotifications(notification_view())) {
+    EXPECT_TRUE(child->GetVisible());
+  }
+
+  notification_view()->SetExpanded(false);
+
+  // Going back to collapsed state only the first
+  // `kMaxGroupedNotificationsInCollapsedState` grouped notifications should be
+  // visible.
+  counter = 0;
+  for (auto* child : GetChildNotifications(notification_view())) {
+    if (counter <
+        message_center_style::kMaxGroupedNotificationsInCollapsedState) {
+      EXPECT_TRUE(child->GetVisible());
+    } else {
+      EXPECT_FALSE(child->GetVisible());
+    }
+    counter++;
+  }
+}
+
 TEST_F(AshNotificationViewTest, ExpandButtonVisibility) {
   // Expand button should be shown in any type of notification and hidden in
   // inline settings UI.
@@ -613,7 +660,6 @@ TEST_F(AshNotificationViewTest, AppIconAndExpandButtonAlignment) {
             expand_button()->GetBoundsInScreen().y());
   EXPECT_EQ(app_icon_view()->GetBoundsInScreen().y(),
             GetHeaderRow(notification_view())->GetBoundsInScreen().y());
-
 }
 
 TEST_F(AshNotificationViewTest, ExpandCollapseAnimationsRecordSmoothness) {

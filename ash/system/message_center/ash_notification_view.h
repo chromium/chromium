@@ -186,6 +186,11 @@ class ASH_EXPORT AshNotificationView
   void CreateOrUpdateSnoozeButton(
       const message_center::Notification& notification);
 
+  // Update visibility for grouped notifications to ensure only
+  // `kMaxGroupedNotificationsInCollapsedState` are visible in the collapsed
+  // state.
+  void UpdateGroupedNotificationsVisibility();
+
   // Update `message_in_expanded_view_` according to the given notification.
   void UpdateMessageLabelInExpandedState(
       const message_center::Notification& notification);

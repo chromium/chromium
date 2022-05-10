@@ -666,10 +666,6 @@ void AshNotificationView::AddGroupNotification(
   auto notification_view =
       std::make_unique<AshNotificationView>(notification,
                                             /*shown_in_popup=*/false);
-  notification_view->SetVisible(
-      total_grouped_notifications_ <
-          message_center_style::kMaxGroupedNotificationsInCollapsedState ||
-      IsExpanded());
   notification_view->SetGroupedChildExpanded(IsExpanded());
   notification_view->set_scroller(
       scroller() ? scroller() : grouped_notifications_scroll_view_);
@@ -679,6 +675,7 @@ void AshNotificationView::AddGroupNotification(
 
   total_grouped_notifications_++;
   left_content_->SetVisible(false);
+  UpdateGroupedNotificationsVisibility();
   expand_button_->UpdateGroupedNotificationsCount(total_grouped_notifications_);
   PreferredSizeChanged();
 }
@@ -722,6 +719,7 @@ void AshNotificationView::RemoveGroupNotification(
   grouped_notifications_container_->RemoveChildViewT(to_be_deleted);
   total_grouped_notifications_--;
   left_content_->SetVisible(total_grouped_notifications_ == 0);
+  UpdateGroupedNotificationsVisibility();
   expand_button_->UpdateGroupedNotificationsCount(total_grouped_notifications_);
   PreferredSizeChanged();
 }
@@ -1172,6 +1170,21 @@ void AshNotificationView::CreateOrUpdateSnoozeButton(
       IconButton::Type::kSmallFloating, &kNotificationSnoozeButtonIcon,
       IDS_MESSAGE_CENTER_NOTIFICATION_SNOOZE_BUTTON_TOOLTIP);
   snooze_button_ = action_buttons_row()->AddChildView(std::move(snooze_button));
+}
+
+void AshNotificationView::UpdateGroupedNotificationsVisibility() {
+  for (size_t i = 0; i < grouped_notifications_container_->children().size();
+       i++) {
+    auto* view = grouped_notifications_container_->children()[i];
+    bool show_notification_view =
+        IsExpanded() ||
+        i < message_center_style::kMaxGroupedNotificationsInCollapsedState;
+
+    if (view->GetVisible() == show_notification_view)
+      continue;
+
+    view->SetVisible(show_notification_view);
+  }
 }
 
 void AshNotificationView::UpdateMessageLabelInExpandedState(
