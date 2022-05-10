@@ -1295,6 +1295,11 @@ interface Functions {
   static void addMount(DOMString source, optional DOMString password,
                        AddMountCallback callback);
 
+  // Cancels an archive mounting operation.
+  // |source| Mount point source. It is the relative file path within the
+  //     external file system.
+  static void cancelMounting(DOMString source, SimpleCallback callback);
+
   // Unmounts a mounted resource.
   // |volumeId| An ID of the volume.
   static void removeMount(DOMString volumeId);

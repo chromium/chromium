@@ -112,9 +112,10 @@ class EventRouter
                      int64_t space_needed);
 
   // Called when a copy task is completed.
-  void OnCopyCompleted(
-      int copy_id, const GURL& source_url, const GURL& destination_url,
-      base::File::Error error);
+  void OnCopyCompleted(int copy_id,
+                       const GURL& source_url,
+                       const GURL& destination_url,
+                       base::File::Error error);
 
   // Called when a copy task progress is updated.
   void OnCopyProgress(int copy_id,
@@ -294,6 +295,9 @@ class EventRouter
   // invalidate the weak pointers before any other members are destroyed.
   base::WeakPtrFactory<EventRouter> weak_factory_{this};
 };
+
+file_manager_private::MountCompletedStatus MountErrorToMountCompletedStatus(
+    chromeos::MountError error);
 
 }  // namespace file_manager
 

@@ -140,69 +140,6 @@ void DispatchEventToExtension(
                         histogram_value, event_name, std::move(event_args)));
 }
 
-file_manager_private::MountCompletedStatus
-MountErrorToMountCompletedStatus(chromeos::MountError error) {
-  switch (error) {
-    case chromeos::MOUNT_ERROR_NONE:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS;
-    case chromeos::MOUNT_ERROR_UNKNOWN:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_UNKNOWN;
-    case chromeos::MOUNT_ERROR_INTERNAL:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_INTERNAL;
-    case chromeos::MOUNT_ERROR_INVALID_ARGUMENT:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_INVALID_ARGUMENT;
-    case chromeos::MOUNT_ERROR_INVALID_PATH:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_INVALID_PATH;
-    case chromeos::MOUNT_ERROR_PATH_ALREADY_MOUNTED:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_PATH_ALREADY_MOUNTED;
-    case chromeos::MOUNT_ERROR_PATH_NOT_MOUNTED:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_PATH_NOT_MOUNTED;
-    case chromeos::MOUNT_ERROR_DIRECTORY_CREATION_FAILED:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_DIRECTORY_CREATION_FAILED;
-    case chromeos::MOUNT_ERROR_INVALID_MOUNT_OPTIONS:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_INVALID_MOUNT_OPTIONS;
-    case chromeos::MOUNT_ERROR_INVALID_UNMOUNT_OPTIONS:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_INVALID_UNMOUNT_OPTIONS;
-    case chromeos::MOUNT_ERROR_INSUFFICIENT_PERMISSIONS:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_INSUFFICIENT_PERMISSIONS;
-    case chromeos::MOUNT_ERROR_MOUNT_PROGRAM_NOT_FOUND:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_MOUNT_PROGRAM_NOT_FOUND;
-    case chromeos::MOUNT_ERROR_MOUNT_PROGRAM_FAILED:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_MOUNT_PROGRAM_FAILED;
-    case chromeos::MOUNT_ERROR_INVALID_DEVICE_PATH:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_INVALID_DEVICE_PATH;
-    case chromeos::MOUNT_ERROR_UNKNOWN_FILESYSTEM:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_UNKNOWN_FILESYSTEM;
-    case chromeos::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_UNSUPPORTED_FILESYSTEM;
-    case chromeos::MOUNT_ERROR_INVALID_ARCHIVE:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_INVALID_ARCHIVE;
-    case chromeos::MOUNT_ERROR_NEED_PASSWORD:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_NEED_PASSWORD;
-    case chromeos::MOUNT_ERROR_IN_PROGRESS:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_IN_PROGRESS;
-    case chromeos::MOUNT_ERROR_CANCELLED:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_CANCELLED;
-    // Not a real error.
-    case chromeos::MOUNT_ERROR_COUNT:
-      NOTREACHED();
-  }
-  NOTREACHED();
-  return file_manager_private::MOUNT_COMPLETED_STATUS_NONE;
-}
-
 file_manager_private::CopyOrMoveProgressStatusType
 CopyOrMoveProgressTypeToCopyOrMoveProgressStatusType(
     FileManagerCopyOrMoveHookDelegate::ProgressType type) {
@@ -511,6 +448,69 @@ void RecordFileSystemProviderMountMetrics(const Volume& volume) {
 }
 
 }  // namespace
+
+file_manager_private::MountCompletedStatus MountErrorToMountCompletedStatus(
+    chromeos::MountError error) {
+  switch (error) {
+    case chromeos::MOUNT_ERROR_NONE:
+      return file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS;
+    case chromeos::MOUNT_ERROR_UNKNOWN:
+      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_UNKNOWN;
+    case chromeos::MOUNT_ERROR_INTERNAL:
+      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_INTERNAL;
+    case chromeos::MOUNT_ERROR_INVALID_ARGUMENT:
+      return file_manager_private::
+          MOUNT_COMPLETED_STATUS_ERROR_INVALID_ARGUMENT;
+    case chromeos::MOUNT_ERROR_INVALID_PATH:
+      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_INVALID_PATH;
+    case chromeos::MOUNT_ERROR_PATH_ALREADY_MOUNTED:
+      return file_manager_private::
+          MOUNT_COMPLETED_STATUS_ERROR_PATH_ALREADY_MOUNTED;
+    case chromeos::MOUNT_ERROR_PATH_NOT_MOUNTED:
+      return file_manager_private::
+          MOUNT_COMPLETED_STATUS_ERROR_PATH_NOT_MOUNTED;
+    case chromeos::MOUNT_ERROR_DIRECTORY_CREATION_FAILED:
+      return file_manager_private::
+          MOUNT_COMPLETED_STATUS_ERROR_DIRECTORY_CREATION_FAILED;
+    case chromeos::MOUNT_ERROR_INVALID_MOUNT_OPTIONS:
+      return file_manager_private::
+          MOUNT_COMPLETED_STATUS_ERROR_INVALID_MOUNT_OPTIONS;
+    case chromeos::MOUNT_ERROR_INVALID_UNMOUNT_OPTIONS:
+      return file_manager_private::
+          MOUNT_COMPLETED_STATUS_ERROR_INVALID_UNMOUNT_OPTIONS;
+    case chromeos::MOUNT_ERROR_INSUFFICIENT_PERMISSIONS:
+      return file_manager_private::
+          MOUNT_COMPLETED_STATUS_ERROR_INSUFFICIENT_PERMISSIONS;
+    case chromeos::MOUNT_ERROR_MOUNT_PROGRAM_NOT_FOUND:
+      return file_manager_private::
+          MOUNT_COMPLETED_STATUS_ERROR_MOUNT_PROGRAM_NOT_FOUND;
+    case chromeos::MOUNT_ERROR_MOUNT_PROGRAM_FAILED:
+      return file_manager_private::
+          MOUNT_COMPLETED_STATUS_ERROR_MOUNT_PROGRAM_FAILED;
+    case chromeos::MOUNT_ERROR_INVALID_DEVICE_PATH:
+      return file_manager_private::
+          MOUNT_COMPLETED_STATUS_ERROR_INVALID_DEVICE_PATH;
+    case chromeos::MOUNT_ERROR_UNKNOWN_FILESYSTEM:
+      return file_manager_private::
+          MOUNT_COMPLETED_STATUS_ERROR_UNKNOWN_FILESYSTEM;
+    case chromeos::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM:
+      return file_manager_private::
+          MOUNT_COMPLETED_STATUS_ERROR_UNSUPPORTED_FILESYSTEM;
+    case chromeos::MOUNT_ERROR_INVALID_ARCHIVE:
+      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_INVALID_ARCHIVE;
+    case chromeos::MOUNT_ERROR_NEED_PASSWORD:
+      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_NEED_PASSWORD;
+    case chromeos::MOUNT_ERROR_IN_PROGRESS:
+      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_IN_PROGRESS;
+    case chromeos::MOUNT_ERROR_CANCELLED:
+      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_CANCELLED;
+    // Not a real error.
+    case chromeos::MOUNT_ERROR_COUNT:
+      NOTREACHED();
+  }
+  NOTREACHED();
+  return file_manager_private::MOUNT_COMPLETED_STATUS_NONE;
+}
 
 EventRouter::EventRouter(Profile* profile)
     : pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()),

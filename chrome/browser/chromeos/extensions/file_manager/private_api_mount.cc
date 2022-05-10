@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
+#include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
@@ -121,6 +122,55 @@ void FileManagerPrivateAddMountFunction::FinishMounting() {
       path_.BaseName().AsUTF8Unsafe(), std::move(options_),
       chromeos::MOUNT_TYPE_ARCHIVE, chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
       base::DoNothing());
+}
+
+FileManagerPrivateCancelMountingFunction::
+    FileManagerPrivateCancelMountingFunction() = default;
+
+FileManagerPrivateCancelMountingFunction::
+    ~FileManagerPrivateCancelMountingFunction() = default;
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateCancelMountingFunction::Run() {
+  using file_manager_private::CancelMounting::Params;
+  const std::unique_ptr<Params> params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
+
+  drive::EventLogger* logger = file_manager::util::GetLogger(profile);
+  if (logger) {
+    logger->Log(logging::LOG_INFO, "%s[%d] called. (source: '%s')", name(),
+                request_id(),
+                params->source.empty() ? "(none)" : params->source.c_str());
+  }
+  set_log_on_completion(true);
+
+  if (params->source.empty())
+    return RespondNow(Error("Invalid path"));
+
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  base::FilePath path = file_manager::util::GetLocalPathFromURL(
+      render_frame_host(), profile, GURL(params->source));
+
+  DiskMountManager* const disk_mount_manager = DiskMountManager::GetInstance();
+  DCHECK(disk_mount_manager);
+  disk_mount_manager->UnmountPath(
+      path.AsUTF8Unsafe(),
+      base::BindOnce(&FileManagerPrivateCancelMountingFunction::OnCancelled,
+                     this));
+
+  return RespondLater();
+}
+
+void FileManagerPrivateCancelMountingFunction::OnCancelled(
+    chromeos::MountError error) {
+  if (error == chromeos::MOUNT_ERROR_NONE) {
+    return Respond(NoArguments());
+  }
+  return Respond(Error(file_manager_private::ToString(
+      file_manager::MountErrorToMountCompletedStatus(error))));
 }
 
 ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
