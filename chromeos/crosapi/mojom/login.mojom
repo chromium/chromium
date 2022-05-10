@@ -38,14 +38,6 @@ interface ExternalLogoutRequestObserver {
 // Next MinVersion: 4
 [Stable, Uuid="639e9f04-981f-46d1-91da-583c2958265b"]
 interface Login {
-  // Launches a managed guest session if one is set up via the admin console.
-  // If there are several managed guest sessions set up, it will launch the
-  // first available one.
-  // If a password is provided, the Managed Guest Session will be lockable and
-  // can be unlocked by providing the same password to
-  // |UnlockManagedGuestSession()|.
-  LaunchManagedGuestSession@0(string? password) => (string? error);
-
   // Exits the current session. If |data_for_next_login_attempt| is provided,
   // stores data which can be read by |FetchDataForNextLoginAttempt()|.
   ExitCurrentSession@1(string? data_for_next_login_attempt) => (string? error);
@@ -58,29 +50,6 @@ interface Login {
   // Deprecated. Use |LockCurrentSession()| below.
   LockManagedGuestSession@3() => (string? error);
 
-  // Deprecated. Use |UnlockCurrentSession()| below.
-  UnlockManagedGuestSession@4(string password) => (string? error);
-
-  // Starts a ChromeOS Managed Guest Session which will host the shared user
-  // sessions. An initial shared session is entered with |password| as the
-  // password. When this shared session is locked, it can only be unlocked by
-  // calling |UnlockSharedSession()| with the same password.
-  LaunchSharedManagedGuestSession@5(string password) => (string? error);
-
-  // Enters the shared session with the given password. If the session is
-  // locked, it can only be unlocked by calling |UnlockSharedSession()| with
-  // the same password.
-  // Fails if  there is already a shared session running. Can only be called
-  // from the lock screen.
-  EnterSharedSession@6(string password) => (string? error);
-
-  // Unlocks the shared session with the provided password. Fails if the
-  // password does not match the one provided to
-  // |LaunchSharedManagedGuestSession()| or |EnterSharedSession()|.
-  // Fails if  there is no existing shared session. Can only be called from the
-  // lock screen.
-  UnlockSharedSession@7(string password) => (string? error);
-
   // Ends the shared session. Security- and privacy-sensitive data in the
   // session will be cleaned up on a best effort basis.
   // Can be called from both the lock screen or in session.
@@ -91,24 +60,11 @@ interface Login {
   // calling |FetchDataForNextLoginAttempt()|.
   SetDataForNextLoginAttempt@9(string data_for_next_login_attempt) => ();
 
-  // Launches a SAML user session with the provided email, gaiaId, password
-  // and oauth_code cookie.
-  [MinVersion=1]
-  LaunchSamlUserSession@10(SamlUserSessionProperties properties) =>
-      (string? error);
-
   // Locks the current session. The session has to be either a user session or a
   // Managed Guest Session launched by |LaunchManagedGuestSession()| with a
   // password.
   [MinVersion=1]
   LockCurrentSession@11() => (string? error);
-
-  // Unlocks the current session. The session has to be either a user session or
-  // a Managed Guest Session launched by |LaunchManagedGuestSession()| with a
-  // password. The session will unlock if |password| matches the one provided
-  // to at launch.
-  [MinVersion=1]
-  UnlockCurrentSession@12(string password) => (string? error);
 
   // Adds an observer for the cleanup triggered event.
   [MinVersion=2]
@@ -126,4 +82,16 @@ interface Login {
   // lock screen (ash-chrome) listens for the dispatched event.
   [MinVersion=3]
   NotifyOnExternalLogoutDone@16();
+
+  // Removed methods.
+  REMOVED_0@0(string? password) => (string? error);
+  REMOVED_4@4(string password) => (string? error);
+  REMOVED_5@5(string password) => (string? error);
+  REMOVED_6@6(string password) => (string? error);
+  REMOVED_7@7(string password) => (string? error);
+  [MinVersion=1]
+  REMOVED_10@10(SamlUserSessionProperties properties) =>
+      (string? error);
+  [MinVersion=1]
+  REMOVED_12@12(string password) => (string? error);
 };

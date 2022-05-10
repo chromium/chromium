@@ -27,13 +27,19 @@ namespace extensions {
 
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+crosapi::LoginAsh* GetLoginApiAsh() {
+  return crosapi::CrosapiManager::Get()->crosapi_ash()->login_ash();
+}
+#endif
+
 crosapi::mojom::Login* GetLoginApi() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::LacrosService::Get()
       ->GetRemote<crosapi::mojom::Login>()
       .get();
 #else
-  return crosapi::CrosapiManager::Get()->crosapi_ash()->login_ash();
+  return GetLoginApiAsh();
 #endif
 }
 
@@ -110,7 +116,7 @@ LoginLaunchManagedGuestSessionFunction::Run() {
   if (parameters->password) {
     password = std::move(*parameters->password);
   }
-  GetLoginApi()->LaunchManagedGuestSession(password, std::move(callback));
+  GetLoginApiAsh()->LaunchManagedGuestSession(password, std::move(callback));
   return did_respond() ? AlreadyResponded() : RespondLater();
 #endif
 }
@@ -200,8 +206,8 @@ LoginUnlockManagedGuestSessionFunction::Run() {
   auto callback =
       base::BindOnce(&LoginUnlockManagedGuestSessionFunction::OnResult, this);
 
-  GetLoginApi()->UnlockManagedGuestSession(parameters->password,
-                                           std::move(callback));
+  GetLoginApiAsh()->UnlockManagedGuestSession(parameters->password,
+                                              std::move(callback));
   return did_respond() ? AlreadyResponded() : RespondLater();
 #endif
 }
@@ -240,8 +246,8 @@ ExtensionFunction::ResponseAction LoginUnlockCurrentSessionFunction::Run() {
   auto callback =
       base::BindOnce(&LoginUnlockCurrentSessionFunction::OnResult, this);
 
-  GetLoginApi()->UnlockCurrentSession(parameters->password,
-                                      std::move(callback));
+  GetLoginApiAsh()->UnlockCurrentSession(parameters->password,
+                                         std::move(callback));
   return RespondLater();
 #endif
 }
@@ -261,11 +267,10 @@ ExtensionFunction::ResponseAction LoginLaunchSamlUserSessionFunction::Run() {
   auto callback =
       base::BindOnce(&LoginLaunchSamlUserSessionFunction::OnResult, this);
 
-  auto properties = crosapi::mojom::SamlUserSessionProperties::New(
+  GetLoginApiAsh()->LaunchSamlUserSession(
       parameters->properties.email, parameters->properties.gaia_id,
-      parameters->properties.password, parameters->properties.oauth_code);
-  GetLoginApi()->LaunchSamlUserSession(std::move(properties),
-                                       std::move(callback));
+      parameters->properties.password, parameters->properties.oauth_code,
+      std::move(callback));
   return RespondLater();
 #endif
 }
@@ -287,8 +292,8 @@ LoginLaunchSharedManagedGuestSessionFunction::Run() {
   auto callback = base::BindOnce(
       &LoginLaunchSharedManagedGuestSessionFunction::OnResult, this);
 
-  GetLoginApi()->LaunchSharedManagedGuestSession(parameters->password,
-                                                 std::move(callback));
+  GetLoginApiAsh()->LaunchSharedManagedGuestSession(parameters->password,
+                                                    std::move(callback));
   return did_respond() ? AlreadyResponded() : RespondLater();
 #endif
 }
@@ -306,7 +311,8 @@ ExtensionFunction::ResponseAction LoginEnterSharedSessionFunction::Run() {
   auto callback =
       base::BindOnce(&LoginEnterSharedSessionFunction::OnResult, this);
 
-  GetLoginApi()->EnterSharedSession(parameters->password, std::move(callback));
+  GetLoginApiAsh()->EnterSharedSession(parameters->password,
+                                       std::move(callback));
   return did_respond() ? AlreadyResponded() : RespondLater();
 #endif
 }
@@ -324,7 +330,8 @@ ExtensionFunction::ResponseAction LoginUnlockSharedSessionFunction::Run() {
   auto callback =
       base::BindOnce(&LoginUnlockSharedSessionFunction::OnResult, this);
 
-  GetLoginApi()->UnlockSharedSession(parameters->password, std::move(callback));
+  GetLoginApiAsh()->UnlockSharedSession(parameters->password,
+                                        std::move(callback));
   return did_respond() ? AlreadyResponded() : RespondLater();
 #endif
 }
@@ -381,10 +388,7 @@ ExtensionFunction::ResponseAction LoginRequestExternalLogoutFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return RespondNow(Error(kCannotBeCalledFromLacros));
 #else
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->login_ash()
-      ->NotifyOnRequestExternalLogout();
+  GetLoginApiAsh()->NotifyOnRequestExternalLogout();
 
   return RespondNow(NoArguments());
 #endif
