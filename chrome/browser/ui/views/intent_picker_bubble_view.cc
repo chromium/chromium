@@ -133,24 +133,11 @@ views::Widget* IntentPickerBubbleView::ShowBubble(
   intent_picker_bubble_->Initialize();
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(intent_picker_bubble_);
-  // TODO(aleventhal) Should not need to be focusable as only descendant widgets
-  // are interactive; however, it does call RequestFocus(). If it is going to be
-  // focusable, it needs an accessible name so that it can pass accessibility
-  // checks. Use the same accessible name as the icon. Set the role as kDialog
-  // to ensure screen readers immediately announce the text of this view.
-  intent_picker_bubble_->GetViewAccessibility().OverrideRole(
-      ax::mojom::Role::kDialog);
+
   if (bubble_type == BubbleType::kClickToCall) {
-    intent_picker_bubble_->GetViewAccessibility().OverrideName(
-        l10n_util::GetStringUTF16(
-            IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TITLE_LABEL));
     ClickToCallUiController::GetOrCreateFromWebContents(web_contents)
         ->ClearLastDialog();
-  } else {
-    intent_picker_bubble_->GetViewAccessibility().OverrideName(
-        l10n_util::GetStringUTF16(IDS_TOOLTIP_INTENT_PICKER_ICON));
   }
-  intent_picker_bubble_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 
   DCHECK(intent_picker_bubble_->HasCandidates());
   widget->Show();
@@ -266,7 +253,6 @@ void IntentPickerBubbleView::OnWidgetDestroying(views::Widget* widget) {
 void IntentPickerBubbleView::AppButtonPressed(size_t index,
                                               const ui::Event& event) {
   SetSelectedAppIndex(index, &event);
-  RequestFocus();
   if ((event.IsMouseEvent() && event.AsMouseEvent()->GetClickCount() == 2) ||
       (event.IsGestureEvent() &&
        event.AsGestureEvent()->details().tap_count() == 2)) {
