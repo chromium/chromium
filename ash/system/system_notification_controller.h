@@ -15,6 +15,7 @@ class CapsLockNotificationController;
 class GestureEducationNotificationController;
 class CastNotificationController;
 class CellularSetupNotifier;
+class ManagedSimLockNotifier;
 class MicrophoneMuteNotificationController;
 class PowerNotificationController;
 class ScreenSecurityNotificationController;
@@ -37,6 +38,7 @@ class SystemNotificationController {
  private:
   friend class AutoConnectNotifierTest;
   friend class CellularSetupNotifierTest;
+  friend class ManagedSimLockNotifier;
   friend class UpdateNotificationControllerTest;
   const std::unique_ptr<AutoConnectNotifier> auto_connect_;
   const std::unique_ptr<CapsLockNotificationController> caps_lock_;
@@ -44,6 +46,8 @@ class SystemNotificationController {
   const std::unique_ptr<CellularSetupNotifier> cellular_setup_notifier_;
   const std::unique_ptr<GestureEducationNotificationController>
       gesture_education_;
+  // TODO(b/228093904): Make |managed_sim_lock_notifier_| const during cleanup.
+  std::unique_ptr<ManagedSimLockNotifier> managed_sim_lock_notifier_;
   std::unique_ptr<MicrophoneMuteNotificationController> microphone_mute_;
   const std::unique_ptr<PowerNotificationController> power_;
   const std::unique_ptr<ScreenSecurityNotificationController> screen_security_;

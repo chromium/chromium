@@ -11,6 +11,7 @@
 #include "ash/system/microphone_mute/microphone_mute_notification_controller.h"
 #include "ash/system/network/auto_connect_notifier.h"
 #include "ash/system/network/cellular_setup_notifier.h"
+#include "ash/system/network/managed_sim_lock_notifier.h"
 #include "ash/system/network/wifi_toggle_notification_controller.h"
 #include "ash/system/power/power_notification_controller.h"
 #include "ash/system/screen_security/screen_security_notification_controller.h"
@@ -38,6 +39,11 @@ SystemNotificationController::SystemNotificationController()
       wifi_toggle_(std::make_unique<WifiToggleNotificationController>()) {
   if (features::IsMicMuteNotificationsEnabled()) {
     microphone_mute_ = std::make_unique<MicrophoneMuteNotificationController>();
+  }
+
+  if (features::IsSimLockPolicyEnabled()) {
+    managed_sim_lock_notifier_ =
+        std::make_unique<ash::ManagedSimLockNotifier>();
   }
 }
 

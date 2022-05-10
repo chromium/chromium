@@ -2111,6 +2111,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_NETWORK_CELLULAR_SETUP_NOTIFICATION_MESSAGE" desc="Message displayed in the system notification shown post-OOBE if a user has no activated mobile networks.">
         Tap to complete set up
       </message>
+      <message name="IDS_ASH_NETWORK_MANAGED_SIM_LOCK_NOTIFICATION_TITLE" desc="Title used for the system notification shown when the active SIM is locked when it is enterprise policy restricted.">
+        Disable your SIM Lock setting
+      </message>
+      <message name="IDS_ASH_NETWORK_MANAGED_SIM_LOCK_NOTIFICATION_MESSAGE" desc="Message displayed in the system notification shown when the active SIM is locked when it is enterprise policy restricted.">
+        Your administrator is requesting that you turn off the Lock SIM setting
+      </message>
       <message name="IDS_ASH_NETWORK_RESET_EUICC_NOTIFICATION_TITLE" desc="Title used for the system notification shown when the reset euicc operation is initiated.">
         eSIM connection unavailable
       </message>
