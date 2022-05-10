@@ -3405,12 +3405,6 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
     return nullptr;
   }
 
-  if (ElementAnimations* element_animations = GetElementAnimations()) {
-    // See also PostStyleUpdateScope.
-    if (!RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled())
-      element_animations->CssAnimations().MaybeApplyPendingUpdate(this);
-  }
-
   style->UpdateIsStackingContextWithoutContainment(
       this == GetDocument().documentElement(), IsInTopLayer(),
       IsA<SVGForeignObjectElement>(*this));

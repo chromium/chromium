@@ -1494,10 +1494,8 @@ void CSSAnimations::CalculateTransitionUpdate(CSSAnimationUpdate& update,
   bool any_transition_had_transition_all = false;
   const ComputedStyle* old_style = animating_element.GetComputedStyle();
 
-  if (RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled()) {
-    if (auto* data = PostStyleUpdateScope::CurrentAnimationData())
-      old_style = data->GetOldStyle(animating_element);
-  }
+  if (auto* data = PostStyleUpdateScope::CurrentAnimationData())
+    old_style = data->GetOldStyle(animating_element);
 
   if (!animation_style_recalc && style.Display() != EDisplay::kNone &&
       old_style && !old_style->IsEnsuredInDisplayNone()) {

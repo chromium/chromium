@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -19,8 +18,6 @@ PostStyleUpdateScope* PostStyleUpdateScope::current_ = nullptr;
 
 PostStyleUpdateScope::AnimationData*
 PostStyleUpdateScope::CurrentAnimationData() {
-  if (!RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled())
-    return nullptr;
   return current_ ? &current_->animation_data_ : nullptr;
 }
 
@@ -32,8 +29,7 @@ PostStyleUpdateScope::PostStyleUpdateScope(Document& document)
 
 PostStyleUpdateScope::~PostStyleUpdateScope() {
   if (current_ == this) {
-    if (RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled())
-      Apply();
+    Apply();
     document_.ClearFocusedElementIfNeeded();
     current_ = nullptr;
   }
