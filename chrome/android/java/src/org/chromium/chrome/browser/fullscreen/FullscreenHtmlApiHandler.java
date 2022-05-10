@@ -451,6 +451,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
      * @return An observable supplier that determines whether the app is in persistent fullscreen
      *         mode.
      */
+    @Override
     public ObservableSupplier<Boolean> getPersistentFullscreenModeSupplier() {
         return mPersistentModeSupplier;
     }

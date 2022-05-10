@@ -114,6 +114,7 @@ import org.chromium.chrome.browser.flags.ChromeSessionState;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
+import org.chromium.chrome.browser.fullscreen.FullscreenBackPressHandler;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.gsa.ContextReporter;
 import org.chromium.chrome.browser.gsa.GSAAccountChangeListener;
@@ -202,6 +203,7 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
@@ -2331,8 +2333,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return;
         }
 
-        if (!BackPressManager.isEnabled() && getManualFillingComponent().onBackPressed()) {
-            return;
+        if (!BackPressManager.isEnabled()) {
+            if (getManualFillingComponent().onBackPressed()) return;
+
+            if (exitFullscreenIfShowing()) return;
         }
 
         handleBackPressed();
@@ -2364,6 +2368,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             if (ArDelegateProvider.getDelegate() != null) {
                 mBackPressManager.addHandler(ArDelegateProvider.getDelegate(), Type.AR_DELEGATE);
             }
+
+            mBrowserControlsManagerSupplier.addObserver((controlManager) -> {
+                assert !mBackPressManager.has(Type.FULLSCREEN)
+                    : "BrowserControlManager should be set at most once";
+                mBackPressManager.addHandler(
+                        new FullscreenBackPressHandler(controlManager.getFullscreenManager()),
+                        BackPressHandler.Type.FULLSCREEN);
+            });
         }
     }
 

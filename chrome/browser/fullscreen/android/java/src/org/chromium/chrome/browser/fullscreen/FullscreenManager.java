@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.fullscreen;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
@@ -42,6 +43,11 @@ public interface FullscreenManager {
      * @return Whether the application is in persistent fullscreen mode.
      */
     boolean getPersistentFullscreenMode();
+
+    /**
+     * @return Supplier of whether the activity is in persistent fullscreen mode.
+     */
+    ObservableSupplier<Boolean> getPersistentFullscreenModeSupplier();
 
     /**
      * Exits persistent fullscreen mode.  In this mode, the browser controls will be
