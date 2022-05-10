@@ -53,36 +53,45 @@ class XvfbLinuxTest(unittest.TestCase):
     super(XvfbLinuxTest, self).setUp()
     if not sys.platform.startswith('linux'):
       self.skipTest('linux only test')
+    self._procs = []
 
   def test_no_xvfb_display(self):
-    proc = launch_process(['--no-xvfb'])
-    proc.wait()
-    display = read_subprocess_message(proc, 'Display :')
+    self._procs.append(launch_process(['--no-xvfb']))
+    self._procs[0].wait()
+    display = read_subprocess_message(self._procs[0], 'Display :')
     self.assertEqual(display, os.environ.get('DISPLAY', 'None'))
 
   def test_xvfb_display(self):
-    proc = launch_process([])
-    proc.wait()
-    display = read_subprocess_message(proc, 'Display :')
-    self.assertIsNotNone(display)
+    self._procs.append(launch_process([]))
+    self._procs[0].wait()
+    display = read_subprocess_message(self._procs[0], 'Display :')
+    self.assertIsNotNone(display) # Openbox likely failed to open DISPLAY
     self.assertNotEqual(display, os.environ.get('DISPLAY', 'None'))
 
   def test_no_xvfb_flag(self):
-    proc = launch_process(['--no-xvfb'])
-    proc.wait()
+    self._procs.append(launch_process(['--no-xvfb']))
+    self._procs[0].wait()
 
   def test_xvfb_flag(self):
-    proc = launch_process([])
-    proc.wait()
+    self._procs.append(launch_process([]))
+    self._procs[0].wait()
 
   def test_xvfb_race_condition(self):
-    proc_list = [launch_process([]) for _ in range(15)]
-    for proc in proc_list:
+    self._procs = [launch_process([]) for _ in range(15)]
+    for proc in self._procs:
       proc.wait()
-    display_list = [read_subprocess_message(p, 'Display :') for p in proc_list]
+    display_list = [read_subprocess_message(p, 'Display :')
+                    for p in self._procs]
     for display in display_list:
-      self.assertIsNotNone(display)
+      self.assertIsNotNone(display) # Openbox likely failed to open DISPLAY
       self.assertNotEqual(display, os.environ.get('DISPLAY', 'None'))
+
+  def tearDown(self):
+    super(XvfbLinuxTest, self).tearDown()
+    for proc in self._procs:
+      if proc.stdout:
+        proc.stdout.close()
+
 
 
 class XvfbTest(unittest.TestCase):
@@ -91,18 +100,27 @@ class XvfbTest(unittest.TestCase):
     super(XvfbTest, self).setUp()
     if sys.platform == 'win32':
       self.skipTest('non-win32 test')
+    self._proc = None
+
 
   def test_send_sigint(self):
-    proc = launch_process(['--sleep'])
-    send_signal(proc, signal.SIGINT, 1)
-    sig = read_subprocess_message(proc, 'Signal :')
+    self._proc = launch_process(['--sleep'])
+    send_signal(self._proc, signal.SIGINT, 1)
+    sig = read_subprocess_message(self._proc, 'Signal :')
+    self.assertIsNotNone(sig) # OpenBox likely failed to start
     self.assertEqual(int(sig), int(signal.SIGINT))
 
   def test_send_sigterm(self):
-    proc = launch_process(['--sleep'])
-    send_signal(proc, signal.SIGTERM, 1)
-    sig = read_subprocess_message(proc, 'Signal :')
+    self._proc = launch_process(['--sleep'])
+    send_signal(self._proc, signal.SIGTERM, 1)
+    sig = read_subprocess_message(self._proc, 'Signal :')
+    self.assertIsNotNone(sig) # OpenBox likely failed to start
     self.assertEqual(int(sig), int(signal.SIGTERM))
+
+  def tearDown(self):
+    super(XvfbTest, self).tearDown()
+    if self._proc.stdout:
+      self._proc.stdout.close()
 
 if __name__ == '__main__':
   unittest.main()
