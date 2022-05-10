@@ -66,6 +66,9 @@
 // view.
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* fakeOmniboxConstraints;
+// Constraint that pins the fake Omnibox to the top of the view. A subset of
+// |fakeOmniboxConstraints|.
+@property(nonatomic, strong) NSLayoutConstraint* headerTopAnchor;
 
 // Array of constraints used to lay out the fake Omnibox header above the
 // Content Suggestions, as opposed to pinning it to the top of the view in
@@ -284,6 +287,13 @@
 
   if (previousTraitCollection.horizontalSizeClass !=
       self.traitCollection.horizontalSizeClass) {
+    // Update header constant to cover rotation instances. When the omnibox is
+    // pinned to the top, the fake omnibox is the one shown only in portrait
+    // mode, so if the NTP is opened in landscape mode, a rotation to portrait
+    // mode needs to update the top anchor constant based on the correct header
+    // height.
+    self.headerTopAnchor.constant =
+        -([self stickyOmniboxHeight] + [self feedHeaderHeight]);
     [[self contentSuggestionsViewController].view setNeedsLayout];
     [[self contentSuggestionsViewController].view layoutIfNeeded];
     [self.ntpContentDelegate reloadContentSuggestions];
@@ -574,7 +584,7 @@
   // Takes the height of the entire header and subtracts the margin to stick the
   // fake omnibox. Adjusts this for the device by further subtracting the
   // toolbar height and safe area insets.
-  return self.headerController.view.frame.size.height -
+  return [self.headerController headerHeight] -
          ntp_header::kFakeOmniboxScrolledToTopMargin -
          ToolbarExpandedHeight(
              [UIApplication sharedApplication].preferredContentSizeCategory) -
@@ -675,12 +685,16 @@
   [self.view addSubview:self.headerController.view];
 
   if (IsContentSuggestionsHeaderMigrationEnabled()) {
+    self.headerTopAnchor = [self.headerController.view.topAnchor
+        constraintEqualToAnchor:self.discoverFeedWrapperViewController.view
+                                    .topAnchor
+                       constant:-([self stickyOmniboxHeight] +
+                                  [self feedHeaderHeight])];
+    // This issue fundamentally comes down to the topAnchor being set just once
+    // and if it is set in landscape mode, it never is updated upon rotation.
+    // And landscape is when it doesn't matter.
     self.fakeOmniboxConstraints = @[
-      [self.headerController.view.topAnchor
-          constraintEqualToAnchor:self.discoverFeedWrapperViewController.view
-                                      .topAnchor
-                         constant:-([self stickyOmniboxHeight] +
-                                    [self feedHeaderHeight])],
+      self.headerTopAnchor,
       [self.headerController.view.leadingAnchor
           constraintEqualToAnchor:self.discoverFeedWrapperViewController.view
                                       .leadingAnchor],
