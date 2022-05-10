@@ -1840,6 +1840,10 @@ TEST_P(VisualViewportTest, FractionalMaxScrollOffset) {
 // continuous. crbug.com/453460 was caused by the impl-path not updating the
 // ScrollAnimatorBase class.
 TEST_P(VisualViewportTest, SlowScrollAfterImplScroll) {
+  // TODO(crbug.com/1322078): Enable this test for scroll unification.
+  if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
+    return;
+
   InitializeWithDesktopSettings();
   WebView()->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   NavigateTo("about:blank");

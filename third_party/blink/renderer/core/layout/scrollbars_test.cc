@@ -627,6 +627,10 @@ TEST_P(ScrollbarsTest, OverlayScrolblarNotCreatedInUnscrollableAxis) {
 }
 
 TEST_P(ScrollbarsTest, scrollbarIsNotHandlingTouchpadScroll) {
+  // TODO(crbug.com/1322078): Enable this test for scroll unification.
+  if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
+    return;
+
   WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 200));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -2382,6 +2386,10 @@ TEST_P(ScrollbarsTest, MiddleDownShouldNotAffectScrollbarPress) {
 }
 
 TEST_P(ScrollbarsTest, UseCounterNegativeWhenThumbIsNotScrolledWithMouse) {
+  // TODO(crbug.com/1322078): Enable this test for scroll unification.
+  if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
+    return;
+
   // This test requires that scrollbars take up space.
   ENABLE_OVERLAY_SCROLLBARS(false);
 
@@ -2795,6 +2803,10 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
 TEST_P(ScrollbarsTestWithVirtualTimer,
        PressScrollbarButtonOnInfiniteScrolling) {
 #endif
+  // TODO(crbug.com/1322078): Enable this test for scroll unification.
+  if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
+    return;
+
   TimeAdvance();
   GetDocument().GetFrame()->GetSettings()->SetScrollAnimatorEnabled(false);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 200));
@@ -3272,6 +3284,10 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndOverlayScrollbars) {
 // Test events on the additional gutter created by the "both-edges" keyword of
 // scrollbar-gutter.
 TEST_P(ScrollbarsTest, ScrollbarGutterBothEdgesKeywordWithClassicScrollbars) {
+  // TODO(crbug.com/1322201): Enable this test for scroll unification.
+  if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
+    return;
+
   // This test requires that scrollbars take up space.
   ENABLE_OVERLAY_SCROLLBARS(false);
 
