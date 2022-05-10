@@ -642,47 +642,72 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.LocalHistoryPrefixSuggest.SearchTermsExtractedCount"
+    units="counts" expires_after="2022-10-16">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The number of search terms extracted from the database to produce local
+    prefix search suggestions. Emitted when prefix search suggestions are
+    requested as a result of the user typing into the Omnibox or the Realbox on
+    the NTP.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.LocalHistoryPrefixSuggest.SearchTermsExtractionTime"
+    units="ms" expires_after="2022-10-16">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The length of time it takes to extract search terms from the database and
+    sort them by recency (if needed) to produce local prefix search suggestions.
+    Emitted when prefix search suggestions are requested as a result of the user
+    typing into the Omnibox or the Realbox on the NTP.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.LocalHistoryZeroSuggest.AsyncDeleteTime" units="ms"
     expires_after="2022-10-16">
   <owner>mahmadi@chromium.org</owner>
-  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     The length of time it takes for the corresponding URLs that would produce a
-    deleted match to be queried asynchronously and deleted. Triggered when user
+    deleted match to be queried asynchronously and deleted. Emitted when user
     deletes a local history zero-prefix suggestion.
   </summary>
 </histogram>
 
 <histogram name="Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractedCount"
-    units="count" expires_after="2022-10-16">
+    units="counts" expires_after="2022-10-16">
   <owner>mahmadi@chromium.org</owner>
-  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
   <summary>
-    The number of search terms extracted from the keyword search terms database
-    and examined (e.g., sorted) to produce local zero-prefix suggestions.
-    Triggered when zero-prefix suggestions are enabled and requested as a result
-    of user focus into the Omnibox or the Realbox on the NTP.
+    The number of search terms extracted from the database to produce local
+    zero-prefix suggestions. Emitted when zero-prefix suggestions are requested
+    as a result of the user focusing into the Omnibox or the Realbox on the NTP.
   </summary>
 </histogram>
 
 <histogram name="Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTime"
     units="ms" expires_after="2022-10-16">
   <owner>mahmadi@chromium.org</owner>
-  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
   <summary>
-    The length of time it takes to extract search terms from the keyword search
-    terms database and examine (e.g., sort) them to produce local zero-prefix
-    suggestions.
+    The length of time it takes to extract search terms from the database and
+    sort them by frecency to produce local zero-prefix suggestions. Emitted when
+    zero-prefix suggestions are requested as a result of the user focusing into
+    the Omnibox or the Realbox on the NTP. In M103, this was changed to no
+    longer include the construction of the AutocompleteMatch values.
   </summary>
 </histogram>
 
 <histogram name="Omnibox.LocalHistoryZeroSuggest.SyncDeleteTime" units="ms"
     expires_after="2022-10-16">
   <owner>mahmadi@chromium.org</owner>
-  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     The length of time it takes to handle the deletion request for a match and
-    to update the list of provider matches synchronously. Triggered when user
+    to update the list of provider matches synchronously. Emitted when user
     requests to delete a local history zero-prefix suggestion.
   </summary>
 </histogram>

@@ -17,6 +17,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/rand_util.h"
@@ -101,6 +102,16 @@ bool IsSearchEngineGoogle(const TemplateURL* template_url,
          template_url->GetEngineType(
              client->GetTemplateURLService()->search_terms_data()) ==
              SEARCH_ENGINE_GOOGLE;
+}
+
+void RecordDBMetrics(const base::TimeTicks db_query_time,
+                     const size_t result_size) {
+  base::UmaHistogramTimes(
+      "Omnibox.LocalHistoryPrefixSuggest.SearchTermsExtractionTime",
+      base::TimeTicks::Now() - db_query_time);
+  base::UmaHistogramCounts10000(
+      "Omnibox.LocalHistoryPrefixSuggest.SearchTermsExtractedCount",
+      result_size);
 }
 
 }  // namespace
@@ -674,17 +685,21 @@ void SearchProvider::DoHistoryQuery(bool minimal_changes) {
   int num_matches = provider_max_matches_ * 5;
   const TemplateURL* default_url = providers_.GetDefaultProviderURL();
   if (default_url) {
+    const base::TimeTicks db_query_time = base::TimeTicks::Now();
     url_db->GetMostRecentKeywordSearchTerms(default_url->id(),
                                             input_.text(),
                                             num_matches,
                                             &raw_default_history_results_);
+    RecordDBMetrics(db_query_time, raw_default_history_results_.size());
   }
   const TemplateURL* keyword_url = providers_.GetKeywordProviderURL();
   if (keyword_url) {
+    const base::TimeTicks db_query_time = base::TimeTicks::Now();
     url_db->GetMostRecentKeywordSearchTerms(keyword_url->id(),
                                             keyword_input_.text(),
                                             num_matches,
                                             &raw_keyword_history_results_);
+    RecordDBMetrics(db_query_time, raw_keyword_history_results_.size());
   }
 }
 

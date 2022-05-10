@@ -14,6 +14,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -66,6 +67,15 @@ std::u16string GetSearchTermsFromURL(const GURL& url,
 bool AllowLocalHistoryZeroSuggestSuggestions(const AutocompleteInput& input) {
   // Flag is default-enabled on Android and Desktop.
   return base::FeatureList::IsEnabled(omnibox::kLocalHistoryZeroSuggest);
+}
+
+void RecordDBMetrics(const base::TimeTicks db_query_time,
+                     const size_t result_size) {
+  base::UmaHistogramTimes(
+      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTime",
+      base::TimeTicks::Now() - db_query_time);
+  base::UmaHistogramCounts10000(
+      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractedCount", result_size);
 }
 
 }  // namespace
@@ -211,6 +221,8 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
   };
   std::sort(results.begin(), results.end(), CompareByFrecency);
 
+  RecordDBMetrics(db_query_time, results.size());
+
   int relevance = client_->IsAuthenticated()
                       ? kLocalHistoryZPSAuthenticatedRelevance
                       : kLocalHistoryZPSUnauthenticatedRelevance;
@@ -234,13 +246,6 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
     if (matches_.size() >= max_matches_)
       break;
   }
-
-  UMA_HISTOGRAM_TIMES(
-      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTime",
-      base::TimeTicks::Now() - db_query_time);
-  UMA_HISTOGRAM_COUNTS_10000(
-      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractedCount",
-      results.size());
 
   listener_->OnProviderUpdate(true);
 }
