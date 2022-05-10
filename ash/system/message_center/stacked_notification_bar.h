@@ -15,6 +15,7 @@ class Notification;
 }  // namespace message_center
 
 namespace views {
+class BoxLayout;
 class Label;
 }  // namespace views
 
@@ -108,6 +109,7 @@ class StackedNotificationBar : public views::View,
   views::View* const spacer_;
   views::Button* const clear_all_button_;
   views::Button* const expand_all_button_;
+  views::BoxLayout* const layout_manager_;
 
   base::WeakPtrFactory<StackedNotificationBar> weak_ptr_factory_{this};
 };

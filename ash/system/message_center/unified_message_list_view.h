@@ -83,6 +83,12 @@ class ASH_EXPORT UnifiedMessageListView
   std::vector<message_center::Notification*> GetNotificationsAboveY(
       int y_offset) const;
 
+  // Returns the notifications in the view hierarchy that are also in the
+  // MessageCenter, whose bottom position is below |y_offset|. O(n) where n is
+  // number of notifications.
+  std::vector<message_center::Notification*> GetNotificationsBelowY(
+      int y_offset) const;
+
   // Same as GetNotificationsAboveY, but returns notifications that are not in
   // the MessageCenter. This is useful for the clear all animation which first
   // removes all notifications before asking for stacked notifications.

@@ -257,13 +257,14 @@ StackedNotificationBar::StackedNotificationBar(
                               base::Unretained(message_center_view_)),
           l10n_util::GetStringUTF16(
               IDS_ASH_MESSAGE_CENTER_EXPAND_ALL_NOTIFICATIONS_BUTTON_LABEL),
-          message_center_view))) {
+          message_center_view))),
+      layout_manager_(SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          features::IsNotificationsRefreshEnabled() ? kNotificationBarPadding
+                                                    : gfx::Insets()))) {
   SetVisible(false);
-  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      features::IsNotificationsRefreshEnabled() ? kNotificationBarPadding
-                                                : gfx::Insets()));
-  layout->set_cross_axis_alignment(
+
+  layout_manager_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
 
   notification_icons_container_->SetLayoutManager(
@@ -283,7 +284,7 @@ StackedNotificationBar::StackedNotificationBar(
   count_label_->SetFontList(views::Label::GetDefaultFontList().Derive(
       1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
 
-  layout->SetFlexForView(spacer_, 1);
+  layout_manager_->SetFlexForView(spacer_, 1);
 
   clear_all_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_MESSAGE_CENTER_CLEAR_ALL_BUTTON_TOOLTIP));
@@ -340,12 +341,18 @@ void StackedNotificationBar::SetAnimationState(
 }
 
 void StackedNotificationBar::SetCollapsed() {
+  if (features::IsNotificationsRefreshEnabled())
+    layout_manager_->set_inside_border_insets(gfx::Insets());
+
   clear_all_button_->SetVisible(false);
   expand_all_button_->SetVisible(true);
   UpdateVisibility();
 }
 
 void StackedNotificationBar::SetExpanded() {
+  if (features::IsNotificationsRefreshEnabled())
+    layout_manager_->set_inside_border_insets(kNotificationBarPadding);
+
   clear_all_button_->SetVisible(true);
   expand_all_button_->SetVisible(false);
 }

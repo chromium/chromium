@@ -515,6 +515,11 @@ UnifiedMessageCenterView::GetStackedNotifications() const {
     return message_list_view_->GetAllNotifications();
   }
 
+  if (is_notifications_refresh_enabled_) {
+    const int y_offset = scroller_->GetVisibleRect().bottom() - scroller_->y();
+    return message_list_view_->GetNotificationsBelowY(y_offset);
+  }
+
   const int notification_bar_height =
       IsNotificationBarVisible() ? kStackedNotificationBarHeight : 0;
   const int y_offset = scroller_->GetVisibleRect().y() - scroller_->y() +
