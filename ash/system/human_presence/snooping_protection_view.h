@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_UNIFIED_SNOOPING_PROTECTION_VIEW_H_
-#define ASH_SYSTEM_UNIFIED_SNOOPING_PROTECTION_VIEW_H_
+#ifndef ASH_SYSTEM_HUMAN_PRESENCE_SNOOPING_PROTECTION_VIEW_H_
+#define ASH_SYSTEM_HUMAN_PRESENCE_SNOOPING_PROTECTION_VIEW_H_
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/system/human_presence/snooping_protection_controller.h"
 #include "ash/system/tray/tray_item_view.h"
-#include "ash/system/unified/snooping_protection_controller.h"
 #include "base/scoped_observation.h"
 #include "components/session_manager/session_manager_types.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -58,4 +58,4 @@ class ASH_EXPORT SnoopingProtectionView
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_UNIFIED_SNOOPING_PROTECTION_VIEW_H_
+#endif  // ASH_SYSTEM_HUMAN_PRESENCE_SNOOPING_PROTECTION_VIEW_H_

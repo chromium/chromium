@@ -8,7 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/system/unified/snooping_protection_controller.h"
+#include "ash/system/human_presence/snooping_protection_controller.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/message_center/message_center.h"

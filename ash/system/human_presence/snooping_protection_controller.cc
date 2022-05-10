@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/unified/snooping_protection_controller.h"
+#include "ash/system/human_presence/snooping_protection_controller.h"
 
 #include <memory>
 

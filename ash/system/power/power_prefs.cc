@@ -11,7 +11,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/power/lock_on_leave_controller.h"
+#include "ash/system/human_presence/lock_on_leave_controller.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
