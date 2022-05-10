@@ -3091,6 +3091,9 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TOOLS_MENU_BOOKMARKS" desc="The iOS menu item for opening the bookmarks manager [Length: 15em] [iOS only]">
         Bookmarks
       </message>
+      <message name="IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA" desc="The iOS menu item to open the Clear Browsing Data screen [iOS only]" meaning="[Length: unlimited]">
+        Clear Browsing Data
+      </message>
       <message name="IDS_IOS_TOOLS_MENU_CLOSE_ALL_INCOGNITO_TABS" desc="The iOS menu item for closing all Incognito tabs [iOS only]" meaning="[Length: unlimited]">
         Close All Incognito Tabs
       </message>

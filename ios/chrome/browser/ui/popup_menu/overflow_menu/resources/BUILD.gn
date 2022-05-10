@@ -12,6 +12,14 @@ imageset("overflow_menu_action_bookmark") {
   ]
 }
 
+imageset("overflow_menu_action_clear_browsing_data") {
+  sources = [
+    "overflow_menu_action_clear_browsing_data.imageset/Contents.json",
+    "overflow_menu_action_clear_browsing_data.imageset/overflow_menu_action_clear_browsing_data@2x.png",
+    "overflow_menu_action_clear_browsing_data.imageset/overflow_menu_action_clear_browsing_data@3x.png",
+  ]
+}
+
 imageset("overflow_menu_action_find_in_page") {
   sources = [
     "overflow_menu_action_find_in_page.imageset/Contents.json",

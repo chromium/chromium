@@ -14,6 +14,7 @@ source_set("overflow_menu") {
     ":feature_flags",
     ":overflow_menu_swift",
     "resources:overflow_menu_action_bookmark",
+    "resources:overflow_menu_action_clear_browsing_data",
     "resources:overflow_menu_action_edit_bookmark",
     "resources:overflow_menu_action_find_in_page",
     "resources:overflow_menu_action_follow",

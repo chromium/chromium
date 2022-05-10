@@ -84,5 +84,7 @@ extern NSString* const kTextMenuEnterpriseInfo;
 extern NSString* const kToolsMenuFollow;
 // Unfollow item accessibility Identifier.
 extern NSString* const kToolsMenuUnfollow;
+// Clear Browsing Data item accessibility identifier.
+extern NSString* const kToolsMenuClearBrowsingData;
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_POPUP_MENU_CONSTANTS_H_

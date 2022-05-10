@@ -218,6 +218,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 @property(nonatomic, strong) OverflowMenuAction* openIncognitoTabAction;
 @property(nonatomic, strong) OverflowMenuAction* openNewWindowAction;
 
+@property(nonatomic, strong) OverflowMenuAction* clearBrowsingDataAction;
 @property(nonatomic, strong) OverflowMenuAction* followAction;
 @property(nonatomic, strong) OverflowMenuAction* unfollowAction;
 @property(nonatomic, strong) OverflowMenuAction* addBookmarkAction;
@@ -475,6 +476,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                                  actions:@[]
                                                   footer:nil];
 
+  self.clearBrowsingDataAction =
+      CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA,
+                               @"overflow_menu_action_clear_browsing_data",
+                               kToolsMenuClearBrowsingData, ^{
+                                 [weakSelf openClearBrowsingData];
+                               });
   self.followAction = CreateOverflowMenuAction(
       IDS_IOS_TOOLS_MENU_FOLLOW, @"overflow_menu_action_follow",
       kToolsMenuFollow, ^{
@@ -625,7 +632,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   BOOL pageIsBookmarked =
       self.webState && self.bookmarkModel &&
       self.bookmarkModel->IsBookmarked(self.webState->GetVisibleURL());
-  self.pageActionsGroup.actions = @[
+  NSArray<OverflowMenuAction*>* basePageActions = @[
     (pageIsBookmarked) ? self.editBookmarkAction : self.addBookmarkAction,
     self.readLaterAction, self.translateAction,
     ([self userAgentType] != web::UserAgentType::DESKTOP)
@@ -633,6 +640,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
         : self.requestMobileAction,
     self.findInPageAction, self.textZoomAction
   ];
+
+  if (IsNewOverflowMenuCBDActionEnabled()) {
+    self.pageActionsGroup.actions = [@[ self.clearBrowsingDataAction ]
+        arrayByAddingObjectsFromArray:basePageActions];
+  } else {
+    self.pageActionsGroup.actions = basePageActions;
+  }
 
   // Add the follow/unfollow action.
   if (self.followActionState != FollowActionStateHidden) {
@@ -1034,6 +1048,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   [self.dispatcher
       openNewWindowWithActivity:ActivityToLoadURL(WindowActivityToolsOrigin,
                                                   GURL(kChromeUINewTabURL))];
+}
+
+// Dismisses the menu and opens the Clear Browsing Data screen.
+- (void)openClearBrowsingData {
+  RecordAction(UserMetricsAction("MobileMenuClearBrowsingData"));
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  [self.dispatcher showClearBrowsingDataSettings];
 }
 
 // Updates the follow status of the web channel corresponding to |webPageURLs|
