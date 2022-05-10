@@ -92,6 +92,10 @@ PolicyConversions& PolicyConversions::SetDropDefaultValues(bool enabled) {
   return *this;
 }
 
+std::string PolicyConversions::ToJSON() {
+  return client_->ConvertValueToJSON(ToValue());
+}
+
 /**
  * DictionaryPolicyConversions
  */
@@ -101,53 +105,7 @@ DictionaryPolicyConversions::DictionaryPolicyConversions(
     : PolicyConversions(std::move(client)) {}
 DictionaryPolicyConversions::~DictionaryPolicyConversions() = default;
 
-DictionaryPolicyConversions& DictionaryPolicyConversions::EnableConvertTypes(
-    bool enabled) {
-  PolicyConversions::EnableConvertTypes(enabled);
-  return *this;
-}
-
-DictionaryPolicyConversions& DictionaryPolicyConversions::EnableConvertValues(
-    bool enabled) {
-  PolicyConversions::EnableConvertValues(enabled);
-  return *this;
-}
-
-DictionaryPolicyConversions&
-DictionaryPolicyConversions::EnableDeviceLocalAccountPolicies(bool enabled) {
-  PolicyConversions::EnableDeviceLocalAccountPolicies(enabled);
-  return *this;
-}
-
-DictionaryPolicyConversions& DictionaryPolicyConversions::EnableDeviceInfo(
-    bool enabled) {
-  PolicyConversions::EnableDeviceInfo(enabled);
-  return *this;
-}
-
-DictionaryPolicyConversions& DictionaryPolicyConversions::EnablePrettyPrint(
-    bool enabled) {
-  PolicyConversions::EnablePrettyPrint(enabled);
-  return *this;
-}
-
-DictionaryPolicyConversions& DictionaryPolicyConversions::EnableUserPolicies(
-    bool enabled) {
-  PolicyConversions::EnableUserPolicies(enabled);
-  return *this;
-}
-
-DictionaryPolicyConversions& DictionaryPolicyConversions::SetDropDefaultValues(
-    bool enabled) {
-  PolicyConversions::SetDropDefaultValues(enabled);
-  return *this;
-}
-
-std::string DictionaryPolicyConversions::ToJSON() {
-  return client()->ConvertValueToJSON(Value(ToValueDict()));
-}
-
-Value::Dict DictionaryPolicyConversions::ToValueDict() {
+Value DictionaryPolicyConversions::ToValue() {
   Value::Dict all_policies;
 
   if (client()->HasUserPolicies()) {
@@ -176,7 +134,7 @@ Value::Dict DictionaryPolicyConversions::ToValueDict() {
   if (!identity_fields.empty())
     all_policies.Merge(identity_fields);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  return all_policies;
+  return Value(std::move(all_policies));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -223,52 +181,7 @@ void ArrayPolicyConversions::WithAdditionalChromePolicies(Value&& policies) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-ArrayPolicyConversions& ArrayPolicyConversions::EnableConvertTypes(
-    bool enabled) {
-  PolicyConversions::EnableConvertTypes(enabled);
-  return *this;
-}
-
-ArrayPolicyConversions& ArrayPolicyConversions::EnableConvertValues(
-    bool enabled) {
-  PolicyConversions::EnableConvertValues(enabled);
-  return *this;
-}
-
-ArrayPolicyConversions&
-ArrayPolicyConversions::EnableDeviceLocalAccountPolicies(bool enabled) {
-  PolicyConversions::EnableDeviceLocalAccountPolicies(enabled);
-  return *this;
-}
-
-ArrayPolicyConversions& ArrayPolicyConversions::EnableDeviceInfo(bool enabled) {
-  PolicyConversions::EnableDeviceInfo(enabled);
-  return *this;
-}
-
-ArrayPolicyConversions& ArrayPolicyConversions::EnablePrettyPrint(
-    bool enabled) {
-  PolicyConversions::EnablePrettyPrint(enabled);
-  return *this;
-}
-
-ArrayPolicyConversions& ArrayPolicyConversions::EnableUserPolicies(
-    bool enabled) {
-  PolicyConversions::EnableUserPolicies(enabled);
-  return *this;
-}
-
-ArrayPolicyConversions& ArrayPolicyConversions::SetDropDefaultValues(
-    bool enabled) {
-  PolicyConversions::SetDropDefaultValues(enabled);
-  return *this;
-}
-
-std::string ArrayPolicyConversions::ToJSON() {
-  return client()->ConvertValueToJSON(Value(ToValueList()));
-}
-
-Value::List ArrayPolicyConversions::ToValueList() {
+Value ArrayPolicyConversions::ToValue() {
   Value::List all_policies;
 
   if (client()->HasUserPolicies()) {
@@ -309,7 +222,7 @@ Value::List ArrayPolicyConversions::ToValueList() {
     all_policies.Append(std::move(identity_fields));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  return all_policies;
+  return Value(std::move(all_policies));
 }
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
