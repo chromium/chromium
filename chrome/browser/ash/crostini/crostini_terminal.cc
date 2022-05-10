@@ -421,8 +421,8 @@ std::string ShortcutIdForSSH(const std::string& profileId) {
 }
 
 std::string ShortcutIdFromContainerId(const crostini::ContainerId& id) {
-  base::Value dict = id.ToDictValue();
-  dict.SetKey(kShortcutKey, base::Value(kShortcutValueTerminal));
+  base::Value::Dict dict = id.ToDictValue();
+  dict.Set(kShortcutKey, base::Value(kShortcutValueTerminal));
   std::string shortcut_id;
   base::JSONWriter::Write(dict, &shortcut_id);
   return shortcut_id;

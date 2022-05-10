@@ -76,7 +76,7 @@ struct ContainerId {
   explicit ContainerId(const base::Value&) noexcept;
 
   base::flat_map<std::string, std::string> ToMap() const;
-  base::Value ToDictValue() const;
+  base::Value::Dict ToDictValue() const;
 
   static ContainerId GetDefault();
 

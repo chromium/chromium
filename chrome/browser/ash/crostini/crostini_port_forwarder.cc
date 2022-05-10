@@ -365,12 +365,10 @@ void CrostiniPortForwarder::RemoveAllPorts(const ContainerId& container_id) {
 base::ListValue CrostiniPortForwarder::GetActivePorts() {
   base::ListValue forwarded_ports_list;
   for (const auto& port : forwarded_ports_) {
-    base::Value port_info(base::Value::Type::DICTIONARY);
-    port_info.SetKey(kPortNumberKey, base::Value(port.first.port_number));
-    port_info.SetKey(kPortProtocolKey,
-                     base::Value(static_cast<int>(port.first.protocol_type)));
-    port_info.SetKey(kPortContainerIdKey,
-                     port.first.container_id.ToDictValue());
+    base::Value::Dict port_info;
+    port_info.Set(kPortNumberKey, port.first.port_number);
+    port_info.Set(kPortProtocolKey, static_cast<int>(port.first.protocol_type));
+    port_info.Set(kPortContainerIdKey, port.first.container_id.ToDictValue());
     forwarded_ports_list.Append(std::move(port_info));
   }
   return forwarded_ports_list;

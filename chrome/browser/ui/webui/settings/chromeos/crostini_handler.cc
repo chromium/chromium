@@ -748,22 +748,22 @@ void CrostiniHandler::HandleRequestContainerInfo(
   if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
     return;
   }
-  base::Value container_info_list(base::Value::Type::LIST);
+  base::Value::List container_info_list;
 
-  base::Value::ConstListView containers =
+  const base::Value::List& containers =
       profile_->GetPrefs()
-          ->GetList(crostini::prefs::kCrostiniContainers)
-          ->GetListDeprecated();
+          ->Get(crostini::prefs::kCrostiniContainers)
+          ->GetList();
 
   for (const auto& dict : containers) {
     crostini::ContainerId container_id(dict);
-    base::Value container_info_value(base::Value::Type::DICTIONARY);
-    container_info_value.SetKey(kIdKey, container_id.ToDictValue());
+    base::Value::Dict container_info_value;
+    container_info_value.Set(kIdKey, container_id.ToDictValue());
     auto info =
         crostini::CrostiniManager::GetForProfile(profile_)->GetContainerInfo(
             container_id);
     if (info) {
-      container_info_value.SetStringKey(kIpv4Key, info->ipv4_address);
+      container_info_value.Set(kIpv4Key, info->ipv4_address);
     }
 
     SkColor badge_color =
@@ -771,12 +771,13 @@ void CrostiniHandler::HandleRequestContainerInfo(
     std::string badge_color_str =
         base::StringPrintf("#%02x%02x%02x", SkColorGetR(badge_color),
                            SkColorGetG(badge_color), SkColorGetB(badge_color));
-    container_info_value.SetStringKey("badge_color", badge_color_str);
+    container_info_value.Set("badge_color", badge_color_str);
 
     container_info_list.Append(std::move(container_info_value));
   }
 
-  FireWebUIListener("crostini-container-info", container_info_list);
+  FireWebUIListener("crostini-container-info",
+                    base::Value(std::move(container_info_list)));
 }
 
 void CrostiniHandler::HandleSetContainerBadgeColor(

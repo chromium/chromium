@@ -193,9 +193,14 @@ ContainerId::ContainerId(std::string vm_name,
                          std::string container_name) noexcept
     : vm_name(std::move(vm_name)), container_name(std::move(container_name)) {}
 
-ContainerId::ContainerId(const base::Value& dict) noexcept {
-  const std::string* vm = dict.FindStringKey(prefs::kVmKey);
-  const std::string* container = dict.FindStringKey(prefs::kContainerKey);
+ContainerId::ContainerId(const base::Value& value) noexcept {
+  const base::Value::Dict* dict = value.GetIfDict();
+  const std::string* vm = nullptr;
+  const std::string* container = nullptr;
+  if (dict != nullptr) {
+    vm = dict->FindString(prefs::kVmKey);
+    container = dict->FindString(prefs::kContainerKey);
+  }
   vm_name = vm ? *vm : "";
   container_name = container ? *container : "";
 }
@@ -207,10 +212,10 @@ base::flat_map<std::string, std::string> ContainerId::ToMap() const {
   return extras;
 }
 
-base::Value ContainerId::ToDictValue() const {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey(prefs::kVmKey, vm_name);
-  dict.SetStringKey(prefs::kContainerKey, container_name);
+base::Value::Dict ContainerId::ToDictValue() const {
+  base::Value::Dict dict;
+  dict.Set(prefs::kVmKey, vm_name);
+  dict.Set(prefs::kContainerKey, container_name);
   return dict;
 }
 
