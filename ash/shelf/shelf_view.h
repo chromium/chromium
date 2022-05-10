@@ -555,6 +555,9 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Removes and reset |current_ghost_view| and |last_ghost_view|.
   void RemoveGhostView();
 
+  // Resets the data members related to the app item context menu model request.
+  void ResetActiveMenuModelRequest();
+
   // The model; owned by Launcher.
   ShelfModel* const model_;
 

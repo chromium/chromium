@@ -1505,10 +1505,9 @@ void ShelfView::PrepareForDrag(Pointer pointer, const ui::LocatedEvent& event) {
   // context menu is requested), to prevent the pending callback from showing
   // a context menu just after drag starts.
   if (!context_menu_callback_.IsCancelled()) {
-    context_menu_callback_.Cancel();
     GetShelfAppButton(item_awaiting_response_)
         ->OnContextMenuModelRequestCanceled();
-    item_awaiting_response_ = ShelfID();
+    ResetActiveMenuModelRequest();
   }
 
   // Move the view to the front so that it appears on top of other views.
@@ -2141,6 +2140,9 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
   if (old_item.id == context_menu_id_ && shelf_menu_model_adapter_)
     shelf_menu_model_adapter_->Cancel();
 
+  if (old_item.id == item_awaiting_response_)
+    ResetActiveMenuModelRequest();
+
   {
     base::AutoReset<bool> cancelling_drag(&cancelling_drag_model_changed_,
                                           true);
@@ -2640,6 +2642,11 @@ void ShelfView::RemoveGhostView() {
     last_ghost_view_->FadeOut();
     last_ghost_view_ = nullptr;
   }
+}
+
+void ShelfView::ResetActiveMenuModelRequest() {
+  context_menu_callback_.Cancel();
+  item_awaiting_response_ = ShelfID();
 }
 
 }  // namespace ash

@@ -3431,6 +3431,48 @@ TEST_F(ShelfViewGestureTapTest, MouseClickInterruptionAfterGestureLongPress) {
   EXPECT_EQ(views::InkDropState::HIDDEN, GetInkDropStateOfAppIcon1());
 }
 
+// Verifies that removing an item that is still waiting for the context menu
+// model works as expected.
+TEST_F(ShelfViewGestureTapTest, InterruptContextMenuShowByItemRemoval) {
+  // Add two shelf app buttons.
+  const ShelfID id1 = AddAppShortcut();
+  const ShelfID id2 = AddAppShortcut();
+
+  auto item_delegate_owned =
+      std::make_unique<AsyncContextMenuShelfItemDelegate>();
+  AsyncContextMenuShelfItemDelegate* item_delegate = item_delegate_owned.get();
+  model_->ReplaceShelfItemDelegate(id1, std::move(item_delegate_owned));
+
+  ShelfAppButton* app_button = GetButtonByID(id1);
+  GetEventGenerator()->MoveTouch(app_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->PressTouch();
+
+  // Fast forward to generate the ET_GESTURE_SHOW_PRESS event.
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+
+  // Fast forward to generate the ET_GESTURE_LONG_PRESS event to show the
+  // context menu.
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
+  EXPECT_TRUE(item_delegate->HasPendingContextMenuCallback());
+
+  // Remove the shelf item indexed by `id` before handling the pending context
+  // menu model request.
+  const int index = ShelfModel::Get()->ItemIndexByID(id1);
+  ShelfModel::Get()->RemoveItemAt(index);
+  EXPECT_FALSE(shelf_view_->drag_view());
+
+  // Initialize the mouse drag on the shelf app button specified by `id2`.
+  ShelfAppButton* app_button2 = GetButtonByID(id2);
+  GetEventGenerator()->MoveMouseTo(
+      app_button2->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->PressLeftButton();
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+
+  // Move the mouse. Verify that the shelf view has a view under drag.
+  GetEventGenerator()->MoveMouseBy(0, -100);
+  EXPECT_TRUE(shelf_view_->drag_view());
+}
+
 TEST_F(ShelfViewGestureTapTest,
        PressEscapeKeyBeforeReleaseLongPressOnAppButton) {
   const ShelfID id = AddAppShortcut();
