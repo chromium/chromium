@@ -576,6 +576,9 @@ try_.compilator_builder(
 
 try_.builder(
     name = "linux_chromium_ubsan_rel_ng",
+    mirrors = [
+        "ci/linux-ubsan-vptr",
+    ],
 )
 
 try_.builder(
