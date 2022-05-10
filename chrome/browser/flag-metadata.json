@@ -4047,6 +4047,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "messages-for-android-offer-notification",
+    "owners": [ "vishwasuppoor", "siashah" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "messages-for-android-passwords",
     "owners": [ "pavely", "lazzzis" ],
     "expiry_milestone": 105

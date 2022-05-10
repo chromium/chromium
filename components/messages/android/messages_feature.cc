@@ -26,6 +26,9 @@ const base::Feature kMessagesForAndroidNearOomReduction{
 const base::Feature kMessagesForAndroidNotificationBlocked{
     "MessagesForAndroidNotificationBlocked", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kMessagesForAndroidOfferNotification{
+    "MessagesForAndroidOfferNotification", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kMessagesForAndroidPasswords{
     "MessagesForAndroidPasswords", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -89,6 +92,11 @@ bool IsInstantAppsMessagesUiEnabled() {
 bool IsNearOomReductionMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidNearOomReduction);
+}
+
+bool IsOfferNotificationMessagesUiEnabled() {
+  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
+         base::FeatureList::IsEnabled(kMessagesForAndroidOfferNotification);
 }
 
 bool IsPasswordMessagesUiEnabled() {

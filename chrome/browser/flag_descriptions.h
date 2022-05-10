@@ -1857,6 +1857,9 @@ extern const char kMessagesForAndroidNearOomReductionDescription[];
 extern const char kMessagesForAndroidNotificationBlockedName[];
 extern const char kMessagesForAndroidNotificationBlockedDescription[];
 
+extern const char kMessagesForAndroidOfferNotificationName[];
+extern const char kMessagesForAndroidOfferNotificationDescription[];
+
 extern const char kMessagesForAndroidPasswordsName[];
 extern const char kMessagesForAndroidPasswordsDescription[];
 

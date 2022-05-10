@@ -102,6 +102,7 @@ enum class MessageIdentifier {
   INSTANT_APPS = 27,
   ABOUT_THIS_SITE = 28,
   TRANSLATE = 29,
+  OFFER_NOTIFICATION = 30,
 
   // Insert new values before this line.
   COUNT

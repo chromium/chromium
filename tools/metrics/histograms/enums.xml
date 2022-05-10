@@ -54580,6 +54580,7 @@ from previous Chrome versions.
   <int value="-1971086581" label="print-scaling"/>
   <int value="-1970672551" label="CanvasContextLostInBackground:disabled"/>
   <int value="-1969636234" label="OmniboxRefinedFocusState:disabled"/>
+  <int value="-1969625771" label="MessagesForAndroidOfferNotification:enabled"/>
   <int value="-1966445414" label="StylusBatteryStatus:disabled"/>
   <int value="-1965587041" label="omnibox-tab-switch-suggestions"/>
   <int value="-1965232124" label="TabSearchMediaTabs:disabled"/>
@@ -57693,6 +57694,7 @@ from previous Chrome versions.
   <int value="83422372"
       label="ChromeHomePersonalizedOmniboxSuggestions:enabled"/>
   <int value="84911198" label="ScanCardsInWebPayments:disabled"/>
+  <int value="86233339" label="MessagesForAndroidOfferNotification:disabled"/>
   <int value="87306743" label="VariationsFakeCrashAfterStartup:disabled"/>
   <int value="88249612" label="CalendarView:enabled"/>
   <int value="88437020" label="FeaturePolicy:enabled"/>
@@ -63892,6 +63894,7 @@ Called by update_use_counter_css.py.-->
   <int value="27" label="InstantApps"/>
   <int value="28" label="AboutThisSite"/>
   <int value="29" label="Translate"/>
+  <int value="30" label="OfferNotification"/>
 </enum>
 
 <enum name="MessageLoopProblems">

@@ -3279,6 +3279,11 @@ const char kMessagesForAndroidNotificationBlockedName[] =
 const char kMessagesForAndroidNotificationBlockedDescription[] =
     "When enabled, notification blocked prompt will use the new Messages UI.";
 
+extern const char kMessagesForAndroidOfferNotificationName[] =
+    "Offer Notification Messages UI";
+extern const char kMessagesForAndroidOfferNotificationDescription[] =
+    "When enabled, offer notification will use the new Messages UI";
+
 const char kMessagesForAndroidPasswordsName[] = "Passwords Messages UI";
 const char kMessagesForAndroidPasswordsDescription[] =
     "When enabled, password prompt will use the new Messages UI.";

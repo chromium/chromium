@@ -34,6 +34,10 @@ extern const base::Feature kMessagesForAndroidNearOomReduction;
 // Infobars infrastructure.
 extern const base::Feature kMessagesForAndroidNotificationBlocked;
 
+// Feature that controls whether offer notifications use Messages or Infobars
+// infrastructure.
+extern const base::Feature kMessagesForAndroidOfferNotification;
+
 // Feature that controls whether "save password" and "saved password
 // confirmation" prompts use Messages or Infobars infrastructure.
 extern const base::Feature kMessagesForAndroidPasswords;
@@ -81,6 +85,8 @@ bool IsInstantAppsMessagesUiEnabled();
 bool IsNearOomReductionMessagesUiEnabled();
 
 bool IsNotificationBlockedMessagesUiEnabled();
+
+bool IsOfferNotificationMessagesUiEnabled();
 
 bool IsPasswordMessagesUiEnabled();
 

@@ -139,6 +139,8 @@ public class MessagesMetrics {
                 return "AboutThisSite";
             case MessageIdentifier.TRANSLATE:
                 return "Translate";
+            case MessageIdentifier.OFFER_NOTIFICATION:
+                return "OfferNotification";
             default:
                 return "Unknown";
         }
