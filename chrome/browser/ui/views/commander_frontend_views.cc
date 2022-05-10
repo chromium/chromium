@@ -135,6 +135,9 @@ CommanderFrontendViews::~CommanderFrontendViews() {
 }
 void CommanderFrontendViews::ToggleForBrowser(Browser* browser) {
   DCHECK(browser);
+  // This ensures that quick commands are only available for normal browsers.
+  if (!browser->is_type_normal())
+    return;
   bool should_show = !browser_ || browser != browser_;
   if (browser_)
     Hide();
