@@ -179,6 +179,11 @@ interface DriveFsDelegate {
 
   // Invoked when Drive wants to display a confirmation dialog.
   DisplayConfirmDialog(DialogReason reason) => (DialogResult result);
+
+  // Executes the given request on Chrome's networking stack and
+  // calls the necessary callbacks on the |delegate|.
+  ExecuteHttpRequest(
+    HttpRequest request, pending_remote<HttpDelegate> delegate);
 };
 
 // Next MinVersion: 6
@@ -570,4 +575,64 @@ union FilePathOrError {
 struct QuotaUsage {
   uint64 free_cloud_bytes;
   uint64 total_cloud_bytes;
+};
+
+// Matches errors from //net/base/net_error_list.h
+enum NetError {
+  kOk = 0,
+  kIOPending = -1,
+  kFailed = -2,
+  kAborted = -3,
+  kInvalidArgument = -4,
+  kInvalidHandle = -5,
+  kFileNotFound = -6,
+  kTimedOut = -7,
+  kNameNotResolved = -105,
+  kInternetDisconnected = -106,
+  kAddressUnreachable = -109,
+};
+
+struct HttpHeader  {
+  string key;
+  string value;
+};
+
+struct HttpRequest {
+  string method;
+  string url;
+  array<HttpHeader> headers;
+  int64 request_body_bytes;
+};
+
+struct HttpResponse {
+  int32 response_code;
+  array<HttpHeader> headers;
+};
+
+struct HttpCompletionStatus {
+  NetError error;
+  int64 response_body_bytes;
+};
+
+// This interface is backed by a |cello:HttpDelegate| on the DriveFS side and is
+// called from a |URLLoaderClient| on the Chrome side.
+interface HttpDelegate {
+  // Fetches a pipe that will provide the request body.
+  // This method should only be called once.
+  GetRequestBody(handle<data_pipe_producer> request_body);
+
+  // Called once when the response code and headers have been received.
+  // See |URLLoaderClient::OnReceiveResponse|
+  OnReceiveResponse(HttpResponse response);
+
+  // Called once after |OnReceiveResponse| when the body has been received.
+  // Provides a pipe for the response body to be read from.
+  // See |URLLoaderClient::OnStartLoadingResponseBody'
+  OnReceiveBody(handle<data_pipe_consumer> response_body);
+
+  // Called once after the URLLoader is done.
+  // NOTE: There may still be data remaining in the data pipe, so destruction
+  // should be deferred until all data is read.
+  // See |URLLoaderClient::OnComplete|
+  OnRequestComplete(HttpCompletionStatus status);
 };
