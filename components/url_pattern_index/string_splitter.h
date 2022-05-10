@@ -23,9 +23,14 @@ namespace url_pattern_index {
 template <typename IsSeparator>
 class StringSplitter {
  public:
-  class Iterator
-      : public std::iterator<std::input_iterator_tag, base::StringPiece> {
+  class Iterator {
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = base::StringPiece;
+    using difference_type = std::ptrdiff_t;
+    using pointer = base::StringPiece*;
+    using reference = base::StringPiece&;
+
     // Creates an iterator, which points to the leftmost token within the
     // |splitter|'s |text|, starting from |head|.
     Iterator(const StringSplitter& splitter,

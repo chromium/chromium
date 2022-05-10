@@ -15,8 +15,6 @@ namespace content {
 // The range is [begin, end). Bytewise comparison is used to determine
 // overlapping ranges.
 struct COMPONENT_EXPORT(LOCK_MANAGER) LeveledLockRange {
-  LeveledLockRange() = default;
-  ~LeveledLockRange() = default;
   std::string begin;
   std::string end;
 

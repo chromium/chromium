@@ -188,7 +188,7 @@ VerifierResult VerifyCrx3(
                          base::as_bytes(base::make_span(sig)),
                          base::as_bytes(base::make_span(key))))
         return VerifierResult::ERROR_SIGNATURE_INITIALIZATION_FAILED;
-      v->VerifyUpdate(kSignatureContext);
+      v->VerifyUpdate(base::as_bytes(base::make_span(kSignatureContext)));
       v->VerifyUpdate(header_size_octets);
       v->VerifyUpdate(base::as_bytes(base::make_span(signed_header_data_str)));
       verifiers.push_back(std::move(v));

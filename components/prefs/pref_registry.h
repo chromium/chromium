@@ -37,19 +37,19 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
   // behave or be stored. This will be passed in a bitmask when the pref is
   // registered. Subclasses of PrefRegistry can specify their own flags. Care
   // must be taken to ensure none of these overlap with the flags below.
-  enum PrefRegistrationFlags : uint32_t {
-    // No flags are specified.
-    NO_REGISTRATION_FLAGS = 0,
+  using PrefRegistrationFlags = uint32_t;
 
-    // The first 8 bits are reserved for subclasses of PrefRegistry to use.
+  // No flags are specified.
+  static constexpr PrefRegistrationFlags NO_REGISTRATION_FLAGS = 0;
 
-    // This marks the pref as "lossy". There is no strict time guarantee on when
-    // a lossy pref will be persisted to permanent storage when it is modified.
-    LOSSY_PREF = 1 << 8,
+  // The first 8 bits are reserved for subclasses of PrefRegistry to use.
 
-    // Registering a pref as public allows other services to access it.
-    PUBLIC = 1 << 9,
-  };
+  // This marks the pref as "lossy". There is no strict time guarantee on when
+  // a lossy pref will be persisted to permanent storage when it is modified.
+  static constexpr PrefRegistrationFlags LOSSY_PREF = 1 << 8;
+
+  // Registering a pref as public allows other services to access it.
+  static constexpr PrefRegistrationFlags PUBLIC = 1 << 9;
 
   typedef PrefValueMap::const_iterator const_iterator;
   typedef std::unordered_map<std::string, uint32_t> PrefRegistrationFlagsMap;

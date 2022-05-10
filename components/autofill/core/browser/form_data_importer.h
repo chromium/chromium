@@ -138,10 +138,6 @@ class FormDataImporter {
     // Metadata about the import, used for metric collection in
     // ProfileImportProcess after the user's decision.
     ProfileImportMetadata import_metadata;
-    AddressProfileImportCandidate(AddressProfileImportCandidate&& other) =
-        default;
-    AddressProfileImportCandidate& operator=(
-        AddressProfileImportCandidate&& other) = default;
   };
 
   // Scans the given |form| for importable Autofill data. If the form includes

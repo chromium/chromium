@@ -26,11 +26,12 @@ std::u16string ConcatAncestorsTitles(
     std::vector<base::StringPiece16> ancestors) {
   return ancestors.empty()
              ? std::u16string()
-             : std::accumulate(std::next(ancestors.rbegin()), ancestors.rend(),
-                               std::u16string(*ancestors.rbegin()),
-                               [](std::u16string& a, base::StringPiece16& b) {
-                                 return a + u"/" + std::u16string(b);
-                               });
+             : std::accumulate(
+                   std::next(ancestors.rbegin()), ancestors.rend(),
+                   std::u16string(*ancestors.rbegin()),
+                   [](const std::u16string& a, const base::StringPiece16& b) {
+                     return a + u"/" + std::u16string(b);
+                   });
 }
 
 }  // namespace

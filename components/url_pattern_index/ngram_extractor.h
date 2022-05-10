@@ -37,8 +37,14 @@ template <size_t N,
 class NGramExtractor {
  public:
   // An STL compatible input iterator over N-grams contained in a string.
-  class Iterator : public std::iterator<std::input_iterator_tag, NGramType> {
+  class Iterator {
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = NGramType;
+    using difference_type = std::ptrdiff_t;
+    using pointer = NGramType*;
+    using reference = NGramType&;
+
     // Creates an iterator, which points to the leftmost valid N-gram within the
     // |extractor|'s string, starting from |head|.
     Iterator(const NGramExtractor& extractor,

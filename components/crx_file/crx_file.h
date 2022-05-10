@@ -11,7 +11,7 @@ namespace crx_file {
 constexpr char kCrxFileHeaderMagic[] = "Cr24";
 constexpr char kCrxDiffFileHeaderMagic[] = "CrOD";
 constexpr int kCrxFileHeaderMagicSize = 4;
-constexpr unsigned char kSignatureContext[] = u8"CRX3 SignedData";
+constexpr char kSignatureContext[] = "CRX3 SignedData";
 
 }  // namespace crx_file
 

@@ -31,8 +31,6 @@ enum class SigninOrSyncStatus {
 // Provides information relating to the status of profiles in the embedder:
 // how many are open, how many are signed in, and how many are syncing.
 struct ProfilesStatus {
-  ProfilesStatus() = default;
-
   size_t num_opened_profiles = 0;
   size_t num_signed_in_profiles = 0;
   size_t num_syncing_profiles = 0;

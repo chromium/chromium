@@ -133,7 +133,7 @@ bool DisjointRangeLockManager::AcquireLock(
   if (it == level_locks.end()) {
     it = level_locks
              .emplace(std::piecewise_construct,
-                      std::forward_as_tuple(std::move(request.range)),
+                      std::forward_as_tuple(request.range),
                       std::forward_as_tuple())
              .first;
   }

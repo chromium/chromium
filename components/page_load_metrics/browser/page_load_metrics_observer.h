@@ -105,8 +105,6 @@ struct PageRenderData {
 
 // Information related to layout shift normalization for different strategies.
 struct NormalizedCLSData {
-  NormalizedCLSData() = default;
-
   // Maximum CLS of session windows. The gap between two consecutive shifts is
   // not bigger than 1000ms and the maximum window size is 5000ms.
   float session_windows_gap1000ms_max5000ms_max_cls = 0.0;

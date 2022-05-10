@@ -206,10 +206,6 @@ bool Node::FindCorrections(const std::u16string& text,
     // TODO(orinj): This should be optimized in final algorithm; stop copying.
     Correction correction;
 
-    Step(const Step&) = default;
-    Step(Step&&) = default;
-    Step& operator=(Step&&) = default;
-
     // std::priority_queue keeps the greatest element on top, so we want this
     // operator implementation to make bad steps less than good steps.
     // Prioritize minimum distance, with index and length to break ties.

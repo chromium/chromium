@@ -65,9 +65,6 @@ class CreditCardFIDOAuthenticator
   // The response of FIDO authentication, including necessary information needed
   // by the subclasses.
   struct FidoAuthenticationResponse {
-    FidoAuthenticationResponse() = default;
-    ~FidoAuthenticationResponse() = default;
-
     // Whether the authentication was successful.
     bool did_succeed = false;
     // The fetched credit card if the authentication was successful. Can be

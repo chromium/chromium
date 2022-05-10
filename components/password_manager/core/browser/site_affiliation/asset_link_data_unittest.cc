@@ -15,7 +15,7 @@ using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
 
 TEST(AssetLinkData, NonJSON) {
-  constexpr char json[] = u8R"([trash])";
+  constexpr char json[] = R"([trash])";
   AssetLinkData data;
   EXPECT_FALSE(data.Parse(json));
   EXPECT_THAT(data.includes(), IsEmpty());
@@ -24,7 +24,7 @@ TEST(AssetLinkData, NonJSON) {
 
 TEST(AssetLinkData, NotList) {
   constexpr char json[] =
-      u8R"({
+      R"({
       "include": "https://example/.well-known/assetlinks.json"
   })";
   AssetLinkData data;
@@ -35,7 +35,7 @@ TEST(AssetLinkData, NotList) {
 
 TEST(AssetLinkData, IncludeWrongValue) {
   constexpr char json[] =
-      u8R"([{
+      R"([{
       "include": 24
   }])";
   AssetLinkData data;
@@ -46,7 +46,7 @@ TEST(AssetLinkData, IncludeWrongValue) {
 
 TEST(AssetLinkData, IncludeFile) {
   constexpr char json[] =
-      u8R"([{
+      R"([{
       "include": "https://example/.well-known/assetlinks.json"
   }])";
   AssetLinkData data;
@@ -58,7 +58,7 @@ TEST(AssetLinkData, IncludeFile) {
 
 TEST(AssetLinkData, IncludeHTTPFile) {
   constexpr char json[] =
-      u8R"([{
+      R"([{
       "include": "http://example/.well-known/assetlinks.json"
   }])";
   AssetLinkData data;
@@ -69,7 +69,7 @@ TEST(AssetLinkData, IncludeHTTPFile) {
 
 TEST(AssetLinkData, IncludeInvalidFile) {
   constexpr char json[] =
-      u8R"([{
+      R"([{
       "include": "www.example/assetlinks.json"
   }])";
   AssetLinkData data;
@@ -80,7 +80,7 @@ TEST(AssetLinkData, IncludeInvalidFile) {
 
 TEST(AssetLinkData, HandleURLsPermission) {
   constexpr char json[] =
-      u8R"([{
+      R"([{
   "relation": ["delegate_permission/common.handle_all_urls"],
   "target": {
     "namespace": "web",
@@ -102,7 +102,7 @@ TEST(AssetLinkData, HandleURLsPermission) {
 
 TEST(AssetLinkData, BrokenRelation) {
   constexpr char json[] =
-      u8R"([{
+      R"([{
   "relation": "delegate_permission/common.get_login_creds",
   "target": {
     "namespace": "web",
@@ -117,7 +117,7 @@ TEST(AssetLinkData, BrokenRelation) {
 
 TEST(AssetLinkData, GetLoginCredsPermission) {
   constexpr char json[] =
-      u8R"([{
+      R"([{
   "relation": ["delegate_permission/common.get_login_creds"],
   "target": {
     "namespace": "web",
@@ -154,7 +154,7 @@ TEST(AssetLinkData, GetLoginCredsPermission) {
 
 TEST(AssetLinkData, MultiplePermissions) {
   constexpr char json[] =
-      u8R"([{
+      R"([{
   "relation": ["something","delegate_permission/common.get_login_creds"],
   "target": {
     "namespace": "web",
@@ -191,7 +191,7 @@ TEST(AssetLinkData, MultiplePermissions) {
 
 TEST(AssetLinkData, MixedStatements) {
   constexpr char json[] =
-      u8R"([{
+      R"([{
   "relation": ["delegate_permission/common.get_login_creds"],
   "target": {
     "namespace": "web",

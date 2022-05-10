@@ -163,24 +163,24 @@ TEST_F(OmniboxEditModelTest, AdjustTextForCopy) {
 
       // Verifies that non-ASCII characters are %-escaped for valid copied URLs,
       // as long as the host has not been modified from the page URL.
-      {u8"https://ja.wikipedia.org/wiki/目次", 0, "", false,
-       u8"https://ja.wikipedia.org/wiki/目次",
+      {"https://ja.wikipedia.org/wiki/目次", 0, "", false,
+       "https://ja.wikipedia.org/wiki/目次",
        "https://ja.wikipedia.org/wiki/%E7%9B%AE%E6%AC%A1", true,
        "https://ja.wikipedia.org/wiki/%E7%9B%AE%E6%AC%A1"},
       // Test escaping when part of the path was not copied.
-      {u8"https://ja.wikipedia.org/wiki/目次", 0, "", false,
-       u8"https://ja.wikipedia.org/wiki/目",
+      {"https://ja.wikipedia.org/wiki/目次", 0, "", false,
+       "https://ja.wikipedia.org/wiki/目",
        "https://ja.wikipedia.org/wiki/%E7%9B%AE", true,
        "https://ja.wikipedia.org/wiki/%E7%9B%AE"},
       // Correctly handle escaping in the scheme-elided case as well.
-      {u8"https://ja.wikipedia.org/wiki/目次", 0, "", false,
-       u8"ja.wikipedia.org/wiki/目次",
+      {"https://ja.wikipedia.org/wiki/目次", 0, "", false,
+       "ja.wikipedia.org/wiki/目次",
        "https://ja.wikipedia.org/wiki/%E7%9B%AE%E6%AC%A1", true,
        "https://ja.wikipedia.org/wiki/%E7%9B%AE%E6%AC%A1",
-       u8"ja.wikipedia.org/wiki/目次"},
+       "ja.wikipedia.org/wiki/目次"},
       // Don't escape when host was modified.
-      {u8"https://ja.wikipedia.org/wiki/目次", 0, "", false,
-       u8"https://wikipedia.org/wiki/目次", u8"https://wikipedia.org/wiki/目次",
+      {"https://ja.wikipedia.org/wiki/目次", 0, "", false,
+       "https://wikipedia.org/wiki/目次", "https://wikipedia.org/wiki/目次",
        false, ""},
   };
 

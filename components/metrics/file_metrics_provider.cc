@@ -53,10 +53,8 @@ struct SourceOptions {
   bool is_read_only;
 };
 
-enum : int {
-  // Opening a file typically requires at least these flags.
-  STD_OPEN = base::File::FLAG_OPEN | base::File::FLAG_READ,
-};
+// Opening a file typically requires at least these flags.
+constexpr int STD_OPEN = base::File::FLAG_OPEN | base::File::FLAG_READ;
 
 constexpr SourceOptions kSourceOptions[] = {
     // SOURCE_HISTOGRAMS_ATOMIC_FILE

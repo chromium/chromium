@@ -169,10 +169,10 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   struct OverlayRect {
     gfx::Rect rect;
     bool is_overlay;  // If false, it's an underlay.
-    bool operator==(const OverlayRect& b) {
+    bool operator==(const OverlayRect& b) const {
       return rect == b.rect && is_overlay == b.is_overlay;
     }
-    bool operator!=(const OverlayRect& b) { return !(*this == b); }
+    bool operator!=(const OverlayRect& b) const { return !(*this == b); }
   };
   std::vector<OverlayRect> previous_frame_overlay_rects_;
   std::vector<OverlayRect> current_frame_overlay_rects_;
