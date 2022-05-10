@@ -73,8 +73,11 @@ MediaFormatPtr CreateVideoFormat(const std::string& mime,
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_I_FRAME_INTERVAL,
                         iframe_interval);
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_COLOR_FORMAT, format);
-  if (config.require_low_delay)
+  if (config.require_low_delay) {
     AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_LATENCY, 1);
+    // MediaCodec supports two priorities: 0 - realtime, 1 - best effort
+    AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_PRIORITY, 0);
+  }
 
   constexpr int32_t BITRATE_MODE_VBR = 1;
   constexpr int32_t BITRATE_MODE_CBR = 2;
