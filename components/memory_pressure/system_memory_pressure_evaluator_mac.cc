@@ -18,12 +18,7 @@
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
-// Redeclare for partial 10.9 availability.
-DISPATCH_EXPORT const struct dispatch_source_type_s
-    _dispatch_source_type_memorypressure;
-
-namespace memory_pressure {
-namespace mac {
+namespace memory_pressure::mac {
 
 base::MemoryPressureListener::MemoryPressureLevel
 SystemMemoryPressureEvaluator::MemoryPressureLevelForMacMemoryPressureLevel(
@@ -112,5 +107,4 @@ void SystemMemoryPressureEvaluator::OnMemoryPressureChanged() {
   SendCurrentVote(notify);
 }
 
-}  // namespace mac
-}  // namespace memory_pressure
+}  // namespace memory_pressure::mac

@@ -128,13 +128,11 @@ std::string GetSpellCheckerLanguage() {
 }
 
 bool SpellCheckerAvailable() {
-  // If this file was compiled, then we know that we are on OS X 10.5 at least
-  // and can safely return true here.
   return true;
 }
 
 bool SpellCheckerProvidesPanel() {
-  // OS X has a Spelling Panel, so we can return true here.
+  // macOS has a Spelling Panel, so we can return true here.
   return true;
 }
 
@@ -207,10 +205,12 @@ bool CheckSpelling(const std::u16string& word_to_check, int tag) {
   // Convert the word to an NSString.
   NSString* NS_word_to_check = base::SysUTF16ToNSString(word_to_check);
   // Check the spelling, starting at the beginning of the word.
-  spell_range = [SharedSpellChecker()
-                  checkSpellingOfString:NS_word_to_check startingAt:0
-                  language:nil wrap:NO inSpellDocumentWithTag:tag
-                  wordCount:NULL];
+  spell_range = [SharedSpellChecker() checkSpellingOfString:NS_word_to_check
+                                                 startingAt:0
+                                                   language:nil
+                                                       wrap:NO
+                                     inSpellDocumentWithTag:tag
+                                                  wordCount:nullptr];
 
   // If the length of the misspelled word == 0,
   // then there is no misspelled word.
@@ -291,10 +291,9 @@ void RequestTextCheck(PlatformSpellChecker* spell_checker_instance,
 
             // In this use case, the spell checker should never
             // return anything but a single range per result.
-            check_results.push_back(SpellCheckResult(
-                SpellCheckResult::SPELLING,
-                [result range].location,
-                [result range].length));
+            check_results.emplace_back(SpellCheckResult::SPELLING,
+                                       [result range].location,
+                                       [result range].length);
           }
           // TODO(groby): Verify we don't need to post from here.
           std::move(callback).Run(check_results);

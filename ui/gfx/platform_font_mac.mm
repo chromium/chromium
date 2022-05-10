@@ -69,27 +69,16 @@ Weight GetFontWeightFromNSFont(NSFont* font) {
       //   NSFontWeightBlack: 0.62
       //
       // Actual system font weights:
-      //   10.10:
-      //     .HelveticaNeueDeskInterface-UltraLightP2: -0.80
-      //     .HelveticaNeueDeskInterface-Thin: -0.50
-      //     .HelveticaNeueDeskInterface-Light: -0.425
-      //     .HelveticaNeueDeskInterface-Regular: 0.0
-      //     .HelveticaNeueDeskInterface-MediumP4: 0.23
-      //     .HelveticaNeueDeskInterface-Bold (if requested as semibold): 0.24
-      //     .HelveticaNeueDeskInterface-Bold (if requested as bold): 0.4
-      //     .HelveticaNeueDeskInterface-Heavy (if requested as heavy): 0.576
-      //     .HelveticaNeueDeskInterface-Heavy (if requested as black): 0.662
-      //   10.11-:
-      //     .AppleSystemUIFontUltraLight: -0.80
-      //     .AppleSystemUIFontThin: -0.60
-      //     .AppleSystemUIFontLight: -0.40
-      //     .AppleSystemUIFont: 0.0
-      //     .AppleSystemUIFontMedium: 0.23
-      //     .AppleSystemUIFontDemi: 0.30
-      //     .AppleSystemUIFontBold (10.11): 0.40
-      //     .AppleSystemUIFontEmphasized (10.12-): 0.40
-      //     .AppleSystemUIFontHeavy: 0.56
-      //     .AppleSystemUIFontBlack: 0.62
+      //   .AppleSystemUIFontUltraLight: -0.80
+      //   .AppleSystemUIFontThin: -0.60
+      //   .AppleSystemUIFontLight: -0.40
+      //   .AppleSystemUIFont: 0.0
+      //   .AppleSystemUIFontMedium: 0.23
+      //   .AppleSystemUIFontDemi: 0.30
+      //   .AppleSystemUIFontBold (10.11): 0.40
+      //   .AppleSystemUIFontEmphasized (10.12-): 0.40
+      //   .AppleSystemUIFontHeavy: 0.56
+      //   .AppleSystemUIFontBlack: 0.62
       {-1.0, -0.70, Weight::THIN},          // NSFontWeightUltraLight
       {-0.70, -0.45, Weight::EXTRA_LIGHT},  // NSFontWeightThin
       {-0.45, -0.10, Weight::LIGHT},        // NSFontWeightLight

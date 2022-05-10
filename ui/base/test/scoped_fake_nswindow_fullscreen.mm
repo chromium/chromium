@@ -28,8 +28,7 @@ uint64_t g_instance_count = 0;
 
 }  // namespace
 
-namespace ui {
-namespace test {
+namespace ui::test {
 
 class ScopedFakeNSWindowFullscreen::Impl {
  public:
@@ -88,9 +87,7 @@ class ScopedFakeNSWindowFullscreen::Impl {
       return;
     }
 
-    // This cannot be id<NSWindowDelegate> because on 10.6 it won't have
-    // window:willUseFullScreenContentSize:.
-    id delegate = [window delegate];
+    id<NSWindowDelegate> delegate = [window delegate];
 
     // Nothing is currently fullscreen. Make this window fullscreen.
     window_ = window;
@@ -106,7 +103,6 @@ class ScopedFakeNSWindowFullscreen::Impl {
     [[NSNotificationCenter defaultCenter]
         postNotificationName:NSWindowWillEnterFullScreenNotification
                       object:window];
-    // Starting with 10.11, OSX also posts LiveResize notifications.
     [[NSNotificationCenter defaultCenter]
         postNotificationName:NSWindowWillStartLiveResizeNotification
                       object:window];
@@ -214,8 +210,7 @@ void ScopedFakeNSWindowFullscreen::FinishTransition() {
   DCHECK(!impl_->is_in_transition());
 }
 
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test
 
 @implementation ToggleFullscreenDonorForWindow
 

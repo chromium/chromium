@@ -352,12 +352,6 @@ RenderWidgetHostViewBase* WebContentsViewMac::CreateViewForWidget(
   [GetInProcessNSView() addSubview:view_view
                         positioned:NSWindowBelow
                         relativeTo:nil];
-  // For some reason known only to Cocoa, the autorecalculation of the key view
-  // loop set on the window doesn't set the next key view when the subview is
-  // added. On 10.6 things magically work fine; on 10.5 they fail
-  // <http://crbug.com/61493>. Digging into Cocoa key view loop code yielded
-  // madness; TODO(avi,rohit): look at this again and figure out what's really
-  // going on.
   [GetInProcessNSView() setNextKeyView:view_view];
   return view;
 }

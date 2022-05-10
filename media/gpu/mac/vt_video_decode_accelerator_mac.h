@@ -47,7 +47,7 @@ class VP9SuperFrameBitstreamFilter;
 MEDIA_GPU_EXPORT bool InitializeVideoToolbox();
 
 // VideoToolbox.framework implementation of the VideoDecodeAccelerator
-// interface for Mac OS X (currently limited to 10.9+).
+// interface for macOS.
 class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
                                  public base::trace_event::MemoryDumpProvider {
  public:

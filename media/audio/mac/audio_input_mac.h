@@ -24,8 +24,8 @@ namespace media {
 class AudioBus;
 class AudioManagerMac;
 
-// Implementation of AudioInputStream for Mac OS X using the audio queue service
-// present in OS 10.5 and later. Design reflects PCMQueueOutAudioOutputStream.
+// Implementation of AudioInputStream for macOS using the Audio Queue service
+// in Audio Toolbox. Design reflects PCMQueueOutAudioOutputStream.
 class PCMQueueInAudioInputStream : public AudioInputStream {
  public:
   // Parameters as per AudioManager::MakeAudioInputStream.

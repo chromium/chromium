@@ -927,7 +927,7 @@ int VerifyWithGivenFlags(X509Certificate* cert,
       // keychain is not normally present in the keychain search list, but is
       // implicitly checked after the keychains in the search list. By
       // including it directly, force it to be checked first.  This is a gross
-      // hack, but the path is known to be valid on OS X 10.9-10.11.
+      // hack, but the path is known to be valid through macOS 12.
       status = SecKeychainOpen(
           "/System/Library/Keychains/SystemRootCertificates.keychain",
           &keychain);

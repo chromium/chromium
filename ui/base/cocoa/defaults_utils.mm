@@ -6,7 +6,8 @@
 
 #include <AppKit/AppKit.h>
 
-#include <algorithm>
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -44,38 +45,33 @@ absl::optional<base::TimeDelta> TextInsertionCaretBlinkPeriodFromDefaults() {
 
   BlinkPeriodNeedsRefresh() = false;
 
-  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-  // 10.10+
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  // See AppKit's `-[NSTextView _restartBlinkTimer]`.
   NSInteger on_period_ms =
       [defaults integerForKey:@"NSTextInsertionPointBlinkPeriodOn"];
   NSInteger off_period_ms =
       [defaults integerForKey:@"NSTextInsertionPointBlinkPeriodOff"];
-  // 10.9
-  NSInteger period_ms =
-      [defaults integerForKey:@"NSTextInsertionPointBlinkPeriod"];
 
   // If any of the periods is negative the requested blink time makes no sense.
   // In that case use the default blink time.
-  if ((on_period_ms == 0 && off_period_ms == 0 && period_ms == 0) ||
-      on_period_ms < 0 || off_period_ms < 0 || period_ms < 0) {
+  if ((on_period_ms == 0 && off_period_ms == 0) || on_period_ms < 0 ||
+      off_period_ms < 0) {
     blink_period = absl::nullopt;
     return blink_period;
   }
 
-  const int kMaximumReasonableIntervalMs = 60 * 1000;
-  if (on_period_ms > kMaximumReasonableIntervalMs ||
-      period_ms > kMaximumReasonableIntervalMs) {
-    // Treat an exceedingly long on_period_ms as permanently enabling
+  const int kMaximumReasonableIntervalMs =
+      60 * base::Time::kMillisecondsPerSecond;
+  if (on_period_ms > kMaximumReasonableIntervalMs) {
+    // Treat an exceedingly long `on_period_ms` as permanently enabling
     // the cursor. In Blink/Views this is signaled by a blink period of 0.
-    // Conversely, a high off_period_ms would permanently disable the cursor,
+    // Conversely, a high `off_period_ms` would permanently disable the cursor,
     // but Blink and Views don't support that so it's not implemented here.
     blink_period = base::TimeDelta();
   } else if (on_period_ms || off_period_ms) {
     // When both on and off periods are defined take the average (neither Blink
     // nor Views support separate on and off intervals).
     blink_period = base::Milliseconds((on_period_ms + off_period_ms) / 2);
-  } else {
-    blink_period = base::Milliseconds(period_ms);
   }
 
   return blink_period;

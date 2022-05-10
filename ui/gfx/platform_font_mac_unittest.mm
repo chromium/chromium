@@ -183,16 +183,15 @@ TEST(PlatformFontMacTest, DerivedFineGrainedFonts) {
 // Ensures that the Font's reported height is consistent with the native font's
 // ascender and descender metrics.
 TEST(PlatformFontMacTest, ValidateFontHeight) {
-  // Use the default ResourceBundle system font. E.g. Helvetica Neue in 10.10,
-  // Lucida Grande before that, and San Francisco after.
+  // Use the default ResourceBundle system font (i.e. San Francisco).
   Font default_font;
   Font::FontStyle styles[] = {Font::NORMAL, Font::ITALIC, Font::UNDERLINE};
 
-  for (size_t i = 0; i < std::size(styles); ++i) {
-    SCOPED_TRACE(testing::Message() << "Font::FontStyle: " << styles[i]);
+  for (auto& style : styles) {
+    SCOPED_TRACE(testing::Message() << "Font::FontStyle: " << style);
     // Include the range of sizes used by ResourceBundle::FontStyle (-1 to +8).
     for (int delta = -1; delta <= 8; ++delta) {
-      Font font = default_font.Derive(delta, styles[i], Weight::NORMAL);
+      Font font = default_font.Derive(delta, style, Weight::NORMAL);
       SCOPED_TRACE(testing::Message() << "FontSize(): " << font.GetFontSize());
       NSFont* native_font = font.GetNativeFont();
 

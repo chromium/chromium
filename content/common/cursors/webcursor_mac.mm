@@ -20,8 +20,8 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/image/image.h"
 
-// Private interface to CoreCursor, as of Mac OS X 10.7. This is essentially the
-// implementation of WKCursor in WebKitSystemInterface.
+// Private interface to CoreCursor. See
+// https://github.com/WebKit/WebKit/blob/main/Source/WebCore/PAL/pal/spi/mac/HIServicesSPI.h
 
 enum {
   kArrowCursor = 0,
@@ -59,10 +59,10 @@ enum {
   kResizeSouthwestCursor = 37,
   kResizeWestCursor = 38,
   kMoveCursor = 39,
-  kHelpCursor = 40,  // Present on >= 10.7.3.
-  kCellCursor = 41,  // Present on >= 10.7.3.
-  kZoomInCursor = 42,  // Present on >= 10.7.3.
-  kZoomOutCursor = 43  // Present on >= 10.7.3.
+  kHelpCursor = 40,
+  kCellCursor = 41,
+  kZoomInCursor = 42,
+  kZoomOutCursor = 43
 };
 typedef long long CrCoreCursorType;
 

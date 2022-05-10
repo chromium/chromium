@@ -90,7 +90,7 @@ var CrElementsDrawerTest = class extends CrElementsBrowserTest {
   }
 };
 
-// https://crbug.com/1008122 - Flaky on Mac 10.10.
+// https://crbug.com/1008122 - Flaky on Mac.
 GEN('#if BUILDFLAG(IS_MAC)');
 GEN('#define MAYBE_Drawer DISABLED_Drawer');
 GEN('#else');

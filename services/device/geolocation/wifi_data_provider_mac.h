@@ -9,9 +9,7 @@
 
 namespace device {
 
-// Implementation of the wifi data provider for Mac OSX. Uses different API
-// bindings depending on APIs detected available at runtime in order to access
-// wifi scan data: Apple80211.h on OSX 10.5, CoreWLAN framework on OSX 10.6.
+// Implementation of the wifi data provider for macOS using CoreWLAN.
 class WifiDataProviderMac : public WifiDataProviderCommon {
  public:
   WifiDataProviderMac();
