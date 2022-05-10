@@ -3,7 +3,7 @@
 <translationbundle lang="pt-BR">
 <translation id="1006017844123154345">Abrir on-line</translation>
 <translation id="1044891598689252897">Os sites funcionarão normalmente</translation>
-<translation id="1124090076051167250">Essa ação apagará <ph name="DATASIZE" /> de dados e cookies armazenados por sites ou apps na sua tela inicial.</translation>
+<translation id="1124090076051167250">Essa ação vai apagar <ph name="DATASIZE" /> de dados e cookies armazenados por sites ou apps na sua tela inicial.</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1201402288615127009">Próxima</translation>
@@ -78,7 +78,7 @@
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2717722538473713889">Endereços de e-mail</translation>
 <translation id="2750481671343847896">Sites podem exibir solicitações de login de serviços de identidade.</translation>
-<translation id="2785051990912111074">Essa ação apagará os cookies de <ph name="WEBSITE" /></translation>
+<translation id="2785051990912111074">Essa ação vai apagar os cookies de <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Tem certeza de que quer redefinir todas as permissões de site para <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Faixa anterior</translation>
@@ -87,7 +87,7 @@
 <translation id="2913331724188855103">Permitir que os sites salvem e leiam os dados de arquivos "cookies" - que armazenam temporariamente o que você visitou na rede. (Recomendado)</translation>
 <translation id="2932883381142163287">Denunciar abuso</translation>
 <translation id="2968755619301702150">Leitor de certificados</translation>
-<translation id="300526633675317032">Essa ação apagará tudo, <ph name="SIZE_IN_KB" /> de dados de armazenamento de sites.</translation>
+<translation id="300526633675317032">Essa ação vai apagar tudo, <ph name="SIZE_IN_KB" /> de dados de armazenamento de sites.</translation>
 <translation id="3008272652534848354">Redefinir permissões</translation>
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
 <translation id="3114012059975132928">Player de vídeo</translation>
@@ -175,7 +175,7 @@
 <translation id="5317780077021120954">Salvar</translation>
 <translation id="5335288049665977812">Permitir que sites executem o JavaScript (recomendado)</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
-<translation id="5354152178998424783">Essa ação apagará <ph name="DATASIZE" /> de dados e cookies armazenados por sites.</translation>
+<translation id="5354152178998424783">Essa ação vai apagar <ph name="DATASIZE" /> de dados e cookies armazenados por sites.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(mais 1)}one{(mais #)}other{(mais #)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
 <translation id="5412236728747081950">Este site acessa seus interesses no Chrome para mostrar anúncios mais relevantes</translation>
@@ -194,7 +194,7 @@
 <translation id="5677928146339483299">Bloqueado</translation>
 <translation id="5689516760719285838">Local</translation>
 <translation id="5690795753582697420">A câmera está desativada nas configurações do Android</translation>
-<translation id="5719847187258001597">Essa ação apagará todos os dados e cookies armazenados por <ph name="ORIGIN" /> ou pelo app dele na sua tela inicial.</translation>
+<translation id="5719847187258001597">Essa ação vai apagar todos os dados e cookies armazenados por <ph name="ORIGIN" /> ou pelo app dele na sua tela inicial.</translation>
 <translation id="5771720122942595109">Bloqueada: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5860033963881614850">Desativado</translation>
@@ -331,7 +331,7 @@
 <translation id="8719283222052720129">Ative a permissão para o app <ph name="APP_NAME" /> nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8730621377337864115">Concluído</translation>
-<translation id="8737217482364735741">Essa ação apagará todos os dados e cookies armazenados por <ph name="ORIGIN" />.</translation>
+<translation id="8737217482364735741">Essa ação vai apagar todos os dados e cookies armazenados por <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Selecione uma imagem</translation>
 <translation id="8801436777607969138">Bloquear JavaScript para um site específico.</translation>
 <translation id="8816026460808729765">Impedir que sites acessem os sensores</translation>

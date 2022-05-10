@@ -422,7 +422,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="205212645995975601">BBQ và đồ nướng</translation>
 <translation id="2053111141626950936">Các trang viết bằng <ph name="LANGUAGE" /> sẽ không được dịch.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Khi chế độ điều khiển này bật và trạng thái là đang hoạt động, Chrome sẽ xác định xem hoạt động duyệt web gần đây của bạn giống với nhóm đông người hoặc "nhóm thuần tập" nào nhất. Các nhà quảng cáo có thể chọn quảng cáo cho nhóm này và hoạt động duyệt web sẽ được lưu giữ riêng tư trên thiết bị của bạn. Nhóm của bạn được cập nhật hằng ngày.}=1{Khi chế độ điều khiển này bật và trạng thái là đang hoạt động, Chrome sẽ xác định xem hoạt động duyệt web gần đây của bạn giống với nhóm đông người hoặc "nhóm thuần tập" nào nhất. Các nhà quảng cáo có thể chọn quảng cáo cho nhóm này và hoạt động duyệt web sẽ được lưu giữ riêng tư trên thiết bị của bạn. Nhóm của bạn được cập nhật hằng ngày.}other{Khi chế độ điều khiển này bật và trạng thái là đang hoạt động, Chrome sẽ xác định xem hoạt động duyệt web gần đây của bạn giống với nhóm đông người hoặc "nhóm thuần tập" nào nhất. Các nhà quảng cáo có thể chọn quảng cáo cho nhóm này và hoạt động duyệt web sẽ được lưu giữ riêng tư trên thiết bị của bạn. Nhóm của bạn được cập nhật {NUM_DAYS} ngày một lần.}}</translation>
-<translation id="2053553514270667976">Mã zip</translation>
+<translation id="2053553514270667976">Mã ZIP</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 đề xuất}other{# đề xuất}}</translation>
 <translation id="2068528718802935086">Em bé và trẻ mới biết đi</translation>
 <translation id="2071156619270205202">Thẻ này không đáp ứng điều kiện để tạo số thẻ ảo.</translation>
