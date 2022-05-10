@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_marquee_element.h"
-#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_box.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
@@ -2085,40 +2084,32 @@ LayoutUnit LayoutBlock::InlineBlockBaseline(
   return LayoutUnit(-1);
 }
 
-const LayoutBlock* LayoutBlock::EnclosingFirstLineStyleBlock() const {
+const LayoutBlock* LayoutBlock::FirstLineStyleParentBlock() const {
   NOT_DESTROYED();
-  auto* element = DynamicTo<Element>(GetNode());
-  if (element && element->ShadowPseudoId() ==
-                     shadow_element_names::kPseudoInternalInputSuggested) {
-    // Disable ::first-line style for autofill previews. See
-    // crbug.com/1227170.
-    return nullptr;
-  }
   const LayoutBlock* first_line_block = this;
-  bool has_pseudo = false;
-  while (true) {
-    has_pseudo =
-        first_line_block->StyleRef().HasPseudoElementStyle(kPseudoIdFirstLine);
-    if (has_pseudo)
-      break;
-    LayoutObject* parent_block = first_line_block->Parent();
-    if (first_line_block->IsAtomicInlineLevel() ||
-        first_line_block->IsFloatingOrOutOfFlowPositioned() || !parent_block ||
-        !parent_block->BehavesLikeBlockContainer())
-      break;
-    auto* parent_layout_block = DynamicTo<LayoutBlock>(parent_block);
-    const LayoutObject* first_child = parent_layout_block->FirstChild();
-    while (first_child->IsFloatingOrOutOfFlowPositioned())
-      first_child = first_child->NextSibling();
-    if (first_child != first_line_block)
-      break;
-    first_line_block = parent_layout_block;
-  }
-
-  if (!has_pseudo)
+  // Inline blocks do not get ::first-line style from its containing blocks.
+  if (IsAtomicInlineLevel())
+    return nullptr;
+  // Floats and out of flow blocks do not get ::first-line style from its
+  // containing blocks.
+  if (IsFloatingOrOutOfFlowPositioned())
     return nullptr;
 
-  return first_line_block;
+  LayoutObject* parent_block = first_line_block->Parent();
+  if (!parent_block || !parent_block->BehavesLikeBlockContainer())
+    return nullptr;
+
+  const LayoutBlock* parent_layout_block = To<LayoutBlock>(parent_block);
+
+  // If we are not the first in-flow child of our parent, we cannot get
+  // ::first-line style from our ancestors.
+  const LayoutObject* first_child = parent_layout_block->FirstChild();
+  while (first_child->IsFloatingOrOutOfFlowPositioned())
+    first_child = first_child->NextSibling();
+  if (first_child != first_line_block)
+    return nullptr;
+
+  return parent_layout_block;
 }
 
 LayoutBlockFlow* LayoutBlock::NearestInnerBlockWithFirstLine() {

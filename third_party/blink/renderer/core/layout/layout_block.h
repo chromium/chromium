@@ -409,9 +409,10 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   //   </div>
   // </div>
 
-  // Returns the nearest enclosing block (including this block) that contributes
-  // a first-line style to our first line.
-  const LayoutBlock* EnclosingFirstLineStyleBlock() const;
+  // Return the parent LayoutObject if it can contribute to our ::first-line
+  // style.
+  const LayoutBlock* FirstLineStyleParentBlock() const;
+
   // Returns this block or the nearest inner block containing the actual first
   // line.
   LayoutBlockFlow* NearestInnerBlockWithFirstLine();

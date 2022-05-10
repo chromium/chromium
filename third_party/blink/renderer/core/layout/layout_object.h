@@ -3726,8 +3726,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
       AncestorSkipInfo* = nullptr) const;
 
   // Returns the first line style declared in CSS. The style may be declared on
-  // an ancestor block (see EnclosingFirstLineStyleBlock()) that applies to this
-  // object. Returns nullptr if there is no applicable first line style.
+  // an ancestor block (see LayoutBlock::FirstLineStyleParentBlock) that applies
+  // to this object. Returns nullptr if there is no applicable first line style.
   // Whether the style applies is based on CSS rules, regardless of whether this
   // object is really in the first line which is unknown before layout.
   const ComputedStyle* FirstLineStyleWithoutFallback() const;

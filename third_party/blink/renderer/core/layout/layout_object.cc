@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/html/image_document.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
@@ -3937,14 +3938,32 @@ const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
 
   if (BehavesLikeBlockContainer()) {
     if (const ComputedStyle* cached =
-            StyleRef().GetCachedPseudoElementStyle(kPseudoIdFirstLine))
+            StyleRef().GetCachedPseudoElementStyle(kPseudoIdFirstLine)) {
       return cached;
+    }
 
-    if (const LayoutBlock* first_line_block =
-            To<LayoutBlock>(this)->EnclosingFirstLineStyleBlock()) {
-      if (first_line_block->Style() == Style()) {
-        return first_line_block->GetCachedPseudoElementStyle(
-            kPseudoIdFirstLine);
+    if (Element* element = DynamicTo<Element>(GetNode())) {
+      if (element->ShadowPseudoId() ==
+          shadow_element_names::kPseudoInternalInputSuggested) {
+        // Disable ::first-line style for autofill previews. See
+        // crbug.com/1227170.
+        return nullptr;
+      }
+    }
+
+    for (const LayoutBlock* first_line_block = To<LayoutBlock>(this);
+         first_line_block;
+         first_line_block = first_line_block->FirstLineStyleParentBlock()) {
+      const ComputedStyle& style = first_line_block->StyleRef();
+      if (!style.HasPseudoElementStyle(kPseudoIdFirstLine))
+        continue;
+      if (first_line_block == this) {
+        if (const ComputedStyle* cached =
+                first_line_block->GetCachedPseudoElementStyle(
+                    kPseudoIdFirstLine)) {
+          return cached;
+        }
+        continue;
       }
 
       // We can't use first_line_block->GetCachedPseudoElementStyle() because
