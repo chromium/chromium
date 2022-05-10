@@ -92,9 +92,11 @@ class SendTabToSelfBubbleController
 
  private:
   friend class content::WebContentsUserData<SendTabToSelfBubbleController>;
-  friend class SendTabToSelfBubbleViewImplTest;
-  FRIEND_TEST_ALL_PREFIXES(SendTabToSelfBubbleViewImplTest, PopulateScrollView);
-  FRIEND_TEST_ALL_PREFIXES(SendTabToSelfBubbleViewImplTest, DevicePressed);
+  friend class SendTabToSelfDevicePickerBubbleViewTest;
+  FRIEND_TEST_ALL_PREFIXES(SendTabToSelfDevicePickerBubbleViewTest,
+                           PopulateScrollView);
+  FRIEND_TEST_ALL_PREFIXES(SendTabToSelfDevicePickerBubbleViewTest,
+                           DevicePressed);
 
   void UpdateIcon();
 

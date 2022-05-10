@@ -429,10 +429,16 @@ class BrowserWindow : public ui::BaseWindow {
                             const GURL& url,
                             bool show_back_button) = 0;
 
-  // Shows the "send tab to self" bubble. This must only be called as a direct
-  // result of user action.
-  virtual send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfBubble(
-      content::WebContents* contents) = 0;
+  // Shows the "send tab to self" device picker bubble. This must only be called
+  // as a direct result of user action.
+  virtual send_tab_to_self::SendTabToSelfBubbleView*
+  ShowSendTabToSelfDevicePickerBubble(content::WebContents* contents) = 0;
+
+  // Shows the "send tab to self" promo bubble. This must only be called as a
+  // direct result of user action.
+  virtual send_tab_to_self::SendTabToSelfBubbleView*
+  ShowSendTabToSelfPromoBubble(content::WebContents* contents,
+                               bool show_signin_button) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns the PageActionIconView for the Sharing Hub.

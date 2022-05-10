@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view_impl.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
 
 #include <string>
 #include <vector>
@@ -61,7 +61,7 @@ class SendTabToSelfBubbleControllerMock : public SendTabToSelfBubbleController {
 
 }  // namespace
 
-class SendTabToSelfBubbleViewImplTest : public ChromeViewsTestBase {
+class SendTabToSelfDevicePickerBubbleViewTest : public ChromeViewsTestBase {
  protected:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -76,8 +76,8 @@ class SendTabToSelfBubbleViewImplTest : public ChromeViewsTestBase {
     web_contents_->SetUserData(SendTabToSelfBubbleControllerMock::UserDataKey(),
                                base::WrapUnique(controller_.get()));
 
-    bubble_ = new SendTabToSelfBubbleViewImpl(anchor_widget_->GetContentsView(),
-                                              web_contents_.get());
+    bubble_ = new SendTabToSelfDevicePickerBubbleView(
+        anchor_widget_->GetContentsView(), web_contents_.get());
     views::BubbleDialogDelegateView::CreateBubble(bubble_);
   }
 
@@ -91,12 +91,13 @@ class SendTabToSelfBubbleViewImplTest : public ChromeViewsTestBase {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> anchor_widget_;
-  raw_ptr<SendTabToSelfBubbleViewImpl> bubble_;
+  raw_ptr<SendTabToSelfDevicePickerBubbleView> bubble_;
   // Owned by WebContents.
   raw_ptr<SendTabToSelfBubbleControllerMock> controller_;
 };
 
-TEST_F(SendTabToSelfBubbleViewImplTest, KeyboardAccessibilityConfigured) {
+TEST_F(SendTabToSelfDevicePickerBubbleViewTest,
+       KeyboardAccessibilityConfigured) {
   auto* container = bubble_->GetButtonContainerForTesting();
 
   ASSERT_EQ(3U, container->children().size());
@@ -111,7 +112,7 @@ TEST_F(SendTabToSelfBubbleViewImplTest, KeyboardAccessibilityConfigured) {
             container->children()[2]->GetGroup());
 }
 
-TEST_F(SendTabToSelfBubbleViewImplTest, ButtonPressed) {
+TEST_F(SendTabToSelfDevicePickerBubbleViewTest, ButtonPressed) {
   EXPECT_CALL(*controller_, OnDeviceSelected("device_guid_3"));
   const views::View* button_container = bubble_->GetButtonContainerForTesting();
   ASSERT_EQ(3U, button_container->children().size());

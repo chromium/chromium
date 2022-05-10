@@ -27783,6 +27783,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromSendTabToSelfPromo">
+  <owner>victorvianna@google.com</owner>
+  <owner>harrisonsean@chromium.org</owner>
+  <description>
+    Recorded when showing sign in entry in the send tab to self promo.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromSettings" not_user_triggered="true">
   <owner>bzanotti@chromium.org</owner>
   <owner>gogerald@chromium.org</owner>
@@ -28343,6 +28351,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_SAVE_CARD_BUBBLE.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromSendTabToSelfPromo">
+  <owner>victorvianna@google.com</owner>
+  <owner>harrisonsean@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO.
   </description>
 </action>
 

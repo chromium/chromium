@@ -496,8 +496,11 @@ class BrowserView : public BrowserWindow,
       content::WebContents* contents,
       const GURL& url,
       bool show_back_button) override;
-  send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfBubble(
-      content::WebContents* contents) override;
+  send_tab_to_self::SendTabToSelfBubbleView*
+  ShowSendTabToSelfDevicePickerBubble(content::WebContents* contents) override;
+  send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfPromoBubble(
+      content::WebContents* contents,
+      bool show_signin_button) override;
 #if BUILDFLAG(IS_CHROMEOS)
   views::Button* GetSharingHubIconButton() override;
 #else

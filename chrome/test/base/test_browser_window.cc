@@ -268,7 +268,14 @@ TestBrowserWindow::ShowScreenshotCapturedBubble(content::WebContents* contents,
 #endif
 
 send_tab_to_self::SendTabToSelfBubbleView*
-TestBrowserWindow::ShowSendTabToSelfBubble(content::WebContents* contents) {
+TestBrowserWindow::ShowSendTabToSelfDevicePickerBubble(
+    content::WebContents* contents) {
+  return nullptr;
+}
+
+send_tab_to_self::SendTabToSelfBubbleView*
+TestBrowserWindow::ShowSendTabToSelfPromoBubble(content::WebContents* contents,
+                                                bool show_signin_button) {
   return nullptr;
 }
 

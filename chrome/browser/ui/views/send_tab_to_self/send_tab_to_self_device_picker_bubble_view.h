@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_BUBBLE_VIEW_IMPL_H_
-#define CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_BUBBLE_VIEW_IMPL_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_DEVICE_PICKER_BUBBLE_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_DEVICE_PICKER_BUBBLE_VIEW_H_
 
 #include <map>
 #include <memory>
@@ -30,18 +30,20 @@ class SendTabToSelfBubbleDeviceButton;
 
 // View component of the send tab to self bubble that allows users to choose
 // target device to send tab to.
-class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
-                                    public LocationBarBubbleDelegateView {
+class SendTabToSelfDevicePickerBubbleView
+    : public SendTabToSelfBubbleView,
+      public LocationBarBubbleDelegateView {
  public:
   // Bubble will be anchored to |anchor_view|.
-  SendTabToSelfBubbleViewImpl(views::View* anchor_view,
-                              content::WebContents* web_contents);
+  SendTabToSelfDevicePickerBubbleView(views::View* anchor_view,
+                                      content::WebContents* web_contents);
 
-  SendTabToSelfBubbleViewImpl(const SendTabToSelfBubbleViewImpl&) = delete;
-  SendTabToSelfBubbleViewImpl& operator=(const SendTabToSelfBubbleViewImpl&) =
-      delete;
+  SendTabToSelfDevicePickerBubbleView(
+      const SendTabToSelfDevicePickerBubbleView&) = delete;
+  SendTabToSelfDevicePickerBubbleView& operator=(
+      const SendTabToSelfDevicePickerBubbleView&) = delete;
 
-  ~SendTabToSelfBubbleViewImpl() override;
+  ~SendTabToSelfDevicePickerBubbleView() override;
 
   // SendTabToSelfBubbleView:
   void Hide() override;
@@ -83,4 +85,4 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
 
 }  // namespace send_tab_to_self
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_BUBBLE_VIEW_IMPL_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_DEVICE_PICKER_BUBBLE_VIEW_H_

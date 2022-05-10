@@ -66,12 +66,34 @@ class SendTabToSelfBubbleTest : public DialogBrowserTest {
     web_contents->SetUserData(
         TestSendTabToSelfBubbleController::UserDataKey(),
         std::make_unique<TestSendTabToSelfBubbleController>(web_contents));
-    BrowserView::GetBrowserViewForBrowser(browser())->ShowSendTabToSelfBubble(
-        web_contents);
+
+    if (name == "ShowDeviceList") {
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->ShowSendTabToSelfDevicePickerBubble(web_contents);
+    } else if (name == "ShowSigninPromo") {
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->ShowSendTabToSelfPromoBubble(web_contents,
+                                         /*show_signin_button=*/true);
+    } else if (name == "ShowNoTargetDevicePromo") {
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->ShowSendTabToSelfPromoBubble(web_contents,
+                                         /*show_signin_button=*/false);
+    } else {
+      NOTREACHED();
+    }
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleTest, InvokeUi_default) {
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleTest, InvokeUi_ShowDeviceList) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleTest, InvokeUi_ShowSigninPromo) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleTest,
+                       InvokeUi_ShowNoTargetDevicePromo) {
   ShowAndVerifyUi();
 }
 

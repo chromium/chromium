@@ -181,6 +181,7 @@ enum class AccessPoint : int {
   ACCESS_POINT_KALEIDOSCOPE = 33,
   ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR = 34,
   ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE = 35,
+  ACCESS_POINT_SEND_TAB_TO_SELF_PROMO = 36,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml
   ACCESS_POINT_MAX,  // This must be last.

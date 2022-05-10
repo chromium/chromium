@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/hover_button.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view_impl.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -56,15 +56,15 @@ std::u16string GetLastUpdatedTime(const TargetDeviceInfo& device_info) {
 }  // namespace
 
 SendTabToSelfBubbleDeviceButton::SendTabToSelfBubbleDeviceButton(
-    SendTabToSelfBubbleViewImpl* bubble,
+    SendTabToSelfDevicePickerBubbleView* bubble,
     const TargetDeviceInfo& device_info)
-    : HoverButton(
-          base::BindRepeating(&SendTabToSelfBubbleViewImpl::DeviceButtonPressed,
-                              base::Unretained(bubble),
-                              base::Unretained(this)),
-          CreateIcon(device_info.device_type),
-          base::UTF8ToUTF16(device_info.device_name),
-          GetLastUpdatedTime(device_info)) {
+    : HoverButton(base::BindRepeating(
+                      &SendTabToSelfDevicePickerBubbleView::DeviceButtonPressed,
+                      base::Unretained(bubble),
+                      base::Unretained(this)),
+                  CreateIcon(device_info.device_type),
+                  base::UTF8ToUTF16(device_info.device_name),
+                  GetLastUpdatedTime(device_info)) {
   device_name_ = device_info.device_name;
   device_guid_ = device_info.cache_guid;
   device_type_ = device_info.device_type;

@@ -159,8 +159,11 @@ class TestBrowserWindow : public BrowserWindow {
       const absl::optional<url::Origin>& initiating_origin,
       IntentPickerResponse callback) override {}
 #endif  //  !define(OS_ANDROID)
-  send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfBubble(
-      content::WebContents* contents) override;
+  send_tab_to_self::SendTabToSelfBubbleView*
+  ShowSendTabToSelfDevicePickerBubble(content::WebContents* contents) override;
+  send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfPromoBubble(
+      content::WebContents* contents,
+      bool show_signin_button) override;
 #if BUILDFLAG(IS_CHROMEOS)
   views::Button* GetSharingHubIconButton() override;
 #else

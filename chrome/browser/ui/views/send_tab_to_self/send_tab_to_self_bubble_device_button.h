@@ -14,7 +14,7 @@
 
 namespace send_tab_to_self {
 
-class SendTabToSelfBubbleViewImpl;
+class SendTabToSelfDevicePickerBubbleView;
 struct TargetDeviceInfo;
 
 // A button representing a device in share bubble. It is highlighted when
@@ -22,7 +22,7 @@ struct TargetDeviceInfo;
 class SendTabToSelfBubbleDeviceButton : public HoverButton {
  public:
   METADATA_HEADER(SendTabToSelfBubbleDeviceButton);
-  SendTabToSelfBubbleDeviceButton(SendTabToSelfBubbleViewImpl* bubble,
+  SendTabToSelfBubbleDeviceButton(SendTabToSelfDevicePickerBubbleView* bubble,
                                   const TargetDeviceInfo& device_info);
   SendTabToSelfBubbleDeviceButton(const SendTabToSelfBubbleDeviceButton&) =
       delete;

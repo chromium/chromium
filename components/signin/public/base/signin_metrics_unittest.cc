@@ -138,6 +138,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "EnterpriseSignoutResignSheet";
       case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
         return "SigninInterceptFirstRunExperience";
+      case AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
+        return "SendTabToSelfPromo";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";
