@@ -23,7 +23,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "components/services/storage/public/cpp/buckets/bucket_init_params.h"
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
@@ -866,28 +868,31 @@ bool ObfuscatedFileUtil::IsDirectoryEmpty(FileSystemOperationContext* context,
   return children.empty();
 }
 
+// TODO(https://crbug.com/1310361): refactor GetDirectoryForStorageKeyAndType
+// and its callers to return a base::FileErrorOr<base::FilePath>.
 base::FilePath ObfuscatedFileUtil::GetDirectoryForStorageKeyAndType(
     const blink::StorageKey& storage_key,
     const std::string& type_string,
     bool create,
     base::File::Error* error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::FilePath origin_dir =
-      GetDirectoryForStorageKey(storage_key, create, error_code);
-  if (origin_dir.empty())
+  base::FileErrorOr<base::FilePath> origin_dir =
+      GetDirectoryForStorageKey(storage_key, create);
+  if (origin_dir.is_error()) {
+    *error_code = origin_dir.error();
     return base::FilePath();
-  if (type_string.empty())
-    return origin_dir;
-  base::FilePath path = origin_dir.AppendASCII(type_string);
-  base::File::Error error = base::File::FILE_OK;
-  if (!delegate_->DirectoryExists(path) &&
-      (!create || delegate_->CreateDirectory(path, false /* exclusive */,
-                                             true /* recursive */) !=
-                      base::File::FILE_OK)) {
-    error = create ? base::File::FILE_ERROR_FAILED
-                   : base::File::FILE_ERROR_NOT_FOUND;
   }
-
+  if (origin_dir->empty()) {
+    *error_code = base::File::FILE_OK;
+    return base::FilePath();
+  }
+  if (type_string.empty()) {
+    *error_code = base::File::FILE_OK;
+    return origin_dir.value();
+  }
+  // Append the file system type and verify the path is valid.
+  base::FilePath path = origin_dir->AppendASCII(type_string);
+  base::File::Error error = GetDirectoryHelper(path, create);
   if (error_code)
     *error_code = error;
   return path;
@@ -899,9 +904,9 @@ bool ObfuscatedFileUtil::DeleteDirectoryForStorageKeyAndType(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DestroyDirectoryDatabase(storage_key, type_string);
 
-  const base::FilePath origin_path =
-      GetDirectoryForStorageKey(storage_key, false, nullptr);
-  if (origin_path.empty())
+  base::FileErrorOr<base::FilePath> origin_path =
+      GetDirectoryForStorageKey(storage_key, false);
+  if (origin_path.is_error() || origin_path->empty())
     return true;
 
   if (!type_string.empty()) {
@@ -923,20 +928,24 @@ bool ObfuscatedFileUtil::DeleteDirectoryForStorageKeyAndType(
     for (const std::string& type : known_type_strings_) {
       if (type == type_string)
         continue;
-      if (delegate_->DirectoryExists(origin_path.AppendASCII(type))) {
+      if (delegate_->DirectoryExists(origin_path->AppendASCII(type))) {
         // Other type's directory exists; just return true here.
         return true;
       }
     }
   }
 
-  // No other directories seem exist. Try deleting the entire origin directory.
-  InitOriginDatabase(storage_key.origin(), false);
-  if (origin_database_) {
-    origin_database_->RemovePathForOrigin(
-        GetIdentifierFromOrigin(storage_key.origin()));
+  // No other directories seem exist. If we have a first-party StorageKey,
+  // try deleting the entire origin directory.
+  if (storage_key.IsFirstPartyContext()) {
+    InitOriginDatabase(storage_key.origin(), false);
+    if (origin_database_) {
+      origin_database_->RemovePathForOrigin(
+          GetIdentifierFromOrigin(storage_key.origin()));
+    }
   }
-  return delegate_->DeleteFileOrDirectory(origin_path, true /* recursive */);
+  return delegate_->DeleteFileOrDirectory(origin_path.value(),
+                                          true /* recursive */);
 }
 
 void ObfuscatedFileUtil::CloseFileSystemForStorageKeyAndType(
@@ -1016,8 +1025,15 @@ base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryForURL(
     return path;
   }
   // Construct the file path using non-default bucket information.
-  return GetDirectoryWithBucket(create, url.bucket().value(),
-                                CallGetTypeStringForURL(url));
+  base::FilePath path =
+      sandbox_delegate_->quota_manager_proxy()->GetClientBucketPath(
+          url.bucket().value(), QuotaClientType::kFileSystem);
+  // Append the file system type and verify the path is valid.
+  path = path.AppendASCII(CallGetTypeStringForURL(url));
+  base::File::Error error = GetDirectoryHelper(path, create);
+  if (error != base::File::FILE_OK)
+    return error;
+  return path;
 }
 
 std::string ObfuscatedFileUtil::CallGetTypeStringForURL(
@@ -1235,40 +1251,54 @@ SandboxDirectoryDatabase* ObfuscatedFileUtil::GetDirectoryDatabase(
   return directories_[key].get();
 }
 
-base::FilePath ObfuscatedFileUtil::GetDirectoryForStorageKey(
+base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryForStorageKey(
     const blink::StorageKey& storage_key,
-    bool create,
-    base::File::Error* error_code) {
+    bool create) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (storage_key.IsThirdPartyContext()) {
+    // GetOrCreateBucketSync() called below requires the use of the
+    // base::WaitableEvent sync primitive. We must explicitly declare the usage
+    // of this primitive to avoid thread restriction errors.
+    base::ScopedAllowBaseSyncPrimitives allow_wait;
+    // Retrieve the bucket information for third-party StorageKey.
+    QuotaErrorOr<BucketInfo> bucket =
+        sandbox_delegate_->quota_manager_proxy()->GetOrCreateBucketSync(
+            BucketInitParams(storage_key));
+    if (!bucket.ok())
+      return base::File::FILE_ERROR_FAILED;
+    // Get the path and verify it is valid.
+    base::FileErrorOr<base::FilePath> path =
+        sandbox_delegate_->quota_manager_proxy()->GetClientBucketPath(
+            bucket->ToBucketLocator(), QuotaClientType::kFileSystem);
+    if (path.is_error())
+      return path.error();
+    base::File::Error error = GetDirectoryHelper(path.value(), create);
+    if (error != base::File::FILE_OK)
+      return error;
+    return path;
+  }
+
   if (!InitOriginDatabase(storage_key.origin(), create)) {
-    if (error_code) {
-      *error_code = create ? base::File::FILE_ERROR_FAILED
-                           : base::File::FILE_ERROR_NOT_FOUND;
-    }
-    return base::FilePath();
+    return create ? base::File::FILE_ERROR_FAILED
+                  : base::File::FILE_ERROR_NOT_FOUND;
   }
   base::FilePath directory_name;
   std::string id = GetIdentifierFromOrigin(storage_key.origin());
 
   bool exists_in_db = origin_database_->HasOriginPath(id);
   if (!exists_in_db && !create) {
-    if (error_code)
-      *error_code = base::File::FILE_ERROR_NOT_FOUND;
-    return base::FilePath();
+    return base::File::FILE_ERROR_NOT_FOUND;
   }
   if (!origin_database_->GetPathForOrigin(id, &directory_name)) {
-    if (error_code)
-      *error_code = base::File::FILE_ERROR_FAILED;
-    return base::FilePath();
+    return base::File::FILE_ERROR_FAILED;
   }
 
   base::FilePath path = file_system_directory_.Append(directory_name);
   bool exists_in_fs = delegate_->DirectoryExists(path);
   if (!exists_in_db && exists_in_fs) {
     if (!delegate_->DeleteFileOrDirectory(path, true)) {
-      if (error_code)
-        *error_code = base::File::FILE_ERROR_FAILED;
-      return base::FilePath();
+      return base::File::FILE_ERROR_FAILED;
     }
     exists_in_fs = false;
   }
@@ -1277,35 +1307,24 @@ base::FilePath ObfuscatedFileUtil::GetDirectoryForStorageKey(
     if (!create || delegate_->CreateDirectory(path, false /* exclusive */,
                                               true /* recursive */) !=
                        base::File::FILE_OK) {
-      if (error_code)
-        *error_code = create ? base::File::FILE_ERROR_FAILED
-                             : base::File::FILE_ERROR_NOT_FOUND;
-      return base::FilePath();
+      return create ? base::File::FILE_ERROR_FAILED
+                    : base::File::FILE_ERROR_NOT_FOUND;
     }
   }
-
-  if (error_code)
-    *error_code = base::File::FILE_OK;
-
   return path;
 }
 
-base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryWithBucket(
-    bool create,
-    BucketLocator bucket,
-    std::string file_type) {
-  base::FilePath path =
-      sandbox_delegate_->quota_manager_proxy()->GetClientBucketPath(
-          bucket, QuotaClientType::kFileSystem);
-  // Verify the directory is valid.
+base::File::Error ObfuscatedFileUtil::GetDirectoryHelper(
+    const base::FilePath& path,
+    bool create) {
   if (!delegate_->DirectoryExists(path) &&
-      (!create || delegate_->CreateDirectory(path, false /* exclusive */,
-                                             true /* recursive */) !=
-                      base::File::FILE_OK)) {
+      (!create ||
+       delegate_->CreateDirectory(path, /*exclusive=*/false,
+                                  /*recursive=*/true) != base::File::FILE_OK)) {
     return create ? base::File::FILE_ERROR_FAILED
                   : base::File::FILE_ERROR_NOT_FOUND;
   }
-  return path;
+  return base::File::FILE_OK;
 }
 
 void ObfuscatedFileUtil::InvalidateUsageCache(

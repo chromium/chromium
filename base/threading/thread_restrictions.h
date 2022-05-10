@@ -278,6 +278,9 @@ class PrinterQuery;
 namespace rlz_lib {
 class FinancialPing;
 }
+namespace storage {
+class ObfuscatedFileUtil;
+}
 namespace syncer {
 class GetLocalChangesRequest;
 class HttpBridge;
@@ -592,6 +595,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class rlz_lib::FinancialPing;
   friend class shell_integration_linux::
       LaunchXdgUtilityScopedAllowBaseSyncPrimitives;
+  friend class storage::ObfuscatedFileUtil;
   friend class syncer::HttpBridge;
   friend class syncer::GetLocalChangesRequest;
   friend class webrtc::DesktopConfigurationMonitor;

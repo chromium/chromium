@@ -298,19 +298,18 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   SandboxDirectoryDatabase* GetDirectoryDatabase(const FileSystemURL& url,
                                                  bool create);
 
-  // Gets the topmost directory specific to this StorageKey.  This will
-  // contain both the filesystem type subdirectories.
-  base::FilePath GetDirectoryForStorageKey(const blink::StorageKey& storage_key,
-                                           bool create,
-                                           base::File::Error* error_code);
+  // Gets the topmost directory specific to this StorageKey. This will
+  // contain both of the filesystem type subdirectories.
+  // NOTE: this function uses base::ScopedAllowBaseSyncPrimitives and
+  // calls QuotaManagerProxy::GetOrCreateBucketSync() which relies on a
+  // blocking base::WaitableEvent.
+  base::FileErrorOr<base::FilePath> GetDirectoryForStorageKey(
+      const blink::StorageKey& storage_key,
+      bool create);
 
-  // Returns a valid file path to the directory corresponding to the specified
-  // non-default `bucket` and `file_type.` Will return a FileError if an invalid
-  // file path is found.
-  base::FileErrorOr<base::FilePath> GetDirectoryWithBucket(
-      bool create,
-      BucketLocator bucket,
-      std::string file_type);
+  // A helper function used by the GetDirectoryFor* methods to ensure that
+  // `path` is a valid directory or that a valid directory can be constructed.
+  base::File::Error GetDirectoryHelper(const base::FilePath& path, bool create);
 
   void InvalidateUsageCache(FileSystemOperationContext* context,
                             const blink::StorageKey& storage_key,
