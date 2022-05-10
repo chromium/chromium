@@ -3032,7 +3032,8 @@ bool DXVAVideoDecodeAccelerator::InitializeID3D11VideoProcessor(
   if (use_fp16_ && config_.target_color_space.IsHDR() && color_space.IsHDR()) {
     // Note, we only use the SCRGBLinear output color space when the input is
     // PQ, because nvidia drivers will not convert G22 to G10 for some reason.
-    dx11_converter_output_color_space_ = gfx::ColorSpace::CreateSCRGBLinear();
+    dx11_converter_output_color_space_ =
+        gfx::ColorSpace::CreateSCRGBLinear80Nits();
   } else {
     dx11_converter_output_color_space_ = gfx::ColorSpace::CreateSRGB();
   }

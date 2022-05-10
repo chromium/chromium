@@ -103,7 +103,7 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
       } else if (supports_fmt(DXGI_FORMAT_R16G16B16A16_FLOAT)) {
         output_dxgi_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
         output_pixel_format = PIXEL_FORMAT_RGBAF16;
-        output_color_space = gfx::ColorSpace::CreateSCRGBLinear();
+        output_color_space = gfx::ColorSpace::CreateSCRGBLinear80Nits();
         MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected RGBAF16";
       } else if (supports_fmt(DXGI_FORMAT_R10G10B10A2_UNORM)) {
         output_dxgi_format = DXGI_FORMAT_R10G10B10A2_UNORM;

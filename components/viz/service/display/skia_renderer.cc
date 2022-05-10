@@ -2535,13 +2535,8 @@ sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
     const gfx::ColorSpace& dst,
     float resource_offset,
     float resource_multiplier) {
-  // If the input color space is HDR, and it did not specify a white level,
-  // override it with the frame's white level.
-  gfx::ColorSpace adjusted_src = src.GetWithSDRWhiteLevel(
-      current_frame()->display_color_spaces.GetSDRMaxLuminanceNits());
-
   return color_filter_cache_.Get(
-      adjusted_src, dst, resource_offset, resource_multiplier,
+      src, dst, resource_offset, resource_multiplier,
       current_frame()->display_color_spaces.GetSDRMaxLuminanceNits(),
       current_frame()->display_color_spaces.GetHDRMaxLuminanceRelative());
 }
