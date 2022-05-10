@@ -275,8 +275,13 @@ void DWriteFontCollectionProxy::PrewarmFamily(
     const blink::WebString& family_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!prewarm_task_runner_)
+  if (!prewarm_task_runner_) {
+    // |BindHostReceiverOnMainThread| requires |ChildThread::Get()|, but it may
+    // not be available in some tests. Disable the prewarmer.
+    if (UNLIKELY(!ChildThread::Get()))
+      return;
     InitializePrewarmer();
+  }
 
   DCHECK(prewarm_task_runner_);
   prewarm_task_runner_->PostTask(
