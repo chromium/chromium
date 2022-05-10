@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/bits.h"
 #include "base/callback_helpers.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/cxx17_backports.h"
@@ -1392,6 +1393,14 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTexture2D(
     InsertError(GL_INVALID_OPERATION,
                 "Cannot change the attachments of the default framebuffer.");
     return error::kNoError;
+  }
+  if (feature_info_->workarounds().client_max_texture_size && texture) {
+    GLint max_level = base::bits::Log2Floor(
+        feature_info_->workarounds().client_max_texture_size);
+    if (level > max_level) {
+      InsertError(GL_INVALID_VALUE, "Level too large");
+      return error::kNoError;
+    }
   }
   BindPendingImageForClientIDIfNeeded(texture);
   api()->glFramebufferTexture2DEXTFn(
