@@ -166,6 +166,17 @@ NSString* GetAppIdForUpdaterAsNSString() {
   NOTIMPLEMENTED();
 }
 
+- (void)runInstallerWithAppId:(NSString* _Nonnull)appId
+                installerPath:(NSString* _Nonnull)installerPath
+                  installArgs:(NSString* _Nullable)installArgs
+                  installData:(NSString* _Nullable)installData
+              installSettings:(NSString* _Nullable)installSettings
+                  updateState:(id<CRUUpdateStateObserving> _Nonnull)updateState
+                        reply:(void (^_Nonnull)(
+                                  updater::UpdateService::Result rc))reply {
+  NOTIMPLEMENTED();
+}
+
 @end
 
 BrowserUpdaterClientMac::BrowserUpdaterClientMac()
