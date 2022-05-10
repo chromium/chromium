@@ -228,8 +228,12 @@ class SearchControllerImplNewTest : public testing::Test {
                                        expected_ids_to_burnin_iteration) {
     const auto& actual_ids_to_burnin_iteration =
         std::vector<std::pair<std::string, int>>(
-            search_controller_->ids_to_burnin_iteration_.begin(),
-            search_controller_->ids_to_burnin_iteration_.end());
+            search_controller_->burnin_controller_
+                ->ids_to_burnin_iteration_for_test()
+                .begin(),
+            search_controller_->burnin_controller_
+                ->ids_to_burnin_iteration_for_test()
+                .end());
     ASSERT_EQ(actual_ids_to_burnin_iteration.size(),
               expected_ids_to_burnin_iteration.size());
     EXPECT_THAT(actual_ids_to_burnin_iteration,

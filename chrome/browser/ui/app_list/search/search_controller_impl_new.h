@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/app_list/search/burnin_controller.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
@@ -108,6 +109,7 @@ class SearchControllerImplNew : public SearchController {
   void OnResultsChangedWithType(ash::AppListSearchResultType result_type);
 
   Profile* profile_;
+  std::unique_ptr<BurnInController> burnin_controller_;
 
   // The query associated with the most recent search.
   std::u16string last_query_;
@@ -145,39 +147,6 @@ class SearchControllerImplNew : public SearchController {
 
   // Storage for category scores for the current query.
   CategoriesList categories_;
-
-  // The period of time ("burn-in") to wait before publishing a first collection
-  // of search results to the model updater.
-  const base::TimeDelta burnin_period_;
-
-  // A timer for the burn-in period. During the burn-in period, results are
-  // collected from search providers. Publication of results to the model
-  // updater is delayed until the burn-in period has elapsed.
-  base::OneShotTimer burn_in_timer_;
-
-  // Counter for burn-in iterations. Useful for query search only.
-  //
-  // Zero signifies pre-burn-in state. After burn-in period has elapsed, counter
-  // is incremented by one each time SetResults() is called. This burn-in
-  // iteration number is used for individual results as well as overall
-  // categories.
-  //
-  // This information is useful because it allows for:
-  //
-  // (1) Results and categories to be ranked by different rules depending on
-  // whether the information arrived pre- or post-burn-in.
-  // (2) Sorting stability across multiple post-burn-in updates.
-  int burnin_iteration_counter_ = 0;
-
-  // Store the ID of each result we encounter in a given query, along with the
-  // burn-in iteration during which it arrived. This storage is necessary
-  // because:
-  //
-  // Some providers may return more than once, and on each successive return,
-  // the previous results are swapped for new ones within SetResults(). Result
-  // meta-information we wish to persist across multiple calls to SetResults
-  // must therefore be stored separately.
-  base::flat_map<std::string, int> ids_to_burnin_iteration_;
 
   // If set, called when results set by a provider change.
   ResultsChangedCallback results_changed_callback_;

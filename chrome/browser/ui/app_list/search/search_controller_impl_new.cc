@@ -14,7 +14,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
-#include "base/containers/flat_set.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/sequence_token.h"
@@ -60,11 +59,10 @@ SearchControllerImplNew::SearchControllerImplNew(
     ash::AppListNotifier* notifier,
     Profile* profile)
     : profile_(profile),
+      burnin_controller_(std::make_unique<BurnInController>(
+          base::BindRepeating(&SearchControllerImplNew::OnBurnInPeriodElapsed,
+                              base::Unretained(this)))),
       ranker_(std::make_unique<RankerDelegate>(profile, this)),
-      burnin_period_(base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
-          ash::features::kProductivityLauncher,
-          "burnin_length_ms",
-          200))),
       metrics_observer_(
           std::make_unique<SearchMetricsObserver>(profile, notifier)),
       model_updater_(model_updater),
@@ -77,10 +75,7 @@ SearchControllerImplNew::~SearchControllerImplNew() {}
 void SearchControllerImplNew::StartSearch(const std::u16string& query) {
   // For query searches, begin the burn-in timer.
   if (!query.empty()) {
-    burn_in_timer_.Start(
-        FROM_HERE, burnin_period_,
-        base::BindOnce(&SearchControllerImplNew::OnBurnInPeriodElapsed,
-                       base::Unretained(this)));
+    burnin_controller_->Start();
   }
 
   // Cancel a pending zero-state publish if it exists.
@@ -108,8 +103,6 @@ void SearchControllerImplNew::StartSearch(const std::u16string& query) {
   categories_ = CreateAllCategories();
   ranker_->Start(query, results_, categories_);
 
-  burnin_iteration_counter_ = 0;
-  ids_to_burnin_iteration_.clear();
   session_start_ = base::Time::Now();
   last_query_ = query;
 
@@ -130,7 +123,7 @@ void SearchControllerImplNew::StartSearch(const std::u16string& query) {
 void SearchControllerImplNew::StartZeroState(base::OnceClosure on_done,
                                              base::TimeDelta timeout) {
   // Cancel a pending search publish if it exists.
-  burn_in_timer_.Stop();
+  burnin_controller_->Stop();
 
   results_.clear();
   // Categories currently are not used by zero-state, but may be required for
@@ -265,44 +258,11 @@ void SearchControllerImplNew::SetResults(const SearchProvider* provider,
 
 void SearchControllerImplNew::SetSearchResults(const SearchProvider* provider) {
   Rank(provider->ResultType());
-
-  // From here below is logic concerning the burn-in period.
-  const bool is_post_burnin =
-      base::Time::Now() - session_start_ > burnin_period_;
-  if (is_post_burnin)
-    ++burnin_iteration_counter_;
-
-  // Record the burn-in iteration number for categories we are seeing for the
-  // first time in this search.
-  base::flat_set<Category> updated_categories;
-  for (const auto& result : results_[provider->ResultType()])
-    updated_categories.insert(result->category());
-  for (auto& category : categories_) {
-    const auto it = updated_categories.find(category.category);
-    if (it != updated_categories.end() && category.burnin_iteration == -1)
-      category.burnin_iteration = burnin_iteration_counter_;
-  }
-
-  // Record-keeping for the burn-in iteration number of individual results.
-  const auto it = results_.find(provider->ResultType());
-  DCHECK(it != results_.end());
-
-  for (const auto& result : it->second) {
-    const std::string result_id = result->id();
-    if (ids_to_burnin_iteration_.find(result_id) !=
-        ids_to_burnin_iteration_.end()) {
-      // Result has been seen before. Set burnin_iteration, since the result
-      // object has changed since last seen.
-      result->scoring().burnin_iteration = ids_to_burnin_iteration_[result_id];
-    } else {
-      result->scoring().burnin_iteration = burnin_iteration_counter_;
-      ids_to_burnin_iteration_[result_id] = burnin_iteration_counter_;
-    }
-  }
-
-  // If the burn-in period has not yet elapsed, don't call Publish here. This
-  // case is covered by a call scheduled from within Start().
-  if (is_post_burnin)
+  burnin_controller_->UpdateResults(results_, categories_,
+                                    provider->ResultType());
+  // If the burn-in period has not yet elapsed, don't call Publish here (this
+  // case is covered by a call scheduled within the burn-in controller).
+  if (burnin_controller_->is_post_burnin())
     Publish();
 }
 
