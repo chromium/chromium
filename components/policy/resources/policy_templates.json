@@ -31016,7 +31016,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'owners': ['lgrey@chromium.org', 'chrome-mac-dev@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.mac:103-'],
+      'future_on':['chrome.mac'],
       'tags': ['local-data-access'],
       'features': {
         'dynamic_refresh' : True,
