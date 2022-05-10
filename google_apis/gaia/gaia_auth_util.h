@@ -55,7 +55,14 @@ std::string ExtractDomainName(const std::string& email);
 // to be used sparingly since it ship Googler-only code to all users.
 bool IsGoogleInternalAccountEmail(const std::string& email);
 
+// TODO(crbug.com/1313496): Deprecated, use HasGaiaSchemeHostPort() instead.
 bool IsGaiaSignonRealm(const GURL& url);
+
+// Mechanically compares the scheme, host, and port of the |url| against the
+// GAIA url in GaiaUrls. This means that this function will *not* work for
+// determining whether a frame with an "about:blank" URL or "blob:..." URL has
+// a GAIA origin and will in that case return false.
+bool HasGaiaSchemeHostPort(const GURL& url);
 
 // Parses JSON data returned by /ListAccounts call, returning a vector of
 // email/valid pairs.  An email addresses is considered valid if a passive

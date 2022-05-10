@@ -155,6 +155,39 @@ TEST(GaiaAuthUtilTest, IsGaiaSignonRealm) {
   EXPECT_FALSE(IsGaiaSignonRealm(GURL("https://www.example.com/")));
 }
 
+TEST(GaiaAuthUtilTest, HasGaiaSchemeHostPort) {
+  EXPECT_TRUE(HasGaiaSchemeHostPort(GURL("https://accounts.google.com/")));
+
+  // Paths and queries should be ignored.
+  EXPECT_TRUE(HasGaiaSchemeHostPort(GURL("https://accounts.google.com/foo")));
+  EXPECT_TRUE(
+      HasGaiaSchemeHostPort(GURL("https://accounts.google.com/foo?bar=1#baz")));
+
+  // Scheme mismatch should lead to false.
+  EXPECT_FALSE(HasGaiaSchemeHostPort(GURL("http://accounts.google.com/")));
+
+  // Port mismatch should lead to false.
+  EXPECT_FALSE(HasGaiaSchemeHostPort(GURL("https://accounts.google.com:123/")));
+
+  // Host mismatch should lead to false, including Google URLs.
+  EXPECT_FALSE(HasGaiaSchemeHostPort(GURL("https://example.com/")));
+  EXPECT_FALSE(HasGaiaSchemeHostPort(GURL("https://www.example.com/")));
+  EXPECT_FALSE(HasGaiaSchemeHostPort(GURL("https://www.google.com/")));
+  EXPECT_FALSE(HasGaiaSchemeHostPort(GURL("https://google.com/")));
+  EXPECT_FALSE(HasGaiaSchemeHostPort(GURL("https://mail.google.com/")));
+
+  // about: scheme.
+  EXPECT_FALSE(HasGaiaSchemeHostPort(GURL("about:blank")));
+  EXPECT_FALSE(HasGaiaSchemeHostPort(GURL("about:srcdoc")));
+
+  // blob: scheme.
+  EXPECT_FALSE(HasGaiaSchemeHostPort(
+      GURL("blob:https://accounts.google.com/mocked-blob-guid")));
+
+  // Invalid/empty URL.
+  EXPECT_FALSE(HasGaiaSchemeHostPort(GURL()));
+}
+
 TEST(GaiaAuthUtilTest, ParseListAccountsData) {
   std::vector<ListedAccount> accounts;
   std::vector<ListedAccount> signed_out_accounts;
