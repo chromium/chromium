@@ -40,9 +40,14 @@ class HtmlToWrapperTest(unittest.TestCase):
       expected_wrapper = f.read()
     self.assertMultiLineEqual(str(expected_wrapper), str(actual_wrapper))
 
-  def testHtmlToWrapper(self):
+  def testHtmlToWrapperElement(self):
     self._run_test('html_to_wrapper/foo.html', 'html_to_wrapper/foo.html.ts',
                    'html_to_wrapper/foo_expected.html.ts')
+
+  def testHtmlToWrapperIcons(self):
+    self._run_test('html_to_wrapper/icons.html',
+                   'html_to_wrapper/icons.html.ts',
+                   'html_to_wrapper/icons_expected.html.ts')
 
 
 if __name__ == '__main__':
