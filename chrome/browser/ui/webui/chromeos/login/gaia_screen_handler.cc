@@ -1159,7 +1159,9 @@ void GaiaScreenHandler::SetGaiaPath(GaiaScreenHandler::GaiaPath gaia_path) {
 }
 
 void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {
-  CallExternalAPI("onBeforeLoad");
+  // TODO(https://crbug.com/1317991): Investigate why the call is making Gaia
+  // loading slowly.
+  // CallExternalAPI("onBeforeLoad");
   populated_account_id_ = account_id;
 
   login_request_variant_ = GaiaLoginVariant::kUnknown;

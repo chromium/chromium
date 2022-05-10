@@ -1159,8 +1159,10 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   }
 
   onBeforeLoad() {
-    this.loadingFrameContents_ = true;
-    this.isAllowlistErrorShown_ = false;
+    // TODO(https://crbug.com/1317991): Investigate why the call is making Gaia
+    // loading slowly.
+    // this.loadingFrameContents_ = true;
+    // this.isAllowlistErrorShown_ = false;
   }
 
   /**
