@@ -37,8 +37,11 @@ PasswordChangeSuccessTrackerFactory::GetForBrowserContext(
 
 KeyedService* PasswordChangeSuccessTrackerFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
-  return new PasswordChangeSuccessTrackerImpl(
+  auto* tracker = new PasswordChangeSuccessTrackerImpl(
       user_prefs::UserPrefs::Get(browser_context));
+  tracker->AddMetricsRecorder(
+      std::make_unique<PasswordChangeMetricsRecorderUma>());
+  return tracker;
 }
 
 }  // namespace password_manager

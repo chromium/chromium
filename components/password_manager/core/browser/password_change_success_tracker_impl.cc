@@ -6,6 +6,9 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/json/values_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -16,25 +19,77 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+using base::StringPiece;
+
 namespace password_manager {
 
 namespace {
 
-constexpr char kKeyEtld1[] = "etld1";
+constexpr char kKeyEtldPlus1[] = "etld_plus_1";
 constexpr char kKeyUsername[] = "username";
 constexpr char kKeyStartEvent[] = "start_event";
 constexpr char kKeyEntryPoint[] = "entry_point";
 constexpr char kKeyStartTime[] = "start_time";
 
+// Overloaded helper methods to convert the |PasswordChangeSuccessTracker|
+// enums to strings for building metrics keys.
+StringPiece SerializeEnumForUma(
+    PasswordChangeSuccessTracker::StartEvent event) {
+  switch (event) {
+    case PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow:
+      return ".AutomatedFlow";
+    // Combine all manual flows for UMA reporting to reduce number of
+    // histograms.
+    case PasswordChangeSuccessTracker::StartEvent::kManualUnknownFlow:
+    case PasswordChangeSuccessTracker::StartEvent::kManualWellKnownUrlFlow:
+    case PasswordChangeSuccessTracker::StartEvent::kManualChangePasswordUrlFlow:
+    case PasswordChangeSuccessTracker::StartEvent::kManualHomepageFlow:
+      return ".ManualFlow";
+    case PasswordChangeSuccessTracker::StartEvent::kManualResetLinkFlow:
+      return ".ManualResetLinkFlow";
+  }
+}
+
+StringPiece SerializeEnumForUma(PasswordChangeSuccessTracker::EndEvent event) {
+  switch (event) {
+    // Combine automated flow end events for UMA reporting.
+    case PasswordChangeSuccessTracker::EndEvent::
+        kAutomatedFlowGeneratedPasswordChosen:
+    case PasswordChangeSuccessTracker::EndEvent::
+        kAutomatedFlowOwnPasswordChosen:
+      return ".AutomatedFlowPasswordChosen";
+    case PasswordChangeSuccessTracker::EndEvent::
+        kAutomatedFlowResetLinkRequested:
+      return ".AutomatedFlowResetLinkRequested";
+    // Combine manual flow end events for UMA reporting.
+    case PasswordChangeSuccessTracker::EndEvent::
+        kManualFlowGeneratedPasswordChosen:
+    case PasswordChangeSuccessTracker::EndEvent::kManualFlowOwnPasswordChosen:
+      return ".ManualFlowPasswordChosen";
+    case PasswordChangeSuccessTracker::EndEvent::kTimeout:
+      return ".Timeout";
+  }
+}
+
+StringPiece SerializeEnumForUma(
+    PasswordChangeSuccessTracker::EntryPoint entry_point) {
+  switch (entry_point) {
+    case PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings:
+      return ".LeakCheckInSettings";
+    case PasswordChangeSuccessTracker::EntryPoint::kLeakWarningDialog:
+      return ".LeakWarningDialog";
+  }
+}
+
 // Helper method to create a flow serialized as a |Value::Dict|.
 base::Value::Dict CreateFlow(
-    const std::string& etld1,
+    const std::string& etld_plus_1,
     const std::string& username,
     PasswordChangeSuccessTracker::StartEvent start_event,
     PasswordChangeSuccessTracker::EntryPoint entry_point,
     base::Time start_time) {
   base::Value::Dict flow;
-  flow.Set(kKeyEtld1, base::Value(etld1));
+  flow.Set(kKeyEtldPlus1, base::Value(etld_plus_1));
   flow.Set(kKeyUsername, base::Value(username));
   // Cast enums to ints, since they are one of the supported types of
   // |Value|.
@@ -47,11 +102,32 @@ base::Value::Dict CreateFlow(
 
 }  // namespace
 
+PasswordChangeMetricsRecorderUma::~PasswordChangeMetricsRecorderUma() = default;
+
+void PasswordChangeMetricsRecorderUma::OnFlowRecorded(
+    const std::string& etld_plus_1,
+    PasswordChangeSuccessTracker::StartEvent start_event,
+    PasswordChangeSuccessTracker::EndEvent end_event,
+    PasswordChangeSuccessTracker::EntryPoint entry_point,
+    base::TimeDelta duration) {
+  // Record metrics aggregated over end events.
+  std::string entry_key =
+      base::StrCat({kUmaKey, SerializeEnumForUma(entry_point),
+                    SerializeEnumForUma(start_event)});
+  UmaHistogramLongTimes100(entry_key, duration);
+
+  // Record metrics specified by start and end events. This does not
+  // differentiate between different manual starts and between own or generated
+  // passwords.
+  base::StrAppend(&entry_key, {SerializeEnumForUma(end_event)});
+  UmaHistogramLongTimes100(entry_key, duration);
+}
+
 PasswordChangeSuccessTrackerImpl::IncompleteFlow::IncompleteFlow(
-    const std::string& etld1,
+    const std::string& etld_plus_1,
     const std::string& username,
     EntryPoint entry_point)
-    : etld1(etld1),
+    : etld_plus_1(etld_plus_1),
       username(username),
       entry_point(entry_point),
       start_time(base::Time::Now()) {}
@@ -62,9 +138,9 @@ PasswordChangeSuccessTrackerImpl::FlowView::FlowView(
   DCHECK(value_);
 }
 
-std::string PasswordChangeSuccessTrackerImpl::FlowView::GetEtld1() const {
-  const std::string* etld1 = value_->FindString(kKeyEtld1);
-  return etld1 ? *etld1 : std::string();
+std::string PasswordChangeSuccessTrackerImpl::FlowView::GetEtldPlus1() const {
+  const std::string* etld_plus_1 = value_->FindString(kKeyEtldPlus1);
+  return etld_plus_1 ? *etld_plus_1 : std::string();
 }
 
 std::string PasswordChangeSuccessTrackerImpl::FlowView::GetUsername() const {
@@ -131,8 +207,9 @@ void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowStarted(
   base::Value::List& flows = update->GetList();
   RemoveFlowsWithTimeout(flows);
 
-  flows.Append(base::Value(CreateFlow(ExtractEtld1(url), username, event_type,
-                                      entry_point, base::Time::Now())));
+  flows.Append(
+      base::Value(CreateFlow(ExtractEtldPlus1(url), username, event_type,
+                             entry_point, base::Time::Now())));
 }
 
 void PasswordChangeSuccessTrackerImpl::OnManualChangePasswordFlowStarted(
@@ -140,7 +217,7 @@ void PasswordChangeSuccessTrackerImpl::OnManualChangePasswordFlowStarted(
     const std::string& username,
     EntryPoint entry_point) {
   RemoveIncompleteFlowsWithTimeout();
-  incomplete_manual_flows_.emplace_back(ExtractEtld1(url), username,
+  incomplete_manual_flows_.emplace_back(ExtractEtldPlus1(url), username,
                                         entry_point);
 }
 
@@ -153,10 +230,10 @@ void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowModified(
 
   // We always take the first match. We do not expect conflicts and, if they,
   // occur, the information for both flows should be nearly identical.
-  auto predicate =
-      [target_etld1{ExtractEtld1(url)}](const IncompleteFlow& flow) {
-        return flow.etld1 == target_etld1;
-      };
+  auto predicate = [target_etld_plus_1 =
+                        ExtractEtldPlus1(url)](const IncompleteFlow& flow) {
+    return flow.etld_plus_1 == target_etld_plus_1;
+  };
   if (auto it = std::find_if(incomplete_manual_flows_.cbegin(),
                              incomplete_manual_flows_.cend(), predicate);
       it != incomplete_manual_flows_.cend()) {
@@ -165,8 +242,9 @@ void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowModified(
     base::Value::List& flows = update->GetList();
     RemoveFlowsWithTimeout(flows);
 
-    flows.Append(base::Value(CreateFlow(it->etld1, it->username, new_event_type,
-                                        it->entry_point, it->start_time)));
+    flows.Append(
+        base::Value(CreateFlow(it->etld_plus_1, it->username, new_event_type,
+                               it->entry_point, it->start_time)));
     incomplete_manual_flows_.erase(it);
   }
 }
@@ -186,19 +264,20 @@ void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowModified(
 
   // In the unlikely case that there are two flows with the same url and
   // username, we take the last entry.
-  std::string target_etld1 = ExtractEtld1(url);
+  std::string target_etld_plus_1 = ExtractEtldPlus1(url);
   for (size_t i = flows.size(); i-- > 0;) {
     FlowView view(&flows[i].GetDict());
     if (view.GetStartEvent() == StartEvent::kAutomatedFlow &&
-        view.GetEtld1() == target_etld1 && view.GetUsername() == username) {
+        view.GetEtldPlus1() == target_etld_plus_1 &&
+        view.GetUsername() == username) {
       EntryPoint entry_point = view.GetEntryPoint();
-      RecordMetrics(view.GetEtld1(), view.GetStartEvent(),
-                    EndEvent::kAutomatedFlowResetLinkRequestRequested,
-                    entry_point, base::Time::Now() - view.GetStartTime());
+      RecordMetrics(view.GetEtldPlus1(), view.GetStartEvent(),
+                    EndEvent::kAutomatedFlowResetLinkRequested, entry_point,
+                    base::Time::Now() - view.GetStartTime());
       flows.erase(flows.begin() + i);
 
       // Add a new flow and reset the timer.
-      flows.Append(base::Value(CreateFlow(target_etld1, username,
+      flows.Append(base::Value(CreateFlow(target_etld_plus_1, username,
                                           StartEvent::kManualResetLinkFlow,
                                           entry_point, base::Time::Now())));
 
@@ -226,11 +305,12 @@ void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowCompleted(
   // In the unlikely case that there are two flows with the same eTLD+1 and
   // username, we take the last entry. The underlying assumption is that
   // the first flow was abandoned but has not timed out yet.
-  std::string target_etld1 = ExtractEtld1(url);
+  std::string target_etld_plus_1 = ExtractEtldPlus1(url);
   for (size_t i = flows.size(); i-- > 0;) {
     FlowView view(&flows[i].GetDict());
-    if (view.GetEtld1() == target_etld1 && view.GetUsername() == username) {
-      RecordMetrics(view.GetEtld1(), view.GetStartEvent(), event_type,
+    if (view.GetEtldPlus1() == target_etld_plus_1 &&
+        view.GetUsername() == username) {
+      RecordMetrics(view.GetEtldPlus1(), view.GetStartEvent(), event_type,
                     view.GetEntryPoint(),
                     base::Time::Now() - view.GetStartTime());
       flows.erase(flows.begin() + i);
@@ -244,7 +324,8 @@ void PasswordChangeSuccessTrackerImpl::AddMetricsRecorder(
   metrics_recorders_.push_back(std::move(recorder));
 }
 
-std::string PasswordChangeSuccessTrackerImpl::ExtractEtld1(const GURL& url) {
+std::string PasswordChangeSuccessTrackerImpl::ExtractEtldPlus1(
+    const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::PrivateRegistryFilter::
                INCLUDE_PRIVATE_REGISTRIES);
@@ -274,8 +355,8 @@ void PasswordChangeSuccessTrackerImpl::RemoveFlowsWithTimeout(
     FlowView view(&it->GetDict());
     if (base::TimeDelta duration = now - view.GetStartTime();
         duration > kFlowTimeout) {
-      RecordMetrics(view.GetEtld1(), view.GetStartEvent(), EndEvent::kTimeout,
-                    view.GetEntryPoint(), kFlowTimeout);
+      RecordMetrics(view.GetEtldPlus1(), view.GetStartEvent(),
+                    EndEvent::kTimeout, view.GetEntryPoint(), kFlowTimeout);
       it = flows.erase(it);
     } else {
       // Flows are expected to be ordered by their time of creation.
@@ -284,13 +365,14 @@ void PasswordChangeSuccessTrackerImpl::RemoveFlowsWithTimeout(
   }
 }
 
-void PasswordChangeSuccessTrackerImpl::RecordMetrics(const std::string& etld1,
-                                                     StartEvent start_event,
-                                                     EndEvent end_event,
-                                                     EntryPoint entry_point,
-                                                     base::TimeDelta duration) {
+void PasswordChangeSuccessTrackerImpl::RecordMetrics(
+    const std::string& etld_plus_1,
+    StartEvent start_event,
+    EndEvent end_event,
+    EntryPoint entry_point,
+    base::TimeDelta duration) {
   for (const auto& recorder : metrics_recorders_) {
-    recorder->OnFlowRecorded(etld1, start_event, end_event, entry_point,
+    recorder->OnFlowRecorded(etld_plus_1, start_event, end_event, entry_point,
                              duration);
   }
 }

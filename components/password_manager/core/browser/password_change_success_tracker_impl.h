@@ -24,12 +24,36 @@ class PasswordChangeMetricsRecorder {
  public:
   virtual ~PasswordChangeMetricsRecorder() = default;
 
+  // Record a password change flow whose top level domain plus 1 is
+  // |etld_plus_1|.
   virtual void OnFlowRecorded(
-      const std::string& etld1,
+      const std::string& etld_plus_1,
       PasswordChangeSuccessTracker::StartEvent start_event,
       PasswordChangeSuccessTracker::EndEvent end_event,
       PasswordChangeSuccessTracker::EntryPoint entry_point,
       base::TimeDelta duration) = 0;
+};
+
+// Implementation of |PasswordChangeMetricsRecorder| for UMA metrics.
+class PasswordChangeMetricsRecorderUma : public PasswordChangeMetricsRecorder {
+ public:
+  static constexpr char kUmaKey[] =
+      "PasswordManager.PasswordChangeFlowDuration";
+
+  PasswordChangeMetricsRecorderUma() = default;
+  ~PasswordChangeMetricsRecorderUma() override;
+
+  PasswordChangeMetricsRecorderUma(const PasswordChangeMetricsRecorderUma&) =
+      delete;
+  PasswordChangeMetricsRecorderUma& operator=(
+      const PasswordChangeMetricsRecorderUma&) = delete;
+
+  // PasswordChangeMetricsRecorder:
+  void OnFlowRecorded(const std::string& etld_plus_1,
+                      PasswordChangeSuccessTracker::StartEvent start_event,
+                      PasswordChangeSuccessTracker::EndEvent end_event,
+                      PasswordChangeSuccessTracker::EntryPoint entry_point,
+                      base::TimeDelta duration) override;
 };
 
 // Implementation of the |PasswordChangeSuccessTracker| interface.
@@ -42,11 +66,11 @@ class PasswordChangeSuccessTrackerImpl
   // Describes a manually started flow for which no information on the exact
   // |StartEvent| has been received yet.
   struct IncompleteFlow {
-    IncompleteFlow(const std::string& etld1,
+    IncompleteFlow(const std::string& etld_plus_1,
                    const std::string& username,
                    EntryPoint entry_point);
     // The url is stored as a string, since that is what |base::Value| supports.
-    std::string etld1;
+    std::string etld_plus_1;
     std::string username;
     EntryPoint entry_point;
     base::Time start_time;
@@ -59,7 +83,7 @@ class PasswordChangeSuccessTrackerImpl
    public:
     explicit FlowView(const base::Value::Dict* value);
 
-    std::string GetEtld1() const;
+    std::string GetEtldPlus1() const;
     std::string GetUsername() const;
     StartEvent GetStartEvent() const;
     EntryPoint GetEntryPoint() const;
@@ -99,7 +123,7 @@ class PasswordChangeSuccessTrackerImpl
 
   // Convert the |url| to eTLD+1 serialized as a string. Exposed as a static
   // method for easier testing.
-  static std::string ExtractEtld1(const GURL& url);
+  static std::string ExtractEtldPlus1(const GURL& url);
 
  private:
   // Remove incomplete flows that have been around for longer than
@@ -110,7 +134,7 @@ class PasswordChangeSuccessTrackerImpl
   void RemoveFlowsWithTimeout(base::Value::List& flows);
 
   // Record a completed or timed out flow.
-  void RecordMetrics(const std::string& etld1,
+  void RecordMetrics(const std::string& etld_plus_1,
                      StartEvent start_event,
                      EndEvent end_event,
                      EntryPoint entry_point,

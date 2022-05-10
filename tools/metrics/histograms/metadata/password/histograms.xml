@@ -1882,6 +1882,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.PasswordChangeFlowDuration{EntryPoint}{StartEvent}{EndEvent}"
+    units="ms" expires_after="2023-05-09">
+  <owner>jkeitel@google.com</owner>
+  <owner>kolos@chromium.org</owner>
+  <summary>
+    Duration of a password change flow {EntryPoint} {StartEvent} {EndEvent}.
+  </summary>
+  <token key="EntryPoint">
+    <variant name=".LeakCheckInSettings"
+        summary="that was triggered from a leak check"/>
+    <variant name=".LeakWarningDialog"
+        summary="that was triggered from a leak warning dialog"/>
+  </token>
+  <token key="StartEvent">
+    <variant name=".AutomatedFlow"
+        summary="as an automated change password flow"/>
+    <variant name=".ManualFlow" summary="as a manual change password flow"/>
+    <variant name=".ManualResetLinkFlow"
+        summary="as a manual password reset link flow"/>
+  </token>
+  <token key="EndEvent">
+    <variant name="" summary="aggregated over all end events"/>
+    <variant name=".AutomatedFlowPasswordChosen"
+        summary="and ended with a password from an automated flow"/>
+    <variant name=".AutomatedFlowResetLinkRequested"
+        summary="and ended with the request of a password reset link"/>
+    <variant name=".ManualFlowPasswordChosen"
+        summary="and ended with a password from a manual flow"/>
+    <variant name=".Timeout" summary="and ended with a timeout"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordManager.PasswordCheckup.GetIntent.Error"
     enum="CredentialManagerError" expires_after="M105">
   <owner>ioanap@chromium.org</owner>

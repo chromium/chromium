@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_change_success_tracker_impl.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
@@ -16,12 +17,14 @@
 #include "url/gurl.h"
 
 using password_manager::PasswordChangeMetricsRecorder;
+using password_manager::PasswordChangeMetricsRecorderUma;
 using password_manager::PasswordChangeSuccessTracker;
 using password_manager::PasswordChangeSuccessTrackerImpl;
 using testing::_;
 using testing::StrictMock;
 
 constexpr char kUrl1[] = "https://www.example.com";
+constexpr char kEtldPlus1[] = "example.com";
 constexpr char kUrl2[] = "https://www.example.co.uk";
 constexpr char kUrl2WithPath[] = "https://www.example.co.uk/login.php";
 constexpr char kUsername1[] = "Paul";
@@ -55,6 +58,123 @@ class MockPasswordChangeMetricsRecorder
 
 }  // namespace
 
+// Tests of |PasswordChangeMetricsRecorderUma|.
+class PasswordChangeMetricsRecorderUmaTest : public ::testing::Test {
+ public:
+  PasswordChangeMetricsRecorderUmaTest() = default;
+  ~PasswordChangeMetricsRecorderUmaTest() override = default;
+
+ protected:
+  const base::HistogramTester& histogram_tester() { return histogram_tester_; }
+  PasswordChangeMetricsRecorderUma& recorder() { return recorder_; }
+
+ private:
+  base::HistogramTester histogram_tester_;
+  PasswordChangeMetricsRecorderUma recorder_;
+};
+
+TEST_F(PasswordChangeMetricsRecorderUmaTest, RecordSingleMetricsEvent) {
+  constexpr PasswordChangeSuccessTracker::StartEvent start_event =
+      PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow;
+  constexpr PasswordChangeSuccessTracker::EndEvent end_event =
+      PasswordChangeSuccessTracker::EndEvent::
+          kAutomatedFlowGeneratedPasswordChosen;
+  constexpr PasswordChangeSuccessTracker::EntryPoint entry_point =
+      PasswordChangeSuccessTracker::EntryPoint::kLeakWarningDialog;
+
+  recorder().OnFlowRecorded(kEtldPlus1, start_event, end_event, entry_point,
+                            base::Seconds(30));
+
+  histogram_tester().ExpectUniqueTimeSample(
+      "PasswordManager.PasswordChangeFlowDuration.LeakWarningDialog."
+      "AutomatedFlow",
+      base::Seconds(30), 1);
+
+  histogram_tester().ExpectUniqueTimeSample(
+      "PasswordManager.PasswordChangeFlowDuration.LeakWarningDialog."
+      "AutomatedFlow.AutomatedFlowPasswordChosen",
+      base::Seconds(30), 1);
+}
+
+TEST_F(PasswordChangeMetricsRecorderUmaTest, RecordMultipleMetricsEvents) {
+  constexpr PasswordChangeSuccessTracker::StartEvent start_event1 =
+      PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow;
+  constexpr PasswordChangeSuccessTracker::EndEvent end_event1 =
+      PasswordChangeSuccessTracker::EndEvent::
+          kAutomatedFlowGeneratedPasswordChosen;
+  constexpr PasswordChangeSuccessTracker::EndEvent end_event2 =
+      PasswordChangeSuccessTracker::EndEvent::
+          kManualFlowGeneratedPasswordChosen;
+  constexpr PasswordChangeSuccessTracker::EntryPoint entry_point1 =
+      PasswordChangeSuccessTracker::EntryPoint::kLeakWarningDialog;
+
+  recorder().OnFlowRecorded(kEtldPlus1, start_event1, end_event1, entry_point1,
+                            base::Seconds(30));
+  recorder().OnFlowRecorded(kEtldPlus1, start_event1, end_event2, entry_point1,
+                            base::Seconds(30));
+
+  histogram_tester().ExpectUniqueTimeSample(
+      "PasswordManager.PasswordChangeFlowDuration.LeakWarningDialog."
+      "AutomatedFlow",
+      base::Seconds(30), 2);
+
+  histogram_tester().ExpectUniqueTimeSample(
+      "PasswordManager.PasswordChangeFlowDuration.LeakWarningDialog."
+      "AutomatedFlow.AutomatedFlowPasswordChosen",
+      base::Seconds(30), 1);
+
+  histogram_tester().ExpectUniqueTimeSample(
+      "PasswordManager.PasswordChangeFlowDuration.LeakWarningDialog."
+      "AutomatedFlow.ManualFlowPasswordChosen",
+      base::Seconds(30), 1);
+}
+
+TEST_F(PasswordChangeMetricsRecorderUmaTest,
+       RecordMultipleMetricsEventsWithDifferentDurations) {
+  constexpr PasswordChangeSuccessTracker::StartEvent start_event =
+      PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow;
+  constexpr PasswordChangeSuccessTracker::EndEvent end_event =
+      PasswordChangeSuccessTracker::EndEvent::kManualFlowOwnPasswordChosen;
+  constexpr PasswordChangeSuccessTracker::EntryPoint entry_point =
+      PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings;
+
+  const base::TimeDelta duration1 = base::Seconds(30);
+  const base::TimeDelta duration2 = base::Minutes(30);
+
+  recorder().OnFlowRecorded(kEtldPlus1, start_event, end_event, entry_point,
+                            duration1);
+  recorder().OnFlowRecorded(kEtldPlus1, start_event, end_event, entry_point,
+                            duration2);
+
+  histogram_tester().ExpectTimeBucketCount(
+      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
+      "AutomatedFlow",
+      duration1, 1);
+  histogram_tester().ExpectTimeBucketCount(
+      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
+      "AutomatedFlow",
+      duration2, 1);
+  histogram_tester().ExpectTotalCount(
+      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
+      "AutomatedFlow",
+      2);
+
+  histogram_tester().ExpectTimeBucketCount(
+      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
+      "AutomatedFlow."
+      "ManualFlowPasswordChosen",
+      duration1, 1);
+  histogram_tester().ExpectTimeBucketCount(
+      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
+      "AutomatedFlow.ManualFlowPasswordChosen",
+      duration2, 1);
+  histogram_tester().ExpectTotalCount(
+      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
+      "AutomatedFlow.ManualFlowPasswordChosen",
+      2);
+}
+
+// Tests of |PasswordChangeSuccessTrackerImpl|.
 class PasswordChangeSuccessTrackerImplTest : public ::testing::Test {
  public:
   PasswordChangeSuccessTrackerImplTest() {
@@ -82,10 +202,16 @@ class PasswordChangeSuccessTrackerImplTest : public ::testing::Test {
     return metrics_recorder_;
   }
 
+  void AddMetricsRecorder(
+      std::unique_ptr<PasswordChangeMetricsRecorder> recorder) {
+    password_change_success_tracker_->AddMetricsRecorder(std::move(recorder));
+  }
+
   void FastForwardBy(base::TimeDelta time_step) {
     task_environment_.FastForwardBy(time_step);
   }
 
+ private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
@@ -145,7 +271,7 @@ TEST_F(PasswordChangeSuccessTrackerImplTest,
   EXPECT_CALL(
       *metrics_recorder(),
       OnFlowRecorded(
-          PasswordChangeSuccessTrackerImpl::ExtractEtld1(GURL(kUrl2)),
+          PasswordChangeSuccessTrackerImpl::ExtractEtldPlus1(GURL(kUrl2)),
           PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
           PasswordChangeSuccessTracker::EndEvent::
               kAutomatedFlowGeneratedPasswordChosen,
@@ -153,7 +279,7 @@ TEST_F(PasswordChangeSuccessTrackerImplTest,
   EXPECT_CALL(
       *metrics_recorder(),
       OnFlowRecorded(
-          PasswordChangeSuccessTrackerImpl::ExtractEtld1(GURL(kUrl1)),
+          PasswordChangeSuccessTrackerImpl::ExtractEtldPlus1(GURL(kUrl1)),
           PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
           PasswordChangeSuccessTracker::EndEvent::kManualFlowOwnPasswordChosen,
           PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings, _));
@@ -184,7 +310,7 @@ TEST_F(PasswordChangeSuccessTrackerImplTest,
   EXPECT_CALL(
       *metrics_recorder(),
       OnFlowRecorded(
-          PasswordChangeSuccessTrackerImpl::ExtractEtld1(GURL(kUrl1)),
+          PasswordChangeSuccessTrackerImpl::ExtractEtldPlus1(GURL(kUrl1)),
           PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
           PasswordChangeSuccessTracker::EndEvent::
               kAutomatedFlowOwnPasswordChosen,
@@ -212,7 +338,7 @@ TEST_F(PasswordChangeSuccessTrackerImplTest,
   EXPECT_CALL(
       *metrics_recorder(),
       OnFlowRecorded(
-          PasswordChangeSuccessTrackerImpl::ExtractEtld1(GURL(kUrl2)),
+          PasswordChangeSuccessTrackerImpl::ExtractEtldPlus1(GURL(kUrl2)),
           PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
           PasswordChangeSuccessTracker::EndEvent::
               kAutomatedFlowOwnPasswordChosen,
@@ -242,7 +368,7 @@ TEST_F(PasswordChangeSuccessTrackerImplTest, SuccessfulManualFlows) {
   EXPECT_CALL(
       *metrics_recorder(),
       OnFlowRecorded(
-          PasswordChangeSuccessTrackerImpl::ExtractEtld1(GURL(kUrl1)),
+          PasswordChangeSuccessTrackerImpl::ExtractEtldPlus1(GURL(kUrl1)),
           PasswordChangeSuccessTracker::StartEvent::kManualWellKnownUrlFlow,
           PasswordChangeSuccessTracker::EndEvent::kManualFlowOwnPasswordChosen,
           PasswordChangeSuccessTracker::EntryPoint::kLeakWarningDialog, _));
@@ -269,7 +395,7 @@ TEST_F(PasswordChangeSuccessTrackerImplTest,
   EXPECT_CALL(
       *metrics_recorder(),
       OnFlowRecorded(
-          PasswordChangeSuccessTrackerImpl::ExtractEtld1(GURL(kUrl1)),
+          PasswordChangeSuccessTrackerImpl::ExtractEtldPlus1(GURL(kUrl1)),
           PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
           PasswordChangeSuccessTracker::EndEvent::
               kAutomatedFlowGeneratedPasswordChosen,
@@ -292,10 +418,10 @@ TEST_F(PasswordChangeSuccessTrackerImplTest, AutomatedFlowEndsInPasswordReset) {
   EXPECT_CALL(
       *metrics_recorder(),
       OnFlowRecorded(
-          PasswordChangeSuccessTrackerImpl::ExtractEtld1(GURL(kUrl1)),
+          PasswordChangeSuccessTrackerImpl::ExtractEtldPlus1(GURL(kUrl1)),
           PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
           PasswordChangeSuccessTracker::EndEvent::
-              kAutomatedFlowResetLinkRequestRequested,
+              kAutomatedFlowResetLinkRequested,
           PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings, _));
 
   tracker()->OnChangePasswordFlowModified(
@@ -305,7 +431,7 @@ TEST_F(PasswordChangeSuccessTrackerImplTest, AutomatedFlowEndsInPasswordReset) {
   EXPECT_CALL(
       *metrics_recorder(),
       OnFlowRecorded(
-          PasswordChangeSuccessTrackerImpl::ExtractEtld1(GURL(kUrl1)),
+          PasswordChangeSuccessTrackerImpl::ExtractEtldPlus1(GURL(kUrl1)),
           PasswordChangeSuccessTracker::StartEvent::kManualResetLinkFlow,
           PasswordChangeSuccessTracker::EndEvent::kManualFlowOwnPasswordChosen,
           PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings, _));
@@ -332,10 +458,10 @@ TEST_F(PasswordChangeSuccessTrackerImplTest,
   EXPECT_CALL(
       *metrics_recorder(),
       OnFlowRecorded(
-          PasswordChangeSuccessTrackerImpl::ExtractEtld1(GURL(kUrl1)),
+          PasswordChangeSuccessTrackerImpl::ExtractEtldPlus1(GURL(kUrl1)),
           PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
           PasswordChangeSuccessTracker::EndEvent::
-              kAutomatedFlowResetLinkRequestRequested,
+              kAutomatedFlowResetLinkRequested,
           PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings, _));
   tracker()->OnChangePasswordFlowModified(
       GURL(kUrl1), kUsername1,
@@ -344,7 +470,7 @@ TEST_F(PasswordChangeSuccessTrackerImplTest,
   EXPECT_CALL(
       *metrics_recorder(),
       OnFlowRecorded(
-          PasswordChangeSuccessTrackerImpl::ExtractEtld1(GURL(kUrl1)),
+          PasswordChangeSuccessTrackerImpl::ExtractEtldPlus1(GURL(kUrl1)),
           PasswordChangeSuccessTracker::StartEvent::kManualResetLinkFlow,
           PasswordChangeSuccessTracker::EndEvent::kManualFlowOwnPasswordChosen,
           PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings, _));
@@ -384,7 +510,7 @@ TEST_F(PasswordChangeSuccessTrackerImplTest, TimeoutForFlow) {
   EXPECT_CALL(
       *metrics_recorder(),
       OnFlowRecorded(
-          PasswordChangeSuccessTrackerImpl::ExtractEtld1(GURL(kUrl1)),
+          PasswordChangeSuccessTrackerImpl::ExtractEtldPlus1(GURL(kUrl1)),
           PasswordChangeSuccessTracker::StartEvent::
               kManualChangePasswordUrlFlow,
           PasswordChangeSuccessTracker::EndEvent::kTimeout,
@@ -393,4 +519,46 @@ TEST_F(PasswordChangeSuccessTrackerImplTest, TimeoutForFlow) {
       GURL(kUrl1), kUsername1,
       PasswordChangeSuccessTracker::EndEvent::
           kManualFlowGeneratedPasswordChosen);
+}
+
+TEST_F(PasswordChangeSuccessTrackerImplTest,
+       IntegrationTestWithMetricsRecorderUma) {
+  base::HistogramTester histogram_tester;
+
+  // Manually add the Uma recorder.
+  AddMetricsRecorder(std::make_unique<PasswordChangeMetricsRecorderUma>());
+
+  tracker()->OnChangePasswordFlowStarted(
+      GURL(kUrl2WithPath), kUsername2,
+      PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
+      PasswordChangeSuccessTracker::EntryPoint::kLeakWarningDialog);
+
+  // This flow completion cannot be matched due to a different url,
+  // so there is no call to the recorder.
+  tracker()->OnChangePasswordFlowCompleted(
+      GURL(kUrl1), kUsername2,
+      PasswordChangeSuccessTracker::EndEvent::
+          kAutomatedFlowGeneratedPasswordChosen);
+
+  EXPECT_CALL(
+      *metrics_recorder(),
+      OnFlowRecorded(
+          PasswordChangeSuccessTrackerImpl::ExtractEtldPlus1(GURL(kUrl2)),
+          PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
+          PasswordChangeSuccessTracker::EndEvent::
+              kAutomatedFlowOwnPasswordChosen,
+          PasswordChangeSuccessTracker::EntryPoint::kLeakWarningDialog, _));
+
+  tracker()->OnChangePasswordFlowCompleted(
+      GURL(kUrl2), kUsername2,
+      PasswordChangeSuccessTracker::EndEvent::kAutomatedFlowOwnPasswordChosen);
+
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordChangeFlowDuration.LeakWarningDialog."
+      "AutomatedFlow",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordChangeFlowDuration.LeakWarningDialog."
+      "AutomatedFlow.AutomatedFlowPasswordChosen",
+      1);
 }

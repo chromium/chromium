@@ -77,7 +77,7 @@ class PasswordChangeSuccessTracker : public KeyedService {
 
     // Password-reset link was requested. Autofill Assistant's part is done and
     // a user is supposed to continue the flow on their own.
-    kAutomatedFlowResetLinkRequestRequested = 2,
+    kAutomatedFlowResetLinkRequested = 2,
 
     // A manual password change flow or password reset flow completed with a
     // generated password.
