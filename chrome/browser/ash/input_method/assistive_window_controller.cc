@@ -106,7 +106,7 @@ void AssistiveWindowController::InitAccessibilityView() {
   accessibility_view_->GetWidget()->AddObserver(this);
 }
 
-void AssistiveWindowController::OnWidgetClosing(views::Widget* widget) {
+void AssistiveWindowController::OnWidgetDestroying(views::Widget* widget) {
   if (suggestion_window_view_ &&
       widget == suggestion_window_view_->GetWidget()) {
     widget->RemoveObserver(this);

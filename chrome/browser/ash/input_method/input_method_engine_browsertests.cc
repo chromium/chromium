@@ -42,6 +42,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/test/widget_test.h"
 
 namespace ash {
 namespace input_method {
@@ -703,11 +704,13 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
         }
       });
     )";
-    ASSERT_TRUE(content::ExecuteScript(host->host_contents(),
-                                       set_assistive_window_test_script));
     auto* assistive_window_controller = static_cast<AssistiveWindowController*>(
         ui::IMEBridge::Get()->GetAssistiveWindowHandler());
-
+    views::test::WidgetDestroyedWaiter waiter(
+        assistive_window_controller->GetUndoWindowForTesting()->GetWidget());
+    ASSERT_TRUE(content::ExecuteScript(host->host_contents(),
+                                       set_assistive_window_test_script));
+    waiter.Wait();
     ui::ime::UndoWindow* undo_window =
         assistive_window_controller->GetUndoWindowForTesting();
     EXPECT_FALSE(undo_window);
