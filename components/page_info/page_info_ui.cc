@@ -778,33 +778,6 @@ std::u16string PageInfoUI::PermissionAutoBlockedToUIString(
 }
 
 // static
-std::u16string PageInfoUI::PermissionDecisionReasonToUIString(
-    PageInfoUiDelegate* delegate,
-    const PageInfo::PermissionInfo& permission) {
-  ContentSetting effective_setting = GetEffectiveSetting(
-      permission.type, permission.setting, permission.default_setting);
-  int message_id = kInvalidResourceID;
-  switch (permission.source) {
-    case content_settings::SettingSource::SETTING_SOURCE_POLICY:
-      message_id = kPermissionButtonTextIDPolicyManaged[effective_setting];
-      break;
-    case content_settings::SettingSource::SETTING_SOURCE_EXTENSION:
-      message_id = kPermissionButtonTextIDExtensionManaged[effective_setting];
-      break;
-    default:
-      break;
-  }
-
-  auto auto_block_text = PermissionAutoBlockedToUIString(delegate, permission);
-  if (!auto_block_text.empty())
-    return auto_block_text;
-
-  if (message_id == kInvalidResourceID)
-    return std::u16string();
-  return l10n_util::GetStringUTF16(message_id);
-}
-
-// static
 void PageInfoUI::ToggleBetweenAllowAndBlock(
     PageInfo::PermissionInfo& permission) {
   auto opposite_to_block_setting =

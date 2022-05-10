@@ -195,12 +195,6 @@ class PageInfoUI {
       content_settings::SettingSource source,
       bool is_one_time);
 
-  // Returns a string indicating whether the permission was blocked via an
-  // extension, enterprise policy, or embargo.
-  static std::u16string PermissionDecisionReasonToUIString(
-      PageInfoUiDelegate* delegate,
-      const PageInfo::PermissionInfo& permission);
-
   static std::u16string PermissionStateToUIString(
       PageInfoUiDelegate* delegate,
       const PageInfo::PermissionInfo& permission);
