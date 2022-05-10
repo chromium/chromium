@@ -39,6 +39,8 @@ class SigninUiDelegate {
   // suitable window for `profile` or create a new one if needed.
   // `enable_sync` indicates whether the sync should be enabled after the user
   // successfully re-authenticates.
+  // Note: if sync is enabled, `enable_sync` has to be false, as it's not valid
+  // to start a new sync setup flow when sync is already enabled.
   virtual void ShowReauthUI(Browser* browser,
                             Profile* profile,
                             const std::string& email,

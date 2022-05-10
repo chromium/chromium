@@ -622,9 +622,10 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncErrorButtonTest, OpenReauthTab) {
   EXPECT_EQ(2, tab_strip->count());
   EXPECT_EQ(1, tab_strip->active_index());
   content::WebContents* reauth_page = tab_strip->GetActiveWebContents();
-  EXPECT_EQ(signin::GetChromeSyncURLForDice(account_info().email,
-                                            google_util::kGoogleHomepageURL),
-            reauth_page->GetURL());
+  EXPECT_TRUE(
+      base::StartsWith(reauth_page->GetURL().spec(),
+                       GaiaUrls::GetInstance()->add_account_url().spec(),
+                       base::CompareCase::INSENSITIVE_ASCII));
 }
 #endif
 

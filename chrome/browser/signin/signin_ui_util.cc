@@ -211,9 +211,11 @@ void ShowReauthForPrimaryAccountWithAuthError(
   DCHECK(!primary_account_info.IsEmpty());
   DCHECK(identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
       primary_account_info.account_id));
+  // Pass `false` for `enable_sync`, as his function is not expected to start a
+  // sync setup flow after the reauth.
   GetSigninUiDelegate()->ShowReauthUI(
       browser, browser->profile(), primary_account_info.email,
-      /*enable_sync=*/true, access_point,
+      /*enable_sync=*/false, access_point,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

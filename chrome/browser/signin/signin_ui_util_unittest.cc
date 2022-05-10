@@ -530,9 +530,10 @@ TEST_F(SigninUiUtilTest, ShowReauthTab) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
   content::WebContents* active_contents = tab_strip->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
-  EXPECT_EQ(signin::GetChromeSyncURLForDice(account_info.email,
-                                            google_util::kGoogleHomepageURL),
-            active_contents->GetVisibleURL());
+  EXPECT_TRUE(
+      base::StartsWith(active_contents->GetVisibleURL().spec(),
+                       GaiaUrls::GetInstance()->add_account_url().spec(),
+                       base::CompareCase::INSENSITIVE_ASCII));
 }
 
 TEST_F(SigninUiUtilTest,
@@ -767,7 +768,7 @@ TEST_F(MirrorSigninUiUtilTest, ShowReauthDialog) {
       identity_manager, account_info.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 
-  ExpectReauth(kMainEmail, /*enable_sync=*/true,
+  ExpectReauth(kMainEmail, /*enable_sync=*/false,
                signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
                signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
   ShowReauthForPrimaryAccountWithAuthError(
