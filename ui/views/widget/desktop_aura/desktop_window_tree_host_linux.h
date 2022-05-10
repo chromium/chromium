@@ -82,7 +82,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   const ui::X11Extension* GetX11Extension() const;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTest, HitTest);
+  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTestWithTouch,
+                           HitTest);
 
   // DesktopWindowTreeHostPlatform overrides:
   void AddAdditionalInitProperties(

@@ -65,7 +65,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostLacros
       ui::PlatformWindowInitProperties* properties) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTest, HitTest);
+  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTestWithTouch,
+                           HitTest);
 
   void CreateNonClientEventFilter();
   void DestroyNonClientEventFilter();

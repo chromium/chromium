@@ -320,6 +320,14 @@ class DesktopWindowTreeHostPlatformImplTest
   TestDesktopWindowTreeHostPlatformImpl* host_ = nullptr;
 };
 
+// These tests are run using either click or touch events.
+class DesktopWindowTreeHostPlatformImplTestWithTouch
+    : public DesktopWindowTreeHostPlatformImplTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool use_touch_event() const { return GetParam(); }
+};
+
 // On Lacros, the resize and drag operations are handled by compositor,
 // so this test does not make much sense.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -327,7 +335,7 @@ class DesktopWindowTreeHostPlatformImplTest
 #else
 #define MAYBE_HitTest HitTest
 #endif
-TEST_F(DesktopWindowTreeHostPlatformImplTest, MAYBE_HitTest) {
+TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch, MAYBE_HitTest) {
   gfx::Rect widget_bounds(0, 0, 100, 100);
   std::unique_ptr<Widget> widget(BuildTopLevelDesktopWidget(widget_bounds));
   widget->Show();
@@ -362,158 +370,152 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, MAYBE_HitTest) {
   aura::Window* window = widget->GetNativeWindow();
   auto* frame_view = delegate_->frame_view();
   for (int hittest : hittest_values) {
-    // Alternating between touch and mouse events.
-    for (int use_touch_event = 0; use_touch_event < 2; use_touch_event++) {
-      handler->Reset();
+    handler->Reset();
 
-      // Set the desired hit test result value, which will be returned, when
-      // WindowEventFilter starts to perform hit testing.
-      frame_view->set_hit_test_result(hittest);
+    // Set the desired hit test result value, which will be returned, when
+    // WindowEventFilter starts to perform hit testing.
+    frame_view->set_hit_test_result(hittest);
 
-      gfx::Rect bounds = window->GetBoundsInScreen();
+    gfx::Rect bounds = window->GetBoundsInScreen();
 
-      // The wm move/resize handler receives pointer location in the global
-      // screen coordinate, whereas event dispatcher receives event locations on
-      // a local system coordinate. Thus, add an offset of a new possible origin
-      // value of a window to the expected pointer location.
-      gfx::Point expected_pointer_location_in_px(pointer_location_in_px);
-      expected_pointer_location_in_px.Offset(bounds.x(), bounds.y());
+    // The wm move/resize handler receives pointer location in the global
+    // screen coordinate, whereas event dispatcher receives event locations on
+    // a local system coordinate. Thus, add an offset of a new possible origin
+    // value of a window to the expected pointer location.
+    gfx::Point expected_pointer_location_in_px(pointer_location_in_px);
+    expected_pointer_location_in_px.Offset(bounds.x(), bounds.y());
 
-      if (hittest == HTCAPTION) {
-        // Move the window on HTCAPTION hit test value.
-        bounds = gfx::Rect(gfx::Point(bounds.x() + 2, bounds.y() + 4),
-                           bounds.size());
-        handler->set_bounds(bounds);
-      } else if (IsNonClientComponent(hittest)) {
-        // Resize the window on other than HTCAPTION non client hit test values.
-        bounds = gfx::Rect(
-            gfx::Point(bounds.origin()),
-            gfx::Size(bounds.size().width() + 5, bounds.size().height() + 10));
-        handler->set_bounds(bounds);
-      }
+    if (hittest == HTCAPTION) {
+      // Move the window on HTCAPTION hit test value.
+      bounds =
+          gfx::Rect(gfx::Point(bounds.x() + 2, bounds.y() + 4), bounds.size());
+      handler->set_bounds(bounds);
+    } else if (IsNonClientComponent(hittest)) {
+      // Resize the window on other than HTCAPTION non client hit test values.
+      bounds = gfx::Rect(
+          gfx::Point(bounds.origin()),
+          gfx::Size(bounds.size().width() + 5, bounds.size().height() + 10));
+      handler->set_bounds(bounds);
+    }
 
-      // Send mouse/touch down event and make sure the WindowEventFilter calls
-      // the move/resize handler to start interactive move/resize with the
-      // |hittest| value we specified.
+    // Send mouse/touch down event and make sure the WindowEventFilter calls
+    // the move/resize handler to start interactive move/resize with the
+    // |hittest| value we specified.
 
-      if (use_touch_event) {
-        ui::GestureEventDetails gesture_details(ui::ET_GESTURE_SCROLL_BEGIN);
-        DispatchEvent(
-            GenerateGestureEvent(pointer_location_in_px, gesture_details));
-      } else {
-        DispatchEvent(GenerateMouseEvent(ui::ET_MOUSE_PRESSED,
-                                         pointer_location_in_px,
-                                         ui::EF_LEFT_MOUSE_BUTTON));
-      }
+    if (use_touch_event()) {
+      ui::GestureEventDetails gesture_details(ui::ET_GESTURE_SCROLL_BEGIN);
+      DispatchEvent(
+          GenerateGestureEvent(pointer_location_in_px, gesture_details));
+    } else {
+      DispatchEvent(GenerateMouseEvent(ui::ET_MOUSE_PRESSED,
+                                       pointer_location_in_px,
+                                       ui::EF_LEFT_MOUSE_BUTTON));
+    }
 
-      // The test expectation is based on the hit test component. If it is a
-      // non-client component, which results in a call to move/resize, the
-      // handler must receive the hittest value and the pointer location in
-      // global screen coordinate system. In other cases, it must not.
-      SetExpectationBasedOnHittestValue(hittest, *handler.get(),
-                                        expected_pointer_location_in_px);
-      // Make sure the bounds of the content window are correct.
-      EXPECT_EQ(window->GetBoundsInScreen().ToString(), bounds.ToString());
+    // The test expectation is based on the hit test component. If it is a
+    // non-client component, which results in a call to move/resize, the
+    // handler must receive the hittest value and the pointer location in
+    // global screen coordinate system. In other cases, it must not.
+    SetExpectationBasedOnHittestValue(hittest, *handler.get(),
+                                      expected_pointer_location_in_px);
+    // Make sure the bounds of the content window are correct.
+    EXPECT_EQ(window->GetBoundsInScreen().ToString(), bounds.ToString());
 
-      // Dispatch mouse/touch release event to release a mouse/touch pressed
-      // handler and be able to consume future events.
-      if (use_touch_event) {
-        ui::GestureEventDetails gesture_details(ui::ET_GESTURE_SCROLL_END);
-        DispatchEvent(
-            GenerateGestureEvent(pointer_location_in_px, gesture_details));
-      } else {
-        DispatchEvent(GenerateMouseEvent(ui::ET_MOUSE_RELEASED,
-                                         pointer_location_in_px,
-                                         ui::EF_LEFT_MOUSE_BUTTON));
-      }
+    // Dispatch mouse/touch release event to release a mouse/touch pressed
+    // handler and be able to consume future events.
+    if (use_touch_event()) {
+      ui::GestureEventDetails gesture_details(ui::ET_GESTURE_SCROLL_END);
+      DispatchEvent(
+          GenerateGestureEvent(pointer_location_in_px, gesture_details));
+    } else {
+      DispatchEvent(GenerateMouseEvent(ui::ET_MOUSE_RELEASED,
+                                       pointer_location_in_px,
+                                       ui::EF_LEFT_MOUSE_BUTTON));
     }
   }
 }
 
 // Tests that the window is maximized in response to a double click event.
-TEST_F(DesktopWindowTreeHostPlatformImplTest, DoubleClickHeaderMaximizes) {
-  for (int use_touch_event = 0; use_touch_event < 2; use_touch_event++) {
-    gfx::Rect bounds(0, 0, 100, 100);
-    std::unique_ptr<Widget> widget(BuildTopLevelDesktopWidget(bounds));
-    widget->Show();
+TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch,
+       DoubleClickHeaderMaximizes) {
+  gfx::Rect bounds(0, 0, 100, 100);
+  std::unique_ptr<Widget> widget(BuildTopLevelDesktopWidget(bounds));
+  widget->Show();
 
-    aura::Window* window = widget->GetNativeWindow();
-    window->SetProperty(aura::client::kResizeBehaviorKey,
-                        aura::client::kResizeBehaviorCanMaximize);
+  aura::Window* window = widget->GetNativeWindow();
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      aura::client::kResizeBehaviorCanMaximize);
 
-    RunPendingMessages();
+  RunPendingMessages();
 
-    host_->ResetCalledMaximize();
+  host_->ResetCalledMaximize();
 
-    auto* frame_view = delegate_->frame_view();
-    // Set the desired hit test result value, which will be returned, when
-    // WindowEventFilter starts to perform hit testing.
-    frame_view->set_hit_test_result(HTCAPTION);
+  auto* frame_view = delegate_->frame_view();
+  // Set the desired hit test result value, which will be returned, when
+  // WindowEventFilter starts to perform hit testing.
+  frame_view->set_hit_test_result(HTCAPTION);
 
-    host_->ResetCalledMaximize();
+  host_->ResetCalledMaximize();
 
-    if (use_touch_event) {
-      ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
-      details.set_tap_count(1);
-      DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
-      details.set_tap_count(2);
-      DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
-    } else {
-      int flags = ui::EF_LEFT_MOUSE_BUTTON;
-      GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
-      flags |= ui::EF_IS_DOUBLE_CLICK;
-      GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
-    }
-
-    EXPECT_TRUE(host_->called_maximize());
-
-    widget->CloseNow();
+  if (use_touch_event()) {
+    ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+    details.set_tap_count(1);
+    DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
+    details.set_tap_count(2);
+    DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
+  } else {
+    int flags = ui::EF_LEFT_MOUSE_BUTTON;
+    GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
+    flags |= ui::EF_IS_DOUBLE_CLICK;
+    GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
   }
+
+  EXPECT_TRUE(host_->called_maximize());
+
+  widget->CloseNow();
 }
 
 // Tests that the window does not maximize in response to a double click event,
 // if the first click was to a different target component than that of the
 // second click.
-TEST_F(DesktopWindowTreeHostPlatformImplTest,
+TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch,
        DoubleClickTwoDifferentTargetsDoesntMaximizes) {
-  for (int use_touch_event = 0; use_touch_event < 2; use_touch_event++) {
-    gfx::Rect bounds(0, 0, 100, 100);
-    std::unique_ptr<Widget> widget(BuildTopLevelDesktopWidget(bounds));
-    widget->Show();
+  gfx::Rect bounds(0, 0, 100, 100);
+  std::unique_ptr<Widget> widget(BuildTopLevelDesktopWidget(bounds));
+  widget->Show();
 
-    aura::Window* window = widget->GetNativeWindow();
-    window->SetProperty(aura::client::kResizeBehaviorKey,
-                        aura::client::kResizeBehaviorCanMaximize);
+  aura::Window* window = widget->GetNativeWindow();
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      aura::client::kResizeBehaviorCanMaximize);
 
-    RunPendingMessages();
+  RunPendingMessages();
 
-    host_->ResetCalledMaximize();
+  host_->ResetCalledMaximize();
 
-    auto* frame_view = delegate_->frame_view();
+  auto* frame_view = delegate_->frame_view();
 
-    if (use_touch_event) {
-      frame_view->set_hit_test_result(HTCLIENT);
-      ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
-      details.set_tap_count(1);
-      DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
+  if (use_touch_event()) {
+    frame_view->set_hit_test_result(HTCLIENT);
+    ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+    details.set_tap_count(1);
+    DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
 
-      frame_view->set_hit_test_result(HTCLIENT);
-      details.set_tap_count(2);
-      DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
-    } else {
-      frame_view->set_hit_test_result(HTCLIENT);
-      int flags = ui::EF_LEFT_MOUSE_BUTTON;
-      GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
+    frame_view->set_hit_test_result(HTCLIENT);
+    details.set_tap_count(2);
+    DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
+  } else {
+    frame_view->set_hit_test_result(HTCLIENT);
+    int flags = ui::EF_LEFT_MOUSE_BUTTON;
+    GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
 
-      frame_view->set_hit_test_result(HTCLIENT);
-      flags |= ui::EF_IS_DOUBLE_CLICK;
-      GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
-    }
-
-    EXPECT_FALSE(host_->called_maximize());
-
-    widget->CloseNow();
+    frame_view->set_hit_test_result(HTCLIENT);
+    flags |= ui::EF_IS_DOUBLE_CLICK;
+    GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
   }
+
+  EXPECT_FALSE(host_->called_maximize());
+
+  widget->CloseNow();
 }
 
 // Tests that the window does not maximize in response to a double click event,
@@ -685,5 +687,9 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, InputMethodFocus) {
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
             widget->GetInputMethod()->GetTextInputType());
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         DesktopWindowTreeHostPlatformImplTestWithTouch,
+                         testing::Bool());
 
 }  // namespace views
