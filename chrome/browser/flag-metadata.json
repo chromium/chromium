@@ -173,7 +173,7 @@
   {
     "name": "arc-account-restrictions",
     "owners": [ "anastasiian", "team-dent@google.com"],
-    "expiry_milestone": 102
+    "expiry_milestone": 105
   },
   {
     "name": "arc-compat-snap",
