@@ -177,6 +177,36 @@ export function wrapupRepairCompletePageTest() {
     assertEquals(ShutdownMethod.kReboot, shutdownMethod);
   });
 
+  test('PowerwashDialogClosesWhenCompletedWithShutdown', async () => {
+    await initializeRepairCompletePage();
+
+    service.setGetPowerwashRequiredResult(true);
+
+    await clickButton('#shutDownButton');
+    await clickButton('#powerwashButton');
+    await flushTasks();
+
+    const powerwashDialog =
+        component.shadowRoot.querySelector('#powerwashDialog');
+    assertTrue(!!powerwashDialog);
+    assertFalse(powerwashDialog.open);
+  });
+
+  test('PowerwashDialogClosesWhenCompletedWithReboot', async () => {
+    await initializeRepairCompletePage();
+
+    service.setGetPowerwashRequiredResult(true);
+
+    await clickButton('#rebootButton');
+    await clickButton('#powerwashButton');
+    await flushTasks();
+
+    const powerwashDialog =
+        component.shadowRoot.querySelector('#powerwashDialog');
+    assertTrue(!!powerwashDialog);
+    assertFalse(powerwashDialog.open);
+  });
+
   test('RebootButtonTriggersRebootIfNoPowerwashRequired', async () => {
     const resolver = new PromiseResolver();
     await initializeRepairCompletePage();

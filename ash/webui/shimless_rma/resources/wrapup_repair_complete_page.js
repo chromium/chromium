@@ -186,6 +186,9 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   /** @protected */
   onPowerwashButtonClick_(e) {
     e.preventDefault();
+    const dialog = /** @type {!CrDialogElement} */ (
+      this.shadowRoot.querySelector('#powerwashDialog'));
+    dialog.close();
     this.shutDownOrReboot_();
   }
 

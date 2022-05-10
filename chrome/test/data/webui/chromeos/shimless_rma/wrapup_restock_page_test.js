@@ -145,6 +145,20 @@ export function wrapupRestockPageTest() {
     assertFalse(powerwashDialog.open);
   });
 
+  test('PowerwashDialogClosesWhenCompleted', async () => {
+    await initializeRestockPage();
+
+    const powerwashDialog =
+        component.shadowRoot.querySelector('#powerwashDialog');
+    assertTrue(!!powerwashDialog);
+
+    await clickButton('#shutdown');
+    assertTrue(powerwashDialog.open);
+
+    await clickButton('#powerwashButton');
+    assertFalse(powerwashDialog.open);
+  });
+
   test('RestockPageButtonsDisabled', async () => {
     await initializeRestockPage();
 

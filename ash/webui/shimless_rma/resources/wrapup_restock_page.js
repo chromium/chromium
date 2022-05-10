@@ -81,6 +81,9 @@ export class WrapupRestockPage extends WrapupRestockPageBase {
   /** @protected */
   onPowerwashButtonClick_(e) {
     e.preventDefault();
+    const dialog = /** @type {!CrDialogElement} */ (
+      this.shadowRoot.querySelector('#powerwashDialog'));
+    dialog.close();
     executeThenTransitionState(
         this, () => this.shimlessRmaService_.shutdownForRestock());
   }
