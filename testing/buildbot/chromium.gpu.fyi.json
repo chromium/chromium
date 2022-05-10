@@ -12872,6 +12872,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -12901,6 +12902,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -12928,6 +12930,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -12955,6 +12958,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -12979,6 +12983,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13003,6 +13008,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13024,6 +13030,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13049,6 +13056,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13087,6 +13095,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13123,6 +13132,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13159,6 +13169,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13195,6 +13206,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13235,6 +13247,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13280,6 +13293,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13325,6 +13339,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13361,6 +13376,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13397,6 +13413,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13442,6 +13459,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13487,6 +13505,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13514,6 +13533,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13550,6 +13570,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13587,6 +13608,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13623,6 +13645,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13661,6 +13684,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13700,6 +13724,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13739,6 +13764,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13777,6 +13803,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13815,6 +13842,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13853,6 +13881,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
@@ -13890,6 +13919,7 @@
             {
               "cpu": "arm64",
               "display_attached": "1",
+              "mac_model": "Macmini9,1",
               "os": "Mac-11",
               "pool": "chromium.tests"
             }
