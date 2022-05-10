@@ -35,6 +35,7 @@ export const fakeAuthExtensionDataWithEmail = {
 export const fakeSigninBlockedByPolicyData = {
   email: 'john.doe@example.com',
   hostedDomain: 'example.com',
+  deviceType: 'Chromebook',
   signinBlockedByPolicy: true,
 };
 

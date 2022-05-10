@@ -5668,10 +5668,11 @@ Permissions you've already given to apps may apply to this account. You can cont
     Please try again later.
   </message>
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_TITLE" desc="Title for the sign-in blocked by policy screen in ChromeOS 'Add account' dialog.">
-    Sign-in blocked by your admin
+    Can't sign in with this account
   </message>
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_BODY" desc="Text body for the sign-in blocked by policy screen in ChromeOS 'Add account' dialog.">
-    <ph name="USER_EMAIL">$1<ex>john.doe@example.com</ex></ph> is managed by <ph name="MANAGER">$2<ex>example.com</ex></ph> and your admin has blocked sign-in as a secondary account
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph><ph name="USER_EMAIL">$1<ex>john.doe@example.com</ex></ph> is managed by <ph name="MANAGER">$2<ex>example.com</ex></ph>. You can't add this email as an additional account.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>To use <ph name="USER_EMAIL">$1<ex>john.doe@example.com</ex></ph>, first sign out of your <ph name="DEVICE_TYPE">$3<ex>Chromebook</ex></ph>. Then at the bottom of the login screen, select Add Person.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_IMAGE_ALT" desc="Alternate text for image on the sign-in blocked by policy screen in ChromeOS 'Add account' dialog.">
    Restriction image
@@ -5680,7 +5681,10 @@ Permissions you've already given to apps may apply to this account. You can cont
     Something went wrong
   </message>
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_ERROR_BODY" desc="Text body for the sign-in error screen in ChromeOS 'Add account' dialog.">
-    Sorry, your email or password could not be verified. Please try again.
+    Your email address or password couldn't be verified. Try signing in again.
+  </message>
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_SPINNER_TEXT" desc="Text for the spinner during sign-in flow on ChromeOS 'Add account' dialog.">
+    Verifying account...
   </message>
 
   <!-- Strings for per-account Migration welcome screen -->

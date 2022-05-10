@@ -29,12 +29,15 @@ export class SigninBlockedByPolicyPageElement extends PolymerElement {
    * @param {string} email User's email used in the sign-in flow.
    * @param {string} hostedDomain Hosted domain of the user's email used in the
    *     sign-in flow.
+   * @param {string} deviceType name of the Chrome device type (e.g. Chromebook,
+   *     Chromebox).
    * @return {string}
    * @private
    */
-  getBodyText_(email, hostedDomain) {
+  getBodyText_(email, hostedDomain, deviceType) {
     return loadTimeData.getStringF(
-        'accountManagerDialogSigninBlockedByPolicyBody', email, hostedDomain);
+        'accountManagerDialogSigninBlockedByPolicyBody', email, hostedDomain,
+        deviceType);
   }
 }
 

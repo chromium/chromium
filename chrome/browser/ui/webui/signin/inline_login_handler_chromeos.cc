@@ -44,6 +44,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 
 namespace chromeos {
@@ -381,6 +382,7 @@ void InlineLoginHandlerChromeOS::ShowSigninErrorPage(
   base::Value::Dict params;
   params.Set("email", email);
   params.Set("hostedDomain", hosted_domain);
+  params.Set("deviceType", ui::GetChromeOSDeviceName());
   params.Set("signinBlockedByPolicy", !hosted_domain.empty() ? true : false);
 
   FireWebUIListener("show-signin-error-page", base::Value(std::move(params)));

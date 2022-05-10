@@ -198,6 +198,8 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
      IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_ERROR_BODY},
     {"accountManagerDialogSigninBlockedByPolicyImageAlt",
      IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_IMAGE_ALT},
+    {"accountManagerDialogSigninSpinnerText",
+     IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_SPINNER_TEXT},
 #else
     {"title", IDS_CHROME_SIGNIN_TITLE},
 #endif

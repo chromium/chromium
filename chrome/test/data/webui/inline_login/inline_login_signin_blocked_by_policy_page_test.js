@@ -87,14 +87,17 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
         const title =
             signinBlockedByPolicyPageComponent.shadowRoot.querySelector('h1');
         assertEquals(
-            title.textContent, 'Sign-in blocked by your admin',
+            title.textContent, 'Can\'t sign in with this account',
             'The titles do not match');
         const textBody =
             signinBlockedByPolicyPageComponent.shadowRoot.querySelector(
                 '.secondary');
         assertEquals(
             textBody.textContent,
-            'john.doe@example.com is managed by example.com and your admin has blocked sign-in as a secondary account',
+            'john.doe@example.com is managed by example.com. You can\'t add ' +
+                'this email as an additional account.\n    To use ' +
+                'john.doe@example.com, first sign out of your Chromebook. ' +
+                'Then at the bottom of the login screen, select Add Person.',
             'The text bodies do not match');
       });
 
@@ -119,9 +122,12 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
         assertTrue(
             textBody.textContent.includes('example.com'),
             'Invalid hosted domain');
+        assertTrue(
+            textBody.textContent.includes('Chromebook'), 'Invalid device type');
         webUIListenerCallback('show-signin-error-page', {
           email: 'coyote@acme.com',
           hostedDomain: 'acme.com',
+          deviceType: 'Chromebox',
           signinBlockedByPolicy: true
         });
         textBody = signinBlockedByPolicyPageComponent.shadowRoot.querySelector(
@@ -131,6 +137,8 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
             'Invalid user email');
         assertTrue(
             textBody.textContent.includes('acme.com'), 'Invalid hosted domain');
+        assertTrue(
+            textBody.textContent.includes('Chromebox'), 'Invalid device type');
       });
 
   test(
