@@ -67,7 +67,7 @@
         <item name="android:textColorHint">@color/default_text_color_hint_list</item>
     </style>
     <style name="ThemeOverlay.DynamicButtons" parent="">
-        <item name="globalFilledButtonBgColor">@color/filled_button_bg_dynamic</item>
+        <item name="globalFilledButtonBgColor">@color/filled_button_bg_dynamic_list</item>
         <item name="globalFilledButtonTextColor">@color/default_text_color_on_accent1_list</item>
         <item name="globalTextButtonTextColor">@color/default_text_color_accent1_tint_list</item>
         <item name="globalOutlinedButtonBorderColor">@macro/divider_line_bg_color</item>
