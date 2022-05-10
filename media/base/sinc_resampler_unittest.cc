@@ -228,9 +228,7 @@ class SinusoidalLinearChirpSource {
   }
 
  private:
-  enum {
-    kMinFrequency = 5
-  };
+  static constexpr int kMinFrequency = 5;
 
   double sample_rate_;
   int total_samples_;

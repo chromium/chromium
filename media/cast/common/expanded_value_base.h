@@ -108,12 +108,30 @@ class ExpandedValueBase {
   }
 
   // Comparison operators.
-  bool operator==(Subclass rhs) const { return value_ == rhs.value_; }
-  bool operator!=(Subclass rhs) const { return value_ != rhs.value_; }
-  bool operator<(Subclass rhs) const { return value_ < rhs.value_; }
-  bool operator>(Subclass rhs) const { return value_ > rhs.value_; }
-  bool operator<=(Subclass rhs) const { return value_ <= rhs.value_; }
-  bool operator>=(Subclass rhs) const { return value_ >= rhs.value_; }
+  bool operator==(
+      const ExpandedValueBase<FullWidthInteger, Subclass>& rhs) const {
+    return value_ == rhs.value_;
+  }
+  bool operator!=(
+      const ExpandedValueBase<FullWidthInteger, Subclass>& rhs) const {
+    return value_ != rhs.value_;
+  }
+  bool operator<(
+      const ExpandedValueBase<FullWidthInteger, Subclass>& rhs) const {
+    return value_ < rhs.value_;
+  }
+  bool operator>(
+      const ExpandedValueBase<FullWidthInteger, Subclass>& rhs) const {
+    return value_ > rhs.value_;
+  }
+  bool operator<=(
+      const ExpandedValueBase<FullWidthInteger, Subclass>& rhs) const {
+    return value_ <= rhs.value_;
+  }
+  bool operator>=(
+      const ExpandedValueBase<FullWidthInteger, Subclass>& rhs) const {
+    return value_ >= rhs.value_;
+  }
 
   // (De)Serialize for transmission over IPC.  Do not use these to subvert the
   // valid set of operators allowed by this class or its Subclass.

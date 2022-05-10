@@ -155,7 +155,7 @@ void Vp9CompressedHeaderParser::ReadCoefProbs(Vp9FrameHeader* fhdr) {
     for (auto& ai : fhdr->frame_context.coef_probs[tx_size]) {
       for (auto& aj : ai) {
         for (auto& ak : aj) {
-          int max_l = (ak == aj[0]) ? 3 : 6;
+          int max_l = (+ak == +aj[0]) ? 3 : 6;
           for (int l = 0; l < max_l; l++) {
             DiffUpdateProbArray(ak[l]);
           }

@@ -19,22 +19,21 @@ namespace media {
 // SincResampler is a high-quality single-channel sample-rate converter.
 class MEDIA_EXPORT SincResampler {
  public:
-  enum {
-    // The kernel size can be adjusted for quality (higher is better) at the
-    // expense of performance.  Must be a multiple of 32.
-    // TODO(dalecurtis): Test performance to see if we can jack this up to 64+.
-    kKernelSize = 32,
+  // The kernel size can be adjusted for quality (higher is better) at the
+  // expense of performance.  Must be a multiple of 32.
+  // TODO(dalecurtis): Test performance to see if we can jack this up to 64+.
+  static constexpr int kKernelSize = 32;
 
-    // Default request size.  Affects how often and for how much SincResampler
-    // calls back for input.  Must be greater than kKernelSize.
-    kDefaultRequestSize = 512,
+  // Default request size.  Affects how often and for how much SincResampler
+  // calls back for input.  Must be greater than kKernelSize.
+  static constexpr int kDefaultRequestSize = 512;
 
-    // The kernel offset count is used for interpolation and is the number of
-    // sub-sample kernel shifts.  Can be adjusted for quality (higher is better)
-    // at the expense of allocating more memory.
-    kKernelOffsetCount = 32,
-    kKernelStorageSize = kKernelSize * (kKernelOffsetCount + 1),
-  };
+  // The kernel offset count is used for interpolation and is the number of
+  // sub-sample kernel shifts.  Can be adjusted for quality (higher is better)
+  // at the expense of allocating more memory.
+  static constexpr int kKernelOffsetCount = 32;
+  static constexpr int kKernelStorageSize =
+      kKernelSize * (kKernelOffsetCount + 1);
 
   // Callback type for providing more data into the resampler.  Expects |frames|
   // of data to be rendered into |destination|; zero padded if not enough frames

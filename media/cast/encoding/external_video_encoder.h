@@ -123,11 +123,9 @@ class SizeAdaptableExternalVideoEncoder final
 // value is related to the complexity of the content of the frame.
 class QuantizerEstimator {
  public:
-  enum {
-    NO_RESULT = -1,
-    MIN_VP8_QUANTIZER = 4,
-    MAX_VP8_QUANTIZER = 63,
-  };
+  static constexpr int NO_RESULT = -1;
+  static constexpr int MIN_VP8_QUANTIZER = 4;
+  static constexpr int MAX_VP8_QUANTIZER = 63;
 
   QuantizerEstimator();
 

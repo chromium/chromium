@@ -373,7 +373,7 @@ bool Vp9FrameContext::IsValid() const {
     for (auto& ai : a) {
       for (auto& aj : ai) {
         for (auto& ak : aj) {
-          int max_l = (ak == aj[0]) ? 3 : 6;
+          int max_l = (+ak == +aj[0]) ? 3 : 6;
           for (int l = 0; l < max_l; l++) {
             for (auto& x : ak[l]) {
               if (x == 0) {
