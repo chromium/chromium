@@ -834,8 +834,7 @@ void NGHighlightPainter::PaintSpellingGrammarDecorations(
   const StringView text = cursor_.CurrentText();
   const unsigned clamped_start = ClampOffset(part.from, fragment_item_);
   const unsigned clamped_end = ClampOffset(part.to, fragment_item_);
-  const PhysicalRect marker_rect =
-      MarkerRectForForeground(fragment_item_, text, clamped_start, clamped_end);
+  absl::optional<PhysicalRect> marker_rect{};
 
   for (const HighlightLayer& decoration_layer_id : part.decorations) {
     switch (decoration_layer_id.type) {
@@ -852,12 +851,17 @@ void NGHighlightPainter::PaintSpellingGrammarDecorations(
                 TextDecorationLine::kNone)
           break;
 
+        if (!marker_rect) {
+          marker_rect = MarkerRectForForeground(fragment_item_, text,
+                                                clamped_start, clamped_end);
+        }
+
         DocumentMarkerPainter::PaintDocumentMarker(
             paint_info_, box_origin_, style_,
             decoration_layer_id.type == HighlightLayerType::kSpelling
                 ? DocumentMarker::kSpelling
                 : DocumentMarker::kGrammar,
-            marker_rect,
+            *marker_rect,
             HighlightPaintingUtils::HighlightTextDecorationColor(
                 style_, node_,
                 decoration_layer_id.type == HighlightLayerType::kSpelling
