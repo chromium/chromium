@@ -1,2 +1,2 @@
 AXRowCountChanged on AXOutline
-AXRowExpanded on AXRow AXTitle='Minor'
+AXRowExpanded on AXRow AXSubrole=AXOutlineRow AXTitle='Minor'

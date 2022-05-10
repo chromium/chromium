@@ -8,6 +8,6 @@ AXWebArea
 ++++AXGroup AXDetailsElements=[:11, :13]
 ++++++AXStaticText AXValue='text'
 ++++AXStaticText AXValue=' has details'
-++AXGroup
+++AXGroup AXSubrole=AXApplicationGroup
 ++++AXStaticText AXValue='Text details'
 ++AXImage AXDescription='Image details'

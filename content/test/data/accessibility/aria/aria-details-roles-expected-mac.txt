@@ -9,10 +9,10 @@ AXWebArea
 ++AXGroup AXDetailsElements=[:12, :10, :24, :28] AXHelp='many'
 ++AXGroup
 ++++AXStaticText AXValue='x'
-++AXGroup
+++AXGroup AXSubrole=AXApplicationGroup
 ++++AXHeading AXTitle='heading' AXValue=1
 ++++++AXStaticText AXValue='heading'
-++++AXGroup
+++++AXGroup AXSubrole=AXApplicationGroup
 ++++++AXGroup
 ++++++++AXStaticText AXValue='x'
 ++AXGroup
@@ -21,7 +21,7 @@ AXWebArea
 ++AXGroup
 ++++AXGroup
 ++++++AXStaticText AXValue='x'
-++AXGroup
+++AXGroup AXSubrole=AXDefinition
 ++++AXStaticText AXValue='x'
 ++AXGroup
 ++++AXStaticText AXValue='x'

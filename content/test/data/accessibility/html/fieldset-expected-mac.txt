@@ -1,9 +1,9 @@
 AXWebArea
 ++AXGroup
-++++AXGroup AXDescription='Browser Engines:'
+++++AXGroup AXSubrole=AXApplicationGroup AXDescription='Browser Engines:'
 ++++++AXGroup
 ++++++++AXStaticText AXValue='Browser Engines:'
-++AXGroup AXDescription='Which cake do you prefer?'
+++AXGroup AXSubrole=AXApplicationGroup AXDescription='Which cake do you prefer?'
 ++++AXGroup
 ++++++AXHeading AXTitle='Which cake do you prefer?' AXValue=2
 ++++++++AXStaticText AXValue='Which cake do you prefer?'

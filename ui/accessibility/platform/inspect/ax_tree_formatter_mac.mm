@@ -46,8 +46,8 @@ AXTreeFormatterMac::~AXTreeFormatterMac() = default;
 void AXTreeFormatterMac::AddDefaultFilters(
     std::vector<AXPropertyFilter>* property_filters) {
   static NSArray* default_attributes = [@[
-    @"AXAutocompleteValue=*", @"AXDescription=*", @"AXRole=*", @"AXTitle=*",
-    @"AXTitleUIElement=*", @"AXHelp=*", @"AXValue=*"
+    @"AXAutocompleteValue", @"AXDescription", @"AXRole", @"AXSubrole",
+    @"AXTitle", @"AXTitleUIElement", @"AXHelp", @"AXValue"
   ] retain];
 
   for (NSString* attribute : default_attributes) {

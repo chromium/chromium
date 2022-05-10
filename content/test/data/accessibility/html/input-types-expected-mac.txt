@@ -27,7 +27,7 @@ AXWebArea
 ++++++AXIncrementor AXTitle='Number:'
 ++++AXGroup
 ++++++AXStaticText AXValue='Password: '
-++++++AXTextField AXTitle='Password:'
+++++++AXTextField AXSubrole=AXSecureTextField AXTitle='Password:'
 ++++AXRadioButton AXTitle='Radio:' AXValue=0
 ++++AXGroup
 ++++++AXStaticText AXValue='Range: '
@@ -37,7 +37,7 @@ AXWebArea
 ++++++AXButton AXTitle='Reset:'
 ++++AXGroup
 ++++++AXStaticText AXValue='Search: '
-++++++AXTextField AXTitle='Search:'
+++++++AXTextField AXSubrole=AXSearchField AXTitle='Search:'
 ++++AXGroup
 ++++++AXStaticText AXValue='Submit: '
 ++++++AXButton AXTitle='Submit:'

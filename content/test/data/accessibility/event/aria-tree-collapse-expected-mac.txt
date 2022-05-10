@@ -1,2 +1,2 @@
-AXRowCollapsed on AXRow AXTitle='Minor'
+AXRowCollapsed on AXRow AXSubrole=AXOutlineRow AXTitle='Minor'
 AXRowCountChanged on AXOutline

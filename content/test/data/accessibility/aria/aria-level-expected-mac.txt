@@ -16,7 +16,7 @@ AXWebArea
 ++AXOutline
 ++++AXRow AXSubrole=AXOutlineRow AXDisclosing=1 AXDisclosureLevel=0 AXIndex=0 AXTitle='Tree item at level 1'
 ++++++AXStaticText AXValue='Tree item at level 1'
-++++++AXGroup
+++++++AXGroup AXSubrole=AXApplicationGroup
 ++++++++AXRow AXSubrole=AXOutlineRow AXDisclosing=0 AXDisclosureLevel=1 AXIndex=1 AXTitle='Tree item at level 2'
 ++++++++++AXStaticText AXValue='Tree item at level 2'
 ++++AXRow AXSubrole=AXOutlineRow AXDisclosing=0 AXDisclosureLevel=2 AXIndex=2 AXTitle='Tree item at level 3'
@@ -38,10 +38,10 @@ AXWebArea
 ++++AXStaticText AXValue='List item at level 1'
 ++AXGroup
 ++++AXStaticText AXValue='List item at level 3'
-++AXList
+++AXList AXSubrole=AXContentList
 ++++AXGroup
 ++++++AXStaticText AXValue='List item at level 2'
-++++AXList
+++++AXList AXSubrole=AXContentList
 ++++++AXGroup
 ++++++++AXStaticText AXValue='List item at level 2'
 ++++++AXGroup

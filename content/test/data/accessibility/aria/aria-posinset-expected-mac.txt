@@ -1,7 +1,7 @@
 AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='article'
+++AXGroup AXSubrole=AXDocumentArticle AXRoleDescription='article'
 ++++AXStaticText AXRoleDescription='text' AXValue='This is an ARIA article 1.'
-++AXGroup AXRoleDescription='article'
+++AXGroup AXSubrole=AXDocumentArticle AXRoleDescription='article'
 ++++AXStaticText AXRoleDescription='text' AXValue='This is an ARIA article 2.'
 ++AXList AXARIASetSize=2 AXRoleDescription='list box'
 ++++AXStaticText AXARIAPosInSet=1 AXARIASetSize=2 AXRoleDescription='text' AXValue='Item 1'
@@ -20,7 +20,7 @@ AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group' AXTitle='<newline>'
 ++AXRadioButton AXARIAPosInSet=2 AXARIASetSize=2 AXRoleDescription='radio button' AXValue=0
 ++AXStaticText AXRoleDescription='text' AXValue='Banana'
-++AXGroup AXARIASetSize=0 AXDescription='Cake' AXRoleDescription='group'
+++AXGroup AXSubrole=AXApplicationGroup AXARIASetSize=0 AXDescription='Cake' AXRoleDescription='group'
 ++++AXGroup AXRoleDescription='group'
 ++++++AXStaticText AXRoleDescription='text' AXValue='Cake'
 ++++AXRadioButton AXARIAPosInSet=1 AXARIASetSize=2 AXRoleDescription='radio button' AXTitle='Chiffon cakes' AXValue=1

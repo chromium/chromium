@@ -1,5 +1,5 @@
-AXLiveRegionChanged on AXGroup AXDescription='Foo'
+AXLiveRegionChanged on AXGroup AXSubrole=AXApplicationAlert AXDescription='Foo'
 === Start Continuation ===
-AXLiveRegionChanged on AXGroup AXDescription='Bar'
+AXLiveRegionChanged on AXGroup AXSubrole=AXApplicationAlert AXDescription='Bar'
 === Start Continuation ===
-AXLiveRegionChanged on AXGroup AXDescription='Baz'
+AXLiveRegionChanged on AXGroup AXSubrole=AXApplicationAlert AXDescription='Baz'

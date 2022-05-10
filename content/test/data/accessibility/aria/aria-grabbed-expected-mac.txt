@@ -1,5 +1,5 @@
 AXWebArea
-++AXList
+++AXList AXSubrole=AXContentList
 ++++AXGroup AXGrabbed=1
 ++++++AXListMarker AXValue='%E2%80%A2 '
 ++++++AXStaticText AXValue='grabbed-true '

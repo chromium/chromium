@@ -19,5 +19,5 @@ AXWebArea
 ++AXIncrementor AXDescription='Readonly spinbutton' AXValue=0
 ++AXMenuItem AXDescription='Readonly menuitemcheckbox' AXValue=0
 ++AXMenuItem AXDescription='Readonly menuitemradio' AXValue=0
-++AXTextField AXDescription='Readonly searchbox'
-++AXCheckBox AXDescription='Readonly switch' AXValue=0
+++AXTextField AXSubrole=AXSearchField AXDescription='Readonly searchbox'
+++AXCheckBox AXSubrole=AXSwitch AXDescription='Readonly switch' AXValue=0

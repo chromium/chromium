@@ -7,5 +7,5 @@ AXWebArea
 ++++AXStaticText AXValue='Good job!'
 ++AXGroup
 ++++AXStaticText AXValue='Some footnote.'
-++AXGroup
+++AXGroup AXSubrole=AXDefinition
 ++++AXStaticText AXValue='The meaning is.'

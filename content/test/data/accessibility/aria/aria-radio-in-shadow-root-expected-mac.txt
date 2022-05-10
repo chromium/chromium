@@ -17,7 +17,7 @@ AXWebArea AXLinkedUIElements=[]
 ++++AXRadioButton AXLinkedUIElements=[:17, :18, :19] AXTitle='Red' AXValue=1
 ++++AXRadioButton AXLinkedUIElements=[:17, :18, :19] AXTitle='Green' AXValue=0
 ++++AXRadioButton AXLinkedUIElements=[:17, :18, :19] AXTitle='Blue' AXValue=0
-++AXGroup AXDescription='Checkbox Group One' AXLinkedUIElements=[]
+++AXGroup AXSubrole=AXApplicationGroup AXDescription='Checkbox Group One' AXLinkedUIElements=[]
 ++++AXHeading AXLinkedUIElements=[] AXTitle='Checkbox Group One' AXValue=1
 ++++++AXStaticText AXLinkedUIElements=[] AXValue='Checkbox Group One'
 ++++AXCheckBox AXLinkedUIElements=[] AXTitle='Red' AXValue=1
