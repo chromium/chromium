@@ -1116,7 +1116,7 @@ bool CanApplyInlineStyleIncrementally(Element* element,
   // style onto the base as opposed to the computed style itself,
   // and we don't support that. It should be rare to animate elements
   // _both_ with animations and mutating inline style anyway.
-  if (GetElementAnimations(state)) {
+  if (GetElementAnimations(state) || element->GetComputedStyle()->BaseData()) {
     return false;
   }
 
@@ -1361,6 +1361,10 @@ void StyleResolver::ApplyBaseStyle(
 
     DCHECK_EQ(g_null_atom, ComputeBaseComputedStyleDiff(incremental_style.get(),
                                                         *state.Style()));
+    // The incremental style must not contain BaseData, otherwise we'd risk
+    // creating an infinite chain of BaseData/ComputedStyle in
+    // ApplyAnimatedStyle.
+    DCHECK(!incremental_style->BaseData());
 #endif
     return;
   }
