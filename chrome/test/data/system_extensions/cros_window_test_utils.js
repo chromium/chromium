@@ -31,19 +31,49 @@ async function setFullscreenAndTest(fullscreen) {
   }
 }
 
-async function setBoundsAndTest(newBounds) {
+async function setOriginAndTest(x, y) {
   await assertSingleWindow();
+
+  let originalWidth, originalHeight;
 
   {
     let [window] = await chromeos.windowManagement.getWindows();
-    window.setBounds(newBounds.x, newBounds.y,
-        newBounds.width, newBounds.height);
+    originalWidth = window.width;
+    originalHeight = window.height;
+    window.setOrigin(x, y);
   }
 
   {
     let [window] = await chromeos.windowManagement.getWindows();
-    const actualBounds = window.bounds;
-    assert_weak_equals(actualBounds, newBounds, `set bounds incorrectly`);
+    assert_equals(
+        window.screenLeft, x,
+        `SetOrigin should set origin without changing bounds`);
+    assert_equals(
+        window.screenTop, y,
+        `SetOrigin should set origin without changing bounds`);
+    assert_equals(
+        window.width, originalWidth,
+        `SetOrigin should set origin without changing bounds`);
+    assert_equals(
+        window.height, originalHeight,
+        `SetOrigin should set origin without changing bounds`);
+  }
+}
+
+async function setBoundsAndTest(x, y, width, height) {
+  await assertSingleWindow();
+
+  {
+    let [window] = await chromeos.windowManagement.getWindows();
+    window.setBounds(x, y, width, height);
+  }
+
+  {
+    let [window] = await chromeos.windowManagement.getWindows();
+    assert_equals(window.screenLeft, x, `set bounds incorrectly`);
+    assert_equals(window.screenTop, y, `set bounds incorrectly`);
+    assert_equals(window.width, width, `set bounds incorrectly`);
+    assert_equals(window.height, height, `set bounds incorrectly`);
   }
 }
 

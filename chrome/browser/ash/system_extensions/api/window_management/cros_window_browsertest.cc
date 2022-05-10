@@ -134,16 +134,12 @@ IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowSetOrigin) {
 async function cros_test() {
   let [window] = await chromeos.windowManagement.getWindows();
 
-  const newBounds = DOMRect.fromRect(window.bounds);
-  newBounds.x += 10;
-  newBounds.y += 10;
+  let x = window.screenLeft;
+  let y = window.screenTop;
+  x += 10;
+  y += 10;
 
-  window.setOrigin(newBounds.x, newBounds.y);
-  {
-    let [window] = await chromeos.windowManagement.getWindows();
-    assert_weak_equals(window.bounds, newBounds,
-        `SetOrigin should set origin without changing bounds`);
-  }
+  await setOriginAndTest(x, y);
 }
   )";
 
@@ -155,13 +151,16 @@ IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowSetBounds) {
 async function cros_test() {
   let [window] = await chromeos.windowManagement.getWindows();
 
-  const newBounds = DOMRect.fromRect(window.bounds);
-  newBounds.x += 10;
-  newBounds.y += 10;
-  newBounds.width -= 100;
-  newBounds.height -= 100;
+  let x = window.screenLeft;
+  let y = window.screenTop;
+  let width = window.width;
+  let height = window.height;
+  x += 10;
+  y += 10;
+  width -= 100;
+  height -= 100;
 
-  await setBoundsAndTest(newBounds);
+  await setBoundsAndTest(x, y, width, height);
 }
   )";
 

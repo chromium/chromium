@@ -43,7 +43,11 @@ interface CrosWindow {
   readonly attribute long screenTop;
   [ImplementedAs=screenTop] readonly attribute long screenY;
 
-  readonly attribute DOMRect bounds;
+  // Returns width of the window.
+  readonly attribute long width;
+
+  // Returns height of the window.
+  readonly attribute long height;
 
   // Moves the window such that the window's top left corner is at coordinates
   // (x, y) relative to the top left corner of the current screen. Measured in
