@@ -70,7 +70,8 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
           base::BindOnce(
               &CastStreamingSession::ReceiverSessionClient::OnCastChannelClosed,
               base::Unretained(this))),
-      client_(client) {
+      client_(client),
+      weak_factory_(this) {
   DCHECK(task_runner);
   DCHECK(client_);
 
@@ -93,18 +94,16 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
           base::Unretained(this)));
 }
 
-AudioDemuxerStreamDataProvider::RequestBufferCB
-CastStreamingSession::ReceiverSessionClient::GetAudioBufferRequester() {
+void CastStreamingSession::ReceiverSessionClient::GetAudioBuffer(
+    base::OnceClosure no_frames_available_cb) {
   DCHECK(audio_consumer_);
-  return base::BindRepeating(&StreamConsumer::ReadFrame,
-                             audio_consumer_->GetWeakPtr());
+  audio_consumer_->ReadFrame(std::move(no_frames_available_cb));
 }
 
-VideoDemuxerStreamDataProvider::RequestBufferCB
-CastStreamingSession::ReceiverSessionClient::GetVideoBufferRequester() {
+void CastStreamingSession::ReceiverSessionClient::GetVideoBuffer(
+    base::OnceClosure no_frames_available_cb) {
   DCHECK(video_consumer_);
-  return base::BindRepeating(&StreamConsumer::ReadFrame,
-                             video_consumer_->GetWeakPtr());
+  video_consumer_->ReadFrame(std::move(no_frames_available_cb));
 }
 
 CastStreamingSession::ReceiverSessionClient::~ReceiverSessionClient() = default;
@@ -131,17 +130,25 @@ CastStreamingSession::ReceiverSessionClient::InitializeAudioConsumer(
     return absl::nullopt;
   }
 
-  // We can use unretained pointers here because StreamConsumer is owned by
-  // this object and |client_| is guaranteed to outlive this object. Here,
-  // the duration is set to kNoTimestamp so the audio renderer does not block.
-  // Audio frames duration is not known ahead of time in mirroring.
-  audio_consumer_ = std::make_unique<StreamConsumer>(
-      initialization_info.audio_stream_info->receiver, media::kNoTimestamp,
-      std::move(data_pipe_producer),
-      base::BindRepeating(&CastStreamingSession::Client::OnAudioBufferReceived,
-                          base::Unretained(client_)),
-      base::BindRepeating(&base::OneShotTimer::Reset,
-                          base::Unretained(&data_timeout_timer_)));
+  if (!audio_consumer_) {
+    // We can use unretained pointers here because StreamConsumer is owned by
+    // this object and |client_| is guaranteed to outlive this object. Here,
+    // the duration is set to kNoTimestamp so the audio renderer does not block.
+    // Audio frames duration is not known ahead of time in mirroring.
+    audio_consumer_ = std::make_unique<StreamConsumer>(
+        initialization_info.audio_stream_info->receiver, media::kNoTimestamp,
+        std::move(data_pipe_producer),
+        base::BindRepeating(
+            &CastStreamingSession::Client::OnAudioBufferReceived,
+            base::Unretained(client_)),
+        base::BindRepeating(&base::OneShotTimer::Reset,
+                            base::Unretained(&data_timeout_timer_)));
+  } else {
+    audio_consumer_ = std::make_unique<StreamConsumer>(
+        std::move(*audio_consumer_),
+        initialization_info.audio_stream_info->receiver,
+        std::move(data_pipe_producer));
+  }
 
   return data_pipe_consumer;
 }
@@ -161,21 +168,29 @@ CastStreamingSession::ReceiverSessionClient::InitializeVideoConsumer(
     return absl::nullopt;
   }
 
-  // We can use unretained pointers here because StreamConsumer is owned by
-  // this object and |client_| is guaranteed to outlive this object.
-  // |data_timeout_timer_| is also owned by this object and will outlive both
-  // StreamConsumers.
-  // The frame duration is set to 10 minutes to work around cases where
-  // senders do not send data for a long period of time. We end up with
-  // overlapping video frames but this is fine since the media pipeline mostly
-  // considers the playout time when deciding which frame to present or play
-  video_consumer_ = std::make_unique<StreamConsumer>(
-      initialization_info.video_stream_info->receiver, base::Minutes(10),
-      std::move(data_pipe_producer),
-      base::BindRepeating(&CastStreamingSession::Client::OnVideoBufferReceived,
-                          base::Unretained(client_)),
-      base::BindRepeating(&base::OneShotTimer::Reset,
-                          base::Unretained(&data_timeout_timer_)));
+  if (!video_consumer_) {
+    // We can use unretained pointers here because StreamConsumer is owned by
+    // this object and |client_| is guaranteed to outlive this object.
+    // |data_timeout_timer_| is also owned by this object and will outlive both
+    // StreamConsumers.
+    // The frame duration is set to 10 minutes to work around cases where
+    // senders do not send data for a long period of time. We end up with
+    // overlapping video frames but this is fine since the media pipeline mostly
+    // considers the playout time when deciding which frame to present or play
+    video_consumer_ = std::make_unique<StreamConsumer>(
+        initialization_info.video_stream_info->receiver, base::Minutes(10),
+        std::move(data_pipe_producer),
+        base::BindRepeating(
+            &CastStreamingSession::Client::OnVideoBufferReceived,
+            base::Unretained(client_)),
+        base::BindRepeating(&base::OneShotTimer::Reset,
+                            base::Unretained(&data_timeout_timer_)));
+  } else {
+    video_consumer_ = std::make_unique<StreamConsumer>(
+        std::move(*video_consumer_),
+        initialization_info.video_stream_info->receiver,
+        std::move(data_pipe_producer));
+  }
 
   return data_pipe_consumer;
 }
@@ -200,9 +215,6 @@ void CastStreamingSession::ReceiverSessionClient::StartStreamingSession(
     // This is a second offer message, reinitialize the streams.
     const bool existing_session_has_audio = !!audio_consumer_;
     const bool existing_session_has_video = !!video_consumer_;
-    audio_consumer_.reset();
-    video_consumer_.reset();
-
     const bool new_offer_has_audio = !!initialization_info.audio_stream_info;
     const bool new_offer_has_video = !!initialization_info.video_stream_info;
 
@@ -211,6 +223,9 @@ void CastStreamingSession::ReceiverSessionClient::StartStreamingSession(
       // This call to StartStreamingSession() has support for audio and/or video
       // streaming which does not match the ones provided during a prior call to
       // this method. Return early here.
+      DLOG(ERROR) << "New streaming session has support for audio or video "
+                     "which does not match the ones provided during a prior "
+                     "streaming initialization.";
       client_->OnSessionEnded();
       return;
     }
@@ -321,6 +336,11 @@ void CastStreamingSession::ReceiverSessionClient::OnCastChannelClosed() {
   receiver_session_.reset();
 }
 
+base::WeakPtr<CastStreamingSession::ReceiverSessionClient>
+CastStreamingSession::ReceiverSessionClient::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 CastStreamingSession::Client::~Client() = default;
 CastStreamingSession::CastStreamingSession() = default;
 CastStreamingSession::~CastStreamingSession() = default;
@@ -348,13 +368,17 @@ void CastStreamingSession::Stop() {
 AudioDemuxerStreamDataProvider::RequestBufferCB
 CastStreamingSession::GetAudioBufferRequester() {
   DCHECK(receiver_session_);
-  return receiver_session_->GetAudioBufferRequester();
+  return base::BindRepeating(
+      &CastStreamingSession::ReceiverSessionClient::GetAudioBuffer,
+      receiver_session_->GetWeakPtr());
 }
 
 VideoDemuxerStreamDataProvider::RequestBufferCB
 CastStreamingSession::GetVideoBufferRequester() {
   DCHECK(receiver_session_);
-  return receiver_session_->GetVideoBufferRequester();
+  return base::BindRepeating(
+      &CastStreamingSession::ReceiverSessionClient::GetVideoBuffer,
+      receiver_session_->GetWeakPtr());
 }
 
 }  // namespace cast_streaming
