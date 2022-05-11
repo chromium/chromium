@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.payments.ui;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.PaymentPreferencesUtil;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.payments.PaymentApp;
@@ -12,8 +13,10 @@ import org.chromium.components.payments.PaymentRequestParams;
 import org.chromium.payments.mojom.PaymentOptions;
 
 import java.util.Comparator;
-
-/** A comparator that is used to rank the payment apps to be listed on the PaymentRequest UI. */
+/**
+   A comparator that is used to rank the payment apps to be listed on the PaymentRequest
+   UI.
+ */
 /* package */ class PaymentAppComparator implements Comparator<PaymentApp> {
     private final PaymentRequestParams mParams;
 
@@ -26,18 +29,18 @@ import java.util.Comparator;
     }
 
     /**
-     * Compares two payment apps by frecency.
-     * Return negative value if a has strictly lower frecency score than b.
-     * Return zero if a and b have the same frecency score.
-     * Return positive value if a has strictly higher frecency score than b.
+     * Compares two payment apps by ranking score.
+     * Return negative value if a has strictly lower ranking score than b.
+     * Return zero if a and b have the same ranking score.
+     * Return positive value if a has strictly higher ranking score than b.
      */
-    private static int compareAppsByFrecency(PaymentApp a, PaymentApp b) {
+    private static int compareAppsByRankingScore(PaymentApp a, PaymentApp b) {
         int aCount = PaymentPreferencesUtil.getPaymentAppUseCount(a.getIdentifier());
         int bCount = PaymentPreferencesUtil.getPaymentAppUseCount(b.getIdentifier());
         long aDate = PaymentPreferencesUtil.getPaymentAppLastUseDate(a.getIdentifier());
         long bDate = PaymentPreferencesUtil.getPaymentAppLastUseDate(a.getIdentifier());
 
-        return Double.compare(getFrecencyScore(aCount, aDate), getFrecencyScore(bCount, bDate));
+        return Double.compare(getRankingScore(aCount, aDate), getRankingScore(bCount, bDate));
     }
 
     /**
@@ -51,11 +54,29 @@ import java.util.Comparator;
     }
 
     /**
-     * The frecency score is calculated according to use count and last use date. The formula is
-     * the same as the one used in GetFrecencyScore in autofill_data_model.cc.
+     * The ranking score is calculated according to use count and last use date. The formula is
+     * the same as the one used in GetRankingScore in autofill_data_model.cc.
      */
-    private static double getFrecencyScore(int count, long date) {
+    private static double getRankingScore(int count, long date) {
         long currentTime = System.currentTimeMillis();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA)) {
+            int usageHalfLife = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA,
+                    ChromeFeatureList.AUTOFILL_RANKING_FORMULA_USAGE_HALF_LIFE, 20);
+
+            // Ensure the usage half life is not zero to avoid division by zero errors;
+            if (usageHalfLife == 0) {
+                // Set to default value of 20.
+                usageHalfLife = 20;
+            }
+
+            // Exponentially decay the use count by the days since the data model was
+            // last used.
+            return Math.log10(count + 1)
+                    * Math.exp(((currentTime - date) / (24 * 60 * 60 * 1000)) / usageHalfLife);
+        }
+
+        // Default to legacy frecency scoring.
         return -Math.log((currentTime - date) / (24 * 60 * 60 * 1000) + 2) / Math.log(count + 2);
     }
 
@@ -119,6 +140,6 @@ import java.util.Comparator;
         if (canPreselect != 0) return canPreselect;
 
         // More frequently and recently used apps first.
-        return compareAppsByFrecency(b, a);
+        return compareAppsByRankingScore(b, a);
     }
 }

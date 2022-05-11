@@ -206,6 +206,7 @@ public abstract class ChromeFeatureList {
             "AutofillAllowNonHttpActivation";
     public static final String AUTOFILL_CREDIT_CARD_AUTHENTICATION =
             "AutofillCreditCardAuthentication";
+    public static final String AUTOFILL_ENABLE_RANKING_FORMULA = "AutofillEnableRankingFormula";
     public static final String AUTOFILL_ENABLE_MANUAL_FALLBACK_FOR_VIRTUAL_CARDS =
             "AutofillEnableManualFallbackForVirtualCards";
     public static final String AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES =
@@ -216,6 +217,8 @@ public abstract class ChromeFeatureList {
             "AutofillEnableSupportForMoreStructureInNames";
     public static final String AUTOFILL_ENABLE_UPDATE_VIRTUAL_CARD_ENROLLMENT =
             "AutofillEnableUpdateVirtualCardEnrollment";
+    public static final String AUTOFILL_RANKING_FORMULA_USAGE_HALF_LIFE =
+            "AutofillRankingFormulaUsageHalfLife";
     public static final String ANDROID_SEARCH_ENGINE_CHOICE_NOTIFICATION =
             "AndroidSearchEngineChoiceNotification";
     public static final String ANONYMOUS_UPDATE_CHECKS = "AnonymousUpdateChecks";
