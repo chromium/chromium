@@ -9,8 +9,9 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
-#include "chrome/updater/device_management/cloud_policy_util.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace updater {
