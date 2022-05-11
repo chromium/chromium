@@ -24,7 +24,6 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.WindowInsets;
 import android.view.WindowManager;
-import android.widget.ImageView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
@@ -271,8 +270,9 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     @Override
-    public void onToolbarInitialized(View coordinatorView, CustomTabToolbar toolbar) {
-        roundCorners(coordinatorView, toolbar);
+    public void onToolbarInitialized(
+            View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
+        roundCorners(coordinatorView, toolbar, toolbarCornerRadius);
 
         toolbar.setHandleStrategy(new PartialCustomTabHandleStrategy(mActivity));
     }
@@ -299,14 +299,20 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         updateWindowHeight(value);
     }
 
-    private void roundCorners(View coordinator, CustomTabToolbar toolbar) {
-        final float radius = mActivity.getResources().getDimensionPixelSize(
-                R.dimen.custom_tabs_top_corner_round_radius);
+    private void roundCorners(
+            View coordinator, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
+        final float handlePortionHeight =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_handle_height);
 
         // Inflate the handle View.
         ViewStub handleViewStub = mActivity.findViewById(R.id.custom_tabs_handle_view_stub);
         handleViewStub.inflate();
-        ImageView handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
+        View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
+
+        GradientDrawable background = (GradientDrawable) handleView.getBackground();
+        background.mutate();
+        background.setCornerRadii(new float[] {toolbarCornerRadius, toolbarCornerRadius,
+                toolbarCornerRadius, toolbarCornerRadius, 0, 0, 0, 0});
 
         // Pass the handle View to CustomTabToolbar for background color management.
         toolbar.setHandleView(handleView);
@@ -314,11 +320,10 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // Make enough room for the handle View.
         ViewGroup.MarginLayoutParams mlp =
                 (ViewGroup.MarginLayoutParams) coordinator.getLayoutParams();
-        mlp.setMargins(0, Math.round(radius), 0, 0);
+        mlp.setMargins(0, Math.round(handlePortionHeight), 0, 0);
         coordinator.requestLayout();
 
-        mActivity.getWindow().setBackgroundDrawableResource(
-                R.drawable.custom_tabs_handle_view_shape);
+        mActivity.getWindow().setBackgroundDrawable(background);
     }
 
     private void initializeHeight() {

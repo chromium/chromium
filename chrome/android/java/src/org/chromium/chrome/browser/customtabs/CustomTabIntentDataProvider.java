@@ -170,6 +170,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL";
 
     /**
+     * Extra that, if set, makes the toolbar's top corner radii to be x pixels. This will only have
+     * effect if the custom tab is behaving as a bottom sheet. Currently, this is capped at 16dp.
+     */
+    public static final String EXTRA_TOOLBAR_CORNER_RADIUS_IN_PIXEL =
+            "androidx.browser.customtabs.extra.TOOLBAR_CORNER_RADIUS_IN_PIXEL";
+
+    /**
      * Extra that specifies the position of the close button on the toolbar. Default is
      * {@link #CLOSE_BUTTON_POSITION_DEFAULT}.
      */
@@ -241,6 +248,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private final ColorProvider mColorProvider;
 
     private final @Px int mInitialActivityHeight;
+    private final @Px int mPartialTabToolbarCornerRadius;
 
     /**
      * Add extras to customize menu items for opening Reader Mode UI custom tab from Chrome.
@@ -369,6 +377,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
         mInitialActivityHeight =
                 IntentUtils.safeGetIntExtra(intent, EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL, 0);
+        int defaultToolbarCornerRadius = context.getResources().getDimensionPixelSize(
+                R.dimen.custom_tabs_default_corner_radius);
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_TOOLBAR_CUSTOMIZATIONS)) {
+            mPartialTabToolbarCornerRadius = IntentUtils.safeGetIntExtra(
+                    intent, EXTRA_TOOLBAR_CORNER_RADIUS_IN_PIXEL, defaultToolbarCornerRadius);
+        } else {
+            mPartialTabToolbarCornerRadius = defaultToolbarCornerRadius;
+        }
     }
 
     private void updateExtraMenuItems(List<Bundle> menuItems) {
@@ -865,5 +881,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         }
         return IntentUtils.safeGetIntExtra(
                 mIntent, EXTRA_CLOSE_BUTTON_POSITION, CLOSE_BUTTON_POSITION_DEFAULT);
+    }
+
+    @Override
+    public int getPartialTabToolbarCornerRadius() {
+        return mPartialTabToolbarCornerRadius;
     }
 }

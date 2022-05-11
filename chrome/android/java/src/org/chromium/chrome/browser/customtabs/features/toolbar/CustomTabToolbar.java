@@ -102,7 +102,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private ImageButton mCloseButton;
     private MenuButton mMenuButton;
     // This View will be non-null only for bottom sheet custom tabs.
-    private ImageView mHandleView;
+    private View mHandleView;
 
     // Color scheme and tint that will be applied to icons and text.
     private @BrandedColorScheme int mBrandedColorScheme;
@@ -568,7 +568,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         return mLocationBar;
     }
 
-    public void setHandleView(ImageView view) {
+    public void setHandleView(View view) {
         mHandleView = view;
         setHandleViewBackgroundColor(getBackground().getColor());
     }

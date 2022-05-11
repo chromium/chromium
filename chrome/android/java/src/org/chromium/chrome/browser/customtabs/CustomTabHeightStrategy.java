@@ -40,9 +40,13 @@ public class CustomTabHeightStrategy {
     }
 
     /**
-     * Provide this class with the {@link CustomTabToolbar} so it can set up the strategy, and the
-     * coordinator view to insert the UI "handle" for users to interact with to resize the Custom
-     * Tab.
+     * Provide this class with the required views and values so it can set up the strategy.
+     *
+     * @param coordinatorView Coordinator view to insert the UI handle for the users to resize the
+     *                        custom tab.
+     * @param toolbar The {@link CustomTabToolbar} to set up the strategy.
+     * @param toolbarCornerRadius The custom tab corner radius in pixels.
      */
-    public void onToolbarInitialized(View coordinatorView, CustomTabToolbar toolbar) {}
+    public void onToolbarInitialized(
+            View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {}
 }

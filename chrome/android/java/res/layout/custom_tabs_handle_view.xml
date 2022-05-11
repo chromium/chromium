@@ -3,12 +3,17 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<ImageView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/custom_tabs_top_corner_round_radius"
-    android:importantForAccessibility="no"
-    android:src="@drawable/drag_handlebar"
-    android:tint="@macro/drag_handlebar_color"
-    android:scaleType="center"
-    android:background="@drawable/custom_tabs_handle_view_shape" />
+    android:layout_height="@dimen/custom_tabs_handle_height"
+    android:background="@drawable/custom_tabs_handle_view_shape">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:importantForAccessibility="no"
+        android:src="@drawable/drag_handlebar"
+        android:tint="@macro/drag_handlebar_color" />
+</FrameLayout>

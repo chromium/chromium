@@ -482,4 +482,11 @@ public abstract class BrowserServicesIntentDataProvider {
     public @CloseButtonPosition int getCloseButtonPosition() {
         return CLOSE_BUTTON_POSITION_DEFAULT;
     }
+
+    /**
+     * Returns the partial custom tab toolbar corner radius.
+     */
+    public @Px int getPartialTabToolbarCornerRadius() {
+        return 0;
+    }
 }

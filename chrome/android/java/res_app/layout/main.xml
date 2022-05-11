@@ -13,7 +13,7 @@
         android:id="@+id/custom_tabs_handle_view_stub"
         android:inflatedId="@+id/custom_tabs_handle_view"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/custom_tabs_top_corner_round_radius"
+        android:layout_height="@dimen/custom_tabs_handle_height"
         android:layout="@layout/custom_tabs_handle_view"
         android:visibility="gone" />
 

@@ -8,8 +8,8 @@
     android:shape="rectangle">
     <corners
         android:radius="1dp"
-        android:topLeftRadius="@dimen/custom_tabs_top_corner_round_radius"
-        android:topRightRadius="@dimen/custom_tabs_top_corner_round_radius"
+        android:topLeftRadius="@dimen/custom_tabs_default_corner_radius"
+        android:topRightRadius="@dimen/custom_tabs_default_corner_radius"
         android:bottomLeftRadius="0dp"
         android:bottomRightRadius="0dp" />
     <solid
