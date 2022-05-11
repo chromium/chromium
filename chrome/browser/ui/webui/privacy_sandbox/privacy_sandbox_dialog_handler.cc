@@ -37,7 +37,12 @@ PrivacySandboxDialogHandler::PrivacySandboxDialogHandler(
       resize_callback_(std::move(resize_callback)),
       show_dialog_callback_(std::move(show_dialog_callback)),
       open_settings_callback_(std::move(open_settings_callback)),
-      dialog_type_(dialog_type) {}
+      dialog_type_(dialog_type) {
+  DCHECK(close_callback_);
+  DCHECK(resize_callback_);
+  DCHECK(show_dialog_callback_);
+  DCHECK(open_settings_callback_);
+}
 
 PrivacySandboxDialogHandler::~PrivacySandboxDialogHandler() {
   DisallowJavascript();
@@ -83,14 +88,15 @@ void PrivacySandboxDialogHandler::OnJavascriptDisallowed() {
 
 void PrivacySandboxDialogHandler::HandleDialogActionOccurred(
     const base::Value::List& args) {
+  if (!IsJavascriptAllowed())
+    return;
+
   CHECK_EQ(1U, args.size());
   auto action =
       static_cast<PrivacySandboxService::DialogAction>(args[0].GetInt());
 
-  if (action == PrivacySandboxService::DialogAction::kNoticeOpenSettings) {
-    DCHECK(open_settings_callback_);
+  if (action == PrivacySandboxService::DialogAction::kNoticeOpenSettings)
     std::move(open_settings_callback_).Run();
-  }
 
   bool covered_action = true;
   switch (action) {
@@ -131,7 +137,7 @@ void PrivacySandboxDialogHandler::HandleDialogActionOccurred(
 
   if (covered_action) {
     did_user_make_decision_ = true;
-    DCHECK(close_callback_);
+    DisallowJavascript();
     std::move(close_callback_).Run();
   }
 
