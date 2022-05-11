@@ -183,6 +183,7 @@ android_library("java") {
     "org/chromium/weblayer_private/WebMessageReplyProxyImpl.java",
     "org/chromium/weblayer_private/WebShareServiceFactory.java",
     "org/chromium/weblayer_private/WebappsHelper.java",
+    "org/chromium/weblayer_private/autofill_assistant/WebLayerAssistantBrowserControls.java",
     "org/chromium/weblayer_private/autofill_assistant/WebLayerAssistantDependencies.java",
     "org/chromium/weblayer_private/autofill_assistant/WebLayerAssistantStaticDependencies.java",
     "org/chromium/weblayer_private/autofill_assistant/WebLayerAssistantTabChangeObserver.java",

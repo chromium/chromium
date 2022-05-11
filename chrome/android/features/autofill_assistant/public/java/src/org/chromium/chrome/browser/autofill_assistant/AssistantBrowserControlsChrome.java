@@ -58,14 +58,12 @@ public class AssistantBrowserControlsChrome
     @Override
     public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
             int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
-        mDelegateObserver.onControlsOffsetChanged(topOffset, topControlsMinHeightOffset,
-                bottomOffset, bottomControlsMinHeightOffset, needsAnimate);
+        mDelegateObserver.onControlsOffsetChanged();
     }
 
     @Override
     public void onBottomControlsHeightChanged(
             int bottomControlsHeight, int bottomControlsMinHeight) {
-        mDelegateObserver.onBottomControlsHeightChanged(
-                bottomControlsHeight, bottomControlsMinHeight);
+        mDelegateObserver.onBottomControlsHeightChanged();
     }
 }

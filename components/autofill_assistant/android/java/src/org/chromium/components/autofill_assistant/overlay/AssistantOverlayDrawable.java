@@ -377,14 +377,12 @@ class AssistantOverlayDrawable extends Drawable implements AssistantBrowserContr
     }
 
     @Override
-    public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
-            int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
+    public void onControlsOffsetChanged() {
         invalidateSelf();
     }
 
     @Override
-    public void onBottomControlsHeightChanged(
-            int bottomControlsHeight, int bottomControlsMinHeight) {
+    public void onBottomControlsHeightChanged() {
         invalidateSelf();
     }
 

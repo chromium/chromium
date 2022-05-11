@@ -104,8 +104,7 @@ public class WebLayerAssistantDependencies
 
     @Override
     public AssistantBrowserControlsFactory createBrowserControlsFactory() {
-        // TODO(b/222671580): Implement
-        return null;
+        return () -> new WebLayerAssistantBrowserControls();
     }
 
     @Override

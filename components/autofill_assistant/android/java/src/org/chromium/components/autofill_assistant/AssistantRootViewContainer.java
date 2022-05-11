@@ -51,14 +51,12 @@ public class AssistantRootViewContainer
     }
 
     @Override
-    public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
-            int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
+    public void onControlsOffsetChanged() {
         invalidate();
     }
 
     @Override
-    public void onBottomControlsHeightChanged(
-            int bottomControlsHeight, int bottomControlsMinHeight) {
+    public void onBottomControlsHeightChanged() {
         invalidate();
     }
 
