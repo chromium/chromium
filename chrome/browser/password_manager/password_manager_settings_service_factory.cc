@@ -13,6 +13,8 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/android/password_manager_settings_service_android_impl.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #endif
 
 // static
@@ -46,6 +48,10 @@ KeyedService* PasswordManagerSettingsServiceFactory::BuildServiceInstanceFor(
     return new PasswordManagerSettingsServiceAndroidImpl(
         profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
   }
+  // Reset the migration pref in case the client is no longer in the enabled
+  // group.
+  profile->GetPrefs()->SetBoolean(
+      password_manager::prefs::kSettingsMigratedToUPM, false);
   return new PasswordManagerSettingsServiceImpl(profile->GetPrefs());
 #else
   return new PasswordManagerSettingsServiceImpl(profile->GetPrefs());

@@ -255,6 +255,7 @@ void PasswordManager::RegisterProfilePrefs(
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kOfferToSavePasswordsEnabledGMS, true);
   registry->RegisterBooleanPref(prefs::kAutoSignInEnabledGMS, true);
+  registry->RegisterBooleanPref(prefs::kSettingsMigratedToUPM, false);
   registry->RegisterIntegerPref(
       prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
   registry->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt, 0.0);

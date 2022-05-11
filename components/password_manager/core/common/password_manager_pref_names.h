@@ -49,6 +49,10 @@ extern const char kAutoSignInEnabledGMS[];
 // mapped to `kCredentialEnableService` will be applied.
 extern const char kOfferToSavePasswordsEnabledGMS[];
 
+// Boolean value indicating whether the regular prefs were migrated to UPM
+// settings.
+extern const char kSettingsMigratedToUPM[];
+
 // Integer value which indicates the version used to migrate passwords from
 // built in storage to Google Mobile Services.
 extern const char kCurrentMigrationVersionToGoogleMobileServices[];

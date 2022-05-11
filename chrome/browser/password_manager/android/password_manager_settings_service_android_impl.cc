@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_bridge.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_bridge_impl.h"
@@ -24,6 +25,10 @@ using password_manager::PasswordSettingsUpdaterAndroidBridge;
 using password_manager::sync_util::IsPasswordSyncEnabled;
 
 namespace {
+
+constexpr PasswordManagerSetting kAllPasswordSettings[] = {
+    PasswordManagerSetting::kOfferToSavePasswords,
+    PasswordManagerSetting::kAutoSignIn};
 
 // Returns the preference in which a setting value coming from Google Mobile
 // Services should be stored.
@@ -71,14 +76,15 @@ PasswordManagerSettingsServiceAndroidImpl::
   DCHECK(pref_service_);
   DCHECK(sync_service_);
   DCHECK(password_manager::features::UsesUnifiedPasswordManagerUi());
-  if (PasswordSettingsUpdaterAndroidBridge::CanCreateAccessor()) {
-    bridge_ = PasswordSettingsUpdaterAndroidBridge::Create();
-    bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
-    lifecycle_helper_ = std::make_unique<PasswordManagerLifecycleHelperImpl>();
-    lifecycle_helper_->RegisterObserver(base::BindRepeating(
-        &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
-        weak_ptr_factory_.GetWeakPtr()));
-  }
+  if (!PasswordSettingsUpdaterAndroidBridge::CanCreateAccessor())
+    return;
+  MigratePrefsIfNeeded();
+  bridge_ = PasswordSettingsUpdaterAndroidBridge::Create();
+  bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
+  lifecycle_helper_ = std::make_unique<PasswordManagerLifecycleHelperImpl>();
+  lifecycle_helper_->RegisterObserver(base::BindRepeating(
+      &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 // Constructor for tests
@@ -95,12 +101,13 @@ PasswordManagerSettingsServiceAndroidImpl::
       lifecycle_helper_(std::move(lifecycle_helper)) {
   DCHECK(pref_service_);
   DCHECK(sync_service_);
-  if (bridge_) {
-    bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
-    lifecycle_helper_->RegisterObserver(base::BindRepeating(
-        &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
-        weak_ptr_factory_.GetWeakPtr()));
-  }
+  if (!bridge_)
+    return;
+  MigratePrefsIfNeeded();
+  bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
+  lifecycle_helper_->RegisterObserver(base::BindRepeating(
+      &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 PasswordManagerSettingsServiceAndroidImpl::
@@ -170,7 +177,7 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueAbsent(
 
   // If both GMS and Chrome have default values for the setting, then no update
   // is needed.
-  if (pref->IsDefaultValue())
+  if (!pref_service_->GetUserPrefValue(pref->name()))
     return;
 
   // If Chrome has an explicitly set value, GMS needs to know about it.
@@ -180,4 +187,37 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueAbsent(
       PasswordSettingsUpdaterAndroidBridge::SyncingAccount(
           sync_service_->GetAccountInfo().email),
       setting, pref->GetValue()->GetBool());
+}
+
+void PasswordManagerSettingsServiceAndroidImpl::MigratePrefsIfNeeded() {
+  if (pref_service_->GetBoolean(
+          password_manager::prefs::kSettingsMigratedToUPM))
+    return;
+
+  base::UmaHistogramBoolean("PasswordManager.MigratedSettingsUPMAndroid", true);
+  pref_service_->SetBoolean(password_manager::prefs::kSettingsMigratedToUPM,
+                            true);
+  // No need to copy the values until sync turns on. When sync turns on, this
+  // will be handled as part of the sync state change rather than migration.
+  if (!IsPasswordSyncEnabled(sync_service_))
+    return;
+
+  for (PasswordManagerSetting setting : kAllPasswordSettings) {
+    const PrefService::Preference* regular_pref =
+        GetRegularPrefFromSetting(pref_service_, setting);
+
+    if (!pref_service_->GetUserPrefValue(regular_pref->name())) {
+      continue;
+    }
+
+    const PrefService::Preference* gms_pref =
+        GetGMSPrefFromSetting(pref_service_, setting);
+
+    // Make sure the user prefs are consistent. If the settings are set by
+    // policy, the value of the managed pref will still apply in checks, but
+    // the UPM prefs should contain the user set value.
+    pref_service_->SetBoolean(
+        gms_pref->name(),
+        pref_service_->GetUserPrefValue(regular_pref->name())->GetBool());
+  }
 }

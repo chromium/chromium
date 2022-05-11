@@ -1848,6 +1848,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.MigratedSettingsUPMAndroid"
+    enum="BooleanEnabled" expires_after="M106">
+  <owner>ioanap@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <summary>
+    Records true when a settings migration occurs as part of the UPM transition.
+    It is recorded when the settings service (profile-scoped) is instantiated in
+    a Chrome client with UPM enabled if a migration hasn't already occured. Note
+    that if UPM is disabled, the next time it is enabled a new migration will
+    happen and be recorded.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ModalLoadingDialog.{IntentType}.Outcome"
     enum="PasswordManager.LoadingDialogOutcome" expires_after="M106">
   <owner>maxan@chromium.org</owner>

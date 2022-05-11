@@ -57,6 +57,15 @@ class PasswordManagerSettingsServiceAndroidImpl
   void OnSettingValueAbsent(
       password_manager::PasswordManagerSetting setting) override;
 
+  // Updates the non syncable, android-only prefs with the values of the
+  // syncable cross-platform prefs as the latter won't be used when UPM
+  // is up and running. There is no need to migrate the values until sync turns
+  // on, because UPM is not running until then. When sync turns on, this
+  // will be handled as part of the sync state change rather than migration.
+  // If a migration was already performed, there is no need
+  // to migrate again.
+  void MigratePrefsIfNeeded();
+
   // Pref service used to read and write password manager user prefs.
   raw_ptr<PrefService> pref_service_ = nullptr;
 
