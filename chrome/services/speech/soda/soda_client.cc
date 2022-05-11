@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "base/debug/dump_without_crashing.h"
 #include "base/mac/mac_util.h"
 #endif
 
@@ -62,6 +63,15 @@ SodaClient::SodaClient(base::FilePath library_path)
                              lib_.GetError()->code);
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+  if (load_soda_result_ == LoadSodaResultValue::kBinaryInvalid) {
+    base::UmaHistogramSparse(
+        "Accessibility.LiveCaption.LoadSodaErrorMacOsVersion",
+        base::mac::internal::MacOSVersion());
+    base::debug::DumpWithoutCrashing();
+  }
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 NO_SANITIZE("cfi-icall")
