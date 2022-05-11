@@ -181,9 +181,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   base::queue<TakePhotoCallback> video_stream_take_photo_callbacks_;
   base::WaitableEvent capture_initialize_;
   base::WaitableEvent capture_error_;
-  base::WaitableEvent capture_stopped_;
-  base::WaitableEvent capture_started_;
-  HRESULT last_error_hr_ = S_OK;
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
   absl::optional<int> camera_rotation_;
   VideoCaptureParams params_;
