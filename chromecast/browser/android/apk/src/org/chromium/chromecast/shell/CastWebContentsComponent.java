@@ -9,18 +9,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.PatternMatcher;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.chromecast.base.Controller;
-import org.chromium.chromecast.base.Observable;
-import org.chromium.chromecast.base.Observers;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -117,15 +113,6 @@ public class CastWebContentsComponent {
                 context, webContents, enableTouch, isRemoteControlMode, turnOnScreen, mSessionId);
         if (DEBUG) Log.d(TAG, "start activity by intent: " + intent);
         sResumeIntent.set(intent);
-
-        CastAudioManager audioManager =
-                CastAudioManager.getAudioManager(ContextUtils.getApplicationContext());
-        Observable<CastAudioManager.AudioFocusLoss> focusLoss =
-                audioManager.requestAudioFocusWhen(mAudioFocusRequestState)
-                        .filter(state -> state == CastAudioManager.AudioFocusLoss.NORMAL);
-        mAudioFocusRequestState.andThen(focusLoss).subscribe(
-                Observers.onEnter(x -> mComponentClosedHandler.onComponentClosed()));
-
         context.startActivity(intent);
     }
 
@@ -180,8 +167,6 @@ public class CastWebContentsComponent {
     private boolean mEnableTouchInput;
     private final boolean mIsRemoteControlMode;
     private final boolean mTurnOnScreen;
-
-    private final Controller<CastAudioFocusRequest> mAudioFocusRequestState = new Controller<>();
 
     public CastWebContentsComponent(String sessionId,
             OnComponentClosedHandler onComponentClosedHandler,
@@ -280,9 +265,6 @@ public class CastWebContentsComponent {
                             + "; Visibility Priority: " + params.visibilityPriority);
         }
         mHasWebContentsState.set(params.webContents);
-        mAudioFocusRequestState.set(new CastAudioFocusRequest.Builder()
-                                            .setFocusGain(AudioManager.AUDIOFOCUS_GAIN)
-                                            .build());
         mDelegate.start(params);
         mStarted = true;
     }
@@ -294,7 +276,6 @@ public class CastWebContentsComponent {
                     "stop with delegate: " + mDelegate.getClass().getSimpleName()
                             + "; Instance ID: " + mSessionId);
         }
-        mAudioFocusRequestState.reset();
         mHasWebContentsState.reset();
         if (DEBUG) Log.d(TAG, "Call delegate to stop");
         mDelegate.stop(context);

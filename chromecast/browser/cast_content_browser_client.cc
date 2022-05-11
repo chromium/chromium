@@ -178,8 +178,6 @@ CastContentBrowserClient::CastContentBrowserClient(
 
 #if BUILDFLAG(IS_ANDROID)
   cast_feature_list_creator_->SetExtraDisableFeatures({
-      ::media::kAudioFocusLossSuspendMediaSession,
-      ::media::kRequestSystemAudioFocus,
       // Disable AAudio improve AV sync performance.
       ::features::kUseAAudioDriver,
   });
