@@ -301,9 +301,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     execution_timeout = 7 * time.hour,
-    # We will make this tree closing once we have confirmed that this builder works correctly
-    # crbug.com/1246468
-    tree_closing = False,
+    tree_closing = True,
 )
 
 ci.builder(
