@@ -2735,6 +2735,18 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TracingWithPerfettoConfig) {
   WaitForNotification("Tracing.tracingComplete", true);
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, NavigateToAboutBlankLoaderId) {
+  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
+  Attach();
+
+  base::Value::Dict params;
+  params.Set("url", "about:blank");
+  const base::Value::Dict* result =
+      SendCommand("Page.navigate", std::move(params));
+  EXPECT_THAT(result->FindString("loaderId"),
+              testing::Pointee(testing::Not("")));
+}
+
 class SystemTracingDevToolsProtocolTest : public DevToolsProtocolTest {
  protected:
   const base::Value::Dict* StartSystemTrace() {
