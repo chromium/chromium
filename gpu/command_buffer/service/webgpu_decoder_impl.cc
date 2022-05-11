@@ -87,6 +87,7 @@ class WireServerCommandSerializer : public dawn::wire::CommandSerializer {
   size_t GetMaximumAllocationSize() const final;
   void* GetCmdSpace(size_t size) final;
   bool Flush() final;
+  bool NeedsFlush() const;
 
  private:
   raw_ptr<DecoderClient> client_;
@@ -136,8 +137,12 @@ void* WireServerCommandSerializer::GetCmdSpace(size_t size) {
   return ptr;
 }
 
+bool WireServerCommandSerializer::NeedsFlush() const {
+  return put_offset_ > kDawnReturnCmdsOffset;
+}
+
 bool WireServerCommandSerializer::Flush() {
-  if (put_offset_ > kDawnReturnCmdsOffset) {
+  if (NeedsFlush()) {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
                  "WireServerCommandSerializer::Flush", "bytes", put_offset_);
 
@@ -255,13 +260,16 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   bool HasMoreIdleWork() const override { return false; }
   void PerformIdleWork() override {}
 
-  bool HasPollingWork() const override { return has_polling_work_; }
+  bool HasPollingWork() const override {
+    return has_polling_work_ || wire_serializer_->NeedsFlush();
+  }
 
   void PerformPollingWork() override {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
                  "WebGPUDecoderImpl::PerformPollingWork");
     has_polling_work_ = false;
     if (known_devices_.empty()) {
+      wire_serializer_->Flush();
       return;
     }
 
