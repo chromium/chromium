@@ -15,6 +15,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace base {
@@ -45,7 +46,8 @@ struct SimpleGeoposition {
 // TODO(crbug.com/1272178): `GeolocationController` should observe the sleep
 // and update next request time.
 class ASH_EXPORT GeolocationController
-    : public chromeos::system::TimezoneSettings::Observer {
+    : public chromeos::system::TimezoneSettings::Observer,
+      public chromeos::PowerManagerClient::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -81,6 +83,9 @@ class ASH_EXPORT GeolocationController
 
   // chromeos::system::TimezoneSettings::Observer:
   void TimezoneChanged(const icu::TimeZone& timezone) override;
+
+  // chromeos::PowerManagerClient::Observer:
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // Returns sunset and sunrise time calculated from `geoposition_`. If the
   // position is not set, returns the default sunset 6 PM and sunrise 6 AM.

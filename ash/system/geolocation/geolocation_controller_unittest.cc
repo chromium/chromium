@@ -15,6 +15,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
@@ -35,7 +36,8 @@ std::u16string GetTimezoneId(const icu::TimeZone& timezone) {
 // Base test fixture.
 class GeolocationControllerTest : public AshTestBase {
  public:
-  GeolocationControllerTest() = default;
+  GeolocationControllerTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   GeolocationControllerTest(const GeolocationControllerTest&) = delete;
   GeolocationControllerTest& operator=(const GeolocationControllerTest&) =
       delete;
@@ -64,6 +66,12 @@ class GeolocationControllerTest : public AshTestBase {
     position.accuracy = 10;
     position.timestamp = base::Time::Now();
     SetServerPosition(position);
+  }
+
+  // AshTestBase:
+  void TearDown() override {
+    controller_.reset();
+    AshTestBase::TearDown();
   }
 
   GeolocationController* controller() const { return controller_.get(); }
@@ -264,6 +272,45 @@ TEST_F(GeolocationControllerTest, GetSunRiseSet) {
   EXPECT_EQ(controller()->GetSunsetTime(), sunset);
   EXPECT_EQ(controller()->GetSunriseTime(), sunrise);
   EXPECT_TRUE(timer_ptr()->IsRunning());
+}
+
+// Tests that if device sleeps more than a day, the geoposition is fetched
+// instantly.
+TEST_F(GeolocationControllerTest, RequestGeopositionAfterSuspend) {
+  const base::TimeDelta zero_duration = base::Seconds(0);
+  auto* power_manager_client = chromeos::FakePowerManagerClient::Get();
+  const base::TimeDelta next_request_delay_after_success = base::Days(1);
+  // Add an observer. Adding the first observer automatically requests a
+  // geoposition instantly.
+  GeolocationControllerObserver observer;
+  controller()->AddObserver(&observer);
+  EXPECT_EQ(0, observer.position_received_num());
+  EXPECT_EQ(zero_duration, timer_ptr()->GetCurrentDelay());
+
+  // Fetch that instant request to make the next request has a delay becomes
+  // `kNextRequestDelayAfterSuccess`, i.e. `next_request_delay_after_success`,
+  FireTimerToFetchGeoposition();
+  EXPECT_EQ(next_request_delay_after_success, timer_ptr()->GetCurrentDelay());
+  EXPECT_EQ(1, observer.position_received_num());
+
+  // Suspend the device for a day and wake the device.
+  power_manager_client->SendSuspendImminent(
+      power_manager::SuspendImminent::Reason::SuspendImminent_Reason_IDLE);
+  power_manager_client->SendSuspendDone(base::Days(1));
+  // Test that after waking up from 1-day suspension, the controller request a
+  // new geoposition instantly.
+  EXPECT_EQ(zero_duration, timer_ptr()->GetCurrentDelay());
+  FireTimerToFetchGeoposition();
+  EXPECT_EQ(2, observer.position_received_num());
+  EXPECT_EQ(next_request_delay_after_success, timer_ptr()->GetCurrentDelay());
+
+  // Suspend the device for less than a day.
+  power_manager_client->SendSuspendImminent(
+      power_manager::SuspendImminent::Reason::SuspendImminent_Reason_IDLE);
+  // Test that after waking up from 2-hr suspension, the controller continues
+  // the old geoposition request with the same delay.
+  power_manager_client->SendSuspendDone(base::Hours(2));
+  EXPECT_EQ(next_request_delay_after_success, timer_ptr()->GetCurrentDelay());
 }
 
 }  // namespace

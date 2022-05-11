@@ -46,10 +46,12 @@ GeolocationController::GeolocationController(
   auto* timezone_settings = chromeos::system::TimezoneSettings::GetInstance();
   current_timezone_id_ = timezone_settings->GetCurrentTimezoneID();
   timezone_settings->AddObserver(this);
+  chromeos::PowerManagerClient::Get()->AddObserver(this);
 }
 
 GeolocationController::~GeolocationController() {
   chromeos::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 }
 
 // static
@@ -83,6 +85,11 @@ void GeolocationController::TimezoneChanged(const icu::TimeZone& timezone) {
 
   // On timezone changes, request an immediate geoposition.
   ScheduleNextRequest(base::Seconds(0));
+}
+
+void GeolocationController::SuspendDone(base::TimeDelta sleep_duration) {
+  if (sleep_duration >= kNextRequestDelayAfterSuccess)
+    ScheduleNextRequest(base::Seconds(0));
 }
 
 // static
