@@ -13,20 +13,18 @@
 #include <memory>
 #include <vector>
 
-#include "base/base_paths.h"
 #include "base/bits.h"
-#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
-#include "base/path_service.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/webgpu_cmd_format.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
+#include "gpu/command_buffer/service/dawn_instance.h"
 #include "gpu/command_buffer/service/dawn_platform.h"
 #include "gpu/command_buffer/service/dawn_service_memory_transfer_service.h"
 #include "gpu/command_buffer/service/decoder_client.h"
@@ -483,8 +481,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       shared_image_representation_factory_;
 
   std::unique_ptr<dawn::platform::Platform> dawn_platform_;
+  std::unique_ptr<DawnInstance> dawn_instance_;
   std::unique_ptr<DawnServiceMemoryTransferService> memory_transfer_service_;
-  std::unique_ptr<dawn::native::Instance> dawn_instance_;
   std::vector<dawn::native::Adapter> dawn_adapters_;
 
   bool enable_unsafe_webgpu_ = false;
@@ -969,53 +967,10 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
               shared_image_manager,
               memory_tracker)),
       dawn_platform_(new DawnPlatform()),
+      dawn_instance_(
+          DawnInstance::Create(dawn_platform_.get(), gpu_preferences)),
       memory_transfer_service_(new DawnServiceMemoryTransferService(this)),
       wire_serializer_(new WireServerCommandSerializer(client)) {
-  std::string dawn_search_path;
-  base::FilePath module_path;
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::AmIBundled()) {
-    dawn_search_path = base::mac::FrameworkBundlePath()
-                           .Append("Libraries")
-                           .AsEndingWithSeparator()
-                           .MaybeAsASCII();
-  }
-  if (dawn_search_path.empty())
-#endif
-  {
-    if (base::PathService::Get(base::DIR_MODULE, &module_path)) {
-      dawn_search_path = module_path.AsEndingWithSeparator().MaybeAsASCII();
-    }
-  }
-  const char* dawn_search_path_c_str = dawn_search_path.c_str();
-
-  WGPUDawnInstanceDescriptor dawn_instance_desc = {
-      .chain =
-          {
-              .sType = WGPUSType_DawnInstanceDescriptor,
-          },
-      .additionalRuntimeSearchPathsCount = dawn_search_path.empty() ? 0u : 1u,
-      .additionalRuntimeSearchPaths = &dawn_search_path_c_str,
-  };
-  WGPUInstanceDescriptor instance_desc = {
-      .nextInChain = &dawn_instance_desc.chain,
-  };
-  dawn_instance_ = std::make_unique<dawn::native::Instance>(&instance_desc);
-
-  dawn_instance_->SetPlatform(dawn_platform_.get());
-  switch (gpu_preferences.enable_dawn_backend_validation) {
-    case DawnBackendValidationLevel::kDisabled:
-      break;
-    case DawnBackendValidationLevel::kPartial:
-      dawn_instance_->SetBackendValidationLevel(
-          dawn::native::BackendValidationLevel::Partial);
-      break;
-    case DawnBackendValidationLevel::kFull:
-      dawn_instance_->SetBackendValidationLevel(
-          dawn::native::BackendValidationLevel::Full);
-      break;
-  }
-
   enable_unsafe_webgpu_ = gpu_preferences.enable_unsafe_webgpu;
   use_webgpu_adapter_ = gpu_preferences.use_webgpu_adapter;
   force_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;

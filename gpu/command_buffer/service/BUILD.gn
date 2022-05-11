@@ -282,6 +282,8 @@ target(link_target_type, "gles2_sources") {
 
   if (use_dawn) {
     sources += [
+      "dawn_instance.cc",
+      "dawn_instance.h",
       "dawn_platform.cc",
       "dawn_platform.h",
       "dawn_service_memory_transfer_service.cc",
