@@ -109,6 +109,7 @@ class TestConfigurator : public Configurator {
   void SetDownloadPreference(const std::string& download_preference);
   void SetEnabledCupSigning(bool use_cup_signing);
   void SetUpdateCheckUrl(const GURL& url);
+  void SetUpdateCheckUrls(const std::vector<GURL>& urls);
   void SetPingUrl(const GURL& url);
   void SetCrxDownloaderFactory(
       scoped_refptr<CrxDownloaderFactory> crx_downloader_factory);
@@ -130,7 +131,7 @@ class TestConfigurator : public Configurator {
   std::string download_preference_;
   bool enabled_cup_signing_;
   raw_ptr<PrefService> pref_service_;  // Not owned by this class.
-  GURL update_check_url_;
+  std::vector<GURL> update_check_urls_;
   GURL ping_url_;
 
   scoped_refptr<update_client::UnzipChromiumFactory> unzip_factory_;

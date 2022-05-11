@@ -38,6 +38,7 @@
 #include "components/update_client/update_checker.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/update_client_internal.h"
+#include "components/update_client/update_engine.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -301,18 +302,16 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      EXPECT_FALSE(session_id.empty());
-      EXPECT_EQ(1u, ids_to_check.size());
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-      EXPECT_EQ(id, ids_to_check.front());
-      EXPECT_EQ(1u, components.count(id));
+      EXPECT_EQ(id, context->components_to_check_for_updates.front());
+      EXPECT_EQ(1u, context->components.count(id));
 
-      auto& component = components.at(id);
+      auto& component = context->components.at(id);
 
       EXPECT_TRUE(component->is_foreground());
 
@@ -430,9 +429,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
       /*
@@ -459,14 +456,14 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
         </app>
       </response>
       */
-      EXPECT_FALSE(session_id.empty());
-      EXPECT_EQ(2u, ids_to_check.size());
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(2u, context->components_to_check_for_updates.size());
 
       ProtocolParser::Results results;
       {
         const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-        EXPECT_EQ(id, ids_to_check[0]);
-        EXPECT_EQ(1u, components.count(id));
+        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
+        EXPECT_EQ(1u, context->components.count(id));
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
@@ -482,20 +479,20 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
 
-        EXPECT_FALSE(components.at(id)->is_foreground());
+        EXPECT_FALSE(context->components.at(id)->is_foreground());
       }
 
       {
         const std::string id = "abagagagagagagagagagagagagagagag";
-        EXPECT_EQ(id, ids_to_check[1]);
-        EXPECT_EQ(1u, components.count(id));
+        EXPECT_EQ(id, context->components_to_check_for_updates[1]);
+        EXPECT_EQ(1u, context->components.count(id));
 
         ProtocolParser::Result result;
         result.extension_id = id;
         result.status = "noupdate";
         results.list.push_back(result);
 
-        EXPECT_FALSE(components.at(id)->is_foreground());
+        EXPECT_FALSE(context->components.at(id)->is_foreground());
       }
 
       base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -684,9 +681,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
       /*
@@ -710,14 +705,14 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
         </app>
       </response>
       */
-      EXPECT_FALSE(session_id.empty());
-      EXPECT_EQ(2u, ids_to_check.size());
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(2u, context->components_to_check_for_updates.size());
 
       ProtocolParser::Results results;
       {
         const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-        EXPECT_EQ(id, ids_to_check[0]);
-        EXPECT_EQ(1u, components.count(id));
+        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
+        EXPECT_EQ(1u, context->components.count(id));
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
@@ -733,7 +728,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
 
-        EXPECT_FALSE(components.at(id)->is_foreground());
+        EXPECT_FALSE(context->components.at(id)->is_foreground());
       }
 
       base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -912,9 +907,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
       /*
@@ -938,14 +931,14 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
         </app>
       </response>
       */
-      EXPECT_FALSE(session_id.empty());
-      EXPECT_EQ(1u, ids_to_check.size());
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
 
       ProtocolParser::Results results;
       {
         const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-        EXPECT_EQ(id, ids_to_check[0]);
-        EXPECT_EQ(1u, components.count(id));
+        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
+        EXPECT_EQ(1u, context->components.count(id));
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
@@ -961,7 +954,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
 
-        EXPECT_FALSE(components.at(id)->is_foreground());
+        EXPECT_FALSE(context->components.at(id)->is_foreground());
       }
 
       base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -1119,9 +1112,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
       NOTREACHED();
@@ -1233,9 +1224,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
       /*
@@ -1274,14 +1263,14 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
       </response>
       */
 
-      EXPECT_FALSE(session_id.empty());
-      EXPECT_EQ(2u, ids_to_check.size());
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(2u, context->components_to_check_for_updates.size());
 
       ProtocolParser::Results results;
       {
         const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-        EXPECT_EQ(id, ids_to_check[0]);
-        EXPECT_EQ(1u, components.count(id));
+        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
+        EXPECT_EQ(1u, context->components.count(id));
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
@@ -1300,8 +1289,8 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
 
       {
         const std::string id = "ihfokbkgjpifnbbojhneepfflplebdkc";
-        EXPECT_EQ(id, ids_to_check[1]);
-        EXPECT_EQ(1u, components.count(id));
+        EXPECT_EQ(id, context->components_to_check_for_updates[1]);
+        EXPECT_EQ(1u, context->components.count(id));
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_1.crx";
@@ -1535,12 +1524,10 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      EXPECT_FALSE(session_id.empty());
+      EXPECT_FALSE(context->session_id.empty());
 
       static int num_call = 0;
       ++num_call;
@@ -1569,8 +1556,8 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
         </response>
         */
         const std::string id = "ihfokbkgjpifnbbojhneepfflplebdkc";
-        EXPECT_EQ(id, ids_to_check[0]);
-        EXPECT_EQ(1u, components.count(id));
+        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
+        EXPECT_EQ(1u, context->components.count(id));
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_1.crx";
@@ -1612,8 +1599,8 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
         </response>
         */
         const std::string id = "ihfokbkgjpifnbbojhneepfflplebdkc";
-        EXPECT_EQ(id, ids_to_check[0]);
-        EXPECT_EQ(1u, components.count(id));
+        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
+        EXPECT_EQ(1u, context->components.count(id));
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_2.crx";
@@ -1943,9 +1930,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
       /*
@@ -1969,11 +1954,11 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
         </app>
       </response>
       */
-      EXPECT_FALSE(session_id.empty());
+      EXPECT_FALSE(context->session_id.empty());
 
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-      EXPECT_EQ(id, ids_to_check[0]);
-      EXPECT_EQ(1u, components.count(id));
+      EXPECT_EQ(id, context->components_to_check_for_updates[0]);
+      EXPECT_EQ(1u, context->components.count(id));
 
       ProtocolParser::Result::Manifest::Package package;
       package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
@@ -2151,12 +2136,10 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      EXPECT_FALSE(session_id.empty());
+      EXPECT_FALSE(context->session_id.empty());
 
       static int num_call = 0;
       ++num_call;
@@ -2186,8 +2169,8 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
         </response>
         */
         const std::string id = "ihfokbkgjpifnbbojhneepfflplebdkc";
-        EXPECT_EQ(id, ids_to_check[0]);
-        EXPECT_EQ(1u, components.count(id));
+        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
+        EXPECT_EQ(1u, context->components.count(id));
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_1.crx";
@@ -2230,8 +2213,8 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
         </response>
         */
         const std::string id = "ihfokbkgjpifnbbojhneepfflplebdkc";
-        EXPECT_EQ(id, ids_to_check[0]);
-        EXPECT_EQ(1u, components.count(id));
+        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
+        EXPECT_EQ(1u, context->components.count(id));
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_2.crx";
@@ -2497,18 +2480,16 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      EXPECT_FALSE(session_id.empty());
-      EXPECT_EQ(1u, ids_to_check.size());
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-      EXPECT_EQ(id, ids_to_check.front());
-      EXPECT_EQ(1u, components.count(id));
+      EXPECT_EQ(id, context->components_to_check_for_updates.front());
+      EXPECT_EQ(1u, context->components.count(id));
 
-      auto& component = components.at(id);
+      auto& component = context->components.at(id);
 
       EXPECT_FALSE(component->is_foreground());
 
@@ -2640,9 +2621,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
       /*
@@ -2667,12 +2646,12 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
         </app>
       </response>
       */
-      EXPECT_FALSE(session_id.empty());
-      EXPECT_EQ(1u, ids_to_check.size());
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
 
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-      EXPECT_EQ(id, ids_to_check[0]);
-      EXPECT_EQ(1u, components.count(id));
+      EXPECT_EQ(id, context->components_to_check_for_updates[0]);
+      EXPECT_EQ(1u, context->components.count(id));
 
       ProtocolParser::Result::Manifest::Package package;
       package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
@@ -2694,7 +2673,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
       results.list.push_back(result);
 
       // Verify that calling Install sets ondemand.
-      EXPECT_TRUE(components.at(id)->is_foreground());
+      EXPECT_TRUE(context->components.at(id)->is_foreground());
 
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
@@ -2873,9 +2852,7 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
       NOTREACHED();
@@ -2995,16 +2972,14 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      EXPECT_FALSE(session_id.empty());
-      EXPECT_EQ(1u, ids_to_check.size());
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-      EXPECT_EQ(id, ids_to_check.front());
-      EXPECT_EQ(1u, components.count(id));
+      EXPECT_EQ(id, context->components_to_check_for_updates.front());
+      EXPECT_EQ(1u, context->components.count(id));
 
       ProtocolParser::Result result;
       result.extension_id = id;
@@ -3014,7 +2989,7 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
       results.list.push_back(result);
 
       // Verify that calling Install sets |is_foreground| for the component.
-      EXPECT_TRUE(components.at(id)->is_foreground());
+      EXPECT_TRUE(context->components.at(id)->is_foreground());
 
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
@@ -3119,9 +3094,7 @@ TEST_F(UpdateClientTest, EmptyIdList) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
       NOTREACHED();
@@ -3177,9 +3150,7 @@ TEST_F(UpdateClientTest, SendUninstallPing) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
       NOTREACHED();
@@ -3286,12 +3257,10 @@ TEST_F(UpdateClientTest, RetryAfter) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      EXPECT_FALSE(session_id.empty());
+      EXPECT_FALSE(context->session_id.empty());
 
       static int num_call = 0;
       ++num_call;
@@ -3304,10 +3273,10 @@ TEST_F(UpdateClientTest, RetryAfter) {
         retry_after_sec = 60 * 60;  // 1 hour.
       }
 
-      EXPECT_EQ(1u, ids_to_check.size());
+      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-      EXPECT_EQ(id, ids_to_check.front());
-      EXPECT_EQ(1u, components.count(id));
+      EXPECT_EQ(id, context->components_to_check_for_updates.front());
+      EXPECT_EQ(1u, context->components.count(id));
 
       ProtocolParser::Result result;
       result.extension_id = id;
@@ -3465,9 +3434,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
       /*
@@ -3506,14 +3473,14 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
       </response>
       */
 
-      EXPECT_FALSE(session_id.empty());
-      EXPECT_EQ(2u, ids_to_check.size());
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(2u, context->components_to_check_for_updates.size());
 
       ProtocolParser::Results results;
       {
         const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-        EXPECT_EQ(id, ids_to_check[0]);
-        EXPECT_EQ(1u, components.count(id));
+        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
+        EXPECT_EQ(1u, context->components.count(id));
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
@@ -3532,8 +3499,8 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
 
       {
         const std::string id = "ihfokbkgjpifnbbojhneepfflplebdkc";
-        EXPECT_EQ(id, ids_to_check[1]);
-        EXPECT_EQ(1u, components.count(id));
+        EXPECT_EQ(id, context->components_to_check_for_updates[1]);
+        EXPECT_EQ(1u, context->components.count(id));
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_1.crx";
@@ -3729,16 +3696,14 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      EXPECT_FALSE(session_id.empty());
-      EXPECT_EQ(1u, ids_to_check.size());
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-      EXPECT_EQ(id, ids_to_check.front());
-      EXPECT_EQ(1u, components.count(id));
+      EXPECT_EQ(id, context->components_to_check_for_updates.front());
+      EXPECT_EQ(1u, context->components.count(id));
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(update_check_callback), absl::nullopt,
@@ -3878,13 +3843,11 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      EXPECT_FALSE(session_id.empty());
-      EXPECT_EQ(4u, ids_to_check.size());
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(4u, context->components_to_check_for_updates.size());
 
       const std::string update_response =
           ")]}'"
@@ -4031,9 +3994,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
       /*
@@ -4059,12 +4020,12 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
         </app>
       </response>
       */
-      EXPECT_FALSE(session_id.empty());
-      EXPECT_EQ(1u, ids_to_check.size());
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
 
       const std::string id = "gjpmebpgbhcamgdgjcmnjfhggjpgcimm";
-      EXPECT_EQ(id, ids_to_check[0]);
-      EXPECT_EQ(1u, components.count(id));
+      EXPECT_EQ(id, context->components_to_check_for_updates[0]);
+      EXPECT_EQ(1u, context->components.count(id));
 
       ProtocolParser::Result::Manifest::Package package;
       package.name = "runaction_test_win.crx3";
@@ -4220,9 +4181,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
       /*
@@ -4239,11 +4198,11 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
         </app>
       </response>
       */
-      EXPECT_FALSE(session_id.empty());
-      EXPECT_EQ(1u, ids_to_check.size());
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
       const std::string id = "gjpmebpgbhcamgdgjcmnjfhggjpgcimm";
-      EXPECT_EQ(id, ids_to_check[0]);
-      EXPECT_EQ(1u, components.count(id));
+      EXPECT_EQ(id, context->components_to_check_for_updates[0]);
+      EXPECT_EQ(1u, context->components.count(id));
 
       ProtocolParser::Result result;
       result.extension_id = id;
@@ -4402,18 +4361,16 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
     }
 
     void CheckForUpdates(
-        const std::string& session_id,
-        const std::vector<std::string>& ids_to_check,
-        const IdToComponentPtrMap& components,
+        scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      EXPECT_FALSE(session_id.empty());
-      EXPECT_EQ(1u, ids_to_check.size());
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-      EXPECT_EQ(id, ids_to_check.front());
-      EXPECT_EQ(1u, components.count(id));
+      EXPECT_EQ(id, context->components_to_check_for_updates.front());
+      EXPECT_EQ(1u, context->components.count(id));
 
-      auto& component = components.at(id);
+      auto& component = context->components.at(id);
 
       EXPECT_TRUE(component->is_foreground());
 

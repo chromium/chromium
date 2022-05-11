@@ -21,6 +21,7 @@ namespace update_client {
 
 class Configurator;
 class PersistedData;
+struct UpdateContext;
 
 class UpdateChecker {
  public:
@@ -40,15 +41,11 @@ class UpdateChecker {
   virtual ~UpdateChecker() = default;
 
   // Initiates an update check for the components specified by their ids.
-  // |additional_attributes| provides a way to customize the <request> element.
-  // |is_foreground| controls the value of "X-Goog-Update-Interactivity"
-  // header which is sent with the update check.
-  // On completion, the state of |components| is mutated as required by the
-  // server response received.
+  // `update_context` contains the updateable apps. `additional_attributes`
+  // specifies any extra request data to send. On completion, the state of
+  // `components` is mutated as required by the server response received.
   virtual void CheckForUpdates(
-      const std::string& session_id,
-      const std::vector<std::string>& ids_to_check,
-      const IdToComponentPtrMap& components,
+      scoped_refptr<UpdateContext> update_context,
       const base::flat_map<std::string, std::string>& additional_attributes,
       UpdateCheckCallback update_check_callback) = 0;
 

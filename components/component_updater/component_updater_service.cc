@@ -367,52 +367,26 @@ bool CrxUpdateService::CheckForUpdates(
   UMA_HISTOGRAM_ENUMERATION("ComponentUpdater.Calls", UPDATE_TYPE_AUTOMATIC,
                             UPDATE_TYPE_COUNT);
 
-  std::vector<std::string> secure_ids;    // Requires HTTPS for update checks.
-  std::vector<std::string> unsecure_ids;  // Can fallback to HTTP.
-  for (const auto& id : components_order_) {
-    DCHECK(components_.find(id) != components_.end());
-
-    const auto component = GetComponent(id);
-    if (!component || component->requires_network_encryption)
-      secure_ids.push_back(id);
-    else
-      unsecure_ids.push_back(id);
-  }
-
-  if (unsecure_ids.empty() && secure_ids.empty()) {
+  if (components_order_.empty()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   std::move(on_finished));
     return true;
   }
 
-  Callback on_finished_callback = base::BindOnce(
-      [](UpdateScheduler::OnFinishedCallback on_finished,
-         update_client::Error error) { std::move(on_finished).Run(); },
-      std::move(on_finished));
-
-  if (!unsecure_ids.empty()) {
-    update_client_->Update(
-        unsecure_ids,
-        base::BindOnce(&CrxUpdateService::GetCrxComponents,
-                       base::Unretained(this)),
-        {}, false,
-        base::BindOnce(
-            &CrxUpdateService::OnUpdateComplete, base::Unretained(this),
-            secure_ids.empty() ? std::move(on_finished_callback) : Callback(),
-            base::TimeTicks::Now()));
-  }
-
-  if (!secure_ids.empty()) {
-    update_client_->Update(
-        secure_ids,
-        base::BindOnce(&CrxUpdateService::GetCrxComponents,
-                       base::Unretained(this)),
-        {}, false,
-        base::BindOnce(&CrxUpdateService::OnUpdateComplete,
-                       base::Unretained(this), std::move(on_finished_callback),
-                       base::TimeTicks::Now()));
-  }
-
+  update_client_->Update(
+      components_order_,
+      base::BindOnce(&CrxUpdateService::GetCrxComponents,
+                     base::Unretained(this)),
+      {}, false,
+      base::BindOnce(&CrxUpdateService::OnUpdateComplete,
+                     base::Unretained(this),
+                     base::BindOnce(
+                         [](UpdateScheduler::OnFinishedCallback on_finished,
+                            update_client::Error /*error*/) {
+                           std::move(on_finished).Run();
+                         },
+                         std::move(on_finished)),
+                     base::TimeTicks::Now()));
   return true;
 }
 

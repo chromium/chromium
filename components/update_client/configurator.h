@@ -56,7 +56,8 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
   virtual int UpdateDelay() const = 0;
 
   // The URLs for the update checks. The URLs are tried in order, the first one
-  // that succeeds wins.
+  // that succeeds wins. Since some components cannot be updated over HTTP,
+  // HTTPS URLs should appear first.
   virtual std::vector<GURL> UpdateUrl() const = 0;
 
   // The URLs for pings. Returns an empty vector if and only if pings are

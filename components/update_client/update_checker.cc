@@ -32,23 +32,14 @@
 #include "components/update_client/request_sender.h"
 #include "components/update_client/task_traits.h"
 #include "components/update_client/update_client.h"
+#include "components/update_client/update_engine.h"
 #include "components/update_client/utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace update_client {
 
 namespace {
-
-// Returns true if at least one item requires network encryption.
-bool IsEncryptionRequired(const IdToComponentPtrMap& components) {
-  for (const auto& item : components) {
-    const auto& component = item.second;
-    if (component->crx_component() &&
-        component->crx_component()->requires_network_encryption)
-      return true;
-  }
-  return false;
-}
 
 class UpdateCheckerImpl : public UpdateChecker {
  public:
@@ -62,24 +53,25 @@ class UpdateCheckerImpl : public UpdateChecker {
 
   // Overrides for UpdateChecker.
   void CheckForUpdates(
-      const std::string& session_id,
-      const std::vector<std::string>& ids_checked,
-      const IdToComponentPtrMap& components,
+      scoped_refptr<UpdateContext> context,
       const base::flat_map<std::string, std::string>& additional_attributes,
       UpdateCheckCallback update_check_callback) override;
 
  private:
   UpdaterStateAttributes ReadUpdaterStateAttributes() const;
   void CheckForUpdatesHelper(
-      const std::string& session_id,
-      const IdToComponentPtrMap& components,
+      scoped_refptr<UpdateContext> context,
+      const std::vector<GURL>& urls,
       const base::flat_map<std::string, std::string>& additional_attributes,
       const UpdaterStateAttributes& updater_state_attributes,
       const std::set<std::string>& active_ids);
-  void OnRequestSenderComplete(int error,
+  void OnRequestSenderComplete(scoped_refptr<UpdateContext> context,
+                               absl::optional<base::OnceClosure> fallback,
+                               int error,
                                const std::string& response,
                                int retry_after_sec);
-  void UpdateCheckSucceeded(const ProtocolParser::Results& results,
+  void UpdateCheckSucceeded(scoped_refptr<UpdateContext> context,
+                            const ProtocolParser::Results& results,
                             int retry_after_sec);
   void UpdateCheckFailed(ErrorCategory error_category,
                          int error,
@@ -89,7 +81,6 @@ class UpdateCheckerImpl : public UpdateChecker {
 
   const scoped_refptr<Configurator> config_;
   raw_ptr<PersistedData> metadata_ = nullptr;
-  std::vector<std::string> ids_checked_;
   UpdateCheckCallback update_check_callback_;
   std::unique_ptr<RequestSender> request_sender_;
 };
@@ -103,19 +94,16 @@ UpdateCheckerImpl::~UpdateCheckerImpl() {
 }
 
 void UpdateCheckerImpl::CheckForUpdates(
-    const std::string& session_id,
-    const std::vector<std::string>& ids_checked,
-    const IdToComponentPtrMap& components,
+    scoped_refptr<UpdateContext> context,
     const base::flat_map<std::string, std::string>& additional_attributes,
     UpdateCheckCallback update_check_callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  ids_checked_ = ids_checked;
   update_check_callback_ = std::move(update_check_callback);
 
   auto check_for_updates_invoker = base::BindOnce(
       &UpdateCheckerImpl::CheckForUpdatesHelper, base::Unretained(this),
-      session_id, std::cref(components), additional_attributes);
+      context, config_->UpdateUrl(), additional_attributes);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kTaskTraits,
@@ -132,7 +120,7 @@ void UpdateCheckerImpl::CheckForUpdates(
                                     updater_state_attributes));
           },
           std::move(check_for_updates_invoker), base::Unretained(metadata_),
-          ids_checked));
+          context->components_to_check_for_updates));
 }
 
 // This function runs on the blocking pool task runner.
@@ -148,35 +136,48 @@ UpdaterStateAttributes UpdateCheckerImpl::ReadUpdaterStateAttributes() const {
 }
 
 void UpdateCheckerImpl::CheckForUpdatesHelper(
-    const std::string& session_id,
-    const IdToComponentPtrMap& components,
+    scoped_refptr<UpdateContext> context,
+    const std::vector<GURL>& urls,
     const base::flat_map<std::string, std::string>& additional_attributes,
     const UpdaterStateAttributes& updater_state_attributes,
     const std::set<std::string>& active_ids) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  auto urls(config_->UpdateUrl());
-  if (IsEncryptionRequired(components))
-    RemoveUnsecureUrls(&urls);
+  if (urls.empty()) {
+    UpdateCheckFailed(ErrorCategory::kUpdateCheck,
+                      static_cast<int>(ProtocolError::MISSING_URLS), 0);
+    return;
+  }
+  GURL url = urls.front();
 
   // Components in this update check are either all foreground, or all
   // background since this member is inherited from the component's update
   // context. Pick the state of the first component to use in the update check.
-  DCHECK(!components.empty());
-  const bool is_foreground = components.at(ids_checked_[0])->is_foreground();
+  DCHECK(!context->components.empty());
+  const bool is_foreground =
+      context->components.cbegin()->second->is_foreground();
   DCHECK(
-      std::all_of(components.cbegin(), components.cend(),
+      std::all_of(context->components.cbegin(), context->components.cend(),
                   [is_foreground](IdToComponentPtrMap::const_reference& elem) {
                     return is_foreground == elem.second->is_foreground();
                   }));
 
+  std::vector<std::string> sent_ids;
+
   std::vector<protocol_request::App> apps;
-  for (const auto& app_id : ids_checked_) {
-    DCHECK_EQ(1u, components.count(app_id));
-    const auto& component = components.at(app_id);
+  for (const auto& app_id : context->components_to_check_for_updates) {
+    DCHECK_EQ(1u, context->components.count(app_id));
+    const auto& component = context->components.at(app_id);
     DCHECK_EQ(component->id(), app_id);
     const auto& crx_component = component->crx_component();
     DCHECK(crx_component);
+
+    if (crx_component->requires_network_encryption &&
+        !url.SchemeIsCryptographic()) {
+      continue;
+    }
+
+    sent_ids.push_back(app_id);
 
     std::string install_source;
     if (!crx_component->install_source.empty())
@@ -207,8 +208,15 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
         absl::nullopt));
   }
 
+  if (sent_ids.empty()) {
+    // No apps could be checked over this URL.
+    UpdateCheckFailed(ErrorCategory::kUpdateCheck,
+                      static_cast<int>(ProtocolError::MISSING_URLS), 0);
+    return;
+  }
+
   const auto request = MakeProtocolRequest(
-      !config_->IsPerUserInstall(), session_id, config_->GetProdId(),
+      !config_->IsPerUserInstall(), context->session_id, config_->GetProdId(),
       config_->GetBrowserVersion().GetString(), config_->GetChannel(),
       config_->GetOSLongName(), config_->GetDownloadPreference(),
       config_->IsMachineExternallyManaged(), additional_attributes,
@@ -216,18 +224,28 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
 
   request_sender_ = std::make_unique<RequestSender>(config_);
   request_sender_->Send(
-      urls,
+      {url},
       BuildUpdateCheckExtraRequestHeaders(config_->GetProdId(),
                                           config_->GetBrowserVersion(),
-                                          ids_checked_, is_foreground),
+                                          sent_ids, is_foreground),
       config_->GetProtocolHandlerFactory()->CreateSerializer()->Serialize(
           request),
       config_->EnabledCupSigning(),
       base::BindOnce(&UpdateCheckerImpl::OnRequestSenderComplete,
-                     base::Unretained(this)));
+                     base::Unretained(this), context,
+                     urls.size() > 1
+                         ? absl::optional<base::OnceClosure>(base::BindOnce(
+                               &UpdateCheckerImpl::CheckForUpdatesHelper,
+                               base::Unretained(this), context,
+                               std::vector<GURL>(urls.begin() + 1, urls.end()),
+                               additional_attributes, updater_state_attributes,
+                               active_ids))
+                         : absl::nullopt));
 }
 
 void UpdateCheckerImpl::OnRequestSenderComplete(
+    scoped_refptr<UpdateContext> context,
+    absl::optional<base::OnceClosure> fallback,
     int error,
     const std::string& response,
     int retry_after_sec) {
@@ -235,7 +253,11 @@ void UpdateCheckerImpl::OnRequestSenderComplete(
 
   if (error) {
     VLOG(1) << "RequestSender failed " << error;
-    UpdateCheckFailed(ErrorCategory::kUpdateCheck, error, retry_after_sec);
+    if (fallback && retry_after_sec <= 0) {
+      std::move(*fallback).Run();
+    } else {
+      UpdateCheckFailed(ErrorCategory::kUpdateCheck, error, retry_after_sec);
+    }
     return;
   }
 
@@ -249,10 +271,11 @@ void UpdateCheckerImpl::OnRequestSenderComplete(
   }
 
   DCHECK_EQ(0, error);
-  UpdateCheckSucceeded(parser->results(), retry_after_sec);
+  UpdateCheckSucceeded(context, parser->results(), retry_after_sec);
 }
 
 void UpdateCheckerImpl::UpdateCheckSucceeded(
+    scoped_refptr<UpdateContext> context,
     const ProtocolParser::Results& results,
     int retry_after_sec) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -276,7 +299,8 @@ void UpdateCheckerImpl::UpdateCheckSucceeded(
                      ErrorCategory::kNone, 0, retry_after_sec);
 
   if (daynum != ProtocolParser::kNoDaystart) {
-    metadata_->SetDateLastData(ids_checked_, daynum, std::move(reply));
+    metadata_->SetDateLastData(context->components_to_check_for_updates, daynum,
+                               std::move(reply));
     return;
   }
 

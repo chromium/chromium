@@ -75,8 +75,8 @@ int TestConfigurator::UpdateDelay() const {
 }
 
 std::vector<GURL> TestConfigurator::UpdateUrl() const {
-  if (!update_check_url_.is_empty())
-    return std::vector<GURL>(1, update_check_url_);
+  if (!update_check_urls_.empty())
+    return update_check_urls_;
 
   return MakeDefaultUrls();
 }
@@ -191,7 +191,11 @@ void TestConfigurator::SetDownloadPreference(
 }
 
 void TestConfigurator::SetUpdateCheckUrl(const GURL& url) {
-  update_check_url_ = url;
+  update_check_urls_ = {url};
+}
+
+void TestConfigurator::SetUpdateCheckUrls(const std::vector<GURL>& urls) {
+  update_check_urls_ = urls;
 }
 
 void TestConfigurator::SetPingUrl(const GURL& url) {

@@ -162,9 +162,7 @@ void UpdateEngine::DoUpdateCheck(scoped_refptr<UpdateContext> update_context) {
       update_checker_factory_(config_, metadata_.get());
 
   update_context->update_checker->CheckForUpdates(
-      update_context->session_id,
-      update_context->components_to_check_for_updates,
-      update_context->components, config_->ExtraRequestParams(),
+      update_context, config_->ExtraRequestParams(),
       base::BindOnce(&UpdateEngine::UpdateCheckResultsAvailable, this,
                      update_context));
 }
