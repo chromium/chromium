@@ -597,21 +597,6 @@
             ]
         }
     ],
-    "AsyncFontAccess": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AsyncFontAccess",
-                    "enable_features": [
-                        "AsyncFontAccess"
-                    ]
-                }
-            ]
-        }
-    ],
     "AudioProcessHighPriorityWin": [
         {
             "platforms": [
