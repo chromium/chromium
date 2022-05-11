@@ -33,6 +33,8 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -225,6 +227,8 @@ void EcheTray::HideBubble(const TrayBubbleView* bubble_view) {
 void EcheTray::OnStreamStatusChanged(eche_app::mojom::StreamStatus status) {
   switch (status) {
     case eche_app::mojom::StreamStatus::kStreamStatusStarted:
+      // Reset the timestamp when the streaming is started.
+      init_stream_timestamp_.reset();
       ShowBubble();
       break;
     case eche_app::mojom::StreamStatus::kStreamStatusStopped:
@@ -314,8 +318,10 @@ void EcheTray::PurgeAndClose() {
   web_view_ = nullptr;
   close_button_ = nullptr;
   minimize_button_ = nullptr;
+  arrow_back_button_ = nullptr;
   unload_timer_.reset();
   bubble_.reset();
+  init_stream_timestamp_.reset();
 }
 
 void EcheTray::SetGracefulCloseCallback(
@@ -333,6 +339,13 @@ void EcheTray::SetGracefulGoBackCallback(
 }
 
 void EcheTray::StartGracefulClose() {
+  if (init_stream_timestamp_.has_value()) {
+    base::UmaHistogramLongTimes100(
+        "Eche.StreamEvent.Duration.FromInitializeToClose",
+        base::TimeTicks::Now() - *init_stream_timestamp_);
+    init_stream_timestamp_.reset();
+  }
+
   if (!graceful_close_callback_) {
     PurgeAndClose();
     return;
@@ -361,6 +374,7 @@ void EcheTray::InitBubble() {
   base::UmaHistogramEnumeration(
       "Eche.StreamEvent",
       eche_app::mojom::StreamStatus::kStreamStatusInitializing);
+  init_stream_timestamp_ = base::TimeTicks::Now();
   TrayBubbleView::InitParams init_params;
   init_params.delegate = this;
   // Note: The container id must be smaller than `kShellWindowId_ShelfContainer`

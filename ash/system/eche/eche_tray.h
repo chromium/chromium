@@ -239,6 +239,10 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   views::Button* minimize_button_ = nullptr;
   views::Button* arrow_back_button_ = nullptr;
 
+  // The time a stream is initializing. Used to record the elapsed time from
+  // when the stream is initializing to when the stream is closed by user.
+  absl::optional<base::TimeTicks> init_stream_timestamp_;
+
   // Observers
   base::ScopedObservation<SessionControllerImpl, SessionObserver>
       observed_session_{this};

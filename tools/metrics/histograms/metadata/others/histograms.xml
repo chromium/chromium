@@ -5083,6 +5083,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Eche.StreamEvent.Duration.FromInitializeToClose" units="ms"
+    expires_after="2022-09-30">
+  <owner>paulzchen@google.com</owner>
+  <owner>andychou@google.com</owner>
+  <owner>exo-core-eng@google.com</owner>
+  <summary>
+    Records the elapsed time from when the stream is initializing to when the
+    stream is closed before the stream doesn't started. Fires during the process
+    of closing Eche streaming when the stream doesn't start. It is not sent on a
+    successful connection attempt.
+  </summary>
+</histogram>
+
 <histogram name="EphemeralTab.BottomSheet.CloseReason"
     enum="BottomSheet.StateChangeReason" expires_after="M92">
   <obsolete>
