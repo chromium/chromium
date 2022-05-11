@@ -1335,7 +1335,7 @@ void BrowserManager::OnLoadComplete(
   if (state_ == State::STOPPED && !shutdown_requested_ &&
       (GetLaunchOnLoginPref() || (browser_util::IsLacrosPrimaryBrowser() &&
                                   !IsLoginLacrosOpeningDisabledForTesting()))) {
-    Start(std::move(initial_browser_action));
+    MaybeStart(std::move(initial_browser_action));
   }
 }
 
@@ -1444,7 +1444,6 @@ void BrowserManager::LaunchForKeepAliveIfNecessary() {
   if (state_ == State::STOPPED && !shutdown_requested_ &&
       !keep_alive_features_.empty() && !relaunch_requested_) {
     CHECK(browser_util::IsLacrosEnabled());
-    CHECK(browser_util::IsLacrosAllowedToLaunch());
     MaybeStart(browser_util::InitialBrowserAction(
         mojom::InitialBrowserAction::kDoNotOpenWindow));
   }
