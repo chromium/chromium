@@ -17,7 +17,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -211,6 +210,7 @@ void PendingScreencastManager::OnUnmounted() {
     // Since DriveFS is unmounted, screencasts stop uploading. Notifies pending
     // screencast status has changed.
     pending_screencast_change_callback_.Run(pending_screencast_cache_);
+    last_pending_screencast_change_tick_ = base::TimeTicks();
   }
   error_syncing_files_.clear();
 }
@@ -297,8 +297,8 @@ PendingScreencastManager::GetPendingScreencasts() const {
 void PendingScreencastManager::OnProcessAndGenerateNewScreencastsFinished(
     const base::TimeTicks task_start_tick,
     const ash::PendingScreencastSet& screencasts) {
-  ash::RecordPendingScreencastBatchIOTaskDuration(base::TimeTicks::Now() -
-                                                  task_start_tick);
+  const base::TimeTicks now = base::TimeTicks::Now();
+  ash::RecordPendingScreencastBatchIOTaskDuration(now - task_start_tick);
 
   // Returns if pending screencasts didn't change.
   if (screencasts == pending_screencast_cache_)
@@ -307,6 +307,14 @@ void PendingScreencastManager::OnProcessAndGenerateNewScreencastsFinished(
 
   // Notifies pending screencast status changed.
   pending_screencast_change_callback_.Run(pending_screencast_cache_);
+  if (!last_pending_screencast_change_tick_.is_null()) {
+    ash::RecordPendingScreencastChangeInterval(
+        now - last_pending_screencast_change_tick_);
+  }
+  // Resets `last_pending_screencast_change_tick_` to null. We don't track time
+  // delta between finish uploading and new uploading started.
+  last_pending_screencast_change_tick_ =
+      pending_screencast_cache_.empty() ? base::TimeTicks() : now;
 }
 
 void PendingScreencastManager::OnUserProfileLoaded(

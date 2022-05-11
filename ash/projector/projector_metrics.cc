@@ -31,6 +31,9 @@ constexpr char kProjectorTranscriptsCountHistogramName[] =
 constexpr char kProjectorPendingScreencastBatchIOTaskDurationHistogramName[] =
     "Ash.Projector.PendingScreencastBatchIOTaskDuration";
 
+constexpr char kProjectorPendingScreencastChangeIntervalHistogramName[] =
+    "Ash.Projector.PendingScreencastChangeInterval";
+
 // Appends the proper suffix to |prefix| based on whether the user is in tablet
 // mode or not.
 std::string GetHistogramName(const std::string& prefix) {
@@ -86,6 +89,16 @@ ASH_EXPORT void RecordPendingScreencastBatchIOTaskDuration(
   // exceeded, then the metric would fall into an overflow bucket.
   base::UmaHistogramTimes(
       kProjectorPendingScreencastBatchIOTaskDurationHistogramName, duration);
+}
+
+ASH_EXPORT void RecordPendingScreencastChangeInterval(
+    const base::TimeDelta interval) {
+  // The interval doesn't include the change between last finished uploading to
+  // new start uploading. We don't normally expect the interval is longer than
+  // 10s. If this limit is exceeded, then the metric would fall into an overflow
+  // bucket.
+  base::UmaHistogramTimes(
+      kProjectorPendingScreencastChangeIntervalHistogramName, interval);
 }
 
 }  // namespace ash

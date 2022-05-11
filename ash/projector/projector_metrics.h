@@ -112,6 +112,9 @@ void RecordCreationFlowError(int message_id);
 // Records the IO task processing Time for screencast validation.
 void RecordPendingScreencastBatchIOTaskDuration(const base::TimeDelta duration);
 
+// Records the interval between the UI changes of pending screencasts.
+void RecordPendingScreencastChangeInterval(const base::TimeDelta interval);
+
 }  // namespace ash
 
 #endif  // ASH_PROJECTOR_PROJECTOR_METRICS_H_

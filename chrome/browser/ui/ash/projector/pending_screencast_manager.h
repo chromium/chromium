@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
@@ -26,7 +27,6 @@ class DriveError;
 
 namespace base {
 class FilePath;
-class TimeTicks;
 }
 
 // A callback to notify the change of pending screencasts to
@@ -48,6 +48,9 @@ class PendingScreencastManager
   ~PendingScreencastManager() override;
 
   // Test only:
+  base::TimeTicks last_pending_screencast_change_tick() const {
+    return last_pending_screencast_change_tick_;
+  }
   bool IsDriveFsObservationObservingSource(drivefs::DriveFsHost* source) const;
 
   // drivefs::DriveFsHostObserver:
@@ -101,6 +104,12 @@ class PendingScreencastManager
       &user_manager::UserManager::AddSessionStateObserver,
       &user_manager::UserManager::RemoveSessionStateObserver>
       session_state_observation_{this};
+
+  // The time tick when last `pending_screencast_change_callback_` was called.
+  // Could be null if last `pending_screencast_change_callback_` was called with
+  // empty screencasts set or no `pending_screencast_change_callback_` invoked
+  // in the current ChromeOS session.
+  base::TimeTicks last_pending_screencast_change_tick_;
 
   base::WeakPtrFactory<PendingScreencastManager> weak_ptr_factory_{this};
 };

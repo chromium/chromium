@@ -15,6 +15,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -43,8 +44,9 @@ constexpr char kTestMetadataFile[] = "test_screencast.projector";
 
 constexpr char kProjectorPendingScreencastBatchIOTaskDurationHistogramName[] =
     "Ash.Projector.PendingScreencastBatchIOTaskDuration";
+constexpr char kProjectorPendingScreencastChangeIntervalHistogramName[] =
+    "Ash.Projector.PendingScreencastChangeInterval";
 
-// constexpr char kTestDataToWrite[] = "Data size of 16.";
 // The test media file is 0.7 mb.
 constexpr int64_t kTestMediaFileBytes = 700 * 1024;
 // The test metadata file is 0.1 mb.
@@ -210,6 +212,12 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, ValidScreencast) {
   EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(1);
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
   content::RunAllTasksUntilIdle();
+  histogram_tester_.ExpectTotalCount(
+      kProjectorPendingScreencastChangeIntervalHistogramName,
+      /*count=*/0);
+  const base::TimeTicks last_pending_screencast_change_tick =
+      pending_screencast_manager()->last_pending_screencast_change_tick();
+  EXPECT_NE(base::TimeTicks(), last_pending_screencast_change_tick);
 
   const PendingScreencastSet pending_screencasts =
       pending_screencast_manager()->GetPendingScreencasts();
@@ -225,12 +233,39 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, ValidScreencast) {
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
   content::RunAllTasksUntilIdle();
 
+  // Expects no report since PendingScreencastChangeCallback wasn't invoked.
+  histogram_tester_.ExpectTotalCount(
+      kProjectorPendingScreencastChangeIntervalHistogramName,
+      /*count=*/0);
+  EXPECT_EQ(
+      last_pending_screencast_change_tick,
+      pending_screencast_manager()->last_pending_screencast_change_tick());
+
   // Tests PendingScreencastChangeCallback will be invoked if pending
   // screencast status changes.
   EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(1);
   syncing_status.item_events.clear();
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
   content::RunAllTasksUntilIdle();
+
+  // Since pending screencast set is empty, the last pending screencast change
+  // tick is reset to null:
+  EXPECT_EQ(
+      base::TimeTicks(),
+      pending_screencast_manager()->last_pending_screencast_change_tick());
+
+  const base::TimeDelta elapsed_time =
+      base::TimeTicks::Now() - last_pending_screencast_change_tick;
+  auto change_interval_samples = histogram_tester_.GetAllSamples(
+      kProjectorPendingScreencastChangeIntervalHistogramName);
+  // Expects only 1 sample.
+  EXPECT_EQ(1u, change_interval_samples.size());
+  // Expects the sample only have 1 count.
+  EXPECT_EQ(1, change_interval_samples.front().count);
+  // Since the end of `elapsed_time` is gotten from "base::TimeTicks::Now()"
+  // after PendingScreencastChangeCallback gets invoked. Expects `elapsed_time`
+  // is greater than the sample.
+  EXPECT_GT(elapsed_time.InMicroseconds(), change_interval_samples.front().min);
 
   histogram_tester_.ExpectTotalCount(
       kProjectorPendingScreencastBatchIOTaskDurationHistogramName,
