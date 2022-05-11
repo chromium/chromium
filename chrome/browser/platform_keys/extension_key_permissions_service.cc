@@ -366,25 +366,24 @@ void ExtensionKeyPermissionsService::KeyEntriesFromState(
 
 std::unique_ptr<base::Value>
 ExtensionKeyPermissionsService::KeyEntriesToState() {
-  std::unique_ptr<base::ListValue> new_state(new base::ListValue);
+  base::Value::List new_state;
   for (const KeyEntry& entry : state_store_entries_) {
     // Drop entries that the extension doesn't have any permissions for anymore.
     if (!entry.sign_once && !entry.sign_unlimited)
       continue;
 
-    std::unique_ptr<base::DictionaryValue> new_entry(new base::DictionaryValue);
-    new_entry->SetKey(kStateStoreSPKI, base::Value(entry.spki_b64));
+    base::Value::Dict new_entry;
+    new_entry.Set(kStateStoreSPKI, entry.spki_b64);
     // Omit writing default values, namely |false|.
     if (entry.sign_once) {
-      new_entry->SetKey(kStateStoreSignOnce, base::Value(entry.sign_once));
+      new_entry.Set(kStateStoreSignOnce, entry.sign_once);
     }
     if (entry.sign_unlimited) {
-      new_entry->SetKey(kStateStoreSignUnlimited,
-                        base::Value(entry.sign_unlimited));
+      new_entry.Set(kStateStoreSignUnlimited, entry.sign_unlimited);
     }
-    new_state->Append(std::move(new_entry));
+    new_state.Append(std::move(new_entry));
   }
-  return std::move(new_state);
+  return std::make_unique<base::Value>(std::move(new_state));
 }
 
 // static
