@@ -54,8 +54,8 @@ public class PrivacySandboxBridgeTest {
         // that flag to get a blank activity with no dialogs from breaking.
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> assertEquals("Returned dialog type", DialogType.NONE,
-                                PrivacySandboxBridge.getRequiredDialogType()));
+                        -> assertEquals("Returned dialog type", PromptType.NONE,
+                                PrivacySandboxBridge.getRequiredPromptType()));
     }
 
     @Test

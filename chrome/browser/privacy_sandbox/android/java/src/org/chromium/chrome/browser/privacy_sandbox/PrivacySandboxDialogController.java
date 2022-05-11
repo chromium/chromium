@@ -32,13 +32,13 @@ public class PrivacySandboxDialogController {
         if (isIncognito) {
             return false;
         }
-        @DialogType
-        int dialogType = PrivacySandboxBridge.getRequiredDialogType();
+        @PromptType
+        int promptType = PrivacySandboxBridge.getRequiredPromptType();
         Dialog dialog = null;
-        switch (dialogType) {
-            case DialogType.NONE:
+        switch (promptType) {
+            case PromptType.NONE:
                 return false;
-            case DialogType.NOTICE:
+            case PromptType.NOTICE:
                 if (showNewNotice()) {
                     if (bottomSheetController == null) return false;
                     PrivacySandboxBottomSheetNotice bottomSheet =
@@ -52,13 +52,13 @@ public class PrivacySandboxDialogController {
                     sDialog = new WeakReference<>(dialog);
                 }
                 return true;
-            case DialogType.CONSENT:
+            case PromptType.CONSENT:
                 dialog = new PrivacySandboxDialogConsent(context);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
             default:
-                assert false : "Unknown DialogType value.";
+                assert false : "Unknown PromptType value.";
                 // Should not be reached.
                 return false;
         }

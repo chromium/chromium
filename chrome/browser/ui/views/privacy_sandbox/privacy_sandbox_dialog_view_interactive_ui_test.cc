@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewInteractiveUiTest,
       views::test::AnyWidgetTestPasskey{},
       PrivacySandboxDialogView::kViewClassName);
   ShowPrivacySandboxPrompt(browser(),
-                           PrivacySandboxService::DialogType::kNotice);
+                           PrivacySandboxService::PromptType::kNotice);
   auto* dialog = waiter.WaitIfNeededAndGet();
   EXPECT_TRUE(dialog);
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewInteractiveUiTest,
       views::test::AnyWidgetTestPasskey{},
       PrivacySandboxDialogView::kViewClassName);
   ShowPrivacySandboxDialog(browser(),
-                           PrivacySandboxService::DialogType::kConsent);
+                           PrivacySandboxService::PromptType::kConsent);
   auto* dialog = waiter.WaitIfNeededAndGet();
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
                                               false, false, false));

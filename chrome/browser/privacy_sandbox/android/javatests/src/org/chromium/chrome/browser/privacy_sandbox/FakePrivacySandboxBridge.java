@@ -18,7 +18,7 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     private final HashMap<String, Topic> mTopics = new HashMap<>();
     private final Set<Topic> mCurrentTopTopics = new HashSet<>();
     private final Set<Topic> mBlockedTopics = new HashSet<>();
-    private @DialogType int mDialogType = DialogType.NONE;
+    private @PromptType int mPromptType = PromptType.NONE;
     private Integer mLastDialogAction;
 
     public FakePrivacySandboxBridge() {
@@ -145,13 +145,13 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
         }
     }
 
-    public void setRequiredDialogType(@DialogType int type) {
-        mDialogType = type;
+    public void setRequiredPromptType(@PromptType int type) {
+        mPromptType = type;
     }
 
     @Override
-    public int getRequiredDialogType() {
-        return mDialogType;
+    public int getRequiredPromptType() {
+        return mPromptType;
     }
 
     @Override
