@@ -1251,7 +1251,7 @@ if (!is_ios) {
   }
 
   executable("quic_crypto_message_printer") {
-    sources = [ "src/quiche/quic/core/crypto/crypto_message_printer_bin.cc" ]
+    sources = [ "src/quiche/quic/tools/crypto_message_printer_bin.cc" ]
 
     configs += [ ":quiche_internal_config" ]
     public_configs = [ ":quiche_config" ]
@@ -1288,7 +1288,7 @@ if (!is_ios) {
     configs += [ ":quiche_internal_config" ]
     public_configs = [ ":quiche_config" ]
 
-    sources = [ "src/quiche/quic/core/qpack/qpack_offline_decoder_bin.cc" ]
+    sources = [ "src/quiche/quic/tools/qpack_offline_decoder_bin.cc" ]
     deps = [
       "//base",
       "//net",
