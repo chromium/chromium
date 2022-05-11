@@ -76,8 +76,8 @@
           [[i18n('confirmDeviceInfoSerialNumberLabel')]]
         </label>
         <div class="input-holder">
-          <cr-input id="serialNumber" placeholder="Enter Serial Number"
-              value="{{serialNumber_}}" aria-labelledby="serialNumberLabel"
+          <cr-input id="serialNumber" value="{{serialNumber_}}" 
+              aria-labelledby="serialNumberLabel"
               disabled="[[allButtonsDisabled]]">
           </cr-input>
           <cr-button id="resetSerialNumber"
@@ -94,8 +94,6 @@
         <div class="input-holder">
           <cr-input
               id="dramPartNumber"
-              placeholder=
-                  "[[i18n('confirmDeviceInfoDramPartNumberPlaceholderLabel')]]"
               value="{{dramPartNumber_}}"
               aria-labelledby="dramPartNumberLabel"
               disabled="[[allButtonsDisabled]]">
