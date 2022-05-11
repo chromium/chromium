@@ -22,6 +22,12 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/environment.h"
+#include "base/nix/xdg_util.h"
+#include "base/strings/string_util.h"
+#endif
+
 namespace remoting {
 namespace {
 
@@ -57,12 +63,17 @@ std::vector<base::FilePath> GetRemoteStateChangeDirPaths() {
   std::vector<base::FilePath> dirs;
 
 #if BUILDFLAG(IS_LINUX)
+  // See: chrome/common/chrome_paths_linux.cc
+  auto env = base::Environment::Create();
   base::FilePath base_path;
-  if (!base::PathService::Get(base::DIR_HOME, &base_path)) {
-    LOG(ERROR) << "Failed to get local app data dir";
-    return dirs;
+  std::string chrome_config_home_str;
+  if (env->GetVar("CHROME_CONFIG_HOME", &chrome_config_home_str) &&
+      base::IsStringUTF8(chrome_config_home_str)) {
+    base_path = base::FilePath::FromUTF8Unsafe(chrome_config_home_str);
+  } else {
+    base_path = base::nix::GetXDGDirectory(
+        env.get(), base::nix::kXdgConfigHomeEnvVar, base::nix::kDotConfigDir);
   }
-  base_path = base_path.Append(".config");
   dirs.push_back(base_path.Append("google-chrome").Append(kStateChangeDirName));
   dirs.push_back(
       base_path.Append("google-chrome-beta").Append(kStateChangeDirName));
@@ -70,22 +81,32 @@ std::vector<base::FilePath> GetRemoteStateChangeDirPaths() {
       base_path.Append("google-chrome-unstable").Append(kStateChangeDirName));
   dirs.push_back(base_path.Append("chromium").Append(kStateChangeDirName));
 #elif BUILDFLAG(IS_WIN)
+  // See: chrome/common/chrome_paths_win.cc
+  constexpr base::FilePath::CharType kUserDataDirName[] =
+      FILE_PATH_LITERAL("User Data");
   base::FilePath base_path;
   if (!base::PathService::Get(base::DIR_LOCAL_APP_DATA, &base_path)) {
     LOG(ERROR) << "Failed to get local app data dir";
     return dirs;
   }
   base::FilePath base_path_google = base_path.Append(L"Google");
-  dirs.push_back(
-      base_path_google.Append(L"Chrome").Append(kStateChangeDirName));
-  dirs.push_back(
-      base_path_google.Append(L"Chrome Beta").Append(kStateChangeDirName));
-  dirs.push_back(
-      base_path_google.Append(L"Chrome Dev").Append(kStateChangeDirName));
-  dirs.push_back(
-      base_path_google.Append(L"Chrome SxS").Append(kStateChangeDirName));
-  dirs.push_back(base_path.Append(L"Chromium").Append(kStateChangeDirName));
+  dirs.push_back(base_path_google.Append(L"Chrome")
+                     .Append(kUserDataDirName)
+                     .Append(kStateChangeDirName));
+  dirs.push_back(base_path_google.Append(L"Chrome Beta")
+                     .Append(kUserDataDirName)
+                     .Append(kStateChangeDirName));
+  dirs.push_back(base_path_google.Append(L"Chrome Dev")
+                     .Append(kUserDataDirName)
+                     .Append(kStateChangeDirName));
+  dirs.push_back(base_path_google.Append(L"Chrome SxS")
+                     .Append(kUserDataDirName)
+                     .Append(kStateChangeDirName));
+  dirs.push_back(base_path.Append(L"Chromium")
+                     .Append(kUserDataDirName)
+                     .Append(kStateChangeDirName));
 #elif BUILDFLAG(IS_MAC)
+  // See: chrome/common/chrome_paths_mac.mm
   base::FilePath base_path;
   if (!base::PathService::Get(base::DIR_APP_DATA, &base_path)) {
     LOG(ERROR) << "Failed to get app data dir";
