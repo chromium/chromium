@@ -225,28 +225,69 @@ class CompositorImpl::AndroidHostDisplayClient : public viz::HostDisplayClient {
 class CompositorImpl::HostBeginFrameObserver
     : public viz::mojom::BeginFrameObserver {
  public:
-  explicit HostBeginFrameObserver(
-      const base::flat_set<SimpleBeginFrameObserver*>& observers)
-      : simple_begin_frame_observers_(observers) {}
+  HostBeginFrameObserver(
+      const base::flat_set<SimpleBeginFrameObserver*>& observers,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+      : simple_begin_frame_observers_(observers),
+        task_runner_(std::move(task_runner)) {}
 
   void OnStandaloneBeginFrame(const viz::BeginFrameArgs& args) override {
     if (args.type == viz::BeginFrameArgs::MISSED)
       return;
 
-    for (auto* simple_observer : simple_begin_frame_observers_) {
+    if (pending_coalesce_callback_) {
+      begin_frame_args_ = args;
+      return;
+    }
+
+    static const bool kCoalesce = base::FeatureList::IsEnabled(
+        ::features::kCoalesceIndependentBeginFrame);
+    if (kCoalesce &&
+        (base::TimeTicks::Now() - args.frame_time) > args.interval) {
+      begin_frame_args_ = args;
+      pending_coalesce_callback_ = true;
+      task_runner_->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(
+              &CompositorImpl::HostBeginFrameObserver::CoalescedBeginFrame,
+              weak_factory_.GetWeakPtr()),
+          base::Microseconds(1));
+      return;
+    }
+
+    CallObservers(args);
+  }
+
+  mojo::PendingRemote<viz::mojom::BeginFrameObserver> GetBoundRemote() {
+    return receiver_.BindNewPipeAndPassRemote(task_runner_);
+  }
+
+ private:
+  void CoalescedBeginFrame() {
+    DCHECK(begin_frame_args_.IsValid());
+    pending_coalesce_callback_ = false;
+    viz::BeginFrameArgs args = begin_frame_args_;
+    begin_frame_args_ = viz::BeginFrameArgs();
+    CallObservers(args);
+  }
+
+  // This may be deleted as part of `CallObservers`.
+  void CallObservers(const viz::BeginFrameArgs& args) {
+    auto observers_copy = simple_begin_frame_observers_;
+    for (auto* simple_observer : observers_copy) {
       simple_observer->OnBeginFrame(args.frame_time);
     }
   }
 
-  mojo::PendingRemote<viz::mojom::BeginFrameObserver> GetBoundRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
- private:
   const base::flat_set<SimpleBeginFrameObserver*>&
       simple_begin_frame_observers_;
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  bool pending_coalesce_callback_ = false;
+  viz::BeginFrameArgs begin_frame_args_;
 
   mojo::Receiver<viz::mojom::BeginFrameObserver> receiver_{this};
+  base::WeakPtrFactory<HostBeginFrameObserver> weak_factory_{this};
 };
 
 class CompositorImpl::ScopedCachedBackBuffer {
@@ -1011,8 +1052,9 @@ void CompositorImpl::MaybeUpdateObserveBeginFrame() {
   if (!display_private_)
     return;
 
-  host_begin_frame_observer_ =
-      std::make_unique<HostBeginFrameObserver>(simple_begin_frame_observers_);
+  host_begin_frame_observer_ = std::make_unique<HostBeginFrameObserver>(
+      simple_begin_frame_observers_,
+      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
   display_private_->SetStandaloneBeginFrameObserver(
       host_begin_frame_observer_->GetBoundRemote());
 }
