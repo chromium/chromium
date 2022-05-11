@@ -35,7 +35,7 @@ namespace web_app {
 
 class WebAppUrlLoader;
 class WebAppInstallFinalizer;
-class WebAppInstallManager;
+class WebAppCommandManager;
 class WebAppUiManager;
 class WebAppDataRetriever;
 
@@ -55,7 +55,7 @@ class ExternallyManagedAppInstallTask {
       WebAppRegistrar* registrar,
       WebAppUiManager* ui_manager,
       WebAppInstallFinalizer* install_finalizer,
-      WebAppInstallManager* install_manager,
+      WebAppCommandManager* command_manager,
       ExternalInstallOptions install_options);
 
   ExternallyManagedAppInstallTask(const ExternallyManagedAppInstallTask&) =
@@ -132,7 +132,7 @@ class ExternallyManagedAppInstallTask {
   const raw_ptr<WebAppUrlLoader> url_loader_;
   const raw_ptr<WebAppRegistrar> registrar_;
   const raw_ptr<WebAppInstallFinalizer> install_finalizer_;
-  const raw_ptr<WebAppInstallManager> install_manager_;
+  const raw_ptr<WebAppCommandManager> command_manager_;
   const raw_ptr<WebAppUiManager> ui_manager_;
 
   ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;

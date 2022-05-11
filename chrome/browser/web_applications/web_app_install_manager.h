@@ -69,33 +69,6 @@ class WebAppInstallManager final : public SyncInstallDelegate {
                      const GURL& install_url,
                      OnceInstallCallback callback);
 
-  // Starts a web app installation process using prefilled
-  // |install_info| which holds all the data needed for installation.
-  // This doesn't fetch a manifest and doesn't perform all required steps for
-  // External installed apps: use |ExternallyManagedAppManager::Install|
-  // instead.
-  //
-  // The web app can be simultaneously installed from multiple sources.
-  // If the web app already exists and `overwrite_existing_manifest_fields` is
-  // false then manifest fields in `install_info` are treated only as
-  // fallback manifest values. If `overwrite_existing_manifest_fields` is true
-  // then the existing web app manifest fields will be overwritten.
-  // If `install_info` contains data freshly fetched from the web app's
-  // site then `overwrite_existing_manifest_fields` should be true.
-  void InstallWebAppFromInfo(std::unique_ptr<WebAppInstallInfo> install_info,
-                             bool overwrite_existing_manifest_fields,
-                             ForInstallableSite for_installable_site,
-                             webapps::WebappInstallSource install_source,
-                             OnceInstallCallback callback);
-
-  void InstallWebAppFromInfo(
-      std::unique_ptr<WebAppInstallInfo> install_info,
-      bool overwrite_existing_manifest_fields,
-      ForInstallableSite for_installable_site,
-      const absl::optional<WebAppInstallParams>& install_params,
-      webapps::WebappInstallSource install_source,
-      OnceInstallCallback callback);
-
   // Returns whether the an installation is already running with the
   // same web contents.
   bool IsInstallingForWebContents(

@@ -7,9 +7,10 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -63,12 +64,14 @@ void StandaloneBrowserTestController::InstallWebApp(
   info->user_display_mode = WindowModeToUserDisplayMode(window_mode);
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  provider->install_manager().InstallWebAppFromInfo(
-      std::move(info), /*overwrite_existing_manifest_fields=*/false,
-      web_app::ForInstallableSite::kYes,
-      /*install_source=*/webapps::WebappInstallSource::SYNC,
-      base::BindOnce(&StandaloneBrowserTestController::WebAppInstallationDone,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  provider->command_manager().ScheduleCommand(
+      std::make_unique<web_app::InstallFromInfoCommand>(
+          std::move(info), &provider->install_finalizer(),
+          /*overwrite_existing_manifest_fields=*/false,
+          webapps::WebappInstallSource::SYNC,
+          base::BindOnce(
+              &StandaloneBrowserTestController::WebAppInstallationDone,
+              weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
 
 void StandaloneBrowserTestController::WebAppInstallationDone(

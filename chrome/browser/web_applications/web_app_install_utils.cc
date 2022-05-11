@@ -1018,4 +1018,30 @@ void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,
     web_app_info.install_url = install_params.install_url;
 }
 
+void ApplyParamsToFinalizeOptions(
+    const WebAppInstallParams& install_params,
+    WebAppInstallFinalizer::FinalizeOptions& options) {
+  if (IsChromeOsDataMandatory()) {
+    options.chromeos_data.emplace();
+    options.chromeos_data->show_in_launcher =
+        install_params.add_to_applications_menu;
+    options.chromeos_data->show_in_search = install_params.add_to_search;
+    options.chromeos_data->show_in_management =
+        install_params.add_to_management;
+    options.chromeos_data->is_disabled = install_params.is_disabled;
+    options.chromeos_data->oem_installed = install_params.oem_installed;
+    options.chromeos_data->handles_file_open_intents =
+        install_params.handles_file_open_intents;
+  }
+  options.bypass_os_hooks = install_params.bypass_os_hooks;
+  options.add_to_applications_menu = install_params.add_to_applications_menu;
+  options.add_to_desktop = install_params.add_to_desktop;
+  options.add_to_quick_launch_bar = install_params.add_to_quick_launch_bar;
+  if (install_params.system_app_type.has_value()) {
+    options.system_web_app_data.emplace();
+    options.system_web_app_data->system_app_type =
+        install_params.system_app_type.value();
+  }
+}
+
 }  // namespace web_app

@@ -163,42 +163,6 @@ void WebAppInstallManager::InstallSubApp(const AppId& parent_app_id,
   EnqueueTask(std::move(task), std::move(start_task));
 }
 
-void WebAppInstallManager::InstallWebAppFromInfo(
-    std::unique_ptr<WebAppInstallInfo> install_info,
-    bool overwrite_existing_manifest_fields,
-    ForInstallableSite for_installable_site,
-    webapps::WebappInstallSource install_surface,
-    OnceInstallCallback callback) {
-  InstallWebAppFromInfo(std::move(install_info),
-                        overwrite_existing_manifest_fields,
-                        for_installable_site, absl::nullopt, install_surface,
-                        std::move(callback));
-}
-
-void WebAppInstallManager::InstallWebAppFromInfo(
-    std::unique_ptr<WebAppInstallInfo> install_info,
-    bool overwrite_existing_manifest_fields,
-    ForInstallableSite for_installable_site,
-    const absl::optional<WebAppInstallParams>& install_params,
-    webapps::WebappInstallSource install_surface,
-    OnceInstallCallback callback) {
-  if (!started_)
-    return;
-
-  auto task = std::make_unique<WebAppInstallTask>(profile_, finalizer_,
-                                                  data_retriever_factory_.Run(),
-                                                  registrar_, install_surface);
-  if (install_params) {
-    task->SetInstallParams(install_params.value());
-  }
-  task->InstallWebAppFromInfo(
-      std::move(install_info), overwrite_existing_manifest_fields,
-      base::BindOnce(&WebAppInstallManager::OnInstallTaskCompleted,
-                     GetWeakPtr(), task.get(), std::move(callback)));
-
-  tasks_.insert(std::move(task));
-}
-
 base::WeakPtr<WebAppInstallManager> WebAppInstallManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

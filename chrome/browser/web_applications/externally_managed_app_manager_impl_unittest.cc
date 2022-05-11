@@ -31,9 +31,9 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/test/base/testing_profile.h"
@@ -282,7 +282,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
               externally_managed_app_manager_impl->registrar(),
               externally_managed_app_manager_impl->ui_manager(),
               externally_managed_app_manager_impl->finalizer(),
-              externally_managed_app_manager_impl->install_manager(),
+              externally_managed_app_manager_impl->command_manager(),
               std::move(install_options)),
           externally_managed_app_manager_impl_(
               externally_managed_app_manager_impl),
@@ -413,7 +413,7 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    install_manager_ = std::make_unique<WebAppInstallManager>(profile());
+    command_manager_ = std::make_unique<WebAppCommandManager>(profile());
 
     fake_registry_controller_ =
         std::make_unique<FakeWebAppRegistryController>();
@@ -428,10 +428,15 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
     ui_manager_ = std::make_unique<FakeWebAppUiManager>();
 
     externally_managed_app_manager_impl().SetSubsystems(
-        &registrar(), &ui_manager(), &install_finalizer(), &install_manager(),
+        &registrar(), &ui_manager(), &install_finalizer(), &command_manager(),
         &sync_bridge());
 
     controller().Init();
+  }
+
+  void TearDown() override {
+    command_manager_->Shutdown();
+    WebAppTest::TearDown();
   }
 
  protected:
@@ -555,10 +560,10 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
 
   FakeInstallFinalizer& install_finalizer() { return *install_finalizer_; }
 
-  WebAppInstallManager& install_manager() { return *install_manager_; }
+  WebAppCommandManager& command_manager() { return *command_manager_; }
 
  private:
-  std::unique_ptr<WebAppInstallManager> install_manager_;
+  std::unique_ptr<WebAppCommandManager> command_manager_;
   std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
   std::unique_ptr<TestExternallyManagedAppManager>
       externally_managed_app_manager_impl_;

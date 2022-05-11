@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
 

@@ -185,6 +185,10 @@ class WebAppInstallTask : content::WebContentsObserver {
 
   void SetFlowForTesting(WebAppInstallFlow flow) { flow_ = flow; }
 
+  static void UpdateFinalizerClientData(
+      const absl::optional<WebAppInstallParams>& params,
+      WebAppInstallFinalizer::FinalizeOptions* options);
+
  private:
   void CheckInstallPreconditions();
   void RecordInstallEvent();

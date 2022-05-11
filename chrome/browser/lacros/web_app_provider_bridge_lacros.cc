@@ -7,12 +7,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "chromeos/crosapi/mojom/web_app_types.mojom.h"
@@ -55,11 +56,11 @@ void WebAppProviderBridgeLacros::WebAppInstalledInArc(
             const SkBitmap& bitmap = *arc_install_info->icon.bitmap();
             install_info->icon_bitmaps.any[bitmap.width()] = bitmap;
 
-            provider->install_manager().InstallWebAppFromInfo(
-                std::move(install_info),
-                /*overwrite_existing_manifest_fields=*/false,
-                web_app::ForInstallableSite::kYes,
-                webapps::WebappInstallSource::ARC, std::move(callback));
+            provider->command_manager().ScheduleCommand(
+                std::make_unique<web_app::InstallFromInfoCommand>(
+                    std::move(install_info), &provider->install_finalizer(),
+                    /*overwrite_existing_manifest_fields=*/false,
+                    webapps::WebappInstallSource::ARC, std::move(callback)));
           },
           std::move(arc_install_info), std::move(callback)));
 }

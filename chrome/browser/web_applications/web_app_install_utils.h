@@ -11,6 +11,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -131,10 +132,14 @@ void MaybeDisableOsIntegration(const WebAppRegistrar* app_registrar,
 // Returns true if web app is allowed to update its identity (name and/or icon).
 bool CanWebAppUpdateIdentity(const WebApp* web_app);
 
-// Update WebAppInstallInfo with fields dfrom WebAppInstallParams.
+// Update |web_app_info| using |install_params|.
 void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,
                                     WebAppInstallInfo& web_app_info);
 
+// Update |options| using |install_params|.
+void ApplyParamsToFinalizeOptions(
+    const WebAppInstallParams& install_params,
+    WebAppInstallFinalizer::FinalizeOptions& options);
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_UTILS_H_

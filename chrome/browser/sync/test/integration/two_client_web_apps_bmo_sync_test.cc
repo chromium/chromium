@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
+#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -143,20 +143,20 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
 
     base::RunLoop run_loop;
     AppId app_id;
-
-    WebAppProvider::GetForTest(profile)
-        ->install_manager()
-        .InstallWebAppFromInfo(
+    auto* provider = WebAppProvider::GetForTest(profile);
+    provider->command_manager().ScheduleCommand(
+        std::make_unique<web_app::InstallFromInfoCommand>(
             std::make_unique<WebAppInstallInfo>(info),
-            /*overwrite_existing_manifest_fields=*/true,
-            ForInstallableSite::kYes, source,
+            &provider->install_finalizer(),
+            /*overwrite_existing_manifest_fields=*/true, source,
             base::BindLambdaForTesting([&run_loop, &app_id](
                                            const AppId& new_app_id,
                                            webapps::InstallResultCode code) {
               DCHECK_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
               app_id = new_app_id;
               run_loop.Quit();
-            }));
+            })));
+
     run_loop.Run();
 
     const WebAppRegistrar& registrar = GetRegistrar(profile);

@@ -13,11 +13,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
+#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -86,21 +87,21 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
       install_info->icon_bitmaps.any[icon_size::k32] = std::move(bitmap);
     }
 
-    WebAppInstallManager& install_manager =
-        WebAppProvider::GetForTest(browser()->profile())->install_manager();
-
     base::RunLoop run_loop;
-    install_manager.InstallWebAppFromInfo(
-        std::move(install_info),
-        /*overwrite_existing_manifest_fields=*/false, ForInstallableSite::kYes,
-        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-        base::BindLambdaForTesting(
-            [&app_id, &run_loop](const AppId& installed_app_id,
-                                 webapps::InstallResultCode code) {
+
+    auto* provider = WebAppProvider::GetForTest(browser()->profile());
+    provider->command_manager().ScheduleCommand(
+        std::make_unique<web_app::InstallFromInfoCommand>(
+            std::move(install_info), &provider->install_finalizer(),
+            /*overwrite_existing_manifest_fields=*/false,
+            webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+            base::BindLambdaForTesting([&app_id, &run_loop](
+                                           const AppId& installed_app_id,
+                                           webapps::InstallResultCode code) {
               EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
               app_id = installed_app_id;
               run_loop.Quit();
-            }));
+            })));
 
     run_loop.Run();
   }

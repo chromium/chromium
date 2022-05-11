@@ -16,7 +16,9 @@
 #include "chrome/browser/sync/test/integration/sync_app_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_extension_helper.h"
+#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -233,18 +235,20 @@ web_app::AppId InstallWebApp(Profile* profile, const WebAppInstallInfo& info) {
   base::RunLoop run_loop;
   web_app::AppId app_id;
   auto* provider = web_app::WebAppProvider::GetForTest(profile);
-  provider->install_manager().InstallWebAppFromInfo(
-      std::make_unique<WebAppInstallInfo>(info),
-      /*overwrite_existing_manifest_fields=*/true,
-      web_app::ForInstallableSite::kYes,
-      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-      base::BindLambdaForTesting(
-          [&run_loop, &app_id](const web_app::AppId& new_app_id,
-                               webapps::InstallResultCode code) {
-            DCHECK_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-            app_id = new_app_id;
-            run_loop.Quit();
-          }));
+  provider->command_manager().ScheduleCommand(
+      std::make_unique<web_app::InstallFromInfoCommand>(
+          std::make_unique<WebAppInstallInfo>(info),
+          &provider->install_finalizer(),
+          /*overwrite_existing_manifest_fields=*/true,
+          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+          base::BindLambdaForTesting(
+              [&run_loop, &app_id](const web_app::AppId& new_app_id,
+                                   webapps::InstallResultCode code) {
+                DCHECK_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
+                app_id = new_app_id;
+                run_loop.Quit();
+              })));
+
   run_loop.Run();
 
   const web_app::WebAppRegistrar& registrar = provider->registrar();

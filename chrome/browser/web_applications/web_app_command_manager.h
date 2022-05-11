@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
@@ -75,6 +76,8 @@ class WebAppCommandManager {
 
   std::size_t GetCommandCountForTesting() { return commands_.size(); }
 
+  void AwaitAllCommandsCompleteForTesting();
+
  protected:
   friend class WebAppCommand;
 
@@ -112,6 +115,8 @@ class WebAppCommandManager {
       static_cast<int>(WebAppCommandLock::LockLevel::kMaxValue) + 1};
 
   raw_ptr<WebAppInstallManager> install_manager_;
+
+  base::RunLoop run_loop_for_testing_;
 
   base::WeakPtrFactory<WebAppCommandManager> weak_ptr_factory_{this};
 };

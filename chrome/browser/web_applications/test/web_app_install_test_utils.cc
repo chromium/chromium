@@ -9,12 +9,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/buildflags.h"
@@ -94,15 +95,16 @@ AppId InstallWebApp(Profile* profile,
   auto* provider = WebAppProvider::GetForTest(profile);
   DCHECK(provider);
   WaitUntilReady(provider);
-  provider->install_manager().InstallWebAppFromInfo(
-      std::move(web_app_info), overwrite_existing_manifest_fields,
-      ForInstallableSite::kYes, install_source,
-      base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+  provider->command_manager().ScheduleCommand(
+      std::make_unique<web_app::InstallFromInfoCommand>(
+          std::move(web_app_info), &provider->install_finalizer(),
+          overwrite_existing_manifest_fields, install_source,
+          base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                         webapps::InstallResultCode code) {
             EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
             app_id = installed_app_id;
             run_loop.Quit();
-          }));
+          })));
 
   run_loop.Run();
   // Allow updates to be published to App Service listeners.

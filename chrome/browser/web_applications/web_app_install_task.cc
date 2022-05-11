@@ -311,7 +311,8 @@ void WebAppInstallTask::LoadAndInstallSubAppFromURL(
                      GetWeakPtr(), install_url));
 }
 
-void UpdateFinalizerClientData(
+// static
+void WebAppInstallTask::UpdateFinalizerClientData(
     const absl::optional<WebAppInstallParams>& params,
     WebAppInstallFinalizer::FinalizeOptions* options) {
   if (params) {
@@ -361,8 +362,9 @@ void WebAppInstallTask::InstallWebAppFromInfo(
   options.overwrite_existing_manifest_fields =
       overwrite_existing_manifest_fields;
 
-  UpdateFinalizerClientData(install_params_, &options);
-  if (!install_params_) {
+  if (install_params_) {
+    ApplyParamsToFinalizeOptions(*install_params_, options);
+  } else {
     options.bypass_os_hooks = true;
   }
 
@@ -929,7 +931,7 @@ void WebAppInstallTask::OnDialogCompleted(
         install_params_->force_reinstall;
     finalize_options.parent_app_id = install_params_->parent_app_id;
 
-    UpdateFinalizerClientData(install_params_, &finalize_options);
+    ApplyParamsToFinalizeOptions(*install_params_, finalize_options);
 
     if (install_params_->user_display_mode.has_value())
       web_app_info_copy.user_display_mode = install_params_->user_display_mode;

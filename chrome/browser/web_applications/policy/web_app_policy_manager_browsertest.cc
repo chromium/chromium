@@ -9,14 +9,15 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
@@ -207,11 +208,13 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerTest, MismatchedInstallAndStartUrl) {
   install_info->install_url = GURL(kInstallUrl);
   UpdateWebAppInfoFromManifest(*manifest, GURL(kManifestUrl),
                                install_info.get());
-  WebAppProvider::GetForTest(profile())
-      ->install_manager()
-      .InstallWebAppFromInfo(
-          std::move(install_info), true, ForInstallableSite::kYes,
-          webapps::WebappInstallSource::EXTERNAL_POLICY, base::DoNothing());
+
+  auto* provider = WebAppProvider::GetForTest(profile());
+  provider->command_manager().ScheduleCommand(
+      std::make_unique<web_app::InstallFromInfoCommand>(
+          std::move(install_info), &provider->install_finalizer(),
+          /*overwrite_existing_manifest_fields=*/true,
+          webapps::WebappInstallSource::EXTERNAL_POLICY, base::DoNothing()));
 
   externally_installed_app_prefs().Insert(
       GURL(kInstallUrl), GenerateAppId(absl::nullopt, GURL(kStartUrl)),

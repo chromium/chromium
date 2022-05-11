@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -202,6 +203,13 @@ bool WebAppCommandManager::IsInstallingForWebContents(
   return false;
 }
 
+void WebAppCommandManager::AwaitAllCommandsCompleteForTesting() {
+  if (commands_.empty())
+    return;
+
+  run_loop_for_testing_.Run();
+}
+
 void WebAppCommandManager::OnCommandComplete(
     WebAppCommand* running_command,
     CommandResult result,
@@ -214,6 +222,9 @@ void WebAppCommandManager::OnCommandComplete(
   commands_.erase(command_it);
 
   std::move(completion_callback).Run();
+
+  if (commands_.empty() && run_loop_for_testing_.running())
+    run_loop_for_testing_.Quit();
 }
 
 void WebAppCommandManager::AddValueToLog(base::Value value) {

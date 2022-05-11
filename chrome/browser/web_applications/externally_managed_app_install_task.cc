@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/commands/install_web_app_with_params_command.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -23,9 +24,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_manager.h"
@@ -43,13 +42,13 @@ ExternallyManagedAppInstallTask::ExternallyManagedAppInstallTask(
     WebAppRegistrar* registrar,
     WebAppUiManager* ui_manager,
     WebAppInstallFinalizer* install_finalizer,
-    WebAppInstallManager* install_manager,
+    WebAppCommandManager* command_manager,
     ExternalInstallOptions install_options)
     : profile_(profile),
       url_loader_(url_loader),
       registrar_(registrar),
       install_finalizer_(install_finalizer),
-      install_manager_(install_manager),
+      command_manager_(command_manager),
       ui_manager_(ui_manager),
       externally_installed_app_prefs_(profile_->GetPrefs()),
       install_options_(std::move(install_options)) {}
@@ -167,13 +166,14 @@ void ExternallyManagedAppInstallTask::InstallFromInfo(
     web_app_info->additional_search_terms.push_back(std::move(search_term));
   }
   web_app_info->install_url = install_params.install_url;
-  install_manager_->InstallWebAppFromInfo(
-      std::move(web_app_info),
+  command_manager_->ScheduleCommand(std::make_unique<InstallFromInfoCommand>(
+      std::move(web_app_info), install_finalizer_,
       /*overwrite_existing_manifest_fields=*/install_params.force_reinstall,
-      ForInstallableSite::kYes, install_params, internal_install_source,
+      internal_install_source,
       base::BindOnce(&ExternallyManagedAppInstallTask::OnWebAppInstalled,
                      weak_ptr_factory_.GetWeakPtr(), /* is_placeholder=*/false,
-                     /*offline_install=*/true, std::move(result_callback)));
+                     /*offline_install=*/true, std::move(result_callback)),
+      install_params));
 }
 
 void ExternallyManagedAppInstallTask::UninstallPlaceholderApp(
@@ -222,14 +222,12 @@ void ExternallyManagedAppInstallTask::ContinueWebAppInstall(
   auto install_source = ConvertExternalInstallSourceToInstallSource(
       install_options_.install_source);
 
-  WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile_);
-
   if (!data_retriever_factory_) {
     data_retriever_factory_ = base::BindRepeating(
         []() { return std::make_unique<WebAppDataRetriever>(); });
   }
 
-  provider->command_manager().ScheduleCommand(
+  command_manager_->ScheduleCommand(
       std::make_unique<InstallWebAppWithParamsCommand>(
           web_contents->GetWeakPtr(), install_params, install_source,
           install_finalizer_, registrar_,

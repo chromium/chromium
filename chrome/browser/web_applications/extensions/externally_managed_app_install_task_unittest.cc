@@ -38,7 +38,6 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -307,8 +306,8 @@ class ExternallyManagedAppInstallTaskTest
             registrar.get());
     install_finalizer_ = install_finalizer.get();
 
-    auto install_manager = std::make_unique<WebAppInstallManager>(profile());
-    install_manager_ = install_manager.get();
+    auto command_manager = std::make_unique<WebAppCommandManager>(profile());
+    command_manager_ = command_manager.get();
 
     auto os_integration_manager = std::make_unique<FakeOsIntegrationManager>(
         profile(), /*app_shortcut_manager=*/nullptr,
@@ -319,23 +318,19 @@ class ExternallyManagedAppInstallTaskTest
     auto ui_manager = std::make_unique<FakeWebAppUiManager>();
     ui_manager_ = ui_manager.get();
 
-    auto command_manager = std::make_unique<WebAppCommandManager>(profile());
-
     auto sync_bridge = std::make_unique<WebAppSyncBridge>(registrar.get());
     sync_bridge->SetSubsystems(&provider->GetDatabaseFactory(),
-                               install_manager_, command_manager.get());
+                               /*install_delegate=*/nullptr,
+                               command_manager.get());
 
     provider->SetRegistrar(std::move(registrar));
     provider->SetSyncBridge(std::move(sync_bridge));
-    provider->SetInstallManager(std::move(install_manager));
     provider->SetInstallFinalizer(std::move(install_finalizer));
     provider->SetWebAppUiManager(std::move(ui_manager));
     provider->SetOsIntegrationManager(std::move(os_integration_manager));
     provider->SetCommandManager(std::move(command_manager));
 
     provider->Start();
-    // Start only WebAppInstallManager for real.
-    install_manager_->Start();
   }
 
  protected:
@@ -346,7 +341,7 @@ class ExternallyManagedAppInstallTaskTest
   TestExternallyManagedAppInstallFinalizer* finalizer() {
     return install_finalizer_;
   }
-  WebAppInstallManager* install_manager() { return install_manager_; }
+  WebAppCommandManager* command_manager() { return command_manager_; }
 
   FakeDataRetriever* data_retriever() { return data_retriever_; }
 
@@ -384,7 +379,7 @@ class ExternallyManagedAppInstallTaskTest
 
     auto task = std::make_unique<ExternallyManagedAppInstallTask>(
         profile(), url_loader_.get(), registrar_, ui_manager_,
-        install_finalizer_, install_manager_, std::move(options));
+        install_finalizer_, command_manager_, std::move(options));
     task->SetDataRetrieverFactoryForTesting(
         GetFactoryForRetriever(std::move(data_retriever)));
     return task;
@@ -392,7 +387,7 @@ class ExternallyManagedAppInstallTaskTest
 
  private:
   std::unique_ptr<TestWebAppUrlLoader> url_loader_;
-  raw_ptr<WebAppInstallManager> install_manager_ = nullptr;
+  raw_ptr<WebAppCommandManager> command_manager_ = nullptr;
   raw_ptr<WebAppRegistrar> registrar_ = nullptr;
   raw_ptr<FakeDataRetriever> data_retriever_ = nullptr;
   raw_ptr<TestExternallyManagedAppInstallFinalizer> install_finalizer_ =
@@ -951,7 +946,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallURLLoadFailed) {
         ExternalInstallSource::kInternalDefault);
     ExternallyManagedAppInstallTask install_task(
         profile(), &url_loader(), registrar(), ui_manager(), finalizer(),
-        install_manager(), install_options);
+        command_manager(), install_options);
     url_loader().SetPrepareForLoadResultLoaded();
     url_loader().SetNextLoadUrlResult(GURL(), result_pair.loader_result);
 
@@ -973,7 +968,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallFailedWebContentsDestroyed) {
       ExternalInstallSource::kInternalDefault);
   ExternallyManagedAppInstallTask install_task(
       profile(), &url_loader(), registrar(), ui_manager(), finalizer(),
-      install_manager(), install_options);
+      command_manager(), install_options);
   url_loader().SetPrepareForLoadResultLoaded();
   url_loader().SetNextLoadUrlResult(
       GURL(), WebAppUrlLoader::Result::kFailedWebContentsDestroyed);
@@ -1002,7 +997,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
 
   ExternallyManagedAppInstallTask task(profile(), /*url_loader=*/nullptr,
                                        registrar(), ui_manager(), finalizer(),
-                                       install_manager(), std::move(options));
+                                       command_manager(), std::move(options));
 
   finalizer()->SetNextFinalizeInstallResult(
       kWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
@@ -1051,7 +1046,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoFails) {
 
   ExternallyManagedAppInstallTask task(profile(), /*url_loader=*/nullptr,
                                        registrar(), ui_manager(), finalizer(),
-                                       install_manager(), std::move(options));
+                                       command_manager(), std::move(options));
 
   finalizer()->SetNextFinalizeInstallResult(
       kWebAppUrl, webapps::InstallResultCode::kWriteDataFailed);

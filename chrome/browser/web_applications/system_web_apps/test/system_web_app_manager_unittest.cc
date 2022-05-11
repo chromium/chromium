@@ -40,6 +40,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -154,6 +155,7 @@ class SystemWebAppManagerTest : public WebAppTest {
     test_system_web_app_manager_ =
         std::make_unique<TestSystemWebAppManager>(profile());
     test_ui_manager_ = std::make_unique<FakeWebAppUiManager>();
+    command_manager_ = std::make_unique<WebAppCommandManager>(profile());
 
     install_finalizer().SetSubsystems(
         &install_manager(), &controller().registrar(), &ui_manager(),
@@ -169,7 +171,7 @@ class SystemWebAppManagerTest : public WebAppTest {
 
     externally_managed_app_manager().SetSubsystems(
         &controller().registrar(), &ui_manager(), &install_finalizer(),
-        &install_manager(), &controller().sync_bridge());
+        &command_manager(), &controller().sync_bridge());
 
     web_app_policy_manager().SetSubsystems(
         &externally_managed_app_manager(), &controller().registrar(),
@@ -188,6 +190,8 @@ class SystemWebAppManagerTest : public WebAppTest {
 
   void DestroyManagers() {
     // The reverse order of creation:
+    command_manager_->Shutdown();
+    command_manager_.reset();
     test_ui_manager_.reset();
     test_system_web_app_manager_.reset();
     fake_externally_managed_app_manager_impl_.reset();
@@ -213,6 +217,8 @@ class SystemWebAppManagerTest : public WebAppTest {
   WebAppInstallFinalizer& install_finalizer() { return *install_finalizer_; }
 
   WebAppInstallManager& install_manager() { return *install_manager_; }
+
+  WebAppCommandManager& command_manager() { return *command_manager_; }
 
   FakeExternallyManagedAppManager& externally_managed_app_manager() {
     return *fake_externally_managed_app_manager_impl_;
@@ -284,6 +290,7 @@ class SystemWebAppManagerTest : public WebAppTest {
       fake_externally_managed_app_manager_impl_;
   std::unique_ptr<TestSystemWebAppManager> test_system_web_app_manager_;
   std::unique_ptr<FakeWebAppUiManager> test_ui_manager_;
+  std::unique_ptr<WebAppCommandManager> command_manager_;
 };
 
 // Test that System Apps do install with the feature enabled.
@@ -819,6 +826,7 @@ TEST_F(SystemWebAppManagerTest, AbandonFailedInstalls) {
   system_web_app_manager().set_current_version(base::Version("3.0.0.0"));
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
+  command_manager().AwaitAllCommandsCompleteForTesting();
   externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
 
   EXPECT_EQ(6u, install_requests.size());
@@ -891,6 +899,7 @@ TEST_F(SystemWebAppManagerTest, AbandonFailedInstallsLocaleChange) {
   system_web_app_manager().set_current_locale("fr/fr");
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
+  command_manager().AwaitAllCommandsCompleteForTesting();
   externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
 }
 
