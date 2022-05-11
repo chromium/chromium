@@ -943,6 +943,11 @@ PrivacySandboxService::GetRequiredDialogTypeInternal(
   if (privacy_sandbox::kPrivacySandboxSettings3DisableDialogForTesting.Get())
     return DialogType::kNone;
 
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kDisablePrivacySandboxPrompts)) {
+    return DialogType::kNone;
+  }
+
   if (privacy_sandbox::kPrivacySandboxSettings3ForceShowConsentForTesting.Get())
     return DialogType::kConsent;
 

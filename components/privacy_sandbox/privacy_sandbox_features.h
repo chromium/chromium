@@ -33,15 +33,23 @@ extern const base::FeatureParam<bool> kPrivacySandboxSettings3NewNotice;
 // (unsynced) entering an unexpected state, requiring profile deletion to
 // resolve.
 extern const base::FeatureParam<bool>
-    kPrivacySandboxSettings3DisableDialogForTesting;
-extern const base::FeatureParam<bool>
     kPrivacySandboxSettings3ForceShowConsentForTesting;
 extern const base::FeatureParam<bool>
     kPrivacySandboxSettings3ForceShowNoticeForTesting;
 extern const base::FeatureParam<bool>
     kPrivacySandboxSettings3ShowSampleDataForTesting;
+// This parameter will suppress all Privacy Sandbox prompts, but is supersceeded
+// by the kDisablePrivacySandboxPrompts feature below, and will be removed when
+// the PrivacySandboxSettings3 feature is fully launched & solidified.
+extern const base::FeatureParam<bool>
+    kPrivacySandboxSettings3DisableDialogForTesting;
 
 extern const base::Feature kOverridePrivacySandboxSettingsLocalTesting;
+
+// Disables any Privacy Sandbox related prompts. Should only be used for testing
+// purposes. This feature is used to support external automated testing using
+// Chrome, where additional prompts break behavior expectations.
+extern const base::Feature kDisablePrivacySandboxPrompts;
 
 }  // namespace privacy_sandbox
 
