@@ -62,6 +62,11 @@ void AccessCodeCastUI::SetCastModeSet(const CastModeSet& cast_mode_set) {
   cast_mode_set_ = cast_mode_set;
 }
 
+void AccessCodeCastUI::SetDialogCreationTimestamp(
+    base::Time dialog_creation_timestamp) {
+  dialog_creation_timestamp_ = dialog_creation_timestamp;
+}
+
 void AccessCodeCastUI::SetMediaRouteStarter(
     std::unique_ptr<MediaRouteStarter> media_route_starter) {
   media_route_starter_ = std::move(media_route_starter);
@@ -78,6 +83,12 @@ void AccessCodeCastUI::CreatePageHandler(
     mojo::PendingRemote<access_code_cast::mojom::Page> page,
     mojo::PendingReceiver<access_code_cast::mojom::PageHandler> receiver) {
   DCHECK(page);
+
+  if (dialog_creation_timestamp_.has_value()) {
+    base::TimeDelta dialog_load_time =
+        base::Time::Now() - (dialog_creation_timestamp_.value());
+    AccessCodeCastMetrics::RecordDialogLoadTime(dialog_load_time);
+  }
 
   page_handler_ = std::make_unique<AccessCodeCastHandler>(
       std::move(receiver), std::move(page), cast_mode_set_,

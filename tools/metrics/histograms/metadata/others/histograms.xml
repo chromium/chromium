@@ -190,6 +190,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="AccessCodeCast.Ui.DialogLoadTime" units="ms"
+    expires_after="2023-01-01">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    The length of time for the AccessCodeCast dialog to finish loading after
+    instantiation. Recorded after the UI creates a page handler object. Logged
+    only on desktop platforms.
+  </summary>
+</histogram>
+
 <histogram name="AccessCodeCast.Ui.DialogOpenLocation"
     enum="AccessCodeCastDialogOpenLocation" expires_after="2023-01-01">
   <owner>bzielinski@google.com</owner>

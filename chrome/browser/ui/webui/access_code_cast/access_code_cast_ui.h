@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ACCESS_CODE_CAST_ACCESS_CODE_CAST_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ACCESS_CODE_CAST_ACCESS_CODE_CAST_UI_H_
 
+#include "base/time/time.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/media_router/media_route_starter.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
@@ -29,6 +30,8 @@ class AccessCodeCastUI : public ui::MojoWebDialogUI,
   // Set the set of modes that should be attempted when casting.
   virtual void SetCastModeSet(const media_router::CastModeSet& cast_mode_set);
 
+  virtual void SetDialogCreationTimestamp(base::Time dialog_creation_timestamp);
+
   virtual void SetMediaRouteStarter(
       std::unique_ptr<media_router::MediaRouteStarter> media_route_starter);
 
@@ -45,6 +48,7 @@ class AccessCodeCastUI : public ui::MojoWebDialogUI,
 
   media_router::CastModeSet cast_mode_set_;
   std::unique_ptr<media_router::MediaRouteStarter> media_route_starter_;
+  absl::optional<base::Time> dialog_creation_timestamp_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

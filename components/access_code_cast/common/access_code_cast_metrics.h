@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ACCESS_CODE_CAST_COMMON_ACCESS_CODE_CAST_METRICS_H_
 #define COMPONENTS_ACCESS_CODE_CAST_COMMON_ACCESS_CODE_CAST_METRICS_H_
 
+#include "base/time/time.h"
+
 // NOTE: Do not renumber enums as that would confuse interpretation of
 // previously logged data. When making changes, also update the enum list
 // in tools/metrics/histograms/enums.xml to keep it in sync.
@@ -65,6 +67,7 @@ class AccessCodeCastMetrics {
   static const char kHistogramAddSinkResultNew[];
   static const char kHistogramAddSinkResultRemembered[];
   static const char kHistogramCastModeOnSuccess[];
+  static const char kHistogramDialogLoadTime[];
   static const char kHistogramDialogOpenLocation[];
 
   // Records metrics relating to starting a cast session (route). Mode is
@@ -75,6 +78,9 @@ class AccessCodeCastMetrics {
   // Records the result of adding an access code sink.
   static void RecordAddSinkResult(bool is_remembered,
                                   AccessCodeCastAddSinkResult result);
+
+  // Records the time it takes for the AccessCodeCast dialog to load.
+  static void RecordDialogLoadTime(base::TimeDelta load_time);
 
   // Records where the user clicked to open the AccessCodeCast dialog.
   static void RecordDialogOpenLocation(

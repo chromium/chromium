@@ -4,6 +4,7 @@
 
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
 
+#include "base/time/time.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -86,4 +87,21 @@ TEST(AccessCodeCastMetricsTest, OnCastSessionResult) {
       "AccessCodeCast.Discovery.CastModeOnSuccess", 2, 1);
   histogram_tester.ExpectTotalCount(
       "AccessCodeCast.Discovery.CastModeOnSuccess", 3);
+}
+
+TEST(AccessCodeCastMetricsTest, RecordDialogLoadTime) {
+  base::HistogramTester histogram_tester;
+
+  AccessCodeCastMetrics::RecordDialogLoadTime(base::Milliseconds(10));
+  histogram_tester.ExpectBucketCount("AccessCodeCast.Ui.DialogLoadTime", 10, 1);
+
+  // Ten seconds (10,000 ms) is the max for UmaHistogramTimes.
+  AccessCodeCastMetrics::RecordDialogLoadTime(base::Seconds(10));
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Ui.DialogLoadTime", 10000, 1);
+  AccessCodeCastMetrics::RecordDialogLoadTime(base::Seconds(20));
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Ui.DialogLoadTime", 10000, 2);
+
+  histogram_tester.ExpectTotalCount("AccessCodeCast.Ui.DialogLoadTime", 3);
 }

@@ -62,6 +62,7 @@ void AccessCodeCastDialog::ShowWebDialog() {
 
   auto extra_params = CreateParams();
 
+  dialog_creation_timestamp_ = base::Time::Now();
   gfx::NativeWindow dialog_window = chrome::ShowWebDialogWithParams(
       GetParentView(), context_, this,
       absl::make_optional<views::Widget::InitParams>(std::move(extra_params)));
@@ -155,6 +156,7 @@ void AccessCodeCastDialog::OnDialogShown(content::WebUI* webui) {
   AccessCodeCastUI* controller =
       webui_->GetController()->GetAs<AccessCodeCastUI>();
   controller->SetCastModeSet(cast_mode_set_);
+  controller->SetDialogCreationTimestamp(dialog_creation_timestamp_);
   controller->SetMediaRouteStarter(std::move(media_route_starter_));
 }
 

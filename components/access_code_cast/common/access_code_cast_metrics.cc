@@ -16,6 +16,8 @@ const char AccessCodeCastMetrics::kHistogramAddSinkResultRemembered[] =
     "AccessCodeCast.Discovery.AddSinkResult.Remembered";
 const char AccessCodeCastMetrics::kHistogramCastModeOnSuccess[] =
     "AccessCodeCast.Discovery.CastModeOnSuccess";
+const char AccessCodeCastMetrics::kHistogramDialogLoadTime[] =
+    "AccessCodeCast.Ui.DialogLoadTime";
 const char AccessCodeCastMetrics::kHistogramDialogOpenLocation[] =
     "AccessCodeCast.Ui.DialogOpenLocation";
 
@@ -36,6 +38,11 @@ void AccessCodeCastMetrics::RecordAddSinkResult(
   } else {
     base::UmaHistogramEnumeration(kHistogramAddSinkResultNew, result);
   }
+}
+
+// static
+void AccessCodeCastMetrics::RecordDialogLoadTime(base::TimeDelta load_time) {
+  base::UmaHistogramTimes(kHistogramDialogLoadTime, load_time);
 }
 
 // static
