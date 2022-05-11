@@ -5154,6 +5154,7 @@
                         "OmniboxLocalZeroSuggestAgeThreshold",
                         "OmniboxMaxURLMatches",
                         "OmniboxOnFocusSuggestionsContextualWebAllowSRP",
+                        "OmniboxRetainSuggestionsWithHeaders",
                         "OmniboxUIExperimentMaxAutocompleteMatches",
                         "ZeroSuggestPrefetching"
                     ]
