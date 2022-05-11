@@ -429,7 +429,8 @@ def GetPackageSizes(package_blobs):
   blob_counts = collections.defaultdict(int)
   for package_name in package_blobs:
     for blob_name in package_blobs[package_name]:
-      blob_counts[blob_name] += 1
+      blob = package_blobs[package_name][blob_name]
+      blob_counts[blob.hash] += 1
 
   # Package sizes are the sum of blob sizes divided by their share counts.
   package_sizes = {}
@@ -439,7 +440,7 @@ def GetPackageSizes(package_blobs):
     for blob_name in package_blobs[package_name]:
       blob = package_blobs[package_name][blob_name]
       if blob.is_counted:
-        count = blob_counts[blob_name]
+        count = blob_counts[blob.hash]
         compressed_total += blob.compressed // count
         uncompressed_total += blob.uncompressed // count
     package_sizes[package_name] = PackageSizes(compressed_total,
