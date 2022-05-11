@@ -10,6 +10,7 @@
 
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_toast_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
@@ -90,6 +91,9 @@ class ASH_EXPORT CaptureModeSession
   bool is_shutting_down() const { return is_shutting_down_; }
   void set_is_stopping_to_start_video_recording(bool value) {
     is_stopping_to_start_video_recording_ = value;
+  }
+  CaptureModeToastController* capture_toast_controller() {
+    return &capture_toast_controller_;
   }
 
   // Initializes the capture mode session. This should be called right after the
@@ -221,7 +225,17 @@ class ASH_EXPORT CaptureModeSession
   void OnCameraPreviewDragStarted();
   void OnCameraPreviewDragEnded(const gfx::Point& screen_location,
                                 bool is_touch);
-  void OnCameraPreviewBoundsOrVisibilityChanged();
+
+  // Called every time when camera preview is updated.
+  // `capture_surface_became_too_small` indicates whether the camera preview
+  // becomes invisible is due to the capture surface becoming too small.
+  // `did_bounds_or_visibility_change` determines whether the capture UIs'
+  // opacity should be updated.
+  void OnCameraPreviewBoundsOrVisibilityChanged(
+      bool capture_surface_became_too_small,
+      bool did_bounds_or_visibility_change);
+
+  void OnCameraPreviewDestroyed();
 
  private:
   friend class CaptureModeSettingsTestApi;
@@ -540,7 +554,12 @@ class ASH_EXPORT CaptureModeSession
   std::unique_ptr<FolderSelectionDialogController>
       folder_selection_dialog_controller_;
 
+  // Controls the user nudge animations.
   std::unique_ptr<UserNudgeController> user_nudge_controller_;
+
+  // Controls creating, destroying or updating the visibility of the capture
+  // toast.
+  CaptureModeToastController capture_toast_controller_;
 
   base::WeakPtrFactory<CaptureModeSession> weak_ptr_factory_{this};
 };

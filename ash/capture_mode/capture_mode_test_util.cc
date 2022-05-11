@@ -157,6 +157,12 @@ CaptureModeToggleButton* GetRegionToggleButton() {
   return GetCaptureModeBarView()->capture_source_view()->region_toggle_button();
 }
 
+UserNudgeController* GetUserNudgeController() {
+  auto* session = CaptureModeController::Get()->capture_mode_session();
+  DCHECK(session);
+  return CaptureModeSessionTestApi(session).GetUserNudgeController();
+}
+
 // -----------------------------------------------------------------------------
 // ProjectorCaptureModeIntegrationHelper:
 

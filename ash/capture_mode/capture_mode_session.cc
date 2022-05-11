@@ -18,6 +18,7 @@
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_settings_view.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
+#include "ash/capture_mode/capture_mode_type_view.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/capture_window_observer.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
@@ -39,7 +40,6 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/stringprintf.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
@@ -198,7 +198,7 @@ bool SetMouseWarpEnabled(bool enable) {
   return old_value;
 }
 
-// Gets the overlay container inside |root|.
+// Gets the menu container inside |root|.
 aura::Window* GetParentContainer(aura::Window* root) {
   DCHECK(root);
   DCHECK(root->IsRootWindow());
@@ -600,7 +600,8 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller,
       magnifier_glass_(kMagnifierParams),
       is_in_projector_mode_(projector_mode),
       cursor_setter_(std::make_unique<CursorSetter>()),
-      focus_cycler_(std::make_unique<CaptureModeSessionFocusCycler>(this)) {}
+      focus_cycler_(std::make_unique<CaptureModeSessionFocusCycler>(this)),
+      capture_toast_controller_(this) {}
 
 CaptureModeSession::~CaptureModeSession() = default;
 
@@ -682,6 +683,16 @@ void CaptureModeSession::Initialize() {
 
   UpdateFloatingPanelBoundsIfNeeded();
 
+  // call `OnCaptureTypeChanged` after capture bar's initialization is done
+  // instead of in the initialization of the capture mode type view, since
+  // `OnCaptureTypeChanged` may trigger `ShowCaptureToast` which depends on the
+  // capture bar.
+  // Also please note we should call `OnCaptureTypeChanged` in
+  // `CaptureModeTypeView` instead of `CaptureModeSession`, since this is during
+  // the initialization of the capture session, the type change is not triggered
+  // by the user.
+  capture_mode_bar_view_->capture_type_view()->OnCaptureTypeChanged(
+      controller_->type());
   MaybeCreateUserNudge();
 
   auto* camera_controller = controller_->camera_controller();
@@ -694,6 +705,7 @@ void CaptureModeSession::Shutdown() {
 
   aura::Env::GetInstance()->RemovePreTargetHandler(this);
   display_observer_.reset();
+  user_nudge_controller_.reset();
   current_root_->RemoveObserver(this);
   TabletModeController::Get()->RemoveObserver(this);
   if (input_capture_window_) {
@@ -847,6 +859,7 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown) {
     auto* parent = GetParentContainer(current_root_);
     capture_mode_settings_widget_ = std::make_unique<views::Widget>();
     MaybeDismissUserNudgeForever();
+    capture_toast_controller_.DismissCurrentToastIfAny();
 
     capture_mode_settings_widget_->Init(CreateWidgetParams(
         parent, CaptureModeSettingsView::GetBounds(capture_mode_bar_view_),
@@ -905,11 +918,13 @@ void CaptureModeSession::StartCountDown(
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
-  // Fade out the capture bar and capture settings if it exists.
+  // Fade out the capture bar, capture settings and capture toast if they exist.
   std::vector<ui::Layer*> layers_to_fade_out{
       capture_mode_bar_widget_->GetLayer()};
   if (capture_mode_settings_widget_)
     layers_to_fade_out.push_back(capture_mode_settings_widget_->GetLayer());
+  if (auto* toast_layer = capture_toast_controller_.MaybeGetToastLayer())
+    layers_to_fade_out.push_back(toast_layer);
 
   for (auto* layer : layers_to_fade_out) {
     ui::ScopedLayerAnimationSettings layer_settings(layer->GetAnimator());
@@ -1504,8 +1519,35 @@ void CaptureModeSession::OnCameraPreviewDragEnded(
   UpdateCursor(screen_location, is_touch);
 }
 
-void CaptureModeSession::OnCameraPreviewBoundsOrVisibilityChanged() {
-  MaybeUpdateCaptureUisOpacity();
+void CaptureModeSession::OnCameraPreviewBoundsOrVisibilityChanged(
+    bool capture_surface_became_too_small,
+    bool did_bounds_or_visibility_change) {
+  auto* camera_preview_widget = GetCameraPreviewWidget();
+  DCHECK(camera_preview_widget);
+  const bool is_parented_to_unparented_container =
+      camera_preview_widget->GetNativeWindow()->parent()->GetId() ==
+      kShellWindowId_UnparentedContainer;
+  if (capture_surface_became_too_small && !is_drag_in_progress_ &&
+      !is_parented_to_unparented_container) {
+    // Since the user nudge toast has lower priority, if the toast for the
+    // camera preview needs to be shown, user nudge toast should be dismissed
+    // forever when applicable.
+    MaybeDismissUserNudgeForever();
+
+    capture_toast_controller_.ShowCaptureToast(
+        CaptureToastType::kCameraPreview);
+  } else {
+    capture_toast_controller_.MaybeDismissCaptureToast(
+        CaptureToastType::kCameraPreview);
+  }
+
+  if (did_bounds_or_visibility_change)
+    MaybeUpdateCaptureUisOpacity();
+}
+
+void CaptureModeSession::OnCameraPreviewDestroyed() {
+  capture_toast_controller_.MaybeDismissCaptureToast(
+      CaptureToastType::kCameraPreview);
 }
 
 std::vector<views::Widget*> CaptureModeSession::GetAvailableWidgets() {
@@ -1518,6 +1560,8 @@ std::vector<views::Widget*> CaptureModeSession::GetAvailableWidgets() {
     result.push_back(capture_mode_settings_widget_.get());
   if (dimensions_label_widget_)
     result.push_back(dimensions_label_widget_.get());
+  if (auto* toast = capture_toast_controller_.capture_toast_widget())
+    result.push_back(toast);
   return result;
 }
 
@@ -1580,6 +1624,7 @@ void CaptureModeSession::RefreshBarWidgetBounds() {
   parent->StackChildAtTop(capture_mode_bar_widget_->GetNativeWindow());
   if (user_nudge_controller_)
     user_nudge_controller_->Reposition();
+  capture_toast_controller_.MaybeRepositionCaptureToast();
 }
 
 void CaptureModeSession::MaybeCreateUserNudge() {
@@ -1592,7 +1637,7 @@ void CaptureModeSession::MaybeCreateUserNudge() {
     return;
 
   user_nudge_controller_ = std::make_unique<UserNudgeController>(
-      capture_mode_bar_view_->settings_button());
+      this, capture_mode_bar_view_->settings_button());
   user_nudge_controller_->SetVisible(true);
 }
 
@@ -1618,9 +1663,9 @@ void CaptureModeSession::RefreshStackingOrder() {
 
   auto* parent_container = GetParentContainer(current_root_);
   DCHECK(parent_container);
-  auto* overlay_layer = layer();
+  auto* menu_layer = layer();
   auto* parent_container_layer = parent_container->layer();
-  parent_container_layer->StackAtTop(overlay_layer);
+  parent_container_layer->StackAtTop(menu_layer);
 
   std::vector<views::Widget*> widget_in_order;
 
@@ -1630,6 +1675,8 @@ void CaptureModeSession::RefreshStackingOrder() {
   // belong to the current capture session.
   if (camera_preview_widget && !controller_->is_recording_in_progress())
     widget_in_order.emplace_back(camera_preview_widget);
+  if (auto* toast = capture_toast_controller_.capture_toast_widget())
+    widget_in_order.emplace_back(toast);
   if (capture_label_widget_)
     widget_in_order.emplace_back(capture_label_widget_.get());
   if (capture_mode_bar_widget_)

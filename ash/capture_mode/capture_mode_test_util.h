@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/user_nudge_controller.h"
 #include "ash/projector/test/mock_projector_client.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/event_constants.h"
@@ -98,6 +99,8 @@ CaptureModeBarView* GetCaptureModeBarView();
 CaptureModeToggleButton* GetFullscreenToggleButton();
 
 CaptureModeToggleButton* GetRegionToggleButton();
+
+UserNudgeController* GetUserNudgeController();
 
 // Defines a helper class to allow setting up and testing the Projector feature
 // in multiple test fixtures. Note that this helper initializes the Projector-

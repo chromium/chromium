@@ -71,8 +71,6 @@ constexpr base::TimeDelta kCameraPreviewFadeOutDuration =
 constexpr base::TimeDelta kCameraPreviewFadeInDuration =
     base::Milliseconds(150);
 
-constexpr float kCameraPreviewScaleUpFactor = 0.8f;
-
 // Defines a map type to map a camera model ID (or display name) to the number
 // of cameras of that model that are currently connected.
 using ModelIdToCountMap = std::map<std::string, int>;
@@ -349,6 +347,14 @@ class CameraPreviewTargeter : public aura::WindowTargeter {
   aura::Window* const camera_preview_window_;
 };
 
+capture_mode_util::AnimationParams BuildCameraVisibilityAnimationParams(
+    bool target_visibility,
+    bool apply_scale_up_animation) {
+  return {target_visibility ? kCameraPreviewFadeInDuration
+                            : kCameraPreviewFadeOutDuration,
+          gfx::Tween::LINEAR, apply_scale_up_animation};
+}
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -547,12 +553,22 @@ void CaptureModeCameraController::MaybeUpdatePreviewWidget(bool animate) {
           CalculatePreviewWidgetTargetBounds(confine_bounds, size_specs.size),
           animate);
 
-  const bool did_visibility_change = SetCameraPreviewVisibility(
-      size_specs.should_be_visible, should_animate_visibility);
+  const bool did_visibility_change = capture_mode_util::SetWidgetVisibility(
+      camera_preview_widget_.get(), size_specs.should_be_visible,
+      !should_animate_visibility
+          ? absl::nullopt
+          : absl::make_optional<capture_mode_util::AnimationParams>(
+                BuildCameraVisibilityAnimationParams(
+                    /*target_visibility=*/size_specs.should_be_visible,
+                    /*apply_scale_up_animation=*/is_first_bounds_update_)));
 
-  if (controller->IsActive() && (did_visibility_change || did_bounds_change)) {
+  if (controller->IsActive() && !controller->is_recording_in_progress()) {
     controller->capture_mode_session()
-        ->OnCameraPreviewBoundsOrVisibilityChanged();
+        ->OnCameraPreviewBoundsOrVisibilityChanged(
+            /*capture_surface_became_too_small=*/size_specs
+                .is_surface_too_small,
+            /*did_bounds_or_visibility_change=*/did_visibility_change ||
+                did_bounds_change);
   }
 
   if (did_bounds_change) {
@@ -1015,103 +1031,6 @@ void CaptureModeCameraController::RunPostRefreshCameraPreview(
     UpdateFloatingPanelBoundsIfNeeded(
         camera_preview_widget_->GetNativeWindow()->GetRootWindow());
   }
-}
-
-bool CaptureModeCameraController::SetCameraPreviewVisibility(
-    bool target_visibility,
-    bool animate) {
-  DCHECK(camera_preview_widget_);
-
-  // Note that we use `aura::Window::TargetVisibility()` rather than
-  // `views::Widget::IsVisible()` (which in turn uses
-  // `aura::Window::IsVisible()`). The reason is because the latter takes into
-  // account whether window's layer is drawn or not. We want to calculate the
-  // current visibility only based on the actual visibility of the window
-  // itself, so that we can correctly compare it against `target_visibility`.
-  // Note that the preview may be a child of the unparented container (which is
-  // always hidden), yet the preview's window is shown.
-  const bool current_visibility =
-      camera_preview_widget_->GetNativeWindow()->TargetVisibility() &&
-      camera_preview_widget_->GetLayer()->GetTargetOpacity() > 0.f;
-  if (target_visibility == current_visibility)
-    return false;
-
-  if (animate) {
-    if (target_visibility)
-      FadeInCameraPreview();
-    else
-      FadeOutCameraPreview();
-  } else {
-    if (target_visibility)
-      camera_preview_widget_->Show();
-    else
-      camera_preview_widget_->Hide();
-  }
-
-  capture_mode_util::TriggerAccessibilityAlertSoon(
-      current_visibility ? IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_HIDDEN
-                         : IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_ON);
-  return true;
-}
-
-void CaptureModeCameraController::FadeInCameraPreview() {
-  DCHECK(camera_preview_widget_);
-  auto* layer = camera_preview_widget_->GetLayer();
-  DCHECK(!camera_preview_widget_->GetNativeWindow()->TargetVisibility() ||
-         layer->GetTargetOpacity() < 1.f);
-
-  if (!camera_preview_widget_->GetNativeWindow()->TargetVisibility())
-    camera_preview_widget_->Show();
-  if (layer->opacity() == 1.f)
-    layer->SetOpacity(0.f);
-
-  if (is_first_bounds_update_) {
-    layer->SetTransform(capture_mode_util::GetScaleTransformAboutCenter(
-        layer, kCameraPreviewScaleUpFactor));
-  }
-
-  views::AnimationBuilder builder;
-  auto& animation_sequence_block =
-      builder
-          .SetPreemptionStrategy(
-              ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-          .Once()
-          .SetDuration(kCameraPreviewFadeInDuration)
-          .SetOpacity(layer, 1.f, gfx::Tween::LINEAR);
-
-  // We should only set transform here if `is_first_bounds_update_` is true,
-  // otherwise, it may mess up with the snap animation in
-  // `SetCameraPreviewBounds`.
-  if (is_first_bounds_update_) {
-    animation_sequence_block.SetTransform(layer, gfx::Transform(),
-                                          gfx::Tween::ACCEL_20_DECEL_100);
-  }
-}
-
-void CaptureModeCameraController::FadeOutCameraPreview() {
-  DCHECK(camera_preview_widget_);
-  DCHECK(camera_preview_widget_->GetNativeWindow()->TargetVisibility());
-
-  auto* layer = camera_preview_widget_->GetLayer();
-  DCHECK_EQ(layer->GetTargetOpacity(), 1.f);
-
-  views::AnimationBuilder()
-      .OnEnded(base::BindOnce(
-          [](base::WeakPtr<CaptureModeCameraController> controller) {
-            if (!controller || !controller->camera_preview_widget_)
-              return;
-            // Please notice, the order matters here. If we set the layer's
-            // opacity back to 1.f before calling `Hide`, flickering can be
-            // seen.
-            controller->camera_preview_widget_->Hide();
-            controller->camera_preview_widget_->GetLayer()->SetOpacity(1.f);
-          },
-          weak_ptr_factory_.GetWeakPtr()))
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .Once()
-      .SetDuration(kCameraPreviewFadeOutDuration)
-      .SetOpacity(layer, 0.f, gfx::Tween::LINEAR);
 }
 
 bool CaptureModeCameraController::SetCameraPreviewBounds(

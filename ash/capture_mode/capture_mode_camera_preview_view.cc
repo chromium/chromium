@@ -7,6 +7,7 @@
 #include "ash/accessibility/scoped_a11y_override_window_setter.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -124,7 +125,11 @@ CameraPreviewView::CameraPreviewView(
   UpdateResizeButtonTooltip();
 }
 
-CameraPreviewView::~CameraPreviewView() = default;
+CameraPreviewView::~CameraPreviewView() {
+  auto* controller = CaptureModeController::Get();
+  if (controller->IsActive() && !controller->is_recording_in_progress())
+    controller->capture_mode_session()->OnCameraPreviewDestroyed();
+}
 
 void CameraPreviewView::SetIsCollapsible(bool value) {
   if (value != is_collapsible_) {

@@ -5462,12 +5462,6 @@ class CaptureModeSettingsTest : public CaptureModeTest {
     return CaptureModeSessionTestApi(session).GetCaptureModeSettingsView();
   }
 
-  UserNudgeController* GetUserNudgeController() const {
-    auto* session = CaptureModeController::Get()->capture_mode_session();
-    DCHECK(session);
-    return CaptureModeSessionTestApi(session).GetUserNudgeController();
-  }
-
   void WaitForSettingsMenuToBeRefreshed() {
     base::RunLoop run_loop;
     CaptureModeSettingsTestApi().SetOnSettingsMenuRefreshedCallback(
@@ -5535,10 +5529,15 @@ class CaptureModeNudgeDismissalTest
 
 TEST_P(CaptureModeNudgeDismissalTest, NudgeDismissedForever) {
   auto* controller = StartSession();
+  auto* capture_session = controller->capture_mode_session();
+  auto* capture_toast_controller = capture_session->capture_toast_controller();
   auto* nudge_controller = GetUserNudgeController();
   ASSERT_TRUE(nudge_controller);
   EXPECT_TRUE(nudge_controller->is_visible());
-  EXPECT_TRUE(nudge_controller->toast_widget());
+  EXPECT_TRUE(capture_toast_controller->capture_toast_widget());
+  ASSERT_TRUE(capture_toast_controller->current_toast_type());
+  EXPECT_EQ(*(capture_toast_controller->current_toast_type()),
+            CaptureToastType::kUserNudge);
 
   // Trigger the action that dismisses the nudge forever, it should be removed
   // in this session (if the action doesn't stop the session) and any future
@@ -5572,17 +5571,20 @@ TEST_F(CaptureModeSettingsTest, NudgeChangesRootWithBar) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kImage);
   auto* session = controller->capture_mode_session();
+  auto* capture_toast_controller = session->capture_toast_controller();
+
   EXPECT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
-  auto* nudge_controller = GetUserNudgeController();
-  EXPECT_EQ(
-      nudge_controller->toast_widget()->GetNativeWindow()->GetRootWindow(),
-      session->current_root());
+  EXPECT_EQ(capture_toast_controller->capture_toast_widget()
+                ->GetNativeWindow()
+                ->GetRootWindow(),
+            session->current_root());
 
   MoveMouseToAndUpdateCursorDisplay(gfx::Point(1000, 500), event_generator);
   EXPECT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
-  EXPECT_EQ(
-      nudge_controller->toast_widget()->GetNativeWindow()->GetRootWindow(),
-      session->current_root());
+  EXPECT_EQ(capture_toast_controller->capture_toast_widget()
+                ->GetNativeWindow()
+                ->GetRootWindow(),
+            session->current_root());
 }
 
 TEST_F(CaptureModeSettingsTest, NudgeBehaviorWhenSelectingRegion) {
@@ -5607,9 +5609,11 @@ TEST_F(CaptureModeSettingsTest, NudgeBehaviorWhenSelectingRegion) {
 
   // The nudge shows again, and is on the second display.
   EXPECT_TRUE(nudge_controller->is_visible());
-  EXPECT_EQ(
-      nudge_controller->toast_widget()->GetNativeWindow()->GetRootWindow(),
-      session->current_root());
+  EXPECT_EQ(session->capture_toast_controller()
+                ->capture_toast_widget()
+                ->GetNativeWindow()
+                ->GetRootWindow(),
+            session->current_root());
 }
 
 TEST_F(CaptureModeSettingsTest, NudgeDoesNotShowForAllUserTypes) {

@@ -9,6 +9,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace aura {
@@ -27,6 +30,7 @@ class Layer;
 
 namespace views {
 class View;
+class Widget;
 }  // namespace views
 
 namespace ash {
@@ -136,6 +140,27 @@ CalculateCameraPreviewSizeSpecs(const gfx::Size& confine_bounds_size,
 // capture label. There will be a crash if the capture label widget gets picked
 // since the snapshot code tries to snap a deleted window.
 aura::Window* GetTopMostCapturableWindowAtPoint(const gfx::Point& screen_point);
+
+bool GetWidgetCurrentVisibility(views::Widget* widget);
+
+// Defines an object to hold the animation params used for setting the widget's
+// visibility.
+struct AnimationParams {
+  const base::TimeDelta animation_duration;
+
+  const gfx::Tween::Type tween_type;
+
+  // When it's true, the scale up transform should be applied in the fade in
+  // animiation.
+  const bool apply_scale_up_animation;
+};
+
+// Sets the visibility of the given `widget` to the given `target_visibility`
+// with the given `animation_params`, returns true only if the
+// `target_visibility` is different than the current.
+bool SetWidgetVisibility(views::Widget* widget,
+                         bool target_visibility,
+                         absl::optional<AnimationParams> animation_params);
 
 }  // namespace capture_mode_util
 

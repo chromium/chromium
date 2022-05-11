@@ -314,16 +314,6 @@ class ASH_EXPORT CaptureModeCameraController
   // panels.
   void RunPostRefreshCameraPreview(bool was_preview_visible_before);
 
-  // Sets the visibility of the camera preview to the given `target_visibility`
-  // and returns true only if the `target_visibility` is different than the
-  // current.
-  bool SetCameraPreviewVisibility(bool target_visibility, bool animate);
-
-  // Fades in or out the `camera_preview_widget_` and updates its visibility
-  // accordingly.
-  void FadeInCameraPreview();
-  void FadeOutCameraPreview();
-
   // Sets the given `target_bounds` on the camera preview widget, potentially
   // animating to it if `animate` is true. Returns true if the bounds actually
   // changed from the current.

@@ -83,8 +83,6 @@ CaptureModeTypeView::CaptureModeTypeView(bool projector_mode)
     video_toggle_button_->SetEnabled(false);
   }
 
-  OnCaptureTypeChanged(controller->type());
-
   video_toggle_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_TOOLTIP_SCREENRECORD));
 }

@@ -30,8 +30,10 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/views/notification_background_painter.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash::capture_mode_util {
 
@@ -39,6 +41,7 @@ namespace {
 
 constexpr int kBannerViewTopRadius = 0;
 constexpr int kBannerViewBottomRadius = 8;
+constexpr float kScaleUpFactor = 0.8f;
 
 // Returns the target visibility of the camera preview, given the
 // `confine_bounds_short_side_length`. The out parameter
@@ -70,6 +73,74 @@ bool CalculateCameraPreviewTargetVisibility(
 // Returns the local center point of the given `layer`.
 gfx::Point GetLocalCenterPoint(ui::Layer* layer) {
   return gfx::Rect(layer->GetTargetBounds().size()).CenterPoint();
+}
+
+void FadeInWidget(views::Widget* widget,
+                  const AnimationParams& animation_params) {
+  DCHECK(widget);
+  auto* layer = widget->GetLayer();
+  DCHECK(!widget->GetNativeWindow()->TargetVisibility() ||
+         layer->GetTargetOpacity() < 1.f);
+
+  // Please notice the order matters here. When the opacity is set to 0.f, if
+  // there's any on-going fade out animation, the `OnEnded` in `FadeOutWidget`
+  // will be triggered, which will hide the widget and set its opacity to 1.f.
+  // So `Show` should be triggered after setting the opacity to 0 to undo the
+  // work done by the FadeOutWidget's OnEnded .
+  if (layer->opacity() == 1.f)
+    layer->SetOpacity(0.f);
+  if (!widget->GetNativeWindow()->TargetVisibility())
+    widget->Show();
+
+  if (animation_params.apply_scale_up_animation) {
+    layer->SetTransform(
+        capture_mode_util::GetScaleTransformAboutCenter(layer, kScaleUpFactor));
+  }
+
+  views::AnimationBuilder builder;
+  auto& animation_sequence_block =
+      builder
+          .SetPreemptionStrategy(
+              ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+          .Once()
+          .SetDuration(animation_params.animation_duration)
+          .SetOpacity(layer, 1.f, animation_params.tween_type);
+
+  // We should only set transform here if `apply_scale_up_animation` is true,
+  // otherwise, it may mess up with the snap animation in
+  // `SetCameraPreviewBounds`.
+  if (animation_params.apply_scale_up_animation) {
+    animation_sequence_block.SetTransform(layer, gfx::Transform(),
+                                          gfx::Tween::ACCEL_20_DECEL_100);
+  }
+}
+
+void FadeOutWidget(views::Widget* widget,
+                   const AnimationParams& animation_params) {
+  DCHECK(widget);
+  DCHECK(widget->GetNativeWindow()->TargetVisibility());
+
+  auto* layer = widget->GetLayer();
+  DCHECK_EQ(layer->GetTargetOpacity(), 1.f);
+
+  views::AnimationBuilder()
+      .OnEnded(base::BindOnce(
+          [](base::WeakPtr<views::Widget> the_widget) {
+            if (!the_widget)
+              return;
+
+            // Please notice, the order matters here. If we set the layer's
+            // opacity back to 1.f before calling `Hide`, flickering can be
+            // seen.
+            the_widget->Hide();
+            the_widget->GetLayer()->SetOpacity(1.f);
+          },
+          widget->GetWeakPtr()))
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(animation_params.animation_duration)
+      .SetOpacity(layer, 0.f, animation_params.tween_type);
 }
 
 }  // namespace
@@ -349,13 +420,52 @@ aura::Window* GetTopMostCapturableWindowAtPoint(
   }
 
   if (controller->IsActive()) {
-    if (auto* capture_label_widget =
-            controller->capture_mode_session()->capture_label_widget()) {
+    auto* capture_session = controller->capture_mode_session();
+
+    if (auto* capture_label_widget = capture_session->capture_label_widget())
       ignore_windows.insert(capture_label_widget->GetNativeWindow());
+
+    if (auto* capture_toast_widget = capture_session->capture_toast_controller()
+                                         ->capture_toast_widget()) {
+      ignore_windows.insert(capture_toast_widget->GetNativeWindow());
     }
   }
 
   return GetTopmostWindowAtPoint(screen_point, ignore_windows);
+}
+
+bool GetWidgetCurrentVisibility(views::Widget* widget) {
+  // Note that we use `aura::Window::TargetVisibility()` rather than
+  // `views::Widget::IsVisible()` (which in turn uses
+  // `aura::Window::IsVisible()`). The reason is because the latter takes into
+  // account whether window's layer is drawn or not. We want to calculate the
+  // current visibility only based on the actual visibility of the window
+  // itself, so that we can correctly compare it against `target_visibility`.
+  // Note that the widget may be a child of the unparented container (which is
+  // always hidden), yet the native window is shown.
+  return widget->GetNativeWindow()->TargetVisibility() &&
+         widget->GetLayer()->GetTargetOpacity() > 0.f;
+}
+
+bool SetWidgetVisibility(views::Widget* widget,
+                         bool target_visibility,
+                         absl::optional<AnimationParams> animation_params) {
+  DCHECK(widget);
+  if (target_visibility == GetWidgetCurrentVisibility(widget))
+    return false;
+
+  if (animation_params) {
+    if (target_visibility)
+      FadeInWidget(widget, *animation_params);
+    else
+      FadeOutWidget(widget, *animation_params);
+  } else {
+    if (target_visibility)
+      widget->Show();
+    else
+      widget->Hide();
+  }
+  return true;
 }
 
 }  // namespace ash::capture_mode_util
