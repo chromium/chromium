@@ -19,26 +19,13 @@ ExternalAction::~ExternalAction() = default;
 void ExternalAction::InternalProcessAction(ProcessActionCallback callback) {
   callback_ = std::move(callback);
   if (!delegate_->SupportsExternalActions()) {
-    VLOG(1) << "External action are not supported for this run.";
     EndAction(ClientStatus(INVALID_ACTION));
   }
+
   auto external_action = proto_.external_action();
 
-  if (!external_action.has_info()) {
-    VLOG(1) << "The ExternalAction's |info| is missing.";
-    EndAction(ClientStatus(INVALID_ACTION));
-  }
-
   SendActionInfo();
-
-  // We start checking for interrupts after we sent the action info to make sure
-  // the external caller gets the notifications in the right order. The action
-  // info should always be sent before the notification that an interrupt has
-  // interrupted the action.
-  //
-  // The SendActionInfo call can end the action, so we check that |callback| is
-  // still valid before starting to wait for DOM.
-  if (callback_ && external_action.allow_interrupt()) {
+  if (external_action.allow_interrupt()) {
     delegate_->WaitForDom(
         /* max_wait_time= */ base::TimeDelta::Max(),
         /* allow_observer_mode = */ false, external_action.allow_interrupt(),
@@ -60,7 +47,6 @@ void ExternalAction::OnExternalActionFinished(
     return;
   }
 
-  // TODO(b/201964908): add client status type for external failures.
   EndAction(result.success ? ClientStatus(ACTION_APPLIED)
                            : ClientStatus(UNKNOWN_ACTION_STATUS));
 }

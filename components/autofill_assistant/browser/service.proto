@@ -3419,7 +3419,6 @@ message JsFlowProto {
 // Action which forwards a proto to the owner of the |ExternalScriptController|
 // for the current flow. Not supported for internal flows.
 message ExternalActionProto {
-  // Required.
   // The opaque proto to be forwarded to the owner of the
   // |ExternalScriptController| for this flow.
   optional external.ActionInfo info = 1;
