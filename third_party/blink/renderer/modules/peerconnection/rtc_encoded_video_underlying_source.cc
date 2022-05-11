@@ -56,6 +56,12 @@ void RTCEncodedVideoUnderlyingSource::OnFrameFromSource(
   if (!disconnect_callback_ || !GetExecutionContext()) {
     return;
   }
+  if (!Controller()) {
+    // TODO(ricea): Maybe avoid dropping frames during transfer?
+    DVLOG(1) << "Dropped frame due to null Controller(). This can happen "
+                "during transfer.";
+    return;
+  }
   if (Controller()->DesiredSize() <= kMinQueueDesiredSize) {
     dropped_frames_++;
     VLOG_IF(2, (dropped_frames_ % 20 == 0))
