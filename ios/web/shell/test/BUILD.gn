@@ -91,7 +91,7 @@ source_set("eg_test_support+eg2") {
   ]
 }
 
-source_set("eg_tests+eg2") {
+source_set("eg2_tests") {
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -132,8 +132,8 @@ ios_eg2_test("ios_web_shell_eg2tests_module") {
   xcode_test_application_name = "ios_web_shell_eg2tests"
 
   deps = [
-    # Test support libraries.
-    ":eg_tests+eg2",
+    # Tests and test support libraries.
+    ":eg2_tests",
   ]
 
   data_deps = [ ":ios_web_shell_eg2tests" ]
