@@ -35,6 +35,12 @@ FrameForTest FrameForTest::Create(const fuchsia::web::ContextPtr& context,
   return Create(context.get(), std::move(params));
 }
 
+// static
+FrameForTest FrameForTest::Create(const fuchsia::web::FrameHostPtr& frame_host,
+                                  fuchsia::web::CreateFrameParams params) {
+  return Create(frame_host.get(), std::move(params));
+}
+
 FrameForTest::FrameForTest() = default;
 
 FrameForTest::FrameForTest(FrameForTest&&) = default;

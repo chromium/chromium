@@ -76,35 +76,13 @@ void FetchHistogramsFromChildProcesses(
       kChildProcessHistogramFetchTimeout);
 }
 
-// Implements the fuchsia.web.FrameHost protocol using a ContextImpl with
-// incognito browser context.
-class FrameHostImpl final : public fuchsia::web::FrameHost {
- public:
-  explicit FrameHostImpl(
-      inspect::Node inspect_node,
-      WebEngineDevToolsController* devtools_controller,
-      network::NetworkQualityTracker* network_quality_tracker)
-      : context_(
-            WebEngineBrowserContext::CreateIncognito(network_quality_tracker),
-            std::move(inspect_node),
-            devtools_controller) {}
-  ~FrameHostImpl() override = default;
-
-  FrameHostImpl(const FrameHostImpl&) = delete;
-  FrameHostImpl& operator=(const FrameHostImpl&) = delete;
-
-  // fuchsia.web.FrameHost implementation.
-  void CreateFrameWithParams(
-      fuchsia::web::CreateFrameParams params,
-      fidl::InterfaceRequest<fuchsia::web::Frame> request) override {
-    context_.CreateFrameWithParams(std::move(params), std::move(request));
-  }
-
- private:
-  ContextImpl context_;
-};
-
 }  // namespace
+
+void FrameHostImpl::CreateFrameWithParams(
+    fuchsia::web::CreateFrameParams params,
+    fidl::InterfaceRequest<fuchsia::web::Frame> request) {
+  context_.CreateFrameWithParams(std::move(params), std::move(request));
+}
 
 WebEngineBrowserMainParts::WebEngineBrowserMainParts(
     content::ContentBrowserClient* browser_client,
@@ -277,8 +255,18 @@ void WebEngineBrowserMainParts::SetContextRequestForTest(
 }
 
 ContextImpl* WebEngineBrowserMainParts::context_for_test() const {
-  DCHECK_EQ(context_bindings_.size(), 1u);
+  if (context_bindings_.size() == 0)
+    return nullptr;
   return context_bindings_.bindings().front()->impl().get();
+}
+
+std::vector<FrameHostImpl*> WebEngineBrowserMainParts::frame_hosts_for_test()
+    const {
+  std::vector<FrameHostImpl*> frame_host_impls;
+  for (auto& binding : frame_host_bindings_.bindings()) {
+    frame_host_impls.push_back(binding->impl().get());
+  }
+  return frame_host_impls;
 }
 
 void WebEngineBrowserMainParts::HandleContextRequest(
