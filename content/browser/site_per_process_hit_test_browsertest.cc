@@ -4516,7 +4516,7 @@ class SitePerProcessMouseWheelHitTestBrowserTest
         "scroll_div.addEventListener('scroll', scroll_handler);"
         "document.body.style.background = 'black';";
 
-    content::DOMMessageQueue msg_queue;
+    content::DOMMessageQueue msg_queue(rfh);
     std::string reply;
     EXPECT_TRUE(ExecJs(rfh, script));
 
@@ -4544,7 +4544,7 @@ class SitePerProcessMouseWheelHitTestBrowserTest
   }
 
   void RunTest(gfx::Point pos, RenderWidgetHostViewBase* expected_target) {
-    content::DOMMessageQueue msg_queue;
+    content::DOMMessageQueue msg_queue(web_contents());
     std::string reply;
 
     auto* rwhv_root = static_cast<RenderWidgetHostViewAura*>(

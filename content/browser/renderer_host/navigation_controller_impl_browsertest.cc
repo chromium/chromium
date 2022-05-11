@@ -15326,7 +15326,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
           });
       )"));
 
-  DOMMessageQueue message_queue;
+  DOMMessageQueue message_queue(shell()->web_contents());
   std::vector<std::string> messages;
   std::string message;
   EXPECT_TRUE(NavigateToURL(shell(), hash_url));

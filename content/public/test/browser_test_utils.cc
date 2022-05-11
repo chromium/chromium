@@ -1972,7 +1972,7 @@ bool ExecuteWebUIResourceTest(WebContents* web_contents) {
   script.append("\n");
   ExecuteScriptAsync(web_contents, script);
 
-  DOMMessageQueue message_queue;
+  DOMMessageQueue message_queue(web_contents);
 
   bool should_wait_flag = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kWaitForDebuggerWebUI);

@@ -206,7 +206,7 @@ void PostMessageAndWaitForReply(FrameTreeNode* sender_ftn,
                                 const std::string& reply_status) {
   // Subtle: msg_queue needs to be declared before the ExecuteScript below, or
   // else it might miss the message of interest.  See https://crbug.com/518729.
-  DOMMessageQueue msg_queue;
+  DOMMessageQueue msg_queue(sender_ftn->current_frame_host());
 
   EXPECT_EQ(true, EvalJs(sender_ftn, "(" + post_message_script + ");"));
 
@@ -4512,7 +4512,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // The main frame should be focused.
   EXPECT_EQ(root, root->frame_tree()->GetFocusedFrame());
 
-  DOMMessageQueue msg_queue;
+  DOMMessageQueue msg_queue(web_contents());
 
   // Click on the cross-process subframe.
   SimulateMouseClick(

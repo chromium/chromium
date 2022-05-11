@@ -108,7 +108,7 @@ constexpr char kFocusInputFieldScript[] =
 void SimulateKeyPress(WebContents* web_contents,
                       const std::string& code_string,
                       const std::string& expected_result) {
-  DOMMessageQueue msg_queue;
+  DOMMessageQueue msg_queue(web_contents);
   std::string reply;
   ui::DomKey dom_key = ui::KeycodeConverter::KeyStringToDomKey(code_string);
   ui::DomCode dom_code = ui::KeycodeConverter::CodeStringToDomCode(code_string);

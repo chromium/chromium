@@ -571,7 +571,7 @@ class CompositingRenderWidgetHostViewBrowserTest
   }
 
   bool SetUpSourceSurface(const char* wait_message) override {
-    content::DOMMessageQueue message_queue;
+    content::DOMMessageQueue message_queue(shell()->web_contents());
     EXPECT_TRUE(NavigateToURL(shell(), TestUrl()));
     if (wait_message != nullptr) {
       std::string result(wait_message);

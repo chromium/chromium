@@ -36,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(MessagePortProviderBrowserTest, PostMessage) {
   const std::string target_origin(url.DeprecatedGetOriginAsURL().spec());
   const std::string source_origin("https://source.origin.com");
   const std::string message("success");
-  DOMMessageQueue msg_queue;
+  DOMMessageQueue msg_queue(shell()->web_contents());
   MessagePortProvider::PostMessageToFrame(
       shell()->web_contents()->GetPrimaryPage(),
       base::UTF8ToUTF16(source_origin), base::UTF8ToUTF16(target_origin),

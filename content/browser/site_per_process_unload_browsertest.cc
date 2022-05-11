@@ -252,7 +252,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Open a popup on b.com.  The b.com subframe on the main frame will use this
   // in its unload handler.
   GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
-  EXPECT_TRUE(OpenPopup(shell()->web_contents(), b_url, "popup"));
+
+  // Save the WebContents instance created via the popup to be able to listen
+  // for messages that occur in it.
+  auto* popup_shell = OpenPopup(shell()->web_contents(), b_url, "popup");
+  WebContents* popup_web_contents = popup_shell->web_contents();
 
   // Add an unload handler to b.com subframe, which will look up the top
   // frame's origin and send it via domAutomationController.  Unfortunately,
@@ -268,7 +272,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Navigate the main frame to c.com and wait for the message from the
   // subframe's unload handler.
   GURL c_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
-  DOMMessageQueue msg_queue;
+
+  // NOTE: The message occurs in the WebContents for the popup.
+  DOMMessageQueue msg_queue(popup_web_contents);
   EXPECT_TRUE(NavigateToURL(shell(), c_url));
   std::string message, top_origin;
   while (msg_queue.WaitForMessage(&message)) {

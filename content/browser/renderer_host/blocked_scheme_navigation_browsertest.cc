@@ -198,7 +198,7 @@ class BlockedSchemeNavigationBrowserTest
   }
 
   void Navigate(const GURL& url) {
-    content::DOMMessageQueue message_queue;
+    content::DOMMessageQueue message_queue(shell()->web_contents());
     EXPECT_TRUE(NavigateToURL(shell(), url));
     std::string message;
     while (message_queue.WaitForMessage(&message)) {
@@ -264,7 +264,7 @@ class BlockedSchemeNavigationBrowserTest
 
   // Adds an iframe to |rfh| pointing to |url|.
   void AddIFrame(RenderFrameHost* rfh, const GURL& url) {
-    content::DOMMessageQueue message_queue;
+    content::DOMMessageQueue message_queue(rfh);
     const std::string javascript = base::StringPrintf(
         "f = document.createElement('iframe'); f.src = '%s';"
         "document.body.appendChild(f);",

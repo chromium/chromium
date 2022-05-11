@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(SyntheticKeyEventTest, KeyEventSynthesizeKey) {
       "document.body.addEventListener('keydown', handleKeyEvent);"
       "document.body.addEventListener('keyup', handleKeyEvent);"));
 
-  DOMMessageQueue dom_message_queue;
+  DOMMessageQueue dom_message_queue(shell()->web_contents());
 
   // Send enter (keycode 13).
   SendKeyEvent("rawKeyDown", 0, 13, 13, "Enter", true);

@@ -734,7 +734,7 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest, TabFocus) {
   frame_observer.WaitForScrollOffsetAtTop(
       /*expected_scroll_offset_at_top=*/false);
 
-  DOMMessageQueue msg_queue;
+  DOMMessageQueue msg_queue(main_contents);
   SimulateKeyPress(main_contents, ui::DomKey::TAB, ui::DomCode::TAB,
                    ui::VKEY_TAB, false, false, false, false);
 
