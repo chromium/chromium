@@ -19,7 +19,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
-#include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 using autofill::GaiaIdHash;
 using password_manager::metrics_util::PasswordAccountStorageUsageLevel;
@@ -224,8 +224,7 @@ bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
     return false;
   }
 
-  if (current_page_url.DeprecatedGetOriginAsURL() ==
-      GaiaUrls::GetInstance()->gaia_url().DeprecatedGetOriginAsURL()) {
+  if (gaia::HasGaiaSchemeHostPort(current_page_url)) {
     return false;
   }
 

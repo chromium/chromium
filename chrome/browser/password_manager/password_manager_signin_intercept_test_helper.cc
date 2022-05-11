@@ -80,7 +80,7 @@ void PasswordManagerSigninInterceptTestHelper::NavigateToGaiaSigninPage(
   std::string path = "/password/password_form.html";
   GURL https_url(https_test_server_->GetURL(path));
   DCHECK(https_url.SchemeIs(url::kHttpsScheme));
-  DCHECK(gaia::IsGaiaSignonRealm(https_url.DeprecatedGetOriginAsURL()));
+  DCHECK(gaia::HasGaiaSchemeHostPort(https_url));
 
   PasswordsNavigationObserver navigation_observer(contents);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

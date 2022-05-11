@@ -12,7 +12,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 DiceTabHelper::DiceTabHelper(content::WebContents* web_contents)
     : content::WebContentsUserData<DiceTabHelper>(*web_contents),
@@ -110,8 +110,7 @@ bool DiceTabHelper::IsSigninPageNavigation(
     content::NavigationHandle* navigation_handle) const {
   return !navigation_handle->IsErrorPage() &&
          navigation_handle->GetRedirectChain()[0] == signin_url_ &&
-         navigation_handle->GetURL().DeprecatedGetOriginAsURL() ==
-             GaiaUrls::GetInstance()->gaia_url();
+         gaia::HasGaiaSchemeHostPort(navigation_handle->GetURL());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DiceTabHelper);

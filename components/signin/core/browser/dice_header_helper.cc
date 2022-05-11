@@ -204,7 +204,7 @@ bool DiceHeaderHelper::IsUrlEligibleForRequestHeader(const GURL& url) {
   if (account_consistency_ != AccountConsistencyMethod::kDice)
     return false;
 
-  return gaia::IsGaiaSignonRealm(url.DeprecatedGetOriginAsURL());
+  return gaia::HasGaiaSchemeHostPort(url);
 }
 
 std::string DiceHeaderHelper::BuildRequestHeader(
