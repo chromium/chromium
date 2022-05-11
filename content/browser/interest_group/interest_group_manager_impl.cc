@@ -30,6 +30,8 @@
 namespace content {
 
 namespace {
+// The maximum number of active report requests at a time.
+constexpr int kMaxActiveReportRequests = 5;
 // The maximum number of report URLs that can be stored in `report_requests_`
 // queue.
 constexpr int kMaxReportQueueLength = 100;
@@ -97,6 +99,7 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
             in_memory ? base::FilePath() : path),
       auction_process_manager_(std::make_unique<AuctionProcessManager>()),
       update_manager_(this, std::move(url_loader_factory)),
+      max_active_report_requests_(kMaxActiveReportRequests),
       max_report_queue_length_(kMaxReportQueueLength),
       reporting_interval_(kReportingInterval) {}
 
@@ -346,17 +349,21 @@ void InterestGroupManagerImpl::EnqueueReports(
   HandleReports(std::move(debug_win_report_urls), frame_origin,
                 client_security_state.Clone(), "DebugWinReport",
                 url_loader_factory);
-
-  // Avoid starting another SendReports() task while one is in-progress.
-  if (!send_reports_in_progress_) {
-    send_reports_in_progress_ = true;
+  if (!report_requests_.empty())
     SendReports();
-  }
 }
 
 void InterestGroupManagerImpl::SendReports() {
+  while (!report_requests_.empty() &&
+         num_active_ < max_active_report_requests_) {
+    num_active_++;
+    TrySendingOneReport();
+  }
+}
+
+void InterestGroupManagerImpl::TrySendingOneReport() {
   if (report_requests_.empty()) {
-    send_reports_in_progress_ = false;
+    num_active_--;
     return;
   }
 
@@ -387,15 +394,17 @@ void InterestGroupManagerImpl::SendReports() {
 void InterestGroupManagerImpl::OnOneReportSent(
     std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
     scoped_refptr<net::HttpResponseHeaders> response_headers) {
+  DCHECK_GT(num_active_, 0);
+
   if (!report_requests_.empty()) {
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&InterestGroupManagerImpl::SendReports,
+        base::BindOnce(&InterestGroupManagerImpl::TrySendingOneReport,
                        weak_factory_.GetWeakPtr()),
         reporting_interval_);
-  } else {
-    send_reports_in_progress_ = false;
+    return;
   }
+  num_active_--;
 }
 
 void InterestGroupManagerImpl::set_max_report_queue_length_for_testing(
@@ -406,6 +415,11 @@ void InterestGroupManagerImpl::set_max_report_queue_length_for_testing(
 void InterestGroupManagerImpl::set_reporting_interval_for_testing(
     base::TimeDelta interval) {
   reporting_interval_ = interval;
+}
+
+void InterestGroupManagerImpl::set_max_active_report_requests_for_testing(
+    int max_active_report_requests) {
+  max_active_report_requests_ = max_active_report_requests;
 }
 
 }  // namespace content

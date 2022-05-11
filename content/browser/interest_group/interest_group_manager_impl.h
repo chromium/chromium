@@ -189,13 +189,18 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     auction_process_manager_ = std::move(auction_process_manager);
   }
 
-  // For testing *only*; changes the maximum number of report URLs that can be
-  // stored in `report_requests_` queue.
+  // For testing *only*; changes the maximum number of report requests that can
+  // be stored in `report_requests_` queue.
   void set_max_report_queue_length_for_testing(int max_queue_length);
 
   // For testing *only*; changes the time interval to wait before sending the
   // next report after sending one.
   void set_reporting_interval_for_testing(base::TimeDelta interval);
+
+  // For testing *only*; changes the maximum number of active report requests
+  // at a time.
+  void set_max_active_report_requests_for_testing(
+      int max_active_report_requests);
 
  private:
   // InterestGroupUpdateManager calls private members to write updates to the
@@ -272,9 +277,13 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       network::mojom::ClientSecurityStatePtr client_security_state,
       const std::string& name,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  // Calls TrySendingOneReport() when the queue is not empty and there are less
+  // active report requests than `max_active_report_requests_`.
+  void SendReports();
   // Dequeues and sends the first report request in `report_requests_` queue,
   // if the queue is not empty.
-  void SendReports();
+  void TrySendingOneReport();
   // Invoked when a report request completed.
   void OnOneReportSent(
       std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
@@ -307,9 +316,13 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // `max_report_queue_length` at the time of adding new entries.
   base::circular_deque<std::unique_ptr<ReportRequest>> report_requests_;
 
-  // Whether a task of SendReports() is being executed. Used to avoid invoking
-  // multiple SendReports() simultaneously.
-  bool send_reports_in_progress_ = false;
+  // Current number of active report requests.
+  int num_active_ = 0;
+
+  // The maximum number of active report requests at a time.
+  //
+  // Should *only* be changed by tests.
+  int max_active_report_requests_;
 
   // The maximum number of report requests that can be stored in queue
   // `report_requests_`.
