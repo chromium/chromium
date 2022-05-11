@@ -7,12 +7,12 @@
 
 #include <memory>
 
+#include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "components/chromeos_camera/jpeg_encode_accelerator.h"
 #include "media/base/bitstream_buffer.h"
-#include "media/base/unaligned_shared_memory.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 
@@ -63,8 +63,8 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
   struct EncodeRequest {
     EncodeRequest(int32_t task_id,
                   scoped_refptr<VideoFrame> video_frame,
-                  std::unique_ptr<UnalignedSharedMemory> exif_shm,
-                  std::unique_ptr<UnalignedSharedMemory> output_shm,
+                  base::WritableSharedMemoryMapping exif_mapping,
+                  base::WritableSharedMemoryMapping output_mapping,
                   int quality);
 
     EncodeRequest(const EncodeRequest&) = delete;
@@ -74,8 +74,8 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
 
     int32_t task_id;
     scoped_refptr<VideoFrame> video_frame;
-    std::unique_ptr<UnalignedSharedMemory> exif_shm;
-    std::unique_ptr<UnalignedSharedMemory> output_shm;
+    base::WritableSharedMemoryMapping exif_mapping;
+    base::WritableSharedMemoryMapping output_mapping;
     int quality;
   };
 

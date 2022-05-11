@@ -93,14 +93,14 @@ class MockMojoVideoEncodeAccelerator : public mojom::VideoEncodeAccelerator {
 
   void UseOutputBitstreamBuffer(
       int32_t bitstream_buffer_id,
-      mojo::ScopedSharedBufferHandle buffer) override {
+      base::UnsafeSharedMemoryRegion region) override {
     EXPECT_EQ(-1, configured_bitstream_buffer_id_);
     configured_bitstream_buffer_id_ = bitstream_buffer_id;
 
-    DoUseOutputBitstreamBuffer(bitstream_buffer_id, &buffer);
+    DoUseOutputBitstreamBuffer(bitstream_buffer_id, &region);
   }
   MOCK_METHOD2(DoUseOutputBitstreamBuffer,
-               void(int32_t, mojo::ScopedSharedBufferHandle*));
+               void(int32_t, base::UnsafeSharedMemoryRegion*));
 
   MOCK_METHOD2(RequestEncodingParametersChangeWithLayers,
                void(const media::VideoBitrateAllocation&, uint32_t));
@@ -244,11 +244,9 @@ TEST_F(MojoVideoEncodeAcceleratorTest, EncodeOneFrame) {
     auto shmem = base::UnsafeSharedMemoryRegion::Create(kShMemSize);
     EXPECT_CALL(*mock_mojo_vea(),
                 DoUseOutputBitstreamBuffer(kBitstreamBufferId, _));
-    mojo_vea()->UseOutputBitstreamBuffer(BitstreamBuffer(
-        kBitstreamBufferId,
-        base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
-            std::move(shmem)),
-        kShMemSize, 0 /* offset */, base::TimeDelta()));
+    mojo_vea()->UseOutputBitstreamBuffer(
+        BitstreamBuffer(kBitstreamBufferId, std::move(shmem), kShMemSize,
+                        0 /* offset */, base::TimeDelta()));
     base::RunLoop().RunUntilIdle();
   }
 

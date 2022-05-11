@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
@@ -174,10 +175,10 @@ TEST_F(MojoVideoEncodeAcceleratorServiceTest, EncodeOneFrame) {
   const int32_t kBitstreamBufferId = 17;
   {
     const uint64_t kShMemSize = fake_vea()->minimum_output_buffer_size();
-    auto handle = mojo::SharedBufferHandle::Create(kShMemSize);
+    auto region = base::UnsafeSharedMemoryRegion::Create(kShMemSize);
 
     mojo_vea_service()->UseOutputBitstreamBuffer(kBitstreamBufferId,
-                                                 std::move(handle));
+                                                 std::move(region));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -303,13 +304,13 @@ TEST_F(MojoVideoEncodeAcceleratorServiceTest,
 
   const int32_t kBitstreamBufferId = 17;
   const uint64_t wrong_size = fake_vea()->minimum_output_buffer_size() / 2;
-  auto handle = mojo::SharedBufferHandle::Create(wrong_size);
+  auto region = base::UnsafeSharedMemoryRegion::Create(wrong_size);
 
   EXPECT_CALL(*mock_mojo_vea_client(),
               NotifyError(VideoEncodeAccelerator::kInvalidArgumentError));
 
   mojo_vea_service()->UseOutputBitstreamBuffer(kBitstreamBufferId,
-                                               std::move(handle));
+                                               std::move(region));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -347,9 +348,9 @@ TEST_F(MojoVideoEncodeAcceleratorServiceTest, CallsBeforeInitializeAreIgnored) {
   {
     const int32_t kBitstreamBufferId = 17;
     const uint64_t kShMemSize = 10;
-    auto handle = mojo::SharedBufferHandle::Create(kShMemSize);
+    auto region = base::UnsafeSharedMemoryRegion::Create(kShMemSize);
     mojo_vea_service()->UseOutputBitstreamBuffer(kBitstreamBufferId,
-                                                 std::move(handle));
+                                                 std::move(region));
     base::RunLoop().RunUntilIdle();
   }
   {

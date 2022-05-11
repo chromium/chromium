@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/bits.h"
 #include "base/logging.h"
-#include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/system/sys_info.h"
@@ -47,8 +46,7 @@ class ProtectedBufferManager::ProtectedBuffer {
   // Downcasting methods to return duplicated handles to the underlying
   // protected buffers for each buffer type, or empty/null handles if not
   // applicable.
-  virtual base::subtle::PlatformSharedMemoryRegion
-  DuplicatePlatformSharedMemoryRegion() const {
+  virtual base::UnsafeSharedMemoryRegion DuplicateSharedMemoryRegion() const {
     return {};
   }
   virtual gfx::NativePixmapHandle DuplicateNativePixmapHandle() const {
@@ -79,15 +77,14 @@ class ProtectedBufferManager::ProtectedSharedMemory
       scoped_refptr<gfx::NativePixmap> dummy_handle,
       size_t size);
 
-  base::subtle::PlatformSharedMemoryRegion DuplicatePlatformSharedMemoryRegion()
-      const override {
+  base::UnsafeSharedMemoryRegion DuplicateSharedMemoryRegion() const override {
     return region_.Duplicate();
   }
 
  private:
   explicit ProtectedSharedMemory(scoped_refptr<gfx::NativePixmap> dummy_handle);
 
-  base::subtle::PlatformSharedMemoryRegion region_;
+  base::UnsafeSharedMemoryRegion region_;
 };
 
 ProtectedBufferManager::ProtectedSharedMemory::ProtectedSharedMemory(
@@ -113,9 +110,7 @@ ProtectedBufferManager::ProtectedSharedMemory::Create(
     return nullptr;
   }
 
-  protected_shmem->region_ =
-      base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
-          std::move(shmem_region));
+  protected_shmem->region_ = std::move(shmem_region);
   return protected_shmem;
 }
 
@@ -399,7 +394,7 @@ void ProtectedBufferManager::ReleaseAllProtectedBuffers(uint64_t allocator_id) {
   allocator_to_buffers_map_.erase(allocator_id);
 }
 
-base::subtle::PlatformSharedMemoryRegion
+base::UnsafeSharedMemoryRegion
 ProtectedBufferManager::GetProtectedSharedMemoryRegionFor(
     base::ScopedFD dummy_fd) {
   uint32_t id = 0;
@@ -412,7 +407,7 @@ ProtectedBufferManager::GetProtectedSharedMemoryRegionFor(
   if (iter == buffer_map_.end())
     return {};
 
-  return iter->second->DuplicatePlatformSharedMemoryRegion();
+  return iter->second->DuplicateSharedMemoryRegion();
 }
 
 gfx::NativePixmapHandle

@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -71,16 +71,14 @@ TEST_F(MojoMjpegDecodeAcceleratorServiceTest, InitializeAndDecode) {
   subsamples.push_back(media::SubsampleEntry(15, 7));
 
   base::RunLoop run_loop2;
-  base::subtle::PlatformSharedMemoryRegion shm_region =
-      base::subtle::PlatformSharedMemoryRegion::CreateUnsafe(
-          kInputBufferSizeInBytes);
+  base::UnsafeSharedMemoryRegion shm_region =
+      base::UnsafeSharedMemoryRegion::Create(kInputBufferSizeInBytes);
 
   // mojo::SharedBufferHandle::Create will make a writable region, but an unsafe
   // one is needed.
   mojo::ScopedSharedBufferHandle output_frame_handle =
-      mojo::WrapPlatformSharedMemoryRegion(
-          base::subtle::PlatformSharedMemoryRegion::CreateUnsafe(
-              kOutputFrameSizeInBytes));
+      mojo::WrapUnsafeSharedMemoryRegion(
+          base::UnsafeSharedMemoryRegion::Create(kOutputFrameSizeInBytes));
 
   media::BitstreamBuffer bitstream_buffer(kArbitraryBitstreamBufferId,
                                           std::move(shm_region),

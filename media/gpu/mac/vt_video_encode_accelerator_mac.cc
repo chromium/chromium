@@ -257,8 +257,7 @@ void VTVideoEncodeAccelerator::UseOutputBitstreamBuffer(
     return;
   }
 
-  auto mapping =
-      base::UnsafeSharedMemoryRegion::Deserialize(buffer.TakeRegion()).Map();
+  auto mapping = buffer.TakeRegion().Map();
   if (!mapping.IsValid()) {
     DLOG(ERROR) << "Failed mapping shared memory.";
     client_->NotifyError(kPlatformFailureError);

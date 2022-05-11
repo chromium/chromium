@@ -8,6 +8,8 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "media/base/android/media_codec_util.h"
@@ -676,14 +678,15 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
     return;
   }
 
-  UnalignedSharedMemory shm(bitstream_buffer.TakeRegion(),
-                            bitstream_buffer.size(), false);
-  if (!shm.MapAt(bitstream_buffer.offset(), bitstream_buffer.size())) {
+  base::UnsafeSharedMemoryRegion region = bitstream_buffer.TakeRegion();
+  auto mapping =
+      region.MapAt(bitstream_buffer.offset(), bitstream_buffer.size());
+  if (!mapping.IsValid()) {
     NotifyError("Failed to map SHM", kPlatformFailureError);
     return;
   }
 
-  uint8_t* output_dst = static_cast<uint8_t*>(shm.memory());
+  uint8_t* output_dst = mapping.GetMemoryAs<uint8_t>();
   if (config_size > 0) {
     memcpy(output_dst, config_data_.data(), config_size);
     output_dst += config_size;

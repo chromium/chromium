@@ -6,6 +6,7 @@ module media.mojom;
 
 import "media/mojo/mojom/media_log.mojom";
 import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "media/mojo/mojom/video_encoder_info.mojom";
@@ -159,7 +160,7 @@ interface VideoEncodeAccelerator {
   Encode(VideoFrame frame, bool force_keyframe) => ();
 
   UseOutputBitstreamBuffer(int32 bitstream_buffer_id,
-                           handle<shared_buffer> buffer);
+                           mojo_base.mojom.UnsafeSharedMemoryRegion region);
 
   // Request a change to the encoding parameters. This is only a request,
   // fulfilled on a best-effort basis. This method is intended for use with

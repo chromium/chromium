@@ -12,7 +12,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/writable_shared_memory_region.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -51,13 +52,13 @@ static void ReportToVAJEAEncodeResultUMA(VAJEAEncoderResult result) {
 VaapiJpegEncodeAccelerator::EncodeRequest::EncodeRequest(
     int32_t task_id,
     scoped_refptr<VideoFrame> video_frame,
-    std::unique_ptr<UnalignedSharedMemory> exif_shm,
-    std::unique_ptr<UnalignedSharedMemory> output_shm,
+    base::WritableSharedMemoryMapping exif_mapping,
+    base::WritableSharedMemoryMapping output_mapping,
     int quality)
     : task_id(task_id),
       video_frame(std::move(video_frame)),
-      exif_shm(std::move(exif_shm)),
-      output_shm(std::move(output_shm)),
+      exif_mapping(std::move(exif_mapping)),
+      output_mapping(std::move(output_mapping)),
       quality(quality) {}
 
 VaapiJpegEncodeAccelerator::EncodeRequest::~EncodeRequest() {}
@@ -75,12 +76,11 @@ class VaapiJpegEncodeAccelerator::Encoder {
   ~Encoder();
 
   // Processes one encode task with DMA-buf.
-  void EncodeWithDmaBufTask(
-      scoped_refptr<VideoFrame> input_frame,
-      scoped_refptr<VideoFrame> output_frame,
-      int32_t task_id,
-      int quality,
-      std::unique_ptr<WritableUnalignedMapping> exif_mapping);
+  void EncodeWithDmaBufTask(scoped_refptr<VideoFrame> input_frame,
+                            scoped_refptr<VideoFrame> output_frame,
+                            int32_t task_id,
+                            int quality,
+                            base::WritableSharedMemoryMapping exif_mapping);
 
   // Processes one encode |request|.
   void EncodeTask(std::unique_ptr<EncodeRequest> request);
@@ -137,7 +137,7 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
     scoped_refptr<VideoFrame> output_frame,
     int32_t task_id,
     int quality,
-    std::unique_ptr<WritableUnalignedMapping> exif_mapping) {
+    base::WritableSharedMemoryMapping exif_mapping) {
   DVLOGF(4);
   TRACE_EVENT0("jpeg", "EncodeWithDmaBufTask");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -222,9 +222,9 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   // Prepare exif.
   const uint8_t* exif_buffer = nullptr;
   size_t exif_buffer_size = 0;
-  if (exif_mapping) {
-    exif_buffer = static_cast<const uint8_t*>(exif_mapping->memory());
-    exif_buffer_size = exif_mapping->size();
+  if (exif_mapping.IsValid()) {
+    exif_buffer = exif_mapping.GetMemoryAs<uint8_t>();
+    exif_buffer_size = exif_mapping.size();
   }
 
   if (!jpeg_encoder_->Encode(input_size, /*exif_buffer=*/nullptr,
@@ -410,9 +410,9 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeTask(
 
   uint8_t* exif_buffer = nullptr;
   size_t exif_buffer_size = 0;
-  if (request->exif_shm) {
-    exif_buffer = static_cast<uint8_t*>(request->exif_shm->memory());
-    exif_buffer_size = request->exif_shm->size();
+  if (request->exif_mapping.IsValid()) {
+    exif_buffer = request->exif_mapping.GetMemoryAs<uint8_t>();
+    exif_buffer_size = request->exif_mapping.size();
   }
 
   // When the exif buffer contains a thumbnail, the VAAPI encoder would
@@ -435,15 +435,15 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeTask(
   size_t encoded_size = 0;
   if (!vaapi_wrapper_->DownloadFromVABuffer(
           cached_output_buffer_->id(), va_surface_id_,
-          static_cast<uint8_t*>(request->output_shm->memory()),
-          request->output_shm->size(), &encoded_size)) {
+          request->output_mapping.GetMemoryAs<uint8_t>(),
+          request->output_mapping.size(), &encoded_size)) {
     VLOGF(1) << "Failed to retrieve output image from VA coded buffer";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
   }
 
   // Copy the real exif buffer into preserved space.
-  memcpy(static_cast<uint8_t*>(request->output_shm->memory()) + exif_offset,
+  memcpy(request->output_mapping.GetMemoryAs<uint8_t>() + exif_offset,
          exif_buffer, exif_buffer_size);
 
   video_frame_ready_cb_.Run(task_id, encoded_size);
@@ -613,20 +613,20 @@ void VaapiJpegEncodeAccelerator::Encode(scoped_refptr<VideoFrame> video_frame,
     return;
   }
 
-  std::unique_ptr<UnalignedSharedMemory> exif_shm;
+  base::WritableSharedMemoryMapping exif_mapping;
   if (exif_buffer) {
-    // |exif_shm| will take ownership of the |exif_buffer->region()|.
-    exif_shm = std::make_unique<UnalignedSharedMemory>(
-        exif_buffer->TakeRegion(), exif_buffer->size(), false);
-    if (!exif_shm->MapAt(exif_buffer->offset(), exif_buffer->size())) {
+    base::UnsafeSharedMemoryRegion exif_region = exif_buffer->TakeRegion();
+    exif_mapping =
+        exif_region.MapAt(exif_buffer->offset(), exif_buffer->size());
+    if (!exif_mapping.IsValid()) {
       VLOGF(1) << "Failed to map exif buffer";
       task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&VaapiJpegEncodeAccelerator::NotifyError,
                                     weak_this_, task_id, PLATFORM_FAILURE));
       return;
     }
-    if (exif_shm->size() > kMaxMarkerSizeAllowed) {
-      VLOGF(1) << "Exif buffer too big: " << exif_shm->size();
+    if (exif_mapping.size() > kMaxMarkerSizeAllowed) {
+      VLOGF(1) << "Exif buffer too big: " << exif_mapping.size();
       task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&VaapiJpegEncodeAccelerator::NotifyError,
                                     weak_this_, task_id, INVALID_ARGUMENT));
@@ -634,10 +634,10 @@ void VaapiJpegEncodeAccelerator::Encode(scoped_refptr<VideoFrame> video_frame,
     }
   }
 
-  // |output_shm| will take ownership of the |output_buffer.handle()|.
-  auto output_shm = std::make_unique<UnalignedSharedMemory>(
-      output_buffer.TakeRegion(), output_buffer.size(), false);
-  if (!output_shm->MapAt(output_buffer.offset(), output_buffer.size())) {
+  base::UnsafeSharedMemoryRegion output_region = output_buffer.TakeRegion();
+  base::WritableSharedMemoryMapping output_mapping =
+      output_region.MapAt(output_buffer.offset(), output_buffer.size());
+  if (!output_mapping.IsValid()) {
     VLOGF(1) << "Failed to map output buffer";
     task_runner_->PostTask(
         FROM_HERE,
@@ -647,8 +647,8 @@ void VaapiJpegEncodeAccelerator::Encode(scoped_refptr<VideoFrame> video_frame,
   }
 
   auto request = std::make_unique<EncodeRequest>(
-      task_id, std::move(video_frame), std::move(exif_shm),
-      std::move(output_shm), quality);
+      task_id, std::move(video_frame), std::move(exif_mapping),
+      std::move(output_mapping), quality);
 
   encoder_task_runner_->PostTask(
       FROM_HERE,
@@ -682,21 +682,20 @@ void VaapiJpegEncodeAccelerator::EncodeWithDmaBuf(
     return;
   }
 
-  std::unique_ptr<WritableUnalignedMapping> exif_mapping;
+  base::WritableSharedMemoryMapping exif_mapping;
   if (exif_buffer) {
-    // |exif_mapping| will take ownership of the |exif_buffer->region()|.
-    exif_mapping = std::make_unique<WritableUnalignedMapping>(
-        base::UnsafeSharedMemoryRegion::Deserialize(exif_buffer->TakeRegion()),
-        exif_buffer->size(), exif_buffer->offset());
-    if (!exif_mapping->IsValid()) {
+    base::UnsafeSharedMemoryRegion exif_region = exif_buffer->TakeRegion();
+    exif_mapping =
+        exif_region.MapAt(exif_buffer->offset(), exif_buffer->size());
+    if (!exif_mapping.IsValid()) {
       LOG(ERROR) << "Failed to map exif buffer";
       task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&VaapiJpegEncodeAccelerator::NotifyError,
                                     weak_this_, task_id, PLATFORM_FAILURE));
       return;
     }
-    if (exif_mapping->size() > kMaxMarkerSizeAllowed) {
-      LOG(ERROR) << "Exif buffer too big: " << exif_mapping->size();
+    if (exif_mapping.size() > kMaxMarkerSizeAllowed) {
+      LOG(ERROR) << "Exif buffer too big: " << exif_mapping.size();
       task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&VaapiJpegEncodeAccelerator::NotifyError,
                                     weak_this_, task_id, INVALID_ARGUMENT));

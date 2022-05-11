@@ -23,7 +23,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
@@ -851,11 +850,8 @@ void JpegClient::StartDecode(int32_t task_id, bool do_prepare_memory) {
                      task.image->data_str.size(), 0 /* src_offset */,
                      hw_out_dmabuf_frame_);
   } else {
-    base::subtle::PlatformSharedMemoryRegion dup_region =
-        base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
-            in_shm_.Duplicate());
-    ASSERT_EQ(dup_region.GetSize(), task.image->data_str.size());
-    media::BitstreamBuffer bitstream_buffer(task_id, std::move(dup_region),
+    ASSERT_EQ(in_shm_.GetSize(), task.image->data_str.size());
+    media::BitstreamBuffer bitstream_buffer(task_id, in_shm_.Duplicate(),
                                             task.image->data_str.size());
     decoder_->Decode(std::move(bitstream_buffer), hw_out_frame_);
   }

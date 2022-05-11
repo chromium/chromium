@@ -352,9 +352,7 @@ VideoEncoderClient::CreateBitstreamRef(
   auto it = bitstream_buffers_.find(bitstream_buffer_id);
   LOG_ASSERT(it != bitstream_buffers_.end());
   auto decoder_buffer = DecoderBuffer::FromSharedMemoryRegion(
-      base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
-          it->second.Duplicate()),
-      0u /* offset */, metadata.payload_size_bytes);
+      it->second.Duplicate(), 0u /* offset */, metadata.payload_size_bytes);
   if (!decoder_buffer)
     return nullptr;
   decoder_buffer->set_timestamp(base::Microseconds(frame_index_));

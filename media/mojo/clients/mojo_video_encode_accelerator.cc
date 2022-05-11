@@ -22,7 +22,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 
 namespace media {
 
@@ -201,10 +200,7 @@ void MojoVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 
   DCHECK(buffer.region().IsValid());
 
-  auto buffer_handle =
-      mojo::WrapPlatformSharedMemoryRegion(buffer.TakeRegion());
-
-  vea_->UseOutputBitstreamBuffer(buffer.id(), std::move(buffer_handle));
+  vea_->UseOutputBitstreamBuffer(buffer.id(), buffer.TakeRegion());
 }
 
 void MojoVideoEncodeAccelerator::RequestEncodingParametersChange(

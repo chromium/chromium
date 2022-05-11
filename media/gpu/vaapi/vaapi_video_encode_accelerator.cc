@@ -22,6 +22,8 @@
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
@@ -34,7 +36,6 @@
 #include "media/base/format_utils.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
-#include "media/base/unaligned_shared_memory.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
@@ -129,13 +130,10 @@ struct VaapiVideoEncodeAccelerator::InputFrameRef {
 
 struct VaapiVideoEncodeAccelerator::BitstreamBufferRef {
   BitstreamBufferRef(int32_t id, BitstreamBuffer buffer)
-      : id(id),
-        shm(std::make_unique<UnalignedSharedMemory>(buffer.TakeRegion(),
-                                                    buffer.size(),
-                                                    false)),
-        offset(buffer.offset()) {}
+      : id(id), shm_region(buffer.TakeRegion()), offset(buffer.offset()) {}
   const int32_t id;
-  const std::unique_ptr<UnalignedSharedMemory> shm;
+  base::UnsafeSharedMemoryRegion shm_region;
+  base::WritableSharedMemoryMapping shm_mapping;
   const off_t offset;
 };
 
@@ -512,13 +510,13 @@ void VaapiVideoEncodeAccelerator::ReturnBitstreamBuffer(
     std::unique_ptr<EncodeResult> encode_result,
     std::unique_ptr<BitstreamBufferRef> buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-  uint8_t* target_data = static_cast<uint8_t*>(buffer->shm->memory());
+  uint8_t* target_data = buffer->shm_mapping.GetMemoryAs<uint8_t>();
   size_t data_size = 0;
   // vaSyncSurface() is not necessary because GetEncodedChunkSize() has been
   // called in VaapiVideoEncoderDelegate::Encode().
   if (!vaapi_wrapper_->DownloadFromVABuffer(
           encode_result->coded_buffer_id(), /*sync_surface_id=*/absl::nullopt,
-          target_data, buffer->shm->size(), &data_size)) {
+          target_data, buffer->shm_region.GetSize(), &data_size)) {
     NOTIFY_ERROR(kPlatformFailureError, "Failed downloading coded buffer");
     return;
   }
@@ -954,7 +952,9 @@ void VaapiVideoEncodeAccelerator::UseOutputBitstreamBufferTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK_NE(state_, kUninitialized);
 
-  if (!buffer_ref->shm->MapAt(buffer_ref->offset, buffer_ref->shm->size())) {
+  buffer_ref->shm_mapping = buffer_ref->shm_region.MapAt(
+      buffer_ref->offset, buffer_ref->shm_region.GetSize());
+  if (!buffer_ref->shm_mapping.IsValid()) {
     NOTIFY_ERROR(kPlatformFailureError, "Failed mapping shared memory.");
     return;
   }

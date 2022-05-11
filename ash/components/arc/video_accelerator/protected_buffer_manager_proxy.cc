@@ -6,6 +6,8 @@
 
 #include "ash/components/arc/video_accelerator/arc_video_accelerator_util.h"
 #include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
+#include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "media/gpu/macros.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
@@ -35,8 +37,14 @@ void GpuArcProtectedBufferManagerProxy::
     return;
   }
 
-  // This ScopedFDPair dance is chromeos-specific.
-  base::subtle::ScopedFDPair fd_pair = region.PassPlatformHandle();
+  // Due to POSIX limitations, the shmem platform handle consists of a pair of
+  // a writable FD and a read-only FD. Since GetProtectedSharedMemoryRegionFor()
+  // returns a base::UnsafeSharedMemoryRegion, only the writable FD should be
+  // present.
+  base::subtle::PlatformSharedMemoryRegion platform_region =
+      base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+          std::move(region));
+  base::subtle::ScopedFDPair fd_pair = platform_region.PassPlatformHandle();
   std::move(callback).Run(mojo::WrapPlatformFile(std::move(fd_pair.fd)));
 }
 
@@ -45,16 +53,12 @@ void GpuArcProtectedBufferManagerProxy::GetProtectedSharedMemoryFromHandle(
     GetProtectedSharedMemoryFromHandleCallback callback) {
   base::ScopedFD unwrapped_fd = UnwrapFdFromMojoHandle(std::move(dummy_handle));
 
-  auto region_platform_handle =
+  base::UnsafeSharedMemoryRegion unsafe_shared_memory_region =
       protected_buffer_manager_->GetProtectedSharedMemoryRegionFor(
           std::move(unwrapped_fd));
-  if (!region_platform_handle.IsValid())
+  if (!unsafe_shared_memory_region.IsValid())
     return std::move(callback).Run(mojo::ScopedSharedBufferHandle());
 
-  base::UnsafeSharedMemoryRegion unsafe_shared_memory_region =
-      base::UnsafeSharedMemoryRegion::Deserialize(
-          std::move(region_platform_handle));
-  CHECK(unsafe_shared_memory_region.IsValid());
   std::move(callback).Run(mojo::WrapUnsafeSharedMemoryRegion(
       std::move(unsafe_shared_memory_region)));
 }

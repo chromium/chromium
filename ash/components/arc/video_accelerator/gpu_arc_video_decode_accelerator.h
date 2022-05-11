@@ -13,6 +13,7 @@
 #include "ash/components/arc/mojom/video_decode_accelerator.mojom.h"
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
@@ -110,7 +111,7 @@ class GpuArcVideoDecodeAccelerator
   // directly.
   void ContinueDecode(mojom::BitstreamBufferPtr bitstream_buffer,
                       base::ScopedFD handle_fd,
-                      base::subtle::PlatformSharedMemoryRegion shm_region);
+                      base::UnsafeSharedMemoryRegion shm_region);
 
   // Posted as a task after getting the result of the first query to the
   // |protected_buffer_manager_| in order to resume decode tasks that were

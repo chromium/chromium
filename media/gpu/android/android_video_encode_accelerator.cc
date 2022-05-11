@@ -11,6 +11,8 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -20,7 +22,6 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
-#include "media/base/unaligned_shared_memory.h"
 #include "media/video/picture.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
 #include "ui/gl/android/scoped_java_surface.h"
@@ -467,18 +468,18 @@ void AndroidVideoEncodeAccelerator::DequeueOutput() {
   BitstreamBuffer bitstream_buffer =
       std::move(available_bitstream_buffers_.back());
   available_bitstream_buffers_.pop_back();
-  auto shm = std::make_unique<UnalignedSharedMemory>(
-      bitstream_buffer.TakeRegion(), bitstream_buffer.size(), false);
-  RETURN_ON_FAILURE(
-      shm->MapAt(bitstream_buffer.offset(), bitstream_buffer.size()),
-      "Failed to map SHM", kPlatformFailureError);
+  base::UnsafeSharedMemoryRegion region = bitstream_buffer.TakeRegion();
+  auto mapping =
+      region.MapAt(bitstream_buffer.offset(), bitstream_buffer.size());
+  RETURN_ON_FAILURE(mapping.IsValid(), "Failed to map SHM",
+                    kPlatformFailureError);
   RETURN_ON_FAILURE(
       size <= bitstream_buffer.size(),
       "Encoded buffer too large: " << size << ">" << bitstream_buffer.size(),
       kPlatformFailureError);
 
-  status = media_codec_->CopyFromOutputBuffer(buf_index, offset, shm->memory(),
-                                              size);
+  status = media_codec_->CopyFromOutputBuffer(buf_index, offset,
+                                              mapping.memory(), size);
   RETURN_ON_FAILURE(status == MEDIA_CODEC_OK, "CopyFromOutputBuffer failed",
                     kPlatformFailureError);
   media_codec_->ReleaseOutputBuffer(buf_index, false);

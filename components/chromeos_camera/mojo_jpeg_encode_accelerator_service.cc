@@ -213,21 +213,23 @@ void MojoJpegEncodeAcceleratorService::EncodeWithFD(
               base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
               input_buffer_size, base::UnguessableToken::Create()));
 
-  base::subtle::PlatformSharedMemoryRegion output_shm_region =
-      base::subtle::PlatformSharedMemoryRegion::Take(
-          std::move(output_fd),
-          base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
-          output_buffer_size, base::UnguessableToken::Create());
+  base::UnsafeSharedMemoryRegion output_shm_region =
+      base::UnsafeSharedMemoryRegion::Deserialize(
+          base::subtle::PlatformSharedMemoryRegion::Take(
+              std::move(output_fd),
+              base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
+              output_buffer_size, base::UnguessableToken::Create()));
 
   media::BitstreamBuffer output_buffer(task_id, std::move(output_shm_region),
                                        output_buffer_size);
   std::unique_ptr<media::BitstreamBuffer> exif_buffer;
   if (exif_buffer_size > 0) {
-    base::subtle::PlatformSharedMemoryRegion exif_shm_region =
-        base::subtle::PlatformSharedMemoryRegion::Take(
-            base::subtle::ScopedFDPair(std::move(exif_fd), base::ScopedFD()),
-            base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
-            exif_buffer_size, base::UnguessableToken::Create());
+    base::UnsafeSharedMemoryRegion exif_shm_region =
+        base::UnsafeSharedMemoryRegion::Deserialize(
+            base::subtle::PlatformSharedMemoryRegion::Take(
+                std::move(exif_fd),
+                base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
+                exif_buffer_size, base::UnguessableToken::Create()));
     exif_buffer = std::make_unique<media::BitstreamBuffer>(
         task_id, std::move(exif_shm_region), exif_buffer_size);
   }
@@ -336,11 +338,12 @@ void MojoJpegEncodeAcceleratorService::EncodeWithDmaBuf(
   if (exif_buffer_size > 0) {
     // Currently we use our zero-based |task_id| as id of |exif_buffer| to track
     // the encode task process from both Chrome OS and Chrome side.
-    base::subtle::PlatformSharedMemoryRegion exif_shm_region =
-        base::subtle::PlatformSharedMemoryRegion::Take(
-            base::subtle::ScopedFDPair(std::move(exif_fd), base::ScopedFD()),
-            base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
-            exif_buffer_size, base::UnguessableToken::Create());
+    base::UnsafeSharedMemoryRegion exif_shm_region =
+        base::UnsafeSharedMemoryRegion::Deserialize(
+            base::subtle::PlatformSharedMemoryRegion::Take(
+                std::move(exif_fd),
+                base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
+                exif_buffer_size, base::UnguessableToken::Create()));
     exif_buffer = std::make_unique<media::BitstreamBuffer>(
         task_id, std::move(exif_shm_region), exif_buffer_size);
   }

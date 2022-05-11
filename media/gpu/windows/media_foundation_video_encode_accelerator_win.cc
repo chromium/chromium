@@ -547,10 +547,9 @@ void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBuffer(
     return;
   }
 
-  auto region =
-      base::UnsafeSharedMemoryRegion::Deserialize(buffer.TakeRegion());
+  auto region = buffer.TakeRegion();
   auto mapping = region.Map();
-  if (!region.IsValid() || !mapping.IsValid()) {
+  if (!mapping.IsValid()) {
     DLOG(ERROR) << "Failed mapping shared memory.";
     NotifyError(kPlatformFailureError);
     return;

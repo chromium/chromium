@@ -16,8 +16,7 @@ void ParamTraits<media::BitstreamBuffer>::Write(base::Pickle* m,
                                                 const param_type& p) {
   WriteParam(m, p.id());
   WriteParam(m, static_cast<uint64_t>(p.size()));
-  DCHECK_GE(p.offset(), 0);
-  WriteParam(m, static_cast<uint64_t>(p.offset()));
+  WriteParam(m, p.offset());
   WriteParam(m, p.presentation_timestamp());
   WriteParam(m, p.key_id());
   if (!p.key_id().empty()) {
@@ -32,9 +31,8 @@ bool ParamTraits<media::BitstreamBuffer>::Read(const base::Pickle* m,
                                                param_type* r) {
   DCHECK(r);
   uint64_t size = 0;
-  uint64_t offset = 0;
   if (!(ReadParam(m, iter, &r->id_) && ReadParam(m, iter, &size) &&
-        ReadParam(m, iter, &offset) &&
+        ReadParam(m, iter, &r->offset_) &&
         ReadParam(m, iter, &r->presentation_timestamp_) &&
         ReadParam(m, iter, &r->key_id_)))
     return false;
@@ -45,13 +43,6 @@ bool ParamTraits<media::BitstreamBuffer>::Read(const base::Pickle* m,
     return false;
   }
   r->size_ = checked_size.ValueOrDie();
-
-  base::CheckedNumeric<off_t> checked_offset(offset);
-  if (!checked_offset.IsValid()) {
-    DLOG(ERROR) << "Invalid offset: " << offset;
-    return false;
-  }
-  r->offset_ = checked_offset.ValueOrDie();
 
   if (!r->key_id_.empty()) {
     if (!(ReadParam(m, iter, &r->iv_) && ReadParam(m, iter, &r->subsamples_)))

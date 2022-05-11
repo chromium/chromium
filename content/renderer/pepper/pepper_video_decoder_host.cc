@@ -260,10 +260,7 @@ int32_t PepperVideoDecoderHost::OnHostMsgDecode(
 
   shm_buffers_[shm_id].busy = true;
   decoder_->Decode(media::BitstreamBuffer(
-      decode_id,
-      base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
-          shm_buffers_[shm_id].region.Duplicate()),
-      size));
+      decode_id, shm_buffers_[shm_id].region.Duplicate(), size));
 
   return PP_OK_COMPLETIONPENDING;
 }
@@ -560,9 +557,7 @@ bool PepperVideoDecoderHost::TryFallbackToSoftwareDecoder() {
   for (const PendingDecode& decode : pending_decodes_) {
     DCHECK(shm_buffers_[decode.shm_id].busy);
     decoder_->Decode(media::BitstreamBuffer(
-        decode.decode_id,
-        base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
-            shm_buffers_[decode.shm_id].region.Duplicate()),
+        decode.decode_id, shm_buffers_[decode.shm_id].region.Duplicate(),
         decode.size));
   }
 

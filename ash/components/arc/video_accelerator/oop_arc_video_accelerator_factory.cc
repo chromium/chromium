@@ -8,12 +8,14 @@
 #include "ash/components/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
 #include "ash/components/arc/video_accelerator/gpu_arc_video_decoder.h"
 #include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/gpu/macros.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/system/platform_handle.h"
 
 namespace arc {
 
@@ -67,13 +69,12 @@ class MojoProtectedBufferManager : public DecoderProtectedBufferManager {
       GetProtectedSharedMemoryRegionForResponseCB response_cb,
       mojo::ScopedSharedBufferHandle shared_memory_mojo_handle) {
     if (!shared_memory_mojo_handle.is_valid()) {
-      return std::move(response_cb)
-          .Run(base::subtle::PlatformSharedMemoryRegion());
+      return std::move(response_cb).Run(base::UnsafeSharedMemoryRegion());
     }
 
     // TODO(b/195769334): does anything need to be validated here?
     std::move(response_cb)
-        .Run(mojo::UnwrapPlatformSharedMemoryRegion(
+        .Run(mojo::UnwrapUnsafeSharedMemoryRegion(
             std::move(shared_memory_mojo_handle)));
   }
 

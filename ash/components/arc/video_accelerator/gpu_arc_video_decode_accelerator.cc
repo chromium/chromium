@@ -12,6 +12,8 @@
 #include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
 #include "base/bind.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
@@ -526,13 +528,13 @@ void GpuArcVideoDecodeAccelerator::Decode(
   DCHECK(secure_mode_);
   DCHECK(!*secure_mode_);
   ContinueDecode(std::move(bitstream_buffer), std::move(handle_fd),
-                 base::subtle::PlatformSharedMemoryRegion());
+                 base::UnsafeSharedMemoryRegion());
 }
 
 void GpuArcVideoDecodeAccelerator::ContinueDecode(
     mojom::BitstreamBufferPtr bitstream_buffer,
     base::ScopedFD handle_fd,
-    base::subtle::PlatformSharedMemoryRegion shm_region) {
+    base::UnsafeSharedMemoryRegion shm_region) {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!vda_) {
@@ -583,10 +585,11 @@ void GpuArcVideoDecodeAccelerator::ContinueDecode(
       return;
     }
     DCHECK(!shm_region.IsValid());
-    shm_region = base::subtle::PlatformSharedMemoryRegion::Take(
-        std::move(handle_fd),
-        base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe, handle_size,
-        base::UnguessableToken::Create());
+    shm_region = base::UnsafeSharedMemoryRegion::Deserialize(
+        base::subtle::PlatformSharedMemoryRegion::Take(
+            std::move(handle_fd),
+            base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
+            handle_size, base::UnguessableToken::Create()));
   }
 
   if (!shm_region.IsValid()) {

@@ -8,10 +8,11 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/bind_to_current_loop.h"
-#include "media/base/unaligned_shared_memory.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 
@@ -60,10 +61,10 @@ void FakeMjpegDecodeAccelerator::Decode(
     scoped_refptr<media::VideoFrame> video_frame) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 
-  auto src_shm = std::make_unique<media::UnalignedSharedMemory>(
-      bitstream_buffer.TakeRegion(), bitstream_buffer.size(),
-      false /* read_only */);
-  if (!src_shm->MapAt(bitstream_buffer.offset(), bitstream_buffer.size())) {
+  base::UnsafeSharedMemoryRegion src_shm_region = bitstream_buffer.TakeRegion();
+  base::WritableSharedMemoryMapping src_shm_mapping =
+      src_shm_region.MapAt(bitstream_buffer.offset(), bitstream_buffer.size());
+  if (!src_shm_mapping.IsValid()) {
     DLOG(ERROR) << "Unable to map shared memory in FakeMjpegDecodeAccelerator";
     NotifyError(bitstream_buffer.id(),
                 MjpegDecodeAccelerator::UNREADABLE_INPUT);
@@ -75,7 +76,7 @@ void FakeMjpegDecodeAccelerator::Decode(
       FROM_HERE,
       base::BindOnce(&FakeMjpegDecodeAccelerator::DecodeOnDecoderThread,
                      base::Unretained(this), bitstream_buffer.id(),
-                     std::move(video_frame), std::move(src_shm)));
+                     std::move(video_frame), std::move(src_shm_mapping)));
 }
 
 void FakeMjpegDecodeAccelerator::Decode(
@@ -90,7 +91,7 @@ void FakeMjpegDecodeAccelerator::Decode(
 void FakeMjpegDecodeAccelerator::DecodeOnDecoderThread(
     int32_t task_id,
     scoped_refptr<media::VideoFrame> video_frame,
-    std::unique_ptr<media::UnalignedSharedMemory> src_shm) {
+    base::WritableSharedMemoryMapping src_shm_mapping) {
   DCHECK(decoder_task_runner_->BelongsToCurrentThread());
 
   // Do not actually decode the Jpeg data.

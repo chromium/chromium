@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
@@ -73,7 +74,7 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
               bool force_keyframe,
               EncodeCallback callback) override;
   void UseOutputBitstreamBuffer(int32_t bitstream_buffer_id,
-                                mojo::ScopedSharedBufferHandle buffer) override;
+                                base::UnsafeSharedMemoryRegion region) override;
   void RequestEncodingParametersChangeWithBitrate(
       const media::Bitrate& bitrate_allocation,
       uint32_t framerate) override;

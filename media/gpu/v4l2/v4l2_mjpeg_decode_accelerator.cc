@@ -18,11 +18,12 @@
 #include "base/callback_helpers.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/page_size.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/bitstream_buffer.h"
-#include "media/base/unaligned_shared_memory.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -145,7 +146,7 @@ class V4L2MjpegDecodeAccelerator::JobRecord {
   // Input buffer size.
   virtual size_t size() const = 0;
   // Input buffer offset.
-  virtual off_t offset() const = 0;
+  virtual uint64_t offset() const = 0;
   // Maps input buffer.
   virtual bool map() = 0;
   // Pointer to the input content. Only valid if map() is already called.
@@ -164,9 +165,7 @@ class JobRecordBitstreamBuffer : public V4L2MjpegDecodeAccelerator::JobRecord {
   JobRecordBitstreamBuffer(BitstreamBuffer bitstream_buffer,
                            scoped_refptr<VideoFrame> video_frame)
       : task_id_(bitstream_buffer.id()),
-        shm_(bitstream_buffer.TakeRegion(),
-             bitstream_buffer.size(),
-             false /* read_only */),
+        shm_region_(bitstream_buffer.TakeRegion()),
         offset_(bitstream_buffer.offset()),
         out_frame_(video_frame) {}
 
@@ -174,17 +173,21 @@ class JobRecordBitstreamBuffer : public V4L2MjpegDecodeAccelerator::JobRecord {
   JobRecordBitstreamBuffer& operator=(const JobRecordBitstreamBuffer&) = delete;
 
   int32_t task_id() const override { return task_id_; }
-  size_t size() const override { return shm_.size(); }
-  off_t offset() const override { return offset_; }
-  bool map() override { return shm_.MapAt(offset(), size()); }
-  const void* memory() const override { return shm_.memory(); }
+  size_t size() const override { return shm_region_.GetSize(); }
+  uint64_t offset() const override { return offset_; }
+  bool map() override {
+    shm_mapping_ = shm_region_.MapAt(offset(), size());
+    return shm_mapping_.IsValid();
+  }
+  const void* memory() const override { return shm_mapping_.memory(); }
 
   const scoped_refptr<VideoFrame>& out_frame() override { return out_frame_; }
 
  private:
   int32_t task_id_;
-  UnalignedSharedMemory shm_;
-  off_t offset_;
+  base::UnsafeSharedMemoryRegion shm_region_;
+  uint64_t offset_;
+  base::WritableSharedMemoryMapping shm_mapping_;
   scoped_refptr<VideoFrame> out_frame_;
 };
 
@@ -215,7 +218,7 @@ class JobRecordDmaBuf : public V4L2MjpegDecodeAccelerator::JobRecord {
 
   int32_t task_id() const override { return task_id_; }
   size_t size() const override { return size_; }
-  off_t offset() const override { return offset_; }
+  uint64_t offset() const override { return offset_; }
 
   bool map() override {
     if (mapped_addr_)
@@ -225,7 +228,7 @@ class JobRecordDmaBuf : public V4L2MjpegDecodeAccelerator::JobRecord {
     DCHECK(dmabuf_fd_.is_valid());
     DCHECK_GT(size(), 0u);
     void* addr = mmap(nullptr, size(), PROT_READ, MAP_SHARED, dmabuf_fd_.get(),
-                      offset());
+                      base::checked_cast<off_t>(offset()));
     if (addr == MAP_FAILED)
       return false;
     mapped_addr_ = addr;
@@ -243,7 +246,7 @@ class JobRecordDmaBuf : public V4L2MjpegDecodeAccelerator::JobRecord {
   int32_t task_id_;
   base::ScopedFD dmabuf_fd_;
   size_t size_;
-  off_t offset_;
+  uint64_t offset_;
   void* mapped_addr_;
   scoped_refptr<VideoFrame> out_frame_;
 };

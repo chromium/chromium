@@ -245,9 +245,11 @@ void GpuArcVideoEncodeAccelerator::UseBitstreamBuffer(
   // rather than pulling out the fd. https://crbug.com/713763.
   // TODO(rockot): Pass through a real size rather than |0|.
   base::UnguessableToken guid = base::UnguessableToken::Create();
-  auto shm_region = base::subtle::PlatformSharedMemoryRegion::Take(
-      std::move(fd), base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
-      shmem_size, guid);
+  auto shm_region = base::UnsafeSharedMemoryRegion::Deserialize(
+      base::subtle::PlatformSharedMemoryRegion::Take(
+          std::move(fd),
+          base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe, shmem_size,
+          guid));
   if (!shm_region.IsValid()) {
     client_->NotifyError(Error::kInvalidArgumentError);
     return;

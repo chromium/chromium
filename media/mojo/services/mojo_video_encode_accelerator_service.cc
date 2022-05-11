@@ -158,14 +158,14 @@ void MojoVideoEncodeAcceleratorService::Encode(
 
 void MojoVideoEncodeAcceleratorService::UseOutputBitstreamBuffer(
     int32_t bitstream_buffer_id,
-    mojo::ScopedSharedBufferHandle buffer) {
+    base::UnsafeSharedMemoryRegion region) {
   DVLOG(2) << __func__ << " bitstream_buffer_id=" << bitstream_buffer_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!encoder_)
     return;
-  if (!buffer.is_valid()) {
-    DLOG(ERROR) << __func__ << " invalid |buffer|.";
+  if (!region.IsValid()) {
+    DLOG(ERROR) << __func__ << " invalid |region|.";
     NotifyError(::media::VideoEncodeAccelerator::kInvalidArgumentError);
     return;
   }
@@ -175,9 +175,6 @@ void MojoVideoEncodeAcceleratorService::UseOutputBitstreamBuffer(
     NotifyError(::media::VideoEncodeAccelerator::kInvalidArgumentError);
     return;
   }
-
-  base::subtle::PlatformSharedMemoryRegion region =
-      mojo::UnwrapPlatformSharedMemoryRegion(std::move(buffer));
 
   auto memory_size = region.GetSize();
   if (memory_size < output_buffer_size_) {

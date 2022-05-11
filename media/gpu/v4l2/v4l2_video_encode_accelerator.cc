@@ -21,6 +21,8 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -31,7 +33,6 @@
 #include "media/base/color_plane_layout.h"
 #include "media/base/media_log.h"
 #include "media/base/scopedfd_helper.h"
-#include "media/base/unaligned_shared_memory.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -128,10 +129,10 @@ absl::optional<VideoFrameLayout> AsMultiPlanarLayout(
 }  // namespace
 
 struct V4L2VideoEncodeAccelerator::BitstreamBufferRef {
-  BitstreamBufferRef(int32_t id, std::unique_ptr<UnalignedSharedMemory> shm)
-      : id(id), shm(std::move(shm)) {}
+  BitstreamBufferRef(int32_t id, base::WritableSharedMemoryMapping shm_mapping)
+      : id(id), shm_mapping(std::move(shm_mapping)) {}
   const int32_t id;
-  const std::unique_ptr<UnalignedSharedMemory> shm;
+  base::WritableSharedMemoryMapping shm_mapping;
 };
 
 V4L2VideoEncodeAccelerator::InputRecord::InputRecord() = default;
@@ -648,8 +649,8 @@ size_t V4L2VideoEncodeAccelerator::CopyIntoOutputBuffer(
     std::unique_ptr<BitstreamBufferRef> buffer_ref) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
-  uint8_t* dst_ptr = static_cast<uint8_t*>(buffer_ref->shm->memory());
-  size_t remaining_dst_size = buffer_ref->shm->size();
+  uint8_t* dst_ptr = buffer_ref->shm_mapping.GetMemoryAs<uint8_t>();
+  size_t remaining_dst_size = buffer_ref->shm_mapping.size();
 
   if (!inject_sps_and_pps_) {
     if (bitstream_size <= remaining_dst_size) {
@@ -726,7 +727,7 @@ size_t V4L2VideoEncodeAccelerator::CopyIntoOutputBuffer(
                                 &remaining_dst_size);
   }
 
-  return buffer_ref->shm->size() - remaining_dst_size;
+  return buffer_ref->shm_mapping.size() - remaining_dst_size;
 }
 
 void V4L2VideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
@@ -926,15 +927,17 @@ void V4L2VideoEncodeAccelerator::UseOutputBitstreamBufferTask(
     NOTIFY_ERROR(kInvalidArgumentError);
     return;
   }
-  auto shm = std::make_unique<UnalignedSharedMemory>(buffer.TakeRegion(),
-                                                     buffer.size(), false);
-  if (!shm->MapAt(buffer.offset(), buffer.size())) {
+
+  base::UnsafeSharedMemoryRegion shm_region = buffer.TakeRegion();
+  base::WritableSharedMemoryMapping shm_mapping =
+      shm_region.MapAt(buffer.offset(), buffer.size());
+  if (!shm_mapping.IsValid()) {
     NOTIFY_ERROR(kPlatformFailureError);
     return;
   }
 
-  bitstream_buffer_pool_.push_back(
-      std::make_unique<BitstreamBufferRef>(buffer.id(), std::move(shm)));
+  bitstream_buffer_pool_.push_back(std::make_unique<BitstreamBufferRef>(
+      buffer.id(), std::move(shm_mapping)));
   PumpBitstreamBuffers();
 
   if (encoder_state_ == kInitialized) {
