@@ -2532,6 +2532,7 @@ static_library("browser") {
       "//components/quirks",
       "//components/session_manager/core",
       "//device/vr/public/mojom:isolated_xr_service",
+      "//remoting/host/chromeos:features",
     ]
 
     allow_circular_includes_from += [

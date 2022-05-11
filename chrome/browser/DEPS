@@ -405,6 +405,7 @@ include_rules = [
   "+ppapi/host",
   "+ppapi/proxy",
   "+ppapi/shared_impl",
+  "+remoting/host/chromeos/features.h",
   "+rlz",
   "+sandbox/mac",
   "+sandbox/win/src",

@@ -89,7 +89,7 @@ bool AuraDesktopCapturer::GetSourceList(SourceList* sources) {
 }
 
 bool AuraDesktopCapturer::SelectSource(SourceId id) {
-  if (!base::FeatureList::IsEnabled(kEnableMultiMonitorsInCrd))
+  if (!base::FeatureList::IsEnabled(features::kEnableMultiMonitorsInCrd))
     return false;
 
   if (!util_.GetDisplayForId(id))

@@ -7,11 +7,11 @@
 
 #include "base/feature_list.h"
 
-namespace remoting {
+namespace remoting::features {
 
 // Enable to allow CRD to stream other monitors than the primary display.
 extern const base::Feature kEnableMultiMonitorsInCrd;
 
-}  // namespace remoting
+}  // namespace remoting::features
 
 #endif  // REMOTING_HOST_CHROMEOS_FEATURES_H_

@@ -55,7 +55,7 @@ class DesktopDisplayInfoLoaderChromeOs : public DesktopDisplayInfoLoader {
 };
 
 DesktopDisplayInfo DesktopDisplayInfoLoaderChromeOs::GetCurrentDisplayInfo() {
-  if (!base::FeatureList::IsEnabled(kEnableMultiMonitorsInCrd))
+  if (!base::FeatureList::IsEnabled(features::kEnableMultiMonitorsInCrd))
     return DesktopDisplayInfo();
 
   const DisplayId primary_display_id =

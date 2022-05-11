@@ -4,9 +4,9 @@
 
 #include "remoting/host/chromeos/features.h"
 
-namespace remoting {
+namespace remoting::features {
 
 const base::Feature kEnableMultiMonitorsInCrd{
     "EnableMultiMonitorsInCrd", base::FEATURE_DISABLED_BY_DEFAULT};
 
-}  // namespace remoting
+}  // namespace remoting::features

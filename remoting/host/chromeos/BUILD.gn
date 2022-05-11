@@ -12,8 +12,6 @@ source_set("chromeos") {
     "aura_desktop_capturer.h",
     "clipboard_aura.cc",
     "clipboard_aura.h",
-    "features.cc",
-    "features.h",
     "message_box.cc",
     "message_box.h",
     "mouse_cursor_monitor_aura.cc",
@@ -40,6 +38,7 @@ source_set("chromeos") {
   ]
 
   deps = [
+    ":features",
     "//remoting/base:base",
     "//remoting/host:clipboard",
     "//ui/aura/cursor",
@@ -125,6 +124,7 @@ source_set("unit_tests") {
 
   deps = [
     ":chromeos",
+    ":features",
     "//base/test:test_support",
     "//remoting/host:common",
     "//remoting/host:test_support",
@@ -135,4 +135,12 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/display/manager",
   ]
+}
+
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
 }

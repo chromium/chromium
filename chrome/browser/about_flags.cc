@@ -242,6 +242,7 @@
 #include "components/app_restore/features.h"
 #include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
+#include "remoting/host/chromeos/features.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 #include "ui/events/ozone/features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -6194,6 +6195,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"fast-pair-saved-devices", flag_descriptions::kFastPairSavedDevicesName,
      flag_descriptions::kFastPairSavedDevicesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairSavedDevices)},
+
+    {"multi-monitors-in-crd", flag_descriptions::kMultiMonitorsInCrdName,
+     flag_descriptions::kMultiMonitorsInCrdDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(remoting::features::kEnableMultiMonitorsInCrd)},
 
     {"fast-pair-software-scanning",
      flag_descriptions::kFastPairSoftwareScanningName,

@@ -1226,7 +1226,7 @@ const char kEnablePixelCanvasRecordingDescription[] =
 const char kReduceHorizontalFlingVelocityName[] =
     "Reduce horizontal fling velocity";
 const char kReduceHorizontalFlingVelocityDescription[] =
-    "Reduces the velocity of horizontal flings to 20\% of their original"
+    "Reduces the velocity of horizontal flings to 20% of their original"
     "velocity.";
 
 const char kEnableCssSelectorFragmentAnchorName[] =
@@ -4492,6 +4492,11 @@ const char kFastPairSavedDevicesDescription[] =
     "Enables the Fast Pair \"Saved Devices\" page to display a list of the "
     "user's devices and provide the option to opt in or out of saving devices "
     "to their account.";
+
+const char kMultiMonitorsInCrdName[] = "Multi monitor in CRD";
+const char kMultiMonitorsInCrdDescription[] =
+    "Enables support for viewing multiple monitors connected to this ChromeOS "
+    "device through CRD.";
 
 const char kUseHDRTransferFunctionName[] =
     "Monitor/Display HDR transfer function";

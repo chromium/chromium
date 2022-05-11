@@ -74,7 +74,7 @@ class DesktopDisplayInfoLoaderChromeOsTest : public ::testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment environment_;
-  base::test::ScopedFeatureList features_{kEnableMultiMonitorsInCrd};
+  base::test::ScopedFeatureList features_{features::kEnableMultiMonitorsInCrd};
   test::ScopedFakeAshDisplayUtil display_util_;
 
   std::unique_ptr<DesktopDisplayInfoLoader> display_info_loader_ =
@@ -84,7 +84,7 @@ class DesktopDisplayInfoLoaderChromeOsTest : public ::testing::Test {
 TEST_F(DesktopDisplayInfoLoaderChromeOsTest,
        ShouldReturnNothingIfFeatureIsDisabled) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kEnableMultiMonitorsInCrd);
+  features.InitAndDisableFeature(features::kEnableMultiMonitorsInCrd);
 
   display_util().AddPrimaryDisplay();
   display_util().AddDisplayWithId(111);

@@ -197,7 +197,7 @@ TEST_F(AuraDesktopCapturerTest, ShouldReturnTemporaryErrorIfScreenshotFails) {
 TEST_F(AuraDesktopCapturerTest,
        ShouldNotAllowSwitchingToSecondaryMonitorIfFeatureFlagIsDisabled) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kEnableMultiMonitorsInCrd);
+  features.InitAndDisableFeature(features::kEnableMultiMonitorsInCrd);
 
   display_util().AddDisplayWithId(111);
 
@@ -207,7 +207,7 @@ TEST_F(AuraDesktopCapturerTest,
 
 TEST_F(AuraDesktopCapturerTest,
        ShouldAllowSwitchingToSecondaryMonitorIfFeatureFlagIsEnabled) {
-  base::test::ScopedFeatureList features{kEnableMultiMonitorsInCrd};
+  base::test::ScopedFeatureList features{features::kEnableMultiMonitorsInCrd};
 
   // We're using a value bigger than 32 bit to ensure nothing gets truncated.
   constexpr int64_t display_id = 123456789123456789;
@@ -225,14 +225,14 @@ TEST_F(AuraDesktopCapturerTest,
 }
 
 TEST_F(AuraDesktopCapturerTest, ShouldFailSwitchingToNonExistingMonitor) {
-  base::test::ScopedFeatureList features{kEnableMultiMonitorsInCrd};
+  base::test::ScopedFeatureList features{features::kEnableMultiMonitorsInCrd};
 
   capturer_.Start(&desktop_capturer_callback());
   EXPECT_FALSE(capturer_.SelectSource(222));
 }
 
 TEST_F(AuraDesktopCapturerTest, ShouldUseCorrectDisplayAfterSwitching) {
-  base::test::ScopedFeatureList features{kEnableMultiMonitorsInCrd};
+  base::test::ScopedFeatureList features{features::kEnableMultiMonitorsInCrd};
 
   display_util().AddPrimaryDisplay();
   display_util().AddDisplayWithId(222);

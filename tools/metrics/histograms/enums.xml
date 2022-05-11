@@ -59226,6 +59226,7 @@ from previous Chrome versions.
   <int value="1090442943" label="SemanticColorDebugOverride:enabled"/>
   <int value="1091624595" label="BluetoothAdvertisementMonitoring:enabled"/>
   <int value="1091631619" label="disable-accelerated-video-encode"/>
+  <int value="1092296990" label="EnableMultiMonitorsInCrd:disabled"/>
   <int value="1092896354" label="EnableFullscreenAppList:disabled"/>
   <int value="1093859961" label="RelatedSearchesSimplifiedUx:disabled"/>
   <int value="1094095931" label="enable-vulkan"/>
@@ -59686,6 +59687,7 @@ from previous Chrome versions.
   <int value="1395175083" label="PrivacyGuide:enabled"/>
   <int value="1397053154" label="ContextualSearchLiteralSearchTap:enabled"/>
   <int value="1397069250" label="NetworkService:disabled"/>
+  <int value="1397169840" label="EnableMultiMonitorsInCrd:enabled"/>
   <int value="1398044738" label="EchePhoneHubPermissionsOnboarding:enabled"/>
   <int value="1398049903" label="WebUIDarkMode:disabled"/>
   <int value="1398333721" label="ForceEnableDevicesPage:disabled"/>
