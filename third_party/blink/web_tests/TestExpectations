@@ -248,6 +248,10 @@ crbug.com/1123606 virtual/fenced-frame-mparch/* [ Pass ]
 crbug.com/1311760 [ Mac ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-gradients-in-worker.html [ Failure ]
 crbug.com/1311760 [ Mac ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-paths-in-worker.html [ Failure ]
 
+# Offscreen canvas tests that are flaky because sometimes the image is not rendered in time
+# See crbug.com/1315650
+crbug.com/1322089 virtual/gpu/fast/canvas/OffscreenCanvas-MessageChannel-transfer.html [ Pass Failure ]
+
 # These tests require shared-storage and fenced-frames
 # Keep this in sync with VirtualTestSuites.
 crbug.com/1218540 wpt_internal/shared_storage/* [ Skip ]
