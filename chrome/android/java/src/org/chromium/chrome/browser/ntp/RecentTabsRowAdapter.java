@@ -32,12 +32,10 @@ import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSessionWindow;
 import org.chromium.chrome.browser.signin.SyncPromoView;
-import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.chrome.browser.ui.signin.SigninPromoController.SyncPromoState;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -561,24 +559,30 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                     String groupTitle = recentlyClosedGroup.getTitle();
                     if (TextUtils.isEmpty(groupTitle)) {
                         viewHolder.textView.setText(mActivity.getResources().getString(
-                                R.string.recent_tabs_group_closure_without_title));
+                                R.string.recent_tabs_group_closure_without_title, tabCount));
                     } else {
                         viewHolder.textView.setText(mActivity.getResources().getString(
                                 R.string.recent_tabs_group_closure_with_title, groupTitle));
                     }
                 }
                 if (entry instanceof RecentlyClosedBulkEvent) {
-                    tabCount = ((RecentlyClosedBulkEvent) entry).getTabs().size();
+                    RecentlyClosedBulkEvent recentlyClosedBulkEvent =
+                            (RecentlyClosedBulkEvent) entry;
+                    tabCount = recentlyClosedBulkEvent.getTabs().size();
 
                     viewHolder.textView.setText(mActivity.getResources().getString(
                             R.string.recent_tabs_bulk_closure, tabCount));
                 }
 
-                String dateString =
-                        DateFormat.getDateInstance(DateFormat.LONG, getPreferredLocale())
-                                .format(entry.getDate());
-                viewHolder.domainView.setText(dateString);
-                viewHolder.domainView.setVisibility(View.VISIBLE);
+                // Entries without dates have a time of 0. TabRestoreService may not save timestamps
+                // between restarts.
+                if (entry.getDate().getTime() != 0L) {
+                    String dateString =
+                            DateFormat.getDateInstance(DateFormat.LONG, getPreferredLocale())
+                                    .format(entry.getDate());
+                    viewHolder.domainView.setText(dateString);
+                    viewHolder.domainView.setVisibility(View.VISIBLE);
+                }
                 loadTabCount(viewHolder, tabCount);
             } else {
                 RecentlyClosedTab tab = (RecentlyClosedTab) entry;
@@ -765,9 +769,8 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     }
 
     private void loadTabCount(final ViewHolder viewHolder, int tabCount) {
-        TabSwitcherDrawable image = TabSwitcherDrawable.createTabSwitcherDrawable(
-                mActivity, BrandedColorScheme.APP_DEFAULT);
-        image.updateForTabCount(tabCount, false);
+        RecentTabCountDrawable image = new RecentTabCountDrawable(mActivity);
+        image.updateTabCount(tabCount);
         viewHolder.imageView.setImageDrawable(image);
     }
 

@@ -3137,10 +3137,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         <ph name="TAB_COUNT">%1$s<ex>6</ex></ph> tabs
       </message>
       <message name="IDS_RECENT_TABS_GROUP_CLOSURE_WITH_TITLE" desc="Text for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together that had a user specified group title. TITLE_OF_GROUP is the user specified title of the group.">
-        <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph>
+        Tab group - <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph>
       </message>
-      <message name="IDS_RECENT_TABS_GROUP_CLOSURE_WITHOUT_TITLE" desc="Text for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together that does not have a user specified title.">
-        1 tab group
+      <message name="IDS_RECENT_TABS_GROUP_CLOSURE_WITHOUT_TITLE" desc="Text for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together that does not have a user specified title. TAB_COUNT is the total number of tabs closed in the group.">
+        Tab group - <ph name="TAB_COUNT">%1$s<ex>5</ex></ph> tabs
       </message>
 
       <!-- Explore sites strings -->

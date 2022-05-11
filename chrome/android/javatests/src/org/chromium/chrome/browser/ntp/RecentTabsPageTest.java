@@ -132,10 +132,10 @@ public class RecentTabsPageTest {
     }
 
     @Test
-    @MediumTest
-    @Feature({"RecentTabsPage"})
+    @LargeTest
+    @Feature({"RecentTabsPage", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.BULK_TAB_RESTORE})
-    public void testRecentlyClosedGroup_WithTitle() throws ExecutionException {
+    public void testRecentlyClosedGroup_WithTitle() throws Exception {
         mPage = loadRecentTabsPage();
         // Set a recently closed group and confirm a view is rendered for it.
         final RecentlyClosedGroup group = new RecentlyClosedGroup(2, 0, "Group Title");
@@ -151,6 +151,8 @@ public class RecentTabsPageTest {
         });
         final View view = waitForView(groupString);
 
+        mRenderTestRule.render(mPage.getView(), "recently_closed_group_with_title");
+
         final int groupIdx = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity) ? 0 : 1;
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mPage.onChildClick(null, null, groupIdx, 0, 0); });
@@ -164,24 +166,27 @@ public class RecentTabsPageTest {
     }
 
     @Test
-    @MediumTest
-    @Feature({"RecentTabsPage"})
+    @LargeTest
+    @Feature({"RecentTabsPage", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.BULK_TAB_RESTORE})
-    public void testRecentlyClosedGroup_WithoutTitle() throws ExecutionException {
+    public void testRecentlyClosedGroup_WithoutTitle() throws Exception {
         mPage = loadRecentTabsPage();
+        long time = 904881600000L;
         // Set a recently closed group and confirm a view is rendered for it.
-        final RecentlyClosedGroup group = new RecentlyClosedGroup(2, 0, null);
+        final RecentlyClosedGroup group = new RecentlyClosedGroup(2, time, null);
         group.getTabs().add(new RecentlyClosedTab(
-                0, 0, "Tab Title 0", new GURL("https://www.example.com/url/0"), "group1"));
+                0, time, "Tab Title 0", new GURL("https://www.example.com/url/0"), "group1"));
         group.getTabs().add(new RecentlyClosedTab(
-                1, 0, "Tab Title 1", new GURL("https://www.example.com/url/1"), "group1"));
+                1, time, "Tab Title 1", new GURL("https://www.example.com/url/1"), "group1"));
         setRecentlyClosedEntries(Collections.singletonList(group));
         Assert.assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
         final String groupString = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             return mActivity.getResources().getString(
-                    R.string.recent_tabs_group_closure_without_title);
+                    R.string.recent_tabs_group_closure_without_title, group.getTabs().size());
         });
         final View view = waitForView(groupString);
+
+        mRenderTestRule.render(mPage.getView(), "recently_closed_group_without_title");
 
         final int groupIdx = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity) ? 0 : 1;
         TestThreadUtils.runOnUiThreadBlocking(
@@ -196,20 +201,21 @@ public class RecentTabsPageTest {
     }
 
     @Test
-    @MediumTest
-    @Feature({"RecentTabsPage"})
+    @LargeTest
+    @Feature({"RecentTabsPage", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.BULK_TAB_RESTORE})
-    public void testRecentlyClosedBulkEvent() throws ExecutionException {
+    public void testRecentlyClosedBulkEvent() throws Exception {
         mPage = loadRecentTabsPage();
+        long time = 904881600000L;
         // Set a recently closed bulk event and confirm a view is rendered for it.
-        final RecentlyClosedBulkEvent event = new RecentlyClosedBulkEvent(3, 0);
+        final RecentlyClosedBulkEvent event = new RecentlyClosedBulkEvent(3, time);
         event.getGroupIdToTitleMap().put("group1", "Group 1 Title");
         event.getTabs().add(new RecentlyClosedTab(
-                0, 0, "Tab Title 0", new GURL("https://www.example.com/url/0"), "group1"));
+                0, time, "Tab Title 0", new GURL("https://www.example.com/url/0"), "group1"));
         event.getTabs().add(new RecentlyClosedTab(
-                1, 0, "Tab Title 1", new GURL("https://www.example.com/url/1"), "group1"));
+                1, time, "Tab Title 1", new GURL("https://www.example.com/url/1"), "group1"));
         event.getTabs().add(new RecentlyClosedTab(
-                2, 0, "Tab Title 2", new GURL("https://www.example.com/url/2"), null));
+                2, time, "Tab Title 2", new GURL("https://www.example.com/url/2"), null));
         setRecentlyClosedEntries(Collections.singletonList(event));
         Assert.assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
         final int size = event.getTabs().size();
@@ -217,6 +223,8 @@ public class RecentTabsPageTest {
             return mActivity.getResources().getString(R.string.recent_tabs_bulk_closure, size);
         });
         final View view = waitForView(eventString);
+
+        mRenderTestRule.render(mPage.getView(), "recently_closed_bulk_event");
 
         final int groupIdx = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity) ? 0 : 1;
         TestThreadUtils.runOnUiThreadBlocking(

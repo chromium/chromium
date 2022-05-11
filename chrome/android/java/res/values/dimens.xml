@@ -248,6 +248,7 @@
     <dimen name="recent_tabs_show_history_item_size">60dp</dimen>
     <dimen name="recent_tabs_foreign_session_group_item_height">64dp</dimen>
     <dimen name="recent_tabs_default_group_item_height">48dp</dimen>
+    <dimen name="recent_tabs_count_text_size">11dp</dimen>
 
     <!-- Bookmarks dimensions -->
     <dimen name="bookmark_folder_item_left">16dp</dimen>
