@@ -2657,9 +2657,6 @@ if (!is_android) {
       sources += [
         "../browser/external_protocol/external_protocol_policy_browsertest.cc",
         "../browser/lifetime/application_lifetime_browsertest.cc",
-
-        # crbug.com/1323505 Enable DownloadBubble tests on ChromeOS.
-        "../browser/ui/views/download/bubble/download_bubble_dialog_browsertest.cc",
       ]
     }
 

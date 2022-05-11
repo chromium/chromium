@@ -389,8 +389,6 @@ void DownloadBubbleRowView::OnDownloadUpdated() {
   LoadIcon();
   UpdateButtonsForItems();
   UpdateProgressBar();
-  ui_updated_for_dangerous_download_ = model_->IsDangerous();
-  NotifyIfDownloadDangerous();
 }
 
 void DownloadBubbleRowView::OnDownloadOpened() {
@@ -445,19 +443,6 @@ void DownloadBubbleRowView::ShowContextMenuForViewImpl(
   context_menu_->Run(GetWidget()->GetTopLevelWidget(),
                      gfx::Rect(point, gfx::Size()), source_type,
                      base::RepeatingClosure());
-}
-
-void DownloadBubbleRowView::SetNotifyDangerousDownloadCallbackForTesting(
-    base::OnceClosure callback) {
-  notify_dangerous_download_callback_for_testing_ = std::move(callback);
-  NotifyIfDownloadDangerous();
-}
-
-void DownloadBubbleRowView::NotifyIfDownloadDangerous() {
-  if (ui_updated_for_dangerous_download_ &&
-      notify_dangerous_download_callback_for_testing_) {
-    std::move(notify_dangerous_download_callback_for_testing_).Run();
-  }
 }
 
 BEGIN_METADATA(DownloadBubbleRowView, views::View)
