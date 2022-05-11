@@ -167,6 +167,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
       const base::android::JavaRef<jobject>& jrender_frame_host_android);
 #endif
 
+  // Logs UMA metrics related to isolatable sandboxed iframes.
+  static void LogSandboxedIframesIsolationMetrics();
+
   ~RenderFrameHost() override = default;
 
   // Returns the route id for this frame.

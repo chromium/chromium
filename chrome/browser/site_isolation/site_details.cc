@@ -153,6 +153,11 @@ void SiteDetails::UpdateHistograms(
   base::UmaHistogramCounts100("SiteIsolation.OutOfProcessIframes", num_oopifs);
   base::UmaHistogramCounts100("SiteIsolation.OutOfProcessInnerFrameTrees",
                               num_oop_inner_frame_trees);
+
+  // Log metrics related to the actual & potential process overhead of isolated
+  // sandboxed iframes.
+  RenderFrameHost::LogSandboxedIframesIsolationMetrics();
+
   if (!content::SiteIsolationPolicy::
           IsProcessIsolationForOriginAgentClusterEnabled()) {
     return;

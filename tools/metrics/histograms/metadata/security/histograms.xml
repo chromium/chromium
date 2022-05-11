@@ -720,6 +720,53 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SiteIsolation.IsolatableSandboxedIframes" units="processes"
+    expires_after="2023-05-09">
+  <owner>wjmaclean@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    The number of sandboxed iframes that (i) are same-site (and therefore not
+    already process-isolated) and (ii) eligible to be process isolated if
+    SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled() is true. A
+    sandboxed iframe is eligible for process-isolation so long as it doesn't
+    have `allow-same-origin` among its sandbox permissions, and it isn't an
+    about:blank url. This metric measures the upper bound on the process
+    overhead of isolating sandboxed iframes, namely the case where every
+    sandboxed iframe is placed in its own process. Note that the computation of
+    this metric is independent of the current process model. Recorded once per
+    UMA ping.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.IsolatableSandboxedIframes.UniqueOrigins"
+    units="processes" expires_after="2023-05-09">
+  <owner>wjmaclean@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    The number of unique origins among the sandboxed iframes reported in
+    SiteIsolation.IsolatableSandboxedIframes. Used to estimate the potential
+    process overhead if a per-origin process model is used for isolating the
+    sandboxed iframes instead of the (current) per-site process model. Note that
+    the computation of this metric is independent of the current process model.
+    Recorded once per UMA ping.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.IsolatableSandboxedIframes.UniqueSites"
+    units="processes" expires_after="2023-05-09">
+  <owner>wjmaclean@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    The number of unique sites among the sandboxed iframes reported in
+    SiteIsolation.IsolatableSandboxedIframes. Note that the computation of this
+    metric is independent of the current process model. Recorded once per UMA
+    ping.
+  </summary>
+</histogram>
+
 <histogram name="SiteIsolation.IsPasswordFormSubmittedInDedicatedProcess"
     enum="SiteIsolationIsDedicatedProcess" expires_after="2022-08-07">
   <owner>alexmos@chromium.org</owner>

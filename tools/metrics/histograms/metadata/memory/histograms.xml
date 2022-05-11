@@ -2554,6 +2554,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.RenderProcessHost.Count.SandboxedIframeOverhead"
+    units="processes" expires_after="2023-05-09">
+  <owner>wjmaclean@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    The number of renderer processes that represent sandboxed iframes, computed
+    by counting the number of RenderProcessHosts allocated to them. This will be
+    zero when SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled() is
+    false. Recorded once per UMA ping.
+  </summary>
+</histogram>
+
 <histogram name="Memory.RenderProcessHost.Percent.OriginAgentClusterOverhead"
     units="%" expires_after="2022-09-28">
   <owner>wjmaclean@chromium.org</owner>

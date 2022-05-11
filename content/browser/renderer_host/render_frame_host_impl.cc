@@ -385,6 +385,14 @@ typedef std::unordered_map<GlobalRenderFrameHostId,
 base::LazyInstance<RoutingIDFrameMap>::DestructorAtExit g_routing_id_frame_map =
     LAZY_INSTANCE_INITIALIZER;
 
+// A global set of all sandboxed RenderFrameHosts that could be isolated from
+// the rest of their SiteInstance.
+typedef std::unordered_set<GlobalRenderFrameHostId,
+                           GlobalRenderFrameHostIdHasher>
+    RoutingIDIsolatableSandboxedIframesSet;
+base::LazyInstance<RoutingIDIsolatableSandboxedIframesSet>::DestructorAtExit
+    g_routing_id_isolatable_sandboxed_iframes_set = LAZY_INSTANCE_INITIALIZER;
+
 using TokenFrameMap = std::unordered_map<blink::LocalFrameToken,
                                          RenderFrameHostImpl*,
                                          blink::LocalFrameToken::Hasher>;
@@ -1576,6 +1584,10 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // return |this|.
   g_routing_id_frame_map.Get().erase(
       GlobalRenderFrameHostId(GetProcess()->GetID(), routing_id_));
+
+  // Remove this object from the isolatable sandboxed iframe set as well, if
+  // necessary.
+  g_routing_id_isolatable_sandboxed_iframes_set.Get().erase(GetGlobalId());
 
   // When a RenderFrameHostImpl is deleted, it may still contain children. This
   // can happen with the unload timer. It causes a RenderFrameHost to delete
@@ -10835,6 +10847,112 @@ blink::mojom::ReferrerPtr GetReferrerForDidCommitParams(
   return request->GetReferrer().Clone();
 }
 
+// static
+// This function logs metrics about potentially isolatable sandboxed iframes
+// that are tracked through calls to UpdateIsolatableSandboxedIframeTracking().
+// In addition to reporting the number of potential OOPSIFs, it also reports the
+// number of unique origins encountered (to give insight into potential
+// behavior if a per-origin isolation model was implemented), and it counts the
+// actual number of RenderProcessHosts isolating OOPSIFs using the current
+// per-site isolation model.
+void RenderFrameHost::LogSandboxedIframesIsolationMetrics() {
+  RoutingIDIsolatableSandboxedIframesSet* oopsifs =
+      g_routing_id_isolatable_sandboxed_iframes_set.Pointer();
+
+  base::UmaHistogramCounts1000("SiteIsolation.IsolatableSandboxedIframes",
+                               oopsifs->size());
+
+  // Count the number of unique origins across all the isolatable sandboxed
+  // iframes. This will give us a sense of the potential process overhead if we
+  // chose a per-origin process model for isolating these frames instead of the
+  // per-site model we plan to use. We use the precursor SchemeHostPort rather
+  // than the url::Origin, which is always opaque in these cases.
+  {
+    std::set<SiteInfo> sandboxed_site_infos;
+    std::set<url::SchemeHostPort> sandboxed_origins;
+    for (auto rfh_global_id : *oopsifs) {
+      auto* rfhi = RenderFrameHostImpl::FromID(rfh_global_id);
+      DCHECK(rfhi->GetLastCommittedOrigin().opaque());
+      sandboxed_origins.insert(
+          rfhi->GetLastCommittedOrigin().GetTupleOrPrecursorTupleIfOpaque());
+      sandboxed_site_infos.insert(rfhi->GetSiteInstance()->GetSiteInfo());
+    }
+    base::UmaHistogramCounts1000(
+        "SiteIsolation.IsolatableSandboxedIframes.UniqueOrigins",
+        sandboxed_origins.size());
+    base::UmaHistogramCounts1000(
+        "SiteIsolation.IsolatableSandboxedIframes.UniqueSites",
+        sandboxed_site_infos.size());
+  }
+
+  // Walk the set and count the number of unique RenderProcessHosts. Using a set
+  // allows us to accurately measure process overhead, including cases where
+  // SiteInstances from multiple BrowsingInstances are coalesced into a single
+  // RenderProcess.
+  std::set<RenderProcessHost*> sandboxed_rphs;
+  for (auto rfh_global_id : *oopsifs) {
+    auto* rfhi = FromID(rfh_global_id);
+    DCHECK(rfhi);
+    auto* site_instance =
+        static_cast<SiteInstanceImpl*>(rfhi->GetSiteInstance());
+    DCHECK(site_instance->HasProcess());
+    if (site_instance->GetSiteInfo().is_sandboxed())
+      sandboxed_rphs.insert(site_instance->GetProcess());
+  }
+  // There should be no sandboxed RPHs if the feature isn't enabled.
+  DCHECK(SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled() ||
+         sandboxed_rphs.size() == 0);
+  base::UmaHistogramCounts1000(
+      "Memory.RenderProcessHost.Count.SandboxedIframeOverhead",
+      sandboxed_rphs.size());
+}
+
+void RenderFrameHostImpl::UpdateIsolatableSandboxedIframeTracking() {
+  RoutingIDIsolatableSandboxedIframesSet* oopsifs =
+      g_routing_id_isolatable_sandboxed_iframes_set.Pointer();
+  GlobalRenderFrameHostId global_id = GetGlobalId();
+
+  // Check if the flags are correct.
+  DCHECK(policy_container_host_);
+  bool frame_is_isolatable =
+      IsSandboxed(network::mojom::WebSandboxFlags::kOrigin);
+
+  if (frame_is_isolatable) {
+    // Limit the "isolatable" sandboxed frames to those that are either in the
+    // same SiteInstance as their parent/opener (and thus could be isolated), or
+    // that are already isolated due to sandbox flags.
+    GURL url = GetLastCommittedURL();
+    if (url.IsAboutBlank() || url.is_empty()) {
+      frame_is_isolatable = false;
+    } else {
+      // Since this frame could be a main frame, we need to consider the
+      // SiteInstance of either the parent or opener (if either exists) of this
+      // frame, to see if the url can be placed in an OOPSIF, i.e. it's not
+      // already isolated because of being cross-site.
+      RenderFrameHost* frame_owner = GetParent();
+      if (!frame_owner && frame_tree_node_->opener())
+        frame_owner = frame_tree_node_->opener()->current_frame_host();
+
+      if (!frame_owner) {
+        frame_is_isolatable = false;
+      } else if (GetSiteInstance()->GetSiteInfo().is_sandboxed()) {
+        DCHECK(frame_is_isolatable);
+      } else if (frame_owner->GetSiteInstance() != GetSiteInstance()) {
+        // If this host's SiteInstance isn't already marked as is_sandboxed
+        // (with a frame owner), and yet the SiteInstance doesn't match that of
+        // our parent/opener, then it is already isolated for some other reason
+        // (cross-site, origin-keyed, etc.).
+        frame_is_isolatable = false;
+      }
+    }
+  }
+
+  if (frame_is_isolatable)
+    oopsifs->insert(global_id);
+  else
+    oopsifs->erase(global_id);
+}
+
 bool RenderFrameHostImpl::DidCommitNavigationInternal(
     std::unique_ptr<NavigationRequest> navigation_request,
     mojom::DidCommitProvisionalLoadParamsPtr params,
@@ -11192,6 +11310,8 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   media_device_id_salt_base_ = BrowserContext::CreateRandomMediaDeviceIDSalt();
 
   accessibility_fatal_error_count_ = 0;
+
+  UpdateIsolatableSandboxedIframeTracking();
 }
 
 // TODO(arthursonzogni): Below, many NavigationRequest's objects are passed from
