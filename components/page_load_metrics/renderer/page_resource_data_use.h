@@ -8,7 +8,6 @@
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
-#include "url/origin.h"
 
 class GURL;
 
@@ -88,8 +87,6 @@ class PageResourceDataUse {
   bool completed_before_fcp_;
 
   mojom::CacheType cache_type_;
-
-  url::Origin origin_;
 
   std::string mime_type_;
 };

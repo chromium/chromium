@@ -11,7 +11,6 @@ import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
 import
   "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom";
 import "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom";
-import "url/mojom/origin.mojom";
 
 // TimeDeltas below relative to navigation start.
 struct DocumentTiming {
@@ -261,9 +260,6 @@ struct ResourceDataUpdate {
 
   // Whether this resource was fetched via proxy.
   bool proxy_used;
-
-  // The origin of this resource.
-  url.mojom.Origin origin;
 
   // Whether this resource completed loading, either by network or cache, before
   // FCP in the frame it belongs to. This flag can be set to true at any point

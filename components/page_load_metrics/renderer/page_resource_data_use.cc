@@ -43,7 +43,6 @@ void PageResourceDataUse::DidStartResponse(
   is_secure_scheme_ = response_url.SchemeIsCryptographic();
   is_primary_frame_resource_ =
       blink::IsRequestDestinationFrame(request_destination);
-  origin_ = url::Origin::Create(response_url);
 }
 
 void PageResourceDataUse::DidReceiveTransferSizeUpdate(
@@ -71,7 +70,6 @@ void PageResourceDataUse::DidLoadFromMemoryCache(const GURL& response_url,
                                                  int request_id,
                                                  int64_t encoded_body_length,
                                                  const std::string& mime_type) {
-  origin_ = url::Origin::Create(response_url);
   resource_id_ = request_id;
   mime_type_ = mime_type;
   is_secure_scheme_ = response_url.SchemeIsCryptographic();
@@ -126,7 +124,6 @@ mojom::ResourceDataUpdatePtr PageResourceDataUse::GetResourceDataUpdate() {
   resource_data_update->is_secure_scheme = is_secure_scheme_;
   resource_data_update->proxy_used = proxy_used_;
   resource_data_update->is_primary_frame_resource = is_primary_frame_resource_;
-  resource_data_update->origin = origin_;
   resource_data_update->completed_before_fcp = completed_before_fcp_;
   return resource_data_update;
 }

@@ -13,6 +13,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/scoped_visibility_tracker.h"
+#include "url/gurl.h"
 
 namespace content {
 class WebContents;
