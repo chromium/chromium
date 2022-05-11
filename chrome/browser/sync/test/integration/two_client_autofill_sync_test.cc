@@ -59,11 +59,16 @@ class TwoClientAutofillProfileSyncTest : public SyncTest {
   TwoClientAutofillProfileSyncTest& operator=(
       const TwoClientAutofillProfileSyncTest&) = delete;
 
-  ~TwoClientAutofillProfileSyncTest() override {}
+  ~TwoClientAutofillProfileSyncTest() override = default;
 };
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PersonalDataManagerSanity DISABLED_PersonalDataManagerSanity
+#else
+#define MAYBE_PersonalDataManagerSanity PersonalDataManagerSanity
+#endif
 IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
-                       PersonalDataManagerSanity) {
+                       MAYBE_PersonalDataManagerSanity) {
   ASSERT_TRUE(SetupSync());
 
   base::HistogramTester histograms;
