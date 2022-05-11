@@ -1,6 +1,8 @@
-# Chromium-based Fuchsia services
-This directory contains implementation code for various Fuchsia services living
-in the Chromium repository. To build Chromium on Fuchsia, check this
+# Fuchsia WebEngine and Runners
+This directory contains implementation code for Fuchsia WebEngine and code
+specifically related to it, including the Runners that use it.
+
+For general information about building Chromium on Fuchsia, see this
 [documentation](../docs/fuchsia/build_instructions.md).
 
 [TOC]
@@ -8,41 +10,24 @@ in the Chromium repository. To build Chromium on Fuchsia, check this
 ## Code organization
 Each of the following subdirectories contain code for a specific Fuchsia
 service:
-* `./engine` contains the WebEngine implementation. The WebEngine enables
+* `./engine` contains the WebEngine implementation. WebEngine enables
 Fuchsia applications to embed Chromium frames for rendering web content.
 * `./runners`contains implementations of Fuchsia `sys.runner`.
-    * `./runners/cast` Enables the Fuchsia system to launch cast applications.
+    * `./runners/cast` Enables the Fuchsia system to launch Cast applications.
     * `./runners/web` Enables the Fuchsia system to launch HTTP or HTTPS URLs.
-* `./media_receiver` contains an implementation for an Open Screen receiver.
-
-When writing a new Fuchsia service, it is recommended to create a new
-subdirectory under `//fuchsia` or a new subdirectory under `//fuchsia/runners`
-depending on the use case.
-
-The `./base` subdirectory contains common utilities used by more than one of
-the aforementioned Fuchsia services.
-
-The `./cipd` and `./fidl` subdirectories contain CIPD definitions and FIDL
-interface definitions, respectfully.
-
-### Namespacing
-
-Code that is not shared across multiple targets should live in the global
-namespace. Code that is shared across multiple targets should live in the
-`cr_fuchsia` namespace.
 
 ### Test code
 
-Under the `//fuchsia` directory , there are 3 major types of tests:
-* Unit tests: Exercises a single class in isolation, allowing full control
+There are 3 major types of tests within this directory:
+* Unit tests: Exercise a single class in isolation, allowing full control
   over the external environment of this class.
-* Browser tests: Spawns a full browser process along child processes. The test
+* Browser tests: Spawn a full browser process and its child processes. The test
   code is run inside the browser process, allowing for full access to the
-  browser code, but not other processes.
-* Integration tests: they exercise the published API of a Fuchsia component. For
-  instance, `//fuchsia/engine:web_engine_integration_tests` make use of the
-  `//fuchsia/engine:web_engine` component. The test code is run in a separate
-  process in a separate component, allowing only access to the published API of
+  browser code - but not other processes.
+* Integration tests: Exercise the published FIDL API of a Fuchsia Component. For
+  instance, `//fuchsia_webengine/engine:web_engine_integration_tests` make use of the
+  `//fuchsia_webengine/engine:web_engine` component. The test code runs in a separate
+  process in a separate Fuchsia Component, allowing only access to the published API of
   the component under test.
 
 Integration tests are more resource-intensive than browser tests, which are in
@@ -51,8 +36,9 @@ preferred to write unit tests over browser tests over integration tests.
 
 As a general rule, test-only code should live in the same directory as the code
 under test with an explicit file name, either `fake_*`, `test_*`,
-`*_unittest.cc`, `*_ browser_test.cc` or `*_integration_test.cc`.
+`*_unittest.cc`, `*_ browsertest.cc` or `*_integration_test.cc`.
 
+## TODO(crbug.com/1081525): Update and/or move the remaining text as appropriate.
 Test code that is shared across components should live in a dedicated `test`
 directory, under the `cr_fuchsia` namespace. For instance, see the
 `//fuchsia/engine/test` directory, which contains code shared by all browser
