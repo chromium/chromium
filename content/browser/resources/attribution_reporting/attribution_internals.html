@@ -7,7 +7,6 @@
   <meta charset="utf-8">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
   <link rel="stylesheet" href="chrome://resources/css/roboto.css">
-  <link rel="stylesheet" href="chrome://resources/css/tabs.css">
 
   <link rel="stylesheet" href="attribution_internals.css">
   <script type="module" src="attribution_internals.js"></script>
@@ -22,48 +21,48 @@
 <button id="clear-data">Clear all attribution data</button>
 </header>
 <main>
-  <tabbox>
-    <tabs>
-      <tab id="sources-tab">Sources</tab>
-      <tab id="triggers-tab">Triggers</tab>
-      <tab id="event-level-reports-tab">Event-Level Reports</tab>
-      <tab id="aggregatable-reports-tab">Aggregatable Reports</tab>
-    </tabs>
-    <tabpanels>
-      <tabpanel>
-        <h2>Sources</h2>
-        <div class="content">
-          <div class="table-wrapper" id="source-table-wrapper"></div>
+  <cr-tab-box hidden>
+    <div id="sources-tab" slot="tab">Sources</div>
+    <div id="triggers-tab" slot="tab">Triggers</div>
+    <div id="event-level-reports-tab" slot="tab">Event-Level Reports</div>
+    <div id="aggregatable-reports-tab" slot="tab">Aggregatable Reports</div>
+    <div slot="panel">
+      <h2>Sources</h2>
+      <div class="content">
+        <attribution-internals-table id="sourceTable">
+        </attribution-internals-table>
+      </div>
+    </div>
+    <div slot="panel">
+      <h2>Triggers</h2>
+      <div class="content">
+        <attribution-internals-table id="triggerTable">
+        </attribution-internals-table>
+      </div>
+    </div>
+    <div slot="panel">
+      <h2>Sent and Pending Event-Level Reports</h2>
+      <div class="content">
+        <div>
+          <button id="send-reports" disabled>Send Selected Pending Event-Level Reports</button>
+          <label id="show-debug-event-reports"><input type="checkbox" checked>Show Debug Reports<span></span></label>
         </div>
-      </tabpanel>
-      <tabpanel>
-        <h2>Triggers</h2>
-        <div class="content">
-          <div class="table-wrapper" id="trigger-table-wrapper"></div>
+        <attribution-internals-table id="reportTable">
+        </attribution-internals-table>
+      </div>
+    </div>
+    <div slot="panel">
+      <h2>Sent and Pending Aggregatable Reports</h2>
+      <div class="content">
+        <div>
+          <button id="send-aggregatable-reports" disabled>Send Selected Pending Aggregatable Reports</button>
+          <label id="show-debug-aggregatable-reports"><input type="checkbox" checked>Show Debug Reports<span></span></label>
         </div>
-      </tabpanel>
-      <tabpanel>
-        <h2>Sent and Pending Event-Level Reports</h2>
-        <div class="content">
-          <div>
-            <button id="send-reports" disabled>Send Selected Pending Event-Level Reports</button>
-            <label id="show-debug-event-reports"><input type="checkbox" checked>Show Debug Reports<span></span></label>
-          </div>
-          <div class="table-wrapper" id="report-table-wrapper"></div>
-        </div>
-      </tabpanel>
-      <tabpanel>
-        <h2>Sent and Pending Aggregatable Reports</h2>
-        <div class="content">
-          <div>
-            <button id="send-aggregatable-reports" disabled>Send Selected Pending Aggregatable Reports</button>
-            <label id="show-debug-aggregatable-reports"><input type="checkbox" checked>Show Debug Reports<span></span></label>
-          </div>
-          <div class="table-wrapper" id="aggregatable-report-table-wrapper"></div>
-        </div>
-      </tabpanel>
-    </tabpanels>
-  </tabbox>
+        <attribution-internals-table id="aggregatableReportTable">
+        </attribution-internals-table>
+      </div>
+    </div>
+  </cr-tab-box>
 </main>
 </body>
 </html>

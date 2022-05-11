@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
+import './attribution_internals_table.js';
+
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {$, getRequiredElement, queryRequiredElement} from 'chrome://resources/js/util.m.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
 import {Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportStatus, ReportType, SourceType, WebUIReport, WebUISource, WebUISource_Attributability, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
+import {Column, TableModel} from './table_model.js';
 
 /**
  * @template T
@@ -34,30 +36,6 @@ function compareDefault(a, b) {
  */
 function bigint_replacer(key, value) {
   return typeof value === 'bigint' ? value.toString() : value;
-}
-
-/**
- * @template T
- * @abstract
- */
-class Column {
-  constructor() {
-    /** @type {?function(!T, !T): number} */
-    this.compare;
-  }
-
-  /**
-   * @param {!Element} td
-   * @param {!T} row
-   * @abstract
-   */
-  render(td, row) {}
-
-  /**
-   * @param {!Element} th
-   * @abstract
-   */
-  renderHeader(th) {}
 }
 
 /**
@@ -169,42 +147,6 @@ class ReportUrlColumn extends ValueColumn {
   }
 }
 
-/**
- * @template T
- * @abstract
- */
-class TableModel {
-  constructor() {
-    /** @type {!Array<Column<T>>} */
-    this.cols;
-
-    /** @type {string} */
-    this.emptyRowText;
-
-    /** @type {number} */
-    this.sortIdx = -1;
-
-    /** @type {!Set<function()>} */
-    this.rowsChangedListeners = new Set();
-  }
-
-  /**
-   * @param {!Element} tr
-   * @param {T} data
-   */
-  styleRow(tr, data) {}
-
-  /**
-   * @abstract
-   * @return {!Array<!T>}
-   */
-  getRows() {}
-
-  notifyRowsChanged() {
-    this.rowsChangedListeners.forEach((f) => f());
-  }
-}
-
 class Selectable {
   constructor() {
     this.input = document.createElement('input');
@@ -289,170 +231,6 @@ class SelectionColumn extends Column {
     this.selectionChangedListeners.forEach((f) => f(anySelected));
   }
 }
-
-/**
- * Table abstracts the logic for rendering and sorting a table by dynamically
- * modifying a given <div>'s prototype and managing its children. The table's
- * columns are supplied by a TableModel supplied to the decorate function. Each
- * Column knows how to render the underlying value of the row type T, and
- * optionally sort rows of type T by that value.
- *
- * @template T
- * @extends {HTMLDivElement}
- */
-class Table {
-  constructor() {
-    /** @private {!TableModel<T>} */
-    this.model;
-
-    /** @private {boolean} */
-    this.sortDesc;
-
-    /** @private {!Element} */
-    this.tbody;
-  }
-
-  /**
-   * @template T
-   * @param {!Element} self
-   * @param {!TableModel<T>} model
-   */
-  static decorate(self, model) {
-    self.__proto__ = Table.prototype;
-    self = /** @type {!Table} */ (self);
-
-    self.model = model;
-    self.sortDesc = false;
-
-    const tr = self.ownerDocument.createElement('tr');
-    self.model.cols.forEach((col, idx) => {
-      const th = self.ownerDocument.createElement('th');
-      th.scope = 'col';
-      col.renderHeader(th);
-
-      if (col.compare) {
-        th.role = 'button';
-        Table.setSortAttrs(th, /*sortDesc=*/ null);
-        th.addEventListener('click', () => self.changeSortHeader(idx));
-      }
-
-      tr.appendChild(th);
-    });
-
-    const thead = self.ownerDocument.createElement('thead');
-    thead.appendChild(tr);
-
-    self.tbody = self.ownerDocument.createElement('tbody');
-    self.setSpanningText(self.model.emptyRowText);
-
-    const table = self.ownerDocument.createElement('table');
-    table.appendChild(thead);
-    table.appendChild(self.tbody);
-
-    self.appendChild(table);
-
-    self.model.rowsChangedListeners.add(() => self.updateTbody());
-  }
-
-  /**
-   * @param {string} text
-   * @private
-   */
-  setSpanningText(text) {
-    const td = this.ownerDocument.createElement('td');
-    td.innerText = text;
-    td.colSpan = this.model.cols.length;
-
-    const tr = this.ownerDocument.createElement('tr');
-    tr.appendChild(td);
-
-    this.tbody.appendChild(tr);
-  }
-
-  /**
-   * @param {!Element} th
-   * @param {?boolean} sortDesc
-   * @private
-   */
-  static setSortAttrs(th, sortDesc) {
-    let nextDir;
-    if (sortDesc === null) {
-      th.ariaSort = 'none';
-      nextDir = 'ascending';
-    } else if (sortDesc) {
-      th.ariaSort = 'descending';
-      nextDir = 'ascending';
-    } else {
-      th.ariaSort = 'ascending';
-      nextDir = 'descending';
-    }
-
-    th.title = `Sort by ${th.innerText} ${nextDir}`;
-    th.ariaLabel = th.title;
-  }
-
-  /**
-   * @param {number} idx
-   * @private
-   */
-  changeSortHeader(idx) {
-    const ths = this.querySelectorAll('thead th');
-
-    if (idx === this.model.sortIdx) {
-      this.sortDesc = !this.sortDesc;
-    } else {
-      this.sortDesc = false;
-      if (this.model.sortIdx >= 0) {
-        Table.setSortAttrs(ths[this.model.sortIdx], /*descending=*/ null);
-      }
-    }
-
-    this.model.sortIdx = idx;
-    Table.setSortAttrs(ths[this.model.sortIdx], this.sortDesc);
-    this.updateTbody();
-  }
-
-  /**
-   * @param {!Array<T>} rows
-   * @private
-   */
-  sort(rows) {
-    if (this.model.sortIdx < 0) {
-      return;
-    }
-
-    const multiplier = this.sortDesc ? -1 : 1;
-    rows.sort(
-        (a, b) =>
-            this.model.cols[this.model.sortIdx].compare(a, b) * multiplier);
-  }
-
-  updateTbody() {
-    this.tbody.innerText = '';
-
-    const rows = this.model.getRows();
-
-    if (rows.length === 0) {
-      this.setSpanningText(this.model.emptyRowText);
-      return;
-    }
-
-    this.sort(rows);
-
-    rows.forEach((row) => {
-      const tr = this.ownerDocument.createElement('tr');
-      this.model.cols.forEach((col) => {
-        const td = this.ownerDocument.createElement('td');
-        col.render(td, row);
-        tr.appendChild(td);
-      });
-      this.model.styleRow(tr, row);
-      this.tbody.appendChild(tr);
-    });
-  }
-}
-
-Table.prototype.__proto__ = HTMLDivElement.prototype;
 
 class Source {
   /**
@@ -1112,14 +890,8 @@ class Observer {
  */
 function installUnreadIndicator(model, tab) {
   model.rowsChangedListeners.add(() => {
-    if (!tab.selected) {
+    if (!tab.hasAttribute('selected')) {
       tab.classList.add('unread');
-    }
-  });
-
-  tab.addEventListener('selectedChange', () => {
-    if (tab.selected) {
-      tab.classList.remove('unread');
     }
   });
 }
@@ -1138,6 +910,12 @@ document.addEventListener('DOMContentLoaded', function() {
           getRequiredElement('show-debug-aggregatable-reports'),
           getRequiredElement('send-aggregatable-reports'));
 
+  const tabBox = document.querySelector('cr-tab-box');
+  tabBox.addEventListener('selected-index-change', e => {
+    const tabs = document.querySelectorAll('div[slot=\'tab\']');
+    tabs[/** @type {!CustomEvent<number>} */ (e).detail].classList.remove(
+        'unread');
+  });
   installUnreadIndicator(sourceTableModel, getRequiredElement('sources-tab'));
   installUnreadIndicator(triggerTableModel, getRequiredElement('triggers-tab'));
   installUnreadIndicator(
@@ -1150,16 +928,21 @@ document.addEventListener('DOMContentLoaded', function() {
   $('refresh').addEventListener('click', updatePageData);
   $('clear-data').addEventListener('click', clearStorage);
 
-  Table.decorate(getRequiredElement('source-table-wrapper'), sourceTableModel);
-  Table.decorate(
-      getRequiredElement('trigger-table-wrapper'), triggerTableModel);
-  Table.decorate(
-      getRequiredElement('report-table-wrapper'), eventLevelReportTableModel);
-  Table.decorate(
-      getRequiredElement('aggregatable-report-table-wrapper'),
-      aggregatableAttributionReportTableModel);
+  const sourceTable = /** @type {{ setModel: function(TableModel) }} */ (
+      document.querySelector('#sourceTable'));
+  sourceTable.setModel(sourceTableModel);
+  const triggerTable = /** @type {{ setModel: function(TableModel) }} */ (
+      document.querySelector('#triggerTable'));
+  triggerTable.setModel(triggerTableModel);
+  const reportTable = /** @type {{ setModel: function(TableModel) }} */ (
+      document.querySelector('#reportTable'));
+  reportTable.setModel(eventLevelReportTableModel);
+  const aggregatableReportTable =
+      /** @type {{ setModel: function(TableModel) }} */ (
+          document.querySelector('#aggregatableReportTable'));
+  aggregatableReportTable.setModel(aggregatableAttributionReportTableModel);
 
-  decorate('tabbox', TabBox);
+  tabBox.hidden = false;
 
   const receiver = new ObserverReceiver(new Observer());
   pageHandler.addObserver(receiver.$.bindNewPipeAndPassRemote());

@@ -15,8 +15,10 @@ files that belong there instead.
   <translations />
   <release seq="1">
     <includes>
-      <include name="IDR_ATTRIBUTION_INTERNALS_HTML" file="browser/resources/attribution_reporting/attribution_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+      <include name="IDR_ATTRIBUTION_INTERNALS_HTML" file="browser/resources/attribution_reporting/attribution_internals.html" type="BINDATA" />
       <include name="IDR_ATTRIBUTION_INTERNALS_JS" file="browser/resources/attribution_reporting/attribution_internals.js" type="BINDATA" />
+      <include name="IDR_ATTRIBUTION_INTERNALS_TABLE_MODEL_JS" file="browser/resources/attribution_reporting/table_model.js" type="BINDATA" />
+      <include name="IDR_ATTRIBUTION_INTERNALS_TABLE_JS" file="${root_gen_dir}/content/browser/resources/attribution_reporting/attribution_internals_table.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_ATTRIBUTION_INTERNALS_CSS" file="browser/resources/attribution_reporting/attribution_internals.css" type="BINDATA" />
       <include name="IDR_ATTRIBUTION_INTERNALS_MOJOM_JS" file="${root_gen_dir}/mojom-webui/content/browser/attribution_reporting/attribution_internals.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_GPU_BROWSER_BRIDGE_JS" file="browser/resources/gpu/browser_bridge.js" type="BINDATA" />

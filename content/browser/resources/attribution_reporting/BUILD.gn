@@ -3,6 +3,11 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+
+html_to_js("web_components") {
+  js_files = [ "attribution_internals_table.js" ]
+}
 
 js_type_check("closure_compile") {
   closure_flags = default_closure_args + mojom_js_args + [
@@ -16,8 +21,12 @@ js_type_check("closure_compile") {
 
 js_library("attribution_internals") {
   deps = [
+    ":table_model",
     "//content/browser/attribution_reporting:mojo_bindings_webui_js",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:util.m",
   ]
+}
+
+js_library("table_model") {
 }

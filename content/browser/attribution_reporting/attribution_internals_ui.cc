@@ -30,6 +30,10 @@ AttributionInternalsUI::AttributionInternalsUI(WebUI* web_ui)
                           IDR_ATTRIBUTION_INTERNALS_MOJOM_JS);
   source->AddResourcePath("attribution_internals.js",
                           IDR_ATTRIBUTION_INTERNALS_JS);
+  source->AddResourcePath("attribution_internals_table.js",
+                          IDR_ATTRIBUTION_INTERNALS_TABLE_JS);
+  source->AddResourcePath("table_model.js",
+                          IDR_ATTRIBUTION_INTERNALS_TABLE_MODEL_JS);
   source->AddResourcePath("attribution_internals.css",
                           IDR_ATTRIBUTION_INTERNALS_CSS);
   source->SetDefaultResource(IDR_ATTRIBUTION_INTERNALS_HTML);
