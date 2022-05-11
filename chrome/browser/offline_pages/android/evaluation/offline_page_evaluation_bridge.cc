@@ -132,7 +132,7 @@ void OnGetAllRequestsDone(
 void OnRemoveRequestsDone(const ScopedJavaGlobalRef<jobject>& j_callback_obj,
                           const MultipleItemStatuses& removed_request_results) {
   base::android::RunIntCallbackAndroid(
-      j_callback_obj, static_cast<int>(removed_request_results.size()));
+      j_callback_obj, static_cast<int32_t>(removed_request_results.size()));
 }
 
 std::unique_ptr<KeyedService> GetTestingRequestCoordinator(

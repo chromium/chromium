@@ -41,9 +41,9 @@ class AwComponentUpdateService {
  public:
   static AwComponentUpdateService* GetInstance();
 
-  // Callback used for updating components, with an int that represents how
+  // Callback used for updating components, with an int32_t that represents how
   // many components were actually updated.
-  using UpdateCallback = base::OnceCallback<void(int)>;
+  using UpdateCallback = base::OnceCallback<void(int32_t)>;
 
   void StartComponentUpdateService(UpdateCallback finished_callback,
                                    bool on_demand_update);
@@ -103,7 +103,7 @@ class AwComponentUpdateService {
                                update_client::Error error);
 
   // Counts how many components were updated, for UMA logging.
-  int components_updated_count_ = 0;
+  int32_t components_updated_count_ = 0;
 
   base::WeakPtrFactory<AwComponentUpdateService> weak_ptr_factory_{this};
 };

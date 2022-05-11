@@ -71,7 +71,8 @@ void ForwardShareInfoToJavaCallback(
 
 void RenameItemCallback(ScopedJavaGlobalRef<jobject> j_callback,
                         RenameResult result) {
-  base::android::RunIntCallbackAndroid(j_callback, static_cast<int>(result));
+  base::android::RunIntCallbackAndroid(j_callback,
+                                       static_cast<int32_t>(result));
 }
 
 void RunGetAllItemsCallback(const base::android::JavaRef<jobject>& j_callback,

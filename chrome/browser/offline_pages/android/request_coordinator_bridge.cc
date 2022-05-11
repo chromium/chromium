@@ -78,7 +78,8 @@ void OnRemoveRequestsDone(const ScopedJavaGlobalRef<jobject>& j_callback_obj,
 
 void SavePageLaterCallback(const ScopedJavaGlobalRef<jobject>& j_callback_obj,
                            AddRequestResult value) {
-  base::android::RunIntCallbackAndroid(j_callback_obj, static_cast<int>(value));
+  base::android::RunIntCallbackAndroid(j_callback_obj,
+                                       static_cast<int32_t>(value));
 }
 
 RequestCoordinator* GetRequestCoordinator(

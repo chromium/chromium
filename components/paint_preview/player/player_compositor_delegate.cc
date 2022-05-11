@@ -124,7 +124,7 @@ void PlayerCompositorDelegate::Initialize(
     const GURL& expected_url,
     const DirectoryKey& key,
     bool main_frame_mode,
-    base::OnceCallback<void(int)> compositor_error,
+    CompositorErrorCallback compositor_error,
     base::TimeDelta timeout_duration,
     std::array<size_t, PressureLevelCount::kLevels> max_requests_map) {
   TRACE_EVENT0("paint_preview", "PlayerCompositorDelegate::Initialize");
@@ -164,7 +164,7 @@ void PlayerCompositorDelegate::InitializeWithFakeServiceForTest(
     const GURL& expected_url,
     const DirectoryKey& key,
     bool main_frame_mode,
-    base::OnceCallback<void(int)> compositor_error,
+    CompositorErrorCallback compositor_error,
     base::TimeDelta timeout_duration,
     std::array<size_t, PressureLevelCount::kLevels> max_requests_map,
     std::unique_ptr<PaintPreviewCompositorService, base::OnTaskRunnerDeleter>
@@ -184,7 +184,7 @@ void PlayerCompositorDelegate::InitializeInternal(
     const GURL& expected_url,
     const DirectoryKey& key,
     bool main_frame_mode,
-    base::OnceCallback<void(int)> compositor_error,
+    CompositorErrorCallback compositor_error,
     base::TimeDelta timeout_duration,
     std::array<size_t, PressureLevelCount::kLevels> max_requests_map) {
   max_requests_map_ = max_requests_map;

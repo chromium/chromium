@@ -58,7 +58,7 @@ void SharingServiceProxyAndroid::SendSharedClipboardMessage(
 
   if (!device) {
     std::move(callback).Run(
-        static_cast<int>(SharingSendMessageResult::kDeviceNotFound));
+        static_cast<int32_t>(SharingSendMessageResult::kDeviceNotFound));
     return;
   }
 

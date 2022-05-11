@@ -23,7 +23,7 @@ void RunBooleanCallbackAndroid(const JavaRef<jobject>& callback, bool arg) {
                                         static_cast<jboolean>(arg));
 }
 
-void RunIntCallbackAndroid(const JavaRef<jobject>& callback, int arg) {
+void RunIntCallbackAndroid(const JavaRef<jobject>& callback, int32_t arg) {
   Java_Helper_onIntResultFromNative(AttachCurrentThread(), callback, arg);
 }
 

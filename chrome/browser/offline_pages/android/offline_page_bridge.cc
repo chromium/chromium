@@ -111,7 +111,7 @@ void SavePageCallback(const ScopedJavaGlobalRef<jobject>& j_callback_obj,
 void DeletePageCallback(const ScopedJavaGlobalRef<jobject>& j_callback_obj,
                         OfflinePageModel::DeletePageResult result) {
   base::android::RunIntCallbackAndroid(j_callback_obj,
-                                       static_cast<int>(result));
+                                       static_cast<int32_t>(result));
 }
 
 void SelectPageCallback(const ScopedJavaGlobalRef<jobject>& j_callback_obj,

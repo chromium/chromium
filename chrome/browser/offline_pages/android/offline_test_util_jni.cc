@@ -80,7 +80,7 @@ void OnGetVisualsDoneExtractThumbnail(
 void OnDeletePageDone(const ScopedJavaGlobalRef<jobject>& j_callback_obj,
                       OfflinePageModel::DeletePageResult result) {
   base::android::RunIntCallbackAndroid(j_callback_obj,
-                                       static_cast<int>(result));
+                                       static_cast<int32_t>(result));
 }
 
 std::string RequestListToString(

@@ -91,7 +91,7 @@ void RenameItemCallback(
     download::DownloadItem::DownloadRenameResult result) {
   base::android::RunIntCallbackAndroid(
       j_callback,
-      static_cast<int>(
+      static_cast<int32_t>(
           OfflineItemUtils::ConvertDownloadRenameResultToRenameResult(result)));
 }
 
