@@ -147,16 +147,35 @@ QuotaErrorOr<BucketInfo> QuotaManagerProxy::GetOrCreateBucketSync(
   QuotaErrorOr<BucketInfo> bucket;
   base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
-  // Call the async GetOrCreateBucket but block until it completes.
-  GetOrCreateBucket(
-      params, quota_manager_impl_task_runner_,
+  // Asynchronously call GetOrCreateBucket and block until it completes.
+  quota_manager_impl_task_runner_->PostTask(
+      FROM_HERE,
       base::BindOnce(
-          [](base::WaitableEvent* waiter, QuotaErrorOr<BucketInfo>* sync_bucket,
-             QuotaErrorOr<BucketInfo> result_bucket) {
-            *sync_bucket = std::move(result_bucket);
-            waiter->Signal();
+          [](const scoped_refptr<QuotaManagerProxy>& self,
+             const BucketInitParams& params, base::WaitableEvent* waiter,
+             QuotaErrorOr<BucketInfo>* sync_bucket) {
+            DCHECK_CALLED_ON_VALID_SEQUENCE(
+                self->quota_manager_impl_sequence_checker_);
+            // If the database is still bootstrapping, return an error rather
+            // than risking deadlock.
+            if (!self->quota_manager_impl_ ||
+                self->quota_manager_impl_->is_bootstrapping_database_) {
+              *sync_bucket = QuotaError::kUnknownError;
+              waiter->Signal();
+              return;
+            }
+            // Otherwise, return the bucket value and resolve the waiter.
+            self->quota_manager_impl_->GetOrCreateBucket(
+                params, base::BindOnce(
+                            [](base::WaitableEvent* waiter,
+                               QuotaErrorOr<BucketInfo>* sync_bucket,
+                               QuotaErrorOr<BucketInfo> result_bucket) {
+                              *sync_bucket = std::move(result_bucket);
+                              waiter->Signal();
+                            },
+                            waiter, sync_bucket));
           },
-          &waiter, &bucket));
+          base::WrapRefCounted(this), params, &waiter, &bucket));
   waiter.Wait();
   return bucket;
 }

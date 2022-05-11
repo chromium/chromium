@@ -15,7 +15,7 @@
 namespace storage {
 class FileSystemContext;
 class FileSystemURL;
-class QuotaManager;
+class QuotaManagerProxy;
 }
 
 namespace url {
@@ -120,7 +120,7 @@ class AsyncFileTestHelper {
   // Returns usage and quota. It's valid to pass nullptr to |usage| and/or
   // |quota|.
   static blink::mojom::QuotaStatusCode GetUsageAndQuota(
-      QuotaManager* quota_manager,
+      QuotaManagerProxy* quota_manager_proxy,
       const url::Origin& origin,
       FileSystemType type,
       int64_t* usage,
