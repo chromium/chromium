@@ -809,15 +809,20 @@ void ShelfNavigationWidget::UpdateButtonVisibility(
 }
 
 gfx::Rect ShelfNavigationWidget::CalculateClipRectAfterRTL() const {
-  gfx::Rect bounds_before_rtl;
+  gfx::Rect clip_bounds;
   if (Shell::Get()->IsInTabletMode()) {
-    bounds_before_rtl =
-        gfx::Rect(CalculateIdealSize(/*only_visible_area=*/true));
+    clip_bounds = gfx::Rect(CalculateIdealSize(/*only_visible_area=*/true));
   } else {
-    bounds_before_rtl = gfx::Rect(target_bounds_.size());
+    clip_bounds = gfx::Rect(target_bounds_.size());
   }
 
-  return GetRootView()->GetMirroredRect(bounds_before_rtl);
+  // Bounds will be used to set a layer clip rect, and thus need to be modified
+  // for RTL - avoid using `GetMirroredRect()` method, as it would use the
+  // current widget/root view bounds instead of target bounds.
+  if (base::i18n::IsRTL()) {
+    clip_bounds.set_x(target_bounds_.width() - clip_bounds.right());
+  }
+  return clip_bounds;
 }
 
 gfx::Size ShelfNavigationWidget::CalculateIdealSize(
