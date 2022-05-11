@@ -219,42 +219,42 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
     kEnabled,
   };
 
-  // Flags accessed on fast paths.
-  //
-  // Careful! PartitionAlloc's performance is sensitive to its layout.  Please
-  // put the fast-path objects in the struct below, and the other ones after
-  // the union..
-  struct Flags {
-    // Defines whether objects should be quarantined for this root.
-    QuarantineMode quarantine_mode;
-
-    // Defines whether the root should be scanned.
-    ScanMode scan_mode;
-
-    bool with_thread_cache = false;
-    bool with_denser_bucket_distribution = false;
-
-    bool allow_aligned_alloc;
-    bool allow_cookie;
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-    bool brp_enabled_;
-#endif
-    bool use_configurable_pool;
-
-#if defined(PA_EXTRAS_REQUIRED)
-    uint32_t extras_size;
-    uint32_t extras_offset;
-#else
-    // Teach the compiler that code can be optimized in builds that use no
-    // extras.
-    static inline constexpr uint32_t extras_size = 0;
-    static inline constexpr uint32_t extras_offset = 0;
-#endif  // defined(PA_EXTRAS_REQUIRED)
-  };
+#if !defined(PA_EXTRAS_REQUIRED)
+  // Teach the compiler that code can be optimized in builds that use no
+  // extras.
+  static inline constexpr uint32_t extras_size = 0;
+  static inline constexpr uint32_t extras_offset = 0;
+#endif  // !defined(PA_EXTRAS_REQUIRED)
 
   // Read-mostly flags.
   union {
-    Flags flags;
+    // Flags accessed on fast paths.
+    //
+    // Careful! PartitionAlloc's performance is sensitive to its layout.  Please
+    // put the fast-path objects in the struct below, and the other ones after
+    // the union..
+    struct {
+      // Defines whether objects should be quarantined for this root.
+      QuarantineMode quarantine_mode;
+
+      // Defines whether the root should be scanned.
+      ScanMode scan_mode;
+
+      bool with_thread_cache = false;
+      bool with_denser_bucket_distribution = false;
+
+      bool allow_aligned_alloc;
+      bool allow_cookie;
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+      bool brp_enabled_;
+#endif
+      bool use_configurable_pool;
+
+#if defined(PA_EXTRAS_REQUIRED)
+      uint32_t extras_size;
+      uint32_t extras_offset;
+#endif  // defined(PA_EXTRAS_REQUIRED)
+    };
 
     // The flags above are accessed for all (de)allocations, and are mostly
     // read-only. They should not share a cacheline with the data below, which
@@ -343,8 +343,8 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
 #endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
   PartitionRoot()
-      : flags{.quarantine_mode = QuarantineMode::kAlwaysDisabled,
-              .scan_mode = ScanMode::kDisabled} {}
+      : quarantine_mode(QuarantineMode::kAlwaysDisabled),
+        scan_mode(ScanMode::kDisabled) {}
   explicit PartitionRoot(PartitionOptions opts) { Init(opts); }
   ~PartitionRoot();
 
@@ -532,18 +532,18 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   // guaranteed to have a bucket under the new distribution when they are
   // eventually deallocated. We do not need synchronization here or below.
   void SwitchToDenserBucketDistribution() {
-    flags.with_denser_bucket_distribution = true;
+    with_denser_bucket_distribution = true;
   }
   // Switching back to the less dense bucket distribution is ok during tests.
   // At worst, we end up with deallocations that are sent to a bucket that we
   // cannot allocate from, which will not cause problems besides wasting
   // memory.
   void ResetBucketDistributionForTesting() {
-    flags.with_denser_bucket_distribution = false;
+    with_denser_bucket_distribution = false;
   }
 
   ThreadCache* thread_cache_for_testing() const {
-    return flags.with_thread_cache ? ThreadCache::Get() : nullptr;
+    return with_thread_cache ? ThreadCache::Get() : nullptr;
   }
   size_t get_total_size_of_committed_pages() const {
     return total_size_of_committed_pages.load(std::memory_order_relaxed);
@@ -565,7 +565,7 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   }
 
   internal::pool_handle ChoosePool() const {
-    if (flags.use_configurable_pool) {
+    if (use_configurable_pool) {
       return internal::GetConfigurablePool();
     }
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -576,15 +576,15 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   }
 
   ALWAYS_INLINE bool IsQuarantineAllowed() const {
-    return flags.quarantine_mode != QuarantineMode::kAlwaysDisabled;
+    return quarantine_mode != QuarantineMode::kAlwaysDisabled;
   }
 
   ALWAYS_INLINE bool IsQuarantineEnabled() const {
-    return flags.quarantine_mode == QuarantineMode::kEnabled;
+    return quarantine_mode == QuarantineMode::kEnabled;
   }
 
   ALWAYS_INLINE bool ShouldQuarantine(void* object) const {
-    if (UNLIKELY(flags.quarantine_mode != QuarantineMode::kEnabled))
+    if (UNLIKELY(quarantine_mode != QuarantineMode::kEnabled))
       return false;
 #if defined(PA_HAS_MEMORY_TAGGING)
     if (UNLIKELY(quarantine_always_for_testing))
@@ -604,8 +604,8 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
 
   ALWAYS_INLINE bool IsScanEnabled() const {
     // Enabled scan implies enabled quarantine.
-    PA_DCHECK(flags.scan_mode != ScanMode::kEnabled || IsQuarantineEnabled());
-    return flags.scan_mode == ScanMode::kEnabled;
+    PA_DCHECK(scan_mode != ScanMode::kEnabled || IsQuarantineEnabled());
+    return scan_mode == ScanMode::kEnabled;
   }
 
   static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
@@ -674,8 +674,8 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   // needed.
   ALWAYS_INLINE size_t AdjustSizeForExtrasAdd(size_t size) const {
     size = AdjustSize0IfNeeded(size);
-    PA_DCHECK(size + flags.extras_size >= size);
-    return size + flags.extras_size;
+    PA_DCHECK(size + extras_size >= size);
+    return size + extras_size;
   }
 
   // Adjusts the size by subtracing extras. Doesn't include the 0->1 adjustment,
@@ -683,18 +683,18 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   // AdjustSizeForExtrasSubtract either expect the adjustment to be included, or
   // are indifferent.
   ALWAYS_INLINE size_t AdjustSizeForExtrasSubtract(size_t size) const {
-    return size - flags.extras_size;
+    return size - extras_size;
   }
 
   ALWAYS_INLINE void* SlotStartToObject(uintptr_t slot_start) const {
     // TODO(bartekn): Move MTE tagging here.
     // TODO(bartekn): Check that |slot_start| is indeed a slot start.
-    return reinterpret_cast<void*>(slot_start + flags.extras_offset);
+    return reinterpret_cast<void*>(slot_start + extras_offset);
   }
 
   ALWAYS_INLINE uintptr_t ObjectToSlotStart(void* object) const {
     // TODO(bartekn): Move MTE untagging here.
-    return reinterpret_cast<uintptr_t>(object) - flags.extras_offset;
+    return reinterpret_cast<uintptr_t>(object) - extras_offset;
     // TODO(bartekn): Check that the result is indeed a slot start.
   }
 
@@ -714,14 +714,14 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
 
   bool brp_enabled() const {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-    return flags.brp_enabled_;
+    return brp_enabled_;
 #else
     return false;
 #endif
   }
 
   ALWAYS_INLINE bool uses_configurable_pool() const {
-    return flags.use_configurable_pool;
+    return use_configurable_pool;
   }
 
   // To make tests deterministic, it is necessary to uncap the amount of memory
@@ -1212,7 +1212,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // AllocWithFlagsNoHooks().
 
 #if DCHECK_IS_ON()
-  if (flags.allow_cookie) {
+  if (allow_cookie) {
     // Verify the cookie after the allocated region.
     // If this assert fires, you probably corrupted memory.
     internal::PartitionCookieCheckValue(
@@ -1360,8 +1360,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeWithThreadCache(
   //
   // LIKELY: performance-sensitive partitions have a thread cache, direct-mapped
   // allocations are uncommon.
-  if (LIKELY(flags.with_thread_cache &&
-             !IsDirectMappedBucket(slot_span->bucket))) {
+  if (LIKELY(with_thread_cache && !IsDirectMappedBucket(slot_span->bucket))) {
     size_t bucket_index = slot_span->bucket - this->buckets;
     auto* thread_cache = ThreadCache::Get();
     if (LIKELY(ThreadCache::IsValid(thread_cache) &&
@@ -1671,7 +1670,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
   // underneath us (between calls to |SizeToBucketIndex| during the same call),
   // which would result in an inconsistent state.
   uint16_t bucket_index =
-      SizeToBucketIndex(raw_size, this->flags.with_denser_bucket_distribution);
+      SizeToBucketIndex(raw_size, with_denser_bucket_distribution);
   size_t usable_size;
   bool is_already_zeroed = false;
   uintptr_t slot_start = 0;
@@ -1689,7 +1688,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
   // thread cache will not be able to satisfy it.
   //
   // LIKELY: performance-sensitive partitions use the thread cache.
-  if (LIKELY(this->flags.with_thread_cache &&
+  if (LIKELY(with_thread_cache &&
              slot_span_alignment <= internal::PartitionPageSize())) {
     auto* tcache = ThreadCache::Get();
     // LIKELY: Typically always true, except for the very first allocation of
@@ -1783,7 +1782,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
 
 #if DCHECK_IS_ON()
   // Add the cookie after the allocation.
-  if (this->flags.allow_cookie) {
+  if (allow_cookie) {
     internal::PartitionCookieWriteValue(static_cast<unsigned char*>(object) +
                                         usable_size);
   }
@@ -1872,8 +1871,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocWithFlags(
   // allocation from the beginning of the slot, thus messing up alignment.
   // Extras after the allocation are acceptable, but they have to be taken into
   // account in the request size calculation to avoid crbug.com/1185484.
-  PA_DCHECK(this->flags.allow_aligned_alloc);
-  PA_DCHECK(!this->flags.extras_offset);
+  PA_DCHECK(allow_aligned_alloc);
+  PA_DCHECK(!extras_offset);
   // This is mandated by |posix_memalign()|, so should never fire.
   PA_CHECK(partition_alloc::internal::base::bits::IsPowerOfTwo(alignment));
   // Catch unsupported alignment requests early.
@@ -1969,7 +1968,7 @@ PartitionRoot<thread_safe>::AllocationCapacityFromRequestedSize(
   PA_DCHECK(PartitionRoot<thread_safe>::initialized);
   size = AdjustSizeForExtrasAdd(size);
   auto& bucket =
-      bucket_at(SizeToBucketIndex(size, flags.with_denser_bucket_distribution));
+      bucket_at(SizeToBucketIndex(size, with_denser_bucket_distribution));
   PA_DCHECK(!bucket.slot_size || bucket.slot_size >= size);
   PA_DCHECK(!(bucket.slot_size % internal::kSmallestBucket));
 

@@ -631,7 +631,7 @@ void PartitionRoot<thread_safe>::DestructForTesting() {
   // We need to destruct the thread cache before we unreserve any of the super
   // pages below, which we currently are not doing. So, we should only call
   // this function on PartitionRoots without a thread cache.
-  PA_CHECK(!flags.with_thread_cache);
+  PA_CHECK(!with_thread_cache);
   auto pool_handle = ChoosePool();
   auto* curr = first_extent;
   while (curr != nullptr) {
@@ -674,24 +674,24 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     internal::PartitionAddressSpace::Init();
 #endif
 
-    flags.allow_aligned_alloc =
+    allow_aligned_alloc =
         opts.aligned_alloc == PartitionOptions::AlignedAlloc::kAllowed;
-    flags.allow_cookie = opts.cookie == PartitionOptions::Cookie::kAllowed;
+    allow_cookie = opts.cookie == PartitionOptions::Cookie::kAllowed;
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-    flags.brp_enabled_ =
+    brp_enabled_ =
         opts.backup_ref_ptr == PartitionOptions::BackupRefPtr::kEnabled;
 #else
     PA_CHECK(opts.backup_ref_ptr == PartitionOptions::BackupRefPtr::kDisabled);
 #endif
-    flags.use_configurable_pool =
+    use_configurable_pool =
         (opts.use_configurable_pool ==
          PartitionOptions::UseConfigurablePool::kIfAvailable) &&
         IsConfigurablePoolAvailable();
-    PA_DCHECK(!flags.use_configurable_pool || IsConfigurablePoolAvailable());
+    PA_DCHECK(!use_configurable_pool || IsConfigurablePoolAvailable());
 
     // brp_enabled_() is not supported in the configurable pool because
     // BRP requires objects to be in a different Pool.
-    PA_CHECK(!(flags.use_configurable_pool && brp_enabled()));
+    PA_CHECK(!(use_configurable_pool && brp_enabled()));
 
     // Ref-count messes up alignment needed for AlignedAlloc, making this
     // option incompatible. However, except in the
@@ -701,28 +701,28 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
 #endif
 
 #if defined(PA_EXTRAS_REQUIRED)
-    flags.extras_size = 0;
-    flags.extras_offset = 0;
+    extras_size = 0;
+    extras_offset = 0;
 
-    if (flags.allow_cookie) {
-      flags.extras_size += internal::kPartitionCookieSizeAdjustment;
+    if (allow_cookie) {
+      extras_size += internal::kPartitionCookieSizeAdjustment;
     }
 
     if (brp_enabled()) {
       // TODO(tasak): In the PUT_REF_COUNT_IN_PREVIOUS_SLOT case, ref-count is
       // stored out-of-line for single-slot slot spans, so no need to
       // add/subtract its size in this case.
-      flags.extras_size += internal::kPartitionRefCountSizeAdjustment;
-      flags.extras_offset += internal::kPartitionRefCountOffsetAdjustment;
+      extras_size += internal::kPartitionRefCountSizeAdjustment;
+      extras_offset += internal::kPartitionRefCountOffsetAdjustment;
     }
 #endif  //  defined(PA_EXTRAS_REQUIRED)
 
     // Re-confirm the above PA_CHECKs, by making sure there are no
     // pre-allocation extras when AlignedAlloc is allowed. Post-allocation
     // extras are ok.
-    PA_CHECK(!flags.allow_aligned_alloc || !flags.extras_offset);
+    PA_CHECK(!allow_aligned_alloc || !extras_offset);
 
-    flags.quarantine_mode =
+    quarantine_mode =
 #if defined(PA_ALLOW_PCSCAN)
         (opts.quarantine == PartitionOptions::Quarantine::kDisallowed
              ? QuarantineMode::kAlwaysDisabled
@@ -763,10 +763,10 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     with_thread_cache = false;
 #else
     ThreadCache::EnsureThreadSpecificDataInitialized();
-    flags.with_thread_cache =
+    with_thread_cache =
         (opts.thread_cache == PartitionOptions::ThreadCache::kEnabled);
 
-    if (flags.with_thread_cache)
+    if (with_thread_cache)
       ThreadCache::Init(this);
 #endif  // !defined(PA_THREAD_CACHE_SUPPORTED)
 
@@ -786,7 +786,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
 template <bool thread_safe>
 PartitionRoot<thread_safe>::~PartitionRoot() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  PA_CHECK(!flags.with_thread_cache)
+  PA_CHECK(!with_thread_cache)
       << "Must not destroy a partition with a thread cache";
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -800,7 +800,7 @@ template <bool thread_safe>
 void PartitionRoot<thread_safe>::EnableThreadCacheIfSupported() {
 #if defined(PA_THREAD_CACHE_SUPPORTED)
   ::partition_alloc::internal::ScopedGuard guard{lock_};
-  PA_CHECK(!flags.with_thread_cache);
+  PA_CHECK(!with_thread_cache);
   // By the time we get there, there may be multiple threads created in the
   // process. Since `with_thread_cache` is accessed without a lock, it can
   // become visible to another thread before the effects of
@@ -815,7 +815,7 @@ void PartitionRoot<thread_safe>::EnableThreadCacheIfSupported() {
   PA_CHECK(before == 0);
   ThreadCache::Init(this);
   thread_caches_being_constructed_.fetch_sub(1, std::memory_order_release);
-  flags.with_thread_cache = true;
+  with_thread_cache = true;
 #endif  // defined(PA_THREAD_CACHE_SUPPORTED)
 }
 
@@ -916,7 +916,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
 
 #if DCHECK_IS_ON()
   // Write a new trailing cookie.
-  if (flags.allow_cookie) {
+  if (allow_cookie) {
     auto* object =
         reinterpret_cast<unsigned char*>(SlotStartToObject(slot_start));
     internal::PartitionCookieWriteValue(object +
@@ -965,7 +965,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
 #if DCHECK_IS_ON()
     // Write a new trailing cookie only when it is possible to keep track
     // raw size (otherwise we wouldn't know where to look for it later).
-    if (flags.allow_cookie) {
+    if (allow_cookie) {
       internal::PartitionCookieWriteValue(
           reinterpret_cast<unsigned char*>(address) +
           slot_span->GetUsableSize(this));
@@ -1204,7 +1204,7 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
     stats.total_active_bytes += direct_mapped_allocations_total_size;
     stats.total_active_count += num_direct_mapped_allocations;
 
-    stats.has_thread_cache = flags.with_thread_cache;
+    stats.has_thread_cache = with_thread_cache;
     if (stats.has_thread_cache) {
       ThreadCacheRegistry::Instance().DumpStats(
           true, &stats.current_thread_cache_stats);
@@ -1241,9 +1241,9 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::DeleteForTesting(
     PartitionRoot* partition_root) {
-  if (partition_root->flags.with_thread_cache) {
+  if (partition_root->with_thread_cache) {
     ThreadCache::SwapForTesting(nullptr);
-    partition_root->flags.with_thread_cache = false;
+    partition_root->with_thread_cache = false;
   }
 
   delete partition_root;

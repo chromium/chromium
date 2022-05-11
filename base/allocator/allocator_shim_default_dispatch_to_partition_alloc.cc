@@ -586,7 +586,7 @@ void ConfigurePartitions(
     }
     PA_DCHECK(!enable_brp);
     PA_DCHECK(!use_dedicated_aligned_partition);
-    PA_DCHECK(!current_root->flags.with_thread_cache);
+    PA_DCHECK(!current_root->with_thread_cache);
     return;
   }
 

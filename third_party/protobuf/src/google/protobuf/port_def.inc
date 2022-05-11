@@ -277,18 +277,18 @@
 #endif
 
 #if defined(__has_cpp_attribute)
-#define PROTOBUF_HAS_ATTRIBUTE(attr) __has_cpp_attribute(attr)
+#define HAS_ATTRIBUTE(attr) __has_cpp_attribute(attr)
 #else
-#define PROTOBUF_HAS_ATTRIBUTE(attr) 0
+#define HAS_ATTRIBUTE(attr) 0
 #endif
 
-#if PROTOBUF_HAS_ATTRIBUTE(unused) || (defined(__GNUC__) && !defined(__clang__))
+#if HAS_ATTRIBUTE(unused) || (defined(__GNUC__) && !defined(__clang__))
 #define PROTOBUF_UNUSED __attribute__((__unused__))
 #else
 #define PROTOBUF_UNUSED
 #endif
 
-#undef PROTOBUF_HAS_ATTRIBUTE
+#undef HAS_ATTRIBUTE
 
 #ifdef _MSC_VER
 #define PROTOBUF_LONGLONG(x) x##I64

@@ -117,9 +117,8 @@ using AllocationStateMap =
 //   booted out of the active list. If there are no suitable active slot spans
 //   found, an empty or decommitted slot spans (if one exists) will be pulled
 //   from the empty/decommitted list on to the active list.
-#pragma pack(push, 1)
 template <bool thread_safe>
-struct SlotSpanMetadata {
+struct __attribute__((packed)) SlotSpanMetadata {
  private:
   PartitionFreelistEntry* freelist_head = nullptr;
 
@@ -303,7 +302,6 @@ struct SlotSpanMetadata {
         empty_cache_index_(0),
         unused2_(0) {}
 };
-#pragma pack(pop)
 static_assert(sizeof(SlotSpanMetadata<ThreadSafe>) <= kPageMetadataSize,
               "SlotSpanMetadata must fit into a Page Metadata slot.");
 
@@ -326,12 +324,11 @@ struct SubsequentPageMetadata {
 // first page of a slot span, describes that slot span. If a slot span spans
 // more than 1 page, the page metadata may contain rudimentary additional
 // information.
-// "Pack" the union so that common page metadata still fits within
-// kPageMetadataSize. (SlotSpanMetadata is also "packed".)
-#pragma pack(push, 1)
 template <bool thread_safe>
-struct PartitionPage {
-  union {
+struct __attribute__((packed)) PartitionPage {
+  // "Pack" the union so that common page metadata still fits within
+  // kPageMetadataSize. (SlotSpanMetadata is also "packed".)
+  union __attribute__((packed)) {
     SlotSpanMetadata<thread_safe> slot_span_metadata;
 
     SubsequentPageMetadata subsequent_page_metadata;
@@ -369,7 +366,7 @@ struct PartitionPage {
 
   ALWAYS_INLINE static PartitionPage* FromAddr(uintptr_t address);
 };
-#pragma pack(pop)
+
 static_assert(sizeof(PartitionPage<ThreadSafe>) == kPageMetadataSize,
               "PartitionPage must be able to fit in a metadata slot");
 
@@ -620,7 +617,7 @@ SlotSpanMetadata<thread_safe>::FromObject(void* object) {
   PA_DCHECK((::partition_alloc::internal::UnmaskPtr(object_addr) -
              ::partition_alloc::internal::UnmaskPtr(slot_span_start)) %
                 slot_span->bucket->slot_size ==
-            root->flags.extras_offset);
+            root->extras_offset);
 #endif  // DCHECK_IS_ON()
   return slot_span;
 }
@@ -640,10 +637,10 @@ SlotSpanMetadata<thread_safe>::FromObjectInnerAddr(uintptr_t address) {
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(slot_span);
   uintptr_t shift_from_slot_start =
       (address - slot_span_start) % slot_span->bucket->slot_size;
-  PA_DCHECK(shift_from_slot_start >= root->flags.extras_offset);
+  PA_DCHECK(shift_from_slot_start >= root->extras_offset);
   // Use <= to allow an address immediately past the object.
   PA_DCHECK(shift_from_slot_start <=
-            root->flags.extras_offset + slot_span->GetUsableSize(root));
+            root->extras_offset + slot_span->GetUsableSize(root));
 #endif  // DCHECK_IS_ON()
   return slot_span;
 }

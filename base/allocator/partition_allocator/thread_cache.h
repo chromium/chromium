@@ -506,13 +506,12 @@ ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   }
 
   PA_DCHECK(bucket.count != 0);
-  internal::PartitionFreelistEntry* result = bucket.freelist_head;
+  auto* result = bucket.freelist_head;
   // Passes the bucket size to |GetNext()|, so that in case of freelist
   // corruption, we know the bucket size that lead to the crash, helping to
   // narrow down the search for culprit. |bucket| was touched just now, so this
   // does not introduce another cache miss.
-  internal::PartitionFreelistEntry* next =
-      result->GetNextForThreadCache<true>(bucket.slot_size);
+  auto* next = result->GetNextForThreadCache<true>(bucket.slot_size);
   PA_DCHECK(result != next);
   bucket.count--;
   PA_DCHECK(bucket.count != 0 || !next);

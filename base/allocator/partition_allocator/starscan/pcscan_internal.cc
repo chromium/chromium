@@ -1440,8 +1440,8 @@ void PCScanInternal::RegisterScannableRoot(Root* root) {
       return;
     PA_CHECK(!root->IsQuarantineEnabled());
     super_pages = GetSuperPagesAndCommitStateBitmaps(*root);
-    root->flags.scan_mode = Root::ScanMode::kEnabled;
-    root->flags.quarantine_mode = Root::QuarantineMode::kEnabled;
+    root->scan_mode = Root::ScanMode::kEnabled;
+    root->quarantine_mode = Root::QuarantineMode::kEnabled;
   }
   std::lock_guard<std::mutex> lock(roots_mutex_);
   PA_DCHECK(!scannable_roots_.count(root));
@@ -1462,7 +1462,7 @@ void PCScanInternal::RegisterNonScannableRoot(Root* root) {
     if (root->IsQuarantineEnabled())
       return;
     super_pages = GetSuperPagesAndCommitStateBitmaps(*root);
-    root->flags.quarantine_mode = Root::QuarantineMode::kEnabled;
+    root->quarantine_mode = Root::QuarantineMode::kEnabled;
   }
   std::lock_guard<std::mutex> lock(roots_mutex_);
   PA_DCHECK(!nonscannable_roots_.count(root));
@@ -1582,12 +1582,12 @@ void PCScanInternal::ClearRootsForTesting() {
   // Set all roots as non-scannable and non-quarantinable.
   for (auto& pair : scannable_roots_) {
     Root* root = pair.first;
-    root->flags.scan_mode = Root::ScanMode::kDisabled;
-    root->flags.quarantine_mode = Root::QuarantineMode::kDisabledByDefault;
+    root->scan_mode = Root::ScanMode::kDisabled;
+    root->quarantine_mode = Root::QuarantineMode::kDisabledByDefault;
   }
   for (auto& pair : nonscannable_roots_) {
     Root* root = pair.first;
-    root->flags.quarantine_mode = Root::QuarantineMode::kDisabledByDefault;
+    root->quarantine_mode = Root::QuarantineMode::kDisabledByDefault;
   }
   // Make sure to destroy maps so that on the following ReinitForTesting() call
   // the maps don't attempt to destroy the backing.
