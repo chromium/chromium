@@ -146,11 +146,11 @@ void WebViewPasswordManagerClient::ShowManualFallbackForSaving(
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
     bool has_generated_password,
     bool is_update) {
-  NOTIMPLEMENTED();
+  // No op. We only show save dialogues after successful form submissions.
 }
 
 void WebViewPasswordManagerClient::HideManualFallbackForSaving() {
-  NOTIMPLEMENTED();
+  // No op. We only show save dialogues after successful form submissions.
 }
 
 void WebViewPasswordManagerClient::FocusedInputChanged(

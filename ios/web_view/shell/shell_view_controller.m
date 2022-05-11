@@ -168,7 +168,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                             forAxis:UILayoutConstraintAxisHorizontal];
   _field.delegate = self;
   _field.layer.cornerRadius = 2.0;
-  _field.keyboardType = UIKeyboardTypeURL;
+  _field.keyboardType = UIKeyboardTypeWebSearch;
   _field.autocapitalizationType = UITextAutocapitalizationTypeNone;
   _field.clearButtonMode = UITextFieldViewModeWhileEditing;
   _field.autocorrectionType = UITextAutocorrectionTypeNo;
