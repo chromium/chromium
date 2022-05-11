@@ -736,17 +736,16 @@ TEST_F(DeviceSettingsProviderTest, LegacyDeviceLocalAccounts) {
   BuildAndInstallDevicePolicy();
 
   // On load, the deprecated spec should have been converted to the new format.
-  base::ListValue expected_accounts;
-  std::unique_ptr<base::DictionaryValue> entry_dict(
-      new base::DictionaryValue());
-  entry_dict->SetStringKey(kAccountsPrefDeviceLocalAccountsKeyId,
-                           policy::PolicyBuilder::kFakeUsername);
-  entry_dict->SetIntKey(kAccountsPrefDeviceLocalAccountsKeyType,
-                        policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
+  base::Value::List expected_accounts;
+  base::Value::Dict entry_dict;
+  entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyId,
+                 policy::PolicyBuilder::kFakeUsername);
+  entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyType,
+                 policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
   expected_accounts.Append(std::move(entry_dict));
   const base::Value* actual_accounts =
       provider_->Get(kAccountsPrefDeviceLocalAccounts);
-  EXPECT_EQ(expected_accounts, *actual_accounts);
+  EXPECT_EQ(expected_accounts, actual_accounts->GetList());
 }
 
 TEST_F(DeviceSettingsProviderTest, DecodeDeviceState) {
