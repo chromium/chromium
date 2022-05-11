@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/follow/follow_web_page_urls.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -77,6 +78,9 @@ using base::UserMetricsAction;
 
 namespace {
 
+// The size of overflow symbol images.
+NSInteger kOverflowSymbolPointSize = 22;
+
 enum class Destination {
   Bookmarks = 0,
   History = 1,
@@ -96,7 +100,30 @@ OverflowMenuAction* CreateOverflowMenuAction(int nameID,
                                              Handler handler) {
   NSString* name = l10n_util::GetNSString(nameID);
   return [[OverflowMenuAction alloc] initWithName:name
-                                        imageName:imageName
+                                          uiImage:[UIImage imageNamed:imageName]
+                          accessibilityIdentifier:accessibilityID
+                               enterpriseDisabled:NO
+                                          handler:handler];
+}
+
+OverflowMenuAction* CreateOverflowMenuAction(int nameID,
+                                             NSString* symbolName,
+                                             bool systemSymbol,
+                                             NSString* accessibilityID,
+                                             Handler handler) {
+  DCHECK(UseSymbols());
+  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kOverflowSymbolPointSize
+                          weight:UIImageSymbolWeightLight
+                           scale:UIImageSymbolScaleMedium];
+  NSString* name = l10n_util::GetNSString(nameID);
+  UIImage* symbolImage =
+      [systemSymbol ? DefaultSymbolWithConfiguration(symbolName, configuration)
+                    : CustomSymbolWithConfiguration(symbolName, configuration)
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
+  return [[OverflowMenuAction alloc] initWithName:name
+                                          uiImage:symbolImage
                           accessibilityIdentifier:accessibilityID
                                enterpriseDisabled:NO
                                           handler:handler];
@@ -140,11 +167,12 @@ OverflowMenuDestination* CreateOverflowMenuDestination(
     handler();
   };
 
-  return [[OverflowMenuDestination alloc] initWithName:name
-                                             imageName:imageName
-                               accessibilityIdentifier:accessibilityID
-                                    enterpriseDisabled:NO
-                                               handler:handlerWithMetrics];
+  return [[OverflowMenuDestination alloc]
+                 initWithName:name
+                      uiImage:[UIImage imageNamed:imageName]
+      accessibilityIdentifier:accessibilityID
+           enterpriseDisabled:NO
+                      handler:handlerWithMetrics];
 }
 
 OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
@@ -155,7 +183,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   NSString* link = l10n_util::GetNSString(linkID);
   return [[OverflowMenuFooter alloc] initWithName:name
                                              link:link
-                                        imageName:imageName
+                                          uiImage:[UIImage imageNamed:imageName]
                           accessibilityIdentifier:kTextMenuEnterpriseInfo
                                           handler:handler];
 }
@@ -442,11 +470,20 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
         [weakSelf openSiteInformation];
       });
 
-  self.reloadAction = CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_RELOAD,
-                                               @"overflow_menu_action_reload",
-                                               kToolsMenuReload, ^{
-                                                 [weakSelf reload];
-                                               });
+  if (UseSymbols()) {
+    self.reloadAction =
+        CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_RELOAD,
+                                 kArrowClockWiseSymbol, NO, kToolsMenuReload, ^{
+                                   [weakSelf reload];
+                                 });
+  } else {
+    self.reloadAction = CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_RELOAD,
+                                                 @"overflow_menu_action_reload",
+                                                 kToolsMenuReload, ^{
+                                                   [weakSelf reload];
+                                                 });
+  }
+
   self.stopLoadAction = CreateOverflowMenuAction(
       IDS_IOS_TOOLS_MENU_STOP, @"overflow_menu_action_stop", kToolsMenuStop, ^{
         [weakSelf stopLoading];

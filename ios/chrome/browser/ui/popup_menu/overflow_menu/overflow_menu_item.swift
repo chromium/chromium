@@ -9,12 +9,12 @@ import SwiftUI
   /// The user-visible name of the item.
   @Published public var name: String
 
-  /// The name of the image used to load the image for SwiftUI.
-  @Published public var imageName: String
+  /// The UIImage used to load the image for SwiftUI.
+  @Published public var uiImage: UIImage
 
   /// The SwiftUI `Image` for the action icon.
   public var image: Image {
-    return Image(imageName)
+    return Image(uiImage: uiImage)
   }
 
   /// The accessibility identifier for this item.
@@ -27,11 +27,11 @@ import SwiftUI
   @Published public var handler: () -> Void
 
   public init(
-    name: String, imageName: String, accessibilityIdentifier: String, enterpriseDisabled: Bool,
+    name: String, uiImage: UIImage, accessibilityIdentifier: String, enterpriseDisabled: Bool,
     handler: @escaping () -> Void
   ) {
     self.name = name
-    self.imageName = imageName
+    self.uiImage = uiImage
     self.accessibilityIdentifier = accessibilityIdentifier
     self.enterpriseDisabled = enterpriseDisabled
     self.handler = handler
