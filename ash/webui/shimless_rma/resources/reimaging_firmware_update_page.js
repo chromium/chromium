@@ -83,6 +83,7 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
       shouldShowWarning_: {
         type: Boolean,
         value: false,
+        reflectToAttribute: true,
       },
     };
   }
