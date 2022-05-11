@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
@@ -220,6 +221,15 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
       return *this;
     }
 
+    // Adds a menu item. See DialogModel::AddMenuItem().
+    Builder& AddMenuItem(ImageModel icon,
+                         std::u16string label,
+                         base::RepeatingCallback<void(int)> callback) {
+      model_->AddMenuItem(std::move(icon), std::move(label),
+                          std::move(callback));
+      return *this;
+    }
+
     // Adds a separator. See DialogModel::AddSeparator().
     Builder& AddSeparator() {
       model_->AddSeparator();
@@ -277,6 +287,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
                    std::unique_ptr<ui::ComboboxModel> combobox_model,
                    const DialogModelCombobox::Params& params =
                        DialogModelCombobox::Params());
+
+  // Adds a menu item at the end of the dialog model.
+  void AddMenuItem(ImageModel icon,
+                   std::u16string label,
+                   base::RepeatingCallback<void(int)> callback);
 
   // Adds a separator at the end of the dialog model.
   void AddSeparator();

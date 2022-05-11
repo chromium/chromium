@@ -108,6 +108,14 @@ void DialogModel::AddSeparator() {
   AddField(std::make_unique<DialogModelSeparator>(GetPassKey(), this));
 }
 
+void DialogModel::AddMenuItem(ImageModel icon,
+                              std::u16string label,
+                              base::RepeatingCallback<void(int)> callback) {
+  AddField(std::make_unique<DialogModelMenuItem>(
+      GetPassKey(), this, std::move(icon), std::move(label),
+      std::move(callback)));
+}
+
 void DialogModel::AddTextfield(std::u16string label,
                                std::u16string text,
                                const DialogModelTextfield::Params& params) {

@@ -10,6 +10,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/menu_button.h"
 
 namespace gfx {
@@ -31,15 +32,12 @@ class SavedTabGroupButton : public views::MenuButton {
   SavedTabGroupButton& operator=(const SavedTabGroupButton&) = delete;
   ~SavedTabGroupButton() override;
 
+  // views::MenuButton:
   std::u16string GetTooltipText(const gfx::Point& p) const override;
-
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   void OnPaintBackground(gfx::Canvas* canvas) override;
-
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
       const override;
-
   void OnThemeChanged() override;
 
   void RemoveButtonOutline();
@@ -50,6 +48,21 @@ class SavedTabGroupButton : public views::MenuButton {
   }
 
  private:
+  class ContextMenuController : public views::ContextMenuController {
+   public:
+    ContextMenuController();
+    ~ContextMenuController() override;
+
+   private:
+    void ShowContextMenuForViewImpl(View* source,
+                                    const gfx::Point& point,
+                                    ui::MenuSourceType source_type) override;
+
+    // TODO(pbos): Comment
+    std::unique_ptr<ui::MenuModel> menu_model_;
+    std::unique_ptr<views::MenuRunner> menu_runner_;
+  };
+
   // The animations for button movement.
   std::unique_ptr<gfx::SlideAnimation> show_animation_;
 
@@ -58,6 +71,8 @@ class SavedTabGroupButton : public views::MenuButton {
 
   // Denotes if the tabgroup is currently open in the tabstrip.
   bool is_group_in_tabstrip_;
+
+  ContextMenuController context_menu_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_BUTTON_H_

@@ -50,6 +50,10 @@ BubbleDialogModelHost::FieldType GetFieldTypeForField(
       return BubbleDialogModelHost::FieldType::kControl;
     case ui::DialogModelField::kCombobox:
       return BubbleDialogModelHost::FieldType::kControl;
+    case ui::DialogModelField::kMenuItem:
+      // TODO(crbug.com/1324298): Implement.
+      NOTREACHED();
+      return BubbleDialogModelHost::FieldType::kMenuItem;
     case ui::DialogModelField::kSeparator:
       return BubbleDialogModelHost::FieldType::kMenuItem;
     case ui::DialogModelField::kCustom:
@@ -410,6 +414,10 @@ void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
       break;
     case ui::DialogModelField::kCombobox:
       AddOrUpdateCombobox(field->AsCombobox(GetPassKey()));
+      break;
+    case ui::DialogModelField::kMenuItem:
+      // TODO(crbug.com/1324298): Implement.
+      NOTREACHED();
       break;
     case ui::DialogModelField::kSeparator:
       AddOrUpdateSeparator(field);

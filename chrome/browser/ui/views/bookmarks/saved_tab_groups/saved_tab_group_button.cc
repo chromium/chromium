@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -16,6 +17,8 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
+#include "ui/base/models/dialog_model_menu_model_adapter.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
@@ -25,6 +28,7 @@
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/menu/menu_runner.h"
 
 namespace {
 constexpr float kBorderRadius = 4.5f;
@@ -81,6 +85,9 @@ SavedTabGroupButton::SavedTabGroupButton(PressedCallback callback,
     // comfortably fit in the bookmarks bar.
     SetPreferredSize(gfx::Size(button_height, button_height));
   }
+  // TODO(crbug.com/1324360): Add this back when the ContextMenuController does
+  // something reasonable.
+  // set_context_menu_controller(&context_menu_controller_);
 }
 
 SavedTabGroupButton::~SavedTabGroupButton() = default;
@@ -177,6 +184,38 @@ void SavedTabGroupButton::RemoveButtonOutline() {
 
 bool SavedTabGroupButton::HasButtonOutline() const {
   return is_group_in_tabstrip_;
+}
+
+SavedTabGroupButton::ContextMenuController::ContextMenuController() = default;
+SavedTabGroupButton::ContextMenuController::~ContextMenuController() = default;
+
+void SavedTabGroupButton::ContextMenuController::ShowContextMenuForViewImpl(
+    View* source,
+    const gfx::Point& point,
+    ui::MenuSourceType source_type) {
+  // TODO(pbos): Populate with real data, this is a placeholder to show dljames@
+  // how the API is intended to be used. DoNothing()s need to be replaced with
+  // base::BindRepeating calls to open tabs.
+  auto dialog_model =
+      ui::DialogModel::Builder()
+          .AddMenuItem(ui::ImageModel::FromVectorIcon(kSaveGroupIcon), u"HELLO",
+                       base::DoNothing())
+          .AddMenuItem(
+              ui::ImageModel::FromVectorIcon(kMoveGroupToNewWindowIcon),
+              u"HELLO AGAIN", base::DoNothing())
+          .Build();
+  menu_model_ = std::make_unique<ui::DialogModelMenuModelAdapter>(
+      std::move(dialog_model));
+
+  // TODO(pbos): See if there's a better way than IS_NESTED to force this to
+  // show icons (we need favicons, I haven't figured out why this doesn't show
+  // icons under Mac OS context menus).
+  menu_runner_ = std::make_unique<views::MenuRunner>(
+      menu_model_.get(),
+      views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED);
+  menu_runner_->RunMenuAt(source->GetWidget(), /*button_controller=*/nullptr,
+                          gfx::Rect(point, gfx::Size()),
+                          views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
 BEGIN_METADATA(SavedTabGroupButton, MenuButton)

@@ -138,6 +138,8 @@ component("base") {
     "models/dialog_model_field.cc",
     "models/dialog_model_field.h",
     "models/dialog_model_host.h",
+    "models/dialog_model_menu_model_adapter.cc",
+    "models/dialog_model_menu_model_adapter.h",
     "models/image_model.cc",
     "models/image_model.h",
     "models/list_model.h",

@@ -15,6 +15,7 @@
 #include "base/types/pass_key.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/combobox_model.h"
+#include "ui/base/models/image_model.h"
 
 namespace ui {
 
@@ -25,6 +26,7 @@ class DialogModelCheckbox;
 class DialogModelCombobox;
 class DialogModelCustomField;
 class DialogModelHost;
+class DialogModelMenuItem;
 class DialogModelTextfield;
 class Event;
 
@@ -113,6 +115,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
     kCheckbox,
     kCombobox,
     kCustom,
+    kMenuItem,
     kSeparator,
     kTextfield
   };
@@ -133,6 +136,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   DialogModelBodyText* AsBodyText(base::PassKey<DialogModelHost>);
   DialogModelCheckbox* AsCheckbox(base::PassKey<DialogModelHost>);
   DialogModelCombobox* AsCombobox(base::PassKey<DialogModelHost>);
+  DialogModelMenuItem* AsMenuItem(base::PassKey<DialogModelHost>);
+  const DialogModelMenuItem* AsMenuItem(base::PassKey<DialogModelHost>) const;
   DialogModelTextfield* AsTextfield(base::PassKey<DialogModelHost>);
   DialogModelCustomField* AsCustomField(base::PassKey<DialogModelHost>);
 
@@ -149,6 +154,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   DialogModelBodyText* AsBodyText();
   DialogModelCheckbox* AsCheckbox();
   DialogModelCombobox* AsCombobox();
+  const DialogModelMenuItem* AsMenuItem() const;
   DialogModelTextfield* AsTextfield();
   DialogModelCustomField* AsCustomField();
 
@@ -349,6 +355,37 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
   int selected_index_;
   std::unique_ptr<ui::ComboboxModel> combobox_model_;
   base::RepeatingClosure callback_;
+};
+
+// Field class representing a menu item:
+//
+//     <icon> <label>
+// Ex: [icon] Open URL
+class COMPONENT_EXPORT(UI_BASE) DialogModelMenuItem : public DialogModelField {
+ public:
+  // Note that this is constructed through a DialogModel which adds it to model
+  // fields.
+  DialogModelMenuItem(base::PassKey<DialogModel> pass_key,
+                      DialogModel* model,
+                      ImageModel icon,
+                      std::u16string label,
+                      base::RepeatingCallback<void(int)> callback);
+  DialogModelMenuItem(const DialogModelMenuItem&) = delete;
+  DialogModelMenuItem& operator=(const DialogModelMenuItem&) = delete;
+  ~DialogModelMenuItem() override;
+
+  // Methods with base::PassKey<DialogModelHost> are only intended to be called
+  // by the DialogModelHost implementation.
+  const ImageModel& icon(base::PassKey<DialogModelHost>) const { return icon_; }
+  const std::u16string& label(base::PassKey<DialogModelHost>) const {
+    return label_;
+  }
+  void OnActivated(base::PassKey<DialogModelHost>, int event_flags);
+
+ private:
+  const ImageModel icon_;
+  const std::u16string label_;
+  base::RepeatingCallback<void(int)> callback_;
 };
 
 // Field class representing a separator.
