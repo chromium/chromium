@@ -195,10 +195,12 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // Returns whether the soft keyboard should be suppressed.
   bool ShouldSuppressKeyboard();
 
+#if BUILDFLAG(IS_ANDROID)
   // Asks the agent to show the touch to fill UI for |control_element|. Returns
   // whether the agent was able to do so.
   bool TryToShowTouchToFill(
       const blink::WebFormControlElement& control_element);
+#endif
 
   // Shows an Autofill popup with username suggestions for |element|. If
   // |show_all| is |true|, will show all possible suggestions for that element,
@@ -602,6 +604,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // triggered.
   FieldRendererId field_renderer_id_to_submit_;
 
+  // TODO(crbug.com/1299430): Disable |touch_to_fill_state_| on Desktop.
   // Current state of Touch To Fill. This is reset during
   // CleanupOnDocumentShutdown.
   TouchToFillState touch_to_fill_state_ = TouchToFillState::kShouldShow;

@@ -1038,8 +1038,7 @@ bool PasswordAutofillAgent::ShouldSuppressKeyboard() {
   return touch_to_fill_state_ == TouchToFillState::kIsShowing;
 }
 
-// TODO(crbug.com/1299430): Disable |TryToShowTouchToFill| and
-// |touch_to_fill_state_| on Desktop.
+#if BUILDFLAG(IS_ANDROID)
 bool PasswordAutofillAgent::TryToShowTouchToFill(
     const WebFormControlElement& control_element) {
   if (touch_to_fill_state_ != TouchToFillState::kShouldShow)
@@ -1075,7 +1074,6 @@ bool PasswordAutofillAgent::TryToShowTouchToFill(
 
   focused_input_element_ = input_element;
 
-#if BUILDFLAG(IS_ANDROID)
   WebFormElement form = password_element.Form();
   std::unique_ptr<FormData> form_data =
       form.IsNull() ? GetFormDataFromUnownedInputElements()
@@ -1084,11 +1082,11 @@ bool PasswordAutofillAgent::TryToShowTouchToFill(
       form_data ? CalculateSubmissionReadiness(*form_data, username_element,
                                                password_element)
                 : mojom::SubmissionReadinessState::kNoInformation);
-#endif
 
   touch_to_fill_state_ = TouchToFillState::kIsShowing;
   return true;
 }
+#endif
 
 bool PasswordAutofillAgent::ShowSuggestions(
     const WebInputElement& element,

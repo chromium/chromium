@@ -1130,7 +1130,7 @@ void AutofillAgent::FormControlElementClicked(
   if (input_element.IsNull() && !form_util::IsTextAreaElement(element))
     return;
 
-#if defined(ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   password_autofill_agent_->TryToShowTouchToFill(element);
 #endif
 
