@@ -33,6 +33,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
@@ -218,7 +219,8 @@ class TouchToFillViewBinder {
      * @return The title of Touch To Fill sheet.
      */
     private static String getTitle(PropertyModel model, Context context) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION)
+                || PasswordManagerHelper.usesUnifiedPasswordManagerUI()) {
             return context.getString(R.string.touch_to_fill_sheet_uniform_title);
         } else {
             @StringRes
