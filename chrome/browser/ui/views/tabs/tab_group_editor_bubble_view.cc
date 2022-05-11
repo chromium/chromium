@@ -225,6 +225,7 @@ views::Widget* TabGroupEditorBubbleView::Show(
     // picker.
 
     dialog_builder.OverrideShowCloseButton(false)
+        .AddSeparator()
         .AddCustomField(
             std::make_unique<MenuItemFactory>(
                 l10n_util::GetStringUTF16(

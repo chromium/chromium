@@ -220,6 +220,12 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
       return *this;
     }
 
+    // Adds a separator. See DialogModel::AddSeparator().
+    Builder& AddSeparator() {
+      model_->AddSeparator();
+      return *this;
+    }
+
     // Adds a textfield. See DialogModel::AddTextfield().
     Builder& AddTextfield(std::u16string label,
                           std::u16string text,
@@ -271,6 +277,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
                    std::unique_ptr<ui::ComboboxModel> combobox_model,
                    const DialogModelCombobox::Params& params =
                        DialogModelCombobox::Params());
+
+  // Adds a separator at the end of the dialog model.
+  void AddSeparator();
 
   // Adds a labeled textfield (label: [text]) at the end of the dialog model.
   void AddTextfield(std::u16string label,

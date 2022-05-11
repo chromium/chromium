@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "ui/base/models/dialog_model.h"
+#include <memory>
 
 #include "base/callback_helpers.h"
 #include "base/ranges/algorithm.h"
+#include "ui/base/models/dialog_model_field.h"
 
 namespace ui {
 
@@ -100,6 +102,10 @@ void DialogModel::AddCombobox(std::u16string label,
                               const DialogModelCombobox::Params& params) {
   AddField(std::make_unique<DialogModelCombobox>(
       GetPassKey(), this, std::move(label), std::move(combobox_model), params));
+}
+
+void DialogModel::AddSeparator() {
+  AddField(std::make_unique<DialogModelSeparator>(GetPassKey(), this));
 }
 
 void DialogModel::AddTextfield(std::u16string label,

@@ -166,12 +166,7 @@ void DialogModelButton::OnPressed(base::PassKey<DialogModelHost>,
 DialogModelBodyText::DialogModelBodyText(base::PassKey<DialogModel> pass_key,
                                          DialogModel* model,
                                          const DialogModelLabel& label)
-    : DialogModelField(pass_key,
-                       model,
-                       kBodyText,
-                       -1,
-                       base::flat_set<Accelerator>()),
-      label_(label) {}
+    : DialogModelField(pass_key, model, kBodyText, -1, {}), label_(label) {}
 
 DialogModelBodyText::~DialogModelBodyText() = default;
 
@@ -181,11 +176,7 @@ DialogModelCheckbox::DialogModelCheckbox(
     int unique_id,
     const DialogModelLabel& label,
     const DialogModelCheckbox::Params& params)
-    : DialogModelField(pass_key,
-                       model,
-                       kCheckbox,
-                       unique_id,
-                       base::flat_set<Accelerator>()),
+    : DialogModelField(pass_key, model, kCheckbox, unique_id, {}),
       label_(label),
       is_checked_(params.is_checked_) {}
 
@@ -247,6 +238,12 @@ void DialogModelCombobox::OnPerformAction(base::PassKey<DialogModelHost>) {
     callback_.Run();
 }
 
+DialogModelSeparator::DialogModelSeparator(base::PassKey<DialogModel> pass_key,
+                                           DialogModel* model)
+    : DialogModelField(pass_key, model, kSeparator, -1, {}) {}
+
+DialogModelSeparator::~DialogModelSeparator() = default;
+
 DialogModelTextfield::Params::Params() = default;
 DialogModelTextfield::Params::~Params() = default;
 
@@ -292,11 +289,7 @@ DialogModelCustomField::DialogModelCustomField(
     DialogModel* model,
     int unique_id,
     std::unique_ptr<DialogModelCustomField::Factory> factory)
-    : DialogModelField(pass_key,
-                       model,
-                       kCustom,
-                       unique_id,
-                       base::flat_set<Accelerator>()),
+    : DialogModelField(pass_key, model, kCustom, unique_id, {}),
       factory_(std::move(factory)) {}
 
 DialogModelCustomField::~DialogModelCustomField() = default;

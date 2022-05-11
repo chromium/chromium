@@ -14,6 +14,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/models/dialog_model_field.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -22,6 +23,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
@@ -48,6 +50,8 @@ BubbleDialogModelHost::FieldType GetFieldTypeForField(
       return BubbleDialogModelHost::FieldType::kControl;
     case ui::DialogModelField::kCombobox:
       return BubbleDialogModelHost::FieldType::kControl;
+    case ui::DialogModelField::kSeparator:
+      return BubbleDialogModelHost::FieldType::kMenuItem;
     case ui::DialogModelField::kCustom:
       return static_cast<BubbleDialogModelHost::CustomViewFactory*>(
                  field->AsCustomField(pass_key)->factory(pass_key))
@@ -407,6 +411,9 @@ void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
     case ui::DialogModelField::kCombobox:
       AddOrUpdateCombobox(field->AsCombobox(GetPassKey()));
       break;
+    case ui::DialogModelField::kSeparator:
+      AddOrUpdateSeparator(field);
+      break;
     case ui::DialogModelField::kTextfield:
       AddOrUpdateTextfield(field->AsTextfield(GetPassKey()));
       break;
@@ -565,6 +572,17 @@ void BubbleDialogModelHost::AddOrUpdateCombobox(
   const gfx::FontList& font_list = combobox->GetFontList();
   AddViewForLabelAndField(model_field, model_field->label(GetPassKey()),
                           std::move(combobox), font_list);
+}
+
+void BubbleDialogModelHost::AddOrUpdateSeparator(
+    ui::DialogModelField* model_field) {
+  DCHECK_EQ(ui::DialogModelField::Type::kSeparator,
+            model_field->type(GetPassKey()));
+  // TODO(pbos): Support updates to the existing model.
+
+  auto separator = std::make_unique<Separator>();
+  DialogModelHostField info{model_field, separator.get(), nullptr};
+  AddDialogModelHostField(std::move(separator), info);
 }
 
 void BubbleDialogModelHost::AddOrUpdateTextfield(
