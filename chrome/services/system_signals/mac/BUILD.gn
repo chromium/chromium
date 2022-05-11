@@ -9,7 +9,7 @@ source_set("mac") {
 
   sources = [ "mac_system_signals_service.cc" ]
 
-  public_deps = [ "//chrome/services/system_signals/public/mojom" ]
+  public_deps = [ "//components/device_signals/core/common/mojom" ]
 
   deps = [ "//base" ]
 }

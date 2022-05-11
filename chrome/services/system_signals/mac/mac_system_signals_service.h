@@ -7,11 +7,12 @@
 
 #include <vector>
 
-#include "chrome/services/system_signals/public/mojom/system_signals.mojom.h"
+#include "components/device_signals/core/common/mojom/system_signals.mojom.h"
 
 namespace system_signals {
 
-class MacSystemSignalsService : public mojom::SystemSignalsService {
+class MacSystemSignalsService
+    : public device_signals::mojom::SystemSignalsService {
  public:
   MacSystemSignalsService();
   ~MacSystemSignalsService() override;
@@ -19,9 +20,10 @@ class MacSystemSignalsService : public mojom::SystemSignalsService {
   MacSystemSignalsService(const MacSystemSignalsService&) = delete;
   MacSystemSignalsService& operator=(const MacSystemSignalsService&) = delete;
 
-  // mojom::SystemSignalsService:
-  void GetBinarySignals(std::vector<mojom::BinarySignalsRequestPtr> requests,
-                        GetBinarySignalsCallback callback) override;
+  // device_signals::mojom::SystemSignalsService:
+  void GetBinarySignals(
+      std::vector<device_signals::mojom::BinarySignalsRequestPtr> requests,
+      GetBinarySignalsCallback callback) override;
 };
 
 }  // namespace system_signals

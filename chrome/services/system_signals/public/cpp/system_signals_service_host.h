@@ -6,7 +6,7 @@
 #define CHROME_SERVICES_SYSTEM_SIGNALS_PUBLIC_CPP_SYSTEM_SIGNALS_SERVICE_HOST_H_
 
 #include "build/build_config.h"
-#include "chrome/services/system_signals/public/mojom/system_signals.mojom-forward.h"
+#include "components/device_signals/core/common/mojom/system_signals.mojom-forward.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "mojo/public/cpp/bindings/remote.h"
@@ -28,13 +28,13 @@ class SystemSignalsServiceHost {
   SystemSignalsServiceHost& operator=(const SystemSignalsServiceHost&) = delete;
 
   // Returns a pointer to the currently available SystemSignalsService instance.
-  mojom::SystemSignalsService* GetService();
+  device_signals::mojom::SystemSignalsService* GetService();
 
  private:
 #if BUILDFLAG(IS_WIN)
-  mojom::Remote<mojom::SystemSignalsService> remote_service_;
+  mojom::Remote<device_signals::mojom::SystemSignalsService> remote_service_;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-  std::unique_ptr<mojom::SystemSignalsService> local_service_;
+  std::unique_ptr<device_signals::mojom::SystemSignalsService> local_service_;
 #endif
 };
 

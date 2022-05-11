@@ -10,7 +10,7 @@ MacSystemSignalsService::MacSystemSignalsService() = default;
 MacSystemSignalsService::~MacSystemSignalsService() = default;
 
 void LinuxSystemSignalsService::GetBinarySignals(
-    std::vector<mojom::BinarySignalsRequestPtr> requests,
+    std::vector<device_signals::mojom::BinarySignalsRequestPtr> requests,
     GetBinarySignalsCallback callback) {
   // TODO(b/231326198): Implement this.
   std::move(callback).Run({});

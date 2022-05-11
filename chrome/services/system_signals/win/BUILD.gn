@@ -10,7 +10,7 @@ source_set("win") {
   sources = [ "win_system_signals_service.cc" ]
 
   public_deps = [
-    "//chrome/services/system_signals/public/mojom",
+    "//components/device_signals/core/common/mojom",
     "//mojo/public/mojom/base",
   ]
 

@@ -7,13 +7,13 @@
 namespace system_signals {
 
 WinSystemSignalsService::WinSystemSignalsService(
-    mojo::PendingReceiver<mojom::SystemSignalsService> receiver)
+    mojo::PendingReceiver<device_signals::mojom::SystemSignalsService> receiver)
     : receiver_(this, std::move(receiver)) {}
 
 WinSystemSignalsService::~WinSystemSignalsService() = default;
 
 void WinSystemSignalsService::GetBinarySignals(
-    std::vector<mojom::BinarySignalsRequestPtr> requests,
+    std::vector<device_signals::mojom::BinarySignalsRequestPtr> requests,
     GetBinarySignalsCallback callback) {
   // TODO(b/231298500): Implement this.
   std::move(callback).Run({});

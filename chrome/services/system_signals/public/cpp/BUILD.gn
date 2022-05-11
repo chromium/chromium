@@ -11,7 +11,7 @@ source_set("cpp") {
 
   public_deps = [
     "//build",
-    "//chrome/services/system_signals/public/mojom",
+    "//components/device_signals/core/common/mojom",
     "//mojo/public/mojom/base",
   ]
 

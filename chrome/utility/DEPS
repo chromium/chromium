@@ -36,6 +36,7 @@ include_rules = [
   "+chromeos/services/libassistant/libassistant_service.h",
   "+chromeos/services/tts",
   "+components/crash/core/common/crash_keys.h",
+  "+components/device_signals/core/common/mojom",
   "+components/mirroring/mojom",
   "+components/mirroring/service",
   "+components/paint_preview/buildflags",

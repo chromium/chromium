@@ -7,29 +7,32 @@
 
 #include <vector>
 
-#include "chrome/services/system_signals/public/mojom/system_signals.mojom.h"
+#include "components/device_signals/core/common/mojom/system_signals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace system_signals {
 
-class WinSystemSignalsService : public mojom::SystemSignalsService {
+class WinSystemSignalsService
+    : public device_signals::mojom::SystemSignalsService {
  public:
   explicit WinSystemSignalsService(
-      mojo::PendingReceiver<mojom::SystemSignalsService> receiver);
+      mojo::PendingReceiver<device_signals::mojom::SystemSignalsService>
+          receiver);
   ~WinSystemSignalsService() override;
 
   WinSystemSignalsService(const WinSystemSignalsService&) = delete;
   WinSystemSignalsService& operator=(const WinSystemSignalsService&) = delete;
 
   // mojom::SystemSignalsService:
-  void GetBinarySignals(std::vector<mojom::BinarySignalsRequestPtr> requests,
-                        GetBinarySignalsCallback callback) override;
+  void GetBinarySignals(
+      std::vector<device_signals::mojom::BinarySignalsRequestPtr> requests,
+      GetBinarySignalsCallback callback) override;
   void GetAntiVirusSignals(GetAntiVirusSignalsCallback callback) override;
   void GetHotfixSignals(GetHotfixSignalsCallback callback) override;
 
  private:
-  mojo::Receiver<mojom::SystemSignalsService> receiver_;
+  mojo::Receiver<device_signals::mojom::SystemSignalsService> receiver_;
 };
 
 }  // namespace system_signals

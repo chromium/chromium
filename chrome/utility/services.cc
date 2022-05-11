@@ -35,13 +35,13 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/services/system_signals/public/mojom/system_signals.mojom.h"
 #include "chrome/services/system_signals/win/win_system_signals_service.h"
 #include "chrome/services/util_win/processor_metrics.h"
 #include "chrome/services/util_win/public/mojom/util_read_icon.mojom.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "chrome/services/util_win/util_read_icon.h"
 #include "chrome/services/util_win/util_win_impl.h"
+#include "components/device_signals/core/common/mojom/system_signals.mojom.h"
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"  // nogncheck
 #include "components/services/quarantine/quarantine_impl.h"  // nogncheck
 #include "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom.h"
@@ -175,7 +175,7 @@ auto RunWindowsUtility(mojo::PendingReceiver<chrome::mojom::UtilWin> receiver) {
 }
 
 auto RunSystemSignalsService(
-    mojo::PendingReceiver<system_signals::mojom::SystemSignalsService>
+    mojo::PendingReceiver<device_signals::mojom::SystemSignalsService>
         receiver) {
   return std::make_unique<system_signals::WinSystemSignalsService>(
       std::move(receiver));

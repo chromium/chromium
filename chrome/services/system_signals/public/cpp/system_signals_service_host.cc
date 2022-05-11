@@ -4,7 +4,7 @@
 
 #include "chrome/services/system_signals/public/cpp/system_signals_service_host.h"
 
-#include "chrome/services/system_signals/public/mojom/system_signals.mojom.h"
+#include "components/device_signals/core/common/mojom/system_signals.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/time/time.h"
@@ -23,16 +23,17 @@ SystemSignalsServiceHost::~SystemSignalsServiceHost() = default;
 
 #if BUILDFLAG(IS_WIN)
 
-mojom::SystemSignalsService* SystemSignalsServiceHost::GetService() {
+device_signals::mojom::SystemSignalsService*
+SystemSignalsServiceHost::GetService() {
   // To prevent any impact on Chrome's stability and memory footprint, run
   // this service in its own process on Windows (since it interacts with, e.g.,
   // WMI).
   if (!remote_service_) {
-    remote_service_ =
-        content::ServiceProcessHost::Launch<mojom::SystemSignalsService>(
-            content::ServiceProcessHost::Options()
-                .WithDisplayName(IDS_UTILITY_PROCESS_SYSTEM_SIGNALS_NAME)
-                .Pass());
+    remote_service_ = content::ServiceProcessHost::Launch<
+        device_signals::mojom::SystemSignalsService>(
+        content::ServiceProcessHost::Options()
+            .WithDisplayName(IDS_UTILITY_PROCESS_SYSTEM_SIGNALS_NAME)
+            .Pass());
     remote_service_.reset_on_idle_timeout(base::Seconds(10));
   }
   return &remote_service_;
@@ -40,7 +41,8 @@ mojom::SystemSignalsService* SystemSignalsServiceHost::GetService() {
 
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
-mojom::SystemSignalsService* SystemSignalsServiceHost::GetService() {
+device_signals::mojom::SystemSignalsService*
+SystemSignalsServiceHost::GetService() {
   if (!local_service_) {
 #if BUILDFLAG(IS_MAC)
     local_service_ = std::make_unique<MacSystemSignalsService>();
