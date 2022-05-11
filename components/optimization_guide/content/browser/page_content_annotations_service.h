@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_SERVICE_H_
 
 #include <string>
+#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/containers/lru_cache.h"
@@ -151,31 +152,46 @@ class PageContentAnnotationsService : public KeyedService,
   static std::string StringInputForPageTopicsHost(const std::string& host);
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  // Callback invoked when |visit| has been annotated.
+  // Callback invoked when a single |visit| has been annotated.
   void OnPageContentAnnotated(
       const HistoryVisit& visit,
       const absl::optional<history::VisitContentModelAnnotations>&
           content_annotations);
 
+  // Maybe calls |AnnotateVisitBatch| to start a new batch of content
+  // annotations. Returns true if a new batch is started. Returns false if a
+  // batch is already running, or if there batch queue is not full.
+  bool MaybeStartAnnotateVisitBatch();
+
   // Runs the page annotation models available to |model_manager_| on all the
   // visits within |current_visit_annotation_batch_|.
   void AnnotateVisitBatch();
 
-  // Callback run after the annotations for a |visit| of a batch has been
-  // determined. |current_visit_annotation_batch_| is updated to remove
-  // the annotated visit and will trigger the next visit to be annotated.
-  void OnBatchVisitAnnotated(
-      const HistoryVisit& visit,
-      const absl::optional<history::VisitContentModelAnnotations>&
-          content_annotations);
+  // Runs when a single annotation job of |type| is completed and |batch_result|
+  // can be merged into |merge_to_output|. |signal_merge_complete_callback|
+  // should be run last as it is a |base::BarrierClosure| that may trigger
+  // |OnBatchVisitsAnnotated| to run.
+  static void OnAnnotationBatchComplete(
+      AnnotationType type,
+      std::vector<absl::optional<history::VisitContentModelAnnotations>>*
+          merge_to_output,
+      base::OnceClosure signal_merge_complete_callback,
+      const std::vector<BatchAnnotationResult>& batch_result);
+
+  // Callback run after all annotation types in |annotation_types_to_execute_|
+  // for all of |current_visit_annotation_batch_| has been completed.
+  void OnBatchVisitsAnnotated(
+      std::unique_ptr<
+          std::vector<absl::optional<history::VisitContentModelAnnotations>>>
+          merged_annotation_outputs);
 
   std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;
 
 #endif
 
-  // The annotator to use for requests to |BatchAnnotate|. In prod, this is
-  // simply |model_manager_.get()| but is set as a separate pointer here in
-  // order to be override-able for testing.
+  // The annotator to use for requests to |BatchAnnotate| and |Annotate|. In
+  // prod, this is simply |model_manager_.get()| but is set as a separate
+  // pointer here in order to be override-able for testing.
   raw_ptr<PageContentAnnotator> annotator_;
 
   // Requests to annotate |text|, which is associated with |web_contents|.
@@ -274,6 +290,9 @@ class PageContentAnnotationsService : public KeyedService,
   // from the web content observer. These will be annotated when the set is full
   // and annotations can be scheduled with minimal impact to browsing.
   std::vector<HistoryVisit> visits_to_annotate_;
+
+  // The set of |AnnotationType|'s to run on each of |visits_to_annotate_|.
+  std::vector<AnnotationType> annotation_types_to_execute_;
 
   // The batch of visits being annotated. If this is empty, it is assumed that
   // no visits are actively be annotated and a new batch can be started.

@@ -33,6 +33,8 @@ class InsertionOrderedSet {
 
   bool empty() const { return vector_.empty(); }
 
+  size_t size() const { return vector_.size(); }
+
   const std::vector<T>& vector() { return vector_; }
 
   const base::flat_set<T>& set() { return set_; }

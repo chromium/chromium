@@ -81,11 +81,6 @@ const char kModelOverride[] = "optimization-guide-model-override";
 // Triggers validation of the model. Used for manual testing.
 const char kModelValidate[] = "optimization-guide-model-validate";
 
-// Prevents any models from being executing when in annotating a batch
-// of visits. This is used for testing only.
-const char kStopHistoryVisitBatchAnnotateForTesting[] =
-    "stop-history-visit-batch-annotate";
-
 const char kPageContentAnnotationsLoggingEnabled[] =
     "enable-page-content-annotations-logging";
 
@@ -192,13 +187,6 @@ absl::optional<std::string> GetModelOverride() {
   if (!command_line->HasSwitch(kModelOverride))
     return absl::nullopt;
   return command_line->GetSwitchValueASCII(kModelOverride);
-}
-
-bool StopHistoryVisitBatchAnnotateForTesting() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kStopHistoryVisitBatchAnnotateForTesting))
-    return true;
-  return false;
 }
 
 bool ShouldLogPageContentAnnotationsInput() {

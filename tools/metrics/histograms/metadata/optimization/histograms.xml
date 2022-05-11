@@ -731,6 +731,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="OptimizationGuide.PageContentAnnotationsService.ModelAvailable"
     enum="BooleanAvailable" expires_after="2022-10-30">
+  <obsolete>
+    Removed in M103.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -769,6 +772,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="OptimizationGuide.PageContentAnnotationsService.PageEntitiesExecutionLatency"
     units="ms" expires_after="2022-10-30">
+  <obsolete>
+    Removed in M103.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>

@@ -33,7 +33,6 @@ extern const char kDisableModelDownloadVerificationForTesting[];
 extern const char kModelOverride[];
 extern const char kDebugLoggingEnabled[];
 extern const char kModelValidate[];
-extern const char kStopHistoryVisitBatchAnnotateForTesting[];
 extern const char kPageContentAnnotationsLoggingEnabled[];
 
 // Returns whether the hint component should be processed.
@@ -88,10 +87,6 @@ absl::optional<std::string> GetModelOverride();
 
 // Returns true if debug logs are enabled for the optimization guide.
 bool IsDebugLogsEnabled();
-
-// Whether to prevent annotations from happening when in a batch. For testing
-// purposes only.
-bool StopHistoryVisitBatchAnnotateForTesting();
 
 // Returns true if page content annotations input should be logged.
 bool ShouldLogPageContentAnnotationsInput();

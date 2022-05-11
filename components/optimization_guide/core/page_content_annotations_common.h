@@ -86,6 +86,9 @@ class BatchAnnotationResult {
   BatchAnnotationResult(const BatchAnnotationResult&);
   ~BatchAnnotationResult();
 
+  // Returns true if the output corresponding to |type| is not nullopt;
+  bool HasOutputForType() const;
+
   const std::string& input() const { return input_; }
   AnnotationType type() const { return type_; }
   const absl::optional<std::vector<WeightedIdentifier>>& topics() const {

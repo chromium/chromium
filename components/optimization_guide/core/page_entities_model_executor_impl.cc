@@ -23,6 +23,11 @@ const char kPageEntitiesModelMetadataTypeUrl[] =
     "type.googleapis.com/"
     "google.internal.chrome.optimizationguide.v1.PageEntitiesModelMetadata";
 
+// The max number of page entities that should be output.
+// TODO(crbug/1234578): Make the number of entities Finch-able once we
+// know how much the model is expected to output.
+constexpr size_t kMaxPageEntities = 5;
+
 PageEntitiesModelExecutorConfig& GetPageEntitiesModelExecutorConfigInternal() {
   static base::NoDestructor<PageEntitiesModelExecutorConfig> s_config;
   return *s_config;
@@ -161,6 +166,11 @@ void EntityAnnotatorHolder::AnnotateEntitiesMetadataModelOnBackgroundThread(
               [](const ScoredEntityMetadata& a, const ScoredEntityMetadata& b) {
                 return a.score > b.score;
               });
+
+    // Limit the output to the top |kMaxPageEntities| items.
+    if (scored_md->size() > kMaxPageEntities) {
+      scored_md->resize(kMaxPageEntities);
+    }
   }
   reply_task_runner_->PostTask(FROM_HERE,
                                base::BindOnce(std::move(callback), scored_md));

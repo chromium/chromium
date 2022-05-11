@@ -58,6 +58,19 @@ BatchAnnotationResult::BatchAnnotationResult(const BatchAnnotationResult&) =
     default;
 BatchAnnotationResult::~BatchAnnotationResult() = default;
 
+bool BatchAnnotationResult::HasOutputForType() const {
+  switch (type()) {
+    case AnnotationType::kUnknown:
+      return false;
+    case AnnotationType::kPageTopics:
+      return !!topics();
+    case AnnotationType::kContentVisibility:
+      return !!visibility_score();
+    case AnnotationType::kPageEntities:
+      return !!entities();
+  }
+}
+
 std::string BatchAnnotationResult::ToString() const {
   std::string output = "nullopt";
   if (topics_) {
